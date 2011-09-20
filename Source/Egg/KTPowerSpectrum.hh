@@ -27,8 +27,13 @@ namespace Katydid
             virtual void TakeFrequencySpectrum(const KTComplexVector& freqSpect);
             virtual void TakeFrequencySpectrum(Int_t nBins, const Double_t* real, const Double_t* imag);
 
+            Double_t GetPowerAtFrequency(Double_t freq);
+            Double_t GetPhaseAtFrequency(Double_t freq);
+
             virtual TH1D* CreateMagnitudeHistogram() const;
             virtual TH1D* CreatePhaseHistogram() const;
+
+            virtual TH1D* CreatePowerDistributionHistogram() const;
 
             Double_t GetBinWidth() const;
 

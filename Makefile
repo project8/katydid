@@ -1,5 +1,9 @@
 #####D. Furse's amazing makefile!#####
 
+#---------- build options -----------
+# leave variable values blank to turn an option off
+USE_LICE := yes
+
 
 #---------- definitions of compiler, suffixes, and options ----------
 
@@ -113,24 +117,34 @@ ExeSuf =
 DllSuf = so
 OutPutOpt = -o 
 
+#---------- definitions of paths and libraries for Project 8 packages -----------
+
+# Paths and Libraries for lice
+ifndef USE_LICE
+LICECFLAGS   := 
+LICELIBS     := 
+else
+LICECFLAGS   := -I../lice
+LICELIBS     := -L../lice -llice
+endif
+
 #---------- definitions of paths and libraries for external packages ----------
 
 # Paths and Libraries for ROOT
 ROOTCFLAGS   := $(shell $(ROOTCONFIG) --cflags)
 ROOTLDFLAGS  := $(shell $(ROOTCONFIG) --ldflags)
-ROOTLIBS     := $(shell $(ROOTCONFIG) --libs)
+ROOTLIBS     := $(shell $(ROOTCONFIG) --libs) -lFFTW
 ROOTGLIBS    := $(shell $(ROOTCONFIG) --glibs)
 
 # Paths and Libraries for GSL
-GSLCONFIG := gsl-config
-GSLCFLAGS := $(shell $(GSLCONFIG) --cflags)
-GSLLIBS   := $(shell $(GSLCONFIG) --libs)
+#GSLCONFIG := gsl-config
+#GSLCFLAGS := $(shell $(GSLCONFIG) --cflags)
+#GSLLIBS   := $(shell $(GSLCONFIG) --libs)
 
 # Paths and Libraries for Boost
-
-BOOSTFLAGS := -I/usr/local/include/boost
+#BOOSTFLAGS := -I/usr/local/include/boost
 #BOOSTFLAGS := -I$(BOOSTDIR)
-BOOSTLIBS := -lboost_filesystem -lboost_system
+#BOOSTLIBS := -lboost_filesystem -lboost_system
 
 #$(shell echo ROOTLIBS is --$(ROOTLIBS)-- 1>&2)
 
@@ -139,9 +153,9 @@ MXMLCFLAGS :=
 MXMLLIBS := -lmxml
 
 
-CXXFLAGS     += $(ROOTCFLAGS) $(MXMLCFLAGS) #$(GSLCFLAGS) $(BOOSTFLAGS) -I.
-LDFLAGS      += $(ROOTLDFLAGS) 
-LIBS          = $(ROOTLIBS) $(MXMLLIBS) #$(GSLLIBS) $(BOOSTLIBS)
+CXXFLAGS     += $(ROOTCFLAGS) $(MXMLCFLAGS) $(LICECFLAGS) #$(GSLCFLAGS) $(BOOSTFLAGS) -I.
+LDFLAGS      += $(ROOTLDFLAGS)
+LIBS          = $(ROOTLIBS) $(MXMLLIBS) $(LICELIBS) #$(GSLLIBS) $(BOOSTLIBS)
 
 #---------- Program sections and variable settings ----------
 

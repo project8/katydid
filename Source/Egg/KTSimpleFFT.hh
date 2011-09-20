@@ -8,6 +8,8 @@
 #ifndef KTSIMPLEFFT_HH_
 #define KTSIMPLEFFT_HH_
 
+#include "KTFFT.hh"
+
 #include "TFFTRealComplex.h"
 
 #include <string>
@@ -20,7 +22,7 @@ namespace Katydid
     class KTPowerSpectrum;
     class KTEvent;
 
-    class KTSimpleFFT
+    class KTSimpleFFT : public KTFFT
     {
         public:
             KTSimpleFFT();
@@ -34,9 +36,9 @@ namespace Katydid
 
             virtual void Transform();
 
-            KTPowerSpectrum* CreatePowerSpectrum() const;
-            Int_t GetTimeSize() const;
-            Int_t GetFrequencySize() const;
+            virtual KTPowerSpectrum* CreatePowerSpectrum() const;
+            virtual Int_t GetTimeSize() const;
+            virtual Int_t GetFrequencySize() const;
 
             /// note: SetTimeSize creates a new fTransform.
             ///       It also sets fIsInitialized and fIsDataReady to kFALSE.

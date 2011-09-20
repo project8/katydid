@@ -9,7 +9,8 @@
 
 #include "KTArrayUC.hh"
 
-#include <cstring>
+#include "TH1.h"
+#include "TMath.h"
 
 ClassImp(Katydid::KTEvent);
 
@@ -19,13 +20,16 @@ namespace Katydid
     KTEvent::KTEvent() :
                 fTimeStampSize(0),
                 fFrameIDSize(0),
-                fRecordSize(0),
+                fRecordSize(1),
                 fEventSize(0),
                 fSampleRate(0),
                 fSampleLength(0),
                 fTimeStamp(NULL),
                 fFrameID(NULL),
-                fRecord(NULL)
+                fRecord(NULL),
+                fHertzPerSampleRateUnit(1.),
+                fSecondsPerSampleLengthUnit(1.),
+                fBinWidth(1.)
     {
     }
 
@@ -34,6 +38,27 @@ namespace Katydid
         delete fTimeStamp;
         delete fFrameID;
         delete fRecord;
+    }
+
+    UInt_t KTEvent::GetADCAtTime(Double_t time) const
+    {
+        return this->GetADCAtBin(TMath::Nint(time / fBinWidth));
+    }
+
+    UInt_t KTEvent::GetADCAtBin(Int_t bin) const
+    {
+        return (UInt_t)fRecord->At(bin);
+    }
+
+    TH1I* KTEvent::CreateRecordHistogram() const
+    {
+        TH1I* hist = new TH1I("hRecord", "Event Record", 256, -0.5, 255.5);
+        for (Int_t iBin=0; iBin<fRecord->GetSize(); iBin++)
+        {
+            hist->Fill((Double_t)fRecord->At(iBin));
+        }
+        hist->SetXTitle("ADC Bin");
+        return hist;
     }
 
     Int_t KTEvent::GetEventSize() const
@@ -81,6 +106,21 @@ namespace Katydid
         return fTimeStampSize;
     }
 
+    Double_t KTEvent::GetHertzPerSampleRateUnit() const
+    {
+        return fHertzPerSampleRateUnit;
+    }
+
+    Double_t KTEvent::GetSecondsPerSampleLengthUnit() const
+    {
+        return fSecondsPerSampleLengthUnit;
+    }
+
+    Double_t KTEvent::GetBinWidth() const
+    {
+        return fBinWidth;
+    }
+
     void KTEvent::SetEventSize(Int_t eventSize)
     {
         this->fEventSize = eventSize;
@@ -116,6 +156,7 @@ namespace Katydid
     void KTEvent::SetSampleRate(Int_t sampleRate)
     {
         this->fSampleRate = sampleRate;
+        this->fBinWidth = fHertzPerSampleRateUnit / sampleRate;
     }
 
     void KTEvent::SetTimeStamp(KTArrayUC* timeStamp)
@@ -127,6 +168,18 @@ namespace Katydid
     void KTEvent::SetTimeStampSize(Int_t timeStampSize)
     {
         this->fTimeStampSize = timeStampSize;
+    }
+
+    void KTEvent::SetHertzPerSampleRateUnit(Double_t hpsru)
+    {
+        fHertzPerSampleRateUnit = hpsru;
+        return;
+    }
+
+    void KTEvent::SetSecondsPerSampleLengthUnit(Double_t spslu)
+    {
+        fSecondsPerSampleLengthUnit = spslu;
+        return;
     }
 
 } /* namespace Katydid */

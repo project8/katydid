@@ -55,6 +55,17 @@ namespace Katydid
         return;
     }
 
+    Double_t KTPowerSpectrum::GetPowerAtFrequency(Double_t freq)
+    {
+        return (*fMagnitude)[(Int_t)(freq / fBinWidth)];
+    }
+
+    Double_t KTPowerSpectrum::GetPhaseAtFrequency(Double_t freq)
+    {
+        return (*fPhase)[(Int_t)(freq / fBinWidth)];
+    }
+
+
     TH1D* KTPowerSpectrum::CreateMagnitudeHistogram() const
     {
         Int_t nBins = fMagnitude->GetNoElements();
@@ -78,6 +89,22 @@ namespace Katydid
         }
         hist->SetXTitle("Frequency");
         hist->SetYTitle("Phase");
+        return hist;
+    }
+
+    TH1D* KTPowerSpectrum::CreatePowerDistributionHistogram() const
+    {
+        Double_t tMaxMag = -1.;
+        for (Int_t iBin=0; iBin<fMagnitude->GetNoElements(); iBin++)
+        {
+            if ((*fMagnitude)[iBin] > tMaxMag) tMaxMag = (*fMagnitude)[iBin];
+        }
+        TH1D* hist = new TH1D("hPowerDistribution", "Power Distribution", 100, 0., tMaxMag*1.05);
+        for (Int_t iBin=0; iBin<fMagnitude->GetNoElements(); iBin++)
+        {
+            hist->Fill((*fMagnitude)[iBin]);
+        }
+        hist->SetXTitle("Power");
         return hist;
     }
 

@@ -21,12 +21,17 @@ namespace Katydid
 {
 
     KTSimpleFFT::KTSimpleFFT() :
+            KTFFT(),
             fTransform(NULL),
-            fTransformFlag(string(""))
+            fTransformFlag(string("")),
+            fIsInitialized(kFALSE),
+            fIsDataReady(kFALSE),
+            fBinWidth(1.)
     {
     }
 
     KTSimpleFFT::KTSimpleFFT(Int_t timeSize) :
+            KTFFT(),
             fTransform(new TFFTRealComplex(timeSize, kFALSE)),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
@@ -100,7 +105,7 @@ namespace Katydid
         fTransform->GetPointsComplex(freqSpecReal, freqSpecImag);
 
         KTComplexVector* freqSpec = new KTComplexVector(freqSize, freqSpecReal, freqSpecImag, "R");
-        delete freqSpecReal; delete freqSpecImag;
+        delete [] freqSpecReal; delete [] freqSpecImag;
         (*freqSpec) *= 1. / (Double_t)this->GetTimeSize();
 
         KTPowerSpectrum* powerSpec = new KTPowerSpectrum();

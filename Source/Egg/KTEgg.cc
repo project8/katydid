@@ -117,6 +117,10 @@ namespace Katydid
         std::cout << "Sample Rate: " << fData->GetSampleRate() << '\n';
         std::cout << "Sample Length: " << fData->GetSampleLength() << std::endl;
 
+        // these items aren't included in the header, but maybe will be someday?
+        fData->SetHertzPerSampleRateUnit(1.e6);
+        fData->SetSecondsPerSampleLengthUnit(1.e-3);
+
         return kTRUE;
     }
 
@@ -125,6 +129,7 @@ namespace Katydid
         Bool_t flag = kTRUE;
         unsigned char* readBuffer;
 
+        // read the time stamp
         readBuffer = new unsigned char [fData->GetTimeStampSize()];
         fEggStream.read((char*)(&readBuffer[0]), fData->GetTimeStampSize());
         if (fEggStream.gcount() == 0) flag = kFALSE;
@@ -133,10 +138,15 @@ namespace Katydid
             KTArrayUC* newTimeStamp = new KTArrayUC(fData->GetTimeStampSize());
             newTimeStamp->Adopt(fData->GetTimeStampSize(), readBuffer);
             fData->SetTimeStamp(newTimeStamp);
+            std::cout << "Time stamp (" << newTimeStamp->GetSize() << " chars): ";
+            for (Int_t i=0; i<newTimeStamp->GetSize(); i++)
+                std::cout << newTimeStamp->At(i);
+            std::cout << std::endl;
         }
         //delete [] readBuffer;
         if (! fEggStream.good()) return kFALSE;
 
+        // read the frame size
         readBuffer = new unsigned char [fData->GetFrameIDSize()];
         fEggStream.read((char*)(&readBuffer[0]), fData->GetFrameIDSize());
         if (fEggStream.gcount() == 0)  flag = kFALSE;
@@ -149,6 +159,7 @@ namespace Katydid
         //delete [] readBuffer;
         if (! fEggStream.good()) return kFALSE;
 
+        // read the record
         readBuffer = new unsigned char [fData->GetRecordSize()];
         fEggStream.read((char*)(&readBuffer[0]), fData->GetRecordSize());
         if (fEggStream.gcount() == 0) flag = kFALSE;
