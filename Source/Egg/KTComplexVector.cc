@@ -163,7 +163,7 @@ namespace Katydid
         return (*fPhase)[iBin];
     }
 
-    Int_t KTComplexVector::GetNBins() const
+    Int_t KTComplexVector::GetSize() const
     {
         return fMagnitude->GetNoElements();
     }

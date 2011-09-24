@@ -1,8 +1,8 @@
 #####D. Furse's amazing makefile!#####
 
 #---------- build options -----------
-# leave variable values blank to turn an option off
-USE_LICE := yes
+# use "yes" to include lice. anything other than that will deactivate the use of lice
+USE_LICE := no
 
 
 #---------- definitions of compiler, suffixes, and options ----------
@@ -120,12 +120,12 @@ OutPutOpt = -o
 #---------- definitions of paths and libraries for Project 8 packages -----------
 
 # Paths and Libraries for lice
-ifndef USE_LICE
-LICECFLAGS   := 
-LICELIBS     := 
-else
+ifeq ($(USE_LICE), yes)
 LICECFLAGS   := -I../lice
 LICELIBS     := -L../lice -llice
+else
+LICECFLAGS   := 
+LICELIBS     := 
 endif
 
 #---------- definitions of paths and libraries for external packages ----------

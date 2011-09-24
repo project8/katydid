@@ -36,7 +36,7 @@ namespace Katydid
             Double_t GetMagnitudeAt(Int_t iBin) const;
             Double_t GetPhaseAt(Int_t iBin) const;
 
-            Int_t GetNBins() const;
+            Int_t GetSize() const;
 
             TVectorD* GetMagnitude() const;
             TVectorD* GetPhase() const;

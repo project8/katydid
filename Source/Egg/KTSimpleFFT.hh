@@ -16,6 +16,7 @@
 using std::string;
 
 class TArray;
+class TH1D;
 
 namespace Katydid
 {
@@ -36,6 +37,8 @@ namespace Katydid
 
             virtual void Transform();
 
+            virtual TH1D* CreatePowerSpectrumHistogram() const;
+
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
             virtual Int_t GetTimeSize() const;
             virtual Int_t GetFrequencySize() const;
@@ -48,11 +51,11 @@ namespace Katydid
             const string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Bool_t GetIsDataReady() const;
-            Double_t GetBinWidth() const;
+            Double_t GetFreqBinWidth() const;
 
             /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
             void SetTransformFlag(const string& flag);
-            void SetBinWidth(Double_t bw);
+            void SetFreqBinWidth(Double_t bw);
 
         protected:
 
@@ -63,7 +66,7 @@ namespace Katydid
             Bool_t fIsInitialized;
             Bool_t fIsDataReady;
 
-            Double_t fBinWidth;
+            Double_t fFreqBinWidth;
 
             ClassDef(KTSimpleFFT, 1);
     };
@@ -107,9 +110,9 @@ namespace Katydid
         return fIsDataReady;
     }
 
-    inline Double_t KTSimpleFFT::GetBinWidth() const
+    inline Double_t KTSimpleFFT::GetFreqBinWidth() const
     {
-        return fBinWidth;
+        return fFreqBinWidth;
     }
 
     inline void KTSimpleFFT::SetTransformFlag(const string& flag)
@@ -120,9 +123,9 @@ namespace Katydid
         return;
     }
 
-    inline void KTSimpleFFT::SetBinWidth(Double_t bw)
+    inline void KTSimpleFFT::SetFreqBinWidth(Double_t bw)
     {
-        fBinWidth = bw;
+        fFreqBinWidth = bw;
         return;
     }
 

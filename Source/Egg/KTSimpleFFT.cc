@@ -12,6 +12,7 @@
 #include "KTPowerSpectrum.hh"
 
 #include "TArray.h"
+#include "TH1D.h"
 
 #include <iostream>
 
@@ -26,7 +27,7 @@ namespace Katydid
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
             fIsDataReady(kFALSE),
-            fBinWidth(1.)
+            fFreqBinWidth(1.)
     {
     }
 
@@ -36,7 +37,7 @@ namespace Katydid
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
             fIsDataReady(kFALSE),
-            fBinWidth(1.)
+            fFreqBinWidth(1.)
     {
     }
 
@@ -54,6 +55,11 @@ namespace Katydid
 
     void KTSimpleFFT::TakeData(const KTEvent* event)
     {
+        if (event->GetRecord()->GetSize() != fTransform->GetSize())
+        {
+            std::cerr << "Warning from KTSimpleFFT::TakeData: Number of bins in the data provided does not match the number of bins set for this transform" << std::endl;
+            return;
+        }
         if (! fIsInitialized)
         {
             std::cerr << "Warning from KTSimpleFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
@@ -61,13 +67,18 @@ namespace Katydid
             return;
         }
 
-        fBinWidth = event->GetSampleRate() / (Double_t)event->GetRecordSize();
+        fFreqBinWidth = event->GetSampleRate() / (Double_t)event->GetRecord()->GetSize();
         this->TakeData((TArray*)(event->GetRecord()));
         return;
     }
 
     void KTSimpleFFT::TakeData(const TArray* array)
     {
+        if (array->GetSize() != fTransform->GetSize())
+        {
+            std::cerr << "Warning from KTSimpleFFT::TakeData: Number of bins in the data provided does not match the number of bins set for this transform" << std::endl;
+            return;
+        }
         if (! fIsInitialized)
         {
             std::cerr << "Warning from KTSimpleFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
@@ -92,8 +103,23 @@ namespace Katydid
             return;
         }
 
+        if (! fIsDataReady)
+        {
+            std::cerr << "Warning from KTSimpleFFT::Transform: The data for the transform is not ready"<< std::endl;
+            std::cerr << "   Please first call TakeData, and then perform the transform" << std::endl;
+            return;
+        }
+
         fTransform->Transform();
         return;
+    }
+
+    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram() const
+    {
+        KTPowerSpectrum* ps = this->CreatePowerSpectrum();
+        TH1D* pshist = ps->CreateMagnitudeHistogram();
+        delete ps;
+        return pshist;
     }
 
     KTPowerSpectrum* KTSimpleFFT::CreatePowerSpectrum() const
@@ -110,7 +136,7 @@ namespace Katydid
 
         KTPowerSpectrum* powerSpec = new KTPowerSpectrum();
         powerSpec->TakeFrequencySpectrum(*freqSpec);
-        powerSpec->SetBinWidth(fBinWidth);
+        powerSpec->SetBinWidth(fFreqBinWidth);
         delete freqSpec;
         return powerSpec;
     }

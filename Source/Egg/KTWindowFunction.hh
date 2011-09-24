@@ -26,14 +26,19 @@ namespace Katydid
             KTWindowFunction();
             virtual ~KTWindowFunction();
 
-            virtual Double_t GetWeight(Double_t time) const = 0;
-            virtual Double_t GetWeight(Int_t bin) const = 0;
-
-            virtual Double_t GetWidth() const = 0;
-            virtual Int_t GetWidthInBins() const = 0;
+            virtual Double_t GetWeight(Double_t) const = 0;
+            virtual Double_t GetWeight(Int_t) const = 0;
 
             virtual TH1D* CreateHistogram() const = 0;
             virtual TH1D* CreateFrequencyResponseHistogram() const = 0;
+
+            virtual Double_t GetLength() const = 0;
+            virtual Int_t GetSize() const = 0;
+            virtual Double_t GetBinWidth() const = 0;
+
+            virtual Double_t SetLength(Double_t) = 0;
+            virtual Double_t SetBinWidth(Double_t) = 0;
+            virtual Double_t SetSize(Int_t) = 0;
     };
 
 } /* namespace Katydid */

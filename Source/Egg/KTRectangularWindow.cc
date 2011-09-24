@@ -29,20 +29,20 @@ namespace Katydid
 
     Double_t KTRectangularWindow::GetWeight(Double_t time) const
     {
-        if (fabs(time) <= fWidth/2.) return 1.;
+        if (fabs(time) <= fLength/2.) return 1.;
         return 0.;
     }
 
     Double_t KTRectangularWindow::GetWeight(Int_t bin) const
     {
-        if (bin >= 0 && bin < fWidthInBins) return 1.;
+        if (bin >= 0 && bin < fSize) return 1.;
         return 0.;
     }
 
     void KTRectangularWindow::RebuildWindowFunction()
     {
-        fWindowFunction = new TArrayD(fWidthInBins);
-        for (Int_t iBin=0; iBin < fWidthInBins; iBin++)
+        fWindowFunction = new TArrayD(fSize);
+        for (Int_t iBin=0; iBin < fSize; iBin++)
         {
             (*fWindowFunction)[iBin] = 1.;
         }

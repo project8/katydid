@@ -23,20 +23,21 @@ namespace Katydid
     KTEventWindowFunction::KTEventWindowFunction() :
             KTWindowFunction(),
             fWindowFunction(new TArrayD(1)),
-            fWidth(1.),
+            fLength(1.),
             fBinWidth(1.),
-            fWidthInBins(1)
+            fSize(1)
     {
     }
 
     KTEventWindowFunction::KTEventWindowFunction(const KTEvent* event) :
                     KTWindowFunction(),
                     fWindowFunction(new TArrayD(1)),
-                    fWidth(1.),
+                    fLength(1.),
                     fBinWidth(event->GetBinWidth()),
-                    fWidthInBins(1)
+                    fSize(1)
     {
-        fWidthInBins = TMath::Nint(fWidth / fBinWidth);
+        fSize = TMath::Nint(fLength / fBinWidth);
+        fLength = (Double_t)fSize * fBinWidth;
     }
 
     KTEventWindowFunction::~KTEventWindowFunction()
@@ -49,23 +50,23 @@ namespace Katydid
         return this->SetBinWidth(event->GetBinWidth());
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTEvent* event, Double_t width)
+    Double_t KTEventWindowFunction::AdaptTo(const KTEvent* event, Double_t length)
     {
-        return this->SetBinWidthAndWidth(event->GetBinWidth(), width);
+        return this->SetBinWidthAndLength(event->GetBinWidth(), length);
     }
 
     TH1D* KTEventWindowFunction::CreateHistogram() const
     {
-        Int_t sideBands = TMath::Nint(0.2 * fWidthInBins);
-        Int_t totalWidthInBins = fWidthInBins + 2 * sideBands;
-        Double_t histEdges = fWidth / 2. + sideBands * fBinWidth;
-        TH1D* hist = new TH1D("hWindowFunction", "Window Function", totalWidthInBins, -histEdges, histEdges);
+        Int_t sideBands = TMath::Nint(0.2 * fSize);
+        Int_t totalSize = fSize + 2 * sideBands;
+        Double_t histEdges = fLength / 2. + sideBands * fBinWidth;
+        TH1D* hist = new TH1D("hWindowFunction", "Window Function", totalSize, -histEdges, histEdges);
         for (Int_t iHistBin=1; iHistBin<=sideBands; iHistBin++)
         {
             hist->SetBinContent(iHistBin, 0.);
-            hist->SetBinContent(totalWidthInBins-iHistBin+1, 0.);
+            hist->SetBinContent(totalSize-iHistBin+1, 0.);
         }
-        for (Int_t iHistBin=sideBands+1; iHistBin<=fWidthInBins+sideBands; iHistBin++)
+        for (Int_t iHistBin=sideBands+1; iHistBin<=fSize+sideBands; iHistBin++)
         {
             hist->SetBinContent(iHistBin, this->GetWeight(iHistBin-sideBands-1));
         }
@@ -75,20 +76,20 @@ namespace Katydid
 
     TH1D* KTEventWindowFunction::CreateFrequencyResponseHistogram() const
     {
-        Int_t sideBands = TMath::Nint(0.2 * fWidthInBins);
-        Int_t totalWidthInBins = fWidthInBins + 2 * sideBands;
-        TArrayD* timeData = new TArrayD(totalWidthInBins);
+        Int_t sideBands = TMath::Nint(0.2 * fSize);
+        Int_t totalSize = fSize + 2 * sideBands;
+        TArrayD* timeData = new TArrayD(totalSize);
         for (Int_t iBin=0; iBin<sideBands; iBin++)
         {
             (*timeData)[iBin] = 0.;
-            (*timeData)[totalWidthInBins-iBin-1] = 0.;
+            (*timeData)[totalSize-iBin-1] = 0.;
         }
-        for (Int_t iBin=sideBands; iBin<fWidthInBins+sideBands; iBin++)
+        for (Int_t iBin=sideBands; iBin<fSize+sideBands; iBin++)
         {
             (*timeData)[iBin] = this->GetWeight(iBin-sideBands);
         }
-        KTSimpleFFT* fft = new KTSimpleFFT(totalWidthInBins);
-        fft->SetBinWidth(fBinWidth);
+        KTSimpleFFT* fft = new KTSimpleFFT(totalSize);
+        fft->SetFreqBinWidth(fBinWidth);
         fft->SetTransformFlag("ES");
         fft->InitializeFFT();
         fft->TakeData((TArray*)timeData);
@@ -102,14 +103,14 @@ namespace Katydid
         return hist;
     }
 
-    Double_t KTEventWindowFunction::GetWidth() const
+    Double_t KTEventWindowFunction::GetLength() const
     {
-        return fWidth;
+        return fLength;
     }
 
-    Int_t KTEventWindowFunction::GetWidthInBins() const
+    Int_t KTEventWindowFunction::GetSize() const
     {
-        return fWidthInBins;
+        return fSize;
     }
 
     Double_t KTEventWindowFunction::GetBinWidth() const
@@ -117,33 +118,41 @@ namespace Katydid
         return fBinWidth;
     }
 
-    Double_t KTEventWindowFunction::SetWidth(Double_t width)
+    Double_t KTEventWindowFunction::SetLength(Double_t length)
     {
-        Double_t prelimNBins = width / fBinWidth;
-        fWidthInBins = TMath::Nint(prelimNBins);
-        fWidth = (Double_t)fWidthInBins * fBinWidth;
+        Double_t prelimNBins = length / fBinWidth;
+        fSize = TMath::Nint(prelimNBins);
+        fLength = (Double_t)fSize * fBinWidth;
         this->RebuildWindowFunction();
-        return fWidth;
+        return fLength;
     }
 
     Double_t KTEventWindowFunction::SetBinWidth(Double_t bw)
     {
         fBinWidth = bw;
-        Double_t prelimNBins = fWidth / fBinWidth;
-        fWidthInBins = TMath::Nint(prelimNBins);
-        fWidth = (Double_t)fWidthInBins * fBinWidth;
+        Double_t prelimNBins = fLength / fBinWidth;
+        fSize = TMath::Nint(prelimNBins);
+        fLength = (Double_t)fSize * fBinWidth;
         this->RebuildWindowFunction();
-        return fWidth;
+        return fLength;
     }
 
-    Double_t KTEventWindowFunction::SetBinWidthAndWidth(Double_t bw, Double_t width)
+    Double_t KTEventWindowFunction::SetBinWidthAndLength(Double_t bw, Double_t length)
     {
         fBinWidth = bw;
-        Double_t prelimNBins = width / fBinWidth;
-        fWidthInBins = TMath::Nint(prelimNBins);
-        fWidth = (Double_t)fWidthInBins * fBinWidth;
+        Double_t prelimNBins = length / fBinWidth;
+        fSize = TMath::Nint(prelimNBins);
+        fLength = (Double_t)fSize * fBinWidth;
         this->RebuildWindowFunction();
-        return fWidth;
+        return fLength;
+    }
+
+    Double_t KTEventWindowFunction::SetSize(Int_t wib)
+    {
+        fSize = wib;
+        fLength = (Double_t)fSize * fBinWidth;
+        this->RebuildWindowFunction();
+        return fLength;
     }
 
 

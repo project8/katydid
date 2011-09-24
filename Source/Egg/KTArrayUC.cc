@@ -26,7 +26,7 @@
 #include "TBuffer.h"
 
 
-ClassImp(/*Katydid::*/KTArrayUC)
+ClassImp(KTArrayUC)
 
 //namespace Katydid
 //{
