@@ -218,6 +218,11 @@ namespace Katydid
         return fEggStream;
     }
 
+    UInt_t KTEgg::GetHeaderSize() const
+    {
+        return fHeaderSize;
+    }
+
     const string& KTEgg::GetHeader() const
     {
         return fHeader;
