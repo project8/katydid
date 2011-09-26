@@ -145,6 +145,11 @@ namespace Katydid
         return NULL;
     }
 
+    inline KTWindowFunction* KTSlidingWindowFFT::GetWindowFunction() const
+    {
+        return fWindowFunction;
+    }
+
     inline void KTSlidingWindowFFT::SetTransformFlag(const string& flag)
     {
         fTransformFlag = flag;
