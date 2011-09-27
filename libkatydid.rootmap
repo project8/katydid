@@ -1,0 +1,13 @@
+Library.Katydid@@KTArrayUC:             libKatydid.so
+Library.Katydid@@KTComplexVector:       libKatydid.so
+Library.Katydid@@KTEgg:                 libKatydid.so
+Library.Katydid@@KTEvent:               libKatydid.so
+Library.Katydid@@KTEventWindowFunction: libKatydid.so
+Library.Katydid@@KTFFT:                 libKatydid.so
+Library.Katydid@@KTHammingWindow:       libKatydid.so
+Library.Katydid@@KTHannWindow:          libKatydid.so
+Library.Katydid@@KTPowerSpectrum:       libKatydid.so
+Library.Katydid@@KTRectangularWindow:   libKatydid.so
+Library.Katydid@@KTSimpleFFT:           libKatydid.so
+Library.Katydid@@KTSlidingWindowFFT:    libKatydid.so
+Library.Katydid@@KTWindowFunction:      libKatydid.so
