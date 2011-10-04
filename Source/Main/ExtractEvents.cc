@@ -8,6 +8,7 @@
 
 #include "KTEgg.hh"
 
+#include <cstdlib>
 #include <iostream>
 //#include <sstream>
 //using std::stringstream;
