@@ -39,6 +39,8 @@ namespace Katydid
             virtual Double_t SetLength(Double_t) = 0;
             virtual Double_t SetBinWidth(Double_t) = 0;
             virtual Double_t SetSize(Int_t) = 0;
+
+            ClassDef(KTWindowFunction, 1);
     };
 
 } /* namespace Katydid */

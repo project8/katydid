@@ -67,7 +67,7 @@ namespace Katydid
 
             Int_t fSize;
 
-
+            ClassDef(KTEventWindowFunction, 1);
     };
 
 } /* namespace Katydid */

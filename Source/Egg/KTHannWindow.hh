@@ -26,6 +26,8 @@ namespace Katydid
         protected:
             virtual void RebuildWindowFunction();
 
+            ClassDef(KTHannWindow, 1);
+
     };
 
 } /* namespace Katydid */

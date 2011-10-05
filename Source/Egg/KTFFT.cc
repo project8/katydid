@@ -7,6 +7,8 @@
 
 #include "KTFFT.hh"
 
+ClassImp(Katydid::KTFFT);
+
 namespace Katydid
 {
 

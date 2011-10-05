@@ -7,6 +7,8 @@
 
 #include "KTWindowFunction.hh"
 
+ClassImp(Katydid::KTWindowFunction);
+
 namespace Katydid
 {
 

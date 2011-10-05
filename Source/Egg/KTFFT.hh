@@ -27,6 +27,8 @@ namespace Katydid
 
             virtual void Transform() = 0;
 
+            ClassDef(KTFFT, 1);
+
     };
 
 } /* namespace Katydid */

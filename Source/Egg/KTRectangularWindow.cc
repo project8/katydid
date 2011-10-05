@@ -10,6 +10,8 @@
 #include "TArrayD.h"
 #include <cmath>
 
+ClassImp(Katydid::KTRectangularWindow);
+
 namespace Katydid
 {
 

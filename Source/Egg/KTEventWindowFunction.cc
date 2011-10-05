@@ -17,6 +17,8 @@
 
 #include <iostream>
 
+ClassImp(Katydid::KTEventWindowFunction);
+
 namespace Katydid
 {
 

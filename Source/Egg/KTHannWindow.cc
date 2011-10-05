@@ -12,6 +12,8 @@
 
 #include <cmath>
 
+ClassImp(Katydid::KTHannWindow);
+
 namespace Katydid
 {
 

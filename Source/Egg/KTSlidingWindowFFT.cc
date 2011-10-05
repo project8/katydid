@@ -133,7 +133,7 @@ namespace Katydid
                 //std::cout << "window: " << iWindow+1 << "; window start: " << windowStart << std::endl;
                 for (Int_t iPoint=windowStart; iPoint<windowStart+fWindowFunction->GetSize(); iPoint++)
                 {
-                    fTransform->SetPoint(iPoint, (*fTimeData)[iPoint] * fWindowFunction->GetWeight(iPoint-windowStart));
+                    fTransform->SetPoint(iPoint-windowStart, (*fTimeData)[iPoint] * fWindowFunction->GetWeight(iPoint-windowStart));
                 }
                 fTransform->Transform();
                 fPowerSpectra.push_back(this->CreatePowerSpectrum());
