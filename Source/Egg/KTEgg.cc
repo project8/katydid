@@ -12,6 +12,7 @@
 #include "KTArrayUC.hh"
 
 #include "TArrayC.h"
+//#include "TDOMParser.h"
 
 #include "mxml.h"
 
@@ -83,6 +84,19 @@ namespace Katydid
         // these items aren't included in the header, but maybe will be someday?
         this->SetHertzPerSampleRateUnit(1.e6);
         this->SetSecondsPerApproxRecordLengthUnit(1.e-3);
+
+        /*
+        //some initial code to use the ROOT XML parser instead of mxml
+        TDOMParser* xmlParser = new TDOMParser();
+        Int_t xmlParsed = xmlParser->ParseBuffer(fHeader.c_str(), fHeaderSize);
+        if (xmlParsed != 0)
+        {
+            std::cout << "Error in KTEgg::ParseEggHeader: Problem parsing XML (error code " << xmlParsed << ")" << std::endl;
+            return kFALSE;
+        }
+
+        TXMLNode* xmlHeader = xmlParser->GetXMLDocument()->GetRootNode();
+        */
 
         //mxml_node_t* tree = mxmlLoadString(NULL, (Char_t*)(fHeader->GetArray()), MXML_TEXT_CALLBACK);
         mxml_node_t* tree = mxmlLoadString(NULL, fHeader.c_str(), MXML_TEXT_CALLBACK);

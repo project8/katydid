@@ -20,8 +20,8 @@
     Katydid::KTEgg* egg = new Katydid::KTEgg();
 
     //egg->SetFileName("../data/tone_8_21_2011_4.egg");
-    //egg->SetFileName("/Volumes/Lazlo/flicker.egg");
-    egg->SetFileName("/Volumes/Sycorax/magnet_med_LHe_Kr_trap_pos_pol_0");
+    egg->SetFileName("/Volumes/Lazlo/flicker.egg");
+    //egg->SetFileName("/Volumes/Sycorax/magnet_med_LHe_Kr_trap_pos_pol_0");
     if (! egg->BreakEgg()) return;
     if (! egg->ParseEggHeader()) return;
 
