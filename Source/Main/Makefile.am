@@ -12,9 +12,20 @@ ExtractEvents_SOURCES = ExtractEvents.cc
 ExtractEvents_CPPFLAGS = $(MAIN_CPPFLAGS)
 
 ExtractEvents_LDADD = \
-    @top_builddir@/Source/Egg/libEgg.la
+    @top_builddir@/Source/build/libKatydid.la
 
 ExtractEvents_LDFLAGS = $(AM_LDFLAGS)
+
+#---------------------------
+
+bin_PROGRAMS += SimpleElectronHunt
+SimpleElectronHunt_SOURCES = SimpleElectronHunt.cc
+SimpleElectronHunt_CPPFLAGS = $(MAIN_CPPFLAGS)
+
+SimpleElectronHunt_LDADD = \
+	@top_builddir@/Source/build/libKatydid.la
+	
+SimpleElectronHunt_LDFLAGS = $(AM_LDFLAGS)
 
 #---------------------------
 
@@ -24,7 +35,7 @@ ExtractEvents_LDFLAGS = $(AM_LDFLAGS)
 #FileReader_CPPFLAGS = $(MAIN_CPPFLAGS)
 
 #FileReader_LDADD = \
-#	@top_builddir@/Source/Egg/libEgg.la
+#	@top_builddir@/Source/build/libKatydid.la
 
 #FileReader_LDFLAGS = $(AM_LDFLAGS)
 
