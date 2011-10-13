@@ -5,6 +5,13 @@
  *      Author: nsoblath
  *
  *      Search for electrons with very basic peak finding and grouping
+ *
+ *      Usage: SimpleElectronHunt [-e egg filename] [-p ps filename] [-n # events; -1 for all] [-c control case option]
+ *      Command line options
+ *       -e: The input data file name
+ *       -p: The output ps file name
+ *       -n: The number of events to analyze; use -1 for all
+ *       -c: Use this to run one of the control setups. -1 reverses the high and low margins; -2 uses large negative margins.
  */
 
 #include "KTEgg.hh"
@@ -38,9 +45,13 @@ int main(int argc, char** argv)
     string inputFileName("");
     Int_t numEvents = 1;
 
+    Int_t groupBinsMarginLow = 1;
+    Int_t groupBinsMarginHigh = 3;
+    Int_t groupBinsMarginSameTime = 1;
+
     Int_t arg;
     extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:p:n:")) != -1)
+    while ((arg = getopt(argc, argv, "e:p:n:c")) != -1)
         switch (arg)
         {
             case 'e':
@@ -51,6 +62,21 @@ int main(int argc, char** argv)
                 break;
             case 'n':
                 numEvents = atoi(optarg);
+                break;
+            case 'c':
+                Int_t controlOpt = atoi(optarg);
+                if (controlOpt == 1)
+                {
+                    groupBinsMarginLow = 3;
+                    groupBinsMarginHigh = 1;
+                    groupBinsMarginSameTime = 1;
+                }
+                else if (controlOpt == 2)
+                {
+                    groupBinsMarginLow = 7;
+                    groupBinsMarginHigh = 3;
+                    groupBinsMarginSameTime = 1;
+                }
                 break;
         }
 
@@ -84,6 +110,7 @@ int main(int argc, char** argv)
     plain->SetTitleColor(0);
     plain->SetStatColor(0);
     plain->SetPalette(1);
+    plain->SetOptStat(0);
     gROOT->SetStyle("Plain");
 
     TCanvas *c1 = new TCanvas("c1", "c1");
@@ -141,9 +168,6 @@ int main(int argc, char** argv)
         Int_t nBinsInRange[nSearchRanges] = {lastBins[0]-firstBins[0]+1, lastBins[1]-firstBins[1]+1, lastBins[2]-firstBins[2]+1};
 
         delete histProj;
-
-        Int_t groupBinsMarginLow = 1;
-        Int_t groupBinsMarginHigh = 3;
 
         TObjArray* eventPeakBins = new TObjArray();
         //for (Int_t ifft=1; ifft<=10; ifft++)
@@ -204,7 +228,7 @@ int main(int argc, char** argv)
                     else if (lastFFT == ifft)
                     {
                         Int_t lastFreqBin = ((TParameter<Int_t>*)lastInGroup->Value())->GetVal();
-                        if (pbVal >= lastFreqBin - groupBinsMarginLow && pbVal <= lastFreqBin + groupBinsMarginLow)
+                        if (pbVal >= lastFreqBin - groupBinsMarginSameTime && pbVal <= lastFreqBin + groupBinsMarginSameTime)
                         {
                             TObject* key = new TParameter<Int_t>("key", ifft);
                             TObject* val = new TParameter<Int_t>("val", pbVal);
@@ -282,7 +306,7 @@ int main(int argc, char** argv)
             //cout << endl;
             Char_t histname[256], histtitle[256];
             sprintf(histname, "hCandidate_%i_%i", iEvent, iCandidate);
-            sprintf(histtitle, "Candidate Group - Event %i - Candidate %i; Time (s); Frequency (MHz)", iEvent, iCandidate);
+            sprintf(histtitle, "Candidate Group - Event %i - Candidate %i", iEvent, iCandidate);
             minFFT = TMath::Max(1, minFFT-frameFFT);
             maxFFT = TMath::Min(hist->GetNbinsX(), maxFFT+frameFFT);
             Double_t minValFFT = hist->GetBinLowEdge(minFFT);
@@ -294,6 +318,8 @@ int main(int argc, char** argv)
             //cout << minFFT << "  " << maxFFT << "  " << minValFFT << "  " << maxValFFT << endl;
             //cout << minFreqBin << "  " << maxFreqBin << "  " << minValFreqBin << "  " << maxValFreqBin << endl;
             TH2D* groupHist = new TH2D(histname, histtitle, maxFFT-minFFT+1, minValFFT, maxValFFT, maxFreqBin-minFreqBin+1, minValFreqBin, maxValFreqBin);
+            groupHist->SetXTitle("Time (s)");
+            groupHist->SetYTitle("Frequency (MHz)");
             for (Int_t iFFTBin=1; iFFTBin<=groupHist->GetNbinsX(); iFFTBin++)
             {
                 for (Int_t iFreqBin=1; iFreqBin<=groupHist->GetNbinsY(); iFreqBin++)

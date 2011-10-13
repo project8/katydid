@@ -44,7 +44,7 @@ PKG_PROG_PKG_CONFIG
 
 #check for root and required features
 ROOT_CHECK([5.24])
-ROOT_FEATURE([fftw3])
+#ROOT_FEATURE([fftw3])
 # Need to add -lFFTW because for some reason it doesn't get included from root-config
 ROOT_LDFLAGS="$ROOT_LDFLAGS -lFFTW"
 
@@ -69,6 +69,7 @@ AC_CONFIG_FILES(
 		[katydid.pc]
         [Source/Makefile]
         [Source/Egg/Makefile]
+        [Source/FFT/Makefile]
         [Source/Main/Makefile]
         [Source/build/Makefile]
         [Scripts/Makefile]

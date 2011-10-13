@@ -12,18 +12,8 @@ EGG_DICT_INCLUDES=\
 # headers for classes that should go into the root dictionary
 EGG_DICT_HEADERFILES = \
     KTArrayUC.hh\
-    KTComplexVector.hh\
     KTEgg.hh\
-    KTEvent.hh\
-    KTEventWindowFunction.hh\
-    KTFFT.hh\
-    KTHammingWindow.hh\
-    KTHannWindow.hh\
-    KTPowerSpectrum.hh\
-    KTRectangularWindow.hh\
-    KTSimpleFFT.hh\
-    KTSlidingWindowFFT.hh\
-    KTWindowFunction.hh
+    KTEvent.hh
 
 # headers for classes that should not go into the root dictionary (e.g. if a class uses boost)
 EGG_NODICT_HEADERFILES = 
@@ -34,18 +24,8 @@ EGG_HEADERFILES = \
 
 EGG_SOURCEFILES = \
     KTArrayUC.cc\
-    KTComplexVector.cc\
     KTEgg.cc\
-    KTEvent.cc\
-    KTEventWindowFunction.cc\
-    KTFFT.cc\
-    KTHammingWindow.cc\
-    KTHannWindow.cc\
-    KTPowerSpectrum.cc\
-    KTRectangularWindow.cc\
-    KTSimpleFFT.cc\
-    KTSlidingWindowFFT.cc\
-    KTWindowFunction.cc
+    KTEvent.cc
 
 
 EGG_LINKDEF_HEADERFILES = \

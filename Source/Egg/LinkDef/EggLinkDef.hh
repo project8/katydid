@@ -11,17 +11,7 @@
 
 #pragma link C++ namespace Katydid;
 
-#pragma link C++ class Katydid::KTComplexVector+;
 #pragma link C++ class Katydid::KTEgg+;
 #pragma link C++ class Katydid::KTEvent+;
-#pragma link C++ class Katydid::KTEventWindowFunction+;
-#pragma link C++ class Katydid::KTFFT+;
-#pragma link C++ class Katydid::KTHammingWindow+;
-#pragma link C++ class Katydid::KTHannWindow+;
-#pragma link C++ class Katydid::KTPowerSpectrum+;
-#pragma link C++ class Katydid::KTRectangularWindow+;
-#pragma link C++ class Katydid::KTSimpleFFT+;
-#pragma link C++ class Katydid::KTSlidingWindowFFT+;
-#pragma link C++ class Katydid::KTWindowFunction+;
 
 #endif

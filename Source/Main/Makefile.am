@@ -3,7 +3,8 @@
 # Author: N. Oblath
 
 MAIN_CPPFLAGS = $(AM_CPPFLAGS) \
-	-I@top_srcdir@/Source/Egg
+	-I@top_srcdir@/Source/Egg\
+	-I@top_srcdir@/Source/FFT
 
 #---------------------------
 
