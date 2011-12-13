@@ -6,7 +6,7 @@
 #Autoconf version check.
 #Required for AC_LANG.
 #Tested at v. 2.64. Anything below may or may not work.
-AC_PREREQ([2.50])
+AC_PREREQ([2.60])
 
 
 AC_INIT([Katydid], [0.50], [https://github.com/project8/katydid])
