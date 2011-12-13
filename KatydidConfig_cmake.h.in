@@ -1,0 +1,3 @@
+// the configured options and settings for Kasper
+#define Katydid_VERSION_MAJOR @Katydid_VERSION_MAJOR@
+#define Katydid_VERSION_MINOR @Katydid_VERSION_MINOR@
