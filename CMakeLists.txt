@@ -5,8 +5,10 @@ project (Katydid)
 set (Katydid_VERSION_MAJOR 0)
 set (Katydid_VERSION_MINOR 5)
 
-# check for the ROOT installation
-include(${PROJECT_SOURCE_DIR}/cmake/FindROOT.cmake)
+
+# specify the local directory for CMake modules
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
 
 # set the build directory
 set (PROJECT_BINARY_DIR "${PROJECT_SOURCE_DIR}/cbuild")
@@ -18,11 +20,18 @@ set (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}")
 set (BUILD_SHARED_LIBS ON)
 
 # change the build type
-set (CMAKE_BUILD_TYPE Debug)
+set (CMAKE_BUILD_TYPE "Debug")
 
 
-# set compiler and linker flags
-set (CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${ROOT_LIBRARIES})
+# setup the ROOT install
+find_package (ROOT 5.28 REQUIRED)
+include_directories (${ROOT_INCLUDES})
+# have to add the FFTW library because it doesn't automatically get included for some reason
+set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
+set (LIBS ${LIBS} ${ROOT_LIBRARIES})
+
+# add the mxml library
+set (LIBS ${LIBS} -lmxml)
 
 
 # configuration header file
@@ -38,10 +47,10 @@ install (FILES "${PROJECT_BINARY_DIR}/KatydidConfig.h" DESTINATION include)
 include_directories ("${PROJECT_BINARY_DIR}")
 
 # subdirectories
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Egg")
+include_directories ("${PROJECT_SOURCE_DIR}/Source/FFT")
+
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Main)
-
-include_directories ("${PROJECT_SOURCE_DIR}/Source/Egg")
-include_directories ("${PROJECT_SOURCE_DIR}/SOURCE/FFT")
 

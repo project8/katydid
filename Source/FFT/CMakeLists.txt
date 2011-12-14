@@ -1,25 +1,42 @@
-add_library(KatydidFFT
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTComplexVector.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTEventWindowFunction.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTFFT.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTHammingWindow.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTHannWindow.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTPowerSpectrum.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTRectangularWindow.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTSimpleFFT.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.cc
-    ${PROJECT_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
+set (FFT_DICT_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTComplexVector.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEventWindowFunction.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTFFT.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTHammingWindow.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrum.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
 )
 
-install (FILES ${PROJECT_CURRENT_SOURCE_DIR}/KTComplexVector.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTEventWindowFunction.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTFFT.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTHammingWindow.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTHannWindow.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTPowerSpectrum.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTRectangularWindow.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTSimpleFFT.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.hh
-               ${PROJECT_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
-         DESTINATION include)
+set (FFT_NODICT_HEADERFILES)
+
+set (FFT_HEADERFILES ${EGG_DICT_HEADERFILES} ${EGG_NODICT_HEADERFILES})
+
+set (FFT_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTComplexVector.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEventWindowFunction.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTFFT.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTHammingWindow.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrum.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
+)
+
+set (FFT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/Linkdef/FFTLinkDef.hh)
+set (FFT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/FFTDict.cxx)
+
+##################################################
+
+ROOT_GENERATE_DICTIONARY ("${FFT_DICT_HEADERFILES}" "${FFT_LINKDEF_HEADERFILE}" "${FFT_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+
+add_library (KatydidFFT ${FFT_SOURCEFILES} ${FFT_DICT_OUTFILE})
+target_link_libraries (KatydidFFT KatydidEgg ${LIBS})
+
+install (FILES ${FFT_HEADERFILES}  DESTINATION include)
          
