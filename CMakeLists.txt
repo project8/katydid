@@ -47,9 +47,11 @@ install (FILES "${PROJECT_BINARY_DIR}/KatydidConfig.h" DESTINATION include)
 include_directories ("${PROJECT_BINARY_DIR}")
 
 # subdirectories
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Utility")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Egg")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/FFT")
 
+add_subdirectory (Source/Utility)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Main)

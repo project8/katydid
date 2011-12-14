@@ -19,7 +19,7 @@ using std::endl;
 namespace Katydid
 {
 
-    class KTTextFile;
+    //class KTTextFile;
 
     typedef UInt_t KTMessageSeverity;
     class KTMessageNewline
@@ -132,13 +132,13 @@ namespace Katydid
 
         public:
             void SetTerminalVerbosity( KTMessageSeverity aVerbosity );
-            void SetLogVerbosity( KTMessageSeverity aVerbosity );
-            void SetLogFile( KTTextFile* aLogFile );
+            //void SetLogVerbosity( KTMessageSeverity aVerbosity );
+            //void SetLogFile( KTTextFile* aLogFile );
 
         private:
             KTMessageSeverity fTerminalVerbosity;
-            KTMessageSeverity fLogVerbosity;
-            KTTextFile* fLogFile;
+            //KTMessageSeverity fLogVerbosity;
+            //KTTextFile* fLogFile;
     };
 
 }

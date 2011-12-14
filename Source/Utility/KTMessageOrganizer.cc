@@ -7,10 +7,10 @@
 
 #include "KTMessageOrganizer.hh"
 
-#include "KTTextFile.hh"
+//#include "KTTextFile.hh"
 #include "KTMessage.hh"
 
-#include "KTIOMessage.hh"
+#include "KTUtilityMessage.hh"
 
 namespace Katydid
 {
@@ -26,15 +26,15 @@ namespace Katydid
     }
 
     KTMessageOrganizer::KTMessageOrganizer() :
-        KTCommandLineUser(),
+        //KTCommandLineUser(),
         fMessageMap(),
-        fLogFile( NULL ),
-        fTerminalVerbosity( eNormal ),
-        fLogVerbosity( eNormal )
+        //fLogFile( NULL ),
+        fTerminalVerbosity( eNormal )//,
+        //fLogVerbosity( eNormal )
     {
 #ifdef DEBUG_VERBOSE
         fTerminalVerbosity = eDebug;
-        fLogVerbosity = eDebug;
+        //fLogVerbosity = eDebug;
 #endif
 #ifdef DEBUG_VERBOSE
         if (fTerminalVerbosity >= eDebug)
@@ -45,7 +45,7 @@ namespace Katydid
     KTMessageOrganizer::~KTMessageOrganizer()
     {
     }
-
+    /*
     void KTMessageOrganizer::SetLogFile( KTTextFile* aTextFile )
     {
         fLogFile = aTextFile;
@@ -56,7 +56,7 @@ namespace Katydid
         }
         return;
     }
-
+    */
     //********
     //messages
     //********
@@ -68,8 +68,8 @@ namespace Katydid
         if( TIt == fMessageMap.end() )
         {
             aMessage->SetTerminalVerbosity( fTerminalVerbosity );
-            aMessage->SetLogVerbosity( fLogVerbosity );
-            aMessage->SetLogFile( fLogFile );
+            //aMessage->SetLogVerbosity( fLogVerbosity );
+            //aMessage->SetLogFile( fLogFile );
 
             fMessageMap.insert( MessageEntry( aMessage->GetKey(), aMessage ) );
         }
@@ -97,8 +97,8 @@ namespace Katydid
 
             aMessage->SetKey( aKey );
             aMessage->SetTerminalVerbosity( fTerminalVerbosity );
-            aMessage->SetLogVerbosity( fLogVerbosity );
-            aMessage->SetLogFile( fLogFile );
+            //aMessage->SetLogVerbosity( fLogVerbosity );
+            //aMessage->SetLogFile( fLogFile );
 
             fMessageMap.insert( MessageEntry( aMessage->GetKey(), aMessage ) );
 
@@ -128,7 +128,7 @@ namespace Katydid
 
         return;
     }
-
+    /*
     void KTMessageOrganizer::SetLogVerbosity( const UInt_t& aVerbosity )
     {
         MessageIt MIt;
@@ -140,7 +140,8 @@ namespace Katydid
         fLogVerbosity = aVerbosity;
         return;
     }
-
+    */
+    /*
     void KTMessageOrganizer::AddCommandLineOptions()
     {
         string tKey("Message");
@@ -148,14 +149,14 @@ namespace Katydid
         if( OptionsSet )
         {
             OptionsSet = OptionsSet && fCLHandler->AddOption<UInt_t>( tKey, "Set the global terminal verbosity", "verbosity", 'V' );
-            OptionsSet = OptionsSet && fCLHandler->AddOption<UInt_t>( tKey, "Set the global log verbosity", "log-verbosity", 'L' );
+            //OptionsSet = OptionsSet && fCLHandler->AddOption<UInt_t>( tKey, "Set the global log verbosity", "log-verbosity", 'L' );
             OptionsSet = OptionsSet && fCLHandler->FinalizeNewOptionGroup( tKey );
         }
         if ( ! OptionsSet )
         {
-            iomsg < "KTMessageOrganizer::AddCommandLineOptions";
-            iomsg(eWarning) << "Something went wrong while command line options were being set!" << ret;
-            iomsg << "Message command line options are not available." << eom;
+            umsg < "KTMessageOrganizer::AddCommandLineOptions";
+            umsg(eWarning) << "Something went wrong while command line options were being set!" << ret;
+            umsg << "Message command line options are not available." << eom;
         }
         return;
     }
@@ -164,10 +165,10 @@ namespace Katydid
     {
         if( fCLHandler->IsCommandLineOptSet( "verbosity" ) )
             SetTerminalVerbosity( fCLHandler->GetCommandLineValue< UInt_t >( "verbosity" ) );
-        if ( fCLHandler->IsCommandLineOptSet( "log-verbosity" ) )
-            SetLogVerbosity( fCLHandler->GetCommandLineValue< UInt_t >( "log-verbosity" ) );
+        //if ( fCLHandler->IsCommandLineOptSet( "log-verbosity" ) )
+            //SetLogVerbosity( fCLHandler->GetCommandLineValue< UInt_t >( "log-verbosity" ) );
         return;
     }
-
+    */
 
 } /* namespace Katydid */

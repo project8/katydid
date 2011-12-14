@@ -28,7 +28,7 @@ set (FFT_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
 )
 
-set (FFT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/Linkdef/FFTLinkDef.hh)
+set (FFT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/FFTLinkDef.hh)
 set (FFT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/FFTDict.cxx)
 
 ##################################################
@@ -36,7 +36,7 @@ set (FFT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/FFTDict.cxx)
 ROOT_GENERATE_DICTIONARY ("${FFT_DICT_HEADERFILES}" "${FFT_LINKDEF_HEADERFILE}" "${FFT_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
 add_library (KatydidFFT ${FFT_SOURCEFILES} ${FFT_DICT_OUTFILE})
-target_link_libraries (KatydidFFT KatydidEgg ${LIBS})
+target_link_libraries (KatydidFFT KatydidUtility KatydidEgg ${LIBS})
 
 install (FILES ${FFT_HEADERFILES}  DESTINATION include)
 install (TARGETS KatydidFFT  DESTINATION lib)
