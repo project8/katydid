@@ -3,33 +3,36 @@ It is written in C++ and uses ROOT classes extensively.
 
 Requirements:
   ROOT (tested with 5.26.00), including the FFTW package (root.cern.ch)
-  FFTW3 (if you didn't get ROOT as a binary) (www.fftw.org)
   Mini-XML (www.minixml.org)
+  
+  If building from source:
+  CMake (tested with 2.8)
 
 Directory contents:
   Scripts - A collection of useful (or not) shell and ROOT scripts
   Source
-    Egg - Header and source files for all of the classes (so far)
+    Egg - Classes involved in getting an event out of a data file.
+    FFT - Classes involved in making FFTs from events
     Main - Source code for executables
   
 Installation:
   1. cd into the top-level directory (where this README file is located)
-  2. Run 'autogen.sh'
-  3. Create a directory in which to build (e.g. 'mkdir build')
-  4. cd into the build directory
-  5. Run '../configure'
-  6. Run 'make'
-  7. Run 'make install'
+  2. Run 'cmake .'
+  3. Run 'make
+  4. Run 'make install'
+  
+  At step 2 you can alternatively use ccmake or cmake-gui to have more control over the configuration.
   
 Documentation:
   1. This README file contains some useful information.
   2. Code reference material can be found in Documenation/html/index.html
   
 Usage notes:
-  1. The library libKatydid will be installed in the lib directory.
-  2. The binaries and scripts will be installed in the bin directory.
-  3. You will need to load the library (lib/libKatydid.so) into ROOT, if using this code in an interactive ROOT session.
-  4. You may need to add Source/Egg to the include path in the ROOT session.
+  0. The default build location is a subdirectory called cbuild.
+  1. The libraries will be installed in the lib directory.
+  2. The binaries will be installed in the bin directory.
+  3. You will need to load the libraries into ROOT, if using this code in an interactive ROOT session.
+  4. You may need to add cbuild/include to the include path in the ROOT session.
   5. The classes are in the namespace Katydid.
   6. Scripts/PlotPowerSpectrum.C will give you an idea of how the package should be used.
   
