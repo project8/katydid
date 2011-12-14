@@ -25,5 +25,5 @@ add_library (KatydidEgg ${EGG_SOURCEFILES} ${EGG_DICT_OUTFILE})
 target_link_libraries (KatydidEgg ${LIBS})
 
 install (FILES ${EGG_HEADERFILES}  DESTINATION include)
-         
+install (TARGETS KatydidEgg  DESTINATION lib)
          
