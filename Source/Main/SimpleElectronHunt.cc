@@ -156,6 +156,11 @@ int main(int argc, char** argv)
         Katydid::KTPowerSpectrum* fullPS = fullFFT->CreatePowerSpectrum();
         delete fullFFT;
         TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
+        //c1->SetLogy(1);
+        //histFullPS->Draw(); /*DEBUG*/
+        //c1->WaitPrimitive();
+        //c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
+        //c1->SetLogy(0);
         delete fullPS;
         Double_t fullPSFreqBinWidth = histFullPS->GetBinWidth(1);
 
@@ -178,6 +183,8 @@ int main(int argc, char** argv)
         //   200+/-.2 MHz
 
         TH2D* hist = fft->CreatePowerSpectrumHistogram();
+        //hist->Draw(); /*DEBUG*/
+        //c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
         delete fft;
 
         // use this bin width later:
@@ -207,6 +214,7 @@ int main(int argc, char** argv)
         // Create a histogram to store the gain normalization
         TH1D* histGainNorm = (TH1D*)histProj->Clone();
         histGainNorm->Clear();
+        //histGainNorm->SetNameTitle("GainNorm","GainNorm");
         for (Int_t iBin=1; iBin<=histGainNorm->GetNbinsX(); iBin++)
         {
             Double_t freqBinMin = histGainNorm->GetBinLowEdge(iBin);
@@ -217,17 +225,24 @@ int main(int argc, char** argv)
             Int_t nBinsInSum = 0;
             for (Int_t iSubBin=firstBinFullPS; iSubBin<=lastBinFullPS; iSubBin++)
             {
-                if ((iSubBin >= firstBinsFullPS[0] && iSubBin <= lastBinsFullPS[0]) &&
-                        (iSubBin >= firstBinsFullPS[1] && iSubBin <= lastBinsFullPS[1]) &&
+                if ((iSubBin >= firstBinsFullPS[0] && iSubBin <= lastBinsFullPS[0]) ||
+                        (iSubBin >= firstBinsFullPS[1] && iSubBin <= lastBinsFullPS[1]) ||
                         (iSubBin >= firstBinsFullPS[2] && iSubBin <= lastBinsFullPS[2]))
                 {
                     meanBinContent += histFullPS->GetBinContent(iSubBin);
                     nBinsInSum++;
                 }
             }
-            if (nBinsInSum != 0) meanBinContent /= (Double_t)nBinsInSum;
+            //if (nBinsInSum != 0) meanBinContent /= (Double_t)nBinsInSum;
             histGainNorm->SetBinContent(iBin, meanBinContent);
+            //cout << "Gain norm bin " << iBin << "  content: " << meanBinContent << endl;
         }
+        //c1->SetLogy(1);
+        //histGainNorm->SetTitle("gain normalization");
+        //histGainNorm->Draw(); /*DEBUG*/
+        //c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
+        //c1->SetLogy(0);
+
 
         // Rebin the full-event power spectrum
         //Int_t rebinFactor = TMath::FloorNint((Double_t)histFullPS->GetNbinsX() / (Double_t)freqHistNBins);
@@ -245,7 +260,19 @@ int main(int argc, char** argv)
             // Get this fft's histogram
             histProj = hist->ProjectionY(name.c_str(), ifft, ifft);
             // normalize the histogram based on the full-PS normalization values (calcuclated above)
+            //cout << "integral before: " << histProj->Integral() << endl;
             histProj->Divide(histGainNorm);
+            //cout << "integral after: " << histProj->Integral() << endl;
+            //if (ifft < 10)
+            //{
+                //c1->SetLogy(1);
+                //char projnum[30];
+                //sprintf(projnum, "%s%i", "fft #", ifft);
+                //histProj->SetTitle(projnum);
+                //histProj->Draw(); /*DEBUG*/
+                //c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
+                //c1->SetLogy(0);
+            //}
 
             // this will hold the bin numbers that are above the threshold
             set< Int_t > peakBins;
@@ -255,7 +282,7 @@ int main(int argc, char** argv)
             for (Int_t iRange=0; iRange<nSearchRanges; iRange++)
             {
                 // TMath::RMS actually calculates the standard deviation
-                //cout << "Search range " << iRange << ": [" << firstBins[iRange] << ", " << lastBins[iRange] << "]" << endl;
+                //cout << "Search range " << iRange << ": [" << firstBins[iRange] << ", " << lastBins[iRange] << "]" << "  nbins: " << nBinsInRange[iRange] << "  mean: " << TMath::Mean(nBinsInRange[iRange], dataArray+firstBins[iRange]) << endl;
                 mean += TMath::Mean(nBinsInRange[iRange], dataArray+firstBins[iRange]) * (Double_t)nBinsInRange[iRange];
                 //cout << "   Mean: " << mean << endl;
             }
@@ -264,6 +291,8 @@ int main(int argc, char** argv)
             // at this point histProj's array of data will be directly modified.
             // the histogram should no longer be used as a histogram until it's remade
             Double_t* histProjData = histProj->GetArray();
+
+            //cout << "mean: " << mean << "  threshold: " << threshold << endl;
 
             // set the bin values outside of the three search ranges to -1
             for (Int_t iRange=0; iRange<nSearchRanges-1; iRange++)
