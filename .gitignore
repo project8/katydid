@@ -1,0 +1,14 @@
+CMakeCache.txt
+CMakeFiles/
+Makefile
+Source/Egg/CMakeFiles/
+Source/Egg/Makefile
+Source/Egg/cmake_install.cmake
+Source/FFT/CMakeFiles/
+Source/FFT/Makefile
+Source/FFT/cmake_install.cmake
+Source/Main/CMakeFiles/
+Source/Main/Makefile
+Source/Main/cmake_install.cmake
+cbuild/
+cmake_install.cmake
