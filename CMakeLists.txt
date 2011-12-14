@@ -54,3 +54,5 @@ add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Main)
 
+# this is apparently not the right way to run the link_dylibs script
+#execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib})
