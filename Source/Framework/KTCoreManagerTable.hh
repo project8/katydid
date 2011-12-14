@@ -32,7 +32,7 @@
 #include "KTCoreManager.hh"
 
 #include "KTDestroyer.hh"
-#include "KTCoreMessage.hh"
+#include "KTFrameworkMessage.hh"
 
 #include "Rtypes.h"
 
@@ -142,16 +142,16 @@ namespace Katydid
             KTCoreManager* tCoreManager = this->GetCoreManager();
             if (tCoreManager == NULL)
             {
-                coremsg < "KTCoreManagerTable::GetCoreManager (templated)";
-                coremsg(eWarning) << "Returning NULL pointer; did not receive a KTCoreManager pointer" << eom;
+                fwmsg < "KTCoreManagerTable::GetCoreManager (templated)";
+                fwmsg(eWarning) << "Returning NULL pointer; did not receive a KTCoreManager pointer" << eom;
                 return NULL;
             }
 
             XCoreManagerType* tSpecificCoreManager = dynamic_cast< XCoreManagerType* >(tCoreManager);
             if (tSpecificCoreManager == NULL)
             {
-                coremsg < "KTCoreManagerTable::GetCoreManager (templated)";
-                coremsg(eError) << "Cannot dynamic-cast the coremanager with the type name given to the class provided!" << eom;
+                fwmsg < "KTCoreManagerTable::GetCoreManager (templated)";
+                fwmsg(eError) << "Cannot dynamic-cast the coremanager with the type name given to the class provided!" << eom;
                 return NULL;
             }
             return tSpecificCoreManager;

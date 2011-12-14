@@ -17,7 +17,7 @@
 #include "KTCoreManagerFactory.hh"
 #include "KTCoreManagerTable.hh"
 
-#include "KTCoreMessage.hh"
+#include "KTFrameworkMessage.hh"
 
 namespace Katydid {
     
@@ -29,8 +29,8 @@ namespace Katydid {
         if (KTCoreManagerTable::GetInstance()->RegisterCoreManagerFactory(aAppType, this))
         {
 #ifdef DEBUG_VERBOSE
-            coremsg < "KTCoreManagerFactory(" < fApplicationTypeName < ")::constructor";
-            coremsg(eDebug) << "Successfully registered a factory for core manager <" << aAppType << ">" << eom;
+            fwmsg < "KTCoreManagerFactory(" < fApplicationTypeName < ")::constructor";
+            fwmsg(eDebug) << "Successfully registered a factory for core manager <" << aAppType << ">" << eom;
 #endif
             fStatus = eGood;
         }
@@ -47,8 +47,8 @@ namespace Katydid {
     KTCoreManagerFactory::~KTCoreManagerFactory()
     {
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManagerFactory(" < fApplicationTypeName < ")::~KTCoreManagerFactory";
-        coremsg(eDebug) << "Removing factory from the CoreManagerTable, and deleting the core manager" << eom;
+        fwmsg < "KTCoreManagerFactory(" < fApplicationTypeName < ")::~KTCoreManagerFactory";
+        fwmsg(eDebug) << "Removing factory from the CoreManagerTable, and deleting the core manager" << eom;
 #endif
         KTCoreManagerTable::GetInstance()->RemoveCoreManagerFactory(fApplicationTypeName);
         delete fInstance;
@@ -58,16 +58,16 @@ namespace Katydid {
     {
         if (fStatus == eBad)
         {
-            coremsg < "KTCoreManagerFactory::GetCoreManager";
-            coremsg(eWarning) << "Status of toolbox factory <" << fApplicationTypeName << "> is bad!" << eom;
+            fwmsg < "KTCoreManagerFactory::GetCoreManager";
+            fwmsg(eWarning) << "Status of core manager factory <" << fApplicationTypeName << "> is bad!" << eom;
             return NULL;
         }
         if (fInstance == NULL)
         {
             this->CreateCoreManager();
 #ifdef DEBUG_VERBOSE
-            coremsg < "KTCoreManagerFactory::GetCoreManager";
-            coremsg(eDebug) << "Creating core manager <" << fApplicationTypeName << ">: " << fInstance << eom;
+            fwmsg < "KTCoreManagerFactory::GetCoreManager";
+            fwmsg(eDebug) << "Creating core manager <" << fApplicationTypeName << ">: " << fInstance << eom;
 #endif
         }
         return fInstance;

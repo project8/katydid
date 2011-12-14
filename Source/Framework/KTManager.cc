@@ -21,7 +21,7 @@
 #include "KTManagerFactory.hh"
 #include "KTManagerTable.hh"
 
-#include "KTCoreMessage.hh"
+#include "KTFrameworkMessage.hh"
 
 #include <utility>
 using std::pair;
@@ -60,8 +60,8 @@ namespace Katydid
         //std::cout << "KTManager::Setup -- " << this->GetTypeName() << std::endl;
         if( !this->RecursiveManagerSetup() )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::Setup";
-            coremsg( eError ) << "Manager <" << this->GetTypeName() << "> was not set up properly!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::Setup";
+            fwmsg( eError ) << "Manager <" << this->GetTypeName() << "> was not set up properly!" << eom;
             return kFALSE;
         }
         return kTRUE;
@@ -74,8 +74,8 @@ namespace Katydid
         //std::cout << "KTManager::Prepare -- " << this->GetTypeName() << std::endl;
         if( !this->RecursiveManagerPrepare() )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::Prepare";
-            coremsg( eError ) << "Manager <" << this->GetTypeName() << "> did not prepare properly!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::Prepare";
+            fwmsg( eError ) << "Manager <" << this->GetTypeName() << "> did not prepare properly!" << eom;
             return kFALSE;
         }
         return kTRUE;
@@ -90,8 +90,8 @@ namespace Katydid
         if (fManagerStatus == eBad) return kFALSE;
         if (! this->RecursiveManagerShutdown())
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::Shutdown";
-            coremsg( eWarning ) << "Manager <" << this->GetTypeName() << "> did not shutdown properly!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::Shutdown";
+            fwmsg( eWarning ) << "Manager <" << this->GetTypeName() << "> did not shutdown properly!" << eom;
             return kFALSE;
         }
         return kTRUE;
@@ -130,16 +130,16 @@ namespace Katydid
 
         if( !this->SetupDependentManagers() )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerSetup";
-            coremsg( eWarning ) << "There was a problem setting up the dependencies of <" << this->GetTypeName() << ">!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerSetup";
+            fwmsg( eWarning ) << "There was a problem setting up the dependencies of <" << this->GetTypeName() << ">!" << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
 
         if( !this->SetupManager() )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerSetup";
-            coremsg( eWarning ) << "There was a problem setting up manager <" << this->GetTypeName() << ">!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerSetup";
+            fwmsg( eWarning ) << "There was a problem setting up manager <" << this->GetTypeName() << ">!" << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
@@ -155,9 +155,9 @@ namespace Katydid
         //std::cout << "KTManager::RecursiveManagerPrepare -- " << this->GetTypeName() << std::endl;
         if( fManagerStatus == ePreparing )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerPrepare";
-            coremsg( eWarning ) << "A circular dependence has been found while preparing managers!" << ret;
-            coremsg << "The circle is completed with manager <" << this->GetTypeName() << ">." << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerPrepare";
+            fwmsg( eWarning ) << "A circular dependence has been found while preparing managers!" << ret;
+            fwmsg << "The circle is completed with manager <" << this->GetTypeName() << ">." << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
@@ -169,16 +169,16 @@ namespace Katydid
 
         if( !this->PrepareOrderedDependentManagers() )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerPrepare";
-            coremsg( eWarning ) << "There was a problem preparing the prepare-order-dependent managers of <" << this->GetTypeName() << ">!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerPrepare";
+            fwmsg( eWarning ) << "There was a problem preparing the prepare-order-dependent managers of <" << this->GetTypeName() << ">!" << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
 
         if( !this->PrepareManager() )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerPrepare";
-            coremsg( eWarning ) << "There was a problem preparing manager <" << this->GetTypeName() << ">!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerPrepare";
+            fwmsg( eWarning ) << "There was a problem preparing manager <" << this->GetTypeName() << ">!" << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
@@ -187,8 +187,8 @@ namespace Katydid
 
         if( !this->PrepareUnorderedDependentManagers() )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerPrepare";
-            coremsg( eWarning ) << "There was a problem preparing the non-prepare-order-dependent managers of <" << this->GetTypeName() << ">!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerPrepare";
+            fwmsg( eWarning ) << "There was a problem preparing the non-prepare-order-dependent managers of <" << this->GetTypeName() << ">!" << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
@@ -208,9 +208,9 @@ namespace Katydid
         }
         if (fManagerStatus == eShuttingDown)
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerShutdown";
-            coremsg(eWarning) << "A circular dependence has been found while shutting down managers!" << ret;
-            coremsg << "The circle is completed with manager <" << this->GetTypeName() << ">." << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerShutdown";
+            fwmsg(eWarning) << "A circular dependence has been found while shutting down managers!" << ret;
+            fwmsg << "The circle is completed with manager <" << this->GetTypeName() << ">." << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
@@ -221,24 +221,24 @@ namespace Katydid
 
         if (! this->ShutdownOrderedDependentManagers())
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerShutdown";
-            coremsg(eWarning) << "There was a problem shutting down the ordered dependent managers of <" << this->GetTypeName() << ">!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerShutdown";
+            fwmsg(eWarning) << "There was a problem shutting down the ordered dependent managers of <" << this->GetTypeName() << ">!" << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
 
         if (! this->ShutdownManager())
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerShutdown";
-            coremsg( eWarning ) << "There was a problem shutting down <" << this->GetTypeName() << ">!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerShutdown";
+            fwmsg( eWarning ) << "There was a problem shutting down <" << this->GetTypeName() << ">!" << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
 
         if (! this->ShutdownUnorderedDependentManagers())
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerShutdown";
-            coremsg(eWarning) << "There was a problem shutting down the unordered dependent managers of <" << this->GetTypeName() << ">!" << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::RecursiveManagerShutdown";
+            fwmsg(eWarning) << "There was a problem shutting down the unordered dependent managers of <" << this->GetTypeName() << ">!" << eom;
             fManagerStatus = eBad;
             return kFALSE;
         }
@@ -260,8 +260,8 @@ namespace Katydid
 
             if( iter->second.Manager == NULL)
             {
-                coremsg < "KTManager(" < GetTypeName() < ")::SetupDependentManager";
-                coremsg( eWarning ) << "Could not get manager <" << iter->first << ">!" << eom;
+                fwmsg < "KTManager(" < GetTypeName() < ")::SetupDependentManager";
+                fwmsg( eWarning ) << "Could not get manager <" << iter->first << ">!" << eom;
                 tDepManagersSetUp = kFALSE;
                 continue;
             }
@@ -269,8 +269,8 @@ namespace Katydid
             // at this point the dependent manager is known to exist and its pointer has been obtained
             if( !iter->second.Manager->Setup() )
             {
-                coremsg < "KTManager(" < GetTypeName() < ")::SetupDependentManager";
-                coremsg( eWarning ) << "Manager <" << iter->first << "> failed to be set up correctly!" << eom;
+                fwmsg < "KTManager(" < GetTypeName() < ")::SetupDependentManager";
+                fwmsg( eWarning ) << "Manager <" << iter->first << "> failed to be set up correctly!" << eom;
                 tDepManagersSetUp = kFALSE;
                 continue;
             }
@@ -289,8 +289,8 @@ namespace Katydid
             //std::cout << "   calling prepare for " << iter->first << std::endl;
             if( !iter->second.Manager->Prepare() )
             {
-                coremsg < "KTManager(" < GetTypeName() < ")::PrepareOrderedDependentManager";
-                coremsg( eWarning ) << "Manager <" << iter->first << "> failed to be prepared correctly!" << eom;
+                fwmsg < "KTManager(" < GetTypeName() < ")::PrepareOrderedDependentManager";
+                fwmsg( eWarning ) << "Manager <" << iter->first << "> failed to be prepared correctly!" << eom;
                 tDepManagersPrepared = kFALSE;
                 continue;
             }
@@ -307,8 +307,8 @@ namespace Katydid
             //std::cout << "   calling prepare for " << iter->first << std::endl;
             if( !iter->second.Manager->Prepare() )
             {
-                coremsg < "KTManager(" < GetTypeName() < ")::PrepareUnorderedDependentManager";
-                coremsg( eWarning ) << "Manager <" << iter->first << "> failed to be prepared correctly!" << eom;
+                fwmsg < "KTManager(" < GetTypeName() < ")::PrepareUnorderedDependentManager";
+                fwmsg( eWarning ) << "Manager <" << iter->first << "> failed to be prepared correctly!" << eom;
                 tDepManagersPrepared = kFALSE;
                 continue;
             }
@@ -327,8 +327,8 @@ namespace Katydid
             //std::cout << "   calling shutdown for " << iter->first << std::endl;
             if (! iter->second.Manager->Shutdown())
             {
-                coremsg < "KTManager(" < GetTypeName() < ")::ShutdownOrderedDependentManager";
-                coremsg(eWarning) << "Manager <" << iter->first << "> failed to shutdown correctly!" << eom;
+                fwmsg < "KTManager(" < GetTypeName() < ")::ShutdownOrderedDependentManager";
+                fwmsg(eWarning) << "Manager <" << iter->first << "> failed to shutdown correctly!" << eom;
                 tDepManagersShutdown = kFALSE;
                 continue;
             }
@@ -347,8 +347,8 @@ namespace Katydid
             //std::cout << "   calling shutdown for " << iter->first << std::endl;
             if (! iter->second.Manager->Shutdown())
             {
-                coremsg < "KTManager(" < GetTypeName() < ")::ShutdownUnorderedDependentManager";
-                coremsg(eWarning) << "Manager <" << iter->first << "> failed to shutdown correctly!" << eom;
+                fwmsg < "KTManager(" < GetTypeName() < ")::ShutdownUnorderedDependentManager";
+                fwmsg(eWarning) << "Manager <" << iter->first << "> failed to shutdown correctly!" << eom;
                 tDepManagersShutdown = kFALSE;
                 continue;
             }
@@ -363,9 +363,9 @@ namespace Katydid
         MgrDepMapCIt iter = fMgrDependencyMap.find( aType );
         if( iter != fMgrDependencyMap.end() )
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::AddManagerDependence";
-            coremsg( eWarning ) << "Attempting to add manager <" << aType << "> as a dependency of <" << this->GetTypeName() << ">," << ret;
-            coremsg << "but such a dependency already exists." << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::AddManagerDependence";
+            fwmsg( eWarning ) << "Attempting to add manager <" << aType << "> as a dependency of <" << this->GetTypeName() << ">," << ret;
+            fwmsg << "but such a dependency already exists." << eom;
             return;
         }
         DependentManagerInfo tNewDepInfo;
@@ -379,12 +379,12 @@ namespace Katydid
 
     void KTManager::PrintDependentManagers() const
     {
-        coremsg < "KTManager(" < GetTypeName() < ")::PrintDependentManagers";
+        fwmsg < "KTManager(" < GetTypeName() < ")::PrintDependentManagers";
         for( MgrDepMapCIt iter = fMgrDependencyMap.begin(); iter != fMgrDependencyMap.end(); iter++ )
         {
-            coremsg(eNormal) << iter->first << "  " << iter->second.obeyOrdering << ret;
+            fwmsg(eNormal) << iter->first << "  " << iter->second.obeyOrdering << ret;
         }
-        coremsg << eom;
+        fwmsg << eom;
         return;
     }
 
@@ -411,16 +411,16 @@ namespace Katydid
     void KTManager::AddManagerThatDependsOnMe(KTManager* aManager, Bool_t aShutdownBeforeMe)
     {
         // this is just for debugging; it's a warning so the yellow text sticks out
-        //coremsg < "KTManager::AddManagerThatDependsOnMe";
-        //coremsg(eWarning) << "Request to add manager <" << aManager->GetTypeName() << "> as a depending on <" << this->GetTypeName() << ">; flag: " << aShutdownBeforeMe << eom;
+        //fwmsg < "KTManager::AddManagerThatDependsOnMe";
+        //fwmsg(eWarning) << "Request to add manager <" << aManager->GetTypeName() << "> as a depending on <" << this->GetTypeName() << ">; flag: " << aShutdownBeforeMe << eom;
 
         string tType = aManager->GetTypeName();
         MgrDepOnMeMapCIt iter = fMgrDependsOnMeMap.find(tType);
         if (iter != fMgrDependsOnMeMap.end())
         {
-            coremsg < "KTManager(" < GetTypeName() < ")::AddManagerThatDependsOnMe";
-            coremsg(eWarning) << "Attempting to add manager <" << tType << "> as depending on <" << this->GetTypeName() << ">," << ret;
-            coremsg << "but such a dependency already exists." << eom;
+            fwmsg < "KTManager(" < GetTypeName() < ")::AddManagerThatDependsOnMe";
+            fwmsg(eWarning) << "Attempting to add manager <" << tType << "> as depending on <" << this->GetTypeName() << ">," << ret;
+            fwmsg << "but such a dependency already exists." << eom;
             return;
         }
         DependentManagerInfo tNewDepInfo;
@@ -434,12 +434,12 @@ namespace Katydid
 
     void KTManager::PrintDependsOnMeManagers() const
     {
-        coremsg < "KTManager(" < GetTypeName() < ")::PrintDependsOnMeManagers";
+        fwmsg < "KTManager(" < GetTypeName() < ")::PrintDependsOnMeManagers";
         for (MgrDepOnMeMapCIt iter = fMgrDependsOnMeMap.begin(); iter != fMgrDependsOnMeMap.end(); iter++)
         {
-            coremsg(eNormal) << iter->first << "  " << iter->second.obeyOrdering << ret;
+            fwmsg(eNormal) << iter->first << "  " << iter->second.obeyOrdering << ret;
         }
-        coremsg << eom;
+        fwmsg << eom;
         return;
     }
 

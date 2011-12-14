@@ -33,7 +33,7 @@
 #include "KTManager.hh"
 
 #include "KTDestroyer.hh"
-#include "KTCoreMessage.hh"
+#include "KTFrameworkMessage.hh"
 
 #include "Rtypes.h"
 
@@ -124,16 +124,16 @@ namespace Katydid
             KTManager* tManager = this->GetManager(aType);
             if (tManager == NULL)
             {
-                coremsg < "KTManagerTable::GetManager (templated)";
-                coremsg(eWarning) << "Returning NULL pointer; did not receive a KTManager pointer" << eom;
+                fwmsg < "KTManagerTable::GetManager (templated)";
+                fwmsg(eWarning) << "Returning NULL pointer; did not receive a KTManager pointer" << eom;
                 return NULL;
             }
 
             XManagerType* tSpecificManager = dynamic_cast< XManagerType* >(tManager);
             if (tSpecificManager == NULL)
             {
-                coremsg < "KTManagerTable::GetManager (templated)";
-                coremsg(eError) << "Cannot dynamic-cast the manager with the type name given to the class provided!" << eom;
+                fwmsg < "KTManagerTable::GetManager (templated)";
+                fwmsg(eError) << "Cannot dynamic-cast the manager with the type name given to the class provided!" << eom;
                 return NULL;
             }
             return tSpecificManager;

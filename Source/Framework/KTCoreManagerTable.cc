@@ -16,7 +16,7 @@
 #include "KTCoreManagerTable.hh"
 #include "KTManagerTable.hh"
 
-#include "KTCommandLineHandler.hh"
+//#include "KTCommandLineHandler.hh"
 
 namespace Katydid
 {
@@ -38,8 +38,8 @@ namespace Katydid
             fCoreManagerFactoryMap(), fSpecifiedFactory(NULL), fStatus(eUnspecified)
     {
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManagerTable::KTCoreManagerTable";
-        coremsg( eDebug ) << "CoreManager table has been created." << eom;
+        fwmsg < "KTCoreManagerTable::KTCoreManagerTable";
+        fwmsg( eDebug ) << "CoreManager table has been created." << eom;
 #endif
     }
 
@@ -51,8 +51,8 @@ namespace Katydid
     {
         if (fStatus == eSpecified)
         {
-            coremsg < "KTCoreManagerTable::CreateCoreManager";
-            coremsg(eError) << "A core manager has already been created; only one can exist." << eom;
+            fwmsg < "KTCoreManagerTable::CreateCoreManager";
+            fwmsg(eError) << "A core manager has already been created; only one can exist." << eom;
             return NULL;
         }
 
@@ -66,27 +66,32 @@ namespace Katydid
                 fStatus = eSpecified;
                 fSpecifiedFactory = tIter->second;
 #ifdef DEBUG_VERBOSE
-                coremsg < "KTCoreManagerTable::CreateCoreManager";
-                coremsg(eDebug) << "Core manager <" << aAppType << "> has been created" << eom;
+                fwmsg < "KTCoreManagerTable::CreateCoreManager";
+                fwmsg(eDebug) << "Core manager <" << aAppType << "> has been created" << eom;
 #endif
+                /*
                 KTCommandLineHandler* tCLHandler = KTCommandLineHandler::GetInstance();
                 if (tCLHandler->GetPrintHelpMessageFlag())
                 {
                     tCM->Setup();
                     tCLHandler->PrintHelpMessageAndExit(tCM->GetApplicationType());
                 }
-                if (tCLHandler->GetPrintVersionFlag()) tCLHandler->PrintVersionMessageAndExit(tCM->GetApplicationType(), tCM->GetApplicationString());
+                if (tCLHandler->GetPrintVersionFlag())
+                {
+                    tCLHandler->PrintVersionMessageAndExit(tCM->GetApplicationType(), tCM->GetApplicationString());
+                }
+                */
             }
             else
             {
-                coremsg < "KTCoreManagerTable::CreateCoreManager";
-                coremsg(eError) << "Core manager <" << aAppType << "> was not created!" << eom;
+                fwmsg < "KTCoreManagerTable::CreateCoreManager";
+                fwmsg(eError) << "Core manager <" << aAppType << "> was not created!" << eom;
             }
             return tCM;
         }
 
-        coremsg < "KTCoreManagerTable::CreateCoreManager";
-        coremsg(eError) << "There is no coremanager factory with type <" << aAppType << "> registered" << eom;
+        fwmsg < "KTCoreManagerTable::CreateCoreManager";
+        fwmsg(eError) << "There is no core manager factory with type <" << aAppType << "> registered" << eom;
         return NULL;
     }
 
@@ -100,8 +105,8 @@ namespace Katydid
     {
         if (fStatus != eSpecified)
         {
-            coremsg < "KTCoreManagerTable::GetCoreManager";
-            coremsg(eWarning) << "Core manager has not yet been created!" << eom;
+            fwmsg < "KTCoreManagerTable::GetCoreManager";
+            fwmsg(eWarning) << "Core manager has not yet been created!" << eom;
             return NULL;
         }
         return fSpecifiedFactory->GetCoreManager();
@@ -112,16 +117,16 @@ namespace Katydid
         if (fStatus == eShuttingDown) return kTRUE;
         if (fStatus == eUnspecified)
         {
-            coremsg < "KTCoreManagerTable::ShutdownCoreManager";
-            coremsg(eWarning) << "Core manager has not yet been created!" << eom;
+            fwmsg < "KTCoreManagerTable::ShutdownCoreManager";
+            fwmsg(eWarning) << "Core manager has not yet been created!" << eom;
             return kFALSE;
         }
         if (fStatus == eAborting) return kFALSE;
         fStatus = eShuttingDown;
 
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManagerTable::ShutdownCoreManager";
-        coremsg(eDebug) << "Initiating global shutdown via the CoreManager" << eom;
+        fwmsg < "KTCoreManagerTable::ShutdownCoreManager";
+        fwmsg(eDebug) << "Initiating global shutdown via the CoreManager" << eom;
 #endif
 
         fSpecifiedFactory->GetCoreManager()->ShutdownApplication();
@@ -141,8 +146,8 @@ namespace Katydid
                 tCoreManager->GetManagerStatus() == KTCoreManager::eShutDown) return kTRUE;
 
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManagerTable::AbortCoreManager";
-        coremsg(eDebug) << "Initiating abort of the core manager" << eom;
+        fwmsg < "KTCoreManagerTable::AbortCoreManager";
+        fwmsg(eDebug) << "Initiating abort of the core manager" << eom;
 #endif
 
         if (! tCoreManager->Abort()) return kFALSE;
@@ -155,9 +160,9 @@ namespace Katydid
         TBFactoryMapIt tIter = fCoreManagerFactoryMap.find(aAppType);
         if (tIter != fCoreManagerFactoryMap.end())
         {
-            coremsg < "KTCoreManagerInstanceMap::RegisterCoreManagerFactory";
-            coremsg(eWarning) << "A core manager factory with type <" << aAppType << "> has already been registered!" << ret;
-            coremsg << "This factory was not added." << eom;
+            fwmsg < "KTCoreManagerInstanceMap::RegisterCoreManagerFactory";
+            fwmsg(eWarning) << "A core manager factory with type <" << aAppType << "> has already been registered!" << ret;
+            fwmsg << "This factory was not added." << eom;
             return kFALSE;
         }
 
@@ -179,8 +184,8 @@ namespace Katydid
             fCoreManagerFactoryMap.erase(tIter);
             return;
         }
-        coremsg < "KTCoreManagerTable::RemoveCoreManagerFactory";
-        coremsg(eWarning) << "No core manager with type <" << aAppType << "> has been registered in the table!" << eom;
+        fwmsg < "KTCoreManagerTable::RemoveCoreManagerFactory";
+        fwmsg(eWarning) << "No core manager with type <" << aAppType << "> has been registered in the table!" << eom;
         return;
     }
 

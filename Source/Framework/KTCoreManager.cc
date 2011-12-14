@@ -20,9 +20,7 @@
 
 #include "KTCoreManager.hh"
 
-#include "KTTextFile.hh"
-#include "KTIOToolbox.hh"
-#include "KTCoreMessage.hh"
+#include "KTFrameworkMessage.hh"
 
 #include <utility>
 using std::pair;
@@ -35,17 +33,17 @@ namespace Katydid
 
     KTCoreManager::KTCoreManager(Int_t argC, Char_t** argV) :
             KTManager("Core"),
-            KTCommandLineUser(),
+            //KTCommandLineUser(),
             fApplicationType(""),
             fApplicationString("")
     {
-        fCLHandler->TakeArguments(argC, argV);
+        //fCLHandler->TakeArguments(argC, argV);
         AddManager("IO");
     }
 
     KTCoreManager::KTCoreManager() :
 			KTManager("Core"),
-			KTCommandLineUser(),
+			//KTCommandLineUser(),
 			fApplicationType(""),
 			fApplicationString("")
     {
@@ -62,56 +60,56 @@ namespace Katydid
     {
         if (fManagerStatus != KTManager::eInstantiated)
         {
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
-            coremsg(eError) << "Cannot call SetupApplication unless the core manager is in the Instantiated state (i.e. just after construction)." << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
+            fwmsg(eError) << "Cannot call SetupApplication unless the core manager is in the Instantiated state (i.e. just after construction)." << eom;
             return;
         }
 
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
-        coremsg(eNormal) << "----------------------------------------------------" << ret;
-        coremsg << "  Welcome to " << GetApplicationString() << ret;
-        coremsg << "  Built with " << fCLHandler->GetPackageString() << ret;
-        coremsg << "----------------------------------------------------" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
+        fwmsg(eNormal) << "----------------------------------------------------" << ret;
+        fwmsg << "  Welcome to " << GetApplicationString() << ret;
+        //fwmsg << "  Built with " << fCLHandler->GetPackageString() << ret;
+        fwmsg << "----------------------------------------------------" << eom;
 
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
-        coremsg(eNormal) << "----------------------------------" << ret;
-        coremsg << "  Beginning Initialization Phase" << ret;
-        coremsg << "----------------------------------" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
+        fwmsg(eNormal) << "----------------------------------" << ret;
+        fwmsg << "  Beginning Initialization Phase" << ret;
+        fwmsg << "----------------------------------" << eom;
 
         // Simulation Management
         // ---------------------
 
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
-        coremsg(eDebug) << "Setting up simulation management" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
+        fwmsg(eDebug) << "Setting up simulation management" << eom;
 #endif
 
         if (! this->Setup())
         {
             fManagerStatus = KTManager::eBad;
-            coremsg < "KTCoreManager::SetupApplication";
-            coremsg(eError) << "Something went wrong during the application setup process (Setup)" << eom;
+            fwmsg < "KTCoreManager::SetupApplication";
+            fwmsg(eError) << "Something went wrong during the application setup process (Setup)" << eom;
             return;
         }
 
         // At this point, all of the managers and toolboxes have been created through the Setup functions
 
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
-        coremsg(eDebug) << "Reading configuration files" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
+        fwmsg(eDebug) << "Reading configuration files" << eom;
 #endif
 
         if (! this->Prepare())
         {
             fManagerStatus = KTManager::eBad;
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
-            coremsg(eError) << "Something went wrong during the application setup process (Prepare)" << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
+            fwmsg(eError) << "Something went wrong during the application setup process (Prepare)" << eom;
             return;
         }
 
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
-        coremsg(eDebug) << "Initialization phase complete" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::SetupApplication";
+        fwmsg(eDebug) << "Initialization phase complete" << eom;
 #endif
 
         return;
@@ -121,21 +119,21 @@ namespace Katydid
     {
         if (fManagerStatus != KTManager::ePrepared)
         {
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::RunApplication";
-            coremsg(eError) << "Cannot call RunApplication unless the application is in the Prepared state (i.e. just after running SetupApplication)." << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::RunApplication";
+            fwmsg(eError) << "Cannot call RunApplication unless the application is in the Prepared state (i.e. just after running SetupApplication)." << eom;
             return;
         }
 
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::RunApplication";
-        coremsg(eNormal) << "-----------------------------" << ret;
-        coremsg << "  Beginning Execution Phase" << ret;
-        coremsg << "-----------------------------" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::RunApplication";
+        fwmsg(eNormal) << "-----------------------------" << ret;
+        fwmsg << "  Beginning Execution Phase" << ret;
+        fwmsg << "-----------------------------" << eom;
 
         this->Execute();
 
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::RunApplication";
-        coremsg(eDebug) << "Execution phase complete" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::RunApplication";
+        fwmsg(eDebug) << "Execution phase complete" << eom;
 #endif
 
         return;
@@ -143,22 +141,22 @@ namespace Katydid
 
     void KTCoreManager::ShutdownApplication()
     {
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::ShutdownApplication";
-        coremsg(eNormal) << "----------------------------" << ret;
-        coremsg << "  Beginning Shutdown Phase" << ret;
-        coremsg << "----------------------------" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::ShutdownApplication";
+        fwmsg(eNormal) << "----------------------------" << ret;
+        fwmsg << "  Beginning Shutdown Phase" << ret;
+        fwmsg << "----------------------------" << eom;
 
         if (! this->Shutdown())
         {
             fManagerStatus = KTManager::eBad;
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::ShutdownApplication";
-            coremsg(eWarning) << "The CoreManager did not shut down properly!" << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::ShutdownApplication";
+            fwmsg(eWarning) << "The CoreManager did not shut down properly!" << eom;
             return;
         }
 
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::ShutdownApplication";
-        coremsg(eDebug) << "Shutdown phase complete" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::ShutdownApplication";
+        fwmsg(eDebug) << "Shutdown phase complete" << eom;
 #endif
 
         return;
@@ -171,16 +169,16 @@ namespace Katydid
         //std::cout << "KTCoreManager::Setup -- " << this->GetApplicationType() << std::endl;
         if (fManagerStatus != KTManager::eInstantiated)
         {
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::Setup";
-            coremsg(eError) << "Cannot call Setup unless the core manager is in the Instantiated state (i.e. just after construction)." << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::Setup";
+            fwmsg(eError) << "Cannot call Setup unless the core manager is in the Instantiated state (i.e. just after construction)." << eom;
             return kFALSE;
         }
 
         if (! this->RecursiveManagerSetup())
         {
             fManagerStatus = KTManager::eBad;
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::Setup";
-            coremsg(eWarning) << "Something went wrong during the CoreManager's Setup" << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::Setup";
+            fwmsg(eWarning) << "Something went wrong during the CoreManager's Setup" << eom;
             return kFALSE;
         }
 
@@ -193,8 +191,8 @@ namespace Katydid
         //std::cout << "KTCoreManager::Prepare -- " << this->GetApplicationType() << std::endl;
         if (fManagerStatus != KTManager::eSetUp)
         {
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::Prepare";
-            coremsg(eError) << "Cannot call Prepare unless the application is in the eSetup state (i.e. just after Setup is run)." << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::Prepare";
+            fwmsg(eError) << "Cannot call Prepare unless the application is in the eSetup state (i.e. just after Setup is run)." << eom;
             return kFALSE;
         }
 
@@ -202,7 +200,7 @@ namespace Katydid
         // ---------------------
 
         // Parse the command line options that remain after the initial parsing
-        fCLHandler->ProcessCommandLine();
+        //fCLHandler->ProcessCommandLine();
 
         // All other Configuration files
         // -----------------------------
@@ -212,14 +210,14 @@ namespace Katydid
         if (! this->RecursiveManagerPrepare())
         {
             fManagerStatus = KTManager::eBad;
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::Prepare";
-            coremsg(eWarning) << "Something went wrong during the CoreManager's recursive Prepare" << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::Prepare";
+            fwmsg(eWarning) << "Something went wrong during the CoreManager's recursive Prepare" << eom;
             return kFALSE;
         }
 
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTCoreManager(" < GetApplicationType() < ")::Prepare";
-        coremsg(eDebug) << "Setup complete" << eom;
+        fwmsg < "KTCoreManager(" < GetApplicationType() < ")::Prepare";
+        fwmsg(eDebug) << "Setup complete" << eom;
 #endif
 
         fManagerStatus = KTManager::ePrepared;
@@ -232,8 +230,8 @@ namespace Katydid
         if (!this->RecursiveManagerShutdown())
         {
             fManagerStatus = KTManager::eBad;
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::Shutdown";
-            coremsg(eWarning) << "Something went wrong during the CoreManager's Shutdown" << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::Shutdown";
+            fwmsg(eWarning) << "Something went wrong during the CoreManager's Shutdown" << eom;
             return kFALSE;
         }
         return kTRUE;
@@ -256,16 +254,16 @@ namespace Katydid
 
         if (! this->ShutdownDependentManagers())
         {
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::RecursiveManagerShutdown";
-            coremsg(eWarning) << "There was a problem shutting down the dependent managers of core manager <" << this->GetApplicationType() << ">!" << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::RecursiveManagerShutdown";
+            fwmsg(eWarning) << "There was a problem shutting down the dependent managers of core manager <" << this->GetApplicationType() << ">!" << eom;
             fManagerStatus = KTManager::eBad;
             return kFALSE;
         }
 
         if (! this->ShutdownManager())
         {
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::RecursiveManagerShutdown";
-            coremsg(eWarning) << "There was a problem shutting down the manager aspect of core manager <" << this->GetApplicationType() << ">!" << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::RecursiveManagerShutdown";
+            fwmsg(eWarning) << "There was a problem shutting down the manager aspect of core manager <" << this->GetApplicationType() << ">!" << eom;
             fManagerStatus = KTManager::eBad;
             return kFALSE;
         }
@@ -286,8 +284,8 @@ namespace Katydid
 
             if( iter->second.Manager == NULL)
             {
-                coremsg < "KTManager(" < GetTypeName() < ")::SetupDependentManager";
-                coremsg( eWarning ) << "Could not get manager <" << iter->first << ">!" << eom;
+                fwmsg < "KTManager(" < GetTypeName() < ")::SetupDependentManager";
+                fwmsg( eWarning ) << "Could not get manager <" << iter->first << ">!" << eom;
                 tDepManagersSetUp = kFALSE;
                 continue;
             }
@@ -295,8 +293,8 @@ namespace Katydid
             // at this point the dependent manager is known to exist and its pointer has been obtained
             if( !iter->second.Manager->Setup() )
             {
-                coremsg < "KTManager(" < GetTypeName() < ")::SetupDependentManager";
-                coremsg( eWarning ) << "Manager <" << iter->first << "> failed to be set up correctly!" << eom;
+                fwmsg < "KTManager(" < GetTypeName() < ")::SetupDependentManager";
+                fwmsg( eWarning ) << "Manager <" << iter->first << "> failed to be set up correctly!" << eom;
                 tDepManagersSetUp = kFALSE;
                 continue;
             }
@@ -314,8 +312,8 @@ namespace Katydid
             //std::cout << "   calling shutdown for " << iter->first << std::endl;
             if (! iter->second.Manager->Shutdown())
             {
-                coremsg < "KTCoreManager(" < GetApplicationType() < ")::ShutdownDependentManager";
-                coremsg(eWarning) << "Manager <" << iter->first << "> failed to shutdown correctly!" << eom;
+                fwmsg < "KTCoreManager(" < GetApplicationType() < ")::ShutdownDependentManager";
+                fwmsg(eWarning) << "Manager <" << iter->first << "> failed to shutdown correctly!" << eom;
                 tDepManagersShutdown = kFALSE;
                 continue;
             }
@@ -337,9 +335,9 @@ namespace Katydid
         MgrDepMapCIt iter = fMgrDependencyMap.find(aType);
         if (iter != fMgrDependencyMap.end())
         {
-            coremsg < "KTCoreManager(" < GetApplicationType() < ")::AddManagerDependence";
-            coremsg(eWarning) << "Attempting to add manager <" << aType << "> as a dependency of core manager <" << fApplicationType << ">," << ret;
-            coremsg << "but such a dependency already exists." << eom;
+            fwmsg < "KTCoreManager(" < GetApplicationType() < ")::AddManagerDependence";
+            fwmsg(eWarning) << "Attempting to add manager <" << aType << "> as a dependency of core manager <" << fApplicationType << ">," << ret;
+            fwmsg << "but such a dependency already exists." << eom;
             return;
         }
         DependentManagerInfo tNewDepInfo;
@@ -350,7 +348,7 @@ namespace Katydid
     }
 
     //*************
-
+    /*
     void KTCoreManager::AddCommandLineOptions()
     {
         return;
@@ -360,5 +358,5 @@ namespace Katydid
     {
         return;
     }
-
+    */
 } // end Katydid namespace

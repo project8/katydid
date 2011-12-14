@@ -1,21 +1,21 @@
-#include "KTCoreMessage.hh"
+#include "KTFrameworkMessage.hh"
 #include "KTMessageOrganizer.hh"
 
 namespace Katydid
 {
 
-    KTCoreMessage::KTCoreMessage() :
+    KTFrameworkMessage::KTFrameworkMessage() :
         KTMessage()
     {
-        fKey = string( "core" );
-        fSystemDescription = string( "CORE" );
+        fKey = string( "framework" );
+        fSystemDescription = string( "FRAMEWORK" );
         KTMessageOrganizer::GetInstance()->AddMessage( this );
     }
-    KTCoreMessage::~KTCoreMessage()
+    KTFrameworkMessage::~KTFrameworkMessage()
     {
         KTMessageOrganizer::GetInstance()->RemoveMessage( this );
     }
 
-    KTCoreMessage& coremsg = *((KTCoreMessage*) (KTInitializer< KTCoreMessage >::fData));
+    KTFrameworkMessage& fwmsg = *((KTFrameworkMessage*) (KTInitializer< KTFrameworkMessage >::fData));
 
 }
