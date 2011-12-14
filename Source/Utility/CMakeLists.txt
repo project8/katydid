@@ -1,3 +1,6 @@
+# CMakeLists for Katydid/Source/Utility
+# Author: N. Oblath
+
 set (UTILITY_DICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTArrayUC.hh
 )
@@ -28,6 +31,7 @@ set (UTILITY_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/UtilityDict.cxx)
 ROOT_GENERATE_DICTIONARY ("${UTILITY_DICT_HEADERFILES}" "${UTILITY_LINKDEF_HEADERFILE}" "${UTILITY_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
 add_library (KatydidUtility ${UTILITY_SOURCEFILES} ${UTILITY_DICT_OUTFILE})
+set_target_properties(KatydidUtility PROPERTIES INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 target_link_libraries (KatydidUtility ${LIBS})
 
 install (FILES ${UTILITY_HEADERFILES}  DESTINATION include)

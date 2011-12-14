@@ -1,3 +1,7 @@
+# CMakeLists for Katydid
+# Author: N. Oblath
+
+# minimum cmake version 2.6 required by the scripts to get Git information
 cmake_minimum_required (VERSION 2.6)
 
 # specify the local directory for CMake modules
@@ -32,7 +36,6 @@ set (BUILD_SHARED_LIBS ON)
 # change the build type
 set (CMAKE_BUILD_TYPE "Debug")
 
-
 # setup the ROOT install
 find_package (ROOT 5.28 REQUIRED)
 include_directories (${ROOT_INCLUDES})
@@ -51,7 +54,7 @@ configure_file (
 )
 
 # install location for the configuration header
-install (FILES "${PROJECT_BINARY_DIR}/KatydidConfig.h" DESTINATION include)
+install (FILES "${PROJECT_BINARY_DIR}/KatydidConfig.hh" DESTINATION include)
 
 # add the binary tree to the search path for include files so that the config file is found
 include_directories ("${PROJECT_BINARY_DIR}")
@@ -67,6 +70,7 @@ add_subdirectory (Source/Framework)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Main)
+
 
 # this is apparently not the right way to run the link_dylibs script
 #execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib})

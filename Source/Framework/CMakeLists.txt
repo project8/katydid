@@ -1,3 +1,6 @@
+# CMakeLists for Katydid/Source/Framework
+# Author: N. Oblath
+
 set (FRAMEWORK_DICT_HEADERFILES)
 
 set (FRAMEWORK_NODICT_HEADERFILES
@@ -32,6 +35,7 @@ set (FRAMEWORK_SOURCEFILES
 #ROOT_GENERATE_DICTIONARY ("${FRAMEWORK_DICT_HEADERFILES}" "${FRAMEWORK_LINKDEF_HEADERFILE}" "${FRAMEWORK_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
 add_library (KatydidFramework ${FRAMEWORK_SOURCEFILES} ${FRAMEWORK_DICT_OUTFILE})
+set_target_properties(KatydidFramework PROPERTIES INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/lib)
 target_link_libraries (KatydidFramework KatydidUtility ${LIBS})
 
 install (FILES ${FRAMEWORK_HEADERFILES}  DESTINATION include)
