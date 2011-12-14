@@ -28,7 +28,7 @@ set (FFT_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
 )
 
-set (FFT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/Linkdef/FFTLinkDef.hh)
+set (FFT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/FFTLinkDef.hh)
 set (FFT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/FFTDict.cxx)
 
 ##################################################

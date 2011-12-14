@@ -14,7 +14,7 @@ set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEvent.cc
 )
 
-set (EGG_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/Linkdef/EggLinkDef.hh)
+set (EGG_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/EggLinkDef.hh)
 set (EGG_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EggDict.cxx)
 
 ##################################################
