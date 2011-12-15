@@ -44,6 +44,13 @@ PROJECT_BRIEF          = "Project 8 Analysis Platform"
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
+PROJECT_LOGO           = @PROJECT_SOURCE_DIR@/Documentation/katydid_logo_small.png
+
+# The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
+# base path where the generated documentation will be put.
+# If a relative path is entered, it will be relative to the location
+# where doxygen was started. If left blank the current directory will be used.
+
 OUTPUT_DIRECTORY = ./
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 

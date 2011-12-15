@@ -110,10 +110,6 @@ namespace Katydid
  \mainpage Katydid
 
  <br>
- \section Version Latest Version: 0.5
- <hr>
-
- <br>
  \section Resource Resources at your disposal
  <hr>
  \li <a href="https://github.com/project8/katydid/wiki">User's Manual</a> -- on Github
@@ -198,8 +194,7 @@ namespace Katydid
 
  Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Framework classes and is restricted to infrastructure-related activities.
 
- <br>
- \attention The source of this documentation can be found in: Katydid/Egg/KTEgg.hh
+ <!--The source of this documentation can be found in: Katydid/Egg/KTEgg.hh-->
 
  */
 
