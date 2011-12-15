@@ -31,7 +31,13 @@ PROJECT_NAME = Katydid
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER = 0.50/466d04e
+PROJECT_NUMBER = @Katydid_VERSION@
+
+# Using the PROJECT_BRIEF tag one can provide an optional one line description
+# for a project that appears at the top of each page and should give viewer
+# a quick idea about the purpose of the project. Keep the description short.
+
+PROJECT_BRIEF          = "Project 8 Analysis Platform"
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -563,7 +569,7 @@ WARN_LOGFILE =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 #
-INPUT = ../../Source ../../Scripts 
+INPUT = @CMAKE_CURRENT_SOURCE_DIR@/../../Source 
 
 
 
@@ -732,7 +738,7 @@ VERBATIM_HEADERS = YES
 # of all compounds will be generated. Enable this if the project 
 # contains a lot of classes, structs, unions or interfaces.
 
-ALPHABETICAL_INDEX = NO
+ALPHABETICAL_INDEX = YES
 
 # If the alphabetical index is enabled (see ALPHABETICAL_INDEX) then 
 # the COLS_IN_ALPHA_INDEX tag can be used to specify the number of columns 
@@ -745,7 +751,7 @@ COLS_IN_ALPHA_INDEX = 5
 # The IGNORE_PREFIX tag can be used to specify one or more prefixes that 
 # should be ignored while generating the index headers.
 
-IGNORE_PREFIX = 
+IGNORE_PREFIX = KT
 
 #---------------------------------------------------------------------------
 # configuration options related to the HTML output
@@ -948,21 +954,79 @@ ENUM_VALUES_PER_LINE = 4
 # releases of Doxygen, the values YES and NO are equivalent to FRAME and NONE 
 # respectively.
 
-GENERATE_TREEVIEW = YES
+GENERATE_TREEVIEW = NO
 
 # If the treeview is enabled (see GENERATE_TREEVIEW) then this tag can be 
 # used to set the initial width (in pixels) of the frame in which the tree 
 # is shown.
 
-TREEVIEW_WIDTH = 200
+TREEVIEW_WIDTH         = 250
 
-# Use this tag to change the font size of Latex formulas included 
-# as images in the HTML documentation. The default is 10. Note that 
-# when you change the font size after a successful doxygen run you need 
-# to manually remove any form_*.png images from the HTML output directory 
+# When the EXT_LINKS_IN_WINDOW option is set to YES doxygen will open
+# links to external symbols imported via tag files in a separate window.
+
+EXT_LINKS_IN_WINDOW    = NO
+
+# Use this tag to change the font size of Latex formulas included
+# as images in the HTML documentation. The default is 10. Note that
+# when you change the font size after a successful doxygen run you need
+# to manually remove any form_*.png images from the HTML output directory
 # to force them to be regenerated.
 
-FORMULA_FONTSIZE = 10
+FORMULA_FONTSIZE       = 10
+
+# Use the FORMULA_TRANPARENT tag to determine whether or not the images
+# generated for formulas are transparent PNGs. Transparent PNGs are
+# not supported properly for IE 6.0, but are supported on all modern browsers.
+# Note that when changing this option you need to delete any form_*.png files
+# in the HTML output before the changes have effect.
+
+FORMULA_TRANSPARENT    = YES
+
+# Enable the USE_MATHJAX option to render LaTeX formulas using MathJax
+# (see http://www.mathjax.org) which uses client side Javascript for the
+# rendering instead of using prerendered bitmaps. Use this if you do not
+# have LaTeX installed or if you want to formulas look prettier in the HTML
+# output. When enabled you also need to install MathJax separately and
+# configure the path to it using the MATHJAX_RELPATH option.
+
+USE_MATHJAX            = NO
+
+# When MathJax is enabled you need to specify the location relative to the
+# HTML output directory using the MATHJAX_RELPATH option. The destination
+# directory should contain the MathJax.js script. For instance, if the mathjax
+# directory is located at the same level as the HTML output directory, then
+# MATHJAX_RELPATH should be ../mathjax. The default value points to the
+# mathjax.org site, so you can quickly see the result without installing
+# MathJax, but it is strongly recommended to install a local copy of MathJax
+# before deployment.
+
+MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
+
+# The MATHJAX_EXTENSIONS tag can be used to specify one or MathJax extension
+# names that should be enabled during MathJax rendering.
+
+MATHJAX_EXTENSIONS     =
+
+# When the SEARCHENGINE tag is enabled doxygen will generate a search box
+# for the HTML output. The underlying search engine uses javascript
+# and DHTML and should work on any modern browser. Note that when using
+# HTML help (GENERATE_HTMLHELP), Qt help (GENERATE_QHP), or docsets
+# (GENERATE_DOCSET) there is already a search function so this one should
+# typically be disabled. For large projects the javascript based search engine
+# can be slow, then enabling SERVER_BASED_SEARCH may provide a better solution.
+
+SEARCHENGINE           = YES
+
+# When the SERVER_BASED_SEARCH tag is enabled the search engine will be
+# implemented using a PHP enabled web server instead of at the web client
+# using Javascript. Doxygen will generate the search PHP script and index
+# file to put on the web server. The advantage of the server
+# based approach is that it scales better to large projects and allows
+# full text search. The disadvantages are that it is more difficult to setup
+# and does not have live searching capabilities.
+
+SERVER_BASED_SEARCH    = NO
 
 #---------------------------------------------------------------------------
 # configuration options related to the LaTeX output

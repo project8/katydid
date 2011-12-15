@@ -109,22 +109,24 @@ namespace Katydid
 /*!
  \mainpage Katydid
 
- \attention The source of this documentation can be found in: Katydid/Egg/KTEgg.hh
-
+ <br>
  \section Version Latest Version: 0.5
  <hr>
 
+ <br>
  \section Resource Resources at your disposal
  <hr>
- \li User's Manual -- https://github.com/project8/katydid/wiki/Katydid-User&27s-Guide
- \li Reference Manual -- This Doxygen-based source documentation
+ \li <a href="https://github.com/project8/katydid/wiki">User's Manual</a> -- on Github
+ \li Reference Manual -- this Doxygen-based source documentation
 
+ <br>
  \section Help Getting Help
  <hr>
  \li Send your question by email to Noah Oblath: nsoblath-at-mit.edu
  \li For installation problems see below.
- \li For ROOT problems: see the ROOT website (http://root.cern.ch/drupal)
+ \li For ROOT problems: see the <a href="http://root.cern.ch/drupal">ROOT website</a>
 
+ <br>
  \section Requirements System Requirements
  <hr>
  Linux/MacOS with a reasonably new C++ compiler:
@@ -132,10 +134,11 @@ namespace Katydid
  \li LLVM will hopefully be supported in the future.
 
  Dependencies:
- \li ROOT (http://root.cern.ch/drupal) version 5.24 or higher
- \li CMake (http://www.cmake.org) version 2.6 or higher
+ \li <a href="http://root.cern.ch/drupal">ROOT</a> version 5.24 or higher
+ \li <a href="http://www.cmake.org">CMake</a> version 2.6 or higher
 
 
+ <br>
  \section GettingKT Getting Katydid
  <hr>
  You have two options for downloading any distribution of Katydid:
@@ -146,7 +149,7 @@ namespace Katydid
  </li>
 
  <li> <b>Github</b><br>
- Katydid source can be found on the Project 8 Github repository (https://github.com/project8/katydid).
+ Katydid source can be found on the <a href="https://github.com/project8/katydid">Project 8 Github repository</a>.
  You will need to have CMake installed on your computer (version 2.6 or higher). It's also useful to have ccmake or cmake-gui to make the configuration step easier.
 
  The master branch of the source code can be cloned from the Github repository in the standard way (assuming you ahve Git installed and configured on your computer):
@@ -156,7 +159,7 @@ namespace Katydid
  \endcode
  </li>
 
-
+ <br>
  \section Installing Installing
  <hr>
  The simplest way to configure Katydid is to use the <tt>cmake</tt> command:
@@ -181,10 +184,22 @@ namespace Katydid
 
  If everything compiles and installs correctly, Katydid is ready to use.  If there were problems with the installation process, please see the Installation Problems section below.
 
+ <br>
  \section Problems Installation Problems
  <hr>
  Coming soon (sorry!)
 
+ <br>
+ \section ExternalCode External Packages and Imported Code
+ <hr>
+ Two external packages are distributed with Katydid:
+ \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the event header in the Egg files.  The code is distributed under the Boost Software License v1.0.
+ \li <a href="hhtp://cimg.sourceforge.net">CImg</a> version 1.4.9 is available for any image processing tasks.  It is distributed under the CeCILL License.
+
+ Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Framework classes and is restricted to infrastructure-related activities.
+
+ <br>
+ \attention The source of this documentation can be found in: Katydid/Egg/KTEgg.hh
 
  */
 

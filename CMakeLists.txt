@@ -76,6 +76,10 @@ add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Main)
 
+# Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
+# By default it builds in the source tree.
+add_subdirectory (Documentation/ReferenceGuide)
+
 
 # this is apparently not the right way to run the link_dylibs script
 #execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib})
