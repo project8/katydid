@@ -109,47 +109,83 @@ namespace Katydid
 /*!
  \mainpage Katydid
 
-Katydid is a data analysis package for Project 8.
-It is written in C++ and uses ROOT classes extensively.
+ \attention The source of this documentation can be found in: Katydid/Egg/KTEgg.hh
 
-Requirements:
-  ROOT (tested with 5.26.00), including the FFTW package (root.cern.ch)
-  FFTW3 (if you didn't get ROOT as a binary) (www.fftw.org)
-  Mini-XML (www.minixml.org)
+ \section Version Latest Version: 0.5
+ <hr>
 
-Directory contents:
-  Scripts - A collection of useful (or not) shell and ROOT scripts
-  Source
-    Egg - Header and source files for all of the classes (so far)
-    Main - Source code for executables
+ \section Resource Resources at your disposal
+ <hr>
+ \li User's Manual -- https://github.com/project8/katydid/wiki/Katydid-User&27s-Guide
+ \li Reference Manual -- This Doxygen-based source documentation
 
-Installation:
-  1. cd into the top-level directory (where this README file is located)
-  2. Run 'autogen.sh'
-  3. Create a directory in which to build (e.g. 'mkdir build')
-  4. cd into the build directory
-  5. Run '../configure'
-  6. Run 'make'
-  7. Run 'make install'
+ \section Help Getting Help
+ <hr>
+ \li Send your question by email to Noah Oblath: nsoblath-at-mit.edu
+ \li For installation problems see below.
+ \li For ROOT problems: see the ROOT website (http://root.cern.ch/drupal)
 
-Documentation:
-  1. This README file contains some useful information.
-  2. Code reference material can be found in Documenation/html/index.html
+ \section Requirements System Requirements
+ <hr>
+ Linux/MacOS with a reasonably new C++ compiler:
+ \li The minimum supported gcc version is 4.2.
+ \li LLVM will hopefully be supported in the future.
 
-Usage notes:
-  1. The library libKatydid will be installed in the lib directory.
-  2. The binaries and scripts will be installed in the bin directory.
-  3. You will need to load the library (lib/libKatydid.so) into ROOT, if using this code in an interactive ROOT session.
-  4. You may need to add Source/Egg to the include path in the ROOT session.
-  5. The classes are in the namespace Katydid.
-  6. Scripts/PlotPowerSpectrum.C will give you an idea of how the package should be used.
+ Dependencies:
+ \li ROOT (http://root.cern.ch/drupal) version 5.24 or higher
+ \li CMake (http://www.cmake.org) version 2.6 or higher
 
-Other notes:
-  1. KTEgg and KTEvent are C++ ports of Lisa McBride's monarch library.
-  2. The executable ExtractEvents is based on Lisa's code for printing power spectra to text files, though it doesn't perform the FFT or write any files.  It's there for testing purposes only.
 
-Contact:
-  Noah Oblath (nsoblath@mit.edu)
-*/
+ \section GettingKT Getting Katydid
+ <hr>
+ You have two options for downloading any distribution of Katydid:
+
+ <ul>
+ <li><b>Distribution Tarball</b><br>
+ This option is not yet available
+ </li>
+
+ <li> <b>Github</b><br>
+ Katydid source can be found on the Project 8 Github repository (https://github.com/project8/katydid).
+ You will need to have CMake installed on your computer (version 2.6 or higher). It's also useful to have ccmake or cmake-gui to make the configuration step easier.
+
+ The master branch of the source code can be cloned from the Github repository in the standard way (assuming you ahve Git installed and configured on your computer):
+ \code
+ >  git clone https://github.com/project8/katydid.git
+ >  cd katydid
+ \endcode
+ </li>
+
+
+ \section Installing Installing
+ <hr>
+ The simplest way to configure Katydid is to use the <tt>cmake</tt> command:
+ \code
+ > cmake .
+ \endcode
+
+ Alternatively you can use <tt>ccmake</tt> or <tt>cmake-gui</tt> to interactively select your configuration:
+ \code
+ > ccmake .
+ \endcode
+ or
+ \code
+ > cmake-gui .
+ \endcode
+
+ The following two commands will, respectively, compile and install Katydid:
+ \code
+ > make
+ > make install
+ \endcode
+
+ If everything compiles and installs correctly, Katydid is ready to use.  If there were problems with the installation process, please see the Installation Problems section below.
+
+ \section Problems Installation Problems
+ <hr>
+ Coming soon (sorry!)
+
+
+ */
 
 #endif /* KTEGG_HH_ */
