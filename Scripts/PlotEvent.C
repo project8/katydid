@@ -9,8 +9,8 @@
 
 #include "../Source/Egg/KTEvent.hh"
 #include "../Source/Egg/KTEgg.hh"
-#include "../Source/Egg/KTPowerSpectrum.hh"
-#include "../Source/Egg/KTSimpleFFT.hh"
+#include "../Source/FFT/KTPowerSpectrum.hh"
+#include "../Source/FFT/KTSimpleFFT.hh"
 
 #include "TH1.h"
 
@@ -28,10 +28,10 @@ void PlotEvent(const string& fileName) {
 
     // Hatch the event
     if (! egg->HatchNextEvent()) continue;
-    const KTEvent* event = egg->GetData();
+    const KTEvent* event = egg->HatchNextEvent();
 
     std::cout << "A" << std::endl;
-    KTSimpleFFT* fft = new KTSimpleFFT((Int_t)event->GetRecordSize());
+    KTSimpleFFT* fft = new Katydid::KTSimpleFFT((Int_t)event->GetRecord()->GetSize());
     std::cout << "B" << std::endl;
     fft->SetTransformFlag("ES");
     std::cout << "C" << std::endl;
