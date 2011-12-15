@@ -14,6 +14,7 @@
 #include "TArrayC.h"
 
 #include "rapidxml.hpp"
+//#include "rapidxml_print.hpp"
 
 #include <iostream>
 
@@ -94,34 +95,74 @@ namespace Katydid
             std::cout << e.what() << std::endl;
             return kFALSE;
         }
+        //std::cout << headerDOM;
 
-        rapidxml::xml_node<char>* nodeDataFormat = headerDOM.first_node("data_format");
-        if (nodeDataFormat == NULL) return kFALSE;
+        rapidxml::xml_node<char>* nodeHeader = headerDOM.first_node("header");
+        if (nodeHeader == NULL)
+        {
+            std::cerr << "No header node" << std::endl;
+            return kFALSE;
+        }
+
+        rapidxml::xml_node<char>* nodeDataFormat = nodeHeader->first_node("data_format");
+        if (nodeDataFormat == NULL)
+        {
+            std::cerr << "No data format node" << std::endl;
+            return kFALSE;
+        }
 
         rapidxml::xml_attribute<char>* attr = nodeDataFormat->first_attribute("id");
-        if (attr == NULL) return kFALSE;
+        if (attr == NULL)        {
+            std::cerr << "No id attribute in the data format node" << std::endl;
+            return kFALSE;
+        };
         this->SetFrameIDSize(ConvertFromCharArray< Int_t >(attr->value()));
 
         attr = nodeDataFormat->first_attribute("ts");
-        if (attr == NULL) return kFALSE;
+        if (attr == NULL)
+        {
+            std::cerr << "No ts attribute in the data format node" << std::endl;
+            return kFALSE;
+        }
         this->SetTimeStampSize(ConvertFromCharArray< Int_t >(attr->value()));
 
         attr = nodeDataFormat->first_attribute("data");
-        if (attr == NULL) return kFALSE;
+        if (attr == NULL)
+        {
+            std::cerr << "No data attribute in the data format node" << std::endl;
+            return kFALSE;
+        }
         this->SetRecordSize(ConvertFromCharArray< Int_t >(attr->value()));
 
         this->SetEventSize(this->GetFrameIDSize() + this->GetTimeStampSize() + this->GetRecordSize());
 
-        rapidxml::xml_node<char>* nodeDigitizer = headerDOM.first_node("digitizer");
-        if (nodeDigitizer == NULL) return kFALSE;
+        rapidxml::xml_node<char>* nodeDigitizer = nodeHeader->first_node("digitizer");
+        if (nodeDigitizer == NULL)
+        {
+            std::cerr << "No digitizer node" << std::endl;
+            return kFALSE;
+        }
+
         attr = nodeDigitizer->first_attribute("rate");
-        if (attr == NULL) return kFALSE;
+        if (attr == NULL)
+        {
+            std::cerr << "No rate attribute in the digitizer node" << std::endl;
+            return kFALSE;
+        }
         this->SetSampleRate(ConvertFromCharArray< Double_t >(attr->value()) * this->GetHertzPerSampleRateUnit());
 
-        rapidxml::xml_node<char>* nodeRun = headerDOM.first_node("run");
-        if (nodeRun == NULL) return kFALSE;
+        rapidxml::xml_node<char>* nodeRun = nodeHeader->first_node("run");
+        if (nodeRun == NULL)
+        {
+            std::cerr << "No run node" << std::endl;
+            return kFALSE;
+        }
+
         attr = nodeRun->first_attribute("length");
-        if (attr == NULL) return kFALSE;
+        if (attr == NULL)        {
+            std::cerr << "No length attribute in the run node" << std::endl;
+            return kFALSE;
+        }
         this->SetApproxRecordLength(ConvertFromCharArray< Double_t >(attr->value()) * this->GetSecondsPerApproxRecordLengthUnit());
 
         std::cout << "Parsed header\n";
