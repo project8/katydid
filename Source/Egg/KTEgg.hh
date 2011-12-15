@@ -14,6 +14,8 @@
 using std::ifstream;
 #include <string>
 using std::string;
+#include <sstream>
+using std::stringstream;
 
 class KTArrayUC;
 class TArrayC;
@@ -65,6 +67,9 @@ namespace Katydid
             void SetSecondsPerApproxRecordLengthUnit(Double_t spslu);
 
         private:
+            template< typename XReturnType >
+            XReturnType ConvertFromCharArray(char* value);
+
             string fFileName;
             ifstream fEggStream;
             string fPrelude;
@@ -88,6 +93,16 @@ namespace Katydid
             ClassDef(KTEgg, 1);
 
     };
+
+    template< typename XReturnType >
+    XReturnType KTEgg::ConvertFromCharArray(char* value)
+    {
+        stringstream converter;
+        XReturnType converted;
+        converter << value;
+        converter >> converted;
+        return converted;
+    }
 
 } /* namespace Katydid */
 

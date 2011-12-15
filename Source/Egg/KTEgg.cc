@@ -12,13 +12,10 @@
 #include "KTArrayUC.hh"
 
 #include "TArrayC.h"
-//#include "TDOMParser.h"
 
-#include "mxml.h"
+#include "rapidxml.hpp"
 
 #include <iostream>
-#include <sstream>
-using std::stringstream;
 
 ClassImp(Katydid::KTEgg);
 
@@ -85,56 +82,47 @@ namespace Katydid
         this->SetHertzPerSampleRateUnit(1.e6);
         this->SetSecondsPerApproxRecordLengthUnit(1.e-3);
 
-        /*
-        //some initial code to use the ROOT XML parser instead of mxml
-        TDOMParser* xmlParser = new TDOMParser();
-        Int_t xmlParsed = xmlParser->ParseBuffer(fHeader.c_str(), fHeaderSize);
-        if (xmlParsed != 0)
+        rapidxml::xml_document<char> headerDOM;
+        char* headerCopy = new char [fHeader.size() + 1];
+        strcpy(headerCopy, fHeader.c_str());
+        try
         {
-            std::cout << "Error in KTEgg::ParseEggHeader: Problem parsing XML (error code " << xmlParsed << ")" << std::endl;
+            headerDOM.parse<0>(headerCopy);
+        }
+        catch (rapidxml::parse_error& e)
+        {
+            std::cout << e.what() << std::endl;
             return kFALSE;
         }
 
-        TXMLNode* xmlHeader = xmlParser->GetXMLDocument()->GetRootNode();
-        */
+        rapidxml::xml_node<char>* nodeDataFormat = headerDOM.first_node("data_format");
+        if (nodeDataFormat == NULL) return kFALSE;
 
-        //mxml_node_t* tree = mxmlLoadString(NULL, (Char_t*)(fHeader->GetArray()), MXML_TEXT_CALLBACK);
-        mxml_node_t* tree = mxmlLoadString(NULL, fHeader.c_str(), MXML_TEXT_CALLBACK);
+        rapidxml::xml_attribute<char>* attr = nodeDataFormat->first_attribute("id");
+        if (attr == NULL) return kFALSE;
+        this->SetFrameIDSize(ConvertFromCharArray< Int_t >(attr->value()));
 
-        mxml_node_t* dataFormat = mxmlFindElement(tree, tree, "data_format", NULL, NULL, MXML_DESCEND);
-        if (dataFormat == NULL) return kFALSE;
+        attr = nodeDataFormat->first_attribute("ts");
+        if (attr == NULL) return kFALSE;
+        this->SetTimeStampSize(ConvertFromCharArray< Int_t >(attr->value()));
 
-        stringstream conv;
-        Int_t intConv;
-        conv << mxmlElementGetAttr(dataFormat, "id");
-        conv >> intConv;
-        this->SetFrameIDSize(intConv);
-
-        stringstream conv2;
-        conv2 << mxmlElementGetAttr(dataFormat, "ts");
-        conv2 >> intConv;
-        this->SetTimeStampSize(intConv);
-
-        stringstream conv3;
-        conv3 << mxmlElementGetAttr(dataFormat, "data");
-        conv3 >> intConv;
-        this->SetRecordSize(intConv);
+        attr = nodeDataFormat->first_attribute("data");
+        if (attr == NULL) return kFALSE;
+        this->SetRecordSize(ConvertFromCharArray< Int_t >(attr->value()));
 
         this->SetEventSize(this->GetFrameIDSize() + this->GetTimeStampSize() + this->GetRecordSize());
 
-        stringstream conv4;
-        mxml_node_t* digitizer = mxmlFindElement(tree, tree, "digitizer", NULL, NULL, MXML_DESCEND);
-        if (digitizer == NULL) return kFALSE;
-        conv4 << mxmlElementGetAttr(digitizer, "rate");
-        conv4 >> intConv;
-        this->SetSampleRate((Double_t)intConv * this->GetHertzPerSampleRateUnit());
+        rapidxml::xml_node<char>* nodeDigitizer = headerDOM.first_node("digitizer");
+        if (nodeDigitizer == NULL) return kFALSE;
+        attr = nodeDigitizer->first_attribute("rate");
+        if (attr == NULL) return kFALSE;
+        this->SetSampleRate(ConvertFromCharArray< Double_t >(attr->value()) * this->GetHertzPerSampleRateUnit());
 
-        stringstream conv5;
-        mxml_node_t* run = mxmlFindElement(tree, tree, "run", NULL, NULL, MXML_DESCEND);
-        if (run == NULL) return kFALSE;
-        conv5 << mxmlElementGetAttr(run, "length");
-        conv5 >> intConv;
-        this->SetApproxRecordLength((Double_t)intConv * this->GetSecondsPerApproxRecordLengthUnit());
+        rapidxml::xml_node<char>* nodeRun = headerDOM.first_node("run");
+        if (nodeRun == NULL) return kFALSE;
+        attr = nodeRun->first_attribute("length");
+        if (attr == NULL) return kFALSE;
+        this->SetApproxRecordLength(ConvertFromCharArray< Double_t >(attr->value()) * this->GetSecondsPerApproxRecordLengthUnit());
 
         std::cout << "Parsed header\n";
         std::cout << "Frame ID Size: " << this->GetFrameIDSize() << '\n';

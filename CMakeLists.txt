@@ -44,7 +44,12 @@ set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
 set (LIBS ${LIBS} ${ROOT_LIBRARIES})
 
 # add the mxml library
-set (LIBS ${LIBS} -lmxml)
+#set (LIBS ${LIBS} -lmxml)
+
+
+# external packages distributed with Katydid
+include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
+include_directories ("${PROJECT_SOURCE_DIR}/External/CImg")
 
 
 # configuration header file
