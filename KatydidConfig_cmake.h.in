@@ -18,3 +18,6 @@
 
 // The version number plus the GIT revision number
 #define FULL_VERSION "@Katydid_FULL_VERSION@"
+
+// The full path of the install location
+#define INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
