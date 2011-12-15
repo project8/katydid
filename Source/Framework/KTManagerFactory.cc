@@ -17,7 +17,7 @@
 #include "KTManagerFactory.hh"
 #include "KTManagerTable.hh"
 
-#include "KTCoreMessage.hh"
+#include "KTFrameworkMessage.hh"
 
 namespace Katydid
 {
@@ -30,8 +30,8 @@ namespace Katydid
         if( KTManagerTable::GetInstance()->RegisterManagerFactory( aType, this ) )
         {
 #ifdef DEBUG_VERBOSE
-            coremsg < "KTManagerFactory::constructor";
-            coremsg(eDebug) << "Successfully registered a factory for manager <" << aType << ">" << eom;
+            fwmsg < "KTManagerFactory::constructor";
+            fwmsg(eDebug) << "Successfully registered a factory for manager <" << aType << ">" << eom;
 #endif
             fStatus = eNoManager;
         }
@@ -40,8 +40,8 @@ namespace Katydid
     KTManagerFactory::~KTManagerFactory()
     {
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTManagerFactory(" < fTypeName < ")::~KTManagerFactory";
-        coremsg(eDebug) << "Removing factory from the ManagerTable, and deleting the manager" << eom;
+        fwmsg < "KTManagerFactory(" < fTypeName < ")::~KTManagerFactory";
+        fwmsg(eDebug) << "Removing factory from the ManagerTable, and deleting the manager" << eom;
 #endif
         if (fInstance != NULL) fInstance->Abort();
         KTManagerTable::GetInstance()->RemoveManagerFactory(fTypeName);
@@ -54,8 +54,8 @@ namespace Katydid
     {
         if( fStatus == eBad )
         {
-            coremsg < "KTManagerFactory::GetManager";
-            coremsg( eWarning ) << "Status of manager factory <" << fTypeName << "> is bad!" << eom;
+            fwmsg < "KTManagerFactory::GetManager";
+            fwmsg( eWarning ) << "Status of manager factory <" << fTypeName << "> is bad!" << eom;
             return NULL;
         }
         if( fInstance == NULL)
@@ -64,8 +64,8 @@ namespace Katydid
             fInstance->fManagerFactory = this;
             fStatus = eManagerExists;
 #ifdef DEBUG_VERBOSE
-            coremsg < "KTManagerFactory::GetManager";
-            coremsg(eDebug) << "Creating manager <" << fTypeName << ">: " << fInstance << eom;
+            fwmsg < "KTManagerFactory::GetManager";
+            fwmsg(eDebug) << "Creating manager <" << fTypeName << ">: " << fInstance << eom;
 #endif
         }
         return fInstance;

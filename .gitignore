@@ -4,6 +4,10 @@
 *.so
 *.a
 
+#from Eclipse
+.project
+.cproject
+
 #from cmake
 CMakeCache.txt
 CMakeFiles/

@@ -37,8 +37,8 @@ namespace Katydid
             fStatus(eGood)
     {
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTManagerTable::KTManagerTable";
-        coremsg(eDebug) << "Manager table has been created."<< eom;
+        fwmsg < "KTManagerTable::KTManagerTable";
+        fwmsg(eDebug) << "Manager table has been created."<< eom;
 #endif
     }
 
@@ -54,8 +54,8 @@ namespace Katydid
         {
             return tIter->second->GetManager();
         }
-        coremsg < "KTManagerTable::GetManager";
-        coremsg(eWarning) << "There is no manager factory with type <"<< aType <<"> registered" << eom;
+        fwmsg < "KTManagerTable::GetManager";
+        fwmsg(eWarning) << "There is no manager factory with type <"<< aType <<"> registered" << eom;
         return NULL;
     }
 
@@ -67,16 +67,16 @@ namespace Katydid
 
         Bool_t tSuccess = kTRUE;
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTManagerTable::ShutdownManagers";
-        coremsg(eDebug) << "Shutting down all remaining active managers" << eom;
+        fwmsg < "KTManagerTable::ShutdownManagers";
+        fwmsg(eDebug) << "Shutting down all remaining active managers" << eom;
 #endif
         for (MgrFactoryMapIt tIter=fManagerFactoryMap.begin(); tIter != fManagerFactoryMap.end(); tIter++)
         {
             if (tIter->second->GetStatus() == KTManagerFactory::eManagerExists)
             {
 #ifdef DEBUG_VERBOSE
-                coremsg < "KTManagerTable::ShutdownManagers";
-                coremsg(eDebug) << "Shutting down manager <" << tIter->first << ">" << eom;
+                fwmsg < "KTManagerTable::ShutdownManagers";
+                fwmsg(eDebug) << "Shutting down manager <" << tIter->first << ">" << eom;
 #endif
                 tSuccess = tSuccess && tIter->second->GetManager()->Shutdown();
             }
@@ -92,16 +92,16 @@ namespace Katydid
 
         Bool_t tSuccess = kTRUE;
 #ifdef DEBUG_VERBOSE
-        coremsg < "KTManagerTable::AbortManagers";
-        coremsg(eDebug) << "Aborting all remaining active managers" << eom;
+        fwmsg < "KTManagerTable::AbortManagers";
+        fwmsg(eDebug) << "Aborting all remaining active managers" << eom;
 #endif
         for (MgrFactoryMapIt tIter=fManagerFactoryMap.begin(); tIter != fManagerFactoryMap.end(); tIter++)
         {
             if (tIter->second->GetStatus() == KTManagerFactory::eManagerExists)
             {
 #ifdef DEBUG_VERBOSE
-                coremsg < "KTManagerTable::AbortManagers";
-                coremsg(eDebug) << "Aborting manager <" << tIter->first << ">" << eom;
+                fwmsg < "KTManagerTable::AbortManagers";
+                fwmsg(eDebug) << "Aborting manager <" << tIter->first << ">" << eom;
 #endif
                 tSuccess = tSuccess && tIter->second->GetManager()->Abort();
             }
@@ -117,9 +117,9 @@ namespace Katydid
         MgrFactoryMapIt tIter = fManagerFactoryMap.find(aType);
         if (tIter != fManagerFactoryMap.end())
         {
-            coremsg < "KTManagerInstanceMap::RegisterManagerFactory";
-            coremsg(eWarning) << "A manager factory with type <" << aType << "> has already been registered!" << ret;
-            coremsg << "This factory was not added." << eom;
+            fwmsg < "KTManagerInstanceMap::RegisterManagerFactory";
+            fwmsg(eWarning) << "A manager factory with type <" << aType << "> has already been registered!" << ret;
+            fwmsg << "This factory was not added." << eom;
             return kFALSE;
         }
 
@@ -136,8 +136,8 @@ namespace Katydid
             fManagerFactoryMap.erase(tIter);
             return;
         }
-        coremsg < "KTManagerTable::RemoveManagerFactory";
-        coremsg(eWarning) << "No manager with type <" << aType << "> has been registered in the table!" << eom;
+        fwmsg < "KTManagerTable::RemoveManagerFactory";
+        fwmsg(eWarning) << "No manager with type <" << aType << "> has been registered in the table!" << eom;
         return;
     }
 

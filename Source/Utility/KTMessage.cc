@@ -1,9 +1,9 @@
 #include "KTMessage.hh"
 
-#include "KTCoreManagerTable.hh"
-#include "KTManagerTable.hh"
+//#include "KTCoreManagerTable.hh"
+//#include "KTManagerTable.hh"
 
-#include "KTTextFile.hh"
+//#include "KTTextFile.hh"
 
 #include <cstdio>
 #include <cstdlib>
@@ -54,12 +54,12 @@ namespace Katydid
         fMessageLine(),
         fMessageLines(),
 
-        fTerminalVerbosity( eNormal ),
-        fLogVerbosity( eNormal ),
-        fLogFile( NULL )
+        fTerminalVerbosity( eNormal )//,
+        //fLogVerbosity( eNormal ),
+        //fLogFile( NULL )
     {
         fTerminalVerbosity = eDebug;
-        fLogVerbosity = eDebug;
+        //fLogVerbosity = eDebug;
     }
     KTMessage::~KTMessage()
     {
@@ -183,7 +183,7 @@ namespace Katydid
 
             cout << fPrefix << fBottomSeparator << fSuffix << '\n';
         }
-
+        /*
         if( (fSeverity <= fLogVerbosity) && (fLogFile != NULL) && (fLogFile->IsOpen() == kTRUE) )
         {
             *(fLogFile->File()) << fSystemPrefix << fTopSeparator << fSystemSuffix << '\n';
@@ -202,6 +202,7 @@ namespace Katydid
             }
             *(fLogFile->File()) << fSystemPrefix << fBottomSeparator << fSystemSuffix << '\n';
         }
+        */
 
         while( !fOriginLines.empty() )
         {
@@ -227,6 +228,7 @@ namespace Katydid
 
     void KTMessage::InitiateShutdown()
     {
+        /*
         // For obvious reasons, printing should be done here with cout, not any derived message class
         string tSourceOfShutdown( "KTManagerTable" );
         if( KTCoreManagerTable::GetInstance()->CoreManagerExists() )
@@ -260,6 +262,7 @@ namespace Katydid
 
             cout << fPrefix << fBottomSeparator << fSuffix << endl;
         }
+
         if( (fSeverity <= fLogVerbosity) && (fLogFile != NULL) && (fLogFile->IsOpen() == kTRUE) )
         {
             *(fLogFile->File()) << fSystemPrefix << fTopSeparator << fSystemSuffix << '\n';
@@ -294,6 +297,7 @@ namespace Katydid
         {
             KTManagerTable::GetInstance()->ShutdownManagers();
         }
+        */
 
         exit( 1 );
         return;
@@ -304,6 +308,8 @@ namespace Katydid
         fTerminalVerbosity = aVerbosity;
         return;
     }
+
+    /*
     void KTMessage::SetLogVerbosity( KTMessageSeverity aVerbosity )
     {
         fLogVerbosity = aVerbosity;
@@ -314,5 +320,5 @@ namespace Katydid
         fLogFile = aLogFile;
         return;
     }
-
+    */
 }

@@ -7,16 +7,16 @@
 namespace Katydid
 {
 
-    class KTCoreMessage :
+    class KTFrameworkMessage :
         public KTMessage
     {
         public:
-            KTCoreMessage();
-            virtual ~KTCoreMessage();
+            KTFrameworkMessage();
+            virtual ~KTFrameworkMessage();
     };
 
-    extern KTCoreMessage& coremsg;
-    static KTInitializer< KTCoreMessage > scoremsg;
+    extern KTFrameworkMessage& fwmsg;
+    static KTInitializer< KTFrameworkMessage > sfwmsg;
 }
 
 #endif // KTCOREMESSAGE_H_

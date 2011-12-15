@@ -8,7 +8,9 @@
 #ifndef KTMESSAGEORGANIZER_H_
 #define KTMESSAGEORGANIZER_H_
 
-#include "KTCommandLineUser.hh"
+//#include "KTCommandLineUser.hh"
+
+#include "Rtypes.h"
 
 #include <map>
 using std::map;
@@ -19,10 +21,10 @@ using std::string;
 namespace Katydid
 {
     class KTMessage;
-    class KTTextFile;
+    //class KTTextFile;
 
-    class KTMessageOrganizer :
-        public KTCommandLineUser
+    class KTMessageOrganizer //:
+        //public KTCommandLineUser
     {
 
         public:
@@ -45,19 +47,19 @@ namespace Katydid
             KTMessage* DemandMessage( const string& aMessage );
             void RemoveMessage( KTMessage* aMessage );
 
-            void SetLogFile( KTTextFile* aFile );
+            //void SetLogFile( KTTextFile* aFile );
             void SetTerminalVerbosity( const UInt_t& aVerbosity );
-            void SetLogVerbosity( const UInt_t& aVerbosity );
+            //void SetLogVerbosity( const UInt_t& aVerbosity );
 
         private:
             MessageMap fMessageMap;
-            KTTextFile* fLogFile;
+            //KTTextFile* fLogFile;
             UInt_t fTerminalVerbosity;
-            UInt_t fLogVerbosity;
+            //UInt_t fLogVerbosity;
 
-        public:
-            virtual void AddCommandLineOptions();
-            virtual void UseParsedCommandLineImmediately();
+        //public:
+            //virtual void AddCommandLineOptions();
+            //virtual void UseParsedCommandLineImmediately();
 
     };
 
