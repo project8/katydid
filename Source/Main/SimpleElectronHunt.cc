@@ -11,6 +11,7 @@
  *       -e: The input data file name
  *       -p: The output file name base (there will be .root and .ps files)
  *       -n: The number of events to analyze; use -1 for all
+ *       -t: Threshold in multiples of the mean (default is 10)
  *       -c: Use this to run one of the control setups. -1 reverses the high and low margins; -2 uses large negative margins.
  */
 
@@ -51,13 +52,15 @@ int main(int argc, char** argv)
     string inputFileName("");
     Int_t numEvents = 1;
 
+    Double_t thresholdMult = 10.;
+
     Int_t groupBinsMarginLow = 1;
     Int_t groupBinsMarginHigh = 3;
     Int_t groupBinsMarginSameTime = 1;
 
     Int_t arg;
     extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:p:n:c")) != -1)
+    while ((arg = getopt(argc, argv, "e:p:n:t:c")) != -1)
         switch (arg)
         {
             case 'e':
@@ -68,6 +71,9 @@ int main(int argc, char** argv)
                 break;
             case 'n':
                 numEvents = atoi(optarg);
+                break;
+            case 't':
+                thresholdMult = atof(optarg);
                 break;
             case 'c':
                 Int_t controlOpt = atoi(optarg);
@@ -263,15 +269,15 @@ int main(int argc, char** argv)
             //cout << "integral before: " << histProj->Integral() << endl;
             histProj->Divide(histGainNorm);
             //cout << "integral after: " << histProj->Integral() << endl;
-            //if (ifft < 10)
+            //if (ifft < 5)
             //{
-                //c1->SetLogy(1);
-                //char projnum[30];
-                //sprintf(projnum, "%s%i", "fft #", ifft);
-                //histProj->SetTitle(projnum);
-                //histProj->Draw(); /*DEBUG*/
-                //c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
-                //c1->SetLogy(0);
+            //    c1->SetLogy(1);
+            //    char projnum[30];
+            //    sprintf(projnum, "%s%i", "fft #", ifft);
+            //    histProj->SetTitle(projnum);
+            //    histProj->Draw(); /*DEBUG*/
+            //    c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
+            //    c1->SetLogy(0);
             //}
 
             // this will hold the bin numbers that are above the threshold
@@ -286,8 +292,9 @@ int main(int argc, char** argv)
                 mean += TMath::Mean(nBinsInRange[iRange], dataArray+firstBins[iRange]) * (Double_t)nBinsInRange[iRange];
                 //cout << "   Mean: " << mean << endl;
             }
+            mean /= (Double_t)(nBinsInRange[0] + nBinsInRange[1] + nBinsInRange[2]);
 
-            Double_t threshold = 10. * mean;
+            Double_t threshold = thresholdMult * mean;
             // at this point histProj's array of data will be directly modified.
             // the histogram should no longer be used as a histogram until it's remade
             Double_t* histProjData = histProj->GetArray();
