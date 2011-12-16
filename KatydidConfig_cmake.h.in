@@ -13,6 +13,9 @@
 // The minor component of the version number
 #define VERSION_MINOR @Katydid_VERSION_MINOR@
 
+// The revision number
+#define REVISION @Katydid_REVISION@
+
 // The complete version number
 #define VERSION "@Katydid_VERSION@"
 

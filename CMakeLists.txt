@@ -18,7 +18,8 @@ git_describe (GIT_REV)
 # define the variables to describe the package (will go in the KatydidConfig.hh file)
 set (Katydid_VERSION_MAJOR 0)
 set (Katydid_VERSION_MINOR 5)
-set (Katydid_VERSION "${Katydid_VERSION_MAJOR}.${Katydid_VERSION_MINOR}")
+set (Katydid_REVISION 1)
+set (Katydid_VERSION "${Katydid_VERSION_MAJOR}.${Katydid_VERSION_MINOR}.${Katydid_REVISION}")
 set (Katydid_FULL_VERSION "${Katydid_VERSION_MAJOR}.${Katydid_VERSION_MINOR} (${GIT_REV})")
 set (Katydid_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 set (Katydid_PACKAGE_STRING "${CMAKE_PROJECT_NAME} ${Katydid_FULL_VERSION}")
@@ -35,6 +36,12 @@ set (BUILD_SHARED_LIBS ON)
 
 # change the build type
 set (CMAKE_BUILD_TYPE "Debug")
+
+# add an option to build the validation tests
+option (ENABLE_TESTING "Build the validation test and enable CMake testing" OFF)
+if (ENABLE_TESTING)
+    enable_testing ()
+endif (ENABLE_TESTING)
 
 # setup the ROOT install
 find_package (ROOT 5.28 REQUIRED)
@@ -74,7 +81,8 @@ add_subdirectory (Source/Utility)
 add_subdirectory (Source/Framework)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
-add_subdirectory (Source/Main)
+add_subdirectory (Source/Applications/Main)
+add_subdirectory (Source/Applications/Validation)
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.

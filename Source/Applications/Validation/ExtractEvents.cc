@@ -7,11 +7,10 @@
  */
 
 #include "KTEgg.hh"
+#include "KTEvent.hh"
 
 #include <cstdlib>
 #include <iostream>
-//#include <sstream>
-//using std::stringstream;
 #include <unistd.h>
 
 using namespace::Katydid;
@@ -40,44 +39,24 @@ int main(int argc, char *argv[])
                 break;
         }
 
-    KTEgg* egg = new KTEgg();
-    //struct FFTinput *input;
-    //input = malloc(sizeof(struct FFTinput));
+    KTEgg egg;
 
-    egg->SetFileName(fileName);
-    if (! egg->BreakEgg())
+    egg.SetFileName(fileName);
+    if (! egg.BreakEgg())
     {
         std::cout << "Egg did not break correctly" << std::endl;
         return 1;
     }
-    if (! egg->ParseEggHeader())
+    if (! egg.ParseEggHeader())
     {
         std::cout << "Egg header not parsed correctly" << std::endl;
         return 1;
     }
 
-    //setUp(current, input);
-    //createPlan(input);
-
     for (UInt_t iEvent = 0; iEvent < numEvents; iEvent++)
     {
-        if (! egg->HatchNextEvent()) continue;
-
-        //stringstream conv;
-        //string outputFileName;
-        //conv << iEvent;
-        //conv >> outputFileName;
-        //outputFileName = outputFilePrefix + string("_event") + outputFileName;
-
-        //inputData(current, input);
-        //executePlan(input);
-        //createOutputFile(outputFileName, input);
-
-
-
+        if (! egg.HatchNextEvent()) return 1;
     }
-
-    //cleanUp(input);
 
     return 0;
 }
