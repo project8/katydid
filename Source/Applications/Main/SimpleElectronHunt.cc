@@ -13,6 +13,7 @@
  *       -n: The number of events to analyze; use -1 for all
  *       -t: Threshold in multiples of the mean (default is 10)
  *       -c: Use this to run one of the control setups. -1 reverses the high and low margins; -2 uses large negative margins.
+ *       -d: Include this flag to draw waterfall plots
  */
 
 #include "KTArrayUC.hh"
@@ -54,13 +55,15 @@ int main(int argc, char** argv)
 
     Double_t thresholdMult = 10.;
 
+    Bool_t drawWaterfall = kFALSE;
+
     Int_t groupBinsMarginLow = 1;
     Int_t groupBinsMarginHigh = 3;
     Int_t groupBinsMarginSameTime = 1;
 
     Int_t arg;
     extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:p:n:t:c")) != -1)
+    while ((arg = getopt(argc, argv, "e:p:n:t:c:d")) != -1)
         switch (arg)
         {
             case 'e':
@@ -76,6 +79,7 @@ int main(int argc, char** argv)
                 thresholdMult = atof(optarg);
                 break;
             case 'c':
+            {
                 Int_t controlOpt = atoi(optarg);
                 if (controlOpt == 1)
                 {
@@ -90,6 +94,10 @@ int main(int argc, char** argv)
                     groupBinsMarginSameTime = 1;
                 }
                 break;
+            }
+            case 'd':
+                drawWaterfall = kTRUE;
+                break;
         }
 
     if (inputFileName.empty())
@@ -100,8 +108,13 @@ int main(int argc, char** argv)
 
     string outputFileNameRoot = outputFileNameBase + string(".root");
     string outputFileNamePS = outputFileNameBase + string(".ps");
+    string outputFileNameText = outputFileNameBase + string(".txt");
 
     if (numEvents == -1) numEvents = 999999999;
+
+    ofstream txtOutFile(outputFileNameText.c_str());
+    txtOutFile << "Egg file: " << inputFileName << endl;
+    txtOutFile << "------------------------------------" << endl;
 
     KTEgg* egg = new KTEgg();
     egg->SetFileName(inputFileName);
@@ -130,11 +143,15 @@ int main(int argc, char** argv)
     plain->SetOptStat(0);
     gROOT->SetStyle("Plain");
 
-    TCanvas *c1 = new TCanvas("c1", "c1");
+    TCanvas *c1 = NULL;
     Char_t tempFileName[256];
-    sprintf(tempFileName, "%s[", outputFileNamePS.c_str());
-    c1->Print(tempFileName);
-    c1->SetLogz(1);
+    if (drawWaterfall)
+    {
+        c1 = new TCanvas("c1", "c1");
+        sprintf(tempFileName, "%s[", outputFileNamePS.c_str());
+        c1->Print(tempFileName);
+        c1->SetLogz(1);
+    }
 
     // so that these variables exist after the while loop
     Double_t timeBinWidth = 0., freqBinWidth = 0.;
@@ -143,10 +160,13 @@ int main(int argc, char** argv)
 
     vector< Int_t > globalPeakFreqBins;
 
+    Int_t totalCandidates = 0;
     Int_t iEvent = 0;
     while (kTRUE)
     {
         if (iEvent >= numEvents) break;
+	txtOutFile << "Event " << iEvent << endl;
+        txtOutFile << "   Candidate event frequencies (MHz): ";
 
         // Hatch the event
         KTEvent* event = egg->HatchNextEvent();
@@ -162,11 +182,16 @@ int main(int argc, char** argv)
         Katydid::KTPowerSpectrum* fullPS = fullFFT->CreatePowerSpectrum();
         delete fullFFT;
         TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
-        //c1->SetLogy(1);
-        //histFullPS->Draw(); /*DEBUG*/
-        //c1->WaitPrimitive();
-        //c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
-        //c1->SetLogy(0);
+        /*// DEBUG
+        if (drawWaterfall)
+        {
+            c1->SetLogy(1);
+            histFullPS->Draw();
+            c1->WaitPrimitive();
+            c1->Print(outputFileNamePS.c_str());
+            c1->SetLogy(0);
+        }
+        */
         delete fullPS;
         Double_t fullPSFreqBinWidth = histFullPS->GetBinWidth(1);
 
@@ -189,8 +214,13 @@ int main(int argc, char** argv)
         //   200+/-.2 MHz
 
         TH2D* hist = fft->CreatePowerSpectrumHistogram();
-        //hist->Draw(); /*DEBUG*/
-        //c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
+        /*// DEBUG
+        if (drawWaterfall)
+        {
+            hist->Draw();
+            c1->Print(outputFileNamePS.c_str());
+        }
+        */
         delete fft;
 
         // use this bin width later:
@@ -243,12 +273,16 @@ int main(int argc, char** argv)
             histGainNorm->SetBinContent(iBin, meanBinContent);
             //cout << "Gain norm bin " << iBin << "  content: " << meanBinContent << endl;
         }
-        //c1->SetLogy(1);
-        //histGainNorm->SetTitle("gain normalization");
-        //histGainNorm->Draw(); /*DEBUG*/
-        //c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
-        //c1->SetLogy(0);
-
+        /*// DEBUG
+        if (drawWaterfall)
+        {
+            c1->SetLogy(1);
+            histGainNorm->SetTitle("gain normalization");
+            histGainNorm->Draw();
+            c1->Print(outputFileNamePS.c_str());
+            c1->SetLogy(0);
+        }
+        */
 
         // Rebin the full-event power spectrum
         //Int_t rebinFactor = TMath::FloorNint((Double_t)histFullPS->GetNbinsX() / (Double_t)freqHistNBins);
@@ -269,16 +303,18 @@ int main(int argc, char** argv)
             //cout << "integral before: " << histProj->Integral() << endl;
             histProj->Divide(histGainNorm);
             //cout << "integral after: " << histProj->Integral() << endl;
-            //if (ifft < 5)
-            //{
-            //    c1->SetLogy(1);
-            //    char projnum[30];
-            //    sprintf(projnum, "%s%i", "fft #", ifft);
-            //    histProj->SetTitle(projnum);
-            //    histProj->Draw(); /*DEBUG*/
-            //    c1->Print(outputFileNamePS.c_str()); /*DEBUG*/
-            //    c1->SetLogy(0);
-            //}
+            /*// DEBUG
+            if (drawWaterfall && ifft < 5)
+            {
+                c1->SetLogy(1);
+                char projnum[30];
+                sprintf(projnum, "%s%i", "fft #", ifft);
+                histProj->SetTitle(projnum);
+                histProj->Draw();
+                c1->Print(outputFileNamePS.c_str());
+                c1->SetLogy(0);
+            }
+            */
 
             // this will hold the bin numbers that are above the threshold
             set< Int_t > peakBins;
@@ -429,41 +465,50 @@ int main(int argc, char** argv)
             // check if this group is too small in time
             if (maxFFT - minFFT < 2) continue;
 
-            Char_t histname[256], histtitle[256];
-            sprintf(histname, "hCandidate_%i_%i", iEvent, iCandidate);
-            sprintf(histtitle, "Candidate Group - Event %i - Candidate %i", iEvent, iCandidate);
-            minFFT = TMath::Max(1, minFFT-frameFFT);
-            maxFFT = TMath::Min(hist->GetNbinsX(), maxFFT+frameFFT);
-            Double_t minValFFT = hist->GetBinLowEdge(minFFT);
-            Double_t maxValFFT = hist->GetBinLowEdge(maxFFT) + timeBinWidth;
-            minFreqBin = TMath::Max(1, minFreqBin-frameFreqBin);
-            maxFreqBin = TMath::Min(hist->GetNbinsY(), maxFreqBin+frameFreqBin);
-            Double_t minValFreqBin = hist->GetYaxis()->GetBinLowEdge(minFreqBin);
-            Double_t maxValFreqBin = hist->GetYaxis()->GetBinLowEdge(maxFreqBin) + freqBinWidth;
-            //cout << minFFT << "  " << maxFFT << "  " << minValFFT << "  " << maxValFFT << endl;
-            //cout << minFreqBin << "  " << maxFreqBin << "  " << minValFreqBin << "  " << maxValFreqBin << endl;
-            TH2D* groupHist = new TH2D(histname, histtitle, maxFFT-minFFT+1, minValFFT, maxValFFT, maxFreqBin-minFreqBin+1, minValFreqBin, maxValFreqBin);
-            groupHist->SetXTitle("Time (s)");
-            groupHist->SetYTitle("Frequency (MHz)");
-            for (Int_t iFFTBin=1; iFFTBin<=groupHist->GetNbinsX(); iFFTBin++)
+	    Double_t meanFreq = ((Double_t)maxFreqBin - 1 - (Double_t)(maxFreqBin - minFreqBin)/2.) * freqBinWidth;
+	    txtOutFile << meanFreq << "   ";
+
+            if (drawWaterfall)
             {
-                for (Int_t iFreqBin=1; iFreqBin<=groupHist->GetNbinsY(); iFreqBin++)
+                Char_t histname[256], histtitle[256];
+                sprintf(histname, "hCandidate_%i_%i", iEvent, iCandidate);
+                sprintf(histtitle, "Candidate Group - Event %i - Candidate %i", iEvent, iCandidate);
+                minFFT = TMath::Max(1, minFFT-frameFFT);
+                maxFFT = TMath::Min(hist->GetNbinsX(), maxFFT+frameFFT);
+                Double_t minValFFT = hist->GetBinLowEdge(minFFT);
+                Double_t maxValFFT = hist->GetBinLowEdge(maxFFT) + timeBinWidth;
+                minFreqBin = TMath::Max(1, minFreqBin-frameFreqBin);
+                maxFreqBin = TMath::Min(hist->GetNbinsY(), maxFreqBin+frameFreqBin);
+                Double_t minValFreqBin = hist->GetYaxis()->GetBinLowEdge(minFreqBin);
+                Double_t maxValFreqBin = hist->GetYaxis()->GetBinLowEdge(maxFreqBin) + freqBinWidth;
+                //cout << minFFT << "  " << maxFFT << "  " << minValFFT << "  " << maxValFFT << endl;
+                //cout << minFreqBin << "  " << maxFreqBin << "  " << minValFreqBin << "  " << maxValFreqBin << endl;
+                TH2D* groupHist = new TH2D(histname, histtitle, maxFFT-minFFT+1, minValFFT, maxValFFT, maxFreqBin-minFreqBin+1, minValFreqBin, maxValFreqBin);
+                groupHist->SetXTitle("Time (s)");
+                groupHist->SetYTitle("Frequency (MHz)");
+                for (Int_t iFFTBin=1; iFFTBin<=groupHist->GetNbinsX(); iFFTBin++)
                 {
-                    Double_t content = hist->GetBinContent(iFFTBin+minFFT, iFreqBin+minFreqBin);
-                    groupHist->SetBinContent(iFFTBin, iFreqBin, content);
+                    for (Int_t iFreqBin=1; iFreqBin<=groupHist->GetNbinsY(); iFreqBin++)
+                    {
+                        Double_t content = hist->GetBinContent(iFFTBin+minFFT, iFreqBin+minFreqBin);
+                        groupHist->SetBinContent(iFFTBin, iFreqBin, content);
+                    }
                 }
+
+                groupHist->Draw("colz");
+                c1->Print(outputFileNamePS.c_str());
+
+                groupHist->Write();
             }
-
-            groupHist->Draw("colz");
-            c1->Print(outputFileNamePS.c_str());
-
-            groupHist->Write();
 
             //candidates->Add(groupHist);
             iCandidate++;
         }
 
         cout << "Found " << iCandidate << " candidate groups" << endl;
+	txtOutFile << endl;
+	txtOutFile << "  " << iCandidate << " candidates found" << endl;
+	txtOutFile << "------------------------------------" << endl;
 
         //TCanvas *c1 = new TCanvas("c1", "c1");
         //c1->SetLogz(1);
@@ -482,7 +527,7 @@ int main(int argc, char** argv)
         delete histFullPS;
 
         iEvent++;
-
+	totalCandidates += iCandidate;
         /*
         for (Int_t iCandidate=0; iCandidate<candidates->GetEntriesFast(); iCandidate++)
         {
@@ -498,18 +543,26 @@ int main(int argc, char** argv)
 
     }
 
-    TH1I* histGlobalPeakBins = new TH1I("hGlobalPeakBins", "Peak Bins -- Global", freqHistNBins, freqHistMin, freqHistMax);
-    for (vector< Int_t >::iterator it = globalPeakFreqBins.begin(); it != globalPeakFreqBins.end(); it++)
-    {
-        histGlobalPeakBins->Fill(freqBinWidth * ((Double_t)(*it) - 0.5));
-    }
-    histGlobalPeakBins->Draw("colz");
-    c1->Print(outputFileNamePS.c_str());
-    histGlobalPeakBins->Write();
+    txtOutFile << "Total candidates found in this file: " << totalCandidates << endl;
+    txtOutFile << "Events analyzed: " << iEvent << endl;
+    txtOutFile << "------------------------------------" << endl;
+    txtOutFile.close();
 
-    sprintf(tempFileName, "%s]", outputFileNamePS.c_str());
-    c1->Print(tempFileName);
-    delete c1;
+    if (drawWaterfall)
+    {
+        TH1I* histGlobalPeakBins = new TH1I("hGlobalPeakBins", "Peak Bins -- Global", freqHistNBins, freqHistMin, freqHistMax);
+        for (vector< Int_t >::iterator it = globalPeakFreqBins.begin(); it != globalPeakFreqBins.end(); it++)
+        {
+            histGlobalPeakBins->Fill(freqBinWidth * ((Double_t)(*it) - 0.5));
+        }
+        histGlobalPeakBins->Draw("colz");
+        c1->Print(outputFileNamePS.c_str());
+        histGlobalPeakBins->Write();
+
+        sprintf(tempFileName, "%s]", outputFileNamePS.c_str());
+        c1->Print(tempFileName);
+        delete c1;
+    }
 
     delete app;
 

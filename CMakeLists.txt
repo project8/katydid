@@ -61,7 +61,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/External/CImg")
 
 # configuration header file
 configure_file (
-    "${PROJECT_SOURCE_DIR}/KatydidConfig_cmake.h.in"
+    "${PROJECT_SOURCE_DIR}/KatydidConfig.hh.in"
     "${PROJECT_BINARY_DIR}/KatydidConfig.hh"
 )
 
@@ -90,4 +90,6 @@ add_subdirectory (Documentation/ReferenceGuide)
 
 
 # this is apparently not the right way to run the link_dylibs script
-#execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib})
+#execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)
+
+install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)")

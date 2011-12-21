@@ -186,9 +186,10 @@ namespace Katydid
         // read the time stamp
         readBuffer = new unsigned char [this->GetTimeStampSize()];
         fEggStream.read((char*)(&readBuffer[0]), this->GetTimeStampSize());
-        if (fEggStream.gcount() == 0)
+        if (fEggStream.gcount() != this->GetTimeStampSize())
         {
-            std::cerr << "Warning from KTEgg::HatchNextEvent: No data was read for the time stamp" << std::endl;
+            std::cerr << "Warning from KTEgg::HatchNextEvent: Size of the data read for the time stamp did not match the size expected" << std::endl;
+	    std::cerr << "   Expected: " << this->GetTimeStampSize() << "   Read: " << fEggStream.gcount() << std::endl;
             delete [] readBuffer;
         }
         else
@@ -203,6 +204,7 @@ namespace Katydid
         }
         if (! fEggStream.good())
         {
+	    std::cerr << "Warning from KTEgg::HatchNextEvent: Reached end of file after reading time stamp size" << std::endl;
             delete event;
             return NULL;
         }
@@ -210,9 +212,10 @@ namespace Katydid
         // read the frame size
         readBuffer = new unsigned char [this->GetFrameIDSize()];
         fEggStream.read((char*)(&readBuffer[0]), this->GetFrameIDSize());
-        if (fEggStream.gcount() == 0)
+        if (fEggStream.gcount() != this->GetFrameIDSize())
         {
-            std::cerr << "Warning from KTEgg::HatchNextEvent: No data was read for the frame ID" << std::endl;
+            std::cerr << "Warning from KTEgg::HatchNextEvent: The size of the data read for the frame ID did not match the expected size" << std::endl;
+	    std::cerr << "   Expected: " << this->GetFrameIDSize() << "   Read: " << fEggStream.gcount() << std::endl;
             delete [] readBuffer;
         }
         else
@@ -223,6 +226,7 @@ namespace Katydid
         }
         if (! fEggStream.good())
         {
+  	    std::cerr << "Warning from KTEgg::HatchNextEvent: Reached end of file after reading frame size" << std::endl;
             delete event;
             return NULL;
         }
@@ -230,10 +234,13 @@ namespace Katydid
         // read the record
         readBuffer = new unsigned char [this->GetRecordSize()];
         fEggStream.read((char*)(&readBuffer[0]), this->GetRecordSize());
-        if (fEggStream.gcount() == 0)
+        if (fEggStream.gcount() != this->GetRecordSize())
         {
-            std::cerr << "Warning from KTEgg::HatchNextEvent: No data was read for the record" << std::endl;
+            std::cerr << "Warning from KTEgg::HatchNextEvent: Size of the data read for the record did not match the amount expected" << std::endl;
+	    std::cerr << "   Expected: :" << this->GetRecordSize() << "  Read: " << fEggStream.gcount() << std::endl;
             delete [] readBuffer;
+            delete event;
+	    return NULL;
         }
         else
         {
@@ -241,7 +248,10 @@ namespace Katydid
             newRecord->Adopt(this->GetRecordSize(), readBuffer);
             event->SetRecord(newRecord);
         }
-        //if (! fEggStream.good()) return kFALSE;
+        if (! fEggStream.good())
+	{
+	    std::cerr << "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this event." << std::endl;
+	}
 
         //
         event->SetSampleRate(this->GetSampleRate());
