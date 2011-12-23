@@ -9,14 +9,12 @@
 
 #include "KTEvent.hh"
 
-#include "KTArrayUC.hh"
-
-#include "TArrayC.h"
-
 #include "rapidxml.hpp"
 //#include "rapidxml_print.hpp"
 
 #include <iostream>
+#include <vector>
+using std::vector;
 
 ClassImp(Katydid::KTEgg);
 
@@ -189,22 +187,22 @@ namespace Katydid
         if (fEggStream.gcount() != this->GetTimeStampSize())
         {
             std::cerr << "Warning from KTEgg::HatchNextEvent: Size of the data read for the time stamp did not match the size expected" << std::endl;
-	    std::cerr << "   Expected: " << this->GetTimeStampSize() << "   Read: " << fEggStream.gcount() << std::endl;
+            std::cerr << "   Expected: " << this->GetTimeStampSize() << "   Read: " << fEggStream.gcount() << std::endl;
             delete [] readBuffer;
         }
         else
         {
-            KTArrayUC* newTimeStamp = new KTArrayUC(this->GetTimeStampSize());
-            newTimeStamp->Adopt(this->GetTimeStampSize(), readBuffer);
+            vector< UInt_t > newTimeStamp(readBuffer, readBuffer + this->GetTimeStampSize()/sizeof(unsigned char));
+            delete [] readBuffer;
             event->SetTimeStamp(newTimeStamp);
-            std::cout << "Time stamp (" << newTimeStamp->GetSize() << " chars): ";
-            for (Int_t i=0; i<newTimeStamp->GetSize(); i++)
-                std::cout << (*newTimeStamp)[i];
+            std::cout << "Time stamp (" << newTimeStamp.size() << " chars): ";
+            for (int i=0; i<newTimeStamp.size(); i++)
+                std::cout << newTimeStamp[i];
             std::cout << std::endl;
         }
         if (! fEggStream.good())
         {
-	    std::cerr << "Warning from KTEgg::HatchNextEvent: Reached end of file after reading time stamp size" << std::endl;
+            std::cerr << "Warning from KTEgg::HatchNextEvent: Reached end of file after reading time stamp size" << std::endl;
             delete event;
             return NULL;
         }
@@ -215,18 +213,18 @@ namespace Katydid
         if (fEggStream.gcount() != this->GetFrameIDSize())
         {
             std::cerr << "Warning from KTEgg::HatchNextEvent: The size of the data read for the frame ID did not match the expected size" << std::endl;
-	    std::cerr << "   Expected: " << this->GetFrameIDSize() << "   Read: " << fEggStream.gcount() << std::endl;
+            std::cerr << "   Expected: " << this->GetFrameIDSize() << "   Read: " << fEggStream.gcount() << std::endl;
             delete [] readBuffer;
         }
         else
         {
-            KTArrayUC* newFrameID = new KTArrayUC(this->GetFrameIDSize());
-            newFrameID->Adopt(this->GetFrameIDSize(), readBuffer);
+            vector< UInt_t > newFrameID(readBuffer, readBuffer + this->GetFrameIDSize()/sizeof(unsigned char));
+            delete [] readBuffer;
             event->SetFrameID(newFrameID);
         }
         if (! fEggStream.good())
         {
-  	    std::cerr << "Warning from KTEgg::HatchNextEvent: Reached end of file after reading frame size" << std::endl;
+            std::cerr << "Warning from KTEgg::HatchNextEvent: Reached end of file after reading frame size" << std::endl;
             delete event;
             return NULL;
         }
@@ -237,21 +235,21 @@ namespace Katydid
         if (fEggStream.gcount() != this->GetRecordSize())
         {
             std::cerr << "Warning from KTEgg::HatchNextEvent: Size of the data read for the record did not match the amount expected" << std::endl;
-	    std::cerr << "   Expected: :" << this->GetRecordSize() << "  Read: " << fEggStream.gcount() << std::endl;
+            std::cerr << "   Expected: :" << this->GetRecordSize() << "  Read: " << fEggStream.gcount() << std::endl;
             delete [] readBuffer;
             delete event;
-	    return NULL;
+            return NULL;
         }
         else
         {
-            KTArrayUC* newRecord = new KTArrayUC(this->GetRecordSize());
-            newRecord->Adopt(this->GetRecordSize(), readBuffer);
+            vector< UInt_t > newRecord(readBuffer, readBuffer + this->GetRecordSize()/sizeof(unsigned char));
+            delete [] readBuffer;
             event->SetRecord(newRecord);
         }
         if (! fEggStream.good())
-	{
-	    std::cerr << "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this event." << std::endl;
-	}
+        {
+            std::cerr << "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this event." << std::endl;
+        }
 
         //
         event->SetSampleRate(this->GetSampleRate());

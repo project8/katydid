@@ -20,7 +20,7 @@ namespace Katydid
     {
         public:
             KTComplexVector();
-            KTComplexVector(Int_t nBins, const Double_t* arr1, const Double_t* arr2, const string& mode);
+            KTComplexVector(UInt_t nBins, const Double_t* arr1, const Double_t* arr2, const string& mode);
             KTComplexVector(const TVectorD& v1, const TVectorD& v2, const string& mode);
             KTComplexVector(const KTComplexVector& orig);
             virtual ~KTComplexVector();
@@ -38,8 +38,8 @@ namespace Katydid
 
             Int_t GetSize() const;
 
-            TVectorD* GetMagnitude() const;
-            TVectorD* GetPhase() const;
+            const TVectorD& GetMagnitude() const;
+            const TVectorD& GetPhase() const;
 
             void SetMagnitudeAt(Int_t iBin, Double_t mag);
             void SetPhaseAt(Int_t iBin, Double_t phase);
@@ -49,10 +49,10 @@ namespace Katydid
 
        protected:
 
-            TVectorD* fMagnitude;
-            TVectorD* fPhase;
+            TVectorD fMagnitude;
+            TVectorD fPhase;
 
-            ClassDef(KTComplexVector, 1);
+            ClassDef(KTComplexVector, 2);
     };
 
 } /* namespace Katydid */

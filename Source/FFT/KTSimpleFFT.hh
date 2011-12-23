@@ -15,7 +15,7 @@
 #include <string>
 using std::string;
 
-class TArray;
+//class TArray;
 class TH1D;
 
 namespace Katydid
@@ -27,27 +27,28 @@ namespace Katydid
     {
         public:
             KTSimpleFFT();
-            KTSimpleFFT(Int_t timeSize);
+            KTSimpleFFT(UInt_t timeSize);
             virtual ~KTSimpleFFT();
 
             virtual void InitializeFFT();
 
             virtual void TakeData(const KTEvent* event);
-            virtual void TakeData(const TArray* data);
+            virtual void TakeData(const vector< Double_t >& data);
+            //virtual void TakeData(const TArray* data);
 
             virtual void Transform();
 
             virtual TH1D* CreatePowerSpectrumHistogram() const;
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
-            virtual Int_t GetTimeSize() const;
-            virtual Int_t GetFrequencySize() const;
+            virtual UInt_t GetTimeSize() const;
+            virtual UInt_t GetFrequencySize() const;
 
             /// note: SetTimeSize creates a new fTransform.
             ///       It also sets fIsInitialized and fIsDataReady to kFALSE.
-            virtual void SetTimeSize(Int_t nBins);
+            virtual void SetTimeSize(UInt_t nBins);
 
-            const TFFTRealComplex* GetFFT() const;
+            const TFFTRealComplex& GetFFT() const;
             const string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Bool_t GetIsDataReady() const;
@@ -59,7 +60,7 @@ namespace Katydid
 
         protected:
 
-            TFFTRealComplex* fTransform;
+            TFFTRealComplex fTransform;
 
             string fTransformFlag;
 
@@ -68,29 +69,29 @@ namespace Katydid
 
             Double_t fFreqBinWidth;
 
-            ClassDef(KTSimpleFFT, 1);
+            ClassDef(KTSimpleFFT, 2);
     };
 
-    inline Int_t KTSimpleFFT::GetTimeSize() const
+
+    inline UInt_t KTSimpleFFT::GetTimeSize() const
     {
-        return fTransform->GetSize();
+        return fTransform.GetSize();
     }
 
-    inline Int_t KTSimpleFFT::GetFrequencySize() const
+    inline UInt_t KTSimpleFFT::GetFrequencySize() const
     {
-        return fTransform->GetSize() / 2 + 1;
+        return fTransform.GetSize() / 2 + 1;
     }
 
-    inline void KTSimpleFFT::SetTimeSize(Int_t nBins)
+    inline void KTSimpleFFT::SetTimeSize(UInt_t nBins)
     {
-        delete fTransform;
-        fTransform = new TFFTRealComplex(nBins, kFALSE);
+        fTransform = TFFTRealComplex((Int_t)nBins, kFALSE);
         fIsInitialized = kFALSE;
         fIsDataReady = kFALSE;
         return;
     }
 
-    inline const TFFTRealComplex* KTSimpleFFT::GetFFT() const
+    inline const TFFTRealComplex& KTSimpleFFT::GetFFT() const
     {
         return fTransform;
     }

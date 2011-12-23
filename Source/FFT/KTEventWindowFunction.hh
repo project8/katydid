@@ -10,7 +10,8 @@
 
 #include "KTWindowFunction.hh"
 
-class TArrayD;
+#include <vector>
+using std::vector;
 
 namespace Katydid
 {
@@ -32,13 +33,13 @@ namespace Katydid
             virtual Double_t AdaptTo(const KTEvent* event, Double_t length);
 
             virtual Double_t GetWeight(Double_t time) const = 0;
-            virtual Double_t GetWeight(Int_t bin) const = 0;
+            virtual Double_t GetWeight(UInt_t bin) const = 0;
 
             virtual TH1D* CreateHistogram() const;
             virtual TH1D* CreateFrequencyResponseHistogram() const;
 
             virtual Double_t GetLength() const;
-            virtual Int_t GetSize() const;
+            virtual unsigned int GetSize() const;
 
             virtual Double_t GetBinWidth() const;
 
@@ -55,19 +56,19 @@ namespace Katydid
             Double_t SetBinWidthAndLength(Double_t bw, Double_t length);
             ///Sets fWidthInBins directly; leaves fBinWidth as is, and sets fWidth accordingly.
             ///Returns the adapted length.
-            virtual Double_t SetSize(Int_t size);
+            virtual Double_t SetSize(UInt_t size);
 
         protected:
             virtual void RebuildWindowFunction() = 0;
 
-            TArrayD* fWindowFunction;
+            vector< Double_t > fWindowFunction;
 
             Double_t fLength;
             Double_t fBinWidth;
 
-            Int_t fSize;
+            unsigned int fSize;
 
-            ClassDef(KTEventWindowFunction, 1);
+            ClassDef(KTEventWindowFunction, 2);
     };
 
 } /* namespace Katydid */

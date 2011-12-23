@@ -21,12 +21,12 @@ namespace Katydid
             virtual ~KTHannWindow();
 
             virtual Double_t GetWeight(Double_t time) const;
-            virtual Double_t GetWeight(Int_t bin) const;
+            virtual Double_t GetWeight(UInt_t bin) const;
 
         protected:
             virtual void RebuildWindowFunction();
 
-            ClassDef(KTHannWindow, 1);
+            ClassDef(KTHannWindow, 2);
 
     };
 

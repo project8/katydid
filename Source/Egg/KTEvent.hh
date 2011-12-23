@@ -8,14 +8,15 @@
 #ifndef KTEVENT_HH_
 #define KTEVENT_HH_
 
-#include "Rtypes.h"
+#include "TMath.h"
 
 #include <fstream>
 using std::ifstream;
 #include <string>
 using std::string;
+#include <vector>
+using std::vector;
 
-class KTArrayUC;
 class TH1I;
 
 namespace Katydid
@@ -26,37 +27,54 @@ namespace Katydid
             KTEvent();
             virtual ~KTEvent();
 
-            // time is expected in seconds
-            UInt_t GetADCAtTime(Double_t time) const;
-            UInt_t GetADCAtBin(Int_t bin) const;
-
             virtual TH1I* CreateAmplitudeDistributionHistogram() const;
 
             Double_t GetBinWidth() const;
-            const KTArrayUC* GetFrameID() const;
-            const KTArrayUC* GetRecord() const;
+            const vector< UInt_t >& GetFrameID() const;
+            const vector< UInt_t >& GetRecord() const;
             Double_t GetRecordLength() const;
             Double_t GetSampleRate() const;
-            const KTArrayUC* GetTimeStamp() const;
+            const vector< UInt_t >& GetTimeStamp() const;
+
+            unsigned int GetRecordSize() const;
+            UInt_t GetRecordAt(unsigned int iBin) const;
+            template< typename XType >
+            XType GetRecordAt(unsigned int iBin) const;
+            UInt_t GetRecordAtTime(Double_t time) const; /// time is in seconds and >= 0
+            template< typename XType >
+            XType GetRecordAtTime(Double_t time) const; /// time is in seconds and >= 0
 
             void SetBinWidth(Double_t binWidth);
-            void SetFrameID(KTArrayUC* frameID);
-            void SetRecord(KTArrayUC* record);
+            void SetFrameID(const vector< UInt_t >& frameID);
+            void SetRecord(const vector< UInt_t >& record);
             void SetRecordLength(Double_t recordLength);
             void SetSampleRate(Double_t sampleRate);
-            void SetTimeStamp(KTArrayUC* timeStamp);
+            void SetTimeStamp(const vector< UInt_t >& timeStamp);
 
         private:
             Double_t fSampleRate; // in Hz
             Double_t fRecordLength; // in sec
             Double_t fBinWidth; // in sec
-            KTArrayUC* fTimeStamp;
-            KTArrayUC* fFrameID;
-            KTArrayUC* fRecord;
+            vector< UInt_t > fTimeStamp;
+            vector< UInt_t > fFrameID;
+            vector< UInt_t > fRecord;
 
             ClassDef(KTEvent, 1);
 
     };
+
+    template< typename XType >
+    XType KTEvent::GetRecordAt(unsigned int iPoint) const
+    {
+        return (XType)GetRecordAt(iPoint);
+    }
+
+    template< typename XType >
+    XType KTEvent::GetRecordAtTime(Double_t time) const
+    {
+        return this->GetRecordAt< XType >((unsigned int)(TMath::Nint(TMath::Max(0., time) / fBinWidth)));
+    }
+
 
 } /* namespace Katydid */
 

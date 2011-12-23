@@ -10,7 +10,10 @@
 
 #include "Rtypes.h"
 
-class TArray;
+#include <vector>
+using std::vector;
+
+//class TArray;
 
 namespace Katydid
 {
@@ -23,12 +26,12 @@ namespace Katydid
             virtual ~KTFFT();
 
             virtual void TakeData(const KTEvent* event) = 0;
-            virtual void TakeData(const TArray* data) = 0;
+            virtual void TakeData(const vector< Double_t >& data) = 0;
+            //virtual void TakeData(const TArray* data) = 0;
 
             virtual void Transform() = 0;
 
-            ClassDef(KTFFT, 1);
-
+            ClassDef(KTFFT, 2);
     };
 
 } /* namespace Katydid */

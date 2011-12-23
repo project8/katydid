@@ -116,14 +116,14 @@ int main(int argc, char** argv)
     txtOutFile << "Egg file: " << inputFileName << endl;
     txtOutFile << "------------------------------------" << endl;
 
-    KTEgg* egg = new KTEgg();
-    egg->SetFileName(inputFileName);
-    if (! egg->BreakEgg())
+    KTEgg egg;
+    egg.SetFileName(inputFileName);
+    if (! egg.BreakEgg())
     {
         cout << "Error: Egg did not break" << endl;
         return -1;
     }
-    if (! egg->ParseEggHeader())
+    if (! egg.ParseEggHeader())
     {
         cout << "Error: Header did not parse" << endl;
         return -1;
@@ -165,22 +165,21 @@ int main(int argc, char** argv)
     while (kTRUE)
     {
         if (iEvent >= numEvents) break;
-	txtOutFile << "Event " << iEvent << endl;
+        txtOutFile << "Event " << iEvent << endl;
         txtOutFile << "   Candidate event frequencies (MHz): ";
 
         // Hatch the event
-        KTEvent* event = egg->HatchNextEvent();
+        KTEvent* event = egg.HatchNextEvent();
         if (event == NULL) break;
 
         // FFT of the entire event, which will be used to normalize the gain fluctuations
-        Katydid::KTSimpleFFT* fullFFT = new Katydid::KTSimpleFFT((Int_t)event->GetRecord()->GetSize());
-        fullFFT->SetTransformFlag("ES");
-        fullFFT->InitializeFFT();
-        fullFFT->TakeData(event);
-        fullFFT->Transform();
+        KTSimpleFFT fullFFT(event->GetRecordSize());
+        fullFFT.SetTransformFlag("ES");
+        fullFFT.InitializeFFT();
+        fullFFT.TakeData(event);
+        fullFFT.Transform();
 
-        Katydid::KTPowerSpectrum* fullPS = fullFFT->CreatePowerSpectrum();
-        delete fullFFT;
+        KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
         TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
         /*// DEBUG
         if (drawWaterfall)
@@ -200,28 +199,27 @@ int main(int argc, char** argv)
         wfunc->SetLength(1.e-5);
         cout << "window length: " << wfunc->GetLength() << " s; bin width: " << wfunc->GetBinWidth() << " s; size: " << wfunc->GetSize() << endl;
 
-        KTSlidingWindowFFT* fft = new KTSlidingWindowFFT();
-        fft->SetWindowFunction(wfunc);
-        fft->SetOverlap(wfunc->GetSize() / 5);
-        fft->SetTransformFlag("ES");
-        fft->InitializeFFT();
-        fft->TakeData(event);
-        fft->Transform();
+        KTSlidingWindowFFT fft;
+        fft.SetWindowFunction(wfunc);
+        fft.SetOverlap(wfunc->GetSize() / 5);
+        fft.SetTransformFlag("ES");
+        fft.InitializeFFT();
+        fft.TakeData(event);
+        fft.Transform();
 
         // Need to exclude:
         //   0-.2 MHz
         //   100+/-.2 MHz
         //   200+/-.2 MHz
 
-        TH2D* hist = fft->CreatePowerSpectrumHistogram();
-        /*// DEBUG
+        TH2D* hist = fft.CreatePowerSpectrumHistogram();
+        // DEBUG
         if (drawWaterfall)
         {
             hist->Draw();
             c1->Print(outputFileNamePS.c_str());
         }
-        */
-        delete fft;
+
 
         // use this bin width later:
         TH1D* tempTimeProj = hist->ProjectionX("temp", 1, 1);
@@ -248,9 +246,9 @@ int main(int argc, char** argv)
         Int_t lastBinsFullPS[nSearchRanges] = {histFullPS->FindBin(100.-.2)-1, histFullPS->FindBin(200.-0.2)-1, histFullPS->GetNbinsX()-1};
 
         // Create a histogram to store the gain normalization
-        TH1D* histGainNorm = (TH1D*)histProj->Clone();
+        TH1D* histGainNorm = (TH1D*)(histProj->Clone());
         histGainNorm->Clear();
-        //histGainNorm->SetNameTitle("GainNorm","GainNorm");
+        histGainNorm->SetNameTitle("GainNorm","GainNorm");
         for (Int_t iBin=1; iBin<=histGainNorm->GetNbinsX(); iBin++)
         {
             Double_t freqBinMin = histGainNorm->GetBinLowEdge(iBin);
@@ -428,6 +426,8 @@ int main(int argc, char** argv)
 
         } // for loop over ffts in an event
 
+        delete histGainNorm;
+
         // now we will scan over the groups in the event and draw them.
         // there's still a chance that the groups finished in the last fft are too small, so we'll check the group size.
 
@@ -465,8 +465,8 @@ int main(int argc, char** argv)
             // check if this group is too small in time
             if (maxFFT - minFFT < 2) continue;
 
-	    Double_t meanFreq = ((Double_t)maxFreqBin - 1 - (Double_t)(maxFreqBin - minFreqBin)/2.) * freqBinWidth;
-	    txtOutFile << meanFreq << "   ";
+            Double_t meanFreq = ((Double_t)maxFreqBin - 1 - (Double_t)(maxFreqBin - minFreqBin)/2.) * freqBinWidth;
+            txtOutFile << meanFreq << "   ";
 
             if (drawWaterfall)
             {
@@ -506,9 +506,9 @@ int main(int argc, char** argv)
         }
 
         cout << "Found " << iCandidate << " candidate groups" << endl;
-	txtOutFile << endl;
-	txtOutFile << "  " << iCandidate << " candidates found" << endl;
-	txtOutFile << "------------------------------------" << endl;
+        txtOutFile << endl;
+        txtOutFile << "  " << iCandidate << " candidates found" << endl;
+        txtOutFile << "------------------------------------" << endl;
 
         //TCanvas *c1 = new TCanvas("c1", "c1");
         //c1->SetLogz(1);
@@ -525,9 +525,10 @@ int main(int argc, char** argv)
         //delete c1;
 
         delete histFullPS;
+        delete event;
 
         iEvent++;
-	totalCandidates += iCandidate;
+        totalCandidates += iCandidate;
         /*
         for (Int_t iCandidate=0; iCandidate<candidates->GetEntriesFast(); iCandidate++)
         {
@@ -589,8 +590,6 @@ int main(int argc, char** argv)
     c1->Print(tempFileName);
     delete c1;
     */
-
-    delete egg;
 
     return 0;
 }

@@ -25,7 +25,7 @@ namespace Katydid
 
             /// Input should be the direct FFT, not a power spectrum
             virtual void TakeFrequencySpectrum(const KTComplexVector& freqSpect);
-            virtual void TakeFrequencySpectrum(Int_t nBins, const Double_t* real, const Double_t* imag);
+            virtual void TakeFrequencySpectrum(unsigned int nBins, const Double_t* real, const Double_t* imag);
 
             Double_t GetPowerAtFrequency(Double_t freq);
             Double_t GetPhaseAtFrequency(Double_t freq);
@@ -42,7 +42,7 @@ namespace Katydid
         protected:
             Double_t fBinWidth;
 
-            ClassDef(KTPowerSpectrum, 1);
+            ClassDef(KTPowerSpectrum, 2);
     };
 
     inline Double_t KTPowerSpectrum::GetBinWidth() const

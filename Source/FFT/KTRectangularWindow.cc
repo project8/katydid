@@ -35,18 +35,18 @@ namespace Katydid
         return 0.;
     }
 
-    Double_t KTRectangularWindow::GetWeight(Int_t bin) const
+    Double_t KTRectangularWindow::GetWeight(UInt_t bin) const
     {
-        if (bin >= 0 && bin < fSize) return 1.;
+        if (bin < fSize) return 1.;
         return 0.;
     }
 
     void KTRectangularWindow::RebuildWindowFunction()
     {
-        fWindowFunction = new TArrayD(fSize);
+        fWindowFunction.resize(fSize);
         for (Int_t iBin=0; iBin < fSize; iBin++)
         {
-            (*fWindowFunction)[iBin] = 1.;
+            fWindowFunction[iBin] = 1.;
         }
         return;
     }
