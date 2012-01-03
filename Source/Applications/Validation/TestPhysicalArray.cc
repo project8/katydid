@@ -1,0 +1,120 @@
+/*
+ * TestPhysicalArray.cc
+ *
+ *  Created on: Dec 26, 2011
+ *      Author: nsoblath
+ */
+
+
+#include "KTPhysicalArray.hh"
+
+#include "TH1.h"
+#include "TH2.h"
+
+#include <cmath>
+#include <iostream>
+
+using namespace Katydid;
+using namespace std;
+
+int main(int argc, char** argv)
+{
+    UInt_t nBins1 = 100;
+    Double_t rangeMin1 = 1.0;
+    Double_t rangeMax1 = 2.0;
+
+    Double_t testPosition1 = 1.82235;
+    UInt_t testBin1 = 35;
+
+    UInt_t nBins2 = 541;
+    Double_t rangeMin2 = -23;
+    Double_t rangeMax2 = 2039;
+
+    Double_t testPosition2 = 820;
+    UInt_t testBin2 = 18;
+
+    // Test the 1-D array
+    cout << "One-dimensional test" << endl;
+
+    KTPhysicalArray< 1 > array;
+    array.SetNBins(nBins1);
+    array.SetRangeMin(rangeMin1);
+    array.SetRangeMax(rangeMax1);
+
+    cout << "Physical array setup with nbins = " << array.GetNBins() << ", range_min = " << array.GetRangeMin() << ", and range_max = " << array.GetRangeMax() << endl;
+    cout << "The bin width is " << array.GetBinWidth() << endl;
+    cout << "The test position (" << testPosition1 << ") is in bin " << array.FindBin(testPosition1) << endl;
+    cout << "The test bin (" << testBin1 << ") has a low edge of " << array.GetBinLowEdge(testBin1) << " and a bin center of " << array.GetBinCenter(testBin1) << endl;
+
+    TH1I histCompare("histCompare", "histCompare", nBins1, rangeMin1, rangeMax1);
+    // relative magnitude floating point comparisons
+    Double_t tolerance = 1.e-10;
+    Bool_t theyAgree =
+            fabs(array.GetBinWidth() - histCompare.GetBinWidth(testBin1+1)) / histCompare.GetBinWidth(testBin1) < tolerance &&
+            array.FindBin(testPosition1) == histCompare.FindBin(testPosition1)-1 &&
+            fabs(array.GetBinLowEdge(testBin1) - histCompare.GetBinLowEdge(testBin1+1)) / histCompare.GetBinLowEdge(testBin1) < tolerance &&
+            fabs(array.GetBinCenter(testBin1) - histCompare.GetBinCenter(testBin1+1)) / histCompare.GetBinCenter(testBin1) < tolerance;
+
+    if (! theyAgree)
+    {
+        cout << "The KTPhysicalArray calculations disagree with TH1!" << endl;
+        cout << "  " << histCompare.GetBinWidth(testBin1+1) << "  " << histCompare.FindBin(testPosition1) << "  " << histCompare.GetBinLowEdge(testBin1+1) << "  " << histCompare.GetBinCenter(testBin1+1) << endl;
+        return -1;
+    }
+
+    cout << "The KTPhysicalArray calculations agree with TH1" << endl;
+
+    // Test a 2-D array
+    cout << "Two-dimensional test" << endl;
+
+    KTPhysicalArray< 2 > array2D;
+    UInt_t nBinses [2] = {nBins1, nBins2};
+    Double_t rangeMins [2] = {rangeMin1, rangeMin2};
+    Double_t rangeMaxes [2] = {rangeMax1, rangeMax2};
+    array2D.SetNBins(nBinses);
+    array2D.SetRangeMin(rangeMins);
+    array2D.SetRangeMax(rangeMaxes);
+
+    cout << "Physical array setup with nbins (x,y) = (" << array2D.GetNBins(1) << "," << array2D.GetNBins(2) << "), range_min = (" << array2D.GetRangeMin(1) << "," << array2D.GetRangeMin(2) << "), and range_max = (" << array2D.GetRangeMax(1) << "," << array2D.GetRangeMax(2) << ")" << endl;
+    cout << "The bin widths are " << array2D.GetBinWidth(1) << " and " << array2D.GetBinWidth(2) << endl;
+    cout << "The test position 1 (" << testPosition1 << ") is in bin " << array2D.FindBin(1, testPosition1) << endl;
+    cout << "The test position 2 (" << testPosition2 << ") is in bin " << array2D.FindBin(2, testPosition2) << endl;
+    cout << "The test bin 1 (" << testBin1 << ") has a low edge of " << array2D.GetBinLowEdge(1, testBin1) << " and a bin center of " << array2D.GetBinCenter(1, testBin1) << endl;
+    cout << "The test bin 2 (" << testBin2 << ") has a low edge of " << array2D.GetBinLowEdge(2, testBin2) << " and a bin center of " << array2D.GetBinCenter(2, testBin2) << endl;
+
+    TH2I hist2DCompare("hist2DCompare", "hist2DCompare", nBins1, rangeMin1, rangeMax1, nBins2, rangeMin2, rangeMax2);
+    TAxis* xAxis = hist2DCompare.GetXaxis();
+    TAxis* yAxis = hist2DCompare.GetYaxis();
+    // relative magnitude floating point comparisons
+    theyAgree =
+            fabs(array2D.GetBinWidth(1) - xAxis->GetBinWidth(testBin1+1)) / xAxis->GetBinWidth(testBin1) < tolerance &&
+            array2D.FindBin(1, testPosition1) == xAxis->FindBin(testPosition1)-1 &&
+            fabs(array2D.GetBinLowEdge(1, testBin1) - xAxis->GetBinLowEdge(testBin1+1)) / xAxis->GetBinLowEdge(testBin1) < tolerance &&
+            fabs(array2D.GetBinCenter(1, testBin1) - xAxis->GetBinCenter(testBin1+1)) / xAxis->GetBinCenter(testBin1) < tolerance;
+
+    if (! theyAgree)
+    {
+        cout << "The KTPhysicalArray calculations disagree with the x-axis of TH2!" << endl;
+        cout << "  " << xAxis->GetBinWidth(testBin1+1) << "  " << xAxis->FindBin(testPosition1) << "  " << xAxis->GetBinLowEdge(testBin1+1) << "  " << xAxis->GetBinCenter(testBin1+1) << endl;
+        return -1;
+    }
+
+    theyAgree =
+            fabs(array2D.GetBinWidth(2) - yAxis->GetBinWidth(testBin2+1)) / yAxis->GetBinWidth(testBin2) < tolerance &&
+            array2D.FindBin(2, testPosition2) == yAxis->FindBin(testPosition2)-1 &&
+            fabs(array2D.GetBinLowEdge(2, testBin2) - yAxis->GetBinLowEdge(testBin2+1)) / yAxis->GetBinLowEdge(testBin2) < tolerance &&
+            fabs(array2D.GetBinCenter(2, testBin2) - yAxis->GetBinCenter(testBin2+1)) / yAxis->GetBinCenter(testBin2) < tolerance;
+
+    if (! theyAgree)
+    {
+        cout << "The KTPhysicalArray calculations disagree with the y-axis of TH2!" << endl;
+        cout << "  " << yAxis->GetBinWidth(testBin2+1) << "  " << yAxis->FindBin(testPosition2) << "  " << yAxis->GetBinLowEdge(testBin2+1) << "  " << yAxis->GetBinCenter(testBin2+1) << endl;
+        return -1;
+    }
+
+
+    cout << "The KTPhysicalArray calculations agree with TH2" << endl;
+
+
+    return 0;
+}

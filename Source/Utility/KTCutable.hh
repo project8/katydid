@@ -188,6 +188,14 @@ namespace Katydid
             KTCutable< XObjectType, XRangeIteratorType >& operator=(const KTCutable& rhs);
 
         public:
+            /// Clears all data, including the map of range iterators and the valid iterators
+            void Clear();
+            /// Sets a new range; all iterators are valid
+            void ResetRange(const XRangeIteratorType& begin, const XRangeIteratorType& end);
+            /// Copy the range from another KTCutable, but not the cuts; all iterators are valid
+            void ResetRange(const KTCutable< XObjectType, XRangeIteratorType >& orig);
+
+        public:
             /// Add a cut to a single iterator position
             void Cut(const XRangeIteratorType& toCut);
             /// Remove a cut to a single iterator position
@@ -197,6 +205,11 @@ namespace Katydid
             void Cut(const XRangeIteratorType& toBeginCut, const XRangeIteratorType& toEndCut);
             /// Remove a cut to a range of iterator positions
             void UnCut(const XRangeIteratorType& toBeginUnCut, const XRangeIteratorType& toEndUnCut);
+
+            /// Cut all iterator positions
+            void CutAll();
+            /// Remove all cuts
+            void UnCutAll();
 
         public:
             const XRangeIteratorType& GetCutableBegin() const; /// Get the range iterator to the beginning of the range
@@ -215,6 +228,8 @@ namespace Katydid
             //***********************
 
         public:
+            /// Returns the size of set of valid objects
+            std::size_t size() const;
             /// Returns an iterator to the first valid object
             iterator begin() const;
             /// Returns an iterator after the last valid object
@@ -311,6 +326,7 @@ namespace Katydid
                 fAll.insert(RangeIteratorMapType(iter, index));
                 fValid.insert(setIter, RangeIteratorWrapper(iter, index));
                 index++;
+                setIter++;
             }
         }
     }
@@ -327,6 +343,77 @@ namespace Katydid
     template< class XObjectType, class XRangeIteratorType >
     KTCutable< XObjectType, XRangeIteratorType >::~KTCutable()
     {
+    }
+
+    template< class XObjectType, class XRangeIteratorType >
+    void KTCutable< XObjectType, XRangeIteratorType >::Clear()
+    {
+        fValid.clear();
+        fAll.clear();
+        fBegin = XRangeIteratorType();
+        fEnd = XRangeIteratorType();
+    }
+
+    template< class XObjectType, class XRangeIteratorType >
+    void KTCutable< XObjectType, XRangeIteratorType >::ResetRange(const XRangeIteratorType& begin, const XRangeIteratorType& end)
+    {
+        fValid.clear();
+        fAll.clear();
+        fBegin = begin;
+        fEnd = end;
+
+        int index = 0;
+        XRangeIteratorType iter = fBegin;
+        std::pair< RangeIteratorWrapperSetIt, bool > insertionPair;
+        if (fBegin != fEnd)
+        {
+            // insert the first object
+            fAll.insert(RangeIteratorMapType(iter, index));
+            insertionPair = fValid.insert(RangeIteratorWrapper(iter, index));
+
+            // all of the other objects
+            iter++;
+            index++;
+            RangeIteratorWrapperSetIt setIter = insertionPair.first;
+            for (; iter != fEnd; iter++)
+            {
+                fAll.insert(RangeIteratorMapType(iter, index));
+                fValid.insert(setIter, RangeIteratorWrapper(iter, index));
+                index++;
+                setIter++;
+            }
+        }
+        return;
+    }
+
+    template< class XObjectType, class XRangeIteratorType >
+    void KTCutable< XObjectType, XRangeIteratorType >::ResetRange(const KTCutable< XObjectType, XRangeIteratorType >& orig)
+    {
+        fValid.clear();
+        fAll = orig.fAll;
+        fBegin = orig.fBegin;
+        fEnd = orig.fEnd;
+
+        int index = 0;
+        XRangeIteratorType iter = fBegin;
+        std::pair< RangeIteratorWrapperSetIt, bool > insertionPair;
+        if (fBegin != fEnd)
+        {
+            // insert the first object
+            insertionPair = fValid.insert(RangeIteratorWrapper(iter, index));
+
+            // all of the other objects
+            iter++;
+            index++;
+            RangeIteratorWrapperSetIt setIter = insertionPair.first;
+            for (; iter != fEnd; iter++)
+            {
+                fValid.insert(setIter, RangeIteratorWrapper(iter, index));
+                index++;
+                setIter++;
+            }
+        }
+        return;
     }
 
     template< class XObjectType, class XRangeIteratorType >
@@ -378,6 +465,23 @@ namespace Katydid
     }
 
     template< class XObjectType, class XRangeIteratorType >
+    void KTCutable< XObjectType, XRangeIteratorType >::CutAll()
+    {
+        fValid.clear();
+        return;
+    }
+
+    template< class XObjectType, class XRangeIteratorType >
+    void KTCutable< XObjectType, XRangeIteratorType >::UnCutAll()
+    {
+        for (RangeIteratorMapCIt imIter = fAll.begin(); imIter != fAll.end(); imIter++)
+        {
+            fValid.insert(RangeIteratorWrapper(imIter->first, imIter->second));
+        }
+        return;
+    }
+
+    template< class XObjectType, class XRangeIteratorType >
     const XRangeIteratorType& KTCutable< XObjectType, XRangeIteratorType >::GetCutableBegin() const
     {
         return fBegin;
@@ -387,6 +491,12 @@ namespace Katydid
     const XRangeIteratorType& KTCutable< XObjectType, XRangeIteratorType >::GetCutableEnd() const
     {
         return fEnd;
+    }
+
+    template< class XObjectType, class XRangeIteratorType >
+    std::size_t KTCutable< XObjectType, XRangeIteratorType >::size() const
+    {
+        return fValid.size();
     }
 
     template< class XObjectType, class XRangeIteratorType >
