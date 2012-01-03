@@ -21,12 +21,22 @@ ClassImp(Katydid::KTEgg);
 namespace Katydid
 {
 
-    const ifstream::pos_type KTEgg::sPreludeSize = 8;
+    const ifstream::pos_type KTEgg::sPreludeSize = 9;
 
     KTEgg::KTEgg() :
-                fEggStream(),
-                fPrelude(),
-                fHeader()
+            fFileName(),
+            fEggStream(),
+            fPrelude(),
+            fHeaderSize(0),
+            fHeader(),
+            fTimeStampSize(0),
+            fFrameIDSize(0),
+            fRecordSize(0),
+            fEventSize(0),
+            fApproxRecordLength(0.),
+            fSampleRate(0.),
+            fHertzPerSampleRateUnit(1.),
+            fSecondsPerApproxRecordLengthUnit(1.)
     {
     }
 
@@ -50,8 +60,11 @@ namespace Katydid
         }
 
         // read the prelude (which states how long the header is in hex)
+        // add one to the size of the array to allow it to terminate in a null character
+        //Int_t readBufferSize = (int)sPreludeSize + 1;
         char* readBuffer = new char [(int)sPreludeSize];
-        fEggStream.read(readBuffer, sPreludeSize);
+        int readSize = (int)sPreludeSize - 1;
+        fEggStream.read(readBuffer, readSize);
         if (! fEggStream.good()) return kFALSE;
         string newPrelude(readBuffer, sPreludeSize);
         this->SetPrelude(newPrelude);
@@ -162,6 +175,8 @@ namespace Katydid
             return kFALSE;
         }
         this->SetApproxRecordLength(ConvertFromCharArray< Double_t >(attr->value()) * this->GetSecondsPerApproxRecordLengthUnit());
+
+        delete [] headerCopy;
 
         std::cout << "Parsed header\n";
         std::cout << "Frame ID Size: " << this->GetFrameIDSize() << '\n';
