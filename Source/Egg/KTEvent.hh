@@ -4,6 +4,14 @@
  *  Created on: Sep 9, 2011
  *      Author: nsoblath
  */
+/**
+ @file KTEvent.hh
+ @brief Contains KTEvent
+ @details Contains the information from a single Egg event in the form of a 1-D vector of unsigned integers.
+ The data are the time series of the event.
+ @author: N. S. Oblath
+ @date: Sep 9, 2011
+ */
 
 #ifndef KTEVENT_HH_
 #define KTEVENT_HH_

@@ -1,8 +1,9 @@
-/*
- * KTEgg.hh
- *
- *  Created on: Sep 9, 2011
- *      Author: nsoblath
+/**
+ @file KTEgg.hh
+ @brief Contains KTEgg
+ @details Reads Egg data files: parses the header and produces events.
+ @author: N. S. Oblath
+ @date: Sep 9, 2011
  */
 
 #ifndef KTEGG_HH_
@@ -16,9 +17,6 @@ using std::ifstream;
 using std::string;
 #include <sstream>
 using std::stringstream;
-
-class KTArrayUC;
-class TArrayC;
 
 namespace Katydid
 {

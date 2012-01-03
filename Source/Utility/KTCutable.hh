@@ -1,8 +1,8 @@
-/*
- * KTCutable.hh
- *
- *  Created on: Dec 21, 2011
- *      Author: nsoblath
+/**
+ @file KTCutable.hh
+ @brief Contains KTCutable and associated classes
+ @details KTCutable is a pseudo-container that allows you to apply cuts to a set of objects using STL-like iterator notation.
+ @author: N. S. Oblath
  */
 
 #ifndef KTCUTABLE_HH_
@@ -35,6 +35,31 @@ using namespace boost::multi_index;
 
 namespace Katydid
 {
+    /*!
+     @class KTCutable
+     @author N. S. Oblath
+
+     @brief A pseudo-container class that allows you to cut out ranges using STL-like iterator notation.
+
+     @details
+     A KTCutable object is not a true container, in that it doesn't own the objects it refers to.  The objects remain
+     in their original locations, and KTCutable uses the iterators provided to it to find them.  Please note that
+     this means that your code will crash if the original objects move or are deleted without updating the KTCutable!
+
+     The template parameters are:
+     \li XObjectType: the type of object that will be referred to.
+     \li XRangeIteratorType: the type of the iterator used to refer to the objects.
+
+     The main constructor takes two arguments: the begin and end iterators for the range of objects.
+
+     Cuts can be applied and removed singly or using a sub-range.  An iterator class (KTCutable::iterator) is provided,
+     which will iterate over the given range, skipping any objects that have been cut.  This is done in a way that
+     avoids overhead during iteration at the cost of additional overhead during creation and cut application/removal, as
+     well as memory overhead in the form of one or two copies of XRangeIteratorType for each object.
+
+     KTCutable::iterator is a bi-directional iterator.  However, since the iteration order from XRangeIteratorType is
+     maintained, if XRangeIteratorType is a reverse iterator, KTCutable::iterator will act in reverse as well.
+     */
     template< class XObjectType, class XRangeIteratorType >
     class KTCutable
     {
@@ -42,6 +67,18 @@ namespace Katydid
             // Range iterator wrapper
             //***********************
 
+            /*!
+             @class KTCutable::RangeIteratorWrapper
+             @author N. S. Oblath
+
+             @brief Combines the RangeIterator with its original position and a < operator
+
+             @details
+             The RangeIterator is the original type of iterator given to KTCutable.  This class wraps that iterator with
+             other information and capabilities:
+             \li fPosition is the iterators position in the original range given to KTCutable.
+             \li operator< allows a RangeIteratorWrapper to be compared to other RangeIteratorWrappers based on position.
+             */
         public:
             class RangeIteratorWrapper
             {
@@ -100,15 +137,17 @@ namespace Katydid
             typedef typename RangeIteratorMapByRI::const_iterator RangeIteratorMapCIt;
 
 
-            //***********************
-            // value_type
-            //***********************
+            /*!
+             @typedef KTCutable::value_type
+             @brief The type of the object being referred to
+             */
         public:
             typedef XObjectType value_type;
 
-            //**************************
-            // value_type iterator class
-            //**************************
+            /*!
+             @typedef KTCutable::value_type_range_iterator
+             @brief The type of iterator referring to the objects and defining the range being used
+             */
         public:
             typedef XRangeIteratorType value_type_range_iterator;
 
@@ -125,9 +164,16 @@ namespace Katydid
             typedef typename RangeIteratorWrapperSet::iterator RangeIteratorWrapperSetIt;
 
 
-            //***********************
-            // iterator class
-            //***********************
+            /*!
+             @class KTCutable::iterator
+             @brief A bi-directional iterator over the interval that skips any cut objects
+             @details
+             This iterator will traverse the specified range of objects, skipping any that have been cut out.
+
+             This is a bi-directional iterator, but it will adopt some of the characteristics of the original
+             iterator passed to KTCutable.  For instance, if XRangeIteratorType is a reverse iterator, then
+             KTCutable::iterator will act in reverse.
+             */
 
         public:
             class iterator
@@ -135,24 +181,29 @@ namespace Katydid
                 public:
                     iterator();
                     iterator(const RangeIteratorWrapperSetIt& it);
-                    iterator(const iterator& orig); // copy constructor
+                    iterator(const iterator& orig); /// copy constructor
                     virtual ~iterator();
 
                     /// Dereferences the iterator
                     XObjectType& operator*();
+                    /// Dereferences the iterator (const)
                     const XObjectType& operator*() const;
 
-                    /// Set the pointer
+                    /// Set the pointer (copyable)
                     iterator& operator=(const iterator& rhs);
 
-                    /// Increment the pointer
+                    /// Increment the iterator (postfix)
                     iterator& operator++();
+                    /// Increment the iterator (prefix)
                     iterator  operator++(int);
+                    /// Derement the iterator (postfix)
                     iterator& operator--();
+                    /// Derement the iterator (prefix)
                     iterator  operator--(int);
 
-                    /// Test the pointer
+                    /// Test for equality
                     bool operator==(const iterator& rhs) const;
+                    /// Test for inequality
                     bool operator!=(const iterator& lhs) const;
 
                 private:
@@ -167,28 +218,31 @@ namespace Katydid
 
             // constructors and destructor
         public:
-            KTCutable();
-            KTCutable(const XRangeIteratorType& begin, const XRangeIteratorType& end);
-            KTCutable(const KTCutable< XObjectType, XRangeIteratorType >& orig);
+            KTCutable(); /// default constructor
+            KTCutable(const XRangeIteratorType& begin, const XRangeIteratorType& end); /// primary constructor
+            KTCutable(const KTCutable< XObjectType, XRangeIteratorType >& orig); /// copy constructor
             virtual ~KTCutable();
 
         public:
+            /// Copy another KTCutable's range and cuts
             KTCutable< XObjectType, XRangeIteratorType >& operator=(const KTCutable& rhs);
 
-            // add and remove cut elements
         public:
+            /// Add a cut to a single iterator position
             void Cut(const XRangeIteratorType& toCut);
+            /// Remove a cut to a single iterator position
             void UnCut(const XRangeIteratorType& toUnCut);
 
+            /// Add a cut to a range of iterator positions
             void Cut(const XRangeIteratorType& toBeginCut, const XRangeIteratorType& toEndCut);
+            /// Remove a cut to a range of iterator positions
             void UnCut(const XRangeIteratorType& toBeginUnCut, const XRangeIteratorType& toEndUnCut);
 
-            // access to member variables
         public:
-            const RangeIteratorWrapperSet& GetValid() const;
+            const RangeIteratorWrapperSet& GetValid() const; /// Get the set of valid iterators
 
-            const XRangeIteratorType& GetCutableBegin() const;
-            const XRangeIteratorType& GetCutableEnd() const;
+            const XRangeIteratorType& GetCutableBegin() const; /// Get the range iterator to the beginning of the range
+            const XRangeIteratorType& GetCutableEnd() const; /// Get the range iterator to the end of the range
 
         private:
             RangeIteratorWrapperSet fValid;
@@ -203,7 +257,9 @@ namespace Katydid
             //***********************
 
         public:
+            /// Returns an iterator to the first valid object
             iterator begin() const;
+            /// Returns an iterator after the last valid object
             iterator end() const;
 
 
