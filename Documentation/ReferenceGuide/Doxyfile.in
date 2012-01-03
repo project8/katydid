@@ -37,7 +37,7 @@ PROJECT_NUMBER = @Katydid_VERSION@
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "Project 8 Analysis Platform"
+PROJECT_BRIEF          = "Project 8 Analysis Toolkit"
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
