@@ -8,30 +8,13 @@
 #ifndef KTCUTABLE_HH_
 #define KTCUTABLE_HH_
 
-//#include <boost/unordered_map.hpp>
-//#include <boost/functional/hash.hpp>
-
-//#include <boost/bimap/bimap.hpp>
-//#include <boost/bimap/unconstrained_set_of.hpp>
-//#include <boost/bimap/unordered_set_of.hpp>
-//#include <boost/bimap/vector_of.hpp>
-
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/hashed_index.hpp>
-#include <boost/multi_index/indexed_by.hpp>
-#include <boost/multi_index/global_fun.hpp>
-#include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/identity.hpp>
-#include <boost/multi_index/mem_fun.hpp>
-#include <boost/multi_index/tag.hpp>
+#include <boost/unordered_map.hpp>
+#include <boost/functional/hash.hpp>
 
 #include <cstddef>
 #include <functional>
 #include <set>
 #include <utility>
-
-using namespace boost;
-using namespace boost::multi_index;
 
 namespace Katydid
 {
@@ -116,21 +99,9 @@ namespace Katydid
             };
 
         private:
-            //typedef boost::unordered_map< XRangeIteratorType, int, RangeIteratorHash, RangeIteratorEqualTo > RangeIteratorMap;
-            //typedef boost::bimaps::bimap< boost::bimaps::vector_of< unsigned int >,
-            //                              boost::bimaps::unconstrained_set_of< XRangeIteratorType >,
-            //                              boost::bimaps::unordered_set_of_relation< RangeIteratorHash< boost::bimaps::_relation >, RangeIteratorEqualTo > > RangeIteratorMap;
-            typedef multi_index_container< RangeIteratorWrapper,
-                                           indexed_by< ordered_unique< const_mem_fun< RangeIteratorWrapper, int, &RangeIteratorWrapper::GetPosition > >,
-                                                       hashed_unique<  tag<XRangeIteratorType>,
-                                                                       const_mem_fun< RangeIteratorWrapper, const XRangeIteratorType&, &RangeIteratorWrapper::Iterator >,
-                                                                       RangeIteratorHash,
-                                                                       RangeIteratorEqualTo >
-                                                     >
-                                         > RangeIteratorMap;
-            //typedef typename RangeIteratorMap::const_iterator RangeIteratorMapCIt;
-            typedef typename RangeIteratorMap::template index< XRangeIteratorType >::type RangeIteratorMapByRI;
-            typedef typename RangeIteratorMapByRI::const_iterator RangeIteratorMapCIt;
+            typedef boost::unordered_map< XRangeIteratorType, int, RangeIteratorHash, RangeIteratorEqualTo > RangeIteratorMap;
+            typedef typename RangeIteratorMap::const_iterator RangeIteratorMapCIt;
+            typedef typename RangeIteratorMap::value_type RangeIteratorMapType;
 
 
             /*!
@@ -328,7 +299,7 @@ namespace Katydid
         if (begin != end)
         {
             // insert the first object
-            fAll.insert(RangeIteratorWrapper(iter, index));
+            fAll.insert(RangeIteratorMapType(iter, index));
             insertionPair = fValid.insert(RangeIteratorWrapper(iter, index));
 
             // all of the other objects
@@ -337,7 +308,7 @@ namespace Katydid
             RangeIteratorWrapperSetIt setIter = insertionPair.first;
             for (; iter != end; iter++)
             {
-                fAll.insert(RangeIteratorWrapper(iter, index));
+                fAll.insert(RangeIteratorMapType(iter, index));
                 fValid.insert(setIter, RangeIteratorWrapper(iter, index));
                 index++;
             }
@@ -361,26 +332,24 @@ namespace Katydid
     template< class XObjectType, class XRangeIteratorType >
     void KTCutable< XObjectType, XRangeIteratorType >::Cut(const XRangeIteratorType& toCut)
     {
-        RangeIteratorMapCIt imIter = fAll.get<XRangeIteratorType>().find(toCut);
-        if (imIter == fAll.get<XRangeIteratorType>().end())
+        RangeIteratorMapCIt imIter = fAll.find(toCut);
+        if (imIter == fAll.end())
         {
             return;
         }
-        //fValid.erase(RangeIteratorWrapper(toCut, imIter->second));
-        fValid.erase(*imIter);
+        fValid.erase(RangeIteratorWrapper(toCut, imIter->second));
         return;
     }
 
     template< class XObjectType, class XRangeIteratorType >
     void KTCutable< XObjectType, XRangeIteratorType >::UnCut(const XRangeIteratorType& toUnCut)
     {
-        RangeIteratorMapCIt imIter = fAll.get<XRangeIteratorType>().find(toUnCut);
-        if (imIter == fAll.get<XRangeIteratorType>().end())
+        RangeIteratorMapCIt imIter = fAll.find(toUnCut);
+        if (imIter == fAll.end())
         {
             return;
         }
-        //fValid.insert(RangeIteratorWrapper(toUnCut, imIter->second));
-        fValid.insert(*imIter);
+        fValid.insert(RangeIteratorWrapper(toUnCut, imIter->second));
         return;
     }
 
@@ -389,10 +358,9 @@ namespace Katydid
     {
         for (XRangeIteratorType itIter=toBeginCut; itIter != toEndCut; itIter++)
         {
-            RangeIteratorMapCIt imIter = fAll.get<XRangeIteratorType>().find(itIter);
-            if (imIter == fAll.get<XRangeIteratorType>().end()) break;
-            //fValid.erase(RangeIteratorWrapper(itIter, imIter->second));
-            fValid.erase(*imIter);
+            RangeIteratorMapCIt imIter = fAll.find(itIter);
+            if (imIter == fAll.end()) break;
+            fValid.erase(RangeIteratorWrapper(itIter, imIter->second));
         }
         return;
     }
@@ -402,13 +370,9 @@ namespace Katydid
     {
         for (XRangeIteratorType itIter=toBeginUnCut; itIter != toEndUnCut; itIter++)
         {
-            RangeIteratorMapCIt imIter = fAll.get<XRangeIteratorType>().find(itIter);
-            if (imIter == fAll.get<XRangeIteratorType>().end())
-            {
-                return;
-            }
-            //fValid.insert(RangeIteratorWrapper(itIter, imIter->second));
-            fValid.insert(*imIter);
+            RangeIteratorMapCIt imIter = fAll.find(itIter);
+            if (imIter == fAll.end()) return;
+            fValid.insert(RangeIteratorWrapper(itIter, imIter->second));
         }
         return;
     }
