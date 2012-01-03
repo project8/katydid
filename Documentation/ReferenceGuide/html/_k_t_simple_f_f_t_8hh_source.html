@@ -29,7 +29,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Katydid
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">Project 8 Analysis Platform</div>
   </td>
@@ -97,7 +97,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00015"></a>00015 <span class="preprocessor">#include &lt;string&gt;</span>
 <a name="l00016"></a>00016 <span class="keyword">using</span> std::string;
 <a name="l00017"></a>00017 
-<a name="l00018"></a>00018 <span class="keyword">class </span>TArray;
+<a name="l00018"></a>00018 <span class="comment">//class TArray;</span>
 <a name="l00019"></a>00019 <span class="keyword">class </span>TH1D;
 <a name="l00020"></a>00020 
 <a name="l00021"></a>00021 <span class="keyword">namespace </span>Katydid
@@ -109,107 +109,108 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00027"></a>00027     {
 <a name="l00028"></a>00028         <span class="keyword">public</span>:
 <a name="l00029"></a>00029             <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8cdff1c38c774a02f294cfe5d3338c41">KTSimpleFFT</a>();
-<a name="l00030"></a>00030             <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8cdff1c38c774a02f294cfe5d3338c41">KTSimpleFFT</a>(Int_t timeSize);
+<a name="l00030"></a>00030             <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8cdff1c38c774a02f294cfe5d3338c41">KTSimpleFFT</a>(UInt_t timeSize);
 <a name="l00031"></a>00031             <span class="keyword">virtual</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a76428426a679e119a2343c3c129883f2">~KTSimpleFFT</a>();
 <a name="l00032"></a>00032 
 <a name="l00033"></a>00033             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ae41291cf9e9dc7bb8f003b22f3f0f142">InitializeFFT</a>();
 <a name="l00034"></a>00034 
 <a name="l00035"></a>00035             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a9a6bb7abc0c3e544edaca2ea44017043">TakeData</a>(<span class="keyword">const</span> <a class="code" href="class_katydid_1_1_k_t_event.html">KTEvent</a>* event);
-<a name="l00036"></a>00036             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a9a6bb7abc0c3e544edaca2ea44017043">TakeData</a>(<span class="keyword">const</span> TArray* data);
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a26cd1ca797b17da835a5d2050c6dda2f">Transform</a>();
-<a name="l00039"></a>00039 
-<a name="l00040"></a>00040             <span class="keyword">virtual</span> TH1D* <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a83fcd54cba3f451c50153cce00d40404">CreatePowerSpectrumHistogram</a>() <span class="keyword">const</span>;
-<a name="l00041"></a>00041 
-<a name="l00042"></a>00042             <span class="keyword">virtual</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ae568f8c8070a6e595f7fdd0502d0925a">CreatePowerSpectrum</a>() <span class="keyword">const</span>;
-<a name="l00043"></a>00043             <span class="keyword">virtual</span> Int_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9">GetTimeSize</a>() <span class="keyword">const</span>;
-<a name="l00044"></a>00044             <span class="keyword">virtual</span> Int_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">GetFrequencySize</a>() <span class="keyword">const</span>;
-<a name="l00045"></a>00045 
-<a name="l00048"></a>00048             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a02bc7ce1fbb1d1dbe424d966a1808586">SetTimeSize</a>(Int_t nBins);
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050             <span class="keyword">const</span> TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">GetFFT</a>() <span class="keyword">const</span>;
-<a name="l00051"></a>00051             <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">GetTransformFlag</a>() <span class="keyword">const</span>;
-<a name="l00052"></a>00052             Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">GetIsInitialized</a>() <span class="keyword">const</span>;
-<a name="l00053"></a>00053             Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">GetIsDataReady</a>() <span class="keyword">const</span>;
-<a name="l00054"></a>00054             Double_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">GetFreqBinWidth</a>() <span class="keyword">const</span>;
-<a name="l00055"></a>00055 
-<a name="l00057"></a>00057             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#adc967fd2d5942ccb6adad49df4add034" title="note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.">SetTransformFlag</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; flag);
-<a name="l00058"></a>00058             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">SetFreqBinWidth</a>(Double_t bw);
-<a name="l00059"></a>00059 
-<a name="l00060"></a>00060         <span class="keyword">protected</span>:
-<a name="l00061"></a>00061 
-<a name="l00062"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">00062</a>             TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>;
-<a name="l00063"></a>00063 
-<a name="l00064"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">00064</a>             <span class="keywordtype">string</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a>;
-<a name="l00065"></a>00065 
-<a name="l00066"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">00066</a>             Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a>;
-<a name="l00067"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">00067</a>             Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a>;
-<a name="l00068"></a>00068 
-<a name="l00069"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">00069</a>             Double_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a>;
-<a name="l00070"></a>00070 
-<a name="l00071"></a>00071             <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a37dd26b788fd68f45c5d170ce5924ecd">ClassDef</a>(<a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html">KTSimpleFFT</a>, 1);
-<a name="l00072"></a>00072     };
-<a name="l00073"></a>00073 
-<a name="l00074"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9">00074</a>     <span class="keyword">inline</span> Int_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9">KTSimpleFFT::GetTimeSize</a>()<span class="keyword"> const</span>
-<a name="l00075"></a>00075 <span class="keyword">    </span>{
-<a name="l00076"></a>00076         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>-&gt;GetSize();
-<a name="l00077"></a>00077     }
-<a name="l00078"></a>00078 
-<a name="l00079"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">00079</a>     <span class="keyword">inline</span> Int_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">KTSimpleFFT::GetFrequencySize</a>()<span class="keyword"> const</span>
-<a name="l00080"></a>00080 <span class="keyword">    </span>{
-<a name="l00081"></a>00081         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>-&gt;GetSize() / 2 + 1;
-<a name="l00082"></a>00082     }
-<a name="l00083"></a>00083 
-<a name="l00084"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a02bc7ce1fbb1d1dbe424d966a1808586">00084</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a02bc7ce1fbb1d1dbe424d966a1808586">KTSimpleFFT::SetTimeSize</a>(Int_t nBins)
-<a name="l00085"></a>00085     {
-<a name="l00086"></a>00086         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>;
-<a name="l00087"></a>00087         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a> = <span class="keyword">new</span> TFFTRealComplex(nBins, kFALSE);
-<a name="l00088"></a>00088         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a> = kFALSE;
-<a name="l00089"></a>00089         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a> = kFALSE;
-<a name="l00090"></a>00090         <span class="keywordflow">return</span>;
-<a name="l00091"></a>00091     }
-<a name="l00092"></a>00092 
-<a name="l00093"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">00093</a>     <span class="keyword">inline</span> <span class="keyword">const</span> TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">KTSimpleFFT::GetFFT</a>()<span class="keyword"> const</span>
-<a name="l00094"></a>00094 <span class="keyword">    </span>{
-<a name="l00095"></a>00095         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>;
-<a name="l00096"></a>00096     }
-<a name="l00097"></a>00097 
-<a name="l00098"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">00098</a>     <span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">KTSimpleFFT::GetTransformFlag</a>()<span class="keyword"> const</span>
-<a name="l00099"></a>00099 <span class="keyword">    </span>{
-<a name="l00100"></a>00100         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a>;
-<a name="l00101"></a>00101     }
-<a name="l00102"></a>00102 
-<a name="l00103"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">00103</a>     <span class="keyword">inline</span> Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">KTSimpleFFT::GetIsInitialized</a>()<span class="keyword"> const</span>
-<a name="l00104"></a>00104 <span class="keyword">    </span>{
-<a name="l00105"></a>00105         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a>;
-<a name="l00106"></a>00106     }
-<a name="l00107"></a>00107 
-<a name="l00108"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">00108</a>     <span class="keyword">inline</span> Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">KTSimpleFFT::GetIsDataReady</a>()<span class="keyword"> const</span>
-<a name="l00109"></a>00109 <span class="keyword">    </span>{
-<a name="l00110"></a>00110         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a>;
-<a name="l00111"></a>00111     }
-<a name="l00112"></a>00112 
-<a name="l00113"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">00113</a>     <span class="keyword">inline</span> Double_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">KTSimpleFFT::GetFreqBinWidth</a>()<span class="keyword"> const</span>
-<a name="l00114"></a>00114 <span class="keyword">    </span>{
-<a name="l00115"></a>00115         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a>;
-<a name="l00116"></a>00116     }
-<a name="l00117"></a>00117 
-<a name="l00118"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#adc967fd2d5942ccb6adad49df4add034">00118</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#adc967fd2d5942ccb6adad49df4add034" title="note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.">KTSimpleFFT::SetTransformFlag</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; flag)
-<a name="l00119"></a>00119     {
-<a name="l00120"></a>00120         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a> = flag;
-<a name="l00121"></a>00121         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a> = kFALSE;
-<a name="l00122"></a>00122         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a> = kFALSE;
-<a name="l00123"></a>00123         <span class="keywordflow">return</span>;
-<a name="l00124"></a>00124     }
-<a name="l00125"></a>00125 
-<a name="l00126"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">00126</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">KTSimpleFFT::SetFreqBinWidth</a>(Double_t bw)
-<a name="l00127"></a>00127     {
-<a name="l00128"></a>00128         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a> = bw;
-<a name="l00129"></a>00129         <span class="keywordflow">return</span>;
-<a name="l00130"></a>00130     }
-<a name="l00131"></a>00131 
-<a name="l00132"></a>00132 } <span class="comment">/* namespace Katydid */</span>
-<a name="l00133"></a>00133 <span class="preprocessor">#endif </span><span class="comment">/* KTSIMPLEFFT_HH_ */</span>
+<a name="l00036"></a>00036             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a9a6bb7abc0c3e544edaca2ea44017043">TakeData</a>(<span class="keyword">const</span> vector&lt; Double_t &gt;&amp; data);
+<a name="l00037"></a>00037             <span class="comment">//virtual void TakeData(const TArray* data);</span>
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a26cd1ca797b17da835a5d2050c6dda2f">Transform</a>();
+<a name="l00040"></a>00040 
+<a name="l00041"></a>00041             <span class="keyword">virtual</span> TH1D* <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a83fcd54cba3f451c50153cce00d40404">CreatePowerSpectrumHistogram</a>() <span class="keyword">const</span>;
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043             <span class="keyword">virtual</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#ae568f8c8070a6e595f7fdd0502d0925a">CreatePowerSpectrum</a>() <span class="keyword">const</span>;
+<a name="l00044"></a>00044             <span class="keyword">virtual</span> UInt_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afbcae862cced816e0295a830cdfae57e">GetTimeSize</a>() <span class="keyword">const</span>;
+<a name="l00045"></a>00045             <span class="keyword">virtual</span> UInt_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8f06637395e876188989247a7334708f">GetFrequencySize</a>() <span class="keyword">const</span>;
+<a name="l00046"></a>00046 
+<a name="l00049"></a>00049             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a5683e7d23b436413ea93c8462528cec3">SetTimeSize</a>(UInt_t nBins);
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051             <span class="keyword">const</span> TFFTRealComplex&amp; <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afc6ba2d90ecae0e1c560519d96e38f3a">GetFFT</a>() <span class="keyword">const</span>;
+<a name="l00052"></a>00052             <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">GetTransformFlag</a>() <span class="keyword">const</span>;
+<a name="l00053"></a>00053             Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">GetIsInitialized</a>() <span class="keyword">const</span>;
+<a name="l00054"></a>00054             Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">GetIsDataReady</a>() <span class="keyword">const</span>;
+<a name="l00055"></a>00055             Double_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">GetFreqBinWidth</a>() <span class="keyword">const</span>;
+<a name="l00056"></a>00056 
+<a name="l00058"></a>00058             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#adc967fd2d5942ccb6adad49df4add034" title="note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.">SetTransformFlag</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; flag);
+<a name="l00059"></a>00059             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">SetFreqBinWidth</a>(Double_t bw);
+<a name="l00060"></a>00060 
+<a name="l00061"></a>00061         <span class="keyword">protected</span>:
+<a name="l00062"></a>00062 
+<a name="l00063"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a3ef4793406bddcda4a2a6f82081f49c8">00063</a>             TFFTRealComplex <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a3ef4793406bddcda4a2a6f82081f49c8">fTransform</a>;
+<a name="l00064"></a>00064 
+<a name="l00065"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">00065</a>             <span class="keywordtype">string</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a>;
+<a name="l00066"></a>00066 
+<a name="l00067"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">00067</a>             Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a>;
+<a name="l00068"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">00068</a>             Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a>;
+<a name="l00069"></a>00069 
+<a name="l00070"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">00070</a>             Double_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a>;
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072             <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a3666b67cef81e453409f7f89c5c2b540">ClassDef</a>(<a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html">KTSimpleFFT</a>, 2);
+<a name="l00073"></a>00073     };
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075 
+<a name="l00076"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afbcae862cced816e0295a830cdfae57e">00076</a>     <span class="keyword">inline</span> UInt_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afbcae862cced816e0295a830cdfae57e">KTSimpleFFT::GetTimeSize</a>()<span class="keyword"> const</span>
+<a name="l00077"></a>00077 <span class="keyword">    </span>{
+<a name="l00078"></a>00078         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a3ef4793406bddcda4a2a6f82081f49c8">fTransform</a>.GetSize();
+<a name="l00079"></a>00079     }
+<a name="l00080"></a>00080 
+<a name="l00081"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8f06637395e876188989247a7334708f">00081</a>     <span class="keyword">inline</span> UInt_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8f06637395e876188989247a7334708f">KTSimpleFFT::GetFrequencySize</a>()<span class="keyword"> const</span>
+<a name="l00082"></a>00082 <span class="keyword">    </span>{
+<a name="l00083"></a>00083         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a3ef4793406bddcda4a2a6f82081f49c8">fTransform</a>.GetSize() / 2 + 1;
+<a name="l00084"></a>00084     }
+<a name="l00085"></a>00085 
+<a name="l00086"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a5683e7d23b436413ea93c8462528cec3">00086</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a5683e7d23b436413ea93c8462528cec3">KTSimpleFFT::SetTimeSize</a>(UInt_t nBins)
+<a name="l00087"></a>00087     {
+<a name="l00088"></a>00088         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a3ef4793406bddcda4a2a6f82081f49c8">fTransform</a> = TFFTRealComplex((Int_t)nBins, kFALSE);
+<a name="l00089"></a>00089         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a> = kFALSE;
+<a name="l00090"></a>00090         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a> = kFALSE;
+<a name="l00091"></a>00091         <span class="keywordflow">return</span>;
+<a name="l00092"></a>00092     }
+<a name="l00093"></a>00093 
+<a name="l00094"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afc6ba2d90ecae0e1c560519d96e38f3a">00094</a>     <span class="keyword">inline</span> <span class="keyword">const</span> TFFTRealComplex&amp; <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afc6ba2d90ecae0e1c560519d96e38f3a">KTSimpleFFT::GetFFT</a>()<span class="keyword"> const</span>
+<a name="l00095"></a>00095 <span class="keyword">    </span>{
+<a name="l00096"></a>00096         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a3ef4793406bddcda4a2a6f82081f49c8">fTransform</a>;
+<a name="l00097"></a>00097     }
+<a name="l00098"></a>00098 
+<a name="l00099"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">00099</a>     <span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">KTSimpleFFT::GetTransformFlag</a>()<span class="keyword"> const</span>
+<a name="l00100"></a>00100 <span class="keyword">    </span>{
+<a name="l00101"></a>00101         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a>;
+<a name="l00102"></a>00102     }
+<a name="l00103"></a>00103 
+<a name="l00104"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">00104</a>     <span class="keyword">inline</span> Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">KTSimpleFFT::GetIsInitialized</a>()<span class="keyword"> const</span>
+<a name="l00105"></a>00105 <span class="keyword">    </span>{
+<a name="l00106"></a>00106         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a>;
+<a name="l00107"></a>00107     }
+<a name="l00108"></a>00108 
+<a name="l00109"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">00109</a>     <span class="keyword">inline</span> Bool_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">KTSimpleFFT::GetIsDataReady</a>()<span class="keyword"> const</span>
+<a name="l00110"></a>00110 <span class="keyword">    </span>{
+<a name="l00111"></a>00111         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a>;
+<a name="l00112"></a>00112     }
+<a name="l00113"></a>00113 
+<a name="l00114"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">00114</a>     <span class="keyword">inline</span> Double_t <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">KTSimpleFFT::GetFreqBinWidth</a>()<span class="keyword"> const</span>
+<a name="l00115"></a>00115 <span class="keyword">    </span>{
+<a name="l00116"></a>00116         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a>;
+<a name="l00117"></a>00117     }
+<a name="l00118"></a>00118 
+<a name="l00119"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#adc967fd2d5942ccb6adad49df4add034">00119</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#adc967fd2d5942ccb6adad49df4add034" title="note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.">KTSimpleFFT::SetTransformFlag</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; flag)
+<a name="l00120"></a>00120     {
+<a name="l00121"></a>00121         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a> = flag;
+<a name="l00122"></a>00122         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a> = kFALSE;
+<a name="l00123"></a>00123         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a> = kFALSE;
+<a name="l00124"></a>00124         <span class="keywordflow">return</span>;
+<a name="l00125"></a>00125     }
+<a name="l00126"></a>00126 
+<a name="l00127"></a><a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">00127</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">KTSimpleFFT::SetFreqBinWidth</a>(Double_t bw)
+<a name="l00128"></a>00128     {
+<a name="l00129"></a>00129         <a class="code" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a> = bw;
+<a name="l00130"></a>00130         <span class="keywordflow">return</span>;
+<a name="l00131"></a>00131     }
+<a name="l00132"></a>00132 
+<a name="l00133"></a>00133 } <span class="comment">/* namespace Katydid */</span>
+<a name="l00134"></a>00134 <span class="preprocessor">#endif </span><span class="comment">/* KTSIMPLEFFT_HH_ */</span>
 </pre></div></div>
 </div>
 <!-- window showing the filter options -->
@@ -229,7 +230,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 15 2011 15:31:39 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 3 2012 13:15:54 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

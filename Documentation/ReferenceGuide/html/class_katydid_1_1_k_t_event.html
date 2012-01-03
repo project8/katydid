@@ -29,7 +29,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Katydid
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">Project 8 Analysis Platform</div>
   </td>
@@ -102,21 +102,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#aa3bfc378f4afdde89eeb1a1ec8baa044">KTEvent</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a22ee0e88ec4c2d05e15de1cb58616fea">~KTEvent</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a72bc0158672132d4430bc89dede30bea">GetADCAtTime</a> (Double_t time) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a9ad9503ccd635d75c8e0068657b9fb81">GetADCAtBin</a> (Int_t bin) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual TH1I *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#af6a05134b98cdc49625fa56170a86ab5">CreateAmplitudeDistributionHistogram</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a715a6ace1cb0ce5f127ae79ddb152b92">GetBinWidth</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a9c32ac53ffdc454eb4c5d4d22140fa18">GetFrameID</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a3ab8133e3653b48fd946cbcc847fbe7a">GetRecord</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const vector&lt; UInt_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a194380c4ff642e3bad327696d2f6f018">GetFrameID</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const vector&lt; UInt_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a8734395bfbc3b69c606af294ee94db96">GetRecord</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#aa18edbf7bad1114c3706c91af484a02f">GetRecordLength</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a5a582b49d492e5c3b52de2bb5e33026d">GetSampleRate</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a298eccc0db48376ec822073ce8ac4791">GetTimeStamp</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const vector&lt; UInt_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#adc0f4eae7dba06a64549961774420645">GetTimeStamp</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a9d7f0eacfa07d4bc6c869d7135f72fca">GetRecordSize</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a2ab6758fa13c9c43433cc69622623e5a">GetRecordAt</a> (unsigned int iBin) const </td></tr>
+<tr><td class="memTemplParams" colspan="2">template&lt;typename XType &gt; </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">XType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a7a56587369b5ceba5522bfa401a9af4e">GetRecordAt</a> (unsigned int iBin) const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a59495c1be052fb928bd657a5626011dd">GetRecordAtTime</a> (Double_t time) const </td></tr>
+<tr><td class="memTemplParams" colspan="2">template&lt;typename XType &gt; </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">XType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#abaa4dd1495b0b6c5fcf0c5993bbd7c17">GetRecordAtTime</a> (Double_t time) const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">time is in seconds and &gt;= 0  <a href="#abaa4dd1495b0b6c5fcf0c5993bbd7c17"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#aac586f9448c446ff9f81009f3cc458bc">SetBinWidth</a> (Double_t binWidth)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#ade1b5c7825c27d11d429c4b903402caa">SetFrameID</a> (<a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *frameID)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#aebc12c1a3494e18e459f06ca38936cd6">SetRecord</a> (<a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *record)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">time is in seconds and &gt;= 0  <a href="#aac586f9448c446ff9f81009f3cc458bc"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a8be5261a002a4ba9392f0ad7f91ad9d2">SetFrameID</a> (const vector&lt; UInt_t &gt; &amp;frameID)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a4c0fd81fed9336d7b7c65486dfc89d2b">SetRecord</a> (const vector&lt; UInt_t &gt; &amp;record)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a1d96d622fffa38dcd5a796f78f919e26">SetRecordLength</a> (Double_t recordLength)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a08d3a8287310cf9b5056dc2ebc64be40">SetSampleRate</a> (Double_t sampleRate)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a4769eb451c6434b48ddf63ea1d09a31d">SetTimeStamp</a> (<a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *timeStamp)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a55b1c16d97911aa3647bdb7e2b0ebd63">SetTimeStamp</a> (const vector&lt; UInt_t &gt; &amp;timeStamp)</td></tr>
 <tr><td colspan="2"><h2><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a6faaa1c7bcbc7495408ec0eaf2899c82">ClassDef</a> (<a class="el" href="class_katydid_1_1_k_t_event.html">KTEvent</a>, 1)</td></tr>
@@ -125,13 +132,13 @@ Private Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a92ea0f9ec1c7852d854aa973d2ff4109">fSampleRate</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a04f901f77310b3e3a9b88a581a4b91ef">fRecordLength</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#af799c38702c8c6b74c39b1d180ad989d">fTimeStamp</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a8f95830ff695b32958e13a6f404407d9">fFrameID</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a5421e271f79a54587ec2001a1c82fc0c">fRecord</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">vector&lt; UInt_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#afb991b2885321011e32f08c1ce758ed0">fTimeStamp</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">vector&lt; UInt_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#a2bc5de08cb0648dc361cdbcf214db7f6">fFrameID</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">vector&lt; UInt_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event.html#ad548a8a073ed2434757a3232e5113e4e">fRecord</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00023">23</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00032">32</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="aa3bfc378f4afdde89eeb1a1ec8baa044"></a><!-- doxytag: member="Katydid::KTEvent::KTEvent" ref="aa3bfc378f4afdde89eeb1a1ec8baa044" args="()" -->
 <div class="memitem">
@@ -147,7 +154,7 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00020">20</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00019">19</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
@@ -165,7 +172,7 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00030">30</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00029">29</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
@@ -211,45 +218,7 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00047">47</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a9ad9503ccd635d75c8e0068657b9fb81"></a><!-- doxytag: member="Katydid::KTEvent::GetADCAtBin" ref="a9ad9503ccd635d75c8e0068657b9fb81" args="(Int_t bin) const " -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">UInt_t GetADCAtBin </td>
-          <td>(</td>
-          <td class="paramtype">Int_t&#160;</td>
-          <td class="paramname"><em>bin</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00042">42</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a72bc0158672132d4430bc89dede30bea"></a><!-- doxytag: member="Katydid::KTEvent::GetADCAtTime" ref="a72bc0158672132d4430bc89dede30bea" args="(Double_t time) const " -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">UInt_t GetADCAtTime </td>
-          <td>(</td>
-          <td class="paramtype">Double_t&#160;</td>
-          <td class="paramname"><em>time</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00037">37</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00043">43</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
@@ -267,16 +236,16 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00083">83</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00079">79</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a9c32ac53ffdc454eb4c5d4d22140fa18"></a><!-- doxytag: member="Katydid::KTEvent::GetFrameID" ref="a9c32ac53ffdc454eb4c5d4d22140fa18" args="() const " -->
+<a class="anchor" id="a194380c4ff642e3bad327696d2f6f018"></a><!-- doxytag: member="Katydid::KTEvent::GetFrameID" ref="a194380c4ff642e3bad327696d2f6f018" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> * GetFrameID </td>
+          <td class="memname">const vector&lt; UInt_t &gt; &amp; GetFrameID </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -285,16 +254,16 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00058">58</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00054">54</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a3ab8133e3653b48fd946cbcc847fbe7a"></a><!-- doxytag: member="Katydid::KTEvent::GetRecord" ref="a3ab8133e3653b48fd946cbcc847fbe7a" args="() const " -->
+<a class="anchor" id="a8734395bfbc3b69c606af294ee94db96"></a><!-- doxytag: member="Katydid::KTEvent::GetRecord" ref="a8734395bfbc3b69c606af294ee94db96" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> * GetRecord </td>
+          <td class="memname">const vector&lt; UInt_t &gt; &amp; GetRecord </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -303,7 +272,81 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00063">63</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00059">59</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2ab6758fa13c9c43433cc69622623e5a"></a><!-- doxytag: member="Katydid::KTEvent::GetRecordAt" ref="a2ab6758fa13c9c43433cc69622623e5a" args="(unsigned int iBin) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">XType GetRecordAt </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>iBin</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00089">89</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7a56587369b5ceba5522bfa401a9af4e"></a><!-- doxytag: member="Katydid::KTEvent::GetRecordAt" ref="a7a56587369b5ceba5522bfa401a9af4e" args="(unsigned int iBin) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">XType GetRecordAt </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>iBin</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a59495c1be052fb928bd657a5626011dd"></a><!-- doxytag: member="Katydid::KTEvent::GetRecordAtTime" ref="a59495c1be052fb928bd657a5626011dd" args="(Double_t time) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">XType GetRecordAtTime </td>
+          <td>(</td>
+          <td class="paramtype">Double_t&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00094">94</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abaa4dd1495b0b6c5fcf0c5993bbd7c17"></a><!-- doxytag: member="Katydid::KTEvent::GetRecordAtTime" ref="abaa4dd1495b0b6c5fcf0c5993bbd7c17" args="(Double_t time) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">XType GetRecordAtTime </td>
+          <td>(</td>
+          <td class="paramtype">Double_t&#160;</td>
+          <td class="paramname"><em>time</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>time is in seconds and &gt;= 0 </p>
 
 </div>
 </div>
@@ -321,7 +364,25 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00068">68</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00064">64</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9d7f0eacfa07d4bc6c869d7135f72fca"></a><!-- doxytag: member="Katydid::KTEvent::GetRecordSize" ref="a9d7f0eacfa07d4bc6c869d7135f72fca" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int GetRecordSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00084">84</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
@@ -339,16 +400,16 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00073">73</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00069">69</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a298eccc0db48376ec822073ce8ac4791"></a><!-- doxytag: member="Katydid::KTEvent::GetTimeStamp" ref="a298eccc0db48376ec822073ce8ac4791" args="() const " -->
+<a class="anchor" id="adc0f4eae7dba06a64549961774420645"></a><!-- doxytag: member="Katydid::KTEvent::GetTimeStamp" ref="adc0f4eae7dba06a64549961774420645" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> * GetTimeStamp </td>
+          <td class="memname">const vector&lt; UInt_t &gt; &amp; GetTimeStamp </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -357,7 +418,7 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00078">78</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00074">74</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
@@ -376,18 +437,20 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00110">110</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>time is in seconds and &gt;= 0 </p>
+
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00119">119</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ade1b5c7825c27d11d429c4b903402caa"></a><!-- doxytag: member="Katydid::KTEvent::SetFrameID" ref="ade1b5c7825c27d11d429c4b903402caa" args="(KTArrayUC *frameID)" -->
+<a class="anchor" id="a8be5261a002a4ba9392f0ad7f91ad9d2"></a><!-- doxytag: member="Katydid::KTEvent::SetFrameID" ref="a8be5261a002a4ba9392f0ad7f91ad9d2" args="(const vector&lt; UInt_t &gt; &amp;frameID)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void SetFrameID </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td>
+          <td class="paramtype">const vector&lt; UInt_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>frameID</em></td><td>)</td>
           <td></td>
         </tr>
@@ -395,18 +458,18 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00088">88</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00099">99</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aebc12c1a3494e18e459f06ca38936cd6"></a><!-- doxytag: member="Katydid::KTEvent::SetRecord" ref="aebc12c1a3494e18e459f06ca38936cd6" args="(KTArrayUC *record)" -->
+<a class="anchor" id="a4c0fd81fed9336d7b7c65486dfc89d2b"></a><!-- doxytag: member="Katydid::KTEvent::SetRecord" ref="a4c0fd81fed9336d7b7c65486dfc89d2b" args="(const vector&lt; UInt_t &gt; &amp;record)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void SetRecord </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td>
+          <td class="paramtype">const vector&lt; UInt_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>record</em></td><td>)</td>
           <td></td>
         </tr>
@@ -414,7 +477,7 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00094">94</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00104">104</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
@@ -433,7 +496,7 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00100">100</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00109">109</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
@@ -452,18 +515,18 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00105">105</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00114">114</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a4769eb451c6434b48ddf63ea1d09a31d"></a><!-- doxytag: member="Katydid::KTEvent::SetTimeStamp" ref="a4769eb451c6434b48ddf63ea1d09a31d" args="(KTArrayUC *timeStamp)" -->
+<a class="anchor" id="a55b1c16d97911aa3647bdb7e2b0ebd63"></a><!-- doxytag: member="Katydid::KTEvent::SetTimeStamp" ref="a55b1c16d97911aa3647bdb7e2b0ebd63" args="(const vector&lt; UInt_t &gt; &amp;timeStamp)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void SetTimeStamp </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a> *&#160;</td>
+          <td class="paramtype">const vector&lt; UInt_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>timeStamp</em></td><td>)</td>
           <td></td>
         </tr>
@@ -471,7 +534,7 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00115">115</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8cc_source.html#l00124">124</a> of file <a class="el" href="_k_t_event_8cc_source.html">KTEvent.cc</a>.</p>
 
 </div>
 </div>
@@ -487,37 +550,37 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00052">52</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00065">65</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a8f95830ff695b32958e13a6f404407d9"></a><!-- doxytag: member="Katydid::KTEvent::fFrameID" ref="a8f95830ff695b32958e13a6f404407d9" args="" -->
+<a class="anchor" id="a2bc5de08cb0648dc361cdbcf214db7f6"></a><!-- doxytag: member="Katydid::KTEvent::fFrameID" ref="a2bc5de08cb0648dc361cdbcf214db7f6" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a>* <a class="el" href="class_katydid_1_1_k_t_event.html#a8f95830ff695b32958e13a6f404407d9">fFrameID</a><code> [private]</code></td>
+          <td class="memname">vector&lt; UInt_t &gt; <a class="el" href="class_katydid_1_1_k_t_event.html#a2bc5de08cb0648dc361cdbcf214db7f6">fFrameID</a><code> [private]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00054">54</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00067">67</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a5421e271f79a54587ec2001a1c82fc0c"></a><!-- doxytag: member="Katydid::KTEvent::fRecord" ref="a5421e271f79a54587ec2001a1c82fc0c" args="" -->
+<a class="anchor" id="ad548a8a073ed2434757a3232e5113e4e"></a><!-- doxytag: member="Katydid::KTEvent::fRecord" ref="ad548a8a073ed2434757a3232e5113e4e" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a>* <a class="el" href="class_katydid_1_1_k_t_event.html#a5421e271f79a54587ec2001a1c82fc0c">fRecord</a><code> [private]</code></td>
+          <td class="memname">vector&lt; UInt_t &gt; <a class="el" href="class_katydid_1_1_k_t_event.html#ad548a8a073ed2434757a3232e5113e4e">fRecord</a><code> [private]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00055">55</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00068">68</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
 
 </div>
 </div>
@@ -532,7 +595,7 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00051">51</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00064">64</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
 
 </div>
 </div>
@@ -547,22 +610,22 @@ Private Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00050">50</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00063">63</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="af799c38702c8c6b74c39b1d180ad989d"></a><!-- doxytag: member="Katydid::KTEvent::fTimeStamp" ref="af799c38702c8c6b74c39b1d180ad989d" args="" -->
+<a class="anchor" id="afb991b2885321011e32f08c1ce758ed0"></a><!-- doxytag: member="Katydid::KTEvent::fTimeStamp" ref="afb991b2885321011e32f08c1ce758ed0" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_k_t_array_u_c.html">KTArrayUC</a>* <a class="el" href="class_katydid_1_1_k_t_event.html#af799c38702c8c6b74c39b1d180ad989d">fTimeStamp</a><code> [private]</code></td>
+          <td class="memname">vector&lt; UInt_t &gt; <a class="el" href="class_katydid_1_1_k_t_event.html#afb991b2885321011e32f08c1ce758ed0">fTimeStamp</a><code> [private]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00053">53</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_8hh_source.html#l00066">66</a> of file <a class="el" href="_k_t_event_8hh_source.html">KTEvent.hh</a>.</p>
 
 </div>
 </div>
@@ -588,7 +651,7 @@ Private Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 15 2011 15:31:39 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 3 2012 13:15:54 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

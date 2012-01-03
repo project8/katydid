@@ -29,7 +29,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Katydid
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">Project 8 Analysis Platform</div>
   </td>
@@ -92,9 +92,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00010"></a>00010 <span class="preprocessor"></span>
 <a name="l00011"></a>00011 <span class="preprocessor">#include &quot;<a class="code" href="_k_t_f_f_t_8hh.html">KTFFT.hh</a>&quot;</span>
 <a name="l00012"></a>00012 
-<a name="l00013"></a>00013 <span class="preprocessor">#include &quot;TFFTRealComplex.h&quot;</span>
+<a name="l00013"></a>00013 <span class="preprocessor">#include &quot;<a class="code" href="_k_t_power_spectrum_8hh.html">KTPowerSpectrum.hh</a>&quot;</span>
 <a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="preprocessor">#include &quot;TArrayD.h&quot;</span>
+<a name="l00015"></a>00015 <span class="preprocessor">#include &quot;TFFTRealComplex.h&quot;</span>
 <a name="l00016"></a>00016 
 <a name="l00017"></a>00017 <span class="preprocessor">#include &lt;string&gt;</span>
 <a name="l00018"></a>00018 <span class="keyword">using</span> std::string;
@@ -105,7 +105,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00023"></a>00023 
 <a name="l00024"></a>00024 <span class="keyword">namespace </span>Katydid
 <a name="l00025"></a>00025 {
-<a name="l00026"></a>00026     <span class="keyword">class </span>KTPowerSpectrum;
+<a name="l00026"></a>00026     <span class="comment">//class KTPowerSpectrum;</span>
 <a name="l00027"></a>00027     <span class="keyword">class </span>KTEvent;
 <a name="l00028"></a>00028     <span class="keyword">class </span>KTWindowFunction;
 <a name="l00029"></a>00029 
@@ -118,139 +118,140 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00036"></a>00036             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ae41291cf9e9dc7bb8f003b22f3f0f142">InitializeFFT</a>();
 <a name="l00037"></a>00037 
 <a name="l00038"></a>00038             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a9a6bb7abc0c3e544edaca2ea44017043">TakeData</a>(<span class="keyword">const</span> <a class="code" href="class_katydid_1_1_k_t_event.html">KTEvent</a>* event);
-<a name="l00039"></a>00039             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a9a6bb7abc0c3e544edaca2ea44017043">TakeData</a>(<span class="keyword">const</span> TArray* data);
-<a name="l00040"></a>00040 
-<a name="l00041"></a>00041             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a26cd1ca797b17da835a5d2050c6dda2f">Transform</a>();
-<a name="l00042"></a>00042 
-<a name="l00043"></a>00043             <span class="keyword">virtual</span> TH2D* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8c80b661b8af6db2bea57a50bfcfd8e9">CreatePowerSpectrumHistogram</a>() <span class="keyword">const</span>;
-<a name="l00044"></a>00044 
-<a name="l00046"></a>00046             <span class="keyword">virtual</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9" title="for this FFT, the &quot;TimeSize&quot; is the window size. The &quot;FullTimeSize&quot; is different.">GetTimeSize</a>() <span class="keyword">const</span>;
-<a name="l00047"></a>00047             <span class="keyword">virtual</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">GetFrequencySize</a>() <span class="keyword">const</span>;
-<a name="l00048"></a>00048 
-<a name="l00049"></a>00049             Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af0b7e30c421df439cdcdb1436727208b">GetWindowSize</a>() <span class="keyword">const</span>;
-<a name="l00050"></a>00050             Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b0500ec5dbb52ef654d6da1658d2381">GetFullTimeSize</a>() <span class="keyword">const</span>;
-<a name="l00051"></a>00051             Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adf78bb42c2a9a5af13a39bd7f8ab9012">GetOverlap</a>() <span class="keyword">const</span>;
-<a name="l00052"></a>00052             <a class="code" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a06a4bcfedf33900c53ab8911a019e2ac">GetWindowFunction</a>() <span class="keyword">const</span>;
-<a name="l00053"></a>00053             <span class="keyword">const</span> TArrayD* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a94fcdac3cf8466363c38760fa8660de5">GetTimeData</a>() <span class="keyword">const</span>;
-<a name="l00054"></a>00054             <span class="keyword">const</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a5a6289d80100763c40302d366bc398d0">GetPowerSpectrum</a>(Int_t spect) <span class="keyword">const</span>;
-<a name="l00055"></a>00055 
-<a name="l00056"></a>00056             <span class="keyword">const</span> TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">GetFFT</a>() <span class="keyword">const</span>;
-<a name="l00057"></a>00057             <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">GetTransformFlag</a>() <span class="keyword">const</span>;
-<a name="l00058"></a>00058             Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">GetIsInitialized</a>() <span class="keyword">const</span>;
-<a name="l00059"></a>00059             Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">GetIsDataReady</a>() <span class="keyword">const</span>;
-<a name="l00060"></a>00060             Double_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">GetFreqBinWidth</a>() <span class="keyword">const</span>;
-<a name="l00061"></a>00061 
-<a name="l00063"></a>00063             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adc967fd2d5942ccb6adad49df4add034" title="note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.">SetTransformFlag</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; flag);
-<a name="l00064"></a>00064             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">SetFreqBinWidth</a>(Double_t bw);
-<a name="l00065"></a>00065             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afc5fceb8e9d060fbf5934a611c3ce1d7">SetWindowSize</a>(Int_t nBins);
-<a name="l00066"></a>00066             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af3419c16836c230be8db04b3fad6be05">SetWindowLength</a>(Double_t wlTime);
-<a name="l00067"></a>00067             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4605f02594a332ad95152d3e568b5bf4">SetOverlap</a>(Int_t nBins);
-<a name="l00068"></a>00068             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4605f02594a332ad95152d3e568b5bf4">SetOverlap</a>(Double_t overlapTime);
-<a name="l00069"></a>00069             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#aba3c0e4dc10ea42619a2348f007a8cf7">SetWindowFunction</a>(<a class="code" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a>* wf);
-<a name="l00070"></a>00070 
-<a name="l00071"></a>00071         <span class="keyword">protected</span>:
-<a name="l00072"></a>00072             <span class="keyword">virtual</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ae568f8c8070a6e595f7fdd0502d0925a">CreatePowerSpectrum</a>() <span class="keyword">const</span>;
-<a name="l00073"></a>00073 
-<a name="l00074"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">00074</a>             TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>;
-<a name="l00075"></a>00075 
-<a name="l00076"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">00076</a>             <span class="keywordtype">string</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a>;
-<a name="l00077"></a>00077 
-<a name="l00078"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">00078</a>             Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a>;
-<a name="l00079"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">00079</a>             Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a>;
-<a name="l00080"></a>00080 
-<a name="l00081"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">00081</a>             Double_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a>;
-<a name="l00082"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6c8bf24852d2aed96f11a23beabac000">00082</a>             Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6c8bf24852d2aed96f11a23beabac000">fOverlap</a>;
-<a name="l00083"></a>00083 
-<a name="l00084"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#abcf02d1800b62f3d7b36822f746e7f04">00084</a>             <a class="code" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#abcf02d1800b62f3d7b36822f746e7f04">fWindowFunction</a>;
-<a name="l00085"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a17fc38f9d0469db9f5b4333a3be2a4b6">00085</a>             TArrayD* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a17fc38f9d0469db9f5b4333a3be2a4b6">fTimeData</a>;
-<a name="l00086"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">00086</a>             vector&lt; KTPowerSpectrum* &gt; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">fPowerSpectra</a>;
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088             <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a573f8296e855fa20452ed04c8369e8d5">ClassDef</a>(<a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html">KTSlidingWindowFFT</a>, 1);
-<a name="l00089"></a>00089     };
-<a name="l00090"></a>00090 
-<a name="l00091"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9">00091</a>     <span class="keyword">inline</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9" title="for this FFT, the &quot;TimeSize&quot; is the window size. The &quot;FullTimeSize&quot; is different.">KTSlidingWindowFFT::GetTimeSize</a>()<span class="keyword"> const</span>
-<a name="l00092"></a>00092 <span class="keyword">    </span>{
-<a name="l00093"></a>00093         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>-&gt;GetSize();
-<a name="l00094"></a>00094     }
-<a name="l00095"></a>00095 
-<a name="l00096"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">00096</a>     <span class="keyword">inline</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">KTSlidingWindowFFT::GetFrequencySize</a>()<span class="keyword"> const</span>
-<a name="l00097"></a>00097 <span class="keyword">    </span>{
-<a name="l00098"></a>00098         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>-&gt;GetSize() / 2 + 1;
-<a name="l00099"></a>00099     }
-<a name="l00100"></a>00100 
-<a name="l00101"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">00101</a>     <span class="keyword">inline</span> <span class="keyword">const</span> TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">KTSlidingWindowFFT::GetFFT</a>()<span class="keyword"> const</span>
-<a name="l00102"></a>00102 <span class="keyword">    </span>{
-<a name="l00103"></a>00103         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>;
-<a name="l00104"></a>00104     }
-<a name="l00105"></a>00105 
-<a name="l00106"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">00106</a>     <span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">KTSlidingWindowFFT::GetTransformFlag</a>()<span class="keyword"> const</span>
-<a name="l00107"></a>00107 <span class="keyword">    </span>{
-<a name="l00108"></a>00108         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a>;
-<a name="l00109"></a>00109     }
-<a name="l00110"></a>00110 
-<a name="l00111"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">00111</a>     <span class="keyword">inline</span> Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">KTSlidingWindowFFT::GetIsInitialized</a>()<span class="keyword"> const</span>
-<a name="l00112"></a>00112 <span class="keyword">    </span>{
-<a name="l00113"></a>00113         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a>;
-<a name="l00114"></a>00114     }
-<a name="l00115"></a>00115 
-<a name="l00116"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">00116</a>     <span class="keyword">inline</span> Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">KTSlidingWindowFFT::GetIsDataReady</a>()<span class="keyword"> const</span>
-<a name="l00117"></a>00117 <span class="keyword">    </span>{
-<a name="l00118"></a>00118         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a>;
-<a name="l00119"></a>00119     }
-<a name="l00120"></a>00120 
-<a name="l00121"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">00121</a>     <span class="keyword">inline</span> Double_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">KTSlidingWindowFFT::GetFreqBinWidth</a>()<span class="keyword"> const</span>
-<a name="l00122"></a>00122 <span class="keyword">    </span>{
-<a name="l00123"></a>00123         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a>;
-<a name="l00124"></a>00124     }
-<a name="l00125"></a>00125 
-<a name="l00126"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b0500ec5dbb52ef654d6da1658d2381">00126</a>     <span class="keyword">inline</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b0500ec5dbb52ef654d6da1658d2381">KTSlidingWindowFFT::GetFullTimeSize</a>()<span class="keyword"> const</span>
-<a name="l00127"></a>00127 <span class="keyword">    </span>{
-<a name="l00128"></a>00128         <span class="keywordflow">if</span> (<a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a17fc38f9d0469db9f5b4333a3be2a4b6">fTimeData</a> != NULL) <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a17fc38f9d0469db9f5b4333a3be2a4b6">fTimeData</a>-&gt;GetSize();
-<a name="l00129"></a>00129         <span class="keywordflow">return</span> 0;
-<a name="l00130"></a>00130     }
-<a name="l00131"></a>00131 
-<a name="l00132"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adf78bb42c2a9a5af13a39bd7f8ab9012">00132</a>     <span class="keyword">inline</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adf78bb42c2a9a5af13a39bd7f8ab9012">KTSlidingWindowFFT::GetOverlap</a>()<span class="keyword"> const</span>
-<a name="l00133"></a>00133 <span class="keyword">    </span>{
-<a name="l00134"></a>00134         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6c8bf24852d2aed96f11a23beabac000">fOverlap</a>;
-<a name="l00135"></a>00135     }
-<a name="l00136"></a>00136 
-<a name="l00137"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a94fcdac3cf8466363c38760fa8660de5">00137</a>     <span class="keyword">inline</span> <span class="keyword">const</span> TArrayD* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a94fcdac3cf8466363c38760fa8660de5">KTSlidingWindowFFT::GetTimeData</a>()<span class="keyword"> const</span>
-<a name="l00138"></a>00138 <span class="keyword">    </span>{
-<a name="l00139"></a>00139         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a17fc38f9d0469db9f5b4333a3be2a4b6">fTimeData</a>;
-<a name="l00140"></a>00140     }
-<a name="l00141"></a>00141 
-<a name="l00142"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a5a6289d80100763c40302d366bc398d0">00142</a>     <span class="keyword">inline</span> <span class="keyword">const</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a5a6289d80100763c40302d366bc398d0">KTSlidingWindowFFT::GetPowerSpectrum</a>(Int_t spec)<span class="keyword"> const</span>
-<a name="l00143"></a>00143 <span class="keyword">    </span>{
-<a name="l00144"></a>00144         <span class="keywordflow">if</span> (spec &gt;= 0 &amp;&amp; spec &lt; (Int_t)<a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">fPowerSpectra</a>.size()) <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">fPowerSpectra</a>[spec];
-<a name="l00145"></a>00145         <span class="keywordflow">return</span> NULL;
-<a name="l00146"></a>00146     }
-<a name="l00147"></a>00147 
-<a name="l00148"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a06a4bcfedf33900c53ab8911a019e2ac">00148</a>     <span class="keyword">inline</span> <a class="code" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a06a4bcfedf33900c53ab8911a019e2ac">KTSlidingWindowFFT::GetWindowFunction</a>()<span class="keyword"> const</span>
-<a name="l00149"></a>00149 <span class="keyword">    </span>{
-<a name="l00150"></a>00150         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#abcf02d1800b62f3d7b36822f746e7f04">fWindowFunction</a>;
-<a name="l00151"></a>00151     }
-<a name="l00152"></a>00152 
-<a name="l00153"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adc967fd2d5942ccb6adad49df4add034">00153</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adc967fd2d5942ccb6adad49df4add034" title="note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.">KTSlidingWindowFFT::SetTransformFlag</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; flag)
-<a name="l00154"></a>00154     {
-<a name="l00155"></a>00155         <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a> = flag;
-<a name="l00156"></a>00156         <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a> = kFALSE;
-<a name="l00157"></a>00157         <span class="keywordflow">return</span>;
-<a name="l00158"></a>00158     }
-<a name="l00159"></a>00159 
-<a name="l00160"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4605f02594a332ad95152d3e568b5bf4">00160</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4605f02594a332ad95152d3e568b5bf4">KTSlidingWindowFFT::SetOverlap</a>(Int_t nBins)
-<a name="l00161"></a>00161     {
-<a name="l00162"></a>00162         <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6c8bf24852d2aed96f11a23beabac000">fOverlap</a> = nBins;
-<a name="l00163"></a>00163         <span class="keywordflow">return</span>;
-<a name="l00164"></a>00164     }
-<a name="l00165"></a>00165 
-<a name="l00166"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">00166</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">KTSlidingWindowFFT::SetFreqBinWidth</a>(Double_t bw)
-<a name="l00167"></a>00167     {
-<a name="l00168"></a>00168         <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a> = bw;
-<a name="l00169"></a>00169         <span class="keywordflow">return</span>;
-<a name="l00170"></a>00170     }
-<a name="l00171"></a>00171 
-<a name="l00172"></a>00172 } <span class="comment">/* namespace Katydid */</span>
-<a name="l00173"></a>00173 <span class="preprocessor">#endif </span><span class="comment">/* KTSLIDINGWINDOWFFT_HH_ */</span>
+<a name="l00039"></a>00039             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a9a6bb7abc0c3e544edaca2ea44017043">TakeData</a>(<span class="keyword">const</span> vector&lt; Double_t &gt;&amp; data);
+<a name="l00040"></a>00040             <span class="comment">//virtual void TakeData(const TArray* data);</span>
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042             <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a26cd1ca797b17da835a5d2050c6dda2f">Transform</a>();
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044             <span class="keyword">virtual</span> TH2D* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8c80b661b8af6db2bea57a50bfcfd8e9">CreatePowerSpectrumHistogram</a>() <span class="keyword">const</span>;
+<a name="l00045"></a>00045 
+<a name="l00047"></a>00047             <span class="keyword">virtual</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9" title="for this FFT, the &quot;TimeSize&quot; is the window size. The &quot;FullTimeSize&quot; is different.">GetTimeSize</a>() <span class="keyword">const</span>;
+<a name="l00048"></a>00048             <span class="keyword">virtual</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">GetFrequencySize</a>() <span class="keyword">const</span>;
+<a name="l00049"></a>00049 
+<a name="l00050"></a>00050             UInt_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a2c3bc1664a4aec7a6abca2a323559af7">GetWindowSize</a>() <span class="keyword">const</span>;
+<a name="l00051"></a>00051             UInt_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a836d4ed610ee6e1acff99a2d019dff60">GetFullTimeSize</a>() <span class="keyword">const</span>;
+<a name="l00052"></a>00052             UInt_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a244f77a1b02a46675efc8199b5890506">GetOverlap</a>() <span class="keyword">const</span>;
+<a name="l00053"></a>00053             <a class="code" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a06a4bcfedf33900c53ab8911a019e2ac">GetWindowFunction</a>() <span class="keyword">const</span>;
+<a name="l00054"></a>00054             <span class="keyword">const</span> vector&lt; Double_t &gt;&amp; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4f33339c93164812121ba9873cced505">GetTimeData</a>() <span class="keyword">const</span>;
+<a name="l00055"></a>00055             <span class="keyword">const</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a5a6289d80100763c40302d366bc398d0">GetPowerSpectrum</a>(Int_t spect) <span class="keyword">const</span>;
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057             <span class="keyword">const</span> TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">GetFFT</a>() <span class="keyword">const</span>;
+<a name="l00058"></a>00058             <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">GetTransformFlag</a>() <span class="keyword">const</span>;
+<a name="l00059"></a>00059             Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">GetIsInitialized</a>() <span class="keyword">const</span>;
+<a name="l00060"></a>00060             Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">GetIsDataReady</a>() <span class="keyword">const</span>;
+<a name="l00061"></a>00061             Double_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">GetFreqBinWidth</a>() <span class="keyword">const</span>;
+<a name="l00062"></a>00062 
+<a name="l00064"></a>00064             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adc967fd2d5942ccb6adad49df4add034" title="note: SetTransformFlag sets fIsInitialized and fIsDataReady to kFALSE.">SetTransformFlag</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; flag);
+<a name="l00065"></a>00065             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">SetFreqBinWidth</a>(Double_t bw);
+<a name="l00066"></a>00066             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6d882b21846859dd3e0d9f7675aef6e7">SetWindowSize</a>(UInt_t nBins);
+<a name="l00067"></a>00067             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af3419c16836c230be8db04b3fad6be05">SetWindowLength</a>(Double_t wlTime);
+<a name="l00068"></a>00068             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a294d6f834db735cf04a7ce30289220ea">SetOverlap</a>(UInt_t nBins);
+<a name="l00069"></a>00069             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a294d6f834db735cf04a7ce30289220ea">SetOverlap</a>(Double_t overlapTime);
+<a name="l00070"></a>00070             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#aba3c0e4dc10ea42619a2348f007a8cf7">SetWindowFunction</a>(<a class="code" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a>* wf);
+<a name="l00071"></a>00071 
+<a name="l00072"></a>00072         <span class="keyword">protected</span>:
+<a name="l00073"></a>00073             <span class="keyword">virtual</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ae568f8c8070a6e595f7fdd0502d0925a">CreatePowerSpectrum</a>() <span class="keyword">const</span>;
+<a name="l00074"></a>00074 
+<a name="l00075"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">00075</a>             TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>;
+<a name="l00076"></a>00076 
+<a name="l00077"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">00077</a>             <span class="keywordtype">string</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a>;
+<a name="l00078"></a>00078 
+<a name="l00079"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">00079</a>             Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a>;
+<a name="l00080"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">00080</a>             Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a>;
+<a name="l00081"></a>00081 
+<a name="l00082"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">00082</a>             Double_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a>;
+<a name="l00083"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#acd689f4089448818468eb06b93024f36">00083</a>             UInt_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#acd689f4089448818468eb06b93024f36">fOverlap</a>;
+<a name="l00084"></a>00084 
+<a name="l00085"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#abcf02d1800b62f3d7b36822f746e7f04">00085</a>             <a class="code" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#abcf02d1800b62f3d7b36822f746e7f04">fWindowFunction</a>;
+<a name="l00086"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ad2cd3c7fed0ae97b31e10217de145731">00086</a>             vector&lt; Double_t &gt; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ad2cd3c7fed0ae97b31e10217de145731">fTimeData</a>;
+<a name="l00087"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">00087</a>             vector&lt; KTPowerSpectrum* &gt; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">fPowerSpectra</a>;
+<a name="l00088"></a>00088 
+<a name="l00089"></a>00089             <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#aebc6982d66ad9b7327a8c584d7bebfa5">ClassDef</a>(<a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html">KTSlidingWindowFFT</a>, 2);
+<a name="l00090"></a>00090     };
+<a name="l00091"></a>00091 
+<a name="l00092"></a>00092 
+<a name="l00093"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9">00093</a>     <span class="keyword">inline</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9" title="for this FFT, the &quot;TimeSize&quot; is the window size. The &quot;FullTimeSize&quot; is different.">KTSlidingWindowFFT::GetTimeSize</a>()<span class="keyword"> const</span>
+<a name="l00094"></a>00094 <span class="keyword">    </span>{
+<a name="l00095"></a>00095         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>-&gt;GetSize();
+<a name="l00096"></a>00096     }
+<a name="l00097"></a>00097 
+<a name="l00098"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">00098</a>     <span class="keyword">inline</span> Int_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">KTSlidingWindowFFT::GetFrequencySize</a>()<span class="keyword"> const</span>
+<a name="l00099"></a>00099 <span class="keyword">    </span>{
+<a name="l00100"></a>00100         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>-&gt;GetSize() / 2 + 1;
+<a name="l00101"></a>00101     }
+<a name="l00102"></a>00102 
+<a name="l00103"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">00103</a>     <span class="keyword">inline</span> <span class="keyword">const</span> TFFTRealComplex* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">KTSlidingWindowFFT::GetFFT</a>()<span class="keyword"> const</span>
+<a name="l00104"></a>00104 <span class="keyword">    </span>{
+<a name="l00105"></a>00105         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a>;
+<a name="l00106"></a>00106     }
+<a name="l00107"></a>00107 
+<a name="l00108"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">00108</a>     <span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">KTSlidingWindowFFT::GetTransformFlag</a>()<span class="keyword"> const</span>
+<a name="l00109"></a>00109 <span class="keyword">    </span>{
+<a name="l00110"></a>00110         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a>;
+<a name="l00111"></a>00111     }
+<a name="l00112"></a>00112 
+<a name="l00113"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">00113</a>     <span class="keyword">inline</span> Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">KTSlidingWindowFFT::GetIsInitialized</a>()<span class="keyword"> const</span>
+<a name="l00114"></a>00114 <span class="keyword">    </span>{
+<a name="l00115"></a>00115         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a>;
+<a name="l00116"></a>00116     }
+<a name="l00117"></a>00117 
+<a name="l00118"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">00118</a>     <span class="keyword">inline</span> Bool_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">KTSlidingWindowFFT::GetIsDataReady</a>()<span class="keyword"> const</span>
+<a name="l00119"></a>00119 <span class="keyword">    </span>{
+<a name="l00120"></a>00120         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a>;
+<a name="l00121"></a>00121     }
+<a name="l00122"></a>00122 
+<a name="l00123"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">00123</a>     <span class="keyword">inline</span> Double_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">KTSlidingWindowFFT::GetFreqBinWidth</a>()<span class="keyword"> const</span>
+<a name="l00124"></a>00124 <span class="keyword">    </span>{
+<a name="l00125"></a>00125         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a>;
+<a name="l00126"></a>00126     }
+<a name="l00127"></a>00127 
+<a name="l00128"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a836d4ed610ee6e1acff99a2d019dff60">00128</a>     <span class="keyword">inline</span> UInt_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a836d4ed610ee6e1acff99a2d019dff60">KTSlidingWindowFFT::GetFullTimeSize</a>()<span class="keyword"> const</span>
+<a name="l00129"></a>00129 <span class="keyword">    </span>{
+<a name="l00130"></a>00130         <span class="keywordflow">return</span> (UInt_t)<a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ad2cd3c7fed0ae97b31e10217de145731">fTimeData</a>.size();
+<a name="l00131"></a>00131     }
+<a name="l00132"></a>00132 
+<a name="l00133"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a244f77a1b02a46675efc8199b5890506">00133</a>     <span class="keyword">inline</span> UInt_t <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a244f77a1b02a46675efc8199b5890506">KTSlidingWindowFFT::GetOverlap</a>()<span class="keyword"> const</span>
+<a name="l00134"></a>00134 <span class="keyword">    </span>{
+<a name="l00135"></a>00135         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#acd689f4089448818468eb06b93024f36">fOverlap</a>;
+<a name="l00136"></a>00136     }
+<a name="l00137"></a>00137 
+<a name="l00138"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4f33339c93164812121ba9873cced505">00138</a>     <span class="keyword">inline</span> <span class="keyword">const</span> vector&lt; Double_t &gt;&amp; <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4f33339c93164812121ba9873cced505">KTSlidingWindowFFT::GetTimeData</a>()<span class="keyword"> const</span>
+<a name="l00139"></a>00139 <span class="keyword">    </span>{
+<a name="l00140"></a>00140         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ad2cd3c7fed0ae97b31e10217de145731">fTimeData</a>;
+<a name="l00141"></a>00141     }
+<a name="l00142"></a>00142 
+<a name="l00143"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a5a6289d80100763c40302d366bc398d0">00143</a>     <span class="keyword">inline</span> <span class="keyword">const</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a5a6289d80100763c40302d366bc398d0">KTSlidingWindowFFT::GetPowerSpectrum</a>(Int_t spec)<span class="keyword"> const</span>
+<a name="l00144"></a>00144 <span class="keyword">    </span>{
+<a name="l00145"></a>00145         <span class="keywordflow">if</span> (spec &gt;= 0 &amp;&amp; spec &lt; (Int_t)<a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">fPowerSpectra</a>.size()) <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">fPowerSpectra</a>[spec];
+<a name="l00146"></a>00146         <span class="keywordflow">return</span> NULL;
+<a name="l00147"></a>00147     }
+<a name="l00148"></a>00148 
+<a name="l00149"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a06a4bcfedf33900c53ab8911a019e2ac">00149</a>     <span class="keyword">inline</span> <a class="code" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a>* <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a06a4bcfedf33900c53ab8911a019e2ac">KTSlidingWindowFFT::GetWindowFunction</a>()<span class="keyword"> const</span>
+<a name="l00150"></a>00150 <span class="keyword">    </span>{
+<a name="l00151"></a>00151         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#abcf02d1800b62f3d7b36822f746e7f04">fWindowFunction</a>;
+<a name="l00152"></a>00152     }
+<a name="l00153"></a>00153 
+<a name="l00154"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adc967fd2d5942ccb6adad49df4add034">00154</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adc967fd2d5942ccb6adad49df4add034" title="note: SetTransformFlag sets fIsInitialized and fIsDataReady to kFALSE.">KTSlidingWindowFFT::SetTransformFlag</a>(<span class="keyword">const</span> <span class="keywordtype">string</span>&amp; flag)
+<a name="l00155"></a>00155     {
+<a name="l00156"></a>00156         <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a> = flag;
+<a name="l00157"></a>00157         <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a> = kFALSE;
+<a name="l00158"></a>00158         <span class="keywordflow">return</span>;
+<a name="l00159"></a>00159     }
+<a name="l00160"></a>00160 
+<a name="l00161"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a294d6f834db735cf04a7ce30289220ea">00161</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a294d6f834db735cf04a7ce30289220ea">KTSlidingWindowFFT::SetOverlap</a>(UInt_t nBins)
+<a name="l00162"></a>00162     {
+<a name="l00163"></a>00163         <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#acd689f4089448818468eb06b93024f36">fOverlap</a> = nBins;
+<a name="l00164"></a>00164         <span class="keywordflow">return</span>;
+<a name="l00165"></a>00165     }
+<a name="l00166"></a>00166 
+<a name="l00167"></a><a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">00167</a>     <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">KTSlidingWindowFFT::SetFreqBinWidth</a>(Double_t bw)
+<a name="l00168"></a>00168     {
+<a name="l00169"></a>00169         <a class="code" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a> = bw;
+<a name="l00170"></a>00170         <span class="keywordflow">return</span>;
+<a name="l00171"></a>00171     }
+<a name="l00172"></a>00172 
+<a name="l00173"></a>00173 } <span class="comment">/* namespace Katydid */</span>
+<a name="l00174"></a>00174 <span class="preprocessor">#endif </span><span class="comment">/* KTSLIDINGWINDOWFFT_HH_ */</span>
 </pre></div></div>
 </div>
 <!-- window showing the filter options -->
@@ -270,7 +271,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 15 2011 15:31:39 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 3 2012 13:15:54 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

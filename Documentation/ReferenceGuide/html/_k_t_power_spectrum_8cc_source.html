@@ -29,7 +29,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Katydid
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">Project 8 Analysis Platform</div>
   </td>
@@ -115,47 +115,47 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00033"></a>00033 
 <a name="l00034"></a><a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#ae11638bbfbe8d9fb93e31739f297cfc3">00034</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#ae11638bbfbe8d9fb93e31739f297cfc3" title="Input should be the direct FFT, not a power spectrum.">KTPowerSpectrum::TakeFrequencySpectrum</a>(<span class="keyword">const</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a>&amp; freqSpect)
 <a name="l00035"></a>00035     {
-<a name="l00036"></a>00036         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>;
-<a name="l00037"></a>00037         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">fPhase</a>;
-<a name="l00038"></a>00038         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a> = <span class="keyword">new</span> TVectorD(freqSpect.<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a5e300f5f10773f2d1509b2a624186e85">GetMagnitude</a>()-&gt;Sqr());
-<a name="l00039"></a>00039         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">fPhase</a> = <span class="keyword">new</span> TVectorD(*(freqSpect.<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a912d2c738ccabeb7c433aa8de8dad6c9">GetPhase</a>()));
-<a name="l00040"></a>00040         <span class="keywordflow">return</span>;
-<a name="l00041"></a>00041     }
-<a name="l00042"></a>00042 
-<a name="l00043"></a><a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#aa3228561a05f1ce1f056d45cf2a40166">00043</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#ae11638bbfbe8d9fb93e31739f297cfc3" title="Input should be the direct FFT, not a power spectrum.">KTPowerSpectrum::TakeFrequencySpectrum</a>(Int_t nBins, <span class="keyword">const</span> Double_t* real, <span class="keyword">const</span> Double_t* imag)
-<a name="l00044"></a>00044     {
-<a name="l00045"></a>00045         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>;
-<a name="l00046"></a>00046         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">fPhase</a>;
-<a name="l00047"></a>00047         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a> = <span class="keyword">new</span> TVectorD(nBins);
-<a name="l00048"></a>00048         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">fPhase</a> = <span class="keyword">new</span> TVectorD(nBins);
+<a name="l00036"></a>00036         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>.ResizeTo(freqSpect.<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a801a12f7f99fe59f99f8e685d77361b3">GetSize</a>());
+<a name="l00037"></a>00037         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">fPhase</a>.ResizeTo(freqSpect.<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a801a12f7f99fe59f99f8e685d77361b3">GetSize</a>());
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a> = freqSpect.<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ad39c7f89ab0917f39e436f1afe393532">GetMagnitude</a>();
+<a name="l00040"></a>00040         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a> = <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>.Sqr();
+<a name="l00041"></a>00041         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">fPhase</a> = freqSpect.<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ac414e4c5d640c995e50b2156e7723f93">GetPhase</a>();
+<a name="l00042"></a>00042         <span class="keywordflow">return</span>;
+<a name="l00043"></a>00043     }
+<a name="l00044"></a>00044 
+<a name="l00045"></a><a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a54635aae0618958c0adfe3da4705fc0f">00045</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#ae11638bbfbe8d9fb93e31739f297cfc3" title="Input should be the direct FFT, not a power spectrum.">KTPowerSpectrum::TakeFrequencySpectrum</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nBins, <span class="keyword">const</span> Double_t* real, <span class="keyword">const</span> Double_t* imag)
+<a name="l00046"></a>00046     {
+<a name="l00047"></a>00047         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>.ResizeTo((Int_t)nBins);
+<a name="l00048"></a>00048         <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">fPhase</a>.ResizeTo((Int_t)nBins);
 <a name="l00049"></a>00049 
 <a name="l00050"></a>00050         <span class="keywordflow">for</span> (Int_t iBin=0; iBin&lt;nBins; iBin++)
 <a name="l00051"></a>00051         {
-<a name="l00052"></a>00052             (*fMagnitude)[iBin] = real[iBin]*real[iBin] + imag[iBin]*imag[iBin];
-<a name="l00053"></a>00053             (*fPhase)[iBin] = atan2(imag[iBin], real[iBin]);
+<a name="l00052"></a>00052             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>[iBin] = real[iBin]*real[iBin] + imag[iBin]*imag[iBin];
+<a name="l00053"></a>00053             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">fPhase</a>[iBin] = atan2(imag[iBin], real[iBin]);
 <a name="l00054"></a>00054         }
 <a name="l00055"></a>00055         <span class="keywordflow">return</span>;
 <a name="l00056"></a>00056     }
 <a name="l00057"></a>00057 
 <a name="l00058"></a><a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a0338ef34c83d379f66da5cee3988728f">00058</a>     Double_t <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a0338ef34c83d379f66da5cee3988728f">KTPowerSpectrum::GetPowerAtFrequency</a>(Double_t freq)
 <a name="l00059"></a>00059     {
-<a name="l00060"></a>00060         <span class="keywordflow">return</span> (*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>)[(Int_t)(freq / <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>)];
+<a name="l00060"></a>00060         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>[(Int_t)(freq / <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>)];
 <a name="l00061"></a>00061     }
 <a name="l00062"></a>00062 
 <a name="l00063"></a><a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a3b33cc2ffd07199f824b5ed5674cb292">00063</a>     Double_t <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a3b33cc2ffd07199f824b5ed5674cb292">KTPowerSpectrum::GetPhaseAtFrequency</a>(Double_t freq)
 <a name="l00064"></a>00064     {
-<a name="l00065"></a>00065         <span class="keywordflow">return</span> (*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">fPhase</a>)[(Int_t)(freq / <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>)];
+<a name="l00065"></a>00065         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">fPhase</a>[(Int_t)(freq / <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>)];
 <a name="l00066"></a>00066     }
 <a name="l00067"></a>00067 
 <a name="l00068"></a>00068 
 <a name="l00069"></a><a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a5671cb6a95cd2b8f440bcad006fade35">00069</a>     TH1D* <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a5671cb6a95cd2b8f440bcad006fade35">KTPowerSpectrum::CreateMagnitudeHistogram</a>()<span class="keyword"> const</span>
 <a name="l00070"></a>00070 <span class="keyword">    </span>{
 <a name="l00071"></a>00071         Double_t freqMult = 1.e-6;
-<a name="l00072"></a>00072         Int_t nBins = <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>-&gt;GetNoElements();
-<a name="l00073"></a>00073         TH1D* hist = <span class="keyword">new</span> TH1D(<span class="stringliteral">&quot;hPowerSpectrum&quot;</span>, <span class="stringliteral">&quot;Power Spectrum&quot;</span>, nBins, -0.5*<a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>*freqMult, <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a> * ((Double_t)nBins-0.5) * freqMult);
-<a name="l00074"></a>00074         <span class="keywordflow">for</span> (Int_t iBin=0; iBin&lt;nBins; iBin++)
+<a name="l00072"></a>00072         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nBins = (<span class="keywordtype">unsigned</span> int)<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>.GetNoElements();
+<a name="l00073"></a>00073         TH1D* hist = <span class="keyword">new</span> TH1D(<span class="stringliteral">&quot;hPowerSpectrum&quot;</span>, <span class="stringliteral">&quot;Power Spectrum&quot;</span>, (Int_t)nBins, -0.5*<a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>*freqMult, <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a> * ((Double_t)nBins-0.5) * freqMult);
+<a name="l00074"></a>00074         <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iBin=0; iBin&lt;nBins; iBin++)
 <a name="l00075"></a>00075         {
-<a name="l00076"></a>00076             hist-&gt;SetBinContent(iBin+1, (*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>)[iBin]);
+<a name="l00076"></a>00076             hist-&gt;SetBinContent((Int_t)iBin+1, <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>[iBin]);
 <a name="l00077"></a>00077         }
 <a name="l00078"></a>00078         hist-&gt;SetXTitle(<span class="stringliteral">&quot;Frequency (MHz)&quot;</span>);
 <a name="l00079"></a>00079         hist-&gt;SetYTitle(<span class="stringliteral">&quot;Power&quot;</span>);
@@ -165,11 +165,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00083"></a><a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a6d4b8d741c2de1e5c02591464ac326d5">00083</a>     TH1D* <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a6d4b8d741c2de1e5c02591464ac326d5">KTPowerSpectrum::CreatePhaseHistogram</a>()<span class="keyword"> const</span>
 <a name="l00084"></a>00084 <span class="keyword">    </span>{
 <a name="l00085"></a>00085         Double_t freqMult = 1.e-6;
-<a name="l00086"></a>00086         Int_t nBins = <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">fPhase</a>-&gt;GetNoElements();
-<a name="l00087"></a>00087         TH1D* hist = <span class="keyword">new</span> TH1D(<span class="stringliteral">&quot;hPowerSpectrumPhase&quot;</span>, <span class="stringliteral">&quot;Power Spectrum Phase&quot;</span>, nBins, -0.5*<a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>*freqMult, <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a> * ((Double_t)nBins-0.5) * freqMult);
-<a name="l00088"></a>00088         <span class="keywordflow">for</span> (Int_t iBin=0; iBin&lt;nBins; iBin++)
+<a name="l00086"></a>00086         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nBins = <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">fPhase</a>.GetNoElements();
+<a name="l00087"></a>00087         TH1D* hist = <span class="keyword">new</span> TH1D(<span class="stringliteral">&quot;hPowerSpectrumPhase&quot;</span>, <span class="stringliteral">&quot;Power Spectrum Phase&quot;</span>, (Int_t)nBins, -0.5*<a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>*freqMult, <a class="code" href="class_katydid_1_1_k_t_power_spectrum.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a> * ((Double_t)nBins-0.5) * freqMult);
+<a name="l00088"></a>00088         <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iBin=0; iBin&lt;nBins; iBin++)
 <a name="l00089"></a>00089         {
-<a name="l00090"></a>00090             hist-&gt;SetBinContent(iBin+1, (*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">fPhase</a>)[iBin]);
+<a name="l00090"></a>00090             hist-&gt;SetBinContent((Int_t)iBin+1, <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">fPhase</a>[iBin]);
 <a name="l00091"></a>00091         }
 <a name="l00092"></a>00092         hist-&gt;SetXTitle(<span class="stringliteral">&quot;Frequency (MHz)&quot;</span>);
 <a name="l00093"></a>00093         hist-&gt;SetYTitle(<span class="stringliteral">&quot;Phase&quot;</span>);
@@ -180,22 +180,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00098"></a>00098 <span class="keyword">    </span>{
 <a name="l00099"></a>00099         Double_t tMaxMag = -1.;
 <a name="l00100"></a>00100         Double_t tMinMag = 1.e9;
-<a name="l00101"></a>00101         <span class="keywordflow">for</span> (Int_t iBin=0; iBin&lt;<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>-&gt;GetNoElements(); iBin++)
-<a name="l00102"></a>00102         {
-<a name="l00103"></a>00103             <span class="keywordflow">if</span> ((*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>)[iBin] &lt; tMinMag) tMinMag = (*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>)[iBin];
-<a name="l00104"></a>00104             <span class="keywordflow">if</span> ((*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>)[iBin] &gt; tMaxMag) tMaxMag = (*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>)[iBin];
-<a name="l00105"></a>00105         }
-<a name="l00106"></a>00106         <span class="keywordflow">if</span> (tMinMag &lt; 1. &amp;&amp; tMaxMag &gt; 1.) tMinMag = 0.;
-<a name="l00107"></a>00107         TH1D* hist = <span class="keyword">new</span> TH1D(<span class="stringliteral">&quot;hPowerDistribution&quot;</span>, <span class="stringliteral">&quot;Power Distribution&quot;</span>, 100, tMinMag*0.95, tMaxMag*1.05);
-<a name="l00108"></a>00108         <span class="keywordflow">for</span> (Int_t iBin=0; iBin&lt;<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>-&gt;GetNoElements(); iBin++)
-<a name="l00109"></a>00109         {
-<a name="l00110"></a>00110             hist-&gt;Fill((*<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>)[iBin]);
-<a name="l00111"></a>00111         }
-<a name="l00112"></a>00112         hist-&gt;SetXTitle(<span class="stringliteral">&quot;Power&quot;</span>);
-<a name="l00113"></a>00113         <span class="keywordflow">return</span> hist;
-<a name="l00114"></a>00114     }
-<a name="l00115"></a>00115 
-<a name="l00116"></a>00116 } <span class="comment">/* namespace Katydid */</span>
+<a name="l00101"></a>00101         <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> nBins = (<span class="keywordtype">unsigned</span> int)<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>.GetNoElements();
+<a name="l00102"></a>00102         <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iBin=0; iBin&lt;nBins; iBin++)
+<a name="l00103"></a>00103         {
+<a name="l00104"></a>00104             <span class="keywordflow">if</span> (<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>[iBin] &lt; tMinMag) tMinMag = <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>[iBin];
+<a name="l00105"></a>00105             <span class="keywordflow">if</span> (<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>[iBin] &gt; tMaxMag) tMaxMag = <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>[iBin];
+<a name="l00106"></a>00106         }
+<a name="l00107"></a>00107         <span class="keywordflow">if</span> (tMinMag &lt; 1. &amp;&amp; tMaxMag &gt; 1.) tMinMag = 0.;
+<a name="l00108"></a>00108         TH1D* hist = <span class="keyword">new</span> TH1D(<span class="stringliteral">&quot;hPowerDistribution&quot;</span>, <span class="stringliteral">&quot;Power Distribution&quot;</span>, 100, tMinMag*0.95, tMaxMag*1.05);
+<a name="l00109"></a>00109         <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iBin=0; iBin&lt;nBins; iBin++)
+<a name="l00110"></a>00110         {
+<a name="l00111"></a>00111             hist-&gt;Fill(<a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>[iBin]);
+<a name="l00112"></a>00112         }
+<a name="l00113"></a>00113         hist-&gt;SetXTitle(<span class="stringliteral">&quot;Power&quot;</span>);
+<a name="l00114"></a>00114         <span class="keywordflow">return</span> hist;
+<a name="l00115"></a>00115     }
+<a name="l00116"></a>00116 
+<a name="l00117"></a>00117 } <span class="comment">/* namespace Katydid */</span>
 </pre></div></div>
 </div>
 <!-- window showing the filter options -->
@@ -215,7 +216,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 15 2011 15:31:39 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 3 2012 13:15:54 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

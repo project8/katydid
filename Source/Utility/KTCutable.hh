@@ -63,12 +63,8 @@ namespace Katydid
     template< class XObjectType, class XRangeIteratorType >
     class KTCutable
     {
-            //***********************
-            // Range iterator wrapper
-            //***********************
-
             /*!
-             @class KTCutable::RangeIteratorWrapper
+             @class RangeIteratorWrapper
              @author N. S. Oblath
 
              @brief Combines the RangeIterator with its original position and a < operator
@@ -79,7 +75,7 @@ namespace Katydid
              \li fPosition is the iterators position in the original range given to KTCutable.
              \li operator< allows a RangeIteratorWrapper to be compared to other RangeIteratorWrappers based on position.
              */
-        public:
+        private:
             class RangeIteratorWrapper
             {
                 public:
@@ -138,25 +134,18 @@ namespace Katydid
 
 
             /*!
-             @typedef KTCutable::value_type
+             @typedef value_type
              @brief The type of the object being referred to
              */
         public:
             typedef XObjectType value_type;
 
             /*!
-             @typedef KTCutable::value_type_range_iterator
+             @typedef value_type_range_iterator
              @brief The type of iterator referring to the objects and defining the range being used
              */
         public:
             typedef XRangeIteratorType value_type_range_iterator;
-
-
-        public:
-            struct RangeIteratorWrapperComp {
-                bool operator() (const RangeIteratorWrapper& lhs, const RangeIteratorWrapper& rhs) const
-                {return lhs<rhs;}
-            };
 
 
         private:
@@ -165,7 +154,7 @@ namespace Katydid
 
 
             /*!
-             @class KTCutable::iterator
+             @class iterator
              @brief A bi-directional iterator over the interval that skips any cut objects
              @details
              This iterator will traverse the specified range of objects, skipping any that have been cut out.
@@ -239,8 +228,6 @@ namespace Katydid
             void UnCut(const XRangeIteratorType& toBeginUnCut, const XRangeIteratorType& toEndUnCut);
 
         public:
-            const RangeIteratorWrapperSet& GetValid() const; /// Get the set of valid iterators
-
             const XRangeIteratorType& GetCutableBegin() const; /// Get the range iterator to the beginning of the range
             const XRangeIteratorType& GetCutableEnd() const; /// Get the range iterator to the end of the range
 
@@ -424,12 +411,6 @@ namespace Katydid
             fValid.insert(*imIter);
         }
         return;
-    }
-
-    template< class XObjectType, class XRangeIteratorType >
-    const typename KTCutable< XObjectType, XRangeIteratorType >::RangeIteratorWrapperSet& KTCutable< XObjectType, XRangeIteratorType >::GetValid() const
-    {
-        return fValid;
     }
 
     template< class XObjectType, class XRangeIteratorType >

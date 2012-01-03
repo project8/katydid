@@ -29,7 +29,7 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Katydid
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
    <div id="projectbrief">Project 8 Analysis Platform</div>
   </td>
@@ -102,7 +102,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00020"></a>00020     {
 <a name="l00021"></a>00021         <span class="keyword">public</span>:
 <a name="l00022"></a>00022             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae051dda7211428bad5d5ec4203d5fe28">KTComplexVector</a>();
-<a name="l00023"></a>00023             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae051dda7211428bad5d5ec4203d5fe28">KTComplexVector</a>(Int_t nBins, <span class="keyword">const</span> Double_t* arr1, <span class="keyword">const</span> Double_t* arr2, <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; mode);
+<a name="l00023"></a>00023             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae051dda7211428bad5d5ec4203d5fe28">KTComplexVector</a>(UInt_t nBins, <span class="keyword">const</span> Double_t* arr1, <span class="keyword">const</span> Double_t* arr2, <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; mode);
 <a name="l00024"></a>00024             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae051dda7211428bad5d5ec4203d5fe28">KTComplexVector</a>(<span class="keyword">const</span> TVectorD&amp; v1, <span class="keyword">const</span> TVectorD&amp; v2, <span class="keyword">const</span> <span class="keywordtype">string</span>&amp; mode);
 <a name="l00025"></a>00025             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae051dda7211428bad5d5ec4203d5fe28">KTComplexVector</a>(<span class="keyword">const</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a>&amp; orig);
 <a name="l00026"></a>00026             <span class="keyword">virtual</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#aa257c2a79c2d810dbb62b74f4e130628">~KTComplexVector</a>();
@@ -120,8 +120,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00038"></a>00038 
 <a name="l00039"></a>00039             Int_t <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a801a12f7f99fe59f99f8e685d77361b3">GetSize</a>() <span class="keyword">const</span>;
 <a name="l00040"></a>00040 
-<a name="l00041"></a>00041             TVectorD* <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a5e300f5f10773f2d1509b2a624186e85">GetMagnitude</a>() <span class="keyword">const</span>;
-<a name="l00042"></a>00042             TVectorD* <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a912d2c738ccabeb7c433aa8de8dad6c9">GetPhase</a>() <span class="keyword">const</span>;
+<a name="l00041"></a>00041             <span class="keyword">const</span> TVectorD&amp; <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ad39c7f89ab0917f39e436f1afe393532">GetMagnitude</a>() <span class="keyword">const</span>;
+<a name="l00042"></a>00042             <span class="keyword">const</span> TVectorD&amp; <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ac414e4c5d640c995e50b2156e7723f93">GetPhase</a>() <span class="keyword">const</span>;
 <a name="l00043"></a>00043 
 <a name="l00044"></a>00044             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a2cd76ab46cee2059a8e50f13ae242439">SetMagnitudeAt</a>(Int_t iBin, Double_t mag);
 <a name="l00045"></a>00045             <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a04039571bf50d3bbd5ddd9c25967caa2">SetPhaseAt</a>(Int_t iBin, Double_t phase);
@@ -131,10 +131,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00049"></a>00049 
 <a name="l00050"></a>00050        <span class="keyword">protected</span>:
 <a name="l00051"></a>00051 
-<a name="l00052"></a><a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">00052</a>             TVectorD* <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a883453dd9a098598eba86c1d5c04ccab">fMagnitude</a>;
-<a name="l00053"></a><a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">00053</a>             TVectorD* <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a882cb89da6e126c7030d4384903a6583">fPhase</a>;
+<a name="l00052"></a><a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">00052</a>             TVectorD <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ae04bbf5c8c6df9a4bff086aacf5434dd">fMagnitude</a>;
+<a name="l00053"></a><a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">00053</a>             TVectorD <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#a59608cfb64f48580db9eaeb36dd85701">fPhase</a>;
 <a name="l00054"></a>00054 
-<a name="l00055"></a>00055             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#adddd94afd049fe5862f8320d643a27cd">ClassDef</a>(<a class="code" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a>, 1);
+<a name="l00055"></a>00055             <a class="code" href="class_katydid_1_1_k_t_complex_vector.html#ac97b6814e6451cb909cf8d08556e13aa">ClassDef</a>(<a class="code" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a>, 2);
 <a name="l00056"></a>00056     };
 <a name="l00057"></a>00057 
 <a name="l00058"></a>00058 } <span class="comment">/* namespace Katydid */</span>
@@ -158,7 +158,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 15 2011 15:31:39 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 3 2012 13:15:54 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>
