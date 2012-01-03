@@ -43,6 +43,14 @@ if (ENABLE_TESTING)
     enable_testing ()
 endif (ENABLE_TESTING)
 
+# setup the Boost install
+# at the time of this writing, CMake 2.8.6 searched for boost up to 1.46, but boost 1.48 exists, so it must be added
+# see FindBoost.cmake for additional information about Boost_ADDITIONAL_VERSIONS
+set (Boost_ADDITIONAL_VERSIONS "1.48" "1.48.0")
+find_package (Boost 1.36.0 REQUIRED)
+include_directories (${Boost_INCLUDE_DIRS})
+set (LIBS ${LIBS} ${Boost_LIBRARIES})
+
 # setup the ROOT install
 find_package (ROOT 5.28 REQUIRED)
 include_directories (${ROOT_INCLUDES})
