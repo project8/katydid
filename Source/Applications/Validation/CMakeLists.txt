@@ -9,6 +9,9 @@ if (ENABLE_TESTING)
     add_executable (TestCutIterator ${CMAKE_CURRENT_SOURCE_DIR}/TestCutIterator.cc)
     target_link_libraries (TestCutIterator KatydidUtility ${LIBS})
     
+    add_executable (TestCutableArray ${CMAKE_CURRENT_SOURCE_DIR}/TestCutableArray.cc)
+    target_link_libraries (TestCutableArray KatydidUtility ${LIBS})
+    
     add_executable (TestPhysicalArray ${CMAKE_CURRENT_SOURCE_DIR}/TestPhysicalArray.cc)
     target_link_libraries (TestPhysicalArray KatydidUtility ${LIBS})
     
@@ -20,6 +23,7 @@ if (ENABLE_TESTING)
 
     install (TARGETS ExtractEvents
                      TestCutIterator
+                     TestCutableArray
                      TestPhysicalArray
                      TestSimpleFFT
                      TestSlidingWindowFFT
@@ -28,6 +32,7 @@ if (ENABLE_TESTING)
     # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.
     add_test (Test_ExtractEvents ExtractEvents)
     add_test (Test_CutIterator TestCutIterator)
+    add_test (Test_CutableArray TestCutableArray)
     add_test (Test_PhysicalArray TestPhysicalArray)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)

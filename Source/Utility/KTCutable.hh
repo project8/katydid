@@ -42,6 +42,8 @@ namespace Katydid
 
      KTCutable::iterator is a bi-directional iterator.  However, since the iteration order from XRangeIteratorType is
      maintained, if XRangeIteratorType is a reverse iterator, KTCutable::iterator will act in reverse as well.
+     Currently the iterator must be dereference-able with operator*, though hopefully the option to change the
+     dereferencing function will be added in the future.
      */
     template< class XObjectType, class XRangeIteratorType >
     class KTCutable
