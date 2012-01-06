@@ -65,12 +65,17 @@ namespace Katydid
         return fPhase[(Int_t)(freq / fBinWidth)];
     }
 
-
     TH1D* KTPowerSpectrum::CreateMagnitudeHistogram() const
+    {
+        TH1D* hist = KTPowerSpectrum::CreatePhaseHistogram("hPowerSpectrum");
+        return hist;
+    }
+
+    TH1D* KTPowerSpectrum::CreateMagnitudeHistogram(std::string name) const
     {
         Double_t freqMult = 1.e-6;
         unsigned int nBins = (unsigned int)fMagnitude.GetNoElements();
-        TH1D* hist = new TH1D("hPowerSpectrum", "Power Spectrum", (Int_t)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((Double_t)nBins-0.5) * freqMult);
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((Double_t)nBins-0.5) * freqMult);
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, fMagnitude[iBin]);
@@ -82,9 +87,15 @@ namespace Katydid
 
     TH1D* KTPowerSpectrum::CreatePhaseHistogram() const
     {
+        TH1D* hist = KTPowerSpectrum::CreatePhaseHistogram("hPowerSpectrumPhase");
+        return hist;
+    }
+    
+    TH1D* KTPowerSpectrum::CreatePhaseHistogram(std::string name) const
+    {
         Double_t freqMult = 1.e-6;
         unsigned int nBins = fPhase.GetNoElements();
-        TH1D* hist = new TH1D("hPowerSpectrumPhase", "Power Spectrum Phase", (Int_t)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((Double_t)nBins-0.5) * freqMult);
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum Phase", (Int_t)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((Double_t)nBins-0.5) * freqMult);
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, fPhase[iBin]);
@@ -96,6 +107,12 @@ namespace Katydid
 
     TH1D* KTPowerSpectrum::CreatePowerDistributionHistogram() const
     {
+        TH1D* hist = KTPowerSpectrum::CreatePowerDistributionHistogram("hPowerDistribution");
+        return hist;
+    }
+
+    TH1D* KTPowerSpectrum::CreatePowerDistributionHistogram(std::string name) const
+    {
         Double_t tMaxMag = -1.;
         Double_t tMinMag = 1.e9;
         unsigned int nBins = (unsigned int)fMagnitude.GetNoElements();
@@ -105,7 +122,7 @@ namespace Katydid
             if (fMagnitude[iBin] > tMaxMag) tMaxMag = fMagnitude[iBin];
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
-        TH1D* hist = new TH1D("hPowerDistribution", "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
             hist->Fill(fMagnitude[iBin]);

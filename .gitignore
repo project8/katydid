@@ -19,4 +19,5 @@ cmake_install.cmake
 Documentation/ReferenceGuide/Doxyfile
 Source/Main/ExtractEvents
 Source/Main/SimpleElectronHunt
+Source/Applications/Main/SimpleElectronHunt
 install_manifest.txt
