@@ -40,7 +40,7 @@ namespace Katydid
             KTCutableArray(XArrayIteratorType begin, unsigned int size); /// construct with the pointer to the beginning and the size
             KTCutableArray(XArrayIteratorType begin, XArrayIteratorType end); /// construct with begin and end iterators
             KTCutableArray(const KTCutableArray< XArrayObjectType, XArrayIteratorType >& orig); /// copy constructor
-            virtual ~KTCutableArray();
+            ~KTCutableArray();
 
         public:
             const KTCutableArray< XArrayObjectType, XArrayIteratorType >& operator=(const KTCutableArray< XArrayObjectType, XArrayIteratorType >& orig);

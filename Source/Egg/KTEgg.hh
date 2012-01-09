@@ -25,6 +25,30 @@ namespace Katydid
     class KTEgg
     {
         public:
+            struct HeaderInfo
+            {
+                Int_t fEventSize;
+                Int_t fFrameIDSize;
+                Int_t fRecordSize;
+                Int_t fTimeStampSize;
+                Double_t fRunLength;
+                Double_t fSampleRate;
+                Double_t fHertzPerSampleRateUnit;
+                Double_t fSecondsPerRunLengthUnit;
+
+                HeaderInfo() :
+                    fTimeStampSize(0),
+                    fFrameIDSize(0),
+                    fRecordSize(0),
+                    fEventSize(0),
+                    fRunLength(0.),
+                    fSampleRate(0.),
+                    fHertzPerSampleRateUnit(1.),
+                    fSecondsPerRunLengthUnit(1.)
+                {}
+            };
+
+        public:
             KTEgg();
             virtual ~KTEgg();
 
@@ -38,15 +62,18 @@ namespace Katydid
             const string& GetHeader() const;
             const string& GetPrelude() const;
 
+            const HeaderInfo& GetHeaderInfo() const;
             Int_t GetEventSize() const;
             Int_t GetFrameIDSize() const;
             Int_t GetRecordSize() const;
-            Double_t GetApproxRecordLength() const;
+            Double_t GetRunLength() const;
+            Double_t GetApproxRecordLength() const; /// deprecated
             Double_t GetSampleRate() const;
             Int_t GetTimeStampSize() const;
 
             Double_t GetHertzPerSampleRateUnit() const;
-            Double_t GetSecondsPerApproxRecordLengthUnit() const;
+            Double_t GetSecondsPerRunLengthUnit() const;
+            Double_t GetSecondsPerApproxRecordLengthUnit() const; /// deprecated
 
 
             void SetFileName(const string& fileName);
@@ -57,12 +84,14 @@ namespace Katydid
             void SetEventSize(Int_t size);
             void SetFrameIDSize(Int_t size);
             void SetRecordSize(Int_t size);
-            void SetApproxRecordLength(Double_t length);
+            void SetRunLength(Double_t length);
+            void SetApproxRecordLength(Double_t length); /// deprecated
             void SetSampleRate(Double_t rate);
             void SetTimeStampSize(Int_t size);
 
             void SetHertzPerSampleRateUnit(Double_t hpsru);
-            void SetSecondsPerApproxRecordLengthUnit(Double_t spslu);
+            void SetSecondsPerRunLengthUnit(Double_t sprlu);
+            void SetSecondsPerApproxRecordLengthUnit(Double_t spslu); /// deprecated
 
         private:
             template< typename XReturnType >
@@ -74,23 +103,167 @@ namespace Katydid
             UInt_t fHeaderSize;
             string fHeader;
 
-            Int_t fTimeStampSize;
-            Int_t fFrameIDSize;
-            Int_t fRecordSize;
-            Int_t fEventSize;
-
-            Double_t fApproxRecordLength;
-            Double_t fSampleRate;
-
-            Double_t fHertzPerSampleRateUnit;
-            Double_t fSecondsPerApproxRecordLengthUnit;
-
+            HeaderInfo fHeaderInfo;
 
             static const ifstream::pos_type sPreludeSize;  // the prelude size is currently restricted to eight bytes
 
             ClassDef(KTEgg, 1);
 
     };
+
+    inline const string& KTEgg::GetFileName() const
+    {
+        return fFileName;
+    }
+
+    inline const ifstream& KTEgg::GetEggStream() const
+    {
+        return fEggStream;
+    }
+
+    inline UInt_t KTEgg::GetHeaderSize() const
+    {
+        return fHeaderSize;
+    }
+
+    inline const string& KTEgg::GetHeader() const
+    {
+        return fHeader;
+    }
+
+    inline const string& KTEgg::GetPrelude() const
+    {
+        return fPrelude;
+    }
+
+    inline const KTEgg::HeaderInfo& KTEgg::GetHeaderInfo() const
+    {
+        return fHeaderInfo;
+    }
+
+    inline Int_t KTEgg::GetEventSize() const
+    {
+        return fHeaderInfo.fEventSize;
+    }
+
+    inline Int_t KTEgg::GetFrameIDSize() const
+    {
+        return fHeaderInfo.fFrameIDSize;
+    }
+
+    inline Int_t KTEgg::GetRecordSize() const
+    {
+        return fHeaderInfo.fRecordSize;
+    }
+
+    inline Double_t KTEgg::GetRunLength() const
+    {
+        return fHeaderInfo.fRunLength;
+    }
+
+    inline Double_t KTEgg::GetApproxRecordLength() const
+    {
+        return GetRunLength();
+    }
+
+    inline Double_t KTEgg::GetSampleRate() const
+    {
+        return fHeaderInfo.fSampleRate;
+    }
+
+    inline Int_t KTEgg::GetTimeStampSize() const
+    {
+        return fHeaderInfo.fTimeStampSize;
+    }
+
+    inline Double_t KTEgg::GetHertzPerSampleRateUnit() const
+    {
+        return fHeaderInfo.fHertzPerSampleRateUnit;
+    }
+
+    inline Double_t KTEgg::GetSecondsPerRunLengthUnit() const
+    {
+        return fHeaderInfo.fSecondsPerRunLengthUnit;
+    }
+
+    inline Double_t KTEgg::GetSecondsPerApproxRecordLengthUnit() const
+    {
+        return GetSecondsPerRunLengthUnit();
+    }
+
+
+    inline void KTEgg::SetFileName(const string& fileName)
+    {
+        this->fFileName = fileName;
+    }
+
+    inline void KTEgg::SetHeaderSize(UInt_t size)
+    {
+        this->fHeaderSize = size;
+    }
+
+    inline void KTEgg::SetHeader(const string& header)
+    {
+        //delete fHeader;
+        this->fHeader = header;
+    }
+
+    inline void KTEgg::SetPrelude(const string& prelude)
+    {
+        //delete fPrelude;
+        this->fPrelude = prelude;
+    }
+
+    inline void KTEgg::SetEventSize(Int_t size)
+    {
+        fHeaderInfo.fEventSize = size;
+    }
+
+    inline void KTEgg::SetFrameIDSize(Int_t size)
+    {
+        fHeaderInfo.fFrameIDSize = size;
+    }
+
+    inline void KTEgg::SetRecordSize(Int_t size)
+    {
+        fHeaderInfo.fRecordSize = size;
+    }
+
+    inline void KTEgg::SetRunLength(Double_t length)
+    {
+        fHeaderInfo.fRunLength = length;
+    }
+
+    inline void KTEgg::SetApproxRecordLength(Double_t length)
+    {
+        SetRunLength(length);
+    }
+
+    inline void KTEgg::SetSampleRate(Double_t rate)
+    {
+        fHeaderInfo.fSampleRate = rate;
+    }
+
+    inline void KTEgg::SetTimeStampSize(Int_t size)
+    {
+        fHeaderInfo.fTimeStampSize = size;
+    }
+
+    inline void KTEgg::SetHertzPerSampleRateUnit(Double_t hpsru)
+    {
+        fHeaderInfo.fHertzPerSampleRateUnit = hpsru;
+    }
+
+    inline void KTEgg::SetSecondsPerRunLengthUnit(Double_t sprlu)
+    {
+        fHeaderInfo.fSecondsPerRunLengthUnit = sprlu;
+    }
+
+    inline void KTEgg::SetSecondsPerApproxRecordLengthUnit(Double_t spslu)
+    {
+        SetSecondsPerRunLengthUnit(spslu);
+    }
+
 
     template< typename XReturnType >
     XReturnType KTEgg::ConvertFromCharArray(char* value)

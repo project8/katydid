@@ -35,11 +35,11 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual void TakeData(const KTEvent* event);
-            virtual void TakeData(const vector< Double_t >& data);
-            //virtual void TakeData(const TArray* data);
+            virtual Bool_t TakeData(const KTEvent* event);
+            virtual Bool_t TakeData(const vector< Double_t >& data);
+            //virtual Bool_t TakeData(const TArray* data);
 
-            virtual void Transform();
+            virtual Bool_t Transform();
 
             virtual TH2D* CreatePowerSpectrumHistogram() const;
 

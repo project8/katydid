@@ -65,7 +65,7 @@ namespace Katydid
             {
                 public:
                     RangeIteratorWrapper(const XRangeIteratorType& original, int position);
-                    virtual ~RangeIteratorWrapper();
+                    ~RangeIteratorWrapper();
 
                     bool operator<(RangeIteratorWrapper& rhs);
                     bool operator<(const RangeIteratorWrapper& rhs) const;
@@ -144,7 +144,7 @@ namespace Katydid
                     iterator();
                     iterator(const RangeIteratorWrapperSetIt& it);
                     iterator(const iterator& orig); /// copy constructor
-                    virtual ~iterator();
+                    ~iterator();
 
                     /// Dereferences the iterator
                     XObjectType& operator*();
@@ -183,7 +183,7 @@ namespace Katydid
             KTCutable(); /// default constructor
             KTCutable(const XRangeIteratorType& begin, const XRangeIteratorType& end); /// primary constructor
             KTCutable(const KTCutable< XObjectType, XRangeIteratorType >& orig); /// copy constructor
-            virtual ~KTCutable();
+            ~KTCutable();
 
         public:
             /// Copy another KTCutable's range and cuts

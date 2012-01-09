@@ -29,7 +29,7 @@ namespace Katydid
         public:
             KTPhysicalArray();
             KTPhysicalArray(const KTPhysicalArray< NDims >& orig);
-            virtual ~KTPhysicalArray();
+            ~KTPhysicalArray();
 
         public:
             KTPhysicalArray< NDims >& operator=(const KTPhysicalArray< NDims >& orig);

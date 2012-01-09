@@ -29,14 +29,7 @@ namespace Katydid
             fPrelude(),
             fHeaderSize(0),
             fHeader(),
-            fTimeStampSize(0),
-            fFrameIDSize(0),
-            fRecordSize(0),
-            fEventSize(0),
-            fApproxRecordLength(0.),
-            fSampleRate(0.),
-            fHertzPerSampleRateUnit(1.),
-            fSecondsPerApproxRecordLengthUnit(1.)
+            fHeaderInfo()
     {
     }
 
@@ -73,7 +66,7 @@ namespace Katydid
         stringstream conversion;
         conversion << readBuffer;
         conversion >> std::hex >> fHeaderSize;
-        std::cout << "header size: " << fHeaderSize << std::endl;
+        //std::cout << "header size: " << fHeaderSize << std::endl;
 
         // read the header
         delete [] readBuffer;
@@ -82,6 +75,7 @@ namespace Katydid
         if (! fEggStream.good()) return kFALSE;
         string newHeader(readBuffer, fHeaderSize);
         this->SetHeader(newHeader);
+        std::cout << "Header: " << newHeader << std::endl;
 
         delete [] readBuffer;
 
@@ -92,7 +86,7 @@ namespace Katydid
     {
         // these items aren't included in the header, but maybe will be someday?
         this->SetHertzPerSampleRateUnit(1.e6);
-        this->SetSecondsPerApproxRecordLengthUnit(1.e-3);
+        this->SetSecondsPerRunLengthUnit(1.e-3);
 
         rapidxml::xml_document<char> headerDOM;
         char* headerCopy = new char [fHeader.size() + 1];
@@ -174,15 +168,15 @@ namespace Katydid
             std::cerr << "No length attribute in the run node" << std::endl;
             return kFALSE;
         }
-        this->SetApproxRecordLength(ConvertFromCharArray< Double_t >(attr->value()) * this->GetSecondsPerApproxRecordLengthUnit());
+        this->SetRunLength(ConvertFromCharArray< Double_t >(attr->value()) * this->GetSecondsPerRunLengthUnit());
 
         delete [] headerCopy;
 
-        std::cout << "Parsed header\n";
+        std::cout << "Parsed header:\n";
         std::cout << "Frame ID Size: " << this->GetFrameIDSize() << '\n';
         std::cout << "Time Stamp Size: " << this->GetTimeStampSize() << '\n';
         std::cout << "Record Size: " << this->GetRecordSize() << '\n';
-        std::cout << "Approximate Record Length: " << this->GetApproxRecordLength() << " s" << '\n';
+        std::cout << "Run Length: " << this->GetRunLength() << " s" << '\n';
         std::cout << "Sample Rate: " << this->GetSampleRate() << " Hz " << '\n';
 
         return kTRUE;
@@ -272,134 +266,6 @@ namespace Katydid
         event->SetRecordLength((Double_t)(this->GetRecordSize()) * event->GetBinWidth());
 
         return event;
-    }
-
-    const string& KTEgg::GetFileName() const
-    {
-        return fFileName;
-    }
-
-    const ifstream& KTEgg::GetEggStream() const
-    {
-        return fEggStream;
-    }
-
-    UInt_t KTEgg::GetHeaderSize() const
-    {
-        return fHeaderSize;
-    }
-
-    const string& KTEgg::GetHeader() const
-    {
-        return fHeader;
-    }
-
-    const string& KTEgg::GetPrelude() const
-    {
-        return fPrelude;
-    }
-
-    Int_t KTEgg::GetEventSize() const
-    {
-        return fEventSize;
-    }
-
-    Int_t KTEgg::GetFrameIDSize() const
-    {
-        return fFrameIDSize;
-    }
-
-    Int_t KTEgg::GetRecordSize() const
-    {
-        return fRecordSize;
-    }
-
-    Double_t KTEgg::GetApproxRecordLength() const
-    {
-        return fApproxRecordLength;
-    }
-
-    Double_t KTEgg::GetSampleRate() const
-    {
-        return fSampleRate;
-    }
-
-    Int_t KTEgg::GetTimeStampSize() const
-    {
-        return fTimeStampSize;
-    }
-
-    Double_t KTEgg::GetHertzPerSampleRateUnit() const
-    {
-        return fHertzPerSampleRateUnit;
-    }
-
-    Double_t KTEgg::GetSecondsPerApproxRecordLengthUnit() const
-    {
-        return fSecondsPerApproxRecordLengthUnit;
-    }
-
-
-    void KTEgg::SetFileName(const string& fileName)
-    {
-        this->fFileName = fileName;
-    }
-
-    void KTEgg::SetHeaderSize(UInt_t size)
-    {
-        this->fHeaderSize = size;
-    }
-
-    void KTEgg::SetHeader(const string& header)
-    {
-        //delete fHeader;
-        this->fHeader = header;
-    }
-
-    void KTEgg::SetPrelude(const string& prelude)
-    {
-        //delete fPrelude;
-        this->fPrelude = prelude;
-    }
-
-    void KTEgg::SetEventSize(Int_t size)
-    {
-        fEventSize = size;
-    }
-
-    void KTEgg::SetFrameIDSize(Int_t size)
-    {
-        fFrameIDSize = size;
-    }
-
-    void KTEgg::SetRecordSize(Int_t size)
-    {
-        fRecordSize = size;
-    }
-
-    void KTEgg::SetApproxRecordLength(Double_t length)
-    {
-        fApproxRecordLength = length;
-    }
-
-    void KTEgg::SetSampleRate(Double_t rate)
-    {
-        fSampleRate = rate;
-    }
-
-    void KTEgg::SetTimeStampSize(Int_t size)
-    {
-        fTimeStampSize = size;
-    }
-
-    void KTEgg::SetHertzPerSampleRateUnit(Double_t hpsru)
-    {
-        fHertzPerSampleRateUnit = hpsru;
-    }
-
-    void KTEgg::SetSecondsPerApproxRecordLengthUnit(Double_t spslu)
-    {
-        fSecondsPerApproxRecordLengthUnit = spslu;
     }
 
 } /* namespace Katydid */

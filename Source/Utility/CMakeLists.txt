@@ -13,6 +13,7 @@ set (UTILITY_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMessage.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMessageOrganizer.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArray.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSingleton.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTUtilityMessage.hh
 )
@@ -23,6 +24,7 @@ set (UTILITY_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTArrayUC.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMessage.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMessageOrganizer.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTUtilityMessage.cc
 )
 

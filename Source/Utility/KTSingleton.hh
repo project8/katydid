@@ -17,7 +17,7 @@ namespace Katydid
 
         protected:
             KTSingleton();
-            virtual ~KTSingleton();
+            ~KTSingleton();
     };
 
     template< class XType >

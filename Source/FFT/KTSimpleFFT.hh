@@ -20,6 +20,7 @@ class TH1D;
 
 namespace Katydid
 {
+    class KTComplexVector;
     class KTPowerSpectrum;
     class KTEvent;
 
@@ -32,11 +33,11 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual void TakeData(const KTEvent* event);
-            virtual void TakeData(const vector< Double_t >& data);
-            //virtual void TakeData(const TArray* data);
+            virtual Bool_t TakeData(const KTEvent* event);
+            virtual Bool_t TakeData(const vector< Double_t >& data);
+            //virtual Bool_t TakeData(const TArray* data);
 
-            virtual void Transform();
+            virtual Bool_t Transform();
 
             virtual TH1D* CreatePowerSpectrumHistogram() const;
 
@@ -48,7 +49,8 @@ namespace Katydid
             ///       It also sets fIsInitialized and fIsDataReady to kFALSE.
             virtual void SetTimeSize(UInt_t nBins);
 
-            const TFFTRealComplex& GetFFT() const;
+            const TFFTRealComplex* GetFFT() const;
+            const KTComplexVector* GetTransformResult() const;
             const string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Bool_t GetIsDataReady() const;
@@ -59,8 +61,10 @@ namespace Katydid
             void SetFreqBinWidth(Double_t bw);
 
         protected:
+            void ExtractTransformResult();
 
-            TFFTRealComplex fTransform;
+            TFFTRealComplex* fTransform;
+            KTComplexVector* fTransformResult;
 
             string fTransformFlag;
 
@@ -75,25 +79,31 @@ namespace Katydid
 
     inline UInt_t KTSimpleFFT::GetTimeSize() const
     {
-        return fTransform.GetSize();
+        return fTransform->GetSize();
     }
 
     inline UInt_t KTSimpleFFT::GetFrequencySize() const
     {
-        return fTransform.GetSize() / 2 + 1;
+        return fTransform->GetSize() / 2 + 1;
     }
 
     inline void KTSimpleFFT::SetTimeSize(UInt_t nBins)
     {
-        fTransform = TFFTRealComplex((Int_t)nBins, kFALSE);
+        delete fTransform;
+        fTransform = new TFFTRealComplex((Int_t)nBins, kFALSE);
         fIsInitialized = kFALSE;
         fIsDataReady = kFALSE;
         return;
     }
 
-    inline const TFFTRealComplex& KTSimpleFFT::GetFFT() const
+    inline const TFFTRealComplex* KTSimpleFFT::GetFFT() const
     {
         return fTransform;
+    }
+
+    inline const KTComplexVector* KTSimpleFFT::GetTransformResult() const
+    {
+        return fTransformResult;
     }
 
     inline const string& KTSimpleFFT::GetTransformFlag() const
