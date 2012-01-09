@@ -16,6 +16,8 @@
 
 #include <iostream>
 
+using std::string;
+
 ClassImp(Katydid::KTSimpleFFT);
 
 namespace Katydid
@@ -162,12 +164,17 @@ namespace Katydid
 
     }
 
-    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram() const
+    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram(const string& name) const
     {
         KTPowerSpectrum* ps = this->CreatePowerSpectrum();
-        TH1D* pshist = ps->CreateMagnitudeHistogram();
+        TH1D* pshist = ps->CreateMagnitudeHistogram(name);
         delete ps;
         return pshist;
+    }
+
+    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram() const
+    {
+        return CreatePowerSpectrumHistogram("hPowerSpectrum_SimpleFFT");
     }
 
     KTPowerSpectrum* KTSimpleFFT::CreatePowerSpectrum() const

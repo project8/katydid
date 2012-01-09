@@ -17,6 +17,9 @@
 
 #include <iostream>
 
+using std::string;
+using std::vector;
+
 ClassImp(Katydid::KTSlidingWindowFFT);
 
 namespace Katydid
@@ -176,7 +179,7 @@ namespace Katydid
         return kTRUE;
     }
 
-    TH2D* KTSlidingWindowFFT::CreatePowerSpectrumHistogram() const
+    TH2D* KTSlidingWindowFFT::CreatePowerSpectrumHistogram(const string& name) const
     {
         if (fPowerSpectra.empty()) return NULL;
 
@@ -185,7 +188,7 @@ namespace Katydid
 
         Double_t effTimeWidth = (Double_t)(fPowerSpectra.size() * fWindowFunction->GetSize() - (fPowerSpectra.size()-1) * fOverlap);
         effTimeWidth *= fWindowFunction->GetBinWidth();
-        TH2D* hist = new TH2D("hPowerSpectra", "Power Spectra",
+        TH2D* hist = new TH2D(name.c_str(), "Power Spectra",
                 fPowerSpectra.size(), 0., effTimeWidth,
                 this->GetFrequencySize(), -0.5 * fFreqBinWidth * freqMult, fFreqBinWidth * ((Double_t)this->GetFrequencySize()-0.5) * freqMult);
         std::cout << "Frequency axis: " << this->GetFrequencySize() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " MHz" << std::endl;
@@ -203,6 +206,11 @@ namespace Katydid
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Frequency (MHz)");
         return hist;
+    }
+
+    TH2D* KTSlidingWindowFFT::CreatePowerSpectrumHistogram() const
+    {
+        return CreatePowerSpectrumHistogram("hPowerSpectra_SlidingWindowFFT");
     }
 
     KTPowerSpectrum* KTSlidingWindowFFT::CreatePowerSpectrum() const

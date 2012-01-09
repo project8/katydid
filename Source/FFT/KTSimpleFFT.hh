@@ -13,7 +13,6 @@
 #include "TFFTRealComplex.h"
 
 #include <string>
-using std::string;
 
 //class TArray;
 class TH1D;
@@ -39,6 +38,7 @@ namespace Katydid
 
             virtual Bool_t Transform();
 
+            virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name) const;
             virtual TH1D* CreatePowerSpectrumHistogram() const;
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
@@ -51,13 +51,13 @@ namespace Katydid
 
             const TFFTRealComplex* GetFFT() const;
             const KTComplexVector* GetTransformResult() const;
-            const string& GetTransformFlag() const;
+            const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Bool_t GetIsDataReady() const;
             Double_t GetFreqBinWidth() const;
 
             /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
-            void SetTransformFlag(const string& flag);
+            void SetTransformFlag(const std::string& flag);
             void SetFreqBinWidth(Double_t bw);
 
         protected:
@@ -66,7 +66,7 @@ namespace Katydid
             TFFTRealComplex* fTransform;
             KTComplexVector* fTransformResult;
 
-            string fTransformFlag;
+            std::string fTransformFlag;
 
             Bool_t fIsInitialized;
             Bool_t fIsDataReady;
@@ -106,7 +106,7 @@ namespace Katydid
         return fTransformResult;
     }
 
-    inline const string& KTSimpleFFT::GetTransformFlag() const
+    inline const std::string& KTSimpleFFT::GetTransformFlag() const
     {
         return fTransformFlag;
     }
@@ -126,7 +126,7 @@ namespace Katydid
         return fFreqBinWidth;
     }
 
-    inline void KTSimpleFFT::SetTransformFlag(const string& flag)
+    inline void KTSimpleFFT::SetTransformFlag(const std::string& flag)
     {
         fTransformFlag = flag;
         fIsInitialized = kFALSE;

@@ -11,7 +11,6 @@
 #include "KTComplexVector.hh"
 
 #include <string>
-using std::string;
 
 namespace Katydid
 {
@@ -31,12 +30,12 @@ namespace Katydid
             Double_t GetPhaseAtFrequency(Double_t freq);
 
             virtual TH1D* CreateMagnitudeHistogram() const;
-            virtual TH1D* CreateMagnitudeHistogram(std::string name) const;
+            virtual TH1D* CreateMagnitudeHistogram(const std::string& name) const;
             virtual TH1D* CreatePhaseHistogram() const;
-            virtual TH1D* CreatePhaseHistogram(std::string name) const;
+            virtual TH1D* CreatePhaseHistogram(const std::string& name) const;
 
             virtual TH1D* CreatePowerDistributionHistogram() const;
-            virtual TH1D* CreatePowerDistributionHistogram(std::string name) const;
+            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name) const;
 
             Double_t GetBinWidth() const;
 

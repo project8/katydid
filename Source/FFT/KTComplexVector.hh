@@ -30,7 +30,9 @@ namespace Katydid
 
             KTComplexVector& operator*= (Double_t mult);
 
+            virtual TH1D* CreateMagnitudeHistogram(const std::string& name) const;
             virtual TH1D* CreateMagnitudeHistogram() const;
+            virtual TH1D* CreatePhaseHistogram(const std::string& name) const;
             virtual TH1D* CreatePhaseHistogram() const;
 
             Double_t GetMagnitudeAt(Int_t iBin) const;

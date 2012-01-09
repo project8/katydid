@@ -35,7 +35,9 @@ namespace Katydid
             virtual Double_t GetWeight(Double_t time) const = 0;
             virtual Double_t GetWeight(UInt_t bin) const = 0;
 
+            virtual TH1D* CreateHistogram(const std::string& name) const;
             virtual TH1D* CreateHistogram() const;
+            virtual TH1D* CreateFrequencyResponseHistogram(const std::string& name) const;
             virtual TH1D* CreateFrequencyResponseHistogram() const;
 
             virtual Double_t GetLength() const;

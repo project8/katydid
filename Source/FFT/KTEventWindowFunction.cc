@@ -16,6 +16,8 @@
 
 #include <iostream>
 
+using std::string;
+
 ClassImp(Katydid::KTEventWindowFunction);
 
 namespace Katydid
@@ -55,12 +57,12 @@ namespace Katydid
         return this->SetBinWidthAndLength(event->GetBinWidth(), length);
     }
 
-    TH1D* KTEventWindowFunction::CreateHistogram() const
+    TH1D* KTEventWindowFunction::CreateHistogram(const string& name) const
     {
         Int_t sideBands = TMath::Nint(0.2 * fSize);
         Int_t totalSize = fSize + 2 * sideBands;
         Double_t histEdges = fLength / 2. + sideBands * fBinWidth;
-        TH1D* hist = new TH1D("hWindowFunction", "Window Function", totalSize, -histEdges, histEdges);
+        TH1D* hist = new TH1D(name.c_str(), "Window Function", totalSize, -histEdges, histEdges);
         for (unsigned int iHistBin=1; iHistBin<=sideBands; iHistBin++)
         {
             hist->SetBinContent(iHistBin, 0.);
@@ -74,7 +76,12 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KTEventWindowFunction::CreateFrequencyResponseHistogram() const
+    TH1D* KTEventWindowFunction::CreateHistogram() const
+    {
+        return CreateHistogram("hWindowFunction");
+    }
+
+    TH1D* KTEventWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
     {
         Int_t sideBands = TMath::Nint(0.2 * fSize);
         Int_t totalSize = fSize + 2 * sideBands;
@@ -95,10 +102,15 @@ namespace Katydid
         fft.TakeData(timeData);
         fft.Transform();
         KTPowerSpectrum* ps = fft.CreatePowerSpectrum();
-        TH1D* hist = ps->CreateMagnitudeHistogram();
+        TH1D* hist = ps->CreateMagnitudeHistogram(name);
         hist->SetYTitle("Weight");
         delete ps;
         return hist;
+    }
+
+    TH1D* KTEventWindowFunction::CreateFrequencyResponseHistogram() const
+    {
+        return CreateFrequencyResponseHistogram("hFrequencyResponse");
     }
 
     Double_t KTEventWindowFunction::GetLength() const

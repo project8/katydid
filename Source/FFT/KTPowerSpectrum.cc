@@ -10,6 +10,8 @@
 #include <cmath>
 #include <iostream>
 
+using std::string;
+
 ClassImp(Katydid::KTPowerSpectrum);
 
 namespace Katydid
@@ -71,7 +73,7 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KTPowerSpectrum::CreateMagnitudeHistogram(std::string name) const
+    TH1D* KTPowerSpectrum::CreateMagnitudeHistogram(const string& name) const
     {
         Double_t freqMult = 1.e-6;
         unsigned int nBins = (unsigned int)fMagnitude.GetNoElements();
@@ -91,7 +93,7 @@ namespace Katydid
         return hist;
     }
     
-    TH1D* KTPowerSpectrum::CreatePhaseHistogram(std::string name) const
+    TH1D* KTPowerSpectrum::CreatePhaseHistogram(const string& name) const
     {
         Double_t freqMult = 1.e-6;
         unsigned int nBins = fPhase.GetNoElements();
@@ -111,7 +113,7 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KTPowerSpectrum::CreatePowerDistributionHistogram(std::string name) const
+    TH1D* KTPowerSpectrum::CreatePowerDistributionHistogram(const string& name) const
     {
         Double_t tMaxMag = -1.;
         Double_t tMinMag = 1.e9;

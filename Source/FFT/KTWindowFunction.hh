@@ -15,6 +15,8 @@
 
 #include "Rtypes.h"
 
+#include <string>
+
 class TH1D;
 
 namespace Katydid
@@ -29,7 +31,9 @@ namespace Katydid
             virtual Double_t GetWeight(Double_t) const = 0;
             virtual Double_t GetWeight(UInt_t) const = 0;
 
+            virtual TH1D* CreateHistogram(const std::string& name) const = 0;
             virtual TH1D* CreateHistogram() const = 0;
+            virtual TH1D* CreateFrequencyResponseHistogram(const std::string& name) const = 0;
             virtual TH1D* CreateFrequencyResponseHistogram() const = 0;
 
             virtual Double_t GetLength() const = 0;

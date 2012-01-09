@@ -15,7 +15,6 @@
 #include "TFFTRealComplex.h"
 
 #include <string>
-using std::string;
 #include <vector>
 using std::vector;
 
@@ -36,11 +35,12 @@ namespace Katydid
             virtual void InitializeFFT();
 
             virtual Bool_t TakeData(const KTEvent* event);
-            virtual Bool_t TakeData(const vector< Double_t >& data);
+            virtual Bool_t TakeData(const std::vector< Double_t >& data);
             //virtual Bool_t TakeData(const TArray* data);
 
             virtual Bool_t Transform();
 
+            virtual TH2D* CreatePowerSpectrumHistogram(const std::string& name) const;
             virtual TH2D* CreatePowerSpectrumHistogram() const;
 
             /// for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.
@@ -51,11 +51,11 @@ namespace Katydid
             UInt_t GetFullTimeSize() const;
             UInt_t GetOverlap() const;
             KTWindowFunction* GetWindowFunction() const;
-            const vector< Double_t >& GetTimeData() const;
+            const std::vector< Double_t >& GetTimeData() const;
             const KTPowerSpectrum* GetPowerSpectrum(Int_t spect) const;
 
             const TFFTRealComplex* GetFFT() const;
-            const string& GetTransformFlag() const;
+            const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Bool_t GetIsDataReady() const;
             Double_t GetFreqBinWidth() const;
@@ -74,7 +74,7 @@ namespace Katydid
 
             TFFTRealComplex* fTransform;
 
-            string fTransformFlag;
+            std::string fTransformFlag;
 
             Bool_t fIsInitialized;
             Bool_t fIsDataReady;
@@ -83,8 +83,8 @@ namespace Katydid
             UInt_t fOverlap;
 
             KTWindowFunction* fWindowFunction;
-            vector< Double_t > fTimeData;
-            vector< KTPowerSpectrum* > fPowerSpectra;
+            std::vector< Double_t > fTimeData;
+            std::vector< KTPowerSpectrum* > fPowerSpectra;
 
             ClassDef(KTSlidingWindowFFT, 2);
     };

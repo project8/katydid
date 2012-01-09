@@ -128,20 +128,30 @@ namespace Katydid
         return *this;
     }
 
-    TH1D* KTComplexVector::CreateMagnitudeHistogram() const
+    TH1D* KTComplexVector::CreateMagnitudeHistogram(const string& name) const
     {
         TH1D* hist = new TH1D(fMagnitude);
-        hist->SetNameTitle("Magnitude", "Magnitude");
+        hist->SetNameTitle(name.c_str(), "Magnitude");
         hist->SetYTitle("Magnitude");
+        return hist;
+    }
+
+    TH1D* KTComplexVector::CreateMagnitudeHistogram() const
+    {
+        return CreateMagnitudeHistogram("Magnitude");
+    }
+
+    TH1D* KTComplexVector::CreatePhaseHistogram(const string& name) const
+    {
+        TH1D* hist = new TH1D(fPhase);
+        hist->SetNameTitle(name.c_str(), "Phase");
+        hist->SetYTitle("Phase");
         return hist;
     }
 
     TH1D* KTComplexVector::CreatePhaseHistogram() const
     {
-        TH1D* hist = new TH1D(fPhase);
-        hist->SetNameTitle("Phase", "Phase");
-        hist->SetYTitle("Phase");
-        return hist;
+        return CreatePhaseHistogram("Phase");
     }
 
     Double_t KTComplexVector::GetMagnitudeAt(Int_t iBin) const
