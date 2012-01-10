@@ -74,6 +74,14 @@ namespace Katydid
         public:
             UInt_t FindBin(UInt_t dim, Double_t pos);
 
+            // axis labels
+        public:
+            const std::string& GetLabel(UInt_t dim) const;
+            void SetLabel(UInt_t dim, const std::string& label);
+
+        private:
+            std::string fLabels[NDims];
+
     };
 
     template< UInt_t NDims >
@@ -85,6 +93,7 @@ namespace Katydid
             fBinWidths[iDim] = 1.;
             fRangeMin[iDim] = 0.;
             fRangeMax[iDim] = 1.;
+            fLabels[iDim];
         }
     }
 
@@ -97,6 +106,7 @@ namespace Katydid
             fBinWidths[iDim] = orig.GetBinWidth(iDim);
             fRangeMin[iDim] = orig.GetRangeMin(iDim);
             fRangeMax[iDim] = orig.GetRangeMax(iDim);
+            fLabels[iDim] = orig.GetLabel(iDim);
         }
     }
 
@@ -114,6 +124,7 @@ namespace Katydid
             fBinWidths[iDim] = orig.GetBinWidth(iDim);
             fRangeMin[iDim] = orig.GetRangeMin(iDim);
             fRangeMax[iDim] = orig.GetRangeMax(iDim);
+            fLabels[iDim] = orig.GetLabel(iDim);
         }
         return *this;
     }
@@ -247,6 +258,20 @@ namespace Katydid
         return (UInt_t)(floor((pos - fRangeMin[dim-1]) / fBinWidths[dim-1]));
     }
 
+    template< UInt_t NDims >
+    const std::string& KTPhysicalArray< NDims >::GetLabel(UInt_t dim) const
+    {
+        return fLabels[dim-1];
+    }
+
+    template< UInt_t NDims >
+    void KTPhysicalArray< NDims >::SetLabel(UInt_t dim, const std::string& label)
+    {
+        fLabels[dim-1] = label;
+        return;
+    }
+
+
 } /* namespace Katydid */
 
 
@@ -296,7 +321,7 @@ namespace Katydid
 
         protected:
             UInt_t fNBins;
-            Double_t fBinWidths;
+            Double_t fBinWidth;
             Double_t fRangeMin;
             Double_t fRangeMax;
 
@@ -309,30 +334,41 @@ namespace Katydid
         public:
             UInt_t FindBin(Double_t pos);
 
+            // axis label
+        public:
+            const std::string& GetLabel() const;
+            void SetLabel(const std::string& label);
+
+        private:
+            std::string fLabel;
+
     };
 
     KTPhysicalArray< 1 >::KTPhysicalArray() :
             fNBins(1),
-            fBinWidths(1.),
+            fBinWidth(1.),
             fRangeMin(0.),
-            fRangeMax(1.)
+            fRangeMax(1.),
+            fLabel()
     {
     }
 
     KTPhysicalArray< 1 >::KTPhysicalArray(UInt_t nBins, Double_t rangeMin, Double_t rangeMax) :
             fNBins(nBins),
-            fBinWidths((rangeMax - rangeMin) / (Double_t)nBins),
+            fBinWidth((rangeMax - rangeMin) / (Double_t)nBins),
             fRangeMin(rangeMin),
-            fRangeMax(rangeMax)
+            fRangeMax(rangeMax),
+            fLabel()
     {
     }
 
     KTPhysicalArray< 1 >::KTPhysicalArray(const KTPhysicalArray< 1 >& orig)
     {
         fNBins = orig.GetNBins();
-        fBinWidths = orig.GetBinWidth();
+        fBinWidth = orig.GetBinWidth();
         fRangeMin = orig.GetRangeMin();
         fRangeMax = orig.GetRangeMax();
+        fLabel = orig.GetLabel();
     }
 
     KTPhysicalArray< 1 >::~KTPhysicalArray()
@@ -342,9 +378,10 @@ namespace Katydid
     KTPhysicalArray< 1 >& KTPhysicalArray< 1 >::operator=(const KTPhysicalArray< 1 >& orig)
     {
         fNBins = orig.GetNBins();
-        fBinWidths = orig.GetBinWidth();
+        fBinWidth = orig.GetBinWidth();
         fRangeMin = orig.GetRangeMin();
         fRangeMax = orig.GetRangeMax();
+        fLabel = orig.GetLabel();
         return *this;
     }
 
@@ -356,13 +393,13 @@ namespace Katydid
     void KTPhysicalArray< 1 >::SetNBins(UInt_t nBins)
     {
         fNBins = nBins;
-        fBinWidths = (fRangeMax - fRangeMin) / (Double_t)fNBins;
+        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)fNBins;
         return;
     }
 
     Double_t KTPhysicalArray< 1 >::GetBinWidth() const
     {
-        return fBinWidths;
+        return fBinWidth;
     }
 
     Double_t KTPhysicalArray< 1 >::GetRangeMin() const
@@ -385,14 +422,14 @@ namespace Katydid
     void KTPhysicalArray< 1 >::SetRangeMin(Double_t min)
     {
         fRangeMin = min;
-        fBinWidths = (fRangeMax - fRangeMin) / (Double_t)fNBins;
+        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)fNBins;
         return;
     }
 
     void KTPhysicalArray< 1 >::SetRangeMax(Double_t max)
     {
         fRangeMax = max;
-        fBinWidths = (fRangeMax - fRangeMin) / (Double_t)fNBins;
+        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)fNBins;
         return;
     }
 
@@ -400,23 +437,34 @@ namespace Katydid
     {
         SetRangeMin(min);
         SetRangeMax(max);
-        fBinWidths = (fRangeMax - fRangeMin) / (Double_t)fNBins;
+        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)fNBins;
         return;
     }
 
     Double_t KTPhysicalArray< 1 >::GetBinLowEdge(UInt_t bin) const
     {
-        return fRangeMin + fBinWidths * (Double_t)bin;
+        return fRangeMin + fBinWidth * (Double_t)bin;
     }
 
     Double_t KTPhysicalArray< 1 >::GetBinCenter(UInt_t bin) const
     {
-        return fRangeMin + fBinWidths * ((Double_t)bin + 0.5);
+        return fRangeMin + fBinWidth * ((Double_t)bin + 0.5);
     }
 
     UInt_t KTPhysicalArray< 1 >::FindBin(Double_t pos)
     {
-        return (UInt_t)(floor((pos - fRangeMin) / fBinWidths));
+        return (UInt_t)(floor((pos - fRangeMin) / fBinWidth));
+    }
+
+    const std::string& KTPhysicalArray< 1 >::GetLabel() const
+    {
+        return fLabel;
+    }
+
+    void KTPhysicalArray< 1 >::SetLabel(const std::string& label)
+    {
+        fLabel = label;
+        return;
     }
 
 } /* namespace Katydid */
