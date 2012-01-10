@@ -12,8 +12,8 @@ if (ENABLE_TESTING)
     add_executable (TestCutableArray ${CMAKE_CURRENT_SOURCE_DIR}/TestCutableArray.cc)
     target_link_libraries (TestCutableArray KatydidUtility ${LIBS})
     
-    add_executable (TestPhysicalArray ${CMAKE_CURRENT_SOURCE_DIR}/TestPhysicalArray.cc)
-    target_link_libraries (TestPhysicalArray KatydidUtility ${LIBS})
+    add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
+    target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
     
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
     target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
@@ -24,7 +24,7 @@ if (ENABLE_TESTING)
     install (TARGETS ExtractEvents
                      TestCutIterator
                      TestCutableArray
-                     TestPhysicalArray
+                     TestAxisProperties
                      TestSimpleFFT
                      TestSlidingWindowFFT
              DESTINATION bin)
@@ -33,7 +33,7 @@ if (ENABLE_TESTING)
     add_test (Test_ExtractEvents ExtractEvents)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
-    add_test (Test_PhysicalArray TestPhysicalArray)
+    add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
         

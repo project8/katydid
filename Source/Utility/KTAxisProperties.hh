@@ -1,13 +1,13 @@
 /**
- @file KTPhysicalArray.hh
- @brief Contains KTPhysicalArray
- @details KTPhysicalArray provides physical range and bin properties in multiple dimensions.  It's meant to accompany
+ @file KTAxisProperties.hh
+ @brief Contains KTAxisProperties
+ @details KTAxisProperties provides physical range and bin properties in multiple dimensions.  It's meant to accompany
  multi-dimensional data-storage objects (e.g. it provides the additional information to turn a vector into a histogram or a matrix into a 2-D histogram).
  @author: N. S. Oblath
  */
 
-#ifndef KTPHYSICALARRAY_HH_
-#define KTPHYSICALARRAY_HH_
+#ifndef KTAXISPROPERTIES_HH_
+#define KTAXISPROPERTIES_HH_
 
 #include "Rtypes.h"
 
@@ -16,7 +16,7 @@
 namespace Katydid
 {
     template< UInt_t NDims >
-    class KTPhysicalArray
+    class KTAxisProperties
     {
         public:
             enum Dimension
@@ -27,12 +27,12 @@ namespace Katydid
             };
 
         public:
-            KTPhysicalArray();
-            KTPhysicalArray(const KTPhysicalArray< NDims >& orig);
-            ~KTPhysicalArray();
+            KTAxisProperties();
+            KTAxisProperties(const KTAxisProperties< NDims >& orig);
+            ~KTAxisProperties();
 
         public:
-            KTPhysicalArray< NDims >& operator=(const KTPhysicalArray< NDims >& orig);
+            KTAxisProperties< NDims >& operator=(const KTAxisProperties< NDims >& orig);
 
             // dimensions
         public:
@@ -85,7 +85,7 @@ namespace Katydid
     };
 
     template< UInt_t NDims >
-    KTPhysicalArray< NDims >::KTPhysicalArray()
+    KTAxisProperties< NDims >::KTAxisProperties()
     {
         for (UInt_t iDim=0; iDim < NDims; iDim++)
         {
@@ -98,7 +98,7 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    KTPhysicalArray< NDims >::KTPhysicalArray(const KTPhysicalArray< NDims >& orig)
+    KTAxisProperties< NDims >::KTAxisProperties(const KTAxisProperties< NDims >& orig)
     {
         for (UInt_t iDim=0; iDim < NDims; iDim++)
         {
@@ -111,12 +111,12 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    KTPhysicalArray< NDims >::~KTPhysicalArray()
+    KTAxisProperties< NDims >::~KTAxisProperties()
     {
     }
 
     template< UInt_t NDims >
-    KTPhysicalArray< NDims >& KTPhysicalArray< NDims >::operator=(const KTPhysicalArray< NDims >& orig)
+    KTAxisProperties< NDims >& KTAxisProperties< NDims >::operator=(const KTAxisProperties< NDims >& orig)
     {
         for (UInt_t iDim=0; iDim < NDims; iDim++)
         {
@@ -130,13 +130,13 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    UInt_t KTPhysicalArray< NDims >::GetNBins(UInt_t dim) const
+    UInt_t KTAxisProperties< NDims >::GetNBins(UInt_t dim) const
     {
         return fNBins[dim-1];
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetNBins(UInt_t dim, UInt_t nBins)
+    void KTAxisProperties< NDims >::SetNBins(UInt_t dim, UInt_t nBins)
     {
         UInt_t arrPos = dim - 1;
         fNBins[arrPos] = nBins;
@@ -145,7 +145,7 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetNBins(const UInt_t* nBinses)
+    void KTAxisProperties< NDims >::SetNBins(const UInt_t* nBinses)
     {
         for (Int_t arrPos=0; arrPos<NDims; arrPos++)
         {
@@ -156,25 +156,25 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    Double_t KTPhysicalArray< NDims >::GetBinWidth(UInt_t dim) const
+    Double_t KTAxisProperties< NDims >::GetBinWidth(UInt_t dim) const
     {
         return fBinWidths[dim-1];
     }
 
     template< UInt_t NDims >
-    Double_t KTPhysicalArray< NDims >::GetRangeMin(UInt_t dim) const
+    Double_t KTAxisProperties< NDims >::GetRangeMin(UInt_t dim) const
     {
         return fRangeMin[dim-1];
     }
 
     template< UInt_t NDims >
-    Double_t KTPhysicalArray< NDims >::GetRangeMax(UInt_t dim) const
+    Double_t KTAxisProperties< NDims >::GetRangeMax(UInt_t dim) const
     {
         return fRangeMax[dim-1];
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::GetRange(UInt_t dim, Double_t& min, Double_t& max) const
+    void KTAxisProperties< NDims >::GetRange(UInt_t dim, Double_t& min, Double_t& max) const
     {
         min = GetRangeMin(dim);
         max = GetRangeMax(dim);
@@ -182,7 +182,7 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetRangeMin(UInt_t dim, Double_t min)
+    void KTAxisProperties< NDims >::SetRangeMin(UInt_t dim, Double_t min)
     {
         UInt_t arrPos = dim - 1;
         fRangeMin[arrPos] = min;
@@ -191,7 +191,7 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetRangeMin(const Double_t* mins)
+    void KTAxisProperties< NDims >::SetRangeMin(const Double_t* mins)
     {
         for (Int_t arrPos=0; arrPos<NDims; arrPos++)
         {
@@ -201,7 +201,7 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetRangeMax(UInt_t dim, Double_t max)
+    void KTAxisProperties< NDims >::SetRangeMax(UInt_t dim, Double_t max)
     {
         UInt_t arrPos = dim - 1;
         fRangeMax[arrPos] = max;
@@ -210,7 +210,7 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetRangeMax(const Double_t* maxes)
+    void KTAxisProperties< NDims >::SetRangeMax(const Double_t* maxes)
     {
         for (Int_t arrPos=0; arrPos<NDims; arrPos++)
         {
@@ -220,7 +220,7 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetRange(UInt_t dim, Double_t min, Double_t max)
+    void KTAxisProperties< NDims >::SetRange(UInt_t dim, Double_t min, Double_t max)
     {
         UInt_t arrPos = dim - 1;
         fRangeMin[arrPos] = min;
@@ -230,7 +230,7 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetRange(const Double_t* mins, const Double_t* maxes)
+    void KTAxisProperties< NDims >::SetRange(const Double_t* mins, const Double_t* maxes)
     {
         for (Int_t arrPos=0; arrPos<NDims; arrPos++)
         {
@@ -241,31 +241,31 @@ namespace Katydid
     }
 
     template< UInt_t NDims >
-    Double_t KTPhysicalArray< NDims >::GetBinLowEdge(UInt_t dim, UInt_t bin) const
+    Double_t KTAxisProperties< NDims >::GetBinLowEdge(UInt_t dim, UInt_t bin) const
     {
         return fRangeMin[dim-1] + fBinWidths[dim-1] * (Double_t)bin;
     }
 
     template< UInt_t NDims >
-    Double_t KTPhysicalArray< NDims >::GetBinCenter(UInt_t dim, UInt_t bin) const
+    Double_t KTAxisProperties< NDims >::GetBinCenter(UInt_t dim, UInt_t bin) const
     {
         return fRangeMin[dim-1] + fBinWidths[dim-1] * ((Double_t)bin + 0.5);
     }
 
     template< UInt_t NDims >
-    UInt_t KTPhysicalArray< NDims >::FindBin(UInt_t dim, Double_t pos)
+    UInt_t KTAxisProperties< NDims >::FindBin(UInt_t dim, Double_t pos)
     {
         return (UInt_t)(floor((pos - fRangeMin[dim-1]) / fBinWidths[dim-1]));
     }
 
     template< UInt_t NDims >
-    const std::string& KTPhysicalArray< NDims >::GetLabel(UInt_t dim) const
+    const std::string& KTAxisProperties< NDims >::GetLabel(UInt_t dim) const
     {
         return fLabels[dim-1];
     }
 
     template< UInt_t NDims >
-    void KTPhysicalArray< NDims >::SetLabel(UInt_t dim, const std::string& label)
+    void KTAxisProperties< NDims >::SetLabel(UInt_t dim, const std::string& label)
     {
         fLabels[dim-1] = label;
         return;
@@ -282,7 +282,7 @@ namespace Katydid
 namespace Katydid
 {
     template<>
-    class KTPhysicalArray< 1 >
+    class KTAxisProperties< 1 >
     {
         public:
             enum Dimension
@@ -293,13 +293,13 @@ namespace Katydid
             };
 
         public:
-            KTPhysicalArray();
-            KTPhysicalArray(UInt_t nBins, Double_t rangeMin, Double_t rangeMax);
-            KTPhysicalArray(const KTPhysicalArray< 1 >& orig);
-            virtual ~KTPhysicalArray();
+            KTAxisProperties();
+            KTAxisProperties(UInt_t nBins, Double_t rangeMin, Double_t rangeMax);
+            KTAxisProperties(const KTAxisProperties< 1 >& orig);
+            virtual ~KTAxisProperties();
 
         public:
-            KTPhysicalArray< 1 >& operator=(const KTPhysicalArray< 1 >& orig);
+            KTAxisProperties< 1 >& operator=(const KTAxisProperties< 1 >& orig);
 
             // dimensions
         public:
@@ -344,7 +344,7 @@ namespace Katydid
 
     };
 
-    KTPhysicalArray< 1 >::KTPhysicalArray() :
+    KTAxisProperties< 1 >::KTAxisProperties() :
             fNBins(1),
             fBinWidth(1.),
             fRangeMin(0.),
@@ -353,7 +353,7 @@ namespace Katydid
     {
     }
 
-    KTPhysicalArray< 1 >::KTPhysicalArray(UInt_t nBins, Double_t rangeMin, Double_t rangeMax) :
+    KTAxisProperties< 1 >::KTAxisProperties(UInt_t nBins, Double_t rangeMin, Double_t rangeMax) :
             fNBins(nBins),
             fBinWidth((rangeMax - rangeMin) / (Double_t)nBins),
             fRangeMin(rangeMin),
@@ -362,7 +362,7 @@ namespace Katydid
     {
     }
 
-    KTPhysicalArray< 1 >::KTPhysicalArray(const KTPhysicalArray< 1 >& orig)
+    KTAxisProperties< 1 >::KTAxisProperties(const KTAxisProperties< 1 >& orig)
     {
         fNBins = orig.GetNBins();
         fBinWidth = orig.GetBinWidth();
@@ -371,11 +371,11 @@ namespace Katydid
         fLabel = orig.GetLabel();
     }
 
-    KTPhysicalArray< 1 >::~KTPhysicalArray()
+    KTAxisProperties< 1 >::~KTAxisProperties()
     {
     }
 
-    KTPhysicalArray< 1 >& KTPhysicalArray< 1 >::operator=(const KTPhysicalArray< 1 >& orig)
+    KTAxisProperties< 1 >& KTAxisProperties< 1 >::operator=(const KTAxisProperties< 1 >& orig)
     {
         fNBins = orig.GetNBins();
         fBinWidth = orig.GetBinWidth();
@@ -385,55 +385,55 @@ namespace Katydid
         return *this;
     }
 
-    UInt_t KTPhysicalArray< 1 >::GetNBins() const
+    UInt_t KTAxisProperties< 1 >::GetNBins() const
     {
         return fNBins;
     }
 
-    void KTPhysicalArray< 1 >::SetNBins(UInt_t nBins)
+    void KTAxisProperties< 1 >::SetNBins(UInt_t nBins)
     {
         fNBins = nBins;
         fBinWidth = (fRangeMax - fRangeMin) / (Double_t)fNBins;
         return;
     }
 
-    Double_t KTPhysicalArray< 1 >::GetBinWidth() const
+    Double_t KTAxisProperties< 1 >::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    Double_t KTPhysicalArray< 1 >::GetRangeMin() const
+    Double_t KTAxisProperties< 1 >::GetRangeMin() const
     {
         return fRangeMin;
     }
 
-    Double_t KTPhysicalArray< 1 >::GetRangeMax() const
+    Double_t KTAxisProperties< 1 >::GetRangeMax() const
     {
         return fRangeMax;
     }
 
-    void KTPhysicalArray< 1 >::GetRange(Double_t& min, Double_t& max) const
+    void KTAxisProperties< 1 >::GetRange(Double_t& min, Double_t& max) const
     {
         min = GetRangeMin();
         max = GetRangeMax();
         return;
     }
 
-    void KTPhysicalArray< 1 >::SetRangeMin(Double_t min)
+    void KTAxisProperties< 1 >::SetRangeMin(Double_t min)
     {
         fRangeMin = min;
         fBinWidth = (fRangeMax - fRangeMin) / (Double_t)fNBins;
         return;
     }
 
-    void KTPhysicalArray< 1 >::SetRangeMax(Double_t max)
+    void KTAxisProperties< 1 >::SetRangeMax(Double_t max)
     {
         fRangeMax = max;
         fBinWidth = (fRangeMax - fRangeMin) / (Double_t)fNBins;
         return;
     }
 
-    void KTPhysicalArray< 1 >::SetRange(Double_t min, Double_t max)
+    void KTAxisProperties< 1 >::SetRange(Double_t min, Double_t max)
     {
         SetRangeMin(min);
         SetRangeMax(max);
@@ -441,27 +441,27 @@ namespace Katydid
         return;
     }
 
-    Double_t KTPhysicalArray< 1 >::GetBinLowEdge(UInt_t bin) const
+    Double_t KTAxisProperties< 1 >::GetBinLowEdge(UInt_t bin) const
     {
         return fRangeMin + fBinWidth * (Double_t)bin;
     }
 
-    Double_t KTPhysicalArray< 1 >::GetBinCenter(UInt_t bin) const
+    Double_t KTAxisProperties< 1 >::GetBinCenter(UInt_t bin) const
     {
         return fRangeMin + fBinWidth * ((Double_t)bin + 0.5);
     }
 
-    UInt_t KTPhysicalArray< 1 >::FindBin(Double_t pos)
+    UInt_t KTAxisProperties< 1 >::FindBin(Double_t pos)
     {
         return (UInt_t)(floor((pos - fRangeMin) / fBinWidth));
     }
 
-    const std::string& KTPhysicalArray< 1 >::GetLabel() const
+    const std::string& KTAxisProperties< 1 >::GetLabel() const
     {
         return fLabel;
     }
 
-    void KTPhysicalArray< 1 >::SetLabel(const std::string& label)
+    void KTAxisProperties< 1 >::SetLabel(const std::string& label)
     {
         fLabel = label;
         return;
@@ -470,4 +470,4 @@ namespace Katydid
 } /* namespace Katydid */
 
 
-#endif /* KTPHYSICALARRAY_HH_ */
+#endif /* KTAXISPROPERTIES_HH_ */

@@ -1,12 +1,12 @@
 /*
- * TestPhysicalArray.cc
+ * TestAxisProperties.cc
  *
  *  Created on: Dec 26, 2011
  *      Author: nsoblath
  */
 
 
-#include "KTPhysicalArray.hh"
+#include "KTAxisProperties.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     // Test the 1-D array
     cout << "One-dimensional test" << endl;
 
-    KTPhysicalArray< 1 > array;
+    KTAxisProperties< 1 > array;
     array.SetNBins(nBins1);
     array.SetRangeMin(rangeMin1);
     array.SetRangeMax(rangeMax1);
@@ -57,17 +57,17 @@ int main(int argc, char** argv)
 
     if (! theyAgree)
     {
-        cout << "The KTPhysicalArray calculations disagree with TH1!" << endl;
+        cout << "The KTAxisProperties calculations disagree with TH1!" << endl;
         cout << "  " << histCompare.GetBinWidth(testBin1+1) << "  " << histCompare.FindBin(testPosition1) << "  " << histCompare.GetBinLowEdge(testBin1+1) << "  " << histCompare.GetBinCenter(testBin1+1) << endl;
         return -1;
     }
 
-    cout << "The KTPhysicalArray calculations agree with TH1" << endl;
+    cout << "The KTAxisProperties calculations agree with TH1" << endl;
 
     // Test a 2-D array
     cout << "Two-dimensional test" << endl;
 
-    KTPhysicalArray< 2 > array2D;
+    KTAxisProperties< 2 > array2D;
     UInt_t nBinses [2] = {nBins1, nBins2};
     Double_t rangeMins [2] = {rangeMin1, rangeMin2};
     Double_t rangeMaxes [2] = {rangeMax1, rangeMax2};
@@ -94,7 +94,7 @@ int main(int argc, char** argv)
 
     if (! theyAgree)
     {
-        cout << "The KTPhysicalArray calculations disagree with the x-axis of TH2!" << endl;
+        cout << "The KTAxisProperties calculations disagree with the x-axis of TH2!" << endl;
         cout << "  " << xAxis->GetBinWidth(testBin1+1) << "  " << xAxis->FindBin(testPosition1) << "  " << xAxis->GetBinLowEdge(testBin1+1) << "  " << xAxis->GetBinCenter(testBin1+1) << endl;
         return -1;
     }
@@ -107,13 +107,13 @@ int main(int argc, char** argv)
 
     if (! theyAgree)
     {
-        cout << "The KTPhysicalArray calculations disagree with the y-axis of TH2!" << endl;
+        cout << "The KTAxisProperties calculations disagree with the y-axis of TH2!" << endl;
         cout << "  " << yAxis->GetBinWidth(testBin2+1) << "  " << yAxis->FindBin(testPosition2) << "  " << yAxis->GetBinLowEdge(testBin2+1) << "  " << yAxis->GetBinCenter(testBin2+1) << endl;
         return -1;
     }
 
 
-    cout << "The KTPhysicalArray calculations agree with TH2" << endl;
+    cout << "The KTAxisProperties calculations agree with TH2" << endl;
 
 
     return 0;
