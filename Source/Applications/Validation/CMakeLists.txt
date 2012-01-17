@@ -21,12 +21,16 @@ if (ENABLE_TESTING)
     add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
     target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
 
+    add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
+    target_link_libraries (TestVector KatydidUtility ${LIBS})
+
     install (TARGETS ExtractEvents
                      TestCutIterator
                      TestCutableArray
                      TestAxisProperties
                      TestSimpleFFT
                      TestSlidingWindowFFT
+                     TestVector
              DESTINATION bin)
              
     # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.
@@ -36,5 +40,6 @@ if (ENABLE_TESTING)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
+    add_test (Test_Vector TestVector)
         
 endif (ENABLE_TESTING) 

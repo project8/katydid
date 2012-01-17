@@ -19,29 +19,27 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    UInt_t nBins1 = 100;
+    size_t nBins1 = 100;
     Double_t rangeMin1 = 1.0;
     Double_t rangeMax1 = 2.0;
 
     Double_t testPosition1 = 1.82235;
-    UInt_t testBin1 = 35;
+    size_t testBin1 = 35;
 
-    UInt_t nBins2 = 541;
+    size_t nBins2 = 541;
     Double_t rangeMin2 = -23;
     Double_t rangeMax2 = 2039;
 
     Double_t testPosition2 = 820;
-    UInt_t testBin2 = 18;
+    size_t testBin2 = 18;
 
     // Test the 1-D array
     cout << "One-dimensional test" << endl;
 
-    KTAxisProperties< 1 > array;
-    array.SetNBins(nBins1);
-    array.SetRangeMin(rangeMin1);
-    array.SetRangeMax(rangeMax1);
+    KTNBinsInArray< 1, FixedSize >* nBinsFunctor = new KTNBinsInArray< 1, FixedSize >(nBins1);
+    KTAxisProperties< 1 > array(rangeMin1, rangeMax1, nBinsFunctor);
 
-    cout << "Physical array setup with nbins = " << array.GetNBins() << ", range_min = " << array.GetRangeMin() << ", and range_max = " << array.GetRangeMax() << endl;
+    cout << "Axis properties setup with nbins = " << array.GetNBins() << ", range_min = " << array.GetRangeMin() << ", and range_max = " << array.GetRangeMax() << endl;
     cout << "The bin width is " << array.GetBinWidth() << endl;
     cout << "The test position (" << testPosition1 << ") is in bin " << array.FindBin(testPosition1) << endl;
     cout << "The test bin (" << testBin1 << ") has a low edge of " << array.GetBinLowEdge(testBin1) << " and a bin center of " << array.GetBinCenter(testBin1) << endl;
@@ -67,15 +65,16 @@ int main(int argc, char** argv)
     // Test a 2-D array
     cout << "Two-dimensional test" << endl;
 
+    size_t nBinses [2] = {nBins1, nBins2};
+    KTNBinsInArray< 2, FixedSize >* nBinsFunctor2 = new KTNBinsInArray< 2, FixedSize >(nBinses);
     KTAxisProperties< 2 > array2D;
-    UInt_t nBinses [2] = {nBins1, nBins2};
     Double_t rangeMins [2] = {rangeMin1, rangeMin2};
     Double_t rangeMaxes [2] = {rangeMax1, rangeMax2};
-    array2D.SetNBins(nBinses);
+    array2D.SetNBinsFunc(nBinsFunctor2);
     array2D.SetRangeMin(rangeMins);
     array2D.SetRangeMax(rangeMaxes);
 
-    cout << "Physical array setup with nbins (x,y) = (" << array2D.GetNBins(1) << "," << array2D.GetNBins(2) << "), range_min = (" << array2D.GetRangeMin(1) << "," << array2D.GetRangeMin(2) << "), and range_max = (" << array2D.GetRangeMax(1) << "," << array2D.GetRangeMax(2) << ")" << endl;
+    cout << "Axis properties setup with nbins (x,y) = (" << array2D.GetNBins(1) << "," << array2D.GetNBins(2) << "), range_min = (" << array2D.GetRangeMin(1) << "," << array2D.GetRangeMin(2) << "), and range_max = (" << array2D.GetRangeMax(1) << "," << array2D.GetRangeMax(2) << ")" << endl;
     cout << "The bin widths are " << array2D.GetBinWidth(1) << " and " << array2D.GetBinWidth(2) << endl;
     cout << "The test position 1 (" << testPosition1 << ") is in bin " << array2D.FindBin(1, testPosition1) << endl;
     cout << "The test position 2 (" << testPosition2 << ") is in bin " << array2D.FindBin(2, testPosition2) << endl;
@@ -114,7 +113,6 @@ int main(int argc, char** argv)
 
 
     cout << "The KTAxisProperties calculations agree with TH2" << endl;
-
 
     return 0;
 }
