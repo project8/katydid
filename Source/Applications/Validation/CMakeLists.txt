@@ -15,6 +15,9 @@ if (ENABLE_TESTING)
     add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
     
+    add_executable (TestSettings ${CMAKE_CURRENT_SOURCE_DIR}/TestSettings.cc)
+    target_link_libraries (TestSettings KatydidUtility ${LIBS})
+    
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
     target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
 
@@ -28,6 +31,7 @@ if (ENABLE_TESTING)
                      TestCutIterator
                      TestCutableArray
                      TestAxisProperties
+                     TestSettings
                      TestSimpleFFT
                      TestSlidingWindowFFT
                      TestVector
@@ -38,6 +42,7 @@ if (ENABLE_TESTING)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_AxisProperties TestAxisProperties)
+    add_test (Test_Settings TestSettings)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     add_test (Test_Vector TestVector)

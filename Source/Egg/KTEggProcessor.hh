@@ -45,6 +45,8 @@ namespace Katydid
             KTEggProcessor();
             virtual ~KTEggProcessor();
 
+            Bool_t ApplySetting(const KTSetting* setting);
+
             Bool_t ProcessEgg(const std::string& fileName);
 
             UInt_t GetNEvents() const;

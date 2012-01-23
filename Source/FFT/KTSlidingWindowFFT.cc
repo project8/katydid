@@ -13,7 +13,6 @@
 #include "KTWindowFunction.hh"
 
 #include "TH2D.h"
-#include "TMath.h"
 
 #include <iostream>
 
@@ -32,6 +31,8 @@ namespace Katydid
             fIsInitialized(kFALSE),
             fIsDataReady(kFALSE),
             fOverlap(0),
+            fOverlapFrac(0.),
+            fUseOverlapFrac(kFALSE),
             fWindowFunction(NULL),
             fTimeData(),
             fPowerSpectra()
@@ -67,7 +68,7 @@ namespace Katydid
 
         if (event->GetBinWidth() != fWindowFunction->GetBinWidth())
         {
-            std::cerr << "Warning from KTSlidingWindowFFT::TakeData: Bin widths are mismatched between the given event and the window function." << std::endl;
+            std::cerr << "Warning from KTSlidingWindowFFT::TakeData: Bin widths are mismatched between the given event (" << event->GetBinWidth() << ") and the window function (" << fWindowFunction->GetBinWidth() << ")." << std::endl;
             return kFALSE;
         }
 
@@ -151,8 +152,9 @@ namespace Katydid
 
         if (fWindowFunction->GetSize() < this->GetFullTimeSize())
         {
-            Int_t windowShift = fWindowFunction->GetSize() - fOverlap;
-            std::cout << "window shift: " << windowShift << std::endl;
+            //std::cout << fWindowFunction->GetSize() << "  " << fWindowFunction->GetBinWidth() << "  " << fWindowFunction->GetLength() << "  " << GetEffectiveOverlap() << "  " << GetFullTimeSize() << "  " << GetTimeSize() << std::endl;
+            Int_t windowShift = fWindowFunction->GetSize() - GetEffectiveOverlap();
+            //std::cout << "window shift: " << windowShift << std::endl;
             //Int_t nWindows = 1 + TMath::FloorNint((Double_t)(this->GetFullTimeSize() - fWindowFunction->GetSize()) / (Double_t)windowShift);
             Int_t iWindow = 0;
             for (unsigned int windowStart=0; windowStart + fWindowFunction->GetSize() <= this->GetFullTimeSize(); windowStart += windowShift)
@@ -186,7 +188,7 @@ namespace Katydid
         // plot in MHz, instead of Hz
         Double_t freqMult = 1.e-6;
 
-        Double_t effTimeWidth = (Double_t)(fPowerSpectra.size() * fWindowFunction->GetSize() - (fPowerSpectra.size()-1) * fOverlap);
+        Double_t effTimeWidth = (Double_t)(fPowerSpectra.size() * fWindowFunction->GetSize() - (fPowerSpectra.size()-1) * GetEffectiveOverlap());
         effTimeWidth *= fWindowFunction->GetBinWidth();
         TH2D* hist = new TH2D(name.c_str(), "Power Spectra",
                 fPowerSpectra.size(), 0., effTimeWidth,
@@ -234,18 +236,14 @@ namespace Katydid
     void KTSlidingWindowFFT::SetWindowSize(UInt_t nBins)
     {
         fWindowFunction->SetSize(nBins);
-        delete fTransform;
-        fTransform = new TFFTRealComplex(nBins, kFALSE);
-        fIsInitialized = kFALSE;
+        RecreateFFT();
         return;
     }
 
     void KTSlidingWindowFFT::SetWindowLength(Double_t wlTime)
     {
         fWindowFunction->SetLength(wlTime);
-        delete fTransform;
-        fTransform = new TFFTRealComplex(fWindowFunction->GetSize(), kFALSE);
-        fIsInitialized = kFALSE;
+        RecreateFFT();
         return;
     }
 
@@ -253,21 +251,16 @@ namespace Katydid
     {
         delete fWindowFunction;
         fWindowFunction = wf;
+        RecreateFFT();
+        return;
+    }
+
+    void KTSlidingWindowFFT::RecreateFFT()
+    {
         delete fTransform;
         fTransform = new TFFTRealComplex(fWindowFunction->GetSize(), kFALSE);
         fIsInitialized = kFALSE;
-        return;
-    }
-
-    void KTSlidingWindowFFT::SetOverlap(Double_t overlapTime)
-    {
-        this->SetOverlap((UInt_t)TMath::Nint(overlapTime / fWindowFunction->GetBinWidth()));
-        return;
-    }
-
-    UInt_t KTSlidingWindowFFT::GetWindowSize() const
-    {
-        return (UInt_t)fWindowFunction->GetSize();
+        fIsDataReady = kFALSE;
     }
 
 

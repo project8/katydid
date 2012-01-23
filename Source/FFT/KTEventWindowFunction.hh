@@ -45,19 +45,25 @@ namespace Katydid
 
             virtual Double_t GetBinWidth() const;
 
-            /// Adapts the given length to be the integer multiple of fBinWidth.
-            /// Returns the adapted width.
-            /// If you also need to set the bin width, it is highly recommended that you use SetBinWidthAndLength(Double_t, Double_t).
+            /// Sets fLength to length, and adapts the bin width to be an integral number of bins closest to the current bw.
+            /// Returns the adapted bin width.
+            /// NOTE: this changes the size of the window!
             virtual Double_t SetLength(Double_t length);
             /// Sets fBinWidth to bw, and adapts the length to be the integral number of bins closest to the current fLength.
             /// Returns the adapted length.
-            /// It is recommended that you have already set fLength before calling this function.
+            /// NOTE: this changes the size of the window!
             virtual Double_t SetBinWidth(Double_t bw);
-            ///Adapts the given length to the be an integer multiple of the given bin width (bw).
+            ///Adapts the given length (length) to the be an integer multiple of the given bin width (bw).
             /// Returns the adapted length.
+            /// NOTE: this changes the size of the window!
             Double_t SetBinWidthAndLength(Double_t bw, Double_t length);
-            ///Sets fWidthInBins directly; leaves fBinWidth as is, and sets fWidth accordingly.
+            ///Adapts the given bin width to be an integer divisor of the given length (length)
+            /// Returns the adapted bin width.
+            /// NOTE: this changes the size of the window!
+            Double_t SetLengthAndBinWidth(Double_t length, Double_t bw);
+            ///Sets the number of bins; leaves fBinWidth as is, and sets fLength accordingly.
             ///Returns the adapted length.
+            ///NOTE: this changes the size of the window! (duh)
             virtual Double_t SetSize(UInt_t size);
 
         protected:

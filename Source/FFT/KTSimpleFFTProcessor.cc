@@ -29,6 +29,16 @@ namespace Katydid
         fEventConnection.disconnect();
     }
 
+    Bool_t KTSimpleFFTProcessor::ApplySetting(const KTSetting* setting)
+    {
+        if (setting->GetName() == "TransformFlag")
+        {
+            fFFT.SetTransformFlag(setting->GetValue< const string& >());
+            return kTRUE;
+        }
+        return kFALSE;
+    }
+
     void KTSimpleFFTProcessor::ProcessHeader(KTEgg::HeaderInfo headerInfo)
     {
         fFFT.SetTimeSize(headerInfo.fRecordSize);
@@ -40,7 +50,7 @@ namespace Katydid
     {
         if (fFFT.TakeData(event))
         {
-            cout << "Data transferred; performing transform" << endl;
+            cout << "Data transferred to simple fft; performing transform" << endl;
             fFFT.Transform();
             fFFTSignal(iEvent, &fFFT);
         }

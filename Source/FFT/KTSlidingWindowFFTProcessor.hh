@@ -1,18 +1,19 @@
 /**
- @file KTSimpleFFTProcessor.hh
- @brief Contains KTSimpleFFTProcessor
- @details Creates a 1-D power spectrum from an event; optionally accumulates an average spectrum
+ @file KTSlidingWindowFFTProcessor.hh
+ @brief Contains KTSlidingWindowFFTProcessor
+ @details Creates a 2-D (frequency vs. time) power spectrum from an event
  @author: N. S. Oblath
- @date: Jan 5, 2012
+ @date: Jan 17, 2012
  */
 
-#ifndef KTSIMPLEFFTPROCESSOR_HH_
-#define KTSIMPLEFFTPROCESSOR_HH_
+#ifndef KTSLIDINGWINDOWFFTPROCESSOR_HH_
+#define KTSLIDINGWINDOWFFTPROCESSOR_HH_
 
 #include "KTProcessor.hh"
 
 #include "KTEgg.hh"
-#include "KTSimpleFFT.hh"
+#include "KTSlidingWindowFFT.hh"
+#include "KTEventWindowFunction.hh"
 
 #include "Rtypes.h"
 
@@ -23,14 +24,14 @@
 namespace Katydid
 {
 
-    class KTSimpleFFTProcessor : public KTProcessor
+    class KTSlidingWindowFFTProcessor : public KTProcessor
     {
         public:
-            typedef boost::signals2::signal< void (UInt_t, const KTSimpleFFT*) > FFTSignal;
+            typedef boost::signals2::signal< void (UInt_t, const KTSlidingWindowFFT*) > FFTSignal;
 
         public:
-            KTSimpleFFTProcessor();
-            virtual ~KTSimpleFFTProcessor();
+            KTSlidingWindowFFTProcessor();
+            virtual ~KTSlidingWindowFFTProcessor();
 
             Bool_t ApplySetting(const KTSetting* setting);
 
@@ -39,7 +40,8 @@ namespace Katydid
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
 
         private:
-            KTSimpleFFT fFFT;
+            KTSlidingWindowFFT fFFT;
+            KTEventWindowFunction* fWindowFunc;
 
 
             //***************
@@ -69,22 +71,22 @@ namespace Katydid
 
     };
 
-    inline boost::signals2::connection KTSimpleFFTProcessor::ConnectToFFTSignal(const FFTSignal::slot_type &subscriber)
+    inline boost::signals2::connection KTSlidingWindowFFTProcessor::ConnectToFFTSignal(const FFTSignal::slot_type &subscriber)
     {
         return fFFTSignal.connect(subscriber);
     }
 
-    inline void KTSimpleFFTProcessor::SetHeaderSlotConnection(boost::signals2::connection headerConn)
+    inline void KTSlidingWindowFFTProcessor::SetHeaderSlotConnection(boost::signals2::connection headerConn)
     {
         fHeaderConnection = headerConn;
         return;
     }
 
-    inline void KTSimpleFFTProcessor::SetEventSlotConnection(boost::signals2::connection eventConn)
+    inline void KTSlidingWindowFFTProcessor::SetEventSlotConnection(boost::signals2::connection eventConn)
     {
         fEventConnection = eventConn;
         return;
     }
 
 } /* namespace Katydid */
-#endif /* KTSIMPLEFFTPROCESSOR_HH_ */
+#endif /* KTSLIDINGWINDOWFFTPROCESSOR_HH_ */

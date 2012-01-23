@@ -130,11 +130,12 @@ namespace Katydid
 
     Double_t KTEventWindowFunction::SetLength(Double_t length)
     {
-        Double_t prelimNBins = TMath::Abs(length) / fBinWidth;
+        fLength = TMath::Abs(length);
+        Double_t prelimNBins = fLength / fBinWidth;
         fSize = (unsigned int)TMath::Nint(prelimNBins);
-        fLength = (Double_t)fSize * fBinWidth;
+        fBinWidth = fLength / (Double_t)fSize;
         this->RebuildWindowFunction();
-        return fLength;
+        return fBinWidth;
     }
 
     Double_t KTEventWindowFunction::SetBinWidth(Double_t bw)
@@ -144,6 +145,7 @@ namespace Katydid
         fSize = (unsigned int)TMath::Nint(prelimNBins);
         fLength = (Double_t)fSize * fBinWidth;
         this->RebuildWindowFunction();
+        std::cout << "setting the bin width: " << fSize << "  " << fBinWidth << "  " << fLength << std::endl;
         return fLength;
     }
 
@@ -155,6 +157,16 @@ namespace Katydid
         fLength = (Double_t)fSize * fBinWidth;
         this->RebuildWindowFunction();
         return fLength;
+    }
+
+    Double_t KTEventWindowFunction::SetLengthAndBinWidth(Double_t length, Double_t bw)
+    {
+        fLength = TMath::Abs(length);
+        Double_t prelimNBins = fLength / TMath::Abs(bw);
+        fSize = (unsigned int)TMath::Nint(prelimNBins);
+        fBinWidth = fLength / (Double_t)fSize;
+        this->RebuildWindowFunction();
+        return fBinWidth;
     }
 
     Double_t KTEventWindowFunction::SetSize(UInt_t wib)

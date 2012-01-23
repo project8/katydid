@@ -8,6 +8,7 @@
 
 #include "KTEggProcessor.hh"
 #include "KTSimpleFFTProcessor.hh"
+#include "KTSetting.hh"
 
 #include "TFile.h"
 #include "TH1D.h"
@@ -76,10 +77,12 @@ int main(int argc, char** argv)
 
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
-    procEgg.SetNEvents(numEvents);
+    KTSetting settingEggNEvents("NEvents", numEvents);
+    procEgg.ApplySetting(&settingEggNEvents);
 
     KTSimpleFFTProcessor procFFT;
-    procFFT.SetTransformFlag("ES");
+    KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
+    procFFT.ApplySetting(&settingFFTTransFlag);
 
     PowerSpectraContainer powerSpectra;
 
