@@ -1,0 +1,34 @@
+# CMakeLists for Katydid/Source/Analysis
+# Author: N. Oblath
+
+set (ANALYSIS_DICT_HEADERFILES
+)
+
+set (ANALYSIS_NODICT_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHuntProcessor.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalizationProcessor.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClusteringProcessor.hh
+)
+
+set (ANALYSIS_HEADERFILES ${ANALYSIS_DICT_HEADERFILES} ${ANALYSIS_NODICT_HEADERFILES})
+
+set (ANALYSIS_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHuntProcessor.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalizationProcessor.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClusteringProcessor.cc
+)
+
+#set (ANALYSIS_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/AnalysisLinkDef.hh)
+#set (ANALYSIS_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/AnalysisDict.cxx)
+
+##################################################
+
+#ROOT_GENERATE_DICTIONARY ("${ANALYSIS_DICT_HEADERFILES}" "${ANALYSIS_LINKDEF_HEADERFILE}" "${ANALYSIS_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+
+add_library (KatydidAnalysis ${ANALYSIS_SOURCEFILES} ${ANALYSIS_DICT_OUTFILE})
+set_target_properties(KatydidAnalysis PROPERTIES INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/lib)
+target_link_libraries (KatydidAnalysis KatydidFFT KatydidUtility KatydidEgg ${LIBS})
+
+install (FILES ${ANALYSIS_HEADERFILES}  DESTINATION include)
+install (TARGETS KatydidAnalysis  DESTINATION lib)
+         
