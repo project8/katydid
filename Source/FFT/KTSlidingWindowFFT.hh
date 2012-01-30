@@ -16,6 +16,8 @@
 #include "TFFTRealComplex.h"
 #include "TMath.h"
 
+#include "boost/signals2.hpp"
+
 #include <string>
 #include <vector>
 using std::vector;
@@ -29,6 +31,9 @@ namespace Katydid
 
     class KTSlidingWindowFFT : public KTFFT
     {
+        public:
+            typedef boost::signals2::signal< void (UInt_t, KTPowerSpectrum*) > SingleFFTSignal;
+
         public:
             KTSlidingWindowFFT();
             virtual ~KTSlidingWindowFFT();
@@ -57,7 +62,7 @@ namespace Katydid
             Bool_t GetUseOverlapFrac() const;
             KTWindowFunction* GetWindowFunction() const;
             const std::vector< Double_t >& GetTimeData() const;
-            const KTPowerSpectrum* GetPowerSpectrum(Int_t spect) const;
+            KTPowerSpectrum* GetPowerSpectrum(Int_t spect) const;
 
             const TFFTRealComplex* GetFFT() const;
             const std::string& GetTransformFlag() const;
@@ -95,7 +100,18 @@ namespace Katydid
             std::vector< Double_t > fTimeData;
             std::vector< KTPowerSpectrum* > fPowerSpectra;
 
-            ClassDef(KTSlidingWindowFFT, 2);
+
+            //***************
+            // Signals
+            //***************
+
+        public:
+            boost::signals2::connection ConnectToFFTSignal(const SingleFFTSignal::slot_type &subscriber);
+            boost::signals2::connection ConnectToFFTSignal(Int_t group, const SingleFFTSignal::slot_type &subscriber);
+
+        private:
+            SingleFFTSignal fSingleFFTSignal;
+
     };
 
 
@@ -165,7 +181,7 @@ namespace Katydid
         return fTimeData;
     }
 
-    inline const KTPowerSpectrum* KTSlidingWindowFFT::GetPowerSpectrum(Int_t spec) const
+    inline KTPowerSpectrum* KTSlidingWindowFFT::GetPowerSpectrum(Int_t spec) const
     {
         if (spec >= 0 && spec < (Int_t)fPowerSpectra.size()) return fPowerSpectra[spec];
         return NULL;
@@ -220,6 +236,17 @@ namespace Katydid
         fFreqBinWidth = bw;
         return;
     }
+
+    inline boost::signals2::connection KTSlidingWindowFFT::ConnectToFFTSignal(const SingleFFTSignal::slot_type &subscriber)
+    {
+        return fSingleFFTSignal.connect(subscriber);
+    }
+
+    inline boost::signals2::connection KTSlidingWindowFFT::ConnectToFFTSignal(Int_t group, const SingleFFTSignal::slot_type &subscriber)
+    {
+        return fSingleFFTSignal.connect(group, subscriber);
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTSLIDINGWINDOWFFT_HH_ */

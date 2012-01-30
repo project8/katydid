@@ -7,6 +7,8 @@
 
 #include "KTPowerSpectrum.hh"
 
+#include "KTPhysicalArray.hh"
+
 #include <cmath>
 #include <iostream>
 
@@ -107,6 +109,32 @@ namespace Katydid
         return hist;
     }
 
+    KTPhysicalArray< 1, Double_t >* KTPowerSpectrum::CreateMagnitudePhysArr() const
+    {
+        Double_t freqMult = 1.e-6;
+        size_t nBins = fMagnitude.GetNoElements();
+        KTPhysicalArray< 1, Double_t >* physArray = new KTPhysicalArray< 1, Double_t >(nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((Double_t)nBins-0.5) * freqMult);
+        for (size_t bin=0; bin<nBins; bin++)
+        {
+            (*physArray)[bin] = fMagnitude(bin);
+        }
+        physArray->SetLabel("Frequency (MHz)");
+        return physArray;
+    }
+
+    KTPhysicalArray< 1, Double_t >* KTPowerSpectrum::CreatePhasePhysArr() const
+    {
+        Double_t freqMult = 1.e-6;
+        size_t nBins = fPhase.GetNoElements();
+        KTPhysicalArray< 1, Double_t >* physArray = new KTPhysicalArray< 1, Double_t >(nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((Double_t)nBins-0.5) * freqMult);
+        for (size_t bin=0; bin<nBins; bin++)
+        {
+            (*physArray)[bin] = fPhase(bin);
+        }
+        physArray->SetLabel("Frequency (MHz)");
+        return physArray;
+    }
+
     TH1D* KTPowerSpectrum::CreatePowerDistributionHistogram() const
     {
         TH1D* hist = KTPowerSpectrum::CreatePowerDistributionHistogram("hPowerDistribution");
@@ -132,5 +160,7 @@ namespace Katydid
         hist->SetXTitle("Power");
         return hist;
     }
+
+
 
 } /* namespace Katydid */

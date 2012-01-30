@@ -1,8 +1,9 @@
-/*
- * KTSimpleFFT.hh
- *
- *  Created on: Sep 12, 2011
- *      Author: nsoblath
+/**
+ @file KTSimpleFFT.hh
+ @brief Contains KTSimpleFFT
+ @details Calculates a 1-dimensional FFT on a set of real data.
+ @author: N. S. Oblath
+ @date: Sep 12, 2011
  */
 
 #ifndef KTSIMPLEFFT_HH_
@@ -23,6 +24,21 @@ namespace Katydid
     class KTPowerSpectrum;
     class KTEvent;
 
+    template< size_t NDims, typename XDataType >
+    class KTPhysicalArray;
+
+    /*!
+     @class KTSimpleFFT
+     @author N. S. Oblath
+
+     @brief A one-dimensional real-to-complex FFT class.
+
+     @details
+     KTSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
+
+     The FFT is currently performed by ROOT's adaptation of FFTW. Specifically the TFFTRealComplex class.
+    */
+
     class KTSimpleFFT : public KTFFT
     {
         public:
@@ -40,6 +56,8 @@ namespace Katydid
 
             virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name) const;
             virtual TH1D* CreatePowerSpectrumHistogram() const;
+
+            virtual KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr() const;
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
             virtual UInt_t GetTimeSize() const;

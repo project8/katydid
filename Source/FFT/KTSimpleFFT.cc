@@ -10,6 +10,7 @@
 //#include "KTArrayUC.hh"
 #include "KTEvent.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTPhysicalArray.hh"
 
 //#include "TArray.h"
 #include "TH1D.h"
@@ -175,6 +176,14 @@ namespace Katydid
     TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram() const
     {
         return CreatePowerSpectrumHistogram("hPowerSpectrum_SimpleFFT");
+    }
+
+    KTPhysicalArray< 1, Double_t >* KTSimpleFFT::CreatePowerSpectrumPhysArr() const
+    {
+        KTPowerSpectrum* ps = this->CreatePowerSpectrum();
+        KTPhysicalArray< 1, Double_t >* psPhysArr = ps->CreateMagnitudePhysArr();
+        delete ps;
+        return psPhysArr;
     }
 
     KTPowerSpectrum* KTSimpleFFT::CreatePowerSpectrum() const

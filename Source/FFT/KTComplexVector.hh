@@ -16,6 +16,9 @@ using std::string;
 
 namespace Katydid
 {
+    template< size_t NDims, typename XDataType >
+    class KTPhysicalArray;
+
     class KTComplexVector
     {
         public:
@@ -28,12 +31,18 @@ namespace Katydid
             virtual void UsePolar(const TVectorD& mag, const TVectorD& phase);
             virtual void UseRectangular(const TVectorD& real, const TVectorD& imag);
 
-            KTComplexVector& operator*= (Double_t mult);
+            KTComplexVector& operator*=(Double_t mult);
+
+            // element-by-element division; div assumed real so only magnitude is divided
+            KTComplexVector& operator/=(const KTPhysicalArray< 1, Double_t >& div);
 
             virtual TH1D* CreateMagnitudeHistogram(const std::string& name) const;
             virtual TH1D* CreateMagnitudeHistogram() const;
             virtual TH1D* CreatePhaseHistogram(const std::string& name) const;
             virtual TH1D* CreatePhaseHistogram() const;
+
+            virtual KTPhysicalArray< 1, Double_t >* CreateMagnitudePhysArr() const;
+            virtual KTPhysicalArray< 1, Double_t >* CreatePhasePhysArr() const;
 
             Double_t GetMagnitudeAt(Int_t iBin) const;
             Double_t GetPhaseAt(Int_t iBin) const;

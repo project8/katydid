@@ -14,6 +14,15 @@
 #include "KTSimpleFFTProcessor.hh"
 #include "KTSlidingWindowFFTProcessor.hh"
 #include "KTGainNormalizationProcessor.hh"
+#include "KTSimpleClusteringProcessor.hh"
+
+#include "TFile.h"
+
+#include "boost/signals2.hpp"
+
+#include <fstream>
+#include <list>
+#include <map>
 
 namespace Katydid
 {
@@ -29,6 +38,9 @@ namespace Katydid
 
     class KTFFTEHuntProcessor : public KTProcessor
     {
+        private:
+            typedef std::list< std::multimap< Int_t, Int_t >* > EventPeakBinsList;
+
         public:
             KTFFTEHuntProcessor();
             virtual ~KTFFTEHuntProcessor();
@@ -40,11 +52,54 @@ namespace Katydid
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
 
         private:
+            void EmptyEventPeakBins();
+
+        private:
+            EventPeakBinsList fEventPeakBins;
+
+            UInt_t fMinimumGroupSize;
+
             KTSimpleFFTProcessor fSimpleFFTProc;
             KTSlidingWindowFFTProcessor fWindowFFTProc;
             KTGainNormalizationProcessor fGainNormProc;
+            KTSimpleClusteringProcessor fClusteringProc;
+
+            string fTextFilename;
+            string fROOTFilename;
+            Bool_t fWriteTextFileFlag;
+            Bool_t fWriteROOTFileFlag;
+            ofstream fTextFile;
+            TFile fROOTFile;
+
+
+            //****************
+            // Slot connection
+            //****************
+
+        public:
+            //void ConnectToHeaderSignalFrom(KTSignalEmitter* sigEmit);
+            //void ConnectToEventSignalFrom(KTSignalEmitter* sigEmit);
+            void SetHeaderSlotConnection(boost::signals2::connection headerConn);
+            void SetEventSlotConnection(boost::signals2::connection eventConn);
+
+        private:
+            boost::signals2::connection fHeaderConnection;
+            boost::signals2::connection fEventConnection;
 
     };
+
+    inline void KTFFTEHuntProcessor::SetHeaderSlotConnection(boost::signals2::connection headerConn)
+    {
+        fHeaderConnection = headerConn;
+        return;
+    }
+
+    inline void KTFFTEHuntProcessor::SetEventSlotConnection(boost::signals2::connection eventConn)
+    {
+        fEventConnection = eventConn;
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTFFTEHUNTPROCESSOR_HH_ */

@@ -271,6 +271,7 @@ int main(int argc, char** argv)
             histGainNorm->SetBinContent(iBin, meanBinContent);
             //cout << "Gain norm bin " << iBin << "  content: " << meanBinContent << endl;
         }
+        cout << "gain normalization calculation complete" << endl;
         /*// DEBUG
         if (drawWaterfall)
         {
@@ -292,9 +293,11 @@ int main(int argc, char** argv)
         list< multimap< Int_t, Int_t >* > eventPeakBins;
 
         // Look for the highest-peaked bins
+        cout << "selecting peaked bins and grouping them" << endl;
         //for (Int_t ifft=1; ifft<=10; ifft++)
         for (Int_t ifft=1; ifft<=hist->GetNbinsX(); ifft++)
         {
+            cout << "fft " << ifft << flush;
             // Get this fft's histogram
             histProj = hist->ProjectionY(name.c_str(), ifft, ifft);
             // normalize the histogram based on the full-PS normalization values (calcuclated above)
@@ -363,6 +366,7 @@ int main(int argc, char** argv)
             delete histProj;
 
             // Look for groups
+            cout << "; grouping" << flush;
             for (set< Int_t >::iterator iPB=peakBins.begin(); iPB!=peakBins.end(); iPB++)
             {
                 Int_t pbVal = *iPB;
@@ -420,6 +424,8 @@ int main(int argc, char** argv)
                 eventPeakBins.push_back(newGroupMap);
             } // for loop over peakBins, for grouping purposes
 
+            cout << "; done" << endl;
+
             // we are now done with this fft.
             // peak bins have been found and checked for inclusion in previous groups.
             // a new group was created if a peak bin did not correspond to a previous group.
@@ -431,6 +437,7 @@ int main(int argc, char** argv)
         // now we will scan over the groups in the event and draw them.
         // there's still a chance that the groups finished in the last fft are too small, so we'll check the group size.
 
+        cout << "scanning over groups in the event" << endl;
         Int_t iCandidate = 0;
         // when we make the plot of the group we want a frame of a few bins around the actual group
         Int_t frameFFT = 5;
@@ -445,7 +452,7 @@ int main(int argc, char** argv)
             Int_t maxFFT = -1;
             Int_t minFreqBin = 9999999;
             Int_t maxFreqBin = -1;
-            //cout << "Group " << iEPB << ":  ";
+            cout << "Group " << iCandidate << ":  " << flush;
             for (multimap< Int_t, Int_t >::iterator iGroup=groupMap->begin(); iGroup != groupMap->end(); iGroup++)
             {
                 Int_t thisFFT = iGroup->first;
@@ -454,9 +461,9 @@ int main(int argc, char** argv)
                 Int_t thisFreqBin = iGroup->second;
                 if (thisFreqBin < minFreqBin) minFreqBin = thisFreqBin;
                 if (thisFreqBin > maxFreqBin) maxFreqBin = thisFreqBin;
-                //cout << iGroup->first << "-" << iGroup->second << "  ";
+                cout << iGroup->first << "-" << iGroup->second << "  " << flush;
             }
-            //cout << endl;
+            cout << endl;
 
             // we're done with this multimap object; all we need is min/maxFFT and min/maxFreqBin
             delete groupMap;

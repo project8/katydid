@@ -8,6 +8,7 @@
 #include "KTGainNormalizationProcessor.hh"
 
 #include "KTPhysicalArray.hh"
+#include "KTPowerSpectrum.hh"
 
 #include <iostream>
 
@@ -24,7 +25,7 @@ namespace Katydid
         delete fNormalization;
     }
 
-    Bool_t KTFFTEHuntProcessor::ApplySetting(const KTSetting* setting)
+    Bool_t KTGainNormalizationProcessor::ApplySetting(const KTSetting* setting)
     {
         return kFALSE;
     }
@@ -57,7 +58,7 @@ namespace Katydid
         return;
     }
 
-    void KTGainNormalizationProcessor::ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum)
+    void KTGainNormalizationProcessor::ProcessPowerSpectrum(UInt_t /*psNum*/, KTPowerSpectrum* powerSpectrum)
     {
         if (powerSpectrum->GetSize() != fNormalization->size())
         {

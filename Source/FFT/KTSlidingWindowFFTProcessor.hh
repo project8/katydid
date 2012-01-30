@@ -39,6 +39,9 @@ namespace Katydid
 
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
 
+            KTSlidingWindowFFT* GetFFT() const;
+            KTEventWindowFunction* GetWindowFunc() const;
+
         private:
             KTSlidingWindowFFT fFFT;
             KTEventWindowFunction* fWindowFunc;
@@ -50,6 +53,7 @@ namespace Katydid
 
         public:
             boost::signals2::connection ConnectToFFTSignal(const FFTSignal::slot_type &subscriber);
+            boost::signals2::connection ConnectToFFTSignal(Int_t group, const FFTSignal::slot_type &subscriber);
 
         private:
             FFTSignal fFFTSignal;
@@ -71,9 +75,24 @@ namespace Katydid
 
     };
 
+    inline KTSlidingWindowFFT* KTSlidingWindowFFTProcessor::GetFFT() const
+    {
+        return const_cast< KTSlidingWindowFFT* >(&fFFT);
+    }
+
+    inline KTEventWindowFunction* KTSlidingWindowFFTProcessor::GetWindowFunc() const
+    {
+        return fWindowFunc;
+    }
+
     inline boost::signals2::connection KTSlidingWindowFFTProcessor::ConnectToFFTSignal(const FFTSignal::slot_type &subscriber)
     {
         return fFFTSignal.connect(subscriber);
+    }
+
+    inline boost::signals2::connection KTSlidingWindowFFTProcessor::ConnectToFFTSignal(Int_t group, const FFTSignal::slot_type &subscriber)
+    {
+        return fFFTSignal.connect(group, subscriber);
     }
 
     inline void KTSlidingWindowFFTProcessor::SetHeaderSlotConnection(boost::signals2::connection headerConn)

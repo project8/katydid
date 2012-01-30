@@ -7,6 +7,8 @@
 
 #include "KTComplexVector.hh"
 
+#include "KTPhysicalArray.hh"
+
 #include <cmath>
 #include <iostream>
 
@@ -128,6 +130,18 @@ namespace Katydid
         return *this;
     }
 
+    KTComplexVector& KTComplexVector::operator/=(const KTPhysicalArray< 1, Double_t >& div)
+    {
+        if (fMagnitude.GetNoElements() != div.size()) return *this;
+
+        for (size_t iBin=0; iBin < div.size(); iBin++)
+        {
+            fMagnitude(iBin) /= div[iBin];
+        }
+
+        return *this;
+    }
+
     TH1D* KTComplexVector::CreateMagnitudeHistogram(const string& name) const
     {
         TH1D* hist = new TH1D(fMagnitude);
@@ -152,6 +166,26 @@ namespace Katydid
     TH1D* KTComplexVector::CreatePhaseHistogram() const
     {
         return CreatePhaseHistogram("Phase");
+    }
+
+    KTPhysicalArray< 1, Double_t >* KTComplexVector::CreateMagnitudePhysArr() const
+    {
+        KTPhysicalArray< 1, Double_t >* physArray = new KTPhysicalArray< 1, Double_t >(fMagnitude.GetNoElements(), 0., 1.);
+        for (size_t bin=0; bin<physArray->GetNBins(); bin++)
+        {
+            (*physArray)[bin] = fMagnitude(bin);
+        }
+        return physArray;
+    }
+
+    KTPhysicalArray< 1, Double_t >* KTComplexVector::CreatePhasePhysArr() const
+    {
+        KTPhysicalArray< 1, Double_t >* physArray = new KTPhysicalArray< 1, Double_t >(fPhase.GetNoElements(), 0., 1.);
+        for (size_t bin=0; bin<physArray->GetNBins(); bin++)
+        {
+            (*physArray)[bin] = fPhase(bin);
+        }
+        return physArray;
     }
 
     Double_t KTComplexVector::GetMagnitudeAt(Int_t iBin) const

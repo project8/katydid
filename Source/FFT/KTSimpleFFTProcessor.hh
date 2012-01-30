@@ -22,6 +22,18 @@
 
 namespace Katydid
 {
+    /*!
+     @class KTSimpleFFTProcessor
+     @author N. S. Oblath
+
+     @brief Performs 1-dimensional FFT using KTSimpleFFT.
+
+     @details
+     Processor class for performing 1-dimensional FFTs using KTSimpleFFT.
+
+     Slots: ProcessHeader and ProcessEvent
+     Signals: void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
+    */
 
     class KTSimpleFFTProcessor : public KTProcessor
     {
@@ -37,6 +49,8 @@ namespace Katydid
             void ProcessHeader(KTEgg::HeaderInfo headerInfo);
 
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
+
+            const KTSimpleFFT* GetFFT() const;
 
         private:
             KTSimpleFFT fFFT;
@@ -68,6 +82,11 @@ namespace Katydid
             boost::signals2::connection fEventConnection;
 
     };
+
+    inline const KTSimpleFFT* KTSimpleFFTProcessor::GetFFT() const
+    {
+        return &fFFT;
+    }
 
     inline boost::signals2::connection KTSimpleFFTProcessor::ConnectToFFTSignal(const FFTSignal::slot_type &subscriber)
     {

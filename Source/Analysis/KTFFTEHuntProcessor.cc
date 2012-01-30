@@ -8,10 +8,16 @@
 #include "KTFFTEHuntProcessor.hh"
 
 #include "KTPhysicalArray.hh"
+#include "KTHannWindow.hh"
 
+#include "boost/bind.hpp"
+
+#include <iostream>
 #include <list>
 #include <map>
 
+using std::cout;
+using std::endl;
 using std::list;
 using std::multimap;
 
@@ -19,20 +25,62 @@ namespace Katydid
 {
 
     KTFFTEHuntProcessor::KTFFTEHuntProcessor() :
-        fSimpleFFTProc(),
-        fWindowFFTProc(),
-        fGainNormProc()
+            fEventPeakBins(),
+            fMinimumGroupSize(2),
+            fSimpleFFTProc(),
+            fWindowFFTProc(),
+            fGainNormProc(),
+            fClusteringProc(),
+            fTextFilename("FFTEHuntOutput.txt"),
+            fROOTFilename("FFTEHuntOutput.root"),
+            fWriteTextFileFlag(kFALSE),
+            fWriteROOTFileFlag(kTRUE),
+            fTextFile(),
+            fROOTFile()
     {
-        // link fGainNormProc to fWindowFFTProc in first position
-        // link fClusterProc to fWindowFFTProc in second position
+        fGainNormProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 0, boost::bind(&KTGainNormalizationProcessor::ProcessPowerSpectrum, boost::ref(fGainNormProc), _1, _2) ));
+        fClusteringProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 1, boost::bind(&KTSimpleClusteringProcessor::ProcessPowerSpectrum, boost::ref(fClusteringProc), _1, _2) ));
     }
 
     KTFFTEHuntProcessor::~KTFFTEHuntProcessor()
     {
+        EmptyEventPeakBins();
+        if (fROOTFile.IsOpen()) fROOTFile.Close();
+        if (fTextFile.is_open()) fTextFile.close();
     }
 
     Bool_t KTFFTEHuntProcessor::ApplySetting(const KTSetting* setting)
     {
+        if (setting->GetName() == "ThresholdMult" || setting->GetName() == "GroupBinsMarginHigh" || setting->GetName() == "GroupBinsMarginLow" || setting->GetName() == "GroupBinsMarginSameTime")
+        {
+            return fClusteringProc.ApplySetting(setting);
+        }
+        if (setting->GetName() == "MinimumGroupSize")
+        {
+            fMinimumGroupSize = setting->GetValue< UInt_t >();
+            fClusteringProc.SetMinimumGroupSize(2);
+            return kTRUE;
+        }
+        if (setting->GetName() == "ROOTFilename")
+        {
+            fROOTFilename = setting->GetValue< string >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "TextFilename")
+        {
+            fTextFilename = setting->GetValue< string >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "WriteROOTFileFlag")
+        {
+            fWriteROOTFileFlag = setting->GetValue< Bool_t >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "WriteTextFileFlag")
+        {
+            fWriteTextFileFlag = setting->GetValue< Bool_t >();
+            return kTRUE;
+        }
         return kFALSE;
     }
 
@@ -56,6 +104,20 @@ namespace Katydid
         fSimpleFFTProc.ProcessHeader(headerInfo);
         fWindowFFTProc.ProcessHeader(headerInfo);
 
+        EmptyEventPeakBins();
+        fClusteringProc.SetEventPeakBinsList(&fEventPeakBins);
+
+        if (fWriteTextFileFlag)
+        {
+            fTextFile.open(fTextFilename.c_str(), std::ios::out | std::ios::app);
+            if (! fTextFile.is_open()) fWriteTextFileFlag = kFALSE;
+        }
+        if (fWriteROOTFileFlag)
+        {
+            fROOTFile.Open(fROOTFilename.c_str(), "UPDATE");
+            if (! fROOTFile.IsOpen()) fWriteROOTFileFlag = kFALSE;
+        }
+
         return;
     }
 
@@ -74,6 +136,101 @@ namespace Katydid
         // Run the windowed FFT; the grouping algorithm is triggered by a single from fWindowFFTProc.
         fWindowFFTProc.ProcessEvent(iEvent, event);
 
+        // Scan through the groups
+        // Remove any that are too small
+        // Draw histograms and print text if requested
+
+        Int_t iCandidate = 0;
+        // when we make the plot of the group we want a frame of a few bins around the actual group
+        Int_t frameFFT = 5;
+        Int_t frameFreqBin = 5;
+        EventPeakBinsList::iterator iEPB = fEventPeakBins.begin();
+        while (! eventPeakBins.empty())
+        {
+            // for each group we need to get the min and max FFT, and min and max frequency bins.
+            // then we will remove the group from the list.
+            multimap< Int_t, Int_t >* groupMap = *iEPB;
+            Int_t minFFT = 9999999;
+            Int_t maxFFT = -1;
+            Int_t minFreqBin = 9999999;
+            Int_t maxFreqBin = -1;
+            //cout << "Group " << iEPB << ":  ";
+            for (multimap< Int_t, Int_t >::iterator iGroup=groupMap->begin(); iGroup != groupMap->end(); iGroup++)
+            {
+                Int_t thisFFT = iGroup->first;
+                if (thisFFT < minFFT) minFFT = thisFFT;
+                if (thisFFT > maxFFT) maxFFT = thisFFT;
+                Int_t thisFreqBin = iGroup->second;
+                if (thisFreqBin < minFreqBin) minFreqBin = thisFreqBin;
+                if (thisFreqBin > maxFreqBin) maxFreqBin = thisFreqBin;
+                //cout << iGroup->first << "-" << iGroup->second << "  ";
+            }
+            //cout << endl;
+
+            // we're done with this multimap object; all we need is min/maxFFT and min/maxFreqBin
+            delete groupMap;
+            iEPB = eventPeakBins.erase(iEPB); // move the iterator back one so we don't skip anything when the for loop advances the iterator
+
+            // check if this group is too small in time
+            if (maxFFT - minFFT < 2) continue;
+            /*
+            Double_t meanFreq = ((Double_t)maxFreqBin - 1 - (Double_t)(maxFreqBin - minFreqBin)/2.) * freqBinWidth;
+            txtOutFile << meanFreq << "   ";
+
+            if (drawWaterfall)
+            {
+                Char_t histname[256], histtitle[256];
+                sprintf(histname, "hCandidate_%i_%i", iEvent, iCandidate);
+                sprintf(histtitle, "Candidate Group - Event %i - Candidate %i", iEvent, iCandidate);
+                minFFT = TMath::Max(1, minFFT-frameFFT);
+                maxFFT = TMath::Min(hist->GetNbinsX(), maxFFT+frameFFT);
+                Double_t minValFFT = hist->GetBinLowEdge(minFFT);
+                Double_t maxValFFT = hist->GetBinLowEdge(maxFFT) + timeBinWidth;
+                minFreqBin = TMath::Max(1, minFreqBin-frameFreqBin);
+                maxFreqBin = TMath::Min(hist->GetNbinsY(), maxFreqBin+frameFreqBin);
+                Double_t minValFreqBin = hist->GetYaxis()->GetBinLowEdge(minFreqBin);
+                Double_t maxValFreqBin = hist->GetYaxis()->GetBinLowEdge(maxFreqBin) + freqBinWidth;
+                //cout << minFFT << "  " << maxFFT << "  " << minValFFT << "  " << maxValFFT << endl;
+                //cout << minFreqBin << "  " << maxFreqBin << "  " << minValFreqBin << "  " << maxValFreqBin << endl;
+                TH2D* groupHist = new TH2D(histname, histtitle, maxFFT-minFFT+1, minValFFT, maxValFFT, maxFreqBin-minFreqBin+1, minValFreqBin, maxValFreqBin);
+                groupHist->SetXTitle("Time (s)");
+                groupHist->SetYTitle("Frequency (MHz)");
+                for (Int_t iFFTBin=1; iFFTBin<=groupHist->GetNbinsX(); iFFTBin++)
+                {
+                    for (Int_t iFreqBin=1; iFreqBin<=groupHist->GetNbinsY(); iFreqBin++)
+                    {
+                        Double_t content = hist->GetBinContent(iFFTBin+minFFT, iFreqBin+minFreqBin);
+                        groupHist->SetBinContent(iFFTBin, iFreqBin, content);
+                    }
+                }
+
+                groupHist->Draw("colz");
+                c1->Print(outputFileNamePS.c_str());
+
+                groupHist->Write();
+            }
+            */
+
+            //candidates->Add(groupHist);
+            iCandidate++;
+        }
+
+        cout << "Found " << iCandidate << " candidate groups" << endl;
+        fTextFile << endl;
+        fTextFile << "  " << iCandidate << " candidates found" << endl;
+        fTextFile << "------------------------------------" << endl;
+
+
+        return;
+    }
+
+    void KTFFTEHuntProcessor::EmptyEventPeakBins()
+    {
+        while (! fEventPeakBins.empty())
+        {
+            delete fEventPeakBins.back();
+            fEventPeakBins.pop_back();
+        }
         return;
     }
 

@@ -31,6 +31,9 @@ namespace Katydid
         public:
             KTPhysicalArray();
             ~KTPhysicalArray();
+
+        public:
+            KTPhysicalArray< NDims, XDataType >& operator/=(const KTPhysicalArray< NDims, XDataType >& rhs);
     };
 
     template< size_t NDims, typename XDataType >
@@ -46,6 +49,12 @@ namespace Katydid
     template< size_t NDims, typename XDataType >
     KTPhysicalArray< NDims, XDataType >::~KTPhysicalArray()
     {
+    }
+
+    template< size_t NDims, typename XDataType >
+    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator/=(const KTPhysicalArray< NDims, XDataType>& /*rhs*/)
+    {
+        return *this;
     }
 
     //*************************
@@ -64,6 +73,8 @@ namespace Katydid
             KTPhysicalArray(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
             ~KTPhysicalArray();
 
+        public:
+            KTPhysicalArray< 1, XDataType >& operator/=(const KTPhysicalArray< 1, XDataType >& rhs);
     };
 
     template< typename XDataType >
@@ -91,8 +102,16 @@ namespace Katydid
     {
     }
 
-
-
+    template< typename XDataType >
+    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const KTPhysicalArray< 1, XDataType>& rhs)
+    {
+        if (rhs.size() != this->size()) return *this;
+        for (size_t iBin=0; iBin<this->size(); iBin++)
+        {
+            (*this)[iBin] /= rhs[iBin];
+        }
+        return *this;
+    }
 
 } /* namespace Katydid */
 #endif /* KTPHYSICALARRAY_HH_ */

@@ -17,6 +17,19 @@
 
 namespace Katydid
 {
+    /*!
+     @class KTAxisProperties
+     @author N. S. Oblath
+
+     @brief Encapsulates the properties of n-dimensional binned axes.
+
+     @details
+     Provides the number of bins and axis ranges for n-dimensional axes.  This is intended to be combined
+     with array- or vector-like storage classes.
+
+     \tparam <NDims> {Number of dimensions}
+    */
+
     template< size_t NDims >
     class KTAxisProperties
     {
@@ -277,6 +290,17 @@ namespace Katydid
 
 namespace Katydid
 {
+    /*!
+     @class KTAxisProperties< 1 >
+     @author N. S. Oblath
+
+     @brief Specialization of KTAxisProperties; encapsulates the properties of 1-dimensional binned axes.
+
+     @details
+     Provides the number of bins and axis ranges for 1-dimensional axis.  This is intended to be combined
+     with an array- or vector-like storage class.
+    */
+
     template<>
     class KTAxisProperties< 1 >
     {
@@ -331,6 +355,8 @@ namespace Katydid
             std::string fLabel;
 
     };
+}
+    /*
 
     KTAxisProperties< 1 >::KTAxisProperties() :
             fGetNBinsFunc(new KTDefaultNBins< 1 >()),
@@ -458,6 +484,6 @@ namespace Katydid
         return;
     }
 
-} /* namespace Katydid */
+} *//* namespace Katydid */
 
 #endif /* KTAXISPROPERTIES_HH_ */

@@ -16,11 +16,13 @@ int main ()
 
     for (unsigned i = 0; i < std::min (v1.size (), v2.size ()); ++ i)
     {
-        v1 (i) = v2 (i) = i;
+        v1 (i) = v2 (i) = i+1;
     }
 
     std::cout << v1 + v2 << std::endl;
     std::cout << v1 - v2 << std::endl;
+    v1 /= v2;
+    std::cout << v1 << std::endl;
 
     return 0;
 }

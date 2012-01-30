@@ -1,71 +1,169 @@
 /*
- * KTGainNormalizationProcessor.cc
+ * KTSimpleCusteringProcessor.cc
  *
  *  Created on: Jan 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTGainNormalizationProcessor.hh"
+#include "KTSimpleClusteringProcessor.hh"
 
 #include "KTPhysicalArray.hh"
+#include "KTPowerSpectrum.hh"
+
+#include "TMath.h"
 
 #include <iostream>
+#include <set>
+#include <utility>
+
+using std::list;
+using std::multimap;
+using std::set;
+using std::pair;
 
 namespace Katydid
 {
 
-    KTGainNormalizationProcessor::KTGainNormalizationProcessor() :
-            fNormalization(NULL)
+    KTSimpleClusteringProcessor::KTSimpleClusteringProcessor() :
+            fEventPeakBins(NULL),
+            fThresholdMult(8.),
+            fMinimumGroupSize(2),
+            fGroupBinsMarginLow(1),
+            fGroupBinsMarginHigh(3),
+            fGroupBinsMarginSameTime(1)
     {
     }
 
-    KTGainNormalizationProcessor::~KTGainNormalizationProcessor()
+    KTSimpleClusteringProcessor::~KTSimpleClusteringProcessor()
     {
-        delete fNormalization;
     }
 
-    Bool_t KTFFTEHuntProcessor::ApplySetting(const KTSetting* setting)
+    Bool_t KTSimpleClusteringProcessor::ApplySetting(const KTSetting* setting)
     {
+        if (setting->GetName() == "ThresholdMult")
+        {
+            fThresholdMult = setting->GetValue< Double_t >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "MinimumGroupSize")
+        {
+            fMinimumGroupSize = setting->GetValue< UInt_t >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "GroupBinsMarginHigh")
+        {
+            fGroupBinsMarginHigh = setting->GetValue< Int_t >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "GroupBinsMarginLow")
+        {
+            fGroupBinsMarginLow = setting->GetValue< Int_t >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "GroupBinsMarginSameTime")
+        {
+            fGroupBinsMarginSameTime = setting->GetValue< Int_t >();
+            return kTRUE;
+        }
         return kFALSE;
     }
 
-    void KTGainNormalizationProcessor::PrepareNormalization(KTPhysicalArray< 1, Double_t >* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth)
+    void KTSimpleClusteringProcessor::ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum)
     {
-        Double_t freqMult = 1.e-6;
-        delete fNormalization;
-        fNormalization = new KTPhysicalArray< 1, Double_t >(reducedNBins, -0.5*reducedBinWidth*freqMult, reducedBinWidth * ((Double_t)reducedNBins-0.5) * freqMult);
-
-        for (UInt_t iBin=0; iBin<reducedNBins; iBin++)
+        // Look for the highest-peaked bins in this power spectrum
+        /*// DEBUG
+        if (drawWaterfall && ifft < 5)
         {
-            Double_t freqBinMin = fNormalization->GetBinLowEdge(iBin);
-            Double_t freqBinMax = fNormalization->GetBinLowEdge(iBin+1);
-            Int_t firstBinFullPS = fullArray->FindBin(freqBinMin);
-            Int_t lastBinFullPS = fullArray->FindBin(freqBinMax);
-            Double_t meanBinContent = 0.;
-            Int_t nBinsInSum = 0;
-            for (Int_t iSubBin=firstBinFullPS; iSubBin<=lastBinFullPS; iSubBin++)
+            c1->SetLogy(1);
+            char projnum[30];
+            sprintf(projnum, "%s%i", "fft #", ifft);
+            histProj->SetTitle(projnum);
+            histProj->Draw();
+            c1->Print(outputFileNamePS.c_str());
+            c1->SetLogy(0);
+        }
+        */
+
+        // this will hold the bin numbers that are above the threshold
+        set< Int_t > peakBins;
+
+        const Double_t* dataArray = powerSpectrum->GetMagnitude().GetMatrixArray();
+        unsigned int nBins = (unsigned int)powerSpectrum->GetSize();
+
+        Double_t mean = TMath::Mean(nBins, dataArray);
+        //cout << "   Mean: " << mean << endl;
+
+        Double_t threshold = fThresholdMult * mean;
+
+        //cout << "mean: " << mean << "  threshold: " << threshold << endl;
+
+        // search for bins above the threshold
+        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        {
+            if (dataArray[iBin] > threshold)
             {
-                    meanBinContent += (*fullArray)[iSubBin];
-                    nBinsInSum++;
+                peakBins.insert(iBin);
             }
-            //if (nBinsInSum != 0) meanBinContent /= (Double_t)nBinsInSum;
-            (*fNormalization)[iBin] = meanBinContent;
-            //cout << "Gain norm bin " << iBin << "  content: " << meanBinContent << endl;
         }
+        //cout << "FFT " << ifft << " -- Peak bins: " << peakBins->GetEntries() << endl;
 
-
-        return;
-    }
-
-    void KTGainNormalizationProcessor::ProcessArray(KTPhysicalArray< 1, Double_t >* reducedArray)
-    {
-        if (reducedArray->size() != fNormalization->size())
+        // Look for groups
+        for (set< Int_t >::iterator iPB=peakBins.begin(); iPB!=peakBins.end(); iPB++)
         {
-            std::cout << "Error in KTGainNormalizationProcessor::ProcessArray: Array sizes do not match!" << std::endl;
-            return;
-        }
+            Int_t pbVal = *iPB;
+            Bool_t foundGroup = kFALSE;
+            for (list< multimap< Int_t, Int_t >* >::iterator iEPB=fEventPeakBins->begin(); iEPB!=fEventPeakBins->end(); iEPB++)
+            {
+                multimap< Int_t, Int_t >* groupMap = *iEPB;
+                multimap< Int_t, Int_t >::iterator lastGroup = groupMap->end();
+                lastGroup--;
+                UInt_t lastFFT = (UInt_t)lastGroup->first;
+                // check if we've passed this group, and if so, if the group is too small, remove it
+                if (lastFFT < psNum - 1 && (UInt_t)groupMap->size() <= fMinimumGroupSize)
+                {
+                    delete groupMap;
+                    iEPB = fEventPeakBins->erase(iEPB);
+                    iEPB--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
+                    continue;
+                }
+                pair< multimap< Int_t, Int_t >::iterator, multimap< Int_t, Int_t >::iterator > lastFFTRange =
+                        groupMap->equal_range(lastFFT);
+                multimap< Int_t, Int_t >::iterator firstGroupInRange = lastFFTRange.first;
+                Int_t firstGroupFreqBin = firstGroupInRange->second;
+                Int_t lastGroupFreqBin = firstGroupFreqBin;
+                firstGroupInRange++;
+                for (multimap< Int_t, Int_t >::iterator grIt=firstGroupInRange; grIt!=lastFFTRange.second; grIt++)
+                {
+                    if (grIt->second > lastGroupFreqBin) lastGroupFreqBin = grIt->second;
+                    else if (grIt->second < firstGroupFreqBin) firstGroupFreqBin = grIt->second;
+                }
 
-        (*reducedArray) /= (*fNormalization);
+                if ((UInt_t)lastFFT == psNum)
+                {
+                    if (pbVal >= firstGroupFreqBin - fGroupBinsMarginSameTime && pbVal <= lastGroupFreqBin + fGroupBinsMarginSameTime)
+                    {
+                        groupMap->insert( pair< Int_t, Int_t >((Int_t)psNum, pbVal) );
+                        foundGroup = kTRUE;
+                        break;
+                    }
+                }
+                else if ((UInt_t)lastFFT == psNum - 1)
+                {
+                    if (pbVal >= firstGroupFreqBin - fGroupBinsMarginLow && pbVal <= lastGroupFreqBin + fGroupBinsMarginHigh)
+                    {
+                        groupMap->insert( pair< Int_t, Int_t >((Int_t)psNum, pbVal) );
+                        foundGroup = kTRUE;
+                        break;
+                    }
+                }
+            }
+            if (foundGroup) continue;
+
+            // no match to existing groups, so add a new one
+            multimap< Int_t, Int_t >* newGroupMap = new multimap< Int_t, Int_t >();
+            newGroupMap->insert( pair< Int_t, Int_t >((Int_t)psNum, pbVal) );
+            fEventPeakBins->push_back(newGroupMap);
+        }
 
         return;
     }

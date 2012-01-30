@@ -19,7 +19,10 @@ namespace Katydid
 {
 
     KTSlidingWindowFFTProcessor::KTSlidingWindowFFTProcessor() :
-            fFFT()
+            fFFT(),
+            fFFTSignal(),
+            fHeaderConnection(),
+            fEventConnection()
     {
     }
 

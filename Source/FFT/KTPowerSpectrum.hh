@@ -34,6 +34,9 @@ namespace Katydid
             virtual TH1D* CreatePhaseHistogram() const;
             virtual TH1D* CreatePhaseHistogram(const std::string& name) const;
 
+            virtual KTPhysicalArray< 1, Double_t >* CreateMagnitudePhysArr() const;
+            virtual KTPhysicalArray< 1, Double_t >* CreatePhasePhysArr() const;
+
             virtual TH1D* CreatePowerDistributionHistogram() const;
             virtual TH1D* CreatePowerDistributionHistogram(const std::string& name) const;
 

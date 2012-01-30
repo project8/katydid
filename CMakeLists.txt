@@ -84,11 +84,13 @@ include_directories ("${PROJECT_SOURCE_DIR}/Source/Utility")
 #include_directories ("${PROJECT_SOURCE_DIR}/Source/Framework")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/Egg")
 include_directories ("${PROJECT_SOURCE_DIR}/Source/FFT")
+include_directories ("${PROJECT_SOURCE_DIR}/Source/Analysis")
 
 add_subdirectory (Source/Utility)
 #add_subdirectory (Source/Framework)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
+add_subdirectory (Source/Analysis)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)
 

@@ -19,8 +19,6 @@
 using std::string;
 using std::vector;
 
-ClassImp(Katydid::KTSlidingWindowFFT);
-
 namespace Katydid
 {
 
@@ -35,7 +33,8 @@ namespace Katydid
             fUseOverlapFrac(kFALSE),
             fWindowFunction(NULL),
             fTimeData(),
-            fPowerSpectra()
+            fPowerSpectra(),
+            fSingleFFTSignal()
     {
     }
 
@@ -156,7 +155,7 @@ namespace Katydid
             Int_t windowShift = fWindowFunction->GetSize() - GetEffectiveOverlap();
             //std::cout << "window shift: " << windowShift << std::endl;
             //Int_t nWindows = 1 + TMath::FloorNint((Double_t)(this->GetFullTimeSize() - fWindowFunction->GetSize()) / (Double_t)windowShift);
-            Int_t iWindow = 0;
+            UInt_t iWindow = 0;
             for (unsigned int windowStart=0; windowStart + fWindowFunction->GetSize() <= this->GetFullTimeSize(); windowStart += windowShift)
             {
                 //std::cout << "window: " << iWindow+1 << "; window start: " << windowStart << std::endl;
@@ -167,6 +166,8 @@ namespace Katydid
                 }
                 fTransform->Transform();
                 fPowerSpectra.push_back(this->CreatePowerSpectrum());
+                // emit a signal that the FFT was performed, for any connected slots
+                fSingleFFTSignal(iWindow, fPowerSpectra.back());
                 iWindow++;
             }
             std::cout << "FFTs complete; windows used: " << iWindow << std::endl;

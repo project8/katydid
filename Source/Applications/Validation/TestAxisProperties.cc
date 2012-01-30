@@ -7,6 +7,7 @@
 
 
 #include "KTAxisProperties.hh"
+#include "KTAxisProperties.hh"
 
 #include "TH1.h"
 #include "TH2.h"
