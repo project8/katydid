@@ -161,7 +161,6 @@ namespace Katydid
         public:
             KTNBinsInArray(size_t nBins)
             {
-                std::cout << "using 1-dim, fixed-size" << std::endl;
                 fNBins = nBins;
             }
             virtual ~KTNBinsInArray() {}

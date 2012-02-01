@@ -21,6 +21,8 @@
 #include "KTSetting.hh"
 
 #include "TApplication.h"
+#include "TROOT.h"
+#include "TStyle.h"
 
 #include <cstdio>
 #include <unistd.h>
@@ -44,6 +46,8 @@ int main(int argc, char** argv)
     Int_t groupBinsMarginLow = 1;
     Int_t groupBinsMarginHigh = 3;
     Int_t groupBinsMarginSameTime = 1;
+
+    UInt_t firstBinToUse = 4;
 
     Int_t arg;
     extern char *optarg;
@@ -96,6 +100,19 @@ int main(int argc, char** argv)
 
     if (numEvents == -1) numEvents = 999999999;
 
+    TApplication* app = new TApplication("", 0, 0);
+    TStyle *plain = new TStyle("Plain", "Plain Style");
+    plain->SetCanvasBorderMode(0);
+    plain->SetPadBorderMode(0);
+    plain->SetPadColor(0);
+    plain->SetCanvasColor(0);
+    plain->SetTitleColor(0);
+    plain->SetStatColor(0);
+    plain->SetPalette(1);
+    plain->SetOptStat(0);
+    gROOT->SetStyle("Plain");
+
+
     //ofstream txtOutFile(outputFileNameText.c_str());
     //txtOutFile << "Egg file: " << inputFileName << endl;
     //txtOutFile << "------------------------------------" << endl;
@@ -111,6 +128,7 @@ int main(int argc, char** argv)
     KTSetting settingHuntGroupBinsMarginHigh("GroupBinsMarginHigh", (Int_t)groupBinsMarginHigh);
     KTSetting settingHuntGroupBinsMarginLow("GroupBinsMarginLow", (Int_t)groupBinsMarginLow);
     KTSetting settingHuntGroupBinsMarginSameTime("GroupBinsMarginSameTime", (Int_t)groupBinsMarginSameTime);
+    KTSetting settingHuntFirstBinToUse("FirstBinToUse", (UInt_t)firstBinToUse);
     KTSetting settingHuntWriteText("WriteTextFileFlag", kTRUE);
     KTSetting settingHuntTextFilename("TextFilename", outputFileNameText);
     KTSetting settingHuntWriteROOT("WriteROOTFileFlag", drawWaterfall);
@@ -119,6 +137,7 @@ int main(int argc, char** argv)
     procEHunt.ApplySetting(&settingHuntGroupBinsMarginHigh);
     procEHunt.ApplySetting(&settingHuntGroupBinsMarginLow);
     procEHunt.ApplySetting(&settingHuntGroupBinsMarginSameTime);
+    procEHunt.ApplySetting(&settingHuntFirstBinToUse);
     procEHunt.ApplySetting(&settingHuntWriteText);
     procEHunt.ApplySetting(&settingHuntTextFilename);
     procEHunt.ApplySetting(&settingHuntWriteROOT);

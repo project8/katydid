@@ -10,6 +10,8 @@
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
 
+#include "TCanvas.h"
+#include "TH1.h"
 #include "TMath.h"
 
 #include <iostream>
@@ -30,7 +32,9 @@ namespace Katydid
             fMinimumGroupSize(2),
             fGroupBinsMarginLow(1),
             fGroupBinsMarginHigh(3),
-            fGroupBinsMarginSameTime(1)
+            fGroupBinsMarginSameTime(1),
+            fFirstBinToUse(0),
+            fDrawFlag(kFALSE)
     {
     }
 
@@ -65,24 +69,21 @@ namespace Katydid
             fGroupBinsMarginSameTime = setting->GetValue< Int_t >();
             return kTRUE;
         }
+        if (setting->GetName() == "FirstBinToUse")
+        {
+            fFirstBinToUse = setting->GetValue< UInt_t >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "DrawFlag")
+        {
+            fDrawFlag = setting->GetValue< Bool_t >();
+        }
         return kFALSE;
     }
 
     void KTSimpleClusteringProcessor::ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum)
     {
         // Look for the highest-peaked bins in this power spectrum
-        /*// DEBUG
-        if (drawWaterfall && ifft < 5)
-        {
-            c1->SetLogy(1);
-            char projnum[30];
-            sprintf(projnum, "%s%i", "fft #", ifft);
-            histProj->SetTitle(projnum);
-            histProj->Draw();
-            c1->Print(outputFileNamePS.c_str());
-            c1->SetLogy(0);
-        }
-        */
 
         // this will hold the bin numbers that are above the threshold
         set< Int_t > peakBins;
@@ -90,22 +91,51 @@ namespace Katydid
         const Double_t* dataArray = powerSpectrum->GetMagnitude().GetMatrixArray();
         unsigned int nBins = (unsigned int)powerSpectrum->GetSize();
 
-        Double_t mean = TMath::Mean(nBins, dataArray);
+        Double_t mean = TMath::Mean(nBins-fFirstBinToUse, dataArray+fFirstBinToUse);
         //cout << "   Mean: " << mean << endl;
 
         Double_t threshold = fThresholdMult * mean;
 
-        //cout << "mean: " << mean << "  threshold: " << threshold << endl;
+        /*
+        std::cout << "mean: " << mean << "  threshold: " << threshold << std::endl;
+
+        for (unsigned int iBin=0; iBin<fFirstBinToUse; iBin++)
+        {
+            std::cout << "  " << powerSpectrum->GetMagnitudeAt((Int_t)iBin) << "  " << dataArray[iBin] << std::endl;
+        }
+        std::cout << std::endl;
+        for (unsigned int iBin=fFirstBinToUse; iBin<100; iBin++)
+        {
+            std::cout << "  " << powerSpectrum->GetMagnitudeAt((Int_t)iBin) << "  " << dataArray[iBin] << std::endl;
+        }
+        */
 
         // search for bins above the threshold
-        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        for (unsigned int iBin=fFirstBinToUse; iBin<nBins; iBin++)
         {
             if (dataArray[iBin] > threshold)
             {
                 peakBins.insert(iBin);
             }
         }
-        //cout << "FFT " << ifft << " -- Peak bins: " << peakBins->GetEntries() << endl;
+        //std::cout << "FFT " << psNum << " -- Peak bins: " << peakBins.size() << std::endl;
+
+        /**/// DEBUG
+        if (fDrawFlag && psNum < 5)
+        //if (psNum < 5)
+        {
+            TCanvas *cSCP = new TCanvas("cSCP", "cSCP");
+            TH1D* histPS = powerSpectrum->CreateMagnitudeHistogram("ps_scp");
+            cSCP->SetLogy(1);
+            char projnum[30];
+            sprintf(projnum, "%s%i", "fft #", psNum);
+            histPS->SetTitle(projnum);
+            histPS->Draw();
+            cSCP->WaitPrimitive();
+            //cSCP->Print(outputFileNamePS.c_str());
+            delete cSCP;
+        }
+        /**/
 
         // Look for groups
         for (set< Int_t >::iterator iPB=peakBins.begin(); iPB!=peakBins.end(); iPB++)

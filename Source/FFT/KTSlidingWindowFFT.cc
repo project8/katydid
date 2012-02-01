@@ -28,6 +28,7 @@ namespace Katydid
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
             fIsDataReady(kFALSE),
+            fFreqBinWidth(0.),
             fOverlap(0),
             fOverlapFrac(0.),
             fUseOverlapFrac(kFALSE),
@@ -42,11 +43,7 @@ namespace Katydid
     {
         delete fTransform;
         delete fWindowFunction;
-        while (! fPowerSpectra.empty())
-        {
-            delete fPowerSpectra.back();
-            fPowerSpectra.pop_back();
-        }
+        ClearPowerSpectra();
     }
 
     void KTSlidingWindowFFT::InitializeFFT()
@@ -142,12 +139,7 @@ namespace Katydid
             return kFALSE;
         }
 
-        while (! fPowerSpectra.empty())
-        {
-            std::cout << "power spectrum: " << fPowerSpectra.back() << std::endl;
-            delete fPowerSpectra.back();
-            fPowerSpectra.pop_back();
-        }
+        ClearPowerSpectra();
 
         if (fWindowFunction->GetSize() < this->GetFullTimeSize())
         {
@@ -262,6 +254,16 @@ namespace Katydid
         fTransform = new TFFTRealComplex(fWindowFunction->GetSize(), kFALSE);
         fIsInitialized = kFALSE;
         fIsDataReady = kFALSE;
+    }
+
+    void KTSlidingWindowFFT::ClearPowerSpectra()
+    {
+        while (! fPowerSpectra.empty())
+        {
+            delete fPowerSpectra.back();
+            fPowerSpectra.pop_back();
+        }
+        return;
     }
 
 

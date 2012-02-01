@@ -181,16 +181,16 @@ int main(int argc, char** argv)
 
         KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
         TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
-        /*// DEBUG
+        /**/// DEBUG
         if (drawWaterfall)
         {
             c1->SetLogy(1);
             histFullPS->Draw();
-            c1->WaitPrimitive();
+            //c1->WaitPrimitive();
             c1->Print(outputFileNamePS.c_str());
             c1->SetLogy(0);
         }
-        */
+        /**/
         delete fullPS;
         Double_t fullPSFreqBinWidth = histFullPS->GetBinWidth(1);
 
@@ -212,11 +212,17 @@ int main(int argc, char** argv)
         //   100+/-.2 MHz
         //   200+/-.2 MHz
 
-        TH2D* hist = fft.CreatePowerSpectrumHistogram();
+        stringstream conv;
+        string histName;
+        conv << iEvent;
+        conv >> histName;
+        histName = string("histWindowedPS") + histName;
+        TH2D* hist = fft.CreatePowerSpectrumHistogram(histName);
         // DEBUG
         if (drawWaterfall)
         {
-            hist->Draw();
+            hist->Draw("COLZ");
+            //c1->WaitPrimitive();
             c1->Print(outputFileNamePS.c_str());
         }
 
@@ -272,16 +278,17 @@ int main(int argc, char** argv)
             //cout << "Gain norm bin " << iBin << "  content: " << meanBinContent << endl;
         }
         cout << "gain normalization calculation complete" << endl;
-        /*// DEBUG
+        /**/// DEBUG
         if (drawWaterfall)
         {
             c1->SetLogy(1);
             histGainNorm->SetTitle("gain normalization");
             histGainNorm->Draw();
+            //c1->WaitPrimitive();
             c1->Print(outputFileNamePS.c_str());
             c1->SetLogy(0);
         }
-        */
+        /**/
 
         // Rebin the full-event power spectrum
         //Int_t rebinFactor = TMath::FloorNint((Double_t)histFullPS->GetNbinsX() / (Double_t)freqHistNBins);
@@ -291,20 +298,21 @@ int main(int argc, char** argv)
         delete histProj;
 
         list< multimap< Int_t, Int_t >* > eventPeakBins;
+        //list< multimap< Int_t, Int_t >* > eventPeakBinsActive;
 
         // Look for the highest-peaked bins
         cout << "selecting peaked bins and grouping them" << endl;
         //for (Int_t ifft=1; ifft<=10; ifft++)
         for (Int_t ifft=1; ifft<=hist->GetNbinsX(); ifft++)
         {
-            cout << "fft " << ifft << flush;
+            //cout << "fft " << ifft << flush;
             // Get this fft's histogram
             histProj = hist->ProjectionY(name.c_str(), ifft, ifft);
             // normalize the histogram based on the full-PS normalization values (calcuclated above)
             //cout << "integral before: " << histProj->Integral() << endl;
             histProj->Divide(histGainNorm);
             //cout << "integral after: " << histProj->Integral() << endl;
-            /*// DEBUG
+            /**/// DEBUG
             if (drawWaterfall && ifft < 5)
             {
                 c1->SetLogy(1);
@@ -312,10 +320,11 @@ int main(int argc, char** argv)
                 sprintf(projnum, "%s%i", "fft #", ifft);
                 histProj->SetTitle(projnum);
                 histProj->Draw();
+                //c1->WaitPrimitive();
                 c1->Print(outputFileNamePS.c_str());
                 c1->SetLogy(0);
             }
-            */
+            /**/
 
             // this will hold the bin numbers that are above the threshold
             set< Int_t > peakBins;
@@ -362,11 +371,117 @@ int main(int argc, char** argv)
                     }
                 }
             }
-            //cout << "FFT " << ifft << " -- Peak bins: " << peakBins->GetEntries() << endl;
+            //cout << "FFT " << ifft << " -- Peak bins: " << peakBins.size() << endl;
             delete histProj;
 
+            /*
+            // Attach peak bins to groups or form new groups
+            //cout << "; grouping" << flush;
+            for (list< multimap< Int_t, Int_t >* >::iterator iEPBA=eventPeakBinsActive.begin(); iEPBA!=eventPeakBinsActive.end(); iEPBA++)
+            {
+                multimap< Int_t, Int_t >* groupMap = *iEPBA;
+                multimap< Int_t, Int_t >::iterator lastGroup = groupMap->end();
+                lastGroup--;
+                Int_t lastFFT = lastGroup->first;
+                // check if we've passed this group
+                if (lastFFT < ifft - 1)
+                {
+                    // if the group is too small, remove it
+                    if (groupMap->size() <= 2)
+                    {
+                        delete groupMap;
+                        iEPBA = eventPeakBinsActive.erase(iEPBA);
+                        iEPBA--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
+                        continue;
+                    }
+                    // otherwise, transfer it to completed groups list
+                    eventPeakBins.push_back(groupMap);
+                    eventPeakBinsActive.erase(iEPBA);
+                    continue;
+                }
+
+                // Find the range of frequency bins covered by the current group
+                pair< multimap< Int_t, Int_t >::iterator, multimap< Int_t, Int_t >::iterator > lastFFTRange =
+                        groupMap->equal_range(lastFFT);
+                multimap< Int_t, Int_t >::iterator firstGroupInRange = lastFFTRange.first;
+                Int_t firstGroupFreqBin = firstGroupInRange->second;
+                Int_t lastGroupFreqBin = firstGroupFreqBin;
+                firstGroupInRange++;
+                for (multimap< Int_t, Int_t >::iterator grIt=firstGroupInRange; grIt!=lastFFTRange.second; grIt++)
+                {
+                    if (grIt->second > lastGroupFreqBin) lastGroupFreqBin = grIt->second;
+                    else if (grIt->second < firstGroupFreqBin) firstGroupFreqBin = grIt->second;
+                }
+
+                // Loop over the peak bins from the FFT
+                for (set< Int_t >::iterator iPB=peakBins.begin(); iPB!=peakBins.end(); iPB++)
+                {
+                    Int_t pbVal = *iPB;
+                    Bool_t foundGroup = kFALSE;
+
+                    // check grouping condition for case where this fft is the next one past the end of the group
+                    if (lastFFT == ifft - 1)
+                    {
+                        if (pbVal >= firstGroupFreqBin - groupBinsMarginLow && pbVal <= lastGroupFreqBin + groupBinsMarginHigh)
+                        {
+                            groupMap->insert( pair< Int_t, Int_t >(ifft, pbVal) );
+                            foundGroup = kTRUE;
+                        }
+                    }
+                    // check the grouping condition for case where this fft is the same as the end of the group
+                    else if (lastFFT == ifft)
+                    {
+                        if (pbVal >= firstGroupFreqBin - groupBinsMarginSameTime && pbVal <= lastGroupFreqBin + groupBinsMarginSameTime)
+                        {
+                            groupMap->insert( pair< Int_t, Int_t >(ifft, pbVal) );
+                            foundGroup = kTRUE;
+                        }
+                    }
+
+                    // actions if the peak bin is grouped; remove the peak bin from the set and check if the group has increased in frequency bin range
+                    if (foundGroup == kTRUE)
+                    {
+                        set< Int_t >::iterator iPBCopy = iPB;
+                        iPB--;
+                        peakBins.erase(iPB);
+                        if (pbVal < firstGroupFreqBin) firstGroupFreqBin = pbVal;
+                        if (pbVal > lastGroupFreqBin) lastGroupFreqBin = pbVal;
+                        break;
+                    }
+                } // end loop over peak bins
+
+            } // end loop over groups
+
+            // loop over the remaining peak bins and add them as new groups
+            //cout << "; adding new groups" << flush;
+            Int_t lastPBVal = -9999999;
+            multimap< Int_t, Int_t >* lastNewGroupMap = NULL;
+            for (set< Int_t >::iterator iPB=peakBins.begin(); iPB!=peakBins.end(); iPB++)
+            {
+                Int_t pbVal = *iPB;
+                // see if this peak bin should be attached to the last new group made
+                if (lastNewGroupMap != NULL)
+                {
+                    if (abs(pbVal - lastPBVal) < groupBinsMarginSameTime)
+                    {
+                        lastNewGroupMap->insert( pair< Int_t, Int_t >(ifft, pbVal) );
+                        continue;
+                    }
+                }
+                multimap< Int_t, Int_t >* newGroupMap = new multimap< Int_t, Int_t >();
+                newGroupMap->insert( pair< Int_t, Int_t >(ifft, pbVal) );
+                eventPeakBins.push_back(newGroupMap);
+                lastNewGroupMap = newGroupMap;
+                lastPBVal = pbVal;
+            }
+
+            //cout << "; done" << endl;
+            */
+
+
+            /**/
             // Look for groups
-            cout << "; grouping" << flush;
+            //cout << "; grouping" << flush;
             for (set< Int_t >::iterator iPB=peakBins.begin(); iPB!=peakBins.end(); iPB++)
             {
                 Int_t pbVal = *iPB;
@@ -424,7 +539,8 @@ int main(int argc, char** argv)
                 eventPeakBins.push_back(newGroupMap);
             } // for loop over peakBins, for grouping purposes
 
-            cout << "; done" << endl;
+            //cout << "; done" << endl;
+            /**/
 
             // we are now done with this fft.
             // peak bins have been found and checked for inclusion in previous groups.
@@ -433,6 +549,26 @@ int main(int argc, char** argv)
         } // for loop over ffts in an event
 
         delete histGainNorm;
+
+        /*
+        // do a final loop over the remaining active groups; discard if too small or add to the final list of groups
+        for (list< multimap< Int_t, Int_t >* >::iterator iEPBA=eventPeakBinsActive.begin(); iEPBA!=eventPeakBinsActive.end(); iEPBA++)
+        {
+            multimap< Int_t, Int_t >* groupMap = *iEPBA;
+            // if the group is too small, remove it
+            if (groupMap->size() <= 2)
+            {
+                delete groupMap;
+                iEPBA = eventPeakBinsActive.erase(iEPBA);
+                iEPBA--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
+                continue;
+            }
+            // otherwise, transfer it to completed groups list
+            eventPeakBins.push_back(groupMap);
+            eventPeakBinsActive.erase(iEPBA);
+            continue;
+        }
+        */
 
         // now we will scan over the groups in the event and draw them.
         // there's still a chance that the groups finished in the last fft are too small, so we'll check the group size.
@@ -452,7 +588,7 @@ int main(int argc, char** argv)
             Int_t maxFFT = -1;
             Int_t minFreqBin = 9999999;
             Int_t maxFreqBin = -1;
-            cout << "Group " << iCandidate << ":  " << flush;
+            //cout << "Group " << iCandidate << ":  " << flush;
             for (multimap< Int_t, Int_t >::iterator iGroup=groupMap->begin(); iGroup != groupMap->end(); iGroup++)
             {
                 Int_t thisFFT = iGroup->first;
@@ -461,15 +597,15 @@ int main(int argc, char** argv)
                 Int_t thisFreqBin = iGroup->second;
                 if (thisFreqBin < minFreqBin) minFreqBin = thisFreqBin;
                 if (thisFreqBin > maxFreqBin) maxFreqBin = thisFreqBin;
-                cout << iGroup->first << "-" << iGroup->second << "  " << flush;
+                //cout << iGroup->first << "-" << iGroup->second << "  " << flush;
             }
-            cout << endl;
+            //cout << endl;
 
             // we're done with this multimap object; all we need is min/maxFFT and min/maxFreqBin
             delete groupMap;
             iEPB = eventPeakBins.erase(iEPB); // move the iterator back one so we don't skip anything when the for loop advances the iterator
 
-            // check if this group is too small in time
+            // check if this group is too small in time (this shouldn't happen, but just to be sure . . .)
             if (maxFFT - minFFT < 2) continue;
 
             Double_t meanFreq = ((Double_t)maxFreqBin - 1 - (Double_t)(maxFreqBin - minFreqBin)/2.) * freqBinWidth;

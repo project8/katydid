@@ -21,6 +21,7 @@ namespace Katydid
     {
         if (fGetNBinsFunc == NULL) fGetNBinsFunc = new KTDefaultNBins< 1 >();
         fBinWidth = (rangeMax - rangeMin) / (Double_t)(*fGetNBinsFunc)();
+        //std::cout << "created KTAxisProperties<1>: nbins: " << (*fGetNBinsFunc)() << "  binwidth: " << fBinWidth << "  rangemin: " << fRangeMin << "  rangemax: " << fRangeMax << std::endl;
     }
 
     KTAxisProperties< 1 >::KTAxisProperties(const KTAxisProperties< 1 >& orig)
@@ -56,6 +57,7 @@ namespace Katydid
     {
         delete fGetNBinsFunc;
         fGetNBinsFunc = getNBinsFunc;
+        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)(*fGetNBinsFunc)();
         return;
     }
 

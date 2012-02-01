@@ -71,7 +71,7 @@ namespace Katydid
 
     TH1D* KTPowerSpectrum::CreateMagnitudeHistogram() const
     {
-        TH1D* hist = KTPowerSpectrum::CreatePhaseHistogram("hPowerSpectrum");
+        TH1D* hist = KTPowerSpectrum::CreateMagnitudeHistogram("hPowerSpectrum");
         return hist;
     }
 
@@ -86,6 +86,7 @@ namespace Katydid
         }
         hist->SetXTitle("Frequency (MHz)");
         hist->SetYTitle("Power");
+        std::cout << "created ps magnitude histogram with " << hist->GetNbinsX() << " bins, going from " << hist->GetBinLowEdge(1) << " to " << hist->GetBinLowEdge(hist->GetNbinsX()+1) << std::endl;
         return hist;
     }
 

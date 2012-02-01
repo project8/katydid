@@ -70,6 +70,7 @@ namespace Katydid
         fWindowFunc->SetBinWidth(1. / headerInfo.fSampleRate);
         fFFT.RecreateFFT();
         fFFT.InitializeFFT();
+        fFFT.SetFreqBinWidth(headerInfo.fSampleRate / (Double_t)fWindowFunc->GetSize());
         return;
     }
 

@@ -51,7 +51,7 @@ namespace Katydid
 
     Bool_t KTFFTEHuntProcessor::ApplySetting(const KTSetting* setting)
     {
-        if (setting->GetName() == "ThresholdMult" || setting->GetName() == "GroupBinsMarginHigh" || setting->GetName() == "GroupBinsMarginLow" || setting->GetName() == "GroupBinsMarginSameTime")
+        if (setting->GetName() == "ThresholdMult" || setting->GetName() == "GroupBinsMarginHigh" || setting->GetName() == "GroupBinsMarginLow" || setting->GetName() == "GroupBinsMarginSameTime" || setting->GetName() == "FirstBinToUse")
         {
             return fClusteringProc.ApplySetting(setting);
         }
@@ -131,9 +131,9 @@ namespace Katydid
         fGainNormProc.PrepareNormalization(fullFFT, (UInt_t)fWindowFFTProc.GetFFT()->GetFrequencySize(), fWindowFFTProc.GetFFT()->GetFreqBinWidth());
 
         // Prepare to run the windowed FFT
-        list< multimap< Int_t, Int_t >* > eventPeakBins;
+        //list< multimap< Int_t, Int_t >* > eventPeakBins;
 
-        // Run the windowed FFT; the grouping algorithm is triggered by a single from fWindowFFTProc.
+        // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
         fWindowFFTProc.ProcessEvent(iEvent, event);
 
         // Scan through the groups
@@ -145,7 +145,7 @@ namespace Katydid
         Int_t frameFFT = 5;
         Int_t frameFreqBin = 5;
         EventPeakBinsList::iterator iEPB = fEventPeakBins.begin();
-        while (! eventPeakBins.empty())
+        while (! fEventPeakBins.empty())
         {
             // for each group we need to get the min and max FFT, and min and max frequency bins.
             // then we will remove the group from the list.
@@ -169,7 +169,7 @@ namespace Katydid
 
             // we're done with this multimap object; all we need is min/maxFFT and min/maxFreqBin
             delete groupMap;
-            iEPB = eventPeakBins.erase(iEPB); // move the iterator back one so we don't skip anything when the for loop advances the iterator
+            iEPB = fEventPeakBins.erase(iEPB); // move the iterator back one so we don't skip anything when the for loop advances the iterator
 
             // check if this group is too small in time
             if (maxFFT - minFFT < 2) continue;

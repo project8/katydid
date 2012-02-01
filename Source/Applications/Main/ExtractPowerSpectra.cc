@@ -138,9 +138,14 @@ PowerSpectraContainer::~PowerSpectraContainer()
     }
 }
 
-void PowerSpectraContainer::AddPowerSpectrum(UInt_t /*iEvent*/, const KTSimpleFFT* fft)
+void PowerSpectraContainer::AddPowerSpectrum(UInt_t iEvent, const KTSimpleFFT* fft)
 {
-    TH1D* powerSpectrum = fft->CreatePowerSpectrumHistogram();
+    stringstream conv;
+    string histName;
+    conv << iEvent;
+    conv >> histName;
+    histName = "histPS" + histName;
+    TH1D* powerSpectrum = fft->CreatePowerSpectrumHistogram(histName);
     // set name and/or title?
     fPowerSpectra.push_back(powerSpectrum);
     return;

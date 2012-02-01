@@ -83,6 +83,7 @@ namespace Katydid
 
         protected:
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
+            void ClearPowerSpectra();
 
             TFFTRealComplex* fTransform;
 

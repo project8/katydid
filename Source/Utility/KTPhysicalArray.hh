@@ -83,7 +83,7 @@ namespace Katydid
             KTAxisProperties< 1 >()
     {
         SetNBinsFunc(new KTNBinsInArray< 1, XVectorType >(this, &XVectorType::size));
-        std::cout << "You have created a 1-D physical array" << std::endl;
+        //std::cout << "You have created a 1-D physical array" << std::endl;
     }
 
     template< typename XDataType >
@@ -94,7 +94,7 @@ namespace Katydid
         SetNBinsFunc(new KTNBinsInArray< 1, XVectorType >((XVectorType*)this, &XVectorType::size));
         //SetNBinsFunc(KTNBinsInArray< 1, XVectorType >(this, &XVectorType::size));
         //SetNBinsFunc(boost::bind(&KTNBinsInArray< 1, XVectorType >::operator(), boost::ref(fNBinsFunc)));
-        std::cout << "You have created a 1-D physical array with " << nBins << " bins, going from " << rangeMin << " to " << rangeMax << std::endl;
+        //std::cout << "You have created a 1-D physical array with " << nBins << " bins, going from " << rangeMin << " to " << rangeMax << "  binwidth: " << fBinWidth << std::endl;
     }
 
     template< typename XDataType >

@@ -49,6 +49,10 @@ namespace Katydid
             Int_t fGroupBinsMarginHigh;
             Int_t fGroupBinsMarginSameTime;
 
+            UInt_t fFirstBinToUse;
+
+            Bool_t fDrawFlag;
+
             //****************
             // Slot connection
             //****************
