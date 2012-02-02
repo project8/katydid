@@ -35,6 +35,7 @@ namespace Katydid
             KTEvent();
             virtual ~KTEvent();
 
+            virtual TH1I* CreateEventHistogram() const;
             virtual TH1I* CreateAmplitudeDistributionHistogram() const;
 
             Double_t GetBinWidth() const;

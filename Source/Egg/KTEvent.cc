@@ -40,9 +40,21 @@ namespace Katydid
         return fRecord[bin];
     }
     */
+
+    TH1I* KTEvent::CreateEventHistogram() const
+    {
+        TH1I* hist = new TH1I("hRecord", "Event Record", (Int_t)GetRecordSize(), -0.5*fBinWidth, GetRecordLength() + fBinWidth*0.5);
+        for (unsigned int iBin=0; iBin<fRecord.size(); iBin++)
+        {
+            hist->SetBinContent(iBin+1, fRecord[iBin]);
+        }
+        hist->SetXTitle("Time (s)");
+        return hist;
+    }
+
     TH1I* KTEvent::CreateAmplitudeDistributionHistogram() const
     {
-        TH1I* hist = new TH1I("hRecord", "Event Record", 256, -0.5, 255.5);
+        TH1I* hist = new TH1I("hRecordAmpl", "Event Record Amplitude Distribution", 256, -0.5, 255.5);
         for (int iBin=0; iBin<fRecord.size(); iBin++)
         {
             hist->Fill((Double_t)(fRecord[iBin]));

@@ -11,6 +11,9 @@
 #include "KTEgg.hh"
 #include "KTEvent.hh"
 
+//#include "TCanvas.h"
+//#include "TH1.h"
+
 #include <iostream>
 
 using std::string;
@@ -68,6 +71,15 @@ namespace Katydid
             // Hatch the event
             KTEvent* event = egg.HatchNextEvent();
             if (event == NULL) break;
+
+            /*
+            TCanvas* cAmpl = new TCanvas("cAmpl", "cAmpl");
+            TH1I* hist = event->CreateEventHistogram();
+            hist->Draw();
+            cAmpl->WaitPrimitive();
+            delete hist;
+            delete cAmpl;
+            */
 
             // Pass the event to any subscribers
             fEventSignal(iEvent, event);
