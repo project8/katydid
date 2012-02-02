@@ -31,7 +31,7 @@
    <div id="projectname">Katydid
    &#160;<span id="projectnumber">0.5.1</span>
    </div>
-   <div id="projectbrief">Project 8 Analysis Platform</div>
+   <div id="projectbrief">Project 8 Analysis Toolkit</div>
   </td>
   
   
@@ -111,7 +111,9 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a0a500cf76e6a9e9453acb437465a0440">AdaptTo</a> (const <a class="el" href="class_katydid_1_1_k_t_event.html">KTEvent</a> *event, Double_t length)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a90f1494ae3fde4e09857c9b75542efab">GetWeight</a> (Double_t time) const =0</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a7ac34a66c0e29cf7606e1c5ddcc75cd1">GetWeight</a> (UInt_t bin) const =0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a62b0669aac40923c9dd8c9566c25f6b1">CreateHistogram</a> (const std::string &amp;name) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a75e6aec6ddeb9cfa94c867584eda0e53">CreateHistogram</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#add1fcec4fa805a7528d260650a46e747">CreateFrequencyResponseHistogram</a> (const std::string &amp;name) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a26c270bfda365da01c6ba62a55545870">CreateFrequencyResponseHistogram</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#ab6addfa157023a812f9aa866e1f96e8b">GetLength</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a7d1646dc12416daf821f666c233d2be2">GetSize</a> () const </td></tr>
@@ -119,6 +121,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a2a7f4aad772aefeb43e83dcae075a91b">SetLength</a> (Double_t length)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a3c1de4cb36ffcad7ec1441203568dfc2">SetBinWidth</a> (Double_t bw)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a7a862afcee4bc46c5f1e1084e7e50447">SetBinWidthAndLength</a> (Double_t bw, Double_t length)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a69175bb7435120f0073d168b7fa029cd">SetLengthAndBinWidth</a> (Double_t length, Double_t bw)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_event_window_function.html#aa140b7a5e60e5bd246df9df42436757d">SetSize</a> (UInt_t size)</td></tr>
 <tr><td colspan="2"><h2><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -149,7 +152,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00024">24</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00026">26</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -168,7 +171,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00033">33</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00035">35</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -186,7 +189,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00044">44</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00046">46</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -207,7 +210,7 @@ Protected Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Sets fBinWidth to event-&gt;<a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a715a6ace1cb0ce5f127ae79ddb152b92">GetBinWidth()</a>, and adapts the length to be the integral number of bins closest to the current fLength. Returns the adapted length. If you also need to set the length, it is recommended that you use AdaptTo(const TEvent*, Double_t) instead of separately setting the length. </p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00048">48</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00050">50</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -237,7 +240,7 @@ Protected Attributes</h2></td></tr>
 <div class="memdoc">
 <p>Sets fBinWidth to event-&gt;<a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a715a6ace1cb0ce5f127ae79ddb152b92">GetBinWidth()</a>, and adapts the length to be the integer multiple of the bin width closest to the given length. Returns the adapted length. </p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00053">53</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00055">55</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -268,6 +271,27 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="add1fcec4fa805a7528d260650a46e747"></a><!-- doxytag: member="Katydid::KTEventWindowFunction::CreateFrequencyResponseHistogram" ref="add1fcec4fa805a7528d260650a46e747" args="(const std::string &amp;name) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TH1D * CreateFrequencyResponseHistogram </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#a424ef3b0fb6f8defb98e61710c74516e">KTWindowFunction</a>.</p>
+
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00084">84</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a26c270bfda365da01c6ba62a55545870"></a><!-- doxytag: member="Katydid::KTEventWindowFunction::CreateFrequencyResponseHistogram" ref="a26c270bfda365da01c6ba62a55545870" args="() const " -->
 <div class="memitem">
 <div class="memproto">
@@ -284,7 +308,28 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#ab4b1e601bfb4157daf560c1b4fb5682e">KTWindowFunction</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00077">77</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00111">111</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a62b0669aac40923c9dd8c9566c25f6b1"></a><!-- doxytag: member="Katydid::KTEventWindowFunction::CreateHistogram" ref="a62b0669aac40923c9dd8c9566c25f6b1" args="(const std::string &amp;name) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TH1D * CreateHistogram </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#a4d93ce446d9592d94301ed49cab2580b">KTWindowFunction</a>.</p>
+
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00060">60</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -304,7 +349,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#adcffd37c9133d36e7d7973d63abc5a00">KTWindowFunction</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00058">58</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00079">79</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -324,7 +369,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#a6a751a35ceb7731685d8da5d3a65c665">KTWindowFunction</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00114">114</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00126">126</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -344,7 +389,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#a58348455092a07690509d4d3d9935b0c">KTWindowFunction</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00104">104</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00116">116</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -364,7 +409,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#ac44d809d82eebeaf109ed8386ee9cd95">KTWindowFunction</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00109">109</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00121">121</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -442,11 +487,11 @@ Protected Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Sets fBinWidth to bw, and adapts the length to be the integral number of bins closest to the current fLength. Returns the adapted length. It is recommended that you have already set fLength before calling this function. </p>
+<p>Sets fBinWidth to bw, and adapts the length to be the integral number of bins closest to the current fLength. Returns the adapted length. NOTE: this changes the size of the window! </p>
 
 <p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#abd5085c64f4776f194f3e142409a9664">KTWindowFunction</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00128">128</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00141">141</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -474,9 +519,9 @@ Protected Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Adapts the given length to the be an integer multiple of the given bin width (bw). Returns the adapted length. </p>
+<p>Adapts the given length (length) to the be an integer multiple of the given bin width (bw). Returns the adapted length. NOTE: this changes the size of the window! </p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00138">138</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00152">152</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -494,11 +539,41 @@ Protected Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Adapts the given length to be the integer multiple of fBinWidth. Returns the adapted width. If you also need to set the bin width, it is highly recommended that you use <a class="el" href="class_katydid_1_1_k_t_event_window_function.html#a7a862afcee4bc46c5f1e1084e7e50447">SetBinWidthAndLength(Double_t, Double_t)</a>. </p>
+<p>Sets fLength to length, and adapts the bin width to be an integral number of bins closest to the current bw. Returns the adapted bin width. NOTE: this changes the size of the window! </p>
 
 <p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#a61649e7f9b36a86fd1846dbf858d765e">KTWindowFunction</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00119">119</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00131">131</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a69175bb7435120f0073d168b7fa029cd"></a><!-- doxytag: member="Katydid::KTEventWindowFunction::SetLengthAndBinWidth" ref="a69175bb7435120f0073d168b7fa029cd" args="(Double_t length, Double_t bw)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Double_t SetLengthAndBinWidth </td>
+          <td>(</td>
+          <td class="paramtype">Double_t&#160;</td>
+          <td class="paramname"><em>length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Double_t&#160;</td>
+          <td class="paramname"><em>bw</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Adapts the given bin width to be an integer divisor of the given length (length) Returns the adapted bin width. NOTE: this changes the size of the window! </p>
+
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00162">162</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -516,11 +591,11 @@ Protected Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Sets fWidthInBins directly; leaves fBinWidth as is, and sets fWidth accordingly. Returns the adapted length. </p>
+<p>Sets the number of bins; leaves fBinWidth as is, and sets fLength accordingly. Returns the adapted length. NOTE: this changes the size of the window! (duh) </p>
 
 <p>Implements <a class="el" href="class_katydid_1_1_k_t_window_function.html#a9d3f5e3c80cb3f60d330b730ced83162">KTWindowFunction</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00148">148</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8cc_source.html#l00172">172</a> of file <a class="el" href="_k_t_event_window_function_8cc_source.html">KTEventWindowFunction.cc</a>.</p>
 
 </div>
 </div>
@@ -536,7 +611,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8hh_source.html#l00067">67</a> of file <a class="el" href="_k_t_event_window_function_8hh_source.html">KTEventWindowFunction.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8hh_source.html#l00075">75</a> of file <a class="el" href="_k_t_event_window_function_8hh_source.html">KTEventWindowFunction.hh</a>.</p>
 
 </div>
 </div>
@@ -551,7 +626,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8hh_source.html#l00066">66</a> of file <a class="el" href="_k_t_event_window_function_8hh_source.html">KTEventWindowFunction.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8hh_source.html#l00074">74</a> of file <a class="el" href="_k_t_event_window_function_8hh_source.html">KTEventWindowFunction.hh</a>.</p>
 
 </div>
 </div>
@@ -566,7 +641,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8hh_source.html#l00069">69</a> of file <a class="el" href="_k_t_event_window_function_8hh_source.html">KTEventWindowFunction.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8hh_source.html#l00077">77</a> of file <a class="el" href="_k_t_event_window_function_8hh_source.html">KTEventWindowFunction.hh</a>.</p>
 
 </div>
 </div>
@@ -581,7 +656,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_event_window_function_8hh_source.html#l00064">64</a> of file <a class="el" href="_k_t_event_window_function_8hh_source.html">KTEventWindowFunction.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_event_window_function_8hh_source.html#l00072">72</a> of file <a class="el" href="_k_t_event_window_function_8hh_source.html">KTEventWindowFunction.hh</a>.</p>
 
 </div>
 </div>
@@ -595,7 +670,7 @@ Protected Attributes</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -607,7 +682,7 @@ Protected Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jan 3 2012 13:15:54 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Feb 2 2012 11:36:02 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

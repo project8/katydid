@@ -31,7 +31,7 @@
    <div id="projectname">Katydid
    &#160;<span id="projectnumber">0.5.1</span>
    </div>
-   <div id="projectbrief">Project 8 Analysis Platform</div>
+   <div id="projectbrief">Project 8 Analysis Toolkit</div>
   </td>
   
   
@@ -110,8 +110,15 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#a6f9987d4cd0f4ac13f1ac0df10c010e3">UsePolar</a> (const TVectorD &amp;mag, const TVectorD &amp;phase)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#af44c2f4f9ec67a8041e8406442a226d9">UseRectangular</a> (const TVectorD &amp;real, const TVectorD &amp;imag)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#a02c9aa766af0f6dead7b65a32dc2b9c1">operator*=</a> (Double_t mult)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#af92748722bcd7895ddf020da16289987">operator/=</a> (const <a class="el" href="class_katydid_1_1_k_t_physical_array.html">KTPhysicalArray</a>&lt; 1, Double_t &gt; &amp;div)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#aeb92f49c6904b9c965b411d09871f799">CreateMagnitudeHistogram</a> (const std::string &amp;name) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#a5671cb6a95cd2b8f440bcad006fade35">CreateMagnitudeHistogram</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#aaff10e6075075ac83f4a7656f554c7ae">CreatePhaseHistogram</a> (const std::string &amp;name) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#a6d4b8d741c2de1e5c02591464ac326d5">CreatePhaseHistogram</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_katydid_1_1_k_t_physical_array.html">KTPhysicalArray</a><br class="typebreak"/>
+&lt; 1, Double_t &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#a21677faed9f910082080c680d71a4f48">CreateMagnitudePhysArr</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_katydid_1_1_k_t_physical_array.html">KTPhysicalArray</a><br class="typebreak"/>
+&lt; 1, Double_t &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#aac0dd73bab258eccbfb55197e712aebb">CreatePhasePhysArr</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#a0cab5217865c5aaff228ba9298805df5">GetMagnitudeAt</a> (Int_t iBin) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#a92f75b0ddd3b8a75f5b90c4ddc67c83f">GetPhaseAt</a> (Int_t iBin) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html#a801a12f7f99fe59f99f8e685d77361b3">GetSize</a> () const </td></tr>
@@ -131,7 +138,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8hh_source.html#l00019">19</a> of file <a class="el" href="_k_t_complex_vector_8hh_source.html">KTComplexVector.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8hh_source.html#l00022">22</a> of file <a class="el" href="_k_t_complex_vector_8hh_source.html">KTComplexVector.hh</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ae051dda7211428bad5d5ec4203d5fe28"></a><!-- doxytag: member="Katydid::KTComplexVector::KTComplexVector" ref="ae051dda7211428bad5d5ec4203d5fe28" args="()" -->
 <div class="memitem">
@@ -147,7 +154,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00018">18</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00020">20</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -188,7 +195,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00024">24</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00026">26</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -223,7 +230,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00047">47</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00049">49</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -242,7 +249,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00080">80</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00082">82</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -260,7 +267,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00086">86</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00088">88</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -292,6 +299,27 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aeb92f49c6904b9c965b411d09871f799"></a><!-- doxytag: member="Katydid::KTComplexVector::CreateMagnitudeHistogram" ref="aeb92f49c6904b9c965b411d09871f799" args="(const std::string &amp;name) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TH1D * CreateMagnitudeHistogram </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html#aeb92f49c6904b9c965b411d09871f799">KTPowerSpectrum</a>.</p>
+
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00145">145</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a5671cb6a95cd2b8f440bcad006fade35"></a><!-- doxytag: member="Katydid::KTComplexVector::CreateMagnitudeHistogram" ref="a5671cb6a95cd2b8f440bcad006fade35" args="() const " -->
 <div class="memitem">
 <div class="memproto">
@@ -308,7 +336,48 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html#a5671cb6a95cd2b8f440bcad006fade35">KTPowerSpectrum</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00131">131</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00153">153</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a21677faed9f910082080c680d71a4f48"></a><!-- doxytag: member="Katydid::KTComplexVector::CreateMagnitudePhysArr" ref="a21677faed9f910082080c680d71a4f48" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_katydid_1_1_k_t_physical_array.html">KTPhysicalArray</a>&lt; 1, Double_t &gt; * CreateMagnitudePhysArr </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html#a21677faed9f910082080c680d71a4f48">KTPowerSpectrum</a>.</p>
+
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00171">171</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaff10e6075075ac83f4a7656f554c7ae"></a><!-- doxytag: member="Katydid::KTComplexVector::CreatePhaseHistogram" ref="aaff10e6075075ac83f4a7656f554c7ae" args="(const std::string &amp;name) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TH1D * CreatePhaseHistogram </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html#aaff10e6075075ac83f4a7656f554c7ae">KTPowerSpectrum</a>.</p>
+
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00158">158</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -328,7 +397,27 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html#a6d4b8d741c2de1e5c02591464ac326d5">KTPowerSpectrum</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00139">139</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00166">166</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aac0dd73bab258eccbfb55197e712aebb"></a><!-- doxytag: member="Katydid::KTComplexVector::CreatePhasePhysArr" ref="aac0dd73bab258eccbfb55197e712aebb" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_katydid_1_1_k_t_physical_array.html">KTPhysicalArray</a>&lt; 1, Double_t &gt; * CreatePhasePhysArr </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html#aac0dd73bab258eccbfb55197e712aebb">KTPowerSpectrum</a>.</p>
+
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00181">181</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -346,7 +435,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00162">162</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00206">206</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -365,7 +454,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00147">147</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00191">191</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -383,7 +472,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00167">167</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00211">211</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -402,7 +491,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00152">152</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00196">196</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -420,7 +509,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00157">157</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00201">201</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -439,7 +528,26 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00125">125</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00127">127</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af92748722bcd7895ddf020da16289987"></a><!-- doxytag: member="Katydid::KTComplexVector::operator/=" ref="af92748722bcd7895ddf020da16289987" args="(const KTPhysicalArray&lt; 1, Double_t &gt; &amp;div)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a> &amp; operator/= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="class_katydid_1_1_k_t_physical_array.html">KTPhysicalArray</a>&lt; 1, Double_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>div</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00133">133</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -458,7 +566,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00182">182</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00226">226</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -487,7 +595,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00172">172</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00216">216</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -506,7 +614,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00187">187</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00231">231</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -535,7 +643,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00177">177</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00221">221</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -564,7 +672,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00090">90</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00092">92</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -593,7 +701,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00104">104</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8cc_source.html#l00106">106</a> of file <a class="el" href="_k_t_complex_vector_8cc_source.html">KTComplexVector.cc</a>.</p>
 
 </div>
 </div>
@@ -609,7 +717,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8hh_source.html#l00052">52</a> of file <a class="el" href="_k_t_complex_vector_8hh_source.html">KTComplexVector.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8hh_source.html#l00063">63</a> of file <a class="el" href="_k_t_complex_vector_8hh_source.html">KTComplexVector.hh</a>.</p>
 
 </div>
 </div>
@@ -624,7 +732,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_complex_vector_8hh_source.html#l00053">53</a> of file <a class="el" href="_k_t_complex_vector_8hh_source.html">KTComplexVector.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_complex_vector_8hh_source.html#l00064">64</a> of file <a class="el" href="_k_t_complex_vector_8hh_source.html">KTComplexVector.hh</a>.</p>
 
 </div>
 </div>
@@ -638,7 +746,7 @@ Protected Attributes</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -650,7 +758,7 @@ Protected Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jan 3 2012 13:15:54 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Feb 2 2012 11:36:02 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>
