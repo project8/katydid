@@ -222,7 +222,7 @@ namespace Katydid
 
         KTPowerSpectrum* powerSpec = new KTPowerSpectrum();
         powerSpec->TakeFrequencySpectrum(freqSpec);
-        powerSpec->SetBinWidth(fWindowFunction->GetBinWidth());
+        powerSpec->SetBinWidth(fFreqBinWidth);
         return powerSpec;
     }
 
