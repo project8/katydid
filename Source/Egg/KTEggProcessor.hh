@@ -40,6 +40,7 @@ namespace Katydid
         public:
             typedef boost::signals2::signal< void (KTEgg::HeaderInfo) > HeaderSignal;
             typedef boost::signals2::signal< void (UInt_t, const KTEvent*) > EventSignal;
+            typedef boost::signals2::signal< void () > EggDoneSignal;
 
         public:
             KTEggProcessor();
@@ -62,10 +63,12 @@ namespace Katydid
         public:
             boost::signals2::connection ConnectToHeaderSignal(const HeaderSignal::slot_type &subscriber);
             boost::signals2::connection ConnectToEventSignal(const EventSignal::slot_type &subscriber);
+            boost::signals2::connection ConnectToEggDoneSignal(const EggDoneSignal::slot_type &subscriber);
 
         private:
             HeaderSignal fHeaderSignal;
             EventSignal fEventSignal;
+            EggDoneSignal fEggDoneSignal;
 
     };
 
@@ -88,6 +91,11 @@ namespace Katydid
     inline boost::signals2::connection KTEggProcessor::ConnectToEventSignal(const EventSignal::slot_type &subscriber)
     {
         return fEventSignal.connect(subscriber);
+    }
+
+    inline boost::signals2::connection KTEggProcessor::ConnectToEggDoneSignal(const EggDoneSignal::slot_type &subscriber)
+    {
+        return fEggDoneSignal.connect(subscriber);
     }
 
 } /* namespace Katydid */

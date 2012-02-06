@@ -89,6 +89,8 @@ namespace Katydid
             delete event;
         }
 
+        fEggDoneSignal();
+
         return true;
     }
 

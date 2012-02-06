@@ -51,6 +51,8 @@ namespace Katydid
 
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
 
+            void FinishHunt();
+
         private:
             void EmptyEventPeakBins();
 
@@ -81,10 +83,12 @@ namespace Katydid
             //void ConnectToEventSignalFrom(KTSignalEmitter* sigEmit);
             void SetHeaderSlotConnection(boost::signals2::connection headerConn);
             void SetEventSlotConnection(boost::signals2::connection eventConn);
+            void SetEggDoneSlotConnection(boost::signals2::connection eggDoneConn);
 
         private:
             boost::signals2::connection fHeaderConnection;
             boost::signals2::connection fEventConnection;
+            boost::signals2::connection fEggDoneConnection;
 
     };
 
@@ -97,6 +101,12 @@ namespace Katydid
     inline void KTFFTEHuntProcessor::SetEventSlotConnection(boost::signals2::connection eventConn)
     {
         fEventConnection = eventConn;
+        return;
+    }
+
+    inline void KTFFTEHuntProcessor::SetEggDoneSlotConnection(boost::signals2::connection eggDoneConn)
+    {
+        fEggDoneConnection = eggDoneConn;
         return;
     }
 

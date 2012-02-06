@@ -10,16 +10,22 @@
 #include "KTPhysicalArray.hh"
 #include "KTHannWindow.hh"
 
+#include "TH2.h"
+
 #include "boost/bind.hpp"
 
 #include <iostream>
 #include <list>
 #include <map>
+#include <string>
+#include <sstream>
 
 using std::cout;
 using std::endl;
 using std::list;
 using std::multimap;
+using std::string;
+using std::stringstream;
 
 namespace Katydid
 {
@@ -129,12 +135,14 @@ namespace Katydid
 
         // Use the data from the full FFT to create a gain normalization
         fGainNormProc.PrepareNormalization(fullFFT, (UInt_t)fWindowFFTProc.GetFFT()->GetFrequencySize(), fWindowFFTProc.GetFFT()->GetFreqBinWidth());
+        delete fullFFT;
 
         // Prepare to run the windowed FFT
         //list< multimap< Int_t, Int_t >* > eventPeakBins;
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
         fWindowFFTProc.ProcessEvent(iEvent, event);
+        Double_t freqBinWidth = fWindowFFTProc.GetFFT()->GetFreqBinWidth();
 
         // Scan through the groups
         // Remove any that are too small
@@ -173,23 +181,34 @@ namespace Katydid
 
             // check if this group is too small in time
             if (maxFFT - minFFT < 2) continue;
-            /*
-            Double_t meanFreq = ((Double_t)maxFreqBin - 1 - (Double_t)(maxFreqBin - minFreqBin)/2.) * freqBinWidth;
-            txtOutFile << meanFreq << "   ";
 
-            if (drawWaterfall)
+            if (fWriteTextFileFlag)
             {
+                Double_t meanFreq = ((Double_t)maxFreqBin - 1 - (Double_t)(maxFreqBin - minFreqBin)/2.) * freqBinWidth;
+                fTextFile << meanFreq << "   ";
+            }
+
+            if (fWriteROOTFileFlag)
+            {
+                stringstream conv;
+                string histName;
+                conv << iEvent;
+                conv >> histName;
+                histName = string("histWindowedPS") + histName;
+                TH2D* histWaterfall = fWindowFFTProc.GetFFT()->CreatePowerSpectrumHistogram(histName);
+                Double_t timeBinWidth = histWaterfall->GetXaxis()->GetBinWidth(1);
+
                 Char_t histname[256], histtitle[256];
                 sprintf(histname, "hCandidate_%i_%i", iEvent, iCandidate);
                 sprintf(histtitle, "Candidate Group - Event %i - Candidate %i", iEvent, iCandidate);
                 minFFT = TMath::Max(1, minFFT-frameFFT);
-                maxFFT = TMath::Min(hist->GetNbinsX(), maxFFT+frameFFT);
-                Double_t minValFFT = hist->GetBinLowEdge(minFFT);
-                Double_t maxValFFT = hist->GetBinLowEdge(maxFFT) + timeBinWidth;
+                maxFFT = TMath::Min(histWaterfall->GetNbinsX(), maxFFT+frameFFT);
+                Double_t minValFFT = histWaterfall->GetBinLowEdge(minFFT);
+                Double_t maxValFFT = histWaterfall->GetBinLowEdge(maxFFT) + timeBinWidth;
                 minFreqBin = TMath::Max(1, minFreqBin-frameFreqBin);
-                maxFreqBin = TMath::Min(hist->GetNbinsY(), maxFreqBin+frameFreqBin);
-                Double_t minValFreqBin = hist->GetYaxis()->GetBinLowEdge(minFreqBin);
-                Double_t maxValFreqBin = hist->GetYaxis()->GetBinLowEdge(maxFreqBin) + freqBinWidth;
+                maxFreqBin = TMath::Min(histWaterfall->GetNbinsY(), maxFreqBin+frameFreqBin);
+                Double_t minValFreqBin = histWaterfall->GetYaxis()->GetBinLowEdge(minFreqBin);
+                Double_t maxValFreqBin = histWaterfall->GetYaxis()->GetBinLowEdge(maxFreqBin) + freqBinWidth;
                 //cout << minFFT << "  " << maxFFT << "  " << minValFFT << "  " << maxValFFT << endl;
                 //cout << minFreqBin << "  " << maxFreqBin << "  " << minValFreqBin << "  " << maxValFreqBin << endl;
                 TH2D* groupHist = new TH2D(histname, histtitle, maxFFT-minFFT+1, minValFFT, maxValFFT, maxFreqBin-minFreqBin+1, minValFreqBin, maxValFreqBin);
@@ -199,28 +218,36 @@ namespace Katydid
                 {
                     for (Int_t iFreqBin=1; iFreqBin<=groupHist->GetNbinsY(); iFreqBin++)
                     {
-                        Double_t content = hist->GetBinContent(iFFTBin+minFFT, iFreqBin+minFreqBin);
+                        Double_t content = histWaterfall->GetBinContent(iFFTBin+minFFT, iFreqBin+minFreqBin);
                         groupHist->SetBinContent(iFFTBin, iFreqBin, content);
                     }
                 }
 
-                groupHist->Draw("colz");
-                c1->Print(outputFileNamePS.c_str());
+                //groupHist->Draw("colz");
+                //c1->Print(outputFileNamePS.c_str());
 
                 groupHist->Write();
             }
-            */
 
             //candidates->Add(groupHist);
             iCandidate++;
         }
 
         cout << "Found " << iCandidate << " candidate groups" << endl;
-        fTextFile << endl;
-        fTextFile << "  " << iCandidate << " candidates found" << endl;
-        fTextFile << "------------------------------------" << endl;
+        if (fWriteTextFileFlag)
+        {
+            fTextFile << endl;
+            fTextFile << "  " << iCandidate << " candidates found" << endl;
+            fTextFile << "------------------------------------" << endl;
+        }
 
+        return;
+    }
 
+    void KTFFTEHuntProcessor::FinishHunt()
+    {
+        if (fTextFile.is_open()) fTextFile.close();
+        if (fROOTFile.IsOpen()) fROOTFile.Close();
         return;
     }
 

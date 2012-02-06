@@ -25,6 +25,7 @@
 #include "TStyle.h"
 
 #include <cstdio>
+#include <fstream>
 #include <unistd.h>
 #include <iostream>
 
@@ -143,14 +144,27 @@ int main(int argc, char** argv)
     procEHunt.ApplySetting(&settingHuntWriteROOT);
     procEHunt.ApplySetting(&settingHuntROOTFilename);
 
-    // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
+    // this will ensure that every time procEgg hatches an event, procEHunt.ProcessEvent will be called
     //procFFT.ConnectToEventSignalFrom(procEgg);
     procEHunt.SetEventSlotConnection(procEgg.ConnectToEventSignal( boost::bind(&KTFFTEHuntProcessor::ProcessEvent, boost::ref(procEHunt), _1, _2) ));
 
-    // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
+    // this will ensure that when procEgg parses the header, the info is passed to procEHunt::ProcessHeader
     //procFFT.ConnectToEventSignalFrom(procEgg);
     procEHunt.SetHeaderSlotConnection(procEgg.ConnectToHeaderSignal( boost::bind(&KTFFTEHuntProcessor::ProcessHeader, boost::ref(procEHunt), _1) ));
 
+    // this will ensure that when procEgg is done with the file, procEHunt is notified
+    procEHunt.SetEggDoneSlotConnection(procEgg.ConnectToEggDoneSignal( boost::bind(&KTFFTEHuntProcessor::FinishHunt, boost::ref(procEHunt)) ));
+
+    // Open the files to add header information and remove previous contents if the files already exist
+    ofstream outFileTxt(outputFileNameText.c_str(), ios::trunc);
+    outFileTxt << "Egg file: " << inputFileName << endl;
+    outFileTxt << "------------------------------------" << endl;
+    outFileTxt.close();
+    if (drawWaterfall)
+    {
+        TFile f(outputFileNameRoot.c_str(), "recreate");
+        f.Close();
+    }
 
     // Process the file
     //-----------------
