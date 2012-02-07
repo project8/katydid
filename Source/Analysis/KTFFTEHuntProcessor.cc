@@ -129,6 +129,11 @@ namespace Katydid
 
     void KTFFTEHuntProcessor::ProcessEvent(UInt_t iEvent, const KTEvent* event)
     {
+        if (fWriteTextFileFlag)
+        {
+            fTextFile << "Event " << iEvent << endl;
+        }
+
         // Perform a 1-D FFT on the entire event
         fSimpleFFTProc.ProcessEvent(iEvent, event);
         KTPhysicalArray< 1, Double_t >* fullFFT = fSimpleFFTProc.GetFFT()->CreatePowerSpectrumPhysArr();
