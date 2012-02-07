@@ -14,9 +14,12 @@
 
 #include <iostream>
 #include <vector>
-using std::vector;
 
-ClassImp(Katydid::KTEgg);
+using std::ifstream;
+using std::fstream;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 namespace Katydid
 {
@@ -36,11 +39,9 @@ namespace Katydid
     KTEgg::~KTEgg()
     {
         if (fEggStream.is_open()) fEggStream.close();
-        //delete fPrelude;
-        //delete fHeader;
     }
 
-    Bool_t KTEgg::BreakEgg()
+    bool KTEgg::BreakEgg()
     {
         if (fEggStream.is_open()) fEggStream.close();
 
@@ -49,16 +50,16 @@ namespace Katydid
 
         if (! fEggStream.is_open())
         {
-            return kFALSE;
+            return false;
         }
 
         // read the prelude (which states how long the header is in hex)
         // add one to the size of the array to allow it to terminate in a null character
-        //Int_t readBufferSize = (int)sPreludeSize + 1;
+        //int readBufferSize = (int)sPreludeSize + 1;
         char* readBuffer = new char [(int)sPreludeSize];
         int readSize = (int)sPreludeSize - 1;
         fEggStream.read(readBuffer, readSize);
-        if (! fEggStream.good()) return kFALSE;
+        if (! fEggStream.good()) return false;
         string newPrelude(readBuffer, sPreludeSize);
         this->SetPrelude(newPrelude);
 
@@ -72,17 +73,17 @@ namespace Katydid
         delete [] readBuffer;
         readBuffer = new char [fHeaderSize];
         fEggStream.read(readBuffer, fHeaderSize);
-        if (! fEggStream.good()) return kFALSE;
+        if (! fEggStream.good()) return false;
         string newHeader(readBuffer, fHeaderSize);
         this->SetHeader(newHeader);
         std::cout << "Header: " << newHeader << std::endl;
 
         delete [] readBuffer;
 
-        return kTRUE;
+        return true;
     }
 
-    Bool_t KTEgg::ParseEggHeader()
+    bool KTEgg::ParseEggHeader()
     {
         // these items aren't included in the header, but maybe will be someday?
         this->SetHertzPerSampleRateUnit(1.e6);
@@ -98,7 +99,7 @@ namespace Katydid
         catch (rapidxml::parse_error& e)
         {
             std::cout << e.what() << std::endl;
-            return kFALSE;
+            return false;
         }
         //std::cout << headerDOM;
 
@@ -106,38 +107,38 @@ namespace Katydid
         if (nodeHeader == NULL)
         {
             std::cerr << "No header node" << std::endl;
-            return kFALSE;
+            return false;
         }
 
         rapidxml::xml_node<char>* nodeDataFormat = nodeHeader->first_node("data_format");
         if (nodeDataFormat == NULL)
         {
             std::cerr << "No data format node" << std::endl;
-            return kFALSE;
+            return false;
         }
 
         rapidxml::xml_attribute<char>* attr = nodeDataFormat->first_attribute("id");
         if (attr == NULL)        {
             std::cerr << "No id attribute in the data format node" << std::endl;
-            return kFALSE;
+            return false;
         };
-        this->SetFrameIDSize(ConvertFromCharArray< Int_t >(attr->value()));
+        this->SetFrameIDSize(ConvertFromCharArray< int >(attr->value()));
 
         attr = nodeDataFormat->first_attribute("ts");
         if (attr == NULL)
         {
             std::cerr << "No ts attribute in the data format node" << std::endl;
-            return kFALSE;
+            return false;
         }
-        this->SetTimeStampSize(ConvertFromCharArray< Int_t >(attr->value()));
+        this->SetTimeStampSize(ConvertFromCharArray< int >(attr->value()));
 
         attr = nodeDataFormat->first_attribute("data");
         if (attr == NULL)
         {
             std::cerr << "No data attribute in the data format node" << std::endl;
-            return kFALSE;
+            return false;
         }
-        this->SetRecordSize(ConvertFromCharArray< Int_t >(attr->value()));
+        this->SetRecordSize(ConvertFromCharArray< int >(attr->value()));
 
         this->SetEventSize(this->GetFrameIDSize() + this->GetTimeStampSize() + this->GetRecordSize());
 
@@ -145,30 +146,30 @@ namespace Katydid
         if (nodeDigitizer == NULL)
         {
             std::cerr << "No digitizer node" << std::endl;
-            return kFALSE;
+            return false;
         }
 
         attr = nodeDigitizer->first_attribute("rate");
         if (attr == NULL)
         {
             std::cerr << "No rate attribute in the digitizer node" << std::endl;
-            return kFALSE;
+            return false;
         }
-        this->SetSampleRate(ConvertFromCharArray< Double_t >(attr->value()) * this->GetHertzPerSampleRateUnit());
+        this->SetSampleRate(ConvertFromCharArray< double >(attr->value()) * this->GetHertzPerSampleRateUnit());
 
         rapidxml::xml_node<char>* nodeRun = nodeHeader->first_node("run");
         if (nodeRun == NULL)
         {
             std::cerr << "No run node" << std::endl;
-            return kFALSE;
+            return false;
         }
 
         attr = nodeRun->first_attribute("length");
         if (attr == NULL)        {
             std::cerr << "No length attribute in the run node" << std::endl;
-            return kFALSE;
+            return false;
         }
-        this->SetRunLength(ConvertFromCharArray< Double_t >(attr->value()) * this->GetSecondsPerRunLengthUnit());
+        this->SetRunLength(ConvertFromCharArray< double >(attr->value()) * this->GetSecondsPerRunLengthUnit());
 
         delete [] headerCopy;
 
@@ -179,7 +180,7 @@ namespace Katydid
         std::cout << "Run Length: " << this->GetRunLength() << " s" << '\n';
         std::cout << "Sample Rate: " << this->GetSampleRate() << " Hz " << '\n';
 
-        return kTRUE;
+        return true;
     }
 
     KTEvent* KTEgg::HatchNextEvent()
@@ -201,7 +202,7 @@ namespace Katydid
         }
         else
         {
-            vector< UInt_t > newTimeStamp(readBuffer, readBuffer + this->GetTimeStampSize()/sizeof(unsigned char));
+            vector< unsigned > newTimeStamp(readBuffer, readBuffer + this->GetTimeStampSize()/sizeof(unsigned char));
             delete [] readBuffer;
             event->SetTimeStamp(newTimeStamp);
             std::cout << "Time stamp (" << newTimeStamp.size() << " chars): ";
@@ -227,7 +228,7 @@ namespace Katydid
         }
         else
         {
-            vector< UInt_t > newFrameID(readBuffer, readBuffer + this->GetFrameIDSize()/sizeof(unsigned char));
+            vector< unsigned > newFrameID(readBuffer, readBuffer + this->GetFrameIDSize()/sizeof(unsigned char));
             delete [] readBuffer;
             event->SetFrameID(newFrameID);
         }
@@ -251,7 +252,7 @@ namespace Katydid
         }
         else
         {
-            vector< UInt_t > newRecord(readBuffer, readBuffer + this->GetRecordSize()/sizeof(unsigned char));
+            vector< unsigned > newRecord(readBuffer, readBuffer + this->GetRecordSize()/sizeof(unsigned char));
             delete [] readBuffer;
             event->SetRecord(newRecord);
         }
@@ -263,7 +264,7 @@ namespace Katydid
         //
         event->SetSampleRate(this->GetSampleRate());
         event->SetBinWidth(1. / this->GetSampleRate());
-        event->SetRecordLength((Double_t)(this->GetRecordSize()) * event->GetBinWidth());
+        event->SetRecordLength((double)(this->GetRecordSize()) * event->GetBinWidth());
 
         return event;
     }

@@ -53,6 +53,9 @@ set (LIBS ${LIBS} ${Boost_LIBRARIES})
 
 # setup the ROOT install
 find_package (ROOT 5.28 REQUIRED)
+if (ROOT_FOUND)
+    add_definitions(-DROOT_FOUND)
+endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
 # have to add the FFTW library because it doesn't automatically get included for some reason
 set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)

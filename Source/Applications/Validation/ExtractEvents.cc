@@ -9,11 +9,14 @@
 #include "KTEgg.hh"
 #include "KTEvent.hh"
 
+#include "Rtypes.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <unistd.h>
 
 using namespace::Katydid;
+using namespace::std;
 
 int main(int argc, char *argv[])
 {
