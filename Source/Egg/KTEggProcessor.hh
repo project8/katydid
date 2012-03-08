@@ -177,7 +177,7 @@ namespace Katydid
  <br>
  \section Problems Installation Problems
  <hr>
- Coming soon (sorry!)
+ \li There's a bug in Boost that's a problem when compiling with LLVM (including using the default compiler in Mac OS X 10.7).  This was fixed in Boost 1.49.00.  If you don't have access to that version you can fix the problem by making the following change:  on line 565 of boost/signals2/detail/auto_buffer.hpp, change the word "size" to "size_arg" (not including the quotes).  Boost need not be recompiled.
 
  <br>
  \section ExternalCode External Packages and Imported Code
