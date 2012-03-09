@@ -73,6 +73,8 @@ namespace Katydid
             ofstream fTextFile;
             TFile fROOTFile;
 
+            Int_t fTotalCandidates;
+
 
             //****************
             // Slot connection

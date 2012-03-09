@@ -42,7 +42,8 @@ namespace Katydid
             fWriteTextFileFlag(kFALSE),
             fWriteROOTFileFlag(kTRUE),
             fTextFile(),
-            fROOTFile()
+            fROOTFile(),
+            fTotalCandidates(0)
     {
         fGainNormProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 0, boost::bind(&KTGainNormalizationProcessor::ProcessPowerSpectrum, boost::ref(fGainNormProc), _1, _2) ));
         fClusteringProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 1, boost::bind(&KTSimpleClusteringProcessor::ProcessPowerSpectrum, boost::ref(fClusteringProc), _1, _2) ));
@@ -123,6 +124,8 @@ namespace Katydid
             fROOTFile.Open(fROOTFilename.c_str(), "UPDATE");
             if (! fROOTFile.IsOpen()) fWriteROOTFileFlag = kFALSE;
         }
+
+        fTotalCandidates = 0;
 
         return;
     }
@@ -246,12 +249,18 @@ namespace Katydid
             fTextFile << "------------------------------------" << endl;
         }
 
+        fTotalCandidates += iCandidate;
+
         return;
     }
 
     void KTFFTEHuntProcessor::FinishHunt()
     {
-        if (fTextFile.is_open()) fTextFile.close();
+        if (fTextFile.is_open())
+        {
+            fTextFile << "Total candidates found in this file: " << fTotalCandidates << endl;
+            fTextFile.close();
+        }
         if (fROOTFile.IsOpen()) fROOTFile.Close();
         return;
     }
