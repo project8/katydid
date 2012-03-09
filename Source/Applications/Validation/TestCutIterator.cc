@@ -8,7 +8,7 @@
 #include "KTCutable.hh"
 
 #include <cstdio>
-#include <cstring>s
+#include <cstring>
 #include <iostream>
 #include <list>
 #include <utility>
