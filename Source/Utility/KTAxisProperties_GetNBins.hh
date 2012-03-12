@@ -34,27 +34,86 @@ namespace Katydid
     template< size_t NDims, typename XArrayType >
     class KTNBinsInArray : public KTNBinsFunctor< NDims >
     {
+        public:
+            typedef size_t (XArrayType::*FuncGetNBinsByDim)(size_t dim) const;
+            typedef size_t (XArrayType::*FuncGetNBinsOneDim)() const;
+
         private:
             XArrayType* fPtrToArray;
-            size_t (XArrayType::*fFuncPtr)(size_t);
+            //size_t (XArrayType::*fFuncPtr)(size_t);
+            size_t (KTNBinsInArray::*fNBinsFuncPtr)(size_t) const;
+
+        private:
+            enum GetNBinsMode
+            {
+                kSingleFunc,
+                kMultipleFunc
+            } fMode;
+            FuncGetNBinsByDim fDirectNBinsPtr;
+            FuncGetNBinsOneDim* fArrayOfGetNBinsPtrs;
+
+            size_t GetNBinsByDimDirectly(size_t dim) const
+            {
+                return ((*fPtrToArray).*fDirectNBinsPtr)(dim);
+            }
+            size_t GetNBinsByDimWithArray(size_t dim) const
+            {
+                if (dim >= NDims) return 0;
+                return ((*fPtrToArray).*fArrayOfGetNBinsPtrs[dim])();
+            }
+
 
         public:
-            KTNBinsInArray(XArrayType* ptrToArray, size_t (XArrayType::*funcGetNBins)(size_t dim))
+            //KTNBinsInArray(XArrayType* ptrToArray, size_t (XArrayType::*funcGetNBins)(size_t dim))
+            KTNBinsInArray(XArrayType* ptrToArray, FuncGetNBinsByDim funcGetNBins) :
+                    fPtrToArray(NULL),
+                    fNBinsFuncPtr(NULL),
+                    fDirectNBinsPtr(NULL),
+                    fArrayOfGetNBinsPtrs(NULL),
+                    fMode(kSingleFunc)
             {
                 fPtrToArray = ptrToArray;
-                fFuncPtr = funcGetNBins;
+                fNBinsFuncPtr = &KTNBinsInArray::GetNBinsByDimDirectly;
+                fDirectNBinsPtr = funcGetNBins;
             }
+
+            KTNBinsInArray(XArrayType* ptrToArray, FuncGetNBinsOneDim* funcGetNBinsArray) :
+                    fPtrToArray(NULL),
+                    fNBinsFuncPtr(NULL),
+                    fDirectNBinsPtr(NULL),
+                    fArrayOfGetNBinsPtrs(NULL),
+                    fMode(kMultipleFunc)
+            {
+                fPtrToArray = ptrToArray;
+                fNBinsFuncPtr = &KTNBinsInArray::GetNBinsByDimWithArray;
+                fArrayOfGetNBinsPtrs = new FuncGetNBinsOneDim [NDims];
+                for (size_t iDim=0; iDim<NDims; iDim++)
+                {
+                    fArrayOfGetNBinsPtrs[iDim] = funcGetNBinsArray[iDim];
+                }
+            }
+
             virtual ~KTNBinsInArray() {}
 
             virtual size_t operator()(size_t dim=1) const
             {
-                return (*fPtrToArray.*fFuncPtr)(dim);
+                return ((*this).*fNBinsFuncPtr)(dim);
             }
 
             virtual KTNBinsFunctor< NDims >* Clone() const
             {
-                return new KTNBinsInArray< NDims, XArrayType >(fPtrToArray, fFuncPtr);
+                if (fMode == kSingleFunc)
+                {
+                    return new KTNBinsInArray< NDims, XArrayType >(fPtrToArray, fDirectNBinsPtr);
+                }
+                else if (fMode == kMultipleFunc)
+                {
+                    return new KTNBinsInArray< NDims, XArrayType >(fPtrToArray, fArrayOfGetNBinsPtrs);
+                }
+                std::cout << "Error in KTNBinsFunctor< " << NDims << " >::Clone: unknown NBins mode" << std::endl;
+                return NULL;
             }
+
     };
 
     // specialize for anything with fixed size

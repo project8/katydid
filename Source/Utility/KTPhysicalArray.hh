@@ -11,6 +11,7 @@
 #include "KTAxisProperties.hh"
 
 #include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/bind.hpp>
 
@@ -109,6 +110,69 @@ namespace Katydid
         for (size_t iBin=0; iBin<this->size(); iBin++)
         {
             (*this)[iBin] /= rhs[iBin];
+        }
+        return *this;
+    }
+
+    //*************************
+    // 2-D array implementation
+    //*************************
+
+    template< typename XDataType >
+    class KTPhysicalArray< 2, XDataType > : public boost::numeric::ublas::matrix< XDataType >, public KTAxisProperties< 2 >
+    {
+        private:
+            typedef boost::numeric::ublas::matrix< XDataType > XMatrixType;
+            typedef KTNBinsInArray< 2, XMatrixType > XNBinsFunctor;
+
+        public:
+            KTPhysicalArray();
+            KTPhysicalArray(size_t xNBins, Double_t xRangeMin, Double_t xRangeMax, size_t yNBins, Double_t yRangeMin, Double_t yRangeMax);
+            ~KTPhysicalArray();
+
+        public:
+            KTPhysicalArray< 2, XDataType >& operator/=(const KTPhysicalArray< 2, XDataType >& rhs);
+    };
+
+    template< typename XDataType >
+    KTPhysicalArray< 2, XDataType >::KTPhysicalArray() :
+            XMatrixType(),
+            KTAxisProperties< 2 >()
+    {
+        SetNBinsFunc(new KTNBinsInArray< 2, XMatrixType >((XMatrixType*)this, &XMatrixType::size));
+        //std::cout << "You have created a 2-D physical array" << std::endl;
+    }
+
+    template< typename XDataType >
+    KTPhysicalArray< 2, XDataType >::KTPhysicalArray(size_t xNBins, Double_t xRangeMin, Double_t xRangeMax, size_t yNBins, Double_t yRangeMin, Double_t yRangeMax) :
+            XMatrixType(xNBins, yNBins),
+            KTAxisProperties< 2 >()
+    {
+        size_t (XMatrixType::*sizeArray[2])() const = {&XMatrixType::size1, &XMatrixType::size2};
+        SetNBinsFunc(new KTNBinsInArray< 2, XMatrixType >((XMatrixType*)this, sizeArray));
+        //SetNBinsFunc(new KTNBinsInArray< 2, XMatrixType >((XMatrixType*)this, (size_t (XMatrixType::*[])()){&XMatrixType::size1, &XMatrixType::size2}));
+        SetRangeMin(1, xRangeMin);
+        SetRangeMin(2, yRangeMin);
+        SetRangeMax(1, xRangeMax);
+        SetRangeMax(2, yRangeMax);
+        //std::cout << "You have created a 2-D physical array with " << nBins << " bins, going from " << rangeMin << " to " << rangeMax << "  binwidth: " << fBinWidth << std::endl;
+    }
+
+    template< typename XDataType >
+    KTPhysicalArray< 2, XDataType >::~KTPhysicalArray()
+    {
+    }
+
+    template< typename XDataType >
+    KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator/=(const KTPhysicalArray< 2, XDataType>& rhs)
+    {
+        if (rhs.size1() != this->size1() || rhs.size2() != this->size2()) return *this;
+        for (size_t iBinX=0; iBinX<this->size1(); iBinX++)
+        {
+            for (size_t iBinY=0; iBinY<this->size2(); iBinY++)
+            {
+                (*this)(iBinX, iBinY) /= rhs(iBinX, iBinY);
+            }
         }
         return *this;
     }
