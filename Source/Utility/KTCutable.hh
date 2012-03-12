@@ -158,9 +158,9 @@ namespace Katydid
                     iterator& operator++();
                     /// Increment the iterator (prefix)
                     iterator  operator++(int);
-                    /// Derement the iterator (postfix)
+                    /// Decrement the iterator (postfix)
                     iterator& operator--();
-                    /// Derement the iterator (prefix)
+                    /// Decrement the iterator (prefix)
                     iterator  operator--(int);
 
                     /// Test for equality
