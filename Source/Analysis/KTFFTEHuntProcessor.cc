@@ -43,6 +43,7 @@ namespace Katydid
             fWriteROOTFileFlag(kTRUE),
             fTextFile(),
             fROOTFile(),
+            fFrequencyMultiplier(1.e-6),
             fTotalCandidates(0)
     {
         fGainNormProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 0, boost::bind(&KTGainNormalizationProcessor::ProcessPowerSpectrum, boost::ref(fGainNormProc), _1, _2) ));
@@ -86,6 +87,11 @@ namespace Katydid
         if (setting->GetName() == "WriteTextFileFlag")
         {
             fWriteTextFileFlag = setting->GetValue< Bool_t >();
+            return kTRUE;
+        }
+        if (setting->GetName() == "FrequencyMultiplier")
+        {
+            fFrequencyMultiplier = setting->GetValue< Double_t >();
             return kTRUE;
         }
         return kFALSE;
@@ -150,7 +156,7 @@ namespace Katydid
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
         fWindowFFTProc.ProcessEvent(iEvent, event);
-        Double_t freqBinWidth = fWindowFFTProc.GetFFT()->GetFreqBinWidth();
+        Double_t freqBinWidth = fWindowFFTProc.GetFFT()->GetFreqBinWidth() * fFrequencyMultiplier;
 
         // Scan through the groups
         // Remove any that are too small

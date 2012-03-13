@@ -73,6 +73,7 @@ namespace Katydid
             ofstream fTextFile;
             TFile fROOTFile;
 
+            Double_t fFrequencyMultiplier;
             Int_t fTotalCandidates;
 
 
