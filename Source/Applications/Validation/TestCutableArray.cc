@@ -1,15 +1,18 @@
 /*
  * TestCutableArray.cc
  *
+ * Tests KTCutableArray and KTMaskedArray
+ *
  *  Created on: Jan 3, 2012
  *      Author: nsoblath
  */
 
 
 #include "KTCutableArray.hh"
+#include "KTMaskedArray.hh"
 
 #include <cstdio>
-#include <cstring>s
+#include <cstring>
 #include <iostream>
 #include <list>
 #include <utility>
@@ -20,6 +23,11 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+    //********************
+    // Test KTCutableArray
+    //********************
+    cout << "Testing KTCutableArray" << endl;
+
     //*******************
     // test with an array
     //*******************
@@ -157,13 +165,87 @@ int main(int argc, char** argv)
 
     if (testListPassed)
     {
-        cout << "List test completed" << endl;
+        cout << "List test completed\n" << endl;
     }
     else
     {
         cout << "List test failed" << endl;
         return -1;
     }
+
+
+    //*******************
+    // Test KTMaskedArray
+    //*******************
+    cout << "Test KTMaskedArray" << endl;
+
+    const unsigned int testMaskedArraySize = 10;
+    int testMaskedArray[testArraySize] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+    const unsigned int cut1Size = 1;
+    unsigned int cut1Pos = 2;
+    int cut1Check[testArraySize-cut1Size] = {1, 2, 4, 5, 6, 7, 8, 9, 10};
+
+    const unsigned int cut2Size = 3;
+    unsigned int cut2StartPos = 5;
+    int cut2Check[testArraySize-cut1Size-cut2Size] = {1, 2, 4, 5, 9, 10};
+
+    KTMaskedArray< int*, int > maskedArray(testMaskedArray, testMaskedArraySize);
+    cout << "Before the cut:" << endl;
+    for (unsigned int iPos=0; iPos<maskedArray.size(); iPos++)
+    {
+        cout << "  " << maskedArray[iPos];
+    }
+    cout << endl;
+
+    bool testMaskedArrayPassed = true;
+
+    maskedArray.Cut(cut1Pos);
+    cout << "Test 1:" << endl;
+    for (unsigned int iPos=0; iPos<maskedArray.size(); iPos++)
+    {
+        cout << "  " << maskedArray[iPos];
+        if (maskedArray[iPos] != cut1Check[iPos]) testMaskedArrayPassed = false;
+    }
+    cout << endl;
+    if (testMaskedArrayPassed == false)
+    {
+        cout << "Test 1 failed" << endl;
+        return -1;
+    }
+    cout << "Passed!" << endl;
+
+    maskedArray.Cut(cut2StartPos, cut2Size);
+    cout << "Test 2:" << endl;
+    for (unsigned int iPos=0; iPos<maskedArray.size(); iPos++)
+    {
+        cout << "  " << maskedArray[iPos];
+        if (maskedArray[iPos] != cut2Check[iPos]) testMaskedArrayPassed = false;
+    }
+    cout << endl;
+    if (testMaskedArrayPassed == false)
+    {
+        cout << "Test 2 failed" << endl;
+        return -1;
+    }
+    cout << "Passed!" << endl;
+
+    maskedArray.UnCut(cut2StartPos, cut2Size);
+    cout << "Undo Test2:" << endl;
+    for (unsigned int iPos=0; iPos<maskedArray.size(); iPos++)
+    {
+        cout << "  " << maskedArray[iPos];
+        if (maskedArray[iPos] != cut1Check[iPos]) testMaskedArrayPassed = false;
+    }
+    cout << endl;
+    if (testMaskedArrayPassed == false)
+    {
+        cout << "Undo test 2 failed" << endl;
+        return -1;
+    }
+    cout << "Passed!" << endl;
+
+    cout << "Masked array test completed" << endl;
 
     return 0;
 }

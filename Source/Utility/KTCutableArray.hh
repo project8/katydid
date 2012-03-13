@@ -16,7 +16,7 @@
 namespace Katydid
 {
     /*!
-     @class KTCutable
+     @class KTCutableArray
      @author N. S. Oblath
 
      @brief A convenient adaptation of KTCutable to fixed-length arrays.
