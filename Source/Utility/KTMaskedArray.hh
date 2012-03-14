@@ -63,7 +63,7 @@ namespace Katydid
             void CutAll();
             void UnCutAll();
 
-            void ChangeArray(const XArrayObjectType* array)
+            void ChangeArray(XArrayType array)
                 {fArray = array;}
 
             const XArrayObjectType* GetArray() const
@@ -76,6 +76,8 @@ namespace Katydid
 
             unsigned int GetArrayPosition(unsigned int unCutPosition)
                 {return fPositions[unCutPosition];}
+            unsigned int FindCutPosition(unsigned int arrayPosition);
+            unsigned int FindCutPositionOrNext(unsigned int arrayPosition);
 
         private:
             XArrayType fArray;
@@ -214,6 +216,23 @@ namespace Katydid
         }
         return;
     }
+
+    template< typename XArrayType, typename XArrayObjectType >
+    unsigned int KTMaskedArray< XArrayType, XArrayObjectType >::FindCutPosition(unsigned int arrayPosition)
+    {
+        PositionStoreIt posInPositions = std::lower_bound(fPositions.begin(), fPositions.end(), arrayPosition);
+        if (posInPositions == fPositions.end()) return fArraySize;
+        if (*posInPositions != arrayPosition) return fArraySize;
+        return (unsigned int)(posInPositions - fPositions.begin());
+    }
+
+    template< typename XArrayType, typename XArrayObjectType >
+    unsigned int KTMaskedArray< XArrayType, XArrayObjectType >::FindCutPositionOrNext(unsigned int arrayPosition)
+    {
+        PositionStoreIt posInPositions = std::lower_bound(fPositions.begin(), fPositions.end(), arrayPosition);
+        return (unsigned int)(posInPositions - fPositions.begin());
+    }
+
 
 
 } /* namespace Katydid */
