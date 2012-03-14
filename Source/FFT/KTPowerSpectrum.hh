@@ -19,6 +19,7 @@ namespace Katydid
     {
         public:
             KTPowerSpectrum();
+            KTPowerSpectrum(UInt_t nBins, Double_t binWidth=1.);
             KTPowerSpectrum(const KTPowerSpectrum& original);
             virtual ~KTPowerSpectrum();
 
@@ -28,6 +29,7 @@ namespace Katydid
 
             Double_t GetPowerAtFrequency(Double_t freq);
             Double_t GetPhaseAtFrequency(Double_t freq);
+            Int_t GetBin(Double_t freq);
 
             virtual TH1D* CreateMagnitudeHistogram() const;
             virtual TH1D* CreateMagnitudeHistogram(const std::string& name) const;
@@ -49,6 +51,21 @@ namespace Katydid
 
             ClassDef(KTPowerSpectrum, 2);
     };
+
+    inline Double_t KTPowerSpectrum::GetPowerAtFrequency(Double_t freq)
+    {
+        return fMagnitude[GetBin(freq)];
+    }
+
+    inline Double_t KTPowerSpectrum::GetPhaseAtFrequency(Double_t freq)
+    {
+        return fPhase[GetBin(freq)];
+    }
+
+    inline Int_t KTPowerSpectrum::GetBin(Double_t freq)
+    {
+        return Int_t(freq / fBinWidth);
+    }
 
     inline Double_t KTPowerSpectrum::GetBinWidth() const
     {

@@ -23,6 +23,12 @@ namespace Katydid
     {
     }
 
+    KTComplexVector::KTComplexVector(UInt_t nBins) :
+            fMagnitude((Int_t)nBins),
+            fPhase((Int_t)nBins)
+    {
+    }
+
     KTComplexVector::KTComplexVector(UInt_t nBins, const Double_t* arr1, const Double_t* arr2, const string& mode) :
             fMagnitude((Int_t)nBins),
             fPhase((Int_t)nBins)
@@ -203,9 +209,19 @@ namespace Katydid
         return fMagnitude.GetNoElements();
     }
 
+    TVectorD& KTComplexVector::GetMagnitude()
+    {
+        return fMagnitude;
+    }
+
     const TVectorD& KTComplexVector::GetMagnitude() const
     {
         return fMagnitude;
+    }
+
+    TVectorD& KTComplexVector::GetPhase()
+    {
+        return fPhase;
     }
 
     const TVectorD& KTComplexVector::GetPhase() const

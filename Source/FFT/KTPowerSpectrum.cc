@@ -25,6 +25,12 @@ namespace Katydid
     {
     }
 
+    KTPowerSpectrum::KTPowerSpectrum(UInt_t nBins, Double_t binWidth) :
+            KTComplexVector(nBins),
+            fBinWidth(binWidth)
+    {
+    }
+
     KTPowerSpectrum::KTPowerSpectrum(const KTPowerSpectrum& original) :
             KTComplexVector(original),
             fBinWidth(original.GetBinWidth())
@@ -59,16 +65,6 @@ namespace Katydid
         return;
     }
 
-    Double_t KTPowerSpectrum::GetPowerAtFrequency(Double_t freq)
-    {
-        return fMagnitude[(Int_t)(freq / fBinWidth)];
-    }
-
-    Double_t KTPowerSpectrum::GetPhaseAtFrequency(Double_t freq)
-    {
-        return fPhase[(Int_t)(freq / fBinWidth)];
-    }
-
     TH1D* KTPowerSpectrum::CreateMagnitudeHistogram() const
     {
         TH1D* hist = KTPowerSpectrum::CreateMagnitudeHistogram("hPowerSpectrum");
@@ -95,7 +91,7 @@ namespace Katydid
         TH1D* hist = KTPowerSpectrum::CreatePhaseHistogram("hPowerSpectrumPhase");
         return hist;
     }
-    
+
     TH1D* KTPowerSpectrum::CreatePhaseHistogram(const string& name) const
     {
         Double_t freqMult = 1.e-6;
