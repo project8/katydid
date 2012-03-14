@@ -9,6 +9,8 @@
 
 #include "KTPhysicalArray.hh"
 #include "KTHannWindow.hh"
+#include "KTMaskedArray.hh"
+#include "KTPowerSpectrum.hh"
 
 #include "TH2.h"
 
@@ -26,6 +28,7 @@ using std::list;
 using std::multimap;
 using std::string;
 using std::stringstream;
+using std::vector;
 
 namespace Katydid
 {
@@ -33,6 +36,7 @@ namespace Katydid
     KTFFTEHuntProcessor::KTFFTEHuntProcessor() :
             fEventPeakBins(),
             fMinimumGroupSize(2),
+            fCutRanges(),
             fSimpleFFTProc(),
             fWindowFFTProc(),
             fGainNormProc(),
@@ -67,6 +71,11 @@ namespace Katydid
         {
             fMinimumGroupSize = setting->GetValue< UInt_t >();
             fClusteringProc.SetMinimumGroupSize(2);
+            return kTRUE;
+        }
+        if (setting->GetName() == "CutRange")
+        {
+            fCutRanges.push_back(CutRange(setting->GetValue< CutRange >()));
             return kTRUE;
         }
         if (setting->GetName() == "ROOTFilename")
@@ -116,6 +125,26 @@ namespace Katydid
         // Process the header information
         fSimpleFFTProc.ProcessHeader(headerInfo);
         fWindowFFTProc.ProcessHeader(headerInfo);
+
+        // Set up the bin cuts
+        // get the number of frequency bins and the frequency bin width
+        Int_t nFreqBins = fWindowFFTProc.GetFFT()->GetFrequencySize();
+        Double_t freqBinWidth = fWindowFFTProc.GetFFT()->GetFreqBinWidth();
+        // create KTPowerSpectrum w/ number of bins; set bin width
+        // binFinder will go out of scope at the end of this function.
+        // therefore, from that point until fClusteringProc sets a new array, binCuts should NOT be used to access array values!
+        KTPowerSpectrum binFinder(nFreqBins, freqBinWidth);
+        // create KTMaskedArray based on power spectrum magnitude array
+        KTMaskedArray< Double_t*, Double_t >* binCuts = new KTMaskedArray< Double_t*, Double_t >(binFinder.GetMagnitude().GetMatrixArray(), nFreqBins);
+        // convert cut frequency ranges to bins, and cut bins from the masked array
+        for (vector< CutRange >::const_iterator itCutRange = fCutRanges.begin(); itCutRange != fCutRanges.end(); itCutRange++)
+        {
+            Int_t firstBinCut = binFinder.GetBin((*itCutRange).first / fFrequencyMultiplier);
+            Int_t nCutBins = binFinder.GetBin((*itCutRange).second / fFrequencyMultiplier) - firstBinCut + 1;
+            binCuts->Cut(UInt_t(firstBinCut), UInt_t(nCutBins));
+        }
+        // give the masked array to fClusteringProc
+        fClusteringProc.SetBinCuts(binCuts);
 
         EmptyEventPeakBins();
         fClusteringProc.SetEventPeakBinsList(&fEventPeakBins);

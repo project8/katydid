@@ -11,6 +11,8 @@
 
 #include "KTProcessor.hh"
 
+#include "KTMaskedArray.hh"
+
 #include "boost/signals2.hpp"
 
 #include <list>
@@ -36,12 +38,15 @@ namespace Katydid
 
             void ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum);
 
-            void SetEventPeakBinsList(epbList* eventPeakBinsList);
+            void SetEventPeakBinsList(epbList* eventPeakBinsList); /// does NOT take ownership of eventPeakBinsList
+            void SetBinCuts(KTMaskedArray< Double_t*, Double_t >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
 
         private:
             epbList* fEventPeakBins;
             Double_t fThresholdMult;
+
+            KTMaskedArray< Double_t*, Double_t >* fBinCuts;
 
             UInt_t fMinimumGroupSize;
 
@@ -69,6 +74,13 @@ namespace Katydid
     inline void KTSimpleClusteringProcessor::SetEventPeakBinsList(epbList* list)
     {
         fEventPeakBins = list;
+        return;
+    }
+
+    inline void KTSimpleClusteringProcessor::SetBinCuts(KTMaskedArray< Double_t*, Double_t >* binCuts)
+    {
+        delete fBinCuts;
+        fBinCuts = binCuts;
         return;
     }
 

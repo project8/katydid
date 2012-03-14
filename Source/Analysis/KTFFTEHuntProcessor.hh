@@ -23,6 +23,8 @@
 #include <fstream>
 #include <list>
 #include <map>
+#include <utility>
+#include <vector>
 
 namespace Katydid
 {
@@ -40,6 +42,7 @@ namespace Katydid
     {
         private:
             typedef std::list< std::multimap< Int_t, Int_t >* > EventPeakBinsList;
+            typedef std::pair< Double_t, Double_t > CutRange;
 
         public:
             KTFFTEHuntProcessor();
@@ -60,6 +63,8 @@ namespace Katydid
             EventPeakBinsList fEventPeakBins;
 
             UInt_t fMinimumGroupSize;
+
+            std::vector< CutRange > fCutRanges;
 
             KTSimpleFFTProcessor fSimpleFFTProc;
             KTSlidingWindowFFTProcessor fWindowFFTProc;

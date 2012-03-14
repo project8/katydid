@@ -7,6 +7,7 @@
 
 #include "KTSimpleClusteringProcessor.hh"
 
+#include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
 
@@ -29,6 +30,7 @@ namespace Katydid
     KTSimpleClusteringProcessor::KTSimpleClusteringProcessor() :
             fEventPeakBins(NULL),
             fThresholdMult(8.),
+            fBinCuts(NULL),
             fMinimumGroupSize(2),
             fGroupBinsMarginLow(1),
             fGroupBinsMarginHigh(3),
@@ -40,6 +42,7 @@ namespace Katydid
 
     KTSimpleClusteringProcessor::~KTSimpleClusteringProcessor()
     {
+        delete fBinCuts;
     }
 
     Bool_t KTSimpleClusteringProcessor::ApplySetting(const KTSetting* setting)
@@ -88,8 +91,20 @@ namespace Katydid
         // this will hold the bin numbers that are above the threshold
         set< Int_t > peakBins;
 
-        const Double_t* dataArray = powerSpectrum->GetMagnitude().GetMatrixArray();
-        unsigned int nBins = (unsigned int)powerSpectrum->GetSize();
+        Double_t* dataArray = powerSpectrum->GetMagnitude().GetMatrixArray();
+        UInt_t nBins = (UInt_t)powerSpectrum->GetSize();
+
+        KTMaskedArray< Double_t*, Double_t >* localBinCuts = fBinCuts;
+        if (nBins != fBinCuts->GetArraySize())
+        {
+            std::cout << "Warning from KTSimpleClusteringProcessor::ProcessPowerSpectrum: size from power spectrum does not match bin cut array size" << std::endl;
+            localBinCuts = new KTMaskedArray< Double_t*, Double_t >(dataArray, nBins);
+        }
+        else
+        {
+            fBinCuts->ChangeArray(dataArray);
+        }
+        UInt_t nCutBins = localBinCuts->size();
 
         Double_t mean = TMath::Mean(nBins-fFirstBinToUse, dataArray+fFirstBinToUse);
         //cout << "   Mean: " << mean << endl;
@@ -111,11 +126,18 @@ namespace Katydid
         */
 
         // search for bins above the threshold
-        for (unsigned int iBin=fFirstBinToUse; iBin<nBins; iBin++)
+        unsigned int firstCutBinToUse = localBinCuts->FindCutPositionOrNext(fFirstBinToUse);
+        for (unsigned int iCutBin=firstCutBinToUse; iCutBin<nCutBins; iCutBin++)
         {
+            /*
             if (dataArray[iBin] > threshold)
             {
                 peakBins.insert(iBin);
+            }
+            */
+            if ((*localBinCuts)[iCutBin] > threshold)
+            {
+                peakBins.insert(localBinCuts->GetArrayPosition(iCutBin));
             }
         }
         //std::cout << "FFT " << psNum << " -- Peak bins: " << peakBins.size() << std::endl;

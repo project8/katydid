@@ -28,6 +28,7 @@
 #include <fstream>
 #include <unistd.h>
 #include <iostream>
+#include <utility>
 
 
 using namespace std;
@@ -47,6 +48,8 @@ int main(int argc, char** argv)
     Int_t groupBinsMarginLow = 1;
     Int_t groupBinsMarginHigh = 3;
     Int_t groupBinsMarginSameTime = 1;
+
+    Int_t cutOption = 0;
 
     UInt_t firstBinToUse = 4;
 
@@ -69,19 +72,7 @@ int main(int argc, char** argv)
                 break;
             case 'c':
             {
-                Int_t controlOpt = atoi(optarg);
-                if (controlOpt == 1)
-                {
-                    groupBinsMarginLow = 3;
-                    groupBinsMarginHigh = 1;
-                    groupBinsMarginSameTime = 1;
-                }
-                else if (controlOpt == 2)
-                {
-                    groupBinsMarginLow = 7;
-                    groupBinsMarginHigh = 3;
-                    groupBinsMarginSameTime = 1;
-                }
+                cutOption = atoi(optarg);
                 break;
             }
             case 'd':
@@ -143,6 +134,16 @@ int main(int argc, char** argv)
     procEHunt.ApplySetting(&settingHuntTextFilename);
     procEHunt.ApplySetting(&settingHuntWriteROOT);
     procEHunt.ApplySetting(&settingHuntROOTFilename);
+
+    if (cutOption == 1)
+    {
+        KTSetting settingHuntCut1("CutRange", pair< Double_t, Double_t > (0., 0.2));
+        KTSetting settingHuntCut2("CutRange", pair< Double_t, Double_t > (99.8, 100.2));
+        KTSetting settingHuntCut3("CutRange", pair< Double_t, Double_t > (199.8, 200.2));
+        procEHunt.ApplySetting(&settingHuntCut1);
+        procEHunt.ApplySetting(&settingHuntCut2);
+        procEHunt.ApplySetting(&settingHuntCut3);
+    }
 
     // this will ensure that every time procEgg hatches an event, procEHunt.ProcessEvent will be called
     //procFFT.ConnectToEventSignalFrom(procEgg);
