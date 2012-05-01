@@ -38,10 +38,10 @@ if (SET_INSTALL_PREFIX_TO_DEFAULT)
 endif (SET_INSTALL_PREFIX_TO_DEFAULT)
 
 # install subdirectories
-set_path (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" "Install directory for headers")
-set_path (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" "Install directory for libraries")
-set_path (BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" "Install directory for binaries")
-
+set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Install directory for headers")
+set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Install directory for libraries")
+set (BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Install directory for binaries")
+set (CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/config" CACHE PATH "Install directory for config files")
 
 # build shared libraries
 set (BUILD_SHARED_LIBS ON)
@@ -69,6 +69,15 @@ include_directories (${ROOT_INCLUDES})
 # have to add the FFTW library because it doesn't automatically get included for some reason
 set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
 set (LIBS ${LIBS} ${ROOT_LIBRARIES})
+
+# setup the log4cxx install
+find_package (LOG4CXX)
+if (LOG4CXX_FOUND)
+    message (STATUS "Log4cxx found")
+    list (APPEND LIBS ${LOG4CXX_LIBRARY})
+    include_directories (${LOG4CXX_INCLUDE_DIRS})
+endif (LOG4CXX_FOUND)
+
 
 
 # external packages distributed with Katydid

@@ -15,6 +15,9 @@ if (ENABLE_TESTING)
     add_executable (TestCutableArray ${CMAKE_CURRENT_SOURCE_DIR}/TestCutableArray.cc)
     target_link_libraries (TestCutableArray KatydidUtility ${LIBS})
     
+    add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
+    target_link_libraries (TestLogger KatydidUtility ${LIBS})
+    
     add_executable (TestSettings ${CMAKE_CURRENT_SOURCE_DIR}/TestSettings.cc)
     target_link_libraries (TestSettings KatydidUtility ${LIBS})
     
@@ -34,6 +37,7 @@ if (ENABLE_TESTING)
                      TestAxisProperties
                      TestCutIterator
                      TestCutableArray
+                     TestLogger
                      TestSettings
                      #TestSignals
                      TestSimpleFFT
@@ -46,6 +50,7 @@ if (ENABLE_TESTING)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
+    add_test (Test_Logger TestLogger)
     add_test (Test_Settings TestSettings)
     #add_test (Test_Signals TestSignals)
     add_test (Test_SimpleFFT TestSimpleFFT)
