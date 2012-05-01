@@ -13,5 +13,5 @@ target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidEgg KatydidFFT)
 install (TARGETS SimpleElectronHunt
                  SimpleElectronHunt2
                  ExtractPowerSpectra
-         DESTINATION bin)
+         DESTINATION ${BIN_INSTALL_DIR})
          

@@ -39,7 +39,7 @@ if (ENABLE_TESTING)
                      TestSimpleFFT
                      TestSlidingWindowFFT
                      TestVector
-             DESTINATION bin)
+             DESTINATION ${BIN_INSTALL_DIR})
              
     # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.
     add_test (Test_ExtractEvents ExtractEvents)

@@ -25,17 +25,17 @@ set (Katydid_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 set (Katydid_PACKAGE_STRING "${CMAKE_PROJECT_NAME} ${Katydid_FULL_VERSION}")
 
 
-# set the build directory
-set (PROJECT_BINARY_DIR "${PROJECT_SOURCE_DIR}/cbuild")
-
-# default install directory set to pwd
+# default install directory set to the build directory
 set (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}")
+
+# install subdirectories
+set_path (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" "Install directory for headers")
+set_path (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" "Install directory for libraries")
+set_path (BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" "Install directory for binaries")
+
 
 # build shared libraries
 set (BUILD_SHARED_LIBS ON)
-
-# change the build type
-set (CMAKE_BUILD_TYPE "Debug")
 
 # add an option to build the validation tests
 option (ENABLE_TESTING "Build the validation test and enable CMake testing" OFF)
@@ -61,9 +61,6 @@ include_directories (${ROOT_INCLUDES})
 set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
 set (LIBS ${LIBS} ${ROOT_LIBRARIES})
 
-# add the mxml library
-#set (LIBS ${LIBS} -lmxml)
-
 
 # external packages distributed with Katydid
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
@@ -75,6 +72,7 @@ configure_file (
     "${PROJECT_SOURCE_DIR}/KatydidConfig.hh.in"
     "${PROJECT_BINARY_DIR}/KatydidConfig.hh"
 )
+
 
 # install location for the configuration header
 install (FILES "${PROJECT_BINARY_DIR}/KatydidConfig.hh" DESTINATION include)
