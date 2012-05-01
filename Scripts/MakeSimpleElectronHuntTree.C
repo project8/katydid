@@ -21,6 +21,7 @@
  *          * There may be a line starting with "Event" that gives the event number.
  *          * After all events there can be a footer with lines beginning with "Events" or "Total".
  *          * Any other lines will be assumed to contain the mean frequencies (in MHz) of the candidates.
+ *          * Frequencies can be provided in Hz or MHz. If the value is greater than 1000, then it's assumed to be Hz.
  *
  *
  */
@@ -92,7 +93,11 @@ void MakeSimpleElectronHuntTree(TString outFileName, TString inFileNamePrefix1, 
 
     // Determine if we'll be using the second input filename prefix
     Bool_t useSecondInput = kFALSE;
-    if (! inFileNamePrefix2.IsNull()) useSecondInput = kTRUE;
+    if (! inFileNamePrefix2.IsNull())
+    {
+        cout << "Using two input files" << endl;
+        useSecondInput = kTRUE;
+    }
 
     // Create the output file
     TFile outFile(outFileName, "recreate");
@@ -115,7 +120,7 @@ void MakeSimpleElectronHuntTree(TString outFileName, TString inFileNamePrefix1, 
     TTree* outTree2 = NULL;
     if (useSecondInput)
     {
-        TTree* outTree2 = new TTree("SimpleEHunt2", "Simple Electron Hunt Tree 2");
+        outTree2 = new TTree("SimpleEHunt2", "Simple Electron Hunt Tree 2");
         outTree2->Branch("ThreshMult", &threshMult);
         outTree2->Branch("Event", &eventNum);
         outTree2->Branch("Candidate", &candidateNum);
@@ -353,7 +358,11 @@ vector< Double_t >* ExtractFrequencies(TString* line)
         token.ReplaceAll("+", "");
         if (token.IsFloat())
         {
-            candidates->push_back(token.Atof());
+            Double_t freq = token.Atof();
+            if (freq > 1.e3) freq /= 1.e6;
+            // if we need to apply the cut around the noise peaks from the september 2011 data
+            if (!(freq < 0.2) && !(freq>99.8 && freq<100.2) && !(freq>199.5&&freq<200.2))
+                candidates->push_back(freq);
         }
     }
     tokens->Delete();
