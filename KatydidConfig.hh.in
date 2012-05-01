@@ -1,4 +1,4 @@
-// the configured options and settings for Kasper
+// the configured options and settings for Katydid
 
 // The name of the package
 #define PACKAGE "@Katydid_PACKAGE_NAME@"
