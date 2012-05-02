@@ -2,7 +2,7 @@
  * KTLogger.cxx
  *
  *  Created on: 18.11.2011 (KLogger from KATRIN's Kasper package)
- *      Author: Marco Haag <marco.haag@kit.edu>
+ *      Author: Marco Haag <marco.haag@kit.edu> and Sebastian Voecking
  *
  *  Ported to Katydid on: 01.05.2012
  *      By: Noah Oblath
