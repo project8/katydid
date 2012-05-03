@@ -99,18 +99,22 @@ install (FILES "${PROJECT_BINARY_DIR}/KatydidConfig.hh" DESTINATION include)
 include_directories ("${PROJECT_BINARY_DIR}")
 
 # subdirectories
-include_directories ("${PROJECT_SOURCE_DIR}/Source/Utility")
-#include_directories ("${PROJECT_SOURCE_DIR}/Source/Framework")
-include_directories ("${PROJECT_SOURCE_DIR}/Source/Egg")
-include_directories ("${PROJECT_SOURCE_DIR}/Source/FFT")
-include_directories ("${PROJECT_SOURCE_DIR}/Source/Analysis")
-include_directories ("${PROJECT_SOURCE_DIR}/Source/Lice")
+include_directories (
+    ${PROJECT_SOURCE_DIR}/Source/Utility
+    #${PROJECT_SOURCE_DIR}/Source/Framework
+    ${PROJECT_SOURCE_DIR}/Source/Egg
+    ${PROJECT_SOURCE_DIR}/Source/FFT
+    ${PROJECT_SOURCE_DIR}/Source/Analysis
+    ${PROJECT_SOURCE_DIR}/Source/Waterfall
+    ${PROJECT_SOURCE_DIR}/Source/Lice
+)
 
 add_subdirectory (Source/Utility)
 #add_subdirectory (Source/Framework)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
+add_subdirectory (Source/Waterfall)
 add_subdirectory (Source/Lice)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)

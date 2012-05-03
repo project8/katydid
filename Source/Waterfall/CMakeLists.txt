@@ -1,0 +1,30 @@
+# CMakeLists for Katydid/Source/Waterfall
+# Author: N. Oblath
+
+set (WATERFALL_DICT_HEADERFILES
+)
+
+set (WATERFALL_NODICT_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWaterfallCandidate.hh
+)
+
+set (WATERFALL_HEADERFILES ${WATERFALL_DICT_HEADERFILES} ${WATERFALL_NODICT_HEADERFILES})
+
+set (WATERFALL_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWaterfallCandidate.cc
+)
+
+#set (WATERFALL_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/WaterfallLinkDef.hh)
+#set (WATERFALL_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/WaterfallDict.cxx)
+
+##################################################
+
+#ROOT_GENERATE_DICTIONARY ("${WATERFALL_DICT_HEADERFILES}" "${WATERFALL_LINKDEF_HEADERFILE}" "${WATERFALL_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+
+add_library (KatydidWaterfall ${WATERFALL_SOURCEFILES} ${WATERFALL_DICT_OUTFILE})
+set_target_properties(KatydidWaterfall PROPERTIES INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/lib)
+target_link_libraries (KatydidWaterfall ${LIBS})
+
+install (FILES ${WATERFALL_HEADERFILES}  DESTINATION include)
+install (TARGETS KatydidWaterfall  DESTINATION lib)
+         
