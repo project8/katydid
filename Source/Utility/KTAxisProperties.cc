@@ -1,5 +1,9 @@
 #include "KTAxisProperties.hh"
 
+ClassImp(Katydid::KTNBinsFunctor< 1 >);
+ClassImp(Katydid::KTNBinsFunctor< 2 >);
+ClassImp(Katydid::KTAxisProperties< 1 >);
+ClassImp(Katydid::KTAxisProperties< 2 >);
 
 namespace Katydid
 {
@@ -36,6 +40,11 @@ namespace Katydid
     KTAxisProperties< 1 >::~KTAxisProperties()
     {
         delete fGetNBinsFunc;
+    }
+
+    size_t KTAxisProperties< 1 >::GetNDimensions() const
+    {
+        return 1;
     }
 
     KTAxisProperties< 1 >& KTAxisProperties< 1 >::operator=(const KTAxisProperties< 1 >& orig)

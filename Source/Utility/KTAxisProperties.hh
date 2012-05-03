@@ -37,7 +37,7 @@ namespace Katydid
             KTAxisProperties();
             KTAxisProperties(KTNBinsFunctor< NDims >* getNBinsFunc);
             KTAxisProperties(const KTAxisProperties< NDims >& orig);
-            ~KTAxisProperties();
+            virtual ~KTAxisProperties();
 
         public:
             KTAxisProperties< NDims >& operator=(const KTAxisProperties< NDims >& orig);
@@ -89,6 +89,8 @@ namespace Katydid
         private:
             std::string fLabels[NDims];
 
+            ClassDef(KTAxisProperties, 1)
+
     };
 
     template< size_t NDims >
@@ -134,6 +136,12 @@ namespace Katydid
     KTAxisProperties< NDims >::~KTAxisProperties()
     {
         delete fGetNBinsFunc;
+    }
+
+    template< size_t NDims >
+    size_t KTAxisProperties< NDims >::GetNDimensions() const
+    {
+        return NDims;
     }
 
     template< size_t NDims >
@@ -353,6 +361,8 @@ namespace Katydid
 
         private:
             std::string fLabel;
+
+            ClassDef(KTAxisProperties< 1 >, 1);
 
     };
 } /* namespace Katydid */

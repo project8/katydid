@@ -23,6 +23,8 @@ namespace Katydid
             virtual ~KTNBinsFunctor() {}
             virtual size_t operator()(size_t dim=1) const =0;
             virtual KTNBinsFunctor< NDims >* Clone() const = 0;
+
+            ClassDef(KTNBinsFunctor, 1)
     };
 
 
@@ -208,6 +210,7 @@ namespace Katydid
             {
                 return new KTNBinsInArray< 1, XArrayType >(fPtrToArray, fFuncPtr);
             }
+
     };
 
     // specialize for fixed-size arrays
