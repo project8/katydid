@@ -8,13 +8,16 @@
 #ifndef KTAXISPROPERTIES_GETNBINS_HH_
 #define KTAXISPROPERTIES_GETNBINS_HH_
 
+#include "KTLogger.hh"
+
 #include "Rtypes.h"
 
 #include <cmath>
-#include <iostream>
 
 namespace Katydid
 {
+    KTLOGGER(utillog_getnbins, "katydid.utility");
+
     template< size_t NDims >
     class KTNBinsFunctor
     {
@@ -24,7 +27,7 @@ namespace Katydid
             virtual size_t operator()(size_t dim=1) const =0;
             virtual KTNBinsFunctor< NDims >* Clone() const = 0;
 
-            ClassDef(KTNBinsFunctor, 1)
+            //ClassDef(KTNBinsFunctor, 1)
     };
 
 
@@ -112,7 +115,7 @@ namespace Katydid
                 {
                     return new KTNBinsInArray< NDims, XArrayType >(fPtrToArray, fArrayOfGetNBinsPtrs);
                 }
-                std::cout << "Error in KTNBinsFunctor< " << NDims << " >::Clone: unknown NBins mode" << std::endl;
+                KTERROR(utillog_getnbins, "Error in KTNBinsFunctor< " << NDims << " >::Clone: unknown NBins mode");
                 return NULL;
             }
 

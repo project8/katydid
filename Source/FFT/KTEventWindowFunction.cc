@@ -10,11 +10,10 @@
 #include "KTEvent.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTSimpleFFT.hh"
+#include "KTLogger.hh"
 
 #include "TH1.h"
 #include "TMath.h"
-
-#include <iostream>
 
 using std::string;
 
@@ -22,6 +21,7 @@ ClassImp(Katydid::KTEventWindowFunction);
 
 namespace Katydid
 {
+    KTLOGGER(fftlog, "katydid.fft");
 
     KTEventWindowFunction::KTEventWindowFunction() :
             KTWindowFunction(),
@@ -145,7 +145,7 @@ namespace Katydid
         fSize = (unsigned int)TMath::Nint(prelimNBins);
         fLength = (Double_t)fSize * fBinWidth;
         this->RebuildWindowFunction();
-        std::cout << "setting the bin width: " << fSize << "  " << fBinWidth << "  " << fLength << std::endl;
+        KTDEBUG(fftlog, "setting the bin width: " << fSize << "  " << fBinWidth << "  " << fLength);
         return fLength;
     }
 

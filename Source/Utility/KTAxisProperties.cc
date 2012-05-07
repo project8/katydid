@@ -1,9 +1,9 @@
 #include "KTAxisProperties.hh"
 
-ClassImp(Katydid::KTNBinsFunctor< 1 >);
-ClassImp(Katydid::KTNBinsFunctor< 2 >);
-ClassImp(Katydid::KTAxisProperties< 1 >);
-ClassImp(Katydid::KTAxisProperties< 2 >);
+//ClassImp(Katydid::KTNBinsFunctor< 1 >);
+//ClassImp(Katydid::KTNBinsFunctor< 2 >);
+//ClassImp(Katydid::KTAxisProperties< 1 >);
+//ClassImp(Katydid::KTAxisProperties< 2 >);
 
 namespace Katydid
 {

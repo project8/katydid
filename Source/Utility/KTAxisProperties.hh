@@ -89,7 +89,7 @@ namespace Katydid
         private:
             std::string fLabels[NDims];
 
-            ClassDef(KTAxisProperties, 1)
+            //ClassDef(KTAxisProperties, 1)
 
     };
 
@@ -362,7 +362,7 @@ namespace Katydid
         private:
             std::string fLabel;
 
-            ClassDef(KTAxisProperties< 1 >, 1);
+            //ClassDef(KTAxisProperties< 1 >, 1);
 
     };
 } /* namespace Katydid */

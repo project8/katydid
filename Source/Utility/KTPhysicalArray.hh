@@ -15,10 +15,10 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/bind.hpp>
 
-#include <iostream>
-
 namespace Katydid
 {
+    KTLOGGER(utillog_physarr, "katydid.utility");
+
     //*******************************
     // general, dummy, implementation
     //*******************************
@@ -32,11 +32,12 @@ namespace Katydid
         public:
             KTPhysicalArray();
             KTPhysicalArray(const KTPhysicalArray< NDims, XDataType >& orig);
-            ~KTPhysicalArray();
+            virtual ~KTPhysicalArray();
 
         public:
             KTPhysicalArray< NDims, XDataType >& operator=(const KTPhysicalArray< NDims, XDataType >& rhs);
             KTPhysicalArray< NDims, XDataType >& operator/=(const KTPhysicalArray< NDims, XDataType >& rhs);
+
     };
 
     template< size_t NDims, typename XDataType >
@@ -45,8 +46,8 @@ namespace Katydid
             KTAxisProperties< NDims >()
     {
         SetNBinsFunc(new KTNBinsInArray< NDims, XVectorType >(this, &XVectorType::size));
-        std::cout << "Warning from KTPhysicalArray: " << NDims << " dimensional arrays are not supported." << std::endl;
-        std::cout << "This is an instance of a dummy object." << std::endl;
+        KTWARN(utillog_physarr, NDims << "-dimensional arrays are not supported.\n"
+                "This is an instance of a dummy object.");
     }
 
     template< size_t NDims, typename XDataType >
@@ -55,8 +56,8 @@ namespace Katydid
             KTAxisProperties< NDims >()
     {
         SetNBinsFunc(new KTNBinsInArray< NDims, XVectorType >(this, &XVectorType::size));
-        std::cout << "Warning from KTPhysicalArray: " << NDims << " dimensional arrays are not supported." << std::endl;
-        std::cout << "This is an instance of a dummy object." << std::endl;
+        KTWARN(utillog_physarr, NDims << "-dimensional arrays are not supported.\n"
+               "This is an instance of a dummy object.");
     }
 
     template< size_t NDims, typename XDataType >
@@ -91,7 +92,7 @@ namespace Katydid
             KTPhysicalArray();
             KTPhysicalArray(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
             KTPhysicalArray(const KTPhysicalArray< 1, XDataType >& orig);
-            ~KTPhysicalArray();
+            virtual ~KTPhysicalArray();
 
         public:
             KTPhysicalArray< 1, XDataType >& operator=(const KTPhysicalArray< 1, XDataType >& rhs);
@@ -99,6 +100,7 @@ namespace Katydid
 
         private:
             void SetNewNBinsFunc(); // called from constructor; do not make virtual
+
     };
 
     template< typename XDataType >
@@ -177,7 +179,7 @@ namespace Katydid
             KTPhysicalArray();
             KTPhysicalArray(size_t xNBins, Double_t xRangeMin, Double_t xRangeMax, size_t yNBins, Double_t yRangeMin, Double_t yRangeMax);
             KTPhysicalArray(const KTPhysicalArray< 2, XDataType >& orig);
-            ~KTPhysicalArray();
+            virtual ~KTPhysicalArray();
 
         public:
             KTPhysicalArray< 2, XDataType >& operator=(const KTPhysicalArray< 2, XDataType >& rhs);

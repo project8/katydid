@@ -8,11 +8,12 @@
 #ifndef KTSETTING_HH_
 #define KTSETTING_HH_
 
+#include "KTLogger.hh"
+
 #include <boost/any.hpp>
 
 #include <cstdlib>
 
-#include <iostream>
 #include <string>
 #include <sstream>
 
@@ -22,6 +23,8 @@ using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(utillog_setting, "katydid.utility");
+
     class KTSetting
     {
         public:
@@ -76,7 +79,7 @@ namespace Katydid
         }
         catch(const boost::bad_any_cast &)
         {
-            std::cout << "Error in KTSetting::GetValue() (name = " << fName << "): Unable to cast to the given type." << std::endl;
+            KTFATAL(utillog_setting, "Setting name: " << fName << " -- Unable to cast to the given type.");
             exit(-1);
             //return XValueType();
         }
