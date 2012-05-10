@@ -7,10 +7,13 @@
 
 #include "KTWaterfallCandidate.hh"
 
+ClassImp(Katydid::KTWaterfallCandidate);
+
 namespace Katydid
 {
 
     KTWaterfallCandidate::KTWaterfallCandidate() :
+            TObject(),
             fData(),
             fEventNumber(0)
     {

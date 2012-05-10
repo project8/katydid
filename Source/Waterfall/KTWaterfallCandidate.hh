@@ -8,17 +8,17 @@
 #ifndef KTWATERFALLCANDIDATE_HH_
 #define KTWATERFALLCANDIDATE_HH_
 
-#include "KTPhysicalArray.hh"
+//#include "KTPhysicalArray.hh"
 
-#include "Rtypes.h"
+#include "TH2.h"
 
 namespace Katydid
 {
 
-    class KTWaterfallCandidate
+    class KTWaterfallCandidate : public TObject
     {
         public:
-            typedef KTPhysicalArray< 2, Double_t > DataArray;
+            //typedef KTPhysicalArray< 2, Double_t > DataArray;
 
         public:
             KTWaterfallCandidate();
@@ -30,14 +30,16 @@ namespace Katydid
 
         // Access to the data
         public:
-            const DataArray& GetData() const;
+            //const DataArray& GetData() const;
+            const TH2D& GetData() const;
             UInt_t GetEventNumber() const;
             Double_t GetStartFrequency() const;
             Double_t GetStartTime() const;
             Double_t GetEndFrequency() const;
             Double_t GetEndTime() const;
 
-            void SetData(const DataArray& data);
+            //void SetData(const DataArray& data);
+            void SetData(const TH2D& data);
             void SetEventNumber(UInt_t num);
             void SetStartFrequency(Double_t freq);
             void SetStartTime(Double_t time);
@@ -46,7 +48,8 @@ namespace Katydid
 
         private:
             // the actual data that makes up the candidate
-            DataArray fData;
+            //DataArray fData;
+            TH2D fData;
 
             // characteristics of the event from which it came
             UInt_t fEventNumber;
@@ -56,9 +59,12 @@ namespace Katydid
             Double_t fStartTime;
             Double_t fEndFrequency;
             Double_t fEndTime;
+
+            ClassDef(KTWaterfallCandidate, 1);
     };
 
-    inline const KTWaterfallCandidate::DataArray& KTWaterfallCandidate::GetData() const
+    //inline const KTWaterfallCandidate::DataArray& KTWaterfallCandidate::GetData() const
+    inline const TH2D& KTWaterfallCandidate::GetData() const
     {
         return fData;
     }
@@ -88,7 +94,8 @@ namespace Katydid
         return fEndTime;
     }
 
-    inline void KTWaterfallCandidate::SetData(const DataArray& data)
+    //inline void KTWaterfallCandidate::SetData(const DataArray& data)
+    inline void KTWaterfallCandidate::SetData(const TH2D& data)
     {
         fData = data;
         return;
