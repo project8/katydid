@@ -12,6 +12,7 @@
 #include "rapidxml.hpp"
 //#include "rapidxml_print.hpp"
 
+#include <cstring>
 #include <iostream>
 #include <vector>
 
