@@ -16,6 +16,7 @@
 namespace Katydid
 {
     class KTPowerSpectrum;
+    class KTSlidingWindowFFT;
 
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;

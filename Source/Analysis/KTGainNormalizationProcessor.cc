@@ -9,6 +9,7 @@
 
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTSlidingWindowFFT.hh"
 
 #include "TMath.h"
 

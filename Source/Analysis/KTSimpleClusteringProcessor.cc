@@ -10,12 +10,11 @@
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTSlidingWindowFFT.hh"
 
 #include "TCanvas.h"
 #include "TH1.h"
 #include "TMath.h"
-
-#include "boost/numeric/ublas/expression_types.hpp"
 
 #include <iostream>
 #include <set>
@@ -25,8 +24,6 @@ using std::list;
 using std::multimap;
 using std::set;
 using std::pair;
-
-using namespace boost::numeric::ublas;
 
 namespace Katydid
 {
