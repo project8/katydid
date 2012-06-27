@@ -36,11 +36,16 @@ namespace Katydid
 
             Bool_t ApplySetting(const KTSetting* setting);
 
+            void ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft);
             void ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum);
 
             void SetEventPeakBinsList(epbList* eventPeakBinsList); /// does NOT take ownership of eventPeakBinsList
             void SetBinCuts(KTMaskedArray< Double_t*, Double_t >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
+
+        protected:
+            template< typename XVectorType >
+            void FindAndGroupPeakBins(UInt_t psNum, const boost::numeric::ublas::vector_expression< XVectorType >& column);
 
         private:
             epbList* fEventPeakBins;

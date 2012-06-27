@@ -62,6 +62,17 @@ namespace Katydid
         return;
     }
 
+    void KTGainNormalizationProcessor::ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft)
+    {
+        UInt_t nPowerSpectra = fft->GetNPowerSpectra();
+        for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
+        {
+            ProcessPowerSpectrum(iPS, fft->GetPowerSpectrum(iPS));
+        }
+
+        return;
+    }
+
     void KTGainNormalizationProcessor::ProcessPowerSpectrum(UInt_t /*psNum*/, KTPowerSpectrum* powerSpectrum)
     {
         if (powerSpectrum->GetSize() != fNormalization->size())

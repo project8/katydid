@@ -30,6 +30,7 @@ namespace Katydid
 
             void PrepareNormalization(KTPhysicalArray< 1, Double_t >* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
 
+            void ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft);
             void ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum);
 
         private:

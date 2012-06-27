@@ -15,6 +15,8 @@
 #include "TH1.h"
 #include "TMath.h"
 
+#include "boost/numeric/ublas/expression_types.hpp"
+
 #include <iostream>
 #include <set>
 #include <utility>
@@ -23,6 +25,8 @@ using std::list;
 using std::multimap;
 using std::set;
 using std::pair;
+
+using namespace boost::numeric::ublas;
 
 namespace Katydid
 {
@@ -82,6 +86,17 @@ namespace Katydid
             fDrawFlag = setting->GetValue< Bool_t >();
         }
         return kFALSE;
+    }
+
+    void KTSimpleClusteringProcessor::ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft)
+    {
+        UInt_t nPowerSpectra = fft->GetNPowerSpectra();
+        for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
+        {
+            ProcessPowerSpectrum(iPS, fft->GetPowerSpectrum(iPS));
+        }
+
+        return;
     }
 
     void KTSimpleClusteringProcessor::ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum)
@@ -219,6 +234,5 @@ namespace Katydid
 
         return;
     }
-
 
 } /* namespace Katydid */
