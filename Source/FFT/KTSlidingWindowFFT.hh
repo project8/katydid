@@ -29,6 +29,9 @@ namespace Katydid
     //class KTPowerSpectrum;
     class KTEvent;
 
+    template< size_t NDims, typename XDataType >
+    class KTPhysicalArray;
+
     class KTSlidingWindowFFT : public KTFFT
     {
         public:
@@ -50,6 +53,8 @@ namespace Katydid
             virtual TH2D* CreatePowerSpectrumHistogram(const std::string& name) const;
             virtual TH2D* CreatePowerSpectrumHistogram() const;
 
+            virtual KTPhysicalArray< 2, Double_t >* CreatePowerSpectrumPhysArr() const;
+
             /// for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.
             virtual Int_t GetTimeSize() const;
             virtual Int_t GetFrequencySize() const;
@@ -63,6 +68,7 @@ namespace Katydid
             KTWindowFunction* GetWindowFunction() const;
             const std::vector< Double_t >& GetTimeData() const;
             KTPowerSpectrum* GetPowerSpectrum(Int_t spect) const;
+            UInt_t GetNPowerSpectra() const;
 
             const TFFTRealComplex* GetFFT() const;
             const std::string& GetTransformFlag() const;
@@ -186,6 +192,11 @@ namespace Katydid
     {
         if (spec >= 0 && spec < (Int_t)fPowerSpectra.size()) return fPowerSpectra[spec];
         return NULL;
+    }
+
+    inline UInt_t KTSlidingWindowFFT::GetNPowerSpectra() const
+    {
+        return (UInt_t)fPowerSpectra.size();
     }
 
     inline KTWindowFunction* KTSlidingWindowFFT::GetWindowFunction() const

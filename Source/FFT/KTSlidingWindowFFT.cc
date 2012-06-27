@@ -9,6 +9,7 @@
 
 //#include "KTArrayUC.hh"
 #include "KTEvent.hh"
+#include "KTPhysicalArray.hh"
 //#include "KTPowerSpectrum.hh"
 #include "KTWindowFunction.hh"
 
@@ -206,6 +207,32 @@ namespace Katydid
     TH2D* KTSlidingWindowFFT::CreatePowerSpectrumHistogram() const
     {
         return CreatePowerSpectrumHistogram("hPowerSpectra_SlidingWindowFFT");
+    }
+
+    KTPhysicalArray< 2, Double_t >* KTSlidingWindowFFT::CreatePowerSpectrumPhysArr() const
+    {
+        if (fPowerSpectra.empty()) return NULL;
+
+        // plot in MHz, instead of Hz
+        Double_t freqMult = 1.e-6;
+
+        Double_t effTimeWidth = (Double_t)(fPowerSpectra.size() * fWindowFunction->GetSize() - (fPowerSpectra.size()-1) * GetEffectiveOverlap());
+        effTimeWidth *= fWindowFunction->GetBinWidth();
+        KTPhysicalArray< 2, Double_t >* array = new KTPhysicalArray< 2, Double_t >(fPowerSpectra.size(), 0., effTimeWidth,
+                this->GetFrequencySize(), -0.5 * fFreqBinWidth * freqMult, fFreqBinWidth * ((Double_t)this->GetFrequencySize()-0.5) * freqMult);
+        std::cout << "Frequency axis: " << this->GetFrequencySize() << " bins; range: " << array->GetRangeMin(2) << " - " << array->GetRangeMax(2) << " MHz" << std::endl;
+        std::cout << "Time axis: " << fPowerSpectra.size() << " bins; range: 0 - " << effTimeWidth << " s" << std::endl;
+
+        for (Int_t iBinX=1; iBinX<=(Int_t)fPowerSpectra.size(); iBinX++)
+        {
+            KTPowerSpectrum* ps = fPowerSpectra[iBinX-1];
+            for (Int_t iBinY=1; iBinY<=this->GetFrequencySize(); iBinY++)
+            {
+                (*array)(iBinX, iBinY) = ps->GetMagnitudeAt(iBinY-1);
+            }
+        }
+
+        return array;
     }
 
     KTPowerSpectrum* KTSlidingWindowFFT::CreatePowerSpectrum() const
