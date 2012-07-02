@@ -1,6 +1,8 @@
 #ifndef KTSINGLETON_H_
 #define KTSINGLETON_H_
 
+#include "KTDestroyer.hh"
+
 #include <cstddef>
 
 namespace Katydid
@@ -14,9 +16,12 @@ namespace Katydid
 
         private:
             static XType* fInstance;
+            static KTDestroyer< XType > fDestroyer;
 
         protected:
             KTSingleton();
+
+            friend class KTDestroyer< XType >;
             ~KTSingleton();
     };
 
@@ -24,11 +29,15 @@ namespace Katydid
     XType* KTSingleton< XType >::fInstance = NULL;
 
     template< class XType >
+    KTDestroyer< XType > KTSingleton< XType >::fDestroyer;
+
+    template< class XType >
     XType* KTSingleton< XType >::GetInstance()
     {
         if( fInstance == NULL )
         {
             fInstance = new XType();
+            fDestroyer.SetDoomed(fInstance);
         }
         return fInstance;
     }
