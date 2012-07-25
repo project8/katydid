@@ -9,7 +9,8 @@
 #define KTPARAMETERINTERFACE_HH_
 
 #include "KTSingleton.hh"
-#include "KTLogger.hh"
+
+#include "Rtypes.h"
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -18,24 +19,24 @@
 
 namespace Katydid
 {
-    KTLOGGER(utillog_pstore, "katydid.utility");
+    class KTPStoreNode;
 
     class KTParameterStore : public KTSingleton< KTParameterStore >
     {
         protected:
-            typedef std::vector< boost::property_tree::ptree > StoreDB;
+            typedef boost::property_tree::ptree PStoreTree;
 
-            // Parameter access interface
+            // Config file reading interface
         public:
-            template< typename XValueType >
-            XValueType GetParameter(const std::string address) const;
+            Bool_t ReadConfigFile(const std::string& filename);
 
-        protected:
-
+            // Parameter store interface
+        public:
+            KTPStoreNode* GetNode(const std::string address) const;
 
             // Parameter storage
         protected:
-            std::vector< boost::property_tree::ptree > fStore;
+            PStoreTree fStore;
 
             // This is a singleton class
             //  -- Friendships with KTSingleton and KTDestroyer
@@ -47,31 +48,19 @@ namespace Katydid
             ~KTParameterStore();
     };
 
+    /*
     template< typename XValueType >
     inline XValueType KTParameterStore::GetParameter(const std::string address) const
     {
         Bool_t foundParam = false;
         for (StoreDB::const_iterator iter = fStore.begin(); iter != fStore.end(); iter++)
         {
-                XValueType returnVal = (*iter).get< XValueType >(address);
+            XValueType returnVal = (*iter).get< XValueType >(address);
             foundParam = true;
             break;
         }
-        /*
-        try
-        {
-            XValueType returnVal = boost::any_cast<XValueType>(dummy);
-            return returnVal;
-        }
-        catch(const boost::bad_any_cast &)
-        {
-            KTFATAL(utillog_pstore, "Parameter address: " << address << " -- Unable to cast to the given type.");
-            exit(-1);
-            //return XValueType();
-        }
-        */
     }
-
+     */
 
 } /* namespace Katydid */
 #endif /* KTPARAMETERINTERFACE_HH_ */

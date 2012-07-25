@@ -3,9 +3,13 @@
  *
  *  Created on: Jul 2, 2012
  *      Author: nsoblath
+ *
+ *  Command-line arguments:
+ *    1. Config filename (use TestParameterStoreConfig.json
  */
 
 #include "KTParameterStore.hh"
+#include "KTTestConfigurable.hh"
 
 #include <iostream>
 #include <string>
@@ -13,12 +17,16 @@
 using namespace Katydid;
 using namespace std;
 
-int main()
+int main(int argc, char** argv)
 {
-    KTParameterStore* store = KTParameterStore::GetInstance();
+    string configFilename(argv[1]);
 
-    cout << "Default value as int: " << store->GetParameter<int>("") << endl;
-    //cout << "Default value as string: " << store->GetParameter<string>("") << endl;
+    KTParameterStore* store = KTParameterStore::GetInstance();
+    store->ReadConfigFile(configFilename);
+
+    KTTestConfigurable* testObj = new KTTestConfigurable();
+
+    delete testObj;
 
     return 0;
 }

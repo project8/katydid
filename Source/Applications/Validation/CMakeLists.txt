@@ -3,6 +3,24 @@
 
 if (ENABLE_TESTING)
 
+    # Config files
+    set (VALIDATION_CONFIGFILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/TestParameterStoreConfig.json
+    )
+    
+    install (FILES ${VALIDATION_CONFIGFILES}  DESTINATION ${CONFIG_INSTALL_DIR})
+    
+
+    # Headers for any test classes
+    set (VALIDATION_HEADERFILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.hh
+    )
+    
+    install (FILES ${VALIDATION_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
+    
+    
+    # Executables
+
     add_executable (ExtractEvents ${CMAKE_CURRENT_SOURCE_DIR}/ExtractEvents.cc)
     target_link_libraries (ExtractEvents KatydidUtility KatydidEgg ${LIBS})
     
@@ -18,7 +36,8 @@ if (ENABLE_TESTING)
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${LIBS})
     
-    add_executable (TestParameterStore ${CMAKE_CURRENT_SOURCE_DIR}/TestParameterStore.cc)
+    add_executable (TestParameterStore ${CMAKE_CURRENT_SOURCE_DIR}/TestParameterStore.cc
+                                       ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
     target_link_libraries (TestParameterStore KatydidUtility ${LIBS})
     
     add_executable (TestSettings ${CMAKE_CURRENT_SOURCE_DIR}/TestSettings.cc)
