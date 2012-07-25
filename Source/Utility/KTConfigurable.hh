@@ -8,6 +8,10 @@
 #ifndef KTCONFIGURABLE_HH_
 #define KTCONFIGURABLE_HH_
 
+#include "KTPStoreNode.hh"
+
+#include "Rtypes.h"
+
 namespace Katydid
 {
     class KTParameterStore;
@@ -19,7 +23,7 @@ namespace Katydid
             KTConfigurable();
             virtual ~KTConfigurable();
 
-            virtual void Configure(KTPStoreNode* node) = 0;
+            virtual Bool_t Configure(const KTPStoreNode* node) = 0;
 
         protected:
             KTParameterStore* fParameterStore;
