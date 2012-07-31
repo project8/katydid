@@ -44,6 +44,7 @@ namespace Katydid
             KTSimpleFFTProcessor();
             virtual ~KTSimpleFFTProcessor();
 
+            Bool_t Configure(const KTPStoreNode* node);
             Bool_t ApplySetting(const KTSetting* setting);
 
             void ProcessHeader(KTEgg::HeaderInfo headerInfo);

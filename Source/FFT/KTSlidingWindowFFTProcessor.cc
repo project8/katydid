@@ -7,19 +7,19 @@
 
 #include "KTSlidingWindowFFTProcessor.hh"
 
+#include "KTFactory.hh"
+#include "KTLogger.hh"
 #include "KTSlidingWindowFFT.hh"
-
-#include <iostream>
-using std::cout;
-using std::endl;
 
 using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(fftlog, "katydid.fft");
 
     KTSlidingWindowFFTProcessor::KTSlidingWindowFFTProcessor() :
             fFFT(),
+            fWindowFunc(NULL),
             fFFTSignal(),
             fHeaderConnection(),
             fEventConnection()
@@ -30,6 +30,26 @@ namespace Katydid
     {
         fHeaderConnection.disconnect();
         fEventConnection.disconnect();
+    }
+
+    Bool_t KTSlidingWindowFFTProcessor::Configure(const KTPStoreNode* node)
+    {
+        fFFT.SetTransformFlag(node->GetData< string >("transform_flag", ""));
+        fFFT.SetOverlap(node->GetData< Double_t >("overlap_time", 0));
+        fFFT.SetOverlap(node->GetData< UInt_t >("overlap_size", 0));
+        fFFT.SetOverlapFrac(node->GetData< Double_t >("overlap_frac", 0.));
+
+        string windowType = node->GetData< string >("window_function", "rectangular");
+        KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
+        if (tempWF == NULL)
+        {
+            KTERROR(fftlog, "Invalid window function type given: <" << windowType << ">.");
+            return false;
+        }
+        fWindowFunc = tempWF;
+        fFFT.SetWindowFunction(tempWF);
+
+        return true;
     }
 
     Bool_t KTSlidingWindowFFTProcessor::ApplySetting(const KTSetting* setting)
@@ -78,7 +98,7 @@ namespace Katydid
     {
         if (fFFT.TakeData(event))
         {
-            cout << "Data transferred to sliding window fft; performing transform" << endl;
+            KTINFO(fftlog, "Data transferred to sliding window fft; performing transform");
             fFFT.Transform();
             fFFTSignal(iEvent, &fFFT);
         }

@@ -7,16 +7,14 @@
 
 #include "KTSimpleFFTProcessor.hh"
 
+#include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
-
-#include <iostream>
-using std::cout;
-using std::endl;
 
 using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(fftlog, "katydid.fft");
 
     KTSimpleFFTProcessor::KTSimpleFFTProcessor() :
             fFFT()
@@ -27,6 +25,12 @@ namespace Katydid
     {
         fHeaderConnection.disconnect();
         fEventConnection.disconnect();
+    }
+
+    Bool_t KTSimpleFFTProcessor::Configure(const KTPStoreNode* node)
+    {
+        fFFT.SetTransformFlag(node->GetData<string>("transform_flag", ""));
+        return true;
     }
 
     Bool_t KTSimpleFFTProcessor::ApplySetting(const KTSetting* setting)
@@ -50,7 +54,7 @@ namespace Katydid
     {
         if (fFFT.TakeData(event))
         {
-            cout << "Data transferred to simple fft; performing transform" << endl;
+            KTINFO(fftlog, "Data transferred to simple fft; performing transform");
             fFFT.Transform();
             fFFTSignal(iEvent, &fFFT);
         }

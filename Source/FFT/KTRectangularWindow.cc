@@ -7,6 +7,8 @@
 
 #include "KTRectangularWindow.hh"
 
+#include "KTFactory.hh"
+
 #include "TArrayD.h"
 #include <cmath>
 
@@ -14,6 +16,7 @@ ClassImp(Katydid::KTRectangularWindow);
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTEventWindowFunction, KTRectangularWindow > sEWFRectRegistrar("rectangular");
 
     KTRectangularWindow::KTRectangularWindow() :
             KTEventWindowFunction()
