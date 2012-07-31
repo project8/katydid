@@ -9,6 +9,7 @@
 #ifndef KTPROCESSOR_HH_
 #define KTPROCESSOR_HH_
 
+#include "KTConfigurable.hh"
 #include "KTSetting.hh"
 
 #include "Rtypes.h"
@@ -16,7 +17,7 @@
 namespace Katydid
 {
 
-    class KTProcessor
+    class KTProcessor : public KTConfigurable
     {
         public:
             KTProcessor();
@@ -24,6 +25,7 @@ namespace Katydid
 
             //virtual void RunProcess() = 0;
 
+            Bool_t Configure(const KTPStoreNode* node) {return false;};
             virtual Bool_t ApplySetting(const KTSetting* setting) = 0;
             //virtual Bool_t ApplySetting(const KTSetting* setting) = 0;
     };
