@@ -34,7 +34,7 @@ namespace Katydid
         }
         catch (boost::property_tree::json_parser::json_parser_error& e)
         {
-            KTERROR(utillog_pstore, "Problem occured while parsing config file <" << filename << ">.");
+            KTERROR(utillog_pstore, "Problem occured while parsing config file <" << filename << ">.\n" << e.what());
             return false;
         }
         return true;

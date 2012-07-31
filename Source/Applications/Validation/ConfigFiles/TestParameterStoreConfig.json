@@ -2,7 +2,7 @@
     "TestConfigurable":
     {
         "int_data": 5,
-        "double_data": 50.,
+        "double_data": 50,
         "string_data": "It works!"
     }
 }
