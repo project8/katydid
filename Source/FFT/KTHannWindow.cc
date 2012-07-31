@@ -7,6 +7,8 @@
 
 #include "KTHannWindow.hh"
 
+#include "KTFactory.hh"
+
 #include "TArrayD.h"
 #include "TMath.h"
 
@@ -16,6 +18,7 @@ ClassImp(Katydid::KTHannWindow);
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTEventWindowFunction, KTHannWindow > sEWFHannRegistrar("hann");
 
     KTHannWindow::KTHannWindow() :
             KTEventWindowFunction()

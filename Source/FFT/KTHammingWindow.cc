@@ -7,6 +7,8 @@
 
 #include "KTHammingWindow.hh"
 
+#include "KTFactory.hh"
+
 #include "TArrayD.h"
 #include "TMath.h"
 
@@ -16,6 +18,7 @@ ClassImp(Katydid::KTHammingWindow);
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTEventWindowFunction, KTHammingWindow > sEWFHammRegistrar("hamming");
 
     KTHammingWindow::KTHammingWindow() :
             KTEventWindowFunction()
