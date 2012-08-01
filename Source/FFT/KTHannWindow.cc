@@ -8,6 +8,7 @@
 #include "KTHannWindow.hh"
 
 #include "KTFactory.hh"
+#include "KTPStoreNode.hh"
 
 #include "TArrayD.h"
 #include "TMath.h"
@@ -32,6 +33,11 @@ namespace Katydid
 
     KTHannWindow::~KTHannWindow()
     {
+    }
+
+    Bool_t KTHannWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    {
+        return true;
     }
 
     Double_t KTHannWindow::GetWeight(Double_t time) const

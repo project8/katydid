@@ -29,7 +29,7 @@ namespace Katydid
         // this class does not own the node pointed to by fTree
     }
 
-    KTPStoreNode* KTPStoreNode::GetChild(const string& nodeName) const
+    const KTPStoreNode* KTPStoreNode::GetChild(const string& nodeName) const
     {
         TreeNode::const_assoc_iterator it = fTree->find(nodeName);
         if (it == fTree->not_found()) return NULL;

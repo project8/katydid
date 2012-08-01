@@ -8,6 +8,7 @@
 #include "KTRectangularWindow.hh"
 
 #include "KTFactory.hh"
+#include "KTPStoreNode.hh"
 
 #include "TArrayD.h"
 #include <cmath>
@@ -30,6 +31,11 @@ namespace Katydid
 
     KTRectangularWindow::~KTRectangularWindow()
     {
+    }
+
+    Bool_t KTRectangularWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    {
+        return true;
     }
 
     Double_t KTRectangularWindow::GetWeight(Double_t time) const

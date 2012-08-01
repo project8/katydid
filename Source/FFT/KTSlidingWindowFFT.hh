@@ -1,8 +1,9 @@
-/*
- * KTSlidingWindowFFT.hh
- *
- *  Created on: Sep 12, 2011
- *      Author: nsoblath
+/**
+ @file KTSlidingWindowFFT.hh
+ @brief Contains KTSlidingWindowFFT
+ @details Creates a 2-D (frequency vs. time) power spectrum from an event
+ @author: N. S. Oblath
+ @date: Sep 12, 2011
  */
 
 #ifndef KTSLIDINGWINDOWFFT_HH_
@@ -11,7 +12,7 @@
 #include "KTFFT.hh"
 
 #include "KTPowerSpectrum.hh"
-#include "KTWindowFunction.hh"
+#include "KTEventWindowFunction.hh"
 
 #include "TFFTRealComplex.h"
 #include "TMath.h"
@@ -28,11 +29,34 @@ namespace Katydid
 {
     //class KTPowerSpectrum;
     class KTEvent;
+    class KTPStoreNode;
 
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
 
-    class KTSlidingWindowFFT : public KTFFT
+    /*!
+     @class KTSlidingWindowFFT
+     @author N. S. Oblath
+
+     @brief Creates a 2-D (frequency vs. time) power spectrum from an event
+
+     @details
+     Slides a window along the length of the (time-domain) data, performing Fourier Transforms as the window moves.
+     The distance the window slides between transforms is given by the overlap or overlap fraction.
+     \li The overlap is the number of bins or time units of overlap between the window from one transform and the next.
+     \li The overlap fraction gives the overlap between the window from one transform and the next as a fraction of the window length.
+     Any type of window function (inheriting from KTWindowFunction) can be used.
+
+     Available configuration values:
+     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
+     \li \c overlap_time -- sets the overlap in time units
+     \li \c overlap_size -- sets the overlap in number of bins
+     \li \c overlap_frac -- sets the overlap in fraction of the window length
+     \li \c window_function_type -- sets the type of window function to be used
+     \li \c window_function -- parent node for the window function configuration
+    */
+
+   class KTSlidingWindowFFT : public KTFFT
     {
         public:
             typedef boost::signals2::signal< void (UInt_t, KTPowerSpectrum*) > SingleFFTSignal;
@@ -40,6 +64,8 @@ namespace Katydid
         public:
             KTSlidingWindowFFT();
             virtual ~KTSlidingWindowFFT();
+
+            Bool_t Configure(const KTPStoreNode* node);
 
             virtual void InitializeFFT();
             virtual void RecreateFFT();
@@ -65,7 +91,7 @@ namespace Katydid
             UInt_t GetEffectiveOverlap() const;
             Double_t GetOverlapFrac() const;
             Bool_t GetUseOverlapFrac() const;
-            KTWindowFunction* GetWindowFunction() const;
+            KTEventWindowFunction* GetWindowFunction() const;
             const std::vector< Double_t >& GetTimeData() const;
             KTPowerSpectrum* GetPowerSpectrum(Int_t spect) const;
             UInt_t GetNPowerSpectra() const;
@@ -85,7 +111,7 @@ namespace Katydid
             void SetOverlap(Double_t overlapTime);
             void SetOverlapFrac(Double_t overlapFrac);
             void SetUseOverlapFrac(Bool_t useOverlapFrac);
-            void SetWindowFunction(KTWindowFunction* wf);
+            void SetWindowFunction(KTEventWindowFunction* wf);
 
         protected:
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
@@ -103,7 +129,7 @@ namespace Katydid
             Double_t fOverlapFrac;
             Bool_t fUseOverlapFrac;
 
-            KTWindowFunction* fWindowFunction;
+            KTEventWindowFunction* fWindowFunction;
             std::vector< Double_t > fTimeData;
             std::vector< KTPowerSpectrum* > fPowerSpectra;
 
@@ -199,7 +225,7 @@ namespace Katydid
         return (UInt_t)fPowerSpectra.size();
     }
 
-    inline KTWindowFunction* KTSlidingWindowFFT::GetWindowFunction() const
+    inline KTEventWindowFunction* KTSlidingWindowFFT::GetWindowFunction() const
     {
         return fWindowFunction;
     }

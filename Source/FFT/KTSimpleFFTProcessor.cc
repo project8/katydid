@@ -27,12 +27,6 @@ namespace Katydid
         fEventConnection.disconnect();
     }
 
-    Bool_t KTSimpleFFTProcessor::Configure(const KTPStoreNode* node)
-    {
-        fFFT.SetTransformFlag(node->GetData<string>("transform_flag", ""));
-        return true;
-    }
-
     Bool_t KTSimpleFFTProcessor::ApplySetting(const KTSetting* setting)
     {
         if (setting->GetName() == "TransformFlag")

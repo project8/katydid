@@ -39,7 +39,7 @@ namespace Katydid
             KTPStoreNode(const TreeNode* tree);
             virtual ~KTPStoreNode();
 
-            KTPStoreNode* GetChild(const std::string& nodeName) const;
+            const KTPStoreNode* GetChild(const std::string& nodeName) const;
 
             Bool_t HasData(const std::string& dataName) const;
 

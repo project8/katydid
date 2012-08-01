@@ -7,6 +7,8 @@
 
 #include "KTWindowFunction.hh"
 
+#include "KTPStoreNode.hh"
+
 ClassImp(Katydid::KTWindowFunction);
 
 namespace Katydid
@@ -19,5 +21,15 @@ namespace Katydid
     KTWindowFunction::~KTWindowFunction()
     {
     }
+
+    Bool_t KTWindowFunction::Configure(const KTPStoreNode* node)
+    {
+        if (node->HasData("length")) SetLength(node->GetData< Double_t >("length", 1.));
+        if (node->HasData("bin_width")) SetBinWidth(node->GetData< Double_t >("bin_width", 1.));
+        if (node->HasData("size")) SetSize(node->GetData< Double_t >("size", 1));
+
+        return ConfigureWindowFunctionSubclass(node);
+    }
+
 
 } /* namespace Katydid */
