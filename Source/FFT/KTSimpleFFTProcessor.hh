@@ -50,7 +50,7 @@ namespace Katydid
 
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
 
-            const KTSimpleFFT* GetFFT() const;
+            KTSimpleFFT* GetFFT() const;
 
         private:
             KTSimpleFFT fFFT;
@@ -83,7 +83,7 @@ namespace Katydid
 
     };
 
-    inline const KTSimpleFFT* KTSimpleFFTProcessor::GetFFT() const
+    inline KTSimpleFFT* KTSimpleFFTProcessor::GetFFT() const
     {
         return &fFFT;
     }
