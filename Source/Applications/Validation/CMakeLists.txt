@@ -20,10 +20,14 @@ if (ENABLE_TESTING)
     
     
     # Executables
-
+    
     add_executable (ExtractEvents ${CMAKE_CURRENT_SOURCE_DIR}/ExtractEvents.cc)
     target_link_libraries (ExtractEvents KatydidUtility KatydidEgg ${LIBS})
     
+    add_executable (TestApplication ${CMAKE_CURRENT_SOURCE_DIR}/TestApplication.cc
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
+    target_link_libraries (TestApplication KatydidUtility ${LIBS})
+
     add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
     
@@ -56,6 +60,7 @@ if (ENABLE_TESTING)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
     
     install (TARGETS ExtractEvents
+                     TestApplication
                      TestAxisProperties
                      TestCutIterator
                      TestCutableArray
@@ -70,6 +75,7 @@ if (ENABLE_TESTING)
              
     # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.
     add_test (Test_ExtractEvents ExtractEvents)
+    add_test (Test_Application TestApplication)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)

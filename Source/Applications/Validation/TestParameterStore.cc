@@ -13,10 +13,6 @@
 #include "KTPStoreNode.hh"
 #include "KTTestConfigurable.hh"
 
-//#include <boost/property_tree/ptree.hpp>
-//#include <boost/property_tree/json_parser.hpp>
-
-#include <iostream>
 #include <string>
 
 using namespace Katydid;
@@ -27,22 +23,6 @@ KTLOGGER(testparamlog, "katydid.applications.validation");
 int main(int argc, char** argv)
 {
     string configFilename(argv[1]);
-/*
-    using boost::property_tree::ptree;
-    ptree pt;
-
-    try
-    {
-        read_json(configFilename, pt);
-    }
-    catch (boost::property_tree::json_parser::json_parser_error& e)
-    {
-        cout << "Error reading config file: " << e.what() << endl;
-        return -1;
-    }
-
-    return 0;
-*/
 
     KTParameterStore* store = KTParameterStore::GetInstance();
     store->ReadConfigFile(configFilename);

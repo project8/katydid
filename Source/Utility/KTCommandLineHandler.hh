@@ -8,31 +8,29 @@
 #ifndef KTCOMMANDLINEHANDLER_H_
 #define KTCOMMANDLINEHANDLER_H_
 
-#include "KTDestroyer.hh"
-#include "KTIOMessage.hh"
+#include "KTLogger.hh"
+#include "KTSingleton.hh"
 
 #include "Rtypes.h"
 
-#include <boost/program_options.hhpp>
+#include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
 #include <map>
-using std::map;
 #include <set>
-using std::set;
 #include <string>
-using std::string;
 #include <vector>
-using std::vector;
 
 namespace Katydid
 {
+    KTLOGGER(utillog_clh, "katydid.utility");
+
     class KTCommandLineUser;
 
-    class KTCommandLineHandler
+    class KTCommandLineHandler : public KTSingleton< KTCommandLineHandler >
     {
         protected:
-            typedef map< string, po::options_description* > OptDescMap;
+            typedef std::map< std::string, po::options_description* > OptDescMap;
             typedef OptDescMap::iterator OptDescMapIt;
             typedef OptDescMap::const_iterator OptDescMapCIt;
 
@@ -40,29 +38,23 @@ namespace Katydid
             // Singleton
             //**************
 
-        public:
-            static KTCommandLineHandler* GetInstance();
-
-        public:
-            friend class KTDestroyer< KTCommandLineHandler >;
-
         protected:
+            friend class KTSingleton< KTCommandLineHandler >;
+            friend class KTDestroyer< KTCommandLineHandler >;
             KTCommandLineHandler();
             virtual ~KTCommandLineHandler();
-            static KTCommandLineHandler* fInstance;
-            static KTDestroyer< KTCommandLineHandler > fCLHandlerDestroyer;
 
             //**************
             // Identification
             //**************
 
         public:
-            const string& GetExecutableName() const;
-            const string& GetPackageString() const;
+            const std::string& GetExecutableName() const;
+            const std::string& GetPackageString() const;
 
         protected:
-            string fExecutableName; // from argv[0], if provided
-            string fPackageString; // Package name and version
+            std::string fExecutableName; // from argv[0], if provided
+            std::string fPackageString; // Package name and version
 
             //**************
             // Command line arguments
@@ -84,43 +76,43 @@ namespace Katydid
             //**************
 
         public:
-            /// Makes a new option group available for command line options. (note: FinalizeNewOoptionGroup must be called to make the options useable)
-            Bool_t ProposeNewOptionGroup(const string& aKey, const string& aTitle);
+            /// Makes a new option group available for command line options.
+            Bool_t ProposeNewOptionGroup(const std::string& aTitle);
 
             /// Simple option adding function, with short option (flag only; no values allowed)
-            Bool_t AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt);
+            Bool_t AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt);
             /// Simple option adding function, without short option (flag only; no values allowed)
-            Bool_t AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt);
+            Bool_t AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt);
 
             /// Option-with-value adding function with short option
             template< class XValueType >
-            Bool_t AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt='#');
+            Bool_t AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt='#');
             /// Option-with-value adding function without short option
             template< class XValueType >
-            Bool_t AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt);
+            Bool_t AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt);
 
             /// Request access to the options description object for more freedom (and responsibility!) in adding options
-            po::options_description* GetOptionsDescription(const string& aKey);
-
-            /// Adds the group of options to the set of useable options groups (note: this must be called to make the options in the group useable)
-            Bool_t FinalizeNewOptionGroup(const string& aKey);
+            po::options_description* GetOptionsDescription(const std::string& aKey);
 
         protected:
             OptDescMap fProposedGroups;
-            set< string > fAllGroupKeys;
-            set< string > fAllOptionsLong;
-            set< Char_t > fAllOptionsShort;
+            std::set< std::string > fAllGroupKeys;
+            std::set< std::string > fAllOptionsLong;
+            std::set< Char_t > fAllOptionsShort;
 
             po::options_description fCommandLineOptions;
             po::options_description fPrintHelpOptions;
 
         protected:
+            /// Adds the groups of options to the set of usable options groups (note: this must be called to make the options in the groups usable)
+            Bool_t FinalizeNewOptionGroups();
             /// Adds a set of command line options
             Bool_t AddCommandLineOptions(const po::options_description& aSetOfOpts);
 
             //**************
             // Parsing
             //**************
+
         public:
             /// Parses the command line (besides the general options, which are automatically processed)
             void ProcessCommandLine();
@@ -131,21 +123,7 @@ namespace Katydid
             void InitialCommandLineProcessing();
 
         protected:
-            vector< string > fCommandLineParseLater;
-
-            //**************
-            // CL Users
-            //**************
-
-        public:
-            virtual void RegisterUser(KTCommandLineUser* aUser);
-            virtual void RemoveUser(KTCommandLineUser* aUser);
-
-        protected:
-            virtual void AddOptionsFromAllUsers();
-            virtual void NotifyUsersOfParsing();
-
-            set< KTCommandLineUser* > fUsers;
+            std::vector< std::string > fCommandLineParseLater;
 
             //**************
             // Access to values
@@ -153,21 +131,21 @@ namespace Katydid
 
         public:
             /// Check if a command line option was set
-            Bool_t IsCommandLineOptSet(const string& aCLOption);
+            Bool_t IsCommandLineOptSet(const std::string& aCLOption);
 
             /// Return the value of a command line option
             template< class XReturnType >
-            XReturnType GetCommandLineValue(const string& aCLOption);
+            XReturnType GetCommandLineValue(const std::string& aCLOption);
 
-            /// Return the file name provided by the user on the command line for the IO ("User") config file
-            const string& GetIOConfigFileName() const;
+            /// Return the file name provided by the user on the command line for the config file
+            const std::string& GetConfigFilename() const;
 
         protected:
             po::variables_map fCommandLineVarMap;
 
             Bool_t fPrintHelpMessage;
             Bool_t fPrintVersion;
-            string fIOConfigFileName;
+            std::string fConfigFilename;
 
             //**************
             // Print useful information
@@ -177,47 +155,43 @@ namespace Katydid
             Bool_t GetPrintHelpMessageFlag();
             Bool_t GetPrintVersionFlag();
 
-            virtual void PrintHelpMessageAndExit(const string& aApplicationType="");
-            virtual void PrintVersionMessageAndExit(const string& aApplicationType="", const string& aApplicationString="");
+            virtual void PrintHelpMessageAndExit(const std::string& aApplicationType="");
+            virtual void PrintVersionMessageAndExit(const std::string& aApplicationType="", const std::string& aApplicationString="");
     };
 
-    inline const string& KTCommandLineHandler::GetExecutableName() const
+    inline const std::string& KTCommandLineHandler::GetExecutableName() const
     {
         return fExecutableName;
     }
-    inline const string& KTCommandLineHandler::GetPackageString() const
+    inline const std::string& KTCommandLineHandler::GetPackageString() const
     {
         return fPackageString;
     }
 
     template< class XValueType >
-    Bool_t KTCommandLineHandler::AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt)
+    Bool_t KTCommandLineHandler::AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt)
     {
         OptDescMapIt tIter = fProposedGroups.find(aKey);
         if (tIter == fProposedGroups.end())
         {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There no proposed option group with key <" << aKey << ">" << eom;
-            return kFALSE;
+            ProposeNewOptionGroup(aKey);
         }
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There is already an option called <" << aLongOpt << ">" << eom;
+            KTWARN(utillog_clh, "There is already an option called <" << aLongOpt << ">");
             return kFALSE;
         }
         if (fAllOptionsShort.find(aShortOpt) != fAllOptionsShort.end())
         {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There is already a short option called <" << aShortOpt << ">" << eom;
+            KTWARN(utillog_clh, "There is already a short option called <" << aShortOpt << ">");
             return kFALSE;
         }
 
         // option is okay at this point
 
-        string tOptionName = aLongOpt;
+        std::string tOptionName = aLongOpt;
         fAllOptionsLong.insert(aLongOpt);
-        tOptionName += "," + string(&aShortOpt);
+        tOptionName += "," + std::string(&aShortOpt);
         fAllOptionsShort.insert(aShortOpt);
 
         tIter->second->add_options()(tOptionName.c_str(), po::value< XValueType >(), aHelpMsg.c_str());
@@ -227,19 +201,16 @@ namespace Katydid
     }
 
     template< class XValueType >
-    Bool_t KTCommandLineHandler::AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt)
+    Bool_t KTCommandLineHandler::AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt)
     {
         OptDescMapIt tIter = fProposedGroups.find(aKey);
         if (tIter == fProposedGroups.end())
         {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There no proposed option group with key <" << aKey << ">" << eom;
-            return kFALSE;
+            ProposeNewOptionGroup(aKey);
         }
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There is already an option called <" << aLongOpt << ">" << eom;
+            KTWARN(utillog_clh, "There is already an option called <" << aLongOpt << ">");
             return kFALSE;
         }
 
@@ -255,20 +226,19 @@ namespace Katydid
 
 
     template< class XReturnType >
-    XReturnType KTCommandLineHandler::GetCommandLineValue(const string& aCLOption)
+    XReturnType KTCommandLineHandler::GetCommandLineValue(const std::string& aCLOption)
     {
         if (!IsCommandLineOptSet(aCLOption))
         {
-            iomsg < "KTCommandLineHandler::GetCommandLineValue";
-            iomsg(eError) << "Command line option <" << aCLOption << "> was not set!" << ret;
-            iomsg << "Next time check whether it's set before calling this function." << eom;
+            KTWARN(utillog_clh, "Command line option <" << aCLOption << "> was not set!\n"
+                   "Next time check whether it's set before calling this function.");
         }
         return fCommandLineVarMap[aCLOption].as< XReturnType >();
     }
 
-    inline const string& KTCommandLineHandler::GetIOConfigFileName() const
+    inline const std::string& KTCommandLineHandler::GetConfigFilename() const
     {
-        return fIOConfigFileName;
+        return fConfigFilename;
     }
 
     inline Bool_t KTCommandLineHandler::GetPrintHelpMessageFlag()
