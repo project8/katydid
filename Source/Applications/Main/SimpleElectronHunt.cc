@@ -195,7 +195,7 @@ int main(int argc, char** argv)
         Double_t fullPSFreqBinWidth = histFullPS->GetBinWidth(1);
 
         // Now the windowed FFT
-        KTWindowFunction* wfunc = new KTHannWindow(event);
+        KTEventWindowFunction* wfunc = new KTHannWindow(event);
         wfunc->SetLength(1.e-5);
         cout << "window length: " << wfunc->GetLength() << " s; bin width: " << wfunc->GetBinWidth() << " s; size: " << wfunc->GetSize() << endl;
 

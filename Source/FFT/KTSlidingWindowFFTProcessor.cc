@@ -32,26 +32,6 @@ namespace Katydid
         fEventConnection.disconnect();
     }
 
-    Bool_t KTSlidingWindowFFTProcessor::Configure(const KTPStoreNode* node)
-    {
-        fFFT.SetTransformFlag(node->GetData< string >("transform_flag", ""));
-        fFFT.SetOverlap(node->GetData< Double_t >("overlap_time", 0));
-        fFFT.SetOverlap(node->GetData< UInt_t >("overlap_size", 0));
-        fFFT.SetOverlapFrac(node->GetData< Double_t >("overlap_frac", 0.));
-
-        string windowType = node->GetData< string >("window_function", "rectangular");
-        KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
-        if (tempWF == NULL)
-        {
-            KTERROR(fftlog, "Invalid window function type given: <" << windowType << ">.");
-            return false;
-        }
-        fWindowFunc = tempWF;
-        fFFT.SetWindowFunction(tempWF);
-
-        return true;
-    }
-
     Bool_t KTSlidingWindowFFTProcessor::ApplySetting(const KTSetting* setting)
     {
         if (setting->GetName() == "TransformFlag")

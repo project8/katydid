@@ -9,19 +9,22 @@
 
 //#include "KTArrayUC.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
+#include "KTLogger.hh"
 #include "KTPhysicalArray.hh"
 //#include "KTPowerSpectrum.hh"
+#include "KTPStoreNode.hh"
 #include "KTWindowFunction.hh"
 
 #include "TH2D.h"
-
-#include <iostream>
 
 using std::string;
 using std::vector;
 
 namespace Katydid
 {
+
+    KTLOGGER(fftlog, "katydid.fft");
 
     KTSlidingWindowFFT::KTSlidingWindowFFT() :
             KTFFT(),
@@ -47,6 +50,33 @@ namespace Katydid
         ClearPowerSpectra();
     }
 
+    Bool_t KTSlidingWindowFFT::Configure(const KTPStoreNode* node)
+    {
+        SetTransformFlag(node->GetData< string >("transform_flag", ""));
+        SetOverlap(node->GetData< Double_t >("overlap_time", 0));
+        SetOverlap(node->GetData< UInt_t >("overlap_size", 0));
+        SetOverlapFrac(node->GetData< Double_t >("overlap_frac", 0.));
+
+        string windowType = node->GetData< string >("window_function_type", "rectangular");
+        KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
+        if (tempWF == NULL)
+        {
+            KTERROR(fftlog, "Invalid window function type given: <" << windowType << ">.");
+            return false;
+        }
+        SetWindowFunction(tempWF);
+
+        const KTPStoreNode* childNode = node->GetChild("window_function");
+        if (childNode != NULL)
+        {
+            fWindowFunction->Configure(childNode);
+        }
+
+        return true;
+    }
+
+
+
     void KTSlidingWindowFFT::InitializeFFT()
     {
         fTransform->Init(fTransformFlag.c_str(), 0, NULL);
@@ -58,14 +88,14 @@ namespace Katydid
     {
         if (! fIsInitialized)
         {
-            std::cerr << "Warning from KTSlidingWindowFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
-            std::cerr << "   Please first call InitializeFFT, and then use the TakeData method of your choice to set the data" << std::endl;
+            KTWARN(fftlog, "FFT must be initialized before setting the data.\n" <<
+                    "Please first call InitializeFFT, and then use the TakeData method of your choice to set the data");
             return kFALSE;
         }
 
         if (event->GetBinWidth() != fWindowFunction->GetBinWidth())
         {
-            std::cerr << "Warning from KTSlidingWindowFFT::TakeData: Bin widths are mismatched between the given event (" << event->GetBinWidth() << ") and the window function (" << fWindowFunction->GetBinWidth() << ")." << std::endl;
+            KTWARN(fftlog, "Warning from KTSlidingWindowFFT::TakeData: Bin widths are mismatched between the given event (" << event->GetBinWidth() << ") and the window function (" << fWindowFunction->GetBinWidth() << ").");
             return kFALSE;
         }
 
@@ -85,8 +115,8 @@ namespace Katydid
     {
         if (! fIsInitialized)
         {
-            std::cerr << "Warning from KTSimpleFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
-            std::cerr << "   Please first call InitializeFFT, and then use the TakeData method of your choice to set the data" << std::endl;
+            KTWARN(fftlog, "FFT must be initialized before setting the data.\n" <<
+                    "Please first call InitializeFFT, and then use the TakeData method of your choice to set the data")
             return kFALSE;
         }
 
@@ -128,15 +158,15 @@ namespace Katydid
     {
         if (! fIsInitialized)
         {
-            std::cerr << "Warning from KTSlidingWindowFFT::Transform: FFT must be initialized before the transform is performed" << std::endl;
-            std::cerr << "   Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform." << std::endl;
+            KTWARN(fftlog, "FFT must be initialized before the transform is performed.\n" <<
+                    "Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
             return kFALSE;
         }
 
         if (! fIsDataReady)
         {
-            std::cerr << "Warning from KTSlidingWindowFFT::Transform: The data for the transform is not ready"<< std::endl;
-            std::cerr << "   Please first call TakeData, and then perform the transform" << std::endl;
+            KTWARN(fftlog, "The data for the transform is not ready.\n" <<
+                    "Please first call TakeData, and then perform the transform");
             return kFALSE;
         }
 
@@ -163,12 +193,12 @@ namespace Katydid
                 fSingleFFTSignal(iWindow, fPowerSpectra.back());
                 iWindow++;
             }
-            std::cout << "FFTs complete; windows used: " << iWindow << std::endl;
+            KTINFO(fftlog, "FFTs complete; windows used: " << iWindow);
         }
         else
         {
-            std::cout << "Warning from KTSlidingWindowFFT: window size is larger than time data: " << fWindowFunction->GetSize() << " > " << this->GetFullTimeSize() << std::endl;
-            std::cout << "   No transform was performed!" << std::endl;
+            KTWARN(fftlog, "Window size is larger than time data: " << fWindowFunction->GetSize() << " > " << this->GetFullTimeSize() << "\n" <<
+                    "No transform was performed!");
             return kFALSE;
         }
 
@@ -267,7 +297,7 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::SetWindowFunction(KTWindowFunction* wf)
+    void KTSlidingWindowFFT::SetWindowFunction(KTEventWindowFunction* wf)
     {
         delete fWindowFunction;
         fWindowFunction = wf;

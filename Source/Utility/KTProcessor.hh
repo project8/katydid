@@ -17,7 +17,7 @@
 namespace Katydid
 {
 
-    class KTProcessor : public KTConfigurable
+    class KTProcessor
     {
         public:
             KTProcessor();
@@ -25,7 +25,6 @@ namespace Katydid
 
             //virtual void RunProcess() = 0;
 
-            Bool_t Configure(const KTPStoreNode* node) {return false;};
             virtual Bool_t ApplySetting(const KTSetting* setting) = 0;
             //virtual Bool_t ApplySetting(const KTSetting* setting) = 0;
     };
