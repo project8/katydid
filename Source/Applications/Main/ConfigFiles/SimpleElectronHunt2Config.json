@@ -1,0 +1,48 @@
+{
+    "electron_hunt":
+    {
+        "egg_processor"
+        {
+            "input_file": "/path/to/file.egg",
+            "number_of_events": 1,           
+        }
+        
+        "fft_e_hunt":
+        {
+	        "output_filename_base": "",
+	        "write_text_file": true,
+	        "write_root_file": false,
+	        "minimum_group_size": 2,
+	        "frequency_multiplier": 1.0e-6,
+	        
+	        "simple_clustering":
+	        {
+	            "threshold_multiplier": 10.0,
+	            "group_bins_margin_high": 1,
+                "group_bins_margin_low": 3,
+                "group_bins_margin_same_time": 1,
+	            "first_bin_to_use": 1
+	        }
+	        
+            "simple_fft":
+            {
+                "transform_flag": "ES"
+            }
+            
+            "sliding_window_fft":
+            {
+                "transform_flag": "ES",
+                "overlap_frac": 0.2,
+                "window_function_type": "hann",
+                "window_function":
+                {
+                    "length": 1.0e-5
+                }
+            }
+	            
+        }
+        
+        
+        
+    }
+}
