@@ -8,20 +8,21 @@
 #ifndef KTTESTCONFIGURABLE_HH_
 #define KTTESTCONFIGURABLE_HH_
 
-#include "KTConfigurable.hh"
+#include "Rtypes.h"
 
 #include <string>
 
 namespace Katydid
 {
+    class KTPStoreNode;
 
-    class KTTestConfigurable : public KTConfigurable
+    class KTTestConfigurable
     {
         public:
             KTTestConfigurable();
             virtual ~KTTestConfigurable();
 
-            virtual Bool_t Configure(const KTPStoreNode* node);
+            Bool_t Configure(const KTPStoreNode* node);
 
         private:
             Int_t fIntData;

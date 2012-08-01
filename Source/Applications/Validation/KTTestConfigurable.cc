@@ -6,12 +6,15 @@
  */
 
 #include "KTLogger.hh"
+#include "KTPStoreNode.hh"
 #include "KTTestConfigurable.hh"
+#include "KTCommandLineOption.hh"
 
 using std::string;
 
 namespace Katydid
 {
+    static KTCommandLineOption< string > sTestConfigStringCLO("TestConfigurable", "Change the string data", "string-data", 's');
 
     KTLOGGER(testparamlog, "katydid.applications.validation");
 
