@@ -103,19 +103,19 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Utility
     #${PROJECT_SOURCE_DIR}/Source/Framework
     ${PROJECT_SOURCE_DIR}/Source/Egg
+    ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/include
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Waterfall
-    ${PROJECT_SOURCE_DIR}/Source/Lice
 )
 
 add_subdirectory (Source/Utility)
 #add_subdirectory (Source/Framework)
 add_subdirectory (Source/Egg)
+add_subdirectory (Source/Egg/Monarch)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
 add_subdirectory (Source/Waterfall)
-add_subdirectory (Source/Lice)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)
 
