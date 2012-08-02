@@ -13,8 +13,6 @@
 
 #include <sstream>
 
-#include <iostream>
-
 #ifndef PACKAGE_STRING
 #define PACKAGE_STRING Katydid (unknown version)
 #endif
@@ -41,7 +39,6 @@ namespace Katydid
             fPrintVersion(false),
             fConfigFilename("NONE")
     {
-        std::cout << "in the command line handler constructor" << std::endl;
     }
 
     KTCommandLineHandler::~KTCommandLineHandler()
