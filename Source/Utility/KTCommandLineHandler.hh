@@ -77,19 +77,19 @@ namespace Katydid
 
         public:
             /// Makes a new option group available for command line options.
-            Bool_t ProposeNewOptionGroup(const std::string& aTitle);
+            OptDescMapIt CreateNewOptionGroup(const std::string& aTitle);
 
             /// Simple option adding function, with short option (flag only; no values allowed)
-            Bool_t AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt);
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt);
             /// Simple option adding function, without short option (flag only; no values allowed)
-            Bool_t AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt);
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt);
 
             /// Option-with-value adding function with short option
             template< class XValueType >
-            Bool_t AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt='#');
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt='#');
             /// Option-with-value adding function without short option
             template< class XValueType >
-            Bool_t AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt);
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt);
 
             /// Request access to the options description object for more freedom (and responsibility!) in adding options
             po::options_description* GetOptionsDescription(const std::string& aKey);
@@ -169,13 +169,8 @@ namespace Katydid
     }
 
     template< class XValueType >
-    Bool_t KTCommandLineHandler::AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt)
+    Bool_t KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt)
     {
-        OptDescMapIt tIter = fProposedGroups.find(aKey);
-        if (tIter == fProposedGroups.end())
-        {
-            ProposeNewOptionGroup(aKey);
-        }
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
             KTWARN(utillog_clh, "There is already an option called <" << aLongOpt << ">");
@@ -189,6 +184,12 @@ namespace Katydid
 
         // option is okay at this point
 
+        OptDescMapIt tIter = fProposedGroups.find(aTitle);
+        if (tIter == fProposedGroups.end())
+        {
+            tIter = CreateNewOptionGroup(aTitle);
+        }
+
         std::string tOptionName = aLongOpt;
         fAllOptionsLong.insert(aLongOpt);
         tOptionName += "," + std::string(&aShortOpt);
@@ -201,13 +202,8 @@ namespace Katydid
     }
 
     template< class XValueType >
-    Bool_t KTCommandLineHandler::AddOption(const std::string& aKey, const std::string& aHelpMsg, const std::string& aLongOpt)
+    Bool_t KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt)
     {
-        OptDescMapIt tIter = fProposedGroups.find(aKey);
-        if (tIter == fProposedGroups.end())
-        {
-            ProposeNewOptionGroup(aKey);
-        }
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
             KTWARN(utillog_clh, "There is already an option called <" << aLongOpt << ">");
@@ -215,6 +211,12 @@ namespace Katydid
         }
 
         // option is okay at this point
+
+        OptDescMapIt tIter = fProposedGroups.find(aTitle);
+        if (tIter == fProposedGroups.end())
+        {
+            tIter = CreateNewOptionGroup(aTitle);
+        }
 
         fAllOptionsLong.insert(aLongOpt);
 
