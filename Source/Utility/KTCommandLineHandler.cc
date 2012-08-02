@@ -13,6 +13,8 @@
 
 #include <sstream>
 
+#include <iostream>
+
 #ifndef PACKAGE_STRING
 #define PACKAGE_STRING Katydid (unknown version)
 #endif
@@ -39,6 +41,7 @@ namespace Katydid
             fPrintVersion(false),
             fConfigFilename("NONE")
     {
+        std::cout << "in the command line handler constructor" << std::endl;
     }
 
     KTCommandLineHandler::~KTCommandLineHandler()
@@ -83,32 +86,21 @@ namespace Katydid
 
     //**************
 
-    Bool_t KTCommandLineHandler::ProposeNewOptionGroup(const string& aTitle)
+    KTCommandLineHandler::OptDescMapIt KTCommandLineHandler::CreateNewOptionGroup(const string& aTitle)
     {
-        if (fAllGroupKeys.find(aTitle) != fAllGroupKeys.end())
-        {
-            KTWARN(utillog, "There is already an option group with key <" << aTitle << ">");
-            return false;
-        }
-        if (fProposedGroups.find(aTitle) != fProposedGroups.end())
-        {
-            KTWARN(utillog, "There is already a proposed option group with key <" << aTitle << ">");
-            return false;
-        }
-
         po::options_description* tNewOpts = new po::options_description(aTitle);
-        fProposedGroups.insert(OptDescMap::value_type(aTitle, tNewOpts));
+        std::pair< OptDescMapIt, Bool_t > result = fProposedGroups.insert(OptDescMap::value_type(aTitle, tNewOpts));
+        if (! result.second)
+        {
+            KTWARN(utillog, "There is already an option group with title <" << aTitle << ">");
+            delete tNewOpts;
+        }
 
-        return true;
+        return result.first;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt)
+    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt)
     {
-        OptDescMapIt tIter = fProposedGroups.find(aKey);
-        if (tIter == fProposedGroups.end())
-        {
-            ProposeNewOptionGroup(aKey);
-        }
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
             KTWARN(utillog, "There is already an option called <" << aLongOpt << ">");
@@ -125,6 +117,12 @@ namespace Katydid
 
         // option is okay at this point
 
+        OptDescMapIt tIter = fProposedGroups.find(aTitle);
+        if (tIter == fProposedGroups.end())
+        {
+            tIter = CreateNewOptionGroup(aTitle);
+        }
+
         string tOptionName = aLongOpt;
         fAllOptionsLong.insert(aLongOpt);
         if (aShortOpt != '#')
@@ -137,13 +135,8 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt)
+    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt)
     {
-        OptDescMapIt tIter = fProposedGroups.find(aKey);
-        if (tIter == fProposedGroups.end())
-        {
-            ProposeNewOptionGroup(aKey);
-        }
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
             KTWARN(utillog, "There is already an option called <" << aLongOpt << ">");
@@ -151,6 +144,12 @@ namespace Katydid
         }
 
         // option is okay at this point
+
+        OptDescMapIt tIter = fProposedGroups.find(aTitle);
+        if (tIter == fProposedGroups.end())
+        {
+            tIter = CreateNewOptionGroup(aTitle);
+        }
 
         fAllOptionsLong.insert(aLongOpt);
         tIter->second->add_options()(aLongOpt.c_str(), aHelpMsg.c_str());
@@ -192,7 +191,6 @@ namespace Katydid
         {
             fCommandLineOptions.add(aSetOfOpts);
             fPrintHelpOptions.add(aSetOfOpts);
-            return true;
         }
         catch (std::exception& e)
         {
@@ -204,7 +202,7 @@ namespace Katydid
             KTERROR(utillog, "Exception was thrown, but caught in a generic way!");
             return false;
         }
-        return false;
+        return true;
     }
 
     //**************
@@ -308,8 +306,15 @@ namespace Katydid
         po::notify(tGeneralOptsVarMap);
 
         // Use the general options information
-        if (tGeneralOptsVarMap.count("help")) PrintHelpMessageAndExit("APPLICATION TYPE");
-        if (tGeneralOptsVarMap.count("version")) PrintVersionMessageAndExit("APPLICATION TYPE", "APPLICATION STRING");
+        if (tGeneralOptsVarMap.count("help"))
+        {
+            this->FinalizeNewOptionGroups();
+            PrintHelpMessageAndExit("APPLICATION TYPE");
+        }
+        if (tGeneralOptsVarMap.count("version"))
+        {
+            PrintVersionMessageAndExit("APPLICATION TYPE", "APPLICATION STRING");
+        }
         if (tGeneralOptsVarMap.count("config-file"))
         {
             fConfigFilename = tGeneralOptsVarMap["config-file"].as< string >();
