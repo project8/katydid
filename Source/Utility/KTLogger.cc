@@ -14,6 +14,7 @@
 
 #include <cstdlib>
 
+#include <log4cxx/helpers/synchronized.h>
 #include <log4cxx/logstring.h>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/propertyconfigurator.h>
@@ -24,6 +25,90 @@
 
 using namespace std;
 using namespace log4cxx;
+
+IMPLEMENT_LOG4CXX_OBJECT(KTColoredPatternLayout)
+
+KTColoredPatternLayout::KTColoredPatternLayout() :
+        PatternLayout(),
+        fNormal("0"),
+        fBright("1"),
+        fForegroundRed("31"),
+        fForegroundGreen("32"),
+        fForegroundYellow("33"),
+        fForegroundCyan("36"),
+        fForegroundWhite("37"),
+        fPrefix("\033["),
+        fSuffix("m"),
+        fSeparator(";")
+{
+    std::cout << "constructing the colored patter layout" << std::endl;
+    setCompoundStrings();
+}
+
+KTColoredPatternLayout::KTColoredPatternLayout(const LogString& pattern) :
+        PatternLayout(pattern),
+        fNormal("0"),
+        fBright("1"),
+        fForegroundRed("31"),
+        fForegroundGreen("32"),
+        fForegroundYellow("33"),
+        fForegroundCyan("36"),
+        fForegroundWhite("37"),
+        fPrefix("\033["),
+        fSuffix("m"),
+        fSeparator(";")
+{
+    std::cout << "constructing the colored patter layout" << std::endl;
+    setCompoundStrings();
+}
+
+KTColoredPatternLayout::~KTColoredPatternLayout()
+{
+}
+
+void KTColoredPatternLayout::setCompoundStrings()
+{
+    fEndColor = fPrefix + fNormal + fSuffix;
+    fFatalColor = fPrefix + fBright + fSeparator + fForegroundRed + fSuffix;
+    fErrorColor = fPrefix + fBright + fSeparator + fForegroundRed + fSuffix;
+    fWarnColor = fPrefix + fBright + fSeparator + fForegroundYellow + fSuffix;
+    fInfoColor = fPrefix + fBright + fSeparator + fForegroundGreen + fSuffix;
+    fDebugColor = fPrefix + fBright + fSeparator + fForegroundCyan + fSuffix;
+    fOtherColor = fPrefix + fBright + fSeparator + fForegroundWhite + fSuffix;
+    return;
+}
+
+void KTColoredPatternLayout::format(LogString& output, const spi::LoggingEventPtr& event, helpers::Pool& pool) const
+{
+    PatternLayout::format(output, event, pool);
+    output = getColor(event->getLevel()) + output + fEndColor;
+    return;
+}
+
+string KTColoredPatternLayout::getColor(const LevelPtr& level) const
+{
+    switch(level->toInt())
+    {
+        case Level::FATAL_INT:
+            return fFatalColor;
+            break;
+        case Level::ERROR_INT:
+            return fErrorColor;
+            break;
+        case Level::WARN_INT:
+            return fWarnColor;
+            break;
+        case Level::INFO_INT:
+            return fInfoColor;
+            break;
+        case Level::DEBUG_INT:
+            return fDebugColor;
+            break;
+        default:
+            return fOtherColor;
+    }
+}
+
 
 namespace {
 
@@ -49,7 +134,7 @@ namespace {
                     Logger::getRootLogger()->setLevel(Level::getInfo());
 #endif
                     static const LogString TTCC_CONVERSION_PATTERN(LOG4CXX_STR("%r [%-5p] %16c: %m%n"));
-                    LayoutPtr layout(new PatternLayout(TTCC_CONVERSION_PATTERN));
+                    LayoutPtr layout(new KTColoredPatternLayout(TTCC_CONVERSION_PATTERN));
                     AppenderPtr appender(new ConsoleAppender(layout));
                     root->addAppender(appender);
 #endif

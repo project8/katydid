@@ -43,8 +43,66 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 // CLASS DEFINITIONS
+
+#if defined(LOG4CXX)
+
+#ifndef _LOG4CXX_COLORED_PATTERN_LAYOUT_H
+#define _LOG4CXX_COLORED_PATTERN_LAYOUT_H
+
+#include <log4cxx/patternlayout.h>
+#include <log4cxx/level.h>
+
+namespace log4cxx {
+
+    class LOG4CXX_EXPORT KTColoredPatternLayout : public PatternLayout
+    {
+        public:
+            DECLARE_LOG4CXX_OBJECT(KTColoredPatternLayout)
+            BEGIN_LOG4CXX_CAST_MAP()
+            LOG4CXX_CAST_ENTRY(KTColoredPatternLayout)
+            LOG4CXX_CAST_ENTRY_CHAIN(Layout)
+            END_LOG4CXX_CAST_MAP()
+
+            KTColoredPatternLayout();
+            KTColoredPatternLayout(const LogString& pattern);
+            virtual ~KTColoredPatternLayout();
+
+        protected:
+            virtual void setCompoundStrings();
+            virtual void format(LogString& output, const spi::LoggingEventPtr& event, helpers::Pool& pool) const;
+            virtual std::string getColor(const LevelPtr& level) const;
+
+        protected:
+            std::string fNormal;
+            std::string fBright;
+            std::string fForegroundRed;
+            std::string fForegroundGreen;
+            std::string fForegroundYellow;
+            std::string fForegroundCyan;
+            std::string fForegroundWhite;
+
+            std::string fPrefix;
+            std::string fSuffix;
+            std::string fSeparator;
+
+            std::string fEndColor;
+            std::string fFatalColor;
+            std::string fErrorColor;
+            std::string fWarnColor;
+            std::string fInfoColor;
+            std::string fDebugColor;
+            std::string fOtherColor;
+    };
+    LOG4CXX_PTR_DEF(KTColoredPatternLayout);
+
+#endif /* _LOG4CXX_COLORED_PATTERN_LAYOUT_H */
+
+}
+
+#endif
 
 namespace Katydid {
 
