@@ -83,30 +83,29 @@ namespace log4cxx {
             virtual ~KTColoredPatternLayout();
 
         protected:
-            virtual void setCompoundStrings();
             virtual void format(LogString& output, const spi::LoggingEventPtr& event, helpers::Pool& pool) const;
             virtual std::string getColor(const LevelPtr& level) const;
 
         protected:
-            std::string fNormal;
-            std::string fBright;
-            std::string fForegroundRed;
-            std::string fForegroundGreen;
-            std::string fForegroundYellow;
-            std::string fForegroundCyan;
-            std::string fForegroundWhite;
+            const static std::string fNormal;
+            const static std::string fBright;
+            const static std::string fForegroundRed;
+            const static std::string fForegroundGreen;
+            const static std::string fForegroundYellow;
+            const static std::string fForegroundCyan;
+            const static std::string fForegroundWhite;
 
-            std::string fPrefix;
-            std::string fSuffix;
-            std::string fSeparator;
+            const static std::string fPrefix;
+            const static std::string fSuffix;
+            const static std::string fSeparator;
 
-            std::string fEndColor;
-            std::string fFatalColor;
-            std::string fErrorColor;
-            std::string fWarnColor;
-            std::string fInfoColor;
-            std::string fDebugColor;
-            std::string fOtherColor;
+            const static std::string fEndColor;
+            const static std::string fFatalColor;
+            const static std::string fErrorColor;
+            const static std::string fWarnColor;
+            const static std::string fInfoColor;
+            const static std::string fDebugColor;
+            const static std::string fOtherColor;
     };
     LOG4CXX_PTR_DEF(KTColoredPatternLayout);
 

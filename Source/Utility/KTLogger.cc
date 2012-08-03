@@ -28,53 +28,38 @@ using namespace log4cxx;
 
 IMPLEMENT_LOG4CXX_OBJECT(KTColoredPatternLayout)
 
+const string KTColoredPatternLayout::fNormal = COLOR_NORMAL;
+const string KTColoredPatternLayout::fBright = COLOR_BRIGHT;
+const string KTColoredPatternLayout::fForegroundRed = COLOR_FOREGROUND_RED;
+const string KTColoredPatternLayout::fForegroundGreen = COLOR_FOREGROUND_GREEN;
+const string KTColoredPatternLayout::fForegroundYellow = COLOR_FOREGROUND_YELLOW;
+const string KTColoredPatternLayout::fForegroundCyan = COLOR_FOREGROUND_CYAN;
+const string KTColoredPatternLayout::fForegroundWhite = COLOR_FOREGROUND_WHITE;
+const string KTColoredPatternLayout::fPrefix = COLOR_PREFIX;
+const string KTColoredPatternLayout::fSuffix = COLOR_SUFFIX;
+const string KTColoredPatternLayout::fSeparator = COLOR_SEPARATOR;
+
+const string KTColoredPatternLayout::fEndColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fNormal + KTColoredPatternLayout::fSuffix;
+const string KTColoredPatternLayout::fFatalColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundRed + fSuffix;
+const string KTColoredPatternLayout::fErrorColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundRed + fSuffix;
+const string KTColoredPatternLayout::fWarnColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundYellow + fSuffix;
+const string KTColoredPatternLayout::fInfoColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundGreen + fSuffix;
+const string KTColoredPatternLayout::fDebugColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundCyan + fSuffix;
+const string KTColoredPatternLayout::fOtherColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundWhite + fSuffix;
+
 
 KTColoredPatternLayout::KTColoredPatternLayout() :
-        PatternLayout(),
-        fNormal(COLOR_NORMAL),
-        fBright(COLOR_BRIGHT),
-        fForegroundRed(COLOR_FOREGROUND_RED),
-        fForegroundGreen(COLOR_FOREGROUND_GREEN),
-        fForegroundYellow(COLOR_FOREGROUND_YELLOW),
-        fForegroundCyan(COLOR_FOREGROUND_CYAN),
-        fForegroundWhite(COLOR_FOREGROUND_WHITE),
-        fPrefix(COLOR_PREFIX),
-        fSuffix(COLOR_SUFFIX),
-        fSeparator(COLOR_SEPARATOR)
+        PatternLayout()
 {
-    setCompoundStrings();
 }
 
 KTColoredPatternLayout::KTColoredPatternLayout(const LogString& pattern) :
-        PatternLayout(pattern),
-        fNormal(COLOR_NORMAL),
-        fBright(COLOR_BRIGHT),
-        fForegroundRed(COLOR_FOREGROUND_RED),
-        fForegroundGreen(COLOR_FOREGROUND_GREEN),
-        fForegroundYellow(COLOR_FOREGROUND_YELLOW),
-        fForegroundCyan(COLOR_FOREGROUND_CYAN),
-        fForegroundWhite(COLOR_FOREGROUND_WHITE),
-        fPrefix(COLOR_PREFIX),
-        fSuffix(COLOR_SUFFIX),
-        fSeparator(COLOR_SEPARATOR)
+        PatternLayout(pattern)
 {
-    setCompoundStrings();
 }
 
 KTColoredPatternLayout::~KTColoredPatternLayout()
 {
-}
-
-void KTColoredPatternLayout::setCompoundStrings()
-{
-    fEndColor = fPrefix + fNormal + fSuffix;
-    fFatalColor = fPrefix + fBright + fSeparator + fForegroundRed + fSuffix;
-    fErrorColor = fPrefix + fBright + fSeparator + fForegroundRed + fSuffix;
-    fWarnColor = fPrefix + fBright + fSeparator + fForegroundYellow + fSuffix;
-    fInfoColor = fPrefix + fBright + fSeparator + fForegroundGreen + fSuffix;
-    fDebugColor = fPrefix + fBright + fSeparator + fForegroundCyan + fSuffix;
-    fOtherColor = fPrefix + fBright + fSeparator + fForegroundWhite + fSuffix;
-    return;
 }
 
 void KTColoredPatternLayout::format(LogString& output, const spi::LoggingEventPtr& event, helpers::Pool& pool) const
