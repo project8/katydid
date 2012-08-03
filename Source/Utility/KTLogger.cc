@@ -28,9 +28,9 @@ using namespace log4cxx;
 
 IMPLEMENT_LOG4CXX_OBJECT(KTColoredPatternLayout)
 
-KTColoredPatternLayout::KTColoredPatternLayout() :
-        PatternLayout(),
-        fNormal("0"),
+
+/*
+ *         fNormal("0"),
         fBright("1"),
         fForegroundRed("31"),
         fForegroundGreen("32"),
@@ -40,25 +40,39 @@ KTColoredPatternLayout::KTColoredPatternLayout() :
         fPrefix("\033["),
         fSuffix("m"),
         fSeparator(";")
+ *
+ */
+KTColoredPatternLayout::KTColoredPatternLayout() :
+        PatternLayout(),
+        fNormal(COLOR_NORMAL),
+        fBright(COLOR_BRIGHT),
+        fForegroundRed(COLOR_FOREGROUND_RED),
+        fForegroundGreen(COLOR_FOREGROUND_GREEN),
+        fForegroundYellow(COLOR_FOREGROUND_YELLOW),
+        fForegroundCyan(COLOR_FOREGROUND_CYAN),
+        fForegroundWhite(COLOR_FOREGROUND_WHITE),
+        fPrefix(COLOR_PREFIX),
+        fSuffix(COLOR_SUFFIX),
+        fSeparator(COLOR_SEPARATOR)
 {
-    std::cout << "constructing the colored patter layout" << std::endl;
+    cout << "constructing the colored patter layout" << endl;
     setCompoundStrings();
 }
 
 KTColoredPatternLayout::KTColoredPatternLayout(const LogString& pattern) :
         PatternLayout(pattern),
-        fNormal("0"),
-        fBright("1"),
-        fForegroundRed("31"),
-        fForegroundGreen("32"),
-        fForegroundYellow("33"),
-        fForegroundCyan("36"),
-        fForegroundWhite("37"),
-        fPrefix("\033["),
-        fSuffix("m"),
-        fSeparator(";")
+        fNormal(COLOR_NORMAL),
+        fBright(COLOR_BRIGHT),
+        fForegroundRed(COLOR_FOREGROUND_RED),
+        fForegroundGreen(COLOR_FOREGROUND_GREEN),
+        fForegroundYellow(COLOR_FOREGROUND_YELLOW),
+        fForegroundCyan(COLOR_FOREGROUND_CYAN),
+        fForegroundWhite(COLOR_FOREGROUND_WHITE),
+        fPrefix(COLOR_PREFIX),
+        fSuffix(COLOR_SUFFIX),
+        fSeparator(COLOR_SEPARATOR)
 {
-    std::cout << "constructing the colored patter layout" << std::endl;
+    cout << "constructing the colored patter layout" << endl;
     setCompoundStrings();
 }
 
@@ -161,7 +175,7 @@ namespace Katydid
         fPrivate->fLogger = Logger::getLogger(name);
     }
 
-    KTLogger::KTLogger(const std::string& name) : fPrivate(new Private)
+    KTLogger::KTLogger(const string& name) : fPrivate(new Private)
     {
         fPrivate->fLogger = Logger::getLogger(name);
     }
@@ -246,6 +260,26 @@ namespace Katydid
             void logCerr(const string& level, const string& message, const Location& /*loc*/) {
                 cerr << __DATE__ " " __TIME__ " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
             }
+            string fNormal = COLOR_NORMAL;
+            string fBright = COLOR_BRIGHT;
+            string fForegroundRed = COLOR_FOREGROUND_RED;
+            string fForegroundGreen = COLOR_FOREGROUND_GREEN;
+            string fForegroundYellow = COLOR_FOREGROUND_YELLOW;
+            string fForegroundCyan = COLOR_FOREGROUND_CYAN;
+            string fForegroundWhite = COLOR_FOREGROUND_WHITE;
+
+            string fPrefix = COLOR_PREFIX;
+            string fSuffix = COLOR_SUFFIX;
+            string fSeparator = COLOR_SEPARATOR;
+
+            string fEndColor;
+            string fFatalColor;
+            string fErrorColor;
+            string fWarnColor;
+            string fInfoColor;
+            string fDebugColor;
+            string fOtherColor;
+
     };
 
     KTLogger::KTLogger(const char *name) : fPrivate(new Private)

@@ -38,6 +38,18 @@
 #define macro_dispatcher_(func, nargs) macro_dispatcher__(func, nargs)
 #define macro_dispatcher__(func, nargs) func ## nargs
 
+// COLOR DEFINITIONS
+#define COLOR_NORMAL "0"
+#define COLOR_BRIGHT "1"
+#define COLOR_FOREGROUND_RED "31"
+#define COLOR_FOREGROUND_GREEN "32"
+#define COLOR_FOREGROUND_YELLOW "33"
+#define COLOR_FOREGROUND_CYAN "36"
+#define COLOR_FOREGROUND_WHITE "37"
+#define COLOR_PREFIX "\033["
+#define COLOR_SUFFIX "m"
+#define COLOR_SEPARATOR ";"
+
 // INCLUDES
 
 #include <cstring>
