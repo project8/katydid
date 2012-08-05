@@ -5,12 +5,14 @@
  *      Author: nsoblath
  *
  *  To test the command-line interface:
- *    > TestApplication -s "blah"
+ *    > TestApplication /path/to/test-config.json -t"blah"
+ *    > TestApplication /path/to/test-config.json --test-opt="blah"
  */
 
 
-#include "KTCommandLineHandler.hh"
 #include "KTTestConfigurable.hh"
+#include "KTApplication.hh"
+#include "KTPStoreNode.hh"
 
 using namespace Katydid;
 using namespace std;
@@ -19,21 +21,58 @@ KTLOGGER(testapplog, "katydid.applications.validation");
 
 int main(int argc, char** argv)
 {
-    KTCommandLineHandler* clHandler = KTCommandLineHandler::GetInstance();
-    clHandler->TakeArguments(argc, argv);
-    KTINFO(testapplog, "Application: " << clHandler->GetExecutableName());
-    KTINFO(testapplog, "Config filename: " << clHandler->GetConfigFilename());
+    KTApplication* app = new KTApplication(argc, argv);
+    app->ProcessCommandLine();
 
-    clHandler->ProcessCommandLine();
 
-    if (clHandler->IsCommandLineOptSet("string-data"))
+    //****************************
+    // Check basic command-line reading
+    //****************************
+
+    KTINFO(testapplog, "Application: " << app->GetCommandLineHandler()->GetExecutableName());
+    KTINFO(testapplog, "Config filename: " << app->GetCommandLineHandler()->GetConfigFilename());
+
+
+    //****************************
+    // Check reading of command-line options
+    //****************************
+
+    app->ProcessCommandLine();
+
+    if (app->GetCommandLineHandler()->IsCommandLineOptSet("test-opt"))
     {
-        KTINFO(testapplog, "String data option is set to value <" << clHandler->GetCommandLineValue< string >("string-data") << ">");
+        KTINFO(testapplog, "Test option is set to value <" << app->GetCommandLineHandler()->GetCommandLineValue< string >("test-opt") << ">");
     }
     else
     {
-        KTINFO(testapplog, "String data option was not set");
+        KTINFO(testapplog, "Test option was not set");
     }
+
+
+    //****************************
+    // Check reading of the config file
+    //****************************
+
+    app->ReadConfigFile();
+
+    KTPStoreNode* topNode = app->GetNode("TestConfigurable");
+    if (topNode == NULL)
+    {
+        KTERROR(testapplog, "Top-level node was not found");
+        return -1;
+    }
+
+    KTTestConfigurable* testObj = new KTTestConfigurable();
+    if (testObj->Configure(topNode))
+    {
+        KTINFO(testapplog, "Configuration complete");
+    }
+    else
+    {
+        KTERROR(testapplog, "Something went wrong during the configuration");
+    }
+
+    delete testObj;
 
     return 0;
 }

@@ -1,8 +1,9 @@
-/*
- * KTCommandLineHandler.hh
- *
- *  Created on: Nov 21, 2011
- *      Author: nsoblath
+/**
+ @file KTCommandLineHandler.hh
+ @brief Contains KTCommandLineHandler
+ @details Parses and stores command-line options
+ @author: N. S. Oblath
+ @date: Created on: Nov 21, 2011
  */
 
 #ifndef KTCOMMANDLINEHANDLER_H_
@@ -27,6 +28,23 @@ namespace Katydid
 
     class KTCommandLineUser;
 
+    /*!
+     @class KTCommandLineHandler
+     @author N. S. Oblath
+
+     @brief Parses and stores command-line options
+
+     @details
+     The basic format for the command line arguments are as follows:
+      - The first argument should be the configuration filename, if you're using one.
+      - All further arguments should either use the "long format" or the "short format":
+          o Long format: --long-option-name[=value]
+          o Short format: -s[value]
+        Strings with spaces should be put in quotation marks.
+
+     The configuration file will be automatically extracted from the command line.
+     If --help (-h) or --version (-v) were given, those will be handled immediately, and the program will exit.
+    */
     class KTCommandLineHandler : public KTSingleton< KTCommandLineHandler >
     {
         protected:

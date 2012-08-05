@@ -14,7 +14,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTCommandLineOption< string > sTestConfigStringCLO("TestConfigurable", "Change the string data", "string-data", 's');
+    static KTCommandLineOption< string > sTestConfigStringCLO("TestConfigurable", "Command-line option for testing", "test-opt", 't');
 
     KTLOGGER(testparamlog, "katydid.applications.validation");
 

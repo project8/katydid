@@ -7,7 +7,7 @@
 
 #include "KTCommandLineHandler.hh"
 
-#include "KTCommandLineUser.hh"
+#include "KTCommandLineOption.hh"
 
 #include "KatydidConfig.hh"
 
