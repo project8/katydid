@@ -45,6 +45,7 @@ namespace Katydid
      The configuration file will be automatically extracted from the command line.
      If --help (-h) or --version (-v) were given, those will be handled immediately, and the program will exit.
     */
+
     class KTCommandLineHandler : public KTSingleton< KTCommandLineHandler >
     {
         protected:

@@ -12,6 +12,7 @@
 
 #include "KTTestConfigurable.hh"
 #include "KTApplication.hh"
+#include "KTCommandLineHandler.hh"
 #include "KTPStoreNode.hh"
 
 using namespace Katydid;
