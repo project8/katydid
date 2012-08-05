@@ -7,56 +7,37 @@
 
 #include "KTApplication.hh"
 
-#include "KTCommandLineHandler.hh"
-#include "KTParameterStore.hh"
-#include "KTPStoreNode.hh"
-
 using std::string;
 
 namespace Katydid
 {
 
-    KTApplication::KTApplication() :
+    KTApplication::KTApplication(Bool_t makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
-            fParamStore(KTParameterStore::GetInstance())
+            fParamStore(KTParameterStore::GetInstance()),
+            fTApp(NULL)
     {
+        if (makeTApp)
+        {
+            fTApp = new TApplication("", 0, 0);
+        }
     }
 
-    KTApplication::KTApplication(int argC, char** argV) :
+    KTApplication::KTApplication(int argC, char** argV, Bool_t makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
-            fParamStore(KTParameterStore::GetInstance())
+            fParamStore(KTParameterStore::GetInstance()),
+            fTApp(NULL)
     {
+        if (makeTApp)
+        {
+            fTApp = new TApplication("", 0, 0);
+        }
+        fCLHandler->TakeArguments(argC, argV);
+        fConfigFilename = fCLHandler->GetConfigFilename();
     }
 
     KTApplication::~KTApplication()
     {
     }
-
-    void KTApplication::ProcessCommandLine()
-    {
-        fCLHandler->ProcessCommandLine();
-        return;
-    }
-
-    Bool_t KTApplication::ReadConfigFile(const string& filename)
-    {
-        return fParamStore->ReadConfigFile(filename);
-    }
-
-    KTPStoreNode* KTApplication::GetNode(const string address) const
-    {
-        return fParamStore->GetNode(address);
-    }
-
-    KTCommandLineHandler* KTApplication::GetCommandLineHandler() const
-    {
-        return fCLHandler;
-    }
-
-    KTParameterStore* KTApplication::GetParameterStore() const
-    {
-        return fParamStore;
-    }
-
 
 } /* namespace Katydid */
