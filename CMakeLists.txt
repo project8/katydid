@@ -111,7 +111,6 @@ include_directories ("${PROJECT_BINARY_DIR}")
 # subdirectories
 include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Utility
-    #${PROJECT_SOURCE_DIR}/Source/Framework
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/include
     ${PROJECT_SOURCE_DIR}/Source/FFT
@@ -120,12 +119,13 @@ include_directories (
 )
 
 add_subdirectory (Source/Utility)
-#add_subdirectory (Source/Framework)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/Egg/Monarch)
-add_subdirectory (Source/FFT)
-add_subdirectory (Source/Analysis)
-add_subdirectory (Source/Waterfall)
+if (ROOT_FOUND)
+    add_subdirectory (Source/FFT)
+    add_subdirectory (Source/Analysis)
+    add_subdirectory (Source/Waterfall)
+endif (ROOT_FOUND)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)
 
