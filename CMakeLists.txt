@@ -61,13 +61,14 @@ include_directories (${Boost_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${Boost_LIBRARIES})
 
 # setup the ROOT install
-find_package (ROOT 5.28)
+#find_package (ROOT 5.28)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
     # have to add the FFTW library because it doesn't automatically get included for some reason
     set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
     set (LIBS ${LIBS} ${ROOT_LIBRARIES})
 else (ROOT_FOUND)
+    message(STATUS "Building without ROOT")
     # option for not building with ROOT: need a few include files for file types
     set (ROOT_INCLUDES ${PROJECT_SOURCE_DIR}/External/ROOT)
     set (EXTERNAL_ROOT_INCLUDE_FILES
