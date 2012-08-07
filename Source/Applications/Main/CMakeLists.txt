@@ -1,6 +1,16 @@
 # CMakeLists for Katydid/Source/Applications/Main
 # Author: N. Oblath
 
+# Config files
+set (VALIDATION_CONFIGFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/SimpleElectronHunt2Config.json
+)
+
+install (FILES ${VALIDATION_CONFIGFILES}  DESTINATION ${CONFIG_INSTALL_DIR})
+    
+
+# Executables
+
 add_executable (SimpleElectronHunt ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt.cc)
 target_link_libraries (SimpleElectronHunt KatydidUtility KatydidEgg KatydidFFT)
 

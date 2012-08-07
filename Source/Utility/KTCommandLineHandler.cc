@@ -35,9 +35,8 @@ namespace Katydid
             fPrintHelpOptions(),
             fCommandLineParseLater(),
             fCommandLineVarMap(),
-            fPrintHelpMessage(false),
-            fPrintVersion(false),
-            fConfigFilename("NONE")
+            fPrintHelpMessageAfterConfig(false),
+            fConfigFilename()
     {
     }
 
@@ -247,7 +246,7 @@ namespace Katydid
 
         // Define general options, and add them to the complete option list
         po::options_description tGeneralOpts("General options");
-        tGeneralOpts.add_options()("help,h", "Print help message")("version,v", "Print version information");
+        tGeneralOpts.add_options()("help,h", "Print help message")("help-config", "Print help message after reading config file")("version,v", "Print version information");
         // We want to have the general options printed if --help is used
         fPrintHelpOptions.add(tGeneralOpts);
 
@@ -255,6 +254,7 @@ namespace Katydid
         fAllGroupKeys.insert("General");
         fAllOptionsLong.insert("help");
         fAllOptionsShort.insert('h');
+        fAllOptionsLong.insert("help-config");
         fAllOptionsLong.insert("version");
         fAllOptionsShort.insert('v');
 
@@ -305,8 +305,12 @@ namespace Katydid
         // Use the general options information
         if (tGeneralOptsVarMap.count("help"))
         {
-            this->FinalizeNewOptionGroups();
-            PrintHelpMessageAndExit("APPLICATION TYPE");
+            FinalizeNewOptionGroups();
+            PrintHelpMessageAndExit();
+        }
+        if (tGeneralOptsVarMap.count("help-config"))
+        {
+            fPrintHelpMessageAfterConfig = true;
         }
         if (tGeneralOptsVarMap.count("version"))
         {
@@ -322,13 +326,11 @@ namespace Katydid
 
     //**************
 
-    void KTCommandLineHandler::PrintHelpMessageAndExit(const string& aApplicationType)
+    void KTCommandLineHandler::PrintHelpMessageAndExit()
     {
-        string tLocation;
-        if (aApplicationType == string("")) tLocation = string("KTCommandLineHandler -- Version Information");
-        else tLocation = aApplicationType + string(" -- Version Information");
         KTINFO(utillog, "\nUsage: " << fExecutableName << " [config file] [options]\n\n" <<
                "  config file: The relative or absolute path for the desired user configuration file\n" <<
+               "  config file options can be modified using --address.of.option=\"value\"\n" <<
                fPrintHelpOptions);
 
         exit(0);

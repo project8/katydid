@@ -54,11 +54,18 @@ namespace Katydid
             KTApplication(int argC, char** argV, Bool_t makeTApp=false);
             virtual ~KTApplication();
 
-            void ProcessCommandLine();
-
+            /// Parse the config file and store the results (performed by KTParameterStore)
             Bool_t ReadConfigFile();
 
+            /// Parse the command line and store the results (performed by KTCommandLineHandler)
+            void ProcessCommandLine();
+
+            /// Get a node from the parameter store tree
             KTPStoreNode* GetNode(const std::string address) const;
+
+        protected:
+            void AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const std::string& addressOfTree="");
+            void ExtractAddresses(const int depth, const std::string& addressOfTree, const KTParameterStore::PStoreTree* tree);
 
         public:
             KTCommandLineHandler* GetCommandLineHandler() const;
@@ -83,11 +90,6 @@ namespace Katydid
     {
         fCLHandler->ProcessCommandLine();
         return;
-    }
-
-    inline Bool_t KTApplication::ReadConfigFile()
-    {
-        return fParamStore->ReadConfigFile(fConfigFilename);
     }
 
     inline KTPStoreNode* KTApplication::GetNode(const std::string address) const

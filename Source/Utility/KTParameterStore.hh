@@ -23,7 +23,7 @@ namespace Katydid
 
     class KTParameterStore : public KTSingleton< KTParameterStore >
     {
-        protected:
+        public:
             typedef boost::property_tree::ptree PStoreTree;
 
             // Config file reading interface
@@ -35,6 +35,9 @@ namespace Katydid
             KTPStoreNode* GetNode(const std::string address) const;
 
             // Parameter storage
+        public:
+            const PStoreTree* GetTree() const;
+
         protected:
             PStoreTree fStore;
 
@@ -47,6 +50,11 @@ namespace Katydid
             KTParameterStore();
             ~KTParameterStore();
     };
+
+    inline const KTParameterStore::PStoreTree* KTParameterStore::GetTree() const
+    {
+        return &fStore;
+    }
 
     /*
     template< typename XValueType >

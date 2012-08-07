@@ -27,6 +27,12 @@ int main(int argc, char** argv)
 
 
     //****************************
+    // Read the config file
+    //****************************
+    app->ReadConfigFile();
+
+
+    //****************************
     // Check basic command-line reading
     //****************************
 
@@ -53,8 +59,6 @@ int main(int argc, char** argv)
     //****************************
     // Check reading of the config file
     //****************************
-
-    app->ReadConfigFile();
 
     KTPStoreNode* topNode = app->GetNode("TestConfigurable");
     if (topNode == NULL)

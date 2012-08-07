@@ -113,6 +113,9 @@ namespace Katydid
             /// Request access to the options description object for more freedom (and responsibility!) in adding options
             po::options_description* GetOptionsDescription(const std::string& aKey);
 
+            /// Adds the groups of options to the set of usable options groups (note: this must be called to make the options in the groups usable)
+            Bool_t FinalizeNewOptionGroups();
+
         protected:
             OptDescMap fProposedGroups;
             std::set< std::string > fAllGroupKeys;
@@ -123,8 +126,6 @@ namespace Katydid
             po::options_description fPrintHelpOptions;
 
         protected:
-            /// Adds the groups of options to the set of usable options groups (note: this must be called to make the options in the groups usable)
-            Bool_t FinalizeNewOptionGroups();
             /// Adds a set of command line options
             Bool_t AddCommandLineOptions(const po::options_description& aSetOfOpts);
 
@@ -162,8 +163,7 @@ namespace Katydid
         protected:
             po::variables_map fCommandLineVarMap;
 
-            Bool_t fPrintHelpMessage;
-            Bool_t fPrintVersion;
+            Bool_t fPrintHelpMessageAfterConfig;
             std::string fConfigFilename;
 
             //**************
@@ -171,10 +171,9 @@ namespace Katydid
             //**************
 
         public:
-            Bool_t GetPrintHelpMessageFlag();
-            Bool_t GetPrintVersionFlag();
+            Bool_t GetPrintHelpMessageAfterConfigFlag();
 
-            virtual void PrintHelpMessageAndExit(const std::string& aApplicationType="");
+            virtual void PrintHelpMessageAndExit();
             virtual void PrintVersionMessageAndExit(const std::string& aApplicationType="", const std::string& aApplicationString="");
     };
 
@@ -262,14 +261,9 @@ namespace Katydid
         return fConfigFilename;
     }
 
-    inline Bool_t KTCommandLineHandler::GetPrintHelpMessageFlag()
+    inline Bool_t KTCommandLineHandler::GetPrintHelpMessageAfterConfigFlag()
     {
-        return fPrintHelpMessage;
-    }
-
-    inline Bool_t KTCommandLineHandler::GetPrintVersionFlag()
-    {
-        return fPrintVersion;
+        return fPrintHelpMessageAfterConfig;
     }
 
 } /* namespace Katydid */
