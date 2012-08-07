@@ -38,6 +38,7 @@ namespace Katydid
 
     KTApplication::~KTApplication()
     {
+        delete fTApp;
     }
 
 } /* namespace Katydid */
