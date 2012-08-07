@@ -61,7 +61,7 @@ include_directories (${Boost_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${Boost_LIBRARIES})
 
 # setup the ROOT install
-#find_package (ROOT 5.28)
+find_package (ROOT 5.28)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
     # have to add the FFTW library because it doesn't automatically get included for some reason
@@ -71,13 +71,6 @@ else (ROOT_FOUND)
     message(STATUS "Building without ROOT")
     # option for not building with ROOT: need a few include files for file types
     set (ROOT_INCLUDES ${PROJECT_SOURCE_DIR}/External/ROOT)
-    set (EXTERNAL_ROOT_INCLUDE_FILES
-        ${PROJECT_SOURCE_DIR}/External/ROOT/DllImport.h
-        ${PROJECT_SOURCE_DIR}/External/ROOT/RConfig.h
-        ${PROJECT_SOURCE_DIR}/External/ROOT/Rtypeinfo.h
-        ${PROJECT_SOURCE_DIR}/External/ROOT/Rtypes.h
-    )
-    install (FILES ${EXTERNAL_ROOT_INCLUDE_FILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
 endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
 
