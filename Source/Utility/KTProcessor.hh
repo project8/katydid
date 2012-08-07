@@ -9,7 +9,6 @@
 #ifndef KTPROCESSOR_HH_
 #define KTPROCESSOR_HH_
 
-#include "KTConfigurable.hh"
 #include "KTSetting.hh"
 
 #include "Rtypes.h"
@@ -23,16 +22,7 @@ namespace Katydid
             KTProcessor();
             virtual ~KTProcessor();
 
-            //virtual void RunProcess() = 0;
-
-            virtual Bool_t ApplySetting(const KTSetting* setting) = 0;
-            //virtual Bool_t ApplySetting(const KTSetting* setting) = 0;
     };
-    /*
-    inline Bool_t KTProcessor::ApplySetting(KTSetting setting)
-    {
-        return ApplySetting(&setting);
-    }
-    */
+
 } /* namespace Katydid */
 #endif /* KTPROCESSOR_HH_ */
