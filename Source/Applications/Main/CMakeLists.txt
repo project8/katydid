@@ -18,9 +18,6 @@ if (ROOT_FOUND)
     add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
     target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidEgg KatydidFFT)
     
-    add_executable (Truncate ${CMAKE_CURRENT_SOURCE_DIR}/Truncate.cc)
-    target_link_libraries (Truncate KatydidUtility)
-    
     install (TARGETS SimpleElectronHunt
                      SimpleElectronHunt2
                      ExtractPowerSpectra

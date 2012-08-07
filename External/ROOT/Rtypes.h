@@ -38,7 +38,7 @@
 
 
 //---- forward declared class types --------------------------------------------
-
+/*
 class TClass;
 class TBuffer;
 class TDirectory;
@@ -49,6 +49,7 @@ class TRootIOCtor;
 class TCollection;
 class TFileMergeInfo;
 class TString;
+*/
 
 //---- types -------------------------------------------------------------------
 
@@ -106,7 +107,7 @@ typedef float          Size_t;      //Attribute size (float)
 enum EColor { kWhite =0,   kBlack =1,   kGray=920,
               kRed   =632, kGreen =416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432,
               kOrange=800, kSpring=820, kTeal=840, kAzure =860, kViolet =880, kPink=900 };
-
+/*
 // There is several streamer concepts.
 class TClassStreamer;   // Streamer functor for a class
 class TMemberStreamer;  // Streamer functor for a data member
@@ -117,7 +118,7 @@ typedef void (*MemberStreamerFunc_t)(TBuffer&, void*, Int_t); // Streamer functi
 class TVirtualCollectionProxy;
 
 typedef void (*VoidFuncPtr_t)();  //pointer to void function
-
+*/
 
 //---- constants ---------------------------------------------------------------
 
@@ -167,12 +168,12 @@ const Ssiz_t    kNPOS        = ~(Ssiz_t)0;
 
 
 //---- debug global ------------------------------------------------------------
-
+/*
 R__EXTERN Int_t gDebug;
-
+*/
 
 //---- ClassDef macros ---------------------------------------------------------
-
+/*
 typedef void (*ShowMembersFunc_t)(void *obj, TMemberInspector &R__insp);
 class TVirtualIsAProxy;
 typedef TClass *(*IsAGlobalFunc_t)(const TClass*, const void *obj);
@@ -256,10 +257,10 @@ namespace ROOT {
          return ROOT::CreateClass(cname, id, info, isa, show, dfil, ifil, dl, il);
       }
    };
-
-   const TInitBehavior *DefineBehavior(void * /*parent_type*/,
-                                       void * /*actual_type*/);
-
+*/
+  // const TInitBehavior *DefineBehavior(void * /*parent_type*/,
+  //                                     void * /*actual_type*/);
+/*
 } // End of namespace ROOT
 
 // The macros below use TGenericClassInfo, so let's ensure it is included
@@ -474,5 +475,6 @@ namespace ROOT {                                                     \
    R__UseDummy(_R__UNIQUE_(R__dummyStreamer));                       \
 }
 #endif
-
+*/
 #endif
+

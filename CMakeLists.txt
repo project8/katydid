@@ -61,7 +61,7 @@ include_directories (${Boost_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${Boost_LIBRARIES})
 
 # setup the ROOT install
-#find_package (ROOT 5.28)
+find_package (ROOT 5.28)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
     # have to add the FFTW library because it doesn't automatically get included for some reason
