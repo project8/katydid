@@ -10,6 +10,7 @@
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTPStoreNode.hh"
 #include "KTSlidingWindowFFT.hh"
 
 #include "TCanvas.h"
@@ -45,6 +46,12 @@ namespace Katydid
     {
         delete fBinCuts;
     }
+
+    Bool_t KTSimpleClusteringProcessor::Configure(const KTPStoreNode* node)
+    {
+        return true;
+    }
+
 
     Bool_t KTSimpleClusteringProcessor::ApplySetting(const KTSetting* setting)
     {

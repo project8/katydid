@@ -16,6 +16,7 @@
 namespace Katydid
 {
     class KTPowerSpectrum;
+    class KTPStoreNode;
     class KTSlidingWindowFFT;
 
     template< size_t NDims, typename XDataType >
@@ -26,6 +27,8 @@ namespace Katydid
         public:
             KTGainNormalizationProcessor();
             virtual ~KTGainNormalizationProcessor();
+
+            Bool_t Configure(const KTPStoreNode* node);
 
             Bool_t ApplySetting(const KTSetting* setting);
 

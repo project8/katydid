@@ -79,7 +79,7 @@ namespace Katydid
         const KTPStoreNode* clusterNode = node->GetChild("simple_clustering");
         if (clusterNode != NULL)
         {
-            //if (! fClusteringProc.Configure(clusterNode)) return false;
+            if (! fClusteringProc.Configure(clusterNode)) return false;
         }
 
         const KTPStoreNode* simpleFFTNode = node->GetChild("simple_fft");
