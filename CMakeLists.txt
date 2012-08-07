@@ -61,7 +61,7 @@ include_directories (${Boost_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${Boost_LIBRARIES})
 
 # setup the ROOT install
-find_package (ROOT 5.28)
+#find_package (ROOT 5.28)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
     # have to add the FFTW library because it doesn't automatically get included for some reason
@@ -129,6 +129,10 @@ if (ROOT_FOUND)
 endif (ROOT_FOUND)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)
+
+if (NOT ROOT_FOUND)
+    add_subdirectory (External/ROOT)
+endif (NOT ROOT_FOUND)
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
