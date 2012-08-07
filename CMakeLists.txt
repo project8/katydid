@@ -61,14 +61,18 @@ include_directories (${Boost_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${Boost_LIBRARIES})
 
 # setup the ROOT install
-find_package (ROOT 5.28 REQUIRED)
+find_package (ROOT 5.28)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
+    # have to add the FFTW library because it doesn't automatically get included for some reason
+    set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
+    set (LIBS ${LIBS} ${ROOT_LIBRARIES})
+else (ROOT_FOUND)
+    message(STATUS "Building without ROOT")
+    # option for not building with ROOT: need a few include files for file types
+    set (ROOT_INCLUDES ${PROJECT_SOURCE_DIR}/External/ROOT)
 endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
-# have to add the FFTW library because it doesn't automatically get included for some reason
-set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
-set (LIBS ${LIBS} ${ROOT_LIBRARIES})
 
 # setup the log4cxx install
 find_package (LOG4CXX)
@@ -103,7 +107,6 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/include
     ${PROJECT_BINARY_DIR}/Source/Egg/Monarch
     ${PROJECT_SOURCE_DIR}/Source/Utility
-    #${PROJECT_SOURCE_DIR}/Source/Framework
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
@@ -112,13 +115,18 @@ include_directories (
 
 add_subdirectory (Source/Egg/Monarch)
 add_subdirectory (Source/Utility)
-#add_subdirectory (Source/Framework)
 add_subdirectory (Source/Egg)
-add_subdirectory (Source/FFT)
-add_subdirectory (Source/Analysis)
-add_subdirectory (Source/Waterfall)
+if (ROOT_FOUND)
+    add_subdirectory (Source/FFT)
+    add_subdirectory (Source/Analysis)
+    add_subdirectory (Source/Waterfall)
+endif (ROOT_FOUND)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)
+
+if (NOT ROOT_FOUND)
+    add_subdirectory (External/ROOT)
+endif (NOT ROOT_FOUND)
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
