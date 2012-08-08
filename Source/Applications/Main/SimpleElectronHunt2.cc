@@ -113,7 +113,9 @@ int main(int argc, char** argv)
     //-------------------------------------------------------
     KTEggProcessor procEgg;
     KTSetting settingEggNEvents("NEvents", (UInt_t)numEvents);
+    KTSetting settingEggFilename("Filename", inputFileName);
     procEgg.ApplySetting(&settingEggNEvents);
+    procEgg.ApplySetting(&settingEggFilename);
 
     KTFFTEHuntProcessor procEHunt;
     KTSetting settingHuntThresholdMult("ThresholdMult", (Double_t)thresholdMult);
@@ -169,7 +171,7 @@ int main(int argc, char** argv)
 
     // Process the file
     //-----------------
-    Bool_t success = procEgg.ProcessEgg(inputFileName);
+    Bool_t success = procEgg.ProcessEgg();
 
 
     if (! success) return -1;

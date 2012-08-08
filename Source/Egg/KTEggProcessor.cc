@@ -10,18 +10,17 @@
 
 #include "KTEgg.hh"
 #include "KTEvent.hh"
+#include "KTLogger.hh"
+#include "KTPStoreNode.hh"
 
 //#include "TCanvas.h"
 //#include "TH1.h"
 
-#include <iostream>
-
 using std::string;
-using std::cout;
-using std::endl;
 
 namespace Katydid
 {
+    KTLOGGER(egglog, "katydid.egg");
 
     KTEggProcessor::KTEggProcessor() :
             fNEvents(0),
@@ -34,6 +33,14 @@ namespace Katydid
     {
     }
 
+    Bool_t KTEggProcessor::Configure(const KTPStoreNode* node)
+    {
+        SetNEvents(node->GetData< UInt_t >("number_of_events", 0));
+        SetFilename(node->GetData< string >("filename", ""));
+        return true;
+    }
+
+
     Bool_t KTEggProcessor::ApplySetting(const KTSetting* setting)
     {
         if (setting->GetName() == "NEvents")
@@ -41,21 +48,26 @@ namespace Katydid
             this->SetNEvents(setting->GetValue< UInt_t >());
             return kTRUE;
         }
+        if (setting->GetName() == "Filename")
+        {
+            this->SetFilename(setting->GetValue< string >());
+            return kTRUE;
+        }
         return kFALSE;
     }
 
-    Bool_t KTEggProcessor::ProcessEgg(const string& fileName)
+    Bool_t KTEggProcessor::ProcessEgg()
     {
         KTEgg egg;
-        egg.SetFileName(fileName);
+        egg.SetFileName(fFilename);
         if (! egg.BreakEgg())
         {
-            cout << "Error: Egg did not break" << endl;
+            KTERROR(egglog, "Egg did not break");
             return false;
         }
         if (! egg.ParseEggHeader())
         {
-            cout << "Error: Header did not parse" << endl;
+            KTERROR(egglog, "Header did not parse");
             return false;
         }
 
@@ -66,7 +78,7 @@ namespace Katydid
         {
             if (iEvent >= fNEvents) break;
 
-            cout << "Event " << iEvent << endl;
+            KTINFO(egglog, "Event " << iEvent);
 
             // Hatch the event
             KTEvent* event = egg.HatchNextEvent();
