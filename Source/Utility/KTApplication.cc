@@ -9,9 +9,8 @@
 
 #include <boost/foreach.hpp>
 
-#include <iostream>
-using std::cout;
-using std::endl;
+#include <vector>
+using std::vector;
 
 using std::string;
 
@@ -50,18 +49,18 @@ namespace Katydid
 
     void KTApplication::AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const string& addressOfTree)
     {
-        BOOST_FOREACH( KTParameterStore::PStoreTree::value_type const& v, tree->get_child("") )
+        BOOST_FOREACH( const KTParameterStore::PStoreTree::value_type& treeNode, tree->get_child("") )
         {
-            KTParameterStore::PStoreTree subtree = v.second;
+            KTParameterStore::PStoreTree subtree = treeNode.second;
             string addressOfNode;
-            if (addressOfTree.size() > 0) addressOfNode = addressOfTree + "." + v.first;
-            else addressOfNode = v.first;
+            if (addressOfTree.size() > 0) addressOfNode = addressOfTree + "." + treeNode.first;
+            else addressOfNode = treeNode.first;
 
-            if (tree->get< string >(v.first).length() > 0)
+            if (tree->get< string >(treeNode.first).length() > 0)
             {
                 // Add this address to the CLHandler
                 string helpMsg = "Configuration option: " + addressOfNode;
-                fCLHandler->AddOption("Config File Options", helpMsg, addressOfNode);
+                fCLHandler->AddOption< string >("Config File Options", helpMsg, addressOfNode);
             }
 
             // Recursively go down the hierarchy
@@ -80,6 +79,29 @@ namespace Katydid
             fCLHandler->PrintHelpMessageAndExit();
         }
         return true;
+    }
+
+    void KTApplication::ApplyCLOptionsToParamStore(const po::parsed_options* parsedOpts)
+    {
+        BOOST_FOREACH( const vector< po::basic_option< char > >::value_type& anOption, parsedOpts->options )
+        {
+            // only use the first token for now, since arrays aren't yet implemented in the parameter store
+            if (anOption.value.size() > 0)
+            {
+                if (fParamStore->NodeExists(anOption.string_key))
+                {
+                    fParamStore->ChangeValue(anOption.string_key, anOption.value.at(0));
+                }
+            }
+        }
+        return;
+    }
+
+    void KTApplication::ProcessCommandLine()
+    {
+        fCLHandler->ProcessCommandLine();
+        ApplyCLOptionsToParamStore(fCLHandler->GetParsedOptions());
+        return;
     }
 
 

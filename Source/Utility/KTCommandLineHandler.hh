@@ -105,7 +105,7 @@ namespace Katydid
 
             /// Option-with-value adding function with short option
             template< class XValueType >
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt='#');
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt);
             /// Option-with-value adding function without short option
             template< class XValueType >
             Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt);
@@ -160,7 +160,11 @@ namespace Katydid
             /// Return the file name provided by the user on the command line for the config file
             const std::string& GetConfigFilename() const;
 
+            const po::parsed_options* GetParsedOptions() const;
+            const po::variables_map* GetVariablesMap() const;
+
         protected:
+            po::parsed_options fParsedOptions;
             po::variables_map fCommandLineVarMap;
 
             Bool_t fPrintHelpMessageAfterConfig;
@@ -264,6 +268,16 @@ namespace Katydid
     inline Bool_t KTCommandLineHandler::GetPrintHelpMessageAfterConfigFlag()
     {
         return fPrintHelpMessageAfterConfig;
+    }
+
+    inline const po::parsed_options* KTCommandLineHandler::GetParsedOptions() const
+    {
+        return &fParsedOptions;
+    }
+
+    inline const po::variables_map* KTCommandLineHandler::GetVariablesMap() const
+    {
+        return &fCommandLineVarMap;
     }
 
 } /* namespace Katydid */

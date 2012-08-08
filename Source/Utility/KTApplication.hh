@@ -65,7 +65,7 @@ namespace Katydid
 
         protected:
             void AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const std::string& addressOfTree="");
-            void ExtractAddresses(const int depth, const std::string& addressOfTree, const KTParameterStore::PStoreTree* tree);
+            void ApplyCLOptionsToParamStore(const po::parsed_options* parsedOpts);
 
         public:
             KTCommandLineHandler* GetCommandLineHandler() const;
@@ -85,12 +85,6 @@ namespace Katydid
         protected:
             TApplication* fTApp;
     };
-
-    inline void KTApplication::ProcessCommandLine()
-    {
-        fCLHandler->ProcessCommandLine();
-        return;
-    }
 
     inline KTPStoreNode* KTApplication::GetNode(const std::string address) const
     {

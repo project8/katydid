@@ -7,6 +7,7 @@
  *  To test the command-line interface:
  *    > TestApplication /path/to/test-config.json -t"blah"
  *    > TestApplication /path/to/test-config.json --test-opt="blah"
+ *    > TestApplication /path/to/test-config.json --TestConfiguration.int-data=500
  */
 
 
@@ -22,13 +23,17 @@ KTLOGGER(testapplog, "katydid.applications.validation");
 
 int main(int argc, char** argv)
 {
+    //****************************
+    // Create the app; this performs the initial command-line processing
+    //****************************
+
     KTApplication* app = new KTApplication(argc, argv);
-    app->ProcessCommandLine();
 
 
     //****************************
     // Read the config file
     //****************************
+
     app->ReadConfigFile();
 
 

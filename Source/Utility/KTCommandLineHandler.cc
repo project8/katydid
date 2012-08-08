@@ -34,6 +34,7 @@ namespace Katydid
             fCommandLineOptions(),
             fPrintHelpOptions(),
             fCommandLineParseLater(),
+            fParsedOptions(NULL),
             fCommandLineVarMap(),
             fPrintHelpMessageAfterConfig(false),
             fConfigFilename()
@@ -223,10 +224,17 @@ namespace Katydid
         }
 
         // Parse the command line options that remain after the initial parsing
-        po::parsed_options tParsedOpts = po::command_line_parser(fCommandLineParseLater).options(fCommandLineOptions).run();
-
+        try
+        {
+            fParsedOptions = po::command_line_parser(fCommandLineParseLater).options(fCommandLineOptions).run();
+        }
+        catch (std::exception& e)
+        {
+            KTERROR(utillog, "An error occurred while boost was parsing the command line options:\n" << e.what());
+            return;
+        }
         // Create the variable map from the parse options
-        po::store(tParsedOpts, fCommandLineVarMap);
+        po::store(fParsedOptions, fCommandLineVarMap);
         po::notify(fCommandLineVarMap);
 
         return;
