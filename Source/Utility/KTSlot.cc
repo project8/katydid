@@ -1,23 +1,22 @@
 /*
- * KTProcessor.cc
+ * KTSlot.cc
  *
- *  Created on: Jan 5, 2012
+ *  Created on: Feb 10, 2012
  *      Author: nsoblath
  */
 
-#include "KTProcessor.hh"
+#include "KTSlot.hh"
 
 namespace Katydid
 {
 
-    KTProcessor::KTProcessor() :
-            fSignalMap()
+    KTSlot::KTSlot()
     {
         // TODO Auto-generated constructor stub
 
     }
 
-    KTProcessor::~KTProcessor()
+    KTSlot::~KTSlot()
     {
         // TODO Auto-generated destructor stub
     }

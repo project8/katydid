@@ -18,8 +18,6 @@
 
 #include "TFile.h"
 
-#include "boost/signals2.hpp"
-
 #include <fstream>
 #include <list>
 #include <map>
@@ -89,30 +87,30 @@ namespace Katydid
         public:
             //void ConnectToHeaderSignalFrom(KTSignalEmitter* sigEmit);
             //void ConnectToEventSignalFrom(KTSignalEmitter* sigEmit);
-            void SetHeaderSlotConnection(boost::signals2::connection headerConn);
-            void SetEventSlotConnection(boost::signals2::connection eventConn);
-            void SetEggDoneSlotConnection(boost::signals2::connection eggDoneConn);
+            void SetHeaderSlotConnection(KTConnection headerConn);
+            void SetEventSlotConnection(KTConnection eventConn);
+            void SetEggDoneSlotConnection(KTConnection eggDoneConn);
 
         private:
-            boost::signals2::connection fHeaderConnection;
-            boost::signals2::connection fEventConnection;
-            boost::signals2::connection fEggDoneConnection;
+            KTConnection fHeaderConnection;
+            KTConnection fEventConnection;
+            KTConnection fEggDoneConnection;
 
     };
 
-    inline void KTFFTEHuntProcessor::SetHeaderSlotConnection(boost::signals2::connection headerConn)
+    inline void KTFFTEHuntProcessor::SetHeaderSlotConnection(KTConnection headerConn)
     {
         fHeaderConnection = headerConn;
         return;
     }
 
-    inline void KTFFTEHuntProcessor::SetEventSlotConnection(boost::signals2::connection eventConn)
+    inline void KTFFTEHuntProcessor::SetEventSlotConnection(KTConnection eventConn)
     {
         fEventConnection = eventConn;
         return;
     }
 
-    inline void KTFFTEHuntProcessor::SetEggDoneSlotConnection(boost::signals2::connection eggDoneConn)
+    inline void KTFFTEHuntProcessor::SetEggDoneSlotConnection(KTConnection eggDoneConn)
     {
         fEggDoneConnection = eggDoneConn;
         return;

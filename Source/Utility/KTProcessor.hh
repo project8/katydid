@@ -9,29 +9,87 @@
 #ifndef KTPROCESSOR_HH_
 #define KTPROCESSOR_HH_
 
+// part of the deprecated settings system; will be removed
 #include "KTSetting.hh"
+
+#include "KTConnection.hh"
+#include "KTSignal.hh"
+
+#include <boost/ptr_container/ptr_map.hpp>
+
+#include <exception>
+//#include <map>
+#include <string>
 
 #include "Rtypes.h"
 
 namespace Katydid
 {
+    //class KTSignal;
+    class ProcessorSignalException : public std::exception
+    {
+        virtual const char* what() const throw()
+        {
+          return "Signal requested was not found.";
+        }
+    };
 
     class KTProcessor
     {
+        protected:
+            typedef boost::ptr_map< std::string, KTSignal > SignalMap;
+            typedef SignalMap::iterator SigMapIt;
+            typedef SignalMap::value_type SigMapVal;
+
         public:
             KTProcessor();
             virtual ~KTProcessor();
 
-            //virtual void RunProcess() = 0;
+            // e.g. subscriber type: boost::bind(&KTFFTEHuntProcessor::ProcessHeader, boost::ref(procEHunt), _1)
 
-            virtual Bool_t ApplySetting(const KTSetting* setting) = 0;
-            //virtual Bool_t ApplySetting(const KTSetting* setting) = 0;
+            // e.g. XSignalSig: void (KTEgg::HeaderInfo)
+
+            //KTConnection ConnectToSignal(const std::string& signalName, const XSlotType& subscriber)
+
+            //template< typename XSlotType >
+            KTConnection ConnectToSignal(const std::string& signalName, void* subscriberPtr)
+            {
+                SigMapIt iter = fSignalMap.find(signalName);
+                if (iter == fSignalMap.end())
+                {
+                    throw ProcessorSignalException();
+                }
+
+                //KTSignal< XSignalSig >* sigPtr = static_cast< KTSignal< XSignalSig >* >(iter->second);
+                //return sigPtr->signal.connect(subscriber);
+                return iter->second->Connect(subscriberPtr);
+            }
+/*
+            template< typename XSignalSig >
+            KTConnection ConnectToSignal(const std::string& signalName, const typename KTSignal< XSignalSig >::signal_type::slot_type& subscriber)
+            {
+                SigMapIt iter = fSignalMap.find(signalName);
+                if (iter == fSignalMap.end())
+                {
+                    throw ProcessorSignalException();
+                }
+
+                KTSignal< XSignalSig >* sigPtr = static_cast< KTSignal< XSignalSig >* >(iter->second);
+                return sigPtr->signal.connect(subscriber);
+            }
+            */
+
+            template< typename XSignalSig >
+            void RegisterSignal(std::string name, boost::signals2::signal< XSignalSig >* signalPtr)
+            {
+                KTSignal* sig = new KTSignal(signalPtr);
+                fSignalMap.insert(name, sig);
+                return;
+            }
+
+        protected:
+            boost::ptr_map< std::string, KTSignal > fSignalMap;
+
     };
-    /*
-    inline Bool_t KTProcessor::ApplySetting(KTSetting setting)
-    {
-        return ApplySetting(&setting);
-    }
-    */
 } /* namespace Katydid */
 #endif /* KTPROCESSOR_HH_ */

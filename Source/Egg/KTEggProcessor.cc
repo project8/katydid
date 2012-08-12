@@ -14,6 +14,9 @@
 //#include "TCanvas.h"
 //#include "TH1.h"
 
+#include <utility>
+using std::pair;
+
 #include <iostream>
 
 using std::string;
@@ -26,8 +29,12 @@ namespace Katydid
     KTEggProcessor::KTEggProcessor() :
             fNEvents(0),
             fHeaderSignal(),
-            fEventSignal()
+            fEventSignal(),
+            fEggDoneSignal()
     {
+        RegisterSignal("header", &fHeaderSignal);
+        RegisterSignal("event", &fEventSignal);
+        RegisterSignal("egg_done", &fEggDoneSignal);
     }
 
     KTEggProcessor::~KTEggProcessor()

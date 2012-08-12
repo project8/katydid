@@ -1,23 +1,22 @@
 /*
- * KTProcessor.cc
+ * KTConnection.cc
  *
- *  Created on: Jan 5, 2012
+ *  Created on: Aug 8, 2012
  *      Author: nsoblath
  */
 
-#include "KTProcessor.hh"
+#include "KTConnection.hh"
 
 namespace Katydid
 {
 
-    KTProcessor::KTProcessor() :
-            fSignalMap()
+    KTConnection::KTConnection()
     {
         // TODO Auto-generated constructor stub
 
     }
 
-    KTProcessor::~KTProcessor()
+    KTConnection::~KTConnection()
     {
         // TODO Auto-generated destructor stub
     }
