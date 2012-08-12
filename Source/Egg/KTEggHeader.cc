@@ -9,13 +9,14 @@
 
 #include "Monarch.hpp"
 #include "MonarchHeader.hpp"
+#include "MonarchTypes.hpp"
 
 namespace Katydid
 {
 
     KTEggHeader::KTEggHeader() :
             fFilename(""),
-            fAcquisitionMode(Monarch::OneChannel),
+            fAcquisitionMode(OneChannel),
             fRecordSize(0),
             fAcquisitionTime(0),
             fAcquisitionRate(0)

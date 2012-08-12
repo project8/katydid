@@ -9,21 +9,24 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
+#include "KTLogger.hh"
 
 #include "Monarch.hpp"
-#include "MonarchIO.hpp"
 
-#include <string>
-
+using std::map;
 using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(egglog, "katydid.egg");
 
     KTEgg::KTEgg() :
             fMonarch(NULL),
-            fHeader(new KTEggHeader())
+            fHeader(new KTEggHeader()),
+            fNumberOfRecords()
     {
+        fNumberOfRecords.insert(AcqModeMapValue(OneChannel, 1));
+        fNumberOfRecords.insert(AcqModeMapValue(TwoChannel, 2));
     }
 
     KTEgg::~KTEgg()
@@ -45,7 +48,7 @@ namespace Katydid
         }
 
         // open the file
-        fMonarch = Monarch::Open(filename, MonarchIO::ReadMode);
+        fMonarch = Monarch::Open(filename, ReadMode);
 
         fHeader->TakeInformation(fMonarch->GetHeader());
 
@@ -56,19 +59,38 @@ namespace Katydid
     {
         if (fMonarch == NULL) return NULL;
 
+        MonarchRecord* eventRecord = NULL;
         KTEvent* event = new KTEvent();
 
-        // TODO: Figure out how to fill all of these things out
-
-        event->SetTimeStamp(newTimeStamp);
-        event->SetFrameID(newFrameID);
-        event->SetRecord(newRecord);
-
-
         //
-        event->SetSampleRate(this->GetSampleRate());
-        event->SetBinWidth(1. / this->GetSampleRate());
-        event->SetRecordLength((double)(this->GetRecordSize()) * event->GetBinWidth());
+        event->SetSampleRate(fHeader->GetAcquisitionRate());
+        event->SetRecordSize(fHeader->GetRecordSize());
+        event->CalculateBinWidthAndRecordLength();
+        //event->SetBinWidth(1. / event->GetSampleRate());
+        //event->SetRecordLength((double)(event->GetRecordSize()) * event->GetBinWidth());
+
+        for (int iRecord=0; iRecord<=fNumberOfRecords[fHeader->GetAcquisitionMode()]; iRecord++)
+        {
+
+            try
+            {
+                eventRecord = fMonarch->GetNextEvent();
+            }
+            catch(MonarchExceptions::EndOfFile& e)
+            {
+                delete event;
+                KTINFO(egglog, "End of file reached before complete event was read: <" << e.what() << ">");
+                return NULL;
+            }
+
+            event->SetChannelID(eventRecord->fCId, iRecord);
+            event->SetAcquisitionID(eventRecord->fAId, iRecord);
+            event->SetRecordID(eventRecord->fRId, iRecord);
+            event->SetTimeStamp(eventRecord->fTick, iRecord);
+
+            event->SetRecord(std::vector< DataType >(eventRecord->fDataPtr, eventRecord->fDataPtr+fHeader->GetRecordSize()), iRecord);
+
+        }
 
         return event;
     }

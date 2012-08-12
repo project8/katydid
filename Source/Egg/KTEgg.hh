@@ -9,6 +9,9 @@
 #ifndef KTEGG_HH_
 #define KTEGG_HH_
 
+#include "MonarchTypes.hpp"
+
+#include <map>
 #include <string>
 
 class Monarch;
@@ -20,6 +23,10 @@ namespace Katydid
 
     class KTEgg
     {
+        protected:
+            typedef std::map< AcquisitionMode, int > AcquisitionModeMap;
+            typedef AcquisitionModeMap::value_type AcqModeMapValue;
+
         public:
             KTEgg();
             virtual ~KTEgg();
@@ -41,6 +48,8 @@ namespace Katydid
             Monarch* fMonarch;
 
             KTEggHeader* fHeader;
+
+            AcquisitionModeMap fNumberOfRecords;
 
     };
 

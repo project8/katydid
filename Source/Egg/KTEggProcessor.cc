@@ -47,19 +47,13 @@ namespace Katydid
     Bool_t KTEggProcessor::ProcessEgg(const string& fileName)
     {
         KTEgg egg;
-        egg.SetFileName(fileName);
-        if (! egg.BreakEgg())
+        if (! egg.BreakEgg(fileName))
         {
             cout << "Error: Egg did not break" << endl;
             return false;
         }
-        if (! egg.ParseEggHeader())
-        {
-            cout << "Error: Header did not parse" << endl;
-            return false;
-        }
 
-        fHeaderSignal(egg.GetHeaderInfo());
+        fHeaderSignal(egg.GetHeader());
 
         UInt_t iEvent = 0;
         while (kTRUE)

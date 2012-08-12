@@ -39,6 +39,7 @@ namespace Katydid
             virtual TH1I* CreateAmplitudeDistributionHistogram(unsigned channelNum = 0) const;
 #endif
 
+            unsigned GetRecordSize() const;
             double GetSampleRate() const;
             double GetRecordLength() const;
             double GetBinWidth() const;
@@ -50,7 +51,7 @@ namespace Katydid
 
             const std::vector< DataType >& GetRecord(unsigned channelNum = 0) const;
 
-            unsigned GetRecordSize(unsigned channelNum = 0) const;
+            //unsigned GetRecordSize(unsigned channelNum = 0) const;
             DataType GetRecordAt(unsigned int iBin, unsigned channelNum = 0) const;
             template< typename XType >
             XType GetRecordAt(unsigned int iBin, unsigned channelNum = 0) const;
@@ -58,18 +59,21 @@ namespace Katydid
             template< typename XType >
             XType GetRecordAtTime(double time, unsigned channelNum = 0) const; /// time is in seconds and >= 0
 
-            void SetSampleRate(double sampleRate, unsigned channelNum = 0);
-            void SetRecordLength(double recordLength, unsigned channelNum = 0);
-            void SetBinWidth(double binWidth, unsigned channelNum = 0);
+            void SetRecordSize(unsigned size);
+            void SetSampleRate(double sampleRate);
+            void SetRecordLength(double recordLength);
+            void SetBinWidth(double binWidth);
+            void CalculateBinWidthAndRecordLength();
 
             void SetTimeStamp(ClockType timeStamp, unsigned channelNum = 0);
             void SetChannelID(ChIdType chId, unsigned channelNum = 0);
             void SetAcquisitionID(AcqIdType acqId, unsigned channelNum = 0);
             void SetRecordID(RecIdType recId, unsigned channelNum = 0);
 
-            void SetRecord(const std::vector< DataType >& record, unsigned channelNum = 0);
+            void SetRecord(std::vector< DataType > record, unsigned channelNum = 0);
 
         private:
+            unsigned fRecordSize; // number of bins
             double fSampleRate; // in Hz
             double fRecordLength; // in sec
             double fBinWidth; // in sec
@@ -86,12 +90,12 @@ namespace Katydid
 
     };
 
-
+    /*
     inline unsigned KTEvent::GetRecordSize(unsigned channelNum) const
     {
         return fRecords[channelNum].size();
     }
-
+    */
     inline DataType KTEvent::GetRecordAt(unsigned int iPoint, unsigned channelNum) const
     {
         return fRecords[iPoint];
@@ -114,6 +118,10 @@ namespace Katydid
         return this->GetRecordAt< XType >((unsigned)(nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
+    inline unsigned KTEvent::GetRecordSize() const
+    {
+        return fRecordSize;
+    }
 
     inline double KTEvent::GetRecordLength() const
     {
@@ -155,20 +163,31 @@ namespace Katydid
         return fRecords[channelNum];
     }
 
-
-    inline void KTEvent::SetRecordLength(double recordLength, unsigned channelNum)
+    inline void KTEvent::SetRecordSize(unsigned recordSize)
     {
-        this->fRecordLength[channelNum] = recordLength;
+        this->fRecordSize = recordSize;
     }
 
-    inline void KTEvent::SetSampleRate(double sampleRate, unsigned channelNum)
+    inline void KTEvent::SetRecordLength(double recordLength)
     {
-        this->fSampleRate[channelNum] = sampleRate;
+        this->fRecordLength = recordLength;
     }
 
-    inline void KTEvent::SetBinWidth(double binWidth, unsigned channelNum)
+    inline void KTEvent::SetSampleRate(double sampleRate)
     {
-        this->fBinWidth[channelNum] = binWidth;
+        this->fSampleRate = sampleRate;
+    }
+
+    inline void KTEvent::SetBinWidth(double binWidth)
+    {
+        this->fBinWidth = binWidth;
+    }
+
+    inline void KTEvent::CalculateBinWidthAndRecordLength()
+    {
+        SetBinWidth(1. / fSampleRate);
+        SetRecordLength(double(fRecordSize) * fBinWidth);
+        return;
     }
 
     void KTEvent::SetTimeStamp(ClockType timeStamp, unsigned channelNum)
@@ -195,7 +214,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTEvent::SetRecord(const std::vector< DataType >& record, unsigned channelNum)
+    inline void KTEvent::SetRecord(std::vector< DataType > record, unsigned channelNum)
     {
         this->fRecords[channelNum] = record;
     }
