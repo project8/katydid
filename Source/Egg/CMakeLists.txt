@@ -29,7 +29,7 @@ set (EGG_SOURCEFILES
 
 add_library (KatydidEgg ${EGG_SOURCEFILES} ${EGG_DICT_OUTFILE})
 set_target_properties(KatydidEgg PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
-target_link_libraries (KatydidEgg KatydidUtility ${LIBS})
+target_link_libraries (KatydidEgg KatydidUtility monarch ${LIBS})
 
 install (FILES ${EGG_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
 install (TARGETS KatydidEgg  DESTINATION ${LIB_INSTALL_DIR})

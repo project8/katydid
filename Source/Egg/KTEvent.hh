@@ -98,12 +98,12 @@ namespace Katydid
     */
     inline DataType KTEvent::GetRecordAt(unsigned int iPoint, unsigned channelNum) const
     {
-        return fRecords[iPoint];
+        return fRecords[channelNum][iPoint];
     }
 
     inline DataType KTEvent::GetRecordAtTime(double time, unsigned channelNum) const
     {
-        return this->GetRecordAt((unsigned)(nint(std::max(0., time) / fBinWidth)));
+        return this->GetRecordAt((unsigned)(nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
     template< typename XType >
@@ -138,22 +138,22 @@ namespace Katydid
         return fBinWidth;
     }
 
-    ClockType KTEvent::GetTimeStamp(unsigned channelNum) const
+    inline ClockType KTEvent::GetTimeStamp(unsigned channelNum) const
     {
         return fTimeStamps[channelNum];
     }
 
-    ChIdType KTEvent::GetChannelID(unsigned channelNum) const
+    inline ChIdType KTEvent::GetChannelID(unsigned channelNum) const
     {
         return fChannelIDs[channelNum];
     }
 
-    AcqIdType KTEvent::GetAcquisitionID(unsigned channelNum) const
+    inline AcqIdType KTEvent::GetAcquisitionID(unsigned channelNum) const
     {
         return fAcquisitionIDs[channelNum];
     }
 
-    RecIdType KTEvent::GetRecordID(unsigned channelNum) const
+    inline RecIdType KTEvent::GetRecordID(unsigned channelNum) const
     {
         return fRecordIDs[channelNum];
     }
@@ -190,25 +190,25 @@ namespace Katydid
         return;
     }
 
-    void KTEvent::SetTimeStamp(ClockType timeStamp, unsigned channelNum)
+    inline void KTEvent::SetTimeStamp(ClockType timeStamp, unsigned channelNum)
     {
         fTimeStamps[channelNum] = timeStamp;
         return;
     }
 
-    void KTEvent::SetChannelID(ChIdType chId, unsigned channelNum)
+    inline void KTEvent::SetChannelID(ChIdType chId, unsigned channelNum)
     {
         fChannelIDs[channelNum] = chId;
         return;
     }
 
-    void KTEvent::SetAcquisitionID(AcqIdType acqId, unsigned channelNum)
+    inline void KTEvent::SetAcquisitionID(AcqIdType acqId, unsigned channelNum)
     {
         fAcquisitionIDs[channelNum] = acqId;
         return;
     }
 
-    void KTEvent::SetRecordID(RecIdType recId, unsigned channelNum)
+    inline void KTEvent::SetRecordID(RecIdType recId, unsigned channelNum)
     {
         fRecordIDs[channelNum] = recId;
         return;

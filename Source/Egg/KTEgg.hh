@@ -34,15 +34,8 @@ namespace Katydid
             bool BreakEgg(const std::string& filename);
             KTEvent* HatchNextEvent();
 
-            KTEggHeader* GetHeader();
-
-            double GetHertzPerSampleRateUnit() const;
-            double GetSecondsPerRunLengthUnit() const;
-
             void SetHeader(KTEggHeader* header);
-
-            void SetHertzPerSampleRateUnit(double hpsru);
-            void SetSecondsPerRunLengthUnit(double sprlu);
+            KTEggHeader* GetHeader() const;
 
         private:
             Monarch* fMonarch;
@@ -52,6 +45,11 @@ namespace Katydid
             AcquisitionModeMap fNumberOfRecords;
 
     };
+
+    inline KTEggHeader* KTEgg::GetHeader() const
+    {
+        return fHeader;
+    }
 
 } /* namespace Katydid */
 

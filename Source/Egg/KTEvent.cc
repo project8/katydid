@@ -20,11 +20,12 @@ namespace Katydid
                 fSampleRate(0.),
                 fRecordLength(0.),
                 fBinWidth(1.),
-                fTimeStamps(vector< ClockType >(1)),
-                fChannelIDs(vector< ChIdType >(1)),
-                fAcquisitionIDs(vector< AcqIdType >(1)),
-                fRecordIDs(vector< RecIdType >(1)),
-                fRecords(vector< vector< DataType >(1) >(1))
+                fRecordSize(0),
+                fTimeStamps(vector< ClockType >()),
+                fChannelIDs(vector< ChIdType >()),
+                fAcquisitionIDs(vector< AcqIdType >()),
+                fRecordIDs(vector< RecIdType >()),
+                fRecords(vector< vector< DataType > >())
     {
     }
 

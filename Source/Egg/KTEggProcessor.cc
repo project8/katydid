@@ -9,6 +9,7 @@
 #include "KTEggProcessor.hh"
 
 #include "KTEgg.hh"
+#include "KTEggHeader.hh"
 #include "KTEvent.hh"
 
 //#include "TCanvas.h"

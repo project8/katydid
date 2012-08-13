@@ -7,6 +7,7 @@
 
 #include "KTSimpleFFTProcessor.hh"
 
+#include "KTEggHeader.hh"
 #include "KTSimpleFFT.hh"
 
 #include <iostream>
@@ -39,9 +40,9 @@ namespace Katydid
         return kFALSE;
     }
 
-    void KTSimpleFFTProcessor::ProcessHeader(KTEgg::HeaderInfo headerInfo)
+    void KTSimpleFFTProcessor::ProcessHeader(const KTEggHeader* header)
     {
-        fFFT.SetTimeSize(headerInfo.fRecordSize);
+        fFFT.SetTimeSize(header->GetRecordSize());
         fFFT.InitializeFFT();
         return;
     }

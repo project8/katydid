@@ -25,19 +25,19 @@ namespace Katydid
             // Member access functions
         public:
             void SetFilename(std::string fname);
-            std::string GetFilename();
+            std::string GetFilename() const;
 
             void SetAcquisitionMode(const AcquisitionMode& mode);
-            AcquisitionMode GetAcquisitionMode();
+            AcquisitionMode GetAcquisitionMode() const;
 
             void SetRecordSize(const std::size_t& recsize);
-            std::size_t GetRecordSize();
+            std::size_t GetRecordSize() const;
 
             void SetAcquisitionTime(const std::size_t& acqt);
-            std::size_t GetAcquisitionTime();
+            std::size_t GetAcquisitionTime() const;
 
             void SetAcquisitionRate(const std::size_t& acqr);
-            std::size_t GetAcquisitionRate();
+            std::size_t GetAcquisitionRate() const;
 
             // Access to the MonarchHeader object
             /// Copies the information from the MonarchHeader object
@@ -58,7 +58,7 @@ namespace Katydid
         return;
     }
 
-    inline std::string KTEggHeader::GetFilename()
+    inline std::string KTEggHeader::GetFilename() const
     {
         return fFilename;
     }
@@ -69,7 +69,7 @@ namespace Katydid
         return;
     }
 
-    inline AcquisitionMode KTEggHeader::GetAcquisitionMode()
+    inline AcquisitionMode KTEggHeader::GetAcquisitionMode() const
     {
         return fAcquisitionMode;
     }
@@ -80,7 +80,7 @@ namespace Katydid
         return;
     }
 
-    inline std::size_t KTEggHeader::GetRecordSize()
+    inline std::size_t KTEggHeader::GetRecordSize() const
     {
         return fRecordSize;
     }
@@ -91,7 +91,7 @@ namespace Katydid
         return;
     }
 
-    inline std::size_t KTEggHeader::GetAcquisitionTime()
+    inline std::size_t KTEggHeader::GetAcquisitionTime() const
     {
         return fAcquisitionTime;
     }
@@ -102,7 +102,7 @@ namespace Katydid
         return;
     }
 
-    inline std::size_t KTEggHeader::GetAcquisitionRate()
+    inline std::size_t KTEggHeader::GetAcquisitionRate() const
     {
         return fAcquisitionRate;
     }

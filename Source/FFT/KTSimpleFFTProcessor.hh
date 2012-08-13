@@ -22,6 +22,8 @@
 
 namespace Katydid
 {
+    class KTEggHeader;
+
     /*!
      @class KTSimpleFFTProcessor
      @author N. S. Oblath
@@ -46,7 +48,7 @@ namespace Katydid
 
             Bool_t ApplySetting(const KTSetting* setting);
 
-            void ProcessHeader(KTEgg::HeaderInfo headerInfo);
+            void ProcessHeader(const KTEggHeader* header);
 
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
 
