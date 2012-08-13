@@ -46,6 +46,12 @@ namespace Katydid
 
     };
 
+    inline void KTEgg::SetHeader(KTEggHeader* header)
+    {
+        fHeader = header;
+        return;
+    }
+
     inline KTEggHeader* KTEgg::GetHeader() const
     {
         return fHeader;
