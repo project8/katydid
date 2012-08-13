@@ -49,12 +49,8 @@ namespace Katydid
 
     void KTSimpleFFTProcessor::ProcessEvent(UInt_t iEvent, const KTEvent* event)
     {
-        if (fFFT.TakeData(event))
-        {
-            cout << "Data transferred to simple fft; performing transform" << endl;
-            fFFT.Transform();
-            fFFTSignal(iEvent, &fFFT);
-        }
+        fFFT.TransformEvent(event);
+        fFFTSignal(iEvent, &fFFT);
         return;
     }
 

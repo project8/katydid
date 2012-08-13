@@ -39,6 +39,8 @@ namespace Katydid
             virtual TH1I* CreateAmplitudeDistributionHistogram(unsigned channelNum = 0) const;
 #endif
 
+            unsigned GetNRecords() const;
+
             unsigned GetRecordSize() const;
             double GetSampleRate() const;
             double GetRecordLength() const;
@@ -96,6 +98,11 @@ namespace Katydid
         return fRecords[channelNum].size();
     }
     */
+    inline unsigned KTEvent::GetNRecords() const
+    {
+        return unsigned(fRecords.size());
+    }
+
     inline DataType KTEvent::GetRecordAt(unsigned int iPoint, unsigned channelNum) const
     {
         return fRecords[channelNum][iPoint];
