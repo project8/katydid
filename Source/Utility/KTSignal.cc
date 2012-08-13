@@ -7,40 +7,19 @@
 
 #include "KTSignal.hh"
 
-#include "KTConnection.hh"
-
-#include <boost/foreach.hpp>
-
-using std::multiset;
-
 namespace Katydid
 {
 
     KTSignal::KTSignal() :
-            fConnections()
+            fSignal(NULL)
     {
-        // TODO Auto-generated constructor stub
-
     }
 
     KTSignal::~KTSignal()
     {
-        // TODO Auto-generated destructor stub
+        delete fSignal;
     }
 
-    void KTSignal::AddConnection(KTConnection* connection)
-    {
-        fConnections.insert(connection);
-        return;
-    }
-
-    void KTSignal::ExecuteSignals()
-    {
-        BOOST_FOREACH( KTConnection* connection, fConnections )
-        {
-            //connection->Execute();
-        }
-    }
 
 
 } /* namespace Katydid */

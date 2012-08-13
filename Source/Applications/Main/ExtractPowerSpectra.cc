@@ -88,21 +88,17 @@ int main(int argc, char** argv)
 
     // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
     //procFFT.ConnectToEventSignalFrom(procEgg);
-    boost::bind* evBind = new boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2);
-    procFFT.SetEventSlotConnection(procEgg.ConnectToSignal("event", evBind));
+    procFFT.SetEventSlotConnection(procEgg.ConnectToSignal< void (UInt_t, const KTEvent*) >("event", boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2)));
 
     // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
     //procFFT.ConnectToEventSignalFrom(procEgg);
-    boost::bind* headBind = boost::bind(&KTSimpleFFTProcessor::ProcessHeader, boost::ref(procFFT), _1);
-    procFFT.SetHeaderSlotConnection(procEgg.ConnectToSignal("header", headBind));
+    procFFT.SetHeaderSlotConnection(procEgg.ConnectToSignal< void (KTEgg::HeaderInfo) >("header", boost::bind(&KTSimpleFFTProcessor::ProcessHeader, boost::ref(procFFT), _1)));
 
     // get the output histogram when an FFT is complete
     boost::signals2::connection fftConnection = procFFT.ConnectToFFTSignal( boost::bind(&PowerSpectraContainer::AddPowerSpectrum, boost::ref(powerSpectra), _1, _2) );
 
     Bool_t success = procEgg.ProcessEgg(inputFileName);
 
-    delete evBind;
-    delete headBind;
     fftConnection.disconnect();
 
     vector< TH1D* > powerSpectrumHistograms = powerSpectra.GetPowerSpectra();

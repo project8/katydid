@@ -16,6 +16,7 @@
 #include "KTSignal.hh"
 
 #include <boost/ptr_container/ptr_map.hpp>
+#include <boost/signals2.hpp>
 
 #include <exception>
 //#include <map>
@@ -51,8 +52,8 @@ namespace Katydid
 
             //KTConnection ConnectToSignal(const std::string& signalName, const XSlotType& subscriber)
 
-            //template< typename XSlotType >
-            KTConnection ConnectToSignal(const std::string& signalName, void* subscriberPtr)
+            template< typename XSignalSig >
+            KTConnection ConnectToSignal(const std::string& signalName, const typename boost::signals2::signal< XSignalSig >::slot_type& slot)
             {
                 SigMapIt iter = fSignalMap.find(signalName);
                 if (iter == fSignalMap.end())
@@ -62,7 +63,7 @@ namespace Katydid
 
                 //KTSignal< XSignalSig >* sigPtr = static_cast< KTSignal< XSignalSig >* >(iter->second);
                 //return sigPtr->signal.connect(subscriber);
-                return iter->second->Connect(subscriberPtr);
+                return iter->second->Connect< XSignalSig >(slot);
             }
 /*
             template< typename XSignalSig >
