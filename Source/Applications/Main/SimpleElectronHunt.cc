@@ -39,7 +39,9 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <fstream>
 #include <set>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -117,15 +119,9 @@ int main(int argc, char** argv)
     txtOutFile << "------------------------------------" << endl;
 
     KTEgg egg;
-    egg.SetFileName(inputFileName);
-    if (! egg.BreakEgg())
+    if (! egg.BreakEgg(inputFileName))
     {
         cout << "Error: Egg did not break" << endl;
-        return -1;
-    }
-    if (! egg.ParseEggHeader())
-    {
-        cout << "Error: Header did not parse" << endl;
         return -1;
     }
 
