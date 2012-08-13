@@ -88,7 +88,8 @@ int main(int argc, char** argv)
 
     // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
     //procFFT.ConnectToEventSignalFrom(procEgg);
-    procFFT.SetEventSlotConnection(procEgg.ConnectToSignal< void (UInt_t, const KTEvent*) >("event", boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2)));
+    //procFFT.SetEventSlotConnection(procEgg.ConnectToSignal< void (UInt_t, const KTEvent*) >("event", boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2)));
+    procFFT.SetEventSlotConnection(procEgg.ConnectToSignal2("event", &procFFT, &KTSimpleFFTProcessor::ProcessEvent, 2));
 
     // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
     //procFFT.ConnectToEventSignalFrom(procEgg);

@@ -15,6 +15,7 @@
 #include "KTConnection.hh"
 #include "KTSignal.hh"
 
+#include <boost/function.hpp>
 #include <boost/ptr_container/ptr_map.hpp>
 #include <boost/signals2.hpp>
 
@@ -65,6 +66,34 @@ namespace Katydid
                 //return sigPtr->signal.connect(subscriber);
                 return iter->second->Connect< XSignalSig >(slot);
             }
+
+            template< class XProcessor, typename XSignature >
+            KTConnection ConnectToSignal2(const std::string& signalName, XProcessor* processor, XSignature funcPtr, int nArgs)
+            {
+                SigMapIt iter = fSignalMap.find(signalName);
+                if (iter == fSignalMap.end())
+                {
+                    throw ProcessorSignalException();
+                }
+
+                switch (nArgs)
+                {
+                    case 0:
+                        return iter->second->Connect< boost::signals2::signal< XSignature >::slot_type >(boost::bind(&funcPtr, boost::ref(*processor)));
+                        break;
+                    case 1:
+                        return iter->second->Connect< boost::signals2::signal< XSignature >::slot_type >(boost::bind(&funcPtr, boost::ref(*processor), _1));
+                        break;
+                    case 2:
+                        return iter->second->Connect< boost::signals2::signal< XSignature >::slot_type >(boost::bind(&funcPtr, boost::ref(*processor), _1, _2));
+                        break;
+                    default:
+                        return iter->second->Connect< boost::signals2::signal< XSignature >::slot_type >(boost::bind(&funcPtr, boost::ref(*processor)));
+
+                }
+            }
+
+
 /*
             template< typename XSignalSig >
             KTConnection ConnectToSignal(const std::string& signalName, const typename KTSignal< XSignalSig >::signal_type::slot_type& subscriber)
