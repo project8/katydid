@@ -1,8 +1,9 @@
-/*
- * KTSimpleFFT.hh
- *
- *  Created on: Sep 12, 2011
- *      Author: nsoblath
+/**
+ @file KTSimpleFFT.hh
+ @brief Contains KTSimpleFFT
+ @details Calculates a 1-dimensional FFT on a set of real data.
+ @author: N. S. Oblath
+ @date: Sep 12, 2011
  */
 
 #ifndef KTSIMPLEFFT_HH_
@@ -13,78 +14,101 @@
 #include "TFFTRealComplex.h"
 
 #include <string>
-using std::string;
 
-class TArray;
+//class TArray;
 class TH1D;
 
 namespace Katydid
 {
+    class KTComplexVector;
     class KTPowerSpectrum;
     class KTEvent;
+
+    template< size_t NDims, typename XDataType >
+    class KTPhysicalArray;
+
+    /*!
+     @class KTSimpleFFT
+     @author N. S. Oblath
+
+     @brief A one-dimensional real-to-complex FFT class.
+
+     @details
+     KTSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
+
+     The FFT is currently performed by ROOT's adaptation of FFTW. Specifically the TFFTRealComplex class.
+    */
 
     class KTSimpleFFT : public KTFFT
     {
         public:
             KTSimpleFFT();
-            KTSimpleFFT(Int_t timeSize);
+            KTSimpleFFT(UInt_t timeSize);
             virtual ~KTSimpleFFT();
 
             virtual void InitializeFFT();
 
-            virtual void TakeData(const KTEvent* event);
-            virtual void TakeData(const TArray* data);
+            virtual Bool_t TakeData(const KTEvent* event);
+            virtual Bool_t TakeData(const vector< Double_t >& data);
+            //virtual Bool_t TakeData(const TArray* data);
 
-            virtual void Transform();
+            virtual Bool_t Transform();
 
+            virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name) const;
             virtual TH1D* CreatePowerSpectrumHistogram() const;
 
+            virtual KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr() const;
+
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
-            virtual Int_t GetTimeSize() const;
-            virtual Int_t GetFrequencySize() const;
+            virtual UInt_t GetTimeSize() const;
+            virtual UInt_t GetFrequencySize() const;
 
             /// note: SetTimeSize creates a new fTransform.
             ///       It also sets fIsInitialized and fIsDataReady to kFALSE.
-            virtual void SetTimeSize(Int_t nBins);
+            virtual void SetTimeSize(UInt_t nBins);
 
             const TFFTRealComplex* GetFFT() const;
-            const string& GetTransformFlag() const;
+            const KTComplexVector* GetTransformResult() const;
+            const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Bool_t GetIsDataReady() const;
             Double_t GetFreqBinWidth() const;
 
             /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
-            void SetTransformFlag(const string& flag);
+            void SetTransformFlag(const std::string& flag);
             void SetFreqBinWidth(Double_t bw);
 
         protected:
+            void ExtractTransformResult();
 
             TFFTRealComplex* fTransform;
+            KTComplexVector* fTransformResult;
 
-            string fTransformFlag;
+            std::string fTransformFlag;
 
             Bool_t fIsInitialized;
             Bool_t fIsDataReady;
 
             Double_t fFreqBinWidth;
 
-            ClassDef(KTSimpleFFT, 1);
+            ClassDef(KTSimpleFFT, 2);
     };
 
-    inline Int_t KTSimpleFFT::GetTimeSize() const
+
+    inline UInt_t KTSimpleFFT::GetTimeSize() const
     {
         return fTransform->GetSize();
     }
 
-    inline Int_t KTSimpleFFT::GetFrequencySize() const
+    inline UInt_t KTSimpleFFT::GetFrequencySize() const
     {
         return fTransform->GetSize() / 2 + 1;
     }
 
-    inline void KTSimpleFFT::SetTimeSize(Int_t nBins)
+    inline void KTSimpleFFT::SetTimeSize(UInt_t nBins)
     {
         delete fTransform;
-        fTransform = new TFFTRealComplex(nBins, kFALSE);
+        fTransform = new TFFTRealComplex((Int_t)nBins, kFALSE);
         fIsInitialized = kFALSE;
         fIsDataReady = kFALSE;
         return;
@@ -95,7 +119,12 @@ namespace Katydid
         return fTransform;
     }
 
-    inline const string& KTSimpleFFT::GetTransformFlag() const
+    inline const KTComplexVector* KTSimpleFFT::GetTransformResult() const
+    {
+        return fTransformResult;
+    }
+
+    inline const std::string& KTSimpleFFT::GetTransformFlag() const
     {
         return fTransformFlag;
     }
@@ -115,7 +144,7 @@ namespace Katydid
         return fFreqBinWidth;
     }
 
-    inline void KTSimpleFFT::SetTransformFlag(const string& flag)
+    inline void KTSimpleFFT::SetTransformFlag(const std::string& flag)
     {
         fTransformFlag = flag;
         fIsInitialized = kFALSE;

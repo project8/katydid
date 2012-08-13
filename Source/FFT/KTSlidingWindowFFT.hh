@@ -10,12 +10,15 @@
 
 #include "KTFFT.hh"
 
-#include "TFFTRealComplex.h"
+#include "KTPowerSpectrum.hh"
+#include "KTWindowFunction.hh"
 
-#include "TArrayD.h"
+#include "TFFTRealComplex.h"
+#include "TMath.h"
+
+#include "boost/signals2.hpp"
 
 #include <string>
-using std::string;
 #include <vector>
 using std::vector;
 
@@ -23,70 +26,101 @@ class TH2D;
 
 namespace Katydid
 {
-    class KTPowerSpectrum;
+    //class KTPowerSpectrum;
     class KTEvent;
-    class KTWindowFunction;
+
+    template< size_t NDims, typename XDataType >
+    class KTPhysicalArray;
 
     class KTSlidingWindowFFT : public KTFFT
     {
+        public:
+            typedef boost::signals2::signal< void (UInt_t, KTPowerSpectrum*) > SingleFFTSignal;
+
         public:
             KTSlidingWindowFFT();
             virtual ~KTSlidingWindowFFT();
 
             virtual void InitializeFFT();
+            virtual void RecreateFFT();
 
-            virtual void TakeData(const KTEvent* event);
-            virtual void TakeData(const TArray* data);
+            virtual Bool_t TakeData(const KTEvent* event);
+            virtual Bool_t TakeData(const std::vector< Double_t >& data);
+            //virtual Bool_t TakeData(const TArray* data);
 
-            virtual void Transform();
+            virtual Bool_t Transform();
 
+            virtual TH2D* CreatePowerSpectrumHistogram(const std::string& name) const;
             virtual TH2D* CreatePowerSpectrumHistogram() const;
+
+            virtual KTPhysicalArray< 2, Double_t >* CreatePowerSpectrumPhysArr() const;
 
             /// for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.
             virtual Int_t GetTimeSize() const;
             virtual Int_t GetFrequencySize() const;
 
-            Int_t GetWindowSize() const;
-            Int_t GetFullTimeSize() const;
-            Int_t GetOverlap() const;
+            UInt_t GetWindowSize() const;
+            UInt_t GetFullTimeSize() const;
+            UInt_t GetOverlap() const;
+            UInt_t GetEffectiveOverlap() const;
+            Double_t GetOverlapFrac() const;
+            Bool_t GetUseOverlapFrac() const;
             KTWindowFunction* GetWindowFunction() const;
-            const TArrayD* GetTimeData() const;
-            const KTPowerSpectrum* GetPowerSpectrum(Int_t spect) const;
+            const std::vector< Double_t >& GetTimeData() const;
+            KTPowerSpectrum* GetPowerSpectrum(Int_t spect) const;
+            UInt_t GetNPowerSpectra() const;
 
             const TFFTRealComplex* GetFFT() const;
-            const string& GetTransformFlag() const;
+            const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Bool_t GetIsDataReady() const;
             Double_t GetFreqBinWidth() const;
 
-            /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
+            /// note: SetTransformFlag sets fIsInitialized and fIsDataReady to kFALSE.
             void SetTransformFlag(const string& flag);
             void SetFreqBinWidth(Double_t bw);
-            void SetWindowSize(Int_t nBins);
+            void SetWindowSize(UInt_t nBins);
             void SetWindowLength(Double_t wlTime);
-            void SetOverlap(Int_t nBins);
+            void SetOverlap(UInt_t nBins);
             void SetOverlap(Double_t overlapTime);
+            void SetOverlapFrac(Double_t overlapFrac);
+            void SetUseOverlapFrac(Bool_t useOverlapFrac);
             void SetWindowFunction(KTWindowFunction* wf);
 
         protected:
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
+            void ClearPowerSpectra();
 
             TFFTRealComplex* fTransform;
 
-            string fTransformFlag;
+            std::string fTransformFlag;
 
             Bool_t fIsInitialized;
             Bool_t fIsDataReady;
 
             Double_t fFreqBinWidth;
-            Int_t fOverlap;
+            UInt_t fOverlap;
+            Double_t fOverlapFrac;
+            Bool_t fUseOverlapFrac;
 
             KTWindowFunction* fWindowFunction;
-            TArrayD* fTimeData;
-            vector< KTPowerSpectrum* > fPowerSpectra;
+            std::vector< Double_t > fTimeData;
+            std::vector< KTPowerSpectrum* > fPowerSpectra;
 
-            ClassDef(KTSlidingWindowFFT, 1);
+
+            //***************
+            // Signals
+            //***************
+
+        public:
+            boost::signals2::connection ConnectToFFTSignal(const SingleFFTSignal::slot_type &subscriber);
+            boost::signals2::connection ConnectToFFTSignal(Int_t group, const SingleFFTSignal::slot_type &subscriber);
+
+        private:
+            SingleFFTSignal fSingleFFTSignal;
+
     };
+
 
     inline Int_t KTSlidingWindowFFT::GetTimeSize() const
     {
@@ -123,31 +157,56 @@ namespace Katydid
         return fFreqBinWidth;
     }
 
-    inline Int_t KTSlidingWindowFFT::GetFullTimeSize() const
+    inline UInt_t KTSlidingWindowFFT::GetFullTimeSize() const
     {
-        if (fTimeData != NULL) return fTimeData->GetSize();
-        return 0;
+        return (UInt_t)fTimeData.size();
     }
 
-    inline Int_t KTSlidingWindowFFT::GetOverlap() const
+    inline UInt_t KTSlidingWindowFFT::GetOverlap() const
     {
         return fOverlap;
     }
 
-    inline const TArrayD* KTSlidingWindowFFT::GetTimeData() const
+    inline Double_t KTSlidingWindowFFT::GetOverlapFrac() const
+    {
+        return fOverlapFrac;
+    }
+
+    inline Bool_t KTSlidingWindowFFT::GetUseOverlapFrac() const
+    {
+        return fUseOverlapFrac;
+    }
+
+    inline UInt_t KTSlidingWindowFFT::GetEffectiveOverlap() const
+    {
+        if (fUseOverlapFrac) return (UInt_t)TMath::Nint(fOverlapFrac * (Double_t)this->fWindowFunction->GetSize());
+        return fOverlap;
+    }
+
+    inline const vector< Double_t >& KTSlidingWindowFFT::GetTimeData() const
     {
         return fTimeData;
     }
 
-    inline const KTPowerSpectrum* KTSlidingWindowFFT::GetPowerSpectrum(Int_t spec) const
+    inline KTPowerSpectrum* KTSlidingWindowFFT::GetPowerSpectrum(Int_t spec) const
     {
         if (spec >= 0 && spec < (Int_t)fPowerSpectra.size()) return fPowerSpectra[spec];
         return NULL;
     }
 
+    inline UInt_t KTSlidingWindowFFT::GetNPowerSpectra() const
+    {
+        return (UInt_t)fPowerSpectra.size();
+    }
+
     inline KTWindowFunction* KTSlidingWindowFFT::GetWindowFunction() const
     {
         return fWindowFunction;
+    }
+
+    inline UInt_t KTSlidingWindowFFT::GetWindowSize() const
+    {
+        return (UInt_t)fWindowFunction->GetSize();
     }
 
     inline void KTSlidingWindowFFT::SetTransformFlag(const string& flag)
@@ -157,9 +216,30 @@ namespace Katydid
         return;
     }
 
-    inline void KTSlidingWindowFFT::SetOverlap(Int_t nBins)
+    inline void KTSlidingWindowFFT::SetOverlap(UInt_t nBins)
     {
         fOverlap = nBins;
+        fUseOverlapFrac = kFALSE;
+        return;
+    }
+
+    inline void KTSlidingWindowFFT::SetOverlap(Double_t overlapTime)
+    {
+        this->SetOverlap((UInt_t)TMath::Nint(overlapTime / fWindowFunction->GetBinWidth()));
+        fUseOverlapFrac = kFALSE;
+        return;
+    }
+
+    inline void KTSlidingWindowFFT::SetOverlapFrac(Double_t overlapFrac)
+    {
+        fOverlapFrac = overlapFrac;
+        fUseOverlapFrac = kTRUE;
+        return;
+    }
+
+    inline void KTSlidingWindowFFT::SetUseOverlapFrac(Bool_t useOverlapFrac)
+    {
+        fUseOverlapFrac = useOverlapFrac;
         return;
     }
 
@@ -168,6 +248,17 @@ namespace Katydid
         fFreqBinWidth = bw;
         return;
     }
+
+    inline boost::signals2::connection KTSlidingWindowFFT::ConnectToFFTSignal(const SingleFFTSignal::slot_type &subscriber)
+    {
+        return fSingleFFTSignal.connect(subscriber);
+    }
+
+    inline boost::signals2::connection KTSlidingWindowFFT::ConnectToFFTSignal(Int_t group, const SingleFFTSignal::slot_type &subscriber)
+    {
+        return fSingleFFTSignal.connect(group, subscriber);
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTSLIDINGWINDOWFFT_HH_ */

@@ -14,10 +14,12 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 cbuild/
+ebuild/
 cmake_install.cmake
 *Dict.h
 *Dict.cxx
 Documentation/ReferenceGuide/Doxyfile
 Source/Main/ExtractEvents
 Source/Main/SimpleElectronHunt
+Source/Applications/Main/SimpleElectronHunt
 install_manifest.txt

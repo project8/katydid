@@ -29,9 +29,9 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Katydid
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
-   <div id="projectbrief">Project 8 Analysis Platform</div>
+   <div id="projectbrief">Project 8 Analysis Toolkit</div>
   </td>
   
   
@@ -94,6 +94,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="contents">
 <!-- doxytag: class="Katydid::KTSimpleFFT" --><!-- doxytag: inherits="Katydid::KTFFT" -->
+<p>A one-dimensional real-to-complex FFT class.  
+ <a href="class_katydid_1_1_k_t_simple_f_f_t.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>&gt;</code></p>
 
 <p>Inherits <a class="el" href="class_katydid_1_1_k_t_f_f_t.html">KTFFT</a>.</p>
@@ -103,39 +106,49 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8cdff1c38c774a02f294cfe5d3338c41">KTSimpleFFT</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#afc70b774c53488fa57d7cbec0ae31070">KTSimpleFFT</a> (Int_t timeSize)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#aef4646354f43743bc653129c36d0106a">KTSimpleFFT</a> (UInt_t timeSize)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a76428426a679e119a2343c3c129883f2">~KTSimpleFFT</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#ae41291cf9e9dc7bb8f003b22f3f0f142">InitializeFFT</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a9a6bb7abc0c3e544edaca2ea44017043">TakeData</a> (const <a class="el" href="class_katydid_1_1_k_t_event.html">KTEvent</a> *event)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a989f1bf1b7cb309a8ca78cf94392bd31">TakeData</a> (const TArray *data)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a26cd1ca797b17da835a5d2050c6dda2f">Transform</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a279d80b12a35ffb74ba19dd260e96f92">TakeData</a> (const <a class="el" href="class_katydid_1_1_k_t_event.html">KTEvent</a> *event)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#ac16d0fd6bc607953a0f55a9e535bac99">TakeData</a> (const vector&lt; Double_t &gt; &amp;data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a981ecce1d8834c642f31a6c130878e73">Transform</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a44488dbc9a5f2f857411de3f338b0498">CreatePowerSpectrumHistogram</a> (const std::string &amp;name) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual TH1D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a83fcd54cba3f451c50153cce00d40404">CreatePowerSpectrumHistogram</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_katydid_1_1_k_t_physical_array.html">KTPhysicalArray</a><br class="typebreak"/>
+&lt; 1, Double_t &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a284473fa4daadedf0165a521291835fc">CreatePowerSpectrumPhysArr</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#ae568f8c8070a6e595f7fdd0502d0925a">CreatePowerSpectrum</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9">GetTimeSize</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">GetFrequencySize</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a02bc7ce1fbb1d1dbe424d966a1808586">SetTimeSize</a> (Int_t nBins)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#afbcae862cced816e0295a830cdfae57e">GetTimeSize</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8f06637395e876188989247a7334708f">GetFrequencySize</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a5683e7d23b436413ea93c8462528cec3">SetTimeSize</a> (UInt_t nBins)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">const TFFTRealComplex *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">GetFFT</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">const string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">GetTransformFlag</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a839b53d811578de5263c62132e0235e3">GetTransformResult</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#ac2ecc92064031823c03af0c80cb658cc">GetTransformFlag</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">GetIsInitialized</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">GetIsDataReady</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">GetFreqBinWidth</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#adc967fd2d5942ccb6adad49df4add034">SetTransformFlag</a> (const string &amp;flag)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.  <a href="#adc967fd2d5942ccb6adad49df4add034"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a6544ce7adf957ab6290a724de5a0b406">SetTransformFlag</a> (const std::string &amp;flag)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.  <a href="#a6544ce7adf957ab6290a724de5a0b406"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">SetFreqBinWidth</a> (Double_t bw)</td></tr>
 <tr><td colspan="2"><h2><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a37dd26b788fd68f45c5d170ce5924ecd">ClassDef</a> (<a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html">KTSimpleFFT</a>, 1)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#ac4164853f07527344a6795b994381c1f">ExtractTransformResult</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a3666b67cef81e453409f7f89c5c2b540">ClassDef</a> (<a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html">KTSimpleFFT</a>, 2)</td></tr>
 <tr><td colspan="2"><h2><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">TFFTRealComplex *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#abfd8d5c2e97fa7b02373cd5b85bd04cd">fTransformResult</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a51c8161305b7260e6c4e6d2c8eeda9d5">fTransformFlag</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00026">26</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<div class="textblock"><p>A one-dimensional real-to-complex FFT class. </p>
+<dl class="author"><dt><b>Author:</b></dt><dd>N. S. Oblath</dd></dl>
+<p><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html" title="A one-dimensional real-to-complex FFT class.">KTSimpleFFT</a> performs a real-to-complex FFT on a one-dimensional array of doubles.</p>
+<p>The FFT is currently performed by ROOT's adaptation of FFTW. Specifically the TFFTRealComplex class. </p>
+
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00042">42</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 </div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a8cdff1c38c774a02f294cfe5d3338c41"></a><!-- doxytag: member="Katydid::KTSimpleFFT::KTSimpleFFT" ref="a8cdff1c38c774a02f294cfe5d3338c41" args="()" -->
 <div class="memitem">
@@ -151,18 +164,18 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00024">24</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00027">27</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="afc70b774c53488fa57d7cbec0ae31070"></a><!-- doxytag: member="Katydid::KTSimpleFFT::KTSimpleFFT" ref="afc70b774c53488fa57d7cbec0ae31070" args="(Int_t timeSize)" -->
+<a class="anchor" id="aef4646354f43743bc653129c36d0106a"></a><!-- doxytag: member="Katydid::KTSimpleFFT::KTSimpleFFT" ref="aef4646354f43743bc653129c36d0106a" args="(UInt_t timeSize)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html">KTSimpleFFT</a> </td>
           <td>(</td>
-          <td class="paramtype">Int_t&#160;</td>
+          <td class="paramtype">UInt_t&#160;</td>
           <td class="paramname"><em>timeSize</em></td><td>)</td>
           <td></td>
         </tr>
@@ -170,7 +183,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00034">34</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00038">38</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -188,12 +201,12 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00044">44</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00049">49</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a37dd26b788fd68f45c5d170ce5924ecd"></a><!-- doxytag: member="Katydid::KTSimpleFFT::ClassDef" ref="a37dd26b788fd68f45c5d170ce5924ecd" args="(KTSimpleFFT, 1)" -->
+<a class="anchor" id="a3666b67cef81e453409f7f89c5c2b540"></a><!-- doxytag: member="Katydid::KTSimpleFFT::ClassDef" ref="a3666b67cef81e453409f7f89c5c2b540" args="(KTSimpleFFT, 2)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -206,7 +219,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">1&#160;</td>
+          <td class="paramtype">2&#160;</td>
           <td class="paramname">&#160;</td>
         </tr>
         <tr>
@@ -234,7 +247,26 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00125">125</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00189">189</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a44488dbc9a5f2f857411de3f338b0498"></a><!-- doxytag: member="Katydid::KTSimpleFFT::CreatePowerSpectrumHistogram" ref="a44488dbc9a5f2f857411de3f338b0498" args="(const std::string &amp;name) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TH1D * CreatePowerSpectrumHistogram </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00168">168</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -252,7 +284,43 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00117">117</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00176">176</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a284473fa4daadedf0165a521291835fc"></a><!-- doxytag: member="Katydid::KTSimpleFFT::CreatePowerSpectrumPhysArr" ref="a284473fa4daadedf0165a521291835fc" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_katydid_1_1_k_t_physical_array.html">KTPhysicalArray</a>&lt; 1, Double_t &gt; * CreatePowerSpectrumPhysArr </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00181">181</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac4164853f07527344a6795b994381c1f"></a><!-- doxytag: member="Katydid::KTSimpleFFT::ExtractTransformResult" ref="ac4164853f07527344a6795b994381c1f" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ExtractTransformResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [protected]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00154">154</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -270,7 +338,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00093">93</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00117">117</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -288,16 +356,16 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00113">113</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00142">142</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a74c2a6df0a42391204a610f3dd7b3199"></a><!-- doxytag: member="Katydid::KTSimpleFFT::GetFrequencySize" ref="a74c2a6df0a42391204a610f3dd7b3199" args="() const " -->
+<a class="anchor" id="a8f06637395e876188989247a7334708f"></a><!-- doxytag: member="Katydid::KTSimpleFFT::GetFrequencySize" ref="a8f06637395e876188989247a7334708f" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Int_t GetFrequencySize </td>
+          <td class="memname">UInt_t GetFrequencySize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const<code> [inline, virtual]</code></td>
@@ -306,7 +374,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00079">79</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00103">103</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -324,7 +392,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00108">108</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00137">137</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -342,16 +410,16 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00103">103</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00132">132</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a90e2edfd3d77048f2e40106e9cce3cf9"></a><!-- doxytag: member="Katydid::KTSimpleFFT::GetTimeSize" ref="a90e2edfd3d77048f2e40106e9cce3cf9" args="() const " -->
+<a class="anchor" id="afbcae862cced816e0295a830cdfae57e"></a><!-- doxytag: member="Katydid::KTSimpleFFT::GetTimeSize" ref="afbcae862cced816e0295a830cdfae57e" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Int_t GetTimeSize </td>
+          <td class="memname">UInt_t GetTimeSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const<code> [inline, virtual]</code></td>
@@ -360,16 +428,16 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00074">74</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00098">98</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a31602d157d6da4b928e1f3dd5a28a587"></a><!-- doxytag: member="Katydid::KTSimpleFFT::GetTransformFlag" ref="a31602d157d6da4b928e1f3dd5a28a587" args="() const " -->
+<a class="anchor" id="ac2ecc92064031823c03af0c80cb658cc"></a><!-- doxytag: member="Katydid::KTSimpleFFT::GetTransformFlag" ref="ac2ecc92064031823c03af0c80cb658cc" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const string &amp; GetTransformFlag </td>
+          <td class="memname">const std::string &amp; GetTransformFlag </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const<code> [inline]</code></td>
@@ -378,7 +446,25 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00098">98</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00127">127</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a839b53d811578de5263c62132e0235e3"></a><!-- doxytag: member="Katydid::KTSimpleFFT::GetTransformResult" ref="a839b53d811578de5263c62132e0235e3" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a> * GetTransformResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00122">122</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -396,7 +482,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00049">49</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00055">55</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -415,18 +501,18 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00126">126</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00155">155</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a02bc7ce1fbb1d1dbe424d966a1808586"></a><!-- doxytag: member="Katydid::KTSimpleFFT::SetTimeSize" ref="a02bc7ce1fbb1d1dbe424d966a1808586" args="(Int_t nBins)" -->
+<a class="anchor" id="a5683e7d23b436413ea93c8462528cec3"></a><!-- doxytag: member="Katydid::KTSimpleFFT::SetTimeSize" ref="a5683e7d23b436413ea93c8462528cec3" args="(UInt_t nBins)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void SetTimeSize </td>
           <td>(</td>
-          <td class="paramtype">Int_t&#160;</td>
+          <td class="paramtype">UInt_t&#160;</td>
           <td class="paramname"><em>nBins</em></td><td>)</td>
           <td><code> [inline, virtual]</code></td>
         </tr>
@@ -435,18 +521,18 @@ Protected Attributes</h2></td></tr>
 <div class="memdoc">
 <p>note: SetTimeSize creates a new fTransform. It also sets fIsInitialized and fIsDataReady to kFALSE. </p>
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00084">84</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00108">108</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="adc967fd2d5942ccb6adad49df4add034"></a><!-- doxytag: member="Katydid::KTSimpleFFT::SetTransformFlag" ref="adc967fd2d5942ccb6adad49df4add034" args="(const string &amp;flag)" -->
+<a class="anchor" id="a6544ce7adf957ab6290a724de5a0b406"></a><!-- doxytag: member="Katydid::KTSimpleFFT::SetTransformFlag" ref="a6544ce7adf957ab6290a724de5a0b406" args="(const std::string &amp;flag)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void SetTransformFlag </td>
           <td>(</td>
-          <td class="paramtype">const string &amp;&#160;</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>flag</em></td><td>)</td>
           <td><code> [inline]</code></td>
         </tr>
@@ -456,16 +542,16 @@ Protected Attributes</h2></td></tr>
 
 <p>note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE. </p>
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00118">118</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00147">147</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a9a6bb7abc0c3e544edaca2ea44017043"></a><!-- doxytag: member="Katydid::KTSimpleFFT::TakeData" ref="a9a6bb7abc0c3e544edaca2ea44017043" args="(const KTEvent *event)" -->
+<a class="anchor" id="a279d80b12a35ffb74ba19dd260e96f92"></a><!-- doxytag: member="Katydid::KTSimpleFFT::TakeData" ref="a279d80b12a35ffb74ba19dd260e96f92" args="(const KTEvent *event)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void TakeData </td>
+          <td class="memname">Bool_t TakeData </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="class_katydid_1_1_k_t_event.html">KTEvent</a> *&#160;</td>
           <td class="paramname"><em>event</em></td><td>)</td>
@@ -475,20 +561,20 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#a2565ff2f9d16f0cd01163e3fa5022143">KTFFT</a>.</p>
+<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#a963cb670de98da742e89b231fe974c21">KTFFT</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00056">56</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00062">62</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a989f1bf1b7cb309a8ca78cf94392bd31"></a><!-- doxytag: member="Katydid::KTSimpleFFT::TakeData" ref="a989f1bf1b7cb309a8ca78cf94392bd31" args="(const TArray *data)" -->
+<a class="anchor" id="ac16d0fd6bc607953a0f55a9e535bac99"></a><!-- doxytag: member="Katydid::KTSimpleFFT::TakeData" ref="ac16d0fd6bc607953a0f55a9e535bac99" args="(const vector&lt; Double_t &gt; &amp;data)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void TakeData </td>
+          <td class="memname">Bool_t TakeData </td>
           <td>(</td>
-          <td class="paramtype">const TArray *&#160;</td>
+          <td class="paramtype">const vector&lt; Double_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>data</em></td><td>)</td>
           <td><code> [virtual]</code></td>
         </tr>
@@ -496,18 +582,18 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#afeb46b0d6f6190aa132474bf24ff3cb3">KTFFT</a>.</p>
+<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#aa4b62538563de8b9ed620be376c25b2d">KTFFT</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00075">75</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00087">87</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a26cd1ca797b17da835a5d2050c6dda2f"></a><!-- doxytag: member="Katydid::KTSimpleFFT::Transform" ref="a26cd1ca797b17da835a5d2050c6dda2f" args="()" -->
+<a class="anchor" id="a981ecce1d8834c642f31a6c130878e73"></a><!-- doxytag: member="Katydid::KTSimpleFFT::Transform" ref="a981ecce1d8834c642f31a6c130878e73" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Transform </td>
+          <td class="memname">Bool_t Transform </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td><code> [virtual]</code></td>
@@ -516,9 +602,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#a9a91ab8ec82c96ff9da02976cba2e59f">KTFFT</a>.</p>
+<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#ad339cbe279c45cb521ea7ac9538cd7b1">KTFFT</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00097">97</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8cc_source.html#l00133">133</a> of file <a class="el" href="_k_t_simple_f_f_t_8cc_source.html">KTSimpleFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -534,7 +620,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00069">69</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00092">92</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -549,7 +635,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00067">67</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00090">90</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -564,7 +650,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00066">66</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00089">89</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -579,22 +665,37 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00062">62</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00084">84</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a273eccd11b2d97fcee4605c8d6778969"></a><!-- doxytag: member="Katydid::KTSimpleFFT::fTransformFlag" ref="a273eccd11b2d97fcee4605c8d6778969" args="" -->
+<a class="anchor" id="a51c8161305b7260e6c4e6d2c8eeda9d5"></a><!-- doxytag: member="Katydid::KTSimpleFFT::fTransformFlag" ref="a51c8161305b7260e6c4e6d2c8eeda9d5" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">string <a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a><code> [protected]</code></td>
+          <td class="memname">std::string <a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#a51c8161305b7260e6c4e6d2c8eeda9d5">fTransformFlag</a><code> [protected]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00064">64</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00087">87</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abfd8d5c2e97fa7b02373cd5b85bd04cd"></a><!-- doxytag: member="Katydid::KTSimpleFFT::fTransformResult" ref="abfd8d5c2e97fa7b02373cd5b85bd04cd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_katydid_1_1_k_t_complex_vector.html">KTComplexVector</a>* <a class="el" href="class_katydid_1_1_k_t_simple_f_f_t.html#abfd8d5c2e97fa7b02373cd5b85bd04cd">fTransformResult</a><code> [protected]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_simple_f_f_t_8hh_source.html#l00085">85</a> of file <a class="el" href="_k_t_simple_f_f_t_8hh_source.html">KTSimpleFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -608,7 +709,7 @@ Protected Attributes</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -620,7 +721,7 @@ Protected Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 15 2011 15:31:39 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Feb 2 2012 11:36:02 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

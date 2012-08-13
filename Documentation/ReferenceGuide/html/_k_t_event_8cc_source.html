@@ -29,9 +29,9 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Katydid
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
-   <div id="projectbrief">Project 8 Analysis Platform</div>
+   <div id="projectbrief">Project 8 Analysis Toolkit</div>
   </td>
   
   
@@ -87,120 +87,128 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00005"></a>00005 <span class="comment"> *      Author: nsoblath</span>
 <a name="l00006"></a>00006 <span class="comment"> */</span>
 <a name="l00007"></a>00007 
-<a name="l00008"></a>00008 <span class="preprocessor">#include &quot;<a class="code" href="_k_t_event_8hh.html">KTEvent.hh</a>&quot;</span>
+<a name="l00008"></a>00008 <span class="preprocessor">#include &quot;<a class="code" href="_k_t_event_8hh.html" title="Contains KTEvent.">KTEvent.hh</a>&quot;</span>
 <a name="l00009"></a>00009 
-<a name="l00010"></a>00010 <span class="preprocessor">#include &quot;<a class="code" href="_k_t_array_u_c_8hh.html">KTArrayUC.hh</a>&quot;</span>
+<a name="l00010"></a>00010 <span class="preprocessor">#include &quot;TH1.h&quot;</span>
 <a name="l00011"></a>00011 
-<a name="l00012"></a>00012 <span class="preprocessor">#include &quot;TH1.h&quot;</span>
-<a name="l00013"></a>00013 <span class="preprocessor">#include &quot;TMath.h&quot;</span>
-<a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <a class="code" href="_k_t_egg_8cc.html#a76d24b430ff43d1db8620accb921e2e5">ClassImp</a>(<a class="code" href="class_katydid_1_1_k_t_event.html">Katydid::KTEvent</a>);
-<a name="l00016"></a>00016 
-<a name="l00017"></a>00017 <span class="keyword">namespace </span>Katydid
-<a name="l00018"></a>00018 {
-<a name="l00019"></a>00019 
-<a name="l00020"></a><a class="code" href="class_katydid_1_1_k_t_event.html#aa3bfc378f4afdde89eeb1a1ec8baa044">00020</a>     <a class="code" href="class_katydid_1_1_k_t_event.html#aa3bfc378f4afdde89eeb1a1ec8baa044">KTEvent::KTEvent</a>() :
-<a name="l00021"></a>00021                 fSampleRate(0.),
-<a name="l00022"></a>00022                 fRecordLength(0.),
-<a name="l00023"></a>00023                 fBinWidth(1.),
-<a name="l00024"></a>00024                 fTimeStamp(NULL),
-<a name="l00025"></a>00025                 fFrameID(NULL),
-<a name="l00026"></a>00026                 fRecord(NULL)
-<a name="l00027"></a>00027     {
-<a name="l00028"></a>00028     }
-<a name="l00029"></a>00029 
-<a name="l00030"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a22ee0e88ec4c2d05e15de1cb58616fea">00030</a>     <a class="code" href="class_katydid_1_1_k_t_event.html#a22ee0e88ec4c2d05e15de1cb58616fea">KTEvent::~KTEvent</a>()
-<a name="l00031"></a>00031     {
-<a name="l00032"></a>00032         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_event.html#af799c38702c8c6b74c39b1d180ad989d">fTimeStamp</a>;
-<a name="l00033"></a>00033         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a8f95830ff695b32958e13a6f404407d9">fFrameID</a>;
-<a name="l00034"></a>00034         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a5421e271f79a54587ec2001a1c82fc0c">fRecord</a>;
-<a name="l00035"></a>00035     }
-<a name="l00036"></a>00036 
-<a name="l00037"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a72bc0158672132d4430bc89dede30bea">00037</a>     UInt_t <a class="code" href="class_katydid_1_1_k_t_event.html#a72bc0158672132d4430bc89dede30bea">KTEvent::GetADCAtTime</a>(Double_t time)<span class="keyword"> const</span>
-<a name="l00038"></a>00038 <span class="keyword">    </span>{
-<a name="l00039"></a>00039         <span class="keywordflow">return</span> this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a9ad9503ccd635d75c8e0068657b9fb81">GetADCAtBin</a>(TMath::Nint(time / <a class="code" href="class_katydid_1_1_k_t_event.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>));
-<a name="l00040"></a>00040     }
-<a name="l00041"></a>00041 
-<a name="l00042"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a9ad9503ccd635d75c8e0068657b9fb81">00042</a>     UInt_t <a class="code" href="class_katydid_1_1_k_t_event.html#a9ad9503ccd635d75c8e0068657b9fb81">KTEvent::GetADCAtBin</a>(Int_t bin)<span class="keyword"> const</span>
-<a name="l00043"></a>00043 <span class="keyword">    </span>{
-<a name="l00044"></a>00044         <span class="keywordflow">return</span> (UInt_t)(*fRecord)[bin];
-<a name="l00045"></a>00045     }
-<a name="l00046"></a>00046 
-<a name="l00047"></a><a class="code" href="class_katydid_1_1_k_t_event.html#af6a05134b98cdc49625fa56170a86ab5">00047</a>     TH1I* <a class="code" href="class_katydid_1_1_k_t_event.html#af6a05134b98cdc49625fa56170a86ab5">KTEvent::CreateAmplitudeDistributionHistogram</a>()<span class="keyword"> const</span>
-<a name="l00048"></a>00048 <span class="keyword">    </span>{
-<a name="l00049"></a>00049         TH1I* hist = <span class="keyword">new</span> TH1I(<span class="stringliteral">&quot;hRecord&quot;</span>, <span class="stringliteral">&quot;Event Record&quot;</span>, 256, -0.5, 255.5);
-<a name="l00050"></a>00050         <span class="keywordflow">for</span> (Int_t iBin=0; iBin&lt;<a class="code" href="class_katydid_1_1_k_t_event.html#a5421e271f79a54587ec2001a1c82fc0c">fRecord</a>-&gt;GetSize(); iBin++)
-<a name="l00051"></a>00051         {
-<a name="l00052"></a>00052             hist-&gt;Fill((Double_t)(*<a class="code" href="class_katydid_1_1_k_t_event.html#a5421e271f79a54587ec2001a1c82fc0c">fRecord</a>)[iBin]);
-<a name="l00053"></a>00053         }
-<a name="l00054"></a>00054         hist-&gt;SetXTitle(<span class="stringliteral">&quot;ADC Bin&quot;</span>);
-<a name="l00055"></a>00055         <span class="keywordflow">return</span> hist;
-<a name="l00056"></a>00056     }
-<a name="l00057"></a>00057 
-<a name="l00058"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a9c32ac53ffdc454eb4c5d4d22140fa18">00058</a>     <span class="keyword">const</span> <a class="code" href="class_k_t_array_u_c.html">KTArrayUC</a>* <a class="code" href="class_katydid_1_1_k_t_event.html#a9c32ac53ffdc454eb4c5d4d22140fa18">KTEvent::GetFrameID</a>()<span class="keyword"> const</span>
-<a name="l00059"></a>00059 <span class="keyword">    </span>{
-<a name="l00060"></a>00060         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a8f95830ff695b32958e13a6f404407d9">fFrameID</a>;
-<a name="l00061"></a>00061     }
-<a name="l00062"></a>00062 
-<a name="l00063"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a3ab8133e3653b48fd946cbcc847fbe7a">00063</a>     <span class="keyword">const</span> <a class="code" href="class_k_t_array_u_c.html">KTArrayUC</a>* <a class="code" href="class_katydid_1_1_k_t_event.html#a3ab8133e3653b48fd946cbcc847fbe7a">KTEvent::GetRecord</a>()<span class="keyword"> const</span>
-<a name="l00064"></a>00064 <span class="keyword">    </span>{
-<a name="l00065"></a>00065         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a5421e271f79a54587ec2001a1c82fc0c">fRecord</a>;
-<a name="l00066"></a>00066     }
-<a name="l00067"></a>00067 
-<a name="l00068"></a><a class="code" href="class_katydid_1_1_k_t_event.html#aa18edbf7bad1114c3706c91af484a02f">00068</a>     Double_t <a class="code" href="class_katydid_1_1_k_t_event.html#aa18edbf7bad1114c3706c91af484a02f">KTEvent::GetRecordLength</a>()<span class="keyword"> const</span>
-<a name="l00069"></a>00069 <span class="keyword">    </span>{
-<a name="l00070"></a>00070         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a04f901f77310b3e3a9b88a581a4b91ef">fRecordLength</a>;
-<a name="l00071"></a>00071     }
-<a name="l00072"></a>00072 
-<a name="l00073"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a5a582b49d492e5c3b52de2bb5e33026d">00073</a>     Double_t <a class="code" href="class_katydid_1_1_k_t_event.html#a5a582b49d492e5c3b52de2bb5e33026d">KTEvent::GetSampleRate</a>()<span class="keyword"> const</span>
-<a name="l00074"></a>00074 <span class="keyword">    </span>{
-<a name="l00075"></a>00075         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a92ea0f9ec1c7852d854aa973d2ff4109">fSampleRate</a>;
-<a name="l00076"></a>00076     }
-<a name="l00077"></a>00077 
-<a name="l00078"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a298eccc0db48376ec822073ce8ac4791">00078</a>     <span class="keyword">const</span> <a class="code" href="class_k_t_array_u_c.html">KTArrayUC</a>* <a class="code" href="class_katydid_1_1_k_t_event.html#a298eccc0db48376ec822073ce8ac4791">KTEvent::GetTimeStamp</a>()<span class="keyword"> const</span>
-<a name="l00079"></a>00079 <span class="keyword">    </span>{
-<a name="l00080"></a>00080         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#af799c38702c8c6b74c39b1d180ad989d">fTimeStamp</a>;
-<a name="l00081"></a>00081     }
-<a name="l00082"></a>00082 
-<a name="l00083"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a715a6ace1cb0ce5f127ae79ddb152b92">00083</a>     Double_t <a class="code" href="class_katydid_1_1_k_t_event.html#a715a6ace1cb0ce5f127ae79ddb152b92">KTEvent::GetBinWidth</a>()<span class="keyword"> const</span>
-<a name="l00084"></a>00084 <span class="keyword">    </span>{
-<a name="l00085"></a>00085         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>;
-<a name="l00086"></a>00086     }
-<a name="l00087"></a>00087 
-<a name="l00088"></a><a class="code" href="class_katydid_1_1_k_t_event.html#ade1b5c7825c27d11d429c4b903402caa">00088</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#ade1b5c7825c27d11d429c4b903402caa">KTEvent::SetFrameID</a>(<a class="code" href="class_k_t_array_u_c.html">KTArrayUC</a>* frameID)
-<a name="l00089"></a>00089     {
-<a name="l00090"></a>00090         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a8f95830ff695b32958e13a6f404407d9">fFrameID</a>;
-<a name="l00091"></a>00091         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a8f95830ff695b32958e13a6f404407d9">fFrameID</a> = frameID;
+<a name="l00012"></a>00012 <span class="preprocessor">#include &lt;iostream&gt;</span>
+<a name="l00013"></a>00013 
+<a name="l00014"></a>00014 <a class="code" href="_k_t_egg_8cc.html#a76d24b430ff43d1db8620accb921e2e5">ClassImp</a>(<a class="code" href="class_katydid_1_1_k_t_event.html">Katydid::KTEvent</a>);
+<a name="l00015"></a>00015 
+<a name="l00016"></a>00016 <span class="keyword">namespace </span>Katydid
+<a name="l00017"></a>00017 {
+<a name="l00018"></a>00018 
+<a name="l00019"></a><a class="code" href="class_katydid_1_1_k_t_event.html#aa3bfc378f4afdde89eeb1a1ec8baa044">00019</a>     <a class="code" href="class_katydid_1_1_k_t_event.html#aa3bfc378f4afdde89eeb1a1ec8baa044">KTEvent::KTEvent</a>() :
+<a name="l00020"></a>00020                 fSampleRate(0.),
+<a name="l00021"></a>00021                 fRecordLength(0.),
+<a name="l00022"></a>00022                 fBinWidth(1.),
+<a name="l00023"></a>00023                 fTimeStamp(),
+<a name="l00024"></a>00024                 fFrameID(),
+<a name="l00025"></a>00025                 fRecord()
+<a name="l00026"></a>00026     {
+<a name="l00027"></a>00027     }
+<a name="l00028"></a>00028 
+<a name="l00029"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a22ee0e88ec4c2d05e15de1cb58616fea">00029</a>     <a class="code" href="class_katydid_1_1_k_t_event.html#a22ee0e88ec4c2d05e15de1cb58616fea">KTEvent::~KTEvent</a>()
+<a name="l00030"></a>00030     {
+<a name="l00031"></a>00031     }
+<a name="l00032"></a>00032     <span class="comment">/*</span>
+<a name="l00033"></a>00033 <span class="comment">    UInt_t KTEvent::GetADCAtTime(Double_t time) const</span>
+<a name="l00034"></a>00034 <span class="comment">    {</span>
+<a name="l00035"></a>00035 <span class="comment">        return this-&gt;GetADCAtBin(TMath::Nint(time / fBinWidth));</span>
+<a name="l00036"></a>00036 <span class="comment">    }</span>
+<a name="l00037"></a>00037 <span class="comment"></span>
+<a name="l00038"></a>00038 <span class="comment">    UInt_t KTEvent::GetADCAtBin(Int_t bin) const</span>
+<a name="l00039"></a>00039 <span class="comment">    {</span>
+<a name="l00040"></a>00040 <span class="comment">        return fRecord[bin];</span>
+<a name="l00041"></a>00041 <span class="comment">    }</span>
+<a name="l00042"></a>00042 <span class="comment">    */</span>
+<a name="l00043"></a><a class="code" href="class_katydid_1_1_k_t_event.html#af6a05134b98cdc49625fa56170a86ab5">00043</a>     TH1I* <a class="code" href="class_katydid_1_1_k_t_event.html#af6a05134b98cdc49625fa56170a86ab5">KTEvent::CreateAmplitudeDistributionHistogram</a>()<span class="keyword"> const</span>
+<a name="l00044"></a>00044 <span class="keyword">    </span>{
+<a name="l00045"></a>00045         TH1I* hist = <span class="keyword">new</span> TH1I(<span class="stringliteral">&quot;hRecord&quot;</span>, <span class="stringliteral">&quot;Event Record&quot;</span>, 256, -0.5, 255.5);
+<a name="l00046"></a>00046         <span class="keywordflow">for</span> (<span class="keywordtype">int</span> iBin=0; iBin&lt;<a class="code" href="class_katydid_1_1_k_t_event.html#ad548a8a073ed2434757a3232e5113e4e">fRecord</a>.size(); iBin++)
+<a name="l00047"></a>00047         {
+<a name="l00048"></a>00048             hist-&gt;Fill((Double_t)(<a class="code" href="class_katydid_1_1_k_t_event.html#ad548a8a073ed2434757a3232e5113e4e">fRecord</a>[iBin]));
+<a name="l00049"></a>00049         }
+<a name="l00050"></a>00050         hist-&gt;SetXTitle(<span class="stringliteral">&quot;ADC Bin&quot;</span>);
+<a name="l00051"></a>00051         <span class="keywordflow">return</span> hist;
+<a name="l00052"></a>00052     }
+<a name="l00053"></a>00053 
+<a name="l00054"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a194380c4ff642e3bad327696d2f6f018">00054</a>     <span class="keyword">const</span> vector&lt; UInt_t &gt;&amp; <a class="code" href="class_katydid_1_1_k_t_event.html#a194380c4ff642e3bad327696d2f6f018">KTEvent::GetFrameID</a>()<span class="keyword"> const</span>
+<a name="l00055"></a>00055 <span class="keyword">    </span>{
+<a name="l00056"></a>00056         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a2bc5de08cb0648dc361cdbcf214db7f6">fFrameID</a>;
+<a name="l00057"></a>00057     }
+<a name="l00058"></a>00058 
+<a name="l00059"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a8734395bfbc3b69c606af294ee94db96">00059</a>     <span class="keyword">const</span> vector&lt; UInt_t &gt;&amp; <a class="code" href="class_katydid_1_1_k_t_event.html#a8734395bfbc3b69c606af294ee94db96">KTEvent::GetRecord</a>()<span class="keyword"> const</span>
+<a name="l00060"></a>00060 <span class="keyword">    </span>{
+<a name="l00061"></a>00061         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#ad548a8a073ed2434757a3232e5113e4e">fRecord</a>;
+<a name="l00062"></a>00062     }
+<a name="l00063"></a>00063 
+<a name="l00064"></a><a class="code" href="class_katydid_1_1_k_t_event.html#aa18edbf7bad1114c3706c91af484a02f">00064</a>     Double_t <a class="code" href="class_katydid_1_1_k_t_event.html#aa18edbf7bad1114c3706c91af484a02f">KTEvent::GetRecordLength</a>()<span class="keyword"> const</span>
+<a name="l00065"></a>00065 <span class="keyword">    </span>{
+<a name="l00066"></a>00066         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a04f901f77310b3e3a9b88a581a4b91ef">fRecordLength</a>;
+<a name="l00067"></a>00067     }
+<a name="l00068"></a>00068 
+<a name="l00069"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a5a582b49d492e5c3b52de2bb5e33026d">00069</a>     Double_t <a class="code" href="class_katydid_1_1_k_t_event.html#a5a582b49d492e5c3b52de2bb5e33026d">KTEvent::GetSampleRate</a>()<span class="keyword"> const</span>
+<a name="l00070"></a>00070 <span class="keyword">    </span>{
+<a name="l00071"></a>00071         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a92ea0f9ec1c7852d854aa973d2ff4109">fSampleRate</a>;
+<a name="l00072"></a>00072     }
+<a name="l00073"></a>00073 
+<a name="l00074"></a><a class="code" href="class_katydid_1_1_k_t_event.html#adc0f4eae7dba06a64549961774420645">00074</a>     <span class="keyword">const</span> vector&lt; UInt_t &gt;&amp; <a class="code" href="class_katydid_1_1_k_t_event.html#adc0f4eae7dba06a64549961774420645">KTEvent::GetTimeStamp</a>()<span class="keyword"> const</span>
+<a name="l00075"></a>00075 <span class="keyword">    </span>{
+<a name="l00076"></a>00076         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#afb991b2885321011e32f08c1ce758ed0">fTimeStamp</a>;
+<a name="l00077"></a>00077     }
+<a name="l00078"></a>00078 
+<a name="l00079"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a715a6ace1cb0ce5f127ae79ddb152b92">00079</a>     Double_t <a class="code" href="class_katydid_1_1_k_t_event.html#a715a6ace1cb0ce5f127ae79ddb152b92">KTEvent::GetBinWidth</a>()<span class="keyword"> const</span>
+<a name="l00080"></a>00080 <span class="keyword">    </span>{
+<a name="l00081"></a>00081         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>;
+<a name="l00082"></a>00082     }
+<a name="l00083"></a>00083 
+<a name="l00084"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a9d7f0eacfa07d4bc6c869d7135f72fca">00084</a>     <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a9d7f0eacfa07d4bc6c869d7135f72fca">KTEvent::GetRecordSize</a>()<span class="keyword"> const</span>
+<a name="l00085"></a>00085 <span class="keyword">    </span>{
+<a name="l00086"></a>00086         <span class="keywordflow">return</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)<a class="code" href="class_katydid_1_1_k_t_event.html#ad548a8a073ed2434757a3232e5113e4e">fRecord</a>.size();
+<a name="l00087"></a>00087     }
+<a name="l00088"></a>00088 
+<a name="l00089"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a2ab6758fa13c9c43433cc69622623e5a">00089</a>     UInt_t <a class="code" href="class_katydid_1_1_k_t_event.html#a2ab6758fa13c9c43433cc69622623e5a">KTEvent::GetRecordAt</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> iPoint)<span class="keyword"> const</span>
+<a name="l00090"></a>00090 <span class="keyword">    </span>{
+<a name="l00091"></a>00091         <span class="keywordflow">return</span> <a class="code" href="class_katydid_1_1_k_t_event.html#ad548a8a073ed2434757a3232e5113e4e">fRecord</a>[iPoint];
 <a name="l00092"></a>00092     }
 <a name="l00093"></a>00093 
-<a name="l00094"></a><a class="code" href="class_katydid_1_1_k_t_event.html#aebc12c1a3494e18e459f06ca38936cd6">00094</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#aebc12c1a3494e18e459f06ca38936cd6">KTEvent::SetRecord</a>(<a class="code" href="class_k_t_array_u_c.html">KTArrayUC</a>* record)
-<a name="l00095"></a>00095     {
-<a name="l00096"></a>00096         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a8f95830ff695b32958e13a6f404407d9">fFrameID</a>;
-<a name="l00097"></a>00097         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a5421e271f79a54587ec2001a1c82fc0c">fRecord</a> = record;
-<a name="l00098"></a>00098     }
-<a name="l00099"></a>00099 
-<a name="l00100"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a1d96d622fffa38dcd5a796f78f919e26">00100</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a1d96d622fffa38dcd5a796f78f919e26">KTEvent::SetRecordLength</a>(Double_t recordLength)
-<a name="l00101"></a>00101     {
-<a name="l00102"></a>00102         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a04f901f77310b3e3a9b88a581a4b91ef">fRecordLength</a> = recordLength;
-<a name="l00103"></a>00103     }
-<a name="l00104"></a>00104 
-<a name="l00105"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a08d3a8287310cf9b5056dc2ebc64be40">00105</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a08d3a8287310cf9b5056dc2ebc64be40">KTEvent::SetSampleRate</a>(Double_t sampleRate)
-<a name="l00106"></a>00106     {
-<a name="l00107"></a>00107         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a92ea0f9ec1c7852d854aa973d2ff4109">fSampleRate</a> = sampleRate;
-<a name="l00108"></a>00108     }
-<a name="l00109"></a>00109 
-<a name="l00110"></a><a class="code" href="class_katydid_1_1_k_t_event.html#aac586f9448c446ff9f81009f3cc458bc">00110</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#aac586f9448c446ff9f81009f3cc458bc">KTEvent::SetBinWidth</a>(Double_t binWidth)
-<a name="l00111"></a>00111     {
-<a name="l00112"></a>00112         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a> = binWidth;
-<a name="l00113"></a>00113     }
-<a name="l00114"></a>00114 
-<a name="l00115"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a4769eb451c6434b48ddf63ea1d09a31d">00115</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a4769eb451c6434b48ddf63ea1d09a31d">KTEvent::SetTimeStamp</a>(<a class="code" href="class_k_t_array_u_c.html">KTArrayUC</a>* timeStamp)
-<a name="l00116"></a>00116     {
-<a name="l00117"></a>00117         <span class="keyword">delete</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a8f95830ff695b32958e13a6f404407d9">fFrameID</a>;
-<a name="l00118"></a>00118         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#af799c38702c8c6b74c39b1d180ad989d">fTimeStamp</a> = timeStamp;
-<a name="l00119"></a>00119     }
-<a name="l00120"></a>00120 
-<a name="l00121"></a>00121 } <span class="comment">/* namespace Katydid */</span>
+<a name="l00094"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a59495c1be052fb928bd657a5626011dd">00094</a>     UInt_t <a class="code" href="class_katydid_1_1_k_t_event.html#a59495c1be052fb928bd657a5626011dd">KTEvent::GetRecordAtTime</a>(Double_t time)<span class="keyword"> const</span>
+<a name="l00095"></a>00095 <span class="keyword">    </span>{
+<a name="l00096"></a>00096         <span class="keywordflow">return</span> this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a2ab6758fa13c9c43433cc69622623e5a">GetRecordAt</a>((<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)(TMath::Nint(TMath::Max(0., time) / <a class="code" href="class_katydid_1_1_k_t_event.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a>)));
+<a name="l00097"></a>00097     }
+<a name="l00098"></a>00098 
+<a name="l00099"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a8be5261a002a4ba9392f0ad7f91ad9d2">00099</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a8be5261a002a4ba9392f0ad7f91ad9d2">KTEvent::SetFrameID</a>(<span class="keyword">const</span> vector&lt; UInt_t &gt;&amp; frameID)
+<a name="l00100"></a>00100     {
+<a name="l00101"></a>00101         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a2bc5de08cb0648dc361cdbcf214db7f6">fFrameID</a> = frameID;
+<a name="l00102"></a>00102     }
+<a name="l00103"></a>00103 
+<a name="l00104"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a4c0fd81fed9336d7b7c65486dfc89d2b">00104</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a4c0fd81fed9336d7b7c65486dfc89d2b">KTEvent::SetRecord</a>(<span class="keyword">const</span> vector&lt; UInt_t &gt;&amp; record)
+<a name="l00105"></a>00105     {
+<a name="l00106"></a>00106         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#ad548a8a073ed2434757a3232e5113e4e">fRecord</a> = record;
+<a name="l00107"></a>00107     }
+<a name="l00108"></a>00108 
+<a name="l00109"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a1d96d622fffa38dcd5a796f78f919e26">00109</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a1d96d622fffa38dcd5a796f78f919e26">KTEvent::SetRecordLength</a>(Double_t recordLength)
+<a name="l00110"></a>00110     {
+<a name="l00111"></a>00111         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a04f901f77310b3e3a9b88a581a4b91ef">fRecordLength</a> = recordLength;
+<a name="l00112"></a>00112     }
+<a name="l00113"></a>00113 
+<a name="l00114"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a08d3a8287310cf9b5056dc2ebc64be40">00114</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a08d3a8287310cf9b5056dc2ebc64be40">KTEvent::SetSampleRate</a>(Double_t sampleRate)
+<a name="l00115"></a>00115     {
+<a name="l00116"></a>00116         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a92ea0f9ec1c7852d854aa973d2ff4109">fSampleRate</a> = sampleRate;
+<a name="l00117"></a>00117     }
+<a name="l00118"></a>00118 
+<a name="l00119"></a><a class="code" href="class_katydid_1_1_k_t_event.html#aac586f9448c446ff9f81009f3cc458bc">00119</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#aac586f9448c446ff9f81009f3cc458bc" title="time is in seconds and &gt;= 0">KTEvent::SetBinWidth</a>(Double_t binWidth)
+<a name="l00120"></a>00120     {
+<a name="l00121"></a>00121         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#a670632e19ecdecfd8acd9d07e466b475">fBinWidth</a> = binWidth;
+<a name="l00122"></a>00122     }
+<a name="l00123"></a>00123 
+<a name="l00124"></a><a class="code" href="class_katydid_1_1_k_t_event.html#a55b1c16d97911aa3647bdb7e2b0ebd63">00124</a>     <span class="keywordtype">void</span> <a class="code" href="class_katydid_1_1_k_t_event.html#a55b1c16d97911aa3647bdb7e2b0ebd63">KTEvent::SetTimeStamp</a>(<span class="keyword">const</span> vector&lt; UInt_t &gt;&amp; timeStamp)
+<a name="l00125"></a>00125     {
+<a name="l00126"></a>00126         this-&gt;<a class="code" href="class_katydid_1_1_k_t_event.html#afb991b2885321011e32f08c1ce758ed0">fTimeStamp</a> = timeStamp;
+<a name="l00127"></a>00127     }
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129 } <span class="comment">/* namespace Katydid */</span>
 </pre></div></div>
 </div>
 <!-- window showing the filter options -->
@@ -208,7 +216,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -220,7 +228,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 15 2011 15:31:39 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Feb 2 2012 11:36:01 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

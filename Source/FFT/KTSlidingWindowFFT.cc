@@ -7,32 +7,36 @@
 
 #include "KTSlidingWindowFFT.hh"
 
-#include "KTArrayUC.hh"
+//#include "KTArrayUC.hh"
 #include "KTEvent.hh"
-#include "KTPowerSpectrum.hh"
+#include "KTPhysicalArray.hh"
+//#include "KTPowerSpectrum.hh"
 #include "KTWindowFunction.hh"
 
-#include "TArray.h"
 #include "TH2D.h"
-#include "TMath.h"
 
 #include <iostream>
 
-ClassImp(Katydid::KTSlidingWindowFFT);
+using std::string;
+using std::vector;
 
 namespace Katydid
 {
 
     KTSlidingWindowFFT::KTSlidingWindowFFT() :
             KTFFT(),
-            fTransform(NULL),
+            fTransform(new TFFTRealComplex()),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
             fIsDataReady(kFALSE),
+            fFreqBinWidth(0.),
             fOverlap(0),
+            fOverlapFrac(0.),
+            fUseOverlapFrac(kFALSE),
             fWindowFunction(NULL),
-            fTimeData(NULL),
-            fPowerSpectra()
+            fTimeData(),
+            fPowerSpectra(),
+            fSingleFFTSignal()
     {
     }
 
@@ -40,12 +44,7 @@ namespace Katydid
     {
         delete fTransform;
         delete fWindowFunction;
-        delete fTimeData;
-        while (! fPowerSpectra.empty())
-        {
-            delete fPowerSpectra.back();
-            fPowerSpectra.pop_back();
-        }
+        ClearPowerSpectra();
     }
 
     void KTSlidingWindowFFT::InitializeFFT()
@@ -55,27 +54,52 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::TakeData(const KTEvent* event)
+    Bool_t KTSlidingWindowFFT::TakeData(const KTEvent* event)
     {
         if (! fIsInitialized)
         {
             std::cerr << "Warning from KTSlidingWindowFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
             std::cerr << "   Please first call InitializeFFT, and then use the TakeData method of your choice to set the data" << std::endl;
-            return;
+            return kFALSE;
         }
 
         if (event->GetBinWidth() != fWindowFunction->GetBinWidth())
         {
-            std::cerr << "Warning from KTSlidingWindowFFT::TakeData: Bin widths are mismatched between the given event and the window function." << std::endl;
-            return;
+            std::cerr << "Warning from KTSlidingWindowFFT::TakeData: Bin widths are mismatched between the given event (" << event->GetBinWidth() << ") and the window function (" << fWindowFunction->GetBinWidth() << ")." << std::endl;
+            return kFALSE;
         }
 
         fFreqBinWidth = event->GetSampleRate() / (Double_t)fWindowFunction->GetSize();
 
-        this->TakeData((TArray*)(event->GetRecord()));
-        return;
+        unsigned int nBins = event->GetRecordSize();
+        fTimeData.resize(nBins);
+        for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
+        {
+            fTimeData[iPoint] = event->GetRecordAt< Double_t >(iPoint);
+        }
+        fIsDataReady = kTRUE;
+        return kTRUE;
     }
 
+    Bool_t KTSlidingWindowFFT::TakeData(const vector< Double_t >& data)
+    {
+        if (! fIsInitialized)
+        {
+            std::cerr << "Warning from KTSimpleFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
+            std::cerr << "   Please first call InitializeFFT, and then use the TakeData method of your choice to set the data" << std::endl;
+            return kFALSE;
+        }
+
+        unsigned int nBins = (unsigned int)data.size();
+        fTimeData.resize(nBins);
+        for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
+        {
+            fTimeData[iPoint] = (Double_t)(data[iPoint]);
+        }
+        fIsDataReady = kTRUE;
+        return kTRUE;
+    }
+    /*
     void KTSlidingWindowFFT::TakeData(const TArray* array)
     {
         if (! fIsInitialized)
@@ -99,62 +123,68 @@ namespace Katydid
         fIsDataReady = kTRUE;
         return;
     }
-
-    void KTSlidingWindowFFT::Transform()
+    */
+    Bool_t KTSlidingWindowFFT::Transform()
     {
         if (! fIsInitialized)
         {
             std::cerr << "Warning from KTSlidingWindowFFT::Transform: FFT must be initialized before the transform is performed" << std::endl;
             std::cerr << "   Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform." << std::endl;
-            return;
+            return kFALSE;
         }
 
         if (! fIsDataReady)
         {
             std::cerr << "Warning from KTSlidingWindowFFT::Transform: The data for the transform is not ready"<< std::endl;
             std::cerr << "   Please first call TakeData, and then perform the transform" << std::endl;
-            return;
+            return kFALSE;
         }
 
-        while (! fPowerSpectra.empty())
-        {
-            delete fPowerSpectra.back();
-            fPowerSpectra.pop_back();
-        }
+        ClearPowerSpectra();
 
         if (fWindowFunction->GetSize() < this->GetFullTimeSize())
         {
-            Int_t windowShift = fWindowFunction->GetSize() - fOverlap;
-            std::cout << "window shift: " << windowShift << std::endl;
+            //std::cout << fWindowFunction->GetSize() << "  " << fWindowFunction->GetBinWidth() << "  " << fWindowFunction->GetLength() << "  " << GetEffectiveOverlap() << "  " << GetFullTimeSize() << "  " << GetTimeSize() << std::endl;
+            Int_t windowShift = fWindowFunction->GetSize() - GetEffectiveOverlap();
+            //std::cout << "window shift: " << windowShift << std::endl;
             //Int_t nWindows = 1 + TMath::FloorNint((Double_t)(this->GetFullTimeSize() - fWindowFunction->GetSize()) / (Double_t)windowShift);
-            Int_t iWindow = 0;
-            for (Int_t windowStart=0; windowStart + fWindowFunction->GetSize() <= this->GetFullTimeSize(); windowStart += windowShift)
+            UInt_t iWindow = 0;
+            for (unsigned int windowStart=0; windowStart + fWindowFunction->GetSize() <= this->GetFullTimeSize(); windowStart += windowShift)
             {
                 //std::cout << "window: " << iWindow+1 << "; window start: " << windowStart << std::endl;
-                for (Int_t iPoint=windowStart; iPoint<windowStart+fWindowFunction->GetSize(); iPoint++)
+                for (unsigned int iPoint=windowStart; iPoint<windowStart+fWindowFunction->GetSize(); iPoint++)
                 {
-                    fTransform->SetPoint(iPoint-windowStart, (*fTimeData)[iPoint] * fWindowFunction->GetWeight(iPoint-windowStart));
+                    fTransform->SetPoint(iPoint-windowStart, fTimeData[iPoint] * fWindowFunction->GetWeight(iPoint-windowStart));
+                    //std::cout << "Setting a point in the transform: " << iPoint-windowStart << "  " << fTransform->GetPointReal(iPoint-windowStart, kTRUE) << std::endl;
                 }
                 fTransform->Transform();
                 fPowerSpectra.push_back(this->CreatePowerSpectrum());
+                // emit a signal that the FFT was performed, for any connected slots
+                fSingleFFTSignal(iWindow, fPowerSpectra.back());
                 iWindow++;
             }
             std::cout << "FFTs complete; windows used: " << iWindow << std::endl;
         }
+        else
+        {
+            std::cout << "Warning from KTSlidingWindowFFT: window size is larger than time data: " << fWindowFunction->GetSize() << " > " << this->GetFullTimeSize() << std::endl;
+            std::cout << "   No transform was performed!" << std::endl;
+            return kFALSE;
+        }
 
-        return;
+        return kTRUE;
     }
 
-    TH2D* KTSlidingWindowFFT::CreatePowerSpectrumHistogram() const
+    TH2D* KTSlidingWindowFFT::CreatePowerSpectrumHistogram(const string& name) const
     {
         if (fPowerSpectra.empty()) return NULL;
 
         // plot in MHz, instead of Hz
         Double_t freqMult = 1.e-6;
 
-        Double_t effTimeWidth = (Double_t)(fPowerSpectra.size() * fWindowFunction->GetSize() - (fPowerSpectra.size()-1) * fOverlap);
+        Double_t effTimeWidth = (Double_t)(fPowerSpectra.size() * fWindowFunction->GetSize() - (fPowerSpectra.size()-1) * GetEffectiveOverlap());
         effTimeWidth *= fWindowFunction->GetBinWidth();
-        TH2D* hist = new TH2D("hPowerSpectra", "Power Spectra",
+        TH2D* hist = new TH2D(name.c_str(), "Power Spectra",
                 fPowerSpectra.size(), 0., effTimeWidth,
                 this->GetFrequencySize(), -0.5 * fFreqBinWidth * freqMult, fFreqBinWidth * ((Double_t)this->GetFrequencySize()-0.5) * freqMult);
         std::cout << "Frequency axis: " << this->GetFrequencySize() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " MHz" << std::endl;
@@ -174,40 +204,66 @@ namespace Katydid
         return hist;
     }
 
+    TH2D* KTSlidingWindowFFT::CreatePowerSpectrumHistogram() const
+    {
+        return CreatePowerSpectrumHistogram("hPowerSpectra_SlidingWindowFFT");
+    }
+
+    KTPhysicalArray< 2, Double_t >* KTSlidingWindowFFT::CreatePowerSpectrumPhysArr() const
+    {
+        if (fPowerSpectra.empty()) return NULL;
+
+        // plot in MHz, instead of Hz
+        Double_t freqMult = 1.e-6;
+
+        Double_t effTimeWidth = (Double_t)(fPowerSpectra.size() * fWindowFunction->GetSize() - (fPowerSpectra.size()-1) * GetEffectiveOverlap());
+        effTimeWidth *= fWindowFunction->GetBinWidth();
+        KTPhysicalArray< 2, Double_t >* array = new KTPhysicalArray< 2, Double_t >(fPowerSpectra.size(), 0., effTimeWidth,
+                this->GetFrequencySize(), -0.5 * fFreqBinWidth * freqMult, fFreqBinWidth * ((Double_t)this->GetFrequencySize()-0.5) * freqMult);
+        std::cout << "Frequency axis: " << this->GetFrequencySize() << " bins; range: " << array->GetRangeMin(2) << " - " << array->GetRangeMax(2) << " MHz" << std::endl;
+        std::cout << "Time axis: " << fPowerSpectra.size() << " bins; range: 0 - " << effTimeWidth << " s" << std::endl;
+
+        for (Int_t iBinX=1; iBinX<=(Int_t)fPowerSpectra.size(); iBinX++)
+        {
+            KTPowerSpectrum* ps = fPowerSpectra[iBinX-1];
+            for (Int_t iBinY=1; iBinY<=this->GetFrequencySize(); iBinY++)
+            {
+                (*array)(iBinX, iBinY) = ps->GetMagnitudeAt(iBinY-1);
+            }
+        }
+
+        return array;
+    }
+
     KTPowerSpectrum* KTSlidingWindowFFT::CreatePowerSpectrum() const
     {
         // Extract the transformed data
-        Int_t freqSize = this->GetFrequencySize();
+        UInt_t freqSize = this->GetFrequencySize();
         Double_t* freqSpecReal = new Double_t [freqSize];
         Double_t* freqSpecImag = new Double_t [freqSize];
         fTransform->GetPointsComplex(freqSpecReal, freqSpecImag);
 
-        KTComplexVector* freqSpec = new KTComplexVector(freqSize, freqSpecReal, freqSpecImag, "R");
+        KTComplexVector freqSpec(freqSize, freqSpecReal, freqSpecImag, "R");
         delete [] freqSpecReal; delete [] freqSpecImag;
-        (*freqSpec) *= 1. / (Double_t)this->GetTimeSize();
+        freqSpec *= 1. / (Double_t)this->GetTimeSize();
 
         KTPowerSpectrum* powerSpec = new KTPowerSpectrum();
-        powerSpec->TakeFrequencySpectrum(*freqSpec);
-        powerSpec->SetBinWidth(fWindowFunction->GetBinWidth());
-        delete freqSpec;
+        powerSpec->TakeFrequencySpectrum(freqSpec);
+        powerSpec->SetBinWidth(fFreqBinWidth);
         return powerSpec;
     }
 
-    void KTSlidingWindowFFT::SetWindowSize(Int_t nBins)
+    void KTSlidingWindowFFT::SetWindowSize(UInt_t nBins)
     {
         fWindowFunction->SetSize(nBins);
-        delete fTransform;
-        fTransform = new TFFTRealComplex(nBins, kFALSE);
-        fIsInitialized = kFALSE;
+        RecreateFFT();
         return;
     }
 
     void KTSlidingWindowFFT::SetWindowLength(Double_t wlTime)
     {
         fWindowFunction->SetLength(wlTime);
-        delete fTransform;
-        fTransform = new TFFTRealComplex(fWindowFunction->GetSize(), kFALSE);
-        fIsInitialized = kFALSE;
+        RecreateFFT();
         return;
     }
 
@@ -215,20 +271,26 @@ namespace Katydid
     {
         delete fWindowFunction;
         fWindowFunction = wf;
+        RecreateFFT();
+        return;
+    }
+
+    void KTSlidingWindowFFT::RecreateFFT()
+    {
+        delete fTransform;
         fTransform = new TFFTRealComplex(fWindowFunction->GetSize(), kFALSE);
         fIsInitialized = kFALSE;
-        return;
+        fIsDataReady = kFALSE;
     }
 
-    void KTSlidingWindowFFT::SetOverlap(Double_t overlapTime)
+    void KTSlidingWindowFFT::ClearPowerSpectra()
     {
-        this->SetOverlap(TMath::Nint(overlapTime / fWindowFunction->GetBinWidth()));
+        while (! fPowerSpectra.empty())
+        {
+            delete fPowerSpectra.back();
+            fPowerSpectra.pop_back();
+        }
         return;
-    }
-
-    Int_t KTSlidingWindowFFT::GetWindowSize() const
-    {
-        return fWindowFunction->GetSize();
     }
 
 

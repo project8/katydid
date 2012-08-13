@@ -7,12 +7,16 @@
 
 #include "KTEvent.hh"
 
-#include "KTArrayUC.hh"
-
+#ifdef ROOT_FOUND
 #include "TH1.h"
-#include "TMath.h"
+#endif
 
-ClassImp(Katydid::KTEvent);
+#include <fstream>
+#include <iostream>
+
+using std::ifstream;
+using std::string;
+using std::vector;
 
 namespace Katydid
 {
@@ -21,101 +25,38 @@ namespace Katydid
                 fSampleRate(0.),
                 fRecordLength(0.),
                 fBinWidth(1.),
-                fTimeStamp(NULL),
-                fFrameID(NULL),
-                fRecord(NULL)
+                fTimeStamp(),
+                fFrameID(),
+                fRecord()
     {
     }
 
     KTEvent::~KTEvent()
     {
-        delete fTimeStamp;
-        delete fFrameID;
-        delete fRecord;
     }
 
-    UInt_t KTEvent::GetADCAtTime(Double_t time) const
+#ifdef ROOT_FOUND
+    TH1I* KTEvent::CreateEventHistogram() const
     {
-        return this->GetADCAtBin(TMath::Nint(time / fBinWidth));
-    }
-
-    UInt_t KTEvent::GetADCAtBin(Int_t bin) const
-    {
-        return (UInt_t)(*fRecord)[bin];
+        TH1I* hist = new TH1I("hRecord", "Event Record", (int)GetRecordSize(), -0.5*fBinWidth, GetRecordLength() + fBinWidth*0.5);
+        for (unsigned int iBin=0; iBin<fRecord.size(); iBin++)
+        {
+            hist->SetBinContent(iBin+1, fRecord[iBin]);
+        }
+        hist->SetXTitle("Time (s)");
+        return hist;
     }
 
     TH1I* KTEvent::CreateAmplitudeDistributionHistogram() const
     {
-        TH1I* hist = new TH1I("hRecord", "Event Record", 256, -0.5, 255.5);
-        for (Int_t iBin=0; iBin<fRecord->GetSize(); iBin++)
+        TH1I* hist = new TH1I("hRecordAmpl", "Event Record Amplitude Distribution", 256, -0.5, 255.5);
+        for (int iBin=0; iBin<fRecord.size(); iBin++)
         {
-            hist->Fill((Double_t)(*fRecord)[iBin]);
+            hist->Fill((double)(fRecord[iBin]));
         }
         hist->SetXTitle("ADC Bin");
         return hist;
     }
-
-    const KTArrayUC* KTEvent::GetFrameID() const
-    {
-        return fFrameID;
-    }
-
-    const KTArrayUC* KTEvent::GetRecord() const
-    {
-        return fRecord;
-    }
-
-    Double_t KTEvent::GetRecordLength() const
-    {
-        return fRecordLength;
-    }
-
-    Double_t KTEvent::GetSampleRate() const
-    {
-        return fSampleRate;
-    }
-
-    const KTArrayUC* KTEvent::GetTimeStamp() const
-    {
-        return fTimeStamp;
-    }
-
-    Double_t KTEvent::GetBinWidth() const
-    {
-        return fBinWidth;
-    }
-
-    void KTEvent::SetFrameID(KTArrayUC* frameID)
-    {
-        delete fFrameID;
-        this->fFrameID = frameID;
-    }
-
-    void KTEvent::SetRecord(KTArrayUC* record)
-    {
-        delete fFrameID;
-        this->fRecord = record;
-    }
-
-    void KTEvent::SetRecordLength(Double_t recordLength)
-    {
-        this->fRecordLength = recordLength;
-    }
-
-    void KTEvent::SetSampleRate(Double_t sampleRate)
-    {
-        this->fSampleRate = sampleRate;
-    }
-
-    void KTEvent::SetBinWidth(Double_t binWidth)
-    {
-        this->fBinWidth = binWidth;
-    }
-
-    void KTEvent::SetTimeStamp(KTArrayUC* timeStamp)
-    {
-        delete fFrameID;
-        this->fTimeStamp = timeStamp;
-    }
+#endif
 
 } /* namespace Katydid */

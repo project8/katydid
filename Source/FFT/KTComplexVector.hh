@@ -16,11 +16,15 @@ using std::string;
 
 namespace Katydid
 {
+    template< size_t NDims, typename XDataType >
+    class KTPhysicalArray;
+
     class KTComplexVector
     {
         public:
             KTComplexVector();
-            KTComplexVector(Int_t nBins, const Double_t* arr1, const Double_t* arr2, const string& mode);
+            KTComplexVector(UInt_t nBins);
+            KTComplexVector(UInt_t nBins, const Double_t* arr1, const Double_t* arr2, const string& mode);
             KTComplexVector(const TVectorD& v1, const TVectorD& v2, const string& mode);
             KTComplexVector(const KTComplexVector& orig);
             virtual ~KTComplexVector();
@@ -28,18 +32,28 @@ namespace Katydid
             virtual void UsePolar(const TVectorD& mag, const TVectorD& phase);
             virtual void UseRectangular(const TVectorD& real, const TVectorD& imag);
 
-            KTComplexVector& operator*= (Double_t mult);
+            KTComplexVector& operator*=(Double_t mult);
 
+            // element-by-element division; div assumed real so only magnitude is divided
+            KTComplexVector& operator/=(const KTPhysicalArray< 1, Double_t >& div);
+
+            virtual TH1D* CreateMagnitudeHistogram(const std::string& name) const;
             virtual TH1D* CreateMagnitudeHistogram() const;
+            virtual TH1D* CreatePhaseHistogram(const std::string& name) const;
             virtual TH1D* CreatePhaseHistogram() const;
+
+            virtual KTPhysicalArray< 1, Double_t >* CreateMagnitudePhysArr() const;
+            virtual KTPhysicalArray< 1, Double_t >* CreatePhasePhysArr() const;
 
             Double_t GetMagnitudeAt(Int_t iBin) const;
             Double_t GetPhaseAt(Int_t iBin) const;
 
             Int_t GetSize() const;
 
-            TVectorD* GetMagnitude() const;
-            TVectorD* GetPhase() const;
+            TVectorD& GetMagnitude();
+            const TVectorD& GetMagnitude() const;
+            TVectorD& GetPhase();
+            const TVectorD& GetPhase() const;
 
             void SetMagnitudeAt(Int_t iBin, Double_t mag);
             void SetPhaseAt(Int_t iBin, Double_t phase);
@@ -49,10 +63,10 @@ namespace Katydid
 
        protected:
 
-            TVectorD* fMagnitude;
-            TVectorD* fPhase;
+            TVectorD fMagnitude;
+            TVectorD fPhase;
 
-            ClassDef(KTComplexVector, 1);
+            ClassDef(KTComplexVector, 2);
     };
 
 } /* namespace Katydid */

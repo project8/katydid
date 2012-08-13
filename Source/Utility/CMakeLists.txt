@@ -1,26 +1,48 @@
 # CMakeLists for Katydid/Source/Utility
 # Author: N. Oblath
 
+if (LOG4CXX_FOUND)
+    set (LOGGER_CONFIGURATION "${CONFIG_INSTALL_DIR}/log4cxx.properties" )
+    set_source_files_properties (KTLogger.cc PROPERTIES COMPILE_DEFINITIONS
+        "LOG4CXX;LOGGER_CONFIGURATION=\"${LOGGER_CONFIGURATION}\""
+    )
+endif (LOG4CXX_FOUND)
+
+
 set (UTILITY_DICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTArrayUC.hh
 )
 
 set (UTILITY_NODICT_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties_GetNBins.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTCutable.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTCutableArray.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDestroyer.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTInitializer.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMessage.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMessageOrganizer.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTMaskedArray.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArray.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSetting.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSingleton.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTUtilityMessage.hh
+#    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlot.hh
+#    ${CMAKE_CURRENT_SOURCE_DIR}/KTTestSlot.hh
+#    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalTest.hh
+#    ${CMAKE_CURRENT_SOURCE_DIR}/KTConnectionTest.hh
 )
 
 set (UTILITY_HEADERFILES ${UTILITY_DICT_HEADERFILES} ${UTILITY_NODICT_HEADERFILES})
 
 set (UTILITY_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTArrayUC.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMessage.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMessageOrganizer.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTUtilityMessage.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSetting.cc
+#    ${CMAKE_CURRENT_SOURCE_DIR}/KTTestSlot.cc
+#    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalTest.cc
+#    ${CMAKE_CURRENT_SOURCE_DIR}/KTConnectionTest.cc
 )
 
 set (UTILITY_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/UtilityLinkDef.hh)
@@ -31,9 +53,12 @@ set (UTILITY_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/UtilityDict.cxx)
 ROOT_GENERATE_DICTIONARY ("${UTILITY_DICT_HEADERFILES}" "${UTILITY_LINKDEF_HEADERFILE}" "${UTILITY_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
 add_library (KatydidUtility ${UTILITY_SOURCEFILES} ${UTILITY_DICT_OUTFILE})
-set_target_properties(KatydidUtility PROPERTIES INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/lib)
+set_target_properties(KatydidUtility PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
 target_link_libraries (KatydidUtility ${LIBS})
 
-install (FILES ${UTILITY_HEADERFILES}  DESTINATION include)
-install (TARGETS KatydidUtility  DESTINATION lib)
-         
+install (FILES ${UTILITY_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
+install (TARGETS KatydidUtility  DESTINATION ${LIB_INSTALL_DIR})
+
+# install the log4cxx config file
+install (FILES config/log4cxx.properties DESTINATION ${CONFIG_INSTALL_DIR})
+

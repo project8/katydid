@@ -29,9 +29,9 @@
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">Katydid
-   &#160;<span id="projectnumber">0.5</span>
+   &#160;<span id="projectnumber">0.5.1</span>
    </div>
-   <div id="projectbrief">Project 8 Analysis Platform</div>
+   <div id="projectbrief">Project 8 Analysis Toolkit</div>
   </td>
   
   
@@ -86,9 +86,11 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a>  </div>
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a>  </div>
   <div class="headertitle">
 <div class="title">KTSlidingWindowFFT Class Reference</div>  </div>
 </div>
@@ -100,57 +102,92 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 <p><a href="class_katydid_1_1_k_t_sliding_window_f_f_t-members.html">List of all members.</a></p>
 <table class="memberdecls">
+<tr><td colspan="2"><h2><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">typedef <br class="typebreak"/>
+boost::signals2::signal&lt; void(UInt_t, <br class="typebreak"/>
+<a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> *)&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af01d6e21e7a7ea53880606ef15ec7edc">SingleFFTSignal</a> )</td></tr>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#aea63b58c45da0d1fa0a5fc55f42c817f">KTSlidingWindowFFT</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a111e262dd303b9101da6982a665ef351">~KTSlidingWindowFFT</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ae41291cf9e9dc7bb8f003b22f3f0f142">InitializeFFT</a> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a9a6bb7abc0c3e544edaca2ea44017043">TakeData</a> (const <a class="el" href="class_katydid_1_1_k_t_event.html">KTEvent</a> *event)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a989f1bf1b7cb309a8ca78cf94392bd31">TakeData</a> (const TArray *data)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a26cd1ca797b17da835a5d2050c6dda2f">Transform</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a75f41077ca6f9b575af9d0f21c529afd">RecreateFFT</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a279d80b12a35ffb74ba19dd260e96f92">TakeData</a> (const <a class="el" href="class_katydid_1_1_k_t_event.html">KTEvent</a> *event)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a254d10c5b4434d58831152c142e5df51">TakeData</a> (const std::vector&lt; Double_t &gt; &amp;data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a981ecce1d8834c642f31a6c130878e73">Transform</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual TH2D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab44d8c63cb5f33a3f6dea424ac88f4cb">CreatePowerSpectrumHistogram</a> (const std::string &amp;name) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual TH2D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8c80b661b8af6db2bea57a50bfcfd8e9">CreatePowerSpectrumHistogram</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a90e2edfd3d77048f2e40106e9cce3cf9">GetTimeSize</a> () const </td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.  <a href="#a90e2edfd3d77048f2e40106e9cce3cf9"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a74c2a6df0a42391204a610f3dd7b3199">GetFrequencySize</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af0b7e30c421df439cdcdb1436727208b">GetWindowSize</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b0500ec5dbb52ef654d6da1658d2381">GetFullTimeSize</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adf78bb42c2a9a5af13a39bd7f8ab9012">GetOverlap</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a2c3bc1664a4aec7a6abca2a323559af7">GetWindowSize</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a836d4ed610ee6e1acff99a2d019dff60">GetFullTimeSize</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a244f77a1b02a46675efc8199b5890506">GetOverlap</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#aae4a4f3e7e31d7425700580d8fc7620a">GetEffectiveOverlap</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b4498129e8ce4633c0e85e898515cdb">GetOverlapFrac</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afc90b32c767110b94197ce2e412f3f97">GetUseOverlapFrac</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a06a4bcfedf33900c53ab8911a019e2ac">GetWindowFunction</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">const TArrayD *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a94fcdac3cf8466363c38760fa8660de5">GetTimeData</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a5a6289d80100763c40302d366bc398d0">GetPowerSpectrum</a> (Int_t spect) const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const std::vector&lt; Double_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4f33339c93164812121ba9873cced505">GetTimeData</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4eb297dcc2a24ea12c1334747bc5f51a">GetPowerSpectrum</a> (Int_t spect) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">const TFFTRealComplex *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8eba07a885b15ef49ad1233b4d0e2a45">GetFFT</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">const string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">GetTransformFlag</a> () const </td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a31602d157d6da4b928e1f3dd5a28a587">GetTransformFlag</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afac197898fde3749ef4882a13bdffeb3">GetIsInitialized</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a1735268a4909eb8a8ed38a8dab29747f">GetIsDataReady</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4451fa6a770d063e20de69182fbd8193">GetFreqBinWidth</a> () const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#adc967fd2d5942ccb6adad49df4add034">SetTransformFlag</a> (const string &amp;flag)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.  <a href="#adc967fd2d5942ccb6adad49df4add034"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">note: SetTransformFlag sets fIsInitialized and fIsDataReady to kFALSE.  <a href="#adc967fd2d5942ccb6adad49df4add034"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a0b79c37d9c4f813abb847b9274d523ff">SetFreqBinWidth</a> (Double_t bw)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#afc5fceb8e9d060fbf5934a611c3ce1d7">SetWindowSize</a> (Int_t nBins)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6d882b21846859dd3e0d9f7675aef6e7">SetWindowSize</a> (UInt_t nBins)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af3419c16836c230be8db04b3fad6be05">SetWindowLength</a> (Double_t wlTime)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a4605f02594a332ad95152d3e568b5bf4">SetOverlap</a> (Int_t nBins)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a294d6f834db735cf04a7ce30289220ea">SetOverlap</a> (UInt_t nBins)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a219acae72b9cde5432e8b562a0b11c0b">SetOverlap</a> (Double_t overlapTime)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab173ccb822d7510bb262b72f9b67fb81">SetOverlapFrac</a> (Double_t overlapFrac)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6f3ea207ea1318de0ff15d7481bff3a2">SetUseOverlapFrac</a> (Bool_t useOverlapFrac)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#aba3c0e4dc10ea42619a2348f007a8cf7">SetWindowFunction</a> (<a class="el" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a> *wf)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">boost::signals2::connection&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8106eb159149aa4c6c83736771b5e7a4">ConnectToFFTSignal</a> (const SingleFFTSignal::slot_type &amp;subscriber)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">boost::signals2::connection&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ac945aedae16221e9cb4b9b913733821c">ConnectToFFTSignal</a> (Int_t group, const SingleFFTSignal::slot_type &amp;subscriber)</td></tr>
 <tr><td colspan="2"><h2><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ae568f8c8070a6e595f7fdd0502d0925a">CreatePowerSpectrum</a> () const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a573f8296e855fa20452ed04c8369e8d5">ClassDef</a> (<a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html">KTSlidingWindowFFT</a>, 1)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#aaf765a2d5875745e0b9dbd7c09ad56db">ClearPowerSpectra</a> ()</td></tr>
 <tr><td colspan="2"><h2><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">TFFTRealComplex *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab5edb16c3e9bd3a74851ec8f528ecd1d">fTransform</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a51c8161305b7260e6c4e6d2c8eeda9d5">fTransformFlag</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a780a71abc09fdfbf6247d7d208dbd287">fIsInitialized</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a7b40e69f5476fae511229e9c60022ec3">fIsDataReady</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af37e636e56dfa5ba6a7c39167ebacbe9">fFreqBinWidth</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6c8bf24852d2aed96f11a23beabac000">fOverlap</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#acd689f4089448818468eb06b93024f36">fOverlap</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">Double_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a9c8eb9c97091e1d4c7f595d837f14b9f">fOverlapFrac</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">Bool_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab29bc646cf813662aee5b7b9f8e38714">fUseOverlapFrac</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_katydid_1_1_k_t_window_function.html">KTWindowFunction</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#abcf02d1800b62f3d7b36822f746e7f04">fWindowFunction</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">TArrayD *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a17fc38f9d0469db9f5b4333a3be2a4b6">fTimeData</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">vector&lt; <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">fPowerSpectra</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; Double_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ae387121c82fdb13098e3ef94e426c4d7">fTimeData</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a01c34323eae64fc2f73667d6131034f5">fPowerSpectra</a></td></tr>
+<tr><td colspan="2"><h2><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af01d6e21e7a7ea53880606ef15ec7edc">SingleFFTSignal</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8944eccbcba7c4a9686f8c561039133c">fSingleFFTSignal</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00030">30</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
-</div><hr/><h2>Constructor &amp; Destructor Documentation</h2>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00032">32</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+</div><hr/><h2>Member Typedef Documentation</h2>
+<a class="anchor" id="af01d6e21e7a7ea53880606ef15ec7edc"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::SingleFFTSignal" ref="af01d6e21e7a7ea53880606ef15ec7edc" args=")" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef boost::signals2::signal&lt; void (UInt_t, <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>*)  <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af01d6e21e7a7ea53880606ef15ec7edc">SingleFFTSignal</a>)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00035">35</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="aea63b58c45da0d1fa0a5fc55f42c817f"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::KTSlidingWindowFFT" ref="aea63b58c45da0d1fa0a5fc55f42c817f" args="()" -->
 <div class="memitem">
 <div class="memproto">
@@ -165,7 +202,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00026">26</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00025">25</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -183,35 +220,74 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00039">39</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00042">42</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a573f8296e855fa20452ed04c8369e8d5"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::ClassDef" ref="a573f8296e855fa20452ed04c8369e8d5" args="(KTSlidingWindowFFT, 1)" -->
+<a class="anchor" id="aaf765a2d5875745e0b9dbd7c09ad56db"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::ClearPowerSpectra" ref="aaf765a2d5875745e0b9dbd7c09ad56db" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">ClassDef </td>
+          <td class="memname">void ClearPowerSpectra </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html">KTSlidingWindowFFT</a>&#160;</td>
-          <td class="paramname">, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">1&#160;</td>
-          <td class="paramname">&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td><code> [protected]</code></td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [protected]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00259">259</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8106eb159149aa4c6c83736771b5e7a4"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::ConnectToFFTSignal" ref="a8106eb159149aa4c6c83736771b5e7a4" args="(const SingleFFTSignal::slot_type &amp;subscriber)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::signals2::connection ConnectToFFTSignal </td>
+          <td>(</td>
+          <td class="paramtype">const SingleFFTSignal::slot_type &amp;&#160;</td>
+          <td class="paramname"><em>subscriber</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00241">241</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac945aedae16221e9cb4b9b913733821c"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::ConnectToFFTSignal" ref="ac945aedae16221e9cb4b9b913733821c" args="(Int_t group, const SingleFFTSignal::slot_type &amp;subscriber)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">boost::signals2::connection ConnectToFFTSignal </td>
+          <td>(</td>
+          <td class="paramtype">Int_t&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const SingleFFTSignal::slot_type &amp;&#160;</td>
+          <td class="paramname"><em>subscriber</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00246">246</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -224,6 +300,25 @@ Protected Attributes</h2></td></tr>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const<code> [protected, virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00211">211</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab44d8c63cb5f33a3f6dea424ac88f4cb"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::CreatePowerSpectrumHistogram" ref="ab44d8c63cb5f33a3f6dea424ac88f4cb" args="(const std::string &amp;name) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TH2D * CreatePowerSpectrumHistogram </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const<code> [virtual]</code></td>
         </tr>
       </table>
 </div>
@@ -247,7 +342,25 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00148">148</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00206">206</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aae4a4f3e7e31d7425700580d8fc7620a"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetEffectiveOverlap" ref="aae4a4f3e7e31d7425700580d8fc7620a" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">UInt_t GetEffectiveOverlap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00174">174</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -265,7 +378,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00101">101</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00129">129</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -283,7 +396,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00121">121</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00149">149</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -301,16 +414,16 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00096">96</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00124">124</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a0b0500ec5dbb52ef654d6da1658d2381"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetFullTimeSize" ref="a0b0500ec5dbb52ef654d6da1658d2381" args="() const " -->
+<a class="anchor" id="a836d4ed610ee6e1acff99a2d019dff60"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetFullTimeSize" ref="a836d4ed610ee6e1acff99a2d019dff60" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Int_t GetFullTimeSize </td>
+          <td class="memname">UInt_t GetFullTimeSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const<code> [inline]</code></td>
@@ -319,7 +432,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00126">126</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00154">154</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -337,7 +450,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00116">116</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00144">144</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -355,16 +468,16 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00111">111</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00139">139</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="adf78bb42c2a9a5af13a39bd7f8ab9012"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetOverlap" ref="adf78bb42c2a9a5af13a39bd7f8ab9012" args="() const " -->
+<a class="anchor" id="a244f77a1b02a46675efc8199b5890506"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetOverlap" ref="a244f77a1b02a46675efc8199b5890506" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Int_t GetOverlap </td>
+          <td class="memname">UInt_t GetOverlap </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const<code> [inline]</code></td>
@@ -373,16 +486,34 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00132">132</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00159">159</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a5a6289d80100763c40302d366bc398d0"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetPowerSpectrum" ref="a5a6289d80100763c40302d366bc398d0" args="(Int_t spect) const " -->
+<a class="anchor" id="a0b4498129e8ce4633c0e85e898515cdb"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetOverlapFrac" ref="a0b4498129e8ce4633c0e85e898515cdb" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> * GetPowerSpectrum </td>
+          <td class="memname">Double_t GetOverlapFrac </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00164">164</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4eb297dcc2a24ea12c1334747bc5f51a"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetPowerSpectrum" ref="a4eb297dcc2a24ea12c1334747bc5f51a" args="(Int_t spect) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a> * GetPowerSpectrum </td>
           <td>(</td>
           <td class="paramtype">Int_t&#160;</td>
           <td class="paramname"><em>spect</em></td><td>)</td>
@@ -392,16 +523,16 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00142">142</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00185">185</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a94fcdac3cf8466363c38760fa8660de5"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetTimeData" ref="a94fcdac3cf8466363c38760fa8660de5" args="() const " -->
+<a class="anchor" id="a4f33339c93164812121ba9873cced505"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetTimeData" ref="a4f33339c93164812121ba9873cced505" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">const TArrayD * GetTimeData </td>
+          <td class="memname">const vector&lt; Double_t &gt; &amp; GetTimeData </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const<code> [inline]</code></td>
@@ -410,7 +541,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00137">137</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00180">180</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -430,7 +561,7 @@ Protected Attributes</h2></td></tr>
 
 <p>for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different. </p>
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00091">91</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00119">119</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -448,7 +579,25 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00106">106</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00134">134</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afc90b32c767110b94197ce2e412f3f97"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetUseOverlapFrac" ref="afc90b32c767110b94197ce2e412f3f97" args="() const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Bool_t GetUseOverlapFrac </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const<code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00169">169</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -466,25 +615,25 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00148">148</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00191">191</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="af0b7e30c421df439cdcdb1436727208b"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetWindowSize" ref="af0b7e30c421df439cdcdb1436727208b" args="() const " -->
+<a class="anchor" id="a2c3bc1664a4aec7a6abca2a323559af7"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::GetWindowSize" ref="a2c3bc1664a4aec7a6abca2a323559af7" args="() const " -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Int_t GetWindowSize </td>
+          <td class="memname">UInt_t GetWindowSize </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td> const</td>
+          <td> const<code> [inline]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00229">229</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00196">196</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -502,7 +651,25 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00051">51</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00049">49</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a75f41077ca6f9b575af9d0f21c529afd"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::RecreateFFT" ref="a75f41077ca6f9b575af9d0f21c529afd" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RecreateFFT </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00251">251</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -521,18 +688,18 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00166">166</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00235">235</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a4605f02594a332ad95152d3e568b5bf4"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::SetOverlap" ref="a4605f02594a332ad95152d3e568b5bf4" args="(Int_t nBins)" -->
+<a class="anchor" id="a294d6f834db735cf04a7ce30289220ea"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::SetOverlap" ref="a294d6f834db735cf04a7ce30289220ea" args="(UInt_t nBins)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void SetOverlap </td>
           <td>(</td>
-          <td class="paramtype">Int_t&#160;</td>
+          <td class="paramtype">UInt_t&#160;</td>
           <td class="paramname"><em>nBins</em></td><td>)</td>
           <td><code> [inline]</code></td>
         </tr>
@@ -540,7 +707,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00160">160</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00208">208</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -553,13 +720,32 @@ Protected Attributes</h2></td></tr>
           <td>(</td>
           <td class="paramtype">Double_t&#160;</td>
           <td class="paramname"><em>overlapTime</em></td><td>)</td>
-          <td></td>
+          <td><code> [inline]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00223">223</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00215">215</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab173ccb822d7510bb262b72f9b67fb81"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::SetOverlapFrac" ref="ab173ccb822d7510bb262b72f9b67fb81" args="(Double_t overlapFrac)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SetOverlapFrac </td>
+          <td>(</td>
+          <td class="paramtype">Double_t&#160;</td>
+          <td class="paramname"><em>overlapFrac</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00222">222</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -578,9 +764,28 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE. </p>
+<p>note: SetTransformFlag sets fIsInitialized and fIsDataReady to kFALSE. </p>
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00153">153</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00201">201</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6f3ea207ea1318de0ff15d7481bff3a2"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::SetUseOverlapFrac" ref="a6f3ea207ea1318de0ff15d7481bff3a2" args="(Bool_t useOverlapFrac)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SetUseOverlapFrac </td>
+          <td>(</td>
+          <td class="paramtype">Bool_t&#160;</td>
+          <td class="paramname"><em>useOverlapFrac</em></td><td>)</td>
+          <td><code> [inline]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00229">229</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -599,7 +804,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00214">214</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00243">243</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -618,18 +823,18 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00205">205</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00236">236</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="afc5fceb8e9d060fbf5934a611c3ce1d7"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::SetWindowSize" ref="afc5fceb8e9d060fbf5934a611c3ce1d7" args="(Int_t nBins)" -->
+<a class="anchor" id="a6d882b21846859dd3e0d9f7675aef6e7"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::SetWindowSize" ref="a6d882b21846859dd3e0d9f7675aef6e7" args="(UInt_t nBins)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void SetWindowSize </td>
           <td>(</td>
-          <td class="paramtype">Int_t&#160;</td>
+          <td class="paramtype">UInt_t&#160;</td>
           <td class="paramname"><em>nBins</em></td><td>)</td>
           <td></td>
         </tr>
@@ -637,16 +842,16 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00196">196</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00229">229</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a9a6bb7abc0c3e544edaca2ea44017043"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::TakeData" ref="a9a6bb7abc0c3e544edaca2ea44017043" args="(const KTEvent *event)" -->
+<a class="anchor" id="a279d80b12a35ffb74ba19dd260e96f92"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::TakeData" ref="a279d80b12a35ffb74ba19dd260e96f92" args="(const KTEvent *event)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void TakeData </td>
+          <td class="memname">Bool_t TakeData </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="class_katydid_1_1_k_t_event.html">KTEvent</a> *&#160;</td>
           <td class="paramname"><em>event</em></td><td>)</td>
@@ -656,20 +861,20 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#a2565ff2f9d16f0cd01163e3fa5022143">KTFFT</a>.</p>
+<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#a963cb670de98da742e89b231fe974c21">KTFFT</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00058">58</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00056">56</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a989f1bf1b7cb309a8ca78cf94392bd31"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::TakeData" ref="a989f1bf1b7cb309a8ca78cf94392bd31" args="(const TArray *data)" -->
+<a class="anchor" id="a254d10c5b4434d58831152c142e5df51"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::TakeData" ref="a254d10c5b4434d58831152c142e5df51" args="(const std::vector&lt; Double_t &gt; &amp;data)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void TakeData </td>
+          <td class="memname">Bool_t TakeData </td>
           <td>(</td>
-          <td class="paramtype">const TArray *&#160;</td>
+          <td class="paramtype">const std::vector&lt; Double_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>data</em></td><td>)</td>
           <td><code> [virtual]</code></td>
         </tr>
@@ -677,18 +882,18 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#afeb46b0d6f6190aa132474bf24ff3cb3">KTFFT</a>.</p>
+<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#aa4b62538563de8b9ed620be376c25b2d">KTFFT</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00079">79</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00083">83</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a26cd1ca797b17da835a5d2050c6dda2f"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::Transform" ref="a26cd1ca797b17da835a5d2050c6dda2f" args="()" -->
+<a class="anchor" id="a981ecce1d8834c642f31a6c130878e73"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::Transform" ref="a981ecce1d8834c642f31a6c130878e73" args="()" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void Transform </td>
+          <td class="memname">Bool_t Transform </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td><code> [virtual]</code></td>
@@ -697,9 +902,9 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#a9a91ab8ec82c96ff9da02976cba2e59f">KTFFT</a>.</p>
+<p>Implements <a class="el" href="class_katydid_1_1_k_t_f_f_t.html#ad339cbe279c45cb521ea7ac9538cd7b1">KTFFT</a>.</p>
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00103">103</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html#l00126">126</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8cc_source.html">KTSlidingWindowFFT.cc</a>.</p>
 
 </div>
 </div>
@@ -715,7 +920,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00081">81</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00095">95</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -730,7 +935,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00079">79</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00093">93</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -745,52 +950,82 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00078">78</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00092">92</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a6c8bf24852d2aed96f11a23beabac000"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fOverlap" ref="a6c8bf24852d2aed96f11a23beabac000" args="" -->
+<a class="anchor" id="acd689f4089448818468eb06b93024f36"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fOverlap" ref="acd689f4089448818468eb06b93024f36" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Int_t <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a6c8bf24852d2aed96f11a23beabac000">fOverlap</a><code> [protected]</code></td>
+          <td class="memname">UInt_t <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#acd689f4089448818468eb06b93024f36">fOverlap</a><code> [protected]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00082">82</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00096">96</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a72647b2ea5d7052ce8fe97f1ff02cfbf"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fPowerSpectra" ref="a72647b2ea5d7052ce8fe97f1ff02cfbf" args="" -->
+<a class="anchor" id="a9c8eb9c97091e1d4c7f595d837f14b9f"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fOverlapFrac" ref="a9c8eb9c97091e1d4c7f595d837f14b9f" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">vector&lt; <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* &gt; <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a72647b2ea5d7052ce8fe97f1ff02cfbf">fPowerSpectra</a><code> [protected]</code></td>
+          <td class="memname">Double_t <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a9c8eb9c97091e1d4c7f595d837f14b9f">fOverlapFrac</a><code> [protected]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00086">86</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00097">97</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a17fc38f9d0469db9f5b4333a3be2a4b6"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fTimeData" ref="a17fc38f9d0469db9f5b4333a3be2a4b6" args="" -->
+<a class="anchor" id="a01c34323eae64fc2f73667d6131034f5"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fPowerSpectra" ref="a01c34323eae64fc2f73667d6131034f5" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">TArrayD* <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a17fc38f9d0469db9f5b4333a3be2a4b6">fTimeData</a><code> [protected]</code></td>
+          <td class="memname">std::vector&lt; <a class="el" href="class_katydid_1_1_k_t_power_spectrum.html">KTPowerSpectrum</a>* &gt; <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a01c34323eae64fc2f73667d6131034f5">fPowerSpectra</a><code> [protected]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00085">85</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00102">102</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8944eccbcba7c4a9686f8c561039133c"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fSingleFFTSignal" ref="a8944eccbcba7c4a9686f8c561039133c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#af01d6e21e7a7ea53880606ef15ec7edc">SingleFFTSignal</a> <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a8944eccbcba7c4a9686f8c561039133c">fSingleFFTSignal</a><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00114">114</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae387121c82fdb13098e3ef94e426c4d7"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fTimeData" ref="ae387121c82fdb13098e3ef94e426c4d7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; Double_t &gt; <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ae387121c82fdb13098e3ef94e426c4d7">fTimeData</a><code> [protected]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00101">101</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -805,22 +1040,37 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00074">74</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00088">88</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a273eccd11b2d97fcee4605c8d6778969"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fTransformFlag" ref="a273eccd11b2d97fcee4605c8d6778969" args="" -->
+<a class="anchor" id="a51c8161305b7260e6c4e6d2c8eeda9d5"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fTransformFlag" ref="a51c8161305b7260e6c4e6d2c8eeda9d5" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">string <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a273eccd11b2d97fcee4605c8d6778969">fTransformFlag</a><code> [protected]</code></td>
+          <td class="memname">std::string <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#a51c8161305b7260e6c4e6d2c8eeda9d5">fTransformFlag</a><code> [protected]</code></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00076">76</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00090">90</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab29bc646cf813662aee5b7b9f8e38714"></a><!-- doxytag: member="Katydid::KTSlidingWindowFFT::fUseOverlapFrac" ref="ab29bc646cf813662aee5b7b9f8e38714" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Bool_t <a class="el" href="class_katydid_1_1_k_t_sliding_window_f_f_t.html#ab29bc646cf813662aee5b7b9f8e38714">fUseOverlapFrac</a><code> [protected]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00098">98</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -835,7 +1085,7 @@ Protected Attributes</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00084">84</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
+<p>Definition at line <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html#l00100">100</a> of file <a class="el" href="_k_t_sliding_window_f_f_t_8hh_source.html">KTSlidingWindowFFT.hh</a>.</p>
 
 </div>
 </div>
@@ -849,7 +1099,7 @@ Protected Attributes</h2></td></tr>
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Defines</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Defines</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -861,7 +1111,7 @@ Protected Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 15 2011 15:31:39 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Feb 2 2012 11:36:02 for Katydid by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.5.1
 </small></address>

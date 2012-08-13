@@ -11,7 +11,6 @@
 #include "KTComplexVector.hh"
 
 #include <string>
-using std::string;
 
 namespace Katydid
 {
@@ -20,20 +19,28 @@ namespace Katydid
     {
         public:
             KTPowerSpectrum();
+            KTPowerSpectrum(UInt_t nBins, Double_t binWidth=1.);
             KTPowerSpectrum(const KTPowerSpectrum& original);
             virtual ~KTPowerSpectrum();
 
             /// Input should be the direct FFT, not a power spectrum
             virtual void TakeFrequencySpectrum(const KTComplexVector& freqSpect);
-            virtual void TakeFrequencySpectrum(Int_t nBins, const Double_t* real, const Double_t* imag);
+            virtual void TakeFrequencySpectrum(unsigned int nBins, const Double_t* real, const Double_t* imag);
 
             Double_t GetPowerAtFrequency(Double_t freq);
             Double_t GetPhaseAtFrequency(Double_t freq);
+            Int_t GetBin(Double_t freq);
 
             virtual TH1D* CreateMagnitudeHistogram() const;
+            virtual TH1D* CreateMagnitudeHistogram(const std::string& name) const;
             virtual TH1D* CreatePhaseHistogram() const;
+            virtual TH1D* CreatePhaseHistogram(const std::string& name) const;
+
+            virtual KTPhysicalArray< 1, Double_t >* CreateMagnitudePhysArr() const;
+            virtual KTPhysicalArray< 1, Double_t >* CreatePhasePhysArr() const;
 
             virtual TH1D* CreatePowerDistributionHistogram() const;
+            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name) const;
 
             Double_t GetBinWidth() const;
 
@@ -42,8 +49,23 @@ namespace Katydid
         protected:
             Double_t fBinWidth;
 
-            ClassDef(KTPowerSpectrum, 1);
+            ClassDef(KTPowerSpectrum, 2);
     };
+
+    inline Double_t KTPowerSpectrum::GetPowerAtFrequency(Double_t freq)
+    {
+        return fMagnitude[GetBin(freq)];
+    }
+
+    inline Double_t KTPowerSpectrum::GetPhaseAtFrequency(Double_t freq)
+    {
+        return fPhase[GetBin(freq)];
+    }
+
+    inline Int_t KTPowerSpectrum::GetBin(Double_t freq)
+    {
+        return Int_t(freq / fBinWidth);
+    }
 
     inline Double_t KTPowerSpectrum::GetBinWidth() const
     {

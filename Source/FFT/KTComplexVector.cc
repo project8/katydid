@@ -7,6 +7,8 @@
 
 #include "KTComplexVector.hh"
 
+#include "KTPhysicalArray.hh"
+
 #include <cmath>
 #include <iostream>
 
@@ -16,81 +18,81 @@ namespace Katydid
 {
 
     KTComplexVector::KTComplexVector() :
-            fMagnitude(new TVectorD()),
-            fPhase(new TVectorD())
+            fMagnitude(),
+            fPhase()
     {
     }
 
-    KTComplexVector::KTComplexVector(Int_t nBins, const Double_t* arr1, const Double_t* arr2, const string& mode)
+    KTComplexVector::KTComplexVector(UInt_t nBins) :
+            fMagnitude((Int_t)nBins),
+            fPhase((Int_t)nBins)
+    {
+    }
+
+    KTComplexVector::KTComplexVector(UInt_t nBins, const Double_t* arr1, const Double_t* arr2, const string& mode) :
+            fMagnitude((Int_t)nBins),
+            fPhase((Int_t)nBins)
     {
         if (mode == string("P"))
         {
-            fMagnitude = new TVectorD(nBins, arr1);
-            fPhase = new TVectorD(nBins, arr2);
+            fMagnitude.SetElements(arr1);
+            fPhase.SetElements(arr2);
         }
         else if (mode == string("R"))
         {
-            fMagnitude = new TVectorD(nBins);
-            fPhase = new TVectorD(nBins);
-            for (Int_t iBin=0; iBin<nBins; iBin++)
+           for (unsigned int iBin=0; iBin<nBins; iBin++)
             {
-                (*fMagnitude)[iBin] = sqrt(arr1[iBin]*arr1[iBin] + arr2[iBin]*arr2[iBin]);
-                (*fPhase)[iBin] = atan2(arr2[iBin], arr1[iBin]);
+                fMagnitude[iBin] = sqrt(arr1[iBin]*arr1[iBin] + arr2[iBin]*arr2[iBin]);
+                fPhase[iBin] = atan2(arr2[iBin], arr1[iBin]);
             }
         }
         else
         {
             std::cerr << "Error in KTComplexVector constructor: invalid mode: " << mode << std::endl;
-            fMagnitude = new TVectorD();
-            fPhase = new TVectorD();
         }
     }
 
-    KTComplexVector::KTComplexVector(const TVectorD& v1, const TVectorD& v2, const string& mode)
+    KTComplexVector::KTComplexVector(const TVectorD& v1, const TVectorD& v2, const string& mode) :
+            fMagnitude(),
+            fPhase()
     {
-        Int_t nBins = v1.GetNoElements();
-        if (nBins != v2.GetNoElements())
+        unsigned int nBins = (unsigned int)v1.GetNoElements();
+        if (nBins != (unsigned int)v2.GetNoElements())
         {
             std::cerr << "Error in KTComplexVector constructor: number of bins don't match: " << nBins << " and " << v2.GetNoElements() << std::endl;
-            fMagnitude = new TVectorD();
-            fPhase = new TVectorD();
         }
         else
         {
+            fMagnitude.ResizeTo(nBins);
+            fPhase.ResizeTo(nBins);
             if (mode == string("P"))
             {
-                fMagnitude = new TVectorD(v1);
-                fPhase = new TVectorD(v2);
+                fMagnitude = v1;
+                fPhase = v2;
             }
             else if (mode == string("R"))
             {
-                fMagnitude = new TVectorD(nBins);
-                fPhase = new TVectorD(nBins);
-                for (Int_t iBin=0; iBin<nBins; iBin++)
+                for (unsigned int iBin=0; iBin<nBins; iBin++)
                 {
-                    (*fMagnitude)[iBin] = sqrt(v1[iBin]*v1[iBin] + v2[iBin]*v2[iBin]);
-                    (*fPhase)[iBin] = atan2(v2[iBin], v1[iBin]);
+                    fMagnitude[iBin] = sqrt(v1[iBin]*v1[iBin] + v2[iBin]*v2[iBin]);
+                    fPhase[iBin] = atan2(v2[iBin], v1[iBin]);
                 }
             }
             else
             {
                 std::cerr << "Error in KTComplexVector constructor: invalid mode: " << mode << std::endl;
-                fMagnitude = new TVectorD();
-                fPhase = new TVectorD();
             }
         }
     }
 
     KTComplexVector::KTComplexVector(const KTComplexVector& orig) :
-            fMagnitude(new TVectorD(*(orig.GetMagnitude()))),
-            fPhase(new TVectorD(*(orig.GetPhase())))
+            fMagnitude(orig.GetMagnitude()),
+            fPhase(orig.GetPhase())
     {
     }
 
     KTComplexVector::~KTComplexVector()
     {
-        delete fMagnitude;
-        delete fPhase;
     }
 
     void KTComplexVector::UsePolar(const TVectorD& mag, const TVectorD& phase)
@@ -100,32 +102,29 @@ namespace Katydid
             std::cerr << "Error in KTComplexVector::UsePolar: number of bins don't match: " << mag.GetNoElements() << " and " << phase.GetNoElements() << std::endl;
             return;
         }
-        delete fMagnitude;
-        delete fPhase;
-        fMagnitude = new TVectorD(mag);
-        fPhase = new TVectorD(phase);
+        fMagnitude.ResizeTo(mag.GetNoElements());
+        fPhase.ResizeTo(phase.GetNoElements());
+        fMagnitude = mag;
+        fPhase = phase;
         return;
     }
 
     void KTComplexVector::UseRectangular(const TVectorD& real, const TVectorD& imag)
     {
-        Int_t nBins = real.GetNoElements();
-        if (nBins != imag.GetNoElements())
+        unsigned int nBins = (unsigned int)real.GetNoElements();
+        if (nBins != (unsigned int)imag.GetNoElements())
         {
             std::cerr << "Error in KTComplexVector::UseRectangular: number of bins don't match: " << nBins << " and " << imag.GetNoElements() << std::endl;
             return;
         }
 
-        delete fMagnitude;
-        delete fPhase;
+        fMagnitude.ResizeTo(nBins);
+        fPhase.ResizeTo(nBins);
 
-        fMagnitude = new TVectorD(nBins);
-        fPhase = new TVectorD(nBins);
-
-        for (Int_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            (*fMagnitude)[iBin] = sqrt(real[iBin]*real[iBin] + imag[iBin]*imag[iBin]);
-            (*fPhase)[iBin] = atan2(imag[iBin], real[iBin]);
+            fMagnitude[iBin] = sqrt(real[iBin]*real[iBin] + imag[iBin]*imag[iBin]);
+            fPhase[iBin] = atan2(imag[iBin], real[iBin]);
         }
 
         return;
@@ -133,71 +132,121 @@ namespace Katydid
 
     KTComplexVector& KTComplexVector::operator*=(Double_t mult)
     {
-        (*fMagnitude) *= mult;
+        fMagnitude *= mult;
         return *this;
+    }
+
+    KTComplexVector& KTComplexVector::operator/=(const KTPhysicalArray< 1, Double_t >& div)
+    {
+        if (fMagnitude.GetNoElements() != div.size()) return *this;
+
+        for (size_t iBin=0; iBin < div.size(); iBin++)
+        {
+            fMagnitude(iBin) /= div[iBin];
+        }
+
+        return *this;
+    }
+
+    TH1D* KTComplexVector::CreateMagnitudeHistogram(const string& name) const
+    {
+        TH1D* hist = new TH1D(fMagnitude);
+        hist->SetNameTitle(name.c_str(), "Magnitude");
+        hist->SetYTitle("Magnitude");
+        return hist;
     }
 
     TH1D* KTComplexVector::CreateMagnitudeHistogram() const
     {
-        TH1D* hist = new TH1D(*fMagnitude);
-        hist->SetNameTitle("Magnitude", "Magnitude");
-        hist->SetYTitle("Magnitude");
+        return CreateMagnitudeHistogram("Magnitude");
+    }
+
+    TH1D* KTComplexVector::CreatePhaseHistogram(const string& name) const
+    {
+        TH1D* hist = new TH1D(fPhase);
+        hist->SetNameTitle(name.c_str(), "Phase");
+        hist->SetYTitle("Phase");
         return hist;
     }
 
     TH1D* KTComplexVector::CreatePhaseHistogram() const
     {
-        TH1D* hist = new TH1D(*fPhase);
-        hist->SetNameTitle("Phase", "Phase");
-        hist->SetYTitle("Phase");
-        return hist;
+        return CreatePhaseHistogram("Phase");
+    }
+
+    KTPhysicalArray< 1, Double_t >* KTComplexVector::CreateMagnitudePhysArr() const
+    {
+        KTPhysicalArray< 1, Double_t >* physArray = new KTPhysicalArray< 1, Double_t >(fMagnitude.GetNoElements(), 0., 1.);
+        for (size_t bin=0; bin<physArray->GetNBins(); bin++)
+        {
+            (*physArray)[bin] = fMagnitude(bin);
+        }
+        return physArray;
+    }
+
+    KTPhysicalArray< 1, Double_t >* KTComplexVector::CreatePhasePhysArr() const
+    {
+        KTPhysicalArray< 1, Double_t >* physArray = new KTPhysicalArray< 1, Double_t >(fPhase.GetNoElements(), 0., 1.);
+        for (size_t bin=0; bin<physArray->GetNBins(); bin++)
+        {
+            (*physArray)[bin] = fPhase(bin);
+        }
+        return physArray;
     }
 
     Double_t KTComplexVector::GetMagnitudeAt(Int_t iBin) const
     {
-        return (*fMagnitude)[iBin];
+        return fMagnitude[iBin];
     }
 
     Double_t KTComplexVector::GetPhaseAt(Int_t iBin) const
     {
-        return (*fPhase)[iBin];
+        return fPhase[iBin];
     }
 
     Int_t KTComplexVector::GetSize() const
     {
-        return fMagnitude->GetNoElements();
+        return fMagnitude.GetNoElements();
     }
 
-    TVectorD* KTComplexVector::GetMagnitude() const
+    TVectorD& KTComplexVector::GetMagnitude()
     {
         return fMagnitude;
     }
 
-    TVectorD* KTComplexVector::GetPhase() const
+    const TVectorD& KTComplexVector::GetMagnitude() const
+    {
+        return fMagnitude;
+    }
+
+    TVectorD& KTComplexVector::GetPhase()
+    {
+        return fPhase;
+    }
+
+    const TVectorD& KTComplexVector::GetPhase() const
     {
         return fPhase;
     }
 
     void KTComplexVector::SetMagnitudeAt(Int_t iBin, Double_t mag)
     {
-        (*fMagnitude)[iBin] = mag;
+        fMagnitude[iBin] = mag;
     }
 
     void KTComplexVector::SetPhaseAt(Int_t iBin, Double_t phase)
     {
-        (*fPhase)[iBin] = phase;
+        fPhase[iBin] = phase;
     }
 
     void KTComplexVector::SetMagnitude(const TVectorD& magnitude)
     {
-        delete fMagnitude;
-        fMagnitude = new TVectorD(magnitude);
+        fMagnitude = magnitude;
     }
 
     void KTComplexVector::SetPhase(const TVectorD& phase)
     {
-        delete fPhase;
-        fPhase = new TVectorD(phase);
+        fPhase = phase;
     }
 
 
