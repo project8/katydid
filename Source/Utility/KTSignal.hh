@@ -38,13 +38,6 @@ namespace Katydid
                     template< typename XSlotType >
                     KTConnection Connect(const XSlotType& slot)
                     {
-                        //typename signal_type::slot_type* castSlotPtr = static_cast< typename signal_type::slot_type* >(slotPtr);
-                        /*
-                        if (castSlotPtr == NULL)
-                        {
-                            // TODO: throw exception
-                        }
-                        */
                         return fSignal->connect(slot);
                     }
                 private:

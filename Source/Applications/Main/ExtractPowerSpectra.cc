@@ -22,6 +22,8 @@
 #include <unistd.h>
 #include <vector>
 
+#include <iostream>
+
 using namespace std;
 using namespace Katydid;
 
@@ -86,15 +88,23 @@ int main(int argc, char** argv)
 
     PowerSpectraContainer powerSpectra;
 
-    // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    //procFFT.SetEventSlotConnection(procEgg.ConnectToSignal< void (UInt_t, const KTEvent*) >("event", boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2)));
-    procFFT.SetEventSlotConnection(procEgg.ConnectToSignal2("event", &procFFT, &KTSimpleFFTProcessor::ProcessEvent, 2));
+    try
+    {
+        // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
+        //procFFT.ConnectToEventSignalFrom(procEgg);
+        //procFFT.SetEventSlotConnection(procEgg.ConnectToSignal< void (UInt_t, const KTEvent*) >("event", boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2)));
+        procEgg.ConnectToSignal2< KTSimpleFFTProcessor, void (UInt_t, const KTEvent*) >("event", &procFFT, "event");
 
-    // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    procFFT.SetHeaderSlotConnection(procEgg.ConnectToSignal< void (KTEgg::HeaderInfo) >("header", boost::bind(&KTSimpleFFTProcessor::ProcessHeader, boost::ref(procFFT), _1)));
-
+        // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
+        //procFFT.ConnectToEventSignalFrom(procEgg);
+        //procFFT.SetHeaderSlotConnection(procEgg.ConnectToSignal< void (KTEgg::HeaderInfo) >("header", boost::bind(&KTSimpleFFTProcessor::ProcessHeader, boost::ref(procFFT), _1)));
+        procEgg.ConnectToSignal2< KTSimpleFFTProcessor, void (KTEgg::HeaderInfo) >("header", &procFFT, "header");
+    }
+    catch (std::exception& e)
+    {
+        std::cout << "An error occured while connecting signals and slots:" << std::endl;
+        std::cout << e.what() << endl;
+    }
     // get the output histogram when an FFT is complete
     boost::signals2::connection fftConnection = procFFT.ConnectToFFTSignal( boost::bind(&PowerSpectraContainer::AddPowerSpectrum, boost::ref(powerSpectra), _1, _2) );
 
