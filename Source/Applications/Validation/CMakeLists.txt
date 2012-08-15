@@ -3,6 +3,8 @@
 
 if (ENABLE_TESTING)
 
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.hh DESTINATION ${INCLUDE_INSTALL_DIR})
+
     add_executable (ExtractEvents ${CMAKE_CURRENT_SOURCE_DIR}/ExtractEvents.cc)
     target_link_libraries (ExtractEvents KatydidUtility KatydidEgg ${LIBS})
     
@@ -21,8 +23,10 @@ if (ENABLE_TESTING)
     add_executable (TestSettings ${CMAKE_CURRENT_SOURCE_DIR}/TestSettings.cc)
     target_link_libraries (TestSettings KatydidUtility ${LIBS})
     
-    #add_executable (TestSignals ${CMAKE_CURRENT_SOURCE_DIR}/TestSignals.cc)
-    #target_link_libraries (TestSignals KatydidUtility ${LIBS})
+    add_executable (TestSignalsAndSlots ${CMAKE_CURRENT_SOURCE_DIR}/TestSignalsAndSlots.cc
+                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.cc
+    )
+    target_link_libraries (TestSignalsAndSlots KatydidUtility ${LIBS})
 
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
     target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
@@ -39,7 +43,7 @@ if (ENABLE_TESTING)
                      TestCutableArray
                      TestLogger
                      TestSettings
-                     #TestSignals
+                     TestSignalsAndSlots
                      TestSimpleFFT
                      TestSlidingWindowFFT
                      TestVector
@@ -52,7 +56,7 @@ if (ENABLE_TESTING)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_Logger TestLogger)
     add_test (Test_Settings TestSettings)
-    #add_test (Test_Signals TestSignals)
+    add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     add_test (Test_Vector TestVector)
