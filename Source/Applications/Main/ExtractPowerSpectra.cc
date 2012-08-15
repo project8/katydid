@@ -104,6 +104,7 @@ int main(int argc, char** argv)
     {
         std::cout << "An error occured while connecting signals and slots:" << std::endl;
         std::cout << e.what() << endl;
+        return -1;
     }
     // get the output histogram when an FFT is complete
     boost::signals2::connection fftConnection = procFFT.ConnectToFFTSignal( boost::bind(&PowerSpectraContainer::AddPowerSpectrum, boost::ref(powerSpectra), _1, _2) );

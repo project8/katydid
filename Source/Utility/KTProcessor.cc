@@ -51,8 +51,6 @@ namespace Katydid
             fSignalMap(),
             fSlotMap()
     {
-        // TODO Auto-generated constructor stub
-
     }
 
     KTProcessor::~KTProcessor()
@@ -60,6 +58,11 @@ namespace Katydid
         for (SlotMapIt iter = fSlotMap.begin(); iter != fSlotMap.end(); iter++)
         {
             iter->second->Disconnect();
+            delete iter->second;
+        }
+        for (SigMapIt iter = fSignalMap.begin(); iter != fSignalMap.end(); iter++)
+        {
+            delete iter->second;
         }
     }
 

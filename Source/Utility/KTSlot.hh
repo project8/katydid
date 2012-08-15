@@ -12,6 +12,7 @@
 
 #include <boost/function.hpp>
 
+#include <typeinfo>
 #include <iostream>
 
 namespace Katydid
@@ -41,7 +42,10 @@ namespace Katydid
                             fSlot(funcPtr),
                             fNArgs(nArgs)
                     {}
-                    virtual ~KTSlotModel() {}
+                    virtual ~KTSlotModel()
+                    {
+                        delete fSlot;
+                    }
                     XSignature& GetSlot()
                     {
                         return *fSlot;
@@ -49,7 +53,7 @@ namespace Katydid
                 private:
                     XTargetType* fTarget; // not owned by this KTSlot
                     //XSignature XTargetType::* fSlot; //not owned by this KTSlot
-                    XSignature* fSlot;
+                    XSignature* fSlot; // is owned by this KTSlot
                     int fNArgs;
             };
 
@@ -62,6 +66,7 @@ namespace Katydid
                     fSlot(new KTSlotModel< XTargetType, XSignature >(target, signalPtr, nArgs)),
                     fConnection()
             {
+                std::cout << "new KTSlot created with fSlot type: " << typeid(fSlot).name() << std::endl;
             }
             ~KTSlot();
 
@@ -69,7 +74,8 @@ namespace Katydid
             //typename boost::signals2::signal< XSignature >::slot_type GetSlot()
             XSignature& GetSlot()
             {
-                KTSlotModel< XTargetType, XSignature >* derivedSlotModel = dynamic_cast< KTSlotModel< XTargetType, XSignature >* >(fSlot);
+                std::cout << "type of fSlot: " << typeid(fSlot).name() << std::endl;
+                KTSlotModel< XTargetType, XSignature >* derivedSlotModel = static_cast< KTSlotModel< XTargetType, XSignature >* >(fSlot);
                 if (derivedSlotModel == NULL)
                 {
                     std::cout << "unable to cast slot; throwing exception" << std::endl;
