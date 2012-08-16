@@ -25,14 +25,5 @@ namespace Katydid
     {
         this->Disconnect();
     }
-/**/
-    void KTSlotWrapper::SetConnection(KTSignalWrapper* signalWrap)
-    {
-        fConnection = this->fSlotWrapper->Connect(signalWrap);
-        return;
-    }
-/**/
-
-
 
 } /* namespace Katydid */
