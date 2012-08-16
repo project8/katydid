@@ -84,38 +84,7 @@ namespace Katydid
             // Slot connection
             //****************
 
-        public:
-            //void ConnectToHeaderSignalFrom(KTSignalEmitter* sigEmit);
-            //void ConnectToEventSignalFrom(KTSignalEmitter* sigEmit);
-            void SetHeaderSlotConnection(KTConnection headerConn);
-            void SetEventSlotConnection(KTConnection eventConn);
-            void SetEggDoneSlotConnection(KTConnection eggDoneConn);
-
-        private:
-            KTConnection fHeaderConnection;
-            KTConnection fEventConnection;
-            KTConnection fEggDoneConnection;
-
     };
-
-    inline void KTFFTEHuntProcessor::SetHeaderSlotConnection(KTConnection headerConn)
-    {
-        fHeaderConnection = headerConn;
-        return;
-    }
-
-    inline void KTFFTEHuntProcessor::SetEventSlotConnection(KTConnection eventConn)
-    {
-        fEventConnection = eventConn;
-        return;
-    }
-
-    inline void KTFFTEHuntProcessor::SetEggDoneSlotConnection(KTConnection eggDoneConn)
-    {
-        fEggDoneConnection = eggDoneConn;
-        return;
-    }
-
 
 } /* namespace Katydid */
 #endif /* KTFFTEHUNTPROCESSOR_HH_ */

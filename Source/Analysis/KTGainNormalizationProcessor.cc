@@ -21,6 +21,7 @@ namespace Katydid
     KTGainNormalizationProcessor::KTGainNormalizationProcessor() :
             fNormalization(NULL)
     {
+        RegisterSlot("power_spect", this, &KTGainNormalizationProcessor::ProcessPowerSpectrum);
     }
 
     KTGainNormalizationProcessor::~KTGainNormalizationProcessor()

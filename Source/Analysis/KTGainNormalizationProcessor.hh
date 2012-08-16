@@ -11,8 +11,6 @@
 
 #include "KTProcessor.hh"
 
-#include "boost/signals2.hpp"
-
 namespace Katydid
 {
     class KTPowerSpectrum;
@@ -37,23 +35,7 @@ namespace Katydid
         private:
             KTPhysicalArray< 1, Double_t >* fNormalization;
 
-            //****************
-            // Slot connection
-            //****************
-
-        public:
-            //void ConnectToPowerSpectrumSignalFrom(KTSignalEmitter* sigEmit);
-            void SetPowerSpectrumSlotConnection(boost::signals2::connection psConn);
-
-        private:
-            boost::signals2::connection fPowerSpectrumConnection;
     };
-
-    inline void KTGainNormalizationProcessor::SetPowerSpectrumSlotConnection(boost::signals2::connection psConn)
-    {
-        fPowerSpectrumConnection = psConn;
-        return;
-    }
 
 } /* namespace Katydid */
 #endif /* KTGAINNORMALIZATIONPROCESSOR_HH_ */

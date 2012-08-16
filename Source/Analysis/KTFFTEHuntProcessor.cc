@@ -50,8 +50,14 @@ namespace Katydid
             fFrequencyMultiplier(1.e-6),
             fTotalCandidates(0)
     {
-        fGainNormProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 0, boost::bind(&KTGainNormalizationProcessor::ProcessPowerSpectrum, boost::ref(fGainNormProc), _1, _2) ));
-        fClusteringProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 1, boost::bind(&KTSimpleClusteringProcessor::ProcessPowerSpectrum, boost::ref(fClusteringProc), _1, _2) ));
+        RegisterSlot("header", this, &KTFFTEHuntProcessor::ProcessHeader);
+        RegisterSlot("event", this, &KTFFTEHuntProcessor::ProcessEvent);
+        RegisterSlot("event_done", this, &KTFFTEHuntProcessor::FinishHunt);
+
+        fWindowFFTProc.ConnectASlot("power_spect", &fGainNormProc, "power_spect");
+        fWindowFFTProc.ConnectASlot("power_spect", &fClusteringProc, "power_spect");
+        //fGainNormProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 0, boost::bind(&KTGainNormalizationProcessor::ProcessPowerSpectrum, boost::ref(fGainNormProc), _1, _2) ));
+        //fClusteringProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 1, boost::bind(&KTSimpleClusteringProcessor::ProcessPowerSpectrum, boost::ref(fClusteringProc), _1, _2) ));
     }
 
     KTFFTEHuntProcessor::~KTFFTEHuntProcessor()
