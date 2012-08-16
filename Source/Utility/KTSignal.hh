@@ -1,5 +1,5 @@
 /*
- * KTSignal.hh
+ * KTSignalWrapper.hh
  *
  *  Created on: Aug 8, 2012
  *      Author: nsoblath
@@ -14,89 +14,119 @@
 #include <boost/signals2.hpp>
 #include <boost/utility.hpp>
 
+#include <iostream>
+#include <typeinfo>
 //#include <set>
 
 namespace Katydid
 {
-
-    class KTSignal : public boost::noncopyable
+    class SignalException : public std::logic_error
     {
+        public:
+            SignalException(std::string const& why);
+    };
+
+    class KTSignalWrapper : public boost::noncopyable
+    {
+        public:
+            friend class KTSlotWrapper;
+
         private:
-            struct KTSignalConcept
+            class KTInternalSignalWrapper
             {
-                virtual ~KTSignalConcept() {}
-                //virtual KTConnection Connect(void* slotPtr) = 0;
+                public:
+                    KTInternalSignalWrapper() {}
+                    virtual ~KTInternalSignalWrapper() {}
+
+                    //virtual KTConnection Connect(void* slotPtr) = 0;
+                    void TestFuncNonVirtual() {std::cout << "signal, non virtual: base" << std::endl;}
+                    virtual void TestFuncVirtual() {std::cout << "signal, virtual: base" << std::endl;}
             };
 
             template< typename XSignature >
-            struct KTSignalModel : public KTSignalConcept, public boost::noncopyable
+            class KTSpecifiedInternalSignalWrapper : public KTInternalSignalWrapper, public boost::noncopyable
             {
                 public:
-                    typedef boost::signals2::signal< XSignature > signal_type;
-                    KTSignalModel(signal_type* signalPtr) : fSignal(signalPtr) {}
-                    virtual ~KTSignalModel() {}
+                    //typedef boost::signals2::signal< XSignature > signal_type;
+                    typedef XSignature signal_type;
+                    KTSpecifiedInternalSignalWrapper(signal_type* signalPtr) : fSignal(signalPtr)
+                    {
+                        std::cout << "internal signal wrapper: signature is " << typeid(signalPtr).name() << std::endl;
+                    }
+                    virtual ~KTSpecifiedInternalSignalWrapper() {}
                     template< typename XSlotType >
-                    KTConnection Connect(const XSlotType& slot)
+                    KTConnection Connect(XSlotType& slot)
                     {
                         return fSignal->connect(slot);
                     }
+                    void TestFuncNonVirtual() {std::cout << "signal, non virtual: derived" << std::endl;}
+                    virtual void TestFuncVirtual() {std::cout << "signal, virtual: derived" << std::endl;}
+
+                    signal_type* GetSignal() const
+                    {
+                        return fSignal;
+                    }
                 private:
-                    signal_type* fSignal; //not owned by this KTSignal
+                    signal_type* fSignal; //not owned by this KTSignalWrapper
             };
 
-            KTSignalConcept* fSignal;
+            KTInternalSignalWrapper* fSignalWrapper;
 
         public:
+            //KTSignalWrapper(boost::signals2::signal< XSignature >* signalPtr) : fSignalWrapper(NULL)
             template< typename XSignature >
-            KTSignal(boost::signals2::signal< XSignature >* signalPtr) : fSignal(NULL)
+            KTSignalWrapper(XSignature* signalPtr) : fSignalWrapper(NULL)
             {
-                fSignal = new KTSignalModel< XSignature >(signalPtr);
+                fSignalWrapper = new KTSpecifiedInternalSignalWrapper< XSignature >(signalPtr);
             }
-            ~KTSignal();
+            ~KTSignalWrapper();
+
+            //KTConnection Connect(const typename boost::signals2::signal< XSignature >::slot_type& slot)
+            template< typename XSignature >
+            KTConnection Connect(XSignature& slot)
+            {
+                KTSpecifiedInternalSignalWrapper< XSignature >* derivedSignalWrapper = dynamic_cast< KTSpecifiedInternalSignalWrapper< XSignature >* >(fSignalWrapper);
+                if (derivedSignalWrapper == NULL)
+                {
+                    std::cout << "unable to cast signal; throwing exception" << std::endl;
+                    throw SignalException("Incorrect cast from KTInternalSignalWrapper* to derived type");
+                }
+                return derivedSignalWrapper->Connect(slot);
+            }
 
             template< typename XSignature >
-            KTConnection Connect(const typename boost::signals2::signal< XSignature >::slot_type& slot)
+            void PrintTestFunc()
             {
-                KTSignalModel< XSignature >* derivedSignalModel = dynamic_cast< KTSignalModel< XSignature >* >(fSignal);
-                if (derivedSignalModel == NULL)
+                std::cout << "### Without Casting ###" << std::endl;
+                fSignalWrapper->TestFuncNonVirtual();
+                fSignalWrapper->TestFuncVirtual();
+
+                std::cout << "### Casting ###" << std::endl;
+                KTSpecifiedInternalSignalWrapper< XSignature >* derivedSignalWrapper = dynamic_cast< KTSpecifiedInternalSignalWrapper< XSignature >* >(fSignalWrapper);
+                if (derivedSignalWrapper == NULL)
                 {
-                    // throw error
+                    std::cout << "unable to cast signal; throwing exception" << std::endl;
+                    throw SignalException("Incorrect cast from KTInternalSignalWrapper* to derived type");
                 }
-                return derivedSignalModel->Connect(slot);
+
+                std::cout << "### With Casting ###" << std::endl;
+                derivedSignalWrapper->TestFuncNonVirtual();
+                derivedSignalWrapper->TestFuncVirtual();
+
+                return;
             }
 
         private:
-            KTSignal();
+            KTSignalWrapper();
+
+            KTInternalSignalWrapper* GetInternal() const;
 
     };
 
-    /*
-    template< typename XSignature >
-    struct KTSignal
+    inline KTSignalWrapper::KTInternalSignalWrapper* KTSignalWrapper::GetInternal() const
     {
-            typedef KTSignal< XSignature > signal_wrapper_type;
-            typedef boost::signals2::signal< XSignature > signal_type;
-            typedef signal_type::slot_type slot_type;
-            signal_type signal;
-    };
-    */
-    /*
-    //class KTConnection;
-
-    class KTSignal
-    {
-        public:
-            KTSignal();
-            virtual ~KTSignal();
-
-            void AddConnection(KTConnection* connection);
-
-            void ExecuteSignals();
-
-        protected:
-            std::multiset< KTConnection* > fConnections;
-    };
-    */
+        return fSignalWrapper;
+    }
 
 } /* namespace Katydid */
 #endif /* KTSIGNAL_HH_ */

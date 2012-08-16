@@ -1,5 +1,5 @@
 /*
- * KTSignal.cc
+ * KTSignalWrapper.cc
  *
  *  Created on: Aug 8, 2012
  *      Author: nsoblath
@@ -9,17 +9,18 @@
 
 namespace Katydid
 {
+    SignalException::SignalException (std::string const& why)
+      : std::logic_error(why)
+    {}
 
-    KTSignal::KTSignal() :
-            fSignal(NULL)
+    KTSignalWrapper::KTSignalWrapper() :
+            fSignalWrapper(NULL)
     {
     }
 
-    KTSignal::~KTSignal()
+    KTSignalWrapper::~KTSignalWrapper()
     {
-        delete fSignal;
+        delete fSignalWrapper;
     }
-
-
 
 } /* namespace Katydid */

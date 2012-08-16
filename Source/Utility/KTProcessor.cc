@@ -15,33 +15,6 @@ using std::endl;
 
 namespace Katydid
 {
-    A::A()
-    {}
-    A::~A()
-    {}
-
-    void A::UseFunc(B* bptr, int (B::*bfunc)())
-    {
-        //cout << (bptr->*bfunc)() << endl;
-
-        //boost::function< int (B*) > func = bfunc;
-        //cout << func(bptr) << endl;
-
-        boost::function< int () > func = boost::bind(bfunc, bptr);
-        cout << func() << endl;
-
-    }
-
-    B::B()
-    {}
-    B::~B()
-    {}
-
-    int B::FuncExample()
-    {
-        return 5;
-    }
-
     ProcessorException::ProcessorException (std::string const& why)
       : std::logic_error(why)
     {}

@@ -21,8 +21,8 @@ namespace Katydid
     KTSimpleFFTProcessor::KTSimpleFFTProcessor() :
             fFFT()
     {
-        RegisterSlot2("header", this, &KTSimpleFFTProcessor::ProcessHeader);
-        RegisterSlot2("event", this, &KTSimpleFFTProcessor::ProcessEvent);
+        RegisterSlot("header", this, &KTSimpleFFTProcessor::ProcessHeader);
+        RegisterSlot("event", this, &KTSimpleFFTProcessor::ProcessEvent);
     }
 
     KTSimpleFFTProcessor::~KTSimpleFFTProcessor()

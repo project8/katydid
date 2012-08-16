@@ -9,89 +9,128 @@
 #define KTSLOT_HH_
 
 #include "KTConnection.hh"
+#include "KTSignal.hh"
 
 #include <boost/function.hpp>
+#include <boost/signals2.hpp>
 
 #include <typeinfo>
 #include <iostream>
 
 namespace Katydid
 {
+    template< typename XFuncSig >
+    struct RawFuncSignatureContainer
+    {
+        typedef XFuncSig function_type;
+        typedef boost::signals2::signal< XFuncSig > signal_type;
+    };
+
+
     class SlotException : public std::logic_error
     {
         public:
             SlotException(std::string const& why);
     };
 
-    class KTSlot : public boost::noncopyable
+    class KTSlotWrapper : public boost::noncopyable
     {
         private:
-            struct KTSlotConcept
-            {
-                virtual ~KTSlotConcept() {}
-                //virtual KTConnection Connect(void* slotPtr) = 0;
-            };
-
-            template< class XTargetType, typename XSignature >
-            struct KTSlotModel : public KTSlotConcept, public boost::noncopyable
+            class KTInternalSlotWrapper
             {
                 public:
-                    //typedef typename boost::signals2::signal< XSignature >::slot_type slot_type;
-                    KTSlotModel(XTargetType* target, XSignature* funcPtr, int nArgs) :
-                            fTarget(target),
-                            fSlot(funcPtr),
-                            fNArgs(nArgs)
-                    {}
-                    virtual ~KTSlotModel()
-                    {
-                        delete fSlot;
-                    }
-                    XSignature& GetSlot()
-                    {
-                        return *fSlot;
-                    }
-                private:
-                    XTargetType* fTarget; // not owned by this KTSlot
-                    //XSignature XTargetType::* fSlot; //not owned by this KTSlot
-                    XSignature* fSlot; // is owned by this KTSlot
-                    int fNArgs;
+                    KTInternalSlotWrapper() {}
+                    virtual ~KTInternalSlotWrapper() {}
+
+                    virtual KTConnection Connect(KTSignalWrapper* signalWrap) = 0;
             };
 
-            KTSlotConcept* fSlot;
+            template< typename XSignature, typename XTypeContainer >
+            class KTSpecifiedInternalSlotWrapper : public KTInternalSlotWrapper, public boost::noncopyable
+            {
+                public:
+                    KTSpecifiedInternalSlotWrapper(XSignature* funcPtr, XTypeContainer* typeCont=NULL) :
+                            fSlot(funcPtr)
+                    {
+                        std::cout << "from internal slot wrapper: signature type is " << typeid(funcPtr).name() << std::endl;
+                    }
+                    virtual ~KTSpecifiedInternalSlotWrapper()
+                    {
+                        //delete fSlot;
+                    }
+
+                    virtual KTConnection Connect(KTSignalWrapper* signalWrap)
+                    {
+                        typedef KTSignalWrapper::KTInternalSignalWrapper SignalWrapperBase;
+                        typedef KTSignalWrapper::KTSpecifiedInternalSignalWrapper< typename XTypeContainer::signal_type > SignalWrapper;
+
+                        SignalWrapperBase* internalSignalWrap = signalWrap->GetInternal();
+                        SignalWrapper* derivedSignalWrapper = dynamic_cast< SignalWrapper* >(internalSignalWrap);
+                        if (derivedSignalWrapper == NULL)
+                        {
+                            std::cout << "unable to cast signal; throwing exception" << std::endl;
+                            throw SignalException("Incorrect cast from KTInternalSignalWrapper* to derived type");
+                        }
+                        return derivedSignalWrapper->GetSignal()->connect(*fSlot);
+                    }
+
+                private:
+                    XSignature* fSlot; // is owned by this KTSlot
+            };
+
+            KTInternalSlotWrapper* fSlotWrapper;
 
         public:
-            //KTSlot(XTargetType* target, boost::signals2::signal< XSignature >* signalPtr, int nArgs) :
-            template< class XTargetType, typename XSignature >
-            KTSlot(XTargetType* target, XSignature* signalPtr, int nArgs) :
-                    fSlot(new KTSlotModel< XTargetType, XSignature >(target, signalPtr, nArgs)),
+            template< typename XSignature, typename XTypeContainer >
+            KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont) :
+                    fSlotWrapper(new KTSpecifiedInternalSlotWrapper< XSignature, XTypeContainer >(signalPtr, typeCont)),
                     fConnection()
-            {
-                std::cout << "new KTSlot created with fSlot type: " << typeid(fSlot).name() << std::endl;
-            }
-            ~KTSlot();
+            {}
+            ~KTSlotWrapper();
 
-            template< class XTargetType, typename XSignature >
-            //typename boost::signals2::signal< XSignature >::slot_type GetSlot()
+            template< typename XSignature >
             XSignature& GetSlot()
             {
-                std::cout << "type of fSlot: " << typeid(fSlot).name() << std::endl;
-                KTSlotModel< XTargetType, XSignature >* derivedSlotModel = static_cast< KTSlotModel< XTargetType, XSignature >* >(fSlot);
-                if (derivedSlotModel == NULL)
+                KTSpecifiedInternalSlotWrapper< XSignature, KTConnection >* derivedSlotWrapper = dynamic_cast< KTSpecifiedInternalSlotWrapper< XSignature, KTConnection >* >(fSlotWrapper);
+                if (derivedSlotWrapper == NULL)
                 {
                     std::cout << "unable to cast slot; throwing exception" << std::endl;
-                    throw SlotException("Incorrect cast from KTSlot* to derived type");
+                    throw SlotException("Incorrect cast from KTInternalSlotWrapper* to derived type");
                 }
-                return derivedSlotModel->GetSlot();
+                return derivedSlotWrapper->GetSlot();
             }
 
-            int GetNArgs() const;
+            template< typename XSignature >
+            void PrintTestFunc()
+            {
+                std::cout << "### Without Casting ###" << std::endl;
+                fSlotWrapper->TestFuncNonVirtual();
+                fSlotWrapper->TestFuncVirtual();
+
+                std::cout << "### Casting ###" << std::endl;
+                KTSpecifiedInternalSlotWrapper< XSignature, KTConnection >* derivedSlotWrapper = static_cast< KTSpecifiedInternalSlotWrapper< XSignature, KTConnection >* >(fSlotWrapper);
+                if (derivedSlotWrapper == NULL)
+                {
+                    std::cout << "unable to cast slot; throwing exception" << std::endl;
+                    throw SlotException("Incorrect cast from KTInternalSlotWrapper* to derived type");
+                }
+
+                std::cout << "### With Casting ###" << std::endl;
+                derivedSlotWrapper->TestFuncNonVirtual();
+                derivedSlotWrapper->TestFuncVirtual();
+                derivedSlotWrapper->TestDerivedOnly();
+
+                return;
+            }
+
 
         private:
-            KTSlot();
+            KTSlotWrapper();
 
 
         public:
             void SetConnection(KTConnection conn);
+            void SetConnection(KTSignalWrapper* signalWrap);
             void Disconnect();
 
         private:
@@ -99,13 +138,13 @@ namespace Katydid
 
     };
 
-    inline void KTSlot::SetConnection(KTConnection conn)
+    inline void KTSlotWrapper::SetConnection(KTConnection conn)
     {
         fConnection = conn;
         return;
     }
 
-    inline void KTSlot::Disconnect()
+    inline void KTSlotWrapper::Disconnect()
     {
         fConnection.disconnect();
         return;

@@ -24,7 +24,7 @@ namespace Katydid
 
             void EmitSignals(int);
 
-        private:
+        //private:
             TheSignal fTheSignal;
     };
 

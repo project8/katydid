@@ -7,21 +7,32 @@
 
 #include "KTSlot.hh"
 
+#include "KTSignal.hh"
+
 namespace Katydid
 {
     SlotException::SlotException (std::string const& why)
       : std::logic_error(why)
     {}
 
-    KTSlot::KTSlot() :
-            fSlot(NULL),
+    KTSlotWrapper::KTSlotWrapper() :
+            fSlotWrapper(NULL),
             fConnection()
     {
     }
 
-    KTSlot::~KTSlot()
+    KTSlotWrapper::~KTSlotWrapper()
     {
         this->Disconnect();
     }
+/**/
+    void KTSlotWrapper::SetConnection(KTSignalWrapper* signalWrap)
+    {
+        fConnection = this->fSlotWrapper->Connect(signalWrap);
+        return;
+    }
+/**/
+
+
 
 } /* namespace Katydid */
