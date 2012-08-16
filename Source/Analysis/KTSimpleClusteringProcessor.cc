@@ -39,6 +39,7 @@ namespace Katydid
             fFirstBinToUse(0),
             fDrawFlag(kFALSE)
     {
+        RegisterSlot("power_spect", this, &KTSimpleClusteringProcessor::ProcessPowerSpectrum);
     }
 
     KTSimpleClusteringProcessor::~KTSimpleClusteringProcessor()

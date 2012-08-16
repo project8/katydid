@@ -20,16 +20,16 @@ namespace Katydid
 
     KTSlidingWindowFFTProcessor::KTSlidingWindowFFTProcessor() :
             fFFT(),
-            fFFTSignal(),
-            fHeaderConnection(),
-            fEventConnection()
+            fFFTSignal()
     {
+        RegisterSignal("fft", &fFFTSignal);
+
+        RegisterSlot("header", this, &KTSlidingWindowFFTProcessor::ProcessHeader);
+        RegisterSlot("event", this, &KTSlidingWindowFFTProcessor::ProcessEvent);
     }
 
     KTSlidingWindowFFTProcessor::~KTSlidingWindowFFTProcessor()
     {
-        fHeaderConnection.disconnect();
-        fEventConnection.disconnect();
     }
 
     Bool_t KTSlidingWindowFFTProcessor::ApplySetting(const KTSetting* setting)

@@ -27,8 +27,6 @@ namespace Katydid
 
     KTSimpleFFTProcessor::~KTSimpleFFTProcessor()
     {
-        fHeaderConnection.disconnect();
-        fEventConnection.disconnect();
     }
 
     Bool_t KTSimpleFFTProcessor::ApplySetting(const KTSetting* setting)

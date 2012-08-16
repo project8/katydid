@@ -15,8 +15,6 @@
 
 #include "Rtypes.h"
 
-#include <boost/signals2.hpp>
-
 #include <string>
 
 namespace Katydid
@@ -38,9 +36,9 @@ namespace Katydid
     class KTEggProcessor : public KTProcessor
     {
         public:
-            typedef boost::signals2::signal< void (KTEgg::HeaderInfo) > HeaderSignal;
-            typedef boost::signals2::signal< void (UInt_t, const KTEvent*) > EventSignal;
-            typedef boost::signals2::signal< void () > EggDoneSignal;
+            typedef KTSignal< void (KTEgg::HeaderInfo) >::signal HeaderSignal;
+            typedef KTSignal< void (UInt_t, const KTEvent*) >::signal EventSignal;
+            typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:
             KTEggProcessor();
@@ -60,15 +58,7 @@ namespace Katydid
             // Signals
             //***************
 
-        public:
-            //KTConnection ConnectToHeaderSignal(const HeaderSignal::signal_type::slot_type &subscriber);
-            //KTConnection ConnectToEventSignal(const EventSignal::signal_type::slot_type &subscriber);
-            //KTConnection ConnectToEggDoneSignal(const EggDoneSignal::signal_type::slot_type &subscriber);
-
         private:
-            //KTSignal fHeaderSignal;
-            //KTSignal fEventSignal;
-            //KTSignal fEggDoneSignal;
             HeaderSignal fHeaderSignal;
             EventSignal fEventSignal;
             EggDoneSignal fEggDoneSignal;
@@ -86,22 +76,6 @@ namespace Katydid
         return;
     }
 
-    /*
-    inline KTConnection KTEggProcessor::ConnectToHeaderSignal(const HeaderSignal::signal_type::slot_type &subscriber)
-    {
-        return fHeaderSignal.signal.connect(subscriber);
-    }
-
-    inline boost::signals2::connection KTEggProcessor::ConnectToEventSignal(const EventSignal::signal_type::slot_type &subscriber)
-    {
-        return fEventSignal.signal.connect(subscriber);
-    }
-
-    inline boost::signals2::connection KTEggProcessor::ConnectToEggDoneSignal(const EggDoneSignal::signal_type::slot_type &subscriber)
-    {
-        return fEggDoneSignal.signal.connect(subscriber);
-    }
-    */
 
 } /* namespace Katydid */
 

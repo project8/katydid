@@ -16,8 +16,6 @@
 
 #include "Rtypes.h"
 
-#include "boost/signals2.hpp"
-
 #include <string>
 
 namespace Katydid
@@ -38,7 +36,7 @@ namespace Katydid
     class KTSimpleFFTProcessor : public KTProcessor
     {
         public:
-            typedef boost::signals2::signal< void (UInt_t, const KTSimpleFFT*) > FFTSignal;
+            typedef KTSignal< void (UInt_t, const KTSimpleFFT*) >::signal FFTSignal;
 
         public:
             KTSimpleFFTProcessor();
@@ -61,25 +59,11 @@ namespace Katydid
             //***************
 
         public:
-            boost::signals2::connection ConnectToFFTSignal(const FFTSignal::slot_type &subscriber);
+            KTConnection ConnectToFFTSignal(const FFTSignal::slot_type &subscriber);
 
         private:
             FFTSignal fFFTSignal;
 
-
-            //****************
-            // Slot connection
-            //****************
-
-        public:
-            //void ConnectToHeaderSignalFrom(KTSignalEmitter* sigEmit);
-            //void ConnectToEventSignalFrom(KTSignalEmitter* sigEmit);
-            void SetHeaderSlotConnection(boost::signals2::connection headerConn);
-            void SetEventSlotConnection(boost::signals2::connection eventConn);
-
-        private:
-            boost::signals2::connection fHeaderConnection;
-            boost::signals2::connection fEventConnection;
 
     };
 
@@ -91,18 +75,6 @@ namespace Katydid
     inline boost::signals2::connection KTSimpleFFTProcessor::ConnectToFFTSignal(const FFTSignal::slot_type &subscriber)
     {
         return fFFTSignal.connect(subscriber);
-    }
-
-    inline void KTSimpleFFTProcessor::SetHeaderSlotConnection(boost::signals2::connection headerConn)
-    {
-        fHeaderConnection = headerConn;
-        return;
-    }
-
-    inline void KTSimpleFFTProcessor::SetEventSlotConnection(boost::signals2::connection eventConn)
-    {
-        fEventConnection = eventConn;
-        return;
     }
 
 } /* namespace Katydid */

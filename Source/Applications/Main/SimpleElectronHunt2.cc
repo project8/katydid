@@ -149,25 +149,13 @@ int main(int argc, char** argv)
     }
 
     // this will ensure that every time procEgg hatches an event, procEHunt.ProcessEvent will be called
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    //procEHunt.SetEventSlotConnection(procEgg.ConnectToEventSignal( boost::bind(&KTFFTEHuntProcessor::ProcessEvent, boost::ref(procEHunt), _1, _2) ));
-    //procEHunt.SetEventSlotConnection(procEgg.ConnectToSignal_old< void (UInt_t, const KTEvent*) >("event", boost::bind(&KTFFTEHuntProcessor::ProcessEvent, boost::ref(procEHunt), _1, _2)));
-    //procEgg.ConnectToSignal< KTFFTEHuntProcessor, void (UInt_t, const KTEvent*) >("event", &procEHunt, "event");
-    procEgg.ConnectToSignal< KTFFTEHuntProcessor, KTEggProcessor::EventSignal >("event", &procEHunt, "event");
+    procEgg.ConnectASlot("event", &procEHunt, "event");
 
     // this will ensure that when procEgg parses the header, the info is passed to procEHunt::ProcessHeader
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    //procEHunt.SetHeaderSlotConnection(procEgg.ConnectToHeaderSignal( boost::bind(&KTFFTEHuntProcessor::ProcessHeader, boost::ref(procEHunt), _1) ));
-    //procEHunt.SetHeaderSlotConnection(procEgg.ConnectToSignal_old< void (KTEgg::HeaderInfo) >("header", boost::bind(&KTFFTEHuntProcessor::ProcessHeader, boost::ref(procEHunt), _1)));
-    //procEHunt.SetHeaderSlotConnection(procEgg.ConnectToSignal< void (KTEgg::HeaderInfo) >("testsig", boost::bind(&KTFFTEHuntProcessor::ProcessHeader, boost::ref(procEHunt), _1) ));
-    //procEgg.ConnectToSignal< KTFFTEHuntProcessor, void (KTEgg::HeaderInfo) >("header", &procEHunt, "header");
-    procEgg.ConnectToSignal< KTFFTEHuntProcessor, KTEggProcessor::HeaderSignal >("header", &procEHunt, "header");
+    procEgg.ConnectASlot("header", &procEHunt, "header");
 
     // this will ensure that when procEgg is done with the file, procEHunt is notified
-    //procEHunt.SetEggDoneSlotConnection(procEgg.ConnectToEggDoneSignal( boost::bind(&KTFFTEHuntProcessor::FinishHunt, boost::ref(procEHunt)) ));
-    //procEHunt.SetEggDoneSlotConnection(procEgg.ConnectToSignal_old< void () >("egg_done", boost::bind(&KTFFTEHuntProcessor::FinishHunt, boost::ref(procEHunt))));
-    //procEgg.ConnectToSignal< KTFFTEHuntProcessor, void () >("egg_done", &procEHunt, "egg_done");
-    procEgg.ConnectToSignal< KTFFTEHuntProcessor, KTEggProcessor::EggDoneSignal >("egg_done", &procEHunt, "egg_done");
+    procEgg.ConnectASlot("egg_done", &procEHunt, "egg_done");
 
     // Open the files to add header information and remove previous contents if the files already exist
     ofstream outFileTxt(outputFileNameText.c_str(), ios::trunc);

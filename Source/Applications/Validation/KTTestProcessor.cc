@@ -7,12 +7,11 @@
 
 #include "KTTestProcessor.hh"
 
-#include <iostream>
-using std::cout;
-using std::endl;
+#include "KTLogger.hh"
 
 namespace Katydid
 {
+    KTLOGGER(testsiglog, "katydid.verification.testsig")
 
     KTTestProcessorA::KTTestProcessorA() :
             fTheSignal()
@@ -45,13 +44,13 @@ namespace Katydid
 
     void KTTestProcessorB::Slot1(int input)
     {
-        cout << "Slot1: input is " << input << endl;
+        KTINFO(testsiglog, "Slot1: input is " << input);
         return;
     }
 
     void KTTestProcessorB::Slot2(int input)
     {
-        cout << "Slot2: twice input is " << 2*input << endl;
+        KTINFO(testsiglog, "Slot2: twice input is " << 2*input);
         return;
     }
 

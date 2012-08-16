@@ -91,16 +91,10 @@ int main(int argc, char** argv)
     try
     {
         // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
-        //procFFT.ConnectToEventSignalFrom(procEgg);
-        //procFFT.SetEventSlotConnection(procEgg.ConnectToSignal< void (UInt_t, const KTEvent*) >("event", boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2)));
-        //procEgg.ConnectToSignal< KTSimpleFFTProcessor, void (UInt_t, const KTEvent*) >("event", &procFFT, "event");
-        procEgg.ConnectToSignal< KTSimpleFFTProcessor, KTEggProcessor::EventSignal >("event", &procFFT, "event");
+        procEgg.ConnectASlot("event", &procFFT, "event");
 
         // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
-        //procFFT.ConnectToEventSignalFrom(procEgg);
-        //procFFT.SetHeaderSlotConnection(procEgg.ConnectToSignal< void (KTEgg::HeaderInfo) >("header", boost::bind(&KTSimpleFFTProcessor::ProcessHeader, boost::ref(procFFT), _1)));
-        //procEgg.ConnectToSignal< KTSimpleFFTProcessor, void (KTEgg::HeaderInfo) >("header", &procFFT, "header");
-        procEgg.ConnectToSignal< KTSimpleFFTProcessor, KTEggProcessor::HeaderSignal >("header", &procFFT, "header");
+        procEgg.ConnectASlot("header", &procFFT, "header");
     }
     catch (std::exception& e)
     {
