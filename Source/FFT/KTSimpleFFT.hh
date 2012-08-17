@@ -10,10 +10,12 @@
 #define KTSIMPLEFFT_HH_
 
 #include "KTFFT.hh"
+#include "KTProcessor.hh"
+
+#include "KTLogger.hh"
 
 #include "TFFTRealComplex.h"
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -21,7 +23,10 @@ class TH1D;
 
 namespace Katydid
 {
+    KTLOGGER(fftlog_simp, "katydid.fft");
+
     class KTComplexVector;
+    class KTEggHeader;
     class KTPowerSpectrum;
     class KTPStoreNode;
     class KTEvent;
@@ -43,10 +48,18 @@ namespace Katydid
      Available configuration values:
      \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
 
+     Slots:
+     \li \c void ProcessHeader(const KTEggHeader* header)
+     \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
+     Signals:
+     \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
     */
 
-    class KTSimpleFFT : public KTFFT
+    class KTSimpleFFT : public KTFFT, public KTProcessor
     {
+        public:
+            typedef KTSignal< void (UInt_t, const KTSimpleFFT*) >::signal FFTSignal;
+
         public:
             KTSimpleFFT();
             KTSimpleFFT(UInt_t timeSize);
@@ -100,7 +113,21 @@ namespace Katydid
 
             Double_t fFreqBinWidth;
 
-            ClassDef(KTSimpleFFT, 2);
+            //***************
+            // Signals
+            //***************
+
+        private:
+            FFTSignal fFFTSignal;
+
+            //***************
+            // Slots
+            //***************
+
+        public:
+            void ProcessHeader(const KTEggHeader* header);
+            void ProcessEvent(UInt_t iEvent, const KTEvent* event);
+
     };
 
 
@@ -110,8 +137,8 @@ namespace Katydid
         unsigned int nBins = (unsigned int)data.size();
         if (nBins != (unsigned int)fTransform->GetSize())
         {
-            std::cerr << "Warning from KTSimpleFFT::TakeData: Number of bins in the data provided does not match the number of bins set for this transform" << std::endl;
-            std::cerr << "   Bin expected: " << fTransform->GetSize() << ";   Bins in data: " << nBins << std::endl;
+            KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+                    << "   Bin expected: " << fTransform->GetSize() << ";   Bins in data: " << nBins);
             return NULL;
         }
 

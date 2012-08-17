@@ -21,9 +21,6 @@ using std::vector;
 
 namespace Katydid
 {
-
-    KTLOGGER(fftlog, "katydid.fft");
-
     KTSlidingWindowFFT::KTSlidingWindowFFT() :
             KTFFT(),
             KTProcessor(),
@@ -64,7 +61,7 @@ namespace Katydid
         KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
         if (tempWF == NULL)
         {
-            KTERROR(fftlog, "Invalid window function type given: <" << windowType << ">.");
+            KTERROR(fftlog_sw, "Invalid window function type given: <" << windowType << ">.");
             return false;
         }
         SetWindowFunction(tempWF);
@@ -106,7 +103,7 @@ namespace Katydid
     {
         if (! fIsInitialized)
         {
-            KTWARN(fftlog, "FFT must be initialized before the transform is performed.\n" <<
+            KTWARN(fftlog_sw, "FFT must be initialized before the transform is performed.\n" <<
                     "Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
             return kFALSE;
         }
@@ -124,7 +121,7 @@ namespace Katydid
             }
             catch (std::exception& e)
             {
-                KTERROR(fftlog, "Channel " << iChannel << " did not transform correctly:\n" << e.what());
+                KTERROR(fftlog_sw, "Channel " << iChannel << " did not transform correctly:\n" << e.what());
                 return false;
             }
             AddTransformResult(newResults);
