@@ -9,6 +9,7 @@
 
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTPStoreNode.hh"
 #include "KTSlidingWindowFFT.hh"
 
 #include "TMath.h"
@@ -21,12 +22,19 @@ namespace Katydid
     KTGainNormalizationProcessor::KTGainNormalizationProcessor() :
             fNormalization(NULL)
     {
+        RegisterSlot("power_spect", this, &KTGainNormalizationProcessor::ProcessPowerSpectrum);
     }
 
     KTGainNormalizationProcessor::~KTGainNormalizationProcessor()
     {
         delete fNormalization;
     }
+
+    Bool_t KTGainNormalizationProcessor::Configure(const KTPStoreNode* node)
+    {
+        return true;
+    }
+
 
     Bool_t KTGainNormalizationProcessor::ApplySetting(const KTSetting* setting)
     {

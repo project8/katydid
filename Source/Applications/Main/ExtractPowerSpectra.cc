@@ -22,6 +22,8 @@
 #include <unistd.h>
 #include <vector>
 
+#include <iostream>
+
 using namespace std;
 using namespace Katydid;
 
@@ -78,7 +80,9 @@ int main(int argc, char** argv)
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
     KTSetting settingEggNEvents("NEvents", numEvents);
+    KTSetting settingEggFilename("Filename", inputFileName);
     procEgg.ApplySetting(&settingEggNEvents);
+    procEgg.ApplySetting(&settingEggFilename);
 
     KTSimpleFFTProcessor procFFT;
     KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
@@ -86,18 +90,24 @@ int main(int argc, char** argv)
 
     PowerSpectraContainer powerSpectra;
 
-    // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    procFFT.SetEventSlotConnection(procEgg.ConnectToEventSignal( boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2) ));
+    try
+    {
+        // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
+        procEgg.ConnectASlot("event", &procFFT, "event");
 
-    // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    procFFT.SetHeaderSlotConnection(procEgg.ConnectToHeaderSignal( boost::bind(&KTSimpleFFTProcessor::ProcessHeader, boost::ref(procFFT), _1) ));
-
+        // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
+        procEgg.ConnectASlot("header", &procFFT, "header");
+    }
+    catch (std::exception& e)
+    {
+        std::cout << "An error occured while connecting signals and slots:" << std::endl;
+        std::cout << e.what() << endl;
+        return -1;
+    }
     // get the output histogram when an FFT is complete
     boost::signals2::connection fftConnection = procFFT.ConnectToFFTSignal( boost::bind(&PowerSpectraContainer::AddPowerSpectrum, boost::ref(powerSpectra), _1, _2) );
 
-    Bool_t success = procEgg.ProcessEgg(inputFileName);
+    Bool_t success = procEgg.ProcessEgg();
 
     fftConnection.disconnect();
 

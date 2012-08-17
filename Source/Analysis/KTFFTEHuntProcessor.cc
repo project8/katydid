@@ -7,10 +7,12 @@
 
 #include "KTFFTEHuntProcessor.hh"
 
+#include "KTEggHeader.hh"
 #include "KTPhysicalArray.hh"
 #include "KTHannWindow.hh"
 #include "KTMaskedArray.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTPStoreNode.hh"
 
 #include "TH2.h"
 
@@ -50,8 +52,12 @@ namespace Katydid
             fFrequencyMultiplier(1.e-6),
             fTotalCandidates(0)
     {
-        fGainNormProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 0, boost::bind(&KTGainNormalizationProcessor::ProcessPowerSpectrum, boost::ref(fGainNormProc), _1, _2) ));
-        fClusteringProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 1, boost::bind(&KTSimpleClusteringProcessor::ProcessPowerSpectrum, boost::ref(fClusteringProc), _1, _2) ));
+        RegisterSlot("header", this, &KTFFTEHuntProcessor::ProcessHeader);
+        RegisterSlot("event", this, &KTFFTEHuntProcessor::ProcessEvent);
+        RegisterSlot("event_done", this, &KTFFTEHuntProcessor::FinishHunt);
+
+        fWindowFFTProc.ConnectASlot("power_spect", &fGainNormProc, "power_spect", 0);
+        fWindowFFTProc.ConnectASlot("power_spect", &fClusteringProc, "power_spect", 1);
     }
 
     KTFFTEHuntProcessor::~KTFFTEHuntProcessor()
@@ -59,6 +65,41 @@ namespace Katydid
         EmptyEventPeakBins();
         if (fROOTFile.IsOpen()) fROOTFile.Close();
         if (fTextFile.is_open()) fTextFile.close();
+    }
+
+    Bool_t KTFFTEHuntProcessor::Configure(const KTPStoreNode* node)
+    {
+        string filenameBase = node->GetData< string >("output_filename_base", "FFTEHuntOutput");
+        fROOTFilename = filenameBase + string(".root");
+        fTextFilename = filenameBase + string(".txt");
+        fWriteROOTFileFlag = node->GetData< Bool_t >("write_root_file");
+        fWriteTextFileFlag = node->GetData< Bool_t >("write_text_file");
+        fFrequencyMultiplier = node->GetData< Double_t >("frequency_multiplier");
+
+        fMinimumGroupSize = node->GetData< UInt_t >("minimum_group_size", 2);
+        fClusteringProc.SetMinimumGroupSize(fMinimumGroupSize);
+
+        // TODO: cut range when arrays are ready in the parameter store
+
+        const KTPStoreNode* clusterNode = node->GetChild("simple_clustering");
+        if (clusterNode != NULL)
+        {
+            if (! fClusteringProc.Configure(clusterNode)) return false;
+        }
+
+        const KTPStoreNode* simpleFFTNode = node->GetChild("simple_fft");
+        if (simpleFFTNode != NULL)
+        {
+            if (! fSimpleFFTProc.GetFFT()->Configure(simpleFFTNode)) return false;
+        }
+
+        const KTPStoreNode* slidingWindowFFTNode = node->GetChild("sliding_window_fft");
+        if (slidingWindowFFTNode != NULL)
+        {
+            if (! fWindowFFTProc.GetFFT()->Configure(slidingWindowFFTNode)) return false;
+        }
+
+        return true;
     }
 
     Bool_t KTFFTEHuntProcessor::ApplySetting(const KTSetting* setting)
@@ -106,7 +147,7 @@ namespace Katydid
         return kFALSE;
     }
 
-    void KTFFTEHuntProcessor::ProcessHeader(KTEgg::HeaderInfo headerInfo)
+    void KTFFTEHuntProcessor::ProcessHeader(const KTEggHeader* header)
     {
         // Initialize the processors that will be used for each event
         KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
@@ -123,8 +164,8 @@ namespace Katydid
         fWindowFFTProc.ApplySetting(&settingFFTOverlap);
 
         // Process the header information
-        fSimpleFFTProc.ProcessHeader(headerInfo);
-        fWindowFFTProc.ProcessHeader(headerInfo);
+        fSimpleFFTProc.ProcessHeader(header);
+        fWindowFFTProc.ProcessHeader(header);
 
         // Set up the bin cuts
         // get the number of frequency bins and the frequency bin width

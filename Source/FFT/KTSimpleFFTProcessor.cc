@@ -7,26 +7,25 @@
 
 #include "KTSimpleFFTProcessor.hh"
 
+#include "KTLogger.hh"
+#include "KTEggHeader.hh"
 #include "KTSimpleFFT.hh"
-
-#include <iostream>
-using std::cout;
-using std::endl;
 
 using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(fftlog, "katydid.fft");
 
     KTSimpleFFTProcessor::KTSimpleFFTProcessor() :
             fFFT()
     {
+        RegisterSlot("header", this, &KTSimpleFFTProcessor::ProcessHeader);
+        RegisterSlot("event", this, &KTSimpleFFTProcessor::ProcessEvent);
     }
 
     KTSimpleFFTProcessor::~KTSimpleFFTProcessor()
     {
-        fHeaderConnection.disconnect();
-        fEventConnection.disconnect();
     }
 
     Bool_t KTSimpleFFTProcessor::ApplySetting(const KTSetting* setting)
@@ -39,21 +38,17 @@ namespace Katydid
         return kFALSE;
     }
 
-    void KTSimpleFFTProcessor::ProcessHeader(KTEgg::HeaderInfo headerInfo)
+    void KTSimpleFFTProcessor::ProcessHeader(const KTEggHeader* header)
     {
-        fFFT.SetTimeSize(headerInfo.fRecordSize);
+        fFFT.SetTimeSize(header->GetRecordSize());
         fFFT.InitializeFFT();
         return;
     }
 
     void KTSimpleFFTProcessor::ProcessEvent(UInt_t iEvent, const KTEvent* event)
     {
-        if (fFFT.TakeData(event))
-        {
-            cout << "Data transferred to simple fft; performing transform" << endl;
-            fFFT.Transform();
-            fFFTSignal(iEvent, &fFFT);
-        }
+        fFFT.TransformEvent(event);
+        fFFTSignal(iEvent, &fFFT);
         return;
     }
 

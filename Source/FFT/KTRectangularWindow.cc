@@ -7,6 +7,9 @@
 
 #include "KTRectangularWindow.hh"
 
+#include "KTFactory.hh"
+#include "KTPStoreNode.hh"
+
 #include "TArrayD.h"
 #include <cmath>
 
@@ -14,6 +17,7 @@ ClassImp(Katydid::KTRectangularWindow);
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTEventWindowFunction, KTRectangularWindow > sEWFRectRegistrar("rectangular");
 
     KTRectangularWindow::KTRectangularWindow() :
             KTEventWindowFunction()
@@ -27,6 +31,11 @@ namespace Katydid
 
     KTRectangularWindow::~KTRectangularWindow()
     {
+    }
+
+    Bool_t KTRectangularWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    {
+        return true;
     }
 
     Double_t KTRectangularWindow::GetWeight(Double_t time) const

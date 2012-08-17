@@ -7,6 +7,9 @@
 
 #include "KTHannWindow.hh"
 
+#include "KTFactory.hh"
+#include "KTPStoreNode.hh"
+
 #include "TArrayD.h"
 #include "TMath.h"
 
@@ -16,6 +19,7 @@ ClassImp(Katydid::KTHannWindow);
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTEventWindowFunction, KTHannWindow > sEWFHannRegistrar("hann");
 
     KTHannWindow::KTHannWindow() :
             KTEventWindowFunction()
@@ -29,6 +33,11 @@ namespace Katydid
 
     KTHannWindow::~KTHannWindow()
     {
+    }
+
+    Bool_t KTHannWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    {
+        return true;
     }
 
     Double_t KTHannWindow::GetWeight(Double_t time) const

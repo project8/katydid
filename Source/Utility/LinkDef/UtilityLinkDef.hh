@@ -7,7 +7,7 @@
 #pragma link C++ nestedclasses;
 #pragma link C++ nestedtypedefs;
 
-#pragma link C++ class KTArrayUC+;
+//#pragma link C++ class KTArrayUC+;
 
 //#pragma link C++ namespace Katydid;
 

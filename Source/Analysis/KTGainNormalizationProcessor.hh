@@ -11,11 +11,10 @@
 
 #include "KTProcessor.hh"
 
-#include "boost/signals2.hpp"
-
 namespace Katydid
 {
     class KTPowerSpectrum;
+    class KTPStoreNode;
     class KTSlidingWindowFFT;
 
     template< size_t NDims, typename XDataType >
@@ -27,6 +26,8 @@ namespace Katydid
             KTGainNormalizationProcessor();
             virtual ~KTGainNormalizationProcessor();
 
+            Bool_t Configure(const KTPStoreNode* node);
+
             Bool_t ApplySetting(const KTSetting* setting);
 
             void PrepareNormalization(KTPhysicalArray< 1, Double_t >* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
@@ -37,23 +38,7 @@ namespace Katydid
         private:
             KTPhysicalArray< 1, Double_t >* fNormalization;
 
-            //****************
-            // Slot connection
-            //****************
-
-        public:
-            //void ConnectToPowerSpectrumSignalFrom(KTSignalEmitter* sigEmit);
-            void SetPowerSpectrumSlotConnection(boost::signals2::connection psConn);
-
-        private:
-            boost::signals2::connection fPowerSpectrumConnection;
     };
-
-    inline void KTGainNormalizationProcessor::SetPowerSpectrumSlotConnection(boost::signals2::connection psConn)
-    {
-        fPowerSpectrumConnection = psConn;
-        return;
-    }
 
 } /* namespace Katydid */
 #endif /* KTGAINNORMALIZATIONPROCESSOR_HH_ */

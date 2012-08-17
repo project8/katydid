@@ -21,6 +21,7 @@
 namespace Katydid
 {
     class KTPowerSpectrum;
+    class KTPStoreNode;
     class KTSlidingWindowFFT;
 
     template< size_t NDims, typename XDataType >
@@ -34,6 +35,8 @@ namespace Katydid
         public:
             KTSimpleClusteringProcessor();
             virtual ~KTSimpleClusteringProcessor();
+
+            Bool_t Configure(const KTPStoreNode* node);
 
             Bool_t ApplySetting(const KTSetting* setting);
 
@@ -60,17 +63,6 @@ namespace Katydid
 
             Bool_t fDrawFlag;
 
-            //****************
-            // Slot connection
-            //****************
-
-        public:
-            //void ConnectToPowerSpectrumSignalFrom(KTSignalEmitter* sigEmit);
-            void SetPowerSpectrumSlotConnection(boost::signals2::connection psConn);
-
-        private:
-            boost::signals2::connection fPowerSpectrumConnection;
-
     };
 
     inline void KTSimpleClusteringProcessor::SetEventPeakBinsList(epbList* list)
@@ -89,12 +81,6 @@ namespace Katydid
     inline void KTSimpleClusteringProcessor::SetMinimumGroupSize(UInt_t size)
     {
         fMinimumGroupSize = size;
-        return;
-    }
-
-    inline void KTSimpleClusteringProcessor::SetPowerSpectrumSlotConnection(boost::signals2::connection psConn)
-    {
-        fPowerSpectrumConnection = psConn;
         return;
     }
 

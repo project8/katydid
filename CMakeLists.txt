@@ -55,20 +55,24 @@ endif (ENABLE_TESTING)
 # setup the Boost install
 # at the time of this writing, CMake 2.8.6 searched for boost up to 1.46, but boost 1.48 exists, so it must be added
 # see FindBoost.cmake for additional information about Boost_ADDITIONAL_VERSIONS
-set (Boost_ADDITIONAL_VERSIONS "1.48" "1.48.0")
-find_package (Boost 1.36.0 REQUIRED)
+set (Boost_ADDITIONAL_VERSIONS "1.41" "1.41.0" "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1" "1.47" "1.47.0" "1.48" "1.48.0" "1.49" "1.49.0" "1.50" "1.50.0")
+find_package (Boost 1.36.0 REQUIRED COMPONENTS program_options)
 include_directories (${Boost_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${Boost_LIBRARIES})
 
 # setup the ROOT install
-find_package (ROOT 5.28 REQUIRED)
+find_package (ROOT 5.28)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
+    # have to add the FFTW library because it doesn't automatically get included for some reason
+    set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
+    set (LIBS ${LIBS} ${ROOT_LIBRARIES})
+else (ROOT_FOUND)
+    message(STATUS "Building without ROOT")
+    # option for not building with ROOT: need a few include files for file types
+    set (ROOT_INCLUDES ${PROJECT_SOURCE_DIR}/External/ROOT)
 endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
-# have to add the FFTW library because it doesn't automatically get included for some reason
-set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
-set (LIBS ${LIBS} ${ROOT_LIBRARIES})
 
 # setup the log4cxx install
 find_package (LOG4CXX)
@@ -100,24 +104,29 @@ include_directories ("${PROJECT_BINARY_DIR}")
 
 # subdirectories
 include_directories (
+    ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/include
+    ${PROJECT_BINARY_DIR}/Source/Egg/Monarch
     ${PROJECT_SOURCE_DIR}/Source/Utility
-    #${PROJECT_SOURCE_DIR}/Source/Framework
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Waterfall
-    ${PROJECT_SOURCE_DIR}/Source/Lice
 )
 
+add_subdirectory (Source/Egg/Monarch)
 add_subdirectory (Source/Utility)
-#add_subdirectory (Source/Framework)
 add_subdirectory (Source/Egg)
-add_subdirectory (Source/FFT)
-add_subdirectory (Source/Analysis)
-add_subdirectory (Source/Waterfall)
-add_subdirectory (Source/Lice)
+if (ROOT_FOUND)
+    add_subdirectory (Source/FFT)
+    add_subdirectory (Source/Analysis)
+    add_subdirectory (Source/Waterfall)
+endif (ROOT_FOUND)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)
+
+if (NOT ROOT_FOUND)
+    add_subdirectory (External/ROOT)
+endif (NOT ROOT_FOUND)
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.

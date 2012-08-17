@@ -15,13 +15,12 @@
 
 #include "Rtypes.h"
 
-#include <boost/signals2.hpp>
-
 #include <string>
 
 namespace Katydid
 {
     class KTEvent;
+    class KTPStoreNode;
 
     /*!
      @class KTEggProcessor
@@ -38,32 +37,34 @@ namespace Katydid
     class KTEggProcessor : public KTProcessor
     {
         public:
-            typedef boost::signals2::signal< void (KTEgg::HeaderInfo) > HeaderSignal;
-            typedef boost::signals2::signal< void (UInt_t, const KTEvent*) > EventSignal;
-            typedef boost::signals2::signal< void () > EggDoneSignal;
+            typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
+            typedef KTSignal< void (UInt_t, const KTEvent*) >::signal EventSignal;
+            typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:
             KTEggProcessor();
             virtual ~KTEggProcessor();
 
+            Bool_t Configure(const KTPStoreNode* node);
+
             Bool_t ApplySetting(const KTSetting* setting);
 
-            Bool_t ProcessEgg(const std::string& fileName);
+            Bool_t ProcessEgg();
 
             UInt_t GetNEvents() const;
+            const std::string& GetFilename() const;
+
             void SetNEvents(UInt_t nEvents);
+            void SetFilename(const std::string& filename);
 
         private:
             UInt_t fNEvents;
 
+            std::string fFilename;
+
             //***************
             // Signals
             //***************
-
-        public:
-            boost::signals2::connection ConnectToHeaderSignal(const HeaderSignal::slot_type &subscriber);
-            boost::signals2::connection ConnectToEventSignal(const EventSignal::slot_type &subscriber);
-            boost::signals2::connection ConnectToEggDoneSignal(const EggDoneSignal::slot_type &subscriber);
 
         private:
             HeaderSignal fHeaderSignal;
@@ -83,20 +84,17 @@ namespace Katydid
         return;
     }
 
-    inline boost::signals2::connection KTEggProcessor::ConnectToHeaderSignal(const HeaderSignal::slot_type &subscriber)
+    inline const std::string& KTEggProcessor::GetFilename() const
     {
-        return fHeaderSignal.connect(subscriber);
+        return fFilename;
     }
 
-    inline boost::signals2::connection KTEggProcessor::ConnectToEventSignal(const EventSignal::slot_type &subscriber)
+    inline void KTEggProcessor::SetFilename(const std::string& filename)
     {
-        return fEventSignal.connect(subscriber);
+        fFilename = filename;
+        return;
     }
 
-    inline boost::signals2::connection KTEggProcessor::ConnectToEggDoneSignal(const EggDoneSignal::slot_type &subscriber)
-    {
-        return fEggDoneSignal.connect(subscriber);
-    }
 
 } /* namespace Katydid */
 

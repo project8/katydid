@@ -9,30 +9,45 @@
 #include "KTEggProcessor.hh"
 
 #include "KTEgg.hh"
+#include "KTEggHeader.hh"
 #include "KTEvent.hh"
+#include "KTLogger.hh"
+#include "KTPStoreNode.hh"
 
 //#include "TCanvas.h"
 //#include "TH1.h"
 
-#include <iostream>
+#include <utility>
+using std::pair;
 
 using std::string;
-using std::cout;
-using std::endl;
 
 namespace Katydid
 {
+    KTLOGGER(egglog, "katydid.egg");
 
     KTEggProcessor::KTEggProcessor() :
             fNEvents(0),
             fHeaderSignal(),
-            fEventSignal()
+            fEventSignal(),
+            fEggDoneSignal()
     {
+        RegisterSignal("header", &fHeaderSignal);
+        RegisterSignal("event", &fEventSignal);
+        RegisterSignal("egg_done", &fEggDoneSignal);
     }
 
     KTEggProcessor::~KTEggProcessor()
     {
     }
+
+    Bool_t KTEggProcessor::Configure(const KTPStoreNode* node)
+    {
+        SetNEvents(node->GetData< UInt_t >("number_of_events", 0));
+        SetFilename(node->GetData< string >("filename", ""));
+        return true;
+    }
+
 
     Bool_t KTEggProcessor::ApplySetting(const KTSetting* setting)
     {
@@ -41,32 +56,31 @@ namespace Katydid
             this->SetNEvents(setting->GetValue< UInt_t >());
             return kTRUE;
         }
+        if (setting->GetName() == "Filename")
+        {
+            this->SetFilename(setting->GetValue< string >());
+            return kTRUE;
+        }
         return kFALSE;
     }
 
-    Bool_t KTEggProcessor::ProcessEgg(const string& fileName)
+    Bool_t KTEggProcessor::ProcessEgg()
     {
         KTEgg egg;
-        egg.SetFileName(fileName);
-        if (! egg.BreakEgg())
+        if (! egg.BreakEgg(fFilename))
         {
-            cout << "Error: Egg did not break" << endl;
-            return false;
-        }
-        if (! egg.ParseEggHeader())
-        {
-            cout << "Error: Header did not parse" << endl;
+            KTERROR(egglog, "Egg did not break");
             return false;
         }
 
-        fHeaderSignal(egg.GetHeaderInfo());
+        fHeaderSignal(egg.GetHeader());
 
         UInt_t iEvent = 0;
         while (kTRUE)
         {
             if (iEvent >= fNEvents) break;
 
-            cout << "Event " << iEvent << endl;
+            KTINFO(egglog, "Event " << iEvent);
 
             // Hatch the event
             KTEvent* event = egg.HatchNextEvent();

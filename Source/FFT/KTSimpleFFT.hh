@@ -13,15 +13,17 @@
 
 #include "TFFTRealComplex.h"
 
+#include <iostream>
 #include <string>
+#include <vector>
 
-//class TArray;
 class TH1D;
 
 namespace Katydid
 {
     class KTComplexVector;
     class KTPowerSpectrum;
+    class KTPStoreNode;
     class KTEvent;
 
     template< size_t NDims, typename XDataType >
@@ -37,6 +39,10 @@ namespace Katydid
      KTSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
 
      The FFT is currently performed by ROOT's adaptation of FFTW. Specifically the TFFTRealComplex class.
+
+     Available configuration values:
+     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
+
     */
 
     class KTSimpleFFT : public KTFFT
@@ -46,32 +52,36 @@ namespace Katydid
             KTSimpleFFT(UInt_t timeSize);
             virtual ~KTSimpleFFT();
 
+            Bool_t Configure(const KTPStoreNode* node);
+
+            void ClearTransformResults();
+
             virtual void InitializeFFT();
 
-            virtual Bool_t TakeData(const KTEvent* event);
-            virtual Bool_t TakeData(const vector< Double_t >& data);
-            //virtual Bool_t TakeData(const TArray* data);
+            virtual Bool_t TransformEvent(const KTEvent* event);
 
-            virtual Bool_t Transform();
+            template< typename XDataType >
+            KTComplexVector* Transform(const std::vector< XDataType >& data);
 
-            virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name) const;
-            virtual TH1D* CreatePowerSpectrumHistogram() const;
+            void AddTransformResult(KTComplexVector* result);
 
-            virtual KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr() const;
+            virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name,  UInt_t channelNum = 0) const;
+            virtual TH1D* CreatePowerSpectrumHistogram(UInt_t channelNum = 0) const;
 
-            virtual KTPowerSpectrum* CreatePowerSpectrum() const;
+            virtual KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr(UInt_t channelNum = 0) const;
+
+            virtual KTPowerSpectrum* CreatePowerSpectrum(UInt_t channelNum = 0) const;
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
 
             /// note: SetTimeSize creates a new fTransform.
-            ///       It also sets fIsInitialized and fIsDataReady to kFALSE.
-            virtual void SetTimeSize(UInt_t nBins);
+            ///       It also sets fIsInitialized to kFALSE.
+            void SetTimeSize(UInt_t nBins);
 
             const TFFTRealComplex* GetFFT() const;
-            const KTComplexVector* GetTransformResult() const;
+            const KTComplexVector* GetTransformResult(UInt_t channelNum = 0) const;
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
-            Bool_t GetIsDataReady() const;
             Double_t GetFreqBinWidth() const;
 
             /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
@@ -79,20 +89,41 @@ namespace Katydid
             void SetFreqBinWidth(Double_t bw);
 
         protected:
-            void ExtractTransformResult();
+            KTComplexVector* ExtractTransformResult();
 
             TFFTRealComplex* fTransform;
-            KTComplexVector* fTransformResult;
+            std::vector< KTComplexVector* > fTransformResults;
 
             std::string fTransformFlag;
 
             Bool_t fIsInitialized;
-            Bool_t fIsDataReady;
 
             Double_t fFreqBinWidth;
 
             ClassDef(KTSimpleFFT, 2);
     };
+
+
+    template< typename XDataType >
+    KTComplexVector* KTSimpleFFT::Transform(const std::vector< XDataType >& data)
+    {
+        unsigned int nBins = (unsigned int)data.size();
+        if (nBins != (unsigned int)fTransform->GetSize())
+        {
+            std::cerr << "Warning from KTSimpleFFT::TakeData: Number of bins in the data provided does not match the number of bins set for this transform" << std::endl;
+            std::cerr << "   Bin expected: " << fTransform->GetSize() << ";   Bins in data: " << nBins << std::endl;
+            return NULL;
+        }
+
+        for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
+        {
+            fTransform->SetPoint(iPoint, Double_t(data[iPoint]));
+        }
+
+        fTransform->Transform();
+
+        return ExtractTransformResult();
+    }
 
 
     inline UInt_t KTSimpleFFT::GetTimeSize() const
@@ -110,7 +141,6 @@ namespace Katydid
         delete fTransform;
         fTransform = new TFFTRealComplex((Int_t)nBins, kFALSE);
         fIsInitialized = kFALSE;
-        fIsDataReady = kFALSE;
         return;
     }
 
@@ -119,9 +149,9 @@ namespace Katydid
         return fTransform;
     }
 
-    inline const KTComplexVector* KTSimpleFFT::GetTransformResult() const
+    inline const KTComplexVector* KTSimpleFFT::GetTransformResult(UInt_t channelNum) const
     {
-        return fTransformResult;
+        return fTransformResults[channelNum];
     }
 
     inline const std::string& KTSimpleFFT::GetTransformFlag() const
@@ -134,11 +164,6 @@ namespace Katydid
         return fIsInitialized;
     }
 
-    inline Bool_t KTSimpleFFT::GetIsDataReady() const
-    {
-        return fIsDataReady;
-    }
-
     inline Double_t KTSimpleFFT::GetFreqBinWidth() const
     {
         return fFreqBinWidth;
@@ -148,7 +173,6 @@ namespace Katydid
     {
         fTransformFlag = flag;
         fIsInitialized = kFALSE;
-        fIsDataReady = kFALSE;
         return;
     }
 

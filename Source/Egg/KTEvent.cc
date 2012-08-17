@@ -11,11 +11,6 @@
 #include "TH1.h"
 #endif
 
-#include <fstream>
-#include <iostream>
-
-using std::ifstream;
-using std::string;
 using std::vector;
 
 namespace Katydid
@@ -25,9 +20,12 @@ namespace Katydid
                 fSampleRate(0.),
                 fRecordLength(0.),
                 fBinWidth(1.),
-                fTimeStamp(),
-                fFrameID(),
-                fRecord()
+                fRecordSize(0),
+                fTimeStamps(vector< ClockType >()),
+                fChannelIDs(vector< ChIdType >()),
+                fAcquisitionIDs(vector< AcqIdType >()),
+                fRecordIDs(vector< RecIdType >()),
+                fRecords(vector< vector< DataType > >())
     {
     }
 
@@ -36,23 +34,23 @@ namespace Katydid
     }
 
 #ifdef ROOT_FOUND
-    TH1I* KTEvent::CreateEventHistogram() const
+    TH1C* KTEvent::CreateEventHistogram(unsigned channelNum) const
     {
-        TH1I* hist = new TH1I("hRecord", "Event Record", (int)GetRecordSize(), -0.5*fBinWidth, GetRecordLength() + fBinWidth*0.5);
-        for (unsigned int iBin=0; iBin<fRecord.size(); iBin++)
+        TH1C* hist = new TH1C("hRecord", "Event Record", (int)GetRecordSize(), -0.5*fBinWidth, GetRecordLength() + fBinWidth*0.5);
+        for (unsigned int iBin=0; iBin<fRecords[channelNum].size(); iBin++)
         {
-            hist->SetBinContent(iBin+1, fRecord[iBin]);
+            hist->SetBinContent(iBin+1, fRecords[channelNum][iBin]);
         }
         hist->SetXTitle("Time (s)");
         return hist;
     }
 
-    TH1I* KTEvent::CreateAmplitudeDistributionHistogram() const
+    TH1I* KTEvent::CreateAmplitudeDistributionHistogram(unsigned channelNum) const
     {
         TH1I* hist = new TH1I("hRecordAmpl", "Event Record Amplitude Distribution", 256, -0.5, 255.5);
-        for (int iBin=0; iBin<fRecord.size(); iBin++)
+        for (int iBin=0; iBin<fRecords[channelNum].size(); iBin++)
         {
-            hist->Fill((double)(fRecord[iBin]));
+            hist->Fill((double)(fRecords[channelNum][iBin]));
         }
         hist->SetXTitle("ADC Bin");
         return hist;

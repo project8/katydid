@@ -1,8 +1,9 @@
-/*
- * KTEventWindowFunction.hh
- *
- *  Created on: Sep 18, 2011
- *      Author: nsoblath
+/**
+ @file KTEventWindowFunction.hh
+ @brief Contains KTEventWindowFunction
+ @details Abstract base class for event-adapted window functions.
+ @author: N. S. Oblath
+ @date: Created on: Sep 18, 2011
  */
 
 #ifndef KTEVENTWINDOWFUNCTION_HH_
@@ -17,12 +18,26 @@ namespace Katydid
 {
     class KTEvent;
 
-    class KTEventWindowFunction : public KTWindowFunction
+    /*!
+     @class KTEventWindowFunction
+     @author N. S. Oblath
+
+     @brief Abstract base class for event-adapted window functions
+
+     @details
+     Available configuration values:
+      none
+    */
+
+   class KTEventWindowFunction : public KTWindowFunction
     {
         public:
             KTEventWindowFunction();
             KTEventWindowFunction(const KTEvent* event);
             virtual ~KTEventWindowFunction();
+
+            virtual Bool_t ConfigureWindowFunctionSubclass(const KTPStoreNode* node);
+            virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node) = 0;
 
             /// Sets fBinWidth to event->GetBinWidth(), and adapts the length to be the integral number of bins closest to the current fLength.
             /// Returns the adapted length.
@@ -53,17 +68,17 @@ namespace Katydid
             /// Returns the adapted length.
             /// NOTE: this changes the size of the window!
             virtual Double_t SetBinWidth(Double_t bw);
-            ///Adapts the given length (length) to the be an integer multiple of the given bin width (bw).
+            /// Adapts the given length (length) to the be an integer multiple of the given bin width (bw).
             /// Returns the adapted length.
             /// NOTE: this changes the size of the window!
             Double_t SetBinWidthAndLength(Double_t bw, Double_t length);
-            ///Adapts the given bin width to be an integer divisor of the given length (length)
+            /// Adapts the given bin width to be an integer divisor of the given length (length)
             /// Returns the adapted bin width.
             /// NOTE: this changes the size of the window!
             Double_t SetLengthAndBinWidth(Double_t length, Double_t bw);
-            ///Sets the number of bins; leaves fBinWidth as is, and sets fLength accordingly.
-            ///Returns the adapted length.
-            ///NOTE: this changes the size of the window! (duh)
+            /// Sets the number of bins; leaves fBinWidth as is, and sets fLength accordingly.
+            /// Returns the adapted length.
+            /// NOTE: this changes the size of the window! (duh)
             virtual Double_t SetSize(UInt_t size);
 
         protected:

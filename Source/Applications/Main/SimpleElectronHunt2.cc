@@ -24,6 +24,9 @@
 #include "TROOT.h"
 #include "TStyle.h"
 
+#include <boost/bind.hpp>
+#include <boost/ref.hpp>
+
 #include <cstdio>
 #include <fstream>
 #include <unistd.h>
@@ -113,7 +116,9 @@ int main(int argc, char** argv)
     //-------------------------------------------------------
     KTEggProcessor procEgg;
     KTSetting settingEggNEvents("NEvents", (UInt_t)numEvents);
+    KTSetting settingEggFilename("Filename", inputFileName);
     procEgg.ApplySetting(&settingEggNEvents);
+    procEgg.ApplySetting(&settingEggFilename);
 
     KTFFTEHuntProcessor procEHunt;
     KTSetting settingHuntThresholdMult("ThresholdMult", (Double_t)thresholdMult);
@@ -146,15 +151,13 @@ int main(int argc, char** argv)
     }
 
     // this will ensure that every time procEgg hatches an event, procEHunt.ProcessEvent will be called
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    procEHunt.SetEventSlotConnection(procEgg.ConnectToEventSignal( boost::bind(&KTFFTEHuntProcessor::ProcessEvent, boost::ref(procEHunt), _1, _2) ));
+    procEgg.ConnectASlot("event", &procEHunt, "event");
 
     // this will ensure that when procEgg parses the header, the info is passed to procEHunt::ProcessHeader
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    procEHunt.SetHeaderSlotConnection(procEgg.ConnectToHeaderSignal( boost::bind(&KTFFTEHuntProcessor::ProcessHeader, boost::ref(procEHunt), _1) ));
+    procEgg.ConnectASlot("header", &procEHunt, "header");
 
     // this will ensure that when procEgg is done with the file, procEHunt is notified
-    procEHunt.SetEggDoneSlotConnection(procEgg.ConnectToEggDoneSignal( boost::bind(&KTFFTEHuntProcessor::FinishHunt, boost::ref(procEHunt)) ));
+    procEgg.ConnectASlot("egg_done", &procEHunt, "egg_done");
 
     // Open the files to add header information and remove previous contents if the files already exist
     ofstream outFileTxt(outputFileNameText.c_str(), ios::trunc);
@@ -169,8 +172,7 @@ int main(int argc, char** argv)
 
     // Process the file
     //-----------------
-    Bool_t success = procEgg.ProcessEgg(inputFileName);
-
+    Bool_t success = procEgg.ProcessEgg();
 
     if (! success) return -1;
     return 0;

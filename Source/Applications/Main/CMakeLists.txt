@@ -1,21 +1,35 @@
 # CMakeLists for Katydid/Source/Applications/Main
 # Author: N. Oblath
 
-add_executable (SimpleElectronHunt ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt.cc)
-target_link_libraries (SimpleElectronHunt KatydidUtility KatydidEgg KatydidFFT)
+# Config files
+set (VALIDATION_CONFIGFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/SimpleElectronHunt2Config.json
+)
 
-add_executable (SimpleElectronHunt2 ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt2.cc)
-target_link_libraries (SimpleElectronHunt2 KatydidUtility KatydidEgg KatydidFFT KatydidAnalysis)
+install (FILES ${VALIDATION_CONFIGFILES}  DESTINATION ${CONFIG_INSTALL_DIR})
+    
 
-add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
-target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidEgg KatydidFFT)
+# Executables
 
 add_executable (Truncate ${CMAKE_CURRENT_SOURCE_DIR}/Truncate.cc)
 target_link_libraries (Truncate KatydidUtility)
 
-install (TARGETS SimpleElectronHunt
-                 SimpleElectronHunt2
-                 ExtractPowerSpectra
-                 Truncate
+install (TARGETS Truncate
          DESTINATION ${BIN_INSTALL_DIR})
-         
+
+
+if (ROOT_FOUND)
+    add_executable (SimpleElectronHunt ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt.cc)
+    target_link_libraries (SimpleElectronHunt KatydidUtility KatydidEgg KatydidFFT)
+    
+    add_executable (SimpleElectronHunt2 ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt2.cc)
+    target_link_libraries (SimpleElectronHunt2 KatydidUtility KatydidEgg KatydidFFT KatydidAnalysis)
+    
+    add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
+    target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidEgg KatydidFFT)
+    
+    install (TARGETS SimpleElectronHunt
+                     SimpleElectronHunt2
+                     ExtractPowerSpectra
+             DESTINATION ${BIN_INSTALL_DIR})
+endif (ROOT_FOUND)

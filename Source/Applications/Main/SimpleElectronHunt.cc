@@ -39,7 +39,9 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <fstream>
 #include <set>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -117,15 +119,9 @@ int main(int argc, char** argv)
     txtOutFile << "------------------------------------" << endl;
 
     KTEgg egg;
-    egg.SetFileName(inputFileName);
-    if (! egg.BreakEgg())
+    if (! egg.BreakEgg(inputFileName))
     {
         cout << "Error: Egg did not break" << endl;
-        return -1;
-    }
-    if (! egg.ParseEggHeader())
-    {
-        cout << "Error: Header did not parse" << endl;
         return -1;
     }
 
@@ -176,8 +172,7 @@ int main(int argc, char** argv)
         KTSimpleFFT fullFFT(event->GetRecordSize());
         fullFFT.SetTransformFlag("ES");
         fullFFT.InitializeFFT();
-        fullFFT.TakeData(event);
-        fullFFT.Transform();
+        fullFFT.TransformEvent(event);
 
         KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
         TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
@@ -195,7 +190,7 @@ int main(int argc, char** argv)
         Double_t fullPSFreqBinWidth = histFullPS->GetBinWidth(1);
 
         // Now the windowed FFT
-        KTWindowFunction* wfunc = new KTHannWindow(event);
+        KTEventWindowFunction* wfunc = new KTHannWindow(event);
         wfunc->SetLength(1.e-5);
         cout << "window length: " << wfunc->GetLength() << " s; bin width: " << wfunc->GetBinWidth() << " s; size: " << wfunc->GetSize() << endl;
 
@@ -204,8 +199,7 @@ int main(int argc, char** argv)
         fft.SetOverlap(wfunc->GetSize() / 5);
         fft.SetTransformFlag("ES");
         fft.InitializeFFT();
-        fft.TakeData(event);
-        fft.Transform();
+        fft.TransformEvent(event);
 
         // Need to exclude:
         //   0-.2 MHz

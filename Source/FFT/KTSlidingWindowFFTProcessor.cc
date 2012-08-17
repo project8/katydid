@@ -7,29 +7,30 @@
 
 #include "KTSlidingWindowFFTProcessor.hh"
 
+#include "KTFactory.hh"
+#include "KTLogger.hh"
+#include "KTEggHeader.hh"
 #include "KTSlidingWindowFFT.hh"
-
-#include <iostream>
-using std::cout;
-using std::endl;
 
 using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(fftlog, "katydid.fft");
 
     KTSlidingWindowFFTProcessor::KTSlidingWindowFFTProcessor() :
             fFFT(),
-            fFFTSignal(),
-            fHeaderConnection(),
-            fEventConnection()
+            fWindowFunc(NULL),
+            fFFTSignal()
     {
+        RegisterSignal("fft", &fFFTSignal);
+
+        RegisterSlot("header", this, &KTSlidingWindowFFTProcessor::ProcessHeader);
+        RegisterSlot("event", this, &KTSlidingWindowFFTProcessor::ProcessEvent);
     }
 
     KTSlidingWindowFFTProcessor::~KTSlidingWindowFFTProcessor()
     {
-        fHeaderConnection.disconnect();
-        fEventConnection.disconnect();
     }
 
     Bool_t KTSlidingWindowFFTProcessor::ApplySetting(const KTSetting* setting)
@@ -65,23 +66,19 @@ namespace Katydid
         return kFALSE;
     }
 
-    void KTSlidingWindowFFTProcessor::ProcessHeader(KTEgg::HeaderInfo headerInfo)
+    void KTSlidingWindowFFTProcessor::ProcessHeader(const KTEggHeader* header)
     {
-        fWindowFunc->SetBinWidth(1. / headerInfo.fSampleRate);
+        fWindowFunc->SetBinWidth(1. / header->GetAcquisitionRate());
         fFFT.RecreateFFT();
         fFFT.InitializeFFT();
-        fFFT.SetFreqBinWidth(headerInfo.fSampleRate / (Double_t)fWindowFunc->GetSize());
+        fFFT.SetFreqBinWidth(header->GetAcquisitionRate() / (Double_t)fWindowFunc->GetSize());
         return;
     }
 
     void KTSlidingWindowFFTProcessor::ProcessEvent(UInt_t iEvent, const KTEvent* event)
     {
-        if (fFFT.TakeData(event))
-        {
-            cout << "Data transferred to sliding window fft; performing transform" << endl;
-            fFFT.Transform();
-            fFFTSignal(iEvent, &fFFT);
-        }
+        fFFT.TransformEvent(event);
+        fFFTSignal(iEvent, &fFFT);
         return;
     }
 

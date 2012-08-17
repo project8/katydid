@@ -9,6 +9,7 @@
 
 #include "KTEvent.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTPStoreNode.hh"
 #include "KTSimpleFFT.hh"
 #include "KTLogger.hh"
 
@@ -45,6 +46,11 @@ namespace Katydid
 
     KTEventWindowFunction::~KTEventWindowFunction()
     {
+    }
+
+    Bool_t KTEventWindowFunction::ConfigureWindowFunctionSubclass(const KTPStoreNode* node)
+    {
+        return ConfigureEventWindowFunctionSubclass(node);
     }
 
     Double_t KTEventWindowFunction::AdaptTo(const KTEvent* event)
@@ -99,8 +105,7 @@ namespace Katydid
         fft.SetFreqBinWidth(fBinWidth);
         fft.SetTransformFlag("ES");
         fft.InitializeFFT();
-        fft.TakeData(timeData);
-        fft.Transform();
+        fft.AddTransformResult(fft.Transform(timeData));
         KTPowerSpectrum* ps = fft.CreatePowerSpectrum();
         TH1D* hist = ps->CreateMagnitudeHistogram(name);
         hist->SetYTitle("Weight");
