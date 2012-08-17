@@ -52,15 +52,9 @@ int main(int argc, char** argv)
     string outputFileNamePS = outputFileNameBase + string(".ps");
 
     KTEgg egg;
-    egg.SetFileName(inputFileName);
-    if (! egg.BreakEgg())
+    if (! egg.BreakEgg(inputFileName))
     {
         cout << "Error: Egg did not break" << endl;
-        return -1;
-    }
-    if (! egg.ParseEggHeader())
-    {
-        cout << "Error: Header did not parse" << endl;
         return -1;
     }
 
@@ -99,8 +93,7 @@ int main(int argc, char** argv)
     KTSimpleFFT fullFFT(event->GetRecordSize());
     fullFFT.SetTransformFlag("ES");
     fullFFT.InitializeFFT();
-    fullFFT.TakeData(event);
-    fullFFT.Transform();
+    fullFFT.TransformEvent(event);
 
     KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
     TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();

@@ -53,15 +53,9 @@ int main(int argc, char** argv)
     string outputFileNamePS = outputFileNameBase + string(".ps");
 
     KTEgg egg;
-    egg.SetFileName(inputFileName);
-    if (! egg.BreakEgg())
+    if (! egg.BreakEgg(inputFileName))
     {
         cout << "Error: Egg did not break" << endl;
-        return -1;
-    }
-    if (! egg.ParseEggHeader())
-    {
-        cout << "Error: Header did not parse" << endl;
         return -1;
     }
 
@@ -106,8 +100,7 @@ int main(int argc, char** argv)
     fft.SetOverlap(wfunc->GetSize() / 5);
     fft.SetTransformFlag("ES");
     fft.InitializeFFT();
-    fft.TakeData(event);
-    fft.Transform();
+    fft.TransformEvent(event);
 
     TH2D* hist = fft.CreatePowerSpectrumHistogram();
 

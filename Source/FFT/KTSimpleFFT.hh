@@ -13,10 +13,10 @@
 
 #include "TFFTRealComplex.h"
 
+#include <iostream>
 #include <string>
 #include <vector>
 
-//class TArray;
 class TH1D;
 
 namespace Katydid
@@ -61,7 +61,9 @@ namespace Katydid
             virtual Bool_t TransformEvent(const KTEvent* event);
 
             template< typename XDataType >
-            virtual KTComplexVector* Transform(const std::vector< XDataType >& data);
+            KTComplexVector* Transform(const std::vector< XDataType >& data);
+
+            void AddTransformResult(KTComplexVector* result);
 
             virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name,  UInt_t channelNum = 0) const;
             virtual TH1D* CreatePowerSpectrumHistogram(UInt_t channelNum = 0) const;
@@ -73,7 +75,7 @@ namespace Katydid
             virtual UInt_t GetFrequencySize() const;
 
             /// note: SetTimeSize creates a new fTransform.
-            ///       It also sets fIsInitialized and fIsDataReady to kFALSE.
+            ///       It also sets fIsInitialized to kFALSE.
             void SetTimeSize(UInt_t nBins);
 
             const TFFTRealComplex* GetFFT() const;
@@ -103,7 +105,7 @@ namespace Katydid
 
 
     template< typename XDataType >
-    virtual KTComplexVector* KTSimpleFFT::Transform(const std::vector< XDataType >& data)
+    KTComplexVector* KTSimpleFFT::Transform(const std::vector< XDataType >& data)
     {
         unsigned int nBins = (unsigned int)data.size();
         if (nBins != (unsigned int)fTransform->GetSize())

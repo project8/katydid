@@ -172,8 +172,7 @@ int main(int argc, char** argv)
         KTSimpleFFT fullFFT(event->GetRecordSize());
         fullFFT.SetTransformFlag("ES");
         fullFFT.InitializeFFT();
-        fullFFT.TakeData(event);
-        fullFFT.Transform();
+        fullFFT.TransformEvent(event);
 
         KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
         TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
@@ -200,8 +199,7 @@ int main(int argc, char** argv)
         fft.SetOverlap(wfunc->GetSize() / 5);
         fft.SetTransformFlag("ES");
         fft.InitializeFFT();
-        fft.TakeData(event);
-        fft.Transform();
+        fft.TransformEvent(event);
 
         // Need to exclude:
         //   0-.2 MHz

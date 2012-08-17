@@ -20,7 +20,6 @@ namespace Katydid
 
     KTSlidingWindowFFTProcessor::KTSlidingWindowFFTProcessor() :
             fFFT(),
-            fFFTSignal(),
             fWindowFunc(NULL),
             fFFTSignal()
     {
@@ -78,12 +77,8 @@ namespace Katydid
 
     void KTSlidingWindowFFTProcessor::ProcessEvent(UInt_t iEvent, const KTEvent* event)
     {
-        if (fFFT.TakeData(event))
-        {
-            KTINFO(fftlog, "Data transferred to sliding window fft; performing transform");
-            fFFT.Transform();
-            fFFTSignal(iEvent, &fFFT);
-        }
+        fFFT.TransformEvent(event);
+        fFFTSignal(iEvent, &fFFT);
         return;
     }
 

@@ -73,13 +73,6 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::InitializeFFT()
-    {
-        fTransform->Init(fTransformFlag.c_str(), 0, NULL);
-        fIsInitialized = kTRUE;
-        return;
-    }
-
     Bool_t KTSimpleFFT::TransformEvent(const KTEvent* event)
     {
         if (! fIsInitialized)
@@ -101,10 +94,16 @@ namespace Katydid
                 std::cerr << "Warning from KTSimpleFFT::TransformEvent: One of the channels did not transform correctly." << std::endl;
                 return kFALSE;
             }
-            fTransformResults.push_back(nextResult);
+            AddTransformResult(nextResult);
         }
 
         return kTRUE;
+    }
+
+    void KTSimpleFFT::AddTransformResult(KTComplexVector* result)
+    {
+        fTransformResults.push_back(result);
+        return;
     }
 
     KTComplexVector* KTSimpleFFT::ExtractTransformResult()
