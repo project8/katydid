@@ -35,14 +35,14 @@ namespace Katydid
         }
     }
 
-    void KTProcessor::ConnectASlot(const std::string& signalName, KTProcessor* processor, const std::string& slotName)
+    void KTProcessor::ConnectASlot(const std::string& signalName, KTProcessor* processor, const std::string& slotName, int groupNum)
     {
         KTSignalWrapper* signal = GetSignal(signalName);
         KTSlotWrapper* slot = processor->GetSlot(slotName);
 
         try
         {
-            ConnectSignalToSlot(signal, slot);
+            ConnectSignalToSlot(signal, slot, groupNum);
         }
         catch (std::exception& e)
         {
@@ -51,14 +51,14 @@ namespace Katydid
         return;
     }
 
-    void KTProcessor::ConnectASignal(KTProcessor* processor, const std::string& signalName, const std::string& slotName)
+    void KTProcessor::ConnectASignal(KTProcessor* processor, const std::string& signalName, const std::string& slotName, int groupNum)
     {
         KTSignalWrapper* signal = processor->GetSignal(signalName);
         KTSlotWrapper* slot = GetSlot(slotName);
 
         try
         {
-            ConnectSignalToSlot(signal, slot);
+            ConnectSignalToSlot(signal, slot, groupNum);
         }
         catch (std::exception& e)
         {
@@ -67,7 +67,7 @@ namespace Katydid
         return;
     }
 
-    void KTProcessor::ConnectSignalToSlot(KTSignalWrapper* signal, KTSlotWrapper* slot)
+    void KTProcessor::ConnectSignalToSlot(KTSignalWrapper* signal, KTSlotWrapper* slot, int groupNum)
     {
         if (signal == NULL)
         {
@@ -80,7 +80,7 @@ namespace Katydid
 
         try
         {
-            slot->SetConnection(signal);
+            slot->SetConnection(signal, groupNum);
         }
         catch (std::exception& e)
         {

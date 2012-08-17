@@ -54,10 +54,8 @@ namespace Katydid
         RegisterSlot("event", this, &KTFFTEHuntProcessor::ProcessEvent);
         RegisterSlot("event_done", this, &KTFFTEHuntProcessor::FinishHunt);
 
-        fWindowFFTProc.ConnectASlot("power_spect", &fGainNormProc, "power_spect");
-        fWindowFFTProc.ConnectASlot("power_spect", &fClusteringProc, "power_spect");
-        //fGainNormProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 0, boost::bind(&KTGainNormalizationProcessor::ProcessPowerSpectrum, boost::ref(fGainNormProc), _1, _2) ));
-        //fClusteringProc.SetPowerSpectrumSlotConnection(fWindowFFTProc.GetFFT()->ConnectToFFTSignal( 1, boost::bind(&KTSimpleClusteringProcessor::ProcessPowerSpectrum, boost::ref(fClusteringProc), _1, _2) ));
+        fWindowFFTProc.ConnectASlot("power_spect", &fGainNormProc, "power_spect", 0);
+        fWindowFFTProc.ConnectASlot("power_spect", &fClusteringProc, "power_spect", 1);
     }
 
     KTFFTEHuntProcessor::~KTFFTEHuntProcessor()

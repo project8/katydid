@@ -31,7 +31,7 @@ namespace Katydid
                     KTInternalSlotWrapper() {}
                     virtual ~KTInternalSlotWrapper() {}
 
-                    virtual KTConnection Connect(KTSignalWrapper* signalWrap) = 0;
+                    virtual KTConnection Connect(KTSignalWrapper* signalWrap, int groupNum=-1) = 0;
             };
 
             template< typename XSignature, typename XTypeContainer >
@@ -46,7 +46,7 @@ namespace Katydid
                         //delete fSlot;
                     }
 
-                    virtual KTConnection Connect(KTSignalWrapper* signalWrap)
+                    virtual KTConnection Connect(KTSignalWrapper* signalWrap, int groupNum=-1)
                     {
                         typedef KTSignalWrapper::KTInternalSignalWrapper SignalWrapperBase;
                         typedef KTSignalWrapper::KTSpecifiedInternalSignalWrapper< typename XTypeContainer::signal > SignalWrapper;
@@ -56,6 +56,10 @@ namespace Katydid
                         if (derivedSignalWrapper == NULL)
                         {
                             throw SignalException("Unable to cast from KTInternalSignalWrapper* to derived type");
+                        }
+                        if (groupNum >= 0)
+                        {
+                            return derivedSignalWrapper->GetSignal()->connect(groupNum, *fSlot);
                         }
                         return derivedSignalWrapper->GetSignal()->connect(*fSlot);
                     }
@@ -77,7 +81,7 @@ namespace Katydid
 
         public:
             void SetConnection(KTConnection conn);
-            void SetConnection(KTSignalWrapper* signalWrap);
+            void SetConnection(KTSignalWrapper* signalWrap, int groupNum=-1);
             void Disconnect();
 
         private:
@@ -97,9 +101,9 @@ namespace Katydid
         return;
     }
 
-    inline void KTSlotWrapper::SetConnection(KTSignalWrapper* signalWrap)
+    inline void KTSlotWrapper::SetConnection(KTSignalWrapper* signalWrap, int groupNum)
     {
-        fConnection = this->fSlotWrapper->Connect(signalWrap);
+        fConnection = this->fSlotWrapper->Connect(signalWrap, groupNum);
         return;
     }
 

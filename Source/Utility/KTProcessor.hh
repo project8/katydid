@@ -49,9 +49,9 @@ namespace Katydid
             KTProcessor();
             virtual ~KTProcessor();
 
-            void ConnectASlot(const std::string& signalName, KTProcessor* processor, const std::string& slotName);
-            void ConnectASignal(KTProcessor* processor, const std::string& signalName, const std::string& slotName);
-            void ConnectSignalToSlot(KTSignalWrapper* signal, KTSlotWrapper* slot);
+            void ConnectASlot(const std::string& signalName, KTProcessor* processor, const std::string& slotName, int groupNum=-1);
+            void ConnectASignal(KTProcessor* processor, const std::string& signalName, const std::string& slotName, int groupNum=-1);
+            void ConnectSignalToSlot(KTSignalWrapper* signal, KTSlotWrapper* slot, int groupNum=-1);
 
             template< class XProcessor >
             void RegisterSignal(std::string name, XProcessor* signalPtr);

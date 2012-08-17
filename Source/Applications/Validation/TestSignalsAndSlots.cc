@@ -36,8 +36,8 @@ int main(int argc, char** argv)
     KTINFO(testsiglog, "Connecting the_signal to first_slot and second_slot");
     try
     {
-        tpA.ConnectASlot("the_signal", &tpB, "first_slot");
-        tpB.ConnectASignal(&tpA, "the_signal", "second_slot");
+        tpA.ConnectASlot("the_signal", &tpB, "first_slot", 20);
+        tpB.ConnectASignal(&tpA, "the_signal", "second_slot", 10);
     }
     catch(std::exception& e)
     {
