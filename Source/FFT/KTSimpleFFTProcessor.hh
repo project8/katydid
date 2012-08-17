@@ -48,7 +48,7 @@ namespace Katydid
 
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
 
-            const KTSimpleFFT* GetFFT() const;
+            KTSimpleFFT* GetFFT() const;
 
         private:
             KTSimpleFFT fFFT;
@@ -67,9 +67,9 @@ namespace Katydid
 
     };
 
-    inline const KTSimpleFFT* KTSimpleFFTProcessor::GetFFT() const
+    inline KTSimpleFFT* KTSimpleFFTProcessor::GetFFT() const
     {
-        return &fFFT;
+        return const_cast< KTSimpleFFT* >(&fFFT);
     }
 
     inline boost::signals2::connection KTSimpleFFTProcessor::ConnectToFFTSignal(const FFTSignal::slot_type &subscriber)

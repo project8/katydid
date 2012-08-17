@@ -80,7 +80,9 @@ int main(int argc, char** argv)
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
     KTSetting settingEggNEvents("NEvents", numEvents);
+    KTSetting settingEggFilename("Filename", inputFileName);
     procEgg.ApplySetting(&settingEggNEvents);
+    procEgg.ApplySetting(&settingEggFilename);
 
     KTSimpleFFTProcessor procFFT;
     KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
@@ -105,7 +107,7 @@ int main(int argc, char** argv)
     // get the output histogram when an FFT is complete
     boost::signals2::connection fftConnection = procFFT.ConnectToFFTSignal( boost::bind(&PowerSpectraContainer::AddPowerSpectrum, boost::ref(powerSpectra), _1, _2) );
 
-    Bool_t success = procEgg.ProcessEgg(inputFileName);
+    Bool_t success = procEgg.ProcessEgg();
 
     fftConnection.disconnect();
 

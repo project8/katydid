@@ -22,6 +22,7 @@ namespace Katydid
 {
     class KTComplexVector;
     class KTPowerSpectrum;
+    class KTPStoreNode;
     class KTEvent;
 
     template< size_t NDims, typename XDataType >
@@ -37,6 +38,10 @@ namespace Katydid
      KTSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
 
      The FFT is currently performed by ROOT's adaptation of FFTW. Specifically the TFFTRealComplex class.
+
+     Available configuration values:
+     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
+
     */
 
     class KTSimpleFFT : public KTFFT
@@ -46,7 +51,9 @@ namespace Katydid
             KTSimpleFFT(UInt_t timeSize);
             virtual ~KTSimpleFFT();
 
-            virtual void InitializeFFT();
+            Bool_t Configure(const KTPStoreNode* node);
+
+            void InitializeFFT();
 
             virtual Bool_t TakeData(const KTEvent* event);
             virtual Bool_t TakeData(const vector< Double_t >& data);
@@ -54,18 +61,18 @@ namespace Katydid
 
             virtual Bool_t Transform();
 
-            virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name) const;
-            virtual TH1D* CreatePowerSpectrumHistogram() const;
+            TH1D* CreatePowerSpectrumHistogram(const std::string& name) const;
+            TH1D* CreatePowerSpectrumHistogram() const;
 
-            virtual KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr() const;
+            KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr() const;
 
-            virtual KTPowerSpectrum* CreatePowerSpectrum() const;
-            virtual UInt_t GetTimeSize() const;
-            virtual UInt_t GetFrequencySize() const;
+            KTPowerSpectrum* CreatePowerSpectrum() const;
+            UInt_t GetTimeSize() const;
+            UInt_t GetFrequencySize() const;
 
             /// note: SetTimeSize creates a new fTransform.
             ///       It also sets fIsInitialized and fIsDataReady to kFALSE.
-            virtual void SetTimeSize(UInt_t nBins);
+            void SetTimeSize(UInt_t nBins);
 
             const TFFTRealComplex* GetFFT() const;
             const KTComplexVector* GetTransformResult() const;

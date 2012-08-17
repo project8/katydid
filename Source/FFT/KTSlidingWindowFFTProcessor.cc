@@ -7,19 +7,20 @@
 
 #include "KTSlidingWindowFFTProcessor.hh"
 
+#include "KTFactory.hh"
+#include "KTLogger.hh"
 #include "KTSlidingWindowFFT.hh"
-
-#include <iostream>
-using std::cout;
-using std::endl;
 
 using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(fftlog, "katydid.fft");
 
     KTSlidingWindowFFTProcessor::KTSlidingWindowFFTProcessor() :
             fFFT(),
+            fFFTSignal(),
+            fWindowFunc(NULL),
             fFFTSignal()
     {
         RegisterSignal("fft", &fFFTSignal);
@@ -78,7 +79,7 @@ namespace Katydid
     {
         if (fFFT.TakeData(event))
         {
-            cout << "Data transferred to sliding window fft; performing transform" << endl;
+            KTINFO(fftlog, "Data transferred to sliding window fft; performing transform");
             fFFT.Transform();
             fFFTSignal(iEvent, &fFFT);
         }

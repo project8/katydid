@@ -26,6 +26,8 @@
 
 namespace Katydid
 {
+    class KTPStoreNode;
+
     /*!
      @class KTFFTEHuntProcessor
      @author N. S. Oblath
@@ -34,6 +36,16 @@ namespace Katydid
 
      @details
      Uses a windows FFT of Egg events to search for clusters of high-peaked bins moving up in frequency.
+
+     Available configuration values:
+     \li \c output_filename_base --
+     \li \c threshold_multiplier --
+     \li \c write_text_file --
+     \li \c draw_waterfall --
+     \li \c group_bins_margin_high --
+     \li \c group_bins_margin_low --
+     \li \c group_bins_margin_same_time --
+
     */
 
     class KTFFTEHuntProcessor : public KTProcessor
@@ -45,6 +57,8 @@ namespace Katydid
         public:
             KTFFTEHuntProcessor();
             virtual ~KTFFTEHuntProcessor();
+
+            Bool_t Configure(const KTPStoreNode* node);
 
             Bool_t ApplySetting(const KTSetting* setting);
 

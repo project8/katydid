@@ -7,16 +7,14 @@
 
 #include "KTSimpleFFTProcessor.hh"
 
+#include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
-
-#include <iostream>
-using std::cout;
-using std::endl;
 
 using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(fftlog, "katydid.fft");
 
     KTSimpleFFTProcessor::KTSimpleFFTProcessor() :
             fFFT()
@@ -50,7 +48,7 @@ namespace Katydid
     {
         if (fFFT.TakeData(event))
         {
-            cout << "Data transferred to simple fft; performing transform" << endl;
+            KTINFO(fftlog, "Data transferred to simple fft; performing transform");
             fFFT.Transform();
             fFFTSignal(iEvent, &fFFT);
         }

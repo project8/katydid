@@ -20,6 +20,7 @@
 namespace Katydid
 {
     class KTEvent;
+    class KTPStoreNode;
 
     /*!
      @class KTEggProcessor
@@ -44,15 +45,22 @@ namespace Katydid
             KTEggProcessor();
             virtual ~KTEggProcessor();
 
+            Bool_t Configure(const KTPStoreNode* node);
+
             Bool_t ApplySetting(const KTSetting* setting);
 
-            Bool_t ProcessEgg(const std::string& fileName);
+            Bool_t ProcessEgg();
 
             UInt_t GetNEvents() const;
+            const std::string& GetFilename() const;
+
             void SetNEvents(UInt_t nEvents);
+            void SetFilename(const std::string& filename);
 
         private:
             UInt_t fNEvents;
+
+            std::string fFilename;
 
             //***************
             // Signals
@@ -73,6 +81,17 @@ namespace Katydid
     inline void KTEggProcessor::SetNEvents(UInt_t nEvents)
     {
         fNEvents = nEvents;
+        return;
+    }
+
+    inline const std::string& KTEggProcessor::GetFilename() const
+    {
+        return fFilename;
+    }
+
+    inline void KTEggProcessor::SetFilename(const std::string& filename)
+    {
+        fFilename = filename;
         return;
     }
 

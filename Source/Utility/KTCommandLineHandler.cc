@@ -7,46 +7,37 @@
 
 #include "KTCommandLineHandler.hh"
 
-#include "KTCommandLineUser.hh"
+#include "KTCommandLineOption.hh"
 
 #include "KatydidConfig.hh"
 
-#include "KTIOMessage.hh"
+#include <sstream>
 
 #ifndef PACKAGE_STRING
 #define PACKAGE_STRING Katydid (unknown version)
 #endif
 #define STRINGIFY_1(x) #x
-#define STRINGIFY(x) STRINGIFY_1(x)
+#define STRINGIFY_2(x) STRINGIFY_1(x)
+
+using std::string;
 
 namespace Katydid
 {
-    KTCommandLineHandler* KTCommandLineHandler::fInstance = NULL;
-    KTDestroyer< KTCommandLineHandler > KTCommandLineHandler::fCLHandlerDestroyer;
-
-    KTCommandLineHandler* KTCommandLineHandler::GetInstance()
-    {
-        if (fInstance == NULL)
-        {
-            fInstance = new KTCommandLineHandler();
-            fCLHandlerDestroyer.SetDoomed(fInstance);
-        }
-        return fInstance;
-    }
+    KTLOGGER(utillog, "katydid.utility");
 
     KTCommandLineHandler::KTCommandLineHandler() :
             fExecutableName("NONE"),
-            fPackageString(STRINGIFY(PACKAGE_STRING)),
+            fPackageString(STRINGIFY_2(PACKAGE_STRING)),
             fNArgs(0),
             fArgV(NULL),
-            fArgumentsTaken(kFALSE),
+            fArgumentsTaken(false),
             fCommandLineOptions(),
             fPrintHelpOptions(),
             fCommandLineParseLater(),
+            fParsedOptions(NULL),
             fCommandLineVarMap(),
-            fPrintHelpMessage(kFALSE),
-            fPrintVersion(kFALSE),
-            fIOConfigFileName("NONE")
+            fPrintHelpMessageAfterConfig(false),
+            fConfigFilename()
     {
     }
 
@@ -58,26 +49,19 @@ namespace Katydid
             delete tIter->second;
             fProposedGroups.erase(tIter);
         }
-        cout << "erasing the command line users: " << fUsers.size() << endl;
-        while (! fUsers.empty())
-        {
-            set< KTCommandLineUser* >::iterator tIter = fUsers.begin();
-            (*tIter)->fCLHandler = NULL;
-            fUsers.erase(tIter);
-        }
     }
 
     Bool_t KTCommandLineHandler::TakeArguments(Int_t argC, Char_t**argV)
     {
-        if (fArgumentsTaken) return kFALSE;
+        if (fArgumentsTaken) return false;
 
         fNArgs = argC;
         fArgV = argV;
-        fArgumentsTaken = kTRUE;
+        fArgumentsTaken = true;
 
         InitialCommandLineProcessing();
 
-        return kTRUE;
+        return true;
     }
 
     //**************
@@ -99,53 +83,42 @@ namespace Katydid
 
     //**************
 
-    Bool_t KTCommandLineHandler::ProposeNewOptionGroup(const string& aKey, const string& aTitle)
+    KTCommandLineHandler::OptDescMapIt KTCommandLineHandler::CreateNewOptionGroup(const string& aTitle)
     {
-        if (fAllGroupKeys.find(aKey) != fAllGroupKeys.end())
-        {
-            iomsg < "KTCommandLineHandler::ProposeNewOptionGroup";
-            iomsg(eWarning) << "There is already an option group with key <" << aKey << ">" << eom;
-            return kFALSE;
-        }
-        if (fProposedGroups.find(aKey) != fProposedGroups.end())
-        {
-            iomsg < "KTCommandLineHandler::ProposeNewOptionGroup";
-            iomsg(eWarning) << "There is already a proposed option group with key <" << aKey << ">" << eom;
-            return kFALSE;
-        }
-
         po::options_description* tNewOpts = new po::options_description(aTitle);
-        fProposedGroups.insert(OptDescMap::value_type(aKey, tNewOpts));
+        std::pair< OptDescMapIt, Bool_t > result = fProposedGroups.insert(OptDescMap::value_type(aTitle, tNewOpts));
+        if (! result.second)
+        {
+            KTWARN(utillog, "There is already an option group with title <" << aTitle << ">");
+            delete tNewOpts;
+        }
 
-        return kTRUE;
+        return result.first;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt)
+    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt)
     {
-        OptDescMapIt tIter = fProposedGroups.find(aKey);
-        if (tIter == fProposedGroups.end())
-        {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There no proposed option group with key <" << aKey << ">" << eom;
-            return kFALSE;
-        }
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There is already an option called <" << aLongOpt << ">" << eom;
-            return kFALSE;
+            KTWARN(utillog, "There is already an option called <" << aLongOpt << ">");
+            return false;
         }
         if (aShortOpt != '#')
         {
             if (fAllOptionsShort.find(aShortOpt) != fAllOptionsShort.end())
             {
-                iomsg < "KTCommandLineHandler::AddOption";
-                iomsg(eWarning) << "There is already a short option called <" << aShortOpt << ">" << eom;
-                return kFALSE;
+                KTWARN(utillog, "There is already a short option called <" << aShortOpt << ">");
+                return false;
             }
         }
 
         // option is okay at this point
+
+        OptDescMapIt tIter = fProposedGroups.find(aTitle);
+        if (tIter == fProposedGroups.end())
+        {
+            tIter = CreateNewOptionGroup(aTitle);
+        }
 
         string tOptionName = aLongOpt;
         fAllOptionsLong.insert(aLongOpt);
@@ -156,31 +129,29 @@ namespace Katydid
         }
         tIter->second->add_options()(tOptionName.c_str(), aHelpMsg.c_str());
 
-        return kTRUE;
+        return true;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aKey, const string& aHelpMsg, const string& aLongOpt)
+    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt)
     {
-        OptDescMapIt tIter = fProposedGroups.find(aKey);
-        if (tIter == fProposedGroups.end())
-        {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There no proposed option group with key <" << aKey << ">" << eom;
-            return kFALSE;
-        }
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There is already an option called <" << aLongOpt << ">" << eom;
-            return kFALSE;
+            KTWARN(utillog, "There is already an option called <" << aLongOpt << ">");
+            return false;
         }
 
         // option is okay at this point
 
+        OptDescMapIt tIter = fProposedGroups.find(aTitle);
+        if (tIter == fProposedGroups.end())
+        {
+            tIter = CreateNewOptionGroup(aTitle);
+        }
+
         fAllOptionsLong.insert(aLongOpt);
         tIter->second->add_options()(aLongOpt.c_str(), aHelpMsg.c_str());
 
-        return kTRUE;
+        return true;
     }
 
     po::options_description* KTCommandLineHandler::GetOptionsDescription(const string& aKey)
@@ -188,31 +159,28 @@ namespace Katydid
         OptDescMapIt tIter = fProposedGroups.find(aKey);
         if (tIter == fProposedGroups.end())
         {
-            iomsg < "KTCommandLineHandler::AddOption";
-            iomsg(eWarning) << "There no proposed option group with key <" << aKey << ">" << eom;
+            KTWARN(utillog, "There no proposed option group with key <" << aKey << ">");
             return NULL;
         }
         return tIter->second;
     }
 
-    Bool_t KTCommandLineHandler::FinalizeNewOptionGroup(const string& aKey)
+    //**************
+
+   Bool_t KTCommandLineHandler::FinalizeNewOptionGroups()
     {
-        OptDescMapIt tIter = fProposedGroups.find(aKey);
-        if ( tIter == fProposedGroups.end())
+        for (OptDescMapIt tIter = fProposedGroups.begin(); tIter != fProposedGroups.end(); tIter++)
         {
-            iomsg < "KTCommandLineHandler::FinalizeNewOptionGroup";
-            iomsg(eWarning) << "There no proposed option group with key <" << aKey << ">" << eom;
-            return kFALSE;
+            if (! AddCommandLineOptions(*(tIter->second)))
+            {
+                return false;
+            }
+            delete tIter->second;
+            fProposedGroups.erase(tIter);
         }
 
-        if (! AddCommandLineOptions(*(tIter->second))) return kFALSE;
-        delete tIter->second;
-        fProposedGroups.erase(tIter);
-
-        return kTRUE;
+        return true;
     }
-
-    //**************
 
     Bool_t KTCommandLineHandler::AddCommandLineOptions(const po::options_description& aSetOfOpts)
     {
@@ -220,21 +188,18 @@ namespace Katydid
         {
             fCommandLineOptions.add(aSetOfOpts);
             fPrintHelpOptions.add(aSetOfOpts);
-            return kTRUE;
         }
         catch (std::exception& e)
         {
-            iomsg < "KTCommandLineHandler::AddCommandLineOptions";
-            iomsg(eWarning) << "Exception thrown while adding options: " << e.what() << eom;
-            return kFALSE;
+            KTERROR(utillog, "Exception thrown while adding options: " << e.what());
+            return false;
         }
         catch (...)
         {
-            iomsg < "KTCommandLineHandler::AddCommandLineOptions";
-            iomsg(eWarning) << "Exception was thrown, but caught in a generic way!" << eom;
-            return kFALSE;
+            KTERROR(utillog, "Exception was thrown, but caught in a generic way!");
+            return false;
         }
-        return kFALSE;
+        return true;
     }
 
     //**************
@@ -248,17 +213,29 @@ namespace Katydid
 
     void KTCommandLineHandler::ProcessCommandLine()
     {
-        // Get options from all command line users
-        AddOptionsFromAllUsers();
+        if (! fProposedGroups.empty())
+        {
+            if (! this->FinalizeNewOptionGroups())
+            {
+                KTERROR(utillog, "An error occurred while adding the proposed option groups\n" <<
+                        "Command-line options were not parsed");
+                return;
+            }
+        }
 
         // Parse the command line options that remain after the initial parsing
-        po::parsed_options tParsedOpts = po::command_line_parser(fCommandLineParseLater).options(fCommandLineOptions).run();
-
+        try
+        {
+            fParsedOptions = po::command_line_parser(fCommandLineParseLater).options(fCommandLineOptions).run();
+        }
+        catch (std::exception& e)
+        {
+            KTERROR(utillog, "An error occurred while boost was parsing the command line options:\n" << e.what());
+            return;
+        }
         // Create the variable map from the parse options
-        po::store(tParsedOpts, fCommandLineVarMap);
+        po::store(fParsedOptions, fCommandLineVarMap);
         po::notify(fCommandLineVarMap);
-
-        this->NotifyUsersOfParsing();
 
         return;
     }
@@ -277,7 +254,7 @@ namespace Katydid
 
         // Define general options, and add them to the complete option list
         po::options_description tGeneralOpts("General options");
-        tGeneralOpts.add_options()("help,h", "Print help message")("version,v", "Print version information");
+        tGeneralOpts.add_options()("help,h", "Print help message")("help-config", "Print help message after reading config file")("version,v", "Print version information");
         // We want to have the general options printed if --help is used
         fPrintHelpOptions.add(tGeneralOpts);
 
@@ -285,12 +262,13 @@ namespace Katydid
         fAllGroupKeys.insert("General");
         fAllOptionsLong.insert("help");
         fAllOptionsShort.insert('h');
+        fAllOptionsLong.insert("help-config");
         fAllOptionsLong.insert("version");
         fAllOptionsShort.insert('v');
 
         // Define the option for the user configuration file; this does not get printed in list of options when --help is used
         po::options_description tHiddenOpts("Hidden options");
-        tHiddenOpts.add_options()("user-config", po::value< string >(), "Assign the UserConfiguration file");
+        tHiddenOpts.add_options()("config-file", po::value< string >(), "Configuration file");
 
         // Add together any options that will be parsed here, in the initial command-line processing
         po::options_description tInitialOptions("Initial options");
@@ -298,7 +276,7 @@ namespace Katydid
 
         // Allow the UserConfiguration file to be specified with the only positional option
         po::positional_options_description tPositionOpt;
-        tPositionOpt.add("user-config", 1);
+        tPositionOpt.add("config-file", 1);
 
         // Command line style
         po::command_line_style::style_t pstyle = po::command_line_style::unix_style;
@@ -333,66 +311,35 @@ namespace Katydid
         po::notify(tGeneralOptsVarMap);
 
         // Use the general options information
-        if (tGeneralOptsVarMap.count("help")) fPrintHelpMessage = kTRUE;
-        if (tGeneralOptsVarMap.count("version")) fPrintVersion = kTRUE;
-        if (tGeneralOptsVarMap.count("user-config"))
+        if (tGeneralOptsVarMap.count("help"))
         {
-            fIOConfigFileName = tGeneralOptsVarMap["user-config"].as< string >();
+            FinalizeNewOptionGroups();
+            PrintHelpMessageAndExit();
         }
-    }
-
-    //**************
-
-    void KTCommandLineHandler::RegisterUser(KTCommandLineUser* aUser)
-    {
-        fUsers.insert(aUser);
-        return;
-    }
-
-    void KTCommandLineHandler::RemoveUser(KTCommandLineUser* aUser)
-    {
-        set< KTCommandLineUser* >::iterator tIter=fUsers.find(aUser);
-        if (tIter != fUsers.end()) fUsers.erase(tIter);
-        return;
-    }
-
-    void KTCommandLineHandler::AddOptionsFromAllUsers()
-    {
-        for (set< KTCommandLineUser* >::iterator tIter=fUsers.begin(); tIter != fUsers.end(); tIter++)
+        if (tGeneralOptsVarMap.count("help-config"))
         {
-            if (! (*tIter)->fCommandLineOptionsAdded)
-            {
-                (*tIter)->AddCommandLineOptions();
-                (*tIter)->fCommandLineOptionsAdded = kTRUE;
-            }
+            fPrintHelpMessageAfterConfig = true;
         }
-        return;
-    }
-
-    void KTCommandLineHandler::NotifyUsersOfParsing()
-    {
-        for (set< KTCommandLineUser* >::iterator tIter=fUsers.begin(); tIter != fUsers.end(); tIter++)
+        if (tGeneralOptsVarMap.count("version"))
         {
-            (*tIter)->UseParsedCommandLineImmediately();
-            (*tIter)->fCommandLineIsParsed = kTRUE;
+            PrintVersionMessageAndExit("APPLICATION TYPE", "APPLICATION STRING");
         }
+        if (tGeneralOptsVarMap.count("config-file"))
+        {
+            fConfigFilename = tGeneralOptsVarMap["config-file"].as< string >();
+        }
+
         return;
     }
 
     //**************
 
-    void KTCommandLineHandler::PrintHelpMessageAndExit(const string& aApplicationType)
+    void KTCommandLineHandler::PrintHelpMessageAndExit()
     {
-        this->AddOptionsFromAllUsers();
-
-        string tLocation;
-        if (aApplicationType == string("")) tLocation = string("KTCommandLineHandler -- Version Information");
-        else tLocation = aApplicationType + string(" -- Version Information");
-        iomsg < tLocation;
-        iomsg(eNormal) << "Usage: " << fExecutableName << " [user-config file] [options]" << ret << ret;
-        iomsg << "   user-config file: The relative or absolute path for the desired user configuration file" << ret;
-
-        iomsg << fPrintHelpOptions << eom;
+        KTINFO(utillog, "\nUsage: " << fExecutableName << " [config file] [options]\n\n" <<
+               "  config file: The relative or absolute path for the desired user configuration file\n" <<
+               "  config file options can be modified using --address.of.option=\"value\"\n" <<
+               fPrintHelpOptions);
 
         exit(0);
     }
@@ -402,11 +349,12 @@ namespace Katydid
         string tLocation;
         if (aApplicationType == string("")) tLocation = string("KTCommandLineHandler -- Version Information");
         else tLocation = aApplicationType + string(" -- Version Information");
-        iomsg < tLocation;
-        iomsg(eNormal) << "Executable: " << fExecutableName << ret;
+        std::stringstream printStream;
+        printStream << "\nExecutable: " << fExecutableName << "\n";
         if (aApplicationString != string(""))
-            iomsg << "Application: " << aApplicationString << ret;
-        iomsg << "Built with: " << fPackageString << eom;
+            printStream << "Application: " << aApplicationString << "\n";
+        printStream << "Built with: " << fPackageString;
+        KTINFO(utillog, printStream.str());
         exit(0);
     }
 

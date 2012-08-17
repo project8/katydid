@@ -11,6 +11,7 @@
 #include "KTEvent.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPhysicalArray.hh"
+#include "KTPStoreNode.hh"
 
 //#include "TArray.h"
 #include "TH1D.h"
@@ -50,6 +51,12 @@ namespace Katydid
     {
         delete fTransform;
         delete fTransformResult;
+    }
+
+    Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
+    {
+        SetTransformFlag(node->GetData<string>("transform_flag", ""));
+        return true;
     }
 
     void KTSimpleFFT::InitializeFFT()

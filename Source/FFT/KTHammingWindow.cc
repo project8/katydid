@@ -7,6 +7,9 @@
 
 #include "KTHammingWindow.hh"
 
+#include "KTFactory.hh"
+#include "KTPStoreNode.hh"
+
 #include "TArrayD.h"
 #include "TMath.h"
 
@@ -16,6 +19,7 @@ ClassImp(Katydid::KTHammingWindow);
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTEventWindowFunction, KTHammingWindow > sEWFHammRegistrar("hamming");
 
     KTHammingWindow::KTHammingWindow() :
             KTEventWindowFunction()
@@ -29,6 +33,11 @@ namespace Katydid
 
     KTHammingWindow::~KTHammingWindow()
     {
+    }
+
+    Bool_t KTHammingWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    {
+        return true;
     }
 
     Double_t KTHammingWindow::GetWeight(Double_t time) const

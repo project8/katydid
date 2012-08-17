@@ -10,6 +10,7 @@
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTPStoreNode.hh"
 #include "KTSlidingWindowFFT.hh"
 
 #include "TCanvas.h"
@@ -46,6 +47,19 @@ namespace Katydid
     {
         delete fBinCuts;
     }
+
+    Bool_t KTSimpleClusteringProcessor::Configure(const KTPStoreNode* node)
+    {
+        fThresholdMult = node->GetData< Double_t >("threshold_multiplier", 10.0);
+        fGroupBinsMarginHigh = node->GetData< Int_t >("group_bins_margin_high", 1);
+        fGroupBinsMarginLow = node->GetData< Int_t >("group_bins_margin_low", 3);
+        fGroupBinsMarginSameTime = node->GetData< Int_t >("group_bins_margin_same_time", 1);
+        fFirstBinToUse = node->GetData< UInt_t >("first_bin_to_use", 1);
+        fDrawFlag = node->GetData< Bool_t >("draw_flag", false);
+
+        return true;
+    }
+
 
     Bool_t KTSimpleClusteringProcessor::ApplySetting(const KTSetting* setting)
     {

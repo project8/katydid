@@ -11,6 +11,7 @@
 #include "KTHannWindow.hh"
 #include "KTMaskedArray.hh"
 #include "KTPowerSpectrum.hh"
+#include "KTPStoreNode.hh"
 
 #include "TH2.h"
 
@@ -63,6 +64,41 @@ namespace Katydid
         EmptyEventPeakBins();
         if (fROOTFile.IsOpen()) fROOTFile.Close();
         if (fTextFile.is_open()) fTextFile.close();
+    }
+
+    Bool_t KTFFTEHuntProcessor::Configure(const KTPStoreNode* node)
+    {
+        string filenameBase = node->GetData< string >("output_filename_base", "FFTEHuntOutput");
+        fROOTFilename = filenameBase + string(".root");
+        fTextFilename = filenameBase + string(".txt");
+        fWriteROOTFileFlag = node->GetData< Bool_t >("write_root_file");
+        fWriteTextFileFlag = node->GetData< Bool_t >("write_text_file");
+        fFrequencyMultiplier = node->GetData< Double_t >("frequency_multiplier");
+
+        fMinimumGroupSize = node->GetData< UInt_t >("minimum_group_size", 2);
+        fClusteringProc.SetMinimumGroupSize(fMinimumGroupSize);
+
+        // TODO: cut range when arrays are ready in the parameter store
+
+        const KTPStoreNode* clusterNode = node->GetChild("simple_clustering");
+        if (clusterNode != NULL)
+        {
+            if (! fClusteringProc.Configure(clusterNode)) return false;
+        }
+
+        const KTPStoreNode* simpleFFTNode = node->GetChild("simple_fft");
+        if (simpleFFTNode != NULL)
+        {
+            if (! fSimpleFFTProc.GetFFT()->Configure(simpleFFTNode)) return false;
+        }
+
+        const KTPStoreNode* slidingWindowFFTNode = node->GetChild("sliding_window_fft");
+        if (slidingWindowFFTNode != NULL)
+        {
+            if (! fWindowFFTProc.GetFFT()->Configure(slidingWindowFFTNode)) return false;
+        }
+
+        return true;
     }
 
     Bool_t KTFFTEHuntProcessor::ApplySetting(const KTSetting* setting)
