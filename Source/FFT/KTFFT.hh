@@ -25,11 +25,8 @@ namespace Katydid
             KTFFT();
             virtual ~KTFFT();
 
-            virtual Bool_t TakeData(const KTEvent* event) = 0;
-            virtual Bool_t TakeData(const vector< Double_t >& data) = 0;
-            //virtual Bool_t TakeData(const TArray* data) = 0;
+            virtual Bool_t TransformEvent(const KTEvent* event) = 0;
 
-            virtual Bool_t Transform() = 0;
 
             ClassDef(KTFFT, 2);
     };

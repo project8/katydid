@@ -27,6 +27,7 @@
 namespace Katydid
 {
     class KTPStoreNode;
+    class KTEggHeader;
 
     /*!
      @class KTFFTEHuntProcessor
@@ -62,7 +63,7 @@ namespace Katydid
 
             Bool_t ApplySetting(const KTSetting* setting);
 
-            void ProcessHeader(KTEgg::HeaderInfo headerInfo);
+            void ProcessHeader(const KTEggHeader* header);
 
             void ProcessEvent(UInt_t iEvent, const KTEvent* event);
 

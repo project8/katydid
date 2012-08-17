@@ -37,7 +37,7 @@ namespace Katydid
     class KTEggProcessor : public KTProcessor
     {
         public:
-            typedef KTSignal< void (KTEgg::HeaderInfo) >::signal HeaderSignal;
+            typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
             typedef KTSignal< void (UInt_t, const KTEvent*) >::signal EventSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 

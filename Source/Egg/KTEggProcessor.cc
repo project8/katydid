@@ -9,6 +9,7 @@
 #include "KTEggProcessor.hh"
 
 #include "KTEgg.hh"
+#include "KTEggHeader.hh"
 #include "KTEvent.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -66,19 +67,13 @@ namespace Katydid
     Bool_t KTEggProcessor::ProcessEgg()
     {
         KTEgg egg;
-        egg.SetFileName(fFilename);
-        if (! egg.BreakEgg())
+        if (! egg.BreakEgg(fFilename))
         {
             KTERROR(egglog, "Egg did not break");
             return false;
         }
-        if (! egg.ParseEggHeader())
-        {
-            KTERROR(egglog, "Header did not parse");
-            return false;
-        }
 
-        fHeaderSignal(egg.GetHeaderInfo());
+        fHeaderSignal(egg.GetHeader());
 
         UInt_t iEvent = 0;
         while (kTRUE)

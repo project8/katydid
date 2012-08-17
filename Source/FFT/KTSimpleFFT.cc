@@ -7,18 +7,17 @@
 
 #include "KTSimpleFFT.hh"
 
-//#include "KTArrayUC.hh"
 #include "KTEvent.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
 
-//#include "TArray.h"
 #include "TH1D.h"
 
 #include <iostream>
 
 using std::string;
+using std::vector;
 
 ClassImp(Katydid::KTSimpleFFT);
 
@@ -28,10 +27,9 @@ namespace Katydid
     KTSimpleFFT::KTSimpleFFT() :
             KTFFT(),
             fTransform(new TFFTRealComplex()),
-            fTransformResult(NULL),
+            fTransformResults(),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
-            fIsDataReady(kFALSE),
             fFreqBinWidth(1.)
     {
     }
@@ -39,10 +37,9 @@ namespace Katydid
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
             KTFFT(),
             fTransform(new TFFTRealComplex((Int_t)timeSize, kFALSE)),
-            fTransformResult(NULL),
+            fTransformResults(),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
-            fIsDataReady(kFALSE),
             fFreqBinWidth(1.)
     {
     }
@@ -50,7 +47,17 @@ namespace Katydid
     KTSimpleFFT::~KTSimpleFFT()
     {
         delete fTransform;
-        delete fTransformResult;
+        ClearTransformResults();
+    }
+
+    void KTSimpleFFT::ClearTransformResults()
+    {
+        while (! fTransformResults.empty())
+        {
+            delete fTransformResults.back();
+            fTransformResults.pop_back();
+        }
+        return;
     }
 
     Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
@@ -66,78 +73,14 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTSimpleFFT::TakeData(const KTEvent* event)
+    void KTSimpleFFT::InitializeFFT()
     {
-        unsigned int nBins = event->GetRecordSize();
-        if (nBins != (unsigned int)fTransform->GetSize())
-        {
-            std::cerr << "Warning from KTSimpleFFT::TakeData: Number of bins in the data provided does not match the number of bins set for this transform" << std::endl;
-            std::cerr << "   Bin expected: " << fTransform->GetSize() << ";   Bins in data: " << nBins << std::endl;
-            return kFALSE;
-        }
-        if (! fIsInitialized)
-        {
-            std::cerr << "Warning from KTSimpleFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
-            std::cerr << "   Please first call InitializeFFT, and then use the TakeData method of your choice to set the data" << std::endl;
-            return kFALSE;
-        }
-
-        fFreqBinWidth = event->GetSampleRate() / (Double_t)nBins;
-        for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
-        {
-            fTransform->SetPoint(iPoint, event->GetRecordAt< Double_t >(iPoint));
-        }
-        fIsDataReady = kTRUE;
-        return kTRUE;
-    }
-
-    Bool_t KTSimpleFFT::TakeData(const vector< Double_t >& data)
-    {
-        unsigned int nBins = (unsigned int)data.size();
-        if (nBins != (unsigned int)fTransform->GetSize())
-        {
-            std::cerr << "Warning from KTSimpleFFT::TakeData: Number of bins in the data provided does not match the number of bins set for this transform" << std::endl;
-            std::cerr << "   Bin expected: " << fTransform->GetSize() << ";   Bins in data: " << nBins << std::endl;
-            return kFALSE;
-        }
-        if (! fIsInitialized)
-        {
-            std::cerr << "Warning from KTSimpleFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
-            std::cerr << "   Please first call InitializeFFT, and then use the TakeData method of your choice to set the data" << std::endl;
-            return kFALSE;
-        }
-
-        for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
-        {
-            fTransform->SetPoint(iPoint, data[iPoint]);
-        }
-        fIsDataReady = kTRUE;
-        return kTRUE;
-    }
-    /*
-    void KTSimpleFFT::TakeData(const TArray* array)
-    {
-        if (array->GetSize() != fTransform->GetSize())
-        {
-            std::cerr << "Warning from KTSimpleFFT::TakeData: Number of bins in the data provided does not match the number of bins set for this transform" << std::endl;
-            return;
-        }
-        if (! fIsInitialized)
-        {
-            std::cerr << "Warning from KTSimpleFFT::TakeData: FFT must be initialized before setting the data" << std::endl;
-            std::cerr << "   Please first call InitializeFFT, and then use the TakeData method of your choice to set the data" << std::endl;
-            return;
-        }
-
-        for (Int_t iPoint=0; iPoint<array->GetSize(); iPoint++)
-        {
-            fTransform->SetPoint(iPoint, (Double_t)(array->GetAt(iPoint)));
-        }
-        fIsDataReady = kTRUE;
+        fTransform->Init(fTransformFlag.c_str(), 0, NULL);
+        fIsInitialized = kTRUE;
         return;
     }
-    */
-    Bool_t KTSimpleFFT::Transform()
+
+    Bool_t KTSimpleFFT::TransformEvent(const KTEvent* event)
     {
         if (! fIsInitialized)
         {
@@ -146,46 +89,51 @@ namespace Katydid
             return kFALSE;
         }
 
-        if (! fIsDataReady)
+        ClearTransformResults();
+
+        fFreqBinWidth = event->GetSampleRate() / (Double_t)event->GetRecordSize();
+
+        for (UInt_t iChannel = 0; iChannel < event->GetNRecords(); iChannel++)
         {
-            std::cerr << "Warning from KTSimpleFFT::Transform: The data for the transform is not ready"<< std::endl;
-            std::cerr << "   Please first call TakeData, and then perform the transform" << std::endl;
-            return kFALSE;
+            KTComplexVector* nextResult = Transform(event->GetRecord(iChannel));
+            if (nextResult == NULL)
+            {
+                std::cerr << "Warning from KTSimpleFFT::TransformEvent: One of the channels did not transform correctly." << std::endl;
+                return kFALSE;
+            }
+            fTransformResults.push_back(nextResult);
         }
 
-        fTransform->Transform();
-        ExtractTransformResult();
         return kTRUE;
     }
 
-    void KTSimpleFFT::ExtractTransformResult()
+    KTComplexVector* KTSimpleFFT::ExtractTransformResult()
     {
         UInt_t freqSize = this->GetFrequencySize();
         Double_t* freqSpecReal = new Double_t [freqSize];
         Double_t* freqSpecImag = new Double_t [freqSize];
         fTransform->GetPointsComplex(freqSpecReal, freqSpecImag);
 
-        delete fTransformResult;
-        fTransformResult = new KTComplexVector((Int_t)freqSize, freqSpecReal, freqSpecImag, "R");
+        KTComplexVector* transformResult = new KTComplexVector((Int_t)freqSize, freqSpecReal, freqSpecImag, "R");
         delete [] freqSpecReal; delete [] freqSpecImag;
-        (*fTransformResult) *= 1. / (Double_t)this->GetTimeSize();
-
+        (*transformResult) *= 1. / (Double_t)this->GetTimeSize();
+        return transformResult;
     }
 
-    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram(const string& name) const
+    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram(const string& name, UInt_t channelNum) const
     {
-        KTPowerSpectrum* ps = this->CreatePowerSpectrum();
+        KTPowerSpectrum* ps = this->CreatePowerSpectrum(channelNum);
         TH1D* pshist = ps->CreateMagnitudeHistogram(name);
         delete ps;
         return pshist;
     }
 
-    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram() const
+    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram(UInt_t channelNum) const
     {
-        return CreatePowerSpectrumHistogram("hPowerSpectrum_SimpleFFT");
+        return CreatePowerSpectrumHistogram("hPowerSpectrum_SimpleFFT", channelNum);
     }
 
-    KTPhysicalArray< 1, Double_t >* KTSimpleFFT::CreatePowerSpectrumPhysArr() const
+    KTPhysicalArray< 1, Double_t >* KTSimpleFFT::CreatePowerSpectrumPhysArr(UInt_t channelNum) const
     {
         KTPowerSpectrum* ps = this->CreatePowerSpectrum();
         KTPhysicalArray< 1, Double_t >* psPhysArr = ps->CreateMagnitudePhysArr();
@@ -193,10 +141,10 @@ namespace Katydid
         return psPhysArr;
     }
 
-    KTPowerSpectrum* KTSimpleFFT::CreatePowerSpectrum() const
+    KTPowerSpectrum* KTSimpleFFT::CreatePowerSpectrum(UInt_t channelNum) const
     {
         KTPowerSpectrum* powerSpec = new KTPowerSpectrum();
-        powerSpec->TakeFrequencySpectrum(*fTransformResult);
+        powerSpec->TakeFrequencySpectrum(*(fTransformResults[channelNum]));
         powerSpec->SetBinWidth(fFreqBinWidth);
         return powerSpec;
     }

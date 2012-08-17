@@ -8,6 +8,7 @@
 #include "KTSimpleFFTProcessor.hh"
 
 #include "KTLogger.hh"
+#include "KTEggHeader.hh"
 #include "KTSimpleFFT.hh"
 
 using std::string;
@@ -37,21 +38,17 @@ namespace Katydid
         return kFALSE;
     }
 
-    void KTSimpleFFTProcessor::ProcessHeader(KTEgg::HeaderInfo headerInfo)
+    void KTSimpleFFTProcessor::ProcessHeader(const KTEggHeader* header)
     {
-        fFFT.SetTimeSize(headerInfo.fRecordSize);
+        fFFT.SetTimeSize(header->GetRecordSize());
         fFFT.InitializeFFT();
         return;
     }
 
     void KTSimpleFFTProcessor::ProcessEvent(UInt_t iEvent, const KTEvent* event)
     {
-        if (fFFT.TakeData(event))
-        {
-            KTINFO(fftlog, "Data transferred to simple fft; performing transform");
-            fFFT.Transform();
-            fFFTSignal(iEvent, &fFFT);
-        }
+        fFFT.TransformEvent(event);
+        fFFTSignal(iEvent, &fFFT);
         return;
     }
 

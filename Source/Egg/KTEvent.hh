@@ -16,11 +16,13 @@
 #ifndef KTEVENT_HH_
 #define KTEVENT_HH_
 
+#include "MonarchTypes.hpp"
+
 #include <algorithm>
-#include <string>
 #include <vector>
 
 #ifdef ROOT_FOUND
+class TH1C;
 class TH1I;
 #endif
 
@@ -33,39 +35,55 @@ namespace Katydid
             virtual ~KTEvent();
 
 #ifdef ROOT_FOUND
-            virtual TH1I* CreateEventHistogram() const;
-            virtual TH1I* CreateAmplitudeDistributionHistogram() const;
+            virtual TH1C* CreateEventHistogram(unsigned channelNum = 0) const;
+            virtual TH1I* CreateAmplitudeDistributionHistogram(unsigned channelNum = 0) const;
 #endif
 
-            double GetBinWidth() const;
-            const std::vector< unsigned >& GetFrameID() const;
-            const std::vector< unsigned >& GetRecord() const;
-            double GetRecordLength() const;
+            unsigned GetNRecords() const;
+
+            unsigned GetRecordSize() const;
             double GetSampleRate() const;
-            const std::vector< unsigned >& GetTimeStamp() const;
+            double GetRecordLength() const;
+            double GetBinWidth() const;
 
-            unsigned int GetRecordSize() const;
-            unsigned GetRecordAt(unsigned int iBin) const;
-            template< typename XType >
-            XType GetRecordAt(unsigned int iBin) const;
-            unsigned GetRecordAtTime(double time) const; /// time is in seconds and >= 0
-            template< typename XType >
-            XType GetRecordAtTime(double time) const; /// time is in seconds and >= 0
+            ClockType GetTimeStamp(unsigned channelNum = 0) const;
+            ChIdType GetChannelID(unsigned channelNum = 0) const;
+            AcqIdType GetAcquisitionID(unsigned channelNum = 0) const;
+            RecIdType GetRecordID(unsigned channelNum = 0) const;
 
-            void SetBinWidth(double binWidth);
-            void SetFrameID(const std::vector< unsigned >& frameID);
-            void SetRecord(const std::vector< unsigned >& record);
-            void SetRecordLength(double recordLength);
+            const std::vector< DataType >& GetRecord(unsigned channelNum = 0) const;
+
+            //unsigned GetRecordSize(unsigned channelNum = 0) const;
+            DataType GetRecordAt(unsigned int iBin, unsigned channelNum = 0) const;
+            template< typename XType >
+            XType GetRecordAt(unsigned int iBin, unsigned channelNum = 0) const;
+            DataType GetRecordAtTime(double time, unsigned channelNum = 0) const; /// time is in seconds and >= 0
+            template< typename XType >
+            XType GetRecordAtTime(double time, unsigned channelNum = 0) const; /// time is in seconds and >= 0
+
+            void SetRecordSize(unsigned size);
             void SetSampleRate(double sampleRate);
-            void SetTimeStamp(const std::vector< unsigned >& timeStamp);
+            void SetRecordLength(double recordLength);
+            void SetBinWidth(double binWidth);
+            void CalculateBinWidthAndRecordLength();
+
+            void SetTimeStamp(ClockType timeStamp, unsigned channelNum = 0);
+            void SetChannelID(ChIdType chId, unsigned channelNum = 0);
+            void SetAcquisitionID(AcqIdType acqId, unsigned channelNum = 0);
+            void SetRecordID(RecIdType recId, unsigned channelNum = 0);
+
+            void SetRecord(std::vector< DataType > record, unsigned channelNum = 0);
 
         private:
+            unsigned fRecordSize; // number of bins
             double fSampleRate; // in Hz
             double fRecordLength; // in sec
             double fBinWidth; // in sec
-            std::vector< unsigned > fTimeStamp;
-            std::vector< unsigned > fFrameID;
-            std::vector< unsigned > fRecord;
+            std::vector< ClockType > fTimeStamps;
+            std::vector< ChIdType > fChannelIDs;
+            std::vector< AcqIdType > fAcquisitionIDs;
+            std::vector< RecIdType > fRecordIDs;
+            std::vector< std::vector< DataType > > fRecords;
 
         private:
             /// Round to nearest integer. Rounds half integers to the nearest even integer.
@@ -74,28 +92,42 @@ namespace Katydid
 
     };
 
-
-    template< typename XType >
-    XType KTEvent::GetRecordAt(unsigned int iPoint) const
+    /*
+    inline unsigned KTEvent::GetRecordSize(unsigned channelNum) const
     {
-        return (XType)GetRecordAt(iPoint);
+        return fRecords[channelNum].size();
+    }
+    */
+    inline unsigned KTEvent::GetNRecords() const
+    {
+        return unsigned(fRecords.size());
+    }
+
+    inline DataType KTEvent::GetRecordAt(unsigned int iPoint, unsigned channelNum) const
+    {
+        return fRecords[channelNum][iPoint];
+    }
+
+    inline DataType KTEvent::GetRecordAtTime(double time, unsigned channelNum) const
+    {
+        return this->GetRecordAt((unsigned)(nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
     template< typename XType >
-    XType KTEvent::GetRecordAtTime(double time) const
+    XType KTEvent::GetRecordAt(unsigned iPoint, unsigned channelNum) const
     {
-        return this->GetRecordAt< XType >((unsigned int)(nint(std::max(0., time) / fBinWidth)));
+        return (XType)GetRecordAt(iPoint, channelNum);
     }
 
-
-    inline const std::vector< unsigned >& KTEvent::GetFrameID() const
+    template< typename XType >
+    XType KTEvent::GetRecordAtTime(double time, unsigned channelNum) const
     {
-        return fFrameID;
+        return this->GetRecordAt< XType >((unsigned)(nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
-    inline const std::vector< unsigned >& KTEvent::GetRecord() const
+    inline unsigned KTEvent::GetRecordSize() const
     {
-        return fRecord;
+        return fRecordSize;
     }
 
     inline double KTEvent::GetRecordLength() const
@@ -108,39 +140,39 @@ namespace Katydid
         return fSampleRate;
     }
 
-    inline const std::vector< unsigned >& KTEvent::GetTimeStamp() const
-    {
-        return fTimeStamp;
-    }
-
     inline double KTEvent::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline unsigned KTEvent::GetRecordSize() const
+    inline ClockType KTEvent::GetTimeStamp(unsigned channelNum) const
     {
-        return (unsigned)fRecord.size();
+        return fTimeStamps[channelNum];
     }
 
-    inline unsigned KTEvent::GetRecordAt(unsigned int iPoint) const
+    inline ChIdType KTEvent::GetChannelID(unsigned channelNum) const
     {
-        return fRecord[iPoint];
+        return fChannelIDs[channelNum];
     }
 
-    inline unsigned KTEvent::GetRecordAtTime(double time) const
+    inline AcqIdType KTEvent::GetAcquisitionID(unsigned channelNum) const
     {
-        return this->GetRecordAt((unsigned int)(nint(std::max(0., time) / fBinWidth)));
+        return fAcquisitionIDs[channelNum];
     }
 
-    inline void KTEvent::SetFrameID(const std::vector< unsigned >& frameID)
+    inline RecIdType KTEvent::GetRecordID(unsigned channelNum) const
     {
-        this->fFrameID = frameID;
+        return fRecordIDs[channelNum];
     }
 
-    inline void KTEvent::SetRecord(const std::vector< unsigned >& record)
+    inline const std::vector< DataType >& KTEvent::GetRecord(unsigned channelNum) const
     {
-        this->fRecord = record;
+        return fRecords[channelNum];
+    }
+
+    inline void KTEvent::SetRecordSize(unsigned recordSize)
+    {
+        this->fRecordSize = recordSize;
     }
 
     inline void KTEvent::SetRecordLength(double recordLength)
@@ -158,10 +190,42 @@ namespace Katydid
         this->fBinWidth = binWidth;
     }
 
-    inline void KTEvent::SetTimeStamp(const std::vector< unsigned >& timeStamp)
+    inline void KTEvent::CalculateBinWidthAndRecordLength()
     {
-        this->fTimeStamp = timeStamp;
+        SetBinWidth(1. / fSampleRate);
+        SetRecordLength(double(fRecordSize) * fBinWidth);
+        return;
     }
+
+    inline void KTEvent::SetTimeStamp(ClockType timeStamp, unsigned channelNum)
+    {
+        fTimeStamps[channelNum] = timeStamp;
+        return;
+    }
+
+    inline void KTEvent::SetChannelID(ChIdType chId, unsigned channelNum)
+    {
+        fChannelIDs[channelNum] = chId;
+        return;
+    }
+
+    inline void KTEvent::SetAcquisitionID(AcqIdType acqId, unsigned channelNum)
+    {
+        fAcquisitionIDs[channelNum] = acqId;
+        return;
+    }
+
+    inline void KTEvent::SetRecordID(RecIdType recId, unsigned channelNum)
+    {
+        fRecordIDs[channelNum] = recId;
+        return;
+    }
+
+    inline void KTEvent::SetRecord(std::vector< DataType > record, unsigned channelNum)
+    {
+        this->fRecords[channelNum] = record;
+    }
+
 
 
     inline int KTEvent::nint(double x) const

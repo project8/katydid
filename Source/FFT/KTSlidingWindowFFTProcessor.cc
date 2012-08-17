@@ -9,6 +9,7 @@
 
 #include "KTFactory.hh"
 #include "KTLogger.hh"
+#include "KTEggHeader.hh"
 #include "KTSlidingWindowFFT.hh"
 
 using std::string;
@@ -66,12 +67,12 @@ namespace Katydid
         return kFALSE;
     }
 
-    void KTSlidingWindowFFTProcessor::ProcessHeader(KTEgg::HeaderInfo headerInfo)
+    void KTSlidingWindowFFTProcessor::ProcessHeader(const KTEggHeader* header)
     {
-        fWindowFunc->SetBinWidth(1. / headerInfo.fSampleRate);
+        fWindowFunc->SetBinWidth(1. / header->GetAcquisitionRate());
         fFFT.RecreateFFT();
         fFFT.InitializeFFT();
-        fFFT.SetFreqBinWidth(headerInfo.fSampleRate / (Double_t)fWindowFunc->GetSize());
+        fFFT.SetFreqBinWidth(header->GetAcquisitionRate() / (Double_t)fWindowFunc->GetSize());
         return;
     }
 

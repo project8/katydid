@@ -7,6 +7,7 @@
 
 #include "KTFFTEHuntProcessor.hh"
 
+#include "KTEggHeader.hh"
 #include "KTPhysicalArray.hh"
 #include "KTHannWindow.hh"
 #include "KTMaskedArray.hh"
@@ -146,7 +147,7 @@ namespace Katydid
         return kFALSE;
     }
 
-    void KTFFTEHuntProcessor::ProcessHeader(KTEgg::HeaderInfo headerInfo)
+    void KTFFTEHuntProcessor::ProcessHeader(const KTEggHeader* header)
     {
         // Initialize the processors that will be used for each event
         KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
@@ -163,8 +164,8 @@ namespace Katydid
         fWindowFFTProc.ApplySetting(&settingFFTOverlap);
 
         // Process the header information
-        fSimpleFFTProc.ProcessHeader(headerInfo);
-        fWindowFFTProc.ProcessHeader(headerInfo);
+        fSimpleFFTProc.ProcessHeader(header);
+        fWindowFFTProc.ProcessHeader(header);
 
         // Set up the bin cuts
         // get the number of frequency bins and the frequency bin width
