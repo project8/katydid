@@ -8,6 +8,7 @@
 
 #include "KTEggProcessor.hh"
 
+#include "KTCommandLineOption.hh"
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
@@ -17,13 +18,13 @@
 //#include "TCanvas.h"
 //#include "TH1.h"
 
-#include <utility>
-using std::pair;
-
 using std::string;
 
 namespace Katydid
 {
+    static KTCommandLineOption< int > sNEventsCLO("Egg Processor", "Number of events to process", "n-events", 'n');
+    static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
+
     KTLOGGER(egglog, "katydid.egg");
 
     KTEggProcessor::KTEggProcessor() :

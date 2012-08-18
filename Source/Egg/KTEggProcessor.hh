@@ -31,8 +31,16 @@ namespace Katydid
      @details
      Iterates over events in an egg file; events are extracted until fNEvents is reached.
 
-     A signal is emitted when the header is parsed.  The signature for the signal call is void (KTEgg::HeaderInfo info).
-     A signal is emitted for each event extracted.  The signature for the signal call is void (UInt_t iEvent, const KTEvent* eventPtr).
+     Available configuration options:
+     \li \c Number of events to process
+     \li \c Egg filename to use
+
+     Command-line options defined
+     \li \c
+
+     Signals:
+     \li \c void (KTEgg::HeaderInfo info) emitted when the file header is parsed.
+     \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
     */
     class KTEggProcessor : public KTProcessor
     {
