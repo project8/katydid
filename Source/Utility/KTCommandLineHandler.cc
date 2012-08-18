@@ -25,6 +25,10 @@ namespace Katydid
 {
     KTLOGGER(utillog, "katydid.utility");
 
+    CommandLineHandlerException::CommandLineHandlerException (std::string const& why)
+      : std::logic_error(why)
+    {}
+
     KTCommandLineHandler::KTCommandLineHandler() :
             fExecutableName("NONE"),
             fPackageString(STRINGIFY_2(PACKAGE_STRING)),
