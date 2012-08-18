@@ -6,15 +6,14 @@
  @date: Jan 5, 2012
  */
 
+#include "KTApplication.hh"
+#include "KTCommandLineOption.hh"
 #include "KTEggProcessor.hh"
-#include "KTSimpleFFTProcessor.hh"
+#include "KTSimpleFFT.hh"
 #include "KTSetting.hh"
 
 #include "TFile.h"
 #include "TH1D.h"
-
-//#include <boost/bind.hpp>
-//#include <boost/signals2.hpp>
 
 #include <cmath>
 #include <cstdlib>
@@ -27,7 +26,7 @@
 using namespace std;
 using namespace Katydid;
 
-class PowerSpectraContainer
+class PowerSpectraContainer : public KTProcessor
 {
     public:
         PowerSpectraContainer();
@@ -39,56 +38,40 @@ class PowerSpectraContainer
         vector< TH1D* > fPowerSpectra;
 };
 
+static KTCommandLineOption< string > sOutputFNameCLO("Extract Power Spectra", "Output filename (not including .root extension)", "output-file", 'o');
+static KTCommandLineOption< unsigned > sNAvgCLO("Extract Power Spectra", "Number of events to average together", "events-per-average", 'a');
+
+
 int main(int argc, char** argv)
 {
-    string outputFileNameBase("power_spectra");
-    string inputFileName("");
-    UInt_t numEvents = 1;
-    UInt_t eventsPerAverage = 1;
+    KTApplication* app = new KTApplication(argc, argv);
+    app->ReadConfigFile();
+    app->ProcessCommandLine();
 
-    Int_t arg;
-    extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:p:n:a")) != -1)
-        switch (arg)
-        {
-            case 'e':
-                cout << optarg << endl;
-                inputFileName = string(optarg);
-                break;
-            case 'p':
-                cout << optarg << endl;
-                outputFileNameBase = string(optarg);
-                break;
-            case 'n':
-                cout << optarg << endl;
-                numEvents = (UInt_t)abs(atoi(optarg));
-                break;
-            case 'a':
-                cout << optarg << endl;
-                eventsPerAverage = (UInt_t)abs(atof(optarg));
-                break;
-        }
 
-    if (inputFileName.empty())
-    {
-        cout << "Error: No egg filename given" << endl;
-        return -1;
-    }
-
+    // Get the application-specific command line options
+    string outputFileNameBase = app->GetCommandLineHandler()->GetCommandLineValue< string >("output-file", "power_spectra");
     string outputFileNameRoot = outputFileNameBase + string(".root");
+
+    UInt_t eventsPerAverage = app->GetCommandLineHandler()->GetCommandLineValue< unsigned >("events-per-average", 1);
+
+
 
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
+    KTSimpleFFT procFFT;
+    PowerSpectraContainer powerSpectra;
+
+
+    /*
     KTSetting settingEggNEvents("NEvents", numEvents);
     KTSetting settingEggFilename("Filename", inputFileName);
     procEgg.ApplySetting(&settingEggNEvents);
     procEgg.ApplySetting(&settingEggFilename);
 
-    KTSimpleFFTProcessor procFFT;
     KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
     procFFT.ApplySetting(&settingFFTTransFlag);
-
-    PowerSpectraContainer powerSpectra;
+     */
 
     try
     {
@@ -97,6 +80,9 @@ int main(int argc, char** argv)
 
         // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
         procEgg.ConnectASlot("header", &procFFT, "header");
+
+        // this will get the output histogram when an FFT is complete
+        procFFT.ConnectASlot("fft", &powerSpectra, "get_ps");
     }
     catch (std::exception& e)
     {
@@ -104,13 +90,15 @@ int main(int argc, char** argv)
         std::cout << e.what() << endl;
         return -1;
     }
-    // get the output histogram when an FFT is complete
-    boost::signals2::connection fftConnection = procFFT.ConnectToFFTSignal( boost::bind(&PowerSpectraContainer::AddPowerSpectrum, boost::ref(powerSpectra), _1, _2) );
 
+
+
+    // Process the egg file
     Bool_t success = procEgg.ProcessEgg();
 
-    fftConnection.disconnect();
 
+
+    // Get the histograms out and save them to a ROOT file
     vector< TH1D* > powerSpectrumHistograms = powerSpectra.GetPowerSpectra();
     powerSpectra.ReleasePowerSpectra();
 
@@ -135,8 +123,10 @@ int main(int argc, char** argv)
 //**************************************
 
 PowerSpectraContainer::PowerSpectraContainer() :
+        KTProcessor(),
         fPowerSpectra()
 {
+    this->RegisterSlot("get_ps", this, &PowerSpectraContainer::AddPowerSpectrum);
 }
 
 PowerSpectraContainer::~PowerSpectraContainer()

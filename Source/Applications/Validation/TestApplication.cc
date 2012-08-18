@@ -13,13 +13,17 @@
 
 #include "KTTestConfigurable.hh"
 #include "KTApplication.hh"
-#include "KTCommandLineHandler.hh"
+#include "KTCommandLineOption.hh"
 #include "KTPStoreNode.hh"
 
 using namespace Katydid;
 using namespace std;
 
 KTLOGGER(testapplog, "katydid.applications.validation");
+
+// Add an application-specific command-line option
+static KTCommandLineOption< string > sTestAppOption("TestApplication", "Application-specific command-line option", "test-app-opt", 'a');
+
 
 int main(int argc, char** argv)
 {
@@ -50,6 +54,15 @@ int main(int argc, char** argv)
     //****************************
 
     app->ProcessCommandLine();
+
+    if (app->GetCommandLineHandler()->IsCommandLineOptSet("test-app-opt"))
+    {
+        KTINFO(testapplog, "Test application option is set to value <" << app->GetCommandLineHandler()->GetCommandLineValue< string >("test-app-opt") << ">");
+    }
+    else
+    {
+        KTINFO(testapplog, "Test application option was not set");
+    }
 
     if (app->GetCommandLineHandler()->IsCommandLineOptSet("test-opt"))
     {
