@@ -3,6 +3,7 @@
 
 # Config files
 set (VALIDATION_CONFIGFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ExtractPowerSpectraConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/SimpleElectronHunt2Config.json
 )
 

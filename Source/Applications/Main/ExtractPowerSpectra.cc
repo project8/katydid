@@ -62,17 +62,6 @@ int main(int argc, char** argv)
     KTSimpleFFT procFFT;
     PowerSpectraContainer powerSpectra;
 
-
-    /*
-    KTSetting settingEggNEvents("NEvents", numEvents);
-    KTSetting settingEggFilename("Filename", inputFileName);
-    procEgg.ApplySetting(&settingEggNEvents);
-    procEgg.ApplySetting(&settingEggFilename);
-
-    KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
-    procFFT.ApplySetting(&settingFFTTransFlag);
-     */
-
     try
     {
         // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called

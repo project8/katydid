@@ -1,0 +1,18 @@
+{
+    "extract_power_spectra":
+    {
+        "output_file": "power_spectra",
+        "events_per_average": 1,
+
+        "egg_processor":
+        {
+            "input_file": "/path/to/file.egg",
+            "number_of_events": 1  
+        },
+        
+        "simple_fft":
+        {
+            "transform_flag": "ES"
+        }    
+    }
+}

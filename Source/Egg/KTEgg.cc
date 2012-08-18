@@ -48,7 +48,15 @@ namespace Katydid
         }
 
         // open the file
-        fMonarch = Monarch::Open(filename, ReadMode);
+        try
+        {
+            fMonarch = Monarch::Open(filename, ReadMode);
+        }
+        catch (std::exception& e)
+        {
+            KTERROR(egglog, "Problem opening file: " << e.what());
+            return false;
+        }
 
         fHeader->TakeInformation(fMonarch->GetHeader());
 
