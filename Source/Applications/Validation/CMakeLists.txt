@@ -27,7 +27,7 @@ if (ENABLE_TESTING)
     
     add_executable (TestApplication ${CMAKE_CURRENT_SOURCE_DIR}/TestApplication.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
-    target_link_libraries (TestApplication KatydidUtility ${LIBS})
+    target_link_libraries (TestApplication KatydidUtility KatydidCore ${LIBS})
 
     add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
@@ -43,7 +43,7 @@ if (ENABLE_TESTING)
     
     add_executable (TestParameterStore ${CMAKE_CURRENT_SOURCE_DIR}/TestParameterStore.cc
                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
-    target_link_libraries (TestParameterStore KatydidUtility ${LIBS})
+    target_link_libraries (TestParameterStore KatydidUtility KatydidCore ${LIBS})
     
     add_executable (TestSettings ${CMAKE_CURRENT_SOURCE_DIR}/TestSettings.cc)
     target_link_libraries (TestSettings KatydidUtility ${LIBS})
@@ -51,7 +51,7 @@ if (ENABLE_TESTING)
     add_executable (TestSignalsAndSlots ${CMAKE_CURRENT_SOURCE_DIR}/TestSignalsAndSlots.cc
                                         ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.cc
     )
-    target_link_libraries (TestSignalsAndSlots KatydidUtility ${LIBS})
+    target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
