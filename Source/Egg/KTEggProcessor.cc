@@ -11,6 +11,8 @@
 #include "KTCommandLineOption.hh"
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
+#include "KTEggReaderMonarch.hh"
+#include "KTEggReader2011.hh"
 #include "KTEvent.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -24,11 +26,14 @@ namespace Katydid
 {
     static KTCommandLineOption< int > sNEventsCLO("Egg Processor", "Number of events to process", "n-events", 'n');
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
+    static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the old egg reader for 2011 data", "use-old-egg-reader", 'z');
 
     KTLOGGER(egglog, "katydid.egg");
 
     KTEggProcessor::KTEggProcessor() :
             fNEvents(0),
+            fFilename(""),
+            fEggReaderType(kMonarchEggReader),
             fHeaderSignal(),
             fEventSignal(),
             fEggDoneSignal()
@@ -46,6 +51,13 @@ namespace Katydid
     {
         SetNEvents(node->GetData< UInt_t >("number_of_events", 0));
         SetFilename(node->GetData< string >("filename", ""));
+
+        // egg reader
+        string eggReaderTypeString = node->GetData< string >("egg_reader", "monarch");
+        if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
+        else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
+        else return false;
+
         return true;
     }
 
@@ -68,6 +80,16 @@ namespace Katydid
     Bool_t KTEggProcessor::ProcessEgg()
     {
         KTEgg egg;
+
+        if (fEggReaderType == kMonarchEggReader)
+        {
+            egg.SetReader(new KTEggReaderMonarch());
+        }
+        else
+        {
+            egg.SetReader(new KTEggReader2011());
+        }
+
         if (! egg.BreakEgg(fFilename))
         {
             KTERROR(egglog, "Egg did not break");

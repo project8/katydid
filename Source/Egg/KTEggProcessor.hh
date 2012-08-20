@@ -36,7 +36,9 @@ namespace Katydid
      \li \c Egg filename to use
 
      Command-line options defined
-     \li \c
+     \li \c -n (n-events): Number of events to process
+     \li \c -e (egg-file): Egg filename to use
+     \li \c -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
      \li \c void (KTEgg::HeaderInfo info) emitted when the file header is parsed.
@@ -50,6 +52,13 @@ namespace Katydid
             typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:
+            enum EggReaderType
+            {
+                k2011EggReader,
+                kMonarchEggReader
+            };
+
+        public:
             KTEggProcessor();
             virtual ~KTEggProcessor();
 
@@ -61,14 +70,18 @@ namespace Katydid
 
             UInt_t GetNEvents() const;
             const std::string& GetFilename() const;
+            EggReaderType GetEggReaderType() const;
 
             void SetNEvents(UInt_t nEvents);
             void SetFilename(const std::string& filename);
+            void SetEggReaderType(EggReaderType type);
 
         private:
             UInt_t fNEvents;
 
             std::string fFilename;
+
+            EggReaderType fEggReaderType;
 
             //***************
             // Signals
@@ -103,6 +116,16 @@ namespace Katydid
         return;
     }
 
+    inline KTEggProcessor::EggReaderType KTEggProcessor::GetEggReaderType() const
+    {
+        return fEggReaderType;
+    }
+
+    inline void KTEggProcessor::SetEggReaderType(EggReaderType type)
+    {
+        fEggReaderType = type;
+        return;
+    }
 
 } /* namespace Katydid */
 
