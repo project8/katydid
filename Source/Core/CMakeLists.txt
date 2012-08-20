@@ -32,6 +32,10 @@ set (CORE_SOURCEFILES
 #    set (CORE_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CoreDict.cxx)
 #endif (ROOT_FOUND)
 
+set (KATYDID_LIBS
+    KatydidUtility
+)
+
 ##################################################
 
 #if (ROOT_FOUND)
@@ -40,7 +44,7 @@ set (CORE_SOURCEFILES
 
 add_library (KatydidCore ${CORE_SOURCEFILES})
 set_target_properties(KatydidCore PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
-target_link_libraries (KatydidCore KatydidUtility ${LIBS})
+target_link_libraries (KatydidCore ${KATYDID_LIBS} ${LIBS})
 
 install (FILES ${CORE_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
 install (TARGETS KatydidCore  DESTINATION ${LIB_INSTALL_DIR})

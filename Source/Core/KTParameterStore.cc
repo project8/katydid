@@ -34,13 +34,14 @@ namespace Katydid
 
     Bool_t KTParameterStore::ReadConfigFile(const string& filename)
     {
+        if (filename.empty()) return true;
         try
         {
             boost::property_tree::json_parser::read_json< PStoreTree >(filename, fStore);
         }
         catch (boost::property_tree::json_parser::json_parser_error& e)
         {
-            KTERROR(utillog_pstore, "Problem occured while parsing config file <" << filename << ">.\n" << e.what());
+            KTERROR(utillog_pstore, "Problem occurred while parsing config file <" << filename << ">.\n" << e.what());
             return false;
         }
         return true;
