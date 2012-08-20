@@ -27,12 +27,16 @@ KTLOGGER(testegg, "katydid.validation.egghatch");
 int main(int argc, char** argv)
 {
 
-    if (argc != 2) return 0;
+    if (argc != 2)
+    {
+        KTERROR(testegg, "No filename supplied");
+        return 0;
+    }
     string filename(argv[1]);
 
     KTINFO(testegg, "Test of hatching egg file <" << filename << ">");
 
-    cout << "Opening file" << endl;
+    KTINFO(testegg, "Opening file");
     KTEgg* egg = new KTEgg();
     if (egg->BreakEgg(filename))
     {

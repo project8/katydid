@@ -48,16 +48,15 @@ namespace Katydid
         }
 
         // open the file
-        try
+        KTDEBUG(egglog, "Attempting to open file <" << filename << ">");
+        fMonarch = Monarch::Open(filename, ReadMode);
+        if (fMonarch == NULL)
         {
-            fMonarch = Monarch::Open(filename, ReadMode);
-        }
-        catch (std::exception& e)
-        {
-            KTERROR(egglog, "Problem breaking egg: " << e.what());
+            KTERROR(egglog, "Unable to break egg (no cake for you!)");
             return false;
         }
 
+        KTDEBUG(egglog, "File open; reading header");
         fHeader->TakeInformation(fMonarch->GetHeader());
 
         return true;
@@ -105,7 +104,10 @@ namespace Katydid
 
     bool KTEgg::CloseEgg()
     {
-        return fMonarch->Close();
+        bool fileExistedAndWasClosed = fMonarch->Close();
+        delete fMonarch;
+        fMonarch = NULL;
+        return fileExistedAndWasClosed;
     }
 
 } /* namespace Katydid */
