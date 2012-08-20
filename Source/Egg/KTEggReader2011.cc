@@ -56,6 +56,7 @@ namespace Katydid
 
         if (! fEggStream.is_open())
         {
+            KTERROR("Egg filestream did not open (file: " << filename << ")");
             return NULL;
         }
 
@@ -67,6 +68,7 @@ namespace Katydid
         fEggStream.read(readBuffer, readSize);
         if (! fEggStream.good())
         {
+            KTERROR("Egg filestream is bad after reading the prelude");
             delete [] readBuffer;
             return NULL;
         }
@@ -85,6 +87,7 @@ namespace Katydid
         fEggStream.read(readBuffer, fHeaderSize);
         if (! fEggStream.good())
         {
+            KTERROR("Egg filestream is bad after reading the header");
             delete [] readBuffer;
             return NULL;
         }

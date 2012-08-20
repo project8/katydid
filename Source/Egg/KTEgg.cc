@@ -38,7 +38,11 @@ namespace Katydid
             return false;
         }
         fHeader = fReader->BreakEgg(filename);
-        if (fHeader == NULL) return false;
+        if (fHeader == NULL)
+        {
+            KTWARN(egglog, "No header was received");
+            return false;
+        }
         return true;
     }
 

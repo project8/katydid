@@ -10,6 +10,8 @@
 
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
+#include "KTEggReader2011.hh"
+#include "KTEggReaderMonarch.hh"
 #include "KTEvent.hh"
 #include "KTLogger.hh"
 
@@ -27,17 +29,35 @@ KTLOGGER(testegg, "katydid.validation.egghatch");
 int main(int argc, char** argv)
 {
 
-    if (argc != 2)
+    if (argc < 2)
     {
         KTERROR(testegg, "No filename supplied");
         return 0;
     }
     string filename(argv[1]);
 
+    string readerOption;
+    if (argc >= 3)
+    {
+        readerOption = argv[2];
+    }
+
     KTINFO(testegg, "Test of hatching egg file <" << filename << ">");
 
-    KTINFO(testegg, "Opening file");
     KTEgg* egg = new KTEgg();
+    if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
+    {
+        KTINFO(testegg, "Using 2011 egg reader");
+        egg->SetReader(new KTEggReader2011());
+    }
+    else
+    {
+        KTINFO(testegg, "Using Monarch egg reader");
+        egg->SetReader(new KTEggReaderMonarch());
+    }
+
+
+    KTINFO(testegg, "Opening file");
     if (egg->BreakEgg(filename))
     {
         KTINFO(testegg, "Egg opened successfully");
