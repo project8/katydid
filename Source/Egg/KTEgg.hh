@@ -33,6 +33,7 @@ namespace Katydid
 
             bool BreakEgg(const std::string& filename);
             KTEvent* HatchNextEvent();
+            bool CloseEgg();
 
             void SetHeader(KTEggHeader* header);
             KTEggHeader* GetHeader() const;

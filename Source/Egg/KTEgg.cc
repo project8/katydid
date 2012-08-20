@@ -54,7 +54,7 @@ namespace Katydid
         }
         catch (std::exception& e)
         {
-            KTERROR(egglog, "Problem opening file: " << e.what());
+            KTERROR(egglog, "Problem breaking egg: " << e.what());
             return false;
         }
 
@@ -101,6 +101,11 @@ namespace Katydid
         }
 
         return event;
+    }
+
+    bool KTEgg::CloseEgg()
+    {
+        return fMonarch->Close();
     }
 
 } /* namespace Katydid */
