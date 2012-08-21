@@ -10,6 +10,7 @@
 #define KTSIMPLECLUSTERINGPROCESSOR_HH_
 
 #include "KTProcessor.hh"
+#include "KTConfigurable.hh"
 
 #include "KTMaskedArray.hh"
 
@@ -27,7 +28,7 @@ namespace Katydid
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
 
-    class KTSimpleClusteringProcessor : public KTProcessor
+    class KTSimpleClusteringProcessor : public KTProcessor, public KTConfigurable
     {
         private:
             typedef std::list< std::multimap< Int_t, Int_t >* > epbList;
