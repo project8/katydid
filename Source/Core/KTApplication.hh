@@ -42,23 +42,24 @@ namespace Katydid
         Note: if the user wants to build a ROOT application, there's a flag which will create a TApplication as well.
         The configuration file will be automatically extracted from the command line.
         If --help (-h) or --version (-v) were given, those will be handled immediately, and the program will exit.
-     2. Call KTApplication::ProcessCommandLine() to parse the remaining command-line options.
-     3. Call KTApplication::ReadConfigFile() to read the config file and store the values in the parameter store.
-     4. Use KTAppilcation::GetNode(address) to get parameter-store nodes.
+     2. Call KTApplication::ReadConfigFile() to read the config file and store the values in the parameter store.
+     3. Use KTAppilcation::GetNode(address) to get parameter-store nodes.
 
     */
     class KTApplication
     {
         public:
             KTApplication(Bool_t makeTApp=false);
+            /// Constructor to use with command-line optiosn; includes parsing of the command line by KTCommandLineHandler (except for config-file-dependent options)
             KTApplication(int argC, char** argV, Bool_t makeTApp=false);
             virtual ~KTApplication();
 
             /// Parse the config file and store the results (performed by KTParameterStore)
             Bool_t ReadConfigFile();
 
-            /// Parse the command line and store the results (performed by KTCommandLineHandler)
-            void ProcessCommandLine();
+            /// Parse any unparsed parts of command line and store the results (performed by KTCommandLineHandler)
+            /// This is called from ReadConfigFile
+            void FinishProcessingCommandLine();
 
             /// Get a node from the parameter store tree
             KTPStoreNode* GetNode(const std::string address) const;

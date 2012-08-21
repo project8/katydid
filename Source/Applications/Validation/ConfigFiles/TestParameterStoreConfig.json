@@ -1,5 +1,5 @@
 {
-    "TestConfigurable":
+    "test_configurable":
     {
         "int_data": 5,
         "double_data": 50,

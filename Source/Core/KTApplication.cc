@@ -78,6 +78,7 @@ namespace Katydid
         {
             fCLHandler->PrintHelpMessageAndExit();
         }
+        FinishProcessingCommandLine();
         return true;
     }
 
@@ -97,9 +98,9 @@ namespace Katydid
         return;
     }
 
-    void KTApplication::ProcessCommandLine()
+    void KTApplication::FinishProcessingCommandLine()
     {
-        fCLHandler->ProcessCommandLine();
+        fCLHandler->DelayedCommandLineProcessing();
         ApplyCLOptionsToParamStore(fCLHandler->GetParsedOptions());
         return;
     }

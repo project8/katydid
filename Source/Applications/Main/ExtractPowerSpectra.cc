@@ -46,7 +46,6 @@ int main(int argc, char** argv)
 {
     KTApplication* app = new KTApplication(argc, argv);
     app->ReadConfigFile();
-    app->ProcessCommandLine();
 
 
     // Get the application-specific command line options

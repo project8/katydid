@@ -42,10 +42,12 @@ namespace Katydid
 
      @details
      The basic format for the command line arguments are as follows:
-      - The first argument should be the configuration filename, if you're using one.
+      <!-- - The first argument should be the configuration filename, if you're using one. -->
       - All further arguments should either use the "long format" or the "short format":
           o Long format: --long-option-name[=value]
+                         --long-option-name [value]
           o Short format: -s[value]
+                          -s [value]
         Strings with spaces should be put in quotation marks.
 
      The configuration file will be automatically extracted from the command line.
@@ -140,11 +142,10 @@ namespace Katydid
             //**************
 
         public:
-            /// Parses the command line (besides the general options, which are automatically processed)
-            void ProcessCommandLine();
+            /// Parses the remaining command line options (those that weren't parsed during the InitialCommandLineProcessing
+            void DelayedCommandLineProcessing();
 
         private:
-            // Do NOT make this virtual. It is called from the constructor.
             /// Parses the general options and stores the remaining options available for later parsing
             void InitialCommandLineProcessing();
 

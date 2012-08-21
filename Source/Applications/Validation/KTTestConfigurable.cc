@@ -14,7 +14,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTCommandLineOption< string > sTestConfigStringCLO("TestConfigurable", "Command-line option for testing", "test-opt", 't');
+    static KTCommandLineOption< Int_t > sTestConfigStringCLO("Test Configurable", "Command-line option for testing", "int-data", 'i');
 
     KTLOGGER(testparamlog, "katydid.applications.validation");
 
@@ -23,13 +23,14 @@ namespace Katydid
             fDoubleData(-99.),
             fStringData("not configured")
     {
+        fConfigName = "test_configurable";
     }
 
     KTTestConfigurable::~KTTestConfigurable()
     {
     }
 
-    Bool_t KTTestConfigurable::Configure(const KTPStoreNode* node)
+    Bool_t KTTestConfigurable::ConfigureFromPStore(const KTPStoreNode* node)
     {
         if (node->HasData("int_data"))
         {
@@ -48,5 +49,16 @@ namespace Katydid
         }
         return true;
     }
+
+    Bool_t KTTestConfigurable::ConfigureFromCL()
+    {
+        if (fCLHandler->IsCommandLineOptSet("int-data"))
+        {
+            fIntData = fCLHandler->GetCommandLineValue< Int_t >("int-data");
+            KTINFO(testparamlog, "Configured integer from CL: " << fIntData);
+        }
+        return true;
+    }
+
 
 } /* namespace Katydid */

@@ -8,27 +8,45 @@
 #ifndef KTTESTCONFIGURABLE_HH_
 #define KTTESTCONFIGURABLE_HH_
 
-#include "Rtypes.h"
-
-#include <string>
+#include "KTConfigurable.hh"
 
 namespace Katydid
 {
-    class KTPStoreNode;
-
-    class KTTestConfigurable
+    class KTTestConfigurable : public KTConfigurable
     {
         public:
             KTTestConfigurable();
             virtual ~KTTestConfigurable();
 
-            Bool_t Configure(const KTPStoreNode* node);
+        protected:
+            Bool_t ConfigureFromPStore(const KTPStoreNode* node);
+            Bool_t ConfigureFromCL();
+
+        public:
+            Int_t GetIntData() const;
+            Double_t GetDoubleData() const;
+            const std::string& GetStringData() const;
 
         private:
             Int_t fIntData;
             Double_t fDoubleData;
             std::string fStringData;
     };
+
+    inline Int_t KTTestConfigurable::GetIntData() const
+    {
+        return fIntData;
+    }
+
+    inline Double_t KTTestConfigurable::GetDoubleData() const
+    {
+        return fDoubleData;
+    }
+
+    inline const std::string& KTTestConfigurable::GetStringData() const
+    {
+        return fStringData;
+    }
 
 } /* namespace Katydid */
 #endif /* KTTESTCONFIGURABLE_HH_ */
