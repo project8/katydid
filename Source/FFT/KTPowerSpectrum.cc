@@ -82,7 +82,6 @@ namespace Katydid
         }
         hist->SetXTitle("Frequency (MHz)");
         hist->SetYTitle("Power");
-        std::cout << "created ps magnitude histogram with " << hist->GetNbinsX() << " bins, going from " << hist->GetBinLowEdge(1) << " to " << hist->GetBinLowEdge(hist->GetNbinsX()+1) << std::endl;
         return hist;
     }
 

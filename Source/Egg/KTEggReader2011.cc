@@ -298,6 +298,7 @@ namespace Katydid
         //
         event->SetSampleRate(double(fHeaderInfo.fSampleRate));
         event->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
+        event->SetRecordSize(fHeaderInfo.fRecordSize);
         event->SetRecordLength(double(fHeaderInfo.fRecordSize) * event->GetBinWidth());
 
         return event;
