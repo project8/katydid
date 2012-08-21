@@ -24,6 +24,7 @@ namespace Katydid
     KTSlidingWindowFFT::KTSlidingWindowFFT() :
             KTFFT(),
             KTProcessor(),
+            KTConfigurable(),
             fTransform(new TFFTRealComplex()),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
@@ -52,12 +53,14 @@ namespace Katydid
 
     Bool_t KTSlidingWindowFFT::Configure(const KTPStoreNode* node)
     {
-        SetTransformFlag(node->GetData< string >("transform_flag", ""));
-        SetOverlap(node->GetData< Double_t >("overlap_time", 0));
-        SetOverlap(node->GetData< UInt_t >("overlap_size", 0));
-        SetOverlapFrac(node->GetData< Double_t >("overlap_frac", 0.));
+        // Config-file options
+        SetTransformFlag(node->GetData< string >("transform-flag", fTransformFlag));
 
-        string windowType = node->GetData< string >("window_function_type", "rectangular");
+        if (node->HasData("overlap-time")) SetOverlap(node->GetData< Double_t >("overlap-time", 0));
+        if (node->HasData("overlap-size")) SetOverlap(node->GetData< UInt_t >("overlap-size", 0));
+        if (node->HasData("overlap-frac")) SetOverlapFrac(node->GetData< Double_t >("overlap-frac", 0.));
+
+        string windowType = node->GetData< string >("window-function-type", "rectangular");
         KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
         if (tempWF == NULL)
         {
@@ -66,11 +69,13 @@ namespace Katydid
         }
         SetWindowFunction(tempWF);
 
-        const KTPStoreNode* childNode = node->GetChild("window_function");
+        const KTPStoreNode* childNode = node->GetChild("window-function");
         if (childNode != NULL)
         {
             fWindowFunction->Configure(childNode);
         }
+
+        // No command-line options
 
         return true;
     }

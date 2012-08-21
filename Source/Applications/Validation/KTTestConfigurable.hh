@@ -18,9 +18,8 @@ namespace Katydid
             KTTestConfigurable();
             virtual ~KTTestConfigurable();
 
-        protected:
-            Bool_t ConfigureFromPStore(const KTPStoreNode* node);
-            Bool_t ConfigureFromCL();
+        public:
+            Bool_t Configure(const KTPStoreNode* node);
 
         public:
             Int_t GetIntData() const;

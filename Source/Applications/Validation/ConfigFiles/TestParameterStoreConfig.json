@@ -1,8 +1,8 @@
 {
-    "test_configurable":
+    "test-configurable":
     {
-        "int_data": 5,
-        "double_data": 50,
-        "string_data": "It works!"
+        "int-data": 5,
+        "double-data": 50,
+        "string-data": "It works!"
     }
 }

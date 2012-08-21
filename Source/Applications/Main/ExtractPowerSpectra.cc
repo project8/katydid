@@ -47,19 +47,36 @@ int main(int argc, char** argv)
     KTApplication* app = new KTApplication(argc, argv);
     app->ReadConfigFile();
 
+    string appConfigName("extract-power-spectra");
+
+    // Variables to be configured either by the config file or comamnd line
+    string outputFileNameBase("power_spectra");
+    UInt_t eventsPerAverage = 1;
+
+    // Get the application-specific configuration file options
+    KTPStoreNode* node = app->GetNode(appConfigName);
+    if (node != NULL)
+    {
+        outputFileNameBase = node->GetData< string >("output-file", outputFileNameBase);
+        eventsPerAverage = node->GetData< UInt_t >("events-per-average", eventsPerAverage);
+    }
 
     // Get the application-specific command line options
-    string outputFileNameBase = app->GetCommandLineHandler()->GetCommandLineValue< string >("output-file", "power_spectra");
+    outputFileNameBase = app->GetCommandLineHandler()->GetCommandLineValue< string >("output-file", outputFileNameBase);
+    eventsPerAverage = app->GetCommandLineHandler()->GetCommandLineValue< unsigned >("events-per-average", eventsPerAverage);
+
     string outputFileNameRoot = outputFileNameBase + string(".root");
-
-    UInt_t eventsPerAverage = app->GetCommandLineHandler()->GetCommandLineValue< unsigned >("events-per-average", 1);
-
 
 
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
     KTSimpleFFT procFFT;
     PowerSpectraContainer powerSpectra;
+
+
+    // Configure the processors
+    app->Configure(&procEgg, appConfigName);
+    app->Configure(&procFFT, appConfigName);
 
     try
     {

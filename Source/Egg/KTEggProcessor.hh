@@ -10,12 +10,9 @@
 #define KTEGGPROCESSOR_HH_
 
 #include "KTProcessor.hh"
+#include "KTConfigurable.hh"
 
 #include "KTEgg.hh"
-
-#include "Rtypes.h"
-
-#include <string>
 
 namespace Katydid
 {
@@ -44,7 +41,7 @@ namespace Katydid
      \li \c void (KTEgg::HeaderInfo info) emitted when the file header is parsed.
      \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
     */
-    class KTEggProcessor : public KTProcessor
+    class KTEggProcessor : public KTProcessor, public KTConfigurable
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;

@@ -26,11 +26,13 @@ namespace Katydid
 {
     static KTCommandLineOption< int > sNEventsCLO("Egg Processor", "Number of events to process", "n-events", 'n');
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
-    static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the old egg reader for 2011 data", "use-old-egg-reader", 'z');
+    static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
     KTLOGGER(egglog, "katydid.egg");
 
     KTEggProcessor::KTEggProcessor() :
+            KTProcessor(),
+            KTConfigurable(),
             fNEvents(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
@@ -38,6 +40,8 @@ namespace Katydid
             fEventSignal(),
             fEggDoneSignal()
     {
+        fConfigName = "egg-processor";
+
         RegisterSignal("header", &fHeaderSignal);
         RegisterSignal("event", &fEventSignal);
         RegisterSignal("egg_done", &fEggDoneSignal);
@@ -49,14 +53,30 @@ namespace Katydid
 
     Bool_t KTEggProcessor::Configure(const KTPStoreNode* node)
     {
-        SetNEvents(node->GetData< UInt_t >("number_of_events", 0));
-        SetFilename(node->GetData< string >("filename", ""));
+        // Config-file settings
+        if (node != NULL)
+        {
+            SetNEvents(node->GetData< UInt_t >("number-of-events", fNEvents));
+            SetFilename(node->GetData< string >("filename", fFilename));
 
-        // egg reader
-        string eggReaderTypeString = node->GetData< string >("egg_reader", "monarch");
-        if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
-        else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
-        else return false;
+            // egg reader
+            string eggReaderTypeString = node->GetData< string >("egg-reader", "monarch");
+            if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
+            else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
+            else
+            {
+                KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
+                return false;
+            }
+        }
+
+        // Command-line settings
+        SetNEvents(fCLHandler->GetCommandLineValue< Int_t >("n-events", fNEvents));
+        SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
+        if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
+        {
+            SetEggReaderType(k2011EggReader);
+        }
 
         return true;
     }

@@ -23,6 +23,8 @@ namespace Katydid
 
     KTSimpleFFT::KTSimpleFFT() :
             KTFFT(),
+            KTProcessor(),
+            KTConfigurable(),
             fTransform(new TFFTRealComplex()),
             fTransformResults(),
             fTransformFlag(string("")),
@@ -30,6 +32,8 @@ namespace Katydid
             fFreqBinWidth(1.),
             fFFTSignal()
     {
+        fConfigName = "simple-fft";
+
         RegisterSignal("fft", &fFFTSignal);
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader);
@@ -38,6 +42,8 @@ namespace Katydid
 
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
             KTFFT(),
+            KTProcessor(),
+            KTConfigurable(),
             fTransform(new TFFTRealComplex((Int_t)timeSize, kFALSE)),
             fTransformResults(),
             fTransformFlag(string("")),
@@ -45,6 +51,8 @@ namespace Katydid
             fFreqBinWidth(1.),
             fFFTSignal()
     {
+        fConfigName = "simple-fft";
+
         RegisterSignal("fft", &fFFTSignal);
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader);
@@ -69,7 +77,15 @@ namespace Katydid
 
     Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
     {
-        SetTransformFlag(node->GetData<string>("transform_flag", ""));
+        // Config-file settings
+        if (node != NULL)
+        {
+            SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
+        }
+
+        // Command-line settings
+        //SetTransformFlag(fCLHandler->GetCommandLineValue< string >("transform-flag", fTransformFlag));
+
         return true;
     }
 

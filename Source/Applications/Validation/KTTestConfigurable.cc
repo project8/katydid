@@ -19,46 +19,42 @@ namespace Katydid
     KTLOGGER(testparamlog, "katydid.applications.validation");
 
     KTTestConfigurable::KTTestConfigurable() :
+            KTConfigurable(),
             fIntData(-9),
             fDoubleData(-99.),
             fStringData("not configured")
     {
-        fConfigName = "test_configurable";
+        fConfigName = "test-configurable";
     }
 
     KTTestConfigurable::~KTTestConfigurable()
     {
     }
 
-    Bool_t KTTestConfigurable::ConfigureFromPStore(const KTPStoreNode* node)
+    Bool_t KTTestConfigurable::Configure(const KTPStoreNode* node)
     {
-        if (node->HasData("int_data"))
+        // Config-file options
+        if (node != NULL)
         {
-            fIntData = node->GetData< Int_t >("int_data", -1);
-            KTINFO(testparamlog, "Configured integer: " << fIntData);
+            // option: check for data before getting it from the node
+            if (node->HasData("int-data"))
+            {
+                fIntData = node->GetData< Int_t >("int-data", fIntData);
+                KTINFO(testparamlog, "Configured integer (= existing value if not provided): " << fIntData);
+            }
+
+            // option: don't check for data before getting it from the node; rely on the default if it's not there.
+            fDoubleData = node->GetData< Double_t >("double-data", fDoubleData);
+            KTINFO(testparamlog, "Configured double (= existing value if not provided): " << fDoubleData);
+            fStringData = node->GetData< string >("string-data", fStringData);
+            KTINFO(testparamlog, "Configured string (= existing value if not provided): " << fStringData);
         }
-        if (node->HasData("double_data"))
-        {
-            fDoubleData = node->GetData< Double_t >("double_data", -11.);
-            KTINFO(testparamlog, "Configured double: " << fDoubleData);
-        }
-        if (node->HasData("string_data"))
-        {
-            fStringData = node->GetData<string>("string_data", "no value");
-            KTINFO(testparamlog, "Configured string: " << fStringData);
-        }
+
+        // Command-line options
+        fIntData = fCLHandler->GetCommandLineValue< Int_t >("int-data", fIntData);
+        KTINFO(testparamlog, "Configured integer from CL (= existing value if not provided): " << fIntData);
+
         return true;
     }
-
-    Bool_t KTTestConfigurable::ConfigureFromCL()
-    {
-        if (fCLHandler->IsCommandLineOptSet("int-data"))
-        {
-            fIntData = fCLHandler->GetCommandLineValue< Int_t >("int-data");
-            KTINFO(testparamlog, "Configured integer from CL: " << fIntData);
-        }
-        return true;
-    }
-
 
 } /* namespace Katydid */

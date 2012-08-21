@@ -1,40 +1,40 @@
 {
-    "electron_hunt":
+    "electron-hunt":
     {
-        "egg_processor":
+        "egg-processor":
         {
-            "input_file": "/path/to/file.egg",
-            "number_of_events": 1  
+            "input-file": "/path/to/file.egg",
+            "number-of-events": 1  
         },
         
-        "fft_e_hunt":
+        "fft-e-hunt":
         {
-	        "output_filename_base": "",
-	        "write_text_file": true,
-	        "write_root_file": false,
-	        "minimum_group_size": 2,
-	        "frequency_multiplier": 1.0e-6,
+	        "output-filename-base": "",
+	        "write-text-file": true,
+	        "write-root-file": false,
+	        "minimum-group-size": 2,
+	        "frequency-multiplier": 1.0e-6,
 	        
-	        "simple_clustering":
+	        "simple-clustering":
 	        {
-	            "threshold_multiplier": 10.0,
-	            "group_bins_margin_high": 1,
-                "group_bins_margin_low": 3,
-                "group_bins_margin_same_time": 1,
-	            "first_bin_to_use": 1
+	            "threshold-multiplier": 10.0,
+	            "group-bins-margin-high": 1,
+                "group-bins-margin-low": 3,
+                "group-bins-margin-same-time": 1,
+	            "first-bin-to-use": 1
 	        },
 	        
-            "simple_fft":
+            "simple-fft":
             {
-                "transform_flag": "ES"
+                "transform-flag": "ES"
             },
             
-            "sliding_window_fft":
+            "sliding-window-fft":
             {
-                "transform_flag": "ES",
-                "overlap_frac": 0.2,
-                "window_function_type": "hann",
-                "window_function":
+                "transform-flag": "ES",
+                "overlap-frac": 0.2,
+                "window-function-type": "hann",
+                "window-function":
                 {
                     "length": 1.0e-5
                 }

@@ -21,8 +21,10 @@
 
 namespace Katydid
 {
+    class KTConfigurable;
+
     /*!
-     @class KTRectanKTApplicationgularWindow
+     @class KTApplication
      @author N. S. Oblath
 
      @brief Interface for the command-line handler and the parameter store.
@@ -61,8 +63,14 @@ namespace Katydid
             /// This is called from ReadConfigFile
             void FinishProcessingCommandLine();
 
+            /// Configure a KTConfigurable object
+            /// If baseAddress is given, the KTConfigurable's config name will be appended before attempting to get the parameter store node.
+            /// If no baseAddress is given, no parameter store node will be used.
+            /// Use baseAddress="" if the parameter store node to be used is a top-level node.
+            Bool_t Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress="NONE");
+
             /// Get a node from the parameter store tree
-            KTPStoreNode* GetNode(const std::string address) const;
+            KTPStoreNode* GetNode(const std::string& address) const;
 
         protected:
             void AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const std::string& addressOfTree="");
@@ -87,7 +95,7 @@ namespace Katydid
             TApplication* fTApp;
     };
 
-    inline KTPStoreNode* KTApplication::GetNode(const std::string address) const
+    inline KTPStoreNode* KTApplication::GetNode(const std::string& address) const
     {
         return fParamStore->GetNode(address);
     }

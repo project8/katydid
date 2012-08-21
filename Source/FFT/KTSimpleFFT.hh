@@ -11,6 +11,7 @@
 
 #include "KTFFT.hh"
 #include "KTProcessor.hh"
+#include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
 
@@ -55,7 +56,7 @@ namespace Katydid
      \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
     */
 
-    class KTSimpleFFT : public KTFFT, public KTProcessor
+    class KTSimpleFFT : public KTFFT, public KTProcessor, public KTConfigurable
     {
         public:
             typedef KTSignal< void (UInt_t, const KTSimpleFFT*) >::signal FFTSignal;
