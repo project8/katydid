@@ -9,6 +9,7 @@
 #include "KTApplication.hh"
 #include "KTCommandLineOption.hh"
 #include "KTEggProcessor.hh"
+#include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
 #include "KTSetting.hh"
 
@@ -21,10 +22,10 @@
 #include <unistd.h>
 #include <vector>
 
-#include <iostream>
-
 using namespace std;
 using namespace Katydid;
+
+KTLOGGER(extpslog, "katydid.extractps");
 
 class PowerSpectraContainer : public KTProcessor
 {
@@ -91,8 +92,8 @@ int main(int argc, char** argv)
     }
     catch (std::exception& e)
     {
-        std::cout << "An error occured while connecting signals and slots:" << std::endl;
-        std::cout << e.what() << endl;
+        KTERROR(extpslog, "An error occured while connecting signals and slots:\n"
+                << '\t' << e.what());
         return -1;
     }
 
@@ -107,7 +108,7 @@ int main(int argc, char** argv)
     vector< TH1D* > powerSpectrumHistograms = powerSpectra.GetPowerSpectra();
     powerSpectra.ReleasePowerSpectra();
 
-    cout << "There are " << powerSpectrumHistograms.size() << " histograms saved" << endl;
+    KTINFO(extpslog, "There are " << powerSpectrumHistograms.size() << " histograms saved");
 
     TFile* outFile = new TFile(outputFileNameRoot.c_str(), "recreate");
     for (UInt_t iHist=0; iHist<(UInt_t)powerSpectrumHistograms.size(); iHist++)
