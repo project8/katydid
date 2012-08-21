@@ -17,6 +17,7 @@
 #include <string>
 
 class Monarch;
+class MonarchHeader;
 
 namespace Katydid
 {
@@ -38,6 +39,9 @@ namespace Katydid
             bool CloseEgg();
 
         private:
+            /// Copy header information from the MonarchHeader object
+            void CopyHeaderInformation(MonarchHeader* monarchHeader, KTEggHeader* eggHeader);
+
             Monarch* fMonarch;
 
             AcquisitionModeMap fNumberOfRecords;

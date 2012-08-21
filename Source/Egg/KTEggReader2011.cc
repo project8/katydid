@@ -48,15 +48,14 @@ namespace Katydid
     KTEggHeader* KTEggReader2011::BreakEgg(const std::string& filename)
     {
         // First, read all of the information from the file and put it in the right places
-
         if (fEggStream.is_open()) fEggStream.close();
 
         // open the file stream
-        fEggStream.open(fFileName.c_str(), ifstream::in|ifstream::binary);
+        fEggStream.open(filename.c_str(), ifstream::in|ifstream::binary);
 
         if (! fEggStream.is_open())
         {
-            KTERROR("Egg filestream did not open (file: " << filename << ")");
+            KTERROR(eggreadlog, "Egg filestream did not open (file: " << filename << ")");
             return NULL;
         }
 
@@ -68,7 +67,7 @@ namespace Katydid
         fEggStream.read(readBuffer, readSize);
         if (! fEggStream.good())
         {
-            KTERROR("Egg filestream is bad after reading the prelude");
+            KTERROR(eggreadlog, "Egg filestream is bad after reading the prelude");
             delete [] readBuffer;
             return NULL;
         }
@@ -87,7 +86,7 @@ namespace Katydid
         fEggStream.read(readBuffer, fHeaderSize);
         if (! fEggStream.good())
         {
-            KTERROR("Egg filestream is bad after reading the header");
+            KTERROR(eggreadlog, "Egg filestream is bad after reading the header");
             delete [] readBuffer;
             return NULL;
         }
@@ -214,7 +213,7 @@ namespace Katydid
     {
         if (! fEggStream.good()) return NULL;
 
-        KTEvent* event = new KTEvent();
+        KTEvent* event = new KTEvent(1);
 
         unsigned char* readBuffer;
 
@@ -287,7 +286,7 @@ namespace Katydid
         }
         else
         {
-            vector< DataType > newRecord(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
+            vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
             delete [] readBuffer;
             event->SetRecord(newRecord);
         }

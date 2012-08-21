@@ -13,9 +13,11 @@
 #include "KTLogger.hh"
 
 #include "Monarch.hpp"
+#include "MonarchHeader.hpp"
 
 using std::map;
 using std::string;
+using std::vector;
 
 namespace Katydid
 {
@@ -58,7 +60,7 @@ namespace Katydid
 
         KTDEBUG(eggreadlog, "File open; reading header");
         KTEggHeader* header = new KTEggHeader();
-        header->TakeInformation(fMonarch->GetHeader());
+        CopyHeaderInformation(fMonarch->GetHeader(), header);
 
         return header;
     }
@@ -68,7 +70,7 @@ namespace Katydid
         if (fMonarch == NULL) return NULL;
 
         MonarchRecord* eventRecord = NULL;
-        KTEvent* event = new KTEvent();
+        KTEvent* event = new KTEvent(fNumberOfRecords[header->GetAcquisitionMode()]);
 
         //
         event->SetSampleRate(header->GetAcquisitionRate());
@@ -96,8 +98,7 @@ namespace Katydid
             event->SetRecordID(eventRecord->fRId, iRecord);
             event->SetTimeStamp(eventRecord->fTick, iRecord);
 
-            event->SetRecord(std::vector< DataType >(eventRecord->fDataPtr, eventRecord->fDataPtr+header->GetRecordSize()), iRecord);
-
+            event->SetRecord(new vector< DataType >(eventRecord->fDataPtr, eventRecord->fDataPtr+header->GetRecordSize()), iRecord);
         }
 
         return event;
@@ -110,6 +111,19 @@ namespace Katydid
         fMonarch = NULL;
         return fileExistedAndWasClosed;
     }
+
+
+    void KTEggReaderMonarch::CopyHeaderInformation(MonarchHeader* monarchHeader, KTEggHeader* eggHeader)
+    {
+        eggHeader->SetFilename(monarchHeader->GetFilename());
+        eggHeader->SetAcquisitionMode(monarchHeader->GetAcqMode());
+        eggHeader->SetRecordSize(monarchHeader->GetRecordSize());
+        eggHeader->SetAcquisitionTime(monarchHeader->GetAcqTime());
+        eggHeader->SetAcquisitionRate(monarchHeader->GetAcqRate());
+        return;
+    }
+
+
 
 } /* namespace Katydid */
 

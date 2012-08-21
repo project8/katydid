@@ -30,8 +30,18 @@ namespace Katydid
 {
     class KTEvent
     {
+        private:
+            struct PerChannelData
+            {
+                ClockType fTimeStamp;
+                ChIdType fChannelID;
+                AcqIdType fAcquisitionID;
+                RecIdType fRecordID;
+                std::vector< DataType >* fRecord;
+            };
+
         public:
-            KTEvent();
+            KTEvent(unsigned nChannels=1);
             virtual ~KTEvent();
 
 #ifdef ROOT_FOUND
@@ -61,6 +71,8 @@ namespace Katydid
             template< typename XType >
             XType GetRecordAtTime(double time, unsigned channelNum = 0) const; /// time is in seconds and >= 0
 
+            void SetNChannels(unsigned channels);
+
             void SetRecordSize(unsigned size);
             void SetSampleRate(double sampleRate);
             void SetRecordLength(double recordLength);
@@ -72,18 +84,15 @@ namespace Katydid
             void SetAcquisitionID(AcqIdType acqId, unsigned channelNum = 0);
             void SetRecordID(RecIdType recId, unsigned channelNum = 0);
 
-            void SetRecord(std::vector< DataType > record, unsigned channelNum = 0);
+            void SetRecord(std::vector< DataType >* record, unsigned channelNum = 0);
 
         private:
             unsigned fRecordSize; // number of bins
             double fSampleRate; // in Hz
             double fRecordLength; // in sec
             double fBinWidth; // in sec
-            std::vector< ClockType > fTimeStamps;
-            std::vector< ChIdType > fChannelIDs;
-            std::vector< AcqIdType > fAcquisitionIDs;
-            std::vector< RecIdType > fRecordIDs;
-            std::vector< std::vector< DataType > > fRecords;
+
+            std::vector< PerChannelData > fChannelData;
 
         private:
             /// Round to nearest integer. Rounds half integers to the nearest even integer.
@@ -92,20 +101,14 @@ namespace Katydid
 
     };
 
-    /*
-    inline unsigned KTEvent::GetRecordSize(unsigned channelNum) const
-    {
-        return fRecords[channelNum].size();
-    }
-    */
     inline unsigned KTEvent::GetNRecords() const
     {
-        return unsigned(fRecords.size());
+        return unsigned(fChannelData.size());
     }
 
     inline DataType KTEvent::GetRecordAt(unsigned int iPoint, unsigned channelNum) const
     {
-        return fRecords[channelNum][iPoint];
+        return fChannelData[channelNum].fRecord->at(iPoint);
     }
 
     inline DataType KTEvent::GetRecordAtTime(double time, unsigned channelNum) const
@@ -147,27 +150,27 @@ namespace Katydid
 
     inline ClockType KTEvent::GetTimeStamp(unsigned channelNum) const
     {
-        return fTimeStamps[channelNum];
+        return fChannelData[channelNum].fTimeStamp;
     }
 
     inline ChIdType KTEvent::GetChannelID(unsigned channelNum) const
     {
-        return fChannelIDs[channelNum];
+        return fChannelData[channelNum].fChannelID;
     }
 
     inline AcqIdType KTEvent::GetAcquisitionID(unsigned channelNum) const
     {
-        return fAcquisitionIDs[channelNum];
+        return fChannelData[channelNum].fAcquisitionID;
     }
 
     inline RecIdType KTEvent::GetRecordID(unsigned channelNum) const
     {
-        return fRecordIDs[channelNum];
+        return fChannelData[channelNum].fRecordID;
     }
 
     inline const std::vector< DataType >& KTEvent::GetRecord(unsigned channelNum) const
     {
-        return fRecords[channelNum];
+        return (*fChannelData[channelNum].fRecord);
     }
 
     inline void KTEvent::SetRecordSize(unsigned recordSize)
@@ -197,33 +200,44 @@ namespace Katydid
         return;
     }
 
+    inline void KTEvent::SetNChannels(unsigned channels)
+    {
+        fChannelData.resize(channels);
+        return;
+    }
+
     inline void KTEvent::SetTimeStamp(ClockType timeStamp, unsigned channelNum)
     {
-        fTimeStamps[channelNum] = timeStamp;
+        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
+        fChannelData[channelNum].fTimeStamp = timeStamp;
         return;
     }
 
     inline void KTEvent::SetChannelID(ChIdType chId, unsigned channelNum)
     {
-        fChannelIDs[channelNum] = chId;
+        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
+        fChannelData[channelNum].fChannelID = chId;
         return;
     }
 
     inline void KTEvent::SetAcquisitionID(AcqIdType acqId, unsigned channelNum)
     {
-        fAcquisitionIDs[channelNum] = acqId;
+        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
+        fChannelData[channelNum].fAcquisitionID = acqId;
         return;
     }
 
     inline void KTEvent::SetRecordID(RecIdType recId, unsigned channelNum)
     {
-        fRecordIDs[channelNum] = recId;
+        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
+        fChannelData[channelNum].fRecordID = recId;
         return;
     }
 
-    inline void KTEvent::SetRecord(std::vector< DataType > record, unsigned channelNum)
+    inline void KTEvent::SetRecord(std::vector< DataType >* record, unsigned channelNum)
     {
-        this->fRecords[channelNum] = record;
+        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
+        fChannelData[channelNum].fRecord = record;
     }
 
 

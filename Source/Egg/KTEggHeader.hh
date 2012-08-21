@@ -12,8 +12,6 @@
 
 #include <string>
 
-class MonarchHeader;
-
 namespace Katydid
 {
     class KTEggHeader
@@ -22,10 +20,9 @@ namespace Katydid
             KTEggHeader();
             ~KTEggHeader();
 
-            // Member access functions
         public:
-            void SetFilename(std::string fname);
-            std::string GetFilename() const;
+            void SetFilename(const std::string& fname);
+            const std::string& GetFilename() const;
 
             void SetAcquisitionMode(const AcquisitionMode& mode);
             AcquisitionMode GetAcquisitionMode() const;
@@ -39,10 +36,6 @@ namespace Katydid
             void SetAcquisitionRate(const std::size_t& acqr);
             std::size_t GetAcquisitionRate() const;
 
-            // Access to the MonarchHeader object
-            /// Copies the information from the MonarchHeader object
-            void TakeInformation(MonarchHeader* header);
-
         protected:
             std::string fFilename;
             AcquisitionMode fAcquisitionMode;
@@ -52,13 +45,13 @@ namespace Katydid
 
     };
 
-    inline void KTEggHeader::SetFilename(std::string fname)
+    inline void KTEggHeader::SetFilename(const std::string& fname)
     {
         fFilename = fname;
         return;
     }
 
-    inline std::string KTEggHeader::GetFilename() const
+    inline const std::string& KTEggHeader::GetFilename() const
     {
         return fFilename;
     }

@@ -66,6 +66,22 @@ namespace Katydid
         return fReader->CloseEgg();
     }
 
+    void KTEgg::SetReader(KTEggReader* reader)
+    {
+        delete fReader;
+        fReader = reader;
+        return;
+    }
+
+    void KTEgg::SetHeader(KTEggHeader* header)
+    {
+        delete fHeader;
+        fHeader = header;
+        return;
+    }
+
+
+
 } /* namespace Katydid */
 
 

@@ -28,10 +28,10 @@ namespace Katydid
             bool CloseEgg();
 
             void SetReader(KTEggReader* reader);
-            KTEggReader* GetReader() const;
+            const KTEggReader* GetReader() const;
 
             void SetHeader(KTEggHeader* header);
-            KTEggHeader* GetHeader() const;
+            const KTEggHeader* GetHeader() const;
 
         private:
             KTEggReader* fReader;
@@ -39,24 +39,12 @@ namespace Katydid
 
     };
 
-    inline void KTEgg::SetReader(KTEggReader* reader)
-    {
-        fReader = reader;
-        return;
-    }
-
-    inline KTEggReader* KTEgg::GetReader() const
+    inline const KTEggReader* KTEgg::GetReader() const
     {
         return fReader;
     }
 
-    inline void KTEgg::SetHeader(KTEggHeader* header)
-    {
-        fHeader = header;
-        return;
-    }
-
-    inline KTEggHeader* KTEgg::GetHeader() const
+    inline const KTEggHeader* KTEgg::GetHeader() const
     {
         return fHeader;
     }

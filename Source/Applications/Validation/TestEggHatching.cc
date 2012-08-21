@@ -68,7 +68,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    KTEggHeader* header = egg->GetHeader();
+    const KTEggHeader* header = egg->GetHeader();
     if (header == NULL)
     {
         KTERROR(testegg, "No header received");
@@ -86,12 +86,17 @@ int main(int argc, char** argv)
         KTERROR(testegg, "Event did not hatch");
         return -1;
     }
-    KTINFO(testegg, "This event contains " << event->GetNRecords() << " records");
+    unsigned nRecords = event->GetNRecords();
+    KTINFO(testegg, "This event contains " << nRecords << " records");
+    if (nRecords >= 1)
+    {
+        KTINFO(testegg, "Record 0 has " << event->GetRecord(0).size() << " bins");
+        KTINFO(testegg, "Bin 0 of record 0 is " << event->GetRecordAt< double >(0, 0));
+    }
 
     KTINFO(testegg, "Test complete; cleaning up");
     egg->CloseEgg();
     delete event;
-    delete header;
     delete egg;
 
     return 0;
