@@ -43,8 +43,8 @@ namespace Katydid
         TreeNode::const_assoc_iterator it = fTree->find(dataName);
         if (it == fTree->not_found())
         {
-            KTERROR(utillog_psnode, "No subnode was found called <" << dataName << ">.");
-            throw dnfException;
+            // subnode with dataName was not found
+            return false;
         }
 
         try
@@ -54,8 +54,10 @@ namespace Katydid
         }
         catch (boost::property_tree::ptree_bad_path& e)
         {
+            // subnode with dataName was found, but was not data
             return false;
         }
+        // subnode with dataName is data!
         return true;
      }
 

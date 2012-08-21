@@ -36,6 +36,8 @@ namespace Katydid
 {
 
     KTFFTEHuntProcessor::KTFFTEHuntProcessor() :
+            KTProcessor(),
+            KTConfigurable(),
             fEventPeakBins(),
             fMinimumGroupSize(2),
             fCutRanges(),
@@ -52,6 +54,8 @@ namespace Katydid
             fFrequencyMultiplier(1.e-6),
             fTotalCandidates(0)
     {
+        fConfigName = "fft-e-hunt";
+
         RegisterSlot("header", this, &KTFFTEHuntProcessor::ProcessHeader);
         RegisterSlot("event", this, &KTFFTEHuntProcessor::ProcessEvent);
         RegisterSlot("event_done", this, &KTFFTEHuntProcessor::FinishHunt);
@@ -69,35 +73,40 @@ namespace Katydid
 
     Bool_t KTFFTEHuntProcessor::Configure(const KTPStoreNode* node)
     {
-        string filenameBase = node->GetData< string >("output_filename_base", "FFTEHuntOutput");
-        fROOTFilename = filenameBase + string(".root");
-        fTextFilename = filenameBase + string(".txt");
-        fWriteROOTFileFlag = node->GetData< Bool_t >("write_root_file");
-        fWriteTextFileFlag = node->GetData< Bool_t >("write_text_file");
-        fFrequencyMultiplier = node->GetData< Double_t >("frequency_multiplier");
-
-        fMinimumGroupSize = node->GetData< UInt_t >("minimum_group_size", 2);
-        fClusteringProc.SetMinimumGroupSize(fMinimumGroupSize);
-
-        // TODO: cut range when arrays are ready in the parameter store
-
-        const KTPStoreNode* clusterNode = node->GetChild("simple_clustering");
-        if (clusterNode != NULL)
+        if (node != NULL)
         {
-            if (! fClusteringProc.Configure(clusterNode)) return false;
+            string filenameBase = node->GetData< string >("output-filename-base", "FFTEHuntOutput");
+            fROOTFilename = filenameBase + string(".root");
+            fTextFilename = filenameBase + string(".txt");
+            fWriteROOTFileFlag = node->GetData< Bool_t >("write-root-file");
+            fWriteTextFileFlag = node->GetData< Bool_t >("write-text-file");
+            fFrequencyMultiplier = node->GetData< Double_t >("frequency-multiplier");
+
+            fMinimumGroupSize = node->GetData< UInt_t >("minimum-group-size", 2);
+            fClusteringProc.SetMinimumGroupSize(fMinimumGroupSize);
+
+            // TODO: cut range when arrays are ready in the parameter store
+
+            const KTPStoreNode* clusterNode = node->GetChild("simple-clustering");
+            if (clusterNode != NULL)
+            {
+                if (! fClusteringProc.Configure(clusterNode)) return false;
+            }
+
+            const KTPStoreNode* simpleFFTNode = node->GetChild("simple-fft");
+            if (simpleFFTNode != NULL)
+            {
+                if (! fSimpleFFTProc.GetFFT()->Configure(simpleFFTNode)) return false;
+            }
+
+            const KTPStoreNode* slidingWindowFFTNode = node->GetChild("sliding-window-fft");
+            if (slidingWindowFFTNode != NULL)
+            {
+                if (! fWindowFFTProc.GetFFT()->Configure(slidingWindowFFTNode)) return false;
+            }
         }
 
-        const KTPStoreNode* simpleFFTNode = node->GetChild("simple_fft");
-        if (simpleFFTNode != NULL)
-        {
-            if (! fSimpleFFTProc.GetFFT()->Configure(simpleFFTNode)) return false;
-        }
-
-        const KTPStoreNode* slidingWindowFFTNode = node->GetChild("sliding_window_fft");
-        if (slidingWindowFFTNode != NULL)
-        {
-            if (! fWindowFFTProc.GetFFT()->Configure(slidingWindowFFTNode)) return false;
-        }
+        // No CL options
 
         return true;
     }

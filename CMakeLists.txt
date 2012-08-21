@@ -107,6 +107,7 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/include
     ${PROJECT_BINARY_DIR}/Source/Egg/Monarch
     ${PROJECT_SOURCE_DIR}/Source/Utility
+    ${PROJECT_SOURCE_DIR}/Source/Core
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
@@ -115,6 +116,7 @@ include_directories (
 
 add_subdirectory (Source/Egg/Monarch)
 add_subdirectory (Source/Utility)
+add_subdirectory (Source/Core)
 add_subdirectory (Source/Egg)
 if (ROOT_FOUND)
     add_subdirectory (Source/FFT)

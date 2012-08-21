@@ -20,14 +20,14 @@ if (ENABLE_TESTING)
     install (FILES ${VALIDATION_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
     
     
-    # Executables
+    # Executables that do NOT require ROOT
     
     #add_executable (ExtractEvents ${CMAKE_CURRENT_SOURCE_DIR}/ExtractEvents.cc)
     #target_link_libraries (ExtractEvents KatydidUtility KatydidEgg ${LIBS})
     
     add_executable (TestApplication ${CMAKE_CURRENT_SOURCE_DIR}/TestApplication.cc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
-    target_link_libraries (TestApplication KatydidUtility ${LIBS})
+    target_link_libraries (TestApplication KatydidUtility KatydidCore ${LIBS})
 
     add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
@@ -38,12 +38,15 @@ if (ENABLE_TESTING)
     add_executable (TestCutableArray ${CMAKE_CURRENT_SOURCE_DIR}/TestCutableArray.cc)
     target_link_libraries (TestCutableArray KatydidUtility ${LIBS})
     
+    add_executable (TestEggHatching ${CMAKE_CURRENT_SOURCE_DIR}/TestEggHatching.cc)
+    target_link_libraries (TestEggHatching KatydidUtility KatydidCore KatydidEgg ${LIBS})
+    
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${LIBS})
     
     add_executable (TestParameterStore ${CMAKE_CURRENT_SOURCE_DIR}/TestParameterStore.cc
                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
-    target_link_libraries (TestParameterStore KatydidUtility ${LIBS})
+    target_link_libraries (TestParameterStore KatydidUtility KatydidCore ${LIBS})
     
     add_executable (TestSettings ${CMAKE_CURRENT_SOURCE_DIR}/TestSettings.cc)
     target_link_libraries (TestSettings KatydidUtility ${LIBS})
@@ -51,7 +54,7 @@ if (ENABLE_TESTING)
     add_executable (TestSignalsAndSlots ${CMAKE_CURRENT_SOURCE_DIR}/TestSignalsAndSlots.cc
                                         ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.cc
     )
-    target_link_libraries (TestSignalsAndSlots KatydidUtility ${LIBS})
+    target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
@@ -61,6 +64,7 @@ if (ENABLE_TESTING)
                      TestAxisProperties
                      TestCutIterator
                      TestCutableArray
+                     TestEggHatching
                      TestLogger
                      TestParameterStore
                      TestSettings
@@ -74,6 +78,7 @@ if (ENABLE_TESTING)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
+    add_test (Test_EggHatching TestEggHatching)
     add_test (Test_Logger TestLogger)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_Settings TestSettings)
@@ -81,6 +86,7 @@ if (ENABLE_TESTING)
     add_test (Test_Vector TestVector)
     
     
+    # executables that DO require ROOT
     if (ROOT_FOUND)
         add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
         target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})

@@ -9,50 +9,42 @@
 #ifndef KTEGG_HH_
 #define KTEGG_HH_
 
-#include "MonarchTypes.hpp"
-
-#include <map>
 #include <string>
-
-class Monarch;
 
 namespace Katydid
 {
-    class KTEvent;
+    class KTEggReader;
     class KTEggHeader;
+    class KTEvent;
 
     class KTEgg
     {
-        protected:
-            typedef std::map< AcquisitionMode, int > AcquisitionModeMap;
-            typedef AcquisitionModeMap::value_type AcqModeMapValue;
-
         public:
             KTEgg();
             virtual ~KTEgg();
 
             bool BreakEgg(const std::string& filename);
             KTEvent* HatchNextEvent();
+            bool CloseEgg();
+
+            void SetReader(KTEggReader* reader);
+            const KTEggReader* GetReader() const;
 
             void SetHeader(KTEggHeader* header);
-            KTEggHeader* GetHeader() const;
+            const KTEggHeader* GetHeader() const;
 
         private:
-            Monarch* fMonarch;
-
+            KTEggReader* fReader;
             KTEggHeader* fHeader;
-
-            AcquisitionModeMap fNumberOfRecords;
 
     };
 
-    inline void KTEgg::SetHeader(KTEggHeader* header)
+    inline const KTEggReader* KTEgg::GetReader() const
     {
-        fHeader = header;
-        return;
+        return fReader;
     }
 
-    inline KTEggHeader* KTEgg::GetHeader() const
+    inline const KTEggHeader* KTEgg::GetHeader() const
     {
         return fHeader;
     }

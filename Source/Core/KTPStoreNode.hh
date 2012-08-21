@@ -82,7 +82,7 @@ namespace Katydid
             KTERROR(utillog_psnode, "Unable to convert to the specified type for parameter named <" << dataName << ">.");
             throw dnfException;
         }
-        KTERROR(utillog_psnode, "Unkown error while attempting to retrieve <" << dataName << ">.");
+        KTERROR(utillog_psnode, "Unknown error while attempting to retrieve <" << dataName << ">.");
         throw dnfException;
     }
 

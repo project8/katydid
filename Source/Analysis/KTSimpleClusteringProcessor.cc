@@ -30,6 +30,8 @@ namespace Katydid
 {
 
     KTSimpleClusteringProcessor::KTSimpleClusteringProcessor() :
+            KTProcessor(),
+            KTConfigurable(),
             fEventPeakBins(NULL),
             fThresholdMult(8.),
             fBinCuts(NULL),
@@ -40,6 +42,8 @@ namespace Katydid
             fFirstBinToUse(0),
             fDrawFlag(kFALSE)
     {
+        fConfigName = "sliding-window-fft";
+
         RegisterSlot("power_spect", this, &KTSimpleClusteringProcessor::ProcessPowerSpectrum);
     }
 
@@ -50,12 +54,17 @@ namespace Katydid
 
     Bool_t KTSimpleClusteringProcessor::Configure(const KTPStoreNode* node)
     {
-        fThresholdMult = node->GetData< Double_t >("threshold_multiplier", 10.0);
-        fGroupBinsMarginHigh = node->GetData< Int_t >("group_bins_margin_high", 1);
-        fGroupBinsMarginLow = node->GetData< Int_t >("group_bins_margin_low", 3);
-        fGroupBinsMarginSameTime = node->GetData< Int_t >("group_bins_margin_same_time", 1);
-        fFirstBinToUse = node->GetData< UInt_t >("first_bin_to_use", 1);
-        fDrawFlag = node->GetData< Bool_t >("draw_flag", false);
+        if (node != NULL)
+        {
+            fThresholdMult = node->GetData< Double_t >("threshold-multiplier", 10.0);
+            fGroupBinsMarginHigh = node->GetData< Int_t >("group-bins-margin-high", 1);
+            fGroupBinsMarginLow = node->GetData< Int_t >("group-bins-margin-low", 3);
+            fGroupBinsMarginSameTime = node->GetData< Int_t >("group-bins-margin-same-time", 1);
+            fFirstBinToUse = node->GetData< UInt_t >("first-bin-to-use", 1);
+            fDrawFlag = node->GetData< Bool_t >("draw-flag", false);
+        }
+
+        // No CL options
 
         return true;
     }

@@ -10,12 +10,9 @@
 #define KTEGGPROCESSOR_HH_
 
 #include "KTProcessor.hh"
+#include "KTConfigurable.hh"
 
 #include "KTEgg.hh"
-
-#include "Rtypes.h"
-
-#include <string>
 
 namespace Katydid
 {
@@ -31,15 +28,32 @@ namespace Katydid
      @details
      Iterates over events in an egg file; events are extracted until fNEvents is reached.
 
-     A signal is emitted when the header is parsed.  The signature for the signal call is void (KTEgg::HeaderInfo info).
-     A signal is emitted for each event extracted.  The signature for the signal call is void (UInt_t iEvent, const KTEvent* eventPtr).
+     Available configuration options:
+     \li \c Number of events to process
+     \li \c Egg filename to use
+
+     Command-line options defined
+     \li \c -n (n-events): Number of events to process
+     \li \c -e (egg-file): Egg filename to use
+     \li \c -z (--use-2011-egg-reader): Use the 2011 egg reader
+
+     Signals:
+     \li \c void (KTEgg::HeaderInfo info) emitted when the file header is parsed.
+     \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
     */
-    class KTEggProcessor : public KTProcessor
+    class KTEggProcessor : public KTProcessor, public KTConfigurable
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
             typedef KTSignal< void (UInt_t, const KTEvent*) >::signal EventSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
+
+        public:
+            enum EggReaderType
+            {
+                k2011EggReader,
+                kMonarchEggReader
+            };
 
         public:
             KTEggProcessor();
@@ -53,14 +67,18 @@ namespace Katydid
 
             UInt_t GetNEvents() const;
             const std::string& GetFilename() const;
+            EggReaderType GetEggReaderType() const;
 
             void SetNEvents(UInt_t nEvents);
             void SetFilename(const std::string& filename);
+            void SetEggReaderType(EggReaderType type);
 
         private:
             UInt_t fNEvents;
 
             std::string fFilename;
+
+            EggReaderType fEggReaderType;
 
             //***************
             // Signals
@@ -95,6 +113,16 @@ namespace Katydid
         return;
     }
 
+    inline KTEggProcessor::EggReaderType KTEggProcessor::GetEggReaderType() const
+    {
+        return fEggReaderType;
+    }
+
+    inline void KTEggProcessor::SetEggReaderType(EggReaderType type)
+    {
+        fEggReaderType = type;
+        return;
+    }
 
 } /* namespace Katydid */
 

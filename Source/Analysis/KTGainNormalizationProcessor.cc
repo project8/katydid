@@ -20,8 +20,12 @@ namespace Katydid
 {
 
     KTGainNormalizationProcessor::KTGainNormalizationProcessor() :
+            KTProcessor(),
+            KTConfigurable(),
             fNormalization(NULL)
     {
+        fConfigName = "gain-normalization";
+
         RegisterSlot("power_spect", this, &KTGainNormalizationProcessor::ProcessPowerSpectrum);
     }
 

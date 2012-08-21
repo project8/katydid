@@ -49,6 +49,29 @@ namespace Katydid
     {
     }
 
+
+    template< >
+    class KTCommandLineOption< bool >
+    {
+        public:
+            KTCommandLineOption() :
+                fCLHandler(KTCommandLineHandler::GetInstance())
+            {
+            }
+            KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, Char_t shortOpt='#') :
+                fCLHandler(KTCommandLineHandler::GetInstance())
+            {
+                fCLHandler->AddOption(group, helpMsg, longOpt, shortOpt);
+            }
+            virtual ~KTCommandLineOption()
+            {
+            }
+
+        protected:
+            KTCommandLineHandler* fCLHandler;
+
+    };
+
 } /* namespace Katydid */
 
 #endif /* KTCOMMANDLINEOPTION_H_ */

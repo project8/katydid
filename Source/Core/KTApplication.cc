@@ -7,6 +7,8 @@
 
 #include "KTApplication.hh"
 
+#include "KTConfigurable.hh"
+
 #include <boost/foreach.hpp>
 
 #include <vector>
@@ -78,6 +80,7 @@ namespace Katydid
         {
             fCLHandler->PrintHelpMessageAndExit();
         }
+        FinishProcessingCommandLine();
         return true;
     }
 
@@ -97,13 +100,27 @@ namespace Katydid
         return;
     }
 
-    void KTApplication::ProcessCommandLine()
+    void KTApplication::FinishProcessingCommandLine()
     {
-        fCLHandler->ProcessCommandLine();
+        fCLHandler->DelayedCommandLineProcessing();
         ApplyCLOptionsToParamStore(fCLHandler->GetParsedOptions());
         return;
     }
 
-
+    Bool_t KTApplication::Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress)
+    {
+        KTPStoreNode* pStoreNode = NULL;
+        if (baseAddress != "NONE")
+        {
+            string address = baseAddress;
+            if (! address.empty())
+            {
+                address = address + ".";
+            }
+            address = address + toBeConfigured->GetConfigName();
+            pStoreNode = GetNode(address);
+        }
+        return toBeConfigured->Configure(pStoreNode);
+    }
 
 } /* namespace Katydid */

@@ -16,7 +16,6 @@
 #pragma link C++ class Katydid::KTHannWindow+;
 #pragma link C++ class Katydid::KTPowerSpectrum+;
 #pragma link C++ class Katydid::KTRectangularWindow+;
-#pragma link C++ class Katydid::KTSimpleFFT+;
 #pragma link C++ class Katydid::KTWindowFunction+;
 
 #endif

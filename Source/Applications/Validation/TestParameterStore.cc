@@ -27,14 +27,15 @@ int main(int argc, char** argv)
     KTParameterStore* store = KTParameterStore::GetInstance();
     store->ReadConfigFile(configFilename);
 
-    KTPStoreNode* topNode = store->GetNode("TestConfigurable");
+    KTTestConfigurable* testObj = new KTTestConfigurable();
+
+    KTPStoreNode* topNode = store->GetNode(testObj->GetConfigName());
     if (topNode == NULL)
     {
-        KTERROR(testparamlog, "Top-level node was not found");
+        KTERROR(testparamlog, "Top-level node <" << testObj->GetConfigName() << "> was not found");
         return -1;
     }
 
-    KTTestConfigurable* testObj = new KTTestConfigurable();
     if (testObj->Configure(topNode))
     {
         KTINFO(testparamlog, "Configuration complete");

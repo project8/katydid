@@ -9,12 +9,12 @@ set (FFT_DICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrum.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
 )
 
 set (FFT_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFTProcessor.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFTProcessor.hh
 )
@@ -39,13 +39,19 @@ set (FFT_SOURCEFILES
 set (FFT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/FFTLinkDef.hh)
 set (FFT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/FFTDict.cxx)
 
+set (KATYDID_LIBS
+    KatydidUtility
+    KatydidCore
+    KatydidEgg
+)
+
 ##################################################
 
 ROOT_GENERATE_DICTIONARY ("${FFT_DICT_HEADERFILES}" "${FFT_LINKDEF_HEADERFILE}" "${FFT_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
 add_library (KatydidFFT ${FFT_SOURCEFILES} ${FFT_DICT_OUTFILE})
 set_target_properties(KatydidFFT PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
-target_link_libraries (KatydidFFT KatydidUtility KatydidEgg ${LIBS})
+target_link_libraries (KatydidFFT ${KATYDID_LIBS} ${LIBS})
 
 install (FILES ${FFT_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
 install (TARGETS KatydidFFT  DESTINATION ${LIB_INSTALL_DIR})

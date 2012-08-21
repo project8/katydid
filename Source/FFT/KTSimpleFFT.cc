@@ -7,6 +7,7 @@
 
 #include "KTSimpleFFT.hh"
 
+#include "KTEggHeader.hh"
 #include "KTEvent.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPhysicalArray.hh"
@@ -14,34 +15,48 @@
 
 #include "TH1D.h"
 
-#include <iostream>
-
 using std::string;
 using std::vector;
-
-ClassImp(Katydid::KTSimpleFFT);
 
 namespace Katydid
 {
 
     KTSimpleFFT::KTSimpleFFT() :
             KTFFT(),
+            KTProcessor(),
+            KTConfigurable(),
             fTransform(new TFFTRealComplex()),
             fTransformResults(),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
-            fFreqBinWidth(1.)
+            fFreqBinWidth(1.),
+            fFFTSignal()
     {
+        fConfigName = "simple-fft";
+
+        RegisterSignal("fft", &fFFTSignal);
+
+        RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader);
+        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent);
     }
 
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
             KTFFT(),
+            KTProcessor(),
+            KTConfigurable(),
             fTransform(new TFFTRealComplex((Int_t)timeSize, kFALSE)),
             fTransformResults(),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
-            fFreqBinWidth(1.)
+            fFreqBinWidth(1.),
+            fFFTSignal()
     {
+        fConfigName = "simple-fft";
+
+        RegisterSignal("fft", &fFFTSignal);
+
+        RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader);
+        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent);
     }
 
     KTSimpleFFT::~KTSimpleFFT()
@@ -62,7 +77,15 @@ namespace Katydid
 
     Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
     {
-        SetTransformFlag(node->GetData<string>("transform_flag", ""));
+        // Config-file settings
+        if (node != NULL)
+        {
+            SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
+        }
+
+        // Command-line settings
+        //SetTransformFlag(fCLHandler->GetCommandLineValue< string >("transform-flag", fTransformFlag));
+
         return true;
     }
 
@@ -77,8 +100,8 @@ namespace Katydid
     {
         if (! fIsInitialized)
         {
-            std::cerr << "Warning from KTSimpleFFT::Transform: FFT must be initialized before the transform is performed" << std::endl;
-            std::cerr << "   Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform." << std::endl;
+            KTERROR(fftlog_simp, "FFT must be initialized before the transform is performed\n"
+                    << "   Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
             return kFALSE;
         }
 
@@ -91,7 +114,7 @@ namespace Katydid
             KTComplexVector* nextResult = Transform(event->GetRecord(iChannel));
             if (nextResult == NULL)
             {
-                std::cerr << "Warning from KTSimpleFFT::TransformEvent: One of the channels did not transform correctly." << std::endl;
+                KTERROR(fftlog_simp, "One of the channels did not transform correctly.");
                 return kFALSE;
             }
             AddTransformResult(nextResult);
@@ -147,6 +170,21 @@ namespace Katydid
         powerSpec->SetBinWidth(fFreqBinWidth);
         return powerSpec;
     }
+
+    void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
+    {
+        SetTimeSize(header->GetRecordSize());
+        InitializeFFT();
+        return;
+    }
+
+    void KTSimpleFFT::ProcessEvent(UInt_t iEvent, const KTEvent* event)
+    {
+        TransformEvent(event);
+        fFFTSignal(iEvent, this);
+        return;
+    }
+
 
 
 } /* namespace Katydid */

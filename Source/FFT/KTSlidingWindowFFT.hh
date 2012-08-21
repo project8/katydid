@@ -10,11 +10,12 @@
 #define KTSLIDINGWINDOWFFT_HH_
 
 #include "KTFFT.hh"
+#include "KTProcessor.hh"
+#include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTEventWindowFunction.hh"
-#include "KTProcessor.hh"
 
 #include "TFFTRealComplex.h"
 #include "TMath.h"
@@ -58,7 +59,7 @@ namespace Katydid
      \li \c window_function -- parent node for the window function configuration
     */
 
-   class KTSlidingWindowFFT : public KTFFT, public KTProcessor
+   class KTSlidingWindowFFT : public KTFFT, public KTProcessor, public KTConfigurable
     {
         public:
             typedef KTSignal< void (UInt_t, KTPowerSpectrum*) >::signal SingleFFTSignal;

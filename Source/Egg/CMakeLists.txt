@@ -8,6 +8,9 @@ set (EGG_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEgg.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggProcessor.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEvent.hh
 )
 
@@ -17,11 +20,20 @@ set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEgg.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggProcessor.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEvent.cc
 )
 
 #set (EGG_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/EggLinkDef.hh)
 #set (EGG_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EggDict.cxx)
+
+set (KATYDID_LIBS
+    KatydidUtility
+    KatydidCore
+    monarch
+)
 
 ##################################################
 
@@ -29,7 +41,7 @@ set (EGG_SOURCEFILES
 
 add_library (KatydidEgg ${EGG_SOURCEFILES} ${EGG_DICT_OUTFILE})
 set_target_properties(KatydidEgg PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
-target_link_libraries (KatydidEgg KatydidUtility monarch ${LIBS})
+target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${LIBS})
 
 install (FILES ${EGG_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
 install (TARGETS KatydidEgg  DESTINATION ${LIB_INSTALL_DIR})

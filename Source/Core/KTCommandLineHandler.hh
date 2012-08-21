@@ -19,6 +19,7 @@ namespace po = boost::program_options;
 
 #include <map>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,12 @@ namespace Katydid
 {
     KTLOGGER(utillog_clh, "katydid.utility");
 
-    class KTCommandLineUser;
+    class CommandLineHandlerException : public std::logic_error
+    {
+        public:
+            CommandLineHandlerException(std::string const& why);
+    };
+
 
     /*!
      @class KTCommandLineHandler
@@ -36,10 +42,12 @@ namespace Katydid
 
      @details
      The basic format for the command line arguments are as follows:
-      - The first argument should be the configuration filename, if you're using one.
+      <!-- - The first argument should be the configuration filename, if you're using one. -->
       - All further arguments should either use the "long format" or the "short format":
           o Long format: --long-option-name[=value]
+                         --long-option-name [value]
           o Short format: -s[value]
+                          -s [value]
         Strings with spaces should be put in quotation marks.
 
      The configuration file will be automatically extracted from the command line.
@@ -134,11 +142,10 @@ namespace Katydid
             //**************
 
         public:
-            /// Parses the command line (besides the general options, which are automatically processed)
-            void ProcessCommandLine();
+            /// Parses the remaining command line options (those that weren't parsed during the InitialCommandLineProcessing
+            void DelayedCommandLineProcessing();
 
         private:
-            // Do NOT make this virtual. It is called from the constructor.
             /// Parses the general options and stores the remaining options available for later parsing
             void InitialCommandLineProcessing();
 
@@ -153,9 +160,13 @@ namespace Katydid
             /// Check if a command line option was set
             Bool_t IsCommandLineOptSet(const std::string& aCLOption);
 
-            /// Return the value of a command line option
+            /// Return the value of a command line option; throws an exception if the value was not set
             template< class XReturnType >
             XReturnType GetCommandLineValue(const std::string& aCLOption);
+
+            /// Return the value of a command line option; returns the default if the value was not set
+            template< class XReturnType >
+            XReturnType GetCommandLineValue(const std::string& aCLOption, XReturnType defaultValue);
 
             /// Return the file name provided by the user on the command line for the config file
             const std::string& GetConfigFilename() const;
@@ -252,10 +263,21 @@ namespace Katydid
     template< class XReturnType >
     XReturnType KTCommandLineHandler::GetCommandLineValue(const std::string& aCLOption)
     {
-        if (!IsCommandLineOptSet(aCLOption))
+        if (! IsCommandLineOptSet(aCLOption))
         {
             KTWARN(utillog_clh, "Command line option <" << aCLOption << "> was not set!\n"
                    "Next time check whether it's set before calling this function.");
+            throw CommandLineHandlerException("Command line option " + aCLOption + " was not set!");
+        }
+        return fCommandLineVarMap[aCLOption].as< XReturnType >();
+    }
+
+    template< class XReturnType >
+    XReturnType KTCommandLineHandler::GetCommandLineValue(const std::string& aCLOption, XReturnType defaultValue)
+    {
+        if (! IsCommandLineOptSet(aCLOption))
+        {
+            return defaultValue;
         }
         return fCommandLineVarMap[aCLOption].as< XReturnType >();
     }

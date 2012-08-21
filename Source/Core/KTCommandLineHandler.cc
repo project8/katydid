@@ -25,6 +25,10 @@ namespace Katydid
 {
     KTLOGGER(utillog, "katydid.utility");
 
+    CommandLineHandlerException::CommandLineHandlerException (std::string const& why)
+      : std::logic_error(why)
+    {}
+
     KTCommandLineHandler::KTCommandLineHandler() :
             fExecutableName("NONE"),
             fPackageString(STRINGIFY_2(PACKAGE_STRING)),
@@ -211,7 +215,7 @@ namespace Katydid
 
     //**************
 
-    void KTCommandLineHandler::ProcessCommandLine()
+    void KTCommandLineHandler::DelayedCommandLineProcessing()
     {
         if (! fProposedGroups.empty())
         {
@@ -255,6 +259,9 @@ namespace Katydid
         // Define general options, and add them to the complete option list
         po::options_description tGeneralOpts("General options");
         tGeneralOpts.add_options()("help,h", "Print help message")("help-config", "Print help message after reading config file")("version,v", "Print version information");
+        /* WHEN NOT USING POSITIONAL CONFIG FILE ARGUMENT */
+        tGeneralOpts.add_options()("config-file,c", po::value< string >(), "Configuration file");
+        /**/
         // We want to have the general options printed if --help is used
         fPrintHelpOptions.add(tGeneralOpts);
 
@@ -268,15 +275,21 @@ namespace Katydid
 
         // Define the option for the user configuration file; this does not get printed in list of options when --help is used
         po::options_description tHiddenOpts("Hidden options");
+        /* WHEN USING POSITIONAL CONFIG FILE ARGUMENT
         tHiddenOpts.add_options()("config-file", po::value< string >(), "Configuration file");
-
+        */
         // Add together any options that will be parsed here, in the initial command-line processing
         po::options_description tInitialOptions("Initial options");
         tInitialOptions.add(tGeneralOpts).add(tHiddenOpts);
 
         // Allow the UserConfiguration file to be specified with the only positional option
+        /* WHEN USING POSITIONAL CONFIG FILE ARGUMENT
         po::positional_options_description tPositionOpt;
         tPositionOpt.add("config-file", 1);
+        */
+
+        // Add contributions of other options from elsewhere in Katydid
+        FinalizeNewOptionGroups();
 
         // Command line style
         po::command_line_style::style_t pstyle = po::command_line_style::unix_style;
@@ -293,10 +306,23 @@ namespace Katydid
                 po::command_line_style::allow_sticky);
         */
 
+        po::parsed_options tParsedOpts(NULL);
         // Parse the command line looking only for the general options
-        po::parsed_options tParsedOpts = po::command_line_parser(fNArgs, fArgV).style(pstyle).options(tInitialOptions).positional(tPositionOpt).allow_unregistered().run();
+        try
+        {
+            tParsedOpts = po::command_line_parser(fNArgs, fArgV).style(pstyle).options(tInitialOptions).allow_unregistered().run();
+            /* WHEN USING POSITIONAL CONFIG FILE ARGUMENT
+            tParsedOpts = po::command_line_parser(fNArgs, fArgV).style(pstyle).options(tInitialOptions).positional(tPositionOpt).allow_unregistered().run();
+            */
+        }
+        catch (std::exception& e)
+        {
+            KTERROR(utillog, "Exception caught while performing initial CL parsing:\n"
+                    << '\t' << e.what());
+            throw std::logic_error(e.what());
+        }
         // Save the remaining command-line options for later parsing (after the full option list has been populated)
-        fCommandLineParseLater = po::collect_unrecognized(tParsedOpts.options, po::exclude_positional);
+        fCommandLineParseLater = po::collect_unrecognized(tParsedOpts.options, po::include_positional);
         /* some debugging couts
         std::cout << "there are " << fCommandLineParseLater.size() << " tokens to parse later." << std::endl;
         for (UInt_t i = 0; i < fCommandLineParseLater.size(); i++)
@@ -313,7 +339,6 @@ namespace Katydid
         // Use the general options information
         if (tGeneralOptsVarMap.count("help"))
         {
-            FinalizeNewOptionGroups();
             PrintHelpMessageAndExit();
         }
         if (tGeneralOptsVarMap.count("help-config"))

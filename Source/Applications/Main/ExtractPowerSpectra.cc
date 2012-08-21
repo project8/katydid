@@ -6,15 +6,15 @@
  @date: Jan 5, 2012
  */
 
+#include "KTApplication.hh"
+#include "KTCommandLineOption.hh"
 #include "KTEggProcessor.hh"
-#include "KTSimpleFFTProcessor.hh"
+#include "KTLogger.hh"
+#include "KTSimpleFFT.hh"
 #include "KTSetting.hh"
 
 #include "TFile.h"
 #include "TH1D.h"
-
-//#include <boost/bind.hpp>
-//#include <boost/signals2.hpp>
 
 #include <cmath>
 #include <cstdlib>
@@ -22,12 +22,12 @@
 #include <unistd.h>
 #include <vector>
 
-#include <iostream>
-
 using namespace std;
 using namespace Katydid;
 
-class PowerSpectraContainer
+KTLOGGER(extpslog, "katydid.extractps");
+
+class PowerSpectraContainer : public KTProcessor
 {
     public:
         PowerSpectraContainer();
@@ -39,56 +39,45 @@ class PowerSpectraContainer
         vector< TH1D* > fPowerSpectra;
 };
 
+static KTCommandLineOption< string > sOutputFNameCLO("Extract Power Spectra", "Output filename (not including .root extension)", "output-file", 'o');
+static KTCommandLineOption< unsigned > sNAvgCLO("Extract Power Spectra", "Number of events to average together", "events-per-average", 'a');
+
+
 int main(int argc, char** argv)
 {
+    KTApplication* app = new KTApplication(argc, argv);
+    app->ReadConfigFile();
+
+    string appConfigName("extract-power-spectra");
+
+    // Variables to be configured either by the config file or comamnd line
     string outputFileNameBase("power_spectra");
-    string inputFileName("");
-    UInt_t numEvents = 1;
     UInt_t eventsPerAverage = 1;
 
-    Int_t arg;
-    extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:p:n:a")) != -1)
-        switch (arg)
-        {
-            case 'e':
-                cout << optarg << endl;
-                inputFileName = string(optarg);
-                break;
-            case 'p':
-                cout << optarg << endl;
-                outputFileNameBase = string(optarg);
-                break;
-            case 'n':
-                cout << optarg << endl;
-                numEvents = (UInt_t)abs(atoi(optarg));
-                break;
-            case 'a':
-                cout << optarg << endl;
-                eventsPerAverage = (UInt_t)abs(atof(optarg));
-                break;
-        }
-
-    if (inputFileName.empty())
+    // Get the application-specific configuration file options
+    KTPStoreNode* node = app->GetNode(appConfigName);
+    if (node != NULL)
     {
-        cout << "Error: No egg filename given" << endl;
-        return -1;
+        outputFileNameBase = node->GetData< string >("output-file", outputFileNameBase);
+        eventsPerAverage = node->GetData< UInt_t >("events-per-average", eventsPerAverage);
     }
+
+    // Get the application-specific command line options
+    outputFileNameBase = app->GetCommandLineHandler()->GetCommandLineValue< string >("output-file", outputFileNameBase);
+    eventsPerAverage = app->GetCommandLineHandler()->GetCommandLineValue< unsigned >("events-per-average", eventsPerAverage);
 
     string outputFileNameRoot = outputFileNameBase + string(".root");
 
+
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
-    KTSetting settingEggNEvents("NEvents", numEvents);
-    KTSetting settingEggFilename("Filename", inputFileName);
-    procEgg.ApplySetting(&settingEggNEvents);
-    procEgg.ApplySetting(&settingEggFilename);
-
-    KTSimpleFFTProcessor procFFT;
-    KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
-    procFFT.ApplySetting(&settingFFTTransFlag);
-
+    KTSimpleFFT procFFT;
     PowerSpectraContainer powerSpectra;
+
+
+    // Configure the processors
+    app->Configure(&procEgg, appConfigName);
+    app->Configure(&procFFT, appConfigName);
 
     try
     {
@@ -97,24 +86,29 @@ int main(int argc, char** argv)
 
         // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
         procEgg.ConnectASlot("header", &procFFT, "header");
+
+        // this will get the output histogram when an FFT is complete
+        procFFT.ConnectASlot("fft", &powerSpectra, "get_ps");
     }
     catch (std::exception& e)
     {
-        std::cout << "An error occured while connecting signals and slots:" << std::endl;
-        std::cout << e.what() << endl;
+        KTERROR(extpslog, "An error occured while connecting signals and slots:\n"
+                << '\t' << e.what());
         return -1;
     }
-    // get the output histogram when an FFT is complete
-    boost::signals2::connection fftConnection = procFFT.ConnectToFFTSignal( boost::bind(&PowerSpectraContainer::AddPowerSpectrum, boost::ref(powerSpectra), _1, _2) );
 
+
+
+    // Process the egg file
     Bool_t success = procEgg.ProcessEgg();
 
-    fftConnection.disconnect();
 
+
+    // Get the histograms out and save them to a ROOT file
     vector< TH1D* > powerSpectrumHistograms = powerSpectra.GetPowerSpectra();
     powerSpectra.ReleasePowerSpectra();
 
-    cout << "There are " << powerSpectrumHistograms.size() << " histograms saved" << endl;
+    KTINFO(extpslog, "There are " << powerSpectrumHistograms.size() << " histograms saved");
 
     TFile* outFile = new TFile(outputFileNameRoot.c_str(), "recreate");
     for (UInt_t iHist=0; iHist<(UInt_t)powerSpectrumHistograms.size(); iHist++)
@@ -135,8 +129,10 @@ int main(int argc, char** argv)
 //**************************************
 
 PowerSpectraContainer::PowerSpectraContainer() :
+        KTProcessor(),
         fPowerSpectra()
 {
+    this->RegisterSlot("get_ps", this, &PowerSpectraContainer::AddPowerSpectrum);
 }
 
 PowerSpectraContainer::~PowerSpectraContainer()

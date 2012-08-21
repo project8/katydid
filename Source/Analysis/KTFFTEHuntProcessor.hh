@@ -10,6 +10,7 @@
 #define KTFFTEHUNTPROCESSOR_HH_
 
 #include "KTProcessor.hh"
+#include "KTConfigurable.hh"
 
 #include "KTSimpleFFTProcessor.hh"
 #include "KTSlidingWindowFFTProcessor.hh"
@@ -49,7 +50,7 @@ namespace Katydid
 
     */
 
-    class KTFFTEHuntProcessor : public KTProcessor
+    class KTFFTEHuntProcessor : public KTProcessor, public KTConfigurable
     {
         private:
             typedef std::list< std::multimap< Int_t, Int_t >* > EventPeakBinsList;
