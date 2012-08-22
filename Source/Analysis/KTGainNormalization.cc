@@ -1,11 +1,11 @@
 /*
- * KTGainNormalizationProcessor.cc
+ * KTGainNormalization.cc
  *
  *  Created on: Jan 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTGainNormalizationProcessor.hh"
+#include "KTGainNormalization.hh"
 
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
@@ -19,33 +19,28 @@
 namespace Katydid
 {
 
-    KTGainNormalizationProcessor::KTGainNormalizationProcessor() :
+    KTGainNormalization::KTGainNormalization() :
             KTProcessor(),
             KTConfigurable(),
             fNormalization(NULL)
     {
         fConfigName = "gain-normalization";
 
-        RegisterSlot("power_spect", this, &KTGainNormalizationProcessor::ProcessPowerSpectrum);
+        RegisterSlot("power_spect", this, &KTGainNormalization::ProcessPowerSpectrum);
     }
 
-    KTGainNormalizationProcessor::~KTGainNormalizationProcessor()
+    KTGainNormalization::~KTGainNormalization()
     {
         delete fNormalization;
     }
 
-    Bool_t KTGainNormalizationProcessor::Configure(const KTPStoreNode* node)
+    Bool_t KTGainNormalization::Configure(const KTPStoreNode* node)
     {
         return true;
     }
 
 
-    Bool_t KTGainNormalizationProcessor::ApplySetting(const KTSetting* setting)
-    {
-        return kFALSE;
-    }
-
-    void KTGainNormalizationProcessor::PrepareNormalization(KTPhysicalArray< 1, Double_t >* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth)
+    void KTGainNormalization::PrepareNormalization(KTPhysicalArray< 1, Double_t >* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth)
     {
         Double_t freqMult = 1.e-6;
         delete fNormalization;
@@ -75,7 +70,7 @@ namespace Katydid
         return;
     }
 
-    void KTGainNormalizationProcessor::ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft)
+    void KTGainNormalization::ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft)
     {
         UInt_t nPowerSpectra = fft->GetNPowerSpectra();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
@@ -86,11 +81,11 @@ namespace Katydid
         return;
     }
 
-    void KTGainNormalizationProcessor::ProcessPowerSpectrum(UInt_t /*psNum*/, KTPowerSpectrum* powerSpectrum)
+    void KTGainNormalization::ProcessPowerSpectrum(UInt_t /*psNum*/, KTPowerSpectrum* powerSpectrum)
     {
         if (powerSpectrum->GetSize() != fNormalization->size())
         {
-            std::cout << "Error in KTGainNormalizationProcessor::ProcessArray: Array sizes do not match!" << std::endl;
+            std::cout << "Error in KTGainNormalization::ProcessArray: Array sizes do not match!" << std::endl;
             return;
         }
 

@@ -1,21 +1,21 @@
 /**
- @file KTFFTEHuntProcessor.hh
- @brief Contains KTFFTEHuntProcessor
+ @file KTFFTEHunt.hh
+ @brief Contains KTFFTEHunt
  @details Performs the FFT-based electron hunt
  @author: N. S. Oblath
  @date: Jan 24, 2012
  */
 
-#ifndef KTFFTEHUNTPROCESSOR_HH_
-#define KTFFTEHUNTPROCESSOR_HH_
+#ifndef KTFFTEHUNT_HH_
+#define KTFFTEHUNT_HH_
 
 #include "KTProcessor.hh"
 #include "KTConfigurable.hh"
 
-#include "KTSimpleFFTProcessor.hh"
-#include "KTSlidingWindowFFTProcessor.hh"
-#include "KTGainNormalizationProcessor.hh"
-#include "KTSimpleClusteringProcessor.hh"
+#include "KTSimpleFFT.hh"
+#include "KTSlidingWindowFFT.hh"
+#include "KTGainNormalization.hh"
+#include "KTSimpleClustering.hh"
 
 #include "TFile.h"
 
@@ -31,7 +31,7 @@ namespace Katydid
     class KTEggHeader;
 
     /*!
-     @class KTFFTEHuntProcessor
+     @class KTFFTEHunt
      @author N. S. Oblath
 
      @brief Performs an FFT-based electron hunt.
@@ -50,19 +50,17 @@ namespace Katydid
 
     */
 
-    class KTFFTEHuntProcessor : public KTProcessor, public KTConfigurable
+    class KTFFTEHunt : public KTProcessor, public KTConfigurable
     {
         private:
             typedef std::list< std::multimap< Int_t, Int_t >* > EventPeakBinsList;
             typedef std::pair< Double_t, Double_t > CutRange;
 
         public:
-            KTFFTEHuntProcessor();
-            virtual ~KTFFTEHuntProcessor();
+            KTFFTEHunt();
+            virtual ~KTFFTEHunt();
 
             Bool_t Configure(const KTPStoreNode* node);
-
-            Bool_t ApplySetting(const KTSetting* setting);
 
             void ProcessHeader(const KTEggHeader* header);
 
@@ -73,6 +71,22 @@ namespace Katydid
         private:
             void EmptyEventPeakBins();
 
+        public:
+            const std::string& GetTextFilename() const;
+            const std::string& GetROOTFilename() const;
+            Bool_t GetWriteTextFileFlag() const;
+            Bool_t GetWriteROOTFileFlag() const;
+
+            Double_t GetFrequencyMultiplier() const;
+            Int_t GetTotalCandidates() const;
+
+            void SetTextFilename(const std::string& name);
+            void SetROOTFilename(const std::string& name);
+            void SetWriteTextFileFlag(Bool_t flag);
+            void SetWriteROOTFileFlag(Bool_t flag);
+
+            void SetFrequencyMultiplier(Double_t mult);
+
         private:
             EventPeakBinsList fEventPeakBins;
 
@@ -80,27 +94,88 @@ namespace Katydid
 
             std::vector< CutRange > fCutRanges;
 
-            KTSimpleFFTProcessor fSimpleFFTProc;
-            KTSlidingWindowFFTProcessor fWindowFFTProc;
-            KTGainNormalizationProcessor fGainNormProc;
-            KTSimpleClusteringProcessor fClusteringProc;
+            KTSimpleFFT fSimpleFFT;
+            KTSlidingWindowFFT fWindowFFT;
+            KTGainNormalization fGainNorm;
+            KTSimpleClustering fClustering;
 
-            string fTextFilename;
-            string fROOTFilename;
+            std::string fTextFilename;
+            std::string fROOTFilename;
             Bool_t fWriteTextFileFlag;
             Bool_t fWriteROOTFileFlag;
-            ofstream fTextFile;
+            std::ofstream fTextFile;
             TFile fROOTFile;
 
             Double_t fFrequencyMultiplier;
             Int_t fTotalCandidates;
 
-
-            //****************
-            // Slot connection
-            //****************
-
     };
 
+
+    const std::string& KTFFTEHunt::GetTextFilename() const
+    {
+        return fTextFilename;
+    }
+
+    const std::string& KTFFTEHunt::GetROOTFilename() const
+    {
+        return fROOTFilename;
+    }
+
+    Bool_t KTFFTEHunt::GetWriteTextFileFlag() const
+    {
+        return fWriteTextFileFlag;
+    }
+
+    Bool_t KTFFTEHunt::GetWriteROOTFileFlag() const
+    {
+        return fWriteROOTFileFlag;
+    }
+
+
+    Double_t KTFFTEHunt::GetFrequencyMultiplier() const
+    {
+        return fFrequencyMultiplier;
+    }
+
+    Int_t KTFFTEHunt::GetTotalCandidates() const
+    {
+        return fTotalCandidates;
+    }
+
+
+    void KTFFTEHunt::SetTextFilename(const std::string& name)
+    {
+        fTextFilename = name;
+        return;
+    }
+
+    void KTFFTEHunt::SetROOTFilename(const std::string& name)
+    {
+        fROOTFilename = name;
+        return;
+    }
+
+    void KTFFTEHunt::SetWriteTextFileFlag(Bool_t flag)
+    {
+        fWriteTextFileFlag = flag;
+        return;
+    }
+
+    void KTFFTEHunt::SetWriteROOTFileFlag(Bool_t flag)
+    {
+        fWriteROOTFileFlag = flag;
+        return;
+    }
+
+
+    void KTFFTEHunt::SetFrequencyMultiplier(Double_t mult)
+    {
+        fFrequencyMultiplier = mult;
+        return;
+    }
+
+
+
 } /* namespace Katydid */
-#endif /* KTFFTEHUNTPROCESSOR_HH_ */
+#endif /* KTFFTEHUNT_HH_ */

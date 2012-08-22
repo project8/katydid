@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTSimpleClusteringProcessor.hh"
+#include "KTSimpleClustering.hh"
 
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
@@ -29,7 +29,7 @@ using std::pair;
 namespace Katydid
 {
 
-    KTSimpleClusteringProcessor::KTSimpleClusteringProcessor() :
+    KTSimpleClustering::KTSimpleClustering() :
             KTProcessor(),
             KTConfigurable(),
             fEventPeakBins(NULL),
@@ -44,15 +44,15 @@ namespace Katydid
     {
         fConfigName = "sliding-window-fft";
 
-        RegisterSlot("power_spect", this, &KTSimpleClusteringProcessor::ProcessPowerSpectrum);
+        RegisterSlot("power_spect", this, &KTSimpleClustering::ProcessPowerSpectrum);
     }
 
-    KTSimpleClusteringProcessor::~KTSimpleClusteringProcessor()
+    KTSimpleClustering::~KTSimpleClustering()
     {
         delete fBinCuts;
     }
 
-    Bool_t KTSimpleClusteringProcessor::Configure(const KTPStoreNode* node)
+    Bool_t KTSimpleClustering::Configure(const KTPStoreNode* node)
     {
         if (node != NULL)
         {
@@ -70,46 +70,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTSimpleClusteringProcessor::ApplySetting(const KTSetting* setting)
-    {
-        if (setting->GetName() == "ThresholdMult")
-        {
-            fThresholdMult = setting->GetValue< Double_t >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "MinimumGroupSize")
-        {
-            fMinimumGroupSize = setting->GetValue< UInt_t >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "GroupBinsMarginHigh")
-        {
-            fGroupBinsMarginHigh = setting->GetValue< Int_t >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "GroupBinsMarginLow")
-        {
-            fGroupBinsMarginLow = setting->GetValue< Int_t >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "GroupBinsMarginSameTime")
-        {
-            fGroupBinsMarginSameTime = setting->GetValue< Int_t >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "FirstBinToUse")
-        {
-            fFirstBinToUse = setting->GetValue< UInt_t >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "DrawFlag")
-        {
-            fDrawFlag = setting->GetValue< Bool_t >();
-        }
-        return kFALSE;
-    }
-
-    void KTSimpleClusteringProcessor::ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft)
+    void KTSimpleClustering::ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft)
     {
         UInt_t nPowerSpectra = fft->GetNPowerSpectra();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
@@ -120,7 +81,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleClusteringProcessor::ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum)
+    void KTSimpleClustering::ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum)
     {
         // Look for the highest-peaked bins in this power spectrum
 
@@ -133,7 +94,7 @@ namespace Katydid
         KTMaskedArray< Double_t*, Double_t >* localBinCuts = fBinCuts;
         if (nBins != fBinCuts->GetArraySize())
         {
-            std::cout << "Warning from KTSimpleClusteringProcessor::ProcessPowerSpectrum: size from power spectrum does not match bin cut array size" << std::endl;
+            std::cout << "Warning from KTSimpleClustering::ProcessPowerSpectrum: size from power spectrum does not match bin cut array size" << std::endl;
             localBinCuts = new KTMaskedArray< Double_t*, Double_t >(dataArray, nBins);
         }
         else

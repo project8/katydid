@@ -1,31 +1,26 @@
 /*
- * KTFFTEHuntProcessor.cc
+ * KTFFTEHunt.cc
  *
  *  Created on: Jan 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTFFTEHuntProcessor.hh"
+#include "KTFFTEHunt.hh"
 
 #include "KTEggHeader.hh"
-#include "KTPhysicalArray.hh"
-#include "KTHannWindow.hh"
+#include "KTLogger.hh"
 #include "KTMaskedArray.hh"
+#include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
 
 #include "TH2.h"
 
-#include "boost/bind.hpp"
-
-#include <iostream>
 #include <list>
 #include <map>
 #include <string>
 #include <sstream>
 
-using std::cout;
-using std::endl;
 using std::list;
 using std::multimap;
 using std::string;
@@ -34,17 +29,18 @@ using std::vector;
 
 namespace Katydid
 {
+    KTLOGGER(ehuntlog, "katydid.fftehunt");
 
-    KTFFTEHuntProcessor::KTFFTEHuntProcessor() :
+    KTFFTEHunt::KTFFTEHunt() :
             KTProcessor(),
             KTConfigurable(),
             fEventPeakBins(),
             fMinimumGroupSize(2),
             fCutRanges(),
-            fSimpleFFTProc(),
-            fWindowFFTProc(),
-            fGainNormProc(),
-            fClusteringProc(),
+            fSimpleFFT(),
+            fWindowFFT(),
+            fGainNorm(),
+            fClustering(),
             fTextFilename("FFTEHuntOutput.txt"),
             fROOTFilename("FFTEHuntOutput.root"),
             fWriteTextFileFlag(kFALSE),
@@ -56,22 +52,22 @@ namespace Katydid
     {
         fConfigName = "fft-e-hunt";
 
-        RegisterSlot("header", this, &KTFFTEHuntProcessor::ProcessHeader);
-        RegisterSlot("event", this, &KTFFTEHuntProcessor::ProcessEvent);
-        RegisterSlot("event_done", this, &KTFFTEHuntProcessor::FinishHunt);
+        RegisterSlot("header", this, &KTFFTEHunt::ProcessHeader);
+        RegisterSlot("event", this, &KTFFTEHunt::ProcessEvent);
+        RegisterSlot("event_done", this, &KTFFTEHunt::FinishHunt);
 
-        fWindowFFTProc.ConnectASlot("power_spect", &fGainNormProc, "power_spect", 0);
-        fWindowFFTProc.ConnectASlot("power_spect", &fClusteringProc, "power_spect", 1);
+        fWindowFFT.ConnectASlot("power_spect", &fGainNorm, "power_spect", 0);
+        fWindowFFT.ConnectASlot("power_spect", &fClustering, "power_spect", 1);
     }
 
-    KTFFTEHuntProcessor::~KTFFTEHuntProcessor()
+    KTFFTEHunt::~KTFFTEHunt()
     {
         EmptyEventPeakBins();
         if (fROOTFile.IsOpen()) fROOTFile.Close();
         if (fTextFile.is_open()) fTextFile.close();
     }
 
-    Bool_t KTFFTEHuntProcessor::Configure(const KTPStoreNode* node)
+    Bool_t KTFFTEHunt::Configure(const KTPStoreNode* node)
     {
         if (node != NULL)
         {
@@ -83,26 +79,35 @@ namespace Katydid
             fFrequencyMultiplier = node->GetData< Double_t >("frequency-multiplier");
 
             fMinimumGroupSize = node->GetData< UInt_t >("minimum-group-size", 2);
-            fClusteringProc.SetMinimumGroupSize(fMinimumGroupSize);
+            fClustering.SetMinimumGroupSize(fMinimumGroupSize);
 
             // TODO: cut range when arrays are ready in the parameter store
+            /*
+             * From ApplySetting
+                if (setting->GetName() == "CutRange")
+                {
+                    fCutRanges.push_back(CutRange(setting->GetValue< CutRange >()));
+                    return kTRUE;
+                }
+             *
+             */
 
             const KTPStoreNode* clusterNode = node->GetChild("simple-clustering");
             if (clusterNode != NULL)
             {
-                if (! fClusteringProc.Configure(clusterNode)) return false;
+                if (! fClustering.Configure(clusterNode)) return false;
             }
 
             const KTPStoreNode* simpleFFTNode = node->GetChild("simple-fft");
             if (simpleFFTNode != NULL)
             {
-                if (! fSimpleFFTProc.GetFFT()->Configure(simpleFFTNode)) return false;
+                if (! fSimpleFFT.Configure(simpleFFTNode)) return false;
             }
 
             const KTPStoreNode* slidingWindowFFTNode = node->GetChild("sliding-window-fft");
             if (slidingWindowFFTNode != NULL)
             {
-                if (! fWindowFFTProc.GetFFT()->Configure(slidingWindowFFTNode)) return false;
+                if (! fWindowFFT.Configure(slidingWindowFFTNode)) return false;
             }
         }
 
@@ -111,75 +116,16 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTFFTEHuntProcessor::ApplySetting(const KTSetting* setting)
+    void KTFFTEHunt::ProcessHeader(const KTEggHeader* header)
     {
-        if (setting->GetName() == "ThresholdMult" || setting->GetName() == "GroupBinsMarginHigh" || setting->GetName() == "GroupBinsMarginLow" || setting->GetName() == "GroupBinsMarginSameTime" || setting->GetName() == "FirstBinToUse")
-        {
-            return fClusteringProc.ApplySetting(setting);
-        }
-        if (setting->GetName() == "MinimumGroupSize")
-        {
-            fMinimumGroupSize = setting->GetValue< UInt_t >();
-            fClusteringProc.SetMinimumGroupSize(2);
-            return kTRUE;
-        }
-        if (setting->GetName() == "CutRange")
-        {
-            fCutRanges.push_back(CutRange(setting->GetValue< CutRange >()));
-            return kTRUE;
-        }
-        if (setting->GetName() == "ROOTFilename")
-        {
-            fROOTFilename = setting->GetValue< string >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "TextFilename")
-        {
-            fTextFilename = setting->GetValue< string >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "WriteROOTFileFlag")
-        {
-            fWriteROOTFileFlag = setting->GetValue< Bool_t >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "WriteTextFileFlag")
-        {
-            fWriteTextFileFlag = setting->GetValue< Bool_t >();
-            return kTRUE;
-        }
-        if (setting->GetName() == "FrequencyMultiplier")
-        {
-            fFrequencyMultiplier = setting->GetValue< Double_t >();
-            return kTRUE;
-        }
-        return kFALSE;
-    }
-
-    void KTFFTEHuntProcessor::ProcessHeader(const KTEggHeader* header)
-    {
-        // Initialize the processors that will be used for each event
-        KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
-        fSimpleFFTProc.ApplySetting(&settingFFTTransFlag);
-
-        //KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
-        fWindowFFTProc.ApplySetting(&settingFFTTransFlag);
-
-        KTWindowFunction* winFunc = new KTHannWindow();
-        winFunc->SetLength(1.e-5);
-        KTSetting settingWinFunc("WindowFunction", winFunc);
-        KTSetting settingFFTOverlap("OverlapFrac", 0.2);
-        fWindowFFTProc.ApplySetting(&settingWinFunc);
-        fWindowFFTProc.ApplySetting(&settingFFTOverlap);
-
         // Process the header information
-        fSimpleFFTProc.ProcessHeader(header);
-        fWindowFFTProc.ProcessHeader(header);
+        fSimpleFFT.ProcessHeader(header);
+        fWindowFFT.ProcessHeader(header);
 
         // Set up the bin cuts
         // get the number of frequency bins and the frequency bin width
-        Int_t nFreqBins = fWindowFFTProc.GetFFT()->GetFrequencySize();
-        Double_t freqBinWidth = fWindowFFTProc.GetFFT()->GetFreqBinWidth();
+        Int_t nFreqBins = fWindowFFT.GetFrequencySize();
+        Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth();
         // create KTPowerSpectrum w/ number of bins; set bin width
         // binFinder will go out of scope at the end of this function.
         // therefore, from that point until fClusteringProc sets a new array, binCuts should NOT be used to access array values!
@@ -194,10 +140,10 @@ namespace Katydid
             binCuts->Cut(UInt_t(firstBinCut), UInt_t(nCutBins));
         }
         // give the masked array to fClusteringProc
-        fClusteringProc.SetBinCuts(binCuts);
+        fClustering.SetBinCuts(binCuts);
 
         EmptyEventPeakBins();
-        fClusteringProc.SetEventPeakBinsList(&fEventPeakBins);
+        fClustering.SetEventPeakBinsList(&fEventPeakBins);
 
         if (fWriteTextFileFlag)
         {
@@ -215,27 +161,27 @@ namespace Katydid
         return;
     }
 
-    void KTFFTEHuntProcessor::ProcessEvent(UInt_t iEvent, const KTEvent* event)
+    void KTFFTEHunt::ProcessEvent(UInt_t iEvent, const KTEvent* event)
     {
         if (fWriteTextFileFlag)
         {
-            fTextFile << "Event " << iEvent << endl;
+            fTextFile << "Event " << iEvent << '\n';
         }
 
         // Perform a 1-D FFT on the entire event
-        fSimpleFFTProc.ProcessEvent(iEvent, event);
-        KTPhysicalArray< 1, Double_t >* fullFFT = fSimpleFFTProc.GetFFT()->CreatePowerSpectrumPhysArr();
+        fSimpleFFT.ProcessEvent(iEvent, event);
+        KTPhysicalArray< 1, Double_t >* fullFFT = fSimpleFFT.CreatePowerSpectrumPhysArr();
 
         // Use the data from the full FFT to create a gain normalization
-        fGainNormProc.PrepareNormalization(fullFFT, (UInt_t)fWindowFFTProc.GetFFT()->GetFrequencySize(), fWindowFFTProc.GetFFT()->GetFreqBinWidth());
+        fGainNorm.PrepareNormalization(fullFFT, (UInt_t)fWindowFFT.GetFrequencySize(), fWindowFFT.GetFreqBinWidth());
         delete fullFFT;
 
         // Prepare to run the windowed FFT
         //list< multimap< Int_t, Int_t >* > eventPeakBins;
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
-        fWindowFFTProc.ProcessEvent(iEvent, event);
-        Double_t freqBinWidth = fWindowFFTProc.GetFFT()->GetFreqBinWidth() * fFrequencyMultiplier;
+        fWindowFFT.ProcessEvent(iEvent, event);
+        Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth() * fFrequencyMultiplier;
 
         // Scan through the groups
         // Remove any that are too small
@@ -288,7 +234,7 @@ namespace Katydid
                 conv << iEvent;
                 conv >> histName;
                 histName = string("histWindowedPS") + histName;
-                TH2D* histWaterfall = fWindowFFTProc.GetFFT()->CreatePowerSpectrumHistogram(histName);
+                TH2D* histWaterfall = fWindowFFT.CreatePowerSpectrumHistogram(histName);
                 Double_t timeBinWidth = histWaterfall->GetXaxis()->GetBinWidth(1);
 
                 Char_t histname[256], histtitle[256];
@@ -326,12 +272,12 @@ namespace Katydid
             iCandidate++;
         }
 
-        cout << "Found " << iCandidate << " candidate groups" << endl;
+        KTINFO(ehuntlog, "Found " << iCandidate << " candidate groups");
         if (fWriteTextFileFlag)
         {
-            fTextFile << endl;
-            fTextFile << "  " << iCandidate << " candidates found" << endl;
-            fTextFile << "------------------------------------" << endl;
+            fTextFile << '\n';
+            fTextFile << "  " << iCandidate << " candidates found" << '\n';
+            fTextFile << "------------------------------------" << '\n';
         }
 
         fTotalCandidates += iCandidate;
@@ -339,18 +285,18 @@ namespace Katydid
         return;
     }
 
-    void KTFFTEHuntProcessor::FinishHunt()
+    void KTFFTEHunt::FinishHunt()
     {
         if (fTextFile.is_open())
         {
-            fTextFile << "Total candidates found in this file: " << fTotalCandidates << endl;
+            fTextFile << "Total candidates found in this file: " << fTotalCandidates << '\n';
             fTextFile.close();
         }
         if (fROOTFile.IsOpen()) fROOTFile.Close();
         return;
     }
 
-    void KTFFTEHuntProcessor::EmptyEventPeakBins()
+    void KTFFTEHunt::EmptyEventPeakBins()
     {
         while (! fEventPeakBins.empty())
         {

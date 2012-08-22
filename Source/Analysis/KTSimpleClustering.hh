@@ -1,20 +1,18 @@
 /**
- @file KTSimpleClusteringProcessor.hh
- @brief Contains KTSimpleClusteringProcessor
+ @file KTSimpleClustering.hh
+ @brief Contains KTSimpleClustering
  @details Simple cluster-finding algorithm that works by looking for lines of high-peaked bins increasing in frequency
  @author: N. S. Oblath
  @date: Jan 24, 2012
  */
 
-#ifndef KTSIMPLECLUSTERINGPROCESSOR_HH_
-#define KTSIMPLECLUSTERINGPROCESSOR_HH_
+#ifndef KTSIMPLECLUSTERING_HH_
+#define KTSIMPLECLUSTERING_HH_
 
 #include "KTProcessor.hh"
 #include "KTConfigurable.hh"
 
 #include "KTMaskedArray.hh"
-
-#include "boost/signals2.hpp"
 
 #include <list>
 #include <map>
@@ -28,18 +26,16 @@ namespace Katydid
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
 
-    class KTSimpleClusteringProcessor : public KTProcessor, public KTConfigurable
+    class KTSimpleClustering : public KTProcessor, public KTConfigurable
     {
         private:
             typedef std::list< std::multimap< Int_t, Int_t >* > epbList;
 
         public:
-            KTSimpleClusteringProcessor();
-            virtual ~KTSimpleClusteringProcessor();
+            KTSimpleClustering();
+            virtual ~KTSimpleClustering();
 
             Bool_t Configure(const KTPStoreNode* node);
-
-            Bool_t ApplySetting(const KTSetting* setting);
 
             void ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft);
             void ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum);
@@ -66,24 +62,24 @@ namespace Katydid
 
     };
 
-    inline void KTSimpleClusteringProcessor::SetEventPeakBinsList(epbList* list)
+    inline void KTSimpleClustering::SetEventPeakBinsList(epbList* list)
     {
         fEventPeakBins = list;
         return;
     }
 
-    inline void KTSimpleClusteringProcessor::SetBinCuts(KTMaskedArray< Double_t*, Double_t >* binCuts)
+    inline void KTSimpleClustering::SetBinCuts(KTMaskedArray< Double_t*, Double_t >* binCuts)
     {
         delete fBinCuts;
         fBinCuts = binCuts;
         return;
     }
 
-    inline void KTSimpleClusteringProcessor::SetMinimumGroupSize(UInt_t size)
+    inline void KTSimpleClustering::SetMinimumGroupSize(UInt_t size)
     {
         fMinimumGroupSize = size;
         return;
     }
 
 } /* namespace Katydid */
-#endif /* KTSIMPLECLUSTERINGPROCESSOR_HH_ */
+#endif /* KTSIMPLECLUSTERING_HH_ */
