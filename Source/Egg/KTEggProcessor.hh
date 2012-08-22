@@ -61,8 +61,6 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            Bool_t ApplySetting(const KTSetting* setting);
-
             Bool_t ProcessEgg();
 
             UInt_t GetNEvents() const;

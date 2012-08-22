@@ -11,7 +11,6 @@
 #include "KTEggProcessor.hh"
 #include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
-#include "KTSetting.hh"
 
 #include "TFile.h"
 #include "TH1D.h"

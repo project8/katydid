@@ -16,16 +16,11 @@
  *       -d: Include this flag to draw waterfall plots
  */
 
+#include "KTApplication.hh"
+#include "KTCommandLineOption.hh"
 #include "KTEggProcessor.hh"
-#include "KTFFTEHuntProcessor.hh"
-#include "KTSetting.hh"
-
-#include "TApplication.h"
-#include "TROOT.h"
-#include "TStyle.h"
-
-#include <boost/bind.hpp>
-#include <boost/ref.hpp>
+#include "KTFFTEHunt.hh"
+#include "KTLogger.hh"
 
 #include <cstdio>
 #include <fstream>
@@ -37,138 +32,65 @@
 using namespace std;
 using namespace Katydid;
 
+KTLOGGER(sehuntlog, "katydid.simpleelectronhunt");
 
 int main(int argc, char** argv)
 {
-    string outputFileNameBase("candidates");
-    string inputFileName("");
-    Int_t numEvents = 1;
+    KTApplication* app = new KTApplication(argc, argv);
+    app->ReadConfigFile();
 
-    Double_t thresholdMult = 10.;
+    string appConfigName("extract-power-spectra");
 
-    Bool_t drawWaterfall = kFALSE;
+    KTEggProcessor procEgg;
+    KTFFTEHunt procEHunt;
 
-    Int_t groupBinsMarginLow = 1;
-    Int_t groupBinsMarginHigh = 3;
-    Int_t groupBinsMarginSameTime = 1;
-
-    Int_t cutOption = 0;
-
-    UInt_t firstBinToUse = 4;
-
-    Int_t arg;
-    extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:p:n:t:c:d")) != -1)
-        switch (arg)
+    /*
+     * For when we can apply cut ranges
+        if (cutOption == 1)
         {
-            case 'e':
-                inputFileName = string(optarg);
-                break;
-            case 'p':
-                outputFileNameBase = string(optarg);
-                break;
-            case 'n':
-                numEvents = atoi(optarg);
-                break;
-            case 't':
-                thresholdMult = atof(optarg);
-                break;
-            case 'c':
-            {
-                cutOption = atoi(optarg);
-                break;
-            }
-            case 'd':
-                drawWaterfall = kTRUE;
-                break;
+            KTSetting settingHuntCut1("CutRange", pair< Double_t, Double_t > (0., 0.2));
+            KTSetting settingHuntCut2("CutRange", pair< Double_t, Double_t > (99.8, 100.2));
+            KTSetting settingHuntCut3("CutRange", pair< Double_t, Double_t > (199.8, 200.2));
+            procEHunt.ApplySetting(&settingHuntCut1);
+            procEHunt.ApplySetting(&settingHuntCut2);
+            procEHunt.ApplySetting(&settingHuntCut3);
         }
 
-    if (inputFileName.empty())
+     */
+
+    // Configure the processors
+    app->Configure(&procEgg, appConfigName);
+    app->Configure(&procEHunt, appConfigName);
+
+    try
     {
-        cout << "Error: No egg filename given" << endl;
+        // every time procEgg hatches an event, procEHunt.ProcessEvent will be called
+        procEgg.ConnectASlot("event", &procEHunt, "event");
+
+        // when procEgg parses the header, the info is passed to procEHunt::ProcessHeader
+        procEgg.ConnectASlot("header", &procEHunt, "header");
+
+        // when procEgg is done with the file, procEHunt is notified
+        procEgg.ConnectASlot("egg_done", &procEHunt, "egg_done");
+    }
+    catch (std::exception& e)
+    {
+        KTERROR(sehuntlog, "An error occured while connecting signals and slots:\n"
+                << '\t' << e.what());
         return -1;
     }
 
-    string outputFileNameRoot = outputFileNameBase + string(".root");
-    string outputFileNamePS = outputFileNameBase + string(".ps");
-    string outputFileNameText = outputFileNameBase + string(".txt");
 
-    if (numEvents == -1) numEvents = 999999999;
-
-    TApplication* app = new TApplication("", 0, 0);
-    TStyle *plain = new TStyle("Plain", "Plain Style");
-    plain->SetCanvasBorderMode(0);
-    plain->SetPadBorderMode(0);
-    plain->SetPadColor(0);
-    plain->SetCanvasColor(0);
-    plain->SetTitleColor(0);
-    plain->SetStatColor(0);
-    plain->SetPalette(1);
-    plain->SetOptStat(0);
-    gROOT->SetStyle("Plain");
-
-
-    //ofstream txtOutFile(outputFileNameText.c_str());
-    //txtOutFile << "Egg file: " << inputFileName << endl;
-    //txtOutFile << "------------------------------------" << endl;
-
-    // Setup the processors and their signal/slot connections
-    //-------------------------------------------------------
-    KTEggProcessor procEgg;
-    KTSetting settingEggNEvents("NEvents", (UInt_t)numEvents);
-    KTSetting settingEggFilename("Filename", inputFileName);
-    procEgg.ApplySetting(&settingEggNEvents);
-    procEgg.ApplySetting(&settingEggFilename);
-
-    KTFFTEHuntProcessor procEHunt;
-    KTSetting settingHuntThresholdMult("ThresholdMult", (Double_t)thresholdMult);
-    KTSetting settingHuntGroupBinsMarginHigh("GroupBinsMarginHigh", (Int_t)groupBinsMarginHigh);
-    KTSetting settingHuntGroupBinsMarginLow("GroupBinsMarginLow", (Int_t)groupBinsMarginLow);
-    KTSetting settingHuntGroupBinsMarginSameTime("GroupBinsMarginSameTime", (Int_t)groupBinsMarginSameTime);
-    KTSetting settingHuntFirstBinToUse("FirstBinToUse", (UInt_t)firstBinToUse);
-    KTSetting settingHuntWriteText("WriteTextFileFlag", kTRUE);
-    KTSetting settingHuntTextFilename("TextFilename", outputFileNameText);
-    KTSetting settingHuntWriteROOT("WriteROOTFileFlag", drawWaterfall);
-    KTSetting settingHuntROOTFilename("ROOTFilename", outputFileNameRoot);
-    procEHunt.ApplySetting(&settingHuntThresholdMult);
-    procEHunt.ApplySetting(&settingHuntGroupBinsMarginHigh);
-    procEHunt.ApplySetting(&settingHuntGroupBinsMarginLow);
-    procEHunt.ApplySetting(&settingHuntGroupBinsMarginSameTime);
-    procEHunt.ApplySetting(&settingHuntFirstBinToUse);
-    procEHunt.ApplySetting(&settingHuntWriteText);
-    procEHunt.ApplySetting(&settingHuntTextFilename);
-    procEHunt.ApplySetting(&settingHuntWriteROOT);
-    procEHunt.ApplySetting(&settingHuntROOTFilename);
-
-    if (cutOption == 1)
-    {
-        KTSetting settingHuntCut1("CutRange", pair< Double_t, Double_t > (0., 0.2));
-        KTSetting settingHuntCut2("CutRange", pair< Double_t, Double_t > (99.8, 100.2));
-        KTSetting settingHuntCut3("CutRange", pair< Double_t, Double_t > (199.8, 200.2));
-        procEHunt.ApplySetting(&settingHuntCut1);
-        procEHunt.ApplySetting(&settingHuntCut2);
-        procEHunt.ApplySetting(&settingHuntCut3);
-    }
-
-    // this will ensure that every time procEgg hatches an event, procEHunt.ProcessEvent will be called
-    procEgg.ConnectASlot("event", &procEHunt, "event");
-
-    // this will ensure that when procEgg parses the header, the info is passed to procEHunt::ProcessHeader
-    procEgg.ConnectASlot("header", &procEHunt, "header");
-
-    // this will ensure that when procEgg is done with the file, procEHunt is notified
-    procEgg.ConnectASlot("egg_done", &procEHunt, "egg_done");
 
     // Open the files to add header information and remove previous contents if the files already exist
-    ofstream outFileTxt(outputFileNameText.c_str(), ios::trunc);
-    outFileTxt << "Egg file: " << inputFileName << endl;
-    outFileTxt << "------------------------------------" << endl;
-    outFileTxt.close();
-    if (drawWaterfall)
+    if (procEHunt.GetWriteTextFileFlag())
     {
-        TFile f(outputFileNameRoot.c_str(), "recreate");
-        f.Close();
+        ofstream outFileTxt(procEHunt.GetTextFilename().c_str(), ios::trunc);
+        outFileTxt << "Egg file: " << procEgg.GetFilename() << '\n';
+        outFileTxt << "------------------------------------" << '\n';
+        outFileTxt.close();
     }
+
 
     // Process the file
     //-----------------
@@ -176,5 +98,8 @@ int main(int argc, char** argv)
 
     if (! success) return -1;
     return 0;
+
+
+
 
 }

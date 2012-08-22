@@ -48,9 +48,6 @@ if (ENABLE_TESTING)
                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
     target_link_libraries (TestParameterStore KatydidUtility KatydidCore ${LIBS})
     
-    add_executable (TestSettings ${CMAKE_CURRENT_SOURCE_DIR}/TestSettings.cc)
-    target_link_libraries (TestSettings KatydidUtility ${LIBS})
-    
     add_executable (TestSignalsAndSlots ${CMAKE_CURRENT_SOURCE_DIR}/TestSignalsAndSlots.cc
                                         ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.cc
     )
@@ -67,7 +64,6 @@ if (ENABLE_TESTING)
                      TestEggHatching
                      TestLogger
                      TestParameterStore
-                     TestSettings
                      TestSignalsAndSlots
                      TestVector
              DESTINATION ${BIN_INSTALL_DIR})
@@ -81,7 +77,6 @@ if (ENABLE_TESTING)
     add_test (Test_EggHatching TestEggHatching)
     add_test (Test_Logger TestLogger)
     add_test (Test_ParameterStore TestParameterStore)
-    add_test (Test_Settings TestSettings)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     add_test (Test_Vector TestVector)
     

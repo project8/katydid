@@ -9,10 +9,6 @@
 #ifndef KTPROCESSOR_HH_
 #define KTPROCESSOR_HH_
 
-// part of the deprecated settings system; will be removed
-#include "KTSetting.hh"
-#include "Rtypes.h"
-
 #include "KTConnection.hh"
 #include "KTSignal.hh"
 #include "KTSlot.hh"

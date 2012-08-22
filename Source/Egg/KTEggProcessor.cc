@@ -82,21 +82,6 @@ namespace Katydid
     }
 
 
-    Bool_t KTEggProcessor::ApplySetting(const KTSetting* setting)
-    {
-        if (setting->GetName() == "NEvents")
-        {
-            this->SetNEvents(setting->GetValue< UInt_t >());
-            return kTRUE;
-        }
-        if (setting->GetName() == "Filename")
-        {
-            this->SetFilename(setting->GetValue< string >());
-            return kTRUE;
-        }
-        return kFALSE;
-    }
-
     Bool_t KTEggProcessor::ProcessEgg()
     {
         KTEgg egg;
