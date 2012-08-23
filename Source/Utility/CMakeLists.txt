@@ -11,6 +11,11 @@ endif (LOG4CXX_FOUND)
 set (UTILITY_DICT_HEADER_FILES)
 
 set (UTILITY_NODICT_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_specialization.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_class.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_operators.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_functions.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties_GetNBins.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCutable.hh
@@ -28,6 +33,7 @@ set (UTILITY_NODICT_HEADERFILES
 set (UTILITY_HEADERFILES ${UTILITY_DICT_HEADERFILES} ${UTILITY_NODICT_HEADERFILES})
 
 set (UTILITY_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_specialization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSetting.cc
