@@ -32,6 +32,9 @@ if (ENABLE_TESTING)
     add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
     
+    add_executable (TestComplexPolar ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexPolar.cc)
+    target_link_libraries (TestComplexPolar KatydidUtility ${LIBS})
+    
     add_executable (TestCutIterator ${CMAKE_CURRENT_SOURCE_DIR}/TestCutIterator.cc)
     target_link_libraries (TestCutIterator KatydidUtility ${LIBS})
     
@@ -59,6 +62,7 @@ if (ENABLE_TESTING)
     install (TARGETS #ExtractEvents
                      TestApplication
                      TestAxisProperties
+                     TestComplexPolar
                      TestCutIterator
                      TestCutableArray
                      TestEggHatching
@@ -72,6 +76,7 @@ if (ENABLE_TESTING)
     #add_test (Test_ExtractEvents ExtractEvents)
     add_test (Test_Application TestApplication)
     add_test (Test_AxisProperties TestAxisProperties)
+    add_test (Test_ComplexPolar TestComplexPolar)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_EggHatching TestEggHatching)
