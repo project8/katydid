@@ -11,6 +11,10 @@
 #include "complexpolar_class.hh"
 #include "complexpolar_functions.hh"
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 namespace Katydid
 {
     template<class T>
@@ -78,9 +82,6 @@ namespace Katydid
     template<class T>
     std::complex<T> operator*(const std::complex<T>& lhs, const complexpolar<T>& rhs)
     {
-        //return complexpolar<T>(lhs) * rhs;
-        //return std::complex<T>(real(rhs*lhs), imag(rhs*lhs));
-        //return polar(complexpolar<T>(std::abs(lhs) * rhs.abs(), std::arg(lhs) + rhs.arg()));
         return polar(rhs * lhs);
     }
     template<class T>
@@ -134,12 +135,18 @@ namespace Katydid
     template<class T>
     bool operator==(const complexpolar<T>& lhs, const complexpolar<T>& rhs)
     {
-        return lhs.abs() == rhs.abs() && lhs.arg() == rhs.arg();
+        //cout.precision(20);
+        //cout.setf(std::ios::fixed,std::ios::floatfield);
+        //cout << '\t' << real(lhs) << " == " << real(rhs) << " ? " << bool(real(lhs) == real(rhs)) <<  "\t" << imag(lhs) << " == " << imag(rhs) << " ? " << bool(imag(lhs) == imag(rhs)) << endl;
+        return real(lhs) == real(rhs) && imag(lhs) == imag(rhs);
     }
     template<class T>
     bool operator==(const complexpolar<T>& lhs, const std::complex<T>& rhs)
     {
-        return lhs.abs() == abs(rhs) && lhs.arg() == arg(rhs);
+        //cout.precision(20);
+        //cout.setf(std::ios::fixed,std::ios::floatfield);
+        //cout << '\t' << real(lhs) << " == " << rhs.real() << " ? " << bool(real(lhs) == rhs.real()) << '\t' << imag(lhs) << " == " << rhs.imag() << " ? " << bool(imag(lhs) == rhs.imag()) << endl;
+        return real(lhs) == rhs.real() && imag(lhs) == rhs.imag();
     }
     template<class T>
     bool operator==(const std::complex<T>& lhs, const complexpolar<T>& rhs)
@@ -149,6 +156,9 @@ namespace Katydid
     template<class T>
     bool operator==(const complexpolar<T>& lhs, const T& val)
     {
+        //cout.precision(20);
+        //cout.setf(std::ios::fixed,std::ios::floatfield);
+        //cout << '\t' << lhs.abs() << " == " << val << " ? " << bool(lhs.abs() == val) << '\t' << lhs.arg() << " == " << T() << " ? " << bool(lhs.arg() == T()) << endl;
         return lhs.abs() == val && lhs.arg() == T();
     }
     template<class T>
