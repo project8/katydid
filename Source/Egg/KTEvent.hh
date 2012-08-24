@@ -1,9 +1,3 @@
-/*
- * KTEvent.hh
- *
- *  Created on: Sep 9, 2011
- *      Author: nsoblath
- */
 /**
  @file KTEvent.hh
  @brief Contains KTEvent
@@ -15,6 +9,8 @@
 
 #ifndef KTEVENT_HH_
 #define KTEVENT_HH_
+
+#include "KTAbstractEvent.hh"
 
 #include "MonarchTypes.hpp"
 
@@ -28,18 +24,8 @@ class TH1I;
 
 namespace Katydid
 {
-    class KTEvent
+    class KTEvent : public KTAbstractEvent
     {
-        private:
-            struct PerChannelData
-            {
-                ClockType fTimeStamp;
-                ChIdType fChannelID;
-                AcqIdType fAcquisitionID;
-                RecIdType fRecordID;
-                std::vector< DataType >* fRecord;
-            };
-
         public:
             KTEvent(unsigned nChannels=1);
             virtual ~KTEvent();
@@ -93,13 +79,25 @@ namespace Katydid
             double fBinWidth; // in sec
 
             std::vector< PerChannelData > fChannelData;
-
+            /*
         private:
             /// Round to nearest integer. Rounds half integers to the nearest even integer.
             /// Based on ROOT's TMath::Nint(Double_t)
             int nint(double x) const;
-
+            */
     };
+
+    template< typename XType >
+    XType KTEvent::GetRecordAt(unsigned iPoint, unsigned channelNum) const
+    {
+        return (XType)GetRecordAt(iPoint, channelNum);
+    }
+
+    template< typename XType >
+    XType KTEvent::GetRecordAtTime(double time, unsigned channelNum) const
+    {
+        return this->GetRecordAt< XType >((unsigned)(nint(std::max(0., time) / GetBinWidth())), channelNum);
+    }
 
     inline unsigned KTEvent::GetNRecords() const
     {
@@ -115,7 +113,7 @@ namespace Katydid
     {
         return this->GetRecordAt((unsigned)(nint(std::max(0., time) / fBinWidth)), channelNum);
     }
-
+    /*
     template< typename XType >
     XType KTEvent::GetRecordAt(unsigned iPoint, unsigned channelNum) const
     {
@@ -127,7 +125,7 @@ namespace Katydid
     {
         return this->GetRecordAt< XType >((unsigned)(nint(std::max(0., time) / fBinWidth)), channelNum);
     }
-
+    */
     inline unsigned KTEvent::GetRecordSize() const
     {
         return fRecordSize;
@@ -241,7 +239,7 @@ namespace Katydid
     }
 
 
-
+    /*
     inline int KTEvent::nint(double x) const
     {
         int i;
@@ -257,7 +255,7 @@ namespace Katydid
         }
         return i;
     }
-
+    */
 
 } /* namespace Katydid */
 

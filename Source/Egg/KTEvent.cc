@@ -17,11 +17,12 @@ namespace Katydid
 {
 
     KTEvent::KTEvent(unsigned nChannels) :
-                fSampleRate(0.),
-                fRecordLength(0.),
-                fBinWidth(1.),
-                fRecordSize(0),
-                fChannelData(nChannels)
+            KTAbstractEvent(),
+            fSampleRate(0.),
+            fRecordLength(0.),
+            fBinWidth(1.),
+            fRecordSize(0),
+            fChannelData(nChannels)
     {
     }
 
