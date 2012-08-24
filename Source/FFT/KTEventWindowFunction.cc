@@ -7,7 +7,7 @@
 
 #include "KTEventWindowFunction.hh"
 
-#include "KTEvent.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
 #include "KTSimpleFFT.hh"
@@ -33,11 +33,11 @@ namespace Katydid
     {
     }
 
-    KTEventWindowFunction::KTEventWindowFunction(const KTEvent* event) :
+    KTEventWindowFunction::KTEventWindowFunction(const KTTimeSeriesData* tsData) :
                     KTWindowFunction(),
                     fWindowFunction(1),
                     fLength(1.),
-                    fBinWidth(event->GetBinWidth()),
+                    fBinWidth(tsData->GetBinWidth()),
                     fSize(1)
     {
         fSize = (unsigned int)TMath::Nint(fLength / fBinWidth);
@@ -53,14 +53,14 @@ namespace Katydid
         return ConfigureEventWindowFunctionSubclass(node);
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTEvent* event)
+    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
     {
-        return this->SetBinWidth(event->GetBinWidth());
+        return this->SetBinWidth(tsData->GetBinWidth());
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTEvent* event, Double_t length)
+    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesData* tsData, Double_t length)
     {
-        return this->SetBinWidthAndLength(event->GetBinWidth(), length);
+        return this->SetBinWidthAndLength(tsData->GetBinWidth(), length);
     }
 
     TH1D* KTEventWindowFunction::CreateHistogram(const string& name) const

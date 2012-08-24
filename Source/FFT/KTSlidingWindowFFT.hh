@@ -31,7 +31,7 @@ namespace Katydid
     KTLOGGER(fftlog_sw, "katydid.fft");
 
     class KTEggHeader;
-    class KTEvent;
+    class KTTimeSeriesData;
     class KTPStoreNode;
 
     template< size_t NDims, typename XDataType >
@@ -74,7 +74,7 @@ namespace Katydid
             virtual void InitializeFFT();
             virtual void RecreateFFT();
 
-            virtual Bool_t TransformEvent(const KTEvent* event);
+            virtual Bool_t TransformData(const KTTimeSeriesData* tsData);
 
             template< typename XDataType >
             void Transform(const std::vector< XDataType >& data, vector< KTPowerSpectrum* >* powerSpectra);
@@ -148,7 +148,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(UInt_t iEvent, const KTEvent* event);
+            void ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData);
 
     };
 

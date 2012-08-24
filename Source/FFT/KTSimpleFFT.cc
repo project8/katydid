@@ -178,9 +178,9 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessEvent(UInt_t iEvent, const KTEvent* event)
+    void KTSimpleFFT::ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData)
     {
-        TransformEvent(event);
+        TransformData(tsData);
         fFFTSignal(iEvent, this);
         return;
     }

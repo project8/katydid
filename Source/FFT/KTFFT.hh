@@ -10,14 +10,9 @@
 
 #include "Rtypes.h"
 
-#include <vector>
-using std::vector;
-
-//class TArray;
-
 namespace Katydid
 {
-    class KTEvent;
+    class KTTimeSeriesData;
 
     class KTFFT
     {
@@ -25,7 +20,7 @@ namespace Katydid
             KTFFT();
             virtual ~KTFFT();
 
-            virtual Bool_t TransformEvent(const KTEvent* event) = 0;
+            virtual Bool_t TransformData(const KTTimeSeriesData* tsData) = 0;
 
 
             ClassDef(KTFFT, 2);

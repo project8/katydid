@@ -8,7 +8,7 @@
 #include "KTSlidingWindowFFT.hh"
 
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTFactory.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
@@ -89,9 +89,9 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::ProcessEvent(UInt_t iEvent, const KTEvent* event)
+    void KTSlidingWindowFFT::ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData)
     {
-        TransformEvent(event);
+        TransformData(tsData);
         fFullFFTSignal(iEvent, this);
         return;
     }
@@ -104,7 +104,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTSlidingWindowFFT::TransformEvent(const KTEvent* event)
+    Bool_t KTSlidingWindowFFT::TransformData(const KTTimeSeriesData* tsData)
     {
         if (! fIsInitialized)
         {
@@ -115,14 +115,14 @@ namespace Katydid
 
         ClearPowerSpectra();
 
-        fFreqBinWidth = event->GetSampleRate() / (Double_t)fWindowFunction->GetSize();
+        fFreqBinWidth = tsData->GetSampleRate() / (Double_t)fWindowFunction->GetSize();
 
-        for (UInt_t iChannel = 0; iChannel < event->GetNRecords(); iChannel++)
+        for (UInt_t iChannel = 0; iChannel < tsData->GetNRecords(); iChannel++)
         {
             vector< KTPowerSpectrum* >* newResults = new vector< KTPowerSpectrum* >();
             try
             {
-                Transform(event->GetRecord(iChannel), newResults);
+                Transform(tsData->GetRecord(iChannel), newResults);
             }
             catch (std::exception& e)
             {
