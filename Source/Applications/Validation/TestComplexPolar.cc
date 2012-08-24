@@ -69,9 +69,9 @@ int main()
     cout << "d7 == cp2: " << bool(d7 == cp7) << endl;
     cout << "cp7 != d7: " << bool(cp7 != d7) << endl;
     cout << "d7 != cp2: " << bool(d7 != cp7) << endl;
-    cout << "cp2 == d7: " << bool(cp1 == d7) << endl;
+    cout << "cp2 == d7: " << bool(cp2 == d7) << endl;
     cout << "d7 == cp2: " << bool(d7 == cp7) << endl;
-    cout << "cp2 != d7: " << bool(cp1 != d7) << endl;
+    cout << "cp2 != d7: " << bool(cp2 != d7) << endl;
     cout << "d7 != cp2: " << bool(d7 != cp7) << endl;
 
     // operators +, -, /, *
