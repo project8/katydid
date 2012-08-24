@@ -13,7 +13,6 @@ namespace Katydid
 {
 
     KTEvent::KTEvent() :
-            KTData(),
             fDataMap()
     {
     }

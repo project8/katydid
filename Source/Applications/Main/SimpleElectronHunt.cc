@@ -23,6 +23,7 @@
 #include "KTPowerSpectrum.hh"
 #include "KTSimpleFFT.hh"
 #include "KTSlidingWindowFFT.hh"
+#include "KTTimeSeriesData.hh"
 
 #include "TApplication.h"
 #include "TCanvas.h"
@@ -167,12 +168,14 @@ int main(int argc, char** argv)
         // Hatch the event
         KTEvent* event = egg.HatchNextEvent();
         if (event == NULL) break;
+        KTTimeSeriesData* data = event->GetData< KTTimeSeriesData >(KTTimeSeriesData::StaticGetName());
+        if (data == NULL) break;
 
         // FFT of the entire event, which will be used to normalize the gain fluctuations
-        KTSimpleFFT fullFFT(event->GetRecordSize());
+        KTSimpleFFT fullFFT(data->GetRecordSize());
         fullFFT.SetTransformFlag("ES");
         fullFFT.InitializeFFT();
-        fullFFT.TransformEvent(event);
+        fullFFT.TransformData(data);
 
         KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
         TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
@@ -190,7 +193,7 @@ int main(int argc, char** argv)
         Double_t fullPSFreqBinWidth = histFullPS->GetBinWidth(1);
 
         // Now the windowed FFT
-        KTEventWindowFunction* wfunc = new KTHannWindow(event);
+        KTEventWindowFunction* wfunc = new KTHannWindow(data);
         wfunc->SetLength(1.e-5);
         cout << "window length: " << wfunc->GetLength() << " s; bin width: " << wfunc->GetBinWidth() << " s; size: " << wfunc->GetSize() << endl;
 
@@ -199,7 +202,7 @@ int main(int argc, char** argv)
         fft.SetOverlap(wfunc->GetSize() / 5);
         fft.SetTransformFlag("ES");
         fft.InitializeFFT();
-        fft.TransformEvent(event);
+        fft.TransformData(data);
 
         // Need to exclude:
         //   0-.2 MHz

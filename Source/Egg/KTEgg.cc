@@ -11,6 +11,7 @@
 #include "KTEggReader.hh"
 #include "KTEvent.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeriesData.hh"
 
 using std::string;
 
@@ -53,8 +54,13 @@ namespace Katydid
             KTWARN(egglog, "Not prepared to hatch an event");
             return NULL;
         }
+        KTTimeSeriesData* data = fReader->HatchNextEvent(fHeader);
+        if (data == NULL)
+        {
+            return NULL;
+        }
         KTEvent* newEvent = new KTEvent();
-        newEvent->AddData(fReader->HatchNextEvent(fHeader));
+        newEvent->AddData(data);
         return newEvent;
     }
 

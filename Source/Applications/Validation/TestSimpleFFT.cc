@@ -9,6 +9,7 @@
 #include "KTEvent.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTSimpleFFT.hh"
+#include "KTTimeSeriesData.hh"
 
 #include "TApplication.h"
 #include "TCanvas.h"
@@ -89,11 +90,19 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    KTTimeSeriesData* data = event->GetData< KTTimeSeriesData >(KTTimeSeriesData::StaticGetName());
+    if (data == NULL)
+    {
+        cout << "No data was present in the event" << endl;
+        delete c1;
+        return -1;
+    }
+
     // FFT of the entire event, which will be used to normalize the gain fluctuations
-    KTSimpleFFT fullFFT(event->GetRecordSize());
+    KTSimpleFFT fullFFT(data->GetRecordSize());
     fullFFT.SetTransformFlag("ES");
     fullFFT.InitializeFFT();
-    fullFFT.TransformEvent(event);
+    fullFFT.TransformData(data);
 
     KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
     TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();

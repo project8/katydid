@@ -92,6 +92,12 @@ namespace Katydid
                 KTINFO(eggreadlog, "End of file reached before complete event was read: <" << e.what() << ">");
                 return NULL;
             }
+            catch(std::exception& e)
+            {
+                delete eventData;
+                KTERROR(eggreadlog, "Something went wrong while reading out an event: " << e.what());
+                return NULL;
+            }
 
             eventData->SetChannelID(monarchRecord->fCId, iRecord);
             eventData->SetAcquisitionID(monarchRecord->fAId, iRecord);

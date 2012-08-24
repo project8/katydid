@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    //class KTEvent;
+    class KTEvent;
 
     class KTData
     {

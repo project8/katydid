@@ -4,7 +4,9 @@
  *  Created on: Aug 20, 2012
  *      Author: nsoblath
  *
- *  Usage:  bin/TestEggHatching filename.egg
+ *  Usage:
+ *     for reading 2012+ data: bin/TestEggHatching filename.egg
+ *     for reading 2011  data: bin/TestEggHatching filename.egg -z
  */
 
 
@@ -14,6 +16,7 @@
 #include "KTEggReaderMonarch.hh"
 #include "KTEvent.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeriesData.hh"
 
 #include <iostream>
 #include <string>

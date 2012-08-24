@@ -29,6 +29,7 @@ namespace Katydid
 {
     class KTPStoreNode;
     class KTEggHeader;
+    class KTTimeSeriesData;
 
     /*!
      @class KTFFTEHunt
@@ -64,7 +65,7 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(UInt_t iEvent, const KTEvent* event);
+            void ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData);
 
             void FinishHunt();
 

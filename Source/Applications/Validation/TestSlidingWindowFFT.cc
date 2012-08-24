@@ -10,6 +10,7 @@
 #include "KTHannWindow.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTSlidingWindowFFT.hh"
+#include "KTTimeSeriesData.hh"
 
 #include "TApplication.h"
 #include "TCanvas.h"
@@ -90,8 +91,16 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    KTTimeSeriesData* data = event->GetData< KTTimeSeriesData >(KTTimeSeriesData::StaticGetName());
+    if (data == NULL)
+    {
+        cout << "No data was present in the event" << endl;
+        delete c1;
+        return -1;
+    }
+
     // Now the windowed FFT
-    KTEventWindowFunction* wfunc = new KTHannWindow(event);
+    KTEventWindowFunction* wfunc = new KTHannWindow(data);
     wfunc->SetLength(1.e-5);
     cout << "window length: " << wfunc->GetLength() << " s; bin width: " << wfunc->GetBinWidth() << " s; size: " << wfunc->GetSize() << endl;
 
@@ -100,7 +109,7 @@ int main(int argc, char** argv)
     fft.SetOverlap(wfunc->GetSize() / 5);
     fft.SetTransformFlag("ES");
     fft.InitializeFFT();
-    fft.TransformEvent(event);
+    fft.TransformData(data);
 
     TH2D* hist = fft.CreatePowerSpectrumHistogram();
 
