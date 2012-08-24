@@ -46,21 +46,6 @@ namespace Katydid
                 return;
             }
 
-            // set functions
-            void set_polar(const double& abs, const double& arg)
-            {
-                fAbs = abs;
-                fArg = arg;
-                return;
-            }
-
-            void set_rect(const double& real, const double& imag)
-            {
-                fAbs = std::sqrt(real*real + imag*imag);
-                fArg = std::atan2(imag, real);
-                return;
-            }
-
             // operators
         public:
             complexpolar& operator= (const complexpolar& rhs);
@@ -155,6 +140,48 @@ namespace Katydid
                 return *this;
             }
 
+            template<class X>
+            complexpolar<float>& operator=  (const X& rhs)
+            {
+                fAbs = float(rhs);
+                fArg = 0.;
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<float>& operator+= (const X& rhs)
+            {
+                float sumx = fAbs * std::cos(fArg) + float(rhs);
+                float sumy = fAbs * std::sin(fArg);
+                fAbs = std::sqrt(sumx*sumx + sumy*sumy);
+                fArg = std::atan2(sumy, sumx);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<float>& operator-= (const X& rhs)
+            {
+                float diffx = fAbs * std::cos(fArg) - float(rhs);
+                float diffy = fAbs * std::sin(fArg);
+                fAbs = std::sqrt(diffx*diffx + diffy*diffy);
+                fArg = std::atan2(diffy, diffx);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<float>& operator*= (const X& rhs)
+            {
+                fAbs = fAbs * float(rhs);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<float>& operator/= (const X& rhs)
+            {
+                fAbs = fAbs / float(rhs);
+                return *this;
+            }
+
         public:
             float abs() const;
             float arg() const;
@@ -192,6 +219,21 @@ namespace Katydid
                     fAbs(double(cmplxp.fAbs)), fArg(double(cmplxp.fArg))
             {}
             ~complexpolar();
+
+            // set functions
+            void set_polar(const double& abs, const double& arg)
+            {
+                fAbs = abs;
+                fArg = arg;
+                return;
+            }
+
+            void set_rect(const double& real, const double& imag)
+            {
+                fAbs = std::sqrt(real*real + imag*imag);
+                fArg = std::atan2(imag, real);
+                return;
+            }
 
             // operators
         public:
@@ -284,6 +326,48 @@ namespace Katydid
             {
                 fAbs = fAbs / double(std::abs(rhs));
                 fArg = fArg - double(std::arg(rhs));
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<double>& operator=  (const X& rhs)
+            {
+                fAbs = double(rhs);
+                fArg = 0.;
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<double>& operator+= (const X& rhs)
+            {
+                double sumx = fAbs * std::cos(fArg) + double(rhs);
+                double sumy = fAbs * std::sin(fArg);
+                fAbs = std::sqrt(sumx*sumx + sumy*sumy);
+                fArg = std::atan2(sumy, sumx);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<double>& operator-= (const X& rhs)
+            {
+                double diffx = fAbs * std::cos(fArg) - double(rhs);
+                double diffy = fAbs * std::sin(fArg);
+                fAbs = std::sqrt(diffx*diffx + diffy*diffy);
+                fArg = std::atan2(diffy, diffx);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<double>& operator*= (const X& rhs)
+            {
+                fAbs = fAbs * double(rhs);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<double>& operator/= (const X& rhs)
+            {
+                fAbs = fAbs / double(rhs);
                 return *this;
             }
 
@@ -432,6 +516,48 @@ namespace Katydid
             {
                 fAbs = fAbs / (long double)(std::abs(rhs));
                 fArg = fArg - (long double)(std::arg(rhs));
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<long double>& operator=  (const X& rhs)
+            {
+                fAbs = (long double)(rhs);
+                fArg = 0.;
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<long double>& operator+= (const X& rhs)
+            {
+                long double sumx = fAbs * std::cos(fArg) + (long double)(rhs);
+                long double sumy = fAbs * std::sin(fArg);
+                fAbs = std::sqrt(sumx*sumx + sumy*sumy);
+                fArg = std::atan2(sumy, sumx);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<long double>& operator-= (const X& rhs)
+            {
+                long double diffx = fAbs * std::cos(fArg) - (long double)(rhs);
+                long double diffy = fAbs * std::sin(fArg);
+                fAbs = std::sqrt(diffx*diffx + diffy*diffy);
+                fArg = std::atan2(diffy, diffx);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<long double>& operator*= (const X& rhs)
+            {
+                fAbs = fAbs * (long double)(rhs);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<long double>& operator/= (const X& rhs)
+            {
+                fAbs = fAbs / (long double)(rhs);
                 return *this;
             }
 

@@ -8,6 +8,8 @@
 #include "KTSimpleFFT.hh"
 
 #include "KTEggHeader.hh"
+#include "KTEvent.hh"
+#include "KTFrequencySpectrumData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPhysicalArray.hh"
@@ -30,6 +32,8 @@ namespace Katydid
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
             fFreqBinWidth(1.),
+            fFreqMin(-0.5),
+            fFreqMax(0.5),
             fFFTSignal()
     {
         fConfigName = "simple-fft";
@@ -49,6 +53,8 @@ namespace Katydid
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
             fFreqBinWidth(1.),
+            fFreqMin(-0.5),
+            fFreqMax(0.5),
             fFFTSignal()
     {
         fConfigName = "simple-fft";
@@ -98,6 +104,12 @@ namespace Katydid
 
     Bool_t KTSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
     {
+        if (tsData->GetRecordSize() != GetTimeSize())
+        {
+            SetTimeSize(tsData->GetRecordSize());
+            InitializeFFT();
+        }
+
         if (! fIsInitialized)
         {
             KTERROR(fftlog_simp, "FFT must be initialized before the transform is performed\n"
@@ -105,20 +117,25 @@ namespace Katydid
             return kFALSE;
         }
 
-        ClearTransformResults();
-
         fFreqBinWidth = tsData->GetSampleRate() / (Double_t)tsData->GetRecordSize();
+        fFreqMin = -0.5 * fFreqBinWidth;
+        fFreqMax = fFreqBinWidth * ((Double_t)tsData->GetRecordSize()-0.5);
 
-        for (UInt_t iChannel = 0; iChannel < tsData->GetNRecords(); iChannel++)
+        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNChannels());
+
+        for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
         {
-            KTComplexVector* nextResult = Transform(tsData->GetRecord(iChannel));
+            KTFrequencySpectrum* nextResult = Transform(tsData->GetRecord(iChannel));
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_simp, "One of the channels did not transform correctly.");
                 return kFALSE;
             }
-            AddTransformResult(nextResult);
+            newData->SetSpectrum(nextResult, iChannel);
         }
+
+        tsData->GetEvent()->AddData(newData);
+        fFFTSignal(newData);
 
         return kTRUE;
     }
@@ -129,17 +146,21 @@ namespace Katydid
         return;
     }
 
-    KTComplexVector* KTSimpleFFT::ExtractTransformResult()
+    KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult()
     {
         UInt_t freqSize = this->GetFrequencySize();
-        Double_t* freqSpecReal = new Double_t [freqSize];
-        Double_t* freqSpecImag = new Double_t [freqSize];
-        fTransform->GetPointsComplex(freqSpecReal, freqSpecImag);
+        Double_t normalization = 1. / (Double_t)GetTimeSize();
 
-        KTComplexVector* transformResult = new KTComplexVector((Int_t)freqSize, freqSpecReal, freqSpecImag, "R");
-        delete [] freqSpecReal; delete [] freqSpecImag;
-        (*transformResult) *= 1. / (Double_t)this->GetTimeSize();
-        return transformResult;
+        Double_t tempReal, tempImag;
+        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, fFreqMin, fFreqMax);
+        for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
+        {
+            fTransform->GetPointComplex(iPoint, tempReal, tempImag);
+            (*newSpect)[iPoint].set_rect(tempReal, tempImag);
+            (*newSpect)[iPoint] *= normalization;
+        }
+
+        return newSpect;
     }
 
     TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram(const string& name, UInt_t channelNum) const
@@ -181,7 +202,6 @@ namespace Katydid
     void KTSimpleFFT::ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData)
     {
         TransformData(tsData);
-        fFFTSignal(iEvent, this);
         return;
     }
 

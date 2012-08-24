@@ -14,6 +14,7 @@
 #include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
+#include "KTFFTTypes.hh"
 
 #include "TFFTRealComplex.h"
 
@@ -31,6 +32,7 @@ namespace Katydid
     class KTPowerSpectrum;
     class KTPStoreNode;
     class KTTimeSeriesData;
+    class KTFrequencySpectrumData;
 
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
@@ -59,7 +61,7 @@ namespace Katydid
     class KTSimpleFFT : public KTFFT, public KTProcessor, public KTConfigurable
     {
         public:
-            typedef KTSignal< void (UInt_t, const KTSimpleFFT*) >::signal FFTSignal;
+            typedef KTSignal< void (const KTFrequencySpectrumData*) >::signal FFTSignal;
 
         public:
             KTSimpleFFT();
@@ -75,7 +77,7 @@ namespace Katydid
             virtual Bool_t TransformData(const KTTimeSeriesData* tsData);
 
             template< typename XDataType >
-            KTComplexVector* Transform(const std::vector< XDataType >& data);
+            KTFrequencySpectrum* Transform(const std::vector< XDataType >& data);
 
             void AddTransformResult(KTComplexVector* result);
 
@@ -97,13 +99,17 @@ namespace Katydid
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Double_t GetFreqBinWidth() const;
+            Double_t GetFreqMin() const;
+            Double_t GetFreqMax() const;
 
             /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
             void SetTransformFlag(const std::string& flag);
             void SetFreqBinWidth(Double_t bw);
+            void SetFreqMin(Double_t fm);
+            void SetFreqMax(Double_t fm);
 
         protected:
-            KTComplexVector* ExtractTransformResult();
+            KTFrequencySpectrum* ExtractTransformResult();
 
             TFFTRealComplex* fTransform;
             std::vector< KTComplexVector* > fTransformResults;
@@ -113,6 +119,8 @@ namespace Katydid
             Bool_t fIsInitialized;
 
             Double_t fFreqBinWidth;
+            Double_t fFreqMin;
+            Double_t fFreqMax;
 
             //***************
             // Signals
@@ -133,7 +141,7 @@ namespace Katydid
 
 
     template< typename XDataType >
-    KTComplexVector* KTSimpleFFT::Transform(const std::vector< XDataType >& data)
+    KTFrequencySpectrum* KTSimpleFFT::Transform(const std::vector< XDataType >& data)
     {
         unsigned int nBins = (unsigned int)data.size();
         if (nBins != (unsigned int)fTransform->GetSize())
@@ -197,6 +205,16 @@ namespace Katydid
         return fFreqBinWidth;
     }
 
+    inline Double_t KTSimpleFFT::GetFreqMin() const
+    {
+        return fFreqMin;
+    }
+
+    inline Double_t KTSimpleFFT::GetFreqMax() const
+    {
+        return fFreqMax;
+    }
+
     inline void KTSimpleFFT::SetTransformFlag(const std::string& flag)
     {
         fTransformFlag = flag;
@@ -207,6 +225,18 @@ namespace Katydid
     inline void KTSimpleFFT::SetFreqBinWidth(Double_t bw)
     {
         fFreqBinWidth = bw;
+        return;
+    }
+
+    inline void KTSimpleFFT::SetFreqMin(Double_t fm)
+    {
+        fFreqMin = fm;
+        return;
+    }
+
+    inline void KTSimpleFFT::SetFreqMax(Double_t fm)
+    {
+        fFreqMax = fm;
         return;
     }
 

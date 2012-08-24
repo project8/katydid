@@ -164,6 +164,51 @@ namespace Katydid
                 return *this;
             }
 
+
+            template<class X>
+            complexpolar<T>& operator=  (const X& rhs)
+            {
+                fAbs = T(rhs);
+                fArg = T();
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<T>& operator+= (const X& rhs)
+            {
+                T sumx = fAbs * std::cos(fArg) + T(rhs);
+                T sumy = fAbs * std::sin(fArg);
+                fAbs = std::sqrt(sumx*sumx + sumy*sumy);
+                fArg = std::atan2(sumy, sumx);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<T>& operator-= (const X& rhs)
+            {
+                T diffx = fAbs * std::cos(fArg) - T(rhs);
+                T diffy = fAbs * std::sin(fArg);
+                fAbs = std::sqrt(diffx*diffx + diffy*diffy);
+                fArg = std::atan2(diffy, diffx);
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<T>& operator*= (const X& rhs)
+            {
+                fAbs = fAbs * T(rhs);
+                fArg = fArg + T();
+                return *this;
+            }
+
+            template<class X>
+            complexpolar<T>& operator/= (const X& rhs)
+            {
+                fAbs = fAbs / T(rhs);
+                fArg = fArg - T();
+                return *this;
+            }
+
         public:
             T abs() const
             {

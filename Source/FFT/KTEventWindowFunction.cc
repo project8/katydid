@@ -105,7 +105,7 @@ namespace Katydid
         fft.SetFreqBinWidth(fBinWidth);
         fft.SetTransformFlag("ES");
         fft.InitializeFFT();
-        fft.AddTransformResult(fft.Transform(timeData));
+        //fft.AddTransformResult(fft.Transform(timeData));
         KTPowerSpectrum* ps = fft.CreatePowerSpectrum();
         TH1D* hist = ps->CreateMagnitudeHistogram(name);
         hist->SetYTitle("Weight");

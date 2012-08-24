@@ -49,7 +49,7 @@ namespace Katydid
             virtual TH1I* CreateAmplitudeDistributionHistogram(unsigned channelNum = 0) const;
 #endif
 
-            unsigned GetNRecords() const;
+            unsigned GetNChannels() const;
 
             unsigned GetRecordSize() const;
             double GetSampleRate() const;
@@ -108,7 +108,7 @@ namespace Katydid
         return fName;
     }
 
-    inline unsigned KTTimeSeriesData::GetNRecords() const
+    inline unsigned KTTimeSeriesData::GetNChannels() const
     {
         return unsigned(fChannelData.size());
     }

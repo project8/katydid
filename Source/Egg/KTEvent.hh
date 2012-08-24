@@ -28,6 +28,15 @@ namespace Katydid
             KTEvent();
             virtual ~KTEvent();
 
+            //*****************************
+            // Intrinsic data
+            //*****************************
+        public:
+            unsigned GetEventNumber() const;
+            void SetEventNumber(unsigned num);
+
+        protected:
+            unsigned fEventNum;
 
             //*****************************
             // Extensible data
@@ -57,6 +66,18 @@ namespace Katydid
             DataMap fDataMap;
 
     };
+
+
+    inline unsigned KTEvent::GetEventNumber() const
+    {
+        return fEventNum;
+    }
+
+    inline void KTEvent::SetEventNumber(unsigned num)
+    {
+        fEventNum = num;
+        return;
+    }
 
     template< typename DerivedData >
     DerivedData* KTEvent::GetData(const std::string& name) const

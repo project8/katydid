@@ -97,7 +97,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    unsigned nRecords = tsData->GetNRecords();
+    unsigned nRecords = tsData->GetNChannels();
     KTINFO(testegg, "This event contains " << nRecords << " records");
     if (nRecords >= 1)
     {

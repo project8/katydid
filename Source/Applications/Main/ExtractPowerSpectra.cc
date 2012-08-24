@@ -9,8 +9,11 @@
 #include "KTApplication.hh"
 #include "KTCommandLineOption.hh"
 #include "KTEggProcessor.hh"
+#include "KTEvent.hh"
 #include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
+#include "KTFrequencySpectrumData.hh"
+#include "KTFFTTypes.hh"
 
 #include "TFile.h"
 #include "TH1D.h"
@@ -31,7 +34,7 @@ class PowerSpectraContainer : public KTProcessor
     public:
         PowerSpectraContainer();
         ~PowerSpectraContainer();
-        void AddPowerSpectrum(UInt_t iEvent, const KTSimpleFFT* fft);
+        void AddPowerSpectrum(const KTFrequencySpectrumData* fftData);
         const vector< TH1D* >& GetPowerSpectra() const;
         void ReleasePowerSpectra();
     private:
@@ -143,16 +146,26 @@ PowerSpectraContainer::~PowerSpectraContainer()
     }
 }
 
-void PowerSpectraContainer::AddPowerSpectrum(UInt_t iEvent, const KTSimpleFFT* fft)
+void PowerSpectraContainer::AddPowerSpectrum(const KTFrequencySpectrumData* fftData)
 {
+    KTEvent* event = fftData->GetEvent();
+
     stringstream conv;
-    string histName;
-    conv << iEvent;
-    conv >> histName;
-    histName = "histPS" + histName;
-    TH1D* powerSpectrum = fft->CreatePowerSpectrumHistogram(histName);
-    // set name and/or title?
-    fPowerSpectra.push_back(powerSpectrum);
+    string histNameBase;
+    conv << event->GetEventNumber();
+    conv >> histNameBase;
+    histNameBase = "histPS" + histNameBase;
+    for (unsigned iChannel=0; iChannel<fftData->GetNChannels(); iChannel++)
+    {
+        conv.flush();
+        conv << iChannel;
+        string histName;
+        conv >> histName;
+        histName = histNameBase + '_' + histName;
+        TH1D* powerSpectrum = CreatePowerSpectrumHistFromFreqSpect(histName, &(fftData->GetSpectrum(iChannel)));
+        // set name and/or title?
+        fPowerSpectra.push_back(powerSpectrum);
+    }
     return;
 }
 

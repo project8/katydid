@@ -117,7 +117,7 @@ namespace Katydid
 
         fFreqBinWidth = tsData->GetSampleRate() / (Double_t)fWindowFunction->GetSize();
 
-        for (UInt_t iChannel = 0; iChannel < tsData->GetNRecords(); iChannel++)
+        for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
         {
             vector< KTPowerSpectrum* >* newResults = new vector< KTPowerSpectrum* >();
             try

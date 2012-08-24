@@ -10,8 +10,7 @@
 
 #include "KTData.hh"
 
-#include "complexpolar.hh"
-#include "KTPhysicalArray.hh"
+#include "KTFFTTypes.hh"
 
 #include <vector>
 
@@ -21,30 +20,50 @@ namespace Katydid
     class KTFrequencySpectrumData : public KTData
     {
         public:
-            typedef KTPhysicalArray< 1, complexpolar< Double_t > > FrequencySpectrum;
-
-        public:
-            KTFrequencySpectrumData();
+            KTFrequencySpectrumData(unsigned nChannels=1);
             virtual ~KTFrequencySpectrumData();
 
-            const FrequencySpectrum& GetSpectrum(unsigned channelNum = 0) const;
+            const std::string& GetName() const;
+            static const std::string& StaticGetName();
 
-            void SetSpectrum(FrequencySpectrum* record, unsigned channelNum = 0);
+            const KTFrequencySpectrum& GetSpectrum(unsigned channelNum = 0) const;
+            unsigned GetNChannels() const;
+
+            void SetSpectrum(KTFrequencySpectrum* record, unsigned channelNum = 0);
+            void SetNChannels(unsigned channels);
 
         protected:
-            std::vector< FrequencySpectrum* > fSpectra;
+            static std::string fName;
+
+            std::vector< KTFrequencySpectrum* > fSpectra;
 
     };
 
-    inline const KTFrequencySpectrumData::FrequencySpectrum& KTFrequencySpectrumData::GetSpectrum(unsigned channelNum) const
+    inline const std::string& KTFrequencySpectrumData::GetName() const
+    {
+        return fName;
+    }
+
+    inline const KTFrequencySpectrum& KTFrequencySpectrumData::GetSpectrum(unsigned channelNum) const
     {
         return (*fSpectra[channelNum]);
     }
 
-    inline void KTFrequencySpectrumData::SetSpectrum(FrequencySpectrum* record, unsigned channelNum)
+    inline unsigned KTFrequencySpectrumData::GetNChannels() const
+    {
+        return unsigned(fSpectra.size());
+    }
+
+    inline void KTFrequencySpectrumData::SetSpectrum(KTFrequencySpectrum* record, unsigned channelNum)
     {
         if (channelNum >= fSpectra.size()) fSpectra.resize(channelNum+1);
         fSpectra[channelNum] = record;
+    }
+
+    inline void KTFrequencySpectrumData::SetNChannels(unsigned channels)
+    {
+        fSpectra.resize(channels);
+        return;
     }
 
 

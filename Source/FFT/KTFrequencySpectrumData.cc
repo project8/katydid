@@ -9,10 +9,16 @@
 
 namespace Katydid
 {
+    std::string KTFrequencySpectrumData::fName("FrequencySpectrum");
 
-    KTFrequencySpectrumData::KTFrequencySpectrumData() :
+    const std::string& KTFrequencySpectrumData::StaticGetName()
+    {
+        return fName;
+    }
+
+    KTFrequencySpectrumData::KTFrequencySpectrumData(unsigned nChannels) :
             KTData(),
-            fSpectra()
+            fSpectra(nChannels)
     {
     }
 
