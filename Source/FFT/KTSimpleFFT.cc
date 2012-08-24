@@ -8,7 +8,7 @@
 #include "KTSimpleFFT.hh"
 
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
@@ -96,7 +96,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTSimpleFFT::TransformEvent(const KTEvent* event)
+    Bool_t KTSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
     {
         if (! fIsInitialized)
         {
@@ -107,11 +107,11 @@ namespace Katydid
 
         ClearTransformResults();
 
-        fFreqBinWidth = event->GetSampleRate() / (Double_t)event->GetRecordSize();
+        fFreqBinWidth = tsData->GetSampleRate() / (Double_t)tsData->GetRecordSize();
 
-        for (UInt_t iChannel = 0; iChannel < event->GetNRecords(); iChannel++)
+        for (UInt_t iChannel = 0; iChannel < tsData->GetNRecords(); iChannel++)
         {
-            KTComplexVector* nextResult = Transform(event->GetRecord(iChannel));
+            KTComplexVector* nextResult = Transform(tsData->GetRecord(iChannel));
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_simp, "One of the channels did not transform correctly.");

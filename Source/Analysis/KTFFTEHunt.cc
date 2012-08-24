@@ -161,7 +161,7 @@ namespace Katydid
         return;
     }
 
-    void KTFFTEHunt::ProcessEvent(UInt_t iEvent, const KTEvent* event)
+    void KTFFTEHunt::ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData)
     {
         if (fWriteTextFileFlag)
         {
@@ -169,8 +169,8 @@ namespace Katydid
         }
 
         // Perform a 1-D FFT on the entire event
-        fSimpleFFT.ProcessEvent(iEvent, event);
-        KTPhysicalArray< 1, Double_t >* fullFFT = fSimpleFFT.CreatePowerSpectrumPhysArr();
+        fSimpleFFT.ProcessEvent(iEvent, tsData);
+        KTPhysicalArray< 1, Double_t >* fullFFT = fSimpleFFT.GetFFT()->CreatePowerSpectrumPhysArr();
 
         // Use the data from the full FFT to create a gain normalization
         fGainNorm.PrepareNormalization(fullFFT, (UInt_t)fWindowFFT.GetFrequencySize(), fWindowFFT.GetFreqBinWidth());
@@ -180,8 +180,8 @@ namespace Katydid
         //list< multimap< Int_t, Int_t >* > eventPeakBins;
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
-        fWindowFFT.ProcessEvent(iEvent, event);
-        Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth() * fFrequencyMultiplier;
+        fWindowFFT.ProcessEvent(iEvent, tsData);
+        Double_t freqBinWidth = fWindowFFT.GetFFT()->GetFreqBinWidth() * fFrequencyMultiplier;
 
         // Scan through the groups
         // Remove any that are too small

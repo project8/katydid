@@ -30,7 +30,7 @@ namespace Katydid
     class KTEggHeader;
     class KTPowerSpectrum;
     class KTPStoreNode;
-    class KTEvent;
+    class KTTimeSeriesData;
 
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
@@ -72,7 +72,7 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual Bool_t TransformEvent(const KTEvent* event);
+            virtual Bool_t TransformData(const KTTimeSeriesData* tsData);
 
             template< typename XDataType >
             KTComplexVector* Transform(const std::vector< XDataType >& data);
