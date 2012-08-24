@@ -45,6 +45,21 @@ namespace Katydid
             ~complexpolar()
             {}
 
+            // set functions
+            void set_polar(const T& abs, const T& arg)
+            {
+                fAbs = abs;
+                fArg = arg;
+                return;
+            }
+
+            void set_rect(const T& real, const T& imag)
+            {
+                fAbs = std::sqrt(real*real + imag*imag);
+                fArg = std::atan2(imag, real);
+                return;
+            }
+
             // operators
         public:
             complexpolar<T>& operator= (const complexpolar<T>& rhs)

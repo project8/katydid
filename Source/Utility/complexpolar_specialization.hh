@@ -31,6 +31,36 @@ namespace Katydid
             {}
             ~complexpolar();
 
+            // set functions
+            void set_polar(const float& abs, const float& arg)
+            {
+                fAbs = abs;
+                fArg = arg;
+                return;
+            }
+
+            void set_rect(const float& real, const float& imag)
+            {
+                fAbs = std::sqrt(real*real + imag*imag);
+                fArg = std::atan2(imag, real);
+                return;
+            }
+
+            // set functions
+            void set_polar(const double& abs, const double& arg)
+            {
+                fAbs = abs;
+                fArg = arg;
+                return;
+            }
+
+            void set_rect(const double& real, const double& imag)
+            {
+                fAbs = std::sqrt(real*real + imag*imag);
+                fArg = std::atan2(imag, real);
+                return;
+            }
+
             // operators
         public:
             complexpolar& operator= (const complexpolar& rhs);
@@ -295,6 +325,21 @@ namespace Katydid
                     fAbs((long double)(cmplxp.fAbs)), fArg((long double)(cmplxp.fArg))
             {}
             ~complexpolar();
+
+            // set functions
+            void set_polar(const long double& abs, const long double& arg)
+            {
+                fAbs = abs;
+                fArg = arg;
+                return;
+            }
+
+            void set_rect(const long double& real, const long double& imag)
+            {
+                fAbs = std::sqrt(real*real + imag*imag);
+                fArg = std::atan2(imag, real);
+                return;
+            }
 
             // operators
         public:
