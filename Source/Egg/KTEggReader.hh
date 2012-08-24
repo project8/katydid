@@ -13,7 +13,7 @@
 namespace Katydid
 {
     class KTEggHeader;
-    class KTEvent;
+    class KTTimeSeriesData;
 
     class KTEggReader
     {
@@ -23,7 +23,7 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string&) = 0;
-            virtual KTEvent* HatchNextEvent(KTEggHeader*) = 0;
+            virtual KTTimeSeriesData* HatchNextEvent(KTEggHeader*) = 0;
             virtual bool CloseEgg() = 0;
 
     };

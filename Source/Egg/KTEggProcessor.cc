@@ -16,6 +16,7 @@
 #include "KTEvent.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTTimeSeriesData.hh"
 
 //#include "TCanvas.h"
 //#include "TH1.h"
@@ -114,6 +115,13 @@ namespace Katydid
             KTEvent* event = egg.HatchNextEvent();
             if (event == NULL) break;
 
+            KTTimeSeriesData* tsData = event->GetData<KTTimeSeriesData>(KTTimeSeriesData::StaticGetName());
+            if (tsData == NULL)
+            {
+                KTWARN(egglog, "No time-series data present in event");
+                continue;
+            }
+
             /*
             TCanvas* cAmpl = new TCanvas("cAmpl", "cAmpl");
             TH1I* hist = event->CreateEventHistogram();
@@ -124,7 +132,7 @@ namespace Katydid
             */
 
             // Pass the event to any subscribers
-            fEventSignal(iEvent, event);
+            fEventSignal(iEvent, tsData);
 
             iEvent++;
 

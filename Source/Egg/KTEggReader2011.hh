@@ -49,7 +49,7 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string& filename);
-            virtual KTEvent* HatchNextEvent(KTEggHeader* header);
+            virtual KTTimeSeriesData* HatchNextEvent(KTEggHeader* header);
             virtual bool CloseEgg();
 
         private:

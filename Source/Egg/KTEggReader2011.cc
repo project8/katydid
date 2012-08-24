@@ -8,7 +8,7 @@
 #include "KTEggReader2011.hh"
 
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTLogger.hh"
 
 #include "rapidxml.hpp"
@@ -209,11 +209,11 @@ namespace Katydid
         return eggHeader;
     }
 
-    KTEvent* KTEggReader2011::HatchNextEvent(KTEggHeader* header)
+    KTTimeSeriesData* KTEggReader2011::HatchNextEvent(KTEggHeader* header)
     {
         if (! fEggStream.good()) return NULL;
 
-        KTEvent* event = new KTEvent(1);
+        KTTimeSeriesData* eventData = new KTTimeSeriesData(1);
 
         unsigned char* readBuffer;
 
@@ -232,7 +232,7 @@ namespace Katydid
             //vector< unsigned > newTimeStamp(readBuffer, readBuffer + fHeaderInfo.fTimeStampSize/sizeof(unsigned char));
             unsigned long int newTimeStamp = ConvertFromArray< unsigned long >(readBuffer);
             delete [] readBuffer;
-            event->SetTimeStamp(newTimeStamp);
+            eventData->SetTimeStamp(newTimeStamp);
             //std::cout << "Time stamp (" << newTimeStamp.size() << " chars): ";
             //for (int i=0; i<newTimeStamp.size(); i++)
             //    std::cout << newTimeStamp[i];
@@ -241,12 +241,12 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading time stamp size");
-            delete event;
+            delete eventData;
             return NULL;
         }
 
         // channel number is always 0
-        event->SetChannelID(0);
+        eventData->SetChannelID(0);
 
         // read the frame size
         readBuffer = new unsigned char [fHeaderInfo.fFrameIDSize];
@@ -263,12 +263,12 @@ namespace Katydid
             //vector< unsigned > newFrameID(readBuffer, readBuffer + fHeaderInfo.fFrameIDSize()/sizeof(unsigned char));
             unsigned newFrameID = ConvertFromArray< unsigned >(readBuffer);
             delete [] readBuffer;
-            event->SetAcquisitionID(newFrameID);
+            eventData->SetAcquisitionID(newFrameID);
         }
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading frame size");
-            delete event;
+            delete eventData;
             return NULL;
         }
 
@@ -281,14 +281,14 @@ namespace Katydid
                     << "\tExpected: :" << fHeaderInfo.fRecordSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
-            delete event;
+            delete eventData;
             return NULL;
         }
         else
         {
             vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
             delete [] readBuffer;
-            event->SetRecord(newRecord);
+            eventData->SetRecord(newRecord);
         }
         if (! fEggStream.good())
         {
@@ -296,12 +296,12 @@ namespace Katydid
         }
 
         //
-        event->SetSampleRate(double(fHeaderInfo.fSampleRate));
-        event->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
-        event->SetRecordSize(fHeaderInfo.fRecordSize);
-        event->SetRecordLength(double(fHeaderInfo.fRecordSize) * event->GetBinWidth());
+        eventData->SetSampleRate(double(fHeaderInfo.fSampleRate));
+        eventData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
+        eventData->SetRecordSize(fHeaderInfo.fRecordSize);
+        eventData->SetRecordLength(double(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
 
-        return event;
+        return eventData;
     }
 
     bool KTEggReader2011::CloseEgg()

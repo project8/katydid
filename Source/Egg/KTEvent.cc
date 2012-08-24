@@ -7,56 +7,38 @@
 
 #include "KTEvent.hh"
 
-#ifdef ROOT_FOUND
-#include "TH1.h"
-#endif
-
-using std::vector;
+#include "KTData.hh"
 
 namespace Katydid
 {
 
-    KTEvent::KTEvent(unsigned nChannels) :
-            KTAbstractEvent(),
-            fSampleRate(0.),
-            fRecordLength(0.),
-            fBinWidth(1.),
-            fRecordSize(0),
-            fChannelData(nChannels)
+    KTEvent::KTEvent() :
+            KTData(),
+            fDataMap()
     {
     }
 
     KTEvent::~KTEvent()
     {
-        while (! fChannelData.empty())
+        for (DataMap::iterator it=fDataMap.begin(); it != fDataMap.end(); it++)
         {
-            delete fChannelData.back().fRecord;
-            fChannelData.pop_back();
+            delete it->second;
         }
     }
 
-#ifdef ROOT_FOUND
-    TH1C* KTEvent::CreateEventHistogram(unsigned channelNum) const
+    bool KTEvent::AddData(KTData* newData)
     {
-        TH1C* hist = new TH1C("hRecord", "Event Record", (int)GetRecordSize(), -0.5*fBinWidth, GetRecordLength() + fBinWidth*0.5);
-        for (unsigned int iBin=0; iBin<fChannelData[channelNum].fRecord->size(); iBin++)
-        {
-            hist->SetBinContent(iBin+1, fChannelData[channelNum].fRecord->at(iBin));
-        }
-        hist->SetXTitle("Time (s)");
-        return hist;
+        return AddData(newData->GetName(), newData);
     }
 
-    TH1I* KTEvent::CreateAmplitudeDistributionHistogram(unsigned channelNum) const
+    bool KTEvent::AddData(const std::string& name, KTData* newData)
     {
-        TH1I* hist = new TH1I("hRecordAmpl", "Event Record Amplitude Distribution", 256, -0.5, 255.5);
-        for (int iBin=0; iBin<fChannelData[channelNum].fRecord->size(); iBin++)
-        {
-            hist->Fill((double)(fChannelData[channelNum].fRecord->at(iBin)));
-        }
-        hist->SetXTitle("ADC Bin");
-        return hist;
+        newData->fEvent = this;
+        return (fDataMap.insert(DataMapVal(name, newData))).second;
     }
-#endif
+
+
+
+
 
 } /* namespace Katydid */

@@ -9,7 +9,7 @@
 
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTLogger.hh"
 
 #include "Monarch.hpp"
@@ -65,43 +65,43 @@ namespace Katydid
         return header;
     }
 
-    KTEvent* KTEggReaderMonarch::HatchNextEvent(KTEggHeader* header)
+    KTTimeSeriesData* KTEggReaderMonarch::HatchNextEvent(KTEggHeader* header)
     {
         if (fMonarch == NULL) return NULL;
 
-        MonarchRecord* eventRecord = NULL;
-        KTEvent* event = new KTEvent(fNumberOfRecords[header->GetAcquisitionMode()]);
+        MonarchRecord* monarchRecord = NULL;
+        KTTimeSeriesData* eventData = new KTTimeSeriesData(fNumberOfRecords[header->GetAcquisitionMode()]);
 
         //
-        event->SetSampleRate(header->GetAcquisitionRate());
-        event->SetRecordSize(header->GetRecordSize());
-        event->CalculateBinWidthAndRecordLength();
-        //event->SetBinWidth(1. / event->GetSampleRate());
-        //event->SetRecordLength((double)(event->GetRecordSize()) * event->GetBinWidth());
+        eventData->SetSampleRate(header->GetAcquisitionRate());
+        eventData->SetRecordSize(header->GetRecordSize());
+        eventData->CalculateBinWidthAndRecordLength();
+        //eventData->SetBinWidth(1. / eventData->GetSampleRate());
+        //eventData->SetRecordLength((double)(eventData->GetRecordSize()) * eventData->GetBinWidth());
 
         for (int iRecord=0; iRecord<=fNumberOfRecords[header->GetAcquisitionMode()]; iRecord++)
         {
 
             try
             {
-                eventRecord = fMonarch->GetNextEvent();
+                monarchRecord = fMonarch->GetNextEvent();
             }
             catch(MonarchExceptions::EndOfFile& e)
             {
-                delete event;
+                delete eventData;
                 KTINFO(eggreadlog, "End of file reached before complete event was read: <" << e.what() << ">");
                 return NULL;
             }
 
-            event->SetChannelID(eventRecord->fCId, iRecord);
-            event->SetAcquisitionID(eventRecord->fAId, iRecord);
-            event->SetRecordID(eventRecord->fRId, iRecord);
-            event->SetTimeStamp(eventRecord->fTick, iRecord);
+            eventData->SetChannelID(monarchRecord->fCId, iRecord);
+            eventData->SetAcquisitionID(monarchRecord->fAId, iRecord);
+            eventData->SetRecordID(monarchRecord->fRId, iRecord);
+            eventData->SetTimeStamp(monarchRecord->fTick, iRecord);
 
-            event->SetRecord(new vector< DataType >(eventRecord->fDataPtr, eventRecord->fDataPtr+header->GetRecordSize()), iRecord);
+            eventData->SetRecord(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iRecord);
         }
 
-        return event;
+        return eventData;
     }
 
     bool KTEggReaderMonarch::CloseEgg()

@@ -35,7 +35,7 @@ namespace Katydid
             virtual ~KTEggReaderMonarch();
 
             KTEggHeader* BreakEgg(const std::string& filename);
-            KTEvent* HatchNextEvent(KTEggHeader* header);
+            KTTimeSeriesData* HatchNextEvent(KTEggHeader* header);
             bool CloseEgg();
 
         private:

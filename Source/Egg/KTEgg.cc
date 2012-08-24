@@ -53,7 +53,9 @@ namespace Katydid
             KTWARN(egglog, "Not prepared to hatch an event");
             return NULL;
         }
-        return fReader->HatchNextEvent(fHeader);
+        KTEvent* newEvent = new KTEvent();
+        newEvent->AddData(fReader->HatchNextEvent(fHeader));
+        return newEvent;
     }
 
     bool KTEgg::CloseEgg()
