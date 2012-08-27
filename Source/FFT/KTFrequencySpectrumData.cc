@@ -35,9 +35,8 @@ namespace Katydid
         }
     }
 
-    void KTFrequencySpectrumData::Accept(KTPublisher* publisher)
+    void KTFrequencySpectrumData::Accept(KTPublisher* publisher) const
     {
-        std::cout << "frequencyspectrumdata's accept" << std::endl;
         publisher->Write(this);
         return;
     }

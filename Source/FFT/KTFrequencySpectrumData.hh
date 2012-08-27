@@ -32,7 +32,7 @@ namespace Katydid
             void SetSpectrum(KTFrequencySpectrum* record, unsigned channelNum = 0);
             void SetNChannels(unsigned channels);
 
-            void Accept(KTPublisher* publisher);
+            void Accept(KTPublisher* publisher) const;
 
         protected:
             static std::string fName;

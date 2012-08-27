@@ -24,11 +24,11 @@ namespace Katydid
             KTPublisher();
             virtual ~KTPublisher();
 
-            virtual void Publish(KTWriteableData* data) = 0;
+            virtual void Publish(const KTWriteableData* data) = 0;
 
-            virtual void Write(KTWriteableData* data) = 0;
+            virtual void Write(const KTWriteableData* data) = 0;
 
-            virtual void Write(KTFrequencySpectrumData* data) = 0;
+            virtual void Write(const KTFrequencySpectrumData* data) = 0;
 
     };
 

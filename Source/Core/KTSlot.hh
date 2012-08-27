@@ -55,7 +55,7 @@ namespace Katydid
                         SignalWrapper* derivedSignalWrapper = dynamic_cast< SignalWrapper* >(internalSignalWrap);
                         if (derivedSignalWrapper == NULL)
                         {
-                            throw SignalException("Unable to cast from KTInternalSignalWrapper* to derived type");
+                            throw SignalException("In KTSpecifiedInternalsSlotWrapper::Connect:\nUnable to cast from KTInternalSignalWrapper* to derived type.");
                         }
                         if (groupNum >= 0)
                         {

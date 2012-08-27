@@ -24,7 +24,7 @@ namespace Katydid
             KTWriteableData();
             virtual ~KTWriteableData();
 
-            virtual void Accept(KTPublisher* publisher) = 0;
+            virtual void Accept(KTPublisher* publisher) const = 0;
     };
 
 } /* namespace Katydid */

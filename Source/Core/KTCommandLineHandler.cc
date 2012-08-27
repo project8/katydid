@@ -361,8 +361,7 @@ namespace Katydid
 
     void KTCommandLineHandler::PrintHelpMessageAndExit()
     {
-        KTINFO(utillog, "\nUsage: " << fExecutableName << " [config file] [options]\n\n" <<
-               "  config file: The relative or absolute path for the desired user configuration file\n" <<
+        KTINFO(utillog, "\nUsage: " << fExecutableName << " [options]\n\n" <<
                "  config file options can be modified using --address.of.option=\"value\"\n" <<
                fPrintHelpOptions);
 

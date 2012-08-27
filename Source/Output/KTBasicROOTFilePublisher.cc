@@ -22,7 +22,7 @@ namespace Katydid
 
     KTBasicROOTFilePublisher::KTBasicROOTFilePublisher() :
             KTPublisher(),
-            fFilename("output.root"),
+            fFilename("basic_output.root"),
             fFileFlag("recreate"),
             fFile(NULL)
     {
@@ -50,7 +50,7 @@ namespace Katydid
         }
 
         // Command-line settings
-        //SetTransformFlag(fCLHandler->GetCommandLineValue< string >("transform-flag", fTransformFlag));
+        //SetFilename(fCLHandler->GetCommandLineValue< string >("broot-output-file", fTransformFlag));
 
         return true;
     }
@@ -71,16 +71,15 @@ namespace Katydid
         return true;
     }
 
-    void KTBasicROOTFilePublisher::Publish(KTWriteableData* data)
+    void KTBasicROOTFilePublisher::Publish(const KTWriteableData* data)
     {
-        std::cout << "publisher's publish" << std::endl;
         data->Accept(this);
         return;
     }
 
-    void KTBasicROOTFilePublisher::Write(KTWriteableData* data)
+    void KTBasicROOTFilePublisher::Write(const KTWriteableData* data)
     {
-        std::cout << "basicrootfilepublisher's generic write" << std::endl;
+        KTWARN(publog, "Generic Write function called; no data written");
         return;
     }
 
@@ -89,18 +88,14 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTFilePublisher::Write(KTFrequencySpectrumData* data)
+    void KTBasicROOTFilePublisher::Write(const KTFrequencySpectrumData* data)
     {
-        std::cout << "basicrootfilepublisher's write for frequencyspectrumdata" << std::endl;
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;
         if (event != NULL) eventNumber = event->GetEventNumber();
         UInt_t nChannels = data->GetNChannels();
 
-        if (! OpenAndVerifyFile())
-        {
-            return;
-        }
+        if (! OpenAndVerifyFile()) return;
 
         for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
         {
@@ -111,10 +106,10 @@ namespace Katydid
                 conv << "histPS_" << eventNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                std::cout << "hist name: <" << histName << ">" << std::endl;
                 TH1D* powerSpectrum = CreatePowerSpectrumHistFromFreqSpect(histName, spectrum);
                 powerSpectrum->SetDirectory(fFile);
                 powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
         return;

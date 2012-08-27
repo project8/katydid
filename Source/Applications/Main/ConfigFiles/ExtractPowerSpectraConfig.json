@@ -1,8 +1,6 @@
 {
     "extract-power-spectra":
     {
-        "events-per-average": 1,
-
         "egg-processor":
         {
             "input-file": "/path/to/file.egg",

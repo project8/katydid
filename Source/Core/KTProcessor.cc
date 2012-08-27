@@ -9,6 +9,10 @@
 
 #include <boost/foreach.hpp>
 
+#include <string>
+
+using std::string;
+
 namespace Katydid
 {
     ProcessorException::ProcessorException (std::string const& why)
@@ -46,8 +50,10 @@ namespace Katydid
         }
         catch (std::exception& e)
         {
-            throw e;
+            string errorMsg = string("Exception caught in KTProcessor::ConnectASlot; signal: ") + signalName + string(", slot: ") + slotName + string("\n") + e.what();
+            throw std::logic_error(errorMsg);
         }
+
         return;
     }
 
@@ -56,7 +62,17 @@ namespace Katydid
         KTSignalWrapper* signal = processor->GetSignal(signalName);
         KTSlotWrapper* slot = GetSlot(slotName);
 
-        ConnectSignalToSlot(signal, slot, groupNum);
+        try
+        {
+            ConnectSignalToSlot(signal, slot, groupNum);
+        }
+        catch (std::exception& e)
+        {
+            string errorMsg = string("Exception caught in KTProcessor::ConnectASignal; signal: ") +
+                    signalName + string(", slot: ") + slotName + string("\n") + e.what() + string("\n") +
+                    string("Check that the signatures of the signal and slot match exactly.");
+            throw std::logic_error(errorMsg);
+        }
 
         return;
     }

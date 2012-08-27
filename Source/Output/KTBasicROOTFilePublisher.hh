@@ -55,15 +55,15 @@ namespace Katydid
             //************************
         public:
 
-            void Publish(KTWriteableData* data);
+            void Publish(const KTWriteableData* data);
 
-            void Write(KTWriteableData* data);
+            void Write(const KTWriteableData* data);
 
             //************************
             // Frequency Spectrum Data
             //************************
         public:
-            void Write(KTFrequencySpectrumData* data);
+            void Write(const KTFrequencySpectrumData* data);
 
     };
 

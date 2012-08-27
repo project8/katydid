@@ -11,7 +11,10 @@
 #include "KTFFTTypes.hh"
 #include "complexpolar.hh"
 
+#include <iostream>
+
 using namespace Katydid;
+using namespace std;
 
 int main()
 {
@@ -50,6 +53,8 @@ int main()
     // Clean up
     delete data;
     delete publisher;
+
+    cout << "Test complete; see histograms in test_publisher.root" << endl;
 
     return 0;
 
