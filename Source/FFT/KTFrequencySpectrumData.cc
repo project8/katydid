@@ -7,6 +7,10 @@
 
 #include "KTFrequencySpectrumData.hh"
 
+#include "KTPublisher.hh"
+
+#include <typeinfo>
+
 namespace Katydid
 {
     std::string KTFrequencySpectrumData::fName("FrequencySpectrum");
@@ -17,7 +21,7 @@ namespace Katydid
     }
 
     KTFrequencySpectrumData::KTFrequencySpectrumData(unsigned nChannels) :
-            KTData(),
+            KTWriteableData(),
             fSpectra(nChannels)
     {
     }
@@ -31,4 +35,13 @@ namespace Katydid
         }
     }
 
+    void KTFrequencySpectrumData::Accept(KTPublisher* publisher)
+    {
+        std::cout << "frequencyspectrumdata's accept" << std::endl;
+        publisher->Write(this);
+        return;
+    }
+
+
 } /* namespace Katydid */
+

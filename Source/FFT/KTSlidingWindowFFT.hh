@@ -77,7 +77,7 @@ namespace Katydid
             virtual Bool_t TransformData(const KTTimeSeriesData* tsData);
 
             template< typename XDataType >
-            void Transform(const std::vector< XDataType >& data, vector< KTPowerSpectrum* >* powerSpectra);
+            void Transform(const std::vector< XDataType >* data, vector< KTPowerSpectrum* >* powerSpectra);
 
             void AddTransformResult(std::vector< KTPowerSpectrum* >* newResults);
 
@@ -154,17 +154,17 @@ namespace Katydid
 
 
     template< typename XDataType >
-    void KTSlidingWindowFFT::Transform(const std::vector< XDataType >& data, vector< KTPowerSpectrum* >* powerSpectra)
+    void KTSlidingWindowFFT::Transform(const std::vector< XDataType >* data, vector< KTPowerSpectrum* >* powerSpectra)
     {
-       if (fWindowFunction->GetSize() < data.size())
+       if (fWindowFunction->GetSize() < data->size())
        {
            Int_t windowShift = fWindowFunction->GetSize() - GetEffectiveOverlap();
            UInt_t iWindow = 0;
-           for (unsigned int windowStart=0; windowStart + fWindowFunction->GetSize() <= data.size(); windowStart += windowShift)
+           for (unsigned int windowStart=0; windowStart + fWindowFunction->GetSize() <= data->size(); windowStart += windowShift)
            {
                for (unsigned int iPoint=windowStart; iPoint<windowStart+fWindowFunction->GetSize(); iPoint++)
                {
-                   fTransform->SetPoint(iPoint-windowStart, Double_t(data[iPoint]) * fWindowFunction->GetWeight(iPoint-windowStart));
+                   fTransform->SetPoint(iPoint-windowStart, Double_t((*data)[iPoint]) * fWindowFunction->GetWeight(iPoint-windowStart));
                }
                fTransform->Transform();
                powerSpectra->push_back(ExtractPowerSpectrum());
@@ -176,7 +176,7 @@ namespace Katydid
            return;
        }
 
-       KTERROR(fftlog_sw, "Window size is larger than time data: " << fWindowFunction->GetSize() << " > " << data.size() << "\n" <<
+       KTERROR(fftlog_sw, "Window size is larger than time data: " << fWindowFunction->GetSize() << " > " << data->size() << "\n" <<
               "No transform was performed!");
        throw(std::length_error("Window size is larger than time data"));
        return;

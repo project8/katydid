@@ -7,28 +7,29 @@
  */
 
 #include "KTApplication.hh"
-#include "KTCommandLineOption.hh"
+#include "KTBasicROOTFilePublisher.hh"
+//#include "KTCommandLineOption.hh"
 #include "KTEggProcessor.hh"
-#include "KTEvent.hh"
+//#include "KTEvent.hh"
 #include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
-#include "KTFrequencySpectrumData.hh"
-#include "KTFFTTypes.hh"
+//#include "KTFrequencySpectrumData.hh"
+//#include "KTFFTTypes.hh"
 
-#include "TFile.h"
-#include "TH1D.h"
+//#include "TFile.h"
+//#include "TH1D.h"
 
-#include <cmath>
-#include <cstdlib>
+//#include <cmath>
+//#include <cstdlib>
 #include <string>
-#include <unistd.h>
-#include <vector>
+//#include <unistd.h>
+//#include <vector>
 
 using namespace std;
 using namespace Katydid;
 
 KTLOGGER(extpslog, "katydid.extractps");
-
+/*
 class PowerSpectraContainer : public KTProcessor
 {
     public:
@@ -40,9 +41,9 @@ class PowerSpectraContainer : public KTProcessor
     private:
         vector< TH1D* > fPowerSpectra;
 };
-
-static KTCommandLineOption< string > sOutputFNameCLO("Extract Power Spectra", "Output filename (not including .root extension)", "output-file", 'o');
-static KTCommandLineOption< unsigned > sNAvgCLO("Extract Power Spectra", "Number of events to average together", "events-per-average", 'a');
+*/
+//static KTCommandLineOption< string > sOutputFNameCLO("Extract Power Spectra", "Output filename (not including .root extension)", "output-file", 'o');
+//static KTCommandLineOption< unsigned > sNAvgCLO("Extract Power Spectra", "Number of events to average together", "events-per-average", 'a');
 
 
 int main(int argc, char** argv)
@@ -53,33 +54,35 @@ int main(int argc, char** argv)
     string appConfigName("extract-power-spectra");
 
     // Variables to be configured either by the config file or comamnd line
-    string outputFileNameBase("power_spectra");
-    UInt_t eventsPerAverage = 1;
+    //string outputFileNameBase("power_spectra");
+    //UInt_t eventsPerAverage = 1;
 
     // Get the application-specific configuration file options
-    KTPStoreNode* node = app->GetNode(appConfigName);
-    if (node != NULL)
-    {
-        outputFileNameBase = node->GetData< string >("output-file", outputFileNameBase);
-        eventsPerAverage = node->GetData< UInt_t >("events-per-average", eventsPerAverage);
-    }
+    //KTPStoreNode* node = app->GetNode(appConfigName);
+    //if (node != NULL)
+    //{
+        //outputFileNameBase = node->GetData< string >("output-file", outputFileNameBase);
+        //eventsPerAverage = node->GetData< UInt_t >("events-per-average", eventsPerAverage);
+    //}
 
     // Get the application-specific command line options
-    outputFileNameBase = app->GetCommandLineHandler()->GetCommandLineValue< string >("output-file", outputFileNameBase);
-    eventsPerAverage = app->GetCommandLineHandler()->GetCommandLineValue< unsigned >("events-per-average", eventsPerAverage);
+    //outputFileNameBase = app->GetCommandLineHandler()->GetCommandLineValue< string >("output-file", outputFileNameBase);
+    //eventsPerAverage = app->GetCommandLineHandler()->GetCommandLineValue< unsigned >("events-per-average", eventsPerAverage);
 
-    string outputFileNameRoot = outputFileNameBase + string(".root");
+    //string outputFileNameRoot = outputFileNameBase + string(".root");
 
 
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
     KTSimpleFFT procFFT;
-    PowerSpectraContainer powerSpectra;
+    KTBasicROOTFilePublisher procPub;
+    //PowerSpectraContainer powerSpectra;
 
 
     // Configure the processors
     app->Configure(&procEgg, appConfigName);
     app->Configure(&procFFT, appConfigName);
+    app->Configure(&procPub, appConfigName);
 
     try
     {
@@ -90,7 +93,8 @@ int main(int argc, char** argv)
         procEgg.ConnectASlot("header", &procFFT, "header");
 
         // this will get the output histogram when an FFT is complete
-        procFFT.ConnectASlot("fft", &powerSpectra, "get_ps");
+        //procFFT.ConnectASlot("fft", &powerSpectra, "get_ps");
+        procFFT.ConnectASlot("fft", &procPub, "write-data");
     }
     catch (std::exception& e)
     {
@@ -104,7 +108,7 @@ int main(int argc, char** argv)
     // Process the egg file
     Bool_t success = procEgg.ProcessEgg();
 
-
+    /*
 
     // Get the histograms out and save them to a ROOT file
     vector< TH1D* > powerSpectrumHistograms = powerSpectra.GetPowerSpectra();
@@ -120,6 +124,7 @@ int main(int argc, char** argv)
     }
     outFile->Close();
     delete outFile;
+    */
 
     if (! success) return -1;
     return 0;
@@ -129,7 +134,7 @@ int main(int argc, char** argv)
 //**************************************
 // Definitions for PowerSpectraContainer
 //**************************************
-
+/*
 PowerSpectraContainer::PowerSpectraContainer() :
         KTProcessor(),
         fPowerSpectra()
@@ -179,3 +184,5 @@ void PowerSpectraContainer::ReleasePowerSpectra()
     fPowerSpectra.clear();
     return;
 }
+
+*/

@@ -1,7 +1,6 @@
 {
     "extract-power-spectra":
     {
-        "output-file": "power_spectra",
         "events-per-average": 1,
 
         "egg-processor":
@@ -13,6 +12,12 @@
         "simple-fft":
         {
             "transform-flag": "ES"
-        }    
+        },
+        
+        "basic-root-publisher":
+        {
+            "output-file": "/path/to/file.root",
+            "file-flag": "recreate"
+        }
     }
 }

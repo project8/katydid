@@ -16,7 +16,6 @@
  *       -d: Include this flag to draw waterfall plots
  */
 
-#include "KTArrayUC.hh"
 #include "KTEgg.hh"
 #include "KTEvent.hh"
 #include "KTHannWindow.hh"

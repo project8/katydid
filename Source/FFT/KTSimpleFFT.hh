@@ -33,6 +33,7 @@ namespace Katydid
     class KTPStoreNode;
     class KTTimeSeriesData;
     class KTFrequencySpectrumData;
+    class KTWriteableData;
 
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
@@ -61,7 +62,7 @@ namespace Katydid
     class KTSimpleFFT : public KTFFT, public KTProcessor, public KTConfigurable
     {
         public:
-            typedef KTSignal< void (const KTFrequencySpectrumData*) >::signal FFTSignal;
+            typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
 
         public:
             KTSimpleFFT();
@@ -77,7 +78,7 @@ namespace Katydid
             virtual Bool_t TransformData(const KTTimeSeriesData* tsData);
 
             template< typename XDataType >
-            KTFrequencySpectrum* Transform(const std::vector< XDataType >& data);
+            KTFrequencySpectrum* Transform(const std::vector< XDataType >* data);
 
             void AddTransformResult(KTComplexVector* result);
 
@@ -141,9 +142,9 @@ namespace Katydid
 
 
     template< typename XDataType >
-    KTFrequencySpectrum* KTSimpleFFT::Transform(const std::vector< XDataType >& data)
+    KTFrequencySpectrum* KTSimpleFFT::Transform(const std::vector< XDataType >* data)
     {
-        unsigned int nBins = (unsigned int)data.size();
+        unsigned int nBins = (unsigned int)data->size();
         if (nBins != (unsigned int)fTransform->GetSize())
         {
             KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -153,7 +154,7 @@ namespace Katydid
 
         for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
         {
-            fTransform->SetPoint(iPoint, Double_t(data[iPoint]));
+            fTransform->SetPoint(iPoint, Double_t((*data)[iPoint]));
         }
 
         fTransform->Transform();

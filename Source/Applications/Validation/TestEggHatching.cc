@@ -101,7 +101,7 @@ int main(int argc, char** argv)
     KTINFO(testegg, "This event contains " << nRecords << " records");
     if (nRecords >= 1)
     {
-        KTINFO(testegg, "Record 0 has " << tsData->GetRecord(0).size() << " bins");
+        KTINFO(testegg, "Record 0 has " << tsData->GetRecord(0)->size() << " bins");
         KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetRecordAt< double >(0, 0));
     }
 

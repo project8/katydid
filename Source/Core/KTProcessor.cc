@@ -56,14 +56,8 @@ namespace Katydid
         KTSignalWrapper* signal = processor->GetSignal(signalName);
         KTSlotWrapper* slot = GetSlot(slotName);
 
-        try
-        {
-            ConnectSignalToSlot(signal, slot, groupNum);
-        }
-        catch (std::exception& e)
-        {
-            throw e;
-        }
+        ConnectSignalToSlot(signal, slot, groupNum);
+
         return;
     }
 
@@ -78,14 +72,7 @@ namespace Katydid
             throw ProcessorException("Slot pointer was NULL");
         }
 
-        try
-        {
-            slot->SetConnection(signal, groupNum);
-        }
-        catch (std::exception& e)
-        {
-            throw e;
-        }
+        slot->SetConnection(signal, groupNum);
 
         return;
     }

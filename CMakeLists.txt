@@ -112,6 +112,7 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Waterfall
+    ${PROJECT_SOURCE_DIR}/Source/Output
 )
 
 add_subdirectory (Source/Egg/Monarch)
@@ -122,6 +123,7 @@ if (ROOT_FOUND)
     add_subdirectory (Source/FFT)
     add_subdirectory (Source/Analysis)
     add_subdirectory (Source/Waterfall)
+    add_subdirectory (Source/Output)
 endif (ROOT_FOUND)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)

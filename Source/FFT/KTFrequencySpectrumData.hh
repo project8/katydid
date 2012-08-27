@@ -8,7 +8,7 @@
 #ifndef KTFREQUENCYSPECTRUMDATA_HH_
 #define KTFREQUENCYSPECTRUMDATA_HH_
 
-#include "KTData.hh"
+#include "KTWriteableData.hh"
 
 #include "KTFFTTypes.hh"
 
@@ -17,7 +17,7 @@
 namespace Katydid
 {
 
-    class KTFrequencySpectrumData : public KTData
+    class KTFrequencySpectrumData : public KTWriteableData
     {
         public:
             KTFrequencySpectrumData(unsigned nChannels=1);
@@ -26,11 +26,13 @@ namespace Katydid
             const std::string& GetName() const;
             static const std::string& StaticGetName();
 
-            const KTFrequencySpectrum& GetSpectrum(unsigned channelNum = 0) const;
+            const KTFrequencySpectrum* GetSpectrum(unsigned channelNum = 0) const;
             unsigned GetNChannels() const;
 
             void SetSpectrum(KTFrequencySpectrum* record, unsigned channelNum = 0);
             void SetNChannels(unsigned channels);
+
+            void Accept(KTPublisher* publisher);
 
         protected:
             static std::string fName;
@@ -44,9 +46,9 @@ namespace Katydid
         return fName;
     }
 
-    inline const KTFrequencySpectrum& KTFrequencySpectrumData::GetSpectrum(unsigned channelNum) const
+    inline const KTFrequencySpectrum* KTFrequencySpectrumData::GetSpectrum(unsigned channelNum) const
     {
-        return (*fSpectra[channelNum]);
+        return fSpectra[channelNum];
     }
 
     inline unsigned KTFrequencySpectrumData::GetNChannels() const
@@ -66,6 +68,6 @@ namespace Katydid
         return;
     }
 
-
 } /* namespace Katydid */
+
 #endif /* KTFREQUENCYSPECTRUMDATA_HH_ */

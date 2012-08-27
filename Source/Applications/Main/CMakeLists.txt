@@ -27,7 +27,7 @@ if (ROOT_FOUND)
     target_link_libraries (SimpleElectronHunt2 KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis)
     
     add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
-    target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidCore KatydidEgg KatydidFFT)
+    target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput)
     
     install (TARGETS SimpleElectronHunt
                      SimpleElectronHunt2

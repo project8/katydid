@@ -27,6 +27,7 @@ namespace Katydid
 
             /// Returns a pointer to the event from which this data object originates
             virtual KTEvent* GetEvent() const;
+            void SetEvent(KTEvent* event);
 
         protected:
             KTEvent* fEvent; // not owned by this object
@@ -35,6 +36,12 @@ namespace Katydid
     inline KTEvent* KTData::GetEvent() const
     {
         return fEvent;
+    }
+
+    inline void KTData::SetEvent(KTEvent* event)
+    {
+        fEvent = event;
+        return;
     }
 
 } /* namespace Katydid */
