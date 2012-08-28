@@ -1,11 +1,11 @@
 /*
- * KTFrequencySpectrumData.cc
+ * KTCorrelationData.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTFrequencySpectrumData.hh"
+#include "KTCorrelationData.hh"
 
 #include "KTPublisher.hh"
 
@@ -13,29 +13,29 @@
 
 namespace Katydid
 {
-    std::string KTFrequencySpectrumData::fName("FrequencySpectrum");
+    std::string KTCorrelationData::fName("Correlation");
 
-    const std::string& KTFrequencySpectrumData::StaticGetName()
+    const std::string& KTCorrelationData::StaticGetName()
     {
         return fName;
     }
 
-    KTFrequencySpectrumData::KTFrequencySpectrumData(unsigned nChannels) :
+    KTCorrelationData::KTCorrelationData(UInt_t nPairs) :
             KTWriteableData(),
-            fSpectra(nChannels)
+            fData(nPairs)
     {
     }
 
-    KTFrequencySpectrumData::~KTFrequencySpectrumData()
+    KTCorrelationData::~KTCorrelationData()
     {
-        while (! fSpectra.empty())
+        while (! fData.empty())
         {
-            delete fSpectra.back();
-            fSpectra.pop_back();
+            delete fData.back().fCorrelation;
+            fData.pop_back();
         }
     }
 
-    void KTFrequencySpectrumData::Accept(KTPublisher* publisher) const
+    void KTCorrelationData::Accept(KTPublisher* publisher) const
     {
         publisher->Write(this);
         return;

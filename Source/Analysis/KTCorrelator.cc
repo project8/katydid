@@ -8,15 +8,21 @@
 #include "KTCorrelator.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTFFTTypes.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTLogger.hh"
+
+using std::pair;
+using std::vector;
 
 namespace Katydid
 {
     KTLOGGER(corrlog, "katydid.analysis");
 
-    KTCorrelator::KTCorrelator()
+    KTCorrelator::KTCorrelator() :
+            KTProcessor(),
+            KTCorrelator(),
+            fPairs(),
+            fCorrSignal()
     {
     }
 
@@ -24,7 +30,12 @@ namespace Katydid
     {
     }
 
-    Bool_t KTCorrelator::Correlate(const KTFrequencySpectrumData* data, KTCorrelationPair pair)
+    Bool_t KTCorrelator::Configure(const KTPStoreNode* node)
+    {
+        return true;
+    }
+
+    Bool_t KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair)
     {
         UInt_t firstChannel = pair.first;
         UInt_t secondChannel = pair.second;
@@ -37,7 +48,7 @@ namespace Katydid
             KTCorrelationData* newData = new KTCorrelationData();
             newData->SetCorrelation(result, firstChannel, secondChannel, 0);
             data->GetEvent()->AddData(newData);
-            fCorrelationSignal(newData);
+            fCorrSignal(newData);
 
             return true;
         }
@@ -47,13 +58,11 @@ namespace Katydid
 
     }
 
-    Bool_t KTCorrelator::Correlate(const KTFrequencySpectrumData* data, std::vector< KTCorrelationPair > pairs)
+    Bool_t KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs)
     {
-        typedef std::vector< KTCorrelationPair > pairVector;
-
         KTCorrelationData* newData = new KTCorrelationData();
 
-        for (pairVector::const_iterator iter = pairs.begin(); iter != pairs.end(); iter++)
+        for (PairVector::const_iterator iter = pairs.begin(); iter != pairs.end(); iter++)
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
@@ -69,16 +78,32 @@ namespace Katydid
         }
 
         data->GetEvent()->AddData(newData);
-        fCorrelationSignal(newData);
+        fCorrSignal(newData);
 
         KTDEBUG(corrlog, "Correlations complete");
-        return result;
+        return true;
     }
 
     KTFrequencySpectrum* KTCorrelator::DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum)
     {
+        // temporary
+        return new KTFrequencySpectrum();
+    }
+
+    void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumData* tsData)
+    {
+        if (! Correlate(tsData, fPairs))
+        {
+            KTWARN(corrlog, "Correlation failed");
+        }
+        return;
+    }
+    /*
+    void KTCorrelator::ProcessEvent(const KTEvent* event)
+    {
 
     }
+    */
 
 
 } /* namespace Katydid */
