@@ -8,6 +8,9 @@
 
 #include "KTFFTTypes.hh"
 
+#include "KTFrequencySpectrum.hh"
+
+
 namespace Katydid
 {
 

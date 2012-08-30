@@ -14,9 +14,10 @@
 
 namespace Katydid
 {
-    class KTPowerSpectrum;
+    class KTFrequencySpectrum;
     class KTPStoreNode;
-    class KTSlidingWindowFFT;
+    class KTSlidingWindowFSData;
+    class KTPowerSpectrum;
 
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
@@ -29,13 +30,13 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            void PrepareNormalization(KTPhysicalArray< 1, Double_t >* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
+            void PrepareNormalization(KTFrequencySpectrum* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
 
-            void ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft);
-            void ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum);
+            void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
+            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
 
         private:
-            KTPhysicalArray< 1, Double_t >* fNormalization;
+            KTFrequencySpectrum* fNormalization;
 
     };
 

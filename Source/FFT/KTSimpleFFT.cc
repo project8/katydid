@@ -11,11 +11,11 @@
 #include "KTEvent.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTTimeSeriesData.hh"
-#include "KTPowerSpectrum.hh"
-#include "KTPhysicalArray.hh"
+//#include "KTPowerSpectrum.hh"
+//#include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
 
-#include "TH1D.h"
+//#include "TH1D.h"
 
 using std::string;
 using std::vector;
@@ -24,11 +24,11 @@ namespace Katydid
 {
 
     KTSimpleFFT::KTSimpleFFT() :
-            KTFFT(),
+            //KTFFT(),
             KTProcessor(),
             KTConfigurable(),
             fTransform(new TFFTRealComplex()),
-            fTransformResults(),
+            //fTransformResults(),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
             fFreqBinWidth(1.),
@@ -45,11 +45,11 @@ namespace Katydid
     }
 
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
-            KTFFT(),
+            //KTFFT(),
             KTProcessor(),
             KTConfigurable(),
             fTransform(new TFFTRealComplex((Int_t)timeSize, kFALSE)),
-            fTransformResults(),
+            //fTransformResults(),
             fTransformFlag(string("")),
             fIsInitialized(kFALSE),
             fFreqBinWidth(1.),
@@ -62,15 +62,16 @@ namespace Katydid
         RegisterSignal("fft", &fFFTSignal);
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader);
+        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData);
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent);
     }
 
     KTSimpleFFT::~KTSimpleFFT()
     {
         delete fTransform;
-        ClearTransformResults();
+        //ClearTransformResults();
     }
-
+    /*
     void KTSimpleFFT::ClearTransformResults()
     {
         while (! fTransformResults.empty())
@@ -80,7 +81,7 @@ namespace Katydid
         }
         return;
     }
-
+    */
     Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
@@ -102,7 +103,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
+    KTFrequencySpectrumData* KTSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
     {
         if (tsData->GetRecordSize() != GetTimeSize())
         {
@@ -114,7 +115,7 @@ namespace Katydid
         {
             KTERROR(fftlog_simp, "FFT must be initialized before the transform is performed\n"
                     << "   Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
-            return kFALSE;
+            return NULL;
         }
 
         fFreqBinWidth = tsData->GetSampleRate() / (Double_t)tsData->GetRecordSize();
@@ -129,26 +130,27 @@ namespace Katydid
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_simp, "One of the channels did not transform correctly.");
-                return kFALSE;
+                delete newData;
+                return NULL;
             }
             newData->SetSpectrum(nextResult, iChannel);
         }
 
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
-        tsData->GetEvent()->AddData(newData);
+        //tsData->GetEvent()->AddData(newData);
         fFFTSignal(newData);
 
-        return kTRUE;
+        return newData;
     }
-
+    /*
     void KTSimpleFFT::AddTransformResult(KTComplexVector* result)
     {
         fTransformResults.push_back(result);
         return;
     }
-
-    KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult()
+    */
+    KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult() const
     {
         UInt_t freqSize = this->GetFrequencySize();
         Double_t normalization = 1. / (Double_t)GetTimeSize();
@@ -164,7 +166,7 @@ namespace Katydid
 
         return newSpect;
     }
-
+    /*
     TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram(const string& name, UInt_t channelNum) const
     {
         KTPowerSpectrum* ps = this->CreatePowerSpectrum(channelNum);
@@ -193,20 +195,37 @@ namespace Katydid
         powerSpec->SetBinWidth(fFreqBinWidth);
         return powerSpec;
     }
+    */
 
     void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
     {
         SetTimeSize(header->GetRecordSize());
         InitializeFFT();
+        fFreqBinWidth = header->GetAcquisitionRate() / (Double_t)header->GetRecordSize();
+        fFreqMin = -0.5 * fFreqBinWidth;
+        fFreqMax = fFreqBinWidth * ((Double_t)header->GetRecordSize()-0.5);
         return;
     }
 
-    void KTSimpleFFT::ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData)
+    void KTSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
-        TransformData(tsData);
+        KTFrequencySpectrumData* newData = TransformData(tsData);
+        tsData->GetEvent()->AddData(newData);
         return;
     }
 
+    void KTSimpleFFT::ProcessEvent(KTEvent* event)
+    {
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+        {
+            KTWARN(fftlog_simp, "No time series data was available in the event");
+            return;
+        }
+        KTFrequencySpectrumData* newData = TransformData(tsData);
+        event->AddData(newData);
+        return;
+    }
 
 
 } /* namespace Katydid */

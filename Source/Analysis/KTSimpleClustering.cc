@@ -9,9 +9,10 @@
 
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
-#include "KTPowerSpectrum.hh"
+#include "KTFrequencySpectrum.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlidingWindowFFT.hh"
+#include "KTSlidingWindowFSData.hh"
 
 #include "TCanvas.h"
 #include "TH1.h"
@@ -44,7 +45,7 @@ namespace Katydid
     {
         fConfigName = "sliding-window-fft";
 
-        RegisterSlot("power_spect", this, &KTSimpleClustering::ProcessPowerSpectrum);
+        RegisterSlot("freq_spect", this, &KTSimpleClustering::ProcessFrequencySpectrum);
     }
 
     KTSimpleClustering::~KTSimpleClustering()
@@ -70,32 +71,33 @@ namespace Katydid
     }
 
 
-    void KTSimpleClustering::ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft)
+    void KTSimpleClustering::ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData)
     {
-        UInt_t nPowerSpectra = fft->GetNPowerSpectra();
+        KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = swFSData->GetSpectra(0);
+        UInt_t nPowerSpectra = spectra->size();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
         {
-            ProcessPowerSpectrum(iPS, fft->GetPowerSpectrum(iPS));
+            ProcessFrequencySpectrum(iPS, (*spectra)[iPS]);
         }
 
         return;
     }
 
-    void KTSimpleClustering::ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum)
+    void KTSimpleClustering::ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* freqSpectrum)
     {
         // Look for the highest-peaked bins in this power spectrum
 
         // this will hold the bin numbers that are above the threshold
         set< Int_t > peakBins;
 
-        Double_t* dataArray = powerSpectrum->GetMagnitude().GetMatrixArray();
-        UInt_t nBins = (UInt_t)powerSpectrum->GetSize();
+        KTFrequencySpectrum::array_type dataArray = freqSpectrum->data();
+        UInt_t nBins = (UInt_t)freqSpectrum->size();
 
-        KTMaskedArray< Double_t*, Double_t >* localBinCuts = fBinCuts;
+        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* localBinCuts = fBinCuts;
         if (nBins != fBinCuts->GetArraySize())
         {
             std::cout << "Warning from KTSimpleClustering::ProcessPowerSpectrum: size from power spectrum does not match bin cut array size" << std::endl;
-            localBinCuts = new KTMaskedArray< Double_t*, Double_t >(dataArray, nBins);
+            localBinCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(dataArray, nBins);
         }
         else
         {
@@ -103,7 +105,14 @@ namespace Katydid
         }
         UInt_t nCutBins = localBinCuts->size();
 
-        Double_t mean = TMath::Mean(nBins-fFirstBinToUse, dataArray+fFirstBinToUse);
+        //Double_t mean = TMath::Mean(nBins-fFirstBinToUse, dataArray+fFirstBinToUse);
+        Double_t mean = 0., value = 0.;
+        const UInt_t firstCutBinToUse = localBinCuts->FindCutPositionOrNext(fFirstBinToUse);
+        for (UInt_t iCutBin=firstCutBinToUse; iCutBin<nCutBins; iCutBin++)
+        {
+            value = (*localBinCuts)[iCutBin].abs();
+            mean += value * value;
+        }
         //cout << "   Mean: " << mean << endl;
 
         Double_t threshold = fThresholdMult * mean;
@@ -123,8 +132,8 @@ namespace Katydid
         */
 
         // search for bins above the threshold
-        unsigned int firstCutBinToUse = localBinCuts->FindCutPositionOrNext(fFirstBinToUse);
-        for (unsigned int iCutBin=firstCutBinToUse; iCutBin<nCutBins; iCutBin++)
+        //UInt_t firstCutBinToUse = localBinCuts->FindCutPositionOrNext(fFirstBinToUse);
+        for (UInt_t iCutBin=firstCutBinToUse; iCutBin<nCutBins; iCutBin++)
         {
             /*
             if (dataArray[iBin] > threshold)
@@ -132,7 +141,8 @@ namespace Katydid
                 peakBins.insert(iBin);
             }
             */
-            if ((*localBinCuts)[iCutBin] > threshold)
+            value = (*localBinCuts)[iCutBin].abs();
+            if (value*value > threshold)
             {
                 peakBins.insert(localBinCuts->GetArrayPosition(iCutBin));
             }
@@ -144,7 +154,7 @@ namespace Katydid
         //if (psNum < 5)
         {
             TCanvas *cSCP = new TCanvas("cSCP", "cSCP");
-            TH1D* histPS = powerSpectrum->CreateMagnitudeHistogram("ps_scp");
+            TH1D* histPS = freqSpectrum->CreatePowerHistogram("ps_scp");
             cSCP->SetLogy(1);
             char projnum[30];
             sprintf(projnum, "%s%i", "fft #", psNum);

@@ -7,6 +7,73 @@
 
 #include "KTPowerSpectrum.hh"
 
+#ifdef ROOT_FOUND
+#include "TH1.h"
+#endif
+
+namespace Katydid
+{
+
+    KTPowerSpectrum::KTPowerSpectrum() :
+            KTPhysicalArray< 1, Double_t >()
+    {
+    }
+
+    KTPowerSpectrum::KTPowerSpectrum(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
+            KTPhysicalArray< 1, Double_t >(nBins, rangeMin, rangeMax)
+    {
+    }
+    KTPowerSpectrum::KTPowerSpectrum(const KTPowerSpectrum& orig) :
+            KTPhysicalArray< 1, Double_t >(orig)
+    {
+    }
+
+    KTPowerSpectrum::~KTPowerSpectrum()
+    {
+    }
+
+#ifdef ROOT_FOUND
+     TH1D* KTPowerSpectrum::CreatePowerHistogram(const std::string& name) const
+    {
+        UInt_t nBins = GetNBins();
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        Double_t value;
+        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        {
+            hist->SetBinContent((Int_t)iBin+1, (*this)[iBin]);
+        }
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Power");
+        return hist;
+    }
+
+    TH1D* KTPowerSpectrum::CreatePowerDistributionHistogram(const std::string& name) const
+    {
+        Double_t tMaxMag = -1.;
+        Double_t tMinMag = 1.e9;
+        UInt_t nBins = GetNBins();
+        Double_t value;
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        {
+            value = (*this)[iBin];
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        {
+            hist->Fill((*this)[iBin]);
+        }
+        hist->SetXTitle("Power");
+        return hist;
+    }
+
+#endif
+
+} /* namespace Katydid */
+
+/*
 #include "KTPhysicalArray.hh"
 
 #include <cmath>
@@ -159,4 +226,4 @@ namespace Katydid
 
 
 
-} /* namespace Katydid */
+}*/ /* namespace Katydid */

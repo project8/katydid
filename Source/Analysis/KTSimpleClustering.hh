@@ -12,6 +12,7 @@
 #include "KTProcessor.hh"
 #include "KTConfigurable.hh"
 
+#include "KTFrequencySpectrum.hh"
 #include "KTMaskedArray.hh"
 
 #include <list>
@@ -19,7 +20,7 @@
 
 namespace Katydid
 {
-    class KTPowerSpectrum;
+    class KTSlidingWindowFSData;
     class KTPStoreNode;
     class KTSlidingWindowFFT;
 
@@ -37,18 +38,18 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            void ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft);
-            void ProcessPowerSpectrum(UInt_t psNum, KTPowerSpectrum* powerSpectrum);
+            void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
+            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
 
             void SetEventPeakBinsList(epbList* eventPeakBinsList); /// does NOT take ownership of eventPeakBinsList
-            void SetBinCuts(KTMaskedArray< Double_t*, Double_t >* binCuts); /// takes ownership of binCuts
+            void SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
 
         private:
             epbList* fEventPeakBins;
             Double_t fThresholdMult;
 
-            KTMaskedArray< Double_t*, Double_t >* fBinCuts;
+            KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* fBinCuts;
 
             UInt_t fMinimumGroupSize;
 
@@ -68,7 +69,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTSimpleClustering::SetBinCuts(KTMaskedArray< Double_t*, Double_t >* binCuts)
+    inline void KTSimpleClustering::SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts)
     {
         delete fBinCuts;
         fBinCuts = binCuts;

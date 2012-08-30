@@ -8,13 +8,37 @@
 #ifndef KTPOWERSPECTRUM_HH_
 #define KTPOWERSPECTRUM_HH_
 
-#include "KTComplexVector.hh"
+//#include "KTComplexVector.hh"
+
+#include "KTPhysicalArray.hh"
+
+#include "Rtypes.h"
 
 #include <string>
+
+class TH1D;
 
 namespace Katydid
 {
 
+    class KTPowerSpectrum : public KTPhysicalArray< 1, Double_t >
+    {
+        public:
+            KTPowerSpectrum();
+            KTPowerSpectrum(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            KTPowerSpectrum(const KTPowerSpectrum& orig);
+            virtual ~KTPowerSpectrum();
+
+#ifdef ROOT_FOUND
+        public:
+            virtual TH1D* CreatePowerHistogram(const std::string& name = "hPowerSpectrum") const;
+
+            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hPowerSpectrumPower") const;
+#endif
+    };
+
+
+    /*
     class KTPowerSpectrum : public KTComplexVector
     {
         public:
@@ -77,6 +101,7 @@ namespace Katydid
         fBinWidth = bw;
         return;
     }
+    */
 
 } /* namespace Katydid */
 #endif /* KTPOWERSPECTRUM_HH_ */

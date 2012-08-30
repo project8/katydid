@@ -7,13 +7,14 @@
 
 #include "KTFrequencySpectrumData.hh"
 
+#include "KTFrequencySpectrum.hh"
 #include "KTPublisher.hh"
 
 #include <typeinfo>
 
 namespace Katydid
 {
-    std::string KTFrequencySpectrumData::fName("FrequencySpectrum");
+    std::string KTFrequencySpectrumData::fName("frequency-spectrum");
 
     const std::string& KTFrequencySpectrumData::StaticGetName()
     {

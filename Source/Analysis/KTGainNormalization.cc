@@ -7,10 +7,11 @@
 
 #include "KTGainNormalization.hh"
 
+#include "KTFrequencySpectrum.hh"
 #include "KTPhysicalArray.hh"
-#include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
-#include "KTSlidingWindowFFT.hh"
+#include "KTSlidingWindowFSData.hh"
+#include "KTPowerSpectrum.hh"
 
 #include "TMath.h"
 
@@ -26,7 +27,7 @@ namespace Katydid
     {
         fConfigName = "gain-normalization";
 
-        RegisterSlot("power_spect", this, &KTGainNormalization::ProcessPowerSpectrum);
+        RegisterSlot("freq_spect", this, &KTGainNormalization::ProcessFrequencySpectrum);
     }
 
     KTGainNormalization::~KTGainNormalization()
@@ -40,11 +41,10 @@ namespace Katydid
     }
 
 
-    void KTGainNormalization::PrepareNormalization(KTPhysicalArray< 1, Double_t >* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth)
+    void KTGainNormalization::PrepareNormalization(KTFrequencySpectrum* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth)
     {
-        Double_t freqMult = 1.e-6;
         delete fNormalization;
-        fNormalization = new KTPhysicalArray< 1, Double_t >(reducedNBins, -0.5*reducedBinWidth*freqMult, reducedBinWidth * ((Double_t)reducedNBins-0.5) * freqMult);
+        fNormalization = new KTFrequencySpectrum(reducedNBins, -0.5*reducedBinWidth, reducedBinWidth * ((Double_t)reducedNBins-0.5));
 
         Int_t veryLastBinInFullPS = (Int_t)fullArray->GetNBins() - 1;
         for (UInt_t iBin=0; iBin<reducedNBins; iBin++)
@@ -54,7 +54,7 @@ namespace Katydid
             Int_t firstBinFullPS = TMath::Max((Int_t)fullArray->FindBin(freqBinMin), 0);
             Int_t lastBinFullPS = TMath::Min((Int_t)fullArray->FindBin(freqBinMax), veryLastBinInFullPS);
             //std::cout << iBin << "  " << freqBinMin << "  " << freqBinMax << "  " << firstBinFullPS << "  " << lastBinFullPS << std::endl;
-            Double_t meanBinContent = 0.;
+            complexpolar<Double_t> meanBinContent;
             Int_t nBinsInSum = 0;
             for (Int_t iSubBin=firstBinFullPS; iSubBin<=lastBinFullPS; iSubBin++)
             {
@@ -70,26 +70,27 @@ namespace Katydid
         return;
     }
 
-    void KTGainNormalization::ProcessSlidingWindowFFT(KTSlidingWindowFFT* fft)
+    void KTGainNormalization::ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData)
     {
-        UInt_t nPowerSpectra = fft->GetNPowerSpectra();
+        KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = swFSData->GetSpectra(0);
+        UInt_t nPowerSpectra = spectra->size();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
         {
-            ProcessPowerSpectrum(iPS, fft->GetPowerSpectrum(iPS));
+            ProcessFrequencySpectrum(iPS, (*spectra)[iPS]);
         }
 
         return;
     }
 
-    void KTGainNormalization::ProcessPowerSpectrum(UInt_t /*psNum*/, KTPowerSpectrum* powerSpectrum)
+    void KTGainNormalization::ProcessFrequencySpectrum(UInt_t /*psNum*/, KTFrequencySpectrum* freqSpectrum)
     {
-        if (powerSpectrum->GetSize() != fNormalization->size())
+        if (freqSpectrum->size() != fNormalization->size())
         {
             std::cout << "Error in KTGainNormalization::ProcessArray: Array sizes do not match!" << std::endl;
             return;
         }
 
-        (*powerSpectrum) /= (*fNormalization);
+        (*freqSpectrum) /= (*fNormalization);
 
         return;
     }

@@ -10,6 +10,7 @@
 #include "KTHannWindow.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTSlidingWindowFFT.hh"
+#include "KTSlidingWindowFSData.hh"
 #include "KTTimeSeriesData.hh"
 
 #include "TApplication.h"
@@ -109,9 +110,9 @@ int main(int argc, char** argv)
     fft.SetOverlap(wfunc->GetSize() / 5);
     fft.SetTransformFlag("ES");
     fft.InitializeFFT();
-    fft.TransformData(data);
+    KTSlidingWindowFSData* freqData = fft.TransformData(data);
 
-    TH2D* hist = fft.CreatePowerSpectrumHistogram();
+    TH2D* hist = freqData->CreatePowerHistogram(0);
 
     if (drawWaterfall)
     {

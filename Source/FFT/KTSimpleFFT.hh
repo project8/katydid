@@ -9,12 +9,12 @@
 #ifndef KTSIMPLEFFT_HH_
 #define KTSIMPLEFFT_HH_
 
-#include "KTFFT.hh"
+//#include "KTFFT.hh"
 #include "KTProcessor.hh"
 #include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
-#include "KTFFTTypes.hh"
+#include "KTFrequencySpectrum.hh"
 
 #include "TFFTRealComplex.h"
 
@@ -27,9 +27,10 @@ namespace Katydid
 {
     KTLOGGER(fftlog_simp, "katydid.fft");
 
-    class KTComplexVector;
+    //class KTComplexVector;
     class KTEggHeader;
-    class KTPowerSpectrum;
+    class KTEvent;
+    //class KTPowerSpectrum;
     class KTPStoreNode;
     class KTTimeSeriesData;
     class KTFrequencySpectrumData;
@@ -59,7 +60,7 @@ namespace Katydid
      \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
     */
 
-    class KTSimpleFFT : public KTFFT, public KTProcessor, public KTConfigurable
+    class KTSimpleFFT : /*public KTFFT,*/ public KTProcessor, public KTConfigurable
     {
         public:
             typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
@@ -71,23 +72,23 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            void ClearTransformResults();
+            //void ClearTransformResults();
 
             virtual void InitializeFFT();
 
-            virtual Bool_t TransformData(const KTTimeSeriesData* tsData);
+            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
             template< typename XDataType >
             KTFrequencySpectrum* Transform(const std::vector< XDataType >* data);
 
-            void AddTransformResult(KTComplexVector* result);
+            //void AddTransformResult(KTComplexVector* result);
 
-            virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name,  UInt_t channelNum = 0) const;
-            virtual TH1D* CreatePowerSpectrumHistogram(UInt_t channelNum = 0) const;
+            //virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name,  UInt_t channelNum = 0) const;
+            //virtual TH1D* CreatePowerSpectrumHistogram(UInt_t channelNum = 0) const;
 
-            virtual KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr(UInt_t channelNum = 0) const;
+            //virtual KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr(UInt_t channelNum = 0) const;
 
-            virtual KTPowerSpectrum* CreatePowerSpectrum(UInt_t channelNum = 0) const;
+            //virtual KTPowerSpectrum* CreatePowerSpectrum(UInt_t channelNum = 0) const;
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
 
@@ -96,7 +97,7 @@ namespace Katydid
             void SetTimeSize(UInt_t nBins);
 
             const TFFTRealComplex* GetFFT() const;
-            const KTComplexVector* GetTransformResult(UInt_t channelNum = 0) const;
+            //const KTComplexVector* GetTransformResult(UInt_t channelNum = 0) const;
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Double_t GetFreqBinWidth() const;
@@ -110,10 +111,10 @@ namespace Katydid
             void SetFreqMax(Double_t fm);
 
         protected:
-            KTFrequencySpectrum* ExtractTransformResult();
+            KTFrequencySpectrum* ExtractTransformResult() const;
 
             TFFTRealComplex* fTransform;
-            std::vector< KTComplexVector* > fTransformResults;
+            //std::vector< KTComplexVector* > fTransformResults;
 
             std::string fTransformFlag;
 
@@ -136,7 +137,8 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData);
+            void ProcessEvent(KTEvent* event);
+            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };
 
@@ -185,12 +187,12 @@ namespace Katydid
     {
         return fTransform;
     }
-
+    /*
     inline const KTComplexVector* KTSimpleFFT::GetTransformResult(UInt_t channelNum) const
     {
         return fTransformResults[channelNum];
     }
-
+     */
     inline const std::string& KTSimpleFFT::GetTransformFlag() const
     {
         return fTransformFlag;

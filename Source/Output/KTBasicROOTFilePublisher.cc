@@ -11,6 +11,8 @@
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
+#include "TH1.h"
+
 #include <sstream>
 
 using std::stringstream;
@@ -106,7 +108,7 @@ namespace Katydid
                 conv << "histPS_" << eventNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* powerSpectrum = CreatePowerSpectrumHistFromFreqSpect(histName, spectrum);
+                TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
                 powerSpectrum->SetDirectory(fFile);
                 powerSpectrum->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");

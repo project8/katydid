@@ -7,8 +7,8 @@
 
 #include "KTBasicROOTFilePublisher.hh"
 #include "KTEvent.hh"
+#include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
-#include "KTFFTTypes.hh"
 #include "complexpolar.hh"
 
 #include <iostream>

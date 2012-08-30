@@ -7,7 +7,7 @@
 
 #include "KTEgg.hh"
 #include "KTEvent.hh"
-#include "KTPowerSpectrum.hh"
+#include "KTFrequencySpectrumData.hh"
 #include "KTSimpleFFT.hh"
 #include "KTTimeSeriesData.hh"
 
@@ -102,10 +102,9 @@ int main(int argc, char** argv)
     KTSimpleFFT fullFFT(data->GetRecordSize());
     fullFFT.SetTransformFlag("ES");
     fullFFT.InitializeFFT();
-    fullFFT.TransformData(data);
+    KTFrequencySpectrumData* freqData = fullFFT.TransformData(data);
 
-    KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
-    TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
+    TH1D* histFullPS = freqData->GetSpectrum(0)->CreatePowerHistogram();
 
     if (drawWaterfall)
     {
@@ -118,7 +117,7 @@ int main(int argc, char** argv)
 
     Bool_t histCheck = histFullPS->Integral() > 0.;
 
-    delete fullPS;
+    delete freqData;
     delete event;
 
     if (drawWaterfall)

@@ -10,12 +10,11 @@
 
 #include "KTWriteableData.hh"
 
-#include "KTFFTTypes.hh"
-
 #include <vector>
 
 namespace Katydid
 {
+    class KTFrequencySpectrum;
 
     class KTCorrelationData : public KTWriteableData
     {
@@ -35,6 +34,7 @@ namespace Katydid
             static const std::string& StaticGetName();
 
             const KTFrequencySpectrum* GetCorrelation(UInt_t pairNum = 0) const;
+            KTFrequencySpectrum* GetCorrelation(UInt_t pairNum = 0);
             UInt_t GetFirstChannel(UInt_t pairNum = 0) const;
             UInt_t GetSecondChannel(UInt_t pairNum = 0) const;
             UInt_t GetNPairs() const;
@@ -57,6 +57,11 @@ namespace Katydid
     }
 
     inline const KTFrequencySpectrum* KTCorrelationData::GetCorrelation(UInt_t pairNum) const
+    {
+        return fData[pairNum].fCorrelation;
+    }
+
+    inline KTFrequencySpectrum* KTCorrelationData::GetCorrelation(UInt_t pairNum)
     {
         return fData[pairNum].fCorrelation;
     }

@@ -10,7 +10,11 @@
 
 #include "KTWriteableData.hh"
 
-#include "KTFFTTypes.hh"
+#include "KTFrequencySpectrum.hh"
+
+#ifdef ROOT_FOUND
+#include "TH1.h"
+#endif
 
 #include <vector>
 
@@ -27,6 +31,7 @@ namespace Katydid
             static const std::string& StaticGetName();
 
             const KTFrequencySpectrum* GetSpectrum(unsigned channelNum = 0) const;
+            KTFrequencySpectrum* GetSpectrum(unsigned channelNum = 0);
             unsigned GetNChannels() const;
 
             void SetSpectrum(KTFrequencySpectrum* record, unsigned channelNum = 0);
@@ -39,6 +44,15 @@ namespace Katydid
 
             std::vector< KTFrequencySpectrum* > fSpectra;
 
+#ifdef ROOT_FOUND
+        public:
+            virtual TH1D* CreateMagnitudeHistogram(unsigned channelNum = 0, const std::string& name = "hFrequencySpectrumMag") const;
+            virtual TH1D* CreatePhaseHistogram(unsigned channelNum = 0, const std::string& name = "hFrequencySpectrumPhase") const;
+
+            virtual TH1D* CreatePowerHistogram(unsigned channelNum = 0, const std::string& name = "hFrequencySpectrumPower") const;
+
+            virtual TH1D* CreatePowerDistributionHistogram(unsigned channelNum = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
+#endif
     };
 
     inline const std::string& KTFrequencySpectrumData::GetName() const
@@ -47,6 +61,11 @@ namespace Katydid
     }
 
     inline const KTFrequencySpectrum* KTFrequencySpectrumData::GetSpectrum(unsigned channelNum) const
+    {
+        return fSpectra[channelNum];
+    }
+
+    inline KTFrequencySpectrum* KTFrequencySpectrumData::GetSpectrum(unsigned channelNum)
     {
         return fSpectra[channelNum];
     }
@@ -67,6 +86,28 @@ namespace Katydid
         fSpectra.resize(channels);
         return;
     }
+
+#ifdef ROOT_FOUND
+    inline TH1D* KTFrequencySpectrumData::CreateMagnitudeHistogram(unsigned channelNum, const std::string& name) const
+    {
+        return fSpectra[channelNum]->CreateMagnitudeHistogram(name);
+    }
+    inline TH1D* KTFrequencySpectrumData::CreatePhaseHistogram(unsigned channelNum, const std::string& name) const
+    {
+        return fSpectra[channelNum]->CreatePhaseHistogram(name);
+    }
+
+    inline TH1D* KTFrequencySpectrumData::CreatePowerHistogram(unsigned channelNum, const std::string& name) const
+    {
+        return fSpectra[channelNum]->CreatePowerHistogram(name);
+    }
+
+    inline TH1D* KTFrequencySpectrumData::CreatePowerDistributionHistogram(unsigned channelNum, const std::string& name) const
+    {
+        return fSpectra[channelNum]->CreatePowerDistributionHistogram(name);
+    }
+#endif
+
 
 } /* namespace Katydid */
 

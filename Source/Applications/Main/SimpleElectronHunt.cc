@@ -18,10 +18,13 @@
 
 #include "KTEgg.hh"
 #include "KTEvent.hh"
+#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumData.hh"
 #include "KTHannWindow.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTSimpleFFT.hh"
 #include "KTSlidingWindowFFT.hh"
+#include "KTSlidingWindowFSData.hh"
 #include "KTTimeSeriesData.hh"
 
 #include "TApplication.h"
@@ -174,10 +177,9 @@ int main(int argc, char** argv)
         KTSimpleFFT fullFFT(data->GetRecordSize());
         fullFFT.SetTransformFlag("ES");
         fullFFT.InitializeFFT();
-        fullFFT.TransformData(data);
+        KTFrequencySpectrumData* freqSpectData = fullFFT.TransformData(data);
 
-        KTPowerSpectrum* fullPS = fullFFT.CreatePowerSpectrum();
-        TH1D* histFullPS = fullPS->CreateMagnitudeHistogram();
+        TH1D* histFullPS = freqSpectData->GetSpectrum(0)->CreatePowerHistogram();
         /**/// DEBUG
         if (drawWaterfall)
         {
@@ -188,7 +190,7 @@ int main(int argc, char** argv)
             c1->SetLogy(0);
         }
         /**/
-        delete fullPS;
+        delete freqSpectData;
         Double_t fullPSFreqBinWidth = histFullPS->GetBinWidth(1);
 
         // Now the windowed FFT
@@ -201,7 +203,7 @@ int main(int argc, char** argv)
         fft.SetOverlap(wfunc->GetSize() / 5);
         fft.SetTransformFlag("ES");
         fft.InitializeFFT();
-        fft.TransformData(data);
+        KTSlidingWindowFSData* swFSData = fft.TransformData(data);
 
         // Need to exclude:
         //   0-.2 MHz
@@ -213,7 +215,8 @@ int main(int argc, char** argv)
         conv << iEvent;
         conv >> histName;
         histName = string("histWindowedPS") + histName;
-        TH2D* hist = fft.CreatePowerSpectrumHistogram(histName);
+        TH2D* hist = swFSData->CreatePowerHistogram(0, histName);
+        delete swFSData;
         // DEBUG
         if (drawWaterfall)
         {

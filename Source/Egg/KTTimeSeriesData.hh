@@ -62,6 +62,7 @@ namespace Katydid
             RecIdType GetRecordID(unsigned channelNum = 0) const;
 
             const std::vector< DataType >* GetRecord(unsigned channelNum = 0) const;
+            std::vector< DataType >* GetRecord(unsigned channelNum = 0);
 
             //unsigned GetRecordSize(unsigned channelNum = 0) const;
             DataType GetRecordAt(unsigned int iBin, unsigned channelNum = 0) const;
@@ -176,6 +177,11 @@ namespace Katydid
     }
 
     inline const std::vector< DataType >* KTTimeSeriesData::GetRecord(unsigned channelNum) const
+    {
+        return fChannelData[channelNum].fRecord;
+    }
+
+    inline std::vector< DataType >* KTTimeSeriesData::GetRecord(unsigned channelNum)
     {
         return fChannelData[channelNum].fRecord;
     }

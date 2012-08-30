@@ -7,13 +7,14 @@
 
 #include "KTCorrelationData.hh"
 
+#include "KTFrequencySpectrum.hh"
 #include "KTPublisher.hh"
 
 #include <typeinfo>
 
 namespace Katydid
 {
-    std::string KTCorrelationData::fName("Correlation");
+    std::string KTCorrelationData::fName("correlation");
 
     const std::string& KTCorrelationData::StaticGetName()
     {

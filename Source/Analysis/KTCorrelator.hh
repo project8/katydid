@@ -11,13 +11,14 @@
 #include "KTProcessor.hh"
 #include "KTConfigurable.hh"
 
-#include "KTFFTTypes.hh"
-
 #include <utility>
 #include <vector>
 
 namespace Katydid
 {
+    class KTCorrelationData;
+    class KTEvent;
+    class KTFrequencySpectrum;
     class KTFrequencySpectrumData;
     class KTWriteableData;
 
@@ -35,13 +36,18 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
+            void AddPair(const KTCorrelationPair& pair);
+            void SetPairVector(const PairVector& pairs);
+            const PairVector& GetPairVector() const;
+            void ClearPairs();
+
         protected:
             PairVector fPairs;
 
         public:
 
-            Bool_t Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs);
-            Bool_t Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair);
+            KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs);
+            KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair);
 
         protected:
             KTFrequencySpectrum* DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum);
@@ -59,10 +65,33 @@ namespace Katydid
 
         public:
             void ProcessFFTData(const KTFrequencySpectrumData* tsData);
-            //void ProcessEvent(const KTEvent* event);
+            void ProcessEvent(KTEvent* event);
 
 
     };
+
+    inline void KTCorrelator::AddPair(const KTCorrelationPair& pair)
+    {
+        fPairs.push_back(pair);
+        return;
+    }
+
+    inline void KTCorrelator::SetPairVector(const PairVector& pairs)
+    {
+        fPairs = pairs;
+        return;
+    }
+
+    inline const KTCorrelator::PairVector& KTCorrelator::GetPairVector() const
+    {
+        return fPairs;
+    }
+
+    inline void KTCorrelator::ClearPairs()
+    {
+        fPairs.clear();
+        return;
+    }
 
 
 } /* namespace Katydid */

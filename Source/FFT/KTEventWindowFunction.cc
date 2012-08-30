@@ -7,6 +7,7 @@
 
 #include "KTEventWindowFunction.hh"
 
+#include "KTFrequencySpectrum.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
@@ -105,11 +106,10 @@ namespace Katydid
         fft.SetFreqBinWidth(fBinWidth);
         fft.SetTransformFlag("ES");
         fft.InitializeFFT();
-        //fft.AddTransformResult(fft.Transform(timeData));
-        KTPowerSpectrum* ps = fft.CreatePowerSpectrum();
-        TH1D* hist = ps->CreateMagnitudeHistogram(name);
+        KTFrequencySpectrum* freqSpect = fft.Transform< Double_t >(&timeData);
+        TH1D* hist = freqSpect->CreatePowerHistogram(name);
         hist->SetYTitle("Weight");
-        delete ps;
+        delete freqSpect;
         return hist;
     }
 

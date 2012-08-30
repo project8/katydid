@@ -8,6 +8,8 @@
 #include "KTCorrelator.hh"
 
 #include "KTCorrelationData.hh"
+#include "KTEvent.hh"
+#include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTLogger.hh"
 
@@ -20,10 +22,14 @@ namespace Katydid
 
     KTCorrelator::KTCorrelator() :
             KTProcessor(),
-            KTCorrelator(),
+            KTConfigurable(),
             fPairs(),
             fCorrSignal()
     {
+        RegisterSignal("correlation", &fCorrSignal);
+
+        RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData);
+        RegisterSlot("event", this, &KTCorrelator::ProcessEvent);
     }
 
     KTCorrelator::~KTCorrelator()
@@ -35,7 +41,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair)
+    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair)
     {
         UInt_t firstChannel = pair.first;
         UInt_t secondChannel = pair.second;
@@ -50,15 +56,15 @@ namespace Katydid
             data->GetEvent()->AddData(newData);
             fCorrSignal(newData);
 
-            return true;
+            return newData;
         }
 
         KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
-        return false;
+        return NULL;
 
     }
 
-    Bool_t KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs)
+    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs)
     {
         KTCorrelationData* newData = new KTCorrelationData();
 
@@ -77,11 +83,11 @@ namespace Katydid
             }
         }
 
-        data->GetEvent()->AddData(newData);
+        //data->GetEvent()->AddData(newData);
         fCorrSignal(newData);
 
         KTDEBUG(corrlog, "Correlations complete");
-        return true;
+        return newData;
     }
 
     KTFrequencySpectrum* KTCorrelator::DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum)
@@ -92,18 +98,24 @@ namespace Katydid
 
     void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumData* tsData)
     {
-        if (! Correlate(tsData, fPairs))
-        {
-            KTWARN(corrlog, "Correlation failed");
-        }
+        KTCorrelationData* newData = Correlate(tsData, fPairs);
+        tsData->GetEvent()->AddData(newData);
         return;
     }
-    /*
-    void KTCorrelator::ProcessEvent(const KTEvent* event)
-    {
 
+    void KTCorrelator::ProcessEvent(KTEvent* event)
+    {
+        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(KTFrequencySpectrumData::StaticGetName()));
+        if (fsData == NULL)
+        {
+            KTWARN(corrlog, "No time series data was available in the event");
+            return;
+        }
+        KTCorrelationData* newData = Correlate(fsData, fPairs);
+        event->AddData(newData);
+        return;
     }
-    */
+
 
 
 } /* namespace Katydid */

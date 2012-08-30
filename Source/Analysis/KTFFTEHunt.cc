@@ -13,6 +13,8 @@
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
+#include "KTTimeSeriesData.hh"
+#include "KTSlidingWindowFSData.hh"
 
 #include "TH2.h"
 
@@ -56,8 +58,8 @@ namespace Katydid
         RegisterSlot("event", this, &KTFFTEHunt::ProcessEvent);
         RegisterSlot("event_done", this, &KTFFTEHunt::FinishHunt);
 
-        fWindowFFT.ConnectASlot("power_spect", &fGainNorm, "power_spect", 0);
-        fWindowFFT.ConnectASlot("power_spect", &fClustering, "power_spect", 1);
+        fWindowFFT.ConnectASlot("full_fft", &fGainNorm, "freq_spect", 0);
+        fWindowFFT.ConnectASlot("full_fft", &fClustering, "freq_spect", 1);
     }
 
     KTFFTEHunt::~KTFFTEHunt()
@@ -123,20 +125,22 @@ namespace Katydid
         fWindowFFT.ProcessHeader(header);
 
         // Set up the bin cuts
-        // get the number of frequency bins and the frequency bin width
+        // get the number of frequency bins and the min and max frequencies
         Int_t nFreqBins = fWindowFFT.GetFrequencySize();
-        Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth();
-        // create KTPowerSpectrum w/ number of bins; set bin width
+        //Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth();
+        Double_t freqMin = fWindowFFT.GetFreqMin();
+        Double_t freqMax = fWindowFFT.GetFreqMax();
+        // create KTFrequencySpectrum w/ number of bins; set bin width
         // binFinder will go out of scope at the end of this function.
         // therefore, from that point until fClusteringProc sets a new array, binCuts should NOT be used to access array values!
-        KTPowerSpectrum binFinder(nFreqBins, freqBinWidth);
+        KTFrequencySpectrum binFinder(nFreqBins, freqMin, freqMax);
         // create KTMaskedArray based on power spectrum magnitude array
-        KTMaskedArray< Double_t*, Double_t >* binCuts = new KTMaskedArray< Double_t*, Double_t >(binFinder.GetMagnitude().GetMatrixArray(), nFreqBins);
+        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(binFinder.data(), nFreqBins);
         // convert cut frequency ranges to bins, and cut bins from the masked array
         for (vector< CutRange >::const_iterator itCutRange = fCutRanges.begin(); itCutRange != fCutRanges.end(); itCutRange++)
         {
-            Int_t firstBinCut = binFinder.GetBin((*itCutRange).first / fFrequencyMultiplier);
-            Int_t nCutBins = binFinder.GetBin((*itCutRange).second / fFrequencyMultiplier) - firstBinCut + 1;
+            Int_t firstBinCut = binFinder.FindBin((*itCutRange).first / fFrequencyMultiplier);
+            Int_t nCutBins = binFinder.FindBin((*itCutRange).second / fFrequencyMultiplier) - firstBinCut + 1;
             binCuts->Cut(UInt_t(firstBinCut), UInt_t(nCutBins));
         }
         // give the masked array to fClusteringProc
@@ -169,18 +173,17 @@ namespace Katydid
         }
 
         // Perform a 1-D FFT on the entire event
-        fSimpleFFT.ProcessEvent(iEvent, tsData);
-        KTPhysicalArray< 1, Double_t >* fullFFT = fSimpleFFT.CreatePowerSpectrumPhysArr();
+        const vector< DataType >* tsDataVect = tsData->GetRecord(0);
+        KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
         // Use the data from the full FFT to create a gain normalization
-        fGainNorm.PrepareNormalization(fullFFT, (UInt_t)fWindowFFT.GetFrequencySize(), fWindowFFT.GetFreqBinWidth());
-        delete fullFFT;
+        fGainNorm.PrepareNormalization(freqSpect, (UInt_t)fWindowFFT.GetFrequencySize(), fWindowFFT.GetFreqBinWidth());
 
         // Prepare to run the windowed FFT
         //list< multimap< Int_t, Int_t >* > eventPeakBins;
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
-        fWindowFFT.ProcessEvent(iEvent, tsData);
+        KTSlidingWindowFSData* windowedFFTData = fWindowFFT.TransformData(tsData);
         Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth() * fFrequencyMultiplier;
 
         // Scan through the groups
@@ -234,7 +237,7 @@ namespace Katydid
                 conv << iEvent;
                 conv >> histName;
                 histName = string("histWindowedPS") + histName;
-                TH2D* histWaterfall = fWindowFFT.CreatePowerSpectrumHistogram(histName);
+                TH2D* histWaterfall = windowedFFTData->CreatePowerHistogram(0, histName);
                 Double_t timeBinWidth = histWaterfall->GetXaxis()->GetBinWidth(1);
 
                 Char_t histname[256], histtitle[256];
@@ -266,6 +269,7 @@ namespace Katydid
                 //c1->Print(outputFileNamePS.c_str());
 
                 groupHist->Write();
+                delete histWaterfall;
             }
 
             //candidates->Add(groupHist);
@@ -281,6 +285,9 @@ namespace Katydid
         }
 
         fTotalCandidates += iCandidate;
+
+        delete freqSpect;
+        delete windowedFFTData;
 
         return;
     }

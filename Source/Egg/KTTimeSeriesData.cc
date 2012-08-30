@@ -15,7 +15,7 @@ using std::vector;
 
 namespace Katydid
 {
-    std::string KTTimeSeriesData::fName("TimeSeries");
+    std::string KTTimeSeriesData::fName("time-series");
 
     const std::string& KTTimeSeriesData::StaticGetName()
     {

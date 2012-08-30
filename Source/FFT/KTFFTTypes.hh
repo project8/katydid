@@ -9,9 +9,6 @@
 #ifndef KTFFTTYPES_HH_
 #define KTFFTTYPES_HH_
 
-#include "complexpolar.hh"
-#include "KTPhysicalArray.hh"
-
 #include "Rtypes.h"
 
 // these go with the temporary function
@@ -21,9 +18,7 @@
 
 namespace Katydid
 {
-
-    typedef KTPhysicalArray< 1, complexpolar< Double_t > > KTFrequencySpectrum;
-
+    class KTFrequencySpectrum;
 
     // This function is temporary!  It will be moved to a writer class.
 #ifdef ROOT_FOUND
