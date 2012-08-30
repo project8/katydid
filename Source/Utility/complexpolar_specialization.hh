@@ -183,6 +183,13 @@ namespace Katydid
             }
 
         public:
+            complexpolar<float>& conj()
+            {
+                fArg = -fArg;
+                return *this;
+            }
+
+        public:
             float abs() const;
             float arg() const;
 
@@ -368,6 +375,13 @@ namespace Katydid
             complexpolar<double>& operator/= (const X& rhs)
             {
                 fAbs = fAbs / double(rhs);
+                return *this;
+            }
+
+        public:
+            complexpolar<double>& conj()
+            {
+                fArg = -fArg;
                 return *this;
             }
 
@@ -558,6 +572,13 @@ namespace Katydid
             complexpolar<long double>& operator/= (const X& rhs)
             {
                 fAbs = fAbs / (long double)(rhs);
+                return *this;
+            }
+
+        public:
+            complexpolar<long double>& conj()
+            {
+                fArg = -fArg;
                 return *this;
             }
 

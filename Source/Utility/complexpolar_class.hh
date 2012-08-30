@@ -210,6 +210,13 @@ namespace Katydid
             }
 
         public:
+            complexpolar<T>& conj()
+            {
+                fArg = -fArg;
+                return *this;
+            }
+
+        public:
             T abs() const
             {
                 return fAbs;

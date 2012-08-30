@@ -22,6 +22,15 @@ int main()
 
     // member operators
 
+    // conj
+    cout << "cp2: " << cp2 << endl;
+    cp2.conj();
+    cout << "after cp2.conj: " << cp2 << endl;
+    cout << "conj(cp2): " << conj(cp2) << endl;
+    cout << "cp2: " << cp2 << endl;
+
+    cout << endl;
+
     // operator=
     complexpolar<double> cp3(0.,0.);
     cp3 = cp1;
