@@ -40,12 +40,23 @@ namespace Katydid
         return *this;
     }
 
+    KTFrequencySpectrum& KTFrequencySpectrum::CConjugate()
+    {
+        UInt_t nBins = GetNBins();
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        {
+            (*this)[iBin].conj();
+        }
+        return *this;
+    }
+
+
     KTPowerSpectrum* KTFrequencySpectrum::CreatePowerSpectrum() const
     {
         UInt_t nBins = GetNBins();
         KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
         Double_t value;
-        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
            value = (*this)[iBin].abs();
            newPS[iBin] = value * value;
@@ -58,7 +69,7 @@ namespace Katydid
     {
         UInt_t nBins = GetNBins();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, (*this)[iBin].abs());
         }
@@ -71,7 +82,7 @@ namespace Katydid
     {
         UInt_t nBins = GetNBins();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, (*this)[iBin].arg());
         }
@@ -85,7 +96,7 @@ namespace Katydid
         UInt_t nBins = GetNBins();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         Double_t value;
-        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)[iBin].abs();
             hist->SetBinContent((Int_t)iBin+1, value*value);

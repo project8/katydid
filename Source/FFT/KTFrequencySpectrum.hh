@@ -31,6 +31,8 @@ namespace Katydid
 
             virtual KTFrequencySpectrum& operator=(const KTFrequencySpectrum& rhs);
 
+            virtual KTFrequencySpectrum& CConjugate();
+
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
 #ifdef ROOT_FOUND
