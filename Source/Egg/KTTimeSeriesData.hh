@@ -1,7 +1,7 @@
 /**
  @file KTTimeSeriesData.hh
  @brief Contains KTTimeSeriesData
- @details Contains the information from a single Egg event in the form of a 1-D std::vector of unsigned integers.
+ @details Contains the information from a single Egg event in the form of a 1-D std::vector of UInt_tegers.
  The data are the time series of the event.
  @note Prior to August 24, 2012, this class was called KTEvent.
  @author: N. S. Oblath
@@ -12,6 +12,8 @@
 #define KTTIMESERIESDATA_HH_
 
 #include "KTData.hh"
+
+#include "KTTimeSeries.hh"
 
 #include "MonarchTypes.hpp"
 
@@ -34,64 +36,64 @@ namespace Katydid
                 ChIdType fChannelID;
                 AcqIdType fAcquisitionID;
                 RecIdType fRecordID;
-                std::vector< DataType >* fRecord;
+                KTTimeSeries* fRecord;
             };
 
         public:
-            KTTimeSeriesData(unsigned nChannels=1);
+            KTTimeSeriesData(UInt_t nChannels=1);
             virtual ~KTTimeSeriesData();
 
             const std::string& GetName() const;
             static const std::string& StaticGetName();
 
 #ifdef ROOT_FOUND
-            virtual TH1C* CreateTimeSeriesHistogram(unsigned channelNum = 0) const;
-            virtual TH1I* CreateAmplitudeDistributionHistogram(unsigned channelNum = 0) const;
+            virtual TH1C* CreateTimeSeriesHistogram(UInt_t channelNum = 0) const;
+            virtual TH1I* CreateAmplitudeDistributionHistogram(UInt_t channelNum = 0) const;
 #endif
 
-            unsigned GetNChannels() const;
+            UInt_t GetNChannels() const;
 
-            unsigned GetRecordSize() const;
-            double GetSampleRate() const;
-            double GetRecordLength() const;
-            double GetBinWidth() const;
+            UInt_t GetRecordSize() const;
+            Double_t GetSampleRate() const;
+            Double_t GetRecordLength() const;
+            Double_t GetBinWidth() const;
 
-            ClockType GetTimeStamp(unsigned channelNum = 0) const;
-            ChIdType GetChannelID(unsigned channelNum = 0) const;
-            AcqIdType GetAcquisitionID(unsigned channelNum = 0) const;
-            RecIdType GetRecordID(unsigned channelNum = 0) const;
+            ClockType GetTimeStamp(UInt_t channelNum = 0) const;
+            ChIdType GetChannelID(UInt_t channelNum = 0) const;
+            AcqIdType GetAcquisitionID(UInt_t channelNum = 0) const;
+            RecIdType GetRecordID(UInt_t channelNum = 0) const;
 
-            const std::vector< DataType >* GetRecord(unsigned channelNum = 0) const;
-            std::vector< DataType >* GetRecord(unsigned channelNum = 0);
+            const KTTimeSeries* GetRecord(UInt_t channelNum = 0) const;
+            KTTimeSeries* GetRecord(UInt_t channelNum = 0);
 
-            //unsigned GetRecordSize(unsigned channelNum = 0) const;
-            DataType GetRecordAt(unsigned int iBin, unsigned channelNum = 0) const;
+            //UInt_t GetRecordSize(UInt_t channelNum = 0) const;
+            Double_t GetRecordAt(UInt_t iBin, UInt_t channelNum = 0) const;
             template< typename XType >
-            XType GetRecordAt(unsigned int iBin, unsigned channelNum = 0) const;
-            DataType GetRecordAtTime(double time, unsigned channelNum = 0) const; /// time is in seconds and >= 0
+            XType GetRecordAt(UInt_t iBin, UInt_t channelNum = 0) const;
+            DataType GetRecordAtTime(Double_t time, UInt_t channelNum = 0) const; /// time is in seconds and >= 0
             template< typename XType >
-            XType GetRecordAtTime(double time, unsigned channelNum = 0) const; /// time is in seconds and >= 0
+            XType GetRecordAtTime(Double_t time, UInt_t channelNum = 0) const; /// time is in seconds and >= 0
 
-            void SetNChannels(unsigned channels);
+            void SetNChannels(UInt_t channels);
 
-            void SetRecordSize(unsigned size);
-            void SetSampleRate(double sampleRate);
-            void SetRecordLength(double recordLength);
-            void SetBinWidth(double binWidth);
+            void SetRecordSize(UInt_t size);
+            void SetSampleRate(Double_t sampleRate);
+            void SetRecordLength(Double_t recordLength);
+            void SetBinWidth(Double_t binWidth);
             void CalculateBinWidthAndRecordLength();
 
-            void SetTimeStamp(ClockType timeStamp, unsigned channelNum = 0);
-            void SetChannelID(ChIdType chId, unsigned channelNum = 0);
-            void SetAcquisitionID(AcqIdType acqId, unsigned channelNum = 0);
-            void SetRecordID(RecIdType recId, unsigned channelNum = 0);
+            void SetTimeStamp(ClockType timeStamp, UInt_t channelNum = 0);
+            void SetChannelID(ChIdType chId, UInt_t channelNum = 0);
+            void SetAcquisitionID(AcqIdType acqId, UInt_t channelNum = 0);
+            void SetRecordID(RecIdType recId, UInt_t channelNum = 0);
 
-            void SetRecord(std::vector< DataType >* record, unsigned channelNum = 0);
+            void SetRecord(KTTimeSeries* record, UInt_t channelNum = 0);
 
         private:
-            unsigned fRecordSize; // number of bins
-            double fSampleRate; // in Hz
-            double fRecordLength; // in sec
-            double fBinWidth; // in sec
+            UInt_t fRecordSize; // number of bins
+            Double_t fSampleRate; // in Hz
+            Double_t fRecordLength; // in sec
+            Double_t fBinWidth; // in sec
 
             std::vector< PerChannelData > fChannelData;
 
@@ -100,7 +102,7 @@ namespace Katydid
         private:
             /// Round to nearest integer. Rounds half integers to the nearest even integer.
             /// Based on ROOT's TMath::Nint(Double_t)
-            int nint(double x) const;
+            int nint(Double_t x) const;
 
     };
 
@@ -109,99 +111,99 @@ namespace Katydid
         return fName;
     }
 
-    inline unsigned KTTimeSeriesData::GetNChannels() const
+    inline UInt_t KTTimeSeriesData::GetNChannels() const
     {
-        return unsigned(fChannelData.size());
+        return UInt_t(fChannelData.size());
     }
 
-    inline DataType KTTimeSeriesData::GetRecordAt(unsigned int iPoint, unsigned channelNum) const
+    inline Double_t KTTimeSeriesData::GetRecordAt(UInt_t iPoint, UInt_t channelNum) const
     {
-        return fChannelData[channelNum].fRecord->at(iPoint);
+        return (*(fChannelData[channelNum].fRecord))[iPoint];
     }
 
-    inline DataType KTTimeSeriesData::GetRecordAtTime(double time, unsigned channelNum) const
+    inline DataType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const
     {
-        return this->GetRecordAt((unsigned)(nint(std::max(0., time) / fBinWidth)), channelNum);
+        return this->GetRecordAt((UInt_t)(nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
     template< typename XType >
-    XType KTTimeSeriesData::GetRecordAt(unsigned iPoint, unsigned channelNum) const
+    XType KTTimeSeriesData::GetRecordAt(UInt_t iPoint, UInt_t channelNum) const
     {
         return (XType)GetRecordAt(iPoint, channelNum);
     }
 
     template< typename XType >
-    XType KTTimeSeriesData::GetRecordAtTime(double time, unsigned channelNum) const
+    XType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const
     {
-        return this->GetRecordAt< XType >((unsigned)(nint(std::max(0., time) / fBinWidth)), channelNum);
+        return this->GetRecordAt< XType >((UInt_t)(nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
-    inline unsigned KTTimeSeriesData::GetRecordSize() const
+    inline UInt_t KTTimeSeriesData::GetRecordSize() const
     {
         return fRecordSize;
     }
 
-    inline double KTTimeSeriesData::GetRecordLength() const
+    inline Double_t KTTimeSeriesData::GetRecordLength() const
     {
         return fRecordLength;
     }
 
-    inline double KTTimeSeriesData::GetSampleRate() const
+    inline Double_t KTTimeSeriesData::GetSampleRate() const
     {
         return fSampleRate;
     }
 
-    inline double KTTimeSeriesData::GetBinWidth() const
+    inline Double_t KTTimeSeriesData::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline ClockType KTTimeSeriesData::GetTimeStamp(unsigned channelNum) const
+    inline ClockType KTTimeSeriesData::GetTimeStamp(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fTimeStamp;
     }
 
-    inline ChIdType KTTimeSeriesData::GetChannelID(unsigned channelNum) const
+    inline ChIdType KTTimeSeriesData::GetChannelID(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fChannelID;
     }
 
-    inline AcqIdType KTTimeSeriesData::GetAcquisitionID(unsigned channelNum) const
+    inline AcqIdType KTTimeSeriesData::GetAcquisitionID(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fAcquisitionID;
     }
 
-    inline RecIdType KTTimeSeriesData::GetRecordID(unsigned channelNum) const
+    inline RecIdType KTTimeSeriesData::GetRecordID(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fRecordID;
     }
 
-    inline const std::vector< DataType >* KTTimeSeriesData::GetRecord(unsigned channelNum) const
+    inline const KTTimeSeries* KTTimeSeriesData::GetRecord(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fRecord;
     }
 
-    inline std::vector< DataType >* KTTimeSeriesData::GetRecord(unsigned channelNum)
+    inline KTTimeSeries* KTTimeSeriesData::GetRecord(UInt_t channelNum)
     {
         return fChannelData[channelNum].fRecord;
     }
 
-    inline void KTTimeSeriesData::SetRecordSize(unsigned recordSize)
+    inline void KTTimeSeriesData::SetRecordSize(UInt_t recordSize)
     {
         this->fRecordSize = recordSize;
     }
 
-    inline void KTTimeSeriesData::SetRecordLength(double recordLength)
+    inline void KTTimeSeriesData::SetRecordLength(Double_t recordLength)
     {
         this->fRecordLength = recordLength;
     }
 
-    inline void KTTimeSeriesData::SetSampleRate(double sampleRate)
+    inline void KTTimeSeriesData::SetSampleRate(Double_t sampleRate)
     {
         this->fSampleRate = sampleRate;
     }
 
-    inline void KTTimeSeriesData::SetBinWidth(double binWidth)
+    inline void KTTimeSeriesData::SetBinWidth(Double_t binWidth)
     {
         this->fBinWidth = binWidth;
     }
@@ -209,45 +211,45 @@ namespace Katydid
     inline void KTTimeSeriesData::CalculateBinWidthAndRecordLength()
     {
         SetBinWidth(1. / fSampleRate);
-        SetRecordLength(double(fRecordSize) * fBinWidth);
+        SetRecordLength(Double_t(fRecordSize) * fBinWidth);
         return;
     }
 
-    inline void KTTimeSeriesData::SetNChannels(unsigned channels)
+    inline void KTTimeSeriesData::SetNChannels(UInt_t channels)
     {
         fChannelData.resize(channels);
         return;
     }
 
-    inline void KTTimeSeriesData::SetTimeStamp(ClockType timeStamp, unsigned channelNum)
+    inline void KTTimeSeriesData::SetTimeStamp(ClockType timeStamp, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fTimeStamp = timeStamp;
         return;
     }
 
-    inline void KTTimeSeriesData::SetChannelID(ChIdType chId, unsigned channelNum)
+    inline void KTTimeSeriesData::SetChannelID(ChIdType chId, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fChannelID = chId;
         return;
     }
 
-    inline void KTTimeSeriesData::SetAcquisitionID(AcqIdType acqId, unsigned channelNum)
+    inline void KTTimeSeriesData::SetAcquisitionID(AcqIdType acqId, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fAcquisitionID = acqId;
         return;
     }
 
-    inline void KTTimeSeriesData::SetRecordID(RecIdType recId, unsigned channelNum)
+    inline void KTTimeSeriesData::SetRecordID(RecIdType recId, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fRecordID = recId;
         return;
     }
 
-    inline void KTTimeSeriesData::SetRecord(std::vector< DataType >* record, unsigned channelNum)
+    inline void KTTimeSeriesData::SetRecord(KTTimeSeries* record, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fRecord = record;
@@ -255,18 +257,18 @@ namespace Katydid
 
 
 
-    inline int KTTimeSeriesData::nint(double x) const
+    inline int KTTimeSeriesData::nint(Double_t x) const
     {
         int i;
         if (x >= 0.)
         {
             i = int(x + 0.5);
-            if (x + 0.5 == double(i) && (i & 1)) i--;
+            if (x + 0.5 == Double_t(i) && (i & 1)) i--;
         }
         else
         {
             i = int(x - 0.5);
-            if (x - 0.5 == double(i) && (i & 1)) i++;
+            if (x - 0.5 == Double_t(i) && (i & 1)) i++;
         }
         return i;
     }

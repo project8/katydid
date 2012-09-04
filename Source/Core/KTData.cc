@@ -10,7 +10,8 @@
 namespace Katydid
 {
 
-    KTData::KTData()
+    KTData::KTData() :
+            fEvent(NULL)
     {
     }
 

@@ -36,6 +36,7 @@ namespace Katydid
 
         public:
             KTPhysicalArray< NDims, XDataType >& operator=(const KTPhysicalArray< NDims, XDataType >& rhs);
+            KTPhysicalArray< NDims, XDataType >& operator*=(const KTPhysicalArray< NDims, XDataType >& rhs);
             KTPhysicalArray< NDims, XDataType >& operator/=(const KTPhysicalArray< NDims, XDataType >& rhs);
 
     };
@@ -72,6 +73,12 @@ namespace Katydid
     }
 
     template< size_t NDims, typename XDataType >
+    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator*=(const KTPhysicalArray< NDims, XDataType>& /*rhs*/)
+    {
+        return *this;
+    }
+
+    template< size_t NDims, typename XDataType >
     KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator/=(const KTPhysicalArray< NDims, XDataType>& /*rhs*/)
     {
         return *this;
@@ -96,6 +103,7 @@ namespace Katydid
 
         public:
             KTPhysicalArray< 1, XDataType >& operator=(const KTPhysicalArray< 1, XDataType >& rhs);
+            KTPhysicalArray< 1, XDataType >& operator*=(const KTPhysicalArray< 1, XDataType >& rhs);
             KTPhysicalArray< 1, XDataType >& operator/=(const KTPhysicalArray< 1, XDataType >& rhs);
 
         private:
@@ -146,6 +154,17 @@ namespace Katydid
     }
 
     template< typename XDataType >
+    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator*=(const KTPhysicalArray< 1, XDataType>& rhs)
+    {
+        if (rhs.size() != this->size()) return *this;
+        for (size_t iBin=0; iBin<this->size(); iBin++)
+        {
+            (*this)[iBin] *= rhs[iBin];
+        }
+        return *this;
+    }
+
+    template< typename XDataType >
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const KTPhysicalArray< 1, XDataType>& rhs)
     {
         if (rhs.size() != this->size()) return *this;
@@ -183,6 +202,7 @@ namespace Katydid
 
         public:
             KTPhysicalArray< 2, XDataType >& operator=(const KTPhysicalArray< 2, XDataType >& rhs);
+            KTPhysicalArray< 2, XDataType >& operator*=(const KTPhysicalArray< 2, XDataType >& rhs);
             KTPhysicalArray< 2, XDataType >& operator/=(const KTPhysicalArray< 2, XDataType >& rhs);
 
     };
@@ -241,6 +261,20 @@ namespace Katydid
         SetRangeMin(2, rhs.GetRangeMin(2));
         SetRangeMax(1, rhs.GetRangeMax(1));
         SetRangeMax(2, rhs.GetRangeMax(2));
+        return *this;
+    }
+
+    template< typename XDataType >
+    KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator*=(const KTPhysicalArray< 2, XDataType>& rhs)
+    {
+        if (rhs.size1() != this->size1() || rhs.size2() != this->size2()) return *this;
+        for (size_t iBinX=0; iBinX<this->size1(); iBinX++)
+        {
+            for (size_t iBinY=0; iBinY<this->size2(); iBinY++)
+            {
+                (*this)(iBinX, iBinY) *= rhs(iBinX, iBinY);
+            }
+        }
         return *this;
     }
 

@@ -32,6 +32,7 @@ namespace Katydid
     class KTEvent;
     //class KTPowerSpectrum;
     class KTPStoreNode;
+    class KTTimeSeries;
     class KTTimeSeriesData;
     class KTFrequencySpectrumData;
     class KTWriteableData;
@@ -78,8 +79,7 @@ namespace Katydid
 
             virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
-            template< typename XDataType >
-            KTFrequencySpectrum* Transform(const std::vector< XDataType >* data);
+            KTFrequencySpectrum* Transform(const KTTimeSeries* data) const;
 
             //void AddTransformResult(KTComplexVector* result);
 
@@ -141,28 +141,6 @@ namespace Katydid
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };
-
-
-    template< typename XDataType >
-    KTFrequencySpectrum* KTSimpleFFT::Transform(const std::vector< XDataType >* data)
-    {
-        unsigned int nBins = (unsigned int)data->size();
-        if (nBins != (unsigned int)fTransform->GetSize())
-        {
-            KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fTransform->GetSize() << ";   Bins in data: " << nBins);
-            return NULL;
-        }
-
-        for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
-        {
-            fTransform->SetPoint(iPoint, Double_t((*data)[iPoint]));
-        }
-
-        fTransform->Transform();
-
-        return ExtractTransformResult();
-    }
 
 
     inline UInt_t KTSimpleFFT::GetTimeSize() const

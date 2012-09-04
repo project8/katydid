@@ -15,7 +15,9 @@
 
 #include <string>
 
+#ifdef ROOT_FOUND
 class TH1D;
+#endif
 
 namespace Katydid
 {

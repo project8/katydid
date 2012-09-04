@@ -8,6 +8,7 @@
 #include "KTFFTEHunt.hh"
 
 #include "KTEggHeader.hh"
+#include "KTEvent.hh"
 #include "KTLogger.hh"
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
@@ -165,15 +166,18 @@ namespace Katydid
         return;
     }
 
-    void KTFFTEHunt::ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData)
+    void KTFFTEHunt::ProcessEvent(const KTEvent* event)
     {
+        UInt_t iEvent = event->GetEventNumber();
         if (fWriteTextFileFlag)
         {
             fTextFile << "Event " << iEvent << '\n';
         }
 
+        const KTTimeSeriesData* tsData = dynamic_cast<const KTTimeSeriesData*>(event->GetData(KTTimeSeriesData::StaticGetName()));
+
         // Perform a 1-D FFT on the entire event
-        const vector< DataType >* tsDataVect = tsData->GetRecord(0);
+        const KTTimeSeries* tsDataVect = tsData->GetRecord(0);
         KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
         // Use the data from the full FFT to create a gain normalization

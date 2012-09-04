@@ -22,7 +22,7 @@ namespace Katydid
         return fName;
     }
 
-    KTTimeSeriesData::KTTimeSeriesData(unsigned nChannels) :
+    KTTimeSeriesData::KTTimeSeriesData(UInt_t nChannels) :
             KTData(),
             fSampleRate(0.),
             fRecordLength(0.),
@@ -42,23 +42,23 @@ namespace Katydid
     }
 
 #ifdef ROOT_FOUND
-    TH1C* KTTimeSeriesData::CreateTimeSeriesHistogram(unsigned channelNum) const
+    TH1C* KTTimeSeriesData::CreateTimeSeriesHistogram(UInt_t channelNum) const
     {
         TH1C* hist = new TH1C("hRecord", "Event Record", (int)GetRecordSize(), -0.5*fBinWidth, GetRecordLength() + fBinWidth*0.5);
-        for (unsigned int iBin=0; iBin<fChannelData[channelNum].fRecord->size(); iBin++)
+        for (UInt_t iBin=0; iBin<fChannelData[channelNum].fRecord->size(); iBin++)
         {
-            hist->SetBinContent(iBin+1, fChannelData[channelNum].fRecord->at(iBin));
+            hist->SetBinContent(iBin+1, (*(fChannelData[channelNum].fRecord))[iBin]);
         }
         hist->SetXTitle("Time (s)");
         return hist;
     }
 
-    TH1I* KTTimeSeriesData::CreateAmplitudeDistributionHistogram(unsigned channelNum) const
+    TH1I* KTTimeSeriesData::CreateAmplitudeDistributionHistogram(UInt_t channelNum) const
     {
         TH1I* hist = new TH1I("hRecordAmpl", "Event Record Amplitude Distribution", 256, -0.5, 255.5);
         for (int iBin=0; iBin<fChannelData[channelNum].fRecord->size(); iBin++)
         {
-            hist->Fill((double)(fChannelData[channelNum].fRecord->at(iBin)));
+            hist->Fill(Double_t((*(fChannelData[channelNum].fRecord))[iBin]));
         }
         hist->SetXTitle("ADC Bin");
         return hist;

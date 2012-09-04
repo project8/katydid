@@ -104,7 +104,13 @@ namespace Katydid
             eventData->SetRecordID(monarchRecord->fRId, iRecord);
             eventData->SetTimeStamp(monarchRecord->fTick, iRecord);
 
-            eventData->SetRecord(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iRecord);
+            //eventData->SetRecord(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iRecord);
+            KTTimeSeries* newRecord = new KTTimeSeries(header->GetRecordSize(), 0., Double_t(header->GetRecordSize()) * eventData->GetBinWidth());
+            for (unsigned iBin=0; iBin<header->GetRecordSize(); iBin++)
+            {
+                (*newRecord)[iBin] = Double_t(monarchRecord->fDataPtr[iBin]);
+            }
+            eventData->SetRecord(newRecord, iRecord);
         }
 
         return eventData;

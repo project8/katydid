@@ -54,6 +54,9 @@ namespace Katydid
             KTCorrelationData* newData = new KTCorrelationData();
             newData->SetCorrelation(result, firstChannel, secondChannel, 0);
             data->GetEvent()->AddData(newData);
+
+            newData->SetEvent(data->GetEvent());
+
             fCorrSignal(newData);
 
             return newData;
@@ -83,6 +86,8 @@ namespace Katydid
             }
         }
 
+        newData->SetEvent(data->GetEvent());
+
         //data->GetEvent()->AddData(newData);
         fCorrSignal(newData);
 
@@ -92,8 +97,10 @@ namespace Katydid
 
     KTFrequencySpectrum* KTCorrelator::DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum)
     {
-        // temporary
-        return new KTFrequencySpectrum();
+        // Performs cc(firstSpectrum) * secondSpectrum
+        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(*firstSpectrum);
+        (*newSpect) *= (*secondSpectrum);
+        return newSpect;
     }
 
     void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumData* tsData)

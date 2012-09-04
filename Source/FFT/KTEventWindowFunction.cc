@@ -92,7 +92,7 @@ namespace Katydid
     {
         Int_t sideBands = TMath::Nint(0.2 * fSize);
         Int_t totalSize = fSize + 2 * sideBands;
-        vector< Double_t > timeData(totalSize);
+        KTTimeSeries timeData(totalSize, 0., totalSize * fBinWidth);
         for (unsigned int iBin=0; iBin<sideBands; iBin++)
         {
             timeData[iBin] = 0.;
@@ -106,7 +106,7 @@ namespace Katydid
         fft.SetFreqBinWidth(fBinWidth);
         fft.SetTransformFlag("ES");
         fft.InitializeFFT();
-        KTFrequencySpectrum* freqSpect = fft.Transform< Double_t >(&timeData);
+        KTFrequencySpectrum* freqSpect = fft.Transform(&timeData);
         TH1D* hist = freqSpect->CreatePowerHistogram(name);
         hist->SetYTitle("Weight");
         delete freqSpect;

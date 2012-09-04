@@ -272,6 +272,12 @@ namespace Katydid
             return NULL;
         }
 
+        // Other information
+        eventData->SetSampleRate(double(fHeaderInfo.fSampleRate));
+        eventData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
+        eventData->SetRecordSize(fHeaderInfo.fRecordSize);
+        eventData->SetRecordLength(double(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
+
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];
         fEggStream.read((char*)(&readBuffer[0]), fHeaderInfo.fRecordSize);
@@ -286,7 +292,12 @@ namespace Katydid
         }
         else
         {
-            vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
+            //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
+            KTTimeSeries* newRecord = new KTTimeSeries(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
+            for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
+            {
+                (*newRecord)[iBin] = Double_t(readBuffer[iBin]);
+            }
             delete [] readBuffer;
             eventData->SetRecord(newRecord);
         }
@@ -294,12 +305,6 @@ namespace Katydid
         {
             KTERROR(eggreadlog, "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this event.");
         }
-
-        //
-        eventData->SetSampleRate(double(fHeaderInfo.fSampleRate));
-        eventData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
-        eventData->SetRecordSize(fHeaderInfo.fRecordSize);
-        eventData->SetRecordLength(double(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
 
         return eventData;
     }

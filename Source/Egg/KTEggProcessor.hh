@@ -45,7 +45,7 @@ namespace Katydid
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
-            typedef KTSignal< void (UInt_t, const KTTimeSeriesData*) >::signal EventSignal;
+            typedef KTSignal< void (KTEvent*) >::signal EventSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:

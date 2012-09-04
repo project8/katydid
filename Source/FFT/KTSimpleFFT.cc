@@ -138,11 +138,34 @@ namespace Katydid
 
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
+        newData->SetEvent(tsData->GetEvent());
+
         //tsData->GetEvent()->AddData(newData);
         fFFTSignal(newData);
 
         return newData;
     }
+
+    KTFrequencySpectrum* KTSimpleFFT::Transform(const KTTimeSeries* data) const
+    {
+        unsigned int nBins = (unsigned int)data->GetNBins();
+        if (nBins != (unsigned int)fTransform->GetSize())
+        {
+            KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+                    << "   Bin expected: " << fTransform->GetSize() << ";   Bins in data: " << nBins);
+            return NULL;
+        }
+
+        for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
+        {
+            fTransform->SetPoint(iPoint, Double_t((*data)[iPoint]));
+        }
+
+        fTransform->Transform();
+
+        return ExtractTransformResult();
+    }
+
     /*
     void KTSimpleFFT::AddTransformResult(KTComplexVector* result)
     {
@@ -216,6 +239,7 @@ namespace Katydid
 
     void KTSimpleFFT::ProcessEvent(KTEvent* event)
     {
+        KTDEBUG(fftlog_simp, "Performing FFT of event " << event->GetEventNumber());
         const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesData::StaticGetName()));
         if (tsData == NULL)
         {

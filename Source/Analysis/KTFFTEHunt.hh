@@ -65,7 +65,7 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData);
+            void ProcessEvent(const KTEvent* event);
 
             void FinishHunt();
 

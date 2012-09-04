@@ -139,10 +139,48 @@ namespace Katydid
             }
             newData->SetSpectra(newResults, iChannel);
         }
+
+        newData->SetEvent(tsData->GetEvent());
+
         fFullFFTSignal(newData);
 
         return newData;
     }
+
+    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFFT::Transform(const KTTimeSeries* data) const
+    {
+        if (fWindowFunction->GetSize() < data->size())
+        {
+            UInt_t windowShift = fWindowFunction->GetSize() - GetEffectiveOverlap();
+            UInt_t nWindows = (data->size() - fWindowFunction->GetSize()) / windowShift + 1;
+            UInt_t nTimeBinsNotUsed = data->size() - (nWindows - 1) * windowShift + fWindowFunction->GetSize();
+            Double_t timeMin = 0.;
+            Double_t timeMax = ((nWindows - 1) * windowShift + fWindowFunction->GetSize()) * fWindowFunction->GetBinWidth();
+            KTPhysicalArray< 1, KTFrequencySpectrum* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(data->size(), timeMin, timeMax);
+            UInt_t windowStart = 0;
+            for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
+            {
+                for (UInt_t iPoint=windowStart; iPoint<windowStart+fWindowFunction->GetSize(); iPoint++)
+                {
+                    fTransform->SetPoint(iPoint-windowStart, Double_t((*data)[iPoint]) * fWindowFunction->GetWeight(iPoint-windowStart));
+                }
+                fTransform->Transform();
+                (*newSpectra)[iWindow] = ExtractTransformResult();
+                // emit a signal that the FFT was performed, for any connected slots
+                fSingleFFTSignal(iWindow, (*newSpectra)[iWindow]);
+                windowStart += windowShift;
+            }
+            KTINFO(fftlog_sw, "FFTs complete; windows used: " << nWindows << "; time bins not used: " << nTimeBinsNotUsed);
+            return newSpectra;
+       }
+
+       KTERROR(fftlog_sw, "Window size is larger than time data: " << fWindowFunction->GetSize() << " > " << data->size() << "\n" <<
+              "No transform was performed!");
+       throw(std::length_error("Window size is larger than time data"));
+       return NULL;
+    }
+
+
     /*
     void KTSlidingWindowFFT::AddTransformResult(vector< KTPowerSpectrum* >* newResults)
     {
