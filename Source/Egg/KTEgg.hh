@@ -33,9 +33,14 @@ namespace Katydid
             void SetHeader(KTEggHeader* header);
             const KTEggHeader* GetHeader() const;
 
+            void SetEventCounter(int count);
+            int GetEventCounter() const;
+
         private:
             KTEggReader* fReader;
             KTEggHeader* fHeader;
+
+            int fEventCounter;
 
     };
 
@@ -47,6 +52,17 @@ namespace Katydid
     inline const KTEggHeader* KTEgg::GetHeader() const
     {
         return fHeader;
+    }
+
+    inline void KTEgg::SetEventCounter(int count)
+    {
+        fEventCounter = count;
+        return;
+    }
+
+    inline int KTEgg::GetEventCounter() const
+    {
+        return fEventCounter;
     }
 
 } /* namespace Katydid */

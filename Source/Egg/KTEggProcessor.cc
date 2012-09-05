@@ -104,8 +104,9 @@ namespace Katydid
 
         fHeaderSignal(egg.GetHeader());
 
-        KTINFO(egglog, "The egg file has been opened successfully and the header parsed and processed;\n"
-                "Proceeding with event processing");
+        KTINFO(egglog, "The egg file has been opened successfully"
+                "\n\tand the header parsed and processed;"
+                "\n\tProceeding with event processing");
 
         UInt_t iEvent = 0;
         while (kTRUE)

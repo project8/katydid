@@ -21,7 +21,8 @@ namespace Katydid
 
     KTEgg::KTEgg() :
             fReader(NULL),
-            fHeader(NULL)
+            fHeader(NULL),
+            fEventCounter(-1)
     {
     }
 
@@ -44,6 +45,7 @@ namespace Katydid
             KTWARN(egglog, "No header was received");
             return false;
         }
+        fEventCounter = -1;
         return true;
     }
 
@@ -54,13 +56,18 @@ namespace Katydid
             KTWARN(egglog, "Not prepared to hatch an event");
             return NULL;
         }
+
         KTTimeSeriesData* data = fReader->HatchNextEvent(fHeader);
         if (data == NULL)
         {
             return NULL;
         }
+        fEventCounter++;
+
         KTEvent* newEvent = new KTEvent();
+        newEvent->SetEventNumber(unsigned(fEventCounter));
         newEvent->AddData(data);
+
         return newEvent;
     }
 
