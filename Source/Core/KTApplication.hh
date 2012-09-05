@@ -67,7 +67,7 @@ namespace Katydid
             /// If baseAddress is given, the KTConfigurable's config name will be appended before attempting to get the parameter store node.
             /// If no baseAddress is given, no parameter store node will be used.
             /// Use baseAddress="" if the parameter store node to be used is a top-level node.
-            Bool_t Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress="NONE");
+            Bool_t Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress);
 
             /// Get a node from the parameter store tree
             KTPStoreNode* GetNode(const std::string& address) const;

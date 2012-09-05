@@ -34,7 +34,11 @@ namespace Katydid
 
     Bool_t KTParameterStore::ReadConfigFile(const string& filename)
     {
-        if (filename.empty()) return true;
+        if (filename.empty())
+        {
+            KTDEBUG(utillog_pstore, "No config. filename given; parameter store is empty.");
+            return true;
+        }
         try
         {
             boost::property_tree::json_parser::read_json< PStoreTree >(filename, fStore);
@@ -44,6 +48,7 @@ namespace Katydid
             KTERROR(utillog_pstore, "Problem occurred while parsing config file <" << filename << ">.\n" << e.what());
             return false;
         }
+        PrintTree();
         return true;
     }
 
@@ -62,10 +67,21 @@ namespace Katydid
 
     KTPStoreNode* KTParameterStore::GetNode(const string& address) const
     {
+        /*
         PStoreTree::const_assoc_iterator it = fStore.find(address);
         if (it == fStore.not_found()) return NULL;
         // eclipse doesn't seem to like this line, but it compiles just fine
         return new KTPStoreNode(&(it->second));
+        */
+        try
+        {
+            return new KTPStoreNode(&(fStore.get_child(address)));
+        }
+        catch (std::exception& e)
+        {
+            return NULL;
+        }
+        return NULL; // code shouldn't get here
     }
 
     Bool_t KTParameterStore::ChangeValue(const string& address, const string& newValue)
@@ -93,7 +109,7 @@ namespace Katydid
         stringstream printStream;
         printStream << '\n';
         PrintSubTree(&fStore, "", &printStream);
-        KTINFO(utillog_pstore, printStream.str());
+        KTDEBUG(utillog_pstore, printStream.str());
         return;
     }
 

@@ -3,7 +3,7 @@
     {
         "egg-processor":
         {
-            "input-file": "/path/to/file.egg",
+            "filename": "/path/to/file.egg",
             "number-of-events": 1  
         },
         

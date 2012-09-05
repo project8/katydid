@@ -84,8 +84,12 @@ namespace Katydid
             template< typename XType >
             XType GetData(const std::string& dataName, XType defaultValue) const;
 
+            void PrintTree() const;
+
         protected:
             const TreeNode* fTree;
+
+            void PrintSubTree(const TreeNode* tree, const std::string& addressOfTree, std::stringstream* printStream) const;
 
         private:
             std::string fDefaultValue;

@@ -8,6 +8,7 @@
 #include "KTApplication.hh"
 
 #include "KTConfigurable.hh"
+#include "KTLogger.hh"
 
 #include <boost/foreach.hpp>
 
@@ -16,8 +17,11 @@ using std::vector;
 
 using std::string;
 
+#include <iostream>
+
 namespace Katydid
 {
+    KTLOGGER(applog, "katydid.core");
 
     KTApplication::KTApplication(Bool_t makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
@@ -110,15 +114,17 @@ namespace Katydid
     Bool_t KTApplication::Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress)
     {
         KTPStoreNode* pStoreNode = NULL;
-        if (baseAddress != "NONE")
+        string address = baseAddress;
+        if (! address.empty())
         {
-            string address = baseAddress;
-            if (! address.empty())
-            {
-                address = address + ".";
-            }
-            address = address + toBeConfigured->GetConfigName();
-            pStoreNode = GetNode(address);
+            address = address + ".";
+        }
+        address = address + toBeConfigured->GetConfigName();
+        pStoreNode = GetNode(address);
+        if (pStoreNode == NULL)
+        {
+            KTWARN(applog, "Did not find a PStoreNode at address <" << address << ">");
+            return false;
         }
         return toBeConfigured->Configure(pStoreNode);
     }

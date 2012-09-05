@@ -7,7 +7,12 @@
 
 #include "KTPStoreNode.hh"
 
+#include <boost/foreach.hpp>
+
+#include <sstream>
+
 using std::string;
+using std::stringstream;
 
 namespace Katydid
 {
@@ -110,6 +115,37 @@ namespace Katydid
 
         // get_value will only return data from this node (whereas get can return data from subnodes)
         return it->second.get_value< string >(defaultValue);
+    }
+
+    void KTPStoreNode::PrintTree() const
+    {
+        stringstream printStream;
+        printStream << '\n';
+        PrintSubTree(fTree, "", &printStream);
+        KTDEBUG(utillog_psnode, printStream.str());
+        return;
+    }
+
+    void KTPStoreNode::PrintSubTree(const TreeNode* tree, const string& addressOfTree, stringstream* printStream) const
+    {
+        BOOST_FOREACH( const TreeNode::value_type& treeNode, tree->get_child("") )
+        {
+            TreeNode subtree = treeNode.second;
+            string addressOfNode;
+            if (addressOfTree.size() > 0) addressOfNode = addressOfTree + "." + treeNode.first;
+            else addressOfNode = treeNode.first;
+
+            *printStream << addressOfNode;
+            if (tree->get< string >(treeNode.first).length() > 0)
+            {
+                *printStream << " = " << tree->get< string >(treeNode.first);
+            }
+            *printStream << '\n';
+
+            // Recursively go down the hierarchy
+            PrintSubTree(&subtree, addressOfNode, printStream);
+        }
+        return;
     }
 
 
