@@ -10,8 +10,6 @@
 #include "KTFrequencySpectrum.hh"
 #include "KTPublisher.hh"
 
-#include <typeinfo>
-
 namespace Katydid
 {
     std::string KTFrequencySpectrumData::fName("frequency-spectrum");
@@ -41,7 +39,6 @@ namespace Katydid
         publisher->Write(this);
         return;
     }
-
 
 } /* namespace Katydid */
 

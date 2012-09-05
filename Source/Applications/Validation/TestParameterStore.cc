@@ -95,7 +95,7 @@ int main(int argc, char** argv)
         KTINFO(testparamlog, "Single data from <sub-data> via an iterator: " << iter->second.get_value< string >());
     }
 
-    std::pair< KTPStoreNode::const_sorted_iterator, KTPStoreNode::const_sorted_iterator > itPair = subNode->EqualRange("multi-data");
+    KTPStoreNode::csi_pair itPair = subNode->EqualRange("multi-data");
     for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
     {
         KTINFO(testparamlog, "Multi data from <sub-data> via an iterator: " << citer->second.get_value< string >());

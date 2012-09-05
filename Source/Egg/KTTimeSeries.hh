@@ -30,6 +30,8 @@ namespace Katydid
 
             virtual KTTimeSeries& operator=(const KTTimeSeries& rhs);
 
+            void Print(unsigned startPrint, unsigned nToPrint) const;
+
 #ifdef ROOT_FOUND
         public:
             virtual TH1D* CreateHistogram(const std::string& name = "hTimeSeries") const;

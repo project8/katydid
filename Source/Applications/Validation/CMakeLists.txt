@@ -93,6 +93,9 @@ if (ENABLE_TESTING)
     
     # executables that DO require ROOT
     if (ROOT_FOUND)
+        add_executable (TestCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/TestCorrelator.cc)
+        target_link_libraries (TestCorrelator KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis ${LIBS})
+        
         add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
         target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
     
@@ -100,10 +103,13 @@ if (ENABLE_TESTING)
         target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
     
         
-        install (TARGETS TestSimpleFFT
-                         TestSlidingWindowFFT
-                 DESTINATION ${BIN_INSTALL_DIR})
+        install (TARGETS 
+                    TestCorrelator
+                    TestSimpleFFT
+                    TestSlidingWindowFFT
+                DESTINATION ${BIN_INSTALL_DIR})
     
+        add_test (Test_Correlator TestCorrelator)
         add_test (Test_SimpleFFT TestSimpleFFT)
         add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     endif (ROOT_FOUND)

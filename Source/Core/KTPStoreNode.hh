@@ -34,6 +34,7 @@ namespace Katydid
     {
         public:
             typedef boost::property_tree::ptree::const_assoc_iterator const_sorted_iterator;
+            typedef std::pair< KTPStoreNode::const_sorted_iterator, KTPStoreNode::const_sorted_iterator > csi_pair;
 
         protected:
             typedef boost::property_tree::ptree TreeNode;

@@ -7,14 +7,20 @@
 
 #include "KTFrequencySpectrum.hh"
 
+#include "KTLogger.hh"
 #include "KTPowerSpectrum.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
 #endif
 
+#include <sstream>
+
+using std::stringstream;
+
 namespace Katydid
 {
+    KTLOGGER(fslog, "katydid.fft");
 
     KTFrequencySpectrum::KTFrequencySpectrum() :
             KTPhysicalArray< 1, complexpolar< Double_t > >()
@@ -63,6 +69,19 @@ namespace Katydid
         }
         return newPS;
     }
+
+    void KTFrequencySpectrum::Print(unsigned startPrint, unsigned nToPrint) const
+    {
+        stringstream printStream;
+        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; iBin++)
+        {
+            printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
+                    ";   y = " << (*this)[iBin] << "\n";
+        }
+        KTDEBUG(fslog, "\n" << printStream.str());
+        return;
+    }
+
 
 #ifdef ROOT_FOUND
     TH1D* KTFrequencySpectrum::CreateMagnitudeHistogram(const std::string& name) const

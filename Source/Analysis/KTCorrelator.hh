@@ -46,8 +46,9 @@ namespace Katydid
 
         public:
 
-            KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs);
-            KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair);
+            KTCorrelationData* Correlate(const KTFrequencySpectrumData* data);
+            //KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs);
+            //KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair);
 
         protected:
             KTFrequencySpectrum* DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum);

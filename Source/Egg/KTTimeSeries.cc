@@ -7,12 +7,19 @@
 
 #include "KTTimeSeries.hh"
 
+#include "KTLogger.hh"
+
 #ifdef ROOT_FOUND
 #include "TH1.h"
 #endif
 
+#include <sstream>
+
+using std::stringstream;
+
 namespace Katydid
 {
+    KTLOGGER(tslog, "katydid.egg");
 
     KTTimeSeries::KTTimeSeries() :
             KTPhysicalArray< 1, Double_t >()
@@ -36,6 +43,18 @@ namespace Katydid
     {
         KTPhysicalArray< 1, Double_t >::operator=(rhs);
         return *this;
+    }
+
+    void KTTimeSeries::Print(unsigned startPrint, unsigned nToPrint) const
+    {
+        stringstream printStream;
+        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; iBin++)
+        {
+            printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
+                    ";   y = " << (*this)[iBin] << "\n";
+        }
+        KTDEBUG(tslog, "\n" << printStream.str());
+        return;
     }
 
 #ifdef ROOT_FOUND

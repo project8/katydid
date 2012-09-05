@@ -37,6 +37,8 @@ namespace Katydid
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
+            void Print(unsigned startPrint, unsigned nToPrint) const;
+
 #ifdef ROOT_FOUND
         public:
             virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const;
