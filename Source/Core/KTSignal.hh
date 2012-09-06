@@ -8,6 +8,8 @@
 #ifndef KTSIGNAL_HH_
 #define KTSIGNAL_HH_
 
+#include "KTSignalSlotSignature.hh"
+
 #include <boost/signals2.hpp>
 #include <boost/utility.hpp>
 
@@ -60,8 +62,10 @@ namespace Katydid
 
         public:
             template< typename XSignature >
-            KTSignalWrapper(XSignature* signalPtr);
+            KTSignalWrapper(XSignature* signalPtr, const std::string& signature);
             ~KTSignalWrapper();
+
+            const KTSignalSlotSignature& GetSignature() const;
 
         private:
             KTSignalWrapper();
@@ -70,11 +74,14 @@ namespace Katydid
 
             KTInternalSignalWrapper* fSignalWrapper;
 
+            KTSignalSlotSignature fSignature;
+
     };
 
     template< typename XSignature >
-    KTSignalWrapper::KTSignalWrapper(XSignature* signalPtr) :
-            fSignalWrapper(NULL)
+    KTSignalWrapper::KTSignalWrapper(XSignature* signalPtr, const std::string& signature) :
+            fSignalWrapper(NULL),
+            fSignature(signature)
     {
         fSignalWrapper = new KTSpecifiedInternalSignalWrapper< XSignature >(signalPtr);
     }
@@ -82,6 +89,11 @@ namespace Katydid
     inline KTSignalWrapper::KTInternalSignalWrapper* KTSignalWrapper::GetInternal() const
     {
         return fSignalWrapper;
+    }
+
+    inline const KTSignalSlotSignature& KTSignalWrapper::GetSignature() const
+    {
+        return fSignature;
     }
 
 } /* namespace Katydid */

@@ -10,6 +10,7 @@
 
 #include "KTConnection.hh"
 #include "KTSignal.hh"
+#include "KTSignalSlotSignature.hh"
 
 #include <boost/function.hpp>
 #include <boost/signals2.hpp>
@@ -70,14 +71,17 @@ namespace Katydid
 
         public:
             template< typename XSignature, typename XTypeContainer >
-            KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont);
+            KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont, const std::string& signature);
             ~KTSlotWrapper();
+
+            const KTSignalSlotSignature& GetSignature() const;
 
         private:
             KTSlotWrapper();
 
             KTInternalSlotWrapper* fSlotWrapper;
 
+            KTSignalSlotSignature fSignature;
 
         public:
             void SetConnection(KTConnection conn);
@@ -90,8 +94,9 @@ namespace Katydid
     };
 
     template< typename XSignature, typename XTypeContainer >
-    KTSlotWrapper::KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont) :
+    KTSlotWrapper::KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont, const std::string& signature) :
             fSlotWrapper(new KTSpecifiedInternalSlotWrapper< XSignature, XTypeContainer >(signalPtr, typeCont)),
+            fSignature(signature),
             fConnection()
     {}
 
@@ -112,6 +117,12 @@ namespace Katydid
         fConnection.disconnect();
         return;
     }
+
+    inline const KTSignalSlotSignature& KTSlotWrapper::GetSignature() const
+    {
+        return fSignature;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTSLOT_HH_ */

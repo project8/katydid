@@ -77,7 +77,7 @@ namespace Katydid
     template< typename XSignalSig >
     void KTProcessor::RegisterSignal(std::string name, XSignalSig* signalPtr, const std::string& signature)
     {
-        KTSignalWrapper* sig = new KTSignalWrapper(signalPtr);
+        KTSignalWrapper* sig = new KTSignalWrapper(signalPtr, signature);
         fSignalMap.insert(SigMapVal(name, sig));
         return;
     }
@@ -89,7 +89,7 @@ namespace Katydid
 
         boost::function< XReturn () > *func = new boost::function< XReturn () >(boost::bind(funcPtr, target));
 
-        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept);
+        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept, signature);
         fSlotMap.insert(SlotMapVal(name, slot));
         return;
     }
@@ -101,7 +101,7 @@ namespace Katydid
 
         boost::function< XReturn (XArg1) > *func = new boost::function< XReturn (XArg1) >(boost::bind(funcPtr, target, _1));
 
-        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept);
+        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept, signature);
         fSlotMap.insert(SlotMapVal(name, slot));
         return;
     }
@@ -113,7 +113,7 @@ namespace Katydid
 
         boost::function< XReturn (XArg1, XArg2) > *func = new boost::function< XReturn (XArg1, XArg2) >(boost::bind(funcPtr, target, _1, _2));
 
-        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept);
+        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept, signature);
         fSlotMap.insert(SlotMapVal(name, slot));
         return;
     }
