@@ -10,8 +10,6 @@
 #include "KTFrequencySpectrum.hh"
 #include "KTPublisher.hh"
 
-#include <typeinfo>
-
 namespace Katydid
 {
     std::string KTCorrelationData::fName("correlation");

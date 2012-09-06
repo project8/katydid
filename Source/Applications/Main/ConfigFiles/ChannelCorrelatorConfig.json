@@ -1,0 +1,27 @@
+{
+    "channel-correlation":
+    {
+        "egg-processor":
+        {
+            "filename": "/path/to/file.egg",
+            "number-of-events": 1  
+        },
+        
+        "simple-fft":
+        {
+            "transform-flag": "ES"
+        },
+        
+        "correlator":
+        {
+            "corr-pair": "0, 0"
+            "corr-pair": "0, 0"
+        },
+        
+        "basic-root-publisher":
+        {
+            "output-file": "/path/to/file.root",
+            "file-flag": "recreate"
+        }
+    }
+}

@@ -134,8 +134,7 @@ namespace Katydid
         TreeNode::const_assoc_iterator it = fTree->find(dataName);
         if (it == fTree->not_found())
         {
-            KTERROR(utillog_psnode, "No subnode was found called <" << dataName << ">.");
-            throw dnfException;
+            return defaultValue;
         }
 
         // get_value will only return data from this node (whereas get can return data from subnodes)

@@ -40,6 +40,8 @@ namespace Katydid
             fPairs(),
             fCorrSignal()
     {
+        fConfigName = "correlator";
+
         RegisterSignal("correlation", &fCorrSignal);
 
         RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData);
@@ -65,6 +67,7 @@ namespace Katydid
                 KTWARN(corrlog, "Unable to parse correlation pair: " << pairString);
                 continue;
             }
+            KTINFO(corrlog, "Adding correlation pair " << first << ", " << second);
             this->AddPair(KTCorrelationPair(first, second));
         }
 
@@ -178,7 +181,7 @@ namespace Katydid
         const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(KTFrequencySpectrumData::StaticGetName()));
         if (fsData == NULL)
         {
-            KTWARN(corrlog, "No time series data was available in the event");
+            KTWARN(corrlog, "No frequency-spectrum data was available in the event");
             return;
         }
         KTCorrelationData* newData = Correlate(fsData);

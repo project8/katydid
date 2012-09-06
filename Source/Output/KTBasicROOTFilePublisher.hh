@@ -10,10 +10,9 @@
 
 #include "KTPublisher.hh"
 #include "KTFrequencySpectrumData.hh"
+#include "KTCorrelationData.hh"
 
 #include "TFile.h"
-
-#include <iostream>
 
 namespace Katydid
 {
@@ -64,6 +63,12 @@ namespace Katydid
             //************************
         public:
             void Write(const KTFrequencySpectrumData* data);
+
+            //************************
+            // Correlation Data
+            //************************
+        public:
+            void Write(const KTCorrelationData* data);
 
     };
 

@@ -117,6 +117,40 @@ namespace Katydid
         return;
     }
 
+    //************************
+    // Correlation Data
+    //************************
+
+    void KTBasicROOTFilePublisher::Write(const KTCorrelationData* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nPairs = data->GetNPairs();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iPair=0; iPair<nPairs; iPair++)
+        {
+            const KTFrequencySpectrum* spectrum = data->GetCorrelation(iPair);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histCorr_" << eventNumber << "_" << iPair;
+                string histName;
+                conv >> histName;
+                TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
+                stringstream titleStream;
+                titleStream << "Event << " << eventNumber << ", Correlation " << iPair << ", "
+                        "Channels (" << data->GetFirstChannel(iPair) << ", " << data->GetSecondChannel(iPair) << ")";
+                corrHist->SetTitle(titleStream.str().c_str());
+                corrHist->SetDirectory(fFile);
+                corrHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
 
 
 } /* namespace Katydid */

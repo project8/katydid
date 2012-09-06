@@ -19,12 +19,12 @@ namespace Katydid
     class KTCorrelationData : public KTWriteableData
     {
         protected:
-        struct PerPairData
-        {
-            UInt_t fFirstChannel;
-            UInt_t fSecondChannel;
-            KTFrequencySpectrum* fCorrelation;
-        };
+            struct PerPairData
+            {
+                UInt_t fFirstChannel;
+                UInt_t fSecondChannel;
+                KTFrequencySpectrum* fCorrelation;
+            };
 
         public:
             KTCorrelationData(unsigned nChannels=1);
