@@ -29,8 +29,9 @@ namespace Katydid
      Iterates over events in an egg file; events are extracted until fNEvents is reached.
 
      Available configuration options:
-     \li \c Number of events to process
-     \li \c Egg filename to use
+     \li \c "number-of-events": UInt_t -- Number of events to process
+     \li \c "filename": string -- Egg filename to use
+     \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
 
      Command-line options defined
      \li \c -n (n-events): Number of events to process
@@ -40,6 +41,7 @@ namespace Katydid
      Signals:
      \li \c void (KTEgg::HeaderInfo info) emitted when the file header is parsed.
      \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
+     \li \c void () emitted when a file is finished.
     */
     class KTEggProcessor : public KTProcessor, public KTConfigurable
     {

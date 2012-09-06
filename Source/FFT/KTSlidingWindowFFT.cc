@@ -41,11 +41,11 @@ namespace Katydid
             fSingleFFTSignal(),
             fFullFFTSignal()
     {
-        RegisterSignal("single_fft", &fSingleFFTSignal);
-        RegisterSignal("full_fft", &fFullFFTSignal);
+        RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrum*)");
+        RegisterSignal("full_fft", &fFullFFTSignal, "void (KTSlidingWindowFSData*)");
 
-        RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader);
-        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent);
+        RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
+        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (UInt_t iEvent, const KTTimeSeriesData*)");
     }
 
     KTSlidingWindowFFT::~KTSlidingWindowFFT()

@@ -42,10 +42,10 @@ namespace Katydid
     {
         fConfigName = "correlator";
 
-        RegisterSignal("correlation", &fCorrSignal);
+        RegisterSignal("correlation", &fCorrSignal, "void (const KTWriteableData*)");
 
-        RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData);
-        RegisterSlot("event", this, &KTCorrelator::ProcessEvent);
+        RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData, "void (const KTFrequencySpectrumData*)");
+        RegisterSlot("event", this, &KTCorrelator::ProcessEvent, "void (KTEvent*)");
     }
 
     KTCorrelator::~KTCorrelator()

@@ -27,7 +27,7 @@ namespace Katydid
     {
         fConfigName = "gain-normalization";
 
-        RegisterSlot("freq_spect", this, &KTGainNormalization::ProcessFrequencySpectrum);
+        RegisterSlot("freq_spect", this, &KTGainNormalization::ProcessFrequencySpectrum, "void (UInt_t, KTFrequencySpectrum*)");
     }
 
     KTGainNormalization::~KTGainNormalization()

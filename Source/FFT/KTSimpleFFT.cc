@@ -38,10 +38,11 @@ namespace Katydid
     {
         fConfigName = "simple-fft";
 
-        RegisterSignal("fft", &fFFTSignal);
+        RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
 
-        RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader);
-        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent);
+        RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
+        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
     }
 
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
@@ -59,11 +60,11 @@ namespace Katydid
     {
         fConfigName = "simple-fft";
 
-        RegisterSignal("fft", &fFFTSignal);
+        RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
 
-        RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader);
-        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData);
-        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent);
+        RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
+        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
     }
 
     KTSimpleFFT::~KTSimpleFFT()

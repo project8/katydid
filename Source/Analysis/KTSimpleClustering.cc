@@ -45,7 +45,7 @@ namespace Katydid
     {
         fConfigName = "sliding-window-fft";
 
-        RegisterSlot("freq_spect", this, &KTSimpleClustering::ProcessFrequencySpectrum);
+        RegisterSlot("freq_spect", this, &KTSimpleClustering::ProcessFrequencySpectrum, "void (UInt_t, KTFrequencySpectrum*)");
     }
 
     KTSimpleClustering::~KTSimpleClustering()

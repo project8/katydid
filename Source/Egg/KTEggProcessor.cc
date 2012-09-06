@@ -43,9 +43,9 @@ namespace Katydid
     {
         fConfigName = "egg-processor";
 
-        RegisterSignal("header", &fHeaderSignal);
-        RegisterSignal("event", &fEventSignal);
-        RegisterSignal("egg_done", &fEggDoneSignal);
+        RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
+        RegisterSignal("event", &fEventSignal, "void (KTEvent*)");
+        RegisterSignal("egg_done", &fEggDoneSignal, "void ()");
     }
 
     KTEggProcessor::~KTEggProcessor()

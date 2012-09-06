@@ -55,9 +55,9 @@ namespace Katydid
     {
         fConfigName = "fft-e-hunt";
 
-        RegisterSlot("header", this, &KTFFTEHunt::ProcessHeader);
-        RegisterSlot("event", this, &KTFFTEHunt::ProcessEvent);
-        RegisterSlot("event_done", this, &KTFFTEHunt::FinishHunt);
+        RegisterSlot("header", this, &KTFFTEHunt::ProcessHeader, "void (const KTEggHeader*)");
+        RegisterSlot("event", this, &KTFFTEHunt::ProcessEvent, " void (const KTEvent*)");
+        RegisterSlot("event_done", this, &KTFFTEHunt::FinishHunt, "void ()");
 
         fWindowFFT.ConnectASlot("full_fft", &fGainNorm, "freq_spect", 0);
         fWindowFFT.ConnectASlot("full_fft", &fClustering, "freq_spect", 1);

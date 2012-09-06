@@ -57,6 +57,7 @@ namespace Katydid
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
      \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
+
      Signals:
      \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
     */

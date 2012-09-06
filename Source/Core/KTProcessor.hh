@@ -50,16 +50,16 @@ namespace Katydid
             void ConnectSignalToSlot(KTSignalWrapper* signal, KTSlotWrapper* slot, int groupNum=-1);
 
             template< class XProcessor >
-            void RegisterSignal(std::string name, XProcessor* signalPtr);
+            void RegisterSignal(std::string name, XProcessor* signalPtr, const std::string& signature="(unknown)");
 
             template< class XTarget, typename XReturn >
-            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)());
+            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(), const std::string& signature="(unknown)");
 
             template< class XTarget, typename XReturn, typename XArg1 >
-            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1));
+            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1), const std::string& signature="(unknown)");
 
             template< class XTarget, typename XReturn, typename XArg1, typename XArg2 >
-            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2));
+            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2), const std::string& signature="(unknown)");
 
             KTSignalWrapper* GetSignal(const std::string& name);
 
@@ -75,7 +75,7 @@ namespace Katydid
 
 
     template< typename XSignalSig >
-    void KTProcessor::RegisterSignal(std::string name, XSignalSig* signalPtr)
+    void KTProcessor::RegisterSignal(std::string name, XSignalSig* signalPtr, const std::string& signature)
     {
         KTSignalWrapper* sig = new KTSignalWrapper(signalPtr);
         fSignalMap.insert(SigMapVal(name, sig));
@@ -83,7 +83,7 @@ namespace Katydid
     }
 
     template< class XTarget, typename XReturn >
-    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)())
+    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(), const std::string& signature)
     {
         KTSignal< XReturn () > signalConcept;
 
@@ -95,7 +95,7 @@ namespace Katydid
     }
 
     template< class XTarget, typename XReturn, typename XArg1 >
-    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1))
+    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1), const std::string& signature)
     {
         KTSignal< XReturn (XArg1) > signalConcept;
 
@@ -107,7 +107,7 @@ namespace Katydid
     }
 
     template< class XTarget, typename XReturn, typename XArg1, typename XArg2 >
-    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2))
+    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2), const std::string& signature)
     {
         KTSignal< XReturn (XArg1, XArg2) > signalConcept;
 
