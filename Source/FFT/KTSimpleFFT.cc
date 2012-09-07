@@ -11,12 +11,11 @@
 #include "KTEvent.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTTimeSeriesData.hh"
-//#include "KTPowerSpectrum.hh"
-//#include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
 
-//#include "TH1D.h"
+#include <algorithm>
 
+using std::copy;
 using std::string;
 using std::vector;
 
@@ -27,10 +26,12 @@ namespace Katydid
             //KTFFT(),
             KTProcessor(),
             KTConfigurable(),
-            fTransform(new TFFTRealComplex()),
-            //fTransformResults(),
-            fTransformFlag(string("")),
-            fIsInitialized(kFALSE),
+            fFTPlan(),
+            fTimeSize(0),
+            fInputArray(NULL),
+            fOutputArray(NULL),
+            fTransformFlag("MEASURE"),
+            fIsInitialized(false),
             fFreqBinWidth(1.),
             fFreqMin(-0.5),
             fFreqMax(0.5),
@@ -43,16 +44,20 @@ namespace Katydid
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
+
+        SetupTransformFlagMap();
     }
 
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
             //KTFFT(),
             KTProcessor(),
             KTConfigurable(),
-            fTransform(new TFFTRealComplex((Int_t)timeSize, kFALSE)),
-            //fTransformResults(),
-            fTransformFlag(string("")),
-            fIsInitialized(kFALSE),
+            fFTPlan(),
+            fTimeSize(timeSize),
+            fInputArray((double*) fftw_malloc(sizeof(double) * timeSize)),
+            fOutputArray((fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(timeSize))),
+            fTransformFlag("MEASURE"),
+            fIsInitialized(false),
             fFreqBinWidth(1.),
             fFreqMin(-0.5),
             fFreqMax(0.5),
@@ -65,24 +70,16 @@ namespace Katydid
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
+
+        SetupTransformFlagMap();
     }
 
     KTSimpleFFT::~KTSimpleFFT()
     {
-        delete fTransform;
-        //ClearTransformResults();
+        if (fInputArray != NULL) fftw_free(fInputArray);
+        if (fOutputArray != NULL) fftw_free(fOutputArray);
     }
-    /*
-    void KTSimpleFFT::ClearTransformResults()
-    {
-        while (! fTransformResults.empty())
-        {
-            delete fTransformResults.back();
-            fTransformResults.pop_back();
-        }
-        return;
-    }
-    */
+
     Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
@@ -99,8 +96,19 @@ namespace Katydid
 
     void KTSimpleFFT::InitializeFFT()
     {
-        fTransform->Init(fTransformFlag.c_str(), 0, NULL);
-        fIsInitialized = kTRUE;
+        // fTransformFlag is guaranteed to be valid in the Set method.
+        TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
+        Int_t transformFlag = iter->second;
+
+        fFTPlan = fftw_plan_dft_r2c_1d(fTimeSize, fInputArray, fOutputArray, transformFlag);
+        if (fFTPlan != NULL)
+        {
+            fIsInitialized = true;
+        }
+        else
+        {
+            fIsInitialized = false;
+        }
         return;
     }
 
@@ -141,7 +149,6 @@ namespace Katydid
 
         newData->SetEvent(tsData->GetEvent());
 
-        //tsData->GetEvent()->AddData(newData);
         fFFTSignal(newData);
 
         return newData;
@@ -149,31 +156,20 @@ namespace Katydid
 
     KTFrequencySpectrum* KTSimpleFFT::Transform(const KTTimeSeries* data) const
     {
-        unsigned int nBins = (unsigned int)data->GetNBins();
-        if (nBins != (unsigned int)fTransform->GetSize())
+        if ((UInt_t)data->GetNBins() != fTimeSize)
         {
             KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fTransform->GetSize() << ";   Bins in data: " << nBins);
+                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << data->GetNBins());
             return NULL;
         }
 
-        for (unsigned int iPoint=0; iPoint<nBins; iPoint++)
-        {
-            fTransform->SetPoint(iPoint, Double_t((*data)[iPoint]));
-        }
+        copy(data->begin(), data->end(), fInputArray);
 
-        fTransform->Transform();
+        fftw_execute(fFTPlan);
 
         return ExtractTransformResult();
     }
 
-    /*
-    void KTSimpleFFT::AddTransformResult(KTComplexVector* result)
-    {
-        fTransformResults.push_back(result);
-        return;
-    }
-    */
     KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult() const
     {
         UInt_t freqSize = this->GetFrequencySize();
@@ -183,43 +179,12 @@ namespace Katydid
         KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, fFreqMin, fFreqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
-            fTransform->GetPointComplex(iPoint, tempReal, tempImag);
-            (*newSpect)[iPoint].set_rect(tempReal, tempImag);
+            (*newSpect)[iPoint].set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
             (*newSpect)[iPoint] *= normalization;
         }
 
         return newSpect;
     }
-    /*
-    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram(const string& name, UInt_t channelNum) const
-    {
-        KTPowerSpectrum* ps = this->CreatePowerSpectrum(channelNum);
-        TH1D* pshist = ps->CreateMagnitudeHistogram(name);
-        delete ps;
-        return pshist;
-    }
-
-    TH1D* KTSimpleFFT::CreatePowerSpectrumHistogram(UInt_t channelNum) const
-    {
-        return CreatePowerSpectrumHistogram("hPowerSpectrum_SimpleFFT", channelNum);
-    }
-
-    KTPhysicalArray< 1, Double_t >* KTSimpleFFT::CreatePowerSpectrumPhysArr(UInt_t channelNum) const
-    {
-        KTPowerSpectrum* ps = this->CreatePowerSpectrum();
-        KTPhysicalArray< 1, Double_t >* psPhysArr = ps->CreateMagnitudePhysArr();
-        delete ps;
-        return psPhysArr;
-    }
-
-    KTPowerSpectrum* KTSimpleFFT::CreatePowerSpectrum(UInt_t channelNum) const
-    {
-        KTPowerSpectrum* powerSpec = new KTPowerSpectrum();
-        powerSpec->TakeFrequencySpectrum(*(fTransformResults[channelNum]));
-        powerSpec->SetBinWidth(fFreqBinWidth);
-        return powerSpec;
-    }
-    */
 
     void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
     {
@@ -249,6 +214,16 @@ namespace Katydid
         }
         KTFrequencySpectrumData* newData = TransformData(tsData);
         event->AddData(newData);
+        return;
+    }
+
+    void KTSimpleFFT::SetupTransformFlagMap()
+    {
+        fTransformFlagMap.clear();
+        fTransformFlagMap["ESTIMATE"] = FFTW_ESTIMATE;
+        fTransformFlagMap["MEASURE"] = FFTW_MEASURE;
+        fTransformFlagMap["PATIENT"] = FFTW_PATIENT;
+        fTransformFlagMap["EXHAUSTIVE"] = FFTW_EXHAUSTIVE;
         return;
     }
 

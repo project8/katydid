@@ -55,10 +55,15 @@ endif (ENABLE_TESTING)
 # setup the Boost install
 # at the time of this writing, CMake 2.8.6 searched for boost up to 1.46, but boost 1.48 exists, so it must be added
 # see FindBoost.cmake for additional information about Boost_ADDITIONAL_VERSIONS
-set (Boost_ADDITIONAL_VERSIONS "1.41" "1.41.0" "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1" "1.47" "1.47.0" "1.48" "1.48.0" "1.49" "1.49.0" "1.50" "1.50.0")
+set (Boost_ADDITIONAL_VERSIONS "1.41" "1.41.0" "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1" "1.47" "1.47.0" "1.48" "1.48.0" "1.49" "1.49.0" "1.50" "1.50.0" "1.51" "1.51.0")
 find_package (Boost 1.36.0 REQUIRED COMPONENTS program_options)
 include_directories (${Boost_INCLUDE_DIRS})
 set (LIBS ${LIBS} ${Boost_LIBRARIES})
+
+# setup the FFTW install
+find_package(FFTW REQUIRED)
+include_directories (${FFTW_INCLUDE_DIR})
+set (LIBS ${LIBS} ${FFTW_LIBRARIES})
 
 # setup the ROOT install
 find_package (ROOT 5.28)

@@ -3,9 +3,16 @@
  *
  *  Created on: Dec 22, 2011
  *      Author: nsoblath
+ *
+ *  Usage: TestSimpleFFT -e /path/to/file.egg [-d]
+ *      -e filename  -- Specify the filename
+ *      -d           -- If present, will plot a histogram of the power spectrum.
+ *      -z           -- If present, use the 2011 egg reader; otherwise use the monarch egg reader
  */
 
 #include "KTEgg.hh"
+#include "KTEggReader2011.hh"
+#include "KTEggREaderMonarch.hh"
 #include "KTEvent.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTSimpleFFT.hh"
@@ -29,18 +36,23 @@ int main(int argc, char** argv)
 {
     string outputFileNameBase("test_simplefft");
     string inputFileName("");
-    Bool_t drawWaterfall = kFALSE;
+    Bool_t drawWaterfall = false;
+
+    KTEgg egg;
 
     Int_t arg;
     extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:d")) != -1)
+    while ((arg = getopt(argc, argv, "e:d:z")) != -1)
         switch (arg)
         {
             case 'e':
                 inputFileName = string(optarg);
                 break;
             case 'd':
-                drawWaterfall = kTRUE;
+                drawWaterfall = true;
+                break;
+            case 'z':
+                egg.SetReader(new KTEggReader2011());
                 break;
         }
 
@@ -50,9 +62,13 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    if (egg.GetReader() == NULL)
+    {
+        egg.SetReader(new KTEggReaderMonarch());
+    }
+
     string outputFileNamePS = outputFileNameBase + string(".ps");
 
-    KTEgg egg;
     if (! egg.BreakEgg(inputFileName))
     {
         cout << "Error: Egg did not break" << endl;
@@ -100,7 +116,7 @@ int main(int argc, char** argv)
 
     // FFT of the entire event, which will be used to normalize the gain fluctuations
     KTSimpleFFT fullFFT(data->GetRecordSize());
-    fullFFT.SetTransformFlag("ES");
+    fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
     KTFrequencySpectrumData* freqData = fullFFT.TransformData(data);
 
@@ -116,6 +132,14 @@ int main(int argc, char** argv)
     }
 
     Bool_t histCheck = histFullPS->Integral() > 0.;
+    if (histCheck)
+    {
+        std::cout << "The integral of the power spectrum is greater than 0!" << std::endl;
+    }
+    else
+    {
+        std::cout << "The integral of the histgoram is not greater than 0.  Something may be wrong!" << std::endl;
+    }
 
     delete freqData;
     delete event;

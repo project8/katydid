@@ -9,36 +9,30 @@
 #ifndef KTSIMPLEFFT_HH_
 #define KTSIMPLEFFT_HH_
 
-//#include "KTFFT.hh"
 #include "KTProcessor.hh"
 #include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
 
-#include "TFFTRealComplex.h"
+#include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
+#include <fftw3/fftw3.h>
 
+#include <map>
 #include <string>
 #include <vector>
-
-class TH1D;
 
 namespace Katydid
 {
     KTLOGGER(fftlog_simp, "katydid.fft");
 
-    //class KTComplexVector;
     class KTEggHeader;
     class KTEvent;
-    //class KTPowerSpectrum;
     class KTPStoreNode;
     class KTTimeSeries;
     class KTTimeSeriesData;
     class KTFrequencySpectrumData;
     class KTWriteableData;
-
-    template< size_t NDims, typename XDataType >
-    class KTPhysicalArray;
 
     /*!
      @class KTSimpleFFT
@@ -49,10 +43,18 @@ namespace Katydid
      @details
      KTSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
 
-     The FFT is currently performed by ROOT's adaptation of FFTW. Specifically the TFFTRealComplex class.
+     The FFT is implemented using FFTW.
 
      Available configuration values:
      \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
+
+     Transform flags control how FFTW performs the FFT.
+     Currently only the following "rigor" flags are available:
+     \li \c ESTIMATE -- "A simple heuristic is used to pick a (probably sub-optimal) plan quickly."
+     \li \c MEASURE --  "Find[s] an optimized plan by actually computing several FFTs and measuring their execution time. Depending on your machine, this can take some time (often a few seconds)." This is the default option.
+     \li \c PATIENT -- "Considers a wider range of algorithms and often produces a “more optimal” plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
+     \li \c EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
+     These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
@@ -67,6 +69,9 @@ namespace Katydid
         public:
             typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
 
+        protected:
+            typedef std::map< std::string, Int_t > TransformFlagMap;
+
         public:
             KTSimpleFFT();
             KTSimpleFFT(UInt_t timeSize);
@@ -74,22 +79,12 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            //void ClearTransformResults();
-
             virtual void InitializeFFT();
 
             virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
             KTFrequencySpectrum* Transform(const KTTimeSeries* data) const;
 
-            //void AddTransformResult(KTComplexVector* result);
-
-            //virtual TH1D* CreatePowerSpectrumHistogram(const std::string& name,  UInt_t channelNum = 0) const;
-            //virtual TH1D* CreatePowerSpectrumHistogram(UInt_t channelNum = 0) const;
-
-            //virtual KTPhysicalArray< 1, Double_t >* CreatePowerSpectrumPhysArr(UInt_t channelNum = 0) const;
-
-            //virtual KTPowerSpectrum* CreatePowerSpectrum(UInt_t channelNum = 0) const;
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
 
@@ -97,8 +92,6 @@ namespace Katydid
             ///       It also sets fIsInitialized to kFALSE.
             void SetTimeSize(UInt_t nBins);
 
-            const TFFTRealComplex* GetFFT() const;
-            //const KTComplexVector* GetTransformResult(UInt_t channelNum = 0) const;
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
             Double_t GetFreqBinWidth() const;
@@ -112,12 +105,17 @@ namespace Katydid
             void SetFreqMax(Double_t fm);
 
         protected:
+            UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
             KTFrequencySpectrum* ExtractTransformResult() const;
+            void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
-            TFFTRealComplex* fTransform;
-            //std::vector< KTComplexVector* > fTransformResults;
+            fftw_plan fFTPlan;
+            UInt_t fTimeSize;
+            Double_t* fInputArray;
+            fftw_complex* fOutputArray;
 
             std::string fTransformFlag;
+            TransformFlagMap fTransformFlagMap;
 
             Bool_t fIsInitialized;
 
@@ -146,32 +144,25 @@ namespace Katydid
 
     inline UInt_t KTSimpleFFT::GetTimeSize() const
     {
-        return fTransform->GetSize();
+        return fTimeSize;
     }
 
     inline UInt_t KTSimpleFFT::GetFrequencySize() const
     {
-        return fTransform->GetSize() / 2 + 1;
+        return CalculateNFrequencyBins(fTimeSize);
     }
 
     inline void KTSimpleFFT::SetTimeSize(UInt_t nBins)
     {
-        delete fTransform;
-        fTransform = new TFFTRealComplex((Int_t)nBins, kFALSE);
-        fIsInitialized = kFALSE;
+        fTimeSize = nBins;
+        fftw_free(fInputArray);
+        fftw_free(fOutputArray);
+        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
+        fIsInitialized = false;
         return;
     }
 
-    inline const TFFTRealComplex* KTSimpleFFT::GetFFT() const
-    {
-        return fTransform;
-    }
-    /*
-    inline const KTComplexVector* KTSimpleFFT::GetTransformResult(UInt_t channelNum) const
-    {
-        return fTransformResults[channelNum];
-    }
-     */
     inline const std::string& KTSimpleFFT::GetTransformFlag() const
     {
         return fTransformFlag;
@@ -199,8 +190,13 @@ namespace Katydid
 
     inline void KTSimpleFFT::SetTransformFlag(const std::string& flag)
     {
+        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
+        {
+            KTWARN(fftlog_simp, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
+            return;
+        }
         fTransformFlag = flag;
-        fIsInitialized = kFALSE;
+        fIsInitialized = false;
         return;
     }
 
@@ -220,6 +216,12 @@ namespace Katydid
     {
         fFreqMax = fm;
         return;
+    }
+
+    inline UInt_t KTSimpleFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const
+    {
+        // Integer division is rounded down, per FFTW's instructions
+        return nTimeBins / 2 + 1;
     }
 
 } /* namespace Katydid */

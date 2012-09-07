@@ -9,7 +9,7 @@
         
         "simple-fft":
         {
-            "transform-flag": "ES"
+            "transform-flag": "ESTIMATE"
         },
         
         "basic-root-publisher":
