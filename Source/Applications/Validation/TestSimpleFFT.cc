@@ -12,7 +12,7 @@
 
 #include "KTEgg.hh"
 #include "KTEggReader2011.hh"
-#include "KTEggREaderMonarch.hh"
+#include "KTEggReaderMonarch.hh"
 #include "KTEvent.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTSimpleFFT.hh"

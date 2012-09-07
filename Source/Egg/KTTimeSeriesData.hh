@@ -17,6 +17,8 @@
 
 #include "MonarchTypes.hpp"
 
+#include "TMath.h"
+
 #include <algorithm>
 #include <vector>
 
@@ -99,11 +101,6 @@ namespace Katydid
 
             static std::string fName;
 
-        private:
-            /// Round to nearest integer. Rounds half integers to the nearest even integer.
-            /// Based on ROOT's TMath::Nint(Double_t)
-            int nint(Double_t x) const;
-
     };
 
     inline const std::string& KTTimeSeriesData::GetName() const
@@ -123,7 +120,7 @@ namespace Katydid
 
     inline DataType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const
     {
-        return this->GetRecordAt((UInt_t)(nint(std::max(0., time) / fBinWidth)), channelNum);
+        return this->GetRecordAt((UInt_t)(TMath::Nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
     template< typename XType >
@@ -135,7 +132,7 @@ namespace Katydid
     template< typename XType >
     XType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const
     {
-        return this->GetRecordAt< XType >((UInt_t)(nint(std::max(0., time) / fBinWidth)), channelNum);
+        return this->GetRecordAt< XType >((UInt_t)(TMath::Nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
     inline UInt_t KTTimeSeriesData::GetRecordSize() const
@@ -254,25 +251,6 @@ namespace Katydid
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fRecord = record;
     }
-
-
-
-    inline int KTTimeSeriesData::nint(Double_t x) const
-    {
-        int i;
-        if (x >= 0.)
-        {
-            i = int(x + 0.5);
-            if (x + 0.5 == Double_t(i) && (i & 1)) i--;
-        }
-        else
-        {
-            i = int(x - 0.5);
-            if (x - 0.5 == Double_t(i) && (i & 1)) i++;
-        }
-        return i;
-    }
-
 
 } /* namespace Katydid */
 

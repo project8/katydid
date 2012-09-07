@@ -42,8 +42,6 @@ namespace Katydid
         protected:
             virtual void RebuildWindowFunction();
 
-            ClassDef(KTRectangularWindow, 2);
-
     };
 
 } /* namespace Katydid */

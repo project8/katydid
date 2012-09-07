@@ -10,10 +10,9 @@
 #include "KTFactory.hh"
 #include "KTPStoreNode.hh"
 
-#include "TArrayD.h"
-#include <cmath>
+#include "TMath.h"
 
-ClassImp(Katydid::KTRectangularWindow);
+#include <cmath>
 
 namespace Katydid
 {

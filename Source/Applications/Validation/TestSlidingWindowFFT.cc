@@ -6,6 +6,8 @@
  */
 
 #include "KTEgg.hh"
+#include "KTEggReader2011.hh"
+#include "KTEggReaderMonarch.hh"
 #include "KTEvent.hh"
 #include "KTHannWindow.hh"
 #include "KTPowerSpectrum.hh"
@@ -33,9 +35,11 @@ int main(int argc, char** argv)
     string inputFileName("");
     Bool_t drawWaterfall = kFALSE;
 
+    KTEgg egg;
+
     Int_t arg;
     extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:d")) != -1)
+    while ((arg = getopt(argc, argv, "e:d:z")) != -1)
         switch (arg)
         {
             case 'e':
@@ -43,6 +47,9 @@ int main(int argc, char** argv)
                 break;
             case 'd':
                 drawWaterfall = kTRUE;
+                break;
+            case 'z':
+                egg.SetReader(new KTEggReader2011());
                 break;
         }
 
@@ -52,9 +59,13 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    if (egg.GetReader() == NULL)
+    {
+        egg.SetReader(new KTEggReaderMonarch());
+    }
+
     string outputFileNamePS = outputFileNameBase + string(".ps");
 
-    KTEgg egg;
     if (! egg.BreakEgg(inputFileName))
     {
         cout << "Error: Egg did not break" << endl;

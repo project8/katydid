@@ -50,13 +50,15 @@ namespace Katydid
             virtual Double_t GetWeight(Double_t time) const = 0;
             virtual Double_t GetWeight(UInt_t bin) const = 0;
 
+#ifdef ROOT_FOUND
             virtual TH1D* CreateHistogram(const std::string& name) const;
             virtual TH1D* CreateHistogram() const;
             virtual TH1D* CreateFrequencyResponseHistogram(const std::string& name) const;
             virtual TH1D* CreateFrequencyResponseHistogram() const;
+#endif
 
             virtual Double_t GetLength() const;
-            virtual unsigned int GetSize() const;
+            virtual UInt_t GetSize() const;
 
             virtual Double_t GetBinWidth() const;
 
@@ -89,9 +91,8 @@ namespace Katydid
             Double_t fLength;
             Double_t fBinWidth;
 
-            unsigned int fSize;
+            UInt_t fSize;
 
-            ClassDef(KTEventWindowFunction, 2);
     };
 
 } /* namespace Katydid */

@@ -13,7 +13,9 @@
 
 #include <string>
 
+#ifdef ROOT_FOUND
 class TH1D;
+#endif
 
 namespace Katydid
 {
@@ -53,10 +55,12 @@ namespace Katydid
             virtual Double_t GetWeight(Double_t) const = 0;
             virtual Double_t GetWeight(UInt_t) const = 0;
 
+#ifdef ROOT_FOUND
             virtual TH1D* CreateHistogram(const std::string& name) const = 0;
             virtual TH1D* CreateHistogram() const = 0;
             virtual TH1D* CreateFrequencyResponseHistogram(const std::string& name) const = 0;
             virtual TH1D* CreateFrequencyResponseHistogram() const = 0;
+#endif
 
             virtual Double_t GetLength() const = 0;
             virtual UInt_t GetSize() const = 0;
@@ -66,7 +70,6 @@ namespace Katydid
             virtual Double_t SetBinWidth(Double_t) = 0;
             virtual Double_t SetSize(UInt_t) = 0;
 
-            ClassDef(KTWindowFunction, 2);
     };
 
 } /* namespace Katydid */

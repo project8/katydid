@@ -9,8 +9,6 @@
 
 #include "KTPStoreNode.hh"
 
-ClassImp(Katydid::KTWindowFunction);
-
 namespace Katydid
 {
 

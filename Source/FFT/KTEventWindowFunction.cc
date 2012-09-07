@@ -14,12 +14,13 @@
 #include "KTSimpleFFT.hh"
 #include "KTLogger.hh"
 
-#include "TH1.h"
 #include "TMath.h"
 
-using std::string;
+#ifdef ROOT_FOUND
+#include "TH1.h"
+#endif
 
-ClassImp(Katydid::KTEventWindowFunction);
+using std::string;
 
 namespace Katydid
 {
@@ -41,7 +42,7 @@ namespace Katydid
                     fBinWidth(tsData->GetBinWidth()),
                     fSize(1)
     {
-        fSize = (unsigned int)TMath::Nint(fLength / fBinWidth);
+        fSize = (UInt_t)TMath::Nint(fLength / fBinWidth);
         fLength = (Double_t)fSize * fBinWidth;
     }
 
@@ -64,18 +65,19 @@ namespace Katydid
         return this->SetBinWidthAndLength(tsData->GetBinWidth(), length);
     }
 
+#ifdef ROOT_FOUND
     TH1D* KTEventWindowFunction::CreateHistogram(const string& name) const
     {
         Int_t sideBands = TMath::Nint(0.2 * fSize);
         Int_t totalSize = fSize + 2 * sideBands;
         Double_t histEdges = fLength / 2. + sideBands * fBinWidth;
         TH1D* hist = new TH1D(name.c_str(), "Window Function", totalSize, -histEdges, histEdges);
-        for (unsigned int iHistBin=1; iHistBin<=sideBands; iHistBin++)
+        for (UInt_t iHistBin=1; iHistBin<=sideBands; iHistBin++)
         {
             hist->SetBinContent(iHistBin, 0.);
             hist->SetBinContent(totalSize-iHistBin+1, 0.);
         }
-        for (unsigned int iHistBin=sideBands+1; iHistBin<=fSize+sideBands; iHistBin++)
+        for (UInt_t iHistBin=sideBands+1; iHistBin<=fSize+sideBands; iHistBin++)
         {
             hist->SetBinContent(iHistBin, this->GetWeight(iHistBin-sideBands-1));
         }
@@ -93,12 +95,12 @@ namespace Katydid
         Int_t sideBands = TMath::Nint(0.2 * fSize);
         Int_t totalSize = fSize + 2 * sideBands;
         KTTimeSeries timeData(totalSize, 0., totalSize * fBinWidth);
-        for (unsigned int iBin=0; iBin<sideBands; iBin++)
+        for (UInt_t iBin=0; iBin<sideBands; iBin++)
         {
             timeData[iBin] = 0.;
             timeData[totalSize-iBin-1] = 0.;
         }
-        for (unsigned int iBin=sideBands; iBin<fSize+sideBands; iBin++)
+        for (UInt_t iBin=sideBands; iBin<fSize+sideBands; iBin++)
         {
             timeData[iBin] = this->GetWeight(iBin-sideBands);
         }
@@ -117,13 +119,14 @@ namespace Katydid
     {
         return CreateFrequencyResponseHistogram("hFrequencyResponse");
     }
+#endif
 
     Double_t KTEventWindowFunction::GetLength() const
     {
         return fLength;
     }
 
-    unsigned int KTEventWindowFunction::GetSize() const
+    UInt_t KTEventWindowFunction::GetSize() const
     {
         return fSize;
     }
@@ -137,7 +140,7 @@ namespace Katydid
     {
         fLength = TMath::Abs(length);
         Double_t prelimNBins = fLength / fBinWidth;
-        fSize = (unsigned int)TMath::Nint(prelimNBins);
+        fSize = (UInt_t)TMath::Nint(prelimNBins);
         fBinWidth = fLength / (Double_t)fSize;
         this->RebuildWindowFunction();
         return fBinWidth;
@@ -147,7 +150,7 @@ namespace Katydid
     {
         fBinWidth = TMath::Abs(bw);
         Double_t prelimNBins = fLength / fBinWidth;
-        fSize = (unsigned int)TMath::Nint(prelimNBins);
+        fSize = (UInt_t)TMath::Nint(prelimNBins);
         fLength = (Double_t)fSize * fBinWidth;
         this->RebuildWindowFunction();
         KTDEBUG(fftlog, "setting the bin width: " << fSize << "  " << fBinWidth << "  " << fLength);
@@ -158,7 +161,7 @@ namespace Katydid
     {
         fBinWidth = TMath::Abs(bw);
         Double_t prelimNBins = TMath::Abs(length) / fBinWidth;
-        fSize = (unsigned int)TMath::Nint(prelimNBins);
+        fSize = (UInt_t)TMath::Nint(prelimNBins);
         fLength = (Double_t)fSize * fBinWidth;
         this->RebuildWindowFunction();
         return fLength;
@@ -168,7 +171,7 @@ namespace Katydid
     {
         fLength = TMath::Abs(length);
         Double_t prelimNBins = fLength / TMath::Abs(bw);
-        fSize = (unsigned int)TMath::Nint(prelimNBins);
+        fSize = (UInt_t)TMath::Nint(prelimNBins);
         fBinWidth = fLength / (Double_t)fSize;
         this->RebuildWindowFunction();
         return fBinWidth;
