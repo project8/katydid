@@ -17,7 +17,9 @@
 #include "KTGainNormalization.hh"
 #include "KTSimpleClustering.hh"
 
+#ifdef ROOT_FOUND
 #include "TFile.h"
+#endif
 
 #include <fstream>
 #include <list>
@@ -105,8 +107,9 @@ namespace Katydid
             Bool_t fWriteTextFileFlag;
             Bool_t fWriteROOTFileFlag;
             std::ofstream fTextFile;
+#ifdef ROOT_FOUND
             TFile fROOTFile;
-
+#endif
             Double_t fFrequencyMultiplier;
             Int_t fTotalCandidates;
 

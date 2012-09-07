@@ -14,9 +14,10 @@
 #include "KTSlidingWindowFFT.hh"
 #include "KTSlidingWindowFSData.hh"
 
+#ifdef ROOT_FOUND
 #include "TCanvas.h"
 #include "TH1.h"
-#include "TMath.h"
+#endif
 
 #include <iostream>
 #include <set>
@@ -149,6 +150,7 @@ namespace Katydid
         }
         //std::cout << "FFT " << psNum << " -- Peak bins: " << peakBins.size() << std::endl;
 
+#ifdef ROOT_FOUND
         /**/// DEBUG
         if (fDrawFlag && psNum < 5)
         //if (psNum < 5)
@@ -165,6 +167,7 @@ namespace Katydid
             delete cSCP;
         }
         /**/
+#endif
 
         // Look for groups
         for (set< Int_t >::iterator iPB=peakBins.begin(); iPB!=peakBins.end(); iPB++)

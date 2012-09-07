@@ -13,11 +13,10 @@
 
 #include "KTData.hh"
 
+#include "KTMath.hh"
 #include "KTTimeSeries.hh"
 
 #include "MonarchTypes.hpp"
-
-#include "TMath.h"
 
 #include <algorithm>
 #include <vector>
@@ -120,7 +119,7 @@ namespace Katydid
 
     inline DataType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const
     {
-        return this->GetRecordAt((UInt_t)(TMath::Nint(std::max(0., time) / fBinWidth)), channelNum);
+        return this->GetRecordAt((UInt_t)(KTMath::Nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
     template< typename XType >
@@ -132,7 +131,7 @@ namespace Katydid
     template< typename XType >
     XType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const
     {
-        return this->GetRecordAt< XType >((UInt_t)(TMath::Nint(std::max(0., time) / fBinWidth)), channelNum);
+        return this->GetRecordAt< XType >((UInt_t)(KTMath::Nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
     inline UInt_t KTTimeSeriesData::GetRecordSize() const

@@ -26,18 +26,18 @@ if (ENABLE_TESTING)
     #target_link_libraries (ExtractEvents KatydidUtility KatydidEgg ${LIBS})
     
     add_executable (TestApplication ${CMAKE_CURRENT_SOURCE_DIR}/TestApplication.cc
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
     target_link_libraries (TestApplication KatydidUtility KatydidCore ${LIBS})
 
     add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
     
-    add_executable (TestBasicROOTFilePublisher ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFilePublisher.cc)
-    target_link_libraries (TestBasicROOTFilePublisher KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
-    
     add_executable (TestComplexPolar ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexPolar.cc)
     target_link_libraries (TestComplexPolar KatydidUtility ${LIBS})
     
+    add_executable (TestCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/TestCorrelator.cc)
+    target_link_libraries (TestCorrelator KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis ${LIBS})
+        
     add_executable (TestCutIterator ${CMAKE_CURRENT_SOURCE_DIR}/TestCutIterator.cc)
     target_link_libraries (TestCutIterator KatydidUtility ${LIBS})
     
@@ -65,8 +65,8 @@ if (ENABLE_TESTING)
     install (TARGETS #ExtractEvents
                      TestApplication
                      TestAxisProperties
-                     TestBasicROOTFilePublisher
                      TestComplexPolar
+                     TestCorrelator
                      TestCutIterator
                      TestCutableArray
                      TestEggHatching
@@ -80,8 +80,8 @@ if (ENABLE_TESTING)
     #add_test (Test_ExtractEvents ExtractEvents)
     add_test (Test_Application TestApplication)
     add_test (Test_AxisProperties TestAxisProperties)
-    add_test (Test_BasicROOTFilePublisher TestBasicROOTFilePublisher)
     add_test (Test_ComplexPolar TestComplexPolar)
+    add_test (Test_Correlator TestCorrelator)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_EggHatching TestEggHatching)
@@ -93,8 +93,8 @@ if (ENABLE_TESTING)
     
     # executables that DO require ROOT
     if (ROOT_FOUND)
-        add_executable (TestCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/TestCorrelator.cc)
-        target_link_libraries (TestCorrelator KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis ${LIBS})
+        add_executable (TestBasicROOTFilePublisher ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFilePublisher.cc)
+        target_link_libraries (TestBasicROOTFilePublisher KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
         
         add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
         target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
@@ -104,12 +104,12 @@ if (ENABLE_TESTING)
     
         
         install (TARGETS 
-                    TestCorrelator
+                    TestBasicROOTFilePublisher
                     TestSimpleFFT
                     TestSlidingWindowFFT
                 DESTINATION ${BIN_INSTALL_DIR})
     
-        add_test (Test_Correlator TestCorrelator)
+        add_test (Test_BasicROOTFilePublisher TestBasicROOTFilePublisher)
         add_test (Test_SimpleFFT TestSimpleFFT)
         add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     endif (ROOT_FOUND)

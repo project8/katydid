@@ -13,11 +13,10 @@
 #include "KTProcessor.hh"
 #include "KTConfigurable.hh"
 
+#include "KTMath.hh"
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTEventWindowFunction.hh"
-
-#include "TMath.h"
 
 #include <complex>
 #include <fftw3/fftw3.h>
@@ -208,7 +207,7 @@ namespace Katydid
 
     inline UInt_t KTSlidingWindowFFT::GetEffectiveOverlap() const
     {
-        if (fUseOverlapFrac) return (UInt_t)TMath::Nint(fOverlapFrac * (Double_t)this->fWindowFunction->GetSize());
+        if (fUseOverlapFrac) return (UInt_t)KTMath::Nint(fOverlapFrac * (Double_t)this->fWindowFunction->GetSize());
         return fOverlap;
     }
 
@@ -243,7 +242,7 @@ namespace Katydid
 
     inline void KTSlidingWindowFFT::SetOverlap(Double_t overlapTime)
     {
-        this->SetOverlap((UInt_t)TMath::Nint(overlapTime / fWindowFunction->GetBinWidth()));
+        this->SetOverlap((UInt_t)KTMath::Nint(overlapTime / fWindowFunction->GetBinWidth()));
         fUseOverlapFrac = false;
         return;
     }

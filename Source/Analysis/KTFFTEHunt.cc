@@ -17,7 +17,10 @@
 #include "KTTimeSeriesData.hh"
 #include "KTSlidingWindowFSData.hh"
 
+#ifdef ROOT_FOUND
 #include "TH2.h"
+#include "TMath.h"
+#endif
 
 #include <list>
 #include <map>
@@ -49,7 +52,7 @@ namespace Katydid
             fWriteTextFileFlag(kFALSE),
             fWriteROOTFileFlag(kTRUE),
             fTextFile(),
-            fROOTFile(),
+            //fROOTFile(),
             fFrequencyMultiplier(1.e-6),
             fTotalCandidates(0)
     {
@@ -61,12 +64,18 @@ namespace Katydid
 
         fWindowFFT.ConnectASlot("full_fft", &fGainNorm, "freq_spect", 0);
         fWindowFFT.ConnectASlot("full_fft", &fClustering, "freq_spect", 1);
+
+#ifdef ROOT_FOUND
+        fROOTFile();
+#endif
     }
 
     KTFFTEHunt::~KTFFTEHunt()
     {
         EmptyEventPeakBins();
+#ifdef ROOT_FOUND
         if (fROOTFile.IsOpen()) fROOTFile.Close();
+#endif
         if (fTextFile.is_open()) fTextFile.close();
     }
 
@@ -155,11 +164,13 @@ namespace Katydid
             fTextFile.open(fTextFilename.c_str(), std::ios::out | std::ios::app);
             if (! fTextFile.is_open()) fWriteTextFileFlag = kFALSE;
         }
+#ifdef ROOT_FOUND
         if (fWriteROOTFileFlag)
         {
             fROOTFile.Open(fROOTFilename.c_str(), "UPDATE");
             if (! fROOTFile.IsOpen()) fWriteROOTFileFlag = kFALSE;
         }
+#endif
 
         fTotalCandidates = 0;
 
@@ -234,6 +245,7 @@ namespace Katydid
                 fTextFile << meanFreq << "   ";
             }
 
+#ifdef ROOT_FOUND
             if (fWriteROOTFileFlag)
             {
                 stringstream conv;
@@ -275,6 +287,7 @@ namespace Katydid
                 groupHist->Write();
                 delete histWaterfall;
             }
+#endif
 
             //candidates->Add(groupHist);
             iCandidate++;
@@ -303,7 +316,9 @@ namespace Katydid
             fTextFile << "Total candidates found in this file: " << fTotalCandidates << '\n';
             fTextFile.close();
         }
+#ifdef ROOT_FOUND
         if (fROOTFile.IsOpen()) fROOTFile.Close();
+#endif
         return;
     }
 

@@ -13,7 +13,9 @@
 #include "KTParameterStore.hh"
 #include "KTPStoreNode.hh"
 
+#ifdef ROOT_FOUND
 #include "TApplication.h"
+#endif
 
 #include "Rtypes.h"
 
@@ -88,11 +90,13 @@ namespace Katydid
 
             std::string fConfigFilename;
 
+#ifdef ROOT_FOUND
         public:
             TApplication* GetTApplication() const;
 
         protected:
             TApplication* fTApp;
+#endif
     };
 
     inline KTPStoreNode* KTApplication::GetNode(const std::string& address) const
@@ -115,11 +119,12 @@ namespace Katydid
         return fConfigFilename;
     }
 
+#ifdef ROOT_FOUND
     TApplication* KTApplication::GetTApplication() const
     {
         return fTApp;
     }
-
+#endif
 
 } /* namespace Katydid */
 #endif /* KTAPPLICATION_HH_ */

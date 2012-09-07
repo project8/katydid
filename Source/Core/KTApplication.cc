@@ -26,31 +26,48 @@ namespace Katydid
     KTApplication::KTApplication(Bool_t makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
             fParamStore(KTParameterStore::GetInstance()),
-            fConfigFilename(),
-            fTApp(NULL)
+            fConfigFilename()
     {
+
+#ifdef ROOT_FOUND
+        fTApp = NULL;
         if (makeTApp)
         {
             fTApp = new TApplication("", 0, 0);
         }
+#else
+        if (makeTApp)
+        {
+            KTWARN(applog, "TApplication requested, but Katydid has been built without ROOT dependence.");
+        }
+#endif
     }
 
     KTApplication::KTApplication(int argC, char** argV, Bool_t makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
-            fParamStore(KTParameterStore::GetInstance()),
-            fTApp(NULL)
+            fParamStore(KTParameterStore::GetInstance())
     {
+#ifdef ROOT_FOUND
+        fTApp = NULL;
         if (makeTApp)
         {
             fTApp = new TApplication("", 0, 0);
         }
+#else
+        if (makeTApp)
+        {
+            KTWARN(applog, "TApplication requested, but Katydid has been built without ROOT dependence.");
+        }
+#endif
         fCLHandler->TakeArguments(argC, argV);
         fConfigFilename = fCLHandler->GetConfigFilename();
     }
 
     KTApplication::~KTApplication()
     {
+#ifdef ROOT_FOUND
         delete fTApp;
+#endif
     }
 
     void KTApplication::AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const string& addressOfTree)

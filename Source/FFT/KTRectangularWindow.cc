@@ -10,8 +10,6 @@
 #include "KTFactory.hh"
 #include "KTPStoreNode.hh"
 
-#include "TMath.h"
-
 #include <cmath>
 
 namespace Katydid

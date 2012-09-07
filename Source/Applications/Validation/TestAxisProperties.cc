@@ -9,8 +9,10 @@
 #include "KTAxisProperties.hh"
 #include "KTAxisProperties.hh"
 
+#ifdef ROOT_FOUND
 #include "TH1.h"
 #include "TH2.h"
+#endif
 
 #include <cmath>
 #include <iostream>
@@ -45,6 +47,7 @@ int main(int argc, char** argv)
     cout << "The test position (" << testPosition1 << ") is in bin " << array.FindBin(testPosition1) << endl;
     cout << "The test bin (" << testBin1 << ") has a low edge of " << array.GetBinLowEdge(testBin1) << " and a bin center of " << array.GetBinCenter(testBin1) << endl;
 
+#ifdef ROOT_FOUND
     TH1I histCompare("histCompare", "histCompare", nBins1, rangeMin1, rangeMax1);
     // relative magnitude floating point comparisons
     Double_t tolerance = 1.e-10;
@@ -62,6 +65,7 @@ int main(int argc, char** argv)
     }
 
     cout << "The KTAxisProperties calculations agree with TH1" << endl;
+#endif
 
     // Test a 2-D array
     cout << "Two-dimensional test" << endl;
@@ -82,6 +86,7 @@ int main(int argc, char** argv)
     cout << "The test bin 1 (" << testBin1 << ") has a low edge of " << array2D.GetBinLowEdge(1, testBin1) << " and a bin center of " << array2D.GetBinCenter(1, testBin1) << endl;
     cout << "The test bin 2 (" << testBin2 << ") has a low edge of " << array2D.GetBinLowEdge(2, testBin2) << " and a bin center of " << array2D.GetBinCenter(2, testBin2) << endl;
 
+#ifdef ROOT_FOUND
     TH2I hist2DCompare("hist2DCompare", "hist2DCompare", nBins1, rangeMin1, rangeMax1, nBins2, rangeMin2, rangeMax2);
     TAxis* xAxis = hist2DCompare.GetXaxis();
     TAxis* yAxis = hist2DCompare.GetYaxis();
@@ -114,6 +119,7 @@ int main(int argc, char** argv)
 
 
     cout << "The KTAxisProperties calculations agree with TH2" << endl;
+#endif
 
     return 0;
 }

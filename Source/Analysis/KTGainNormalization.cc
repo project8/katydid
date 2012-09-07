@@ -13,8 +13,7 @@
 #include "KTSlidingWindowFSData.hh"
 #include "KTPowerSpectrum.hh"
 
-#include "TMath.h"
-
+#include <algorithm>
 #include <iostream>
 
 namespace Katydid
@@ -51,8 +50,8 @@ namespace Katydid
         {
             Double_t freqBinMin = fNormalization->GetBinLowEdge(iBin);
             Double_t freqBinMax = fNormalization->GetBinLowEdge(iBin+1);
-            Int_t firstBinFullPS = TMath::Max((Int_t)fullArray->FindBin(freqBinMin), 0);
-            Int_t lastBinFullPS = TMath::Min((Int_t)fullArray->FindBin(freqBinMax), veryLastBinInFullPS);
+            Int_t firstBinFullPS = std::max((Int_t)fullArray->FindBin(freqBinMin), 0);
+            Int_t lastBinFullPS = std::min((Int_t)fullArray->FindBin(freqBinMax), veryLastBinInFullPS);
             //std::cout << iBin << "  " << freqBinMin << "  " << freqBinMax << "  " << firstBinFullPS << "  " << lastBinFullPS << std::endl;
             complexpolar<Double_t> meanBinContent;
             Int_t nBinsInSum = 0;
