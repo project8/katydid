@@ -12,8 +12,9 @@
 #include "KTTimeSeriesData.hh"
 #include "KTLogger.hh"
 
-#include "Monarch.hpp"
+#include "MonarchPP.hh"
 #include "MonarchHeader.hpp"
+#include "MonarchTypes.hpp"
 
 using std::map;
 using std::string;
@@ -28,8 +29,8 @@ namespace Katydid
             fMonarch(NULL),
             fNumberOfRecords()
     {
-        fNumberOfRecords.insert(AcqModeMapValue(OneChannel, 1));
-        fNumberOfRecords.insert(AcqModeMapValue(TwoChannel, 2));
+        fNumberOfRecords.insert(AcqModeMapValue(sOneChannel, 1));
+        fNumberOfRecords.insert(AcqModeMapValue(sTwoChannel, 2));
     }
 
     KTEggReaderMonarch::~KTEggReaderMonarch()
@@ -51,14 +52,22 @@ namespace Katydid
 
         // open the file
         KTDEBUG(eggreadlog, "Attempting to open file <" << filename << ">");
-        fMonarch = Monarch::Open(filename, ReadMode);
+        fMonarch = MonarchPP::OpenForReading(filename);
         if (fMonarch == NULL)
         {
-            KTERROR(eggreadlog, "Unable to break egg (no cake for you!)");
+            KTERROR(eggreadlog, "Unable to break egg");
             return NULL;
         }
 
         KTDEBUG(eggreadlog, "File open; reading header");
+        if (! fMonarch->ReadHeader())
+        {
+            KTERROR(eggreadlog, "Header was not read correctly; egg breaking aborted.");
+            fMonarch->Close();
+            delete fMonarch;
+            fMonarch = NULL;
+            return NULL;
+        }
         KTEggHeader* header = new KTEggHeader();
         CopyHeaderInformation(fMonarch->GetHeader(), header);
 
@@ -67,35 +76,35 @@ namespace Katydid
 
     KTTimeSeriesData* KTEggReaderMonarch::HatchNextEvent(KTEggHeader* header)
     {
-        if (fMonarch == NULL) return NULL;
+        if (fMonarch == NULL)
+        {
+            KTERROR(eggreadlog, "Monarch file has not been opened");
+            return NULL;
+        }
 
-        MonarchRecord* monarchRecord = NULL;
-        KTTimeSeriesData* eventData = new KTTimeSeriesData(fNumberOfRecords[header->GetAcquisitionMode()]);
+        if (! fMonarch->ReadRecord())
+        {
+            KTINFO(eggreadlog, "End of file reached before complete event was read.");
+            return NULL;
+        }
 
-        //
+        UInt_t numberOfRecords = fNumberOfRecords[header->GetAcquisitionMode()];
+        KTTimeSeriesData* eventData = new KTTimeSeriesData(numberOfRecords);
+
+        // Fill out event information
         eventData->SetSampleRate(header->GetAcquisitionRate());
         eventData->SetRecordSize(header->GetRecordSize());
         eventData->CalculateBinWidthAndRecordLength();
         //eventData->SetBinWidth(1. / eventData->GetSampleRate());
         //eventData->SetRecordLength((double)(eventData->GetRecordSize()) * eventData->GetBinWidth());
 
-        for (int iRecord=0; iRecord<=fNumberOfRecords[header->GetAcquisitionMode()]; iRecord++)
+        for (UInt_t iRecord=0; iRecord<=fNumberOfRecords[header->GetAcquisitionMode()]; iRecord++)
         {
-
-            try
+            const MonarchRecord* monarchRecord = monarchRecord = fMonarch->GetRecord(iRecord);
+            if (monarchRecord == NULL)
             {
-                monarchRecord = fMonarch->GetNextEvent();
-            }
-            catch(MonarchExceptions::EndOfFile& e)
-            {
+                KTWARN(eggreadlog, "Record " << iRecord << " is incomplete; event read aborted.");
                 delete eventData;
-                KTINFO(eggreadlog, "End of file reached before complete event was read: <" << e.what() << ">");
-                return NULL;
-            }
-            catch(std::exception& e)
-            {
-                delete eventData;
-                KTERROR(eggreadlog, "Something went wrong while reading out an event: " << e.what());
                 return NULL;
             }
 
@@ -106,7 +115,7 @@ namespace Katydid
 
             //eventData->SetRecord(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iRecord);
             KTTimeSeries* newRecord = new KTTimeSeries(header->GetRecordSize(), 0., Double_t(header->GetRecordSize()) * eventData->GetBinWidth());
-            for (unsigned iBin=0; iBin<header->GetRecordSize(); iBin++)
+            for (UInt_t iBin=0; iBin<header->GetRecordSize(); iBin++)
             {
                 (*newRecord)[iBin] = Double_t(monarchRecord->fDataPtr[iBin]);
             }
@@ -116,16 +125,16 @@ namespace Katydid
         return eventData;
     }
 
-    bool KTEggReaderMonarch::CloseEgg()
+    Bool_t KTEggReaderMonarch::CloseEgg()
     {
-        bool fileExistedAndWasClosed = fMonarch->Close();
+        Bool_t fileExistedAndWasClosed = fMonarch->Close();
         delete fMonarch;
         fMonarch = NULL;
         return fileExistedAndWasClosed;
     }
 
 
-    void KTEggReaderMonarch::CopyHeaderInformation(MonarchHeader* monarchHeader, KTEggHeader* eggHeader)
+    void KTEggReaderMonarch::CopyHeaderInformation(const MonarchHeader* monarchHeader, KTEggHeader* eggHeader)
     {
         eggHeader->SetFilename(monarchHeader->GetFilename());
         eggHeader->SetAcquisitionMode(monarchHeader->GetAcqMode());

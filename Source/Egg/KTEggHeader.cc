@@ -7,12 +7,14 @@
 
 #include "KTEggHeader.hh"
 
+#include "MonarchTypes.hpp"
+
 namespace Katydid
 {
 
     KTEggHeader::KTEggHeader() :
             fFilename(),
-            fAcquisitionMode(OneChannel),
+            fAcquisitionMode(sOneChannel),
             fRecordSize(0),
             fAcquisitionTime(0),
             fAcquisitionRate(0)

@@ -201,7 +201,7 @@ namespace Katydid
 
         KTEggHeader* eggHeader = new KTEggHeader();
         eggHeader->SetFilename(filename);
-        eggHeader->SetAcquisitionMode(OneChannel);
+        eggHeader->SetAcquisitionMode(sOneChannel);
         eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
         eggHeader->SetAcquisitionTime(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
         eggHeader->SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);

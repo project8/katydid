@@ -8,7 +8,7 @@
 #ifndef KTEGGHEADER_HH_
 #define KTEGGHEADER_HH_
 
-#include "MonarchTypes.hpp"
+#include "Rtypes.h"
 
 #include <string>
 
@@ -24,24 +24,24 @@ namespace Katydid
             void SetFilename(const std::string& fname);
             const std::string& GetFilename() const;
 
-            void SetAcquisitionMode(const AcquisitionMode& mode);
-            AcquisitionMode GetAcquisitionMode() const;
+            void SetAcquisitionMode(UInt_t mode);
+            UInt_t GetAcquisitionMode() const;
 
-            void SetRecordSize(const std::size_t& recsize);
+            void SetRecordSize(std::size_t recsize);
             std::size_t GetRecordSize() const;
 
-            void SetAcquisitionTime(const std::size_t& acqt);
-            std::size_t GetAcquisitionTime() const;
+            void SetAcquisitionTime(UInt_t acqt);
+            UInt_t GetAcquisitionTime() const;
 
-            void SetAcquisitionRate(const std::size_t& acqr);
-            std::size_t GetAcquisitionRate() const;
+            void SetAcquisitionRate(Double_t acqr);
+            Double_t GetAcquisitionRate() const;
 
         protected:
             std::string fFilename;
-            AcquisitionMode fAcquisitionMode;
+            UInt_t fAcquisitionMode;
             std::size_t fRecordSize;
-            std::size_t fAcquisitionTime;
-            std::size_t fAcquisitionRate;
+            UInt_t fAcquisitionTime;
+            Double_t fAcquisitionRate;
 
     };
 
@@ -56,18 +56,18 @@ namespace Katydid
         return fFilename;
     }
 
-    inline void KTEggHeader::SetAcquisitionMode(const AcquisitionMode& mode)
+    inline void KTEggHeader::SetAcquisitionMode(UInt_t mode)
     {
         fAcquisitionMode = mode;
         return;
     }
 
-    inline AcquisitionMode KTEggHeader::GetAcquisitionMode() const
+    inline UInt_t KTEggHeader::GetAcquisitionMode() const
     {
         return fAcquisitionMode;
     }
 
-    inline void KTEggHeader::SetRecordSize(const std::size_t& recsize)
+    inline void KTEggHeader::SetRecordSize(std::size_t recsize)
     {
         fRecordSize = recsize;
         return;
@@ -78,24 +78,24 @@ namespace Katydid
         return fRecordSize;
     }
 
-    inline void KTEggHeader::SetAcquisitionTime(const std::size_t& acqt)
+    inline void KTEggHeader::SetAcquisitionTime(UInt_t acqt)
     {
         fAcquisitionTime = acqt;
         return;
     }
 
-    inline std::size_t KTEggHeader::GetAcquisitionTime() const
+    inline UInt_t KTEggHeader::GetAcquisitionTime() const
     {
         return fAcquisitionTime;
     }
 
-    inline void KTEggHeader::SetAcquisitionRate(const std::size_t& acqr)
+    inline void KTEggHeader::SetAcquisitionRate(Double_t acqr)
     {
         fAcquisitionRate = acqr;
         return;
     }
 
-    inline std::size_t KTEggHeader::GetAcquisitionRate() const
+    inline Double_t KTEggHeader::GetAcquisitionRate() const
     {
         return fAcquisitionRate;
     }

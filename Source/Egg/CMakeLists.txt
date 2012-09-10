@@ -13,6 +13,7 @@ set (EGG_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/MonarchPP.hh
 )
 
 set (EGG_HEADERFILES ${EGG_DICT_HEADERFILES} ${EGG_NODICT_HEADERFILES})
@@ -26,6 +27,7 @@ set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/MonarchPP.cc
 )
 
 #set (EGG_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/EggLinkDef.hh)
@@ -34,7 +36,7 @@ set (EGG_SOURCEFILES
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
-    monarch
+    MonarchCore
 )
 
 ##################################################

@@ -11,12 +11,12 @@
 
 #include "KTEggReader.hh"
 
-#include "MonarchTypes.hpp"
+#include "Rtypes.h"
 
 #include <map>
 #include <string>
 
-class Monarch;
+class MonarchPP;
 class MonarchHeader;
 
 namespace Katydid
@@ -27,7 +27,7 @@ namespace Katydid
     class KTEggReaderMonarch : public KTEggReader
     {
         protected:
-            typedef std::map< AcquisitionMode, int > AcquisitionModeMap;
+            typedef std::map< UInt_t, Int_t > AcquisitionModeMap;
             typedef AcquisitionModeMap::value_type AcqModeMapValue;
 
         public:
@@ -36,13 +36,13 @@ namespace Katydid
 
             KTEggHeader* BreakEgg(const std::string& filename);
             KTTimeSeriesData* HatchNextEvent(KTEggHeader* header);
-            bool CloseEgg();
+            Bool_t CloseEgg();
 
         private:
             /// Copy header information from the MonarchHeader object
-            void CopyHeaderInformation(MonarchHeader* monarchHeader, KTEggHeader* eggHeader);
+            void CopyHeaderInformation(const MonarchHeader* monarchHeader, KTEggHeader* eggHeader);
 
-            Monarch* fMonarch;
+            const MonarchPP* fMonarch;
 
             AcquisitionModeMap fNumberOfRecords;
 
