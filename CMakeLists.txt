@@ -66,7 +66,7 @@ include_directories (${FFTW_INCLUDE_DIR})
 set (LIBS ${LIBS} ${FFTW_LIBRARIES})
 
 # setup the ROOT install
-#find_package (ROOT 5.28)
+find_package (ROOT 5.28)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
     set (LIBS ${LIBS} ${ROOT_LIBRARIES})
