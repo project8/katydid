@@ -98,7 +98,7 @@ namespace Katydid
         //eventData->SetBinWidth(1. / eventData->GetSampleRate());
         //eventData->SetRecordLength((double)(eventData->GetRecordSize()) * eventData->GetBinWidth());
 
-        for (UInt_t iRecord=0; iRecord<=fNumberOfRecords[header->GetAcquisitionMode()]; iRecord++)
+        for (UInt_t iRecord=0; iRecord < numberOfRecords; iRecord++)
         {
             const MonarchRecord* monarchRecord = monarchRecord = fMonarch->GetRecord(iRecord);
             if (monarchRecord == NULL)

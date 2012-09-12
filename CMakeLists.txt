@@ -91,7 +91,6 @@ endif (LOG4CXX_FOUND)
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
 include_directories ("${PROJECT_SOURCE_DIR}/External/CImg")
 
-
 # configuration header file
 configure_file (
     "${PROJECT_SOURCE_DIR}/KatydidConfig.hh.in"
@@ -105,10 +104,12 @@ install (FILES "${PROJECT_BINARY_DIR}/KatydidConfig.hh" DESTINATION include)
 # add the binary tree to the search path for include files so that the config file is found
 include_directories ("${PROJECT_BINARY_DIR}")
 
+# monarch
+include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
+add_subdirectory (Source/Egg/Monarch)
+
 # subdirectories
 include_directories (
-    ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/include
-    ${PROJECT_BINARY_DIR}/Source/Egg/Monarch
     ${PROJECT_SOURCE_DIR}/Source/Utility
     ${PROJECT_SOURCE_DIR}/Source/Core
     ${PROJECT_SOURCE_DIR}/Source/Egg
@@ -118,7 +119,6 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Output
 )
 
-add_subdirectory (Source/Egg/Monarch)
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Core)
 add_subdirectory (Source/Egg)

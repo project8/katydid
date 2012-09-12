@@ -36,7 +36,7 @@ set (EGG_SOURCEFILES
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
-    MonarchCore
+    ${Monarch_LIBRARIES}
 )
 
 ##################################################

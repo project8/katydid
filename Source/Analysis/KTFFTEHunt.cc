@@ -64,10 +64,6 @@ namespace Katydid
 
         fWindowFFT.ConnectASlot("full_fft", &fGainNorm, "freq_spect", 0);
         fWindowFFT.ConnectASlot("full_fft", &fClustering, "freq_spect", 1);
-
-#ifdef ROOT_FOUND
-        fROOTFile();
-#endif
     }
 
     KTFFTEHunt::~KTFFTEHunt()
