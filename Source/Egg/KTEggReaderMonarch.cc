@@ -27,7 +27,9 @@ namespace Katydid
     KTEggReaderMonarch::KTEggReaderMonarch() :
             KTEggReader(),
             fMonarch(NULL),
-            fNumberOfRecords()
+            fNumberOfRecords(),
+            fFullVoltageScale(0.5),
+            fNADCLevels(256)
     {
         fNumberOfRecords.insert(AcqModeMapValue(sOneChannel, 1));
         fNumberOfRecords.insert(AcqModeMapValue(sTwoChannel, 2));
@@ -98,6 +100,9 @@ namespace Katydid
         //eventData->SetBinWidth(1. / eventData->GetSampleRate());
         //eventData->SetRecordLength((double)(eventData->GetRecordSize()) * eventData->GetBinWidth());
 
+        // Normalization of the record values
+        Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
+
         for (UInt_t iRecord=0; iRecord < numberOfRecords; iRecord++)
         {
             const MonarchRecord* monarchRecord = monarchRecord = fMonarch->GetRecord(iRecord);
@@ -117,7 +122,7 @@ namespace Katydid
             KTTimeSeries* newRecord = new KTTimeSeries(header->GetRecordSize(), 0., Double_t(header->GetRecordSize()) * eventData->GetBinWidth());
             for (UInt_t iBin=0; iBin<header->GetRecordSize(); iBin++)
             {
-                (*newRecord)[iBin] = Double_t(monarchRecord->fDataPtr[iBin]);
+                (*newRecord)[iBin] = Double_t(monarchRecord->fDataPtr[iBin]) * normalization;
             }
             eventData->SetRecord(newRecord, iRecord);
         }

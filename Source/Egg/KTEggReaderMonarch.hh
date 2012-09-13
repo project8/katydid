@@ -38,13 +38,21 @@ namespace Katydid
             KTTimeSeriesData* HatchNextEvent(KTEggHeader* header);
             Bool_t CloseEgg();
 
-        private:
+        protected:
             /// Copy header information from the MonarchHeader object
             void CopyHeaderInformation(const MonarchHeader* monarchHeader, KTEggHeader* eggHeader);
 
             const MonarchPP* fMonarch;
 
             AcquisitionModeMap fNumberOfRecords;
+
+        public:
+            Double_t GetFullVoltageScale();
+            UInt_t GetNADCLevels();
+
+        protected:
+            Double_t fFullVoltageScale;
+            UInt_t fNADCLevels;
 
     };
 
