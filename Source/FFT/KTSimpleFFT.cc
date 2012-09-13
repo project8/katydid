@@ -14,6 +14,7 @@
 #include "KTPStoreNode.hh"
 
 #include <algorithm>
+#include <cmath>
 
 using std::copy;
 using std::string;
@@ -173,7 +174,7 @@ namespace Katydid
     KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult() const
     {
         UInt_t freqSize = this->GetFrequencySize();
-        Double_t normalization = 1. / (Double_t)GetTimeSize();
+        Double_t normalization = 1. / sqrt((Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
         KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, fFreqMin, fFreqMax);
