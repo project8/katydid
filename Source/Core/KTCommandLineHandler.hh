@@ -189,7 +189,7 @@ namespace Katydid
             Bool_t GetPrintHelpMessageAfterConfigFlag();
 
             virtual void PrintHelpMessageAndExit();
-            virtual void PrintVersionMessageAndExit(const std::string& aApplicationType="", const std::string& aApplicationString="");
+            virtual void PrintVersionMessageAndExit();
     };
 
     inline const std::string& KTCommandLineHandler::GetExecutableName() const

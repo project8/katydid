@@ -347,7 +347,7 @@ namespace Katydid
         }
         if (tGeneralOptsVarMap.count("version"))
         {
-            PrintVersionMessageAndExit("APPLICATION TYPE", "APPLICATION STRING");
+            PrintVersionMessageAndExit();
         }
         if (tGeneralOptsVarMap.count("config-file"))
         {
@@ -368,15 +368,10 @@ namespace Katydid
         exit(0);
     }
 
-    void KTCommandLineHandler::PrintVersionMessageAndExit(const string& aApplicationType, const string& aApplicationString)
+    void KTCommandLineHandler::PrintVersionMessageAndExit()
     {
-        string tLocation;
-        if (aApplicationType == string("")) tLocation = string("KTCommandLineHandler -- Version Information");
-        else tLocation = aApplicationType + string(" -- Version Information");
         std::stringstream printStream;
-        printStream << "\nExecutable: " << fExecutableName << "\n";
-        if (aApplicationString != string(""))
-            printStream << "Application: " << aApplicationString << "\n";
+        printStream << fExecutableName << " -- Version INformation\n";
         printStream << "Built with: " << fPackageString;
         KTINFO(utillog, printStream.str());
         exit(0);
