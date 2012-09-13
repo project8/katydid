@@ -4,159 +4,122 @@
  *  Created on: Dec 22, 2011
  *      Author: nsoblath
  *
- *  Usage: TestSimpleFFT -e /path/to/file.egg [-d]
- *      -e filename  -- Specify the filename
- *      -d           -- If present, will plot a histogram of the power spectrum.
- *      -z           -- If present, use the 2011 egg reader; otherwise use the monarch egg reader
+ *  Will compare the time series and frequency spectrum using Parseval's theorem.
+ *     (see http://en.wikipedia.org/wiki/Discrete_Fourier_transform)
+ *  If ROOT is present, will draw the time series and frequency spectrum and save the histograms in TestSimpleFFT.root.
+ *
+ *  Usage: > TestSimpleFFT
  */
 
-#include "KTEgg.hh"
-#include "KTEggReader2011.hh"
-#include "KTEggReaderMonarch.hh"
-#include "KTEvent.hh"
-#include "KTFrequencySpectrumData.hh"
+
+#include "complexpolar.hh"
+#include "KTFrequencySpectrum.hh"
+#include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeries.hh"
 
-#include "TApplication.h"
-#include "TCanvas.h"
+#ifdef ROOT_FOUND
 #include "TH1.h"
-#include "TROOT.h"
-#include "TStyle.h"
+#include "TFile.h"
+#endif
 
-#include <cstdio>
-#include <unistd.h>
-#include <iostream>
+#include <cmath>
 
 
 using namespace std;
 using namespace Katydid;
 
+KTLOGGER(vallog, "katydid.applications.validation");
+
 int main(int argc, char** argv)
 {
-    string outputFileNameBase("test_simplefft");
-    string inputFileName("");
-    Bool_t drawWaterfall = false;
+    UInt_t nBins = 1024;
+    Double_t startTime = 0.;
+    Double_t endTime = 10.;
 
-    KTEgg egg;
+    KTINFO(vallog, "Testing the 1D real-to-complex FFT\n"
+           "\tTime series characteristics:\n"
+           "\tSize: " << nBins << " bins\n"
+           "\tValue range: 0-0.5 V\n");
 
-    Int_t arg;
-    extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:d:z")) != -1)
-        switch (arg)
-        {
-            case 'e':
-                inputFileName = string(optarg);
-                break;
-            case 'd':
-                drawWaterfall = true;
-                break;
-            case 'z':
-                egg.SetReader(new KTEggReader2011());
-                break;
-        }
+    KTTimeSeries* timeSeries = new KTTimeSeries(nBins, startTime, endTime);
 
-    if (inputFileName.empty())
+    // Fill the time series with a sinusoid.
+    // The units are volts.
+    for (UInt_t iBin=0; iBin<nBins; iBin++)
     {
-        cout << "Error: No egg filename given" << endl;
-        return -1;
+        (*timeSeries)[iBin] = sin(timeSeries->GetBinCenter(iBin) * 30.);
+        //KTDEBUG(vallog, iBin << "  " << (*timeSeries)[iBin]);
     }
 
-    if (egg.GetReader() == NULL)
-    {
-        egg.SetReader(new KTEggReaderMonarch());
-    }
-
-    string outputFileNamePS = outputFileNameBase + string(".ps");
-
-    if (! egg.BreakEgg(inputFileName))
-    {
-        cout << "Error: Egg did not break" << endl;
-        return -1;
-    }
-
-    TApplication* app = new TApplication("", 0, 0);
-    TStyle *plain = new TStyle("Plain", "Plain Style");
-    plain->SetCanvasBorderMode(0);
-    plain->SetPadBorderMode(0);
-    plain->SetPadColor(0);
-    plain->SetCanvasColor(0);
-    plain->SetTitleColor(0);
-    plain->SetStatColor(0);
-    plain->SetPalette(1);
-    plain->SetOptStat(0);
-    gROOT->SetStyle("Plain");
-
-    TCanvas *c1 = NULL;
-    Char_t tempFileName[256];
-    if (drawWaterfall)
-    {
-        c1 = new TCanvas("c1", "c1");
-        sprintf(tempFileName, "%s[", outputFileNamePS.c_str());
-        c1->Print(tempFileName);
-        c1->SetLogz(1);
-    }
-
-    // Hatch the event
-    KTEvent* event = egg.HatchNextEvent();
-    if (event == NULL)
-    {
-        cout << "No event hatched" << endl;
-        delete c1;
-        return -1;
-    }
-
-    KTTimeSeriesData* data = event->GetData< KTTimeSeriesData >(KTTimeSeriesData::StaticGetName());
-    if (data == NULL)
-    {
-        cout << "No data was present in the event" << endl;
-        delete c1;
-        return -1;
-    }
-
-    // FFT of the entire event, which will be used to normalize the gain fluctuations
-    KTSimpleFFT fullFFT(data->GetRecordSize());
+    // Create and prepare the FFT
+    KTSimpleFFT fullFFT(timeSeries->GetNBins());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
-    KTFrequencySpectrumData* freqData = fullFFT.TransformData(data);
 
-    TH1D* histFullPS = freqData->GetSpectrum(0)->CreatePowerHistogram();
+    // Perform the FFT and get the results
+    KTINFO(vallog, "Performing FFT");
+    KTFrequencySpectrum* frequencySpectrum = fullFFT.Transform(timeSeries);
+    KTINFO(vallog, "FFT complete; frequency spectrum size: " << frequencySpectrum->GetNBins() << "\n");
 
-    if (drawWaterfall)
+#ifdef ROOT_FOUND
+    TFile* file = new TFile("TestSimpleFFT.root", "recreate");
+    TH1D* tsHist = timeSeries->CreateHistogram("hTimeSeries");
+    TH1D* fsHist = frequencySpectrum->CreateMagnitudeHistogram("hFreqSpect");
+    tsHist->SetDirectory(file);
+    fsHist->SetDirectory(file);
+    tsHist->Write();
+    fsHist->Write();
+    file->Close();
+    delete file;
+#endif
+
+    // Use Parseval's theorem to check the normalization of the FFT
+    KTINFO(vallog, "Using Parceval's theorem to check the normalization\n"
+           "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (Double_t)nBins);
+
+    // Calculate sum(timeSeries[i]^2)
+    Double_t tsSum = 0.; // units: volts^2
+    for (UInt_t iBin=0; iBin<nBins; iBin++)
     {
-        c1->SetLogy(1);
-        histFullPS->Draw();
-        c1->WaitPrimitive();
-        c1->Print(outputFileNamePS.c_str());
-        c1->SetLogy(0);
+        tsSum += (*timeSeries)[iBin] * (*timeSeries)[iBin];
     }
 
-    Bool_t histCheck = histFullPS->Integral() > 0.;
-    if (histCheck)
+    KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
+
+    // calculate (1/N) * sum(freqSpectrum[i]^2
+    Double_t fsSum = 0.; // units: volts^2
+    UInt_t nFreqBins = frequencySpectrum->GetNBins();
+    for (UInt_t iBin=0; iBin<nFreqBins; iBin++)
     {
-        std::cout << "The integral of the power spectrum is greater than 0!" << std::endl;
+        fsSum += norm((*frequencySpectrum)[iBin]);
+    }
+
+    // Multiply by 2 because the sum over the frequency spectrum should cover the positive- AND negative-frequency bins.
+    fsSum *= 2.;
+
+    KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
+
+    Double_t fractionalDiff = fabs(tsSum - fsSum) / (0.5 * (tsSum + fsSum));
+    Double_t threshold = 1.e-4;
+    if (fractionalDiff > threshold)
+    {
+        KTWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"
+                "\ttsSum - fsSum = " << tsSum - fsSum << "\n"
+                "\ttsSum / fsSum = " << tsSum / fsSum << "\n"
+                "\t|diff|/avg    = " << fractionalDiff);
     }
     else
     {
-        std::cout << "The integral of the histgoram is not greater than 0.  Something may be wrong!" << std::endl;
+        KTINFO(vallog, "The two sums appear to be equal! (|diff|/avg <= " << threshold << ")\n"
+                "\t|diff|/avg = " << fractionalDiff);
     }
 
-    delete freqData;
-    delete event;
+    delete timeSeries;
+    delete frequencySpectrum;
 
-    if (drawWaterfall)
-    {
-        sprintf(tempFileName, "%s]", outputFileNamePS.c_str());
-        c1->Print(tempFileName);
-        delete c1;
-    }
-    else
-    {
-        delete histFullPS;
-    }
-
-    if (! histCheck) return -1;
     return 0;
+
 }
 
 
