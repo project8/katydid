@@ -94,19 +94,13 @@ namespace Katydid
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
-            Double_t GetFreqBinWidth() const;
-            Double_t GetFreqMin() const;
-            Double_t GetFreqMax() const;
 
             /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
             void SetTransformFlag(const std::string& flag);
-            void SetFreqBinWidth(Double_t bw);
-            void SetFreqMin(Double_t fm);
-            void SetFreqMax(Double_t fm);
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrum* ExtractTransformResult() const;
+            KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;
@@ -118,10 +112,6 @@ namespace Katydid
             TransformFlagMap fTransformFlagMap;
 
             Bool_t fIsInitialized;
-
-            Double_t fFreqBinWidth;
-            Double_t fFreqMin;
-            Double_t fFreqMax;
 
             //***************
             // Signals
@@ -173,21 +163,6 @@ namespace Katydid
         return fIsInitialized;
     }
 
-    inline Double_t KTSimpleFFT::GetFreqBinWidth() const
-    {
-        return fFreqBinWidth;
-    }
-
-    inline Double_t KTSimpleFFT::GetFreqMin() const
-    {
-        return fFreqMin;
-    }
-
-    inline Double_t KTSimpleFFT::GetFreqMax() const
-    {
-        return fFreqMax;
-    }
-
     inline void KTSimpleFFT::SetTransformFlag(const std::string& flag)
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
@@ -197,24 +172,6 @@ namespace Katydid
         }
         fTransformFlag = flag;
         fIsInitialized = false;
-        return;
-    }
-
-    inline void KTSimpleFFT::SetFreqBinWidth(Double_t bw)
-    {
-        fFreqBinWidth = bw;
-        return;
-    }
-
-    inline void KTSimpleFFT::SetFreqMin(Double_t fm)
-    {
-        fFreqMin = fm;
-        return;
-    }
-
-    inline void KTSimpleFFT::SetFreqMax(Double_t fm)
-    {
-        fFreqMax = fm;
         return;
     }
 

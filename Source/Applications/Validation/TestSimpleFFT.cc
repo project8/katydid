@@ -33,14 +33,19 @@ KTLOGGER(vallog, "katydid.applications.validation");
 
 int main(int argc, char** argv)
 {
-    UInt_t nBins = 1024;
-    Double_t startTime = 0.;
-    Double_t endTime = 10.;
+    const Double_t pi = 3.14159265359;
+
+    const UInt_t nBins = 1024;
+    const Double_t startTime = 0.;
+    const Double_t endTime = 10.;
+
+    const Double_t mult = 30.;
 
     KTINFO(vallog, "Testing the 1D real-to-complex FFT\n"
            "\tTime series characteristics:\n"
            "\tSize: " << nBins << " bins\n"
-           "\tValue range: 0-0.5 V\n");
+           "\tRange: " << startTime << " to " << endTime << " s\n"
+           "\tSine wave frequency: " << mult / (2.*pi) << " Hz\n");
 
     KTTimeSeries* timeSeries = new KTTimeSeries(nBins, startTime, endTime);
 
@@ -48,7 +53,7 @@ int main(int argc, char** argv)
     // The units are volts.
     for (UInt_t iBin=0; iBin<nBins; iBin++)
     {
-        (*timeSeries)[iBin] = sin(timeSeries->GetBinCenter(iBin) * 30.);
+        (*timeSeries)[iBin] = sin(timeSeries->GetBinCenter(iBin) * mult);
         //KTDEBUG(vallog, iBin << "  " << (*timeSeries)[iBin]);
     }
 
@@ -60,7 +65,26 @@ int main(int argc, char** argv)
     // Perform the FFT and get the results
     KTINFO(vallog, "Performing FFT");
     KTFrequencySpectrum* frequencySpectrum = fullFFT.Transform(timeSeries);
-    KTINFO(vallog, "FFT complete; frequency spectrum size: " << frequencySpectrum->GetNBins() << "\n");
+
+    // Find the peak frequency
+    Double_t peakFrequency = -1.;
+    Double_t maxValue = -999999.;
+    size_t nFreqBins = frequencySpectrum->GetNBins();
+    for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
+    {
+        if ((*frequencySpectrum)[iBin].abs() > maxValue)
+        {
+            maxValue = (*frequencySpectrum)[iBin].abs();
+            peakFrequency = frequencySpectrum->GetBinCenter(iBin);
+        }
+    }
+
+    KTINFO(vallog, "FFT complete\n"
+           "\tFrequency spectrum characteristics:\n"
+           "\tSize: " << nFreqBins << " bins\n"
+           "\tRange: " << frequencySpectrum->GetRangeMin() << " to " << frequencySpectrum->GetRangeMax() << " Hz\n"
+           "\tBin width: " << frequencySpectrum->GetBinWidth() << " Hz\n"
+           "\tPeak frequency: " << peakFrequency << " +/- " << 0.5 * frequencySpectrum->GetBinWidth() << " Hz\n");
 
 #ifdef ROOT_FOUND
     TFile* file = new TFile("TestSimpleFFT.root", "recreate");
@@ -90,7 +114,6 @@ int main(int argc, char** argv)
 
     // calculate (1/N) * sum(freqSpectrum[i]^2
     Double_t fsSum = 0.; // units: volts^2
-    UInt_t nFreqBins = frequencySpectrum->GetNBins();
     for (UInt_t iBin=0; iBin<nFreqBins; iBin++)
     {
         fsSum += norm((*frequencySpectrum)[iBin]);

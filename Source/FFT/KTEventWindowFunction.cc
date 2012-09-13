@@ -106,8 +106,7 @@ namespace Katydid
             timeData[iBin] = this->GetWeight(iBin-sideBands);
         }
         KTSimpleFFT fft(totalSize);
-        fft.SetFreqBinWidth(fBinWidth);
-        fft.SetTransformFlag("ES");
+        fft.SetTransformFlag("ESTIMATE");
         fft.InitializeFFT();
         KTFrequencySpectrum* freqSpect = fft.Transform(&timeData);
         TH1D* hist = freqSpect->CreatePowerHistogram(name);

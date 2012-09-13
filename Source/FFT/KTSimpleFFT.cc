@@ -33,9 +33,6 @@ namespace Katydid
             fOutputArray(NULL),
             fTransformFlag("MEASURE"),
             fIsInitialized(false),
-            fFreqBinWidth(1.),
-            fFreqMin(-0.5),
-            fFreqMax(0.5),
             fFFTSignal()
     {
         fConfigName = "simple-fft";
@@ -59,9 +56,6 @@ namespace Katydid
             fOutputArray((fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(timeSize))),
             fTransformFlag("MEASURE"),
             fIsInitialized(false),
-            fFreqBinWidth(1.),
-            fFreqMin(-0.5),
-            fFreqMax(0.5),
             fFFTSignal()
     {
         fConfigName = "simple-fft";
@@ -128,10 +122,6 @@ namespace Katydid
             return NULL;
         }
 
-        fFreqBinWidth = tsData->GetSampleRate() / (Double_t)tsData->GetRecordSize();
-        fFreqMin = -0.5 * fFreqBinWidth;
-        fFreqMax = fFreqBinWidth * ((Double_t)tsData->GetRecordSize()-0.5);
-
         KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNChannels());
 
         for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
@@ -157,27 +147,32 @@ namespace Katydid
 
     KTFrequencySpectrum* KTSimpleFFT::Transform(const KTTimeSeries* data) const
     {
-        if ((UInt_t)data->GetNBins() != fTimeSize)
+        UInt_t nTimeBins = (UInt_t)data->GetNBins();
+        if (nTimeBins != fTimeSize)
         {
             KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
                     << "   Bin expected: " << fTimeSize << ";   Bins in data: " << data->GetNBins());
             return NULL;
         }
 
+        Double_t freqBinWidth = 1. / (data->GetBinWidth() * (Double_t)nTimeBins);
+        Double_t freqMin = -0.5 * freqBinWidth;
+        Double_t freqMax = freqBinWidth * ((Double_t)GetFrequencySize() - 0.5);
+
         copy(data->begin(), data->end(), fInputArray);
 
         fftw_execute(fFTPlan);
 
-        return ExtractTransformResult();
+        return ExtractTransformResult(freqMin, freqMax);
     }
 
-    KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult() const
+    KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
     {
-        UInt_t freqSize = this->GetFrequencySize();
+        UInt_t freqSize = GetFrequencySize();
         Double_t normalization = 1. / sqrt((Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, fFreqMin, fFreqMax);
+        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
             (*newSpect)[iPoint].set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
@@ -191,9 +186,6 @@ namespace Katydid
     {
         SetTimeSize(header->GetRecordSize());
         InitializeFFT();
-        fFreqBinWidth = header->GetAcquisitionRate() / (Double_t)header->GetRecordSize();
-        fFreqMin = -0.5 * fFreqBinWidth;
-        fFreqMax = fFreqBinWidth * ((Double_t)header->GetRecordSize()-0.5);
         return;
     }
 

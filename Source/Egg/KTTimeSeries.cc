@@ -66,7 +66,7 @@ namespace Katydid
         {
             hist->SetBinContent((Int_t)iBin+1, (*this)[iBin]);
         }
-        hist->SetXTitle("Frequency (Hz)");
+        hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
         return hist;
     }
