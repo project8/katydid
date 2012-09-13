@@ -119,9 +119,6 @@ int main(int argc, char** argv)
         fsSum += norm((*frequencySpectrum)[iBin]);
     }
 
-    // Multiply by 2 because the sum over the frequency spectrum should cover the positive- AND negative-frequency bins.
-    fsSum *= 2.;
-
     KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
 
     Double_t fractionalDiff = fabs(tsSum - fsSum) / (0.5 * (tsSum + fsSum));
