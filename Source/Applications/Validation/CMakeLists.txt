@@ -59,6 +59,9 @@ if (ENABLE_TESTING)
     )
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
+    add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
+    target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
+    
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
     
@@ -73,6 +76,7 @@ if (ENABLE_TESTING)
                      TestLogger
                      TestParameterStore
                      TestSignalsAndSlots
+                     TestSimpleFFT
                      TestVector
              DESTINATION ${BIN_INSTALL_DIR})
              
@@ -88,6 +92,7 @@ if (ENABLE_TESTING)
     add_test (Test_Logger TestLogger)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
+    add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_Vector TestVector)
     
     
@@ -96,21 +101,16 @@ if (ENABLE_TESTING)
         add_executable (TestBasicROOTFilePublisher ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFilePublisher.cc)
         target_link_libraries (TestBasicROOTFilePublisher KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
         
-        add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
-        target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
-    
         add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
         target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
     
         
         install (TARGETS 
                     TestBasicROOTFilePublisher
-                    TestSimpleFFT
                     TestSlidingWindowFFT
                 DESTINATION ${BIN_INSTALL_DIR})
     
         add_test (Test_BasicROOTFilePublisher TestBasicROOTFilePublisher)
-        add_test (Test_SimpleFFT TestSimpleFFT)
         add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     endif (ROOT_FOUND)
         

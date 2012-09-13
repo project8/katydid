@@ -77,6 +77,7 @@ int main(int argc, char** argv)
     // Use Parseval's theorem to check the normalization of the FFT
     KTINFO(vallog, "Using Parceval's theorem to check the normalization\n"
            "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (Double_t)nBins);
+    // the latter is true because the average of sin^2 is 1/2, and we're effectively calculating avg(sin^2)*nbins.
 
     // Calculate sum(timeSeries[i]^2)
     Double_t tsSum = 0.; // units: volts^2
