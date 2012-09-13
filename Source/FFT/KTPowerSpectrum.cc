@@ -32,6 +32,13 @@ namespace Katydid
     {
     }
 
+    Double_t KTPowerSpectrum::GetResistance()
+    {
+        return fResistance;
+    }
+
+    const Double_t KTPowerSpectrum::fResistance = 50.;
+
 #ifdef ROOT_FOUND
      TH1D* KTPowerSpectrum::CreatePowerHistogram(const std::string& name) const
     {
@@ -43,7 +50,7 @@ namespace Katydid
             hist->SetBinContent((Int_t)iBin+1, (*this)[iBin]);
         }
         hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Power");
+        hist->SetYTitle("Power (W)");
         return hist;
     }
 
@@ -65,7 +72,7 @@ namespace Katydid
         {
             hist->Fill((*this)[iBin]);
         }
-        hist->SetXTitle("Power");
+        hist->SetXTitle("Power (W)");
         return hist;
     }
 

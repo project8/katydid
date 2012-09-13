@@ -62,10 +62,11 @@ namespace Katydid
         UInt_t nBins = GetNBins();
         KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
         Double_t value;
+        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
            value = (*this)[iBin].abs();
-           newPS[iBin] = value * value;
+           newPS[iBin] = value * value * scaling;
         }
         return newPS;
     }
@@ -87,20 +88,20 @@ namespace Katydid
     TH1D* KTFrequencySpectrum::CreateMagnitudeHistogram(const std::string& name) const
     {
         UInt_t nBins = GetNBins();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, (*this)[iBin].abs());
         }
         hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Power");
+        hist->SetYTitle("Voltage (V)");
         return hist;
     }
 
     TH1D* KTFrequencySpectrum::CreatePhaseHistogram(const std::string& name) const
     {
         UInt_t nBins = GetNBins();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, (*this)[iBin].arg());
@@ -115,13 +116,14 @@ namespace Katydid
         UInt_t nBins = GetNBins();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         Double_t value;
+        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)[iBin].abs();
-            hist->SetBinContent((Int_t)iBin+1, value*value);
+            hist->SetBinContent((Int_t)iBin + 1, value * value * scaling);
         }
         hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Power");
+        hist->SetYTitle("Power (W)");
         return hist;
     }
 
@@ -131,10 +133,11 @@ namespace Katydid
         Double_t tMinMag = 1.e9;
         UInt_t nBins = GetNBins();
         Double_t value;
+        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)[iBin].abs();
-            value *= value;
+            value *= value * scaling;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
         }
@@ -143,9 +146,9 @@ namespace Katydid
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)[iBin].abs();
-            hist->Fill(value*value);
+            hist->Fill(value * value * scaling);
         }
-        hist->SetXTitle("Power");
+        hist->SetXTitle("Power (W)");
         return hist;
     }
 

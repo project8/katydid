@@ -61,13 +61,13 @@ namespace Katydid
     TH1D* KTTimeSeries::CreateHistogram(const std::string& name) const
     {
         UInt_t nBins = GetNBins();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Time Series", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, (*this)[iBin]);
         }
         hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Power");
+        hist->SetYTitle("Voltage (V)");
         return hist;
     }
 
@@ -85,13 +85,13 @@ namespace Katydid
             if (value > tMaxMag) tMaxMag = value;
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
-        TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        TH1D* hist = new TH1D(name.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)[iBin];
             hist->Fill(value*value);
         }
-        hist->SetXTitle("Power");
+        hist->SetXTitle("Voltage (V)");
         return hist;
     }
 

@@ -29,6 +29,13 @@ namespace Katydid
             KTPowerSpectrum(const KTPowerSpectrum& orig);
             virtual ~KTPowerSpectrum();
 
+        public:
+            /// Returns the resistance used to calculate the power from the voltage in a frequency spectrum
+            static Double_t GetResistance();
+
+        protected:
+            const static Double_t fResistance; // ohms
+
 #ifdef ROOT_FOUND
         public:
             virtual TH1D* CreatePowerHistogram(const std::string& name = "hPowerSpectrum") const;
