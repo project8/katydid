@@ -28,6 +28,7 @@ namespace Katydid
             KTEggReader(),
             fMonarch(NULL),
             fNumberOfRecords(),
+            fSampleRateUnitsInHz(1.e6),
             fFullVoltageScale(0.5),
             fNADCLevels(256)
     {
@@ -145,7 +146,7 @@ namespace Katydid
         eggHeader->SetAcquisitionMode(monarchHeader->GetAcqMode());
         eggHeader->SetRecordSize(monarchHeader->GetRecordSize());
         eggHeader->SetAcquisitionTime(monarchHeader->GetAcqTime());
-        eggHeader->SetAcquisitionRate(monarchHeader->GetAcqRate());
+        eggHeader->SetAcquisitionRate(monarchHeader->GetAcqRate() * fSampleRateUnitsInHz);
         return;
     }
 

@@ -47,10 +47,14 @@ namespace Katydid
             AcquisitionModeMap fNumberOfRecords;
 
         public:
+            Double_t GetSampleRateUnitsInHz();
+
             Double_t GetFullVoltageScale();
             UInt_t GetNADCLevels();
 
         protected:
+            Double_t fSampleRateUnitsInHz;
+
             Double_t fFullVoltageScale;
             UInt_t fNADCLevels;
 
