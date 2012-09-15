@@ -73,6 +73,8 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Output
 )
 
+message(STATUS "include path: ${CMAKE_PREFIX_PATH}")
+
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Core)
 add_subdirectory (Source/Egg)
@@ -96,6 +98,9 @@ add_subdirectory (Documentation/ReferenceGuide)
 
 # Install config files
 katydid_install_config_files()
+
+# Install the example CMakeLists file for building with this installation of Katydid
+configure_file (${PROJECT_SOURCE_DIR}/Scripts/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)
 
 
 # this is apparently not the right way to run the link_dylibs script
