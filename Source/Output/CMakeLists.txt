@@ -32,9 +32,8 @@ set (KATYDID_LIBS
 #endif (ROOT_FOUND)
 
 add_library (KatydidOutput ${OUTPUT_SOURCEFILES})
-set_target_properties(KatydidOutput PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
 target_link_libraries (KatydidOutput ${KATYDID_LIBS} ${LIBS})
 
-install (FILES ${OUTPUT_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
-install (TARGETS KatydidOutput  DESTINATION ${LIB_INSTALL_DIR})
+katydid_install_headers (${OUTPUT_HEADERFILES})
+katydid_install_libraries (KatydidOutput)
 

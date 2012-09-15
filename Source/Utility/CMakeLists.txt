@@ -49,12 +49,15 @@ set (UTILITY_SOURCEFILES
 #endif (ROOT_FOUND)
 
 add_library (KatydidUtility ${UTILITY_SOURCEFILES})
-set_target_properties(KatydidUtility PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
 target_link_libraries (KatydidUtility ${LIBS})
 
-install (FILES ${UTILITY_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
-install (TARGETS KatydidUtility  DESTINATION ${LIB_INSTALL_DIR})
+katydid_install_headers (${UTILITY_HEADERFILES})
+katydid_install_libraries (KatydidUtility)
 
 # install the log4cxx config file
-install (FILES config/log4cxx.properties DESTINATION ${CONFIG_INSTALL_DIR})
+set (LEVEL "info")
+if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+    set (LEVEL "debug")
+endif (CMAKE_BUILD_TYPE STREQUAL "DEBUG") 
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config/log4cxx.properties ${CONFIG_INSTALL_DIR}/log4cxx.properties @ONLY )
 

@@ -8,7 +8,7 @@ set (VALIDATION_CONFIGFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/SimpleElectronHunt2Config.json
 )
 
-install (FILES ${VALIDATION_CONFIGFILES}  DESTINATION ${CONFIG_INSTALL_DIR})
+katydid_install_config (${VALIDATION_CONFIGFILES})
     
 
 # Executables
@@ -16,9 +16,9 @@ install (FILES ${VALIDATION_CONFIGFILES}  DESTINATION ${CONFIG_INSTALL_DIR})
 add_executable (Truncate ${CMAKE_CURRENT_SOURCE_DIR}/Truncate.cc)
 target_link_libraries (Truncate KatydidUtility)
 
-install (TARGETS 
-            Truncate
-         DESTINATION ${BIN_INSTALL_DIR})
+katydid_install_executables ( 
+    Truncate
+)
 
 
 if (ROOT_FOUND)
@@ -34,10 +34,10 @@ if (ROOT_FOUND)
     add_executable (SimpleElectronHunt2 ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt2.cc)
     target_link_libraries (SimpleElectronHunt2 KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis)
     
-    install (TARGETS
+    katydid_install_executables ( 
                 ChannelCorrelator
                 ExtractPowerSpectra
                 SimpleElectronHunt
                 SimpleElectronHunt2
-             DESTINATION ${BIN_INSTALL_DIR})
+     )
 endif (ROOT_FOUND)

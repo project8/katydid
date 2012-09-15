@@ -8,7 +8,7 @@ if (ENABLE_TESTING)
         ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/TestParameterStoreConfig.json
     )
     
-    install (FILES ${VALIDATION_CONFIGFILES}  DESTINATION ${CONFIG_INSTALL_DIR})
+    katydid_install_config (${VALIDATION_CONFIGFILES})
     
 
     # Headers for any test classes
@@ -17,7 +17,7 @@ if (ENABLE_TESTING)
         ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.hh
     )
     
-    install (FILES ${VALIDATION_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
+    katydid_install_headers (${VALIDATION_HEADERFILES})
     
     
     # Executables that do NOT require ROOT
@@ -65,7 +65,7 @@ if (ENABLE_TESTING)
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
     
-    install (TARGETS #ExtractEvents
+    katydid_install_executables (
                      TestApplication
                      TestAxisProperties
                      TestComplexPolar
@@ -78,7 +78,7 @@ if (ENABLE_TESTING)
                      TestSignalsAndSlots
                      TestSimpleFFT
                      TestVector
-             DESTINATION ${BIN_INSTALL_DIR})
+    )
              
     # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.
     #add_test (Test_ExtractEvents ExtractEvents)
@@ -105,10 +105,10 @@ if (ENABLE_TESTING)
         target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
     
         
-        install (TARGETS 
+        katydid_install_executables ( 
                     TestBasicROOTFilePublisher
                     TestSlidingWindowFFT
-                DESTINATION ${BIN_INSTALL_DIR})
+        )
     
         add_test (Test_BasicROOTFilePublisher TestBasicROOTFilePublisher)
         add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)

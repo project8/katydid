@@ -52,9 +52,8 @@ set (KATYDID_LIBS
 #endif (ROOT_FOUND)
 
 add_library (KatydidFFT ${FFT_SOURCEFILES} ${FFT_DICT_OUTFILE})
-set_target_properties(KatydidFFT PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
 target_link_libraries (KatydidFFT ${KATYDID_LIBS} ${LIBS})
 
-install (FILES ${FFT_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
-install (TARGETS KatydidFFT  DESTINATION ${LIB_INSTALL_DIR})
+katydid_install_headers (${FFT_HEADERFILES})
+katydid_install_libraries (KatydidFFT)
          

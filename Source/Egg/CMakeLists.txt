@@ -44,9 +44,8 @@ set (KATYDID_LIBS
 #ROOT_GENERATE_DICTIONARY ("${EGG_DICT_HEADERFILES}" "${EGG_LINKDEF_HEADERFILE}" "${EGG_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
 add_library (KatydidEgg ${EGG_SOURCEFILES} ${EGG_DICT_OUTFILE})
-set_target_properties(KatydidEgg PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
 target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${LIBS})
 
-install (FILES ${EGG_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
-install (TARGETS KatydidEgg  DESTINATION ${LIB_INSTALL_DIR})
+katydid_install_headers (${EGG_HEADERFILES})
+katydid_install_libraries (KatydidEgg)
          

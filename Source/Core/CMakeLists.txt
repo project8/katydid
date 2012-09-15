@@ -57,9 +57,8 @@ set (KATYDID_LIBS
 #endif (ROOT_FOUND)
 
 add_library (KatydidCore ${CORE_SOURCEFILES})
-set_target_properties(KatydidCore PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
 target_link_libraries (KatydidCore ${KATYDID_LIBS} ${LIBS})
 
-install (FILES ${CORE_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
-install (TARGETS KatydidCore  DESTINATION ${LIB_INSTALL_DIR})
+katydid_install_headers (${CORE_HEADERFILES})
+katydid_install_libraries (KatydidCore)
 
