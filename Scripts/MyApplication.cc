@@ -9,7 +9,7 @@
 
 int main()
 {
-    Katydid::KTTimeSeries ts(1, 0., 1.);
-    std::cout << "test" << std::endl;
+    Katydid::KTTimeSeries ts(1, 0., 1.); // Create something Katydid-specific, just to show it works
+    std::cout << "Hello World!" << std::endl; // What else did you expect to do in an example file?
     return 0;
 }
