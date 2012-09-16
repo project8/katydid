@@ -194,7 +194,7 @@ namespace Katydid
     KTFrequencySpectrum* KTSlidingWindowFFT::ExtractTransformResult() const
     {
         UInt_t freqSize = this->GetFrequencySize();
-        Double_t normalization = 1. / (Double_t)GetTimeSize();
+        Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
         KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, fFreqMin, fFreqMax);
