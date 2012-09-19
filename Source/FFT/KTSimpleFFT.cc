@@ -24,7 +24,7 @@ namespace Katydid
 {
 
     KTSimpleFFT::KTSimpleFFT() :
-            //KTFFT(),
+            KTFFT(),
             KTProcessor(),
             KTConfigurable(),
             fFTPlan(),
