@@ -1,16 +1,16 @@
 /*
- * KTPublishingProcessor.cc
+ * KTPublisher.cc
  *
  *  Created on: Sep 19, 2012
  *      Author: nsoblath
  */
 
-#include "KTPublishingProcessor.hh"
+#include "KTPublisher.hh"
 
 namespace Katydid
 {
 
-    KTPublishingProcessor::KTPublishingProcessor() :
+    KTPublisher::KTPublisher() :
             KTConfigurable(),
             KTProcessor(),
             KTFactory< KTWriter >()
@@ -19,11 +19,11 @@ namespace Katydid
 
     }
 
-    KTPublishingProcessor::~KTPublishingProcessor()
+    KTPublisher::~KTPublisher()
     {
     }
 
-    Bool_t KTPublishingProcessor::Configure(const KTPStoreNode* node)
+    Bool_t KTPublisher::Configure(const KTPStoreNode* node)
     {
         return true;
     }
