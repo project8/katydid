@@ -22,6 +22,7 @@ using std::vector;
 namespace Katydid
 {
     KTSlidingWindowFFT::KTSlidingWindowFFT() :
+            KTFFT(),
             KTProcessor(),
             KTConfigurable(),
             fFTPlan(),
@@ -30,9 +31,6 @@ namespace Katydid
             fOutputArray(NULL),
             fTransformFlag("MEASURE"),
             fIsInitialized(kFALSE),
-            fFreqBinWidth(1.),
-            fFreqMin(0.),
-            fFreqMax(1.),
             fOverlap(0),
             fOverlapFrac(0.),
             fUseOverlapFrac(kFALSE),
@@ -91,9 +89,6 @@ namespace Katydid
         fWindowFunction->SetBinWidth(1. / header->GetAcquisitionRate());
         RecreateFFT();
         InitializeFFT();
-        SetFreqBinWidth(header->GetAcquisitionRate() / (Double_t)fWindowFunction->GetSize());
-        fFreqMin = -0.5 * fFreqBinWidth;
-        fFreqMax = fFreqBinWidth * ((Double_t)fWindowFunction->GetSize()-0.5);
         return;
     }
 
@@ -121,7 +116,6 @@ namespace Katydid
             fIsInitialized = false;
         }
         return;
-        return;
     }
 
     KTSlidingWindowFSData* KTSlidingWindowFFT::TransformData(const KTTimeSeriesData* tsData)
@@ -132,10 +126,6 @@ namespace Katydid
                     "Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
             return NULL;
         }
-
-        fFreqBinWidth = tsData->GetSampleRate() / (Double_t)fWindowFunction->GetSize();
-        fFreqMin = -0.5 * fFreqBinWidth;
-        fFreqMax = fFreqBinWidth * ((Double_t)fWindowFunction->GetSize()-0.5);
 
         KTSlidingWindowFSData* newData = new KTSlidingWindowFSData(tsData->GetNChannels());
 
@@ -163,20 +153,28 @@ namespace Katydid
 
     KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFFT::Transform(const KTTimeSeries* data) const
     {
-        if (fWindowFunction->GetSize() < data->size())
+        UInt_t nTimeBins = fWindowFunction->GetSize();
+        if (nTimeBins < data->size())
         {
-            UInt_t windowShift = fWindowFunction->GetSize() - GetEffectiveOverlap();
-            UInt_t nWindows = (data->size() - fWindowFunction->GetSize()) / windowShift + 1;
+            UInt_t windowShift = nTimeBins - GetEffectiveOverlap();
+            UInt_t nWindows = (data->size() - nTimeBins) / windowShift + 1; // integer arithmetic gets truncated to the nearest integer
             UInt_t nTimeBinsNotUsed = data->size() - (nWindows - 1) * windowShift + fWindowFunction->GetSize();
+
+            Double_t timeBinWidth = data->GetBinWidth();
+            Double_t freqBinWidth = GetFrequencyBinWidth(timeBinWidth);
+            Double_t freqMin = GetMinFrequency(timeBinWidth);
+            Double_t freqMax = GetMaxFrequency(timeBinWidth);
+
             Double_t timeMin = 0.;
             Double_t timeMax = ((nWindows - 1) * windowShift + fWindowFunction->GetSize()) * fWindowFunction->GetBinWidth();
             KTPhysicalArray< 1, KTFrequencySpectrum* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(data->size(), timeMin, timeMax);
+
             UInt_t windowStart = 0;
             for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
             {
                 copy(data->begin() + windowStart, data->begin() + windowStart + fWindowFunction->GetSize(), fInputArray);
                 fftw_execute(fFTPlan);
-                (*newSpectra)[iWindow] = ExtractTransformResult();
+                (*newSpectra)[iWindow] = ExtractTransformResult(freqMin, freqMax);
                 // emit a signal that the FFT was performed, for any connected slots
                 fSingleFFTSignal(iWindow, (*newSpectra)[iWindow]);
                 windowStart += windowShift;
@@ -185,19 +183,19 @@ namespace Katydid
             return newSpectra;
        }
 
-       KTERROR(fftlog_sw, "Window size is larger than time data: " << fWindowFunction->GetSize() << " > " << data->size() << "\n" <<
+       KTERROR(fftlog_sw, "Window size is larger than time data: " << nTimeBins << " > " << data->size() << "\n" <<
               "No transform was performed!");
        throw(std::length_error("Window size is larger than time data"));
        return NULL;
     }
 
-    KTFrequencySpectrum* KTSlidingWindowFFT::ExtractTransformResult() const
+    KTFrequencySpectrum* KTSlidingWindowFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
     {
-        UInt_t freqSize = this->GetFrequencySize();
+        UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, fFreqMin, fFreqMax);
+        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
             (*newSpect)[iPoint].set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
