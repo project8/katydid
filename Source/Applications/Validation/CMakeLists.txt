@@ -98,19 +98,19 @@ if (ENABLE_TESTING)
     
     # executables that DO require ROOT
     if (ROOT_FOUND)
-        add_executable (TestBasicROOTFilePublisher ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFilePublisher.cc)
-        target_link_libraries (TestBasicROOTFilePublisher KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
+        add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
+        target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
         
         add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
         target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
     
         
         katydid_install_executables ( 
-                    TestBasicROOTFilePublisher
+                    TestBasicROOTFileWriter
                     TestSlidingWindowFFT
         )
     
-        add_test (Test_BasicROOTFilePublisher TestBasicROOTFilePublisher)
+        add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)
         add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     endif (ROOT_FOUND)
         

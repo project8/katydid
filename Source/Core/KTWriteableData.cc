@@ -7,7 +7,7 @@
 
 #include "KTWriteableData.hh"
 
-#include "KTPublisher.hh"
+#include "KTWriter.hh"
 
 namespace Katydid
 {

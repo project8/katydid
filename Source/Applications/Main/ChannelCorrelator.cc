@@ -7,7 +7,7 @@
  */
 
 #include "KTApplication.hh"
-#include "KTBasicROOTFilePublisher.hh"
+#include "KTBasicROOTFileWriter.hh"
 #include "KTEggProcessor.hh"
 #include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     KTEggProcessor procEgg;
     KTSimpleFFT procFFT;
     KTCorrelator procCorr;
-    KTBasicROOTFilePublisher procPub;
+    KTBasicROOTFileWriter procPub;
 
 
     // Configure the processors

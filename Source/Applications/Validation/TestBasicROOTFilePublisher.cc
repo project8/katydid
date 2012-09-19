@@ -1,11 +1,11 @@
 /*
- * TestBasicROOTFilePublisher.cc
+ * TestBasicROOTFileWriter.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTBasicROOTFilePublisher.hh"
+#include "KTBasicROOTFileWriter.hh"
 #include "KTEvent.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
@@ -34,13 +34,13 @@ int main()
     (*spectrum2)[8].set_polar(3., 2.);
     data->SetSpectrum(spectrum2, 1);
 
-    // Set up the publisher
-    KTBasicROOTFilePublisher* publisher = new KTBasicROOTFilePublisher();
-    publisher->SetFilename("test_publisher.root");
-    publisher->SetFileFlag("recreate");
+    // Set up the writer
+    KTBasicROOTFileWriter* writer = new KTBasicROOTFileWriter();
+    writer->SetFilename("test_writer.root");
+    writer->SetFileFlag("recreate");
 
-    // Publisher the data
-    publisher->Publish(data);
+    // Writer the data
+    writer->Publish(data);
 
     // Set up next data
     (*spectrum1)[3].set_polar(10., .5);
@@ -48,13 +48,13 @@ int main()
     event->SetEventNumber(1);
 
     // Publish the data
-    publisher->Publish(data);
+    writer->Publish(data);
 
     // Clean up
     delete data;
-    delete publisher;
+    delete writer;
 
-    cout << "Test complete; see histograms in test_publisher.root" << endl;
+    cout << "Test complete; see histograms in test_writer.root" << endl;
 
     return 0;
 

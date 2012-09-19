@@ -7,7 +7,7 @@
  */
 
 #include "KTApplication.hh"
-#include "KTBasicROOTFilePublisher.hh"
+#include "KTBasicROOTFileWriter.hh"
 //#include "KTCommandLineOption.hh"
 #include "KTEggProcessor.hh"
 //#include "KTEvent.hh"
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
     KTSimpleFFT procFFT;
-    KTBasicROOTFilePublisher procPub;
+    KTBasicROOTFileWriter procPub;
     //PowerSpectraContainer powerSpectra;
 
 
