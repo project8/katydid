@@ -126,15 +126,6 @@ namespace Katydid
                 continue;
             }
 
-            /*
-            TCanvas* cAmpl = new TCanvas("cAmpl", "cAmpl");
-            TH1I* hist = event->CreateEventHistogram();
-            hist->Draw();
-            cAmpl->WaitPrimitive();
-            delete hist;
-            delete cAmpl;
-            */
-
             // Pass the event to any subscribers
             fEventSignal(event);
 
