@@ -18,4 +18,9 @@ namespace Katydid
     {
     }
 
+    Bool_t KTEggReader::Configure(const KTPStoreNode* node)
+    {
+        return false;
+    }
+
 } /* namespace Katydid */

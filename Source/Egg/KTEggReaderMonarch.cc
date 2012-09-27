@@ -45,6 +45,11 @@ namespace Katydid
         }
     }
 
+    Bool_t KTEggReader::Configure(const KTPStoreNode* node)
+    {
+        return;
+    }
+
     KTEggHeader* KTEggReaderMonarch::BreakEgg(const string& filename)
     {
         if (fMonarch != NULL)

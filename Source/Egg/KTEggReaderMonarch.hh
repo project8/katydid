@@ -34,6 +34,10 @@ namespace Katydid
             KTEggReaderMonarch();
             virtual ~KTEggReaderMonarch();
 
+        public:
+            Bool_t Configure(const KTPStoreNode* node);
+
+        public:
             KTEggHeader* BreakEgg(const std::string& filename);
             KTTimeSeriesData* HatchNextEvent(KTEggHeader* header);
             Bool_t CloseEgg();

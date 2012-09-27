@@ -18,9 +18,6 @@
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
 
-//#include "TCanvas.h"
-//#include "TH1.h"
-
 using std::string;
 
 namespace Katydid
@@ -60,7 +57,7 @@ namespace Katydid
             SetNEvents(node->GetData< UInt_t >("number-of-events", fNEvents));
             SetFilename(node->GetData< string >("filename", fFilename));
 
-            // egg reader
+            // choose the egg reader
             string eggReaderTypeString = node->GetData< string >("egg-reader", "monarch");
             if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
             else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
@@ -69,6 +66,14 @@ namespace Katydid
                 KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
                 return false;
             }
+
+            // configure the egg reader
+            const KTPStoreNode* simpleFFTNode = node->GetChild("simple-fft");
+            if (simpleFFTNode != NULL)
+            {
+                if (! fSimpleFFT.Configure(simpleFFTNode)) return false;
+            }
+
         }
 
         // Command-line settings
