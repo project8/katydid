@@ -37,7 +37,7 @@ namespace Katydid
             void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra, unsigned channelNum = 0);
             void SetNChannels(unsigned channels);
 
-            void Accept(KTPublisher* publisher) const;
+            void Accept(KTWriter* writer) const;
 
         protected:
             static std::string fName;

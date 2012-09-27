@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    class KTPublisher;
+    class KTWriter;
 
     class KTWriteableData : public KTData
     {
@@ -24,7 +24,7 @@ namespace Katydid
             KTWriteableData();
             virtual ~KTWriteableData();
 
-            virtual void Accept(KTPublisher* publisher) const = 0;
+            virtual void Accept(KTWriter* writer) const = 0;
     };
 
 } /* namespace Katydid */

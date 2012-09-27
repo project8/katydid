@@ -1,14 +1,14 @@
 /*
- * KTBasicROOTFilePublisher.hh
+ * KTBasicROOTFileWriter.hh
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#ifndef KTBASICROOTFILEPUBLISHER_HH_
-#define KTBASICROOTFILEPUBLISHER_HH_
+#ifndef KTBASICROOTFILEWRITER_HH_
+#define KTBASICROOTFILEWRITER_HH_
 
-#include "KTPublisher.hh"
+#include "KTWriter.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTCorrelationData.hh"
 
@@ -17,11 +17,11 @@
 namespace Katydid
 {
 
-    class KTBasicROOTFilePublisher : public KTPublisher
+    class KTBasicROOTFileWriter : public KTWriter
     {
         public:
-            KTBasicROOTFilePublisher();
-            virtual ~KTBasicROOTFilePublisher();
+            KTBasicROOTFileWriter();
+            virtual ~KTBasicROOTFileWriter();
 
             Bool_t Configure(const KTPStoreNode* node);
 
@@ -72,13 +72,13 @@ namespace Katydid
 
     };
 
-    inline TFile* KTBasicROOTFilePublisher::OpenFile(const std::string& filename, const std::string& flag)
+    inline TFile* KTBasicROOTFileWriter::OpenFile(const std::string& filename, const std::string& flag)
     {
         CloseFile();
         fFile = new TFile(filename.c_str(), flag.c_str());
         return fFile;
     }
-    inline void KTBasicROOTFilePublisher::CloseFile()
+    inline void KTBasicROOTFileWriter::CloseFile()
     {
         if (fFile != NULL)
         {
@@ -89,31 +89,31 @@ namespace Katydid
         return;
     }
 
-    inline const std::string& KTBasicROOTFilePublisher::GetFilename() const
+    inline const std::string& KTBasicROOTFileWriter::GetFilename() const
     {
         return fFilename;
     }
-    inline void KTBasicROOTFilePublisher::SetFilename(const std::string& filename)
+    inline void KTBasicROOTFileWriter::SetFilename(const std::string& filename)
     {
         fFilename = filename;
         return;
     }
 
-    inline const std::string& KTBasicROOTFilePublisher::GetFileFlag() const
+    inline const std::string& KTBasicROOTFileWriter::GetFileFlag() const
     {
         return fFileFlag;
     }
-    inline void KTBasicROOTFilePublisher::SetFileFlag(const std::string& flag)
+    inline void KTBasicROOTFileWriter::SetFileFlag(const std::string& flag)
     {
         fFileFlag = flag;
         return;
     }
 
-    inline TFile* KTBasicROOTFilePublisher::GetFile()
+    inline TFile* KTBasicROOTFileWriter::GetFile()
     {
         return fFile;
     }
 
 
 } /* namespace Katydid */
-#endif /* KTBASICROOTFILEPUBLISHER_HH_ */
+#endif /* KTBASICROOTFILEWRITER_HH_ */

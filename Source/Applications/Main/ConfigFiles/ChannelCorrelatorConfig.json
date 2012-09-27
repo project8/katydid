@@ -18,7 +18,7 @@
             "corr-pair": "0, 0"
         },
         
-        "basic-root-publisher":
+        "basic-root-writer":
         {
             "output-file": "/path/to/file.root",
             "file-flag": "recreate"

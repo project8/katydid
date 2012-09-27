@@ -42,7 +42,7 @@ namespace Katydid
             void SetCorrelation(KTFrequencySpectrum* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
             void SetNPairs(unsigned pairs);
 
-            void Accept(KTPublisher* publisher) const;
+            void Accept(KTWriter* writer) const;
 
         protected:
             static std::string fName;

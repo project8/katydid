@@ -8,7 +8,7 @@
 #include "KTCorrelationData.hh"
 
 #include "KTFrequencySpectrum.hh"
-#include "KTPublisher.hh"
+#include "KTWriter.hh"
 
 namespace Katydid
 {
@@ -34,9 +34,9 @@ namespace Katydid
         }
     }
 
-    void KTCorrelationData::Accept(KTPublisher* publisher) const
+    void KTCorrelationData::Accept(KTWriter* writer) const
     {
-        publisher->Write(this);
+        writer->Write(this);
         return;
     }
 

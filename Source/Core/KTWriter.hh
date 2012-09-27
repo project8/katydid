@@ -1,12 +1,12 @@
 /*
- * KTPublisher.hh
+ * KTWriter.hh
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#ifndef KTPUBLISHER_HH_
-#define KTPUBLISHER_HH_
+#ifndef KTWRITER_HH_
+#define KTWRITER_HH_
 
 #include "KTConfigurable.hh"
 #include "KTProcessor.hh"
@@ -19,11 +19,11 @@ namespace Katydid
     class KTFrequencySpectrumData;
     class KTCorrelationData;
 
-    class KTPublisher : public KTProcessor, public KTConfigurable
+    class KTWriter : public KTProcessor, public KTConfigurable
     {
         public:
-            KTPublisher();
-            virtual ~KTPublisher();
+            KTWriter();
+            virtual ~KTWriter();
 
             virtual void Publish(const KTWriteableData* data) = 0;
 
@@ -36,4 +36,4 @@ namespace Katydid
     };
 
 } /* namespace Katydid */
-#endif /* KTPUBLISHER_HH_ */
+#endif /* KTWRITER_HH_ */

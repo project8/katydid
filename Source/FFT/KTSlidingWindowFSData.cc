@@ -8,7 +8,7 @@
 #include "KTSlidingWindowFSData.hh"
 
 #include "KTFrequencySpectrum.hh"
-#include "KTPublisher.hh"
+#include "KTWriter.hh"
 
 using std::vector;
 
@@ -41,9 +41,9 @@ namespace Katydid
         }
     }
 
-    void KTSlidingWindowFSData::Accept(KTPublisher* publisher) const
+    void KTSlidingWindowFSData::Accept(KTWriter* writer) const
     {
-        publisher->Write(this);
+        writer->Write(this);
         return;
     }
 

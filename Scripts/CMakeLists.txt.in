@@ -4,6 +4,7 @@
 
 cmake_minimum_required (VERSION 2.6)
 
+# Change this name to something suitable (optional)
 project (MyApplication)
 
 include (@CMAKE_INSTALL_PREFIX@/@PROJECT_NAME@Config.cmake)
@@ -13,5 +14,8 @@ link_directories(${@PROJECT_NAME@_LIBRARY_DIRS})
 # Change the lines below to match the applications you want to build
 
 # Build an executable
+# Change the target name (first argument) and the source file (second argument)
 add_executable (MyApplication ${CMAKE_CURRENT_SOURCE_DIR}/MyApplication.cc)
+# Change the target name (first argument) to match the above target
+# Add any further libraries you need to link against after the library variables (second and third arguments)
 target_link_libraries (MyApplication ${DEPENDS_LIBRARIES} ${@PROJECT_NAME@_LIBRARIES})

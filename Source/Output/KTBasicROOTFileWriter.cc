@@ -1,11 +1,11 @@
 /*
- * KTBasicROOTFilePublisher.cc
+ * KTBasicROOTFileWriter.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTBasicROOTFilePublisher.hh"
+#include "KTBasicROOTFileWriter.hh"
 
 #include "KTEvent.hh"
 #include "KTLogger.hh"
@@ -22,18 +22,18 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    KTBasicROOTFilePublisher::KTBasicROOTFilePublisher() :
-            KTPublisher(),
+    KTBasicROOTFileWriter::KTBasicROOTFileWriter() :
+            KTWriter(),
             fFilename("basic_output.root"),
             fFileFlag("recreate"),
             fFile(NULL)
     {
-        fConfigName = "basic-root-publisher";
+        fConfigName = "basic-root-writer";
 
-        RegisterSlot("write-data", this, &KTBasicROOTFilePublisher::Publish);
+        RegisterSlot("write-data", this, &KTBasicROOTFileWriter::Publish);
     }
 
-    KTBasicROOTFilePublisher::~KTBasicROOTFilePublisher()
+    KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
     {
         if (fFile != NULL)
         {
@@ -42,7 +42,7 @@ namespace Katydid
         delete fFile;
     }
 
-    Bool_t KTBasicROOTFilePublisher::Configure(const KTPStoreNode* node)
+    Bool_t KTBasicROOTFileWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
@@ -57,7 +57,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTBasicROOTFilePublisher::OpenAndVerifyFile()
+    Bool_t KTBasicROOTFileWriter::OpenAndVerifyFile()
     {
         if (fFile == NULL)
         {
@@ -73,13 +73,13 @@ namespace Katydid
         return true;
     }
 
-    void KTBasicROOTFilePublisher::Publish(const KTWriteableData* data)
+    void KTBasicROOTFileWriter::Publish(const KTWriteableData* data)
     {
         data->Accept(this);
         return;
     }
 
-    void KTBasicROOTFilePublisher::Write(const KTWriteableData* data)
+    void KTBasicROOTFileWriter::Write(const KTWriteableData* data)
     {
         KTWARN(publog, "Generic Write function called; no data written");
         return;
@@ -90,7 +90,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTFilePublisher::Write(const KTFrequencySpectrumData* data)
+    void KTBasicROOTFileWriter::Write(const KTFrequencySpectrumData* data)
     {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;
@@ -121,7 +121,7 @@ namespace Katydid
     // Correlation Data
     //************************
 
-    void KTBasicROOTFilePublisher::Write(const KTCorrelationData* data)
+    void KTBasicROOTFileWriter::Write(const KTCorrelationData* data)
     {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;

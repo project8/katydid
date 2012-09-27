@@ -1,24 +1,24 @@
 /*
- * KTPublisher.cc
+ * KTWriter.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTPublisher.hh"
+#include "KTWriter.hh"
 
 #include "KTWriteableData.hh"
 
 namespace Katydid
 {
 
-    KTPublisher::KTPublisher() :
+    KTWriter::KTWriter() :
             KTProcessor(),
             KTConfigurable()
     {
     }
 
-    KTPublisher::~KTPublisher()
+    KTWriter::~KTWriter()
     {
     }
 
