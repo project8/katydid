@@ -33,11 +33,9 @@ namespace Katydid
     class KTPStoreNode
     {
         public:
-            typedef boost::property_tree::ptree::const_assoc_iterator const_sorted_iterator;
-            typedef std::pair< KTPStoreNode::const_sorted_iterator, KTPStoreNode::const_sorted_iterator > csi_pair;
-
-        protected:
             typedef boost::property_tree::ptree TreeNode;
+            typedef TreeNode::const_assoc_iterator const_sorted_iterator;
+            typedef std::pair< KTPStoreNode::const_sorted_iterator, KTPStoreNode::const_sorted_iterator > csi_pair;
 
         public:
             KTPStoreNode();
@@ -53,7 +51,7 @@ namespace Katydid
 
             const_sorted_iterator NotFound() const;
 
-            std::pair< const_sorted_iterator, const_sorted_iterator > EqualRange(const std::string& nodeName) const;
+            csi_pair EqualRange(const std::string& nodeName) const;
 
             /// Returns a constant pointer to the child node named nodeName (non-recursive).
             /// Returns NULL if the child doesn't exist.

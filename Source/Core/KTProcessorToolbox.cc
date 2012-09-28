@@ -8,6 +8,9 @@
 #include "KTProcessorToolbox.hh"
 
 #include "KTLogger.hh"
+#include "KTPStoreNode.hh"
+
+using std::string;
 
 namespace Katydid
 {
@@ -27,7 +30,46 @@ namespace Katydid
 
     Bool_t KTProcessorToolbox::Configure(const KTPStoreNode* node)
     {
-        return false;
+        // Deal with "processor" blocks first
+        KTPStoreNode::csi_pair itPair = node->EqualRange("processor");
+        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        {
+            KTPStoreNode subNode = KTPStoreNode(it->second);
+            if (! subNode.HasData("type"))
+            {
+                KTERROR(proclog, "Unable to create processor: no processor type given");
+                return false;
+            }
+            string procType = subNode.GetData("type");
+            string procName;
+            if (! subNode.HasData("name"))
+            {
+                KTINFO(proclog, "No name given for processor of type <" << procType << ">; using type as name.");
+                procName = procType;
+            }
+            else
+            {
+                procName = subNode.GetData("name");
+            }
+            string procName = /* extract the processor key*/;
+            KTProcessor* newProc = this->Create(procType);
+            if (newProc == NULL)
+            {
+                KTERROR(proclog, "Unable to create processor of type <" << procType << ">");
+                return false;
+            }
+            if (! AddProcessor(procName, newProc))
+            {
+                KTERROR(proclog, "Unable to add processor <" << procName << ">");
+                delete newProc;
+                return false;
+            }
+        }
+
+        // Then deal with "connection blocks"
+
+
+        return true;
     }
 
     KTProcessor* KTProcessorToolbox::GetProcessor(const std::string& procName)
