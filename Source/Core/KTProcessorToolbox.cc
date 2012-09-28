@@ -18,7 +18,7 @@ namespace Katydid
 
     KTProcessorToolbox::KTProcessorToolbox() :
             KTConfigurable(),
-            KTFactory< KTProcessor >(),
+            fProcFactory(KTFactory< KTProcessor >::GetInstance()),
             fProcMap()
     {
     }
@@ -51,7 +51,7 @@ namespace Katydid
             {
                 procName = subNode.GetData("name");
             }
-            KTProcessor* newProc = this->Create(procType);
+            KTProcessor* newProc = fProcFactory->Create(procType);
             if (newProc == NULL)
             {
                 KTERROR(proclog, "Unable to create processor of type <" << procType << ">");

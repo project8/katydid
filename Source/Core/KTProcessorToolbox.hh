@@ -16,11 +16,14 @@
 namespace Katydid
 {
 
-    class KTProcessorToolbox : public KTConfigurable, public KTFactory< KTProcessor >
+    class KTProcessorToolbox : public KTConfigurable
     {
         public:
             KTProcessorToolbox();
             virtual ~KTProcessorToolbox();
+
+        protected:
+            KTFactory< KTProcessor >* fProcFactory; // singleton; not owned by KTProcessorToolbox
 
         public:
             Bool_t Configure(const KTPStoreNode* node);
