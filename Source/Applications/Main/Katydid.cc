@@ -3,6 +3,10 @@
  *
  *  Created on: Sep 28, 2012
  *      Author: nsoblath
+ *
+ *  This program will run any processor-based code in Katydid.
+ *  All of the action is setup with a config file.
+ *  See KTProcessorToolbox for details on the configuration option.
  */
 
 #include "KTApplication.hh"
@@ -39,6 +43,7 @@ int main(int argc, char** argv)
         return -2;
     }
 
+    // Execute the run queue!
     Bool_t success = procTB.Run();
 
     if (! success) return -3;
