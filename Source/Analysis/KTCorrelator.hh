@@ -9,7 +9,6 @@
 #define KTCORRELATOR_HH_
 
 #include "KTProcessor.hh"
-#include "KTConfigurable.hh"
 
 #include <utility>
 #include <vector>
@@ -24,7 +23,7 @@ namespace Katydid
 
     typedef std::pair< UInt_t, UInt_t > KTCorrelationPair;
 
-    class KTCorrelator : public KTProcessor, public KTConfigurable
+    class KTCorrelator : public KTProcessor
     {
         protected:
             typedef KTSignal< void (const KTWriteableData*) >::signal CorrelationSignal;

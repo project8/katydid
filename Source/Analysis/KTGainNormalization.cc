@@ -23,7 +23,6 @@ namespace Katydid
 
     KTGainNormalization::KTGainNormalization() :
             KTProcessor(),
-            KTConfigurable(),
             fNormalization(NULL)
     {
         fConfigName = "gain-normalization";

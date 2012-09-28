@@ -36,7 +36,6 @@ namespace Katydid
 
     KTEggProcessor::KTEggProcessor() :
             KTProcessor(),
-            KTConfigurable(),
             fNEvents(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),

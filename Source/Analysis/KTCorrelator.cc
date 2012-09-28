@@ -39,7 +39,6 @@ namespace Katydid
 
     KTCorrelator::KTCorrelator() :
             KTProcessor(),
-            KTConfigurable(),
             fPairs(),
             fCorrSignal()
     {

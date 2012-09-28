@@ -25,6 +25,7 @@ namespace Katydid
 
 
     KTProcessor::KTProcessor() :
+            KTConfigurable(),
             fSignalMap(),
             fSlotMap()
     {

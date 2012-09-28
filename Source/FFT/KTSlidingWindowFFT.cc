@@ -25,7 +25,6 @@ namespace Katydid
 
     KTSlidingWindowFFT::KTSlidingWindowFFT() :
             KTProcessor(),
-            KTConfigurable(),
             fFTPlan(),
             fTimeSize(0),
             fInputArray(NULL),

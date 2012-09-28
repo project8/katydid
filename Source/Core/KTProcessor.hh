@@ -9,6 +9,8 @@
 #ifndef KTPROCESSOR_HH_
 #define KTPROCESSOR_HH_
 
+#include "KTConfigurable.hh"
+
 #include "KTConnection.hh"
 #include "KTSignal.hh"
 #include "KTSlot.hh"
@@ -30,7 +32,7 @@ namespace Katydid
             ProcessorException(std::string const& why);
     };
 
-    class KTProcessor
+    class KTProcessor : public KTConfigurable
     {
         protected:
             typedef std::map< std::string, KTSignalWrapper* > SignalMap;

@@ -42,7 +42,6 @@ namespace Katydid
 
     KTFFTEHunt::KTFFTEHunt() :
             KTProcessor(),
-            KTConfigurable(),
             fEventPeakBins(),
             fMinimumGroupSize(2),
             fCutRanges(),

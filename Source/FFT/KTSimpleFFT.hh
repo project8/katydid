@@ -10,7 +10,6 @@
 #define KTSIMPLEFFT_HH_
 
 #include "KTProcessor.hh"
-#include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
@@ -64,7 +63,7 @@ namespace Katydid
      \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
     */
 
-    class KTSimpleFFT : /*public KTFFT,*/ public KTProcessor, public KTConfigurable
+    class KTSimpleFFT : /*public KTFFT,*/ public KTProcessor
     {
         public:
             typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;

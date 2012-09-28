@@ -35,7 +35,6 @@ namespace Katydid
 
     KTSimpleClustering::KTSimpleClustering() :
             KTProcessor(),
-            KTConfigurable(),
             fEventPeakBins(NULL),
             fThresholdMult(8.),
             fBinCuts(NULL),
