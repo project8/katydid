@@ -34,7 +34,7 @@ namespace Katydid
         KTPStoreNode::csi_pair itPair = node->EqualRange("processor");
         for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
         {
-            KTPStoreNode subNode = KTPStoreNode(it->second);
+            KTPStoreNode subNode = KTPStoreNode(&(it->second));
             if (! subNode.HasData("type"))
             {
                 KTERROR(proclog, "Unable to create processor: no processor type given");
@@ -51,7 +51,6 @@ namespace Katydid
             {
                 procName = subNode.GetData("name");
             }
-            string procName = /* extract the processor key*/;
             KTProcessor* newProc = this->Create(procType);
             if (newProc == NULL)
             {
@@ -67,7 +66,47 @@ namespace Katydid
         }
 
         // Then deal with "connection blocks"
+        itPair = node->EqualRange("connection");
+        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        {
+            KTPStoreNode subNode = KTPStoreNode(&(it->second));
+            if (! subNode.HasData("signal_processor") || ! subNode.HasData("signal_name") ||
+                    ! subNode.HasData("slot_processor") || ! subNode.HasData("slot_name"))
+            {
+                KTERROR(proclog, "Signal/Slot connection information is incomplete!");
+                return false;
+            }
 
+            KTProcessor* signalProc = GetProcessor(subNode.GetData("signal_processor"));
+            KTProcessor* slotProc = GetProcessor(subNode.GetData("slot_processor"));
+
+            if (signalProc == NULL)
+            {
+                KTERROR(proclog, "Processor named <" << subNode.GetData("signal_processor") << "> was not found!");
+                return false;
+            }
+            if (slotProc == NULL)
+            {
+                KTERROR(proclog, "Processor named <" << subNode.GetData("slot_processor") << "> was not found!");
+                return false;
+            }
+
+            string signalName = subNode.GetData("signal_name");
+            string slotName = subNode.GetData("slot_name");
+
+            try
+            {
+                signalProc->ConnectASlot(signalName, slotProc, slotName);
+            }
+            catch (std::exception& e)
+            {
+                KTERROR(proclog, "An error occurred while connecting signals and slots:\n"
+                        << "\tSignal " << signalName << " from processor " << subNode.GetData("signal_processor") << '\n'
+                        << "\tSlot " << slotName << " from processor " << subNode.GetData("slot_processor") << '\n'
+                        << '\t' << e.what());
+                return false;
+            }
+       }
 
         return true;
     }
