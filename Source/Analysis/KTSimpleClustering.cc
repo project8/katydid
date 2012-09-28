@@ -7,6 +7,7 @@
 
 #include "KTSimpleClustering.hh"
 
+#include "KTFactory.hh"
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
 #include "KTFrequencySpectrum.hh"
@@ -30,6 +31,7 @@ using std::pair;
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTProcessor, KTSimpleClustering > sSimpClustRegistrar("simple-clustering");
 
     KTSimpleClustering::KTSimpleClustering() :
             KTProcessor(),

@@ -14,6 +14,7 @@
 #include "KTEggReaderMonarch.hh"
 #include "KTEggReader2011.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
@@ -30,6 +31,8 @@ namespace Katydid
     static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
     KTLOGGER(egglog, "katydid.egg");
+
+    static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg");
 
     KTEggProcessor::KTEggProcessor() :
             KTProcessor(),

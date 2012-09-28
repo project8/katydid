@@ -7,6 +7,7 @@
 
 #include "KTGainNormalization.hh"
 
+#include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
@@ -18,6 +19,7 @@
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTProcessor, KTGainNormalization > sGainNormRegistrar("gain-normalization");
 
     KTGainNormalization::KTGainNormalization() :
             KTProcessor(),

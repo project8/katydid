@@ -9,6 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTPStoreNode.hh"
@@ -22,6 +23,8 @@ using std::vector;
 
 namespace Katydid
 {
+
+    static KTDerivedRegistrar< KTProcessor, KTSimpleFFT > sSimpleFFTRegistrar("simple-fft");
 
     KTSimpleFFT::KTSimpleFFT() :
             //KTFFT(),

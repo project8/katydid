@@ -9,6 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
@@ -36,6 +37,8 @@ using std::vector;
 namespace Katydid
 {
     KTLOGGER(ehuntlog, "katydid.fftehunt");
+
+    static KTDerivedRegistrar< KTProcessor, KTFFTEHunt > sFFTEHRegistrar("fft-ehunt");
 
     KTFFTEHunt::KTFFTEHunt() :
             KTProcessor(),
