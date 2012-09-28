@@ -62,6 +62,8 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
+            Bool_t Run();
+
             Bool_t ProcessEgg();
 
             UInt_t GetNEvents() const;
@@ -89,6 +91,11 @@ namespace Katydid
             EggDoneSignal fEggDoneSignal;
 
     };
+
+    inline Bool_t KTEggProcessor::Run()
+    {
+        return ProcessEgg();
+    }
 
     inline UInt_t KTEggProcessor::GetNEvents() const
     {

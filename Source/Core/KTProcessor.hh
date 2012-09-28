@@ -47,6 +47,13 @@ namespace Katydid
             KTProcessor();
             virtual ~KTProcessor();
 
+        public:
+            /// Processors can optionally have a default Run action.
+            /// If a derived processor does not re-implement this function, an error message will be printed and it will return false.
+            virtual Bool_t Run();
+
+        public:
+
             void ConnectASlot(const std::string& signalName, KTProcessor* processor, const std::string& slotName, int groupNum=-1);
             void ConnectASignal(KTProcessor* processor, const std::string& signalName, const std::string& slotName, int groupNum=-1);
             void ConnectSignalToSlot(KTSignalWrapper* signal, KTSlotWrapper* slot, int groupNum=-1);
