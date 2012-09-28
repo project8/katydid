@@ -10,6 +10,7 @@
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
+using std::deque;
 using std::string;
 
 namespace Katydid
@@ -19,6 +20,7 @@ namespace Katydid
     KTProcessorToolbox::KTProcessorToolbox() :
             KTConfigurable(),
             fProcFactory(KTFactory< KTProcessor >::GetInstance()),
+            fRunQueue(),
             fProcMap()
     {
         fConfigName = "processor-toolbox";
@@ -115,7 +117,30 @@ namespace Katydid
                         << '\t' << e.what());
                 return false;
             }
-       }
+        }
+
+        // Finally, deal with processor-run specifications
+        const KTPStoreNode* subNodePtr = node->GetChild("run-queue");
+        if (subNodePtr != NULL)
+        {
+            for (KTPStoreNode::const_iterator iter = subNodePtr->Begin(); iter != subNodePtr->End(); iter++)
+            {
+                string procName = iter->second.get_value< string >("processor");
+                KTProcessor* procForRunQueue = GetProcessor(procName);
+                if (procForRunQueue == NULL)
+                {
+                    KTERROR(proclog, "Unable to find processor <" << procName << "> requested for the run queue");
+                    delete subNodePtr;
+                    return false;
+                }
+                fRunQueue.push_back(procForRunQueue);
+            }
+        }
+        else
+        {
+            KTWARN(proclog, "No run queue was specified during configuration.");
+        }
+        delete subNodePtr;
 
         return true;
     }
@@ -140,6 +165,18 @@ namespace Katydid
                     KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << configName << ">");
                     return false;
                 }
+            }
+        }
+        return true;
+    }
+
+    Bool_t KTProcessorToolbox::Run()
+    {
+        for (deque< KTProcessor* >::const_iterator iter = fRunQueue.begin(); iter != fRunQueue.end(); iter++)
+        {
+            if (! (*iter)->Run())
+            {
+                return false;
             }
         }
         return true;

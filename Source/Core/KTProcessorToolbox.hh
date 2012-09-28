@@ -13,6 +13,8 @@
 
 #include "KTProcessor.hh"
 
+#include <deque>
+
 namespace Katydid
 {
 
@@ -29,6 +31,12 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
             Bool_t ConfigureProcessors(const KTPStoreNode* node);
+
+        public:
+            Bool_t Run();
+
+        protected:
+            std::deque< KTProcessor* > fRunQueue;
 
         protected:
             struct ProcessorInfo
