@@ -28,8 +28,15 @@ namespace Katydid
         public:
             Bool_t Configure(const KTPStoreNode* node);
 
+            Bool_t ConfigureProcessors(const KTPStoreNode* node);
+
         protected:
-            typedef std::map< std::string, KTProcessor* > ProcessorMap;
+            struct ProcessorInfo
+            {
+                KTProcessor* fProc;
+                Bool_t fIsTopLevel;
+            };
+            typedef std::map< std::string, ProcessorInfo > ProcessorMap;
             typedef ProcessorMap::iterator ProcMapIt;
             typedef ProcessorMap::const_iterator ProcMapCIt;
             typedef ProcessorMap::value_type ProcMapValue;
@@ -37,7 +44,7 @@ namespace Katydid
         public:
             KTProcessor* GetProcessor(const std::string& procName);
             const KTProcessor* GetProcessor(const std::string& procName) const;
-            Bool_t AddProcessor(const std::string& procName, KTProcessor* proc);
+            Bool_t AddProcessor(const std::string& procName, KTProcessor* proc, Bool_t isTopLevel=false);
             Bool_t RemoveProcessor(const std::string& procName);
             KTProcessor* ReleaseProcessor(const std::string& procName);
             void ClearProcessors();

@@ -21,6 +21,7 @@ namespace Katydid
             fProcFactory(KTFactory< KTProcessor >::GetInstance()),
             fProcMap()
     {
+        fConfigName = "processor-toolbox";
     }
 
     KTProcessorToolbox::~KTProcessorToolbox()
@@ -41,6 +42,7 @@ namespace Katydid
                 return false;
             }
             string procType = subNode.GetData("type");
+
             string procName;
             if (! subNode.HasData("name"))
             {
@@ -57,7 +59,14 @@ namespace Katydid
                 KTERROR(proclog, "Unable to create processor of type <" << procType << ">");
                 return false;
             }
-            if (! AddProcessor(procName, newProc))
+
+            Bool_t isTopLevel = false;
+            if (subNode.HasData("is-top-level"))
+            {
+                isTopLevel = subNode.GetData< Bool_t >("is-top-level");
+            }
+
+            if (! AddProcessor(procName, newProc, isTopLevel))
             {
                 KTERROR(proclog, "Unable to add processor <" << procName << ">");
                 delete newProc;
@@ -111,6 +120,31 @@ namespace Katydid
         return true;
     }
 
+    Bool_t KTProcessorToolbox::ConfigureProcessors(const KTPStoreNode* node)
+    {
+        for (ProcMapIt iter = fProcMap.begin(); iter != fProcMap.end(); iter++)
+        {
+            if (iter->second.fIsTopLevel)
+            {
+                KTDEBUG(proclog, "Attempting to configure top-level processor <" << iter->first << ">");
+                string configName = iter->second.fProc->GetConfigName();
+                const KTPStoreNode* subNode = node->GetChild(configName);
+                if (subNode == NULL)
+                {
+                    KTWARN(proclog, "Did not find a PStoreNode <" << configName << ">\n"
+                            "\tProcessor <" << iter->first << "> was not configured.");
+                    continue;
+                }
+                if (! iter->second.fProc->Configure(subNode))
+                {
+                    KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << configName << ">");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     KTProcessor* KTProcessorToolbox::GetProcessor(const std::string& procName)
     {
         ProcMapIt it = fProcMap.find(procName);
@@ -119,7 +153,7 @@ namespace Katydid
             KTWARN(proclog, "Processor <" << procName << "> was not found.");
             return NULL;
         }
-        return it->second;
+        return it->second.fProc;
     }
 
     const KTProcessor* KTProcessorToolbox::GetProcessor(const std::string& procName) const
@@ -130,15 +164,18 @@ namespace Katydid
             KTWARN(proclog, "Processor <" << procName << "> was not found.");
             return NULL;
         }
-        return it->second;
+        return it->second.fProc;
     }
 
-    Bool_t KTProcessorToolbox::AddProcessor(const std::string& procName, KTProcessor* proc)
+    Bool_t KTProcessorToolbox::AddProcessor(const std::string& procName, KTProcessor* proc, Bool_t isTopLevel)
     {
         ProcMapIt it = fProcMap.find(procName);
         if (it == fProcMap.end())
         {
-            fProcMap.insert(ProcMapValue(procName, proc));
+            ProcessorInfo pInfo;
+            pInfo.fProc = proc;
+            pInfo.fIsTopLevel = isTopLevel;
+            fProcMap.insert(ProcMapValue(procName, pInfo));
             KTDEBUG(proclog, "Added processor <" << procName << ">");
             return true;
         }
@@ -166,7 +203,7 @@ namespace Katydid
             KTWARN(proclog, "Processor <" << procName << "> was not found.");
             return NULL;
         }
-        KTProcessor* procToRelease = it->second;
+        KTProcessor* procToRelease = it->second.fProc;
         fProcMap.erase(it);
         return procToRelease;
     }
@@ -175,7 +212,7 @@ namespace Katydid
     {
         for (ProcMapIt it = fProcMap.begin(); it != fProcMap.end(); it++)
         {
-            delete it->second;
+            delete it->second.fProc;
         }
         fProcMap.clear();
         return;
