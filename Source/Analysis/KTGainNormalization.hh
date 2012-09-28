@@ -10,7 +10,6 @@
 #define KTGAINNORMALIZATION_HH_
 
 #include "KTProcessor.hh"
-#include "KTConfigurable.hh"
 
 namespace Katydid
 {
@@ -22,7 +21,7 @@ namespace Katydid
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
 
-    class KTGainNormalization : public KTProcessor, public KTConfigurable
+    class KTGainNormalization : public KTProcessor
     {
         public:
             KTGainNormalization();

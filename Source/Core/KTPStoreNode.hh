@@ -33,27 +33,34 @@ namespace Katydid
     class KTPStoreNode
     {
         public:
-            typedef boost::property_tree::ptree::const_assoc_iterator const_sorted_iterator;
-            typedef std::pair< KTPStoreNode::const_sorted_iterator, KTPStoreNode::const_sorted_iterator > csi_pair;
-
-        protected:
             typedef boost::property_tree::ptree TreeNode;
+            typedef TreeNode::iterator iterator;
+            typedef TreeNode::const_iterator const_iterator;
+            typedef TreeNode::assoc_iterator assoc_iterator;
+            typedef TreeNode::const_assoc_iterator const_sorted_iterator;
+            typedef std::pair< KTPStoreNode::const_sorted_iterator, KTPStoreNode::const_sorted_iterator > csi_pair;
 
         public:
             KTPStoreNode();
             KTPStoreNode(const TreeNode* tree);
             virtual ~KTPStoreNode();
 
+            /// Returns an iterator to the beginning of the node, preserving the order of insertion.
+            const_iterator Begin() const;
+            /// Returns an iterator to the end of the node, preserving the order of insertion.
+            const_iterator End() const;
+
             /// Counts how many immediate-child nodes with nodeName exist (non-recursive).
             UInt_t CountNodes(const std::string& nodeName) const;
 
+            /// Returns an interator to the beginning of the node, sorted alphabetically.
             const_sorted_iterator SortedBegin() const;
 
             const_sorted_iterator Find(const std::string& nodeName) const;
 
             const_sorted_iterator NotFound() const;
 
-            std::pair< const_sorted_iterator, const_sorted_iterator > EqualRange(const std::string& nodeName) const;
+            csi_pair EqualRange(const std::string& nodeName) const;
 
             /// Returns a constant pointer to the child node named nodeName (non-recursive).
             /// Returns NULL if the child doesn't exist.
@@ -139,6 +146,16 @@ namespace Katydid
 
         // get_value will only return data from this node (whereas get can return data from subnodes)
         return it->second.get_value< XType >(defaultValue);
+    }
+
+    inline KTPStoreNode::const_iterator KTPStoreNode::Begin() const
+    {
+        return fTree->begin();
+    }
+
+    inline KTPStoreNode::const_iterator KTPStoreNode::End() const
+    {
+        return fTree->end();
     }
 
     inline UInt_t KTPStoreNode::CountNodes(const std::string& nodeName) const

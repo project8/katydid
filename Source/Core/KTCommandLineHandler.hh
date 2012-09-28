@@ -107,16 +107,16 @@ namespace Katydid
             OptDescMapIt CreateNewOptionGroup(const std::string& aTitle);
 
             /// Simple option adding function, with short option (flag only; no values allowed)
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt);
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate=true);
             /// Simple option adding function, without short option (flag only; no values allowed)
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt);
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Bool_t aWarnOnDuplicate=true);
 
             /// Option-with-value adding function with short option
             template< class XValueType >
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt);
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate=true);
             /// Option-with-value adding function without short option
             template< class XValueType >
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt);
+            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Bool_t aWarnOnDuplicate=true);
 
             /// Request access to the options description object for more freedom (and responsibility!) in adding options
             po::options_description* GetOptionsDescription(const std::string& aKey);
@@ -202,17 +202,19 @@ namespace Katydid
     }
 
     template< class XValueType >
-    Bool_t KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt)
+    Bool_t KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
-            KTWARN(utillog_clh, "There is already an option called <" << aLongOpt << ">");
-            return kFALSE;
+            if (aWarnOnDuplicate)
+                KTWARN(utillog_clh, "There is already an option called <" << aLongOpt << ">");
+            return false;
         }
         if (fAllOptionsShort.find(aShortOpt) != fAllOptionsShort.end())
         {
-            KTWARN(utillog_clh, "There is already a short option called <" << aShortOpt << ">");
-            return kFALSE;
+            if (aWarnOnDuplicate)
+                KTWARN(utillog_clh, "There is already a short option called <" << aShortOpt << ">");
+            return false;
         }
 
         // option is okay at this point
@@ -230,17 +232,18 @@ namespace Katydid
 
         tIter->second->add_options()(tOptionName.c_str(), po::value< XValueType >(), aHelpMsg.c_str());
 
-        return kTRUE;
+        return true;
 
     }
 
     template< class XValueType >
-    Bool_t KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt)
+    Bool_t KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Bool_t aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
-            KTWARN(utillog_clh, "There is already an option called <" << aLongOpt << ">");
-            return kFALSE;
+            if (aWarnOnDuplicate)
+                KTWARN(utillog_clh, "There is already an option called <" << aLongOpt << ">");
+            return false;
         }
 
         // option is okay at this point
@@ -255,7 +258,7 @@ namespace Katydid
 
         tIter->second->add_options()(aLongOpt.c_str(), po::value< XValueType >(), aHelpMsg.c_str());
 
-        return kTRUE;
+        return true;
 
     }
 

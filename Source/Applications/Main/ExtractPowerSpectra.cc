@@ -98,7 +98,7 @@ int main(int argc, char** argv)
     }
     catch (std::exception& e)
     {
-        KTERROR(extpslog, "An error occured while connecting signals and slots:\n"
+        KTERROR(extpslog, "An error occurred while connecting signals and slots:\n"
                 << '\t' << e.what());
         return -1;
     }
