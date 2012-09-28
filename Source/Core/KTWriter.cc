@@ -13,7 +13,7 @@ namespace Katydid
 {
 
     KTWriter::KTWriter() :
-            KTProcessor(),
+            KTProcessor()
     {
     }
 

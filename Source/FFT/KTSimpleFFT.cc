@@ -51,7 +51,6 @@ namespace Katydid
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
             //KTFFT(),
             KTProcessor(),
-            KTConfigurable(),
             fFTPlan(),
             fTimeSize(timeSize),
             fInputArray((double*) fftw_malloc(sizeof(double) * timeSize)),
