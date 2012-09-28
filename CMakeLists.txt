@@ -73,8 +73,6 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Output
 )
 
-message(STATUS "include path: ${CMAKE_PREFIX_PATH}")
-
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Core)
 add_subdirectory (Source/Egg)
