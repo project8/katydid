@@ -34,6 +34,9 @@ namespace Katydid
     {
         public:
             typedef boost::property_tree::ptree TreeNode;
+            typedef TreeNode::iterator iterator;
+            typedef TreeNode::const_iterator const_iterator;
+            typedef TreeNode::assoc_iterator assoc_iterator;
             typedef TreeNode::const_assoc_iterator const_sorted_iterator;
             typedef std::pair< KTPStoreNode::const_sorted_iterator, KTPStoreNode::const_sorted_iterator > csi_pair;
 
@@ -42,9 +45,15 @@ namespace Katydid
             KTPStoreNode(const TreeNode* tree);
             virtual ~KTPStoreNode();
 
+            /// Returns an iterator to the beginning of the node, preserving the order of insertion.
+            const_iterator Begin() const;
+            /// Returns an iterator to the end of the node, preserving the order of insertion.
+            const_iterator End() const;
+
             /// Counts how many immediate-child nodes with nodeName exist (non-recursive).
             UInt_t CountNodes(const std::string& nodeName) const;
 
+            /// Returns an interator to the beginning of the node, sorted alphabetically.
             const_sorted_iterator SortedBegin() const;
 
             const_sorted_iterator Find(const std::string& nodeName) const;
@@ -137,6 +146,16 @@ namespace Katydid
 
         // get_value will only return data from this node (whereas get can return data from subnodes)
         return it->second.get_value< XType >(defaultValue);
+    }
+
+    inline KTPStoreNode::const_iterator KTPStoreNode::Begin() const
+    {
+        return fTree->begin();
+    }
+
+    inline KTPStoreNode::const_iterator KTPStoreNode::End() const
+    {
+        return fTree->end();
     }
 
     inline UInt_t KTPStoreNode::CountNodes(const std::string& nodeName) const
