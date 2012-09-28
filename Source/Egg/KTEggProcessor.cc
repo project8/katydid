@@ -32,7 +32,7 @@ namespace Katydid
 
     KTLOGGER(egglog, "katydid.egg");
 
-    static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg");
+    static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
 
     KTEggProcessor::KTEggProcessor() :
             KTProcessor(),

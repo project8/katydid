@@ -5,6 +5,7 @@
 set (VALIDATION_CONFIGFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ChannelCorrelatorConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ExtractPowerSpectraConfig.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/SimpleElectronHunt2Config.json
 )
 
@@ -13,10 +14,14 @@ katydid_install_config (${VALIDATION_CONFIGFILES})
 
 # Executables
 
+add_executable (Katydid ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
+target_link_libraries (Katydid KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput KatydidAnalysis)
+
 add_executable (Truncate ${CMAKE_CURRENT_SOURCE_DIR}/Truncate.cc)
 target_link_libraries (Truncate KatydidUtility)
 
 katydid_install_executables ( 
+    Katydid
     Truncate
 )
 

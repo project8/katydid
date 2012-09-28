@@ -1,0 +1,71 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg",
+                "is-top-level": true
+            },
+            "processor":
+            {
+                "type": "simple-fft",
+                "name": "fft",
+                "is-top-level": true
+            },
+            "processor":
+            {
+                "type": "basic-root-writer",
+                "name": "writer",
+                "is-top-level": true
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "fft",
+                "slot-name": "event"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "fft",
+                "signal-name": "fft",
+                "slot-processor": "writer",
+                "slot-name": "write-data"
+            },
+            
+            "run-queue":
+            {
+                "processor": "egg"
+            }
+        },
+        
+
+        "egg":
+        {
+            "filename": "/path/to/file.egg",
+            "number-of-events": 1  
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE"
+        },
+        
+        "writer":
+        {
+            "output-file": "/path/to/file.root",
+            "file-flag": "recreate"
+        }
+    }
+}

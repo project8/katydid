@@ -81,29 +81,29 @@ namespace Katydid
         for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
         {
             KTPStoreNode subNode = KTPStoreNode(&(it->second));
-            if (! subNode.HasData("signal_processor") || ! subNode.HasData("signal_name") ||
-                    ! subNode.HasData("slot_processor") || ! subNode.HasData("slot_name"))
+            if (! subNode.HasData("signal-processor") || ! subNode.HasData("signal-name") ||
+                    ! subNode.HasData("slot-processor") || ! subNode.HasData("slot-name"))
             {
                 KTERROR(proclog, "Signal/Slot connection information is incomplete!");
                 return false;
             }
 
-            KTProcessor* signalProc = GetProcessor(subNode.GetData("signal_processor"));
-            KTProcessor* slotProc = GetProcessor(subNode.GetData("slot_processor"));
+            KTProcessor* signalProc = GetProcessor(subNode.GetData("signal-processor"));
+            KTProcessor* slotProc = GetProcessor(subNode.GetData("slot-processor"));
 
             if (signalProc == NULL)
             {
-                KTERROR(proclog, "Processor named <" << subNode.GetData("signal_processor") << "> was not found!");
+                KTERROR(proclog, "Processor named <" << subNode.GetData("signal-processor") << "> was not found!");
                 return false;
             }
             if (slotProc == NULL)
             {
-                KTERROR(proclog, "Processor named <" << subNode.GetData("slot_processor") << "> was not found!");
+                KTERROR(proclog, "Processor named <" << subNode.GetData("slot-processor") << "> was not found!");
                 return false;
             }
 
-            string signalName = subNode.GetData("signal_name");
-            string slotName = subNode.GetData("slot_name");
+            string signalName = subNode.GetData("signal-name");
+            string slotName = subNode.GetData("slot-name");
 
             try
             {
