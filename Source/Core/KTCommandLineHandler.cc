@@ -100,18 +100,20 @@ namespace Katydid
         return result.first;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt)
+    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
-            KTWARN(utillog, "There is already an option called <" << aLongOpt << ">");
+            if (aWarnOnDuplicate)
+                KTWARN(utillog, "There is already an option called <" << aLongOpt << ">");
             return false;
         }
         if (aShortOpt != '#')
         {
             if (fAllOptionsShort.find(aShortOpt) != fAllOptionsShort.end())
             {
-                KTWARN(utillog, "There is already a short option called <" << aShortOpt << ">");
+                if (aWarnOnDuplicate)
+                        KTWARN(utillog, "There is already a short option called <" << aShortOpt << ">");
                 return false;
             }
         }
@@ -136,11 +138,12 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt)
+    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Bool_t aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
-            KTWARN(utillog, "There is already an option called <" << aLongOpt << ">");
+            if (aWarnOnDuplicate)
+                KTWARN(utillog, "There is already an option called <" << aLongOpt << ">");
             return false;
         }
 
