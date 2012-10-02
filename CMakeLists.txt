@@ -45,7 +45,7 @@ endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
 
 # log4cxx
-find_package (LOG4CXX)
+find_package (Log4CXX)
 if (LOG4CXX_FOUND)
     message (STATUS "Log4cxx found")
     list (APPEND LIBS ${LOG4CXX_LIBRARY})

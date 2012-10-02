@@ -27,6 +27,9 @@ ENDIF ()
 IF (LOG4CXX_ROOT)
     SET (LOG4CXX_INCLUDE_HINTS HINTS "${LOG4CXX_ROOT}/include" "${LOG4CXX_ROOT}")
     SET (LOG4CXX_LIBRARY_HINTS HINTS "${LOG4CXX_ROOT}/lib")
+ELSE ()
+    SET (LOG4CXX_INCLUDE_HINTS HINTS "/usr/local/include" "/usr/include")
+    SET (LOG4CXX_LIBRARY_HINTS HINTS "/usr/local/lib" "/usr/lib")
 ENDIF ()
 
 # Find headers and libraries
