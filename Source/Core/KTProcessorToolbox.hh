@@ -55,6 +55,7 @@ namespace Katydid
                  <li>signal-name -- name of the signal being emitted.</li>
                  <li>slot-processor -- <i>name</li> of the processor with the slot that will receive the signal.</li>
                  <li>slot-name -- name of the slot being used to receive the signal.</li>
+                 <li>group-order -- (optional) integer specifying the order in which slots should be called.
              </ul>
          </li>
          <li>run-queue -- define the queue of processors for which Run() will be called (this option should NOT be repeated)

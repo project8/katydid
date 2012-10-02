@@ -105,9 +105,24 @@ namespace Katydid
             string signalName = subNode.GetData("signal-name");
             string slotName = subNode.GetData("slot-name");
 
+            Bool_t useGroupOrdering = false;
+            Int_t groupOrder = 0;
+            if (subNode.HasData("group-order"))
+            {
+                useGroupOrdering = true;
+                groupOrder = subNode.GetData< Int_t >("group-order");
+            }
+
             try
             {
-                signalProc->ConnectASlot(signalName, slotProc, slotName);
+                if (useGroupOrdering)
+                {
+                    signalProc->ConnectASlot(signalName, slotProc, slotName, groupOrder);
+                }
+                else
+                {
+                    signalProc->ConnectASlot(signalName, slotProc, slotName);
+                }
             }
             catch (std::exception& e)
             {
