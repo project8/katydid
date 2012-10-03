@@ -8,7 +8,6 @@
 #include "KTPhysicalArray.hh"
 
 using namespace Katydid;
-using namespace boost::numeric::ublas;
 
 int main ()
 {
@@ -46,6 +45,8 @@ int main ()
 
     std::cout << m1 << std::endl;
     std::cout << m2 << std::endl;
+    KTPhysicalArray< 2, double > m3(m1);
+    std::cout << m3 << std::endl;
     std::cout << m1 + m2 << std::endl;
     std::cout << m1 - m2 << std::endl;
     m1 /= m2;

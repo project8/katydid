@@ -465,10 +465,10 @@ namespace Katydid
         public:
             typedef XDataType value_type;
             typedef typename boost::numeric::ublas::matrix< XDataType > matrix_type;
-            typedef typename matrix_type::const_iterator2 const_iterator1;
-            typedef typename matrix_type::iterator2 iterator1;
-            typedef typename matrix_type::const_reverse_iterator2 const_reverse_iterator1;
-            typedef typename matrix_type::reverse_iterator2 reverse_iterator1;
+            typedef typename matrix_type::const_iterator1 const_iterator1;
+            typedef typename matrix_type::iterator1 iterator1;
+            typedef typename matrix_type::const_reverse_iterator1 const_reverse_iterator1;
+            typedef typename matrix_type::reverse_iterator1 reverse_iterator1;
             typedef typename matrix_type::const_iterator2 const_iterator2;
             typedef typename matrix_type::iterator2 iterator2;
             typedef typename matrix_type::const_reverse_iterator2 const_reverse_iterator2;
@@ -558,10 +558,10 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >::KTPhysicalArray(const KTPhysicalArray< 2, value_type >& orig) :
             KTAxisProperties< 2 >(),
-            fData(orig.GetNBins(1), orig.GetNBins(2))
+            fData(orig.fData)
     {
         size_t (matrix_type::*sizeArray[2])() const = {&matrix_type::size1, &matrix_type::size2};
-        SetNBinsFunc(new KTNBinsInArray< 2, matrix_type >((matrix_type*)this, sizeArray));
+        SetNBinsFunc(new KTNBinsInArray< 2, matrix_type >(&fData, sizeArray));
         SetRangeMin(1, orig.GetRangeMin(1));
         SetRangeMin(2, orig.GetRangeMin(2));
         SetRangeMax(1, orig.GetRangeMax(1));
