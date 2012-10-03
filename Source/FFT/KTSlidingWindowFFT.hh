@@ -9,7 +9,7 @@
 #ifndef KTSLIDINGWINDOWFFT_HH_
 #define KTSLIDINGWINDOWFFT_HH_
 
-//#include "KTFFT.hh"
+#include "KTFFT.hh"
 #include "KTProcessor.hh"
 #include "KTConfigurable.hh"
 
@@ -58,7 +58,7 @@ namespace Katydid
      \li \c window_function -- parent node for the window function configuration
     */
 
-   class KTSlidingWindowFFT : /*public KTFFT,*/ public KTProcessor, public KTConfigurable
+   class KTSlidingWindowFFT : public KTFFT, public KTProcessor, public KTConfigurable
     {
         public:
             typedef KTSignal< void (UInt_t, KTFrequencySpectrum*) >::signal SingleFFTSignal;
@@ -73,16 +73,16 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            virtual void InitializeFFT();
-            virtual void RecreateFFT();
+            void InitializeFFT();
+            void RecreateFFT();
 
-            virtual KTSlidingWindowFSData* TransformData(const KTTimeSeriesData* tsData);
+            KTSlidingWindowFSData* TransformData(const KTTimeSeriesData* tsData);
 
             KTPhysicalArray< 1, KTFrequencySpectrum* >* Transform(const KTTimeSeries* data) const;
 
             /// for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.
-            virtual Int_t GetTimeSize() const;
-            virtual Int_t GetFrequencySize() const;
+            virtual UInt_t GetTimeSize() const;
+            virtual UInt_t GetFrequencySize() const;
 
             UInt_t GetWindowSize() const;
             UInt_t GetOverlap() const;
@@ -93,15 +93,9 @@ namespace Katydid
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
-            Double_t GetFreqBinWidth() const;
-            Double_t GetFreqMin() const;
-            Double_t GetFreqMax() const;
 
             /// note: SetTransformFlag sets fIsInitialized to kFALSE.
             void SetTransformFlag(const std::string& flag);
-            void SetFreqBinWidth(Double_t bw);
-            void SetFreqMin(Double_t fm);
-            void SetFreqMax(Double_t fm);
             void SetWindowSize(UInt_t nBins);
             void SetWindowLength(Double_t wlTime);
             void SetOverlap(UInt_t nBins);
@@ -112,7 +106,7 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            virtual KTFrequencySpectrum* ExtractTransformResult() const;
+            virtual KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;
@@ -125,9 +119,6 @@ namespace Katydid
 
             Bool_t fIsInitialized;
 
-            Double_t fFreqBinWidth;
-            Double_t fFreqMin;
-            Double_t fFreqMax;
             UInt_t fOverlap;
             Double_t fOverlapFrac;
             Bool_t fUseOverlapFrac;
@@ -155,12 +146,12 @@ namespace Katydid
     };
 
 
-    inline Int_t KTSlidingWindowFFT::GetTimeSize() const
+    inline UInt_t KTSlidingWindowFFT::GetTimeSize() const
     {
         return fTimeSize;
     }
 
-    inline Int_t KTSlidingWindowFFT::GetFrequencySize() const
+    inline UInt_t KTSlidingWindowFFT::GetFrequencySize() const
     {
         return CalculateNFrequencyBins(fTimeSize);
     }
@@ -173,21 +164,6 @@ namespace Katydid
     inline Bool_t KTSlidingWindowFFT::GetIsInitialized() const
     {
         return fIsInitialized;
-    }
-
-    inline Double_t KTSlidingWindowFFT::GetFreqBinWidth() const
-    {
-        return fFreqBinWidth;
-    }
-
-    inline Double_t KTSlidingWindowFFT::GetFreqMin() const
-    {
-        return fFreqMin;
-    }
-
-    inline Double_t KTSlidingWindowFFT::GetFreqMax() const
-    {
-        return fFreqMax;
     }
 
     inline UInt_t KTSlidingWindowFFT::GetOverlap() const
@@ -257,24 +233,6 @@ namespace Katydid
     inline void KTSlidingWindowFFT::SetUseOverlapFrac(Bool_t useOverlapFrac)
     {
         fUseOverlapFrac = useOverlapFrac;
-        return;
-    }
-
-    inline void KTSlidingWindowFFT::SetFreqBinWidth(Double_t bw)
-    {
-        fFreqBinWidth = bw;
-        return;
-    }
-
-    inline void KTSlidingWindowFFT::SetFreqMin(Double_t fm)
-    {
-        fFreqMin = fm;
-        return;
-    }
-
-    inline void KTSlidingWindowFFT::SetFreqMax(Double_t fm)
-    {
-        fFreqMax = fm;
         return;
     }
 

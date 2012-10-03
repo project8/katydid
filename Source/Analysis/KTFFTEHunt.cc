@@ -53,6 +53,7 @@ namespace Katydid
             fWriteROOTFileFlag(kTRUE),
             fTextFile(),
             //fROOTFile(),
+            fFrequencyBinWidth(1.),
             fFrequencyMultiplier(1.e-6),
             fTotalCandidates(0)
     {
@@ -133,9 +134,10 @@ namespace Katydid
         // Set up the bin cuts
         // get the number of frequency bins and the min and max frequencies
         Int_t nFreqBins = fWindowFFT.GetFrequencySize();
-        //Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth();
-        Double_t freqMin = fWindowFFT.GetFreqMin();
-        Double_t freqMax = fWindowFFT.GetFreqMax();
+        Double_t timeBinWidth = 1. / header->GetAcquisitionRate();
+        fFrequencyBinWidth = fWindowFFT.GetFrequencyBinWidth(timeBinWidth);
+        Double_t freqMin = fWindowFFT.GetMaxFrequency(timeBinWidth);
+        Double_t freqMax = fWindowFFT.GetMinFrequency(timeBinWidth);
         // create KTFrequencySpectrum w/ number of bins; set bin width
         // binFinder will go out of scope at the end of this function.
         // therefore, from that point until fClusteringProc sets a new array, binCuts should NOT be used to access array values!
@@ -188,14 +190,14 @@ namespace Katydid
         KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
         // Use the data from the full FFT to create a gain normalization
-        fGainNorm.PrepareNormalization(freqSpect, (UInt_t)fWindowFFT.GetFrequencySize(), fWindowFFT.GetFreqBinWidth());
+        fGainNorm.PrepareNormalization(freqSpect, (UInt_t)fWindowFFT.GetFrequencySize(), fFrequencyBinWidth);
 
         // Prepare to run the windowed FFT
         //list< multimap< Int_t, Int_t >* > eventPeakBins;
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
         KTSlidingWindowFSData* windowedFFTData = fWindowFFT.TransformData(tsData);
-        Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth() * fFrequencyMultiplier;
+        Double_t freqBinWidth = fFrequencyBinWidth * fFrequencyMultiplier;
 
         // Scan through the groups
         // Remove any that are too small

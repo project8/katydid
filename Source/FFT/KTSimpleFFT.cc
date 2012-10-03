@@ -47,7 +47,7 @@ namespace Katydid
     }
 
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
-            //KTFFT(),
+            KTFFT(),
             KTProcessor(),
             KTConfigurable(),
             fFTPlan(),

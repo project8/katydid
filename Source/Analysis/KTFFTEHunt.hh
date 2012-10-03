@@ -110,6 +110,7 @@ namespace Katydid
 #ifdef ROOT_FOUND
             TFile fROOTFile;
 #endif
+            Double_t fFrequencyBinWidth;
             Double_t fFrequencyMultiplier;
             Int_t fTotalCandidates;
 

@@ -7,7 +7,7 @@
 #pragma link C++ nestedclasses;
 #pragma link C++ nestedtypedefs;
 
-#pragma link C++ namespace Katydid;
+//#pragma link C++ namespace Katydid;
 
 //#pragma link C++ class Katydid::KTComplexVector+;
 //#pragma link C++ class Katydid::KTEventWindowFunction+;
