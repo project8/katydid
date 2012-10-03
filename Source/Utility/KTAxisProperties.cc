@@ -57,6 +57,16 @@ namespace Katydid
         return *this;
     }
 
+    bool KTAxisProperties< 1 >::empty() const
+    {
+        return size() == 0;
+    }
+
+    size_t KTAxisProperties< 1 >::size() const
+    {
+        return (*fGetNBinsFunc)();
+    }
+
     size_t KTAxisProperties< 1 >::GetNBins() const
     {
         return (*fGetNBinsFunc)();
