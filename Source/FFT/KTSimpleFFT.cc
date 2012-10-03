@@ -175,8 +175,8 @@ namespace Katydid
         KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
-            (*newSpect)[iPoint].set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
-            (*newSpect)[iPoint] *= normalization;
+            (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
+            (*newSpect)(iPoint) *= normalization;
         }
 
         return newSpect;

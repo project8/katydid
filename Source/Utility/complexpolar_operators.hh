@@ -11,9 +11,9 @@
 #include "complexpolar_class.hh"
 #include "complexpolar_functions.hh"
 
-#include <iostream>
-using std::cout;
-using std::endl;
+//#include <iostream>
+//using std::cout;
+//using std::endl;
 
 namespace Katydid
 {

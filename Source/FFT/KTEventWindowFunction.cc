@@ -98,12 +98,12 @@ namespace Katydid
         KTTimeSeries timeData(totalSize, 0., totalSize * fBinWidth);
         for (UInt_t iBin=0; iBin<sideBands; iBin++)
         {
-            timeData[iBin] = 0.;
-            timeData[totalSize-iBin-1] = 0.;
+            timeData(iBin) = 0.;
+            timeData(totalSize-iBin-1) = 0.;
         }
         for (UInt_t iBin=sideBands; iBin<fSize+sideBands; iBin++)
         {
-            timeData[iBin] = this->GetWeight(iBin-sideBands);
+            timeData(iBin) = this->GetWeight(iBin-sideBands);
         }
         KTSimpleFFT fft(totalSize);
         fft.SetTransformFlag("ESTIMATE");

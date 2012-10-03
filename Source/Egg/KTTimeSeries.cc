@@ -51,7 +51,7 @@ namespace Katydid
         for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; iBin++)
         {
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
-                    ";   y = " << (*this)[iBin] << "\n";
+                    ";   y = " << (*this)(iBin) << "\n";
         }
         KTDEBUG(tslog, "\n" << printStream.str());
         return;
@@ -64,7 +64,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Time Series", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)[iBin]);
+            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -79,7 +79,7 @@ namespace Katydid
         Double_t value;
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            value = (*this)[iBin];
+            value = (*this)(iBin);
             value *= value;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
@@ -88,7 +88,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            value = (*this)[iBin];
+            value = (*this)(iBin);
             hist->Fill(value*value);
         }
         hist->SetXTitle("Voltage (V)");

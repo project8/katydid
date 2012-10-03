@@ -114,7 +114,7 @@ namespace Katydid
 
     inline Double_t KTTimeSeriesData::GetRecordAt(UInt_t iPoint, UInt_t channelNum) const
     {
-        return (*(fChannelData[channelNum].fRecord))[iPoint];
+        return (*(fChannelData[channelNum].fRecord))(iPoint);
     }
 
     inline DataType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const

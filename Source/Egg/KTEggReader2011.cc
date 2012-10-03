@@ -296,7 +296,7 @@ namespace Katydid
             KTTimeSeries* newRecord = new KTTimeSeries(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
             for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
-                (*newRecord)[iBin] = Double_t(readBuffer[iBin]);
+                (*newRecord)(iBin) = Double_t(readBuffer[iBin]);
             }
             delete [] readBuffer;
             eventData->SetRecord(newRecord);

@@ -123,7 +123,7 @@ namespace Katydid
             KTTimeSeries* newRecord = new KTTimeSeries(header->GetRecordSize(), 0., Double_t(header->GetRecordSize()) * eventData->GetBinWidth());
             for (UInt_t iBin=0; iBin<header->GetRecordSize(); iBin++)
             {
-                (*newRecord)[iBin] = Double_t(monarchRecord->fDataPtr[iBin]) * normalization;
+                (*newRecord)(iBin) = Double_t(monarchRecord->fDataPtr[iBin]) * normalization;
             }
             eventData->SetRecord(newRecord, iRecord);
         }

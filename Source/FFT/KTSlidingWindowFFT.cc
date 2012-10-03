@@ -176,9 +176,9 @@ namespace Katydid
             {
                 copy(data->begin() + windowStart, data->begin() + windowStart + fWindowFunction->GetSize(), fInputArray);
                 fftw_execute(fFTPlan);
-                (*newSpectra)[iWindow] = ExtractTransformResult();
+                (*newSpectra)(iWindow) = ExtractTransformResult();
                 // emit a signal that the FFT was performed, for any connected slots
-                fSingleFFTSignal(iWindow, (*newSpectra)[iWindow]);
+                fSingleFFTSignal(iWindow, (*newSpectra)(iWindow));
                 windowStart += windowShift;
             }
             KTINFO(fftlog_sw, "FFTs complete; windows used: " << nWindows << "; time bins not used: " << nTimeBinsNotUsed);
@@ -200,8 +200,8 @@ namespace Katydid
         KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, fFreqMin, fFreqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
-            (*newSpect)[iPoint].set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
-            (*newSpect)[iPoint] *= normalization;
+            (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
+            (*newSpect)(iPoint) *= normalization;
         }
 
         return newSpect;
