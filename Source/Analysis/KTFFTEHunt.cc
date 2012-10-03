@@ -143,7 +143,7 @@ namespace Katydid
         // therefore, from that point until fClusteringProc sets a new array, binCuts should NOT be used to access array values!
         KTFrequencySpectrum binFinder(nFreqBins, freqMin, freqMax);
         // create KTMaskedArray based on power spectrum magnitude array
-        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(binFinder.data(), nFreqBins);
+        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(binFinder.GetData().data(), nFreqBins);
         // convert cut frequency ranges to bins, and cut bins from the masked array
         for (vector< CutRange >::const_iterator itCutRange = fCutRanges.begin(); itCutRange != fCutRanges.end(); itCutRange++)
         {

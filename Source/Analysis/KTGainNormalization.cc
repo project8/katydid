@@ -57,11 +57,11 @@ namespace Katydid
             Int_t nBinsInSum = 0;
             for (Int_t iSubBin=firstBinFullPS; iSubBin<=lastBinFullPS; iSubBin++)
             {
-                    meanBinContent += (*fullArray)[iSubBin];
+                    meanBinContent += (*fullArray)(iSubBin);
                     nBinsInSum++;
             }
             //if (nBinsInSum != 0) meanBinContent /= (Double_t)nBinsInSum;
-            (*fNormalization)[iBin] = meanBinContent;
+            (*fNormalization)(iBin) = meanBinContent;
             //cout << "Gain norm bin " << iBin << "  content: " << meanBinContent << endl;
         }
 
@@ -75,7 +75,7 @@ namespace Katydid
         UInt_t nPowerSpectra = spectra->size();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
         {
-            ProcessFrequencySpectrum(iPS, (*spectra)[iPS]);
+            ProcessFrequencySpectrum(iPS, (*spectra)(iPS));
         }
 
         return;
