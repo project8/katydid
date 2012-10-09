@@ -17,10 +17,15 @@ if (SET_INSTALL_PREFIX_TO_DEFAULT)
 endif (SET_INSTALL_PREFIX_TO_DEFAULT)
 
 # install subdirectories
-set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Install directory for headers")
-set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Install directory for libraries")
-set (BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Install directory for binaries")
-set (CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/config" CACHE PATH "Install directory for config files")
+set (INCLUDE_INSTALL_SUBDIR "include" CACHE PATH "Install subdirectory for headers")
+set (LIB_INSTALL_SUBDIR "lib" CACHE PATH "Install subdirectory for libraries")
+set (BIN_INSTALL_SUBDIR "bin" CACHE PATH "Install subdirectory for binaries")
+set (CONFIG_INSTALL_SUBDIR "config" CACHE PATH "Install subdirectory for config files")
+
+set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_SUBDIR}")
+set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_SUBDIR}")
+set (BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${BIN_INSTALL_SUBDIR}")
+set (CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CONFIG_INSTALL_SUBDIR}")
 
 # build shared libraries
 set (BUILD_SHARED_LIBS ON)
@@ -46,13 +51,13 @@ endif (ENABLE_TESTING)
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# the RPATH to be used when installing, but only if it's not a system directory
-LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${LIB_INSTALL_DIR}" isSystemDir)
-IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${LIB_INSTALL_DIR}")
-ENDIF("${isSystemDir}" STREQUAL "-1")
+# add to the RPATH to be used when installing, but only if it's not a system directory
+list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${LIB_INSTALL_DIR}" isSystemDir)
+if ("${isSystemDir}" STREQUAL "-1")
+   list (APPEND CMAKE_INSTALL_RPATH "${LIB_INSTALL_DIR}")
+endif ("${isSystemDir}" STREQUAL "-1")
 
 
 ##########
