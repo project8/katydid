@@ -43,7 +43,7 @@ IF (ROOT_CONFIG_EXECUTABLE)
    
   SET(ROOT_FOUND FALSE)
 
-  EXEC_PROGRAM(${ROOT_CONFIG_EXECUTABLE} ARGS "--version" OUTPUT_VARIABLE ROOTVERSION)
+  EXECUTE_PROCESS(COMMAND ${ROOT_CONFIG_EXECUTABLE} --version OUTPUT_VARIABLE ROOTVERSION)
 
   MESSAGE(STATUS "Looking for Root... - found $ENV{ROOTSYS}/bin/root")
   MESSAGE(STATUS "Looking for Root... - version ${ROOTVERSION} ")   
@@ -85,41 +85,47 @@ IF (ROOT_FOUND)
   # ask root-config for the library dir
   # Set ROOT_LIBRARY_DIR
 
-  EXEC_PROGRAM( ${ROOT_CONFIG_EXECUTABLE}
-    ARGS "--libdir"
+  EXECUTE_PROCESS(COMMAND  ${ROOT_CONFIG_EXECUTABLE} --libdir
     OUTPUT_VARIABLE ROOT_LIBRARY_DIR_TMP )
+  STRING(STRIP ${ROOT_LIBRARY_DIR_TMP} ROOT_LIBRARY_DIR_TMP)
 
-  IF(EXISTS "${ROOT_LIBRARY_DIR_TMP}")
+  IF(EXISTS "${ROOT_LIBRARY_DIR_TMP}/")
     SET(ROOT_LIBRARY_DIR ${ROOT_LIBRARY_DIR_TMP} )
-  ELSE(EXISTS "${ROOT_LIBRARY_DIR_TMP}")
+  ELSE(EXISTS "${ROOT_LIBRARY_DIR_TMP}/")
     MESSAGE("Warning: ROOT_CONFIG_EXECUTABLE reported ${ROOT_LIBRARY_DIR_TMP} as library path,")
     MESSAGE("Warning: but ${ROOT_LIBRARY_DIR_TMP} does NOT exist, ROOT must NOT be installed correctly.")
-  ENDIF(EXISTS "${ROOT_LIBRARY_DIR_TMP}")
+  ENDIF(EXISTS "${ROOT_LIBRARY_DIR_TMP}/")
     
   # ask root-config for the binary dir
-  EXEC_PROGRAM(${ROOT_CONFIG_EXECUTABLE}
-    ARGS "--bindir"
+  EXECUTE_PROCESS(COMMAND ${ROOT_CONFIG_EXECUTABLE} --bindir
     OUTPUT_VARIABLE root_bins )
+  STRING(STRIP ${root_bins} root_bins)
   SET(ROOT_BINARY_DIR ${root_bins})
 
   # ask root-config for the include dir
-  EXEC_PROGRAM( ${ROOT_CONFIG_EXECUTABLE}
-    ARGS "--incdir" 
+  EXECUTE_PROCESS(COMMAND  ${ROOT_CONFIG_EXECUTABLE} --incdir
     OUTPUT_VARIABLE root_headers )
+  STRING(STRIP ${root_headers} root_headers)
   SET(ROOT_INCLUDE_DIR ${root_headers})
       # CACHE INTERNAL "")
 
   # ask root-config for the library varaibles
-  EXEC_PROGRAM( ${ROOT_CONFIG_EXECUTABLE}
-#    ARGS "--noldflags --noauxlibs --libs" 
-    ARGS "--glibs" 
+  EXECUTE_PROCESS(COMMAND ${ROOT_CONFIG_EXECUTABLE} --noldflags --noauxlibs --glibs
     OUTPUT_VARIABLE root_flags )
+    
+  separate_arguments (root_flags)
+  foreach (lib ${root_flags})
+    string (STRIP ${lib} lib)
+    string (REPLACE "-l" "${ROOT_LIBRARY_DIR}/lib" lib ${lib})
+    set (lib "${lib}.so")
+    list (APPEND root_full_libs ${lib})
+  endforeach (lib)
 
 #  STRING(REGEX MATCHALL "([^ ])+"  root_libs_all ${root_flags})
 #  STRING(REGEX MATCHALL "-L([^ ])+"  root_library ${root_flags})
 #  REMOVE_FROM_LIST(root_flags "${root_libs_all}" "${root_library}")
 
-  SET(ROOT_LIBRARIES ${root_flags})
+  SET(ROOT_LIBRARIES ${root_full_libs})
 
   # Make variables changeble to the advanced user
   MARK_AS_ADVANCED( ROOT_LIBRARY_DIR ROOT_INCLUDE_DIR ROOT_DEFINITIONS)
@@ -267,6 +273,6 @@ MACRO (GENERATE_ROOT_TEST_SCRIPT SCRIPT_FULL_NAME)
                   )
   endif(CMAKE_SYSTEM MATCHES Darwin)
 
-  EXEC_PROGRAM(/bin/chmod ARGS "u+x  ${new_path}/${shell_script_name}")
+  EXECUTE_PROCESS(COMMAND /bin/chmod u+x  ${new_path}/${shell_script_name})
 
 ENDMACRO (GENERATE_ROOT_TEST_SCRIPT)
