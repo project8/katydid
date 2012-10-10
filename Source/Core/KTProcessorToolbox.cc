@@ -167,17 +167,30 @@ namespace Katydid
             if (iter->second.fIsTopLevel)
             {
                 KTDEBUG(proclog, "Attempting to configure top-level processor <" << iter->first << ">");
-                string configName = iter->second.fProc->GetConfigName();
-                const KTPStoreNode* subNode = node->GetChild(configName);
+                string procName = iter->first;
+                string nameUsed;
+                const KTPStoreNode* subNode = node->GetChild(procName);
                 if (subNode == NULL)
                 {
-                    KTWARN(proclog, "Did not find a PStoreNode <" << configName << ">\n"
-                            "\tProcessor <" << iter->first << "> was not configured.");
-                    continue;
+                    string configName = iter->second.fProc->GetConfigName();
+                    KTWARN(proclog, "Did not find a PSToreNode <" << procName << ">\n"
+                            "\tWill check using the generic name of the processor, <" << configName << ">.");
+                    subNode = node->GetChild(configName);
+                    if (subNode == NULL)
+                    {
+                        KTWARN(proclog, "Did not find a PStoreNode <" << configName << ">\n"
+                                "\tProcessor <" << iter->first << "> was not configured.");
+                        continue;
+                    }
+                    nameUsed = configName;
+                }
+                else
+                {
+                    nameUsed = procName;
                 }
                 if (! iter->second.fProc->Configure(subNode))
                 {
-                    KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << configName << ">");
+                    KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << nameUsed << ">");
                     return false;
                 }
             }
