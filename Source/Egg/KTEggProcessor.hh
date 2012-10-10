@@ -9,7 +9,7 @@
 #ifndef KTEGGPROCESSOR_HH_
 #define KTEGGPROCESSOR_HH_
 
-#include "KTProcessor.hh"
+#include "KTPrimaryProcessor.hh"
 
 #include "KTEgg.hh"
 
@@ -42,7 +42,7 @@ namespace Katydid
      \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
      \li \c void () emitted when a file is finished.
     */
-    class KTEggProcessor : public KTProcessor
+    class KTEggProcessor : public KTPrimaryProcessor
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;

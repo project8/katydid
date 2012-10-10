@@ -148,7 +148,15 @@ namespace Katydid
                     delete subNodePtr;
                     return false;
                 }
-                fRunQueue.push_back(procForRunQueue);
+
+                KTPrimaryProcessor* primaryProc = dynamic_cast< KTPrimaryProcessor* >(procForRunQueue);
+                if (primaryProc == NULL)
+                {
+                    KTERROR(proclog, "Processor <" << procName << "> is not a primary processor.");
+                    delete subNodePtr;
+                    return false;
+                }
+                fRunQueue.push_back(primaryProc);
             }
         }
         else
@@ -200,7 +208,7 @@ namespace Katydid
 
     Bool_t KTProcessorToolbox::Run()
     {
-        for (deque< KTProcessor* >::const_iterator iter = fRunQueue.begin(); iter != fRunQueue.end(); iter++)
+        for (deque< KTPrimaryProcessor* >::const_iterator iter = fRunQueue.begin(); iter != fRunQueue.end(); iter++)
         {
             if (! (*iter)->Run())
             {

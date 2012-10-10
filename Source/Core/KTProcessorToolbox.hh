@@ -12,7 +12,7 @@
 #include "KTConfigurable.hh"
 #include "KTFactory.hh"
 
-#include "KTProcessor.hh"
+#include "KTPrimaryProcessor.hh"
 
 #include <deque>
 
@@ -87,7 +87,7 @@ namespace Katydid
             Bool_t Run();
 
         protected:
-            std::deque< KTProcessor* > fRunQueue;
+            std::deque< KTPrimaryProcessor* > fRunQueue;
 
         protected:
             struct ProcessorInfo
