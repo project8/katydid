@@ -15,7 +15,7 @@
 #include "KTFrequencySpectrum.hh"
 
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
-#include <fftw3/fftw3.h>
+#include <fftw3.h>
 
 #include <map>
 #include <string>
