@@ -15,7 +15,7 @@ project (Katydid)
 include (KatydidBuild)
 
 # Set the version and associated variables
-katydid_prepare_project (0 9 0)
+katydid_prepare_project (0 9 1)
 
 # Boost
 find_package (Boost 1.36.0 REQUIRED COMPONENTS program_options)
