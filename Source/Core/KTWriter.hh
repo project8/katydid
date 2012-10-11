@@ -8,7 +8,6 @@
 #ifndef KTWRITER_HH_
 #define KTWRITER_HH_
 
-#include "KTConfigurable.hh"
 #include "KTProcessor.hh"
 
 #include <iostream>
@@ -19,7 +18,7 @@ namespace Katydid
     class KTFrequencySpectrumData;
     class KTCorrelationData;
 
-    class KTWriter : public KTProcessor, public KTConfigurable
+    class KTWriter : public KTProcessor
     {
         public:
             KTWriter();

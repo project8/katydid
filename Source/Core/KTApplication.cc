@@ -83,7 +83,7 @@ namespace Katydid
             {
                 // Add this address to the CLHandler
                 string helpMsg = "Configuration option: " + addressOfNode;
-                fCLHandler->AddOption< string >("Config File Options", helpMsg, addressOfNode);
+                fCLHandler->AddOption< string >("Config File Options", helpMsg, addressOfNode, false);
             }
 
             // Recursively go down the hierarchy

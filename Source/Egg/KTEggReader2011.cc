@@ -82,7 +82,7 @@ namespace Katydid
 
         // read the header
         delete [] readBuffer;
-        readBuffer = new char [fHeaderSize];
+        readBuffer = new char [fHeaderSize+1];
         fEggStream.read(readBuffer, fHeaderSize);
         if (! fEggStream.good())
         {
@@ -90,7 +90,8 @@ namespace Katydid
             delete [] readBuffer;
             return NULL;
         }
-        string newHeader(readBuffer, fHeaderSize);
+        readBuffer[fHeaderSize] = '\0';
+        string newHeader(readBuffer);
         fHeader = newHeader;
         KTDEBUG(eggreadlog, "Header: " << newHeader);
 
@@ -106,7 +107,7 @@ namespace Katydid
 
         // Parse the XML header
         rapidxml::xml_document<char> headerDOM;
-        char* headerCopy = new char [fHeader.size() + 1];
+        char* headerCopy = new char [fHeader.size()+1];
         strcpy(headerCopy, fHeader.c_str());
         try
         {
@@ -114,7 +115,9 @@ namespace Katydid
         }
         catch (rapidxml::parse_error& e)
         {
-            KTERROR(eggreadlog, "Caught exception while parsing header: " << e.what());
+            KTERROR(eggreadlog, "Caught exception while parsing header:\n" <<
+                    '\t' << e.what() << '\n' <<
+                    '\t' << e.where<char>());
             return NULL;
         }
         //std::cout << headerDOM;

@@ -21,10 +21,11 @@ using std::vector;
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTProcessor, KTSlidingWindowFFT > sSWFFTRegistrar("sliding-window-fft");
+
     KTSlidingWindowFFT::KTSlidingWindowFFT() :
             KTFFT(),
             KTProcessor(),
-            KTConfigurable(),
             fFTPlan(),
             fTimeSize(0),
             fInputArray(NULL),

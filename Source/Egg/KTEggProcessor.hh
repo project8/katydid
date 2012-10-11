@@ -10,7 +10,6 @@
 #define KTEGGPROCESSOR_HH_
 
 #include "KTProcessor.hh"
-#include "KTConfigurable.hh"
 
 #include "KTEgg.hh"
 
@@ -43,7 +42,7 @@ namespace Katydid
      \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
      \li \c void () emitted when a file is finished.
     */
-    class KTEggProcessor : public KTProcessor, public KTConfigurable
+    class KTEggProcessor : public KTProcessor
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
@@ -62,6 +61,8 @@ namespace Katydid
             virtual ~KTEggProcessor();
 
             Bool_t Configure(const KTPStoreNode* node);
+
+            Bool_t Run();
 
             Bool_t ProcessEgg();
 
@@ -90,6 +91,11 @@ namespace Katydid
             EggDoneSignal fEggDoneSignal;
 
     };
+
+    inline Bool_t KTEggProcessor::Run()
+    {
+        return ProcessEgg();
+    }
 
     inline UInt_t KTEggProcessor::GetNEvents() const
     {

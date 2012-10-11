@@ -11,13 +11,12 @@
 
 #include "KTFFT.hh"
 #include "KTProcessor.hh"
-#include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
 
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
-#include <fftw3/fftw3.h>
+#include <fftw3.h>
 
 #include <map>
 #include <string>
@@ -65,7 +64,7 @@ namespace Katydid
      \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
     */
 
-    class KTSimpleFFT : public KTFFT, public KTProcessor, public KTConfigurable
+    class KTSimpleFFT : public KTFFT, public KTProcessor
     {
         public:
             typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;

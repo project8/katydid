@@ -9,6 +9,8 @@
 #ifndef KTPROCESSOR_HH_
 #define KTPROCESSOR_HH_
 
+#include "KTConfigurable.hh"
+
 #include "KTConnection.hh"
 #include "KTSignal.hh"
 #include "KTSlot.hh"
@@ -30,7 +32,7 @@ namespace Katydid
             ProcessorException(std::string const& why);
     };
 
-    class KTProcessor
+    class KTProcessor : public KTConfigurable
     {
         protected:
             typedef std::map< std::string, KTSignalWrapper* > SignalMap;
@@ -44,6 +46,13 @@ namespace Katydid
         public:
             KTProcessor();
             virtual ~KTProcessor();
+
+        public:
+            /// Processors can optionally have a default Run action.
+            /// If a derived processor does not re-implement this function, an error message will be printed and it will return false.
+            virtual Bool_t Run();
+
+        public:
 
             void ConnectASlot(const std::string& signalName, KTProcessor* processor, const std::string& slotName, int groupNum=-1);
             void ConnectASignal(KTProcessor* processor, const std::string& signalName, const std::string& slotName, int groupNum=-1);
