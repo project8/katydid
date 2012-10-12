@@ -390,7 +390,6 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const XDataType& rhs)
     {
-        if (rhs.fData.size() != fData.size()) return *this;
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) /= rhs;
