@@ -41,7 +41,7 @@ namespace Katydid
             const array_type& GetData() const;
             array_type& GetData();
 
-        private:
+        protected:
             array_type fData;
 
         public:
@@ -202,7 +202,7 @@ namespace Katydid
             const array_type& GetData() const;
             array_type& GetData();
 
-        private:
+        protected:
             array_type fData;
 
         public:
@@ -486,7 +486,7 @@ namespace Katydid
             const matrix_type& GetData() const;
             matrix_type& GetData();
 
-        private:
+        protected:
             matrix_type fData;
 
         public:

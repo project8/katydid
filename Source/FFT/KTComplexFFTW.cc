@@ -10,7 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTTimeSeriesDataFFTW.hh"
 #include "KTPStoreNode.hh"
 
@@ -135,7 +135,7 @@ namespace Katydid
         return;
     }
 
-    KTFrequencySpectrumData* KTComplexFFTW::TransformData(const KTTimeSeriesDataFFTW* tsData)
+    KTFrequencySpectrumDataFFTW* KTComplexFFTW::TransformData(const KTTimeSeriesDataFFTW* tsData)
     {
         if (tsData->GetRecordSize() != GetTimeSize())
         {
@@ -150,11 +150,11 @@ namespace Katydid
             return NULL;
         }
 
-        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNChannels());
+        KTFrequencySpectrumDataFFTW* newData = new KTFrequencySpectrumDataFFTW(tsData->GetNChannels());
 
         for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
         {
-            KTFrequencySpectrum* nextResult = Transform(tsData->GetRecord(iChannel));
+            KTFrequencySpectrumFFTW* nextResult = Transform(tsData->GetRecord(iChannel));
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_comp, "One of the channels did not transform correctly.");
@@ -173,7 +173,7 @@ namespace Katydid
         return newData;
     }
 
-    KTFrequencySpectrum* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
+    KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
     {
         UInt_t nTimeBins = (UInt_t)data->GetNBins();
         if (nTimeBins != fTimeSize)
@@ -187,7 +187,7 @@ namespace Katydid
         Double_t freqMin = -0.5 * freqBinWidth;
         Double_t freqMax = freqBinWidth * ((Double_t)GetFrequencySize() - 0.5);
 
-        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrum(fTimeSize);
+        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(fTimeSize);
 
         fftw_execute_dft(fFTPlan[fActivePlanIndex], data->GetData(), newSpectrum->GetData());
 
@@ -228,7 +228,7 @@ namespace Katydid
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
         {
-            KTWARN(fftlog_simp, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
+            KTWARN(fftlog_comp, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
             return;
         }
         fTransformFlag = flag;
@@ -245,7 +245,7 @@ namespace Katydid
 
     void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* tsData)
     {
-        KTFrequencySpectrumData* newData = TransformData(tsData);
+        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
         tsData->GetEvent()->AddData(newData);
         return;
     }
@@ -259,7 +259,7 @@ namespace Katydid
             KTWARN(fftlog_comp, "No time series data was available in the event");
             return;
         }
-        KTFrequencySpectrumData* newData = TransformData(tsData);
+        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
         event->AddData(newData);
         return;
     }

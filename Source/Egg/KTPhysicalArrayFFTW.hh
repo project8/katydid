@@ -43,7 +43,7 @@ namespace Katydid
             const array_type& GetData() const;
             array_type& GetData();
 
-        private:
+        protected:
             array_type fData;
 
         public:

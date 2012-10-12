@@ -31,7 +31,8 @@ namespace Katydid
     class KTPStoreNode;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesDataFFTW;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumFFTW;
+    class KTFrequencySpectrumDataFFTW;
     class KTWriteableData;
 
     /*!
@@ -82,9 +83,9 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesDataFFTW* tsData);
+            virtual KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesDataFFTW* tsData);
 
-            KTFrequencySpectrum* Transform(const KTTimeSeriesFFTW* data) const;
+            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -112,7 +113,7 @@ namespace Katydid
             UInt_t fActivePlanIndex;
 
             UInt_t fTimeSize;
-            Double_t* fInputArray;
+            fftw_complex* fInputArray;
             fftw_complex* fOutputArray;
 
             std::string fDirection;
