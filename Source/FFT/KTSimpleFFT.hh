@@ -70,7 +70,7 @@ namespace Katydid
             typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
 
         protected:
-            typedef std::map< std::string, Int_t > TransformFlagMap;
+            typedef std::map< std::string, UInt_t > TransformFlagMap;
 
         public:
             KTSimpleFFT();
@@ -95,7 +95,7 @@ namespace Katydid
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
 
-            /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
+            /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
 
         protected:
@@ -142,17 +142,6 @@ namespace Katydid
         return CalculateNFrequencyBins(fTimeSize);
     }
 
-    inline void KTSimpleFFT::SetTimeSize(UInt_t nBins)
-    {
-        fTimeSize = nBins;
-        fftw_free(fInputArray);
-        fftw_free(fOutputArray);
-        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
-        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
-        fIsInitialized = false;
-        return;
-    }
-
     inline const std::string& KTSimpleFFT::GetTransformFlag() const
     {
         return fTransformFlag;
@@ -161,18 +150,6 @@ namespace Katydid
     inline Bool_t KTSimpleFFT::GetIsInitialized() const
     {
         return fIsInitialized;
-    }
-
-    inline void KTSimpleFFT::SetTransformFlag(const std::string& flag)
-    {
-        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
-        {
-            KTWARN(fftlog_simp, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
-            return;
-        }
-        fTransformFlag = flag;
-        fIsInitialized = false;
-        return;
     }
 
     inline UInt_t KTSimpleFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const

@@ -183,6 +183,29 @@ namespace Katydid
         return newSpect;
     }
 
+    void KTSimpleFFT::SetTimeSize(UInt_t nBins)
+    {
+        fTimeSize = nBins;
+        if (fInputArray != NULL) fftw_free(fInputArray);
+        if (fOutputArray != NULL) fftw_free(fOutputArray);
+        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
+        fIsInitialized = false;
+        return;
+    }
+
+    void KTSimpleFFT::SetTransformFlag(const std::string& flag)
+    {
+        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
+        {
+            KTWARN(fftlog_simp, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
+            return;
+        }
+        fTransformFlag = flag;
+        fIsInitialized = false;
+        return;
+    }
+
     void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
     {
         SetTimeSize(header->GetRecordSize());
