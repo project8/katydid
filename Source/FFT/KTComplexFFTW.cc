@@ -24,7 +24,7 @@ using std::vector;
 namespace Katydid
 {
 
-    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("simple-fft");
+    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("complex-fft");
 
     KTComplexFFTW::KTComplexFFTW() :
             KTFFT(),
