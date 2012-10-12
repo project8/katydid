@@ -24,7 +24,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_simp, "katydid.fft");
+    KTLOGGER(fftlog_comp, "katydid.fft");
 
     class KTEggHeader;
     class KTEvent;
@@ -70,7 +70,8 @@ namespace Katydid
             typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
 
         protected:
-            typedef std::map< std::string, Int_t > TransformFlagMap;
+            typedef std::map< std::string, UInt_t > TransformFlagMap;
+            typedef std::map< std::string, UInt_t > DirectionMap;
 
         public:
             KTComplexFFTW();
@@ -92,21 +93,30 @@ namespace Katydid
             ///       It also sets fIsInitialized to kFALSE.
             void SetTimeSize(UInt_t nBins);
 
+            const std::string& GetDirection() const;
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
 
-            /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
+            /// note: SetDirection does NOT affect fIsInitialized.
+            void SetDirection(const std::string& dir);
+
+            /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
 
         protected:
+            void AllocateArrays();
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
-            void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
+            void SetupInternalMaps(); // do not make this virtual (called from the constructor)
 
-            fftw_plan fFTPlan;
+            fftw_plan fFTPlan[2];
+            UInt_t fActivePlanIndex;
+
             UInt_t fTimeSize;
             Double_t* fInputArray;
             fftw_complex* fOutputArray;
+
+            std::string fDirection;
+            DirectionMap fDirectionMap;
 
             std::string fTransformFlag;
             TransformFlagMap fTransformFlagMap;
@@ -142,15 +152,9 @@ namespace Katydid
         return CalculateNFrequencyBins(fTimeSize);
     }
 
-    inline void KTComplexFFTW::SetTimeSize(UInt_t nBins)
+    inline const std::string& KTComplexFFTW::GetDirection() const
     {
-        fTimeSize = nBins;
-        fftw_free(fInputArray);
-        fftw_free(fOutputArray);
-        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
-        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
-        fIsInitialized = false;
-        return;
+        return fDirection;
     }
 
     inline const std::string& KTComplexFFTW::GetTransformFlag() const
@@ -161,18 +165,6 @@ namespace Katydid
     inline Bool_t KTComplexFFTW::GetIsInitialized() const
     {
         return fIsInitialized;
-    }
-
-    inline void KTComplexFFTW::SetTransformFlag(const std::string& flag)
-    {
-        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
-        {
-            KTWARN(fftlog_simp, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
-            return;
-        }
-        fTransformFlag = flag;
-        fIsInitialized = false;
-        return;
     }
 
     inline UInt_t KTComplexFFTW::CalculateNFrequencyBins(UInt_t nTimeBins) const
