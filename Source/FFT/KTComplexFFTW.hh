@@ -47,7 +47,8 @@ namespace Katydid
      The FFT is implemented using FFTW.
 
      Available configuration values:
-     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
+     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms (see below)
+     \li \c direction -- select if the forward ("FORWARD") or reverse ("BACKWARD") transform is performed.
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -57,9 +58,12 @@ namespace Katydid
      \li \c EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
+     FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
+
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
      \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
+     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* data)
 
      Signals:
      \li \c void (UInt_t, const KTComplexFFTW*) emitted upon performance of a transform.

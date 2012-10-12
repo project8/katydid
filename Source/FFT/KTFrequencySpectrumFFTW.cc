@@ -23,16 +23,19 @@ namespace Katydid
     KTLOGGER(fslog, "katydid.fft");
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW() :
-            KTPhysicalArray< 1, fftw_complex >()
+            KTPhysicalArray< 1, fftw_complex >(),
+            fNBinsPosFreqs(0)
     {
     }
 
-    KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
-            KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax)
+    KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t totalBins, size_t nBinsPosFreqs, Double_t rangeMin, Double_t rangeMax) :
+            KTPhysicalArray< 1, fftw_complex >(totalBins, rangeMin, rangeMax),
+            fNBinsPosFreqs(nBinsPosFreqs)
     {
     }
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
-            KTPhysicalArray< 1, fftw_complex >(orig)
+            KTPhysicalArray< 1, fftw_complex >(orig),
+            fNBinsPosFreqs(orig.fNBinsPosFreqs)
     {
     }
 
@@ -43,6 +46,7 @@ namespace Katydid
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::operator=(const KTFrequencySpectrumFFTW& rhs)
     {
         KTPhysicalArray< 1, fftw_complex >::operator=(rhs);
+        fNBinsPosFreqs = rhs.fNBinsPosFreqs;
         return *this;
     }
 
@@ -59,11 +63,10 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumFFTW::CreatePowerSpectrum() const
     {
-        UInt_t nBins = GetNBins();
-        KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
+        KTPowerSpectrum* newPS = new KTPowerSpectrum(fNBinsPosFreqs, GetRangeMin(), GetRangeMax());
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iBin=0; iBin<fNBinsPosFreqs; iBin++)
         {
            value = fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1];
            (*newPS)(iBin) = value * scaling;
@@ -87,9 +90,8 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH1D* KTFrequencySpectrumFFTW::CreateMagnitudeHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)fNBinsPosFreqs, GetRangeMin(), GetRangeMax());
+        for (UInt_t iBin=0; iBin<fNBinsPosFreqs; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, std::sqrt(fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]));
         }
@@ -100,9 +102,8 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePhaseHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)fNBinsPosFreqs, GetRangeMin(), GetRangeMax());
+        for (UInt_t iBin=0; iBin<fNBinsPosFreqs; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, std::atan2(fData[iBin][1], fData[iBin][0]));
         }
@@ -113,11 +114,10 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)fNBinsPosFreqs, GetRangeMin(), GetRangeMax());
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iBin=0; iBin<fNBinsPosFreqs; iBin++)
         {
             value = fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1];
             hist->SetBinContent((Int_t)iBin + 1, value * scaling);
@@ -131,10 +131,9 @@ namespace Katydid
     {
         Double_t tMaxMag = -1.;
         Double_t tMinMag = 1.e9;
-        UInt_t nBins = GetNBins();
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iBin=0; iBin<fNBinsPosFreqs; iBin++)
         {
             value = (fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]) * scaling;
             if (value < tMinMag) tMinMag = value;
@@ -142,7 +141,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iBin=0; iBin<fNBinsPosFreqs; iBin++)
         {
             value = fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1];
             hist->Fill(value * scaling);

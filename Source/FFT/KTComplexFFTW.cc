@@ -41,7 +41,7 @@ namespace Katydid
             fIsInitialized(false),
             fFFTSignal()
     {
-        fConfigName = "simple-fft";
+        fConfigName = "complex-fftw";
 
         RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
 
@@ -67,7 +67,7 @@ namespace Katydid
             fIsInitialized(false),
             fFFTSignal()
     {
-        fConfigName = "simple-fft";
+        fConfigName = "complex-fftw";
 
         RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
 
@@ -187,7 +187,7 @@ namespace Katydid
         Double_t freqMin = -0.5 * freqBinWidth;
         Double_t freqMax = freqBinWidth * ((Double_t)GetFrequencySize() - 0.5);
 
-        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(fTimeSize);
+        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(CalculateNFrequencyBins(fTimeSize), fTimeSize, freqMin, freqMax);
 
         fftw_execute_dft(fFTPlan[fActivePlanIndex], data->GetData(), newSpectrum->GetData());
 
