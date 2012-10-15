@@ -17,13 +17,16 @@
 #include "KTComplexFFTW.hh"
 #include "KTTimeSeriesFFTW.hh"
 
+#include "KTSimpleFFT.hh"
+#include "KTTimeSeries.hh"
+
 #ifdef ROOT_FOUND
 #include "TH1.h"
 #include "TFile.h"
 #endif
 
 #include <cmath>
-
+#include <iostream>
 
 using namespace std;
 using namespace Katydid;
@@ -34,7 +37,7 @@ int main(int argc, char** argv)
 {
     const Double_t pi = 3.14159265359;
 
-    const UInt_t nBins = 1024;
+    const UInt_t nBins = 1023;
     const Double_t startTime = 0.;
     const Double_t endTime = 10.;
 
@@ -47,12 +50,14 @@ int main(int argc, char** argv)
            "\tSine wave frequency: " << mult / (2.*pi) << " Hz\n");
 
     KTTimeSeriesFFTW* timeSeries = new KTTimeSeriesFFTW(nBins, startTime, endTime);
+    KTTimeSeries* timeSeries2 = new KTTimeSeries(nBins, startTime, endTime);
 
     // Fill the time series with a sinusoid.
     // The units are volts.
     for (UInt_t iBin=0; iBin<nBins; iBin++)
     {
         (*timeSeries)(iBin)[0] = sin(timeSeries->GetBinCenter(iBin) * mult);
+        (*timeSeries2)(iBin) = sin(timeSeries2->GetBinCenter(iBin) * mult);
         //KTDEBUG(vallog, iBin << "  " << (*timeSeries)(iBin));
     }
 
@@ -61,15 +66,21 @@ int main(int argc, char** argv)
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 
+    KTSimpleFFT simpFFT(timeSeries2->GetNBins());
+    simpFFT.SetTransformFlag("ESTIMATE");
+    simpFFT.InitializeFFT();
+
     // Perform the FFT and get the results
     KTINFO(vallog, "Performing FFT");
     KTFrequencySpectrumFFTW* frequencySpectrum = fullFFT.Transform(timeSeries);
+    KTFrequencySpectrum* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
+    size_t nFreqBins2 = frequencySpectrum2->GetNBins();
 
     // Find the peak frequency
     Double_t peakFrequency = -1.;
     Double_t maxValue = -999999.;
     Double_t value;
-    size_t nFreqBins = frequencySpectrum->GetNBinsPosFreqs();
+    size_t nFreqBins = frequencySpectrum->GetNBins();
     for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
     {
         value = (*frequencySpectrum)(iBin)[0]*(*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1]*(*frequencySpectrum)(iBin)[1];
@@ -77,6 +88,14 @@ int main(int argc, char** argv)
         {
             maxValue = value;
             peakFrequency = frequencySpectrum->GetBinCenter(iBin);
+        }
+        if (iBin < nFreqBins2)
+        {
+            cout << iBin << '\t' << sqrt(value) << '\t' << (*frequencySpectrum2)(iBin).abs() << endl;
+        }
+        else
+        {
+            cout << iBin << '\t' << sqrt(value) << endl;
         }
     }
 

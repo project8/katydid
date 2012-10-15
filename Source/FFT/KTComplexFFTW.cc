@@ -184,12 +184,15 @@ namespace Katydid
         }
 
         Double_t freqBinWidth = 1. / (data->GetBinWidth() * (Double_t)nTimeBins);
-        Double_t freqMin = -0.5 * freqBinWidth;
+        //Double_t freqMin = -0.5 * freqBinWidth;
+        Double_t freqMin = -freqBinWidth * ((Double_t)GetFrequencySize() - 0.5);
         Double_t freqMax = freqBinWidth * ((Double_t)GetFrequencySize() - 0.5);
 
-        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(CalculateNFrequencyBins(fTimeSize), fTimeSize, freqMin, freqMax);
+        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(fTimeSize, freqMin, freqMax);
 
         fftw_execute_dft(fFTPlan[fActivePlanIndex], data->GetData(), newSpectrum->GetData());
+
+        (*newSpectrum) *= sqrt(1. / (Double_t)GetTimeSize());
 
         return newSpectrum;
     }

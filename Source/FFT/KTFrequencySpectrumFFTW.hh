@@ -26,21 +26,21 @@ namespace Katydid
     {
         public:
             KTFrequencySpectrumFFTW();
-            KTFrequencySpectrumFFTW(size_t totalBins, size_t nBinsPosFreqs, Double_t rangeMin=0., Double_t rangeMax=1.);
+            KTFrequencySpectrumFFTW(size_t totalBins, Double_t rangeMin=0., Double_t rangeMax=1.);
             KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig);
             virtual ~KTFrequencySpectrumFFTW();
 
             // replace some of the KTPhysicalArray interface
 
             /// Returns the size of the positive-frequency part of the array
-            size_t size() const;
+            //size_t size() const;
             /// Returns the isze of the positive-frequency part of the array
-            size_t GetNBins() const;
+            //size_t GetNBins() const;
 
             /// Returns the actual size of the storage array
-            size_t size_total() const;
+            //size_t size_total() const;
             /// Returns the actual size of the storage array
-            size_t GetNBinsTotal() const;
+            //size_t GetNBinsTotal() const;
 
             // normal KTFrequencySpectrum functions
 
@@ -52,10 +52,6 @@ namespace Katydid
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
 
-
-        protected:
-            UInt_t fNBinsPosFreqs;
-
 #ifdef ROOT_FOUND
         public:
             virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const;
@@ -66,11 +62,6 @@ namespace Katydid
             virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
     };
-
-    inline UInt_t KTFrequencySpectrumFFTW::GetNBinsPosFreqs() const
-    {
-        return fNBinsPosFreqs;
-    }
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYSPECTRUMFFTW_HH_ */
