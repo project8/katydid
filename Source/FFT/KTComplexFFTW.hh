@@ -15,7 +15,6 @@
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
 
-#include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
 #include <fftw3.h>
 
 #include <map>
@@ -154,7 +153,7 @@ namespace Katydid
 
     inline UInt_t KTComplexFFTW::GetFrequencySize() const
     {
-        return CalculateNFrequencyBins(fTimeSize);
+        return fTimeSize;
     }
 
     inline const std::string& KTComplexFFTW::GetDirection() const
