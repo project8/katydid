@@ -37,16 +37,16 @@ int main(int argc, char** argv)
 {
     const Double_t pi = 3.14159265359;
 
-    const UInt_t nBins = 1023;
+    const UInt_t nBins = 1024;
     const Double_t startTime = 0.;
     const Double_t endTime = 10.;
 
     const Double_t mult = 30.;
 
-    KTINFO(vallog, "Testing the 1D real-to-complex FFT\n"
-           "\tTime series characteristics:\n"
-           "\tSize: " << nBins << " bins\n"
-           "\tRange: " << startTime << " to " << endTime << " s\n"
+    KTINFO(vallog, "Testing the 1D real-to-complex FFT\n" <<
+           "\tTime series characteristics:\n" <<
+           "\tSize: " << nBins << " bins\n" <<
+           "\tRange: " << startTime << " to " << endTime << " s\n" <<
            "\tSine wave frequency: " << mult / (2.*pi) << " Hz\n");
 
     KTTimeSeriesFFTW* timeSeries = new KTTimeSeriesFFTW(nBins, startTime, endTime);
@@ -81,6 +81,8 @@ int main(int argc, char** argv)
     Double_t maxValue = -999999.;
     Double_t value;
     size_t nFreqBins = frequencySpectrum->GetNBins();
+
+    size_t dcBin = frequencySpectrum->GetDCBin();
     for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
     {
         value = (*frequencySpectrum)(iBin)[0]*(*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1]*(*frequencySpectrum)(iBin)[1];
@@ -89,9 +91,9 @@ int main(int argc, char** argv)
             maxValue = value;
             peakFrequency = frequencySpectrum->GetBinCenter(iBin);
         }
-        if (iBin < nFreqBins2)
+        if (iBin >= dcBin)
         {
-            cout << iBin << '\t' << sqrt(value) << '\t' << (*frequencySpectrum2)(iBin).abs() << endl;
+            cout << iBin << '\t' << sqrt(value) << '\t' << (*frequencySpectrum2)(iBin-dcBin).abs() << endl;
         }
         else
         {
@@ -99,11 +101,13 @@ int main(int argc, char** argv)
         }
     }
 
-    KTINFO(vallog, "FFT complete\n"
-           "\tFrequency spectrum characteristics:\n"
-           "\tSize: " << nFreqBins << " bins\n"
-           "\tRange: " << frequencySpectrum->GetRangeMin() << " to " << frequencySpectrum->GetRangeMax() << " Hz\n"
-           "\tBin width: " << frequencySpectrum->GetBinWidth() << " Hz\n"
+    KTINFO(vallog, "FFT complete\n" <<
+           "\tFrequency spectrum characteristics:\n" <<
+           "\tSize: " << nFreqBins << " bins\n" <<
+           "\tDC bin: " << frequencySpectrum->GetDCBin() << '\n' <<
+           "\tBin Offset: " << frequencySpectrum->GetNegFreqOffset() << '\n' <<
+           "\tRange: " << frequencySpectrum->GetRangeMin() << " to " << frequencySpectrum->GetRangeMax() << " Hz\n" <<
+           "\tBin width: " << frequencySpectrum->GetBinWidth() << " Hz\n" <<
            "\tPeak frequency: " << peakFrequency << " +/- " << 0.5 * frequencySpectrum->GetBinWidth() << " Hz\n");
 
 #ifdef ROOT_FOUND

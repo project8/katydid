@@ -23,16 +23,28 @@ namespace Katydid
     KTLOGGER(fslog, "katydid.fft");
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW() :
-            KTPhysicalArray< 1, fftw_complex >()
+            KTPhysicalArray< 1, fftw_complex >(),
+            fIsSizeEven(true),
+            fNegFreqOffset(0),
+            fDCBin(0)
     {
     }
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
-            KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax)
+            KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax),
+            fIsSizeEven(nBins%2 == 0),
+            fNegFreqOffset(nBins/2),
+            fDCBin((nBins+1)/2)
     {
+        KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
+        KTINFO(fslog, "neg freq offset: " << fNegFreqOffset);
     }
+
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
-            KTPhysicalArray< 1, fftw_complex >(orig)
+            KTPhysicalArray< 1, fftw_complex >(orig),
+            fIsSizeEven(orig.fIsSizeEven),
+            fNegFreqOffset(orig.fNegFreqOffset),
+            fDCBin(orig.fDCBin)
     {
     }
 
@@ -43,6 +55,9 @@ namespace Katydid
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::operator=(const KTFrequencySpectrumFFTW& rhs)
     {
         KTPhysicalArray< 1, fftw_complex >::operator=(rhs);
+        fIsSizeEven = rhs.fIsSizeEven;
+        fNegFreqOffset = rhs.fNegFreqOffset;
+        fDCBin = rhs.fDCBin;
         return *this;
     }
 
@@ -51,7 +66,8 @@ namespace Katydid
         UInt_t nBins = GetNBins();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            (*this)(iBin)[1] = -fData[iBin][1];
+            // order doesn't matter, so use fData[] to access values
+            fData[iBin][1] = -fData[iBin][1];
         }
         return *this;
     }
@@ -65,8 +81,9 @@ namespace Katydid
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-           value = fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1];
-           (*newPS)(iBin) = value * scaling;
+            // order matters, so use (*this)() to access values
+            value = (*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1];
+            (*newPS)(iBin) = value * scaling;
         }
         return newPS;
     }
@@ -76,8 +93,9 @@ namespace Katydid
         stringstream printStream;
         for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; iBin++)
         {
+            // order matters, so use (*this)() to access values
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
-                    ";   y = " << fData[iBin] << "\n";
+                    ";   y = " << (*this)(iBin) << "\n";
         }
         KTDEBUG(fslog, "\n" << printStream.str());
         return;
@@ -91,7 +109,8 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, std::sqrt(fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]));
+            // order matters, so use (*this)() to access values
+            hist->SetBinContent((Int_t)iBin+1, std::sqrt((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Voltage (V)");
@@ -104,7 +123,8 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, std::atan2(fData[iBin][1], fData[iBin][0]));
+            // order matters, so use (*this)() to access values
+            hist->SetBinContent((Int_t)iBin+1, std::atan2((*this)(iBin)[1], (*this)(iBin)[0]));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Phase");
@@ -119,7 +139,8 @@ namespace Katydid
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            value = fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1];
+            // order matters, so use (*this)() to access values
+            value = (*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1];
             hist->SetBinContent((Int_t)iBin + 1, value * scaling);
         }
         hist->SetXTitle("Frequency (Hz)");
@@ -136,6 +157,7 @@ namespace Katydid
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
+            // order doesn't matter, so use fData[iBin] to access values
             value = (fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]) * scaling;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
@@ -144,7 +166,8 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            value = fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1];
+            // order matters, so use (*this)() to access values
+            value = (*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1];
             hist->Fill(value * scaling);
         }
         hist->SetXTitle("Power (W)");
