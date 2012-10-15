@@ -203,6 +203,18 @@ namespace Katydid
     }
 
 
+    KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator*=(double rhs)
+    {
+        for (size_t iBin=0; iBin<size(); iBin++)
+        {
+            fData[iBin][0] = fData[iBin][0] * rhs;
+            fData[iBin][1] = fData[iBin][0] * rhs;
+        }
+        return *this;
+    }
+
+
+
     KTPhysicalArray< 1, fftw_complex >::const_iterator KTPhysicalArray< 1, fftw_complex >::begin() const
     {
         return fData;

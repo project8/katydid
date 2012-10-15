@@ -65,6 +65,8 @@ namespace Katydid
             KTPhysicalArray< 1, fftw_complex >& operator*=(const fftw_complex& rhs);
             KTPhysicalArray< 1, fftw_complex >& operator/=(const fftw_complex& rhs);
 
+            KTPhysicalArray< 1, fftw_complex >& operator*=(double rhs);
+
         public:
             const_iterator begin() const;
             const_iterator end() const;
