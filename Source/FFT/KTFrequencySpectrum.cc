@@ -48,7 +48,7 @@ namespace Katydid
 
     KTFrequencySpectrum& KTFrequencySpectrum::CConjugate()
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             (*this)(iBin).conj();
@@ -59,7 +59,7 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrum::CreatePowerSpectrum() const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
@@ -87,7 +87,7 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH1D* KTFrequencySpectrum::CreateMagnitudeHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
@@ -100,7 +100,7 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrum::CreatePhaseHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
@@ -113,7 +113,7 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrum::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
@@ -131,7 +131,7 @@ namespace Katydid
     {
         Double_t tMaxMag = -1.;
         Double_t tMinMag = 1.e9;
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
         for (UInt_t iBin=0; iBin<nBins; iBin++)

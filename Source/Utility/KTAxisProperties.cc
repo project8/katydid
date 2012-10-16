@@ -67,11 +67,6 @@ namespace Katydid
         return (*fGetNBinsFunc)();
     }
 
-    size_t KTAxisProperties< 1 >::GetNBins() const
-    {
-        return (*fGetNBinsFunc)();
-    }
-
     void KTAxisProperties< 1 >::SetNBinsFunc(KTNBinsFunctor< 1 >* getNBinsFunc)
     {
         delete fGetNBinsFunc;
