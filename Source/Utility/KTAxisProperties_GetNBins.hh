@@ -59,12 +59,12 @@ namespace Katydid
 
             size_t GetNBinsByDimDirectly(size_t dim) const
             {
-                return ((*fPtrToArray).*fDirectNBinsPtr)(dim);
+                return ((*fPtrToArray).*fDirectNBinsPtr)(dim-1);
             }
             size_t GetNBinsByDimWithArray(size_t dim) const
             {
-                if (dim >= NDims) return 0;
-                return ((*fPtrToArray).*fArrayOfGetNBinsPtrs[dim])();
+                if (dim > NDims) return 0;
+                return ((*fPtrToArray).*fArrayOfGetNBinsPtrs[dim-1])();
             }
 
 
@@ -92,9 +92,9 @@ namespace Katydid
                 fPtrToArray = ptrToArray;
                 fNBinsFuncPtr = &KTNBinsInArray::GetNBinsByDimWithArray;
                 fArrayOfGetNBinsPtrs = new FuncGetNBinsOneDim [NDims];
-                for (size_t iDim=0; iDim<NDims; iDim++)
+                for (size_t arrPos=0; arrPos<NDims; arrPos++)
                 {
-                    fArrayOfGetNBinsPtrs[iDim] = funcGetNBinsArray[iDim];
+                    fArrayOfGetNBinsPtrs[arrPos] = funcGetNBinsArray[arrPos];
                 }
             }
 
@@ -133,9 +133,9 @@ namespace Katydid
             KTNBinsInArray(const size_t* nBins)
             {
                 fNBins = new size_t[NDims];
-                for (size_t iDim=0; iDim<NDims; iDim++)
+                for (size_t arrPos=0; arrPos<NDims; arrPos++)
                 {
-                    fNBins[iDim] = nBins[iDim];
+                    fNBins[arrPos] = nBins[arrPos];
                 }
             }
             virtual ~KTNBinsInArray() {}

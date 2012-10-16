@@ -22,6 +22,8 @@ namespace Katydid
             KTTestProcessorA();
             virtual ~KTTestProcessorA();
 
+            Bool_t Configure(const KTPStoreNode* node);
+
             void EmitSignals(int);
 
         //private:
@@ -34,6 +36,8 @@ namespace Katydid
         public:
             KTTestProcessorB();
             virtual ~KTTestProcessorB();
+
+            Bool_t Configure(const KTPStoreNode* node);
 
             void Slot1(int);
             void Slot2(int);

@@ -8,7 +8,6 @@
 #include "KTPhysicalArray.hh"
 
 using namespace Katydid;
-using namespace boost::numeric::ublas;
 
 int main ()
 {
@@ -31,21 +30,23 @@ int main ()
     KTPhysicalArray< 2, double > m1(5, -1., 2., 10, 15., 20.);
     KTPhysicalArray< 2, double > m2(5, -1., 2., 10, 15., 20.);
 
-    std::cout << m1.size1() << "  " << m1.size2() << std::endl;
-    std::cout << m2.size1() << "  " << m2.size2() << std::endl;
+    std::cout << m1.size(1) << "  " << m1.size(2) << std::endl;
+    std::cout << m2.size(1) << "  " << m2.size(2) << std::endl;
 
-    for (unsigned i = 0; i < std::min (m1.size1(), m2.size1()); i++)
+    for (unsigned i = 0; i < std::min (m1.size(1), m2.size(1)); i++)
     {
-        std::cout << "i=" << i << "  m1.size1=" << m1.size1() << std::endl;
-        for (unsigned j = 0; j < std::min(m1.size2(), m2.size2()); j++)
+        std::cout << "i=" << i << "  m1.size1=" << m1.size(1) << std::endl;
+        for (unsigned j = 0; j < std::min(m1.size(2), m2.size(2)); j++)
         {
-            std::cout << "   j=" << j << "  m1.size2=" << m1.size2() << std::endl;
+            std::cout << "   j=" << j << "  m1.size2=" << m1.size(2) << std::endl;
             m1(i, j) = m2(i, j) = i+j+1;
         }
     }
 
     std::cout << m1 << std::endl;
     std::cout << m2 << std::endl;
+    KTPhysicalArray< 2, double > m3(m1);
+    std::cout << m3 << std::endl;
     std::cout << m1 + m2 << std::endl;
     std::cout << m1 - m2 << std::endl;
     m1 /= m2;

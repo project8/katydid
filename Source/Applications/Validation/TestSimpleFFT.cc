@@ -16,7 +16,7 @@
 #include "KTFrequencySpectrum.hh"
 #include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
-#include "KTTimeSeries.hh"
+#include "KTTimeSeriesReal.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -47,18 +47,18 @@ int main(int argc, char** argv)
            "\tRange: " << startTime << " to " << endTime << " s\n"
            "\tSine wave frequency: " << mult / (2.*pi) << " Hz\n");
 
-    KTTimeSeries* timeSeries = new KTTimeSeries(nBins, startTime, endTime);
+    KTTimeSeriesReal* timeSeries = new KTTimeSeriesReal(nBins, startTime, endTime);
 
     // Fill the time series with a sinusoid.
     // The units are volts.
     for (UInt_t iBin=0; iBin<nBins; iBin++)
     {
-        (*timeSeries)[iBin] = sin(timeSeries->GetBinCenter(iBin) * mult);
-        //KTDEBUG(vallog, iBin << "  " << (*timeSeries)[iBin]);
+        (*timeSeries)(iBin) = sin(timeSeries->GetBinCenter(iBin) * mult);
+        //KTDEBUG(vallog, iBin << "  " << (*timeSeries)(iBin));
     }
 
     // Create and prepare the FFT
-    KTSimpleFFT fullFFT(timeSeries->GetNBins());
+    KTSimpleFFT fullFFT(timeSeries->size());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 
@@ -69,12 +69,12 @@ int main(int argc, char** argv)
     // Find the peak frequency
     Double_t peakFrequency = -1.;
     Double_t maxValue = -999999.;
-    size_t nFreqBins = frequencySpectrum->GetNBins();
+    size_t nFreqBins = frequencySpectrum->size();
     for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
     {
-        if ((*frequencySpectrum)[iBin].abs() > maxValue)
+        if ((*frequencySpectrum)(iBin).abs() > maxValue)
         {
-            maxValue = (*frequencySpectrum)[iBin].abs();
+            maxValue = (*frequencySpectrum)(iBin).abs();
             peakFrequency = frequencySpectrum->GetBinCenter(iBin);
         }
     }
@@ -107,7 +107,7 @@ int main(int argc, char** argv)
     Double_t tsSum = 0.; // units: volts^2
     for (UInt_t iBin=0; iBin<nBins; iBin++)
     {
-        tsSum += (*timeSeries)[iBin] * (*timeSeries)[iBin];
+        tsSum += (*timeSeries)(iBin) * (*timeSeries)(iBin);
     }
 
     KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
     Double_t fsSum = 0.; // units: volts^2
     for (UInt_t iBin=0; iBin<nFreqBins; iBin++)
     {
-        fsSum += norm((*frequencySpectrum)[iBin]);
+        fsSum += norm((*frequencySpectrum)(iBin));
     }
 
     KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");

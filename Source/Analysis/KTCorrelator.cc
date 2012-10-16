@@ -9,6 +9,7 @@
 
 #include "KTCorrelationData.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTLogger.hh"
@@ -34,9 +35,10 @@ namespace Katydid
 {
     KTLOGGER(corrlog, "katydid.analysis");
 
+    static KTDerivedRegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
+
     KTCorrelator::KTCorrelator() :
             KTProcessor(),
-            KTConfigurable(),
             fPairs(),
             fCorrSignal()
     {

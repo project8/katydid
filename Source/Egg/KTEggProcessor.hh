@@ -10,13 +10,11 @@
 #define KTEGGPROCESSOR_HH_
 
 #include "KTProcessor.hh"
-#include "KTConfigurable.hh"
 
 #include "KTEgg.hh"
 
 namespace Katydid
 {
-    class KTTimeSeriesData;
     class KTPStoreNode;
 
     /*!
@@ -32,6 +30,7 @@ namespace Katydid
      \li \c "number-of-events": UInt_t -- Number of events to process
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
+     \li \c "time-series": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
      \li \c -n (n-events): Number of events to process
@@ -43,7 +42,7 @@ namespace Katydid
      \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
      \li \c void () emitted when a file is finished.
     */
-    class KTEggProcessor : public KTProcessor, public KTConfigurable
+    class KTEggProcessor : public KTProcessor
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
@@ -57,21 +56,31 @@ namespace Katydid
                 kMonarchEggReader
             };
 
+            enum TimeSeriesType
+            {
+                kRealTimeSeries,
+                kFFTWTimeSeries
+            };
+
         public:
             KTEggProcessor();
             virtual ~KTEggProcessor();
 
             Bool_t Configure(const KTPStoreNode* node);
 
+            Bool_t Run();
+
             Bool_t ProcessEgg();
 
             UInt_t GetNEvents() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
+            TimeSeriesType GetTimeSeriesType() const;
 
             void SetNEvents(UInt_t nEvents);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
+            void SetTimeSeriesType(TimeSeriesType type);
 
         private:
             UInt_t fNEvents;
@@ -79,6 +88,8 @@ namespace Katydid
             std::string fFilename;
 
             EggReaderType fEggReaderType;
+
+            TimeSeriesType fTimeSeriesType;
 
             //***************
             // Signals
@@ -90,6 +101,11 @@ namespace Katydid
             EggDoneSignal fEggDoneSignal;
 
     };
+
+    inline Bool_t KTEggProcessor::Run()
+    {
+        return ProcessEgg();
+    }
 
     inline UInt_t KTEggProcessor::GetNEvents() const
     {
@@ -121,6 +137,17 @@ namespace Katydid
     inline void KTEggProcessor::SetEggReaderType(EggReaderType type)
     {
         fEggReaderType = type;
+        return;
+    }
+
+    inline KTEggProcessor::TimeSeriesType KTEggProcessor::GetTimeSeriesType() const
+    {
+        return fTimeSeriesType;
+    }
+
+    inline void KTEggProcessor::SetTimeSeriesType(TimeSeriesType type)
+    {
+        fTimeSeriesType = type;
         return;
     }
 

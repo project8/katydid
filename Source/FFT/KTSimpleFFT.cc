@@ -9,8 +9,10 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTFrequencySpectrumData.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTPStoreNode.hh"
 
 #include <algorithm>
@@ -23,10 +25,11 @@ using std::vector;
 namespace Katydid
 {
 
+    static KTDerivedRegistrar< KTProcessor, KTSimpleFFT > sSimpleFFTRegistrar("simple-fft");
+
     KTSimpleFFT::KTSimpleFFT() :
-            //KTFFT(),
+            KTFFT(),
             KTProcessor(),
-            KTConfigurable(),
             fFTPlan(),
             fTimeSize(0),
             fInputArray(NULL),
@@ -40,16 +43,15 @@ namespace Katydid
         RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesDataReal*)");
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
 
         SetupTransformFlagMap();
     }
 
     KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
-            //KTFFT(),
+            KTFFT(),
             KTProcessor(),
-            KTConfigurable(),
             fFTPlan(),
             fTimeSize(timeSize),
             fInputArray((double*) fftw_malloc(sizeof(double) * timeSize)),
@@ -63,7 +65,7 @@ namespace Katydid
         RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesDataReal*)");
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
 
         SetupTransformFlagMap();
@@ -107,7 +109,7 @@ namespace Katydid
         return;
     }
 
-    KTFrequencySpectrumData* KTSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
+    KTFrequencySpectrumData* KTSimpleFFT::TransformData(const KTTimeSeriesDataReal* tsData)
     {
         if (tsData->GetRecordSize() != GetTimeSize())
         {
@@ -126,7 +128,14 @@ namespace Katydid
 
         for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
         {
-            KTFrequencySpectrum* nextResult = Transform(tsData->GetRecord(iChannel));
+            const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetRecord(iChannel));
+            if (nextInput == NULL)
+            {
+                KTERROR(fftlog_simp, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
+                delete newData;
+                return NULL;
+            }
+            KTFrequencySpectrum* nextResult = Transform(nextInput);
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_simp, "One of the channels did not transform correctly.");
@@ -145,13 +154,13 @@ namespace Katydid
         return newData;
     }
 
-    KTFrequencySpectrum* KTSimpleFFT::Transform(const KTTimeSeries* data) const
+    KTFrequencySpectrum* KTSimpleFFT::Transform(const KTTimeSeriesReal* data) const
     {
-        UInt_t nTimeBins = (UInt_t)data->GetNBins();
+        UInt_t nTimeBins = (UInt_t)data->size();
         if (nTimeBins != fTimeSize)
         {
             KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << data->GetNBins());
+                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << nTimeBins);
             return NULL;
         }
 
@@ -175,11 +184,34 @@ namespace Katydid
         KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
-            (*newSpect)[iPoint].set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
-            (*newSpect)[iPoint] *= normalization;
+            (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
+            (*newSpect)(iPoint) *= normalization;
         }
 
         return newSpect;
+    }
+
+    void KTSimpleFFT::SetTimeSize(UInt_t nBins)
+    {
+        fTimeSize = nBins;
+        if (fInputArray != NULL) fftw_free(fInputArray);
+        if (fOutputArray != NULL) fftw_free(fOutputArray);
+        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
+        fIsInitialized = false;
+        return;
+    }
+
+    void KTSimpleFFT::SetTransformFlag(const std::string& flag)
+    {
+        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
+        {
+            KTWARN(fftlog_simp, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
+            return;
+        }
+        fTransformFlag = flag;
+        fIsInitialized = false;
+        return;
     }
 
     void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
@@ -189,7 +221,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
+    void KTSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesDataReal* tsData)
     {
         KTFrequencySpectrumData* newData = TransformData(tsData);
         tsData->GetEvent()->AddData(newData);
@@ -199,7 +231,7 @@ namespace Katydid
     void KTSimpleFFT::ProcessEvent(KTEvent* event)
     {
         KTDEBUG(fftlog_simp, "Performing FFT of event " << event->GetEventNumber());
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesData::StaticGetName()));
+        const KTTimeSeriesDataReal* tsData = dynamic_cast< KTTimeSeriesDataReal* >(event->GetData(KTTimeSeriesDataReal::StaticGetName()));
         if (tsData == NULL)
         {
             KTWARN(fftlog_simp, "No time series data was available in the event");

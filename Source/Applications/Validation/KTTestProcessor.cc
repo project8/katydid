@@ -23,6 +23,11 @@ namespace Katydid
     {
     }
 
+    Bool_t KTTestProcessorA::Configure(const KTPStoreNode* node)
+    {
+        return true;
+    }
+
     void KTTestProcessorA::EmitSignals(int value)
     {
         fTheSignal(value);
@@ -40,6 +45,11 @@ namespace Katydid
 
     KTTestProcessorB::~KTTestProcessorB()
     {
+    }
+
+    Bool_t KTTestProcessorB::Configure(const KTPStoreNode* node)
+    {
+        return true;
     }
 
     void KTTestProcessorB::Slot1(int input)

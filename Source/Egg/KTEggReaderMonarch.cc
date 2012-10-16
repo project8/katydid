@@ -9,8 +9,11 @@
 
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
-#include "KTTimeSeriesData.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeriesDataFFTW.hh"
+#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 
 #include "MonarchPP.hh"
 #include "MonarchHeader.hpp"
@@ -26,6 +29,7 @@ namespace Katydid
 
     KTEggReaderMonarch::KTEggReaderMonarch() :
             KTEggReader(),
+            fTimeSeriesType(kRealTimeSeries),
             fMonarch(NULL),
             fNumberOfRecords(),
             fSampleRateUnitsInHz(1.e6),
@@ -97,7 +101,15 @@ namespace Katydid
         }
 
         UInt_t numberOfRecords = fNumberOfRecords[header->GetAcquisitionMode()];
-        KTTimeSeriesData* eventData = new KTTimeSeriesData(numberOfRecords);
+        KTTimeSeriesData* eventData;
+        if (fTimeSeriesType == kRealTimeSeries)
+        {
+            eventData = new KTTimeSeriesDataReal(numberOfRecords);
+        }
+        else
+        {
+            eventData = new KTTimeSeriesDataFFTW(numberOfRecords);
+        }
 
         // Fill out event information
         eventData->SetSampleRate(header->GetAcquisitionRate());
@@ -125,10 +137,20 @@ namespace Katydid
             eventData->SetTimeStamp(monarchRecord->fTick, iRecord);
 
             //eventData->SetRecord(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iRecord);
-            KTTimeSeries* newRecord = new KTTimeSeries(header->GetRecordSize(), 0., Double_t(header->GetRecordSize()) * eventData->GetBinWidth());
+            KTTimeSeries* newRecord;
+            if (fTimeSeriesType == kRealTimeSeries)
+            {
+                newRecord = new KTTimeSeriesReal(header->GetRecordSize(), 0., Double_t(header->GetRecordSize()) * eventData->GetBinWidth());
+            }
+            else
+            {
+                newRecord = new KTTimeSeriesFFTW(header->GetRecordSize(), 0., Double_t(header->GetRecordSize()) * eventData->GetBinWidth());
+            }
+
             for (UInt_t iBin=0; iBin<header->GetRecordSize(); iBin++)
             {
-                (*newRecord)[iBin] = Double_t(monarchRecord->fDataPtr[iBin]) * normalization;
+                //(*newRecord)(iBin) = Double_t(monarchRecord->fDataPtr[iBin]) * normalization;
+                newRecord->SetValue(iBin, Double_t(monarchRecord->fDataPtr[iBin]) * normalization);
             }
             eventData->SetRecord(newRecord, iRecord);
         }

@@ -9,12 +9,14 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTSlidingWindowFSData.hh"
 
 #ifdef ROOT_FOUND
@@ -37,9 +39,10 @@ namespace Katydid
 {
     KTLOGGER(ehuntlog, "katydid.fftehunt");
 
+    static KTDerivedRegistrar< KTProcessor, KTFFTEHunt > sFFTEHRegistrar("fft-ehunt");
+
     KTFFTEHunt::KTFFTEHunt() :
             KTProcessor(),
-            KTConfigurable(),
             fEventPeakBins(),
             fMinimumGroupSize(2),
             fCutRanges(),
@@ -53,6 +56,7 @@ namespace Katydid
             fWriteROOTFileFlag(kTRUE),
             fTextFile(),
             //fROOTFile(),
+            fFrequencyBinWidth(1.),
             fFrequencyMultiplier(1.e-6),
             fTotalCandidates(0)
     {
@@ -133,15 +137,16 @@ namespace Katydid
         // Set up the bin cuts
         // get the number of frequency bins and the min and max frequencies
         Int_t nFreqBins = fWindowFFT.GetFrequencySize();
-        //Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth();
-        Double_t freqMin = fWindowFFT.GetFreqMin();
-        Double_t freqMax = fWindowFFT.GetFreqMax();
+        Double_t timeBinWidth = 1. / header->GetAcquisitionRate();
+        fFrequencyBinWidth = fWindowFFT.GetFrequencyBinWidth(timeBinWidth);
+        Double_t freqMin = fWindowFFT.GetMaxFrequency(timeBinWidth);
+        Double_t freqMax = fWindowFFT.GetMinFrequency(timeBinWidth);
         // create KTFrequencySpectrum w/ number of bins; set bin width
         // binFinder will go out of scope at the end of this function.
         // therefore, from that point until fClusteringProc sets a new array, binCuts should NOT be used to access array values!
         KTFrequencySpectrum binFinder(nFreqBins, freqMin, freqMax);
         // create KTMaskedArray based on power spectrum magnitude array
-        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(binFinder.data(), nFreqBins);
+        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(binFinder.GetData().data(), nFreqBins);
         // convert cut frequency ranges to bins, and cut bins from the masked array
         for (vector< CutRange >::const_iterator itCutRange = fCutRanges.begin(); itCutRange != fCutRanges.end(); itCutRange++)
         {
@@ -181,21 +186,21 @@ namespace Katydid
             fTextFile << "Event " << iEvent << '\n';
         }
 
-        const KTTimeSeriesData* tsData = dynamic_cast<const KTTimeSeriesData*>(event->GetData(KTTimeSeriesData::StaticGetName()));
+        const KTTimeSeriesDataReal* tsData = dynamic_cast<const KTTimeSeriesDataReal*>(event->GetData(KTTimeSeriesDataReal::StaticGetName()));
 
         // Perform a 1-D FFT on the entire event
-        const KTTimeSeries* tsDataVect = tsData->GetRecord(0);
+        const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetRecord(0));
         KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
         // Use the data from the full FFT to create a gain normalization
-        fGainNorm.PrepareNormalization(freqSpect, (UInt_t)fWindowFFT.GetFrequencySize(), fWindowFFT.GetFreqBinWidth());
+        fGainNorm.PrepareNormalization(freqSpect, (UInt_t)fWindowFFT.GetFrequencySize(), fFrequencyBinWidth);
 
         // Prepare to run the windowed FFT
         //list< multimap< Int_t, Int_t >* > eventPeakBins;
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
         KTSlidingWindowFSData* windowedFFTData = fWindowFFT.TransformData(tsData);
-        Double_t freqBinWidth = fWindowFFT.GetFreqBinWidth() * fFrequencyMultiplier;
+        Double_t freqBinWidth = fFrequencyBinWidth * fFrequencyMultiplier;
 
         // Scan through the groups
         // Remove any that are too small

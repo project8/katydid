@@ -25,6 +25,7 @@ namespace Katydid
 
 
     KTProcessor::KTProcessor() :
+            KTConfigurable(),
             fSignalMap(),
             fSlotMap()
     {
@@ -41,6 +42,12 @@ namespace Katydid
         {
             delete iter->second;
         }
+    }
+
+    Bool_t KTProcessor::Run()
+    {
+        KTERROR(proclog, "This processor has not implemented a default Run action.");
+        return false;
     }
 
     void KTProcessor::ConnectASlot(const std::string& signalName, KTProcessor* processor, const std::string& slotName, int groupNum)
