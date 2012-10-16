@@ -18,7 +18,7 @@
 #include "KTTimeSeriesFFTW.hh"
 
 #include "KTSimpleFFT.hh"
-#include "KTTimeSeries.hh"
+#include "KTTimeSeriesReal.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
            "\tSine wave frequency: " << mult / (2.*pi) << " Hz\n");
 
     KTTimeSeriesFFTW* timeSeries = new KTTimeSeriesFFTW(nBins, startTime, endTime);
-    KTTimeSeries* timeSeries2 = new KTTimeSeries(nBins, startTime, endTime);
+    KTTimeSeriesReal* timeSeries2 = new KTTimeSeriesReal(nBins, startTime, endTime);
 
     // Fill the time series with a sinusoid.
     // The units are volts.
@@ -62,11 +62,11 @@ int main(int argc, char** argv)
     }
 
     // Create and prepare the FFT
-    KTComplexFFTW fullFFT(timeSeries->GetNBins());
+    KTComplexFFTW fullFFT(timeSeries->size());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 
-    KTSimpleFFT simpFFT(timeSeries2->GetNBins());
+    KTSimpleFFT simpFFT(timeSeries2->size());
     simpFFT.SetTransformFlag("ESTIMATE");
     simpFFT.InitializeFFT();
 
@@ -74,13 +74,13 @@ int main(int argc, char** argv)
     KTINFO(vallog, "Performing FFT");
     KTFrequencySpectrumFFTW* frequencySpectrum = fullFFT.Transform(timeSeries);
     KTFrequencySpectrum* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
-    size_t nFreqBins2 = frequencySpectrum2->GetNBins();
+    size_t nFreqBins2 = frequencySpectrum2->size();
 
     // Find the peak frequency
     Double_t peakFrequency = -1.;
     Double_t maxValue = -999999.;
     Double_t value;
-    size_t nFreqBins = frequencySpectrum->GetNBins();
+    size_t nFreqBins = frequencySpectrum->size();
 
     size_t dcBin = frequencySpectrum->GetDCBin();
     for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)

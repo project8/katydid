@@ -15,7 +15,8 @@
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTSlidingWindowFSData.hh"
 
 #ifdef ROOT_FOUND
@@ -185,10 +186,10 @@ namespace Katydid
             fTextFile << "Event " << iEvent << '\n';
         }
 
-        const KTTimeSeriesData* tsData = dynamic_cast<const KTTimeSeriesData*>(event->GetData(KTTimeSeriesData::StaticGetName()));
+        const KTTimeSeriesDataReal* tsData = dynamic_cast<const KTTimeSeriesDataReal*>(event->GetData(KTTimeSeriesDataReal::StaticGetName()));
 
         // Perform a 1-D FFT on the entire event
-        const KTTimeSeries* tsDataVect = tsData->GetRecord(0);
+        const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetRecord(0));
         KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
         // Use the data from the full FFT to create a gain normalization

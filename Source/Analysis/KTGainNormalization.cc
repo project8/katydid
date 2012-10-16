@@ -46,7 +46,7 @@ namespace Katydid
         delete fNormalization;
         fNormalization = new KTFrequencySpectrum(reducedNBins, -0.5*reducedBinWidth, reducedBinWidth * ((Double_t)reducedNBins-0.5));
 
-        Int_t veryLastBinInFullPS = (Int_t)fullArray->GetNBins() - 1;
+        Int_t veryLastBinInFullPS = (Int_t)fullArray->size() - 1;
         for (UInt_t iBin=0; iBin<reducedNBins; iBin++)
         {
             Double_t freqBinMin = fNormalization->GetBinLowEdge(iBin);

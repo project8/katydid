@@ -16,7 +16,7 @@
 #include "KTFrequencySpectrum.hh"
 #include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
-#include "KTTimeSeries.hh"
+#include "KTTimeSeriesReal.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
            "\tRange: " << startTime << " to " << endTime << " s\n"
            "\tSine wave frequency: " << mult / (2.*pi) << " Hz\n");
 
-    KTTimeSeries* timeSeries = new KTTimeSeries(nBins, startTime, endTime);
+    KTTimeSeriesReal* timeSeries = new KTTimeSeriesReal(nBins, startTime, endTime);
 
     // Fill the time series with a sinusoid.
     // The units are volts.
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     }
 
     // Create and prepare the FFT
-    KTSimpleFFT fullFFT(timeSeries->GetNBins());
+    KTSimpleFFT fullFFT(timeSeries->size());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
     // Find the peak frequency
     Double_t peakFrequency = -1.;
     Double_t maxValue = -999999.;
-    size_t nFreqBins = frequencySpectrum->GetNBins();
+    size_t nFreqBins = frequencySpectrum->size();
     for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
     {
         if ((*frequencySpectrum)(iBin).abs() > maxValue)
