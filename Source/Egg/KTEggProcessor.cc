@@ -77,7 +77,7 @@ namespace Katydid
             // type series
             string timeSeriesTypeString = node->GetData< string >("time-series", "real");
             if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
-            else if (timeSeriesTypeString == "fftw-complex") SetTimeSeriesType(kFFTWComplexTimeSeries);
+            else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
             else
             {
                 KTERROR(egglog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
@@ -103,7 +103,12 @@ namespace Katydid
 
         if (fEggReaderType == kMonarchEggReader)
         {
-            egg.SetReader(new KTEggReaderMonarch());
+            KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+            if (fTimeSeriesType == kRealTimeSeries)
+                eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
+            else if (fTimeSeriesType == kFFTWTimeSeries)
+                eggReader->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
+            egg.SetReader(eggReader);
         }
         else
         {

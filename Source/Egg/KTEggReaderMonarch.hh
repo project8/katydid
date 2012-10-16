@@ -32,7 +32,7 @@ namespace Katydid
             enum TimeSeriesType
             {
                 kRealTimeSeries,
-                kFFTWComplexTimeSeries
+                kFFTWTimeSeries
             };
 
         public:

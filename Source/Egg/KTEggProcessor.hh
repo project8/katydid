@@ -30,7 +30,7 @@ namespace Katydid
      \li \c "number-of-events": UInt_t -- Number of events to process
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
-     \li \c "time-series": string -- Type of time series to produce (options: real [default], fftw-complex [not available with the 2011 egg reader])
+     \li \c "time-series": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
      \li \c -n (n-events): Number of events to process
@@ -59,7 +59,7 @@ namespace Katydid
             enum TimeSeriesType
             {
                 kRealTimeSeries,
-                kFFTWComplexTimeSeries
+                kFFTWTimeSeries
             };
 
         public:
