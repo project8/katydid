@@ -1,22 +1,22 @@
 /**
- @file KTSimpleFFT.hh
- @brief Contains KTSimpleFFT
+ @file KTInverseSimpleFFT.hh
+ @brief Contains KTInverseSimpleFFT
  @details Calculates a 1-dimensional FFT on a set of real data.
  @author: N. S. Oblath
  @date: Sep 12, 2011
  */
 
-#ifndef KTSIMPLEFFT_HH_
-#define KTSIMPLEFFT_HH_
+#ifndef KTINVERSESIMPLEFFT_HH_
+#define KTINVERSESIMPLEFFT_HH_
 
-#include "KTFFT.hh"
 #include "KTProcessor.hh"
+#include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
 
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
-#include <fftw3.h>
+#include <fftw3/fftw3.h>
 
 #include <map>
 #include <string>
@@ -29,19 +29,19 @@ namespace Katydid
     class KTEggHeader;
     class KTEvent;
     class KTPStoreNode;
-    class KTTimeSeriesReal;
-    class KTTimeSeriesDataReal;
+    class KTTimeSeries;
+    class KTTimeSeriesData;
     class KTFrequencySpectrumData;
     class KTWriteableData;
 
     /*!
-     @class KTSimpleFFT
+     @class KTInverseSimpleFFT
      @author N. S. Oblath
 
      @brief A one-dimensional real-to-complex FFT class.
 
      @details
-     KTSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
+     KTInverseSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
 
      The FFT is implemented using FFTW.
 
@@ -59,32 +59,31 @@ namespace Katydid
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
      \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
-     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal* data)
 
      Signals:
-     \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
+     \li \c void (UInt_t, const KTInverseSimpleFFT*) emitted upon performance of a transform.
     */
 
-    class KTSimpleFFT : public KTFFT, public KTProcessor
+    class KTInverseSimpleFFT : /*public KTFFT,*/ public KTProcessor, public KTConfigurable
     {
         public:
             typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
 
         protected:
-            typedef std::map< std::string, UInt_t > TransformFlagMap;
+            typedef std::map< std::string, Int_t > TransformFlagMap;
 
         public:
-            KTSimpleFFT();
-            KTSimpleFFT(UInt_t timeSize);
-            virtual ~KTSimpleFFT();
+            KTInverseSimpleFFT();
+            KTInverseSimpleFFT(UInt_t timeSize);
+            virtual ~KTInverseSimpleFFT();
 
             Bool_t Configure(const KTPStoreNode* node);
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesDataReal* tsData);
+            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
-            KTFrequencySpectrum* Transform(const KTTimeSeriesReal* data) const;
+            KTFrequencySpectrum* Transform(const KTTimeSeries* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -96,7 +95,7 @@ namespace Katydid
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
 
-            /// note: SetTransoformFlag sets fIsInitialized to false.
+            /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
             void SetTransformFlag(const std::string& flag);
 
         protected:
@@ -128,36 +127,59 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessEvent(KTEvent* event);
-            void ProcessTimeSeriesData(const KTTimeSeriesDataReal* tsData);
+            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };
 
 
-    inline UInt_t KTSimpleFFT::GetTimeSize() const
+    inline UInt_t KTInverseSimpleFFT::GetTimeSize() const
     {
         return fTimeSize;
     }
 
-    inline UInt_t KTSimpleFFT::GetFrequencySize() const
+    inline UInt_t KTInverseSimpleFFT::GetFrequencySize() const
     {
         return CalculateNFrequencyBins(fTimeSize);
     }
 
-    inline const std::string& KTSimpleFFT::GetTransformFlag() const
+    inline void KTInverseSimpleFFT::SetTimeSize(UInt_t nBins)
+    {
+        fTimeSize = nBins;
+        fftw_free(fInputArray);
+        fftw_free(fOutputArray);
+        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
+        fIsInitialized = false;
+        return;
+    }
+
+    inline const std::string& KTInverseSimpleFFT::GetTransformFlag() const
     {
         return fTransformFlag;
     }
 
-    inline Bool_t KTSimpleFFT::GetIsInitialized() const
+    inline Bool_t KTInverseSimpleFFT::GetIsInitialized() const
     {
         return fIsInitialized;
     }
 
-    inline UInt_t KTSimpleFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const
+    inline void KTInverseSimpleFFT::SetTransformFlag(const std::string& flag)
+    {
+        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
+        {
+            KTWARN(fftlog_simp, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
+            return;
+        }
+        fTransformFlag = flag;
+        fIsInitialized = false;
+        return;
+    }
+
+    inline UInt_t KTInverseSimpleFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const
     {
         // Integer division is rounded down, per FFTW's instructions
         return nTimeBins / 2 + 1;
     }
 
 } /* namespace Katydid */
-#endif /* KTSIMPLEFFT_HH_ */
+#endif /* KTINVERSESIMPLEFFT_HH_ */

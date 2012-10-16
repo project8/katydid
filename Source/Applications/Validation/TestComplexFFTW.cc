@@ -1,20 +1,22 @@
 /*
- * TestSimpleFFT.cc
+ * TestComplexFFTW.cc
  *
  *  Created on: Dec 22, 2011
  *      Author: nsoblath
  *
  *  Will compare the time series and frequency spectrum using Parseval's theorem.
  *     (see http://en.wikipedia.org/wiki/Discrete_Fourier_transform)
- *  If ROOT is present, will draw the time series and frequency spectrum and save the histograms in TestSimpleFFT.root.
+ *  If ROOT is present, will draw the time series and frequency spectrum and save the histograms in TestComplexFFTW.root.
  *
- *  Usage: > TestSimpleFFT
+ *  Usage: > TestComplexFFTW
  */
 
 
-#include "complexpolar.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
+#include "KTComplexFFTW.hh"
+#include "KTTimeSeriesFFTW.hh"
+
 #include "KTSimpleFFT.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -24,7 +26,7 @@
 #endif
 
 #include <cmath>
-
+#include <iostream>
 
 using namespace std;
 using namespace Katydid;
@@ -41,53 +43,75 @@ int main(int argc, char** argv)
 
     const Double_t mult = 30.;
 
-    KTINFO(vallog, "Testing the 1D real-to-complex FFT\n"
-           "\tTime series characteristics:\n"
-           "\tSize: " << nBins << " bins\n"
-           "\tRange: " << startTime << " to " << endTime << " s\n"
+    KTINFO(vallog, "Testing the 1D real-to-complex FFT\n" <<
+           "\tTime series characteristics:\n" <<
+           "\tSize: " << nBins << " bins\n" <<
+           "\tRange: " << startTime << " to " << endTime << " s\n" <<
            "\tSine wave frequency: " << mult / (2.*pi) << " Hz\n");
 
-    KTTimeSeriesReal* timeSeries = new KTTimeSeriesReal(nBins, startTime, endTime);
+    KTTimeSeriesFFTW* timeSeries = new KTTimeSeriesFFTW(nBins, startTime, endTime);
+    KTTimeSeriesReal* timeSeries2 = new KTTimeSeriesReal(nBins, startTime, endTime);
 
     // Fill the time series with a sinusoid.
     // The units are volts.
     for (UInt_t iBin=0; iBin<nBins; iBin++)
     {
-        (*timeSeries)(iBin) = sin(timeSeries->GetBinCenter(iBin) * mult);
+        (*timeSeries)(iBin)[0] = sin(timeSeries->GetBinCenter(iBin) * mult);
+        (*timeSeries2)(iBin) = sin(timeSeries2->GetBinCenter(iBin) * mult);
         //KTDEBUG(vallog, iBin << "  " << (*timeSeries)(iBin));
     }
 
     // Create and prepare the FFT
-    KTSimpleFFT fullFFT(timeSeries->size());
+    KTComplexFFTW fullFFT(timeSeries->size());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 
+    KTSimpleFFT simpFFT(timeSeries2->size());
+    simpFFT.SetTransformFlag("ESTIMATE");
+    simpFFT.InitializeFFT();
+
     // Perform the FFT and get the results
     KTINFO(vallog, "Performing FFT");
-    KTFrequencySpectrum* frequencySpectrum = fullFFT.Transform(timeSeries);
+    KTFrequencySpectrumFFTW* frequencySpectrum = fullFFT.Transform(timeSeries);
+    KTFrequencySpectrum* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
+    size_t nFreqBins2 = frequencySpectrum2->size();
 
     // Find the peak frequency
     Double_t peakFrequency = -1.;
     Double_t maxValue = -999999.;
+    Double_t value;
     size_t nFreqBins = frequencySpectrum->size();
+
+    size_t dcBin = frequencySpectrum->GetDCBin();
     for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
     {
-        if ((*frequencySpectrum)(iBin).abs() > maxValue)
+        value = (*frequencySpectrum)(iBin)[0]*(*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1]*(*frequencySpectrum)(iBin)[1];
+        if (value > maxValue)
         {
-            maxValue = (*frequencySpectrum)(iBin).abs();
+            maxValue = value;
             peakFrequency = frequencySpectrum->GetBinCenter(iBin);
+        }
+        if (iBin >= dcBin)
+        {
+            cout << iBin << '\t' << sqrt(value) << '\t' << (*frequencySpectrum2)(iBin-dcBin).abs() << endl;
+        }
+        else
+        {
+            cout << iBin << '\t' << sqrt(value) << endl;
         }
     }
 
-    KTINFO(vallog, "FFT complete\n"
-           "\tFrequency spectrum characteristics:\n"
-           "\tSize: " << nFreqBins << " bins\n"
-           "\tRange: " << frequencySpectrum->GetRangeMin() << " to " << frequencySpectrum->GetRangeMax() << " Hz\n"
-           "\tBin width: " << frequencySpectrum->GetBinWidth() << " Hz\n"
+    KTINFO(vallog, "FFT complete\n" <<
+           "\tFrequency spectrum characteristics:\n" <<
+           "\tSize: " << nFreqBins << " bins\n" <<
+           "\tDC bin: " << frequencySpectrum->GetDCBin() << '\n' <<
+           "\tBin Offset: " << frequencySpectrum->GetNegFreqOffset() << '\n' <<
+           "\tRange: " << frequencySpectrum->GetRangeMin() << " to " << frequencySpectrum->GetRangeMax() << " Hz\n" <<
+           "\tBin width: " << frequencySpectrum->GetBinWidth() << " Hz\n" <<
            "\tPeak frequency: " << peakFrequency << " +/- " << 0.5 * frequencySpectrum->GetBinWidth() << " Hz\n");
 
 #ifdef ROOT_FOUND
-    TFile* file = new TFile("TestSimpleFFT.root", "recreate");
+    TFile* file = new TFile("TestComplexFFTW.root", "recreate");
     TH1D* tsHist = timeSeries->CreateHistogram("hTimeSeries");
     TH1D* fsHist = frequencySpectrum->CreateMagnitudeHistogram("hFreqSpect");
     tsHist->SetDirectory(file);
@@ -107,7 +131,7 @@ int main(int argc, char** argv)
     Double_t tsSum = 0.; // units: volts^2
     for (UInt_t iBin=0; iBin<nBins; iBin++)
     {
-        tsSum += (*timeSeries)(iBin) * (*timeSeries)(iBin);
+        tsSum += (*timeSeries)(iBin)[0] * (*timeSeries)(iBin)[0];
     }
 
     KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
@@ -116,7 +140,7 @@ int main(int argc, char** argv)
     Double_t fsSum = 0.; // units: volts^2
     for (UInt_t iBin=0; iBin<nFreqBins; iBin++)
     {
-        fsSum += norm((*frequencySpectrum)(iBin));
+        fsSum += (*frequencySpectrum)(iBin)[0] * (*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1] * (*frequencySpectrum)(iBin)[1];
     }
 
     KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");

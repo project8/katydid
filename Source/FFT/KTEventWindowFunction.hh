@@ -16,7 +16,7 @@ using std::vector;
 
 namespace Katydid
 {
-    class KTTimeSeriesData;
+    class KTTimeSeriesDataReal;
 
     /*!
      @class KTEventWindowFunction
@@ -33,7 +33,7 @@ namespace Katydid
     {
         public:
             KTEventWindowFunction();
-            KTEventWindowFunction(const KTTimeSeriesData* tsData);
+            KTEventWindowFunction(const KTTimeSeriesDataReal* tsData);
             virtual ~KTEventWindowFunction();
 
             virtual Bool_t ConfigureWindowFunctionSubclass(const KTPStoreNode* node);
@@ -42,10 +42,10 @@ namespace Katydid
             /// Sets fBinWidth to event->GetBinWidth(), and adapts the length to be the integral number of bins closest to the current fLength.
             /// Returns the adapted length.
             /// If you also need to set the length, it is recommended that you use AdaptTo(const TEvent*, Double_t) instead of separately setting the length.
-            virtual Double_t AdaptTo(const KTTimeSeriesData* tsData);
+            virtual Double_t AdaptTo(const KTTimeSeriesDataReal* tsData);
             /// Sets fBinWidth to event->GetBinWidth(), and adapts the length to be the integer multiple of the bin width closest to the given length.
             /// Returns the adapted length.
-            virtual Double_t AdaptTo(const KTTimeSeriesData* tsData, Double_t length);
+            virtual Double_t AdaptTo(const KTTimeSeriesDataReal* tsData, Double_t length);
 
             virtual Double_t GetWeight(Double_t time) const = 0;
             virtual Double_t GetWeight(UInt_t bin) const = 0;

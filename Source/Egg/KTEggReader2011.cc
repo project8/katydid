@@ -8,8 +8,9 @@
 #include "KTEggReader2011.hh"
 
 #include "KTEggHeader.hh"
-#include "KTTimeSeriesData.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesReal.hh"
 
 #include "rapidxml.hpp"
 //#include "rapidxml_print.hpp"
@@ -216,7 +217,7 @@ namespace Katydid
     {
         if (! fEggStream.good()) return NULL;
 
-        KTTimeSeriesData* eventData = new KTTimeSeriesData(1);
+        KTTimeSeriesData* eventData = new KTTimeSeriesDataReal(1);
 
         unsigned char* readBuffer;
 
@@ -296,10 +297,11 @@ namespace Katydid
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTTimeSeries* newRecord = new KTTimeSeries(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
+            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
             for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
-                (*newRecord)[iBin] = Double_t(readBuffer[iBin]);
+                //(*newRecord)(iBin) = Double_t(readBuffer[iBin]);
+                newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));
             }
             delete [] readBuffer;
             eventData->SetRecord(newRecord);
