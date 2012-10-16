@@ -31,8 +31,8 @@ namespace Katydid
 
     class KTEggHeader;
     class KTSlidingWindowFSData;
-    class KTTimeSeries;
-    class KTTimeSeriesData;
+    class KTTimeSeriesReal;
+    class KTTimeSeriesDataReal;
     class KTPStoreNode;
 
     /*!
@@ -75,9 +75,9 @@ namespace Katydid
             void InitializeFFT();
             void RecreateFFT();
 
-            KTSlidingWindowFSData* TransformData(const KTTimeSeriesData* tsData);
+            KTSlidingWindowFSData* TransformData(const KTTimeSeriesDataReal* tsData);
 
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* Transform(const KTTimeSeries* data) const;
+            KTPhysicalArray< 1, KTFrequencySpectrum* >* Transform(const KTTimeSeriesReal* data) const;
 
             /// for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.
             virtual UInt_t GetTimeSize() const;
@@ -140,7 +140,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData);
+            void ProcessEvent(UInt_t iEvent, const KTTimeSeriesDataReal* tsData);
 
     };
 

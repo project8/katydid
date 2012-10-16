@@ -9,7 +9,8 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTFactory.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
@@ -43,7 +44,7 @@ namespace Katydid
         RegisterSignal("full_fft", &fFullFFTSignal, "void (KTSlidingWindowFSData*)");
 
         RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (UInt_t iEvent, const KTTimeSeriesData*)");
+        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (UInt_t iEvent, const KTTimeSeriesDataReal*)");
 
         SetupTransformFlagMap();
     }
@@ -93,7 +94,7 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData)
+    void KTSlidingWindowFFT::ProcessEvent(UInt_t iEvent, const KTTimeSeriesDataReal* tsData)
     {
         KTSlidingWindowFSData* newData = TransformData(tsData);
         tsData->GetEvent()->AddData(newData);
@@ -119,7 +120,7 @@ namespace Katydid
         return;
     }
 
-    KTSlidingWindowFSData* KTSlidingWindowFFT::TransformData(const KTTimeSeriesData* tsData)
+    KTSlidingWindowFSData* KTSlidingWindowFFT::TransformData(const KTTimeSeriesDataReal* tsData)
     {
         if (! fIsInitialized)
         {
@@ -132,10 +133,16 @@ namespace Katydid
 
         for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
         {
+            const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetRecord(iChannel));
+            if (nextInput == NULL)
+            {
+                KTERROR(fftlog_sw, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
+                return NULL;
+            }
             KTPhysicalArray< 1, KTFrequencySpectrum* >* newResults = NULL;
             try
             {
-                newResults = Transform(tsData->GetRecord(iChannel));
+                newResults = Transform(nextInput);
             }
             catch (std::exception& e)
             {
@@ -152,7 +159,7 @@ namespace Katydid
         return newData;
     }
 
-    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFFT::Transform(const KTTimeSeries* data) const
+    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFFT::Transform(const KTTimeSeriesReal* data) const
     {
         UInt_t nTimeBins = fWindowFunction->GetSize();
         if (nTimeBins < data->size())

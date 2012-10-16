@@ -63,7 +63,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::CConjugate()
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             // order doesn't matter, so use fData[] to access values
@@ -75,7 +75,7 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumFFTW::CreatePowerSpectrum() const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
@@ -105,7 +105,7 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH1D* KTFrequencySpectrumFFTW::CreateMagnitudeHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
@@ -119,7 +119,7 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePhaseHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
@@ -133,7 +133,7 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
@@ -150,7 +150,7 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePowerDistributionHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         Double_t tMaxMag = -1.;
         Double_t tMinMag = 1.e9;
         Double_t value;

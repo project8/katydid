@@ -29,8 +29,8 @@ namespace Katydid
     class KTEggHeader;
     class KTEvent;
     class KTPStoreNode;
-    class KTTimeSeries;
-    class KTTimeSeriesData;
+    class KTTimeSeriesReal;
+    class KTTimeSeriesDataReal;
     class KTFrequencySpectrumData;
     class KTWriteableData;
 
@@ -59,7 +59,7 @@ namespace Katydid
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
      \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
-     \li \c void ProcessTimeSeriesData(const KTTimeSeriesData* data)
+     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal* data)
 
      Signals:
      \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
@@ -82,9 +82,9 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
+            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesDataReal* tsData);
 
-            KTFrequencySpectrum* Transform(const KTTimeSeries* data) const;
+            KTFrequencySpectrum* Transform(const KTTimeSeriesReal* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -128,7 +128,7 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessEvent(KTEvent* event);
-            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+            void ProcessTimeSeriesData(const KTTimeSeriesDataReal* tsData);
 
     };
 

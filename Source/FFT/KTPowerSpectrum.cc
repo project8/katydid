@@ -42,7 +42,7 @@ namespace Katydid
 #ifdef ROOT_FOUND
      TH1D* KTPowerSpectrum::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         Double_t value;
         for (unsigned int iBin=0; iBin<nBins; iBin++)
@@ -58,7 +58,7 @@ namespace Katydid
     {
         Double_t tMaxMag = -1.;
         Double_t tMinMag = 1.e9;
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         Double_t value;
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {

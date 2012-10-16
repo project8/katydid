@@ -12,6 +12,7 @@
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTTimeSeriesDataFFTW.hh"
+#include "KTTimeSeriesFFTW.hh"
 #include "KTPStoreNode.hh"
 
 #include <algorithm>
@@ -154,7 +155,16 @@ namespace Katydid
 
         for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
         {
-            KTFrequencySpectrumFFTW* nextResult = Transform(tsData->GetRecord(iChannel));
+            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData->GetRecord(iChannel));
+            if (nextInput == NULL)
+            {
+                KTERROR(fftlog_comp, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
+                delete newData;
+                return NULL;
+            }
+
+            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
+
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_comp, "One of the channels did not transform correctly.");
@@ -175,11 +185,11 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
     {
-        UInt_t nTimeBins = (UInt_t)data->GetNBins();
+        UInt_t nTimeBins = data->GetNBins();
         if (nTimeBins != fTimeSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << data->GetNBins());
+                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << nTimeBins);
             return NULL;
         }
 
