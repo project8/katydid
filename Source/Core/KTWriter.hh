@@ -16,6 +16,7 @@ namespace Katydid
 {
     class KTWriteableData;
     class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataFFTW;
     class KTCorrelationData;
 
     class KTWriter : public KTProcessor
@@ -29,6 +30,7 @@ namespace Katydid
             virtual void Write(const KTWriteableData* data) = 0;
 
             virtual void Write(const KTFrequencySpectrumData* data) = 0;
+            virtual void Write(const KTFrequencySpectrumDataFFTW* data) = 0;
 
             virtual void Write(const KTCorrelationData* data) = 0;
 
