@@ -21,8 +21,6 @@ class MonarchHeader;
 
 namespace Katydid
 {
-    class KTEvent;
-    class KTEggHeader;
 
     class KTEggReaderMonarch : public KTEggReader
     {
@@ -31,12 +29,25 @@ namespace Katydid
             typedef AcquisitionModeMap::value_type AcqModeMapValue;
 
         public:
+            enum TimeSeriesType
+            {
+                kRealTimeSeries,
+                kFFTWComplexTimeSeries
+            };
+
+        public:
             KTEggReaderMonarch();
             virtual ~KTEggReaderMonarch();
 
             KTEggHeader* BreakEgg(const std::string& filename);
             KTTimeSeriesData* HatchNextEvent(KTEggHeader* header);
             Bool_t CloseEgg();
+
+            TimeSeriesType GetTimeSeriesType() const;
+            void SetTimeSeriesType(TimeSeriesType type);
+
+        protected:
+            TimeSeriesType fTimeSeriesType;
 
         protected:
             /// Copy header information from the MonarchHeader object
@@ -59,6 +70,18 @@ namespace Katydid
             UInt_t fNADCLevels;
 
     };
+
+    inline KTEggReaderMonarch::TimeSeriesType KTEggReaderMonarch::GetTimeSeriesType() const
+    {
+        return fTimeSeriesType;
+    }
+
+    inline void KTEggReaderMonarch::SetTimeSeriesType(TimeSeriesType type)
+    {
+        fTimeSeriesType = type;
+        return;
+    }
+
 
 } /* namespace Katydid */
 

@@ -9,20 +9,13 @@
 #define KTTIMESERIESFFTW_HH_
 
 #include "KTPhysicalArrayFFTW.hh"
-
-#include "Rtypes.h"
-
-#include <string>
-
-#ifdef ROOT_FOUND
-class TH1D;
-#endif
+#include "KTTimeSeries.hh"
 
 namespace Katydid
 {
 
 
-    class KTTimeSeriesFFTW : public KTPhysicalArray< 1, fftw_complex >
+    class KTTimeSeriesFFTW : public KTTimeSeries, public KTPhysicalArray< 1, fftw_complex >
     {
         public:
             KTTimeSeriesFFTW();
@@ -30,9 +23,14 @@ namespace Katydid
             KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig);
             virtual ~KTTimeSeriesFFTW();
 
-            virtual KTTimeSeriesFFTW& operator=(const KTTimeSeriesFFTW& rhs);
+            KTTimeSeriesFFTW& operator=(const KTTimeSeriesFFTW& rhs);
 
-            void Print(unsigned startPrint, unsigned nToPrint) const;
+            virtual UInt_t GetNBins() const;
+
+            virtual void SetValue(UInt_t bin, Double_t value);
+            virtual Double_t GetValue(UInt_t bin) const;
+
+            virtual void Print(UInt_t startPrint, UInt_t nToPrint) const;
 
 #ifdef ROOT_FOUND
         public:
@@ -41,6 +39,23 @@ namespace Katydid
             virtual TH1D* CreateAmplitudeDistributionHistogram(const std::string& name = "hTimeSeriesDist") const;
 #endif
     };
+
+    inline UInt_t KTTimeSeriesFFTW::GetNBins() const
+    {
+        return this->size();
+    }
+
+    inline void KTTimeSeriesFFTW::SetValue(UInt_t bin, Double_t value)
+    {
+        (*this)(bin)[0] = value;
+        (*this)(bin)[1] = 0.;
+        return;
+    }
+
+    inline Double_t KTTimeSeriesFFTW::GetValue(UInt_t bin) const
+    {
+        return (*this)(bin)[0];
+    }
 
 } /* namespace Katydid */
 #endif /* KTTIMESERIESFFTW_HH_ */

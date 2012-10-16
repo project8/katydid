@@ -32,8 +32,8 @@ namespace Katydid
             KTAxisProperties< 1 >(orig),
             fData(NULL)
     {
-        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(orig.GetNBins()));
-        fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * GetNBins());
+        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(orig.size()));
+        fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size());
     }
 
 
@@ -83,9 +83,9 @@ namespace Katydid
         {
             fftw_free(fData);
         }
-        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(rhs.GetNBins()));
-        fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * GetNBins());
-        for (size_t iBin=0; iBin<GetNBins(); iBin++)
+        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(rhs.size()));
+        fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size());
+        for (size_t iBin=0; iBin<size(); iBin++)
         {
             fData[iBin][0] = rhs(iBin)[0];
             fData[iBin][1] = rhs(iBin)[1];
