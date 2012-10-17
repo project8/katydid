@@ -75,6 +75,7 @@ namespace Katydid
     {
         if (fInputArray != NULL) fftw_free(fInputArray);
         if (fOutputArray != NULL) fftw_free(fOutputArray);
+        fftw_destroy_plan(fFTPlan);
     }
 
     Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
