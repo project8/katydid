@@ -18,7 +18,7 @@ include (KatydidBuild)
 katydid_prepare_project (0 9 0)
 
 # Boost
-find_package (Boost 1.36.0 REQUIRED COMPONENTS program_options)
+find_package (Boost 1.36.0 REQUIRED COMPONENTS program_options thread)
 include_directories (${Boost_INCLUDE_DIRS})
 list (APPEND LIBS ${Boost_LIBRARIES})
 

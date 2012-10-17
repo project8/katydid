@@ -35,7 +35,7 @@ namespace Katydid
     static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
 
     KTEggProcessor::KTEggProcessor() :
-            KTProcessor(),
+            KTPrimaryProcessor(),
             fNEvents(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),

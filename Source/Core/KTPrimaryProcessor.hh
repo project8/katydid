@@ -10,6 +10,8 @@
 
 #include "KTProcessor.hh"
 
+#include "KTLogger.hh"
+
 namespace Katydid
 {
 
@@ -20,6 +22,11 @@ namespace Katydid
             virtual ~KTPrimaryProcessor();
 
         public:
+            /// Callable function used by boost::thread
+            virtual void operator()();
+
+        public:
+            /// Starts the  main action of the processor
             virtual Bool_t Run() = 0;
 
     };

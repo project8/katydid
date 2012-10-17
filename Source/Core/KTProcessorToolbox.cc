@@ -8,7 +8,10 @@
 #include "KTProcessorToolbox.hh"
 
 #include "KTLogger.hh"
+#include "KTPrimaryProcessor.hh"
 #include "KTPStoreNode.hh"
+
+#include <boost/thread.hpp>
 
 using std::deque;
 using std::string;
@@ -210,10 +213,17 @@ namespace Katydid
     {
         for (deque< KTPrimaryProcessor* >::const_iterator iter = fRunQueue.begin(); iter != fRunQueue.end(); iter++)
         {
+            /*
             if (! (*iter)->Run())
             {
                 return false;
             }
+            */
+            // create a boost::thread object to launch the thread
+            // use boost::ref to avoid copying the processor
+            boost::thread thread = boost::thread(boost::ref(**iter));
+            // wait for execution of the thread to finish before continuing
+            thread.join();
         }
         return true;
     }

@@ -12,12 +12,12 @@
 #include "KTConfigurable.hh"
 #include "KTFactory.hh"
 
-#include "KTPrimaryProcessor.hh"
-
 #include <deque>
 
 namespace Katydid
 {
+    class KTPrimaryProcessor;
+    class KTProcessor;
 
     /*!
      @class KTProcessorToolbox
