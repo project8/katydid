@@ -10,6 +10,7 @@
 
 #include "KTWriter.hh"
 #include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTCorrelationData.hh"
 
 #include "TFile.h"
@@ -63,6 +64,7 @@ namespace Katydid
             //************************
         public:
             void Write(const KTFrequencySpectrumData* data);
+            void Write(const KTFrequencySpectrumDataFFTW* data);
 
             //************************
             // Correlation Data

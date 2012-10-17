@@ -9,13 +9,14 @@
 #ifndef KTSIMPLEFFT_HH_
 #define KTSIMPLEFFT_HH_
 
+#include "KTFFT.hh"
 #include "KTProcessor.hh"
 
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
 
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
-#include <fftw3/fftw3.h>
+#include <fftw3.h>
 
 #include <map>
 #include <string>
@@ -28,8 +29,8 @@ namespace Katydid
     class KTEggHeader;
     class KTEvent;
     class KTPStoreNode;
-    class KTTimeSeries;
-    class KTTimeSeriesData;
+    class KTTimeSeriesReal;
+    class KTTimeSeriesDataReal;
     class KTFrequencySpectrumData;
     class KTWriteableData;
 
@@ -58,18 +59,19 @@ namespace Katydid
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
      \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
+     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal* data)
 
      Signals:
      \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
     */
 
-    class KTSimpleFFT : /*public KTFFT,*/ public KTProcessor
+    class KTSimpleFFT : public KTFFT, public KTProcessor
     {
         public:
             typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
 
         protected:
-            typedef std::map< std::string, Int_t > TransformFlagMap;
+            typedef std::map< std::string, UInt_t > TransformFlagMap;
 
         public:
             KTSimpleFFT();
@@ -80,9 +82,9 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
+            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesDataReal* tsData);
 
-            KTFrequencySpectrum* Transform(const KTTimeSeries* data) const;
+            KTFrequencySpectrum* Transform(const KTTimeSeriesReal* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -94,7 +96,7 @@ namespace Katydid
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
 
-            /// note: SetTransoformFlag sets fIsInitialized and fIsDataReady to kFALSE.
+            /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
 
         protected:
@@ -126,7 +128,7 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessEvent(KTEvent* event);
-            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+            void ProcessTimeSeriesData(const KTTimeSeriesDataReal* tsData);
 
     };
 
@@ -141,17 +143,6 @@ namespace Katydid
         return CalculateNFrequencyBins(fTimeSize);
     }
 
-    inline void KTSimpleFFT::SetTimeSize(UInt_t nBins)
-    {
-        fTimeSize = nBins;
-        fftw_free(fInputArray);
-        fftw_free(fOutputArray);
-        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
-        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
-        fIsInitialized = false;
-        return;
-    }
-
     inline const std::string& KTSimpleFFT::GetTransformFlag() const
     {
         return fTransformFlag;
@@ -160,18 +151,6 @@ namespace Katydid
     inline Bool_t KTSimpleFFT::GetIsInitialized() const
     {
         return fIsInitialized;
-    }
-
-    inline void KTSimpleFFT::SetTransformFlag(const std::string& flag)
-    {
-        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
-        {
-            KTWARN(fftlog_simp, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
-            return;
-        }
-        fTransformFlag = flag;
-        fIsInitialized = false;
-        return;
     }
 
     inline UInt_t KTSimpleFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const

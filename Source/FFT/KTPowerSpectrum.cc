@@ -42,12 +42,12 @@ namespace Katydid
 #ifdef ROOT_FOUND
      TH1D* KTPowerSpectrum::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         Double_t value;
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)[iBin]);
+            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Power (W)");
@@ -58,11 +58,11 @@ namespace Katydid
     {
         Double_t tMaxMag = -1.;
         Double_t tMinMag = 1.e9;
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = size();
         Double_t value;
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            value = (*this)[iBin];
+            value = (*this)(iBin);
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
         }
@@ -70,7 +70,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            hist->Fill((*this)[iBin]);
+            hist->Fill((*this)(iBin));
         }
         hist->SetXTitle("Power (W)");
         return hist;
@@ -133,8 +133,8 @@ namespace Katydid
 
         for (Int_t iBin=0; iBin<nBins; iBin++)
         {
-            fMagnitude[iBin] = real[iBin]*real[iBin] + imag[iBin]*imag[iBin];
-            fPhase[iBin] = atan2(imag[iBin], real[iBin]);
+            fMagnitude(iBin) = real(iBin)*real(iBin) + imag(iBin)*imag(iBin);
+            fPhase(iBin) = atan2(imag(iBin), real(iBin));
         }
         return;
     }
@@ -152,7 +152,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((Double_t)nBins-0.5) * freqMult);
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, fMagnitude[iBin]);
+            hist->SetBinContent((Int_t)iBin+1, fMagnitude(iBin));
         }
         hist->SetXTitle("Frequency (MHz)");
         hist->SetYTitle("Power");
@@ -172,7 +172,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum Phase", (Int_t)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((Double_t)nBins-0.5) * freqMult);
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, fPhase[iBin]);
+            hist->SetBinContent((Int_t)iBin+1, fPhase(iBin));
         }
         hist->SetXTitle("Frequency (MHz)");
         hist->SetYTitle("Phase");
@@ -218,14 +218,14 @@ namespace Katydid
         unsigned int nBins = (unsigned int)fMagnitude.GetNoElements();
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            if (fMagnitude[iBin] < tMinMag) tMinMag = fMagnitude[iBin];
-            if (fMagnitude[iBin] > tMaxMag) tMaxMag = fMagnitude[iBin];
+            if (fMagnitude(iBin) < tMinMag) tMinMag = fMagnitude(iBin);
+            if (fMagnitude(iBin) > tMaxMag) tMaxMag = fMagnitude(iBin);
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            hist->Fill(fMagnitude[iBin]);
+            hist->Fill(fMagnitude(iBin));
         }
         hist->SetXTitle("Power");
         return hist;

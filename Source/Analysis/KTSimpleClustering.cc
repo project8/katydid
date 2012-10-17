@@ -79,7 +79,7 @@ namespace Katydid
         UInt_t nPowerSpectra = spectra->size();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
         {
-            ProcessFrequencySpectrum(iPS, (*spectra)[iPS]);
+            ProcessFrequencySpectrum(iPS, (*spectra)(iPS));
         }
 
         return;
@@ -92,7 +92,7 @@ namespace Katydid
         // this will hold the bin numbers that are above the threshold
         set< Int_t > peakBins;
 
-        KTFrequencySpectrum::array_type dataArray = freqSpectrum->data();
+        KTFrequencySpectrum::array_type dataArray = freqSpectrum->GetData().data();
         UInt_t nBins = (UInt_t)freqSpectrum->size();
 
         KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* localBinCuts = fBinCuts;

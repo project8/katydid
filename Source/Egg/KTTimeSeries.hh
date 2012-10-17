@@ -8,8 +8,6 @@
 #ifndef KTTIMESERIES_HH_
 #define KTTIMESERIES_HH_
 
-#include "KTPhysicalArray.hh"
-
 #include "Rtypes.h"
 
 #include <string>
@@ -20,23 +18,28 @@ class TH1D;
 
 namespace Katydid
 {
-    class KTTimeSeries : public KTPhysicalArray< 1, Double_t >
+    class KTTimeSeries
     {
         public:
             KTTimeSeries();
-            KTTimeSeries(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
-            KTTimeSeries(const KTTimeSeries& orig);
             virtual ~KTTimeSeries();
 
-            virtual KTTimeSeries& operator=(const KTTimeSeries& rhs);
+            /// Get the size of the time series via the KTTimeSeries interface
+            virtual UInt_t GetNBins() const = 0;
 
-            void Print(unsigned startPrint, unsigned nToPrint) const;
+            /// Set values in the time series via the KTTimeSeries interface
+            virtual void SetValue(UInt_t bin, Double_t value) = 0;
+
+            /// Get values in the time series via the KTTimeSeries interface
+            virtual Double_t GetValue(UInt_t bin) const = 0;
+
+            virtual void Print(UInt_t startPrint, UInt_t nToPrint) const = 0;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateHistogram(const std::string& name = "hTimeSeries") const;
+            virtual TH1D* CreateHistogram(const std::string& name = "hTimeSeries") const = 0;
 
-            virtual TH1D* CreateAmplitudeDistributionHistogram(const std::string& name = "hTimeSeriesDist") const;
+            virtual TH1D* CreateAmplitudeDistributionHistogram(const std::string& name = "hTimeSeriesDist") const = 0;
 #endif
     };
 

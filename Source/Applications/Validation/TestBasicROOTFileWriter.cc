@@ -27,11 +27,11 @@ int main()
     event->SetEventNumber(0);
 
     KTFrequencySpectrum* spectrum1 = new KTFrequencySpectrum(10, -0.5, 9.5);
-    (*spectrum1)[3].set_polar(5., 1.);
+    (*spectrum1)(3).set_polar(5., 1.);
     data->SetSpectrum(spectrum1, 0);
 
     KTFrequencySpectrum* spectrum2 = new KTFrequencySpectrum(10, -0.5, 9.5);
-    (*spectrum2)[8].set_polar(3., 2.);
+    (*spectrum2)(8).set_polar(3., 2.);
     data->SetSpectrum(spectrum2, 1);
 
     // Set up the writer
@@ -43,8 +43,8 @@ int main()
     writer->Publish(data);
 
     // Set up next data
-    (*spectrum1)[3].set_polar(10., .5);
-    (*spectrum2)[8].set_polar(12., 2.1);
+    (*spectrum1)(3).set_polar(10., .5);
+    (*spectrum2)(8).set_polar(12., 2.1);
     event->SetEventNumber(1);
 
     // Publish the data
