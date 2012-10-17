@@ -11,9 +11,19 @@ using std::vector;
 
 namespace Katydid
 {
+    KTBasicTimeSeriesData::KTBasicTimeSeriesData() :
+            KTWriteableData()
+    {
+    }
+
+    KTBasicTimeSeriesData::~KTBasicTimeSeriesData()
+    {
+    }
+
+
 
     KTTimeSeriesData::KTTimeSeriesData(UInt_t nChannels) :
-            KTData(),
+            KTBasicTimeSeriesData(),
             fSampleRate(0.),
             fRecordLength(0.),
             fBinWidth(1.),

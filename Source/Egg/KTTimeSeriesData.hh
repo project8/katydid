@@ -11,7 +11,7 @@
 #ifndef KTTIMESERIESDATA_HH_
 #define KTTIMESERIESDATA_HH_
 
-#include "KTData.hh"
+#include "KTWriteableData.hh"
 
 #include "KTTimeSeries.hh"
 
@@ -21,7 +21,25 @@
 
 namespace Katydid
 {
-    class KTTimeSeriesData : public KTData
+    class KTBasicTimeSeriesData : public KTWriteableData
+    {
+        public:
+            KTBasicTimeSeriesData();
+            virtual ~KTBasicTimeSeriesData();
+
+            virtual UInt_t GetNChannels() const = 0;
+
+            virtual const KTTimeSeries* GetRecord(UInt_t channelNum = 0) const = 0;
+            virtual KTTimeSeries* GetRecord(UInt_t channelNum = 0) = 0;
+
+            virtual void SetNChannels(UInt_t channels) = 0;
+
+            virtual void SetRecord(KTTimeSeries* record, UInt_t channelNum = 0) = 0;
+
+    };
+
+
+    class KTTimeSeriesData : public KTBasicTimeSeriesData
     {
         protected:
             struct PerChannelData
@@ -74,8 +92,6 @@ namespace Katydid
             Double_t fBinWidth; // in sec
 
             std::vector< PerChannelData > fChannelData;
-
-            static std::string fName;
 
     };
 
@@ -199,6 +215,7 @@ namespace Katydid
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fRecord = record;
+        return;
     }
 
 } /* namespace Katydid */

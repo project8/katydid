@@ -7,9 +7,36 @@
 
 #include "KTTimeSeriesDataFFTW.hh"
 
+#include "KTWriter.hh"
+
 
 namespace Katydid
 {
+    std::string KTBasicTimeSeriesDataFFTW::fName("basic-time-series-fftw");
+
+    const std::string& KTBasicTimeSeriesDataFFTW::StaticGetName()
+    {
+        return fName;
+    }
+
+    KTBasicTimeSeriesDataFFTW::KTBasicTimeSeriesDataFFTW(UInt_t nChannels) :
+            KTBasicTimeSeriesData()
+    {
+    }
+
+    KTBasicTimeSeriesDataFFTW::~KTBasicTimeSeriesDataFFTW()
+    {
+    }
+
+    void KTBasicTimeSeriesDataFFTW::Accept(KTWriter* writer) const
+    {
+        writer->Write(this);
+        return;
+    }
+
+
+
+
     std::string KTTimeSeriesDataFFTW::fName("time-series-fftw");
 
     const std::string& KTTimeSeriesDataFFTW::StaticGetName()
@@ -25,6 +52,13 @@ namespace Katydid
     KTTimeSeriesDataFFTW::~KTTimeSeriesDataFFTW()
     {
     }
+
+    void KTTimeSeriesDataFFTW::Accept(KTWriter* writer) const
+    {
+        writer->Write(this);
+        return;
+    }
+
 
 
 } /* namespace Katydid */

@@ -7,6 +7,8 @@
 
 #include "KTTimeSeriesDataReal.hh"
 
+#include "KTWriter.hh"
+
 namespace Katydid
 {
     std::string KTTimeSeriesDataReal::fName("time-series-real");
@@ -24,5 +26,12 @@ namespace Katydid
     KTTimeSeriesDataReal::~KTTimeSeriesDataReal()
     {
     }
+
+    void KTTimeSeriesDataReal::Accept(KTWriter* writer) const
+    {
+        writer->Write(this);
+        return;
+    }
+
 
 } /* namespace Katydid */

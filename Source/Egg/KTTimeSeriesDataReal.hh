@@ -23,6 +23,8 @@ namespace Katydid
             const std::string& GetName() const;
             static const std::string& StaticGetName();
 
+            void Accept(KTWriter* writer) const;
+
         private:
             static std::string fName;
 
