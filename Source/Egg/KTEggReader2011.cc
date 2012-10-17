@@ -8,8 +8,9 @@
 #include "KTEggReader2011.hh"
 
 #include "KTEggHeader.hh"
-#include "KTTimeSeriesData.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesReal.hh"
 
 #include "rapidxml.hpp"
 //#include "rapidxml_print.hpp"
@@ -82,7 +83,7 @@ namespace Katydid
 
         // read the header
         delete [] readBuffer;
-        readBuffer = new char [fHeaderSize];
+        readBuffer = new char [fHeaderSize+1];
         fEggStream.read(readBuffer, fHeaderSize);
         if (! fEggStream.good())
         {
@@ -90,7 +91,8 @@ namespace Katydid
             delete [] readBuffer;
             return NULL;
         }
-        string newHeader(readBuffer, fHeaderSize);
+        readBuffer[fHeaderSize] = '\0';
+        string newHeader(readBuffer);
         fHeader = newHeader;
         KTDEBUG(eggreadlog, "Header: " << newHeader);
 
@@ -106,7 +108,7 @@ namespace Katydid
 
         // Parse the XML header
         rapidxml::xml_document<char> headerDOM;
-        char* headerCopy = new char [fHeader.size() + 1];
+        char* headerCopy = new char [fHeader.size()+1];
         strcpy(headerCopy, fHeader.c_str());
         try
         {
@@ -114,7 +116,9 @@ namespace Katydid
         }
         catch (rapidxml::parse_error& e)
         {
-            KTERROR(eggreadlog, "Caught exception while parsing header: " << e.what());
+            KTERROR(eggreadlog, "Caught exception while parsing header:\n" <<
+                    '\t' << e.what() << '\n' <<
+                    '\t' << e.where<char>());
             return NULL;
         }
         //std::cout << headerDOM;
@@ -213,7 +217,7 @@ namespace Katydid
     {
         if (! fEggStream.good()) return NULL;
 
-        KTTimeSeriesData* eventData = new KTTimeSeriesData(1);
+        KTTimeSeriesData* eventData = new KTTimeSeriesDataReal(1);
 
         unsigned char* readBuffer;
 
@@ -293,10 +297,11 @@ namespace Katydid
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTTimeSeries* newRecord = new KTTimeSeries(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
+            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
             for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
-                (*newRecord)[iBin] = Double_t(readBuffer[iBin]);
+                //(*newRecord)(iBin) = Double_t(readBuffer[iBin]);
+                newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));
             }
             delete [] readBuffer;
             eventData->SetRecord(newRecord);

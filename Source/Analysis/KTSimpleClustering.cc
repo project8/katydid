@@ -7,6 +7,7 @@
 
 #include "KTSimpleClustering.hh"
 
+#include "KTFactory.hh"
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
 #include "KTFrequencySpectrum.hh"
@@ -30,10 +31,10 @@ using std::pair;
 
 namespace Katydid
 {
+    static KTDerivedRegistrar< KTProcessor, KTSimpleClustering > sSimpClustRegistrar("simple-clustering");
 
     KTSimpleClustering::KTSimpleClustering() :
             KTProcessor(),
-            KTConfigurable(),
             fEventPeakBins(NULL),
             fThresholdMult(8.),
             fBinCuts(NULL),
@@ -78,7 +79,7 @@ namespace Katydid
         UInt_t nPowerSpectra = spectra->size();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
         {
-            ProcessFrequencySpectrum(iPS, (*spectra)[iPS]);
+            ProcessFrequencySpectrum(iPS, (*spectra)(iPS));
         }
 
         return;
@@ -91,7 +92,7 @@ namespace Katydid
         // this will hold the bin numbers that are above the threshold
         set< Int_t > peakBins;
 
-        KTFrequencySpectrum::array_type dataArray = freqSpectrum->data();
+        KTFrequencySpectrum::array_type dataArray = freqSpectrum->GetData().data();
         UInt_t nBins = (UInt_t)freqSpectrum->size();
 
         KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* localBinCuts = fBinCuts;

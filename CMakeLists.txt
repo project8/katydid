@@ -15,28 +15,23 @@ project (Katydid)
 include (KatydidBuild)
 
 # Set the version and associated variables
-katydid_prepare_project (0 9 0)
-
-
+katydid_prepare_project (0 9 1)
 
 # Boost
-# at the time of this writing, CMake 2.8.6 searched for boost up to 1.46, but boost 1.48 exists, so it must be added
-# see FindBoost.cmake for additional information about Boost_ADDITIONAL_VERSIONS
-set (Boost_ADDITIONAL_VERSIONS "1.41" "1.41.0" "1.42" "1.42.0" "1.43" "1.43.0" "1.44" "1.44.0" "1.45" "1.45.0" "1.46" "1.46.0" "1.46.1" "1.47" "1.47.0" "1.48" "1.48.0" "1.49" "1.49.0" "1.50" "1.50.0" "1.51" "1.51.0")
 find_package (Boost 1.36.0 REQUIRED COMPONENTS program_options)
 include_directories (${Boost_INCLUDE_DIRS})
-set (LIBS ${LIBS} ${Boost_LIBRARIES})
+list (APPEND LIBS ${Boost_LIBRARIES})
 
 # FFTW
 find_package(FFTW REQUIRED)
 include_directories (${FFTW_INCLUDE_DIR})
-set (LIBS ${LIBS} ${FFTW_LIBRARIES})
+list (APPEND LIBS ${FFTW_LIBRARIES})
 
 # ROOT
 find_package (ROOT 5.28)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
-    set (LIBS ${LIBS} ${ROOT_LIBRARIES})
+    list (APPEND LIBS ${ROOT_LIBRARIES})
 else (ROOT_FOUND)
     message(STATUS "Building without ROOT")
     # option for not building with ROOT: need a few include files for file types
@@ -45,14 +40,12 @@ endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
 
 # log4cxx
-find_package (LOG4CXX)
+find_package (Log4CXX)
 if (LOG4CXX_FOUND)
     message (STATUS "Log4cxx found")
     list (APPEND LIBS ${LOG4CXX_LIBRARY})
     include_directories (${LOG4CXX_INCLUDE_DIRS})
 endif (LOG4CXX_FOUND)
-
-
 
 # External packages distributed with Katydid
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
@@ -61,6 +54,11 @@ include_directories ("${PROJECT_SOURCE_DIR}/External/CImg")
 # Monarch
 include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
 add_subdirectory (Source/Egg/Monarch)
+# add to the RPATH to be used when installing, but only if it's not a system directory
+list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
+if ("${isSystemDir}" STREQUAL "-1")
+   list (APPEND CMAKE_INSTALL_RPATH ${Monarch_LIBRARY_DIR})
+endif ("${isSystemDir}" STREQUAL "-1")
 
 # Subdirectories
 include_directories (
@@ -72,8 +70,6 @@ include_directories (
     #${PROJECT_SOURCE_DIR}/Source/Waterfall
     ${PROJECT_SOURCE_DIR}/Source/Output
 )
-
-message(STATUS "include path: ${CMAKE_PREFIX_PATH}")
 
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Core)

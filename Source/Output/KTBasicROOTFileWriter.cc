@@ -24,6 +24,7 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
     static KTDerivedRegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root");
+    static KTDerivedRegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root-writer");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter() :
             KTWriter(),
@@ -105,6 +106,33 @@ namespace Katydid
         for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
         {
             const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histPS_" << eventNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
+                powerSpectrum->SetDirectory(fFile);
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTFileWriter::Write(const KTFrequencySpectrumDataFFTW* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nChannels = data->GetNChannels();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = data->GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
                 stringstream conv;

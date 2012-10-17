@@ -13,18 +13,11 @@
 
 #include "KTData.hh"
 
-#include "KTMath.hh"
 #include "KTTimeSeries.hh"
 
 #include "MonarchTypes.hpp"
 
-#include <algorithm>
 #include <vector>
-
-#ifdef ROOT_FOUND
-class TH1C;
-class TH1I;
-#endif
 
 namespace Katydid
 {
@@ -44,14 +37,6 @@ namespace Katydid
             KTTimeSeriesData(UInt_t nChannels=1);
             virtual ~KTTimeSeriesData();
 
-            const std::string& GetName() const;
-            static const std::string& StaticGetName();
-
-#ifdef ROOT_FOUND
-            virtual TH1C* CreateTimeSeriesHistogram(UInt_t channelNum = 0) const;
-            virtual TH1I* CreateAmplitudeDistributionHistogram(UInt_t channelNum = 0) const;
-#endif
-
             UInt_t GetNChannels() const;
 
             UInt_t GetRecordSize() const;
@@ -66,14 +51,6 @@ namespace Katydid
 
             const KTTimeSeries* GetRecord(UInt_t channelNum = 0) const;
             KTTimeSeries* GetRecord(UInt_t channelNum = 0);
-
-            //UInt_t GetRecordSize(UInt_t channelNum = 0) const;
-            Double_t GetRecordAt(UInt_t iBin, UInt_t channelNum = 0) const;
-            template< typename XType >
-            XType GetRecordAt(UInt_t iBin, UInt_t channelNum = 0) const;
-            DataType GetRecordAtTime(Double_t time, UInt_t channelNum = 0) const; /// time is in seconds and >= 0
-            template< typename XType >
-            XType GetRecordAtTime(Double_t time, UInt_t channelNum = 0) const; /// time is in seconds and >= 0
 
             void SetNChannels(UInt_t channels);
 
@@ -102,36 +79,9 @@ namespace Katydid
 
     };
 
-    inline const std::string& KTTimeSeriesData::GetName() const
-    {
-        return fName;
-    }
-
     inline UInt_t KTTimeSeriesData::GetNChannels() const
     {
         return UInt_t(fChannelData.size());
-    }
-
-    inline Double_t KTTimeSeriesData::GetRecordAt(UInt_t iPoint, UInt_t channelNum) const
-    {
-        return (*(fChannelData[channelNum].fRecord))[iPoint];
-    }
-
-    inline DataType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const
-    {
-        return this->GetRecordAt((UInt_t)(KTMath::Nint(std::max(0., time) / fBinWidth)), channelNum);
-    }
-
-    template< typename XType >
-    XType KTTimeSeriesData::GetRecordAt(UInt_t iPoint, UInt_t channelNum) const
-    {
-        return (XType)GetRecordAt(iPoint, channelNum);
-    }
-
-    template< typename XType >
-    XType KTTimeSeriesData::GetRecordAtTime(Double_t time, UInt_t channelNum) const
-    {
-        return this->GetRecordAt< XType >((UInt_t)(KTMath::Nint(std::max(0., time) / fBinWidth)), channelNum);
     }
 
     inline UInt_t KTTimeSeriesData::GetRecordSize() const

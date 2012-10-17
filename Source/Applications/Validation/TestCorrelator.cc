@@ -21,28 +21,28 @@ int main(int argc, char** argv)
     KTFrequencySpectrumData* dataInput = new KTFrequencySpectrumData(2);
 
     KTFrequencySpectrum* spectrum0 = new KTFrequencySpectrum(10, 0, 10);
-    (*spectrum0)[0] = 0.;
-    (*spectrum0)[1] = 0.;
-    (*spectrum0)[2] = 1.;
-    (*spectrum0)[3] = 2.;
-    (*spectrum0)[4] = 3.;
-    (*spectrum0)[5] = 4.;
-    (*spectrum0)[6] = 5.;
-    (*spectrum0)[7] = 6.;
-    (*spectrum0)[8] = complexpolar<double>(0., 1.);
-    (*spectrum0)[9] = complexpolar<double>(0., 10.);
+    (*spectrum0)(0) = 0.;
+    (*spectrum0)(1) = 0.;
+    (*spectrum0)(2) = 1.;
+    (*spectrum0)(3) = 2.;
+    (*spectrum0)(4) = 3.;
+    (*spectrum0)(5) = 4.;
+    (*spectrum0)(6) = 5.;
+    (*spectrum0)(7) = 6.;
+    (*spectrum0)(8) = complexpolar<double>(0., 1.);
+    (*spectrum0)(9) = complexpolar<double>(0., 10.);
 
     KTFrequencySpectrum* spectrum1 = new KTFrequencySpectrum(10, 0, 10);
-    (*spectrum1)[0] = 0.;
-    (*spectrum1)[1] = 0.;
-    (*spectrum1)[2] = 0.;
-    (*spectrum1)[3] = 5.;
-    (*spectrum1)[4] = 5.;
-    (*spectrum1)[5] = 5.;
-    (*spectrum1)[6] = 5.;
-    (*spectrum1)[7] = 0.;
-    (*spectrum1)[8] = complexpolar<double>(0., 2.);
-    (*spectrum1)[9] = complexpolar<double>(0., 2.);
+    (*spectrum1)(0) = 0.;
+    (*spectrum1)(1) = 0.;
+    (*spectrum1)(2) = 0.;
+    (*spectrum1)(3) = 5.;
+    (*spectrum1)(4) = 5.;
+    (*spectrum1)(5) = 5.;
+    (*spectrum1)(6) = 5.;
+    (*spectrum1)(7) = 0.;
+    (*spectrum1)(8) = complexpolar<double>(0., 2.);
+    (*spectrum1)(9) = complexpolar<double>(0., 2.);
 
     dataInput->SetSpectrum(spectrum0, 0);
     dataInput->SetSpectrum(spectrum1, 1);

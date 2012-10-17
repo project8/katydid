@@ -27,6 +27,9 @@ namespace Katydid
      Provides the number of bins and axis ranges for n-dimensional axes.  This is intended to be combined
      with array- or vector-like storage classes.
 
+     @note
+     Dimensions are numbered on the interval [1, NDims].
+
      \tparam <NDims> {Number of dimensions}
     */
 
@@ -48,7 +51,8 @@ namespace Katydid
 
             // physical characteristics
         public:
-            size_t GetNBins(size_t dim) const;
+            bool empty() const;
+            size_t size(size_t dim) const;
             void SetNBinsFunc(const KTNBinsFunctor< NDims >* getNBinsFunc);
 
             Double_t GetBinWidth(size_t dim) const;
@@ -97,12 +101,14 @@ namespace Katydid
     KTAxisProperties< NDims >::KTAxisProperties()
     {
         fGetNBinsFunc = new KTDefaultNBins< NDims >();
-        for (size_t iDim=0; iDim < NDims; iDim++)
+        size_t arrPos;
+        for (size_t iDim=1; iDim <= NDims; iDim++)
         {
-            fBinWidths[iDim] = 1.;
-            fRangeMin[iDim] = 0.;
-            fRangeMax[iDim] = 1.;
-            fLabels[iDim] = std::string("");
+            arrPos = iDim - 1;
+            fBinWidths[arrPos] = 1.;
+            fRangeMin[arrPos] = 0.;
+            fRangeMax[arrPos] = 1.;
+            fLabels[arrPos] = std::string("");
         }
     }
 
@@ -110,12 +116,14 @@ namespace Katydid
     KTAxisProperties< NDims >::KTAxisProperties(KTNBinsFunctor< NDims >* getNBinsFunc)
     {
         fGetNBinsFunc = getNBinsFunc;
-        for (size_t iDim=0; iDim < NDims; iDim++)
+        size_t arrPos;
+        for (size_t iDim=1; iDim <= NDims; iDim++)
         {
-            fBinWidths[iDim] = 1.;
-            fRangeMin[iDim] = 0.;
-            fRangeMax[iDim] = 1.;
-            fLabels[iDim] = std::string("");
+            arrPos = iDim - 1;
+            fBinWidths[arrPos] = 1.;
+            fRangeMin[arrPos] = 0.;
+            fRangeMax[arrPos] = 1.;
+            fLabels[arrPos] = std::string("");
         }
     }
 
@@ -123,12 +131,14 @@ namespace Katydid
     KTAxisProperties< NDims >::KTAxisProperties(const KTAxisProperties< NDims >& orig)
     {
         fGetNBinsFunc = orig.fGetNBinsFunc->Clone();
-        for (size_t iDim=0; iDim < NDims; iDim++)
+        size_t arrPos;
+        for (size_t iDim=1; iDim <= NDims; iDim++)
         {
-            fBinWidths[iDim] = orig.GetBinWidth(iDim);
-            fRangeMin[iDim] = orig.GetRangeMin(iDim);
-            fRangeMax[iDim] = orig.GetRangeMax(iDim);
-            fLabels[iDim] = orig.GetLabel(iDim);
+            arrPos = iDim - 1;
+            fBinWidths[arrPos] = orig.GetBinWidth(iDim);
+            fRangeMin[arrPos] = orig.GetRangeMin(iDim);
+            fRangeMax[arrPos] = orig.GetRangeMax(iDim);
+            fLabels[arrPos] = orig.GetLabel(iDim);
         }
     }
 
@@ -148,18 +158,31 @@ namespace Katydid
     KTAxisProperties< NDims >& KTAxisProperties< NDims >::operator=(const KTAxisProperties< NDims >& orig)
     {
         fGetNBinsFunc = orig.fGetNBinsFunc->Clone();
-        for (size_t iDim=0; iDim < NDims; iDim++)
+        size_t arrPos;
+        for (size_t iDim=1; iDim <= NDims; iDim++)
         {
-            fBinWidths[iDim] = orig.GetBinWidth(iDim);
-            fRangeMin[iDim] = orig.GetRangeMin(iDim);
-            fRangeMax[iDim] = orig.GetRangeMax(iDim);
-            fLabels[iDim] = orig.GetLabel(iDim);
+            arrPos = iDim - 1;
+            fBinWidths[arrPos] = orig.GetBinWidth(iDim);
+            fRangeMin[arrPos] = orig.GetRangeMin(iDim);
+            fRangeMax[arrPos] = orig.GetRangeMax(iDim);
+            fLabels[arrPos] = orig.GetLabel(iDim);
         }
         return *this;
     }
 
     template< size_t NDims >
-    size_t KTAxisProperties< NDims >::GetNBins(size_t dim) const
+    bool KTAxisProperties< NDims >::empty() const
+    {
+        bool isEmpty = true;
+        for (size_t iDim=1; iDim <= NDims; iDim++)
+        {
+            isEmpty = isEmpty && size(iDim) == 0;
+        }
+        return isEmpty;
+    }
+
+    template< size_t NDims >
+    size_t KTAxisProperties< NDims >::size(size_t dim) const
     {
         return (*fGetNBinsFunc)(dim);
     }
@@ -327,7 +350,8 @@ namespace Katydid
 
             // physical characteristics
         public:
-            size_t GetNBins() const;
+            bool empty() const;
+            size_t size() const;
             void SetNBinsFunc(KTNBinsFunctor< 1 >* getNBinsFunc);
 
             Double_t GetBinWidth() const;

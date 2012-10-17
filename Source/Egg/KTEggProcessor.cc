@@ -14,9 +14,11 @@
 #include "KTEggReaderMonarch.hh"
 #include "KTEggReader2011.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesDataFFTW.hh"
 
 //#include "TCanvas.h"
 //#include "TH1.h"
@@ -31,12 +33,14 @@ namespace Katydid
 
     KTLOGGER(egglog, "katydid.egg");
 
+    static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
+
     KTEggProcessor::KTEggProcessor() :
             KTProcessor(),
-            KTConfigurable(),
             fNEvents(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
+            fTimeSeriesType(kRealTimeSeries),
             fHeaderSignal(),
             fEventSignal(),
             fEggDoneSignal()
@@ -69,6 +73,16 @@ namespace Katydid
                 KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
                 return false;
             }
+
+            // type series
+            string timeSeriesTypeString = node->GetData< string >("time-series", "real");
+            if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
+            else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
+            else
+            {
+                KTERROR(egglog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
+                return false;
+            }
         }
 
         // Command-line settings
@@ -89,7 +103,12 @@ namespace Katydid
 
         if (fEggReaderType == kMonarchEggReader)
         {
-            egg.SetReader(new KTEggReaderMonarch());
+            KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+            if (fTimeSeriesType == kRealTimeSeries)
+                eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
+            else if (fTimeSeriesType == kFFTWTimeSeries)
+                eggReader->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
+            egg.SetReader(eggReader);
         }
         else
         {
@@ -119,8 +138,18 @@ namespace Katydid
             KTEvent* event = egg.HatchNextEvent();
             if (event == NULL) break;
 
-            KTTimeSeriesData* tsData = event->GetData<KTTimeSeriesData>(KTTimeSeriesData::StaticGetName());
-            if (tsData == NULL)
+            Bool_t tsDataPresent = false;
+            if (event->GetData<KTTimeSeriesDataReal>(KTTimeSeriesDataReal::StaticGetName()) != NULL)
+            {
+                tsDataPresent = true;
+                KTDEBUG(egglog, "Time series data (type: real) is present.");
+            }
+            if (event->GetData<KTTimeSeriesDataFFTW>(KTTimeSeriesDataFFTW::StaticGetName()) != NULL)
+            {
+                tsDataPresent = true;
+                KTDEBUG(egglog, "Time series data (type: fftw-complex) is present.");
+            }
+            if (! tsDataPresent)
             {
                 KTWARN(egglog, "No time-series data present in event");
                 continue;
