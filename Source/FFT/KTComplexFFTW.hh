@@ -65,7 +65,6 @@ namespace Katydid
      \li \c "event-forward": void ProcessEventForward(const KTEvent* event)
      \li \c "event-reverse": void ProcessEventReverse(const KTEvent* event)
      \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* data)
-     \li \c "basic-ts-data": void ProcessBasicTimeSeriesData(const KTBasicTimeSeriesDataFFTW* data)
      \li \c "fs-data": void ProcessFrequencySpectrumData(const KTTimeSeriesDataFFTW* data)
 
      Signals:
@@ -90,9 +89,8 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesDataFFTW* tsData);
-            virtual KTFrequencySpectrumDataFFTW* TransformData(const KTBasicTimeSeriesDataFFTW* tsData);
-            virtual KTBasicTimeSeriesDataFFTW* TransformData(const KTFrequencySpectrumDataFFTW* fsData);
+            virtual KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesData* tsData);
+            virtual KTTimeSeriesData* TransformData(const KTFrequencySpectrumDataFFTW* fsData);
 
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
             KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* data) const;
@@ -112,7 +110,6 @@ namespace Katydid
             void SetTransformFlag(const std::string& flag);
 
         protected:
-            virtual KTFrequencySpectrumDataFFTW* DoTransformData(const KTBasicTimeSeriesData* tsData);
             void AllocateArrays();
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)
 
@@ -144,8 +141,7 @@ namespace Katydid
             void ProcessHeader(const KTEggHeader* header);
             void ProcessEventForward(KTEvent* event);
             void ProcessEventReverse(KTEvent* event);
-            void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* tsData);
-            void ProcessBasicTimeSeriesData(const KTBasicTimeSeriesDataFFTW* tsData);
+            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
     };

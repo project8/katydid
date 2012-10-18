@@ -11,14 +11,13 @@
 #include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTTimeSeriesDataFFTW.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTPStoreNode.hh"
 
 #include <algorithm>
 #include <cmath>
 
-using std::copy;
 using std::string;
 using std::vector;
 
@@ -47,8 +46,7 @@ namespace Katydid
         RegisterSignal("fft-reverse", &fFFTReverseSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesDataFFTW*)");
-        RegisterSlot("basic-ts-data", this, &KTComplexFFTW::ProcessBasicTimeSeriesData, "void (const KTBasicTimeSeriesDataFFTW*)");
+        RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event-forward", this, &KTComplexFFTW::ProcessEventForward, "void (KTEvent*)");
         RegisterSlot("event-reverse", this, &KTComplexFFTW::ProcessEventReverse, "void (KTEvent*)");
@@ -76,8 +74,7 @@ namespace Katydid
         RegisterSignal("fft-reverse", &fFFTReverseSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesDataFFTW*)");
-        RegisterSlot("basic-ts-data", this, &KTComplexFFTW::ProcessBasicTimeSeriesData, "void (const KTBasicTimeSeriesDataFFTW*)");
+        RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event-forward", this, &KTComplexFFTW::ProcessEventForward, "void (KTEvent*)");
         RegisterSlot("event-reverse", this, &KTComplexFFTW::ProcessEventReverse, "void (KTEvent*)");
@@ -149,21 +146,16 @@ namespace Katydid
         return;
     }
 
-    KTFrequencySpectrumDataFFTW* KTComplexFFTW::TransformData(const KTTimeSeriesDataFFTW* tsData)
+    KTFrequencySpectrumDataFFTW* KTComplexFFTW::TransformData(const KTTimeSeriesData* tsData)
     {
-        return DoTransformData(tsData);
-    }
-
-    KTFrequencySpectrumDataFFTW* KTComplexFFTW::TransformData(const KTBasicTimeSeriesDataFFTW* tsData)
-    {
-        return DoTransformData(tsData);
-    }
-
-    KTFrequencySpectrumDataFFTW* KTComplexFFTW::DoTransformData(const KTBasicTimeSeriesData* tsData)
-    {
-        if (tsData->GetRecord(0)->GetNBins() != GetSize())
+        if (tsData->GetNChannels() < 1)
         {
-            SetSize(tsData->GetRecord(0)->GetNBins());
+            KTWARN(fftlog_comp, "Data has no channels!");
+            return NULL;
+        }
+        if (tsData->GetRecordSize() != GetSize())
+        {
+            SetSize(tsData->GetRecordSize());
             InitializeFFT();
         }
 
@@ -206,8 +198,13 @@ namespace Katydid
         return newData;
     }
 
-    KTBasicTimeSeriesDataFFTW* KTComplexFFTW::TransformData(const KTFrequencySpectrumDataFFTW* fsData)
+    KTTimeSeriesData* KTComplexFFTW::TransformData(const KTFrequencySpectrumDataFFTW* fsData)
     {
+        if (fsData->GetNChannels() < 1)
+        {
+            KTWARN(fftlog_comp, "Data has no channels!");
+            return NULL;
+        }
         if (fsData->GetSpectrum(0)->size() != GetSize())
         {
             SetSize(fsData->GetSpectrum(0)->size());
@@ -221,7 +218,7 @@ namespace Katydid
             return NULL;
         }
 
-        KTBasicTimeSeriesDataFFTW* newData = new KTBasicTimeSeriesDataFFTW(fsData->GetNChannels());
+        KTBasicTimeSeriesData* newData = new KTBasicTimeSeriesData(fsData->GetNChannels());
 
         for (UInt_t iChannel = 0; iChannel < fsData->GetNChannels(); iChannel++)
         {
@@ -345,14 +342,7 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* tsData)
-    {
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        tsData->GetEvent()->AddData(newData);
-        return;
-    }
-
-    void KTComplexFFTW::ProcessBasicTimeSeriesData(const KTBasicTimeSeriesDataFFTW* tsData)
+    void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
         tsData->GetEvent()->AddData(newData);
@@ -361,7 +351,7 @@ namespace Katydid
 
     void KTComplexFFTW::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* tsData)
     {
-        KTBasicTimeSeriesDataFFTW* newData = TransformData(tsData);
+        KTTimeSeriesData* newData = TransformData(tsData);
         tsData->GetEvent()->AddData(newData);
         return;
     }
@@ -369,17 +359,17 @@ namespace Katydid
     void KTComplexFFTW::ProcessEventForward(KTEvent* event)
     {
         KTDEBUG(fftlog_comp, "Performing forward FFT of event " << event->GetEventNumber());
-        const KTBasicTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesDataFFTW* >(event->GetData(KTTimeSeriesDataFFTW::StaticGetName()));
+        const KTTimeSeriesData* tsData = dynamic_cast< KTProgenitorTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
         if (tsData == NULL)
         {
-            tsData = dynamic_cast< KTBasicTimeSeriesDataFFTW* >(event->GetData(KTBasicTimeSeriesDataFFTW::StaticGetName()));
+            tsData = dynamic_cast< KTBasicTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
             if (tsData == NULL)
             {
                 KTWARN(fftlog_comp, "No time series data was available in the event");
                 return;
             }
         }
-        KTFrequencySpectrumDataFFTW* newData = DoTransformData(tsData);
+        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
         event->AddData(newData);
         return;
     }
@@ -393,7 +383,7 @@ namespace Katydid
             KTWARN(fftlog_comp, "No frequency spectrum data was available in the event");
             return;
         }
-        KTBasicTimeSeriesDataFFTW* newData = TransformData(tsData);
+        KTTimeSeriesData* newData = TransformData(tsData);
         event->AddData(newData);
         return;
     }

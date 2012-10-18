@@ -17,8 +17,7 @@
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesDataReal.hh"
-#include "KTTimeSeriesDataFFTW.hh"
+#include "KTTimeSeriesData.hh"
 
 //#include "TCanvas.h"
 //#include "TH1.h"
@@ -138,18 +137,11 @@ namespace Katydid
             KTEvent* event = egg.HatchNextEvent();
             if (event == NULL) break;
 
-            Bool_t tsDataPresent = false;
-            if (event->GetData<KTTimeSeriesDataReal>(KTTimeSeriesDataReal::StaticGetName()) != NULL)
+            if (event->GetData<KTProgenitorTimeSeriesData>(KTProgenitorTimeSeriesData::StaticGetName()) != NULL)
             {
-                tsDataPresent = true;
-                KTDEBUG(egglog, "Time series data (type: real) is present.");
+                KTDEBUG(egglog, "Time series data is present.");
             }
-            if (event->GetData<KTTimeSeriesDataFFTW>(KTTimeSeriesDataFFTW::StaticGetName()) != NULL)
-            {
-                tsDataPresent = true;
-                KTDEBUG(egglog, "Time series data (type: fftw-complex) is present.");
-            }
-            if (! tsDataPresent)
+            else
             {
                 KTWARN(egglog, "No time-series data present in event");
                 continue;

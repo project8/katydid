@@ -16,7 +16,7 @@
 #include "KTEggReaderMonarch.hh"
 #include "KTEvent.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 
 #include <iostream>
 #include <string>
@@ -90,7 +90,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    KTTimeSeriesDataReal* tsData = event->GetData<KTTimeSeriesDataReal>(KTTimeSeriesDataReal::StaticGetName());
+    KTTimeSeriesData* tsData = event->GetData<KTProgenitorTimeSeriesData>(KTProgenitorTimeSeriesData::StaticGetName());
     if (tsData == NULL)
     {
         KTWARN(testegg, "No time-series data present in event");
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
     KTINFO(testegg, "This event contains " << nRecords << " records");
     if (nRecords >= 1)
     {
-        KTINFO(testegg, "Record 0 has " << tsData->GetRecord(0)->GetNBins() << " bins");
+        KTINFO(testegg, "Record 0 has " << tsData->GetRecordSize() << " bins");
         KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetRecord(0)->GetValue(0));
     }
 

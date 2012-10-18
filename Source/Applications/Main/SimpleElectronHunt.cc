@@ -25,7 +25,7 @@
 #include "KTSimpleFFT.hh"
 #include "KTSlidingWindowFFT.hh"
 #include "KTSlidingWindowFSData.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 
 #include "TApplication.h"
 #include "TCanvas.h"
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
         // Hatch the event
         KTEvent* event = egg.HatchNextEvent();
         if (event == NULL) break;
-        KTTimeSeriesDataReal* data = event->GetData< KTTimeSeriesDataReal >(KTTimeSeriesDataReal::StaticGetName());
+        KTProgenitorTimeSeriesData* data = event->GetData< KTProgenitorTimeSeriesData >(KTProgenitorTimeSeriesData::StaticGetName());
         if (data == NULL) break;
 
         // FFT of the entire event, which will be used to normalize the gain fluctuations

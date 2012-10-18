@@ -13,7 +13,7 @@
 #include "KTPowerSpectrum.hh"
 #include "KTSlidingWindowFFT.hh"
 #include "KTSlidingWindowFSData.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 
 #include "TApplication.h"
 #include "TCanvas.h"
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    KTTimeSeriesDataReal* data = event->GetData< KTTimeSeriesDataReal >(KTTimeSeriesDataReal::StaticGetName());
+    KTProgenitorTimeSeriesData* data = event->GetData< KTProgenitorTimeSeriesData >(KTProgenitorTimeSeriesData::StaticGetName());
     if (data == NULL)
     {
         cout << "No data was present in the event" << endl;
