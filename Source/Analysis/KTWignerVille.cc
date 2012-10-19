@@ -8,7 +8,19 @@
 #include "KTWignerVille.hh"
 
 #include "KTComplexFFTW.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
+#include "KTPStoreNode.hh"
+#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesFFTW.hh"
+
+    class KTComplexFFTW;
+    class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumFFTW;
+    class KTTimeSeriesData;
+    class KTTimeSeriesFFTW;
+
 
 #include <algorithm>
 
@@ -32,6 +44,8 @@ namespace Katydid
 
     Bool_t KTWignerVille::Configure(const KTPStoreNode* node)
     {
+        SetSaveFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveFrequencySpectrum));
+
         const KTPStoreNode* fftNode = node->GetChild("complex-fft");
         if (fftNode != NULL)
         {
@@ -43,7 +57,7 @@ namespace Katydid
         return true;
     }
 
-    KTTimeSeriesData* KTWignerVille::TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData=NULL)
+    KTTimeSeriesData* KTWignerVille::TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData)
     {
         if (fFFT == NULL)
         {
@@ -111,7 +125,7 @@ namespace Katydid
         return newTSData;
     }
 
-    KTTimeSeriesFFTW* KTWignerVille::Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL)
+    KTTimeSeriesFFTW* KTWignerVille::Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
         if (fFFT == NULL)
         {
@@ -160,7 +174,7 @@ namespace Katydid
         }
 
         if (outputFS == NULL) delete freqSpec;
-        return outputFS;
+        return outputTS;
     }
 
     Bool_t KTWignerVille::Transform(KTFrequencySpectrumFFTW* freqSpectrum)
@@ -176,7 +190,7 @@ namespace Katydid
         // DC bin stays as is (array position 0).
         // Positive frequency bins are multiplied by 2 (from array position 1 to size/2).
         fftw_complex* data = freqSpectrum->GetData();
-        UInt_t arraySize = freqSpectrum.size();
+        UInt_t arraySize = freqSpectrum->size();
         UInt_t nyquistPos = arraySize / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
         for (UInt_t arrayPos=1; arrayPos<nyquistPos; arrayPos++)
         {

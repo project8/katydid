@@ -26,6 +26,8 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
+            Bool_t GetSaveFrequencySpectrum() const;
+            void SetSaveFrequencySpectrum(Bool_t flag);
 
         protected:
             KTComplexFFTW* fFFT;
@@ -48,6 +50,17 @@ namespace Katydid
 
 
     };
+
+    inline Bool_t KTWignerVille::GetSaveFrequencySpectrum() const
+    {
+        return fSaveFrequencySpectrum;
+    }
+
+    inline void KTWignerVille::SetSaveFrequencySpectrum(Bool_t flag)
+    {
+        fSaveFrequencySpectrum = flag;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTWIGNERVILLE_HH_ */
