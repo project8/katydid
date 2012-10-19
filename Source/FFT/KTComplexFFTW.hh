@@ -89,10 +89,14 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
+            /// Forward FFT
             virtual KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesData* tsData);
+            /// Reverse FFT
             virtual KTTimeSeriesData* TransformData(const KTFrequencySpectrumDataFFTW* fsData);
 
+            /// Forward FFT
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
+            /// Reverse FFT
             KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* data) const;
 
             virtual UInt_t GetSize() const;

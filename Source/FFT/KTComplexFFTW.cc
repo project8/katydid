@@ -182,7 +182,7 @@ namespace Katydid
 
             if (nextResult == NULL)
             {
-                KTERROR(fftlog_comp, "One of the channels did not transform correctly.");
+                KTERROR(fftlog_comp, "Channel <" << iChannel << "> did not transform correctly.");
                 delete newData;
                 return NULL;
             }
@@ -191,7 +191,7 @@ namespace Katydid
 
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
-        newData->SetEvent(tsData->GetEvent());
+        //newData->SetEvent(tsData->GetEvent());
 
         fFFTForwardSignal(newData);
 
@@ -243,7 +243,7 @@ namespace Katydid
 
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
-        newData->SetEvent(fsData->GetEvent());
+        //newData->SetEvent(fsData->GetEvent());
 
         fFFTReverseSignal(newData);
 
@@ -345,14 +345,16 @@ namespace Katydid
     void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        tsData->GetEvent()->AddData(newData);
+        if (tsData->GetEvent() != NULL)
+            tsData->GetEvent()->AddData(newData);
         return;
     }
 
-    void KTComplexFFTW::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* tsData)
+    void KTComplexFFTW::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
     {
-        KTTimeSeriesData* newData = TransformData(tsData);
-        tsData->GetEvent()->AddData(newData);
+        KTTimeSeriesData* newData = TransformData(fsData);
+        if (fsData->GetEvent() != NULL)
+            fsData->GetEvent()->AddData(newData);
         return;
     }
 

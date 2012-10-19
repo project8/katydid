@@ -153,7 +153,7 @@ namespace Katydid
 
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
-        newData->SetEvent(tsData->GetEvent());
+        //newData->SetEvent(tsData->GetEvent());
 
         fFFTSignal(newData);
 
@@ -230,7 +230,8 @@ namespace Katydid
     void KTSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTFrequencySpectrumData* newData = TransformData(tsData);
-        tsData->GetEvent()->AddData(newData);
+        if (tsData->GetEvent() != NULL)
+            tsData->GetEvent()->AddData(newData);
         return;
     }
 
