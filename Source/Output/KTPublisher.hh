@@ -9,7 +9,7 @@
 #define KTPUBLISHER_HH_
 
 #include "KTFactory.hh"
-#include "KTProcessor.hh"
+#include "KTPrimaryProcessor.hh"
 
 #include "KTWriter.hh"
 
@@ -21,7 +21,7 @@ namespace Katydid
     class KTEvent;
     class KTPStoreNode;
 
-    class KTPublisher : public KTProcessor, public KTFactory< KTWriter >
+    class KTPublisher : public KTPrimaryProcessor, public KTFactory< KTWriter >
     {
         protected:
             typedef std::set< std::string > DataList;
@@ -43,12 +43,27 @@ namespace Katydid
             typedef PublicationQueue::iterator PubQueueIter;
             typedef PublicationQueue::const_iterator PubQueueCIter;
 
+            enum Status
+            {
+                kStopped,
+                kIdle,
+                kRunning
+            };
+
         public:
             KTPublisher();
             virtual ~KTPublisher();
 
         public:
             Bool_t Configure(const KTPStoreNode* node);
+
+            Bool_t Run();
+
+            Status GetStatus() const;
+            void SetStatus(KTPublisher::Status);
+
+        protected:
+            Status fStatus;
 
 
             //**************************
@@ -82,6 +97,7 @@ namespace Katydid
             void Publish(const KTEvent* event);
             /// Queue and event for publication
             /// Assumes ownership of the event
+            /// If processor is not running, initiates the runnning of the processor (i.e. calls Run())
             void Queue(KTEvent* event);
 
     };
