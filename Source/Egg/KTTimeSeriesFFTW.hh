@@ -25,7 +25,8 @@ namespace Katydid
 
             KTTimeSeriesFFTW& operator=(const KTTimeSeriesFFTW& rhs);
 
-            virtual UInt_t GetNBins() const;
+            virtual UInt_t GetNTimeBins() const;
+            virtual Double_t GetTimeBinWidth() const;
 
             virtual void SetValue(UInt_t bin, Double_t value);
             virtual Double_t GetValue(UInt_t bin) const;
@@ -40,9 +41,14 @@ namespace Katydid
 #endif
     };
 
-    inline UInt_t KTTimeSeriesFFTW::GetNBins() const
+    inline UInt_t KTTimeSeriesFFTW::GetNTimeBins() const
     {
         return this->size();
+    }
+
+    inline Double_t KTTimeSeriesFFTW::GetTimeBinWidth() const
+    {
+        return this->GetBinWidth();
     }
 
     inline void KTTimeSeriesFFTW::SetValue(UInt_t bin, Double_t value)

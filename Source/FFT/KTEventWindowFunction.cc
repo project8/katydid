@@ -13,7 +13,7 @@
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
 #include "KTSimpleFFT.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
 
 #ifdef ROOT_FOUND
@@ -37,7 +37,7 @@ namespace Katydid
     {
     }
 
-    KTEventWindowFunction::KTEventWindowFunction(const KTTimeSeriesDataReal* tsData) :
+    KTEventWindowFunction::KTEventWindowFunction(const KTTimeSeriesData* tsData) :
             KTWindowFunction(),
             fWindowFunction(1),
             fLength(1.),
@@ -57,12 +57,12 @@ namespace Katydid
         return ConfigureEventWindowFunctionSubclass(node);
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesDataReal* tsData)
+    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
     {
         return this->SetBinWidth(tsData->GetBinWidth());
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesDataReal* tsData, Double_t length)
+    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesData* tsData, Double_t length)
     {
         return this->SetBinWidthAndLength(tsData->GetBinWidth(), length);
     }

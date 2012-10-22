@@ -23,7 +23,8 @@ namespace Katydid
 
             KTTimeSeriesReal& operator=(const KTTimeSeriesReal& rhs);
 
-            virtual UInt_t GetNBins() const;
+            virtual UInt_t GetNTimeBins() const;
+            virtual Double_t GetTimeBinWidth() const;
 
             virtual void SetValue(UInt_t bin, Double_t value);
             virtual Double_t GetValue(UInt_t bin) const;
@@ -38,9 +39,14 @@ namespace Katydid
 #endif
     };
 
-    inline UInt_t KTTimeSeriesReal::GetNBins() const
+    inline UInt_t KTTimeSeriesReal::GetNTimeBins() const
     {
         return this->size();
+    }
+
+    inline Double_t KTTimeSeriesReal::GetTimeBinWidth() const
+    {
+        return this->GetBinWidth();
     }
 
     inline void KTTimeSeriesReal::SetValue(UInt_t bin, Double_t value)

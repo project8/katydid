@@ -15,7 +15,7 @@
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTSlidingWindowFSData.hh"
 
@@ -186,7 +186,7 @@ namespace Katydid
             fTextFile << "Event " << iEvent << '\n';
         }
 
-        const KTTimeSeriesDataReal* tsData = dynamic_cast<const KTTimeSeriesDataReal*>(event->GetData(KTTimeSeriesDataReal::StaticGetName()));
+        const KTProgenitorTimeSeriesData* tsData = dynamic_cast<const KTProgenitorTimeSeriesData*>(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
 
         // Perform a 1-D FFT on the entire event
         const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetRecord(0));

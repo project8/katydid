@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
 
 #include "rapidxml.hpp"
@@ -217,7 +217,7 @@ namespace Katydid
     {
         if (! fEggStream.good()) return NULL;
 
-        KTTimeSeriesData* eventData = new KTTimeSeriesDataReal(1);
+        KTProgenitorTimeSeriesData* eventData = new KTProgenitorTimeSeriesData(1);
 
         unsigned char* readBuffer;
 

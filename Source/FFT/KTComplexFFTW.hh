@@ -28,8 +28,10 @@ namespace Katydid
     class KTEggHeader;
     class KTEvent;
     class KTPStoreNode;
+    class KTBasicTimeSeriesData;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesDataFFTW;
+    class KTBasicTimeSeriesDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumDataFFTW;
     class KTWriteableData;
@@ -47,7 +49,6 @@ namespace Katydid
 
      Available configuration values:
      \li \c transform_flag -- flag that determines how much planning is done prior to any transforms (see below)
-     \li \c direction -- select if the forward ("FORWARD") or reverse ("BACKWARD") transform is performed.
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -60,12 +61,15 @@ namespace Katydid
      FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
 
      Slots:
-     \li \c void ProcessHeader(const KTEggHeader* header)
-     \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
-     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* data)
+     \li \c "header": void ProcessHeader(const KTEggHeader* header)
+     \li \c "event-forward": void ProcessEventForward(const KTEvent* event)
+     \li \c "event-reverse": void ProcessEventReverse(const KTEvent* event)
+     \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* data)
+     \li \c "fs-data": void ProcessFrequencySpectrumData(const KTTimeSeriesDataFFTW* data)
 
      Signals:
-     \li \c void (UInt_t, const KTComplexFFTW*) emitted upon performance of a transform.
+     \li \c "fft-forward": void (const KTWriteableData*) emitted upon performance of a forward transform.
+     \li \c "fft-reverse": void (const KTWriteableData*) emitted upon performance of a reverse transform.
     */
 
     class KTComplexFFTW : public KTFFT, public KTProcessor
@@ -75,52 +79,50 @@ namespace Katydid
 
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
-            typedef std::map< std::string, UInt_t > DirectionMap;
 
         public:
             KTComplexFFTW();
-            KTComplexFFTW(UInt_t timeSize);
+            KTComplexFFTW(UInt_t size);
             virtual ~KTComplexFFTW();
 
             Bool_t Configure(const KTPStoreNode* node);
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesDataFFTW* tsData);
+            /// Forward FFT
+            virtual KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesData* tsData);
+            /// Reverse FFT
+            virtual KTTimeSeriesData* TransformData(const KTFrequencySpectrumDataFFTW* fsData);
 
+            /// Forward FFT
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
+            /// Reverse FFT
+            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* data) const;
 
+            virtual UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
 
-            /// note: SetTimeSize creates a new fTransform.
-            ///       It also sets fIsInitialized to kFALSE.
-            void SetTimeSize(UInt_t nBins);
-
-            const std::string& GetDirection() const;
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
 
-            /// note: SetDirection does NOT affect fIsInitialized.
-            void SetDirection(const std::string& dir);
+            /// note: SetSize creates a new fTransform.
+            ///       It also sets fIsInitialized to kFALSE.
+            void SetSize(UInt_t nBins);
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
 
         protected:
             void AllocateArrays();
-            UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)
 
-            fftw_plan fFTPlan[2];
-            UInt_t fActivePlanIndex;
+            fftw_plan fForwardPlan;
+            fftw_plan fReversePlan;
 
-            UInt_t fTimeSize;
+            UInt_t fSize;
             fftw_complex* fInputArray;
             fftw_complex* fOutputArray;
-
-            std::string fDirection;
-            DirectionMap fDirectionMap;
 
             std::string fTransformFlag;
             TransformFlagMap fTransformFlagMap;
@@ -132,7 +134,8 @@ namespace Katydid
             //***************
 
         private:
-            FFTSignal fFFTSignal;
+            FFTSignal fFFTForwardSignal;
+            FFTSignal fFFTReverseSignal;
 
             //***************
             // Slots
@@ -140,25 +143,27 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(KTEvent* event);
-            void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* tsData);
+            void ProcessEventForward(KTEvent* event);
+            void ProcessEventReverse(KTEvent* event);
+            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+            void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
     };
 
 
+    inline UInt_t KTComplexFFTW::GetSize() const
+    {
+        return fSize;
+    }
+
     inline UInt_t KTComplexFFTW::GetTimeSize() const
     {
-        return fTimeSize;
+        return fSize;
     }
 
     inline UInt_t KTComplexFFTW::GetFrequencySize() const
     {
-        return fTimeSize;
-    }
-
-    inline const std::string& KTComplexFFTW::GetDirection() const
-    {
-        return fDirection;
+        return fSize;
     }
 
     inline const std::string& KTComplexFFTW::GetTransformFlag() const
@@ -169,12 +174,6 @@ namespace Katydid
     inline Bool_t KTComplexFFTW::GetIsInitialized() const
     {
         return fIsInitialized;
-    }
-
-    inline UInt_t KTComplexFFTW::CalculateNFrequencyBins(UInt_t nTimeBins) const
-    {
-        // Integer division is rounded down, per FFTW's instructions
-        return nTimeBins / 2 + 1;
     }
 
 } /* namespace Katydid */
