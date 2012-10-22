@@ -15,7 +15,6 @@
 
 namespace Katydid
 {
-    class KTTimeSeriesData;
     class KTPStoreNode;
 
     /*!
@@ -31,6 +30,7 @@ namespace Katydid
      \li \c "number-of-events": UInt_t -- Number of events to process
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
+     \li \c "time-series": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
      \li \c -n (n-events): Number of events to process
@@ -56,6 +56,12 @@ namespace Katydid
                 kMonarchEggReader
             };
 
+            enum TimeSeriesType
+            {
+                kRealTimeSeries,
+                kFFTWTimeSeries
+            };
+
         public:
             KTEggProcessor();
             virtual ~KTEggProcessor();
@@ -69,10 +75,12 @@ namespace Katydid
             UInt_t GetNEvents() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
+            TimeSeriesType GetTimeSeriesType() const;
 
             void SetNEvents(UInt_t nEvents);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
+            void SetTimeSeriesType(TimeSeriesType type);
 
         private:
             UInt_t fNEvents;
@@ -80,6 +88,8 @@ namespace Katydid
             std::string fFilename;
 
             EggReaderType fEggReaderType;
+
+            TimeSeriesType fTimeSeriesType;
 
             //***************
             // Signals
@@ -127,6 +137,17 @@ namespace Katydid
     inline void KTEggProcessor::SetEggReaderType(EggReaderType type)
     {
         fEggReaderType = type;
+        return;
+    }
+
+    inline KTEggProcessor::TimeSeriesType KTEggProcessor::GetTimeSeriesType() const
+    {
+        return fTimeSeriesType;
+    }
+
+    inline void KTEggProcessor::SetTimeSeriesType(TimeSeriesType type)
+    {
+        fTimeSeriesType = type;
         return;
     }
 
