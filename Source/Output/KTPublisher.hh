@@ -8,12 +8,12 @@
 #ifndef KTPUBLISHER_HH_
 #define KTPUBLISHER_HH_
 
-#include "KTConfigurable.hh"
 #include "KTFactory.hh"
 #include "KTProcessor.hh"
 
 #include "KTWriter.hh"
 
+#include <deque>
 #include <set>
 
 namespace Katydid
@@ -21,7 +21,7 @@ namespace Katydid
     class KTEvent;
     class KTPStoreNode;
 
-    class KTPublisher : public KTConfigurable, public KTProcessor, public KTFactory< KTWriter >
+    class KTPublisher : public KTProcessor, public KTFactory< KTWriter >
     {
         protected:
             typedef std::set< std::string > DataList;
@@ -38,6 +38,10 @@ namespace Katydid
             typedef PublicationMap::iterator PubMapIter;
             typedef PublicationMap::const_iterator PubMapCIter;
             typedef PublicationMap::value_type PubMapValue;
+
+            typedef std::deque< KTEvent* > PublicationQueue;
+            typedef PublicationQueue::iterator PubQueueIter;
+            typedef PublicationQueue::const_iterator PubQueueCIter;
 
         public:
             KTPublisher();
@@ -59,11 +63,26 @@ namespace Katydid
             PublicationMap fPubMap;
 
 
+            //*********************
+            // Publication queue
+            //*********************
+        public:
+            Bool_t ProcessQueue();
+
+            void ClearPublicationQueue();
+
+        protected:
+            PublicationQueue fPubQueue;
+
+
             //*********
             // Slots
             //*********
         public:
             void Publish(const KTEvent* event);
+            /// Queue and event for publication
+            /// Assumes ownership of the event
+            void Queue(KTEvent* event);
 
     };
 

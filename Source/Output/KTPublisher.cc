@@ -18,17 +18,20 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
     KTPublisher::KTPublisher() :
-            KTConfigurable(),
             KTProcessor(),
-            KTFactory< KTWriter >()
+            KTFactory< KTWriter >(),
+            fPubMap(),
+            fPubQueue()
     {
-        fConfigName = "writer";
+        fConfigName = "publisher";
 
         this->RegisterSlot("publish-event", this, &KTPublisher::Publish, "void (const KTEvent*)");
+        this->RegisterSlot("queue-event", this, &KTPublisher::Queue, "void (KTEvent*)");
     }
 
     KTPublisher::~KTPublisher()
     {
+        ClearPublicationQueue();
         ClearPublicationList();
     }
 
@@ -113,6 +116,29 @@ namespace Katydid
         return;
     }
 
+    Bool_t KTPublisher::ProcessQueue()
+    {
+        while (! fPubQueue.empty())
+        {
+            KTEvent* eventToPublish = fPubQueue.front();
+            Publish(eventToPublish);
+            delete eventToPublish;
+            fPubQueue.pop_front();
+        }
+        return true;
+    }
+
+    void KTPublisher::ClearPublicationQueue()
+    {
+        while (! fPubQueue.empty())
+        {
+            KTEvent* eventToRemove = fPubQueue.front();
+            delete eventToRemove;
+            fPubQueue.pop_front();
+        }
+        return;
+    }
+
 
     void KTPublisher::Publish(const KTEvent* event)
     {
@@ -133,6 +159,12 @@ namespace Katydid
                 }
             }
         }
+        return;
+    }
+
+    void KTPublisher::Queue(KTEvent* event)
+    {
+        fPubQueue.push_back(event);
         return;
     }
 
