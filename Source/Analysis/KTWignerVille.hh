@@ -21,6 +21,9 @@ namespace Katydid
     class KTWignerVille : public KTProcessor
     {
         public:
+            typedef KTSignal< void (const KTWriteableData*) >::signal WVSignal;
+
+        public:
             KTWignerVille();
             virtual ~KTWignerVille();
 
@@ -48,6 +51,22 @@ namespace Katydid
             /// Performs the W-V transform on the given frequency spectrum (does NOT create a new FS)
             Bool_t Transform(KTFrequencySpectrumFFTW* freqSpectrum);
 
+            //***************
+             // Signals
+             //***************
+
+         private:
+             WVSignal fWVSignal;
+
+             //***************
+             // Slots
+             //***************
+
+         public:
+             //void ProcessHeader(const KTEggHeader* header);
+             void ProcessEvent(KTEvent* event);
+             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
     };
 

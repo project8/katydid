@@ -33,8 +33,17 @@ namespace Katydid
     KTWignerVille::KTWignerVille() :
             KTProcessor(),
             fFFT(NULL),
-            fSaveFrequencySpectrum(false)
+            fSaveFrequencySpectrum(false),
+            fWVSignal()
     {
+        fConfigName = "wigner-ville";
+
+        RegisterSignal("wigner-ville", &fWVSignal, "void (const KTWriteableData*)");
+
+        //RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
+        RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("fs-data", this, &KTWignerVille::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
+        RegisterSlot("event", this, &KTWignerVille::ProcessEvent, "void (KTEvent*)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -205,7 +214,47 @@ namespace Katydid
 
         return true;
     }
+    /*
+    void KTComplexFFTW::ProcessHeader(const KTEggHeader* header)
+    {
+        SetSize(header->GetRecordSize());
+        InitializeFFT();
+        return;
+    }
+    */
+    void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
+    {
+        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
+        if (tsData->GetEvent() != NULL)
+            tsData->GetEvent()->AddData(newData);
+        return;
+    }
 
+    void KTComplexFFTW::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
+    {
+        KTTimeSeriesData* newData = TransformData(fsData);
+        if (fsData->GetEvent() != NULL)
+            fsData->GetEvent()->AddData(newData);
+        return;
+    }
+
+    void KTWignerVille::ProcessEvent(KTEvent* event)
+    {
+        KTDEBUG(fftlog_comp, "Performing reverse FFT of event " << event->GetEventNumber());
+        const KTTimeSeriesData* tsData = dynamic_cast< KTProgenitorTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+        {
+            tsData = dynamic_cast< KTBasicTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
+            if (tsData == NULL)
+            {
+                KTWARN(fftlog_comp, "No frequency spectrum data was available in the event");
+                return;
+            }
+        }
+        KTTimeSeriesData* newData = TransformData(tsData);
+        event->AddData(newData);
+        return;
+    }
 
 
 } /* namespace Katydid */
