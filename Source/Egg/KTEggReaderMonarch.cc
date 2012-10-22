@@ -10,8 +10,7 @@
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesDataFFTW.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -96,15 +95,7 @@ namespace Katydid
         }
 
         UInt_t numberOfRecords = fNumberOfRecords[header->GetAcquisitionMode()];
-        KTTimeSeriesData* eventData;
-        if (fTimeSeriesType == kRealTimeSeries)
-        {
-            eventData = new KTTimeSeriesDataReal(numberOfRecords);
-        }
-        else
-        {
-            eventData = new KTTimeSeriesDataFFTW(numberOfRecords);
-        }
+        KTProgenitorTimeSeriesData* eventData = new KTProgenitorTimeSeriesData(numberOfRecords);
 
         // Fill out event information
         eventData->SetSampleRate(header->GetAcquisitionRate());

@@ -22,7 +22,7 @@ namespace Katydid
     {
     }
 
-    KTHannWindow::KTHannWindow(const KTTimeSeriesDataReal* tsData) :
+    KTHannWindow::KTHannWindow(const KTTimeSeriesData* tsData) :
             KTEventWindowFunction(tsData)
     {
     }

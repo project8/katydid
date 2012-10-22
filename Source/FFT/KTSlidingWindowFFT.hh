@@ -32,7 +32,7 @@ namespace Katydid
     class KTEggHeader;
     class KTSlidingWindowFSData;
     class KTTimeSeriesReal;
-    class KTTimeSeriesDataReal;
+    class KTTimeSeriesData;
     class KTPStoreNode;
 
     /*!
@@ -75,7 +75,7 @@ namespace Katydid
             void InitializeFFT();
             void RecreateFFT();
 
-            KTSlidingWindowFSData* TransformData(const KTTimeSeriesDataReal* tsData);
+            KTSlidingWindowFSData* TransformData(const KTTimeSeriesData* tsData);
 
             KTPhysicalArray< 1, KTFrequencySpectrum* >* Transform(const KTTimeSeriesReal* data) const;
 
@@ -140,7 +140,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(UInt_t iEvent, const KTTimeSeriesDataReal* tsData);
+            void ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData);
 
     };
 

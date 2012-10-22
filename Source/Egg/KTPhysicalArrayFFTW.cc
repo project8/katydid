@@ -7,6 +7,10 @@
 
 #include "KTPhysicalArrayFFTW.hh"
 
+#include <cstring>
+
+using std::memcpy;
+
 namespace Katydid
 {
 
@@ -34,6 +38,7 @@ namespace Katydid
     {
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(orig.size()));
         fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size());
+        memcpy( fData, orig.fData, orig.size() * sizeof( fftw_complex ) );
     }
 
 
@@ -85,11 +90,7 @@ namespace Katydid
         }
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(rhs.size()));
         fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size());
-        for (size_t iBin=0; iBin<size(); iBin++)
-        {
-            fData[iBin][0] = rhs(iBin)[0];
-            fData[iBin][1] = rhs(iBin)[1];
-        }
+        memcpy( fData, rhs.fData, rhs.size() * sizeof( fftw_complex ) );
         KTAxisProperties< 1 >::operator=(rhs);
         return *this;
     }

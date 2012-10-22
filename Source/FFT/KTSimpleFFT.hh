@@ -30,7 +30,7 @@ namespace Katydid
     class KTEvent;
     class KTPStoreNode;
     class KTTimeSeriesReal;
-    class KTTimeSeriesDataReal;
+    class KTTimeSeriesData;
     class KTFrequencySpectrumData;
     class KTWriteableData;
 
@@ -82,7 +82,7 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesDataReal* tsData);
+            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
             KTFrequencySpectrum* Transform(const KTTimeSeriesReal* data) const;
 
@@ -128,7 +128,7 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessEvent(KTEvent* event);
-            void ProcessTimeSeriesData(const KTTimeSeriesDataReal* tsData);
+            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };
 
