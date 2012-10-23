@@ -17,6 +17,7 @@ namespace Katydid
             fAcquisitionMode(sOneChannel),
             fNChannels(1),
             fRecordSize(0),
+            fMonarchRecordSize(0),
             fAcquisitionTime(0),
             fAcquisitionRate(0)
     {
@@ -27,6 +28,7 @@ namespace Katydid
             fAcquisitionMode(orig.fAcquisitionMode),
             fNChannels(orig.fNChannels),
             fRecordSize(orig.fRecordSize),
+            fMonarchRecordSize(orig.fMonarchRecordSize),
             fAcquisitionTime(orig.fAcquisitionTime),
             fAcquisitionRate(orig.fAcquisitionRate)
     {

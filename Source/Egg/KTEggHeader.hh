@@ -34,6 +34,9 @@ namespace Katydid
             void SetRecordSize(std::size_t recsize);
             std::size_t GetRecordSize() const;
 
+            void SetMonarchRecordSize(std::size_t mrecsize);
+            std::size_t GetMonarchRecordSize() const;
+
             void SetAcquisitionTime(UInt_t acqt);
             UInt_t GetAcquisitionTime() const;
 
@@ -44,6 +47,7 @@ namespace Katydid
             std::string fFilename;
             UInt_t fAcquisitionMode;
             UInt_t fNChannels;
+            std::size_t fMonarchRecordSize;
             std::size_t fRecordSize;
             UInt_t fAcquisitionTime;
             Double_t fAcquisitionRate;
@@ -92,6 +96,17 @@ namespace Katydid
     inline std::size_t KTEggHeader::GetRecordSize() const
     {
         return fRecordSize;
+    }
+
+    inline void KTEggHeader::SetMonarchRecordSize(std::size_t mrecsize)
+    {
+        fMonarchRecordSize = mrecsize;
+        return;
+    }
+
+    inline std::size_t KTEggHeader::GetMonarchRecordSize() const
+    {
+        return fMonarchRecordSize;
     }
 
     inline void KTEggHeader::SetAcquisitionTime(UInt_t acqt)
