@@ -18,6 +18,7 @@ namespace Katydid
     {
         public:
             KTEggHeader();
+            KTEggHeader(const KTEggHeader& orig);
             ~KTEggHeader();
 
         public:
@@ -26,6 +27,9 @@ namespace Katydid
 
             void SetAcquisitionMode(UInt_t mode);
             UInt_t GetAcquisitionMode() const;
+
+            void SetNChannels(UInt_t channels);
+            UInt_t GetNChannels() const;
 
             void SetRecordSize(std::size_t recsize);
             std::size_t GetRecordSize() const;
@@ -39,6 +43,7 @@ namespace Katydid
         protected:
             std::string fFilename;
             UInt_t fAcquisitionMode;
+            UInt_t fNChannels;
             std::size_t fRecordSize;
             UInt_t fAcquisitionTime;
             Double_t fAcquisitionRate;
@@ -65,6 +70,17 @@ namespace Katydid
     inline UInt_t KTEggHeader::GetAcquisitionMode() const
     {
         return fAcquisitionMode;
+    }
+
+    inline void KTEggHeader::SetNChannels(UInt_t channels)
+    {
+        fNChannels = channels;
+        return;
+    }
+
+    inline UInt_t KTEggHeader::GetNChannels() const
+    {
+        return fNChannels;
     }
 
     inline void KTEggHeader::SetRecordSize(std::size_t recsize)
