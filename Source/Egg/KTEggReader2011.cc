@@ -213,7 +213,7 @@ namespace Katydid
         return eggHeader;
     }
 
-    KTTimeSeriesData* KTEggReader2011::HatchNextEvent(KTEggHeader* header)
+    KTTimeSeriesData* KTEggReader2011::HatchNextEvent()
     {
         if (! fEggStream.good()) return NULL;
 

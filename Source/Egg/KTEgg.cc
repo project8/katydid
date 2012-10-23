@@ -57,7 +57,7 @@ namespace Katydid
             return NULL;
         }
 
-        KTTimeSeriesData* data = fReader->HatchNextEvent(fHeader);
+        KTTimeSeriesData* data = fReader->HatchNextEvent();
         if (data == NULL)
         {
             return NULL;

@@ -8,7 +8,7 @@
 #ifndef KTEGGREADER_HH_
 #define KTEGGREADER_HH_
 
-#include "KTConfigurable.hh"
+#include "Rtypes.h"
 
 #include <string>
 
@@ -25,7 +25,7 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string&) = 0;
-            virtual KTTimeSeriesData* HatchNextEvent(KTEggHeader*) = 0;
+            virtual KTTimeSeriesData* HatchNextEvent() = 0;
             virtual Bool_t CloseEgg() = 0;
 
     };
