@@ -56,7 +56,10 @@ int main(int argc, char** argv)
     else
     {
         KTINFO(testegg, "Using Monarch egg reader");
-        egg->SetReader(new KTEggReaderMonarch());
+        KTINFO(testegg, "Record size should be 2048");
+        KTEggReaderMonarch* reader = new KTEggReaderMonarch();
+        reader->SetTimeSeriesSize(2048);
+        egg->SetReader(reader);
     }
 
 
@@ -80,7 +83,8 @@ int main(int argc, char** argv)
     KTINFO(testegg, "Some header information:\n"
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
-           << "\tRecord Size: " << header->GetRecordSize());
+           << "\tRecord Size: " << header->GetRecordSize() << '\n'
+           << "\tMonarch Record Size: " << header->GetMonarchRecordSize());
 
     KTINFO(testegg, "Hatching event");
     KTEvent* event = egg->HatchNextEvent();
