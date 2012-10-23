@@ -27,7 +27,7 @@ namespace Katydid
     KTEggReaderMonarch::KTEggReaderMonarch() :
             KTEggReader(),
             fTimeSeriesType(kRealTimeSeries),
-            fTimeSeriesSize(0),
+            fTimeSeriesSizeRequest(0),
             fMonarch(NULL),
             fHeader(),
             fReadState(),
@@ -79,8 +79,15 @@ namespace Katydid
             fMonarch = NULL;
             return NULL;
         }
-        fHeader.SetRecordSize(fTimeSeriesSize);
         CopyHeaderInformation(fMonarch->GetHeader());
+        if (fTimeSeriesSizeRequest == 0)
+        {
+            fHeader.SetRecordSize(fHeader.GetMonarchRecordSize());
+        }
+        else
+        {
+            fHeader.SetRecordSize(fTimeSeriesSizeRequest);
+        }
 
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
         fReadState.fAcquisitionID = 0;
@@ -138,11 +145,11 @@ namespace Katydid
             KTTimeSeries* newRecord;
             if (fTimeSeriesType == kRealTimeSeries)
             {
-                newRecord = new KTTimeSeriesReal(fTimeSeriesSize, 0., Double_t(fTimeSeriesSize) * eventData->GetBinWidth());
+                newRecord = new KTTimeSeriesReal(fHeader.GetRecordSize(), 0., Double_t(fHeader.GetRecordSize()) * eventData->GetBinWidth());
             }
             else
             {
-                newRecord = new KTTimeSeriesFFTW(fTimeSeriesSize, 0., Double_t(fTimeSeriesSize) * eventData->GetBinWidth());
+                newRecord = new KTTimeSeriesFFTW(fHeader.GetRecordSize(), 0., Double_t(fHeader.GetRecordSize()) * eventData->GetBinWidth());
             }
             newRecords[iChannel] = newRecord;
         }

@@ -36,6 +36,7 @@ namespace Katydid
             fNEvents(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
+            fRecordSizeRequest(0),
             fTimeSeriesType(kRealTimeSeries),
             fHeaderSignal(),
             fEventSignal(),
@@ -70,8 +71,11 @@ namespace Katydid
                 return false;
             }
 
-            // type series
-            string timeSeriesTypeString = node->GetData< string >("time-series", "real");
+            // specify the length of the time series (0 for use Monarch's record size)
+            fRecordSizeRequest = node->GetData< UInt_t >("time-series-size", fRecordSizeRequest);
+
+            // type of time series
+            string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
             if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
             else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
             else
@@ -100,6 +104,7 @@ namespace Katydid
         if (fEggReaderType == kMonarchEggReader)
         {
             KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+            eggReader->SetTimeSeriesSizeRequest(fRecordSizeRequest);
             if (fTimeSeriesType == kRealTimeSeries)
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)

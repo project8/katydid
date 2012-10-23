@@ -63,12 +63,12 @@ namespace Katydid
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
 
-            UInt_t GetTimeSeriesSize() const;
-            void SetTimeSeriesSize(UInt_t size);
+            UInt_t GetTimeSeriesSizeRequest() const;
+            void SetTimeSeriesSizeRequest(UInt_t size);
 
         protected:
             TimeSeriesType fTimeSeriesType;
-            UInt_t fTimeSeriesSize;
+            UInt_t fTimeSeriesSizeRequest;
 
         public:
             /// Opens the egg file and returns a new copy of the header information.
@@ -113,14 +113,14 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTEggReaderMonarch::GetTimeSeriesSize() const
+    inline UInt_t KTEggReaderMonarch::GetTimeSeriesSizeRequest() const
     {
-        return fTimeSeriesSize;
+        return fTimeSeriesSizeRequest;
     }
 
-    inline void KTEggReaderMonarch::SetTimeSeriesSize(UInt_t size)
+    inline void KTEggReaderMonarch::SetTimeSeriesSizeRequest(UInt_t size)
     {
-        fTimeSeriesSize = size;
+        fTimeSeriesSizeRequest = size;
         return;
     }
 
