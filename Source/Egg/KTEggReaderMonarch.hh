@@ -42,16 +42,20 @@ namespace Katydid
         public:
             Bool_t Configure(const KTPStoreNode* node);
 
+            TimeSeriesType GetTimeSeriesType() const;
+            void SetTimeSeriesType(TimeSeriesType type);
+
+            UInt_t GetTimeSeriesSize() const;
+            void SetTimeSeriesSize(UInt_t size);
+
+        protected:
+            TimeSeriesType fTimeSeriesType;
+            UInt_t fTimeSeriesSize;
+
         public:
             KTEggHeader* BreakEgg(const std::string& filename);
             KTTimeSeriesData* HatchNextEvent(KTEggHeader* header);
             Bool_t CloseEgg();
-
-            TimeSeriesType GetTimeSeriesType() const;
-            void SetTimeSeriesType(TimeSeriesType type);
-
-        protected:
-            TimeSeriesType fTimeSeriesType;
 
         protected:
             /// Copy header information from the MonarchHeader object
@@ -83,6 +87,17 @@ namespace Katydid
     inline void KTEggReaderMonarch::SetTimeSeriesType(TimeSeriesType type)
     {
         fTimeSeriesType = type;
+        return;
+    }
+
+    inline UInt_t KTEggReaderMonarch::GetTimeSeriesSize() const
+    {
+        return fTimeSeriesSize;
+    }
+
+    inline void KTEggReaderMonarch::SetTimeSeriesSize(UInt_t size)
+    {
+        fTimeSeriesSize = size;
         return;
     }
 
