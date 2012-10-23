@@ -25,7 +25,10 @@ namespace Katydid
             virtual ~KTTimeSeries();
 
             /// Get the size of the time series via the KTTimeSeries interface
-            virtual UInt_t GetNBins() const = 0;
+            virtual UInt_t GetNTimeBins() const = 0;
+
+            /// Get the bin width via the KTTimeSeries interface
+            virtual Double_t GetTimeBinWidth() const = 0;
 
             /// Set values in the time series via the KTTimeSeries interface
             virtual void SetValue(UInt_t bin, Double_t value) = 0;

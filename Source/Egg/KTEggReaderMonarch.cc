@@ -9,8 +9,7 @@
 
 #include "KTEgg.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesDataFFTW.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -114,15 +113,7 @@ namespace Katydid
             fReadState.fStatus = MonarchReadState::kContinueReading;
         }
 
-        KTTimeSeriesData* eventData;
-        if (fTimeSeriesType == kRealTimeSeries)
-        {
-            eventData = new KTTimeSeriesDataReal(fHeader.GetNChannels());
-        }
-        else
-        {
-            eventData = new KTTimeSeriesDataFFTW(fHeader.GetNChannels());
-        }
+        KTProgenitorTimeSeriesData* eventData = new KTProgenitorTimeSeriesData(fHeader.GetNChannels());
 
         // Fill out event information
         eventData->SetSampleRate(fHeader.GetAcquisitionRate());

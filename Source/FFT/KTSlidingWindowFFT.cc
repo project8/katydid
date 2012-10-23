@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
-#include "KTTimeSeriesDataReal.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTFactory.hh"
 #include "KTPhysicalArray.hh"
@@ -44,7 +44,7 @@ namespace Katydid
         RegisterSignal("full_fft", &fFullFFTSignal, "void (KTSlidingWindowFSData*)");
 
         RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (UInt_t iEvent, const KTTimeSeriesDataReal*)");
+        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (UInt_t iEvent, const KTTimeSeriesData*)");
 
         SetupTransformFlagMap();
     }
@@ -94,7 +94,7 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::ProcessEvent(UInt_t iEvent, const KTTimeSeriesDataReal* tsData)
+    void KTSlidingWindowFFT::ProcessEvent(UInt_t iEvent, const KTTimeSeriesData* tsData)
     {
         KTSlidingWindowFSData* newData = TransformData(tsData);
         tsData->GetEvent()->AddData(newData);
@@ -120,7 +120,7 @@ namespace Katydid
         return;
     }
 
-    KTSlidingWindowFSData* KTSlidingWindowFFT::TransformData(const KTTimeSeriesDataReal* tsData)
+    KTSlidingWindowFSData* KTSlidingWindowFFT::TransformData(const KTTimeSeriesData* tsData)
     {
         if (! fIsInitialized)
         {
