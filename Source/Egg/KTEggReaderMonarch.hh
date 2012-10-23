@@ -40,8 +40,6 @@ namespace Katydid
             virtual ~KTEggReaderMonarch();
 
         public:
-            Bool_t Configure(const KTPStoreNode* node);
-
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
 

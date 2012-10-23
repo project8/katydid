@@ -24,9 +24,6 @@ namespace Katydid
             virtual ~KTEggReader();
 
         public:
-            Bool_t Configure(const KTPStoreNode* node);
-
-        public:
             virtual KTEggHeader* BreakEgg(const std::string&) = 0;
             virtual KTTimeSeriesData* HatchNextEvent(KTEggHeader*) = 0;
             virtual Bool_t CloseEgg() = 0;

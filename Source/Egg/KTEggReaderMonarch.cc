@@ -30,6 +30,7 @@ namespace Katydid
     KTEggReaderMonarch::KTEggReaderMonarch() :
             KTEggReader(),
             fTimeSeriesType(kRealTimeSeries),
+            fTimeSeriesSize(1),
             fMonarch(NULL),
             fNumberOfRecords(),
             fSampleRateUnitsInHz(1.e6),
@@ -47,11 +48,6 @@ namespace Katydid
             fMonarch->Close();
             delete fMonarch;
         }
-    }
-
-    Bool_t KTEggReader::Configure(const KTPStoreNode* node)
-    {
-        return;
     }
 
     KTEggHeader* KTEggReaderMonarch::BreakEgg(const string& filename)
