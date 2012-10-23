@@ -162,7 +162,7 @@ namespace Katydid
             if (fReadState.fStatus == MonarchReadState::kAtEndOfFile)
             {
                 KTINFO(eggreadlog, "End of file reached.\n"
-                        << "\tNumber of unused bins: " << fHeader.GetRecordSize() - iBin);
+                        << "\tNumber of unused bins: " << iBin - 1);
                 delete eventData;
                 for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
                 {
@@ -175,7 +175,7 @@ namespace Katydid
                 // this means that a new monarch record has come up, and it has a different acquisition id.
                 // in this situation we need to start the time series over with the new monarch record
                 KTDEBUG(eggreadlog, "Acquisition ID change; resetting event to start with this monarch record.\n"
-                        << "\tNumber of unused bins: " << iBin);
+                        << "\tNumber of unused bins: " << iBin - 1);
                 // reset event data
                 for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
                 {

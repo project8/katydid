@@ -56,9 +56,10 @@ int main(int argc, char** argv)
     else
     {
         KTINFO(testegg, "Using Monarch egg reader");
-        KTINFO(testegg, "Record size should be 2048");
+        UInt_t recordSize = 2200000;
+        KTINFO(testegg, "Record size should be " << recordSize);
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
-        reader->SetTimeSeriesSize(2048);
+        reader->SetTimeSeriesSize(recordSize);
         egg->SetReader(reader);
     }
 
