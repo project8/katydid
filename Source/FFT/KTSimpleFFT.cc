@@ -102,6 +102,9 @@ namespace Katydid
         if (fFTPlan != NULL)
         {
             fIsInitialized = true;
+            KTDEBUG(fftlog_simp, "FFT is initialized" << '\n' <<
+                    "\tTime-domain size: " << fTimeSize << '\n' <<
+                    "\tFrequency-domain size: " << GetFrequencySize());
         }
         else
         {
@@ -153,7 +156,9 @@ namespace Katydid
 
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
-        //newData->SetEvent(tsData->GetEvent());
+        // just sets the event pointer; doesn't actually add the data to the event
+        // this way anything receiving the signal can use the event pointer
+        newData->SetEvent(tsData->GetEvent());
 
         fFFTSignal(newData);
 
@@ -237,7 +242,6 @@ namespace Katydid
 
     void KTSimpleFFT::ProcessEvent(KTEvent* event)
     {
-        KTDEBUG(fftlog_simp, "Performing FFT of event " << event->GetEventNumber());
         const KTTimeSeriesData* tsData = dynamic_cast< KTProgenitorTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
         if (tsData == NULL)
         {
