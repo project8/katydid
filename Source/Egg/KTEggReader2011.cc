@@ -207,13 +207,14 @@ namespace Katydid
         eggHeader->SetFilename(filename);
         eggHeader->SetAcquisitionMode(sOneChannel);
         eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
+        eggHeader->SetMonarchRecordSize(fHeaderInfo.fRecordSize);
         eggHeader->SetAcquisitionTime(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
         eggHeader->SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
 
         return eggHeader;
     }
 
-    KTTimeSeriesData* KTEggReader2011::HatchNextEvent(KTEggHeader* header)
+    KTTimeSeriesData* KTEggReader2011::HatchNextEvent()
     {
         if (! fEggStream.good()) return NULL;
 

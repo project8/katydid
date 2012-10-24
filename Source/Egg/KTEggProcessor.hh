@@ -30,7 +30,8 @@ namespace Katydid
      \li \c "number-of-events": UInt_t -- Number of events to process
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
-     \li \c "time-series": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
+     \li \c "time-series-length": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
+     \li \c "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
      \li \c -n (n-events): Number of events to process
@@ -75,11 +76,13 @@ namespace Katydid
             UInt_t GetNEvents() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
+            UInt_t GetRecordSizeRequest() const;
             TimeSeriesType GetTimeSeriesType() const;
 
             void SetNEvents(UInt_t nEvents);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
+            void SetRecordSizeRequest(UInt_t size);
             void SetTimeSeriesType(TimeSeriesType type);
 
         private:
@@ -88,6 +91,8 @@ namespace Katydid
             std::string fFilename;
 
             EggReaderType fEggReaderType;
+
+            UInt_t fRecordSizeRequest;
 
             TimeSeriesType fTimeSeriesType;
 
@@ -137,6 +142,17 @@ namespace Katydid
     inline void KTEggProcessor::SetEggReaderType(EggReaderType type)
     {
         fEggReaderType = type;
+        return;
+    }
+
+    inline UInt_t KTEggProcessor::GetRecordSizeRequest() const
+    {
+        return fRecordSizeRequest;
+    }
+
+    inline void KTEggProcessor::SetRecordSizeRequest(UInt_t size)
+    {
+        fRecordSizeRequest = size;
         return;
     }
 

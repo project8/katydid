@@ -19,9 +19,6 @@
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
 
-//#include "TCanvas.h"
-//#include "TH1.h"
-
 using std::string;
 
 namespace Katydid
@@ -39,6 +36,7 @@ namespace Katydid
             fNEvents(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
+            fRecordSizeRequest(0),
             fTimeSeriesType(kRealTimeSeries),
             fHeaderSignal(),
             fEventSignal(),
@@ -63,7 +61,7 @@ namespace Katydid
             SetNEvents(node->GetData< UInt_t >("number-of-events", fNEvents));
             SetFilename(node->GetData< string >("filename", fFilename));
 
-            // egg reader
+            // choose the egg reader
             string eggReaderTypeString = node->GetData< string >("egg-reader", "monarch");
             if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
             else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
@@ -73,8 +71,11 @@ namespace Katydid
                 return false;
             }
 
-            // type series
-            string timeSeriesTypeString = node->GetData< string >("time-series", "real");
+            // specify the length of the time series (0 for use Monarch's record size)
+            fRecordSizeRequest = node->GetData< UInt_t >("time-series-size", fRecordSizeRequest);
+
+            // type of time series
+            string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
             if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
             else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
             else
@@ -103,6 +104,7 @@ namespace Katydid
         if (fEggReaderType == kMonarchEggReader)
         {
             KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+            eggReader->SetTimeSeriesSizeRequest(fRecordSizeRequest);
             if (fTimeSeriesType == kRealTimeSeries)
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)
@@ -146,15 +148,6 @@ namespace Katydid
                 KTWARN(egglog, "No time-series data present in event");
                 continue;
             }
-
-            /*
-            TCanvas* cAmpl = new TCanvas("cAmpl", "cAmpl");
-            TH1I* hist = event->CreateEventHistogram();
-            hist->Draw();
-            cAmpl->WaitPrimitive();
-            delete hist;
-            delete cAmpl;
-            */
 
             // Pass the event to any subscribers
             fEventSignal(event);
