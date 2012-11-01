@@ -191,7 +191,9 @@ namespace Katydid
 
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
-        //newData->SetEvent(tsData->GetEvent());
+        // just sets the event pointer; doesn't actually add the data to the event
+        // this way anything receiving the signal can use the event pointer
+        newData->SetEvent(tsData->GetEvent());
 
         fFFTForwardSignal(newData);
 

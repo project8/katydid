@@ -30,7 +30,7 @@ namespace Katydid
      \li \c "number-of-events": UInt_t -- Number of events to process
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
-     \li \c "time-series-length": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
+     \li \c "time-series-size": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
      \li \c "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined

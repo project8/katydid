@@ -89,6 +89,16 @@ namespace Katydid
             fHeader.SetRecordSize(fTimeSeriesSizeRequest);
         }
 
+        KTDEBUG("Parsed header:\n"
+             << "\tFilename: " << fHeader.GetFilename() << '\n'
+             << "\tAcuisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
+             << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'
+             << "\tRecord Size: " << fHeader.GetRecordSize() << '\n'
+             << "\tMonarch Record Size: " << fHeader.GetMonarchRecordSize() << '\n'
+             << "\tAcquisition Time: " << fHeader.GetAcquisitionTime() << " s" << '\n'
+             << "\tAcquisition Rate: " << fHeader.GetAcquisitionRate() << " Hz ");
+
+
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
         fReadState.fAcquisitionID = 0;
         fReadState.fDataPtrOffset = 0;
