@@ -15,16 +15,23 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
-    class KTComplexFFTW;
-    class KTFrequencySpectrumDataFFTW;
-    class KTFrequencySpectrumFFTW;
-    class KTTimeSeriesData;
-    class KTTimeSeriesFFTW;
-
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
 
 #include <algorithm>
 
 using std::copy;
+using std::string;
+
+// I can't just use boost::spirit::qi because of naming conflicts with std
+using boost::spirit::qi::int_;
+// I had to take this out because of a naming conflict with boost::bind
+//using boost::spirit::qi::_1;
+using boost::spirit::qi::phrase_parse;
+using boost::spirit::ascii::space;
+using boost::phoenix::ref;
+
 
 namespace Katydid
 {
@@ -32,7 +39,7 @@ namespace Katydid
 
     KTWignerVille::KTWignerVille() :
             KTProcessor(),
-            fFFT(NULL),
+            fFullFFT(NULL),
             fSaveFrequencySpectrum(false),
             fWVSignal()
     {
@@ -48,19 +55,36 @@ namespace Katydid
 
     KTWignerVille::~KTWignerVille()
     {
-        delete fFFT;
+        delete fFullFFT;
     }
 
     Bool_t KTWignerVille::Configure(const KTPStoreNode* node)
     {
         SetSaveFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveFrequencySpectrum));
 
+        KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
+        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
+        {
+            string pairString(citer->second.get_value< string >());
+            UInt_t first = 0, second = 0;
+            Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
+                    (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> int_[ref(second) = boost::spirit::qi::_1]),
+                    space);
+            if (! parsed)
+            {
+                KTWARN(wvlog, "Unable to parse WV pair: " << pairString);
+                continue;
+            }
+            KTINFO(wvlog, "Adding WV pair " << first << ", " << second);
+            this->AddPair(KTWVPair(first, second));
+        }
+
         const KTPStoreNode* fftNode = node->GetChild("complex-fft");
         if (fftNode != NULL)
         {
-            delete fFFT;
-            fFFT = new KTComplexFFTW();
-            if (! fFFT->Configure(fftNode)) return false;
+            delete fFullFFT;
+            fFullFFT = new KTComplexFFTW();
+            if (! fFullFFT->Configure(fftNode)) return false;
         }
 
         return true;
@@ -68,7 +92,7 @@ namespace Katydid
 
     KTTimeSeriesData* KTWignerVille::TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData)
     {
-        if (fFFT == NULL)
+        if (fFullFFT == NULL)
         {
             KTERROR(wvlog, "FFT is not initialized; cannot perform a transform on time series data.");
             return NULL;
@@ -109,11 +133,11 @@ namespace Katydid
             KTTimeSeriesFFTW* newTS = NULL;
             if (fSaveFrequencySpectrum)
             {
-                newTS = Transform(nextInput, &newFS);
+                newTS = CalculateAnalyticAssociate(nextInput, &newFS);
             }
             else
             {
-                newTS = Transform(nextInput);
+                newTS = CalculateAnalyticAssociate(nextInput);
             }
 
             if (newFS != NULL)
@@ -136,7 +160,7 @@ namespace Katydid
 
     KTTimeSeriesFFTW* KTWignerVille::Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
-        if (fFFT == NULL)
+        if (fFullFFT == NULL)
         {
             KTERROR(wvlog, "FFT is not initialized; cannot perform a transform on time series data.");
             return NULL;
@@ -155,34 +179,14 @@ namespace Katydid
                     << "\tTo avoid a potential memory leak, the frequency spectra will not be saved.");
         }
 
-        // Forward FFT
-        KTFrequencySpectrumFFTW* freqSpec = fFFT->Transform(inputTS);
-        if (freqSpec == NULL)
-        {
-            KTERROR(wvlog, "Something went wrong with the forward FFT on the time series.");
-            return NULL;
-        }
-        // copy the address of the frequency spectrum to outputFS
-        outputFS = &freqSpec;
+        // Calculate the analytic associate
+        KTFrequencySpectrumFFTW* tempOutputFS = NULL;
+        KTTimeSeriesFFTW* outputTS = CalculateAnalyticAssociate(inputTS, &tempOutputFS);
 
-        // perform the actual W-V transform
-        if (! Transform(freqSpec))
-        {
-            KTERROR(wvlog, "Something went wrong with the W-V transform of the frequency spectrum.");
-            if (outputFS == NULL) delete freqSpec;
-            return NULL;
-        }
+        // Delete or reassign the intermediate FS
+        if (outputFS == NULL) delete tempOutputFS;
+        else outputFS = &tempOutputFS;
 
-        // reverse FFT
-        KTTimeSeriesFFTW* outputTS = fFFT->Transform(freqSpec);
-        if (outputTS == NULL)
-        {
-            KTERROR(wvlog, "Something went wrong with the reverse FFT on the frequency spectrum.");
-            if (outputFS == NULL) delete freqSpec;
-            return NULL;
-        }
-
-        if (outputFS == NULL) delete freqSpec;
         return outputTS;
     }
 
@@ -194,6 +198,45 @@ namespace Katydid
             return false;
         }
 
+        return CalculateAnalyticAssociate(freqSpectrum);
+    }
+
+
+    KTTimeSeriesFFTW* KTWignerVille::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
+    {
+        // Forward FFT
+        KTFrequencySpectrumFFTW* freqSpec = fFullFFT->Transform(inputTS);
+        if (freqSpec == NULL)
+        {
+            KTERROR(wvlog, "Something went wrong with the forward FFT on the time series.");
+            return NULL;
+        }
+        // copy the address of the frequency spectrum to outputFS
+        outputFS = &freqSpec;
+
+        // perform the actual W-V transform
+        if (! CalculateAnalyticAssociate(freqSpec))
+        {
+            KTERROR(wvlog, "Something went wrong with the W-V transform of the frequency spectrum.");
+            if (outputFS == NULL) delete freqSpec;
+            return NULL;
+        }
+
+        // reverse FFT
+        KTTimeSeriesFFTW* outputTS = fFullFFT->Transform(freqSpec);
+        if (outputTS == NULL)
+        {
+            KTERROR(wvlog, "Something went wrong with the reverse FFT on the frequency spectrum.");
+            if (outputFS == NULL) delete freqSpec;
+            return NULL;
+        }
+
+        return outputTS;
+    }
+
+
+    Bool_t KTWignerVille::CalculateAnalyticAssociate(KTFrequencySpectrumFFTW* freqSpectrum)
+    {
         // Note: the data storage array is accessed directly, so the FFTW data storage format is used.
         // Nyquist bin(s) and negative frequency bins are set to 0 (from size/2 to the end of the array)
         // DC bin stays as is (array position 0).
@@ -211,9 +254,11 @@ namespace Katydid
             data[arrayPos][0] = 0.;
             data[arrayPos][1] = 0.;
         }
-
         return true;
     }
+
+
+
     /*
     void KTComplexFFTW::ProcessHeader(const KTEggHeader* header)
     {
