@@ -157,7 +157,7 @@ namespace Katydid
 
         return newTSData;
     }
-
+/*
     KTTimeSeriesFFTW* KTWignerVille::Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
         if (fFullFFT == NULL)
@@ -200,7 +200,7 @@ namespace Katydid
 
         return CalculateAnalyticAssociate(freqSpectrum);
     }
-
+*/
 
     KTTimeSeriesFFTW* KTWignerVille::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
@@ -255,6 +255,21 @@ namespace Katydid
             data[arrayPos][1] = 0.;
         }
         return true;
+    }
+
+    KTTimeSeriesFFTW* KTWignerVille::CrossMultiply(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2)
+    {
+        KTTimeSeriesFFTW* product = new KTTimeSeriesFFTW(*data1);
+
+        UInt_t size = data1->size();
+        UInt_t iBin2 = size - 1;
+        for (UInt_t iBin1 = 0; iBin1 < size; iBin1++)
+        {
+            data1(iBin1) = data1(iBin1) * data2(iBin2);
+            iBin2--;
+        }
+
+        return product;
     }
 
 

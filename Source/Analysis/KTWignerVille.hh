@@ -58,10 +58,10 @@ namespace Katydid
             /// Performs the W-V transform on the given time series.
             /// In the process, the data is FFTed, and then reverse FFTed. If you want to keep the intermediate frequency spectrum, pass a KTFrequencySpectrumFFTW** as the second parameter.
             /// @note A frequency spectrum object can still be returned even if the full W-V transform fails.
-            KTTimeSeriesFFTW* Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
+            //KTTimeSeriesFFTW* Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
 
             /// Performs the W-V transform on the given frequency spectrum (in place! does NOT create a new FS)
-            Bool_t Transform(KTFrequencySpectrumFFTW* freqSpectrum);
+            //Bool_t Transform(KTFrequencySpectrumFFTW* freqSpectrum);
 
         private:
             /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
@@ -69,7 +69,7 @@ namespace Katydid
             /// Calculates the AA in place.
             Bool_t CalculateAnalyticAssociate(KTFrequencySpectrumFFTW* freqSpectrum);
 
-
+            KTTimeSeriesFFTW* CrossMultiply(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2);
 
 
             //***************
