@@ -126,10 +126,8 @@ namespace Katydid
         double abs, arg;
         for (size_t iBin=0; iBin<size(); iBin++)
         {
-            double abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) * (rhs(iBin)[0]*rhs(iBin)[0] + rhs(iBin)[1]*rhs(iBin)[1]));
-            double arg = std::atan2(fData[iBin][1], fData[iBin][0]) + std::atan2(rhs(iBin)[1], rhs(iBin)[0]);
-            fData[iBin][0] = abs * std::cos(arg);
-            fData[iBin][1] = abs * std::sin(arg);
+            fData[iBin][0] = fData[iBin][0] * rhs(iBin)[0] - fData[iBin][1] * rhs(iBin)[1];
+            fData[iBin][1] = fData[iBin][0] * rhs(iBin)[1] + fData[iBin][1] * rhs(iBin)[0];
         }
         return *this;
     }
