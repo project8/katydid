@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    std::string KTPairedTimeSeriesData::fName("correlation-fftw");
+    std::string KTPairedTimeSeriesData::fName("paired-time-series");
 
     const std::string& KTPairedTimeSeriesData::StaticGetName()
     {
@@ -29,7 +29,7 @@ namespace Katydid
     {
         while (! fData.empty())
         {
-            delete fData.back().fCorrelation;
+            delete fData.back().fTimeSeries;
             fData.pop_back();
         }
     }

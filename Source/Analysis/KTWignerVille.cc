@@ -11,6 +11,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
+#include "KTPairedTimeSeriesData.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -20,8 +21,11 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 
 #include <algorithm>
+#include <set>
 
 using std::copy;
+using std::map;
+using std::set;
 using std::string;
 
 // I can't just use boost::spirit::qi because of naming conflicts with std
@@ -111,21 +115,33 @@ namespace Katydid
                     << "\tTo avoid a potential memory leak, the frequency spectra will not be saved.");
         }
 
-        KTBasicTimeSeriesData* newTSData = new KTBasicTimeSeriesData(data->GetNChannels());
-        KTFrequencySpectrumDataFFTW* newFSData = NULL;
-        if (fSaveFrequencySpectrum)
+        // make a set of the channel numbers in use so that we can make the analytic associates of only the channels we need
+        set< UInt_t > channelsInUse;
+        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
         {
-            newFSData = new KTFrequencySpectrumDataFFTW(data->GetNChannels());
-            outputFSData = &newFSData;
+            channelsInUse.insert((*pairIt).first);
+            channelsInUse.insert((*pairIt).second);
         }
 
-        for (UInt_t iChannel = 0; iChannel < data->GetNChannels(); iChannel++)
+        // New data to hold the time series of the analytic associate
+        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(data->GetNChannels());
+        KTFrequencySpectrumDataFFTW* aaFSData = NULL;
+        if (fSaveFrequencySpectrum)
         {
-            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(data->GetRecord(iChannel));
+            aaFSData = new KTFrequencySpectrumDataFFTW(data->GetNChannels());
+            outputFSData = &aaFSData;
+        }
+
+        // Calculate the analytic associates
+        // Use this map to hold pointers to them so we don't have to dynamic cast later.
+        map< UInt_t, const KTTimeSeriesFFTW* > channelAAs;
+        for (set< UInt_t >::const_iterator channelIt = channelsInUse.begin(); channelIt != channelsInUse.end(); channelIt++)
+        {
+            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(data->GetRecord(*channelIt));
             if (nextInput == NULL)
             {
                 KTERROR(wvlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
-                delete newTSData;
+                delete aaTSData;
                 return NULL;
             }
 
@@ -141,17 +157,42 @@ namespace Katydid
             }
 
             if (newFS != NULL)
-                newFSData->SetSpectrum(newFS, iChannel);
+                aaFSData->SetSpectrum(newFS, *channelIt);
 
             if (newTS == NULL)
             {
-                KTERROR(wvlog, "Channel <" << iChannel << "> did not transform correctly.");
-                delete newTSData;
+                KTERROR(wvlog, "Channel <" << *channelIt << "> did not transform correctly.");
+                delete aaTSData;
                 return NULL;
             }
 
-            newTSData->SetRecord(newTS, iChannel);
+            aaTSData->SetRecord(newTS, *channelIt);
+            channelAAs[*channelIt] = newTS;
         }
+
+        // new KTPairedTimeSeriesData to hold the results of the cross multiplication
+        KTPairedTimeSeriesData* crossMultipliedData = new KTPairedTimeSeriesData(fPairs.size());
+
+        // Cross-multiply pairs of channels
+        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
+        {
+            UInt_t firstChannel = (*pairIt).first;
+            UInt_t secondChannel = (*pairIt).second;
+
+            KTTimeSeriesFFTW* newTS = CrossMultiply(channelAAs[firstChannel], channelAAs[secondChannel]);
+            if (newTS == NULL)
+            {
+                KTERROR(wvlog, "Something went wrong in the cross multiplication of channels <" << firstChannel << "> and < " << secondChannel << ">.");
+                delete aaTSData;
+                delete crossMultipliedData;
+                return NULL;
+            }
+
+            crossMultipliedData->SetPair(newTS, firstChannel, secondChannel);
+        }
+
+
+
 
         KTDEBUG(fftlog_comp, "W-V transform complete; " << newTSData->GetNChannels() << " channel(s) transformed");
 

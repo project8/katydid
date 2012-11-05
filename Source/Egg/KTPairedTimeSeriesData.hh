@@ -23,7 +23,7 @@ namespace Katydid
             {
                 UInt_t fFirstChannel;
                 UInt_t fSecondChannel;
-                KTTimeSeries* fCorrelation;
+                KTTimeSeries* fTimeSeries;
             };
 
         public:
@@ -33,13 +33,13 @@ namespace Katydid
             const std::string& GetName() const;
             static const std::string& StaticGetName();
 
-            const KTTimeSeries* GetCorrelation(UInt_t pairNum = 0) const;
-            KTTimeSeries* GetCorrelation(UInt_t pairNum = 0);
+            const KTTimeSeries* GetPair(UInt_t pairNum = 0) const;
+            KTTimeSeries* GetPair(UInt_t pairNum = 0);
             UInt_t GetFirstChannel(UInt_t pairNum = 0) const;
             UInt_t GetSecondChannel(UInt_t pairNum = 0) const;
             UInt_t GetNPairs() const;
 
-            void SetCorrelation(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
+            void SetPair(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
             void SetNPairs(unsigned pairs);
 
             void Accept(KTWriter* writer) const;
@@ -56,14 +56,14 @@ namespace Katydid
         return fName;
     }
 
-    inline const KTTimeSeries* KTPairedTimeSeriesData::GetCorrelation(UInt_t pairNum) const
+    inline const KTTimeSeries* KTPairedTimeSeriesData::GetPair(UInt_t pairNum) const
     {
-        return fData[pairNum].fCorrelation;
+        return fData[pairNum].fTimeSeries;
     }
 
-    inline KTTimeSeries* KTPairedTimeSeriesData::GetCorrelation(UInt_t pairNum)
+    inline KTTimeSeries* KTPairedTimeSeriesData::GetPair(UInt_t pairNum)
     {
-        return fData[pairNum].fCorrelation;
+        return fData[pairNum].fTimeSeries;
     }
 
     inline UInt_t KTPairedTimeSeriesData::GetFirstChannel(UInt_t pairNum) const
@@ -81,10 +81,10 @@ namespace Katydid
         return UInt_t(fData.size());
     }
 
-    inline void KTPairedTimeSeriesData::SetCorrelation(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum)
+    inline void KTPairedTimeSeriesData::SetPair(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum)
     {
         if (pairNum >= fData.size()) fData.resize(pairNum+1);
-        fData[pairNum].fCorrelation = record;
+        fData[pairNum].fTimeSeries = record;
         fData[pairNum].fFirstChannel = firstChannel;
         fData[pairNum].fSecondChannel = secondChannel;
     }
