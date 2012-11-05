@@ -1,11 +1,11 @@
 /*
- * KTSlidingWindowFFT.cc
+ * KTSlidingWindowFFTW.cc
  *
  *  Created on: Sep 12, 2011
  *      Author: nsoblath
  */
 
-#include "KTSlidingWindowFFT.hh"
+#include "KTSlidingWindowFFTW.hh"
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
@@ -22,9 +22,9 @@ using std::vector;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTSlidingWindowFFT > sSWFFTRegistrar("sliding-window-fft");
+    static KTDerivedRegistrar< KTProcessor, KTSlidingWindowFFTW > sSWFFTRegistrar("sliding-window-fft");
 
-    KTSlidingWindowFFT::KTSlidingWindowFFT() :
+    KTSlidingWindowFFTW::KTSlidingWindowFFTW() :
             KTFFT(),
             KTProcessor(),
             fFTPlan(),
@@ -43,15 +43,15 @@ namespace Katydid
         RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrum*)");
         RegisterSignal("full_fft", &fFullFFTSignal, "void (KTSlidingWindowFSData*)");
 
-        RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTSlidingWindowFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (KTEvent*)");
-        RegisterSlot("event-named-data", this, &KTSlidingWindowFFT::ProcessEvent, "void (KTEvent*, const string&)");
+        RegisterSlot("header", this, &KTSlidingWindowFFTW::ProcessHeader, "void (const KTEggHeader*)");
+        RegisterSlot("time-series", this, &KTSlidingWindowFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("event", this, &KTSlidingWindowFFTW::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("event-named-data", this, &KTSlidingWindowFFTW::ProcessEvent, "void (KTEvent*, const string&)");
 
         SetupTransformFlagMap();
     }
 
-    KTSlidingWindowFFT::~KTSlidingWindowFFT()
+    KTSlidingWindowFFTW::~KTSlidingWindowFFTW()
     {
         if (fInputArray != NULL) fftw_free(fInputArray);
         if (fOutputArray != NULL) fftw_free(fOutputArray);
@@ -59,7 +59,7 @@ namespace Katydid
         //ClearPowerSpectra();
     }
 
-    Bool_t KTSlidingWindowFFT::Configure(const KTPStoreNode* node)
+    Bool_t KTSlidingWindowFFTW::Configure(const KTPStoreNode* node)
     {
         // Config-file options
         SetTransformFlag(node->GetData< string >("transform-flag", fTransformFlag));
@@ -88,7 +88,7 @@ namespace Katydid
         return true;
     }
 
-    void KTSlidingWindowFFT::ProcessHeader(const KTEggHeader* header)
+    void KTSlidingWindowFFTW::ProcessHeader(const KTEggHeader* header)
     {
         fWindowFunction->SetBinWidth(1. / header->GetAcquisitionRate());
         RecreateFFT();
@@ -96,16 +96,15 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
+    void KTSlidingWindowFFTW::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
-        KTSlidingWindowFSData* newData = TransformData(tsData);
+        KTSlidingWindowFSDataFFTW* newData = TransformData(tsData);
         if (tsData->GetEvent() != NULL)
             tsData->GetEvent()->AddData(newData);
         return;
     }
 
-
-    void KTSlidingWindowFFT::ProcessEvent(KTEvent* event, const string& dataName)
+    void KTSlidingWindowFFTW::ProcessEvent(KTEvent* event, const string& dataName)
     {
         const KTTimeSeriesData* tsData = NULL;
         if (dataName.empty())
@@ -127,14 +126,13 @@ namespace Katydid
             return;
         }
 
-        KTSlidingWindowFSData* newData = TransformData(tsData);
+        KTSlidingWindowFSDataFFTW* newData = TransformData(tsData);
         event->AddData(newData);
         return;
     }
 
 
-
-    void KTSlidingWindowFFT::InitializeFFT()
+    void KTSlidingWindowFFTW::InitializeFFT()
     {
         // fTransformFlag is guaranteed to be valid in the Set method.
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
@@ -152,7 +150,7 @@ namespace Katydid
         return;
     }
 
-    KTSlidingWindowFSData* KTSlidingWindowFFT::TransformData(const KTTimeSeriesData* tsData)
+    KTSlidingWindowFSData* KTSlidingWindowFFTW::TransformData(const KTTimeSeriesData* tsData)
     {
         if (! fIsInitialized)
         {
@@ -191,7 +189,7 @@ namespace Katydid
         return newData;
     }
 
-    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFFT::Transform(const KTTimeSeriesReal* data) const
+    KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTSlidingWindowFFTW::Transform(const KTTimeSeriesFFTW* data) const
     {
         UInt_t nTimeBins = fWindowFunction->GetSize();
         if (nTimeBins < data->size())
@@ -229,7 +227,7 @@ namespace Katydid
        return NULL;
     }
 
-    KTFrequencySpectrum* KTSlidingWindowFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
+    KTFrequencySpectrumFFTW* KTSlidingWindowFFTW::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
     {
         UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
@@ -245,21 +243,21 @@ namespace Katydid
         return newSpect;
     }
 
-    void KTSlidingWindowFFT::SetWindowSize(UInt_t nBins)
+    void KTSlidingWindowFFTW::SetWindowSize(UInt_t nBins)
     {
         fWindowFunction->SetSize(nBins);
         RecreateFFT();
         return;
     }
 
-    void KTSlidingWindowFFT::SetWindowLength(Double_t wlTime)
+    void KTSlidingWindowFFTW::SetWindowLength(Double_t wlTime)
     {
         fWindowFunction->SetLength(wlTime);
         RecreateFFT();
         return;
     }
 
-    void KTSlidingWindowFFT::SetWindowFunction(KTEventWindowFunction* wf)
+    void KTSlidingWindowFFTW::SetWindowFunction(KTEventWindowFunction* wf)
     {
         delete fWindowFunction;
         fWindowFunction = wf;
@@ -267,7 +265,7 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::RecreateFFT()
+    void KTSlidingWindowFFTW::RecreateFFT()
     {
         fftw_destroy_plan(fFTPlan);
         fftw_free(fInputArray);
@@ -277,7 +275,7 @@ namespace Katydid
         fIsInitialized = false;
     }
 
-     void KTSlidingWindowFFT::SetupTransformFlagMap()
+     void KTSlidingWindowFFTW::SetupTransformFlagMap()
      {
          fTransformFlagMap.clear();
          fTransformFlagMap["ESTIMATE"] = FFTW_ESTIMATE;

@@ -18,7 +18,9 @@ set (FFT_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSDataFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
 )
 
@@ -38,7 +40,9 @@ set (FFT_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSDataFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
 )
 

@@ -11,7 +11,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
-#include "KTPairedTimeSeriesData.hh"
+#include "KTTimeSeriesPairedData.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -124,11 +124,11 @@ namespace Katydid
         }
 
         // New data to hold the time series of the analytic associate
-        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(data->GetNChannels());
+        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(data->GetNTimeSeries());
         KTFrequencySpectrumDataFFTW* aaFSData = NULL;
         if (fSaveFrequencySpectrum)
         {
-            aaFSData = new KTFrequencySpectrumDataFFTW(data->GetNChannels());
+            aaFSData = new KTFrequencySpectrumDataFFTW(data->GetNTimeSeries());
             outputFSData = &aaFSData;
         }
 
@@ -137,7 +137,7 @@ namespace Katydid
         map< UInt_t, const KTTimeSeriesFFTW* > channelAAs;
         for (set< UInt_t >::const_iterator channelIt = channelsInUse.begin(); channelIt != channelsInUse.end(); channelIt++)
         {
-            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(data->GetRecord(*channelIt));
+            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(data->GetTimeSeries(*channelIt));
             if (nextInput == NULL)
             {
                 KTERROR(wvlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
@@ -166,12 +166,12 @@ namespace Katydid
                 return NULL;
             }
 
-            aaTSData->SetRecord(newTS, *channelIt);
+            aaTSData->SetTimeSeries(newTS, *channelIt);
             channelAAs[*channelIt] = newTS;
         }
 
-        // new KTPairedTimeSeriesData to hold the results of the cross multiplication
-        KTPairedTimeSeriesData* crossMultipliedData = new KTPairedTimeSeriesData(fPairs.size());
+        // new KTTimeSeriesPairedData to hold the results of the cross multiplication
+        KTTimeSeriesPairedData* crossMultipliedData = new KTTimeSeriesPairedData(fPairs.size());
 
         // Cross-multiply pairs of channels
         for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
@@ -188,13 +188,13 @@ namespace Katydid
                 return NULL;
             }
 
-            crossMultipliedData->SetPair(newTS, firstChannel, secondChannel);
+            crossMultipliedData->SetTimeSeries(newTS, firstChannel, secondChannel);
         }
 
 
 
 
-        KTDEBUG(fftlog_comp, "W-V transform complete; " << newTSData->GetNChannels() << " channel(s) transformed");
+        KTDEBUG(fftlog_comp, "W-V transform complete; " << newTSData->GetNTimeSeries() << " channel(s) transformed");
 
         return newTSData;
     }

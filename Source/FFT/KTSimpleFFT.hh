@@ -127,7 +127,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(KTEvent* event);
+            void ProcessEvent(KTEvent* event, const std::string& dataName="");
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };

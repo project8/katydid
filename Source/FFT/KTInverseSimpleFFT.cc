@@ -122,11 +122,11 @@ namespace Katydid
             return NULL;
         }
 
-        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNChannels());
+        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNTimeSeries());
 
-        for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
+        for (UInt_t iChannel = 0; iChannel < tsData->GetNTimeSeries(); iChannel++)
         {
-            KTFrequencySpectrum* nextResult = Transform(tsData->GetRecord(iChannel));
+            KTFrequencySpectrum* nextResult = Transform(tsData->GetTimeSeries(iChannel));
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_simp, "One of the channels did not transform correctly.");

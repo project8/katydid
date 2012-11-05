@@ -102,12 +102,12 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    unsigned nRecords = tsData->GetNChannels();
+    unsigned nRecords = tsData->GetNTimeSeries();
     KTINFO(testegg, "This event contains " << nRecords << " records");
     if (nRecords >= 1)
     {
         KTINFO(testegg, "Record 0 has " << tsData->GetRecordSize() << " bins");
-        KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetRecord(0)->GetValue(0));
+        KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetTimeSeries(0)->GetValue(0));
     }
 
     KTINFO(testegg, "Test complete; cleaning up");

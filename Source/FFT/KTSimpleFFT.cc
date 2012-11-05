@@ -45,6 +45,7 @@ namespace Katydid
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("event-named-data", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*, const string&)");
 
         SetupTransformFlagMap();
     }
@@ -115,7 +116,7 @@ namespace Katydid
 
     KTFrequencySpectrumData* KTSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
     {
-        if (tsData->GetNChannels() < 1)
+        if (tsData->GetNTimeSeries() < 1)
         {
             KTWARN(fftlog_simp, "Data has no channels!");
             return NULL;
@@ -133,11 +134,11 @@ namespace Katydid
             return NULL;
         }
 
-        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNChannels());
+        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNTimeSeries());
 
-        for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
+        for (UInt_t iChannel = 0; iChannel < tsData->GetNTimeSeries(); iChannel++)
         {
-            const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetRecord(iChannel));
+            const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetTimeSeries(iChannel));
             if (nextInput == NULL)
             {
                 KTERROR(fftlog_simp, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
@@ -240,18 +241,28 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessEvent(KTEvent* event)
+    void KTSimpleFFT::ProcessEvent(KTEvent* event, const string& dataName)
     {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTProgenitorTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
+        const KTTimeSeriesData* tsData = NULL;
+        if (dataName.empty())
+        {
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
+            if (tsData == NULL)
+                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
+            if (tsData == NULL)
+                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
+        }
+        else
+        {
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
+        }
+
         if (tsData == NULL)
         {
-            tsData = dynamic_cast< KTBasicTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-            {
-                KTWARN(fftlog_simp, "No time series data was available in the event");
-                return;
-            }
+            KTWARN(fftlog_simp, "No time series data was available in the event");
+            return;
         }
+
         KTFrequencySpectrumData* newData = TransformData(tsData);
         event->AddData(newData);
         return;

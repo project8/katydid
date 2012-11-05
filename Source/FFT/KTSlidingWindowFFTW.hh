@@ -1,20 +1,20 @@
 /**
- @file KTSlidingWindowFFT.hh
- @brief Contains KTSlidingWindowFFT
+ @file KTSlidingWindowFFTW.hh
+ @brief Contains KTSlidingWindowFFTW
  @details Creates a 2-D (frequency vs. time) power spectrum from an event
  @author: N. S. Oblath
  @date: Sep 12, 2011
  */
 
-#ifndef KTSLIDINGWINDOWFFT_HH_
-#define KTSLIDINGWINDOWFFT_HH_
+#ifndef KTSLIDINGWINDOWFFTW_HH_
+#define KTSLIDINGWINDOWFFTW_HH_
 
 #include "KTFFT.hh"
 #include "KTProcessor.hh"
 
 #include "KTMath.hh"
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTEventWindowFunction.hh"
 
 #include <complex>
@@ -30,13 +30,13 @@ namespace Katydid
     KTLOGGER(fftlog_sw, "katydid.fft");
 
     class KTEggHeader;
-    class KTSlidingWindowFSData;
-    class KTTimeSeriesReal;
+    class KTSlidingWindowFSDataFFTW;
+    class KTTimeSeriesFFTW;
     class KTTimeSeriesData;
     class KTPStoreNode;
 
     /*!
-     @class KTSlidingWindowFFT
+     @class KTSlidingWindowFFTW
      @author N. S. Oblath
 
      @brief Creates a 2-D (frequency vs. time) power spectrum from an event
@@ -57,27 +57,27 @@ namespace Katydid
      \li \c window_function -- parent node for the window function configuration
     */
 
-   class KTSlidingWindowFFT : public KTFFT, public KTProcessor
+   class KTSlidingWindowFFTW : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (UInt_t, KTFrequencySpectrum*) >::signal SingleFFTSignal;
-            typedef KTSignal< void (KTSlidingWindowFSData*) >::signal FullFFTSignal;
+            typedef KTSignal< void (UInt_t, KTFrequencySpectrumFFTW*) >::signal SingleFFTSignal;
+            typedef KTSignal< void (KTSlidingWindowFSDataFFTW*) >::signal FullFFTSignal;
 
         protected:
             typedef std::map< std::string, Int_t > TransformFlagMap;
 
         public:
-            KTSlidingWindowFFT();
-            virtual ~KTSlidingWindowFFT();
+            KTSlidingWindowFFTW();
+            virtual ~KTSlidingWindowFFTW();
 
             Bool_t Configure(const KTPStoreNode* node);
 
             void InitializeFFT();
             void RecreateFFT();
 
-            KTSlidingWindowFSData* TransformData(const KTTimeSeriesData* tsData);
+            KTSlidingWindowFSDataFFTW* TransformData(const KTTimeSeriesData* tsData);
 
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* Transform(const KTTimeSeriesReal* data) const;
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* Transform(const KTTimeSeriesFFTW* data) const;
 
             /// for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.
             virtual UInt_t GetTimeSize() const;
@@ -105,7 +105,7 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            virtual KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
+            virtual KTFrequencySpectrumFFTW* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;
@@ -141,63 +141,63 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
-            void ProcessEvent(KTEvent* event, const std::string& dataName);
+            void ProcessEvent(KTEvent* event, const std::string& dataName="");
 
     };
 
 
-    inline UInt_t KTSlidingWindowFFT::GetTimeSize() const
+    inline UInt_t KTSlidingWindowFFTW::GetTimeSize() const
     {
         return fTimeSize;
     }
 
-    inline UInt_t KTSlidingWindowFFT::GetFrequencySize() const
+    inline UInt_t KTSlidingWindowFFTW::GetFrequencySize() const
     {
         return CalculateNFrequencyBins(fTimeSize);
     }
 
-    inline const std::string& KTSlidingWindowFFT::GetTransformFlag() const
+    inline const std::string& KTSlidingWindowFFTW::GetTransformFlag() const
     {
         return fTransformFlag;
     }
 
-    inline Bool_t KTSlidingWindowFFT::GetIsInitialized() const
+    inline Bool_t KTSlidingWindowFFTW::GetIsInitialized() const
     {
         return fIsInitialized;
     }
 
-    inline UInt_t KTSlidingWindowFFT::GetOverlap() const
+    inline UInt_t KTSlidingWindowFFTW::GetOverlap() const
     {
         return fOverlap;
     }
 
-    inline Double_t KTSlidingWindowFFT::GetOverlapFrac() const
+    inline Double_t KTSlidingWindowFFTW::GetOverlapFrac() const
     {
         return fOverlapFrac;
     }
 
-    inline Bool_t KTSlidingWindowFFT::GetUseOverlapFrac() const
+    inline Bool_t KTSlidingWindowFFTW::GetUseOverlapFrac() const
     {
         return fUseOverlapFrac;
     }
 
-    inline UInt_t KTSlidingWindowFFT::GetEffectiveOverlap() const
+    inline UInt_t KTSlidingWindowFFTW::GetEffectiveOverlap() const
     {
         if (fUseOverlapFrac) return (UInt_t)KTMath::Nint(fOverlapFrac * (Double_t)this->fWindowFunction->GetSize());
         return fOverlap;
     }
 
-    inline KTEventWindowFunction* KTSlidingWindowFFT::GetWindowFunction() const
+    inline KTEventWindowFunction* KTSlidingWindowFFTW::GetWindowFunction() const
     {
         return fWindowFunction;
     }
 
-    inline UInt_t KTSlidingWindowFFT::GetWindowSize() const
+    inline UInt_t KTSlidingWindowFFTW::GetWindowSize() const
     {
         return (UInt_t)fWindowFunction->GetSize();
     }
 
-    inline void KTSlidingWindowFFT::SetTransformFlag(const std::string& flag)
+    inline void KTSlidingWindowFFTW::SetTransformFlag(const std::string& flag)
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
         {
@@ -209,38 +209,38 @@ namespace Katydid
         return;
     }
 
-    inline void KTSlidingWindowFFT::SetOverlap(UInt_t nBins)
+    inline void KTSlidingWindowFFTW::SetOverlap(UInt_t nBins)
     {
         fOverlap = nBins;
         fUseOverlapFrac = false;
         return;
     }
 
-    inline void KTSlidingWindowFFT::SetOverlap(Double_t overlapTime)
+    inline void KTSlidingWindowFFTW::SetOverlap(Double_t overlapTime)
     {
         this->SetOverlap((UInt_t)KTMath::Nint(overlapTime / fWindowFunction->GetBinWidth()));
         fUseOverlapFrac = false;
         return;
     }
 
-    inline void KTSlidingWindowFFT::SetOverlapFrac(Double_t overlapFrac)
+    inline void KTSlidingWindowFFTW::SetOverlapFrac(Double_t overlapFrac)
     {
         fOverlapFrac = overlapFrac;
         fUseOverlapFrac = false;
         return;
     }
 
-    inline void KTSlidingWindowFFT::SetUseOverlapFrac(Bool_t useOverlapFrac)
+    inline void KTSlidingWindowFFTW::SetUseOverlapFrac(Bool_t useOverlapFrac)
     {
         fUseOverlapFrac = useOverlapFrac;
         return;
     }
 
-    inline UInt_t KTSlidingWindowFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const
+    inline UInt_t KTSlidingWindowFFTW::CalculateNFrequencyBins(UInt_t nTimeBins) const
     {
         // Integer division is rounded down, per FFTW's instructions
         return nTimeBins / 2 + 1;
     }
 
 } /* namespace Katydid */
-#endif /* KTSLIDINGWINDOWFFT_HH_ */
+#endif /* KTSLIDINGWINDOWFFTW_HH_ */

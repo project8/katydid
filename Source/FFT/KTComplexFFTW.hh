@@ -143,8 +143,8 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEventForward(KTEvent* event);
-            void ProcessEventReverse(KTEvent* event);
+            void ProcessEventForward(KTEvent* event, const std::string& dataName="");
+            void ProcessEventReverse(KTEvent* event, const std::string& dataName="");
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 

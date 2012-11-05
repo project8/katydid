@@ -189,7 +189,7 @@ namespace Katydid
         const KTProgenitorTimeSeriesData* tsData = dynamic_cast<const KTProgenitorTimeSeriesData*>(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
 
         // Perform a 1-D FFT on the entire event
-        const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetRecord(0));
+        const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetTimeSeries(0));
         KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
         // Use the data from the full FFT to create a gain normalization
