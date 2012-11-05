@@ -1,31 +1,31 @@
 /*
- * KTCorrelationDataFFTW.cc
+ * KTPairedTimeSeriesData.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTCorrelationDataFFTW.hh"
+#include "KTPairedTimeSeriesData.hh"
 
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTWriter.hh"
 
 namespace Katydid
 {
-    std::string KTCorrelationDataFFTW::fName("correlation-fftw");
+    std::string KTPairedTimeSeriesData::fName("correlation-fftw");
 
-    const std::string& KTCorrelationDataFFTW::StaticGetName()
+    const std::string& KTPairedTimeSeriesData::StaticGetName()
     {
         return fName;
     }
 
-    KTCorrelationDataFFTW::KTCorrelationDataFFTW(UInt_t nPairs) :
+    KTPairedTimeSeriesData::KTPairedTimeSeriesData(UInt_t nPairs) :
             KTWriteableData(),
             fData(nPairs)
     {
     }
 
-    KTCorrelationDataFFTW::~KTCorrelationDataFFTW()
+    KTPairedTimeSeriesData::~KTPairedTimeSeriesData()
     {
         while (! fData.empty())
         {
@@ -34,7 +34,7 @@ namespace Katydid
         }
     }
 
-    void KTCorrelationDataFFTW::Accept(KTWriter* writer) const
+    void KTPairedTimeSeriesData::Accept(KTWriter* writer) const
     {
         writer->Write(this);
         return;
