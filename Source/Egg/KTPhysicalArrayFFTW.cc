@@ -123,7 +123,6 @@ namespace Katydid
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator*=(const KTPhysicalArray< 1, fftw_complex>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        double abs, arg;
         for (size_t iBin=0; iBin<size(); iBin++)
         {
             fData[iBin][0] = fData[iBin][0] * rhs(iBin)[0] - fData[iBin][1] * rhs(iBin)[1];
@@ -172,15 +171,10 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator*=(const fftw_complex& rhs)
     {
-        double abs, arg;
-        double rhsabs = rhs[0]*rhs[0] + rhs[1]*rhs[1];
-        double rhsarg = std::atan2(rhs[1], rhs[0]);
         for (size_t iBin=0; iBin<size(); iBin++)
         {
-            double abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) * rhsabs);
-            double arg = std::atan2(fData[iBin][1], fData[iBin][0]) + rhsarg;
-            fData[iBin][0] = abs * std::cos(arg);
-            fData[iBin][1] = abs * std::sin(arg);
+            fData[iBin][0] = fData[iBin][0] * rhs[0] - fData[iBin][1] * rhs[1];
+            fData[iBin][1] = fData[iBin][0] * rhs[1] + fData[iBin][1] * rhs[0];
         }
         return *this;
     }
