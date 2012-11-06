@@ -17,6 +17,8 @@
 
 namespace Katydid
 {
+    class KTSlidingWindowFSData;
+    class KTSlidingWindowFSDataFFTW;
 
     class KTBasicROOTFileWriter : public KTWriter
     {
@@ -71,6 +73,13 @@ namespace Katydid
             //************************
         public:
             void Write(const KTCorrelationData* data);
+
+            //************************
+            // Sliding Window Data
+            //************************
+        public:
+            void Write(const KTSlidingWindowFSData* data);
+            void Write(const KTSlidingWindowFSDataFFTW* data);
 
     };
 

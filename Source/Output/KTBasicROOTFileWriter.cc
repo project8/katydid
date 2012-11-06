@@ -12,7 +12,11 @@
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
+#include "KTSlidingWindowFSData.hh"
+#include "KTSlidingWindowFSDataFFTW.hh"
+
 #include "TH1.h"
+#include "TH2.h"
 
 #include <sstream>
 
@@ -181,6 +185,57 @@ namespace Katydid
         }
         return;
     }
+
+    //************************
+    // Sliding Window Data
+    //************************
+
+    void KTBasicROOTFileWriter::Write(const KTSlidingWindowFSData* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nPlots = data->GetNChannels();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
+        {
+            stringstream conv;
+            conv << "histSW_" << eventNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH2D* swHist = data->CreateMagnitudeHistogram(iPlot, histName);
+            swHist->SetDirectory(fFile);
+            swHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        }
+        return;
+    }
+
+    void KTBasicROOTFileWriter::Write(const KTSlidingWindowFSDataFFTW* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nPlots = data->GetNChannels();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
+        {
+            stringstream conv;
+            conv << "histSW_" << eventNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH2D* swHist = data->CreateMagnitudeHistogram(iPlot, histName);
+            swHist->SetDirectory(fFile);
+            swHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        }
+        return;
+    }
+
 
 
 } /* namespace Katydid */
