@@ -11,7 +11,7 @@
 #include "KTEggReader.hh"
 #include "KTEvent.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
 
 using std::string;
 

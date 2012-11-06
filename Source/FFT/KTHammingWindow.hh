@@ -34,7 +34,7 @@ namespace Katydid
     {
         public:
             KTHammingWindow();
-            KTHammingWindow(const KTTimeSeriesData* tsData);
+            KTHammingWindow(const KTTimeSeriesChannelData* tsData);
             virtual ~KTHammingWindow();
 
             virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node);

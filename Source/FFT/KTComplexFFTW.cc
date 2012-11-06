@@ -11,7 +11,8 @@
 #include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
+#include "KTTimeSeriesPairedData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTPStoreNode.hh"
 
@@ -157,9 +158,9 @@ namespace Katydid
             KTWARN(fftlog_comp, "Data has no channels!");
             return NULL;
         }
-        if (tsData->GetRecordSize() != GetSize())
+        if (tsData->GetTimeSeries(0)->GetNTimeBins() != GetSize())
         {
-            SetSize(tsData->GetRecordSize());
+            SetSize(tsData->GetTimeSeries(0)->GetNTimeBins());
             InitializeFFT();
         }
 
@@ -244,10 +245,10 @@ namespace Katydid
                 delete newData;
                 return NULL;
             }
-            newData->SetRecord(nextResult, iChannel);
+            newData->SetTimeSeries(nextResult, iChannel);
         }
 
-        KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
+        KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNTimeSeries() << " channel(s) transformed");
 
         //newData->SetEvent(fsData->GetEvent());
 

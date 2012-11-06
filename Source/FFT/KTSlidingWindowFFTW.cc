@@ -9,13 +9,16 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
-#include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesReal.hh"
+#include "KTTimeSeriesChannelData.hh"
+#include "KTTimeSeriesPairedData.hh"
+#include "KTTimeSeriesFFTW.hh"
 #include "KTFactory.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
-#include "KTSlidingWindowFSData.hh"
+#include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTWindowFunction.hh"
+
+#include <cstring>
 
 using std::string;
 using std::vector;
@@ -122,7 +125,7 @@ namespace Katydid
 
         if (tsData == NULL)
         {
-            KTWARN(fftlog_simp, "No time series data was available in the event");
+            KTWARN(fftlog_sw, "No time series data was available in the event");
             return;
         }
 
@@ -138,7 +141,7 @@ namespace Katydid
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         Int_t transformFlag = iter->second;
 
-        fFTPlan = fftw_plan_dft_r2c_1d(fTimeSize, fInputArray, fOutputArray, transformFlag);
+        fFTPlan = fftw_plan_dft_1d(fTimeSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag);
         if (fFTPlan != NULL)
         {
             fIsInitialized = true;
@@ -150,7 +153,7 @@ namespace Katydid
         return;
     }
 
-    KTSlidingWindowFSData* KTSlidingWindowFFTW::TransformData(const KTTimeSeriesData* tsData)
+    KTSlidingWindowFSDataFFTW* KTSlidingWindowFFTW::TransformData(const KTTimeSeriesData* tsData)
     {
         if (! fIsInitialized)
         {
@@ -159,17 +162,17 @@ namespace Katydid
             return NULL;
         }
 
-        KTSlidingWindowFSData* newData = new KTSlidingWindowFSData(tsData->GetNTimeSeries());
+        KTSlidingWindowFSDataFFTW* newData = new KTSlidingWindowFSDataFFTW(tsData->GetNTimeSeries());
 
         for (UInt_t iChannel = 0; iChannel < tsData->GetNTimeSeries(); iChannel++)
         {
-            const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetTimeSeries(iChannel));
+            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData->GetTimeSeries(iChannel));
             if (nextInput == NULL)
             {
                 KTERROR(fftlog_sw, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
                 return NULL;
             }
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* newResults = NULL;
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newResults = NULL;
             try
             {
                 newResults = Transform(nextInput);
@@ -205,12 +208,13 @@ namespace Katydid
 
             Double_t timeMin = 0.;
             Double_t timeMax = ((nWindows - 1) * windowShift + fWindowFunction->GetSize()) * fWindowFunction->GetBinWidth();
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(data->size(), timeMin, timeMax);
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(data->size(), timeMin, timeMax);
 
             UInt_t windowStart = 0;
             for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
             {
-                copy(data->begin() + windowStart, data->begin() + windowStart + fWindowFunction->GetSize(), fInputArray);
+                //copy(data->begin() + windowStart, data->begin() + windowStart + fWindowFunction->GetSize(), fInputArray);
+                std::memcpy(data->GetData() + windowStart, fInputArray, fWindowFunction->GetSize() * sizeof(fftw_complex));
                 fftw_execute(fFTPlan);
                 (*newSpectra)(iWindow) = ExtractTransformResult(freqMin, freqMax);
                 // emit a signal that the FFT was performed, for any connected slots
@@ -232,12 +236,11 @@ namespace Katydid
         UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
-        Double_t tempReal, tempImag;
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
+        KTFrequencySpectrumFFTW* newSpect = new KTFrequencySpectrumFFTW(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
-            (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
-            (*newSpect)(iPoint) *= normalization;
+            (*newSpect)(iPoint)[0] = fOutputArray[iPoint][0] * normalization;
+            (*newSpect)(iPoint)[1] = fOutputArray[iPoint][1] * normalization;
         }
 
         return newSpect;
@@ -270,7 +273,7 @@ namespace Katydid
         fftw_destroy_plan(fFTPlan);
         fftw_free(fInputArray);
         fftw_free(fOutputArray);
-        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
+        fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
         fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
         fIsInitialized = false;
     }

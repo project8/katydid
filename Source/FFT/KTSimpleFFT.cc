@@ -11,7 +11,8 @@
 #include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumData.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
+#include "KTTimeSeriesPairedData.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTPStoreNode.hh"
 
@@ -121,9 +122,9 @@ namespace Katydid
             KTWARN(fftlog_simp, "Data has no channels!");
             return NULL;
         }
-        if (tsData->GetRecordSize() != GetTimeSize())
+        if (tsData->GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
-            SetTimeSize(tsData->GetRecordSize());
+            SetTimeSize(tsData->GetTimeSeries(0)->GetNTimeBins());
             InitializeFFT();
         }
 

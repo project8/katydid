@@ -21,7 +21,7 @@ namespace Katydid
     {
     }
 
-    KTRectangularWindow::KTRectangularWindow(const KTTimeSeriesData* tsData) :
+    KTRectangularWindow::KTRectangularWindow(const KTTimeSeriesChannelData* tsData) :
             KTEventWindowFunction(tsData)
     {
     }

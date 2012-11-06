@@ -14,7 +14,7 @@ using std::vector;
 namespace Katydid
 {
     KTTimeSeriesChannelData::KTTimeSeriesChannelData() :
-            KTWriteableData()
+            KTTimeSeriesData()
     {
     }
 

@@ -1,31 +1,31 @@
 /*
- * KTPairedTimeSeriesData.cc
+ * KTTimeSeriesPairedData.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTPairedTimeSeriesData.hh"
+#include "KTTimeSeriesPairedData.hh"
 
-#include "KTFrequencySpectrumFFTW.hh"
+#include "KTTimeSeries.hh"
 #include "KTWriter.hh"
 
 namespace Katydid
 {
-    std::string KTPairedTimeSeriesData::fName("paired-time-series");
+    std::string KTTimeSeriesPairedData::fName("time-series-paired");
 
-    const std::string& KTPairedTimeSeriesData::StaticGetName()
+    const std::string& KTTimeSeriesPairedData::StaticGetName()
     {
         return fName;
     }
 
-    KTPairedTimeSeriesData::KTPairedTimeSeriesData(UInt_t nPairs) :
-            KTWriteableData(),
+    KTTimeSeriesPairedData::KTTimeSeriesPairedData(UInt_t nPairs) :
+            KTTimeSeriesData(),
             fData(nPairs)
     {
     }
 
-    KTPairedTimeSeriesData::~KTPairedTimeSeriesData()
+    KTTimeSeriesPairedData::~KTTimeSeriesPairedData()
     {
         while (! fData.empty())
         {
@@ -34,7 +34,7 @@ namespace Katydid
         }
     }
 
-    void KTPairedTimeSeriesData::Accept(KTWriter* writer) const
+    void KTTimeSeriesPairedData::Accept(KTWriter* writer) const
     {
         writer->Write(this);
         return;

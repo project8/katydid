@@ -9,7 +9,7 @@
 
 #include "KTEgg.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -151,7 +151,7 @@ namespace Katydid
             eventData->SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
             eventData->SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
 
-            //eventData->SetRecord(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iChannel);
+            //eventData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iChannel);
             KTTimeSeries* newRecord;
             if (fTimeSeriesType == kRealTimeSeries)
             {
@@ -235,7 +235,7 @@ namespace Katydid
         // finally, set the records in the new data object
         for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
         {
-            eventData->SetRecord(newRecords[iChannel], iChannel);
+            eventData->SetTimeSeries(newRecords[iChannel], iChannel);
         }
 
         return eventData;

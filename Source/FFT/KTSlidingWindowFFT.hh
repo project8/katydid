@@ -30,6 +30,7 @@ namespace Katydid
     KTLOGGER(fftlog_sw, "katydid.fft");
 
     class KTEggHeader;
+    class KTEvent;
     class KTSlidingWindowFSData;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;

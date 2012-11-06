@@ -9,7 +9,8 @@
 
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
+#include "KTTimeSeriesPairedData.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTFactory.hh"
 #include "KTPhysicalArray.hh"
@@ -123,7 +124,7 @@ namespace Katydid
 
         if (tsData == NULL)
         {
-            KTWARN(fftlog_simp, "No time series data was available in the event");
+            KTWARN(fftlog_sw, "No time series data was available in the event");
             return;
         }
 

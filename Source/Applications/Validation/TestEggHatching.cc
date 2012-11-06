@@ -16,7 +16,7 @@
 #include "KTEggReaderMonarch.hh"
 #include "KTEvent.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
 
 #include <iostream>
 #include <string>
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
     KTINFO(testegg, "This event contains " << nRecords << " records");
     if (nRecords >= 1)
     {
-        KTINFO(testegg, "Record 0 has " << tsData->GetRecordSize() << " bins");
+        KTINFO(testegg, "Record 0 has " << tsData->GetTimeSeries(0)->GetNTimeBins() << " bins");
         KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetTimeSeries(0)->GetValue(0));
     }
 

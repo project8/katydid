@@ -1,14 +1,14 @@
 /*
- * KTPairedTimeSeriesData.hh
+ * KTTimeSeriesPairedData.hh
  *
  *  Created on: Aug 27, 2012
  *      Author: nsoblath
  */
 
-#ifndef KTPAIREDTIMESERIESDATA_HH_
-#define KTPAIREDTIMESERIESDATA_HH_
+#ifndef KTTIMESERIESPAIREDDATA_HH_
+#define KTTIMESERIESPAIREDDATA_HH_
 
-#include "KTWriteableData.hh"
+#include "KTTimeSeriesData.hh"
 
 #include <vector>
 
@@ -16,7 +16,7 @@ namespace Katydid
 {
     class KTTimeSeries;
 
-    class KTPairedTimeSeriesData : public KTWriteableData
+    class KTTimeSeriesPairedData : public KTTimeSeriesData
     {
         protected:
             struct PerPairData
@@ -27,20 +27,22 @@ namespace Katydid
             };
 
         public:
-            KTPairedTimeSeriesData(unsigned nChannels=1);
-            virtual ~KTPairedTimeSeriesData();
+            KTTimeSeriesPairedData(unsigned nChannels=1);
+            virtual ~KTTimeSeriesPairedData();
 
             const std::string& GetName() const;
             static const std::string& StaticGetName();
 
-            const KTTimeSeries* GetPair(UInt_t pairNum = 0) const;
-            KTTimeSeries* GetPair(UInt_t pairNum = 0);
+            const KTTimeSeries* GetTimeSeries(UInt_t pairNum = 0) const;
+            KTTimeSeries* GetTimeSeries(UInt_t pairNum = 0);
             UInt_t GetFirstChannel(UInt_t pairNum = 0) const;
             UInt_t GetSecondChannel(UInt_t pairNum = 0) const;
-            UInt_t GetNPairs() const;
+            UInt_t GetNTimeSeries() const;
 
-            void SetPair(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
-            void SetNPairs(unsigned pairs);
+            void SetTimeSeries(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
+            void SetTimeSeries(KTTimeSeries* record, UInt_t pairNum = 0);
+
+            void SetNTimeSeries(unsigned pairs);
 
             void Accept(KTWriter* writer) const;
 
@@ -51,37 +53,37 @@ namespace Katydid
 
     };
 
-    inline const std::string& KTPairedTimeSeriesData::GetName() const
+    inline const std::string& KTTimeSeriesPairedData::GetName() const
     {
         return fName;
     }
 
-    inline const KTTimeSeries* KTPairedTimeSeriesData::GetPair(UInt_t pairNum) const
+    inline const KTTimeSeries* KTTimeSeriesPairedData::GetTimeSeries(UInt_t pairNum) const
     {
         return fData[pairNum].fTimeSeries;
     }
 
-    inline KTTimeSeries* KTPairedTimeSeriesData::GetPair(UInt_t pairNum)
+    inline KTTimeSeries* KTTimeSeriesPairedData::GetTimeSeries(UInt_t pairNum)
     {
         return fData[pairNum].fTimeSeries;
     }
 
-    inline UInt_t KTPairedTimeSeriesData::GetFirstChannel(UInt_t pairNum) const
+    inline UInt_t KTTimeSeriesPairedData::GetFirstChannel(UInt_t pairNum) const
     {
         return fData[pairNum].fFirstChannel;
     }
 
-    inline UInt_t KTPairedTimeSeriesData::GetSecondChannel(UInt_t pairNum) const
+    inline UInt_t KTTimeSeriesPairedData::GetSecondChannel(UInt_t pairNum) const
     {
         return fData[pairNum].fSecondChannel;
     }
 
-    inline UInt_t KTPairedTimeSeriesData::GetNPairs() const
+    inline UInt_t KTTimeSeriesPairedData::GetNTimeSeries() const
     {
         return UInt_t(fData.size());
     }
 
-    inline void KTPairedTimeSeriesData::SetPair(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum)
+    inline void KTTimeSeriesPairedData::SetTimeSeries(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum)
     {
         if (pairNum >= fData.size()) fData.resize(pairNum+1);
         fData[pairNum].fTimeSeries = record;
@@ -89,7 +91,15 @@ namespace Katydid
         fData[pairNum].fSecondChannel = secondChannel;
     }
 
-    inline void KTPairedTimeSeriesData::SetNPairs(unsigned pairs)
+    inline void KTTimeSeriesPairedData::SetTimeSeries(KTTimeSeries* record, UInt_t pairNum)
+    {
+        if (pairNum >= fData.size()) fData.resize(pairNum+1);
+        fData[pairNum].fTimeSeries = record;
+        fData[pairNum].fFirstChannel = 0;
+        fData[pairNum].fSecondChannel = 0;
+    }
+
+    inline void KTTimeSeriesPairedData::SetNTimeSeries(unsigned pairs)
     {
         fData.resize(pairs);
         return;
@@ -97,4 +107,4 @@ namespace Katydid
 
 } /* namespace Katydid */
 
-#endif /* KTPAIREDTIMESERIESDATA_HH_ */
+#endif /* KTTIMESERIESPAIREDDATA_HH_ */

@@ -15,7 +15,7 @@
 #include "KTPhysicalArray.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTSlidingWindowFSData.hh"
 

@@ -30,6 +30,7 @@ namespace Katydid
     KTLOGGER(fftlog_sw, "katydid.fft");
 
     class KTEggHeader;
+    class KTEvent;
     class KTSlidingWindowFSDataFFTW;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesData;
@@ -110,7 +111,7 @@ namespace Katydid
 
             fftw_plan fFTPlan;
             UInt_t fTimeSize;
-            Double_t* fInputArray;
+            fftw_complex* fInputArray;
             fftw_complex* fOutputArray;
 
             std::string fTransformFlag;

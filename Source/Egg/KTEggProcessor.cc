@@ -17,7 +17,7 @@
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
 
 using std::string;
 

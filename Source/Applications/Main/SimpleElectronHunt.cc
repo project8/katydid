@@ -25,7 +25,7 @@
 #include "KTSimpleFFT.hh"
 #include "KTSlidingWindowFFT.hh"
 #include "KTSlidingWindowFSData.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
 
 #include "TApplication.h"
 #include "TCanvas.h"

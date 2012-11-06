@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesReal.hh"
 
 #include "rapidxml.hpp"
@@ -305,7 +305,7 @@ namespace Katydid
                 newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));
             }
             delete [] readBuffer;
-            eventData->SetRecord(newRecord);
+            eventData->SetTimeSeries(newRecord);
         }
         if (! fEggStream.good())
         {

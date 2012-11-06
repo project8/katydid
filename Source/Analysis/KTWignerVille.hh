@@ -13,10 +13,12 @@
 namespace Katydid
 {
     class KTComplexFFTW;
+    class KTEvent;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
+    class KTWriteableData;
 
     typedef std::pair< UInt_t, UInt_t > KTWVPair;
 
@@ -35,7 +37,7 @@ namespace Katydid
             Bool_t GetSaveFrequencySpectrum() const;
             void SetSaveFrequencySpectrum(Bool_t flag);
 
-            void AddPair(const KTCorrelationPair& pair);
+            void AddPair(const KTWVPair& pair);
             void SetPairVector(const PairVector& pairs);
             const PairVector& GetPairVector() const;
             void ClearPairs();
@@ -86,8 +88,8 @@ namespace Katydid
          public:
              //void ProcessHeader(const KTEggHeader* header);
              void ProcessEvent(KTEvent* event);
-             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
-             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
+             //void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+             //void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
     };
 
@@ -114,7 +116,7 @@ namespace Katydid
         return;
     }
 
-    inline const KTWignerVille::PairVector& KTCorrelator::GetPairVector() const
+    inline const KTWignerVille::PairVector& KTWignerVille::GetPairVector() const
     {
         return fPairs;
     }

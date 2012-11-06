@@ -8,9 +8,11 @@
 #include "KTWignerVille.hh"
 
 #include "KTComplexFFTW.hh"
+#include "KTEvent.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesPairedData.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
@@ -52,8 +54,8 @@ namespace Katydid
         RegisterSignal("wigner-ville", &fWVSignal, "void (const KTWriteableData*)");
 
         //RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("fs-data", this, &KTWignerVille::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
+        //RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        //RegisterSlot("fs-data", this, &KTWignerVille::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event", this, &KTWignerVille::ProcessEvent, "void (KTEvent*)");
     }
 
@@ -194,9 +196,9 @@ namespace Katydid
 
 
 
-        KTDEBUG(fftlog_comp, "W-V transform complete; " << newTSData->GetNTimeSeries() << " channel(s) transformed");
+        KTDEBUG(fftlog_comp, "W-V transform complete; " << aaTSData->GetNTimeSeries() << " channel(s) transformed");
 
-        return newTSData;
+        return aaTSData;
     }
 /*
     KTTimeSeriesFFTW* KTWignerVille::Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
@@ -306,7 +308,8 @@ namespace Katydid
         UInt_t iBin2 = size - 1;
         for (UInt_t iBin1 = 0; iBin1 < size; iBin1++)
         {
-            data1(iBin1) = data1(iBin1) * data2(iBin2);
+            (*product)(iBin1)[0] = (*data1)(iBin1)[0] * (*data2)(iBin2)[0] - (*data1)(iBin1)[1] * (*data2)(iBin2)[1];
+            (*product)(iBin1)[1] = (*data1)(iBin1)[0] * (*data2)(iBin2)[1] + (*data1)(iBin1)[1] * (*data2)(iBin2)[0];
             iBin2--;
         }
 

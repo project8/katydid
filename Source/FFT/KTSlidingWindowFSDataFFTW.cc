@@ -7,7 +7,7 @@
 
 #include "KTSlidingWindowFSDataFFTW.hh"
 
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTWriter.hh"
 
 using std::vector;
@@ -31,8 +31,8 @@ namespace Katydid
     {
         while (! fSpectra.empty())
         {
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* backSpectra = fSpectra.back();
-            for (KTPhysicalArray< 1, KTFrequencySpectrum* >::iterator iter = backSpectra->begin(); iter != backSpectra->end(); iter++)
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* backSpectra = fSpectra.back();
+            for (KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >::iterator iter = backSpectra->begin(); iter != backSpectra->end(); iter++)
             {
                 delete *iter;
             }
