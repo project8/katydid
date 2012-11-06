@@ -16,6 +16,8 @@ namespace Katydid
     class KTEvent;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
+    class KTSlidingWindowFFTW;
+    class KTSlidingWindowFSDataFFTW;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
     class KTWriteableData;
@@ -34,8 +36,13 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            Bool_t GetSaveFrequencySpectrum() const;
-            void SetSaveFrequencySpectrum(Bool_t flag);
+            Bool_t GetSaveAAFrequencySpectrum() const;
+            Bool_t GetSaveAnalyticAssociate() const;
+            Bool_t GetSaveCrossMultipliedTimeSeries() const;
+
+            void SetSaveAAFrequencySpectrum(Bool_t flag);
+            void SetSaveAnalyticAssociate(Bool_t flag);
+            void SetSaveCrossMultipliedTimeSeries(Bool_t flag);
 
             void AddPair(const KTWVPair& pair);
             void SetPairVector(const PairVector& pairs);
@@ -48,14 +55,17 @@ namespace Katydid
 
         protected:
             KTComplexFFTW* fFullFFT;
+            KTSlidingWindowFFTW* fWindowedFFT;
 
-            Bool_t fSaveFrequencySpectrum;
+            Bool_t fSaveAAFrequencySpectrum;
+            Bool_t fSaveAnalyticAssociate;
+            Bool_t fSaveCrossMultipliedTimeSeries;
 
         public:
             /// Performs the W-V transform on the given time series data.
             /// In the process, the data is FFTed, and then reverse FFTed; if you want to keep the intermediate frequency spectrum, pass a KTFrequencySpectrumDataFFTW** as the second parameter..
             /// @note A frequency spectrum data object can still be returned even if the full W-V transform fails!
-            KTTimeSeriesData* TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData=NULL);
+            KTSlidingWindowFSDataFFTW* TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData=NULL, KTTimeSeriesData** outputAAData=NULL, KTTimeSeriesData** outputCMTSData=NULL);
 
             /// Performs the W-V transform on the given time series.
             /// In the process, the data is FFTed, and then reverse FFTed. If you want to keep the intermediate frequency spectrum, pass a KTFrequencySpectrumFFTW** as the second parameter.
@@ -87,20 +97,42 @@ namespace Katydid
 
          public:
              //void ProcessHeader(const KTEggHeader* header);
-             void ProcessEvent(KTEvent* event);
+             void ProcessEvent(KTEvent* event, const std::string& dataName="");
              //void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
              //void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
     };
 
-    inline Bool_t KTWignerVille::GetSaveFrequencySpectrum() const
+    inline Bool_t KTWignerVille::GetSaveAAFrequencySpectrum() const
     {
-        return fSaveFrequencySpectrum;
+        return fSaveAAFrequencySpectrum;
     }
 
-    inline void KTWignerVille::SetSaveFrequencySpectrum(Bool_t flag)
+    inline void KTWignerVille::SetSaveAAFrequencySpectrum(Bool_t flag)
     {
-        fSaveFrequencySpectrum = flag;
+        fSaveAAFrequencySpectrum = flag;
+        return;
+    }
+
+    inline Bool_t KTWignerVille::GetSaveAnalyticAssociate() const
+    {
+        return fSaveAnalyticAssociate;
+    }
+
+    inline void KTWignerVille::SetSaveAnalyticAssociate(Bool_t flag)
+    {
+        fSaveAnalyticAssociate = flag;
+        return;
+    }
+
+    inline Bool_t KTWignerVille::GetSaveCrossMultipliedTimeSeries() const
+    {
+        return fSaveCrossMultipliedTimeSeries;
+    }
+
+    inline void KTWignerVille::SetSaveCrossMultipliedTimeSeries(Bool_t flag)
+    {
+        fSaveCrossMultipliedTimeSeries = flag;
         return;
     }
 
