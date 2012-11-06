@@ -419,8 +419,16 @@ namespace Katydid
             return;
         }
 
-        KTSlidingWindowFSDataFFTW* newData = TransformData(tsData);
+        //Pass these pointers in case the user wants to save these data.
+        KTFrequencySpectrumDataFFTW* saveAAFreqSpec = NULL;
+        KTTimeSeriesData* saveAA = NULL;
+        KTTimeSeriesData* saveCMTS = NULL;
+
+        KTSlidingWindowFSDataFFTW* newData = TransformData(tsData, &saveAAFreqSpec, &saveAA, &saveCMTS);
         event->AddData(newData);
+        if (fSaveAAFrequencySpectrum) event->AddData(saveAAFreqSpec);
+        if (fSaveAnalyticAssociate) event->AddData(saveAA);
+        if (fSaveCrossMultipliedTimeSeries) event->AddData(saveCMTS);
         return;
     }
 
