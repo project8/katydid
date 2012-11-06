@@ -36,6 +36,9 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
+            KTComplexFFTW* GetFullFFT() const;
+            KTSlidingWindowFFTW* GetWindowedFFT() const;
+
             Bool_t GetSaveAAFrequencySpectrum() const;
             Bool_t GetSaveAnalyticAssociate() const;
             Bool_t GetSaveCrossMultipliedTimeSeries() const;

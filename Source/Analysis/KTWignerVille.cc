@@ -432,5 +432,14 @@ namespace Katydid
         return;
     }
 
+    KTComplexFFTW* KTWignerVille::GetFullFFT() const
+    {
+        return fFullFFT;
+    }
+
+    KTSlidingWindowFFTW* KTWignerVille::GetWindowedFFT() const
+    {
+        return fWindowedFFT;
+    }
 
 } /* namespace Katydid */
