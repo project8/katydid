@@ -80,11 +80,11 @@ namespace Katydid
 
             KTPhysicalArray< 1, KTFrequencySpectrum* >* Transform(const KTTimeSeriesReal* data) const;
 
-            /// for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
+            virtual Double_t GetMinFrequency(Double_t timeBinWidth) const;
+            virtual Double_t GetMaxFrequency(Double_t timeBinWidth) const;
 
-            UInt_t GetWindowSize() const;
             UInt_t GetOverlap() const;
             UInt_t GetEffectiveOverlap() const;
             Double_t GetOverlapFrac() const;
@@ -158,6 +158,16 @@ namespace Katydid
         return CalculateNFrequencyBins(fWindowFunction->GetSize());
     }
 
+    inline Double_t KTSlidingWindowFFT::GetMinFrequency(Double_t timeBinWidth) const
+    {
+        return -0.5 * GetFrequencyBinWidth(timeBinWidth);
+    }
+
+    inline Double_t KTSlidingWindowFFT::GetMaxFrequency(Double_t timeBinWidth) const
+    {
+        return GetFrequencyBinWidth(timeBinWidth) * ((Double_t)GetFrequencySize() - 0.5);
+    }
+
     inline const std::string& KTSlidingWindowFFT::GetTransformFlag() const
     {
         return fTransformFlag;
@@ -192,11 +202,6 @@ namespace Katydid
     inline KTEventWindowFunction* KTSlidingWindowFFT::GetWindowFunction() const
     {
         return fWindowFunction;
-    }
-
-    inline UInt_t KTSlidingWindowFFT::GetWindowSize() const
-    {
-        return (UInt_t)fWindowFunction->GetSize();
     }
 
     inline void KTSlidingWindowFFT::SetTransformFlag(const std::string& flag)

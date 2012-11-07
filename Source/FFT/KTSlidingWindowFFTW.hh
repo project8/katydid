@@ -80,9 +80,11 @@ namespace Katydid
 
             KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* Transform(const KTTimeSeriesFFTW* data) const;
 
-            /// for this FFT, the "TimeSize" is the window size. The "FullTimeSize" is different.
+            UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
+            virtual Double_t GetMinFrequency(Double_t timeBinWidth) const;
+            virtual Double_t GetMaxFrequency(Double_t timeBinWidth) const;
 
             UInt_t GetWindowSize() const;
             UInt_t GetOverlap() const;
@@ -105,7 +107,6 @@ namespace Katydid
             void SetWindowFunction(KTEventWindowFunction* wf);
 
         protected:
-            UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
             virtual KTFrequencySpectrumFFTW* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
@@ -145,17 +146,39 @@ namespace Katydid
 
     };
 
-
-    inline UInt_t KTSlidingWindowFFTW::GetTimeSize() const
+    inline UInt_t KTSlidingWindowFFTW::GetSize() const
     {
         if (fWindowFunction == NULL) return 0;
         return fWindowFunction->GetSize();
     }
 
+    inline UInt_t KTSlidingWindowFFTW::GetTimeSize() const
+    {
+        return GetSize();
+    }
+
     inline UInt_t KTSlidingWindowFFTW::GetFrequencySize() const
     {
-        return CalculateNFrequencyBins(fWindowFunction->GetSize());
+        return GetSize();
     }
+
+    inline Double_t KTSlidingWindowFFTW::GetMinFrequency(Double_t timeBinWidth) const
+    {
+        // There's one bin at the center, always: the DC bin.
+        // # of bins on the negative side is nFreqBins/2 (rounded down because of integer division).
+        // 0.5 is added to the # of bins because of the half of the DC bin on the negative frequency side.
+        return -GetFrequencyBinWidth(timeBinWidth) * (Double_t(GetSize()/2) + 0.5);
+    }
+
+    inline Double_t KTSlidingWindowFFTW::GetMaxFrequency(Double_t timeBinWidth) const
+    {
+        // There's one bin at the center, always: the DC bin.
+        // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
+        // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
+        UInt_t nBins = GetSize();
+        UInt_t nBinsToSide = nBins / 2;
+        return GetFrequencyBinWidth(timeBinWidth) * (Double_t(nBinsToSide*2 == nBins ? nBinsToSide - 1 : nBinsToSide) + 0.5);
+   }
 
     inline const std::string& KTSlidingWindowFFTW::GetTransformFlag() const
     {
@@ -191,12 +214,6 @@ namespace Katydid
     inline KTEventWindowFunction* KTSlidingWindowFFTW::GetWindowFunction() const
     {
         return fWindowFunction;
-    }
-
-    inline UInt_t KTSlidingWindowFFTW::GetWindowSize() const
-    {
-        if (fWindowFunction == NULL) return 0;
-        return (UInt_t)fWindowFunction->GetSize();
     }
 
     inline void KTSlidingWindowFFTW::SetTransformFlag(const std::string& flag)
@@ -236,12 +253,6 @@ namespace Katydid
     {
         fUseOverlapFrac = useOverlapFrac;
         return;
-    }
-
-    inline UInt_t KTSlidingWindowFFTW::CalculateNFrequencyBins(UInt_t nTimeBins) const
-    {
-        // Integer division is rounded down, per FFTW's instructions
-        return nTimeBins / 2 + 1;
     }
 
 } /* namespace Katydid */

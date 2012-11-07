@@ -259,22 +259,17 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
     {
-        UInt_t nTimeBins = data->size();
-        if (nTimeBins != fSize)
+        UInt_t nBins = data->size();
+        if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fSize << ";   Bins in data: " << nTimeBins);
+                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
             return NULL;
         }
 
-        Bool_t isEven = (GetFrequencySize() % 2) == 0;
-        UInt_t nBins = GetFrequencySize();
-        UInt_t nBinsToSide = nBins / 2;
-        UInt_t nBinsToNegSide = nBinsToSide;
-        UInt_t nBinsToPosSide = isEven ? nBinsToSide - 1 : nBinsToSide;
-        Double_t freqBinWidth = 1. / (data->GetBinWidth() * (Double_t)nTimeBins);
-        Double_t freqMin = -freqBinWidth * Double_t(nBinsToNegSide);
-        Double_t freqMax = freqBinWidth * Double_t(nBinsToPosSide);
+        Double_t timeBinWidth = data->GetTimeBinWidth();
+        Double_t freqMin = GetMinFrequency(timeBinWidth);
+        Double_t freqMax = GetMaxFrequency(timeBinWidth);
 
         KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
 
@@ -287,28 +282,19 @@ namespace Katydid
 
     KTTimeSeriesFFTW* KTComplexFFTW::Transform(const KTFrequencySpectrumFFTW* data) const
     {
-        UInt_t nTimeBins = data->size();
-        if (nTimeBins != fSize)
+        UInt_t nBins = data->size();
+        if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fSize << ";   Bins in data: " << nTimeBins);
+                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
             return NULL;
         }
 
-        Bool_t isEven = (GetFrequencySize() % 2) == 0;
-        UInt_t nBins = GetFrequencySize();
-        UInt_t nBinsToSide = nBins / 2;
-        UInt_t nBinsToNegSide = nBinsToSide;
-        UInt_t nBinsToPosSide = isEven ? nBinsToSide - 1 : nBinsToSide;
-        Double_t freqBinWidth = 1. / (data->GetBinWidth() * (Double_t)nTimeBins);
-        Double_t freqMin = -freqBinWidth * Double_t(nBinsToNegSide);
-        Double_t freqMax = freqBinWidth * Double_t(nBinsToPosSide);
-
-        KTTimeSeriesFFTW* newRecord = new KTTimeSeriesFFTW(nBins, freqMin, freqMax);
+        KTTimeSeriesFFTW* newRecord = new KTTimeSeriesFFTW(nBins, GetMinTime(), GetMaxTime(data->GetBinWidth()));
 
         fftw_execute_dft(fReversePlan, data->GetData(), newRecord->GetData());
 
-        (*newRecord) *= sqrt(1. / fSize);
+        (*newRecord) *= sqrt(1. / Double_t(fSize));
 
         return newRecord;
     }

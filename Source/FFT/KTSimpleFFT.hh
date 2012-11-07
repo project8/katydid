@@ -88,6 +88,8 @@ namespace Katydid
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
+            virtual Double_t GetMinFrequency(Double_t timeBinWidth) const;
+            virtual Double_t GetMaxFrequency(Double_t timeBinWidth) const;
 
             /// note: SetTimeSize creates a new fTransform.
             ///       It also sets fIsInitialized to kFALSE.
@@ -141,6 +143,16 @@ namespace Katydid
     inline UInt_t KTSimpleFFT::GetFrequencySize() const
     {
         return CalculateNFrequencyBins(fTimeSize);
+    }
+
+    inline Double_t KTSimpleFFT::GetMinFrequency(Double_t timeBinWidth) const
+    {
+        return -0.5 * GetFrequencyBinWidth(timeBinWidth);
+    }
+
+    inline Double_t KTSimpleFFT::GetMaxFrequency(Double_t timeBinWidth) const
+    {
+        return GetFrequencyBinWidth(timeBinWidth) * ((Double_t)GetFrequencySize() - 0.5);
     }
 
     inline const std::string& KTSimpleFFT::GetTransformFlag() const

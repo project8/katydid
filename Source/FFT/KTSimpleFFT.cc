@@ -177,15 +177,13 @@ namespace Katydid
             return NULL;
         }
 
-        Double_t freqBinWidth = 1. / (data->GetBinWidth() * (Double_t)nTimeBins);
-        Double_t freqMin = -0.5 * freqBinWidth;
-        Double_t freqMax = freqBinWidth * ((Double_t)GetFrequencySize() - 0.5);
+        Double_t timeBinWidth = data->GetTimeBinWidth();
 
         copy(data->begin(), data->end(), fInputArray);
 
         fftw_execute(fFTPlan);
 
-        return ExtractTransformResult(freqMin, freqMax);
+        return ExtractTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
     }
 
     KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const

@@ -216,13 +216,12 @@ namespace Katydid
             UInt_t nTimeBinsNotUsed = dataSize - nTimeBinsUsed;
 
             // Characteristics of the frequency spectrum
-            Double_t timeBinWidth = data->GetBinWidth();
-            Double_t freqBinWidth = GetFrequencyBinWidth(timeBinWidth);
+            Double_t timeBinWidth = data->GetTimeBinWidth();
             Double_t freqMin = GetMinFrequency(timeBinWidth);
             Double_t freqMax = GetMaxFrequency(timeBinWidth);
 
             Double_t timeMin = 0.;
-            Double_t timeMax = nTimeBinsUsed * fWindowFunction->GetBinWidth();
+            Double_t timeMax = nTimeBinsUsed * timeBinWidth;
             KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nWindows, timeMin, timeMax);
 
             KTDEBUG(fftlog_sw, "Performing windowed FFT\n"
