@@ -31,7 +31,7 @@ namespace Katydid
     {
         public:
             KTRectangularWindow();
-            KTRectangularWindow(const KTTimeSeriesChannelData* tsData);
+            KTRectangularWindow(const KTTimeSeriesData* tsData);
             virtual ~KTRectangularWindow();
 
             virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node);

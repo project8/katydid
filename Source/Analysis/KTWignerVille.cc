@@ -45,8 +45,8 @@ namespace Katydid
 
     KTWignerVille::KTWignerVille() :
             KTProcessor(),
-            fFullFFT(NULL),
-            fWindowedFFT(NULL),
+            fFullFFT(new KTComplexFFTW()),
+            fWindowedFFT(new KTSlidingWindowFFTW()),
             fSaveAAFrequencySpectrum(false),
             fSaveAnalyticAssociate(false),
             fSaveCrossMultipliedTimeSeries(false),
@@ -117,10 +117,18 @@ namespace Katydid
             KTERROR(wvlog, "Full FFT is not initialized; cannot perform the transform.");
             return NULL;
         }
+        if (! fFullFFT->GetIsInitialized()) fFullFFT->InitializeFFT();
 
         if (fWindowedFFT == NULL)
         {
             KTERROR(wvlog, "Windowed FFT is not initialized; cannot perform the transform.");
+            return NULL;
+        }
+        if (! fWindowedFFT->GetIsInitialized()) fWindowedFFT->InitializeFFT();
+
+        if (fPairs.empty())
+        {
+            KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
             return NULL;
         }
 

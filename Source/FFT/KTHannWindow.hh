@@ -40,7 +40,7 @@ namespace Katydid
     {
         public:
             KTHannWindow();
-            KTHannWindow(const KTTimeSeriesChannelData* tsData);
+            KTHannWindow(const KTTimeSeriesData* tsData);
             virtual ~KTHannWindow();
 
             virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node);

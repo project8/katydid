@@ -25,13 +25,12 @@ using std::vector;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTSlidingWindowFFTW > sSWFFTRegistrar("sliding-window-fft");
+    static KTDerivedRegistrar< KTProcessor, KTSlidingWindowFFTW > sSWFFTRegistrar("sliding-window-fftw");
 
     KTSlidingWindowFFTW::KTSlidingWindowFFTW() :
             KTFFT(),
             KTProcessor(),
-            fFTPlan(),
-            fTimeSize(0),
+            fFTPlan(NULL),
             fInputArray(NULL),
             fOutputArray(NULL),
             fTransformFlag("MEASURE"),
@@ -56,6 +55,7 @@ namespace Katydid
 
     KTSlidingWindowFFTW::~KTSlidingWindowFFTW()
     {
+        fftw_destroy_plan(fFTPlan);
         if (fInputArray != NULL) fftw_free(fInputArray);
         if (fOutputArray != NULL) fftw_free(fOutputArray);
         delete fWindowFunction;
@@ -137,17 +137,28 @@ namespace Katydid
 
     void KTSlidingWindowFFTW::InitializeFFT()
     {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw, "No window function has been set. The FFT has not been initialized.");
+            return;
+        }
+
         // fTransformFlag is guaranteed to be valid in the Set method.
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         Int_t transformFlag = iter->second;
 
-        fFTPlan = fftw_plan_dft_1d(fTimeSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag);
+        KTDEBUG(fftlog_sw, "Creating plan: " << fWindowFunction->GetSize() << " bins; forward FFT");
+        if (fFTPlan != NULL)
+            fftw_destroy_plan(fFTPlan);
+        fFTPlan = fftw_plan_dft_1d(fWindowFunction->GetSize(), fInputArray, fOutputArray, FFTW_FORWARD, transformFlag);
         if (fFTPlan != NULL)
         {
+            KTDEBUG(fftlog_sw, "FFTW plan created");
             fIsInitialized = true;
         }
         else
         {
+            KTWARN(fftlog_sw, "Unable to create FFTW plan!");
             fIsInitialized = false;
         }
         return;
@@ -158,7 +169,7 @@ namespace Katydid
         if (! fIsInitialized)
         {
             KTWARN(fftlog_sw, "FFT must be initialized before the transform is performed.\n" <<
-                    "Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
+                    "Please first call InitializeFFT(), and then perform the transform.");
             return NULL;
         }
 
@@ -248,6 +259,11 @@ namespace Katydid
 
     void KTSlidingWindowFFTW::SetWindowSize(UInt_t nBins)
     {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw, "Window function has not been set.");
+            return;
+        }
         fWindowFunction->SetSize(nBins);
         RecreateFFT();
         return;
@@ -255,6 +271,11 @@ namespace Katydid
 
     void KTSlidingWindowFFTW::SetWindowLength(Double_t wlTime)
     {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw, "Window function has not been set.");
+            return;
+        }
         fWindowFunction->SetLength(wlTime);
         RecreateFFT();
         return;
@@ -270,11 +291,17 @@ namespace Katydid
 
     void KTSlidingWindowFFTW::RecreateFFT()
     {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw, "No window function has been set. The FFT has not been recreated.");
+            return;
+        }
+
         fftw_destroy_plan(fFTPlan);
         fftw_free(fInputArray);
         fftw_free(fOutputArray);
-        fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
-        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
+        fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fWindowFunction->GetSize());
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fWindowFunction->GetSize()));
         fIsInitialized = false;
     }
 

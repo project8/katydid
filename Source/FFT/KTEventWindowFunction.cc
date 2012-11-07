@@ -13,7 +13,7 @@
 #include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
 #include "KTSimpleFFT.hh"
-#include "KTTimeSeriesChannelData.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
 
 #ifdef ROOT_FOUND
@@ -37,11 +37,11 @@ namespace Katydid
     {
     }
 
-    KTEventWindowFunction::KTEventWindowFunction(const KTTimeSeriesChannelData* tsData) :
+    KTEventWindowFunction::KTEventWindowFunction(const KTTimeSeriesData* tsData) :
             KTWindowFunction(),
             fWindowFunction(1),
             fLength(1.),
-            fBinWidth(tsData->GetBinWidth()),
+            fBinWidth(tsData->GetTimeSeries(0)->GetTimeBinWidth()),
             fSize(1)
     {
         fSize = (UInt_t)KTMath::Nint(fLength / fBinWidth);
@@ -57,14 +57,14 @@ namespace Katydid
         return ConfigureEventWindowFunctionSubclass(node);
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesChannelData* tsData)
+    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
     {
-        return this->SetBinWidth(tsData->GetBinWidth());
+        return this->SetBinWidth(tsData->GetTimeSeries(0)->GetTimeBinWidth());
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesChannelData* tsData, Double_t length)
+    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesData* tsData, Double_t length)
     {
-        return this->SetBinWidthAndLength(tsData->GetBinWidth(), length);
+        return this->SetBinWidthAndLength(tsData->GetTimeSeries(0)->GetTimeBinWidth(), length);
     }
 
 #ifdef ROOT_FOUND
