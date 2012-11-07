@@ -28,8 +28,7 @@ namespace Katydid
     KTSlidingWindowFFT::KTSlidingWindowFFT() :
             KTFFT(),
             KTProcessor(),
-            fFTPlan(),
-            fTimeSize(0),
+            fFTPlan(NULL),
             fInputArray(NULL),
             fOutputArray(NULL),
             fTransformFlag("MEASURE"),
@@ -54,10 +53,10 @@ namespace Katydid
 
     KTSlidingWindowFFT::~KTSlidingWindowFFT()
     {
+        fftw_destroy_plan(fFTPlan);
         if (fInputArray != NULL) fftw_free(fInputArray);
         if (fOutputArray != NULL) fftw_free(fOutputArray);
         delete fWindowFunction;
-        //ClearPowerSpectra();
     }
 
     Bool_t KTSlidingWindowFFT::Configure(const KTPStoreNode* node)
@@ -137,17 +136,28 @@ namespace Katydid
 
     void KTSlidingWindowFFT::InitializeFFT()
     {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw, "No window function has been set. The FFT has not been initialized.");
+            return;
+        }
+
         // fTransformFlag is guaranteed to be valid in the Set method.
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         Int_t transformFlag = iter->second;
 
-        fFTPlan = fftw_plan_dft_r2c_1d(fTimeSize, fInputArray, fOutputArray, transformFlag);
+        KTDEBUG(fftlog_sw, "Creating plan: " << fWindowFunction->GetSize() << " bins; forward FFT");
+        if (fFTPlan != NULL)
+            fftw_destroy_plan(fFTPlan);
+        fFTPlan = fftw_plan_dft_r2c_1d(fWindowFunction->GetSize(), fInputArray, fOutputArray, transformFlag);
         if (fFTPlan != NULL)
         {
+            KTDEBUG(fftlog_sw, "FFTW plan created");
             fIsInitialized = true;
         }
         else
         {
+            KTWARN(fftlog_sw, "Unable to create FFTW plan!");
             fIsInitialized = false;
         }
         return;
@@ -158,7 +168,7 @@ namespace Katydid
         if (! fIsInitialized)
         {
             KTWARN(fftlog_sw, "FFT must be initialized before the transform is performed.\n" <<
-                    "Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
+                    "Please first call InitializeFFT(), and then perform the transform.");
             return NULL;
         }
 
@@ -194,25 +204,37 @@ namespace Katydid
 
     KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFFT::Transform(const KTTimeSeriesReal* data) const
     {
-        UInt_t nTimeBins = fWindowFunction->GetSize();
-        if (nTimeBins < data->size())
+        // # of time bins in each FFT, and the number of bins in the data
+        UInt_t windowSize = fWindowFunction->GetSize();
+        UInt_t dataSize = data->size();
+        if (windowSize < dataSize)
         {
-            UInt_t windowShift = nTimeBins - GetEffectiveOverlap();
-            UInt_t nWindows = (data->size() - nTimeBins) / windowShift + 1; // integer arithmetic gets truncated to the nearest integer
-            UInt_t nTimeBinsNotUsed = data->size() - (nWindows - 1) * windowShift + fWindowFunction->GetSize();
+            // Characteristics of the whole windowed FFT
+            UInt_t windowShift = windowSize - GetEffectiveOverlap();
+            UInt_t nWindows = (dataSize - windowSize) / windowShift + 1; // integer arithmetic gets truncated to the nearest integer
+            UInt_t nTimeBinsUsed = windowSize + (nWindows - 1) * windowShift;
+            UInt_t nTimeBinsNotUsed = dataSize - nTimeBinsUsed;
 
+            // Characteristics of the frequency spectrum
             Double_t timeBinWidth = data->GetBinWidth();
             Double_t freqBinWidth = GetFrequencyBinWidth(timeBinWidth);
             Double_t freqMin = GetMinFrequency(timeBinWidth);
             Double_t freqMax = GetMaxFrequency(timeBinWidth);
 
             Double_t timeMin = 0.;
-            Double_t timeMax = ((nWindows - 1) * windowShift + fWindowFunction->GetSize()) * fWindowFunction->GetBinWidth();
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(data->size(), timeMin, timeMax);
+            Double_t timeMax = nTimeBinsUsed * fWindowFunction->GetBinWidth();
+            KTPhysicalArray< 1, KTFrequencySpectrum* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(nWindows, timeMin, timeMax);
+
+            KTDEBUG(fftlog_sw, "Performing windowed FFT\n"
+                    << "\tWindow size: " << windowSize << '\n'
+                    << "\tWindow shift: " << windowShift << '\n'
+                    << "\t# of windows: " << nWindows << '\n'
+                    << "\t# of unused bins: " << nTimeBinsNotUsed)
 
             UInt_t windowStart = 0;
             for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
             {
+                KTDEBUG(fftlog_sw, "Window: " << iWindow << "; first bin: " << windowStart);
                 copy(data->begin() + windowStart, data->begin() + windowStart + fWindowFunction->GetSize(), fInputArray);
                 fftw_execute(fFTPlan);
                 (*newSpectra)(iWindow) = ExtractTransformResult(freqMin, freqMax);
@@ -224,7 +246,7 @@ namespace Katydid
             return newSpectra;
        }
 
-       KTERROR(fftlog_sw, "Window size is larger than time data: " << nTimeBins << " > " << data->size() << "\n" <<
+       KTERROR(fftlog_sw, "Window size is larger than time data: " << windowSize << " > " << dataSize << "\n" <<
               "No transform was performed!");
        throw(std::length_error("Window size is larger than time data"));
        return NULL;
@@ -248,6 +270,11 @@ namespace Katydid
 
     void KTSlidingWindowFFT::SetWindowSize(UInt_t nBins)
     {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw, "Window function has not been set.");
+            return;
+        }
         fWindowFunction->SetSize(nBins);
         RecreateFFT();
         return;
@@ -255,6 +282,11 @@ namespace Katydid
 
     void KTSlidingWindowFFT::SetWindowLength(Double_t wlTime)
     {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw, "Window function has not been set.");
+            return;
+        }
         fWindowFunction->SetLength(wlTime);
         RecreateFFT();
         return;
@@ -270,11 +302,18 @@ namespace Katydid
 
     void KTSlidingWindowFFT::RecreateFFT()
     {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw, "No window function has been set. The FFT has not been recreated.");
+            return;
+        }
+
         fftw_destroy_plan(fFTPlan);
+        fFTPlan = NULL;
         fftw_free(fInputArray);
         fftw_free(fOutputArray);
-        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
-        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
+        fInputArray = (double*) fftw_malloc(sizeof(double) * fWindowFunction->GetSize());
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fWindowFunction->GetSize()));
         fIsInitialized = false;
     }
 

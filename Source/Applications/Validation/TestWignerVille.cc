@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     KTINFO(testwv, "Test of hatching egg file <" << filename << ">");
 
     KTEgg egg;
-    UInt_t recordSize = 500000;
+    UInt_t recordSize = 50000;
     KTINFO(testwv, "Record size will be " << recordSize << " (if 0, it should be the same as the Monarch record size)");
     KTEggReaderMonarch* reader = new KTEggReaderMonarch();
     reader->SetTimeSeriesSizeRequest(recordSize);
@@ -125,7 +125,6 @@ int main(int argc, char** argv)
     }
 
     KTINFO(testwv, "Test complete; cleaning up");
-    KTDEBUG(testwv, "some addresses: " << &egg << "  " << wvData << "  " << event);
     egg.CloseEgg();
     delete wvData;
     delete event;

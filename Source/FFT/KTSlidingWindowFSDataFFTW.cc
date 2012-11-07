@@ -9,8 +9,6 @@
 
 #include "KTWriter.hh"
 
-#include <iostream>
-
 using std::vector;
 
 namespace Katydid
@@ -44,7 +42,6 @@ namespace Katydid
 
     void KTSlidingWindowFSDataFFTW::Accept(KTWriter* writer) const
     {
-        std::cout << "accept in sliding window fs data fftw" << std::endl;
         writer->Write(this);
         return;
     }

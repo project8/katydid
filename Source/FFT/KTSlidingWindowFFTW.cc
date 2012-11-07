@@ -59,7 +59,6 @@ namespace Katydid
         if (fInputArray != NULL) fftw_free(fInputArray);
         if (fOutputArray != NULL) fftw_free(fOutputArray);
         delete fWindowFunction;
-        //ClearPowerSpectra();
     }
 
     Bool_t KTSlidingWindowFFTW::Configure(const KTPStoreNode* node)
@@ -180,7 +179,7 @@ namespace Katydid
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData->GetTimeSeries(iChannel));
             if (nextInput == NULL)
             {
-                KTERROR(fftlog_sw, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
+                KTERROR(fftlog_sw, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
                 return NULL;
             }
             KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newResults = NULL;
@@ -205,27 +204,38 @@ namespace Katydid
 
     KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTSlidingWindowFFTW::Transform(const KTTimeSeriesFFTW* data) const
     {
-        UInt_t nTimeBins = fWindowFunction->GetSize();
-        if (nTimeBins < data->size())
+        // # of time bins in each FFT, and the number of bins in the data
+        UInt_t windowSize = fWindowFunction->GetSize();
+        UInt_t dataSize = data->size();
+        if (windowSize < dataSize)
         {
-            UInt_t windowShift = nTimeBins - GetEffectiveOverlap();
-            UInt_t nWindows = (data->size() - nTimeBins) / windowShift + 1; // integer arithmetic gets truncated to the nearest integer
-            UInt_t nTimeBinsNotUsed = data->size() - (nWindows - 1) * windowShift + fWindowFunction->GetSize();
+            // Characteristics of the whole windowed FFT
+            UInt_t windowShift = windowSize - GetEffectiveOverlap();
+            UInt_t nWindows = (dataSize - windowSize) / windowShift + 1; // integer arithmetic gets truncated to the nearest integer
+            UInt_t nTimeBinsUsed = windowSize + (nWindows - 1) * windowShift;
+            UInt_t nTimeBinsNotUsed = dataSize - nTimeBinsUsed;
 
+            // Characteristics of the frequency spectrum
             Double_t timeBinWidth = data->GetBinWidth();
             Double_t freqBinWidth = GetFrequencyBinWidth(timeBinWidth);
             Double_t freqMin = GetMinFrequency(timeBinWidth);
             Double_t freqMax = GetMaxFrequency(timeBinWidth);
 
             Double_t timeMin = 0.;
-            Double_t timeMax = ((nWindows - 1) * windowShift + fWindowFunction->GetSize()) * fWindowFunction->GetBinWidth();
-            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(data->size(), timeMin, timeMax);
+            Double_t timeMax = nTimeBinsUsed * fWindowFunction->GetBinWidth();
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nWindows, timeMin, timeMax);
+
+            KTDEBUG(fftlog_sw, "Performing windowed FFT\n"
+                    << "\tWindow size: " << windowSize << '\n'
+                    << "\tWindow shift: " << windowShift << '\n'
+                    << "\t# of windows: " << nWindows << '\n'
+                    << "\t# of unused bins: " << nTimeBinsNotUsed)
 
             UInt_t windowStart = 0;
             for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
             {
-                //copy(data->begin() + windowStart, data->begin() + windowStart + fWindowFunction->GetSize(), fInputArray);
-                std::memcpy(data->GetData() + windowStart, fInputArray, fWindowFunction->GetSize() * sizeof(fftw_complex));
+                KTDEBUG(fftlog_sw, "Window: " << iWindow << "; first bin: " << windowStart);
+                std::memcpy(data->GetData() + windowStart, fInputArray, windowSize * sizeof(fftw_complex));
                 fftw_execute(fFTPlan);
                 (*newSpectra)(iWindow) = ExtractTransformResult(freqMin, freqMax);
                 // emit a signal that the FFT was performed, for any connected slots
@@ -236,7 +246,7 @@ namespace Katydid
             return newSpectra;
        }
 
-       KTERROR(fftlog_sw, "Window size is larger than time data: " << nTimeBins << " > " << data->size() << "\n" <<
+       KTERROR(fftlog_sw, "Window size is larger than time data: " << windowSize << " > " << dataSize << "\n" <<
               "No transform was performed!");
        throw(std::length_error("Window size is larger than time data"));
        return NULL;
@@ -298,6 +308,7 @@ namespace Katydid
         }
 
         fftw_destroy_plan(fFTPlan);
+        fFTPlan = NULL;
         fftw_free(fInputArray);
         fftw_free(fOutputArray);
         fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fWindowFunction->GetSize());

@@ -110,7 +110,6 @@ namespace Katydid
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;
-            UInt_t fTimeSize;
             Double_t* fInputArray;
             fftw_complex* fOutputArray;
 
@@ -149,12 +148,14 @@ namespace Katydid
 
     inline UInt_t KTSlidingWindowFFT::GetTimeSize() const
     {
-        return fTimeSize;
+        if (fWindowFunction == NULL) return 0;
+        return fWindowFunction->GetSize();
     }
 
     inline UInt_t KTSlidingWindowFFT::GetFrequencySize() const
     {
-        return CalculateNFrequencyBins(fTimeSize);
+        if (fWindowFunction == NULL) return 0;
+        return CalculateNFrequencyBins(fWindowFunction->GetSize());
     }
 
     inline const std::string& KTSlidingWindowFFT::GetTransformFlag() const
@@ -202,7 +203,7 @@ namespace Katydid
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
         {
-            KTWARN(fftlog_sw, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
+            KTWARN(fftlog_sw, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
             return;
         }
         fTransformFlag = flag;

@@ -36,8 +36,8 @@ namespace Katydid
             fNegFreqOffset(nBins/2),
             fDCBin((nBins+1)/2)
     {
-        KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
-        KTINFO(fslog, "neg freq offset: " << fNegFreqOffset);
+        //KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
+        //KTINFO(fslog, "neg freq offset: " << fNegFreqOffset);
     }
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
