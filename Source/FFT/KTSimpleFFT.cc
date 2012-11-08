@@ -46,7 +46,7 @@ namespace Katydid
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
-        RegisterSlot("event-named-data", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*, const string&)");
+        RegisterSlot("event-named-data", this, &KTSimpleFFT::ProcessEventNamedData, "void (KTEvent*, const string&)");
 
         SetupTransformFlagMap();
     }
@@ -240,21 +240,28 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessEvent(KTEvent* event, const string& dataName)
+    void KTSimpleFFT::ProcessEvent(KTEvent* event)
     {
-        const KTTimeSeriesData* tsData = NULL;
-        if (dataName.empty())
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
+
+        if (tsData == NULL)
         {
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
+            KTWARN(fftlog_simp, "No time series data was available in the event");
+            return;
         }
-        else
-        {
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
-        }
+
+        KTFrequencySpectrumData* newData = TransformData(tsData);
+        event->AddData(newData);
+        return;
+    }
+
+    void KTSimpleFFT::ProcessEventNamedData(KTEvent* event, const string& dataName)
+    {
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
 
         if (tsData == NULL)
         {

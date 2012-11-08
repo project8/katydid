@@ -51,8 +51,8 @@ namespace Katydid
         RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event-forward", this, &KTComplexFFTW::ProcessEventForward, "void (KTEvent*)");
         RegisterSlot("event-reverse", this, &KTComplexFFTW::ProcessEventReverse, "void (KTEvent*)");
-        RegisterSlot("event-forward-named-data", this, &KTComplexFFTW::ProcessEventForward, "void (KTEvent*, const string&)");
-        RegisterSlot("event-reverse-named-data", this, &KTComplexFFTW::ProcessEventReverse, "void (KTEvent*, const string&)");
+        RegisterSlot("event-forward-named-data", this, &KTComplexFFTW::ProcessEventNamedDataForward, "void (KTEvent*, const string&)");
+        RegisterSlot("event-reverse-named-data", this, &KTComplexFFTW::ProcessEventNamedDataReverse, "void (KTEvent*, const string&)");
 
         SetupInternalMaps();
     }
@@ -81,8 +81,8 @@ namespace Katydid
         RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event-forward", this, &KTComplexFFTW::ProcessEventForward, "void (KTEvent*)");
         RegisterSlot("event-reverse", this, &KTComplexFFTW::ProcessEventReverse, "void (KTEvent*)");
-        RegisterSlot("event-forward-named-data", this, &KTComplexFFTW::ProcessEventForward, "void (KTEvent*, const string&)");
-        RegisterSlot("event-reverse-named-data", this, &KTComplexFFTW::ProcessEventReverse, "void (KTEvent*, const string&)");
+        RegisterSlot("event-named-data-forward", this, &KTComplexFFTW::ProcessEventNamedDataForward, "void (KTEvent*, const string&)");
+        RegisterSlot("event-named-data-reverse", this, &KTComplexFFTW::ProcessEventNamedDataReverse, "void (KTEvent*, const string&)");
 
         SetupInternalMaps();
     }
@@ -344,22 +344,14 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessEventForward(KTEvent* event, const string& dataName)
+    void KTComplexFFTW::ProcessEventForward(KTEvent* event)
     {
         KTDEBUG(fftlog_comp, "Performing forward FFT of event " << event->GetEventNumber());
-        const KTTimeSeriesData* tsData = NULL;
-        if (dataName.empty())
-        {
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
-        }
-        else
-        {
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
-        }
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
 
         if (tsData == NULL)
         {
@@ -372,18 +364,42 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessEventReverse(KTEvent* event, const string& dataName)
+    void KTComplexFFTW::ProcessEventReverse(KTEvent* event)
     {
         KTDEBUG(fftlog_comp, "Performing reverse FFT of event " << event->GetEventNumber());
-        const KTFrequencySpectrumDataFFTW* fsData = NULL;
-        if (dataName.empty())
+        const KTFrequencySpectrumDataFFTW* fsData = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(KTFrequencySpectrumDataFFTW::StaticGetName()));
+
+        if (fsData == NULL)
         {
-            fsData = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(KTFrequencySpectrumDataFFTW::StaticGetName()));
+            KTWARN(fftlog_comp, "No frequency spectrum data was available in the event");
+            return;
         }
-        else
+
+        KTTimeSeriesData* newData = TransformData(fsData);
+        event->AddData(newData);
+        return;
+    }
+
+    void KTComplexFFTW::ProcessEventNamedDataForward(KTEvent* event, const string& dataName)
+    {
+        KTDEBUG(fftlog_comp, "Performing forward FFT of event " << event->GetEventNumber());
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
+
+        if (tsData == NULL)
         {
-            fsData = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(dataName));
+            KTWARN(fftlog_comp, "No time series data was available in the event");
+            return;
         }
+
+        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
+        event->AddData(newData);
+        return;
+    }
+
+    void KTComplexFFTW::ProcessEventNamedDataReverse(KTEvent* event, const string& dataName)
+    {
+        KTDEBUG(fftlog_comp, "Performing reverse FFT of event " << event->GetEventNumber());
+        const KTFrequencySpectrumDataFFTW* fsData = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(dataName));
 
         if (fsData == NULL)
         {

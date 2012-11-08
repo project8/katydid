@@ -46,7 +46,7 @@ namespace Katydid
         RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSlidingWindowFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (KTEvent*)");
-        RegisterSlot("event-named-data", this, &KTSlidingWindowFFT::ProcessEvent, "void (KTEvent*, const string&)");
+        RegisterSlot("event-named-data", this, &KTSlidingWindowFFT::ProcessEventNamedData, "void (KTEvent*, const string&)");
 
         SetupTransformFlagMap();
     }
@@ -105,21 +105,13 @@ namespace Katydid
     }
 
 
-    void KTSlidingWindowFFT::ProcessEvent(KTEvent* event, const string& dataName)
+    void KTSlidingWindowFFT::ProcessEvent(KTEvent* event)
     {
-        const KTTimeSeriesData* tsData = NULL;
-        if (dataName.empty())
-        {
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
-        }
-        else
-        {
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
-        }
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
 
         if (tsData == NULL)
         {
@@ -132,6 +124,20 @@ namespace Katydid
         return;
     }
 
+    void KTSlidingWindowFFT::ProcessEventNamedData(KTEvent* event, const string& dataName)
+    {
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
+
+        if (tsData == NULL)
+        {
+            KTWARN(fftlog_sw, "No time series data was available in the event");
+            return;
+        }
+
+        KTSlidingWindowFSData* newData = TransformData(tsData);
+        event->AddData(newData);
+        return;
+    }
 
 
     void KTSlidingWindowFFT::InitializeFFT()
