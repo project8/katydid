@@ -234,7 +234,7 @@ namespace Katydid
             for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
             {
                 KTDEBUG(fftlog_sw, "Window: " << iWindow << "; first bin: " << windowStart);
-                std::memcpy(data->GetData() + windowStart, fInputArray, windowSize * sizeof(fftw_complex));
+                memcpy(fInputArray, data->GetData() + windowStart, windowSize * sizeof(fftw_complex));
                 fftw_execute(fFTPlan);
                 (*newSpectra)(iWindow) = ExtractTransformResult(freqMin, freqMax);
                 // emit a signal that the FFT was performed, for any connected slots
@@ -259,8 +259,8 @@ namespace Katydid
         KTFrequencySpectrumFFTW* newSpect = new KTFrequencySpectrumFFTW(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
-            (*newSpect)(iPoint)[0] = fOutputArray[iPoint][0] * normalization;
-            (*newSpect)(iPoint)[1] = fOutputArray[iPoint][1] * normalization;
+            (newSpect->GetData())[iPoint][0] = fOutputArray[iPoint][0] * normalization;
+            (newSpect->GetData())[iPoint][1] = fOutputArray[iPoint][1] * normalization;
         }
 
         return newSpect;
@@ -311,7 +311,7 @@ namespace Katydid
         fftw_free(fInputArray);
         fftw_free(fOutputArray);
         fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fWindowFunction->GetSize());
-        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fWindowFunction->GetSize()));
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fWindowFunction->GetSize());
         fIsInitialized = false;
     }
 
