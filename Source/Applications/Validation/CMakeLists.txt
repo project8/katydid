@@ -67,10 +67,13 @@ if (ENABLE_TESTING)
 
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
     target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
-    
+
+    add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
+    target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis KatydidOutput ${LIBS})
+
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
-    
+
     add_executable (TestWignerVille ${CMAKE_CURRENT_SOURCE_DIR}/TestWignerVille.cc)
     target_link_libraries (TestWignerVille KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis KatydidOutput ${LIBS})
 
@@ -88,6 +91,7 @@ if (ENABLE_TESTING)
                      TestParameterStore
                      TestSignalsAndSlots
                      TestSimpleFFT
+                     TestSlidingWindowFFT
                      TestVector
                      TestWignerVille
     )
@@ -107,6 +111,7 @@ if (ENABLE_TESTING)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     add_test (Test_SimpleFFT TestSimpleFFT)
+    add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     add_test (Test_Vector TestVector)
     add_test (Test_WignerVille TestWignerVille)
     
@@ -116,17 +121,11 @@ if (ENABLE_TESTING)
         add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
         target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
         
-        add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
-        target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
-    
-        
         katydid_install_executables ( 
                     TestBasicROOTFileWriter
-                    TestSlidingWindowFFT
         )
     
         add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)
-        add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     endif (ROOT_FOUND)
         
 endif (ENABLE_TESTING) 
