@@ -8,7 +8,9 @@
 #include "KTWignerVille.hh"
 
 #include "KTComplexFFTW.hh"
+#include "KTEggHeader.hh"
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
@@ -43,6 +45,8 @@ namespace Katydid
 {
     KTLOGGER(wvlog, "katydid.analysis");
 
+    static KTDerivedRegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
+
     KTWignerVille::KTWignerVille() :
             KTProcessor(),
             fFullFFT(new KTComplexFFTW()),
@@ -56,11 +60,11 @@ namespace Katydid
 
         RegisterSignal("wigner-ville", &fWVSignal, "void (const KTWriteableData*)");
 
-        //RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
-        //RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
+        RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         //RegisterSlot("fs-data", this, &KTWignerVille::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event", this, &KTWignerVille::ProcessEvent, "void (KTEvent*)");
-        RegisterSlot("event-named-data", this, &KTWignerVille::ProcessEvent, "void (KTEvent*, const string&)");
+        RegisterSlot("event-named-data", this, &KTWignerVille::ProcessEventNamedData, "void (KTEvent*, const string&)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -117,14 +121,30 @@ namespace Katydid
             KTERROR(wvlog, "Full FFT is not initialized; cannot perform the transform.");
             return NULL;
         }
-        if (! fFullFFT->GetIsInitialized()) fFullFFT->InitializeFFT();
+        if (! fFullFFT->GetIsInitialized())
+        {
+            fFullFFT->InitializeFFT();
+            if (! fFullFFT->GetIsInitialized())
+            {
+                KTERROR(wvlog, "Unable to initialize full FFT.");
+                return NULL;
+            }
+        }
 
         if (fWindowedFFT == NULL)
         {
-            KTERROR(wvlog, "Windowed FFT is not initialized; cannot perform the transform.");
+            KTERROR(wvlog, "Windowed FFT is not present; cannot perform the transform.");
             return NULL;
         }
-        if (! fWindowedFFT->GetIsInitialized()) fWindowedFFT->InitializeFFT();
+        if (! fWindowedFFT->GetIsInitialized())
+        {
+            fWindowedFFT->InitializeFFT();
+            if (! fWindowedFFT->GetIsInitialized())
+            {
+                KTERROR(wvlog, "Unable to initialize windowed FFT.");
+                return NULL;
+            }
+        }
 
         if (fPairs.empty())
         {
@@ -260,6 +280,8 @@ namespace Katydid
 
         KTDEBUG(fftlog_comp, "W-V transform complete; " << newSWFSData->GetNChannels() << " pair(s) transformed");
 
+        fWVSignal(newSWFSData);
+
         return newSWFSData;
     }
 /*
@@ -379,26 +401,47 @@ namespace Katydid
         return product;
     }
 
-
-
-    /*
-    void KTComplexFFTW::ProcessHeader(const KTEggHeader* header)
+    void KTWignerVille::ProcessHeader(const KTEggHeader* header)
     {
-        SetSize(header->GetRecordSize());
-        InitializeFFT();
-        return;
-    }
-    */
-    /*
-    void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
-    {
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        if (tsData->GetEvent() != NULL)
-            tsData->GetEvent()->AddData(newData);
+        fFullFFT->ProcessHeader(header);
+        fWindowedFFT->ProcessHeader(header);
         return;
     }
 
-    void KTComplexFFTW::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
+    void KTWignerVille::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
+    {
+        //Pass these pointers in case the user wants to save these data.
+        KTFrequencySpectrumDataFFTW* saveAAFreqSpec = NULL;
+        KTTimeSeriesData* saveAA = NULL;
+        KTTimeSeriesData* saveCMTS = NULL;
+
+        KTSlidingWindowFSDataFFTW* newData = TransformData(tsData, &saveAAFreqSpec, &saveAA, &saveCMTS);
+
+        if (newData == NULL)
+        {
+            KTERROR(wvlog, "Unable to transform data");
+            return;
+        }
+
+        KTEvent* event = tsData->GetEvent();
+        if (event != NULL)
+        {
+            event->AddData(newData);
+
+            if (fSaveAAFrequencySpectrum) event->AddData(saveAAFreqSpec);
+            else delete saveAAFreqSpec;
+
+            if (fSaveAnalyticAssociate) event->AddData(saveAA);
+            else delete saveAA;
+
+            if (fSaveCrossMultipliedTimeSeries) event->AddData(saveCMTS);
+            else delete saveCMTS;
+        }
+
+        return;
+    }
+    /*
+    void KTWignerVille::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
     {
         KTSlidingWindowFSDataFFTW* newData = TransformData(fsData);
         if (fsData->GetEvent() != NULL)
@@ -406,21 +449,13 @@ namespace Katydid
         return;
     }
     */
-    void KTWignerVille::ProcessEvent(KTEvent* event, const string& dataName)
+    void KTWignerVille::ProcessEvent(KTEvent* event)
     {
-        const KTTimeSeriesData* tsData = NULL;
-        if (dataName.empty())
-        {
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-            if (tsData == NULL)
-                tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
-        }
-        else
-        {
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
-        }
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
+        if (tsData == NULL)
+            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
 
         if (tsData == NULL)
         {
@@ -428,16 +463,21 @@ namespace Katydid
             return;
         }
 
-        //Pass these pointers in case the user wants to save these data.
-        KTFrequencySpectrumDataFFTW* saveAAFreqSpec = NULL;
-        KTTimeSeriesData* saveAA = NULL;
-        KTTimeSeriesData* saveCMTS = NULL;
+        ProcessTimeSeriesData(tsData);
+        return;
+    }
 
-        KTSlidingWindowFSDataFFTW* newData = TransformData(tsData, &saveAAFreqSpec, &saveAA, &saveCMTS);
-        event->AddData(newData);
-        if (fSaveAAFrequencySpectrum) event->AddData(saveAAFreqSpec);
-        if (fSaveAnalyticAssociate) event->AddData(saveAA);
-        if (fSaveCrossMultipliedTimeSeries) event->AddData(saveCMTS);
+    void KTWignerVille::ProcessEventNamedData(KTEvent* event, const string& dataName)
+    {
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
+
+        if (tsData == NULL)
+        {
+            KTWARN(wvlog, "No time series data was available in the event");
+            return;
+        }
+
+        ProcessTimeSeriesData(tsData);
         return;
     }
 

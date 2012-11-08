@@ -13,6 +13,7 @@
 namespace Katydid
 {
     class KTComplexFFTW;
+    class KTEggHeader;
     class KTEvent;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
@@ -99,9 +100,10 @@ namespace Katydid
              //***************
 
          public:
-             //void ProcessHeader(const KTEggHeader* header);
-             void ProcessEvent(KTEvent* event, const std::string& dataName="");
-             //void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+             void ProcessHeader(const KTEggHeader* header);
+             void ProcessEvent(KTEvent* event);
+             void ProcessEventNamedData(KTEvent* event, const std::string& dataName);
+             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
              //void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
     };

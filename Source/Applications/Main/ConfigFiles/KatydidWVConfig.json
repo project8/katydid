@@ -25,6 +25,13 @@
             "connection":
             {
                 "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "wv",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "wv",
                 "slot-name": "event"
@@ -47,7 +54,9 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-events": 1  
+            "number-of-events": 1,
+            "time-series-size": 0,
+            "time-series-type": "fftw"
         },
         
         "wv":
