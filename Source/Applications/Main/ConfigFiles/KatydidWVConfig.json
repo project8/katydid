@@ -1,0 +1,78 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg",
+                "is-top-level": true
+            },
+            "processor":
+            {
+                "type": "wigner-ville",
+                "name": "wv",
+                "is-top-level": true
+            },
+            "processor":
+            {
+                "type": "basic-root-writer",
+                "name": "writer",
+                "is-top-level": true
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "wv",
+                "slot-name": "event"
+            },
+            "connection":
+            {
+                "signal-processor": "wv",
+                "signal-name": "wigner-ville",
+                "slot-processor": "writer",
+                "slot-name": "write-data"
+            },
+            
+            "run-queue":
+            {
+                "processor": "egg"
+            }
+        },
+        
+
+        "egg":
+        {
+            "filename": "/path/to/file.egg",
+            "number-of-events": 1  
+        },
+        
+        "wv":
+        {
+            "wv-pair": "0, 1",
+            "complex-fft":
+            {
+                "transform-flag": "ESTIMATE"
+            },
+            "sliding-window-fftw":
+            {
+                "transform-flag": "ESTIMATE",
+                "overlap-size": 0,
+                "window-function-type": "rectangular",
+                "window-function":
+                {
+                    "size": 512
+                }
+            }
+        },
+        
+        "writer":
+        {
+            "output-file": "/path/to/file.root",
+            "file-flag": "recreate"
+        }
+    }
+}
