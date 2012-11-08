@@ -117,6 +117,7 @@ namespace Katydid
 
         protected:
             void AllocateArrays();
+            void FreeArrays();
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)
 
             fftw_plan fForwardPlan;

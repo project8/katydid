@@ -89,8 +89,7 @@ namespace Katydid
 
     KTComplexFFTW::~KTComplexFFTW()
     {
-        if (fInputArray != NULL) fftw_free(fInputArray);
-        if (fOutputArray != NULL) fftw_free(fOutputArray);
+        FreeArrays();
         fftw_destroy_plan(fForwardPlan);
         fftw_destroy_plan(fReversePlan);
     }
@@ -118,23 +117,17 @@ namespace Katydid
         // allocate the input and output arrays if they're not there already
         AllocateArrays();
 
+        KTDEBUG(fftlog_comp, "Creating plan: " << fSize << " bins; forward FFT");
         fForwardPlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
+        KTDEBUG(fftlog_comp, "Creating plan: " << fSize << " bins; backward FFT");
         fReversePlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_BACKWARD, transformFlag | FFTW_PRESERVE_INPUT);
 
         if (fForwardPlan != NULL && fReversePlan != NULL)
         {
             fIsInitialized = true;
             // delete the input and output arrays to save memory, since they're not needed for the transform
-            if (fInputArray != NULL)
-            {
-                fftw_free(fInputArray);
-                fInputArray = NULL;
-            }
-            if (fOutputArray != NULL)
-            {
-                fftw_free(fOutputArray);
-                fOutputArray = NULL;
-            }
+            FreeArrays();
+            KTDEBUG(fftlog_comp, "FFTW plans created; Initialization complete.");
         }
         else
         {
@@ -145,7 +138,7 @@ namespace Katydid
             }
             if (fReversePlan == NULL)
             {
-                KTERROR(fftlog_comp, "Unable to create the reverse FFT plans! FFT is not initialized.");
+                KTERROR(fftlog_comp, "Unable to create the reverse FFT plan! FFT is not initialized.");
             }
         }
         return;
@@ -416,6 +409,7 @@ namespace Katydid
 
     void KTComplexFFTW::AllocateArrays()
     {
+        FreeArrays();
         if (fInputArray == NULL)
         {
             fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fSize);
@@ -423,6 +417,21 @@ namespace Katydid
         if (fOutputArray == NULL)
         {
             fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
+        }
+        return;
+    }
+
+    void KTComplexFFTW::FreeArrays()
+    {
+        if (fInputArray != NULL)
+        {
+            fftw_free(fInputArray);
+            fInputArray = NULL;
+        }
+        if (fOutputArray != NULL)
+        {
+            fftw_free(fOutputArray);
+            fOutputArray = NULL;
         }
         return;
     }
