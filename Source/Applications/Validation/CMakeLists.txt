@@ -50,6 +50,9 @@ if (ENABLE_TESTING)
     add_executable (TestEggHatching ${CMAKE_CURRENT_SOURCE_DIR}/TestEggHatching.cc)
     target_link_libraries (TestEggHatching KatydidUtility KatydidCore KatydidEgg ${LIBS})
     
+    add_executable (TestFrequencySpectrumFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestFrequencySpectrumFFTW.cc)
+    target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidEgg KatydidFFT ${LIBS})
+    
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${LIBS})
     
@@ -80,6 +83,7 @@ if (ENABLE_TESTING)
                      TestCutIterator
                      TestCutableArray
                      TestEggHatching
+                     TestFrequencySpectrumFFTW
                      TestLogger
                      TestParameterStore
                      TestSignalsAndSlots
@@ -98,6 +102,7 @@ if (ENABLE_TESTING)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_EggHatching TestEggHatching)
+    add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)
     add_test (Test_Logger TestLogger)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
