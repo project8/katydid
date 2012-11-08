@@ -51,11 +51,11 @@ namespace Katydid
 
      Available configuration values:
      \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
-     \li \c overlap_time -- sets the overlap in time units
-     \li \c overlap_size -- sets the overlap in number of bins
-     \li \c overlap_frac -- sets the overlap in fraction of the window length
-     \li \c window_function_type -- sets the type of window function to be used
-     \li \c window_function -- parent node for the window function configuration
+     \li \c overlap-time -- sets the overlap in time units
+     \li \c overlap-size -- sets the overlap in number of bins
+     \li \c overlap-frac -- sets the overlap in fraction of the window length
+     \li \c window-function-type -- sets the type of window function to be used
+     \li \c window-function -- parent node for the window function configuration
     */
 
    class KTSlidingWindowFFTW : public KTFFT, public KTProcessor

@@ -15,7 +15,7 @@
         "correlator":
         {
             "corr-pair": "0, 0"
-            "corr-pair": "0, 0"
+            "corr-pair": "0, 1"
         },
         
         "basic-root-writer":
