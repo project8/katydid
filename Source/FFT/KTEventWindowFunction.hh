@@ -31,6 +31,14 @@ namespace Katydid
 
    class KTEventWindowFunction : public KTWindowFunction
     {
+        protected:
+            enum ParameterName
+            {
+                kBinWidth,
+                kSize,
+                kLength
+            };
+
         public:
             KTEventWindowFunction();
             KTEventWindowFunction(const KTTimeSeriesData* tsData);
@@ -92,6 +100,8 @@ namespace Katydid
             Double_t fBinWidth;
 
             UInt_t fSize;
+
+            ParameterName fLastSetParameter;
 
     };
 
