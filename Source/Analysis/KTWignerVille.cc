@@ -370,8 +370,9 @@ namespace Katydid
         UInt_t iBin2 = size - 1;
         for (UInt_t iBin1 = 0; iBin1 < size; iBin1++)
         {
-            (*product)(iBin1)[0] = (*data1)(iBin1)[0] * (*data2)(iBin2)[0] - (*data1)(iBin1)[1] * (*data2)(iBin2)[1];
-            (*product)(iBin1)[1] = (*data1)(iBin1)[0] * (*data2)(iBin2)[1] + (*data1)(iBin1)[1] * (*data2)(iBin2)[0];
+            // data1 * CC(data2)
+            (*product)(iBin1)[0] = (*data1)(iBin1)[0] * (*data2)(iBin2)[0] + (*data1)(iBin1)[1] * (*data2)(iBin2)[1];
+            (*product)(iBin1)[1] = (*data1)(iBin1)[0] * (*data2)(iBin2)[1] - (*data1)(iBin1)[1] * (*data2)(iBin2)[0];
             iBin2--;
         }
 
