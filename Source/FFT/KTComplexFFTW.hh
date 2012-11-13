@@ -48,7 +48,11 @@ namespace Katydid
      The FFT is implemented using FFTW.
 
      Available configuration values:
-     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms (see below)
+     \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
+     \li \c "forward-input-data-name": string -- name of the data to find if processing an event in the forward direction
+     \li \c "forward-output-data-name": string -- name to give to the data produced by a forward FFT
+     \li \c "reverse-input-data-name": string -- name of the data to find if processing an event in the reverse direction
+     \li \c "reverse-output-data-name": string -- name of give to the data produced by a reverse FFT
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -115,6 +119,18 @@ namespace Katydid
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
 
+            const std::string& GetForwardInputDataName() const;
+            void SetForwardInputDataName(const std::string& name);
+
+            const std::string& GetForwardOutputDataName() const;
+            void SetForwardOutputDataName(const std::string& name);
+
+            const std::string& GetReverseInputDataName() const;
+            void SetReverseInputDataName(const std::string& name);
+
+            const std::string& GetReverseOutputDataName() const;
+            void SetReverseOutputDataName(const std::string& name);
+
         protected:
             void AllocateArrays();
             void FreeArrays();
@@ -132,6 +148,12 @@ namespace Katydid
 
             Bool_t fIsInitialized;
 
+            std::string fForwardInputDataName;
+            std::string fForwardOutputDataName;
+
+            std::string fReverseInputDataName;
+            std::string fReverseOutputDataName;
+
             //***************
             // Signals
             //***************
@@ -148,8 +170,6 @@ namespace Katydid
             void ProcessHeader(const KTEggHeader* header);
             void ProcessEventForward(KTEvent* event);
             void ProcessEventReverse(KTEvent* event);
-            void ProcessEventNamedDataForward(KTEvent* event, const std::string& dataName);
-            void ProcessEventNamedDataReverse(KTEvent* event, const std::string& dataName);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
@@ -196,6 +216,50 @@ namespace Katydid
     inline Bool_t KTComplexFFTW::GetIsInitialized() const
     {
         return fIsInitialized;
+    }
+
+    inline const std::string& KTComplexFFTW::GetForwardInputDataName() const
+    {
+        return fForwardInputDataName;
+    }
+
+    inline void KTComplexFFTW::SetForwardInputDataName(const std::string& name)
+    {
+        fForwardInputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTComplexFFTW::GetForwardOutputDataName() const
+    {
+        return fForwardOutputDataName;
+    }
+
+    inline void KTComplexFFTW::SetForwardOutputDataName(const std::string& name)
+    {
+        fForwardOutputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTComplexFFTW::GetReverseInputDataName() const
+    {
+        return fReverseInputDataName;
+    }
+
+    inline void KTComplexFFTW::SetReverseInputDataName(const std::string& name)
+    {
+        fReverseInputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTComplexFFTW::GetReverseOutputDataName() const
+    {
+        return fReverseOutputDataName;
+    }
+
+    inline void KTComplexFFTW::SetReverseOutputDataName(const std::string& name)
+    {
+        fReverseOutputDataName = name;
+        return;
     }
 
 } /* namespace Katydid */

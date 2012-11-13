@@ -48,6 +48,13 @@ namespace Katydid
             virtual ~KTEggReader2011();
 
         public:
+            const std::string& GetOutputDataName() const;
+            void SetOutputDataName(const std::string& name);
+
+        private:
+            std::string fOutputDataName;
+
+        public:
             virtual KTEggHeader* BreakEgg(const std::string& filename);
             virtual KTTimeSeriesData* HatchNextEvent();
             virtual bool CloseEgg();
@@ -76,6 +83,17 @@ namespace Katydid
         converter << value;
         converter >> converted;
         return converted;
+    }
+
+    inline const std::string& KTEggReader2011::GetOutputDataName() const
+    {
+        return fOutputDataName;
+    }
+
+    inline void KTEggReader2011::SetOutputDataName(const std::string& name)
+    {
+        fOutputDataName = name;
+        return;
     }
 
 

@@ -46,7 +46,9 @@ namespace Katydid
      The FFT is implemented using FFTW.
 
      Available configuration values:
-     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
+     \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
+     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -101,6 +103,12 @@ namespace Katydid
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
 
+            const std::string& GetInputDataName() const;
+            void SetInputDataName(const std::string& name);
+
+            const std::string& GetOutputDataName() const;
+            void SetOutputDataName(const std::string& name);
+
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
             KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
@@ -116,6 +124,9 @@ namespace Katydid
 
             Bool_t fIsInitialized;
 
+            std::string fInputDataName;
+            std::string fOutputDataName;
+
             //***************
             // Signals
             //***************
@@ -130,7 +141,6 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessEvent(KTEvent* event);
-            void ProcessEventNamedData(KTEvent* event, const std::string& dataName);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };
@@ -164,6 +174,28 @@ namespace Katydid
     inline Bool_t KTSimpleFFT::GetIsInitialized() const
     {
         return fIsInitialized;
+    }
+
+    inline const std::string& KTSimpleFFT::GetInputDataName() const
+    {
+        return fInputDataName;
+    }
+
+    inline void KTSimpleFFT::SetInputDataName(const std::string& name)
+    {
+        fInputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTSimpleFFT::GetOutputDataName() const
+    {
+        return fOutputDataName;
+    }
+
+    inline void KTSimpleFFT::SetOutputDataName(const std::string& name)
+    {
+        fOutputDataName = name;
+        return;
     }
 
     inline UInt_t KTSimpleFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const

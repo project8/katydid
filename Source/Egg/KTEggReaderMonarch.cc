@@ -28,6 +28,7 @@ namespace Katydid
             KTEggReader(),
             fTimeSeriesType(kRealTimeSeries),
             fTimeSeriesSizeRequest(0),
+            fOutputDataName("time-series"),
             fMonarch(NULL),
             fHeader(),
             fReadState(),
@@ -237,6 +238,8 @@ namespace Katydid
         {
             eventData->SetTimeSeries(newRecords[iChannel], iChannel);
         }
+
+        eventData->SetName(fOutputDataName);
 
         return eventData;
     }

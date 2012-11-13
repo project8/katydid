@@ -38,6 +38,10 @@ namespace Katydid
             fTransformFlag("MEASURE"),
             fTransformFlagMap(),
             fIsInitialized(false),
+            fForwardInputDataName("time-series"),
+            fForwardOutputDataName("frequency-spectrum"),
+            fReverseInputDataName("frequency-spectrum"),
+            fReverseOutputDataName("time-series"),
             fFFTForwardSignal(),
             fFFTReverseSignal()
     {
@@ -51,8 +55,6 @@ namespace Katydid
         RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event-forward", this, &KTComplexFFTW::ProcessEventForward, "void (KTEvent*)");
         RegisterSlot("event-reverse", this, &KTComplexFFTW::ProcessEventReverse, "void (KTEvent*)");
-        RegisterSlot("event-forward-named-data", this, &KTComplexFFTW::ProcessEventNamedDataForward, "void (KTEvent*, const string&)");
-        RegisterSlot("event-reverse-named-data", this, &KTComplexFFTW::ProcessEventNamedDataReverse, "void (KTEvent*, const string&)");
 
         SetupInternalMaps();
     }
@@ -68,6 +70,10 @@ namespace Katydid
             fTransformFlag("MEASURE"),
             fTransformFlagMap(),
             fIsInitialized(false),
+            fForwardInputDataName("time-series"),
+            fForwardOutputDataName("frequency-spectrum"),
+            fReverseInputDataName("frequency-spectrum"),
+            fReverseOutputDataName("time-series"),
             fFFTForwardSignal(),
             fFFTReverseSignal()
     {
@@ -81,8 +87,6 @@ namespace Katydid
         RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event-forward", this, &KTComplexFFTW::ProcessEventForward, "void (KTEvent*)");
         RegisterSlot("event-reverse", this, &KTComplexFFTW::ProcessEventReverse, "void (KTEvent*)");
-        RegisterSlot("event-named-data-forward", this, &KTComplexFFTW::ProcessEventNamedDataForward, "void (KTEvent*, const string&)");
-        RegisterSlot("event-named-data-reverse", this, &KTComplexFFTW::ProcessEventNamedDataReverse, "void (KTEvent*, const string&)");
 
         SetupInternalMaps();
     }
@@ -100,6 +104,11 @@ namespace Katydid
         if (node != NULL)
         {
             SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
+
+            SetForwardInputDataName(node->GetData<string>("forward-input-data-name", fForwardInputDataName));
+            SetForwardOutputDataName(node->GetData<string>("forward-output-data-name", fForwardOutputDataName));
+            SetReverseInputDataName(node->GetData<string>("reverse-input-data-name", fReverseInputDataName));
+            SetReverseOutputDataName(node->GetData<string>("reverse-output-data-name", fReverseOutputDataName));
         }
 
         // Command-line settings
@@ -189,6 +198,7 @@ namespace Katydid
 
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
+        newData->SetName(fForwardOutputDataName);
         // just sets the event pointer; doesn't actually add the data to the event
         // this way anything receiving the signal can use the event pointer
         newData->SetEvent(tsData->GetEvent());
@@ -243,7 +253,10 @@ namespace Katydid
 
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNTimeSeries() << " channel(s) transformed");
 
-        //newData->SetEvent(fsData->GetEvent());
+        newData->SetName(fReverseOutputDataName);
+        // just sets the event pointer; doesn't actually add the data to the event
+        // this way anything receiving the signal can use the event pointer
+        newData->SetEvent(fsData->GetEvent());
 
         fFFTReverseSignal(newData);
 
@@ -347,15 +360,10 @@ namespace Katydid
     void KTComplexFFTW::ProcessEventForward(KTEvent* event)
     {
         KTDEBUG(fftlog_comp, "Performing forward FFT of event " << event->GetEventNumber());
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
-        if (tsData == NULL)
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-        if (tsData == NULL)
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
-
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(fForwardInputDataName);
         if (tsData == NULL)
         {
-            KTWARN(fftlog_comp, "No time series data was available in the event");
+            KTWARN(fftlog_comp, "No time series data named <" << fForwardInputDataName << "> was available in the event");
             return;
         }
 
@@ -367,43 +375,10 @@ namespace Katydid
     void KTComplexFFTW::ProcessEventReverse(KTEvent* event)
     {
         KTDEBUG(fftlog_comp, "Performing reverse FFT of event " << event->GetEventNumber());
-        const KTFrequencySpectrumDataFFTW* fsData = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(KTFrequencySpectrumDataFFTW::StaticGetName()));
-
+        const KTFrequencySpectrumDataFFTW* fsData = dynamic_cast< KTFrequencySpectrumDataFFTW* >(fReverseInputDataName);
         if (fsData == NULL)
         {
-            KTWARN(fftlog_comp, "No frequency spectrum data was available in the event");
-            return;
-        }
-
-        KTTimeSeriesData* newData = TransformData(fsData);
-        event->AddData(newData);
-        return;
-    }
-
-    void KTComplexFFTW::ProcessEventNamedDataForward(KTEvent* event, const string& dataName)
-    {
-        KTDEBUG(fftlog_comp, "Performing forward FFT of event " << event->GetEventNumber());
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
-
-        if (tsData == NULL)
-        {
-            KTWARN(fftlog_comp, "No time series data was available in the event");
-            return;
-        }
-
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        event->AddData(newData);
-        return;
-    }
-
-    void KTComplexFFTW::ProcessEventNamedDataReverse(KTEvent* event, const string& dataName)
-    {
-        KTDEBUG(fftlog_comp, "Performing reverse FFT of event " << event->GetEventNumber());
-        const KTFrequencySpectrumDataFFTW* fsData = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(dataName));
-
-        if (fsData == NULL)
-        {
-            KTWARN(fftlog_comp, "No frequency spectrum data was available in the event");
+            KTWARN(fftlog_comp, "No frequency spectrum data named <" << fReverseInputDataName << "> was available in the event");
             return;
         }
 

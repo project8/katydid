@@ -37,6 +37,8 @@ namespace Katydid
             fOutputArray(NULL),
             fTransformFlag("MEASURE"),
             fIsInitialized(false),
+            fInputDataName("time-series"),
+            fOutputDataName("frequency-spectrum"),
             fFFTSignal()
     {
         fConfigName = "simple-fft";
@@ -46,7 +48,6 @@ namespace Katydid
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
-        RegisterSlot("event-named-data", this, &KTSimpleFFT::ProcessEventNamedData, "void (KTEvent*, const string&)");
 
         SetupTransformFlagMap();
     }
@@ -60,6 +61,8 @@ namespace Katydid
             fOutputArray((fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(timeSize))),
             fTransformFlag("MEASURE"),
             fIsInitialized(false),
+            fInputDataName("time-series"),
+            fOutputDataName("frequency-spectrum"),
             fFFTSignal()
     {
         fConfigName = "simple-fft";
@@ -87,6 +90,9 @@ namespace Katydid
         {
             SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
         }
+
+        SetInputDataName(node->GetData<string>("input-data-name", fInputDataName));
+        SetOutputDataName(node->GetData<string>("output-data-name", fOutputDataName));
 
         // Command-line settings
         //SetTransformFlag(fCLHandler->GetCommandLineValue< string >("transform-flag", fTransformFlag));
@@ -158,6 +164,7 @@ namespace Katydid
 
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
+        newData->SetName(fOutputDataName);
         // just sets the event pointer; doesn't actually add the data to the event
         // this way anything receiving the signal can use the event pointer
         newData->SetEvent(tsData->GetEvent());
@@ -242,30 +249,10 @@ namespace Katydid
 
     void KTSimpleFFT::ProcessEvent(KTEvent* event)
     {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
-        if (tsData == NULL)
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-        if (tsData == NULL)
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
-
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(fInputDataName);
         if (tsData == NULL)
         {
-            KTWARN(fftlog_simp, "No time series data was available in the event");
-            return;
-        }
-
-        KTFrequencySpectrumData* newData = TransformData(tsData);
-        event->AddData(newData);
-        return;
-    }
-
-    void KTSimpleFFT::ProcessEventNamedData(KTEvent* event, const string& dataName)
-    {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
-
-        if (tsData == NULL)
-        {
-            KTWARN(fftlog_simp, "No time series data was available in the event");
+            KTWARN(fftlog_simp, "No time series data named <" << fInputDataName << "> was available in the event");
             return;
         }
 

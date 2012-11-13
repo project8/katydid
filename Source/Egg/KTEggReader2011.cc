@@ -33,6 +33,7 @@ namespace Katydid
 
     KTEggReader2011::KTEggReader2011() :
             KTEggReader(),
+            fOutputDataName("time-series"),
             fFileName(),
             fEggStream(),
             fPrelude(),
@@ -311,6 +312,8 @@ namespace Katydid
         {
             KTERROR(eggreadlog, "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this event.");
         }
+
+        eventData->SetName(fOutputDataName);
 
         return eventData;
     }

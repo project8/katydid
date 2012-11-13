@@ -38,6 +38,7 @@ namespace Katydid
             fEggReaderType(kMonarchEggReader),
             fRecordSizeRequest(0),
             fTimeSeriesType(kRealTimeSeries),
+            fOutputDataName("time-series"),
             fHeaderSignal(),
             fEventSignal(),
             fEggDoneSignal()
@@ -83,6 +84,9 @@ namespace Katydid
                 KTERROR(egglog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
                 return false;
             }
+
+            // output data name
+            SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
         }
 
         // Command-line settings
@@ -109,11 +113,14 @@ namespace Katydid
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
+            eggReader->SetOutputDataName(fOutputDataName);
             egg.SetReader(eggReader);
         }
         else
         {
-            egg.SetReader(new KTEggReader2011());
+            KTEggReader2011* eggReader = new KTEggReader2011();
+            eggReader->SetOutputDataName(fOutputDataName);
+            egg.SetReader(eggReader);
         }
 
         if (! egg.BreakEgg(fFilename))
@@ -139,7 +146,8 @@ namespace Katydid
             KTEvent* event = egg.HatchNextEvent();
             if (event == NULL) break;
 
-            if (event->GetData<KTProgenitorTimeSeriesData>(KTProgenitorTimeSeriesData::StaticGetName()) != NULL)
+            KTTimeSeriesData* newData = event->GetData<KTProgenitorTimeSeriesData>(fOutputDataName);
+            if (newData != NULL)
             {
                 KTDEBUG(egglog, "Time series data is present.");
             }
