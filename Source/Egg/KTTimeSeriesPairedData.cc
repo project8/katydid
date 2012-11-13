@@ -12,11 +12,11 @@
 
 namespace Katydid
 {
-    std::string KTTimeSeriesPairedData::fName("time-series-paired");
+    std::string KTTimeSeriesPairedData::fDefaultName("time-series-paired");
 
-    const std::string& KTTimeSeriesPairedData::StaticGetName()
+    const std::string& KTTimeSeriesPairedData::StaticGetDefaultName()
     {
-        return fName;
+        return fDefaultName;
     }
 
     KTTimeSeriesPairedData::KTTimeSeriesPairedData(UInt_t nPairs) :

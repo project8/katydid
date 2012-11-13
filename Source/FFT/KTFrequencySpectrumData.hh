@@ -27,8 +27,8 @@ namespace Katydid
             KTFrequencySpectrumData(unsigned nChannels=1);
             virtual ~KTFrequencySpectrumData();
 
-            const std::string& GetName() const;
-            static const std::string& StaticGetName();
+            const std::string& GetDefaultName() const;
+            static const std::string& StaticGetDefaultName();
 
             const KTFrequencySpectrum* GetSpectrum(unsigned channelNum = 0) const;
             KTFrequencySpectrum* GetSpectrum(unsigned channelNum = 0);
@@ -40,7 +40,7 @@ namespace Katydid
             void Accept(KTWriter* writer) const;
 
         protected:
-            static std::string fName;
+            static std::string fDefaultName;
 
             std::vector< KTFrequencySpectrum* > fSpectra;
 
@@ -55,9 +55,9 @@ namespace Katydid
 #endif
     };
 
-    inline const std::string& KTFrequencySpectrumData::GetName() const
+    inline const std::string& KTFrequencySpectrumData::GetDefaultName() const
     {
-        return fName;
+        return fDefaultName;
     }
 
     inline const KTFrequencySpectrum* KTFrequencySpectrumData::GetSpectrum(unsigned channelNum) const

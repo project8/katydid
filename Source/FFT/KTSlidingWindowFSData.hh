@@ -27,8 +27,8 @@ namespace Katydid
             KTSlidingWindowFSData(unsigned nChannels=1);
             virtual ~KTSlidingWindowFSData();
 
-            const std::string& GetName() const;
-            static const std::string& StaticGetName();
+            const std::string& GetDefaultName() const;
+            static const std::string& StaticGetDefaultName();
 
             const KTPhysicalArray< 1, KTFrequencySpectrum* >* GetSpectra(unsigned channelNum = 0) const;
             KTPhysicalArray< 1, KTFrequencySpectrum* >* GetSpectra(unsigned channelNum = 0);
@@ -40,7 +40,7 @@ namespace Katydid
             void Accept(KTWriter* writer) const;
 
         protected:
-            static std::string fName;
+            static std::string fDefaultName;
 
             std::vector< KTPhysicalArray< 1, KTFrequencySpectrum* >* > fSpectra;
 
@@ -55,9 +55,9 @@ namespace Katydid
 
     };
 
-    inline const std::string& KTSlidingWindowFSData::GetName() const
+    inline const std::string& KTSlidingWindowFSData::GetDefaultName() const
     {
-        return fName;
+        return fDefaultName;
     }
 
     inline const KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFSData::GetSpectra(unsigned channelNum) const

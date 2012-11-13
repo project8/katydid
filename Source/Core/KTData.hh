@@ -23,8 +23,16 @@ namespace Katydid
             KTData();
             virtual ~KTData();
 
-            virtual const std::string& GetName() const = 0;
+        public:
+            virtual const std::string& GetDefaultName() const = 0;
 
+            const std::string& GetName() const;
+            void SetName(const std::string& name);
+
+        protected:
+            std::string fName;
+
+        public:
             /// Returns a pointer to the event from which this data object originates
             virtual KTEvent* GetEvent() const;
             void SetEvent(KTEvent* event);
@@ -41,6 +49,17 @@ namespace Katydid
     inline void KTData::SetEvent(KTEvent* event)
     {
         fEvent = event;
+        return;
+    }
+
+    inline const std::string& KTData::GetName() const
+    {
+        return fName;
+    }
+
+    inline void KTData::SetName(const std::string& name)
+    {
+        fName = name;
         return;
     }
 

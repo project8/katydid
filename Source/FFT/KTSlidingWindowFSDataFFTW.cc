@@ -13,11 +13,11 @@ using std::vector;
 
 namespace Katydid
 {
-    std::string KTSlidingWindowFSDataFFTW::fName("sliding-window-fs-fftw");
+    std::string KTSlidingWindowFSDataFFTW::fDefaultName("sliding-window-fs-fftw");
 
-    const std::string& KTSlidingWindowFSDataFFTW::StaticGetName()
+    const std::string& KTSlidingWindowFSDataFFTW::StaticGetDefaultName()
     {
-        return fName;
+        return fDefaultName;
     }
 
     KTSlidingWindowFSDataFFTW::KTSlidingWindowFSDataFFTW(unsigned nChannels) :

@@ -12,11 +12,11 @@
 
 namespace Katydid
 {
-    std::string KTFrequencySpectrumDataFFTW::fName("frequency-spectrum-fftw");
+    std::string KTFrequencySpectrumDataFFTW::fDefaultName("frequency-spectrum-fftw");
 
-    const std::string& KTFrequencySpectrumDataFFTW::StaticGetName()
+    const std::string& KTFrequencySpectrumDataFFTW::StaticGetDefaultName()
     {
-        return fName;
+        return fDefaultName;
     }
 
     KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW(unsigned nChannels) :

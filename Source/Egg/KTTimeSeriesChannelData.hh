@@ -40,13 +40,13 @@ namespace Katydid
             KTBasicTimeSeriesData(UInt_t nChannels=1);
             virtual ~KTBasicTimeSeriesData();
 
-            const std::string& GetName() const;
-            static const std::string& StaticGetName();
+            const std::string& GetDefaultName() const;
+            static const std::string& StaticGetDefaultName();
 
             void Accept(KTWriter* writer) const;
 
         private:
-            static std::string fName;
+            static std::string fDefaultName;
 
 
         public:
@@ -67,9 +67,9 @@ namespace Katydid
 
     };
 
-    inline const std::string& KTBasicTimeSeriesData::GetName() const
+    inline const std::string& KTBasicTimeSeriesData::GetDefaultName() const
     {
-        return fName;
+        return fDefaultName;
     }
 
     inline UInt_t KTBasicTimeSeriesData::GetNTimeSeries() const
