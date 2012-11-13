@@ -14,13 +14,6 @@ using std::vector;
 
 namespace Katydid
 {
-    std::string KTSlidingWindowFSData::fDefaultName("sliding-window-fs");
-
-    const std::string& KTSlidingWindowFSData::StaticGetDefaultName()
-    {
-        return fDefaultName;
-    }
-
     KTSlidingWindowFSData::KTSlidingWindowFSData(unsigned nChannels) :
             KTWriteableData(),
             fSpectra(nChannels)

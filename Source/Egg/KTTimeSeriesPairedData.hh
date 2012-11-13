@@ -30,9 +30,6 @@ namespace Katydid
             KTTimeSeriesPairedData(unsigned nChannels=1);
             virtual ~KTTimeSeriesPairedData();
 
-            const std::string& GetDefaultName() const;
-            static const std::string& StaticGetDefaultName();
-
             const KTTimeSeries* GetTimeSeries(UInt_t pairNum = 0) const;
             KTTimeSeries* GetTimeSeries(UInt_t pairNum = 0);
             UInt_t GetFirstChannel(UInt_t pairNum = 0) const;
@@ -52,11 +49,6 @@ namespace Katydid
             std::vector< PerPairData > fData;
 
     };
-
-    inline const std::string& KTTimeSeriesPairedData::GetName() const
-    {
-        return fDefaultName;
-    }
 
     inline const KTTimeSeries* KTTimeSeriesPairedData::GetTimeSeries(UInt_t pairNum) const
     {

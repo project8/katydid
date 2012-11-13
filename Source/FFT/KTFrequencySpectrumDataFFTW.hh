@@ -27,9 +27,6 @@ namespace Katydid
             KTFrequencySpectrumDataFFTW(unsigned nChannels=1);
             virtual ~KTFrequencySpectrumDataFFTW();
 
-            const std::string& GetDefaultName() const;
-            static const std::string& StaticGetDefaultName();
-
             const KTFrequencySpectrumFFTW* GetSpectrum(unsigned channelNum = 0) const;
             KTFrequencySpectrumFFTW* GetSpectrum(unsigned channelNum = 0);
             unsigned GetNChannels() const;
@@ -54,11 +51,6 @@ namespace Katydid
             virtual TH1D* CreatePowerDistributionHistogram(unsigned channelNum = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
     };
-
-    inline const std::string& KTFrequencySpectrumDataFFTW::GetDefaultName() const
-    {
-        return fDefaultName;
-    }
 
     inline const KTFrequencySpectrumFFTW* KTFrequencySpectrumDataFFTW::GetSpectrum(unsigned channelNum) const
     {

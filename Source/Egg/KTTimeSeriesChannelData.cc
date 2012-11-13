@@ -23,13 +23,6 @@ namespace Katydid
     }
 
 
-    std::string KTBasicTimeSeriesData::fDefaultName("basic-time-series");
-
-    const std::string& KTBasicTimeSeriesData::StaticGetDefaultName()
-    {
-        return fDefaultName;
-    }
-
     KTBasicTimeSeriesData::KTBasicTimeSeriesData(UInt_t nChannels) :
             KTTimeSeriesChannelData()
     {
@@ -51,13 +44,6 @@ namespace Katydid
     }
 
 
-
-    std::string KTProgenitorTimeSeriesData::fName("progenitor-time-series");
-
-    const std::string& KTProgenitorTimeSeriesData::StaticGetName()
-    {
-        return fName;
-    }
 
     KTProgenitorTimeSeriesData::KTProgenitorTimeSeriesData(UInt_t nChannels) :
             KTTimeSeriesChannelData(),

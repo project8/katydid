@@ -40,9 +40,6 @@ namespace Katydid
             KTBasicTimeSeriesData(UInt_t nChannels=1);
             virtual ~KTBasicTimeSeriesData();
 
-            const std::string& GetDefaultName() const;
-            static const std::string& StaticGetDefaultName();
-
             void Accept(KTWriter* writer) const;
 
         private:
@@ -66,11 +63,6 @@ namespace Katydid
             std::vector< KTTimeSeries* > fChannelData;
 
     };
-
-    inline const std::string& KTBasicTimeSeriesData::GetDefaultName() const
-    {
-        return fDefaultName;
-    }
 
     inline UInt_t KTBasicTimeSeriesData::GetNTimeSeries() const
     {
@@ -136,9 +128,6 @@ namespace Katydid
             KTProgenitorTimeSeriesData(UInt_t nChannels=1);
             virtual ~KTProgenitorTimeSeriesData();
 
-            const std::string& GetName() const;
-            static const std::string& StaticGetName();
-
             void Accept(KTWriter* writer) const;
 
         private:
@@ -184,11 +173,6 @@ namespace Katydid
             std::vector< PerChannelData > fChannelData;
 
     };
-
-    inline const std::string& KTProgenitorTimeSeriesData::GetName() const
-    {
-        return fName;
-    }
 
     inline UInt_t KTProgenitorTimeSeriesData::GetNTimeSeries() const
     {

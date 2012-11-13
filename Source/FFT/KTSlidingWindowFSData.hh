@@ -27,9 +27,6 @@ namespace Katydid
             KTSlidingWindowFSData(unsigned nChannels=1);
             virtual ~KTSlidingWindowFSData();
 
-            const std::string& GetDefaultName() const;
-            static const std::string& StaticGetDefaultName();
-
             const KTPhysicalArray< 1, KTFrequencySpectrum* >* GetSpectra(unsigned channelNum = 0) const;
             KTPhysicalArray< 1, KTFrequencySpectrum* >* GetSpectra(unsigned channelNum = 0);
             unsigned GetNChannels() const;
@@ -54,11 +51,6 @@ namespace Katydid
 
 
     };
-
-    inline const std::string& KTSlidingWindowFSData::GetDefaultName() const
-    {
-        return fDefaultName;
-    }
 
     inline const KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFSData::GetSpectra(unsigned channelNum) const
     {

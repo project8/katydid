@@ -24,8 +24,6 @@ namespace Katydid
             virtual ~KTData();
 
         public:
-            virtual const std::string& GetDefaultName() const = 0;
-
             const std::string& GetName() const;
             void SetName(const std::string& name);
 
