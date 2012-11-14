@@ -37,6 +37,8 @@ namespace Katydid
             fOverlapFrac(0.),
             fUseOverlapFrac(kFALSE),
             fWindowFunction(NULL),
+            fInputDataName("time-series"),
+            fOutputDataName("sw-frequency-spectrum"),
             fSingleFFTSignal(),
             fFullFFTSignal()
     {
@@ -83,6 +85,9 @@ namespace Katydid
             fWindowFunction->Configure(childNode);
         }
 
+        SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
+        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
+
         // No command-line options
 
         return true;
@@ -107,15 +112,10 @@ namespace Katydid
 
     void KTSlidingWindowFFT::ProcessEvent(KTEvent* event)
     {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
-        if (tsData == NULL)
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-        if (tsData == NULL)
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
-
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
         if (tsData == NULL)
         {
-            KTWARN(fftlog_sw, "No time series data was available in the event");
+            KTWARN(fftlog_sw, "No time series data named <" << fInputDataName << "> was available in the event");
             return;
         }
 
@@ -123,22 +123,6 @@ namespace Katydid
         event->AddData(newData);
         return;
     }
-
-    void KTSlidingWindowFFT::ProcessEventNamedData(KTEvent* event, const string& dataName)
-    {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
-
-        if (tsData == NULL)
-        {
-            KTWARN(fftlog_sw, "No time series data was available in the event");
-            return;
-        }
-
-        KTSlidingWindowFSData* newData = TransformData(tsData);
-        event->AddData(newData);
-        return;
-    }
-
 
     void KTSlidingWindowFFT::InitializeFFT()
     {
@@ -202,6 +186,7 @@ namespace Katydid
         }
 
         newData->SetEvent(tsData->GetEvent());
+        newData->SetName(fOutputDataName);
 
         fFullFFTSignal(newData);
 

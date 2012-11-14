@@ -54,6 +54,11 @@ namespace Katydid
             fSaveAAFrequencySpectrum(false),
             fSaveAnalyticAssociate(false),
             fSaveCrossMultipliedTimeSeries(false),
+            fInputDataName("time-series"),
+            fOutputDataName("wigner-ville"),
+            fAAFSOutputDataName("aafs-wigner-ville"),
+            fAATSOutputDataName("aats-wigner-ville"),
+            fCMTSOutputDataName("cmts-wigner-ville"),
             fWVSignal()
     {
         fConfigName = "wigner-ville";
@@ -64,7 +69,6 @@ namespace Katydid
         RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         //RegisterSlot("fs-data", this, &KTWignerVille::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event", this, &KTWignerVille::ProcessEvent, "void (KTEvent*)");
-        RegisterSlot("event-named-data", this, &KTWignerVille::ProcessEventNamedData, "void (KTEvent*, const string&)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -77,6 +81,13 @@ namespace Katydid
         SetSaveAAFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveAAFrequencySpectrum));
         SetSaveAnalyticAssociate(node->GetData< Bool_t >("save-analytic-associate", fSaveAnalyticAssociate));
         SetSaveCrossMultipliedTimeSeries(node->GetData< Bool_t >("save-cross-multiplied-time-series", fSaveCrossMultipliedTimeSeries));
+
+        SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
+        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
+
+        SetAAFSOutputDataName(node->GetData< string >("aa-ts-output-data-name", fAAFSOutputDataName));
+        SetAATSOutputDataName(node->GetData< string >("aa-fs-output-data-name", fAATSOutputDataName));
+        SetCMTSOutputDataName(node->GetData< string >("cm-ts-output-data-name", fCMTSOutputDataName));
 
         KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
@@ -196,6 +207,7 @@ namespace Katydid
         if (fSaveAAFrequencySpectrum)
         {
             aaFSData = new KTFrequencySpectrumDataFFTW(data->GetNTimeSeries());
+            aaFSData->SetName(fAAFSOutputDataName);
             (*outputFSData) = aaFSData;
         }
 
@@ -217,14 +229,12 @@ namespace Katydid
             if (fSaveAAFrequencySpectrum)
             {
                 newTS = CalculateAnalyticAssociate(nextInput, &newFS);
+                aaFSData->SetSpectrum(newFS, *channelIt);
             }
             else
             {
                 newTS = CalculateAnalyticAssociate(nextInput);
             }
-
-            if (fSaveAAFrequencySpectrum)
-                aaFSData->SetSpectrum(newFS, *channelIt);
 
             if (newTS == NULL)
             {
@@ -242,6 +252,7 @@ namespace Katydid
         KTTimeSeriesPairedData* crossMultipliedData = new KTTimeSeriesPairedData(fPairs.size());
         if (fSaveCrossMultipliedTimeSeries)
         {
+            crossMultipliedData->SetName(fAATSOutputDataName);
             (*outputCMTSData) = (KTTimeSeriesData*)crossMultipliedData;
         }
 
@@ -277,6 +288,13 @@ namespace Katydid
         {
             delete crossMultipliedData;
         }
+        else
+        {
+            crossMultipliedData->SetName(fCMTSOutputDataName);
+        }
+
+        newSWFSData->SetEvent(data->GetEvent());
+        newSWFSData->SetName(fOutputDataName);
 
         KTDEBUG(fftlog_comp, "W-V transform complete; " << newSWFSData->GetNChannels() << " pair(s) transformed");
 
@@ -451,29 +469,10 @@ namespace Katydid
     */
     void KTWignerVille::ProcessEvent(KTEvent* event)
     {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));
-        if (tsData == NULL)
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTBasicTimeSeriesData::StaticGetName()));
-        if (tsData == NULL)
-            tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesPairedData::StaticGetName()));
-
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
         if (tsData == NULL)
         {
-            KTWARN(wvlog, "No time series data was available in the event");
-            return;
-        }
-
-        ProcessTimeSeriesData(tsData);
-        return;
-    }
-
-    void KTWignerVille::ProcessEventNamedData(KTEvent* event, const string& dataName)
-    {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(dataName));
-
-        if (tsData == NULL)
-        {
-            KTWARN(wvlog, "No time series data was available in the event");
+            KTWARN(wvlog, "No time series data named <" << fInputDataName << "> was available in the event");
             return;
         }
 

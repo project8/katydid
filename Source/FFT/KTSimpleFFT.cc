@@ -52,30 +52,6 @@ namespace Katydid
         SetupTransformFlagMap();
     }
 
-    KTSimpleFFT::KTSimpleFFT(UInt_t timeSize) :
-            KTFFT(),
-            KTProcessor(),
-            fFTPlan(),
-            fTimeSize(timeSize),
-            fInputArray((double*) fftw_malloc(sizeof(double) * timeSize)),
-            fOutputArray((fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(timeSize))),
-            fTransformFlag("MEASURE"),
-            fIsInitialized(false),
-            fInputDataName("time-series"),
-            fOutputDataName("frequency-spectrum"),
-            fFFTSignal()
-    {
-        fConfigName = "simple-fft";
-
-        RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
-
-        RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
-
-        SetupTransformFlagMap();
-    }
-
     KTSimpleFFT::~KTSimpleFFT()
     {
         if (fInputArray != NULL) fftw_free(fInputArray);

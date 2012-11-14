@@ -73,6 +73,9 @@ namespace Katydid
             this->AddPair(KTCorrelationPair(first, second));
         }
 
+        SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
+        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
+
         return true;
     }
 
@@ -99,6 +102,7 @@ namespace Katydid
         }
 
         newData->SetEvent(data->GetEvent());
+        newData->SetName(fOutputDataName);
 
         //data->GetEvent()->AddData(newData);
         fCorrSignal(newData);
@@ -180,10 +184,10 @@ namespace Katydid
 
     void KTCorrelator::ProcessEvent(KTEvent* event)
     {
-        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(KTFrequencySpectrumData::StaticGetName()));
+        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fInputDataName));
         if (fsData == NULL)
         {
-            KTWARN(corrlog, "No frequency-spectrum data was available in the event");
+            KTWARN(corrlog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");
             return;
         }
         KTCorrelationData* newData = Correlate(fsData);

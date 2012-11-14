@@ -77,7 +77,6 @@ namespace Katydid
 
         public:
             KTSimpleFFT();
-            KTSimpleFFT(UInt_t timeSize);
             virtual ~KTSimpleFFT();
 
             Bool_t Configure(const KTPStoreNode* node);

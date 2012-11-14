@@ -58,7 +58,8 @@ namespace Katydid
             //fROOTFile(),
             fFrequencyBinWidth(1.),
             fFrequencyMultiplier(1.e-6),
-            fTotalCandidates(0)
+            fTotalCandidates(0),
+            fInputDataName("time-series")
     {
         fConfigName = "fft-e-hunt";
 
@@ -121,6 +122,8 @@ namespace Katydid
             {
                 if (! fWindowFFT.Configure(slidingWindowFFTNode)) return false;
             }
+
+            SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
         }
 
         // No CL options

@@ -42,13 +42,14 @@ namespace Katydid
      Uses a windows FFT of Egg events to search for clusters of high-peaked bins moving up in frequency.
 
      Available configuration values:
-     \li \c output_filename_base --
-     \li \c threshold_multiplier --
-     \li \c write_text_file --
-     \li \c draw_waterfall --
-     \li \c group_bins_margin_high --
-     \li \c group_bins_margin_low --
-     \li \c group_bins_margin_same_time --
+     \li \c output-filename_base --
+     \li \c threshold-multiplier --
+     \li \c write-text-file --
+     \li \c draw-waterfall --
+     \li \c group-bins-margin-high --
+     \li \c group-bins-margin-low --
+     \li \c group-bins-margin-same_time --
+     \li \c input-data-name -- name used to find data when processing an event
 
     */
 
@@ -89,6 +90,12 @@ namespace Katydid
 
             void SetFrequencyMultiplier(Double_t mult);
 
+            const std::string& GetInputDataName() const;
+            void SetInputDataName(const std::string& name);
+
+            //const std::string& GetOutputDataName() const;
+            //void SetOutputDataName(const std::string& name);
+
         private:
             EventPeakBinsList fEventPeakBins;
 
@@ -112,6 +119,9 @@ namespace Katydid
             Double_t fFrequencyBinWidth;
             Double_t fFrequencyMultiplier;
             Int_t fTotalCandidates;
+
+            std::string fInputDataName;
+            //std::string fOutputDataName;
 
     };
 
@@ -179,6 +189,28 @@ namespace Katydid
         return;
     }
 
+    inline const std::string& KTFFTEHunt::GetInputDataName() const
+    {
+        return fInputDataName;
+    }
+
+    inline void KTFFTEHunt::SetInputDataName(const std::string& name)
+    {
+        fInputDataName = name;
+        return;
+    }
+    /*
+    inline const std::string& KTFFTEHunt::GetOutputDataName() const
+    {
+        return fOutputDataName;
+    }
+
+    inline void KTFFTEHunt::SetOutputDataName(const std::string& name)
+    {
+        fOutputDataName = name;
+        return;
+    }
+    */
 
 
 } /* namespace Katydid */

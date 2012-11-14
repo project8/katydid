@@ -53,6 +53,21 @@ namespace Katydid
             const PairVector& GetPairVector() const;
             void ClearPairs();
 
+            const std::string& GetInputDataName() const;
+            void SetInputDataName(const std::string& name);
+
+            const std::string& GetOutputDataName() const;
+            void SetOutputDataName(const std::string& name);
+
+            const std::string& GetAAFSOutputDataName() const;
+            void SetAAFSOutputDataName(const std::string& name);
+
+            const std::string& GetAATSOutputDataName() const;
+            void SetAATSOutputDataName(const std::string& name);
+
+            const std::string& GetCMTSOutputDataName() const;
+            void SetCMTSOutputDataName(const std::string& name);
+
         protected:
             PairVector fPairs;
 
@@ -64,6 +79,13 @@ namespace Katydid
             Bool_t fSaveAAFrequencySpectrum;
             Bool_t fSaveAnalyticAssociate;
             Bool_t fSaveCrossMultipliedTimeSeries;
+
+            std::string fInputDataName;
+            std::string fOutputDataName;
+
+            std::string fAAFSOutputDataName;
+            std::string fAATSOutputDataName;
+            std::string fCMTSOutputDataName;
 
         public:
             /// Performs the W-V transform on the given time series data.
@@ -102,7 +124,6 @@ namespace Katydid
          public:
              void ProcessHeader(const KTEggHeader* header);
              void ProcessEvent(KTEvent* event);
-             void ProcessEventNamedData(KTEvent* event, const std::string& dataName);
              void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
              //void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
@@ -161,6 +182,61 @@ namespace Katydid
     inline void KTWignerVille::ClearPairs()
     {
         fPairs.clear();
+        return;
+    }
+
+    inline const std::string& KTWignerVille::GetInputDataName() const
+    {
+        return fInputDataName;
+    }
+
+    inline void KTWignerVille::SetInputDataName(const std::string& name)
+    {
+        fInputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTWignerVille::GetOutputDataName() const
+    {
+        return fOutputDataName;
+    }
+
+    inline void KTWignerVille::SetOutputDataName(const std::string& name)
+    {
+        fOutputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTWignerVille::GetAAFSOutputDataName() const
+    {
+        return fAAFSOutputDataName;
+    }
+
+    inline void KTWignerVille::SetAAFSOutputDataName(const std::string& name)
+    {
+        fAAFSOutputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTWignerVille::GetAATSOutputDataName() const
+    {
+        return fAATSOutputDataName;
+    }
+
+    inline void KTWignerVille::SetAATSOutputDataName(const std::string& name)
+    {
+        fAATSOutputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTWignerVille::GetCMTSOutputDataName() const
+    {
+        return fCMTSOutputDataName;
+    }
+
+    inline void KTWignerVille::SetCMTSOutputDataName(const std::string& name)
+    {
+        fCMTSOutputDataName = name;
         return;
     }
 

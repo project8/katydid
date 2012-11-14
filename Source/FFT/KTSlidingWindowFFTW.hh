@@ -50,12 +50,13 @@ namespace Katydid
      Any type of window function (inheriting from KTWindowFunction) can be used.
 
      Available configuration values:
-     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
-     \li \c overlap-time -- sets the overlap in time units
-     \li \c overlap-size -- sets the overlap in number of bins
-     \li \c overlap-frac -- sets the overlap in fraction of the window length
-     \li \c window-function-type -- sets the type of window function to be used
-     \li \c window-function -- parent node for the window function configuration
+     \li \c "transform-flag": string -- flag that determines how much planning is done prior to any transforms
+     \li \c "overlap-time": float -- sets the overlap in time units
+     \li \c "overlap-size": int -- sets the overlap in number of bins
+     \li \c "overlap-frac": float -- sets the overlap in fraction of the window length
+     \li \c "window-function-type": string -- sets the type of window function to be used
+     \li \c "window-function": subtree -- parent node for the window function configuration
+     \li \c "input-data-name": string -- name used to find data when processing events
     */
 
    class KTSlidingWindowFFTW : public KTFFT, public KTProcessor
@@ -106,6 +107,12 @@ namespace Katydid
             void SetUseOverlapFrac(Bool_t useOverlapFrac);
             void SetWindowFunction(KTEventWindowFunction* wf);
 
+            const std::string& GetInputDataName() const;
+            void SetInputDataName(const std::string& name);
+
+            const std::string& GetOutputDataName() const;
+            void SetOutputDataName(const std::string& name);
+
         protected:
             virtual KTFrequencySpectrumFFTW* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
@@ -126,6 +133,9 @@ namespace Katydid
             KTEventWindowFunction* fWindowFunction;
             //std::vector< std::vector< KTPowerSpectrum* >* > fPowerSpectra;
 
+            std::string fInputDataName;
+            std::string fOutputDataName;
+
 
             //***************
             // Signals
@@ -143,7 +153,6 @@ namespace Katydid
             void ProcessHeader(const KTEggHeader* header);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
             void ProcessEvent(KTEvent* event);
-            void ProcessEventNamedData(KTEvent* event, const std::string& dataName);
 
     };
 
@@ -253,6 +262,28 @@ namespace Katydid
     inline void KTSlidingWindowFFTW::SetUseOverlapFrac(Bool_t useOverlapFrac)
     {
         fUseOverlapFrac = useOverlapFrac;
+        return;
+    }
+
+    inline const std::string& KTSlidingWindowFFTW::GetInputDataName() const
+    {
+        return fInputDataName;
+    }
+
+    inline void KTSlidingWindowFFTW::SetInputDataName(const std::string& name)
+    {
+        fInputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTSlidingWindowFFTW::GetOutputDataName() const
+    {
+        return fOutputDataName;
+    }
+
+    inline void KTSlidingWindowFFTW::SetOutputDataName(const std::string& name)
+    {
+        fOutputDataName = name;
         return;
     }
 

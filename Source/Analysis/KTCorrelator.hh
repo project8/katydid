@@ -40,8 +40,17 @@ namespace Katydid
             const PairVector& GetPairVector() const;
             void ClearPairs();
 
+            const std::string& GetInputDataName() const;
+            void SetInputDataName(const std::string& name);
+
+            const std::string& GetOutputDataName() const;
+            void SetOutputDataName(const std::string& name);
+
         protected:
             PairVector fPairs;
+
+            std::string fInputDataName;
+            std::string fOutputDataName;
 
         public:
 
@@ -90,6 +99,28 @@ namespace Katydid
     inline void KTCorrelator::ClearPairs()
     {
         fPairs.clear();
+        return;
+    }
+
+    inline const std::string& KTCorrelator::GetInputDataName() const
+    {
+        return fInputDataName;
+    }
+
+    inline void KTCorrelator::SetInputDataName(const std::string& name)
+    {
+        fInputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTCorrelator::GetOutputDataName() const
+    {
+        return fOutputDataName;
+    }
+
+    inline void KTCorrelator::SetOutputDataName(const std::string& name)
+    {
+        fOutputDataName = name;
         return;
     }
 
