@@ -4,18 +4,22 @@
         "egg-processor":
         {
             "filename": "/path/to/file.egg",
-            "number-of-events": 1  
+            "number-of-events": 1,
+            "output-data-name": "time-series"
         },
         
         "simple-fft":
         {
             "transform-flag": "ESTIMATE"
+            "input-data-name": "time-series",
+            "output-data-name": "frequency-spectrum"
         },
         
         "correlator":
         {
-            "corr-pair": "0, 0"
-            "corr-pair": "0, 1"
+            "corr-pair": "0, 0",
+            "corr-pair": "0, 1",
+            "input-data-name": "frequency-spectrum"
         },
         
         "basic-root-writer":

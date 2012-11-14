@@ -56,12 +56,14 @@
             "filename": "/path/to/file.egg",
             "number-of-events": 1,
             "time-series-size": 0,
-            "time-series-type": "fftw"
+            "time-series-type": "fftw",
+            "output-data-name": "time-series"
         },
         
         "wv":
         {
             "wv-pair": "0, 1",
+            "input-data-name": "time-series",
             "complex-fft":
             {
                 "transform-flag": "ESTIMATE"

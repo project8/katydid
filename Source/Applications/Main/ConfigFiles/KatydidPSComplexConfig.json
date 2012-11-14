@@ -54,12 +54,14 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-events": 1  
+            "number-of-events": 1,
+            "output-data-name": "time-series"
         },
         
         "fft":
         {
-            "transform-flag": "ESTIMATE"
+            "transform-flag": "ESTIMATE",
+            "input-data-name": "time-series"
         },
         
         "writer":

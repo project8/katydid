@@ -4,7 +4,8 @@
         "egg-processor":
         {
             "input-file": "/path/to/file.egg",
-            "number-of-events": 1  
+            "number-of-events": 1,
+            "output-data-name": "time-series"
         },
         
         "fft-e-hunt":
@@ -14,6 +15,7 @@
 	        "write-root-file": false,
 	        "minimum-group-size": 2,
 	        "frequency-multiplier": 1.0e-6,
+	        "input-data-name": "time-series",
 	        
 	        "simple-clustering":
 	        {
