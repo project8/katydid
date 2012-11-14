@@ -86,7 +86,6 @@ namespace Katydid
 
         public:
             KTComplexFFTW();
-            KTComplexFFTW(UInt_t size);
             virtual ~KTComplexFFTW();
 
             Bool_t Configure(const KTPStoreNode* node);

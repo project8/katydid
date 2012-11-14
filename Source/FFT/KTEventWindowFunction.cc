@@ -108,7 +108,8 @@ namespace Katydid
         {
             timeData(iBin) = this->GetWeight(iBin-sideBands);
         }
-        KTSimpleFFT fft(totalSize);
+        KTSimpleFFT fft;
+        fft.SetTimeSize(totalSize);
         fft.SetTransformFlag("ESTIMATE");
         fft.InitializeFFT();
         KTFrequencySpectrum* freqSpect = fft.Transform(&timeData);

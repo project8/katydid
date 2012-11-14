@@ -58,7 +58,8 @@ int main(int argc, char** argv)
     }
 
     // Create and prepare the FFT
-    KTSimpleFFT fullFFT(timeSeries->size());
+    KTSimpleFFT fullFFT;
+    fullFFT.SetTimeSize(timeSeries->size());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 

@@ -225,7 +225,7 @@ namespace Katydid
 
     void KTSimpleFFT::ProcessEvent(KTEvent* event)
     {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(fInputDataName);
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
         if (tsData == NULL)
         {
             KTWARN(fftlog_simp, "No time series data named <" << fInputDataName << "> was available in the event");

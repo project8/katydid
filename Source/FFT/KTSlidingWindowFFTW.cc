@@ -50,7 +50,6 @@ namespace Katydid
         RegisterSlot("header", this, &KTSlidingWindowFFTW::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("time-series", this, &KTSlidingWindowFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("event", this, &KTSlidingWindowFFTW::ProcessEvent, "void (KTEvent*)");
-        RegisterSlot("event-named-data", this, &KTSlidingWindowFFTW::ProcessEventNamedData, "void (KTEvent*, const string&)");
 
         SetupTransformFlagMap();
     }

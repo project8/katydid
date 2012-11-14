@@ -95,7 +95,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    KTTimeSeriesData* tsData = event->GetData<KTProgenitorTimeSeriesData>(KTProgenitorTimeSeriesData::StaticGetName());
+    KTTimeSeriesData* tsData = event->GetData<KTProgenitorTimeSeriesData>("time-series");
     if (tsData == NULL)
     {
         KTWARN(testegg, "No time-series data present in event");

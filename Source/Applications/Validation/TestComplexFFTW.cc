@@ -62,11 +62,13 @@ int main(int argc, char** argv)
     }
 
     // Create and prepare the FFT
-    KTComplexFFTW fullFFT(timeSeries->size());
+    KTComplexFFTW fullFFT;
+    fullFFT.SetSize(timeSeries->size());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 
-    KTSimpleFFT simpFFT(timeSeries2->size());
+    KTSimpleFFT simpFFT;
+    simpFFT.SetTimeSize(timeSeries2->size());
     simpFFT.SetTransformFlag("ESTIMATE");
     simpFFT.InitializeFFT();
 

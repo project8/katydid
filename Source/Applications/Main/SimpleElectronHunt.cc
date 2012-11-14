@@ -170,11 +170,12 @@ int main(int argc, char** argv)
         // Hatch the event
         KTEvent* event = egg.HatchNextEvent();
         if (event == NULL) break;
-        KTProgenitorTimeSeriesData* data = event->GetData< KTProgenitorTimeSeriesData >(KTProgenitorTimeSeriesData::StaticGetName());
+        KTProgenitorTimeSeriesData* data = event->GetData< KTProgenitorTimeSeriesData >("time-series");
         if (data == NULL) break;
 
         // FFT of the entire event, which will be used to normalize the gain fluctuations
-        KTSimpleFFT fullFFT(data->GetRecordSize());
+        KTSimpleFFT fullFFT;
+        fullFFT.SetTimeSize(data->GetRecordSize());
         fullFFT.SetTransformFlag("ES");
         fullFFT.InitializeFFT();
         KTFrequencySpectrumData* freqSpectData = fullFFT.TransformData(data);
