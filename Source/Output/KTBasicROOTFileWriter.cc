@@ -236,6 +236,32 @@ namespace Katydid
         return;
     }
 
+    //************************
+    // Hough Transform Data
+    //************************
+
+    void KTBasicROOTFileWriter::Write(const KTHoughData* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nPlots = data->GetNTransforms();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
+        {
+            stringstream conv;
+            conv << "histHT_" << eventNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH2D* swHist = data->CreateHistogram(iPlot, histName);
+            swHist->SetDirectory(fFile);
+            swHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        }
+        return;
+    }
 
 
 } /* namespace Katydid */

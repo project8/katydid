@@ -12,6 +12,7 @@
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTCorrelationData.hh"
+#include "KTHoughData.hh"
 
 #include "TFile.h"
 
@@ -80,6 +81,12 @@ namespace Katydid
         public:
             void Write(const KTSlidingWindowFSData* data);
             void Write(const KTSlidingWindowFSDataFFTW* data);
+
+            //************************
+            // Hough Transform Data
+            //************************
+        public:
+            void Write(const KTHoughData* data);
 
     };
 
