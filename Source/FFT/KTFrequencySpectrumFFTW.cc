@@ -33,8 +33,8 @@ namespace Katydid
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax),
             fIsSizeEven(nBins%2 == 0),
-            fNegFreqOffset(nBins/2),
-            fDCBin((nBins+1)/2)
+            fNegFreqOffset((nBins+1)/2),
+            fDCBin(nBins/2)
     {
         //KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
         //KTINFO(fslog, "neg freq offset: " << fNegFreqOffset);
@@ -75,16 +75,44 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumFFTW::CreatePowerSpectrum() const
     {
-        UInt_t nBins = size();
-        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
-        Double_t value;
+        // The negative frequency values will be combined with the positive ones,
+        // so the power spectrum will go from the DC bin to the max frequency
+
+        UInt_t nBins = fDCBin + 1;
+        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
+        Double_t value, valueImag, valueReal;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+
+        // DC bin
+        value = (*this)(fDCBin)[0] * (*this)(fDCBin)[0] + (*this)(fDCBin)[1] * (*this)(fDCBin)[1];
+        (*newPS)(0) = value * scaling;
+
+        // All bins besides the Nyquist and DC bins
+        UInt_t totalBins = size(), iPosBin;
+        for (UInt_t iNegBin=1; iNegBin<nBins-1; iNegBin++)
         {
             // order matters, so use (*this)() to access values
-            value = (*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1];
-            (*newPS)(iBin) = value * scaling;
+            iPosBin = totalBins - 1 - iNegBin;
+            valueReal = (*this)(iNegBin)[0] + (*this)(iPosBin)[0];
+            valueImag = (*this)(iNegBin)[1] + (*this)(iPosBin)[1];
+            value = valueReal * valueReal + valueImag * valueImag;
+            (*newPS)(iNegBin) = value * scaling; // use iNegBin, even though the power spectrum only has positive frequencies
         }
+
+        // Nyquist bin
+        if (fIsSizeEven)
+        {
+            value = (*this)(0)[0] * (*this)(0)[0] + (*this)(0)[1] * (*this)(0)[1];
+            (*newPS)(nBins-1) = value * scaling;
+        }
+        else
+        {
+            valueReal = (*this)(0)[0] + (*this)(totalBins-1)[0];
+            valueImag = (*this)(0)[1] + (*this)(totalBins-1)[1];
+            value = valueReal * valueReal + valueImag * valueImag;
+            (*newPS)(nBins-1) = value * scaling;
+        }
+
         return newPS;
     }
 
