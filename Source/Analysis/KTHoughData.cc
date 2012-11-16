@@ -62,8 +62,8 @@ namespace Katydid
             }
         }
 
-        hist->SetXTitle("X Axis");
-        hist->SetYTitle("Y Axis");
+        hist->SetXTitle("Angle");
+        hist->SetYTitle("Radius");
         return hist;
     }
 

@@ -85,6 +85,38 @@ namespace Katydid
                     ! subNode.HasData("slot-processor") || ! subNode.HasData("slot-name"))
             {
                 KTERROR(proclog, "Signal/Slot connection information is incomplete!");
+                if (subNode.HasData("signal-processor"))
+                {
+                    KTWARN(proclog, "signal-processor = " << subNode.GetData<string>("signal-processor"));
+                }
+                else
+                {
+                    KTERROR(proclog, "signal-processor = MISSING");
+                }
+                if (subNode.HasData("signal-name"))
+                {
+                    KTWARN(proclog, "signal-name = " << subNode.GetData<string>("signal-name"));
+                }
+                else
+                {
+                    KTERROR(proclog, "signal-name = MISSING");
+                }
+                if (subNode.HasData("slot-processor"))
+                {
+                    KTWARN(proclog, "slot-processor = " << subNode.GetData<string>("slot-processor"));
+                }
+                else
+                {
+                    KTERROR(proclog, "slot-processor = MISSING");
+                }
+                if (subNode.HasData("slot-name"))
+                {
+                    KTWARN(proclog, "slot-name = " << subNode.GetData<string>("slot-name"));
+                }
+                else
+                {
+                    KTERROR(proclog, "slot-namer = MISSING");
+                }
                 return false;
             }
 
