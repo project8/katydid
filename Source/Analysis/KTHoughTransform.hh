@@ -17,6 +17,7 @@ namespace Katydid
     class KTEvent;
     class KTFrequencySpectrumFFTW;
     class KTHoughData;
+    class KTPowerSpectrum;
     class KTSlidingWindowFSDataFFTW;
     class KTWriteableData;
 
@@ -54,7 +55,10 @@ namespace Katydid
 
         public:
             KTHoughData* TransformData(const KTSlidingWindowFSDataFFTW* data);
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum);
+            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSpectrum(const KTPhysicalArray< 1, KTPowerSpectrum* >* powerSpectrum);
+
+        protected:
+            KTPhysicalArray< 1, KTPowerSpectrum* >* CreatePowerSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum);
 
             //***************
              // Signals

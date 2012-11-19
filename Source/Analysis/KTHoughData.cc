@@ -50,8 +50,8 @@ namespace Katydid
                 fTransforms[transformNum]->size(), fTransforms[transformNum]->GetRangeMin(), fTransforms[transformNum]->GetRangeMax(),
                 (*fTransforms[transformNum])(0)->size(), (*fTransforms[transformNum])(0)->GetRangeMin(), (*fTransforms[transformNum])(0)->GetRangeMax());
 
-        KTINFO("Frequency axis: " << (*fTransforms[transformNum])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
-        KTINFO("Time axis: " << fTransforms[transformNum]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
+        KTINFO("Radius axis: " << (*fTransforms[transformNum])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
+        KTINFO("Angle axis: " << fTransforms[transformNum]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
 
         for (Int_t iBinX=1; iBinX<=(Int_t)fTransforms[transformNum]->size(); iBinX++)
         {

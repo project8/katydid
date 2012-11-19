@@ -51,8 +51,8 @@ namespace Katydid
                 fSpectra[channelNum]->size(), fSpectra[channelNum]->GetRangeMin(), fSpectra[channelNum]->GetRangeMax(),
                 (*fSpectra[channelNum])(0)->size(), (*fSpectra[channelNum])(0)->GetRangeMin(), (*fSpectra[channelNum])(0)->GetRangeMax());
 
-        KTINFO("Frequency axis: " << (*fSpectra[channelNum])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
-        KTINFO("Time axis: " << fSpectra[channelNum]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
+        KTINFO("Frequency axis: " << (*fSpectra[channelNum])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz; bin width: " << hist->GetYaxis()->GetBinWidth(1) << " Hz");
+        KTINFO("Time axis: " << fSpectra[channelNum]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s; bin width: " << hist->GetXaxis()->GetBinWidth(1) << " s");
 
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[channelNum]->size(); iBinX++)
         {
