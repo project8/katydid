@@ -159,8 +159,8 @@ namespace Katydid
             catch (std::exception& e)
             {
                 KTERROR(proclog, "An error occurred while connecting signals and slots:\n"
-                        << "\tSignal " << signalName << " from processor " << subNode.GetData("signal-processor") << '\n'
-                        << "\tSlot " << slotName << " from processor " << subNode.GetData("slot-processor") << '\n'
+                        << "\tSignal " << signalName << " from processor " << subNode.GetData("signal-processor") << " (a.k.a. " << signalProc->GetConfigName() << ")" << '\n'
+                        << "\tSlot " << slotName << " from processor " << subNode.GetData("slot-processor") << " (a.k.a. " << slotProc->GetConfigName() << ")" << '\n'
                         << '\t' << e.what());
                 return false;
             }

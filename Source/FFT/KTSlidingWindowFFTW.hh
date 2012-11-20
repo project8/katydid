@@ -27,7 +27,7 @@ class TH2D;
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_sw, "katydid.fft");
+    KTLOGGER(fftlog_sw_fftw, "katydid.fft");
 
     class KTEggHeader;
     class KTEvent;
@@ -35,6 +35,7 @@ namespace Katydid
     class KTTimeSeriesFFTW;
     class KTTimeSeriesData;
     class KTPStoreNode;
+    class KTWriteableData;
 
     /*!
      @class KTSlidingWindowFFTW
@@ -63,7 +64,7 @@ namespace Katydid
     {
         public:
             typedef KTSignal< void (UInt_t, KTFrequencySpectrumFFTW*) >::signal SingleFFTSignal;
-            typedef KTSignal< void (KTSlidingWindowFSDataFFTW*) >::signal FullFFTSignal;
+            typedef KTSignal< void (const KTWriteableData*) >::signal FullFFTSignal;
 
         protected:
             typedef std::map< std::string, Int_t > TransformFlagMap;
@@ -230,7 +231,7 @@ namespace Katydid
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
         {
-            KTWARN(fftlog_sw, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
+            KTWARN(fftlog_sw_fftw, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
             return;
         }
         fTransformFlag = flag;

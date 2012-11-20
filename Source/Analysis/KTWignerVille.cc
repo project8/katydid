@@ -106,7 +106,7 @@ namespace Katydid
             this->AddPair(KTWVPair(first, second));
         }
 
-        const KTPStoreNode* fftNode = node->GetChild("complex-fft");
+        const KTPStoreNode* fftNode = node->GetChild("complex-fftw");
         if (fftNode != NULL)
         {
             delete fFullFFT;

@@ -11,7 +11,7 @@
             },
             "processor":
             {
-                "type": "complex-fft",
+                "type": "complex-fftw",
                 "name": "fft",
                 "is-top-level": true
             },

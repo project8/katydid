@@ -87,7 +87,7 @@
             "wv-pair": "0, 1",
             "input-data-name": "time-series",
             "output-data-name": "wigner-ville",
-            "complex-fft":
+            "complex-fftw":
             {
                 "transform-flag": "ESTIMATE"
             },
