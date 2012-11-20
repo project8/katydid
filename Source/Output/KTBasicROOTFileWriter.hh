@@ -63,6 +63,12 @@ namespace Katydid
             void Write(const KTWriteableData* data);
 
             //************************
+            // Time Series Data
+            //************************
+        public:
+            void Write(const KTTimeSeriesData* data);
+
+            //************************
             // Frequency Spectrum Data
             //************************
         public:
