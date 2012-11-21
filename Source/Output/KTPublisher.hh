@@ -11,9 +11,9 @@
 #include "KTFactory.hh"
 #include "KTPrimaryProcessor.hh"
 
+#include "KTConcurrentQueue.hh"
 #include "KTWriter.hh"
 
-#include <deque>
 #include <set>
 
 namespace Katydid
@@ -39,14 +39,11 @@ namespace Katydid
             typedef PublicationMap::const_iterator PubMapCIter;
             typedef PublicationMap::value_type PubMapValue;
 
-            typedef std::deque< KTEvent* > PublicationQueue;
-            typedef PublicationQueue::iterator PubQueueIter;
-            typedef PublicationQueue::const_iterator PubQueueCIter;
+            typedef KTConcurrentQueue< KTEvent* > PublicationQueue;
 
             enum Status
             {
                 kStopped,
-                kIdle,
                 kRunning
             };
 
@@ -58,6 +55,8 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
             Bool_t Run();
+
+            void Stop();
 
             Status GetStatus() const;
             void SetStatus(KTPublisher::Status);

@@ -25,11 +25,22 @@ namespace Katydid
     {
 
         public:
-            KTConcurrentQueue();
-            virtual ~KTConcurrentQueue();
+            KTConcurrentQueue() :
+                fQueue(),
+                fInterrupt(false),
+                fMutex(),
+                fConditionVar()
+            {
+            }
+
+            virtual ~KTConcurrentQueue()
+            {
+                fQueue.clear();
+            }
 
         private:
             std::deque< XDataType > fQueue;
+            bool fInterrupt;
 
             mutable boost::mutex fMutex;
             boost::condition_variable fConditionVar;
@@ -38,9 +49,10 @@ namespace Katydid
             void push(XDataType const& data)
             {
                 boost::mutex::scoped_lock lock(fMutex);
-                fQueue.push(data);
+                fQueue.push_back(data);
                 lock.unlock();
                 fConditionVar.notify_one();
+                return;
             }
 
             bool empty() const
@@ -52,26 +64,41 @@ namespace Katydid
             bool try_pop(XDataType& popped_value)
             {
                 boost::mutex::scoped_lock lock(fMutex);
+                fInterrupt = false;
                 if(fQueue.empty())
                 {
                     return false;
                 }
 
                 popped_value=fQueue.front();
-                fQueue.pop();
+                fQueue.pop_front();
                 return true;
             }
 
-            void wait_and_pop(XDataType& popped_value)
+            bool wait_and_pop(XDataType& popped_value)
             {
                 boost::mutex::scoped_lock lock(fMutex);
+                fInterrupt = false;
                 while(fQueue.empty())
                 {
                     fConditionVar.wait(lock);
+                    if (fInterrupt)
+                    {
+                        fInterrupt = false;
+                        return false;
+                    }
                 }
 
                 popped_value=fQueue.front();
-                fQueue.pop();
+                fQueue.pop_front();
+                return true;
+            }
+
+            void interrupt()
+            {
+                fInterrupt = true;
+                fConditionVar.notify_one();
+                return;
             }
 
     };

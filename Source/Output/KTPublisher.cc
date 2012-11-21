@@ -8,8 +8,10 @@
 #include "KTPublisher.hh"
 
 #include "KTEvent.hh"
+#include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTWriteableData.hh"
 
 using std::string;
 
@@ -17,10 +19,12 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
+    static KTDerivedRegistrar< KTProcessor, KTPublisher > sPublisherProcRegistrar("publisher");
+
     KTPublisher::KTPublisher() :
             KTPrimaryProcessor(),
             KTFactory< KTWriter >(),
-            fStatus(kIdle),
+            fStatus(kStopped),
             fPubMap(),
             fPubQueue()
     {
@@ -47,6 +51,13 @@ namespace Katydid
         return ProcessQueue();
     }
 
+    void KTPublisher::Stop()
+    {
+        fStatus = kStopped;
+        fPubQueue.interrupt();
+        return;
+    }
+
     Bool_t KTPublisher::AddDataToPublicationList(const string& writerName, const string& dataName)
     {
         PubMapIter pmIter = fPubMap.find(writerName);
@@ -64,7 +75,7 @@ namespace Katydid
             }
 
             // Insert a new writer and data list into the publication map
-            std::pair< PubMapIter, Bool_t > newInsert = fPubMap.insert(PubMapValue(writerName, WriterAndDataList));
+            std::pair< PubMapIter, Bool_t > newInsert = fPubMap.insert(PubMapValue(writerName, WriterAndDataList()));
             if (! newInsert.second)
             {
                 KTERROR(publog, "Failed to insert new data list and writer into the publication map (writer = " << writerName << ";  data = " << dataName << ")");
@@ -125,14 +136,15 @@ namespace Katydid
 
     Bool_t KTPublisher::ProcessQueue()
     {
-        while (! fPubQueue.empty() && fStatus != kStopped)
+        while (fStatus != kStopped)
         {
-            KTEvent* eventToPublish = fPubQueue.front();
-            Publish(eventToPublish);
-            delete eventToPublish;
-            fPubQueue.pop_front();
+            KTEvent* eventToPublish = NULL;
+            if (fPubQueue.wait_and_pop(eventToPublish))
+            {
+                Publish(eventToPublish);
+                delete eventToPublish;
+            }
         }
-        fStatus = kIdle;
         return true;
     }
 
@@ -140,11 +152,9 @@ namespace Katydid
     {
         while (! fPubQueue.empty())
         {
-            if (fStatus == kRunning) fStatus = kIdle;
-
-            KTEvent* eventToRemove = fPubQueue.front();
-            delete eventToRemove;
-            fPubQueue.pop_front();
+            KTEvent* eventToDelete = NULL;
+            fPubQueue.wait_and_pop(eventToDelete);
+            delete eventToDelete;
         }
         return;
     }
@@ -176,12 +186,7 @@ namespace Katydid
 
     void KTPublisher::Queue(KTEvent* event)
     {
-        fPubQueue.push_back(event);
-        if (fStatus == kIdle)
-        {
-            fStatus = kRunning;
-            Run();
-        }
+        fPubQueue.push(event);
         return;
     }
 
