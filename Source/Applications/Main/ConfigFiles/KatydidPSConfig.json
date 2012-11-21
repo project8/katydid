@@ -15,10 +15,16 @@
                 "name": "fft",
                 "is-top-level": true
             },
+            //"processor":
+            //{
+            //    "type": "basic-root-writer",
+            //    "name": "writer",
+            //    "is-top-level": true
+            //},
             "processor":
             {
-                "type": "basic-root-writer",
-                "name": "writer",
+                "type": "publisher",
+                "name": "publisher",
                 "is-top-level": true
             },
             
@@ -38,15 +44,23 @@
             },
             "connection":
             {
-                "signal-processor": "fft",
-                "signal-name": "fft",
-                "slot-processor": "writer",
-                "slot-name": "write-data"
-            },
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "publisher",
+                "slot-name": "queue-event"
+            }
+            //"connection":
+            //{
+            //    "signal-processor": "fft",
+            //    "signal-name": "fft",
+            //    "slot-processor": "writer",
+            //    "slot-name": "write-data"
+            //},
             
             "run-queue":
             {
-                "processor": "egg"
+                "processor": "egg",
+                "processor": "publisher"
             }
         },
         
@@ -62,10 +76,10 @@
             "transform-flag": "ESTIMATE"
         },
         
-        "writer":
-        {
-            "output-file": "/path/to/file.root",
-            "file-flag": "recreate"
-        }
+        //"writer":
+        //{
+        //    "output-file": "/path/to/file.root",
+        //    "file-flag": "recreate"
+        //}
     }
 }
