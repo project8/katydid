@@ -15,6 +15,8 @@
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
 
+#include <boost/shared_ptr.hpp>
+
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
 #include <fftw3.h>
 
@@ -127,7 +129,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(KTEvent* event);
+            void ProcessEvent(boost::shared_ptr<KTEvent> event);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };

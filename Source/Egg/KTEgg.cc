@@ -14,6 +14,7 @@
 #include "KTTimeSeriesData.hh"
 
 using std::string;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -49,22 +50,22 @@ namespace Katydid
         return true;
     }
 
-    KTEvent* KTEgg::HatchNextEvent()
+    shared_ptr<KTEvent> KTEgg::HatchNextEvent()
     {
         if (fReader == NULL || fHeader == NULL)
         {
             KTWARN(egglog, "Not prepared to hatch an event");
-            return NULL;
+            return shared_ptr<KTEvent>();
         }
 
         KTTimeSeriesData* data = fReader->HatchNextEvent(fHeader);
         if (data == NULL)
         {
-            return NULL;
+            return shared_ptr<KTEvent>();
         }
         fEventCounter++;
 
-        KTEvent* newEvent = new KTEvent();
+        shared_ptr<KTEvent> newEvent(new KTEvent());
         newEvent->SetEventNumber(unsigned(fEventCounter));
         newEvent->AddData(data);
 

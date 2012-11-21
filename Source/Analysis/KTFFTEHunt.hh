@@ -20,6 +20,8 @@
 #include "TFile.h"
 #endif
 
+#include <boost/shared_ptr.hpp>
+
 #include <fstream>
 #include <list>
 #include <map>
@@ -66,7 +68,7 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(const KTEvent* event);
+            void ProcessEvent(boost::shared_ptr<KTEvent> event);
 
             void FinishHunt();
 

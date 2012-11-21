@@ -21,6 +21,7 @@
 using std::copy;
 using std::string;
 using std::vector;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -44,7 +45,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (shared_ptr<KTEvent>)");
 
         SetupTransformFlagMap();
     }
@@ -235,7 +236,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessEvent(KTEvent* event)
+    void KTSimpleFFT::ProcessEvent(shared_ptr<KTEvent> event)
     {
         KTDEBUG(fftlog_simp, "Performing FFT of event " << event->GetEventNumber());
         const KTTimeSeriesData* tsData = dynamic_cast< KTProgenitorTimeSeriesData* >(event->GetData(KTProgenitorTimeSeriesData::StaticGetName()));

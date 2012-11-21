@@ -95,7 +95,7 @@ int main(int argc, char** argv)
     }
 
     // Hatch the event
-    KTEvent* event = egg.HatchNextEvent();
+    boost::shared_ptr<KTEvent> event = egg.HatchNextEvent();
     if (event == NULL)
     {
         cout << "No event hatched" << endl;
@@ -130,8 +130,6 @@ int main(int argc, char** argv)
         hist->Draw();
         c1->Print(outputFileNamePS.c_str());
     }
-
-    delete event;
 
     if (drawWaterfall)
     {

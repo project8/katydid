@@ -13,6 +13,8 @@
 
 #include "KTEgg.hh"
 
+#include <boost/shared_ptr.hpp>
+
 namespace Katydid
 {
     class KTPStoreNode;
@@ -46,7 +48,7 @@ namespace Katydid
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
-            typedef KTSignal< void (KTEvent*) >::signal EventSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTEvent>) >::signal EventSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:

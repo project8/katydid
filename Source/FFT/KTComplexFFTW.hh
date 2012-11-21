@@ -15,6 +15,8 @@
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"
 
+#include <boost/shared_ptr.hpp>
+
 #include <fftw3.h>
 
 #include <map>
@@ -143,8 +145,8 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEventForward(KTEvent* event);
-            void ProcessEventReverse(KTEvent* event);
+            void ProcessEventForward(boost::shared_ptr<KTEvent> event);
+            void ProcessEventReverse(boost::shared_ptr<KTEvent> event);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 

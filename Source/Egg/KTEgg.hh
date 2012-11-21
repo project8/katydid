@@ -9,6 +9,8 @@
 #ifndef KTEGG_HH_
 #define KTEGG_HH_
 
+#include <boost/shared_ptr.hpp>
+
 #include <string>
 
 namespace Katydid
@@ -24,7 +26,7 @@ namespace Katydid
             virtual ~KTEgg();
 
             bool BreakEgg(const std::string& filename);
-            KTEvent* HatchNextEvent();
+            boost::shared_ptr<KTEvent> HatchNextEvent();
             bool CloseEgg();
 
             void SetReader(KTEggReader* reader);

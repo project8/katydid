@@ -10,6 +10,8 @@
 
 #include "KTProcessor.hh"
 
+#include <boost/shared_ptr.hpp>
+
 #include <utility>
 #include <vector>
 
@@ -65,7 +67,7 @@ namespace Katydid
 
         public:
             void ProcessFFTData(const KTFrequencySpectrumData* tsData);
-            void ProcessEvent(KTEvent* event);
+            void ProcessEvent(boost::shared_ptr<KTEvent> event);
 
 
     };
