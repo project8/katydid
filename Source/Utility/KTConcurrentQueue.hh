@@ -14,12 +14,16 @@
 #ifndef KTCONCURRENTQUEUE_HH_
 #define KTCONCURRENTQUEUE_HH_
 
+#include "KTLogger.hh"
+
 #include <boost/thread.hpp>
 
 #include <deque>
 
 namespace Katydid
 {
+    KTLOGGER(queuelog, "katydid.utility");
+
     template< class XDataType >
     class KTConcurrentQueue
     {
@@ -48,7 +52,9 @@ namespace Katydid
         public:
             void push(XDataType const& data)
             {
+                KTDEBUG(queuelog, "Attempting to push to queue");
                 boost::mutex::scoped_lock lock(fMutex);
+                KTDEBUG(queuelog, "Pushing to concurrent queue; size: " << fQueue.size());
                 fQueue.push_back(data);
                 lock.unlock();
                 fConditionVar.notify_one();
@@ -59,6 +65,12 @@ namespace Katydid
             {
                 boost::mutex::scoped_lock lock(fMutex);
                 return fQueue.empty();
+            }
+
+            bool size() const
+            {
+                boost::mutex::scoped_lock lock(fMutex);
+                return fQueue.size();
             }
 
             bool try_pop(XDataType& popped_value)
@@ -91,6 +103,7 @@ namespace Katydid
 
                 popped_value=fQueue.front();
                 fQueue.pop_front();
+                KTDEBUG(queuelog, "Popping from concurrent queue; size: " << fQueue.size());
                 return true;
             }
 
