@@ -15,12 +15,6 @@
                 "name": "fft",
                 "is-top-level": true
             },
-            //"processor":
-            //{
-            //    "type": "basic-root-writer",
-            //    "name": "writer",
-            //    "is-top-level": true
-            //},
             "processor":
             {
                 "type": "publisher",
@@ -33,7 +27,8 @@
                 "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "fft",
-                "slot-name": "event"
+                "slot-name": "event",
+                "group-order": 0
             },
             "connection":
             {
@@ -47,15 +42,9 @@
                 "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "publisher",
-                "slot-name": "queue-event"
+                "slot-name": "queue-event",
+                "group-order": 1
             }
-            //"connection":
-            //{
-            //    "signal-processor": "fft",
-            //    "signal-name": "fft",
-            //    "slot-processor": "writer",
-            //    "slot-name": "write-data"
-            //},
             
             "run-queue":
             {
@@ -76,10 +65,23 @@
             "transform-flag": "ESTIMATE"
         },
         
-        //"writer":
-        //{
-        //    "output-file": "/path/to/file.root",
-        //    "file-flag": "recreate"
-        //}
+        "publisher":
+        {
+            "writer":
+            {
+                "type": "basic-root",
+                "name": "brwriter",
+                "configuration":
+                {
+	                "output-file": "/path/to/file.root",
+	                "file-flag": "recreate"
+                }
+            },
+            "publish-data":
+            {
+                "writer-name": "brwriter",
+                "data-name": "frequency-spectrum"
+            }
+        }
     }
 }
