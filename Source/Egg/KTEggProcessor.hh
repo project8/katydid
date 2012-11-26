@@ -9,9 +9,11 @@
 #ifndef KTEGGPROCESSOR_HH_
 #define KTEGGPROCESSOR_HH_
 
-#include "KTProcessor.hh"
+#include "KTPrimaryProcessor.hh"
 
 #include "KTEgg.hh"
+
+#include <boost/shared_ptr.hpp>
 
 namespace Katydid
 {
@@ -45,12 +47,12 @@ namespace Katydid
      \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
      \li \c void () emitted when a file is finished.
     */
-    class KTEggProcessor : public KTProcessor
+    class KTEggProcessor : public KTPrimaryProcessor
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
             typedef KTSignal< void (const KTWriteableData*) >::signal DataSignal;
-            typedef KTSignal< void (KTEvent*) >::signal EventSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTEvent>) >::signal EventSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:

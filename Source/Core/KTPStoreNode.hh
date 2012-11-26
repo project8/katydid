@@ -71,6 +71,12 @@ namespace Katydid
             /// If multiple nodes exist with this name, the choice of the node that gets returned is not defined.
             KTPStoreNode* GetChild(const std::string& nodeName);
 
+            /// Returns the data of this node
+            std::string Value();
+            /// Returns the data of this node, cast to type XType (non-recursive)
+            template< typename XType >
+            XType GetValue() const;
+
             /// Returns true if an immediate-child exists with name dataName, and that child contains data (non-recursive).
             Bool_t HasData(const std::string& dataName) const;
 
@@ -103,6 +109,21 @@ namespace Katydid
             std::string fDefaultValue;
 
     };
+
+    template< typename XType >
+    XType KTPStoreNode::GetValue() const
+    {
+        try
+        {
+            return fTree->get_value< XType >();
+        }
+        catch (boost::property_tree::ptree_bad_data& e)
+        {
+            KTERROR(utillog_psnode, "Unable to convert to the specified type.");
+            throw KTPStoreNodeDataNotFound();
+        }
+    }
+
 
     template< typename XType >
     XType KTPStoreNode::GetData(const std::string& dataName) const

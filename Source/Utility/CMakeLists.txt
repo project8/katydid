@@ -18,6 +18,7 @@ set (UTILITY_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_functions.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties_GetNBins.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTConcurrentQueue.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCutable.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCutableArray.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDestroyer.hh

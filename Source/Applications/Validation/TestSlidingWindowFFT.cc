@@ -86,8 +86,9 @@ int main(int argc, char** argv)
     }
 
     KTINFO(testsw, "Hatching event");
-    KTEvent* event = egg.HatchNextEvent();
-    if (event == NULL)
+    // Hatch the event
+    boost::shared_ptr<KTEvent> event = egg.HatchNextEvent();
+    if (event.get() == NULL)
     {
         KTERROR(testsw, "Event did not hatch");
         egg.CloseEgg();

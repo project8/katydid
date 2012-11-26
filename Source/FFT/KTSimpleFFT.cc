@@ -22,6 +22,7 @@
 using std::copy;
 using std::string;
 using std::vector;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -223,7 +224,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessEvent(KTEvent* event)
+    void KTSimpleFFT::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
         if (tsData == NULL)

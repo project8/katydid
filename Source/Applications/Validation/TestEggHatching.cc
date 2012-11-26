@@ -18,6 +18,8 @@
 #include "KTLogger.hh"
 #include "KTTimeSeriesChannelData.hh"
 
+#include <boost/shared_ptr.hpp>
+
 #include <iostream>
 #include <string>
 
@@ -88,8 +90,8 @@ int main(int argc, char** argv)
            << "\tMonarch Record Size: " << header->GetMonarchRecordSize());
 
     KTINFO(testegg, "Hatching event");
-    KTEvent* event = egg->HatchNextEvent();
-    if (event == NULL)
+    boost::shared_ptr<KTEvent> event = egg->HatchNextEvent();
+    if (event.get() == NULL)
     {
         KTERROR(testegg, "Event did not hatch");
         return -1;
@@ -112,7 +114,6 @@ int main(int argc, char** argv)
 
     KTINFO(testegg, "Test complete; cleaning up");
     egg->CloseEgg();
-    delete event;
     delete egg;
 
     return 0;

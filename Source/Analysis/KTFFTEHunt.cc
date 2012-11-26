@@ -34,6 +34,7 @@ using std::multimap;
 using std::string;
 using std::stringstream;
 using std::vector;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -64,7 +65,7 @@ namespace Katydid
         fConfigName = "fft-e-hunt";
 
         RegisterSlot("header", this, &KTFFTEHunt::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("event", this, &KTFFTEHunt::ProcessEvent, " void (const KTEvent*)");
+        RegisterSlot("event", this, &KTFFTEHunt::ProcessEvent, " void (shared_ptr<KTEvent>)");
         RegisterSlot("event_done", this, &KTFFTEHunt::FinishHunt, "void ()");
 
         fWindowFFT.ConnectASlot("full_fft", &fGainNorm, "freq_spect", 0);
@@ -181,7 +182,7 @@ namespace Katydid
         return;
     }
 
-    void KTFFTEHunt::ProcessEvent(const KTEvent* event)
+    void KTFFTEHunt::ProcessEvent(shared_ptr<KTEvent> event)
     {
         UInt_t iEvent = event->GetEventNumber();
         if (fWriteTextFileFlag)

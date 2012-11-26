@@ -21,6 +21,7 @@
 
 using std::string;
 using std::vector;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -325,7 +326,7 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessEventForward(KTEvent* event)
+    void KTComplexFFTW::ProcessEventForward(shared_ptr<KTEvent> event)
     {
         KTDEBUG(fftlog_comp, "Performing forward FFT of event " << event->GetEventNumber());
         const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fForwardInputDataName));
@@ -340,7 +341,7 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessEventReverse(KTEvent* event)
+    void KTComplexFFTW::ProcessEventReverse(shared_ptr<KTEvent> event)
     {
         KTDEBUG(fftlog_comp, "Performing reverse FFT of event " << event->GetEventNumber());
         const KTFrequencySpectrumDataFFTW* fsData = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(fReverseInputDataName));
