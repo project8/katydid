@@ -13,8 +13,12 @@
 
 #include <boost/thread.hpp>
 
+#include <vector>
+
 using std::deque;
+using std::set;
 using std::string;
+using std::vector;
 
 namespace Katydid
 {
@@ -130,8 +134,8 @@ namespace Katydid
             catch (std::exception& e)
             {
                 KTERROR(proclog, "An error occurred while connecting signals and slots:\n"
-                        << "\tSignal " << signalName << " from processor " << subNode.GetData("signal_processor") << '\n'
-                        << "\tSlot " << slotName << " from processor " << subNode.GetData("slot_processor") << '\n'
+                        << "\tSignal " << signalName << " from processor " << subNode.GetData("signal-processor") << '\n'
+                        << "\tSlot " << slotName << " from processor " << subNode.GetData("slot-processor") << '\n'
                         << '\t' << e.what());
                 return false;
             }
@@ -141,10 +145,13 @@ namespace Katydid
         const KTPStoreNode* subNodePtr = node->GetChild("run-queue");
         if (subNodePtr != NULL)
         {
+            ThreadGroup threadGroup;
             for (KTPStoreNode::const_iterator iter = subNodePtr->Begin(); iter != subNodePtr->End(); iter++)
             {
-                string procName = iter->second.get_value< string >("processor");
+                KTPStoreNode subSubNode = KTPStoreNode(&(iter->second));
+                string procName = subSubNode.GetValue< string >();
                 KTProcessor* procForRunQueue = GetProcessor(procName);
+                KTDEBUG(proclog, "Adding processor of type " << procName << " to the run queue");
                 if (procForRunQueue == NULL)
                 {
                     KTERROR(proclog, "Unable to find processor <" << procName << "> requested for the run queue");
@@ -159,8 +166,10 @@ namespace Katydid
                     delete subNodePtr;
                     return false;
                 }
-                fRunQueue.push_back(primaryProc);
+
+                threadGroup.insert(primaryProc);
             }
+            fRunQueue.push_back(threadGroup);
         }
         else
         {
@@ -211,19 +220,23 @@ namespace Katydid
 
     Bool_t KTProcessorToolbox::Run()
     {
-        for (deque< KTPrimaryProcessor* >::const_iterator iter = fRunQueue.begin(); iter != fRunQueue.end(); iter++)
+        UInt_t iGroup = 0;
+        for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); rqIter++)
         {
-            /*
-            if (! (*iter)->Run())
+            KTDEBUG(proclog, "Starting thread group " << iGroup);
+            boost::thread_group parallelThreads;
+            UInt_t iThread = 0;
+            for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); tgIter++)
             {
-                return false;
+                // create a boost::thread object to launch the thread
+                // use boost::ref to avoid copying the processor
+                KTDEBUG(proclog, "Starting thread " << iThread);
+                parallelThreads.create_thread(boost::ref(**tgIter));
+                iThread++;
             }
-            */
-            // create a boost::thread object to launch the thread
-            // use boost::ref to avoid copying the processor
-            boost::thread thread = boost::thread(boost::ref(**iter));
-            // wait for execution of the thread to finish before continuing
-            thread.join();
+            // wait for execution to complete
+            parallelThreads.join_all();
+            iGroup++;
         }
         return true;
     }
