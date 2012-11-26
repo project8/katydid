@@ -50,6 +50,12 @@ namespace Katydid
         return new KTPStoreNode(&(it->second));
     }
 
+    std::string KTPStoreNode::Value()
+    {
+        return fTree->data();
+    }
+
+
     Bool_t KTPStoreNode::HasData(const string& dataName) const
     {
         KTPStoreNodeDataNotFound dnfException;
