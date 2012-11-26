@@ -14,6 +14,7 @@
 #include "KTWriteableData.hh"
 
 using std::string;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -23,8 +24,8 @@ namespace Katydid
 
     KTPublisher::KTPublisher() :
             KTPrimaryProcessor(),
-            KTFactory< KTWriter >(),
             fStatus(kStopped),
+            fPubFactory(KTFactory< KTWriter >::GetInstance()),
             fPubMap(),
             fPubQueue()
     {
@@ -42,6 +43,59 @@ namespace Katydid
 
     Bool_t KTPublisher::Configure(const KTPStoreNode* node)
     {
+        // Configure writers
+        KTPStoreNode::csi_pair itPair = node->EqualRange("writer");
+        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        {
+            KTPStoreNode subNode = KTPStoreNode(&(it->second));
+            if (! subNode.HasData("type"))
+            {
+                KTERROR(publog, "Unable to add writer: no writer type given");
+                return false;
+            }
+            string writerType = subNode.GetData("type");
+            string writerName = subNode.GetData("name", writerType);
+            KTWriter* newWriter = AddWriter(writerType, writerName);
+
+            if (newWriter == NULL)
+            {
+                KTERROR(publog, "Something went wrong while creating the writer.");
+                return false;
+            }
+
+            const KTPStoreNode* writerConfigNode = subNode.GetChild("configuration");
+            if (! newWriter->Configure(writerConfigNode))
+            {
+                KTERROR(publog, "An error occurred while configuring writer <" << writerName << "> (a.k.a. " << writerType << ")");
+                return false;
+            }
+        }
+
+        // Add data to the publication list
+        itPair = node->EqualRange("publish-data");
+        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        {
+            KTPStoreNode subNode = KTPStoreNode(&(it->second));
+            if (! subNode.HasData("writer-name"))
+            {
+                KTERROR(publog, "Unable to add data for publication; no writer name was given.");
+                return false;
+            }
+            if (! subNode.HasData("data-name"))
+            {
+                KTERROR(publog, "Unable to add data for publication; no data name was given.");
+                return false;
+            }
+            string writerName = subNode.GetData("writer-name");
+            string dataName = subNode.GetData("data-name");
+
+            if (! AddDataToPublicationList(writerName, dataName))
+            {
+                KTERROR(publog, "Something went wrong while adding data for publication: writer name: " << writerName << "; data name: " << dataName);
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -58,7 +112,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTPublisher::AddDataToPublicationList(const string& writerName, const string& dataName)
+    KTWriter* KTPublisher::AddWriter(const std::string& writerType, const std::string& writerName)
     {
         PubMapIter pmIter = fPubMap.find(writerName);
 
@@ -66,26 +120,57 @@ namespace Katydid
         {
             // Writer with writerName does not yet exist
             // Create a new writer
-            KTWriter* newWriter = Create(writerName);
+            KTWriter* newWriter = fPubFactory->Create(writerType);
             if (newWriter == NULL)
             {
                 // Failed to create the writer
-                KTERROR(publog, "Failed to create new writer <" << writerName << "> while trying to add publication of data <" << dataName << ">");
-                return false;
+                KTERROR(publog, "Failed to create new writer <" << writerName << "> of type <" << writerType << ">");
+                return NULL;
             }
 
             // Insert a new writer and data list into the publication map
             std::pair< PubMapIter, Bool_t > newInsert = fPubMap.insert(PubMapValue(writerName, WriterAndDataList()));
             if (! newInsert.second)
             {
-                KTERROR(publog, "Failed to insert new data list and writer into the publication map (writer = " << writerName << ";  data = " << dataName << ")");
+                KTERROR(publog, "Failed to insert new writer into the publication map; writer name: " << writerName << "; writer type: " << writerType);
                 delete newWriter;
-                return false;
+                return NULL;
             }
             // Insertion was successful
             pmIter = newInsert.first;
             // Hand off newWriter to the publication map
             pmIter->second.fWriter = newWriter;
+
+            return newWriter;
+        }
+
+        KTWARN(publog, "A writer with name " << writerName << " has already been added; there is probably a mistake in the configuration file.");
+        return NULL;
+    }
+
+    void KTPublisher::RemoveWriter(const std::string& writerName)
+    {
+        PubMapIter pmIter = fPubMap.find(writerName);
+        if (pmIter == fPubMap.end())
+        {
+            // Writer with writerName was not found in the publication list
+            return;
+        }
+
+        delete pmIter->second.fWriter;
+        fPubMap.erase(pmIter);
+
+        return;
+    }
+
+    Bool_t KTPublisher::AddDataToPublicationList(const string& writerName, const string& dataName)
+    {
+        PubMapIter pmIter = fPubMap.find(writerName);
+
+        if (pmIter == fPubMap.end())
+        {
+            KTERROR(publog, "Did not find writer <" << writerName << ">. Please create and configure the writer in your configuration file.");
+            return false;
         }
 
         // Add dataName to the data list
@@ -114,13 +199,6 @@ namespace Katydid
         // Data with dataName was found in the data list
         pmIter->second.fDataList.erase(dlIter);
 
-        if (pmIter->second.fDataList.empty())
-        {
-            // Data list is now empty, so remove the writer from the publication list
-            delete pmIter->second.fWriter;
-            fPubMap.erase(pmIter);
-        }
-
         return;
     }
 
@@ -136,13 +214,16 @@ namespace Katydid
 
     Bool_t KTPublisher::ProcessQueue()
     {
+        KTDEBUG(publog, "Beginning to process publication queue");
         while (fStatus != kStopped)
         {
-            KTEvent* eventToPublish = NULL;
+            KTDEBUG(publog, "processing . . .");
+            shared_ptr<KTEvent> eventToPublish;
             if (fPubQueue.wait_and_pop(eventToPublish))
             {
+                KTDEBUG(publog, "Event acquired for publishing");
                 Publish(eventToPublish);
-                delete eventToPublish;
+                if (eventToPublish->GetIsLastEvent()) fStatus = kStopped;
             }
         }
         return true;
@@ -152,15 +233,14 @@ namespace Katydid
     {
         while (! fPubQueue.empty())
         {
-            KTEvent* eventToDelete = NULL;
+            shared_ptr<KTEvent> eventToDelete;
             fPubQueue.wait_and_pop(eventToDelete);
-            delete eventToDelete;
         }
         return;
     }
 
 
-    void KTPublisher::Publish(const KTEvent* event)
+    void KTPublisher::Publish(shared_ptr<KTEvent> event)
     {
         if (fStatus == kStopped) return;
 
@@ -184,8 +264,9 @@ namespace Katydid
         return;
     }
 
-    void KTPublisher::Queue(KTEvent* event)
+    void KTPublisher::Queue(shared_ptr<KTEvent> event)
     {
+        KTDEBUG(publog, "Queueing event");
         fPubQueue.push(event);
         return;
     }

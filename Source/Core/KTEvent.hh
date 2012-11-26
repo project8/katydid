@@ -35,8 +35,12 @@ namespace Katydid
             unsigned GetEventNumber() const;
             void SetEventNumber(unsigned num);
 
+            bool GetIsLastEvent() const;
+            void SetIsLastEvent(bool flag);
+
         protected:
             unsigned fEventNum;
+            bool fIsLastEvent;
 
             //*****************************
             // Extensible data
@@ -76,6 +80,17 @@ namespace Katydid
     inline void KTEvent::SetEventNumber(unsigned num)
     {
         fEventNum = num;
+        return;
+    }
+
+    inline bool KTEvent::GetIsLastEvent() const
+    {
+        return fIsLastEvent;
+    }
+
+    inline void KTEvent::SetIsLastEvent(bool flag)
+    {
+        fIsLastEvent = flag;
         return;
     }
 

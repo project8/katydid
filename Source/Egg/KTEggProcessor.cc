@@ -138,6 +138,8 @@ namespace Katydid
             shared_ptr<KTEvent> event = egg.HatchNextEvent();
             if (event.get() == NULL) break;
 
+            if (iEvent == fNEvents - 1) event->SetIsLastEvent(true);
+
             if (event->GetData<KTProgenitorTimeSeriesData>(KTProgenitorTimeSeriesData::StaticGetName()) != NULL)
             {
                 KTDEBUG(egglog, "Time series data is present.");
@@ -145,7 +147,6 @@ namespace Katydid
             else
             {
                 KTWARN(egglog, "No time-series data present in event");
-                continue;
             }
 
             /*

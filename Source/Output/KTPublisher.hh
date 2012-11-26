@@ -14,6 +14,8 @@
 #include "KTConcurrentQueue.hh"
 #include "KTWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 #include <set>
 
 namespace Katydid
@@ -21,7 +23,7 @@ namespace Katydid
     class KTEvent;
     class KTPStoreNode;
 
-    class KTPublisher : public KTPrimaryProcessor, public KTFactory< KTWriter >
+    class KTPublisher : public KTPrimaryProcessor
     {
         protected:
             typedef std::set< std::string > DataList;
@@ -39,7 +41,7 @@ namespace Katydid
             typedef PublicationMap::const_iterator PubMapCIter;
             typedef PublicationMap::value_type PubMapValue;
 
-            typedef KTConcurrentQueue< KTEvent* > PublicationQueue;
+            typedef KTConcurrentQueue< boost::shared_ptr<KTEvent> > PublicationQueue;
 
             enum Status
             {
@@ -69,11 +71,15 @@ namespace Katydid
             // Publication map access
             //**************************
         public:
+            KTWriter* AddWriter(const std::string& writerType, const std::string& writerName);
+            void RemoveWriter(const std::string& writerName);
             Bool_t AddDataToPublicationList(const std::string& writerName, const std::string& dataName);
             void RemoveDataFromPublicationList(const std::string& writerName, const std::string& dataName);
             void ClearPublicationList();
 
         protected:
+            KTFactory< KTWriter >* fPubFactory; // singleton; not owned by KTPublisher
+
             PublicationMap fPubMap;
 
 
@@ -93,11 +99,11 @@ namespace Katydid
             // Slots
             //*********
         public:
-            void Publish(const KTEvent* event);
+            void Publish(boost::shared_ptr<KTEvent> event);
             /// Queue and event for publication
             /// Assumes ownership of the event
             /// If processor is not running, initiates the runnning of the processor (i.e. calls Run())
-            void Queue(KTEvent* event);
+            void Queue(boost::shared_ptr<KTEvent> event);
 
     };
 
