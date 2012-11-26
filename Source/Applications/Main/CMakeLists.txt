@@ -35,8 +35,8 @@ if (ROOT_FOUND)
     add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
     target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
     
-    add_executable (SimpleElectronHunt ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt.cc)
-    target_link_libraries (SimpleElectronHunt KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
+    #add_executable (SimpleElectronHunt ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt.cc)
+    #target_link_libraries (SimpleElectronHunt KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
     
     add_executable (SimpleElectronHunt2 ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt2.cc)
     target_link_libraries (SimpleElectronHunt2 KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
@@ -44,7 +44,7 @@ if (ROOT_FOUND)
     katydid_install_executables ( 
                 ChannelCorrelator
                 ExtractPowerSpectra
-                SimpleElectronHunt
+                #SimpleElectronHunt
                 SimpleElectronHunt2
      )
 endif (ROOT_FOUND)

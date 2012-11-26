@@ -17,8 +17,8 @@
             },
             "processor":
             {
-                "type": "basic-root-writer",
-                "name": "writer",
+                "type": "publisher",
+                "name": "publisher",
                 "is-top-level": true
             },
             
@@ -27,7 +27,8 @@
                 "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "fft",
-                "slot-name": "event"
+                "slot-name": "event",
+                "group-order": 0
             },
             "connection":
             {
@@ -38,15 +39,17 @@
             },
             "connection":
             {
-                "signal-processor": "fft",
-                "signal-name": "fft",
-                "slot-processor": "writer",
-                "slot-name": "write-data"
-            },
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "publisher",
+                "slot-name": "queue-event",
+                "group-order": 1
+            }
             
             "run-queue":
             {
-                "processor": "egg"
+                "processor": "egg",
+                "processor": "publisher"
             }
         },
         
@@ -64,10 +67,23 @@
             "input-data-name": "time-series"
         },
         
-        "writer":
+        "publisher":
         {
-            "output-file": "/path/to/file.root",
-            "file-flag": "recreate"
+            "writer":
+            {
+                "type": "basic-root",
+                "name": "brwriter",
+                "configuration":
+                {
+	                "output-file": "/path/to/file.root",
+	                "file-flag": "recreate"
+                }
+            },
+            "publish-data":
+            {
+                "writer-name": "brwriter",
+                "data-name": "frequency-spectrum"
+            }
         }
     }
 }

@@ -20,6 +20,7 @@
 #include "KTTimeSeriesChannelData.hh"
 
 using std::string;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -32,7 +33,7 @@ namespace Katydid
     static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
 
     KTEggProcessor::KTEggProcessor() :
-            KTProcessor(),
+            KTPrimaryProcessor(),
             fNEvents(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
@@ -46,7 +47,7 @@ namespace Katydid
         fConfigName = "egg-processor";
 
         RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
-        RegisterSignal("event", &fEventSignal, "void (KTEvent*)");
+        RegisterSignal("event", &fEventSignal, "boost::shared_ptr<KTEvent>");
         RegisterSignal("egg_done", &fEggDoneSignal, "void ()");
     }
 
@@ -143,8 +144,10 @@ namespace Katydid
             KTINFO(egglog, "Event " << iEvent);
 
             // Hatch the event
-            KTEvent* event = egg.HatchNextEvent();
-            if (event == NULL) break;
+            shared_ptr<KTEvent> event = egg.HatchNextEvent();
+            if (event.get() == NULL) break;
+
+            if (iEvent == fNEvents - 1) event->SetIsLastEvent(true);
 
             KTTimeSeriesData* newData = event->GetData<KTProgenitorTimeSeriesData>(fOutputDataName);
             if (newData != NULL)
@@ -154,15 +157,12 @@ namespace Katydid
             else
             {
                 KTWARN(egglog, "No time-series data present in event");
-                continue;
             }
 
             // Pass the event to any subscribers
             fEventSignal(event);
 
             iEvent++;
-
-            delete event;
         }
 
         fEggDoneSignal();

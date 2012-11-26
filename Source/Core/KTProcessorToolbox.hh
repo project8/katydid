@@ -12,12 +12,13 @@
 #include "KTConfigurable.hh"
 #include "KTFactory.hh"
 
-#include "KTProcessor.hh"
-
 #include <deque>
+#include <set>
 
 namespace Katydid
 {
+    class KTPrimaryProcessor;
+    class KTProcessor;
 
     /*!
      @class KTProcessorToolbox
@@ -81,13 +82,17 @@ namespace Katydid
             /// Configure top-level processors (i.e. those with top-level blocks in the config. file)
             Bool_t ConfigureProcessors(const KTPStoreNode* node);
 
+        protected:
+            typedef std::set< KTPrimaryProcessor* > ThreadGroup;
+            typedef std::deque< ThreadGroup > RunQueue;
+
         public:
             /// Process the run queue.
             /// This will call Run() on all of the processors in the queue.
             Bool_t Run();
 
         protected:
-            std::deque< KTProcessor* > fRunQueue;
+            RunQueue fRunQueue;
 
         protected:
             struct ProcessorInfo

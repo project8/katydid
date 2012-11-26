@@ -23,6 +23,8 @@ using std::pair;
 using std::string;
 using std::vector;
 
+using boost::shared_ptr;
+
 // I can't just use boost::spirit::qi because of naming conflicts with std
 using boost::spirit::qi::int_;
 // I had to take this out because of a naming conflict with boost::bind
@@ -47,7 +49,7 @@ namespace Katydid
         RegisterSignal("correlation", &fCorrSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData, "void (const KTFrequencySpectrumData*)");
-        RegisterSlot("event", this, &KTCorrelator::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("event", this, &KTCorrelator::ProcessEvent, "void (shared_ptr<KTEvent>)");
     }
 
     KTCorrelator::~KTCorrelator()
@@ -182,7 +184,7 @@ namespace Katydid
         return;
     }
 
-    void KTCorrelator::ProcessEvent(KTEvent* event)
+    void KTCorrelator::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fInputDataName));
         if (fsData == NULL)

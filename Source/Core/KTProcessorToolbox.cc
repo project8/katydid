@@ -8,10 +8,17 @@
 #include "KTProcessorToolbox.hh"
 
 #include "KTLogger.hh"
+#include "KTPrimaryProcessor.hh"
 #include "KTPStoreNode.hh"
 
+#include <boost/thread.hpp>
+
+#include <vector>
+
 using std::deque;
+using std::set;
 using std::string;
+using std::vector;
 
 namespace Katydid
 {
@@ -138,18 +145,31 @@ namespace Katydid
         const KTPStoreNode* subNodePtr = node->GetChild("run-queue");
         if (subNodePtr != NULL)
         {
+            ThreadGroup threadGroup;
             for (KTPStoreNode::const_iterator iter = subNodePtr->Begin(); iter != subNodePtr->End(); iter++)
             {
-                string procName = iter->second.get_value< string >("processor");
+                KTPStoreNode subSubNode = KTPStoreNode(&(iter->second));
+                string procName = subSubNode.GetValue< string >();
                 KTProcessor* procForRunQueue = GetProcessor(procName);
+                KTDEBUG(proclog, "Adding processor of type " << procName << " to the run queue");
                 if (procForRunQueue == NULL)
                 {
                     KTERROR(proclog, "Unable to find processor <" << procName << "> requested for the run queue");
                     delete subNodePtr;
                     return false;
                 }
-                fRunQueue.push_back(procForRunQueue);
+
+                KTPrimaryProcessor* primaryProc = dynamic_cast< KTPrimaryProcessor* >(procForRunQueue);
+                if (primaryProc == NULL)
+                {
+                    KTERROR(proclog, "Processor <" << procName << "> is not a primary processor.");
+                    delete subNodePtr;
+                    return false;
+                }
+
+                threadGroup.insert(primaryProc);
             }
+            fRunQueue.push_back(threadGroup);
         }
         else
         {
@@ -200,12 +220,23 @@ namespace Katydid
 
     Bool_t KTProcessorToolbox::Run()
     {
-        for (deque< KTProcessor* >::const_iterator iter = fRunQueue.begin(); iter != fRunQueue.end(); iter++)
+        UInt_t iGroup = 0;
+        for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); rqIter++)
         {
-            if (! (*iter)->Run())
+            KTDEBUG(proclog, "Starting thread group " << iGroup);
+            boost::thread_group parallelThreads;
+            UInt_t iThread = 0;
+            for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); tgIter++)
             {
-                return false;
+                // create a boost::thread object to launch the thread
+                // use boost::ref to avoid copying the processor
+                KTDEBUG(proclog, "Starting thread " << iThread);
+                parallelThreads.create_thread(boost::ref(**tgIter));
+                iThread++;
             }
+            // wait for execution to complete
+            parallelThreads.join_all();
+            iGroup++;
         }
         return true;
     }
