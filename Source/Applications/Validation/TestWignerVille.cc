@@ -24,6 +24,8 @@
 #include "KTBasicROOTFileWriter.hh"
 #endif
 
+#include <boost/shared_ptr.hpp>
+
 
 using namespace std;
 using namespace Katydid;
@@ -72,7 +74,7 @@ int main(int argc, char** argv)
     }
 
     KTINFO(testwv, "Hatching event");
-    KTEvent* event = egg.HatchNextEvent();
+    boost::shared_ptr<KTEvent> event = egg.HatchNextEvent();
     if (event == NULL)
     {
         KTERROR(testwv, "Event did not hatch");
@@ -86,7 +88,6 @@ int main(int argc, char** argv)
     if (tsData == NULL)
     {
         KTWARN(testwv, "No time-series data present in event");
-        delete event;
         egg.CloseEgg();
         return -1;
     }
@@ -127,7 +128,6 @@ int main(int argc, char** argv)
     KTINFO(testwv, "Test complete; cleaning up");
     egg.CloseEgg();
     delete wvData;
-    delete event;
 
     return 0;
 
