@@ -86,7 +86,6 @@ int main(int argc, char** argv)
     if (tsData == NULL)
     {
         KTWARN(testsw, "No time-series data present in event");
-        delete event;
         egg.CloseEgg();
         return -1;
     }
@@ -125,7 +124,6 @@ int main(int argc, char** argv)
     KTINFO(testsw, "Test complete; cleaning up");
     egg.CloseEgg();
     delete swData;
-    delete event;
 
     return 0;
 
