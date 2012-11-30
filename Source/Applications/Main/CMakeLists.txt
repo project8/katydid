@@ -3,10 +3,12 @@
 
 # Config files
 set (VALIDATION_CONFIGFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/AveragePowerSpectrumConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ChannelCorrelatorConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ExtractPowerSpectraConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSComplexConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSConfig.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSMultithreadedConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidWVConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/SimpleElectronHunt2Config.json
 )
@@ -29,6 +31,9 @@ katydid_install_executables (
 
 
 if (ROOT_FOUND)
+    add_executable (AveragePowerSpectrum ${CMAKE_CURRENT_SOURCE_DIR}/AveragePowerSpectrum.cc)
+    target_link_libraries (AveragePowerSpectrum KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
+
     add_executable (ChannelCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/ChannelCorrelator.cc)
     target_link_libraries (ChannelCorrelator KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput KatydidAnalysis ${LIBS})
 
@@ -42,6 +47,7 @@ if (ROOT_FOUND)
     target_link_libraries (SimpleElectronHunt2 KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
     
     katydid_install_executables ( 
+                AveragePowerSpectrum
                 ChannelCorrelator
                 ExtractPowerSpectra
                 #SimpleElectronHunt

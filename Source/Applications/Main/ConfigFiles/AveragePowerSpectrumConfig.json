@@ -1,0 +1,89 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg",
+                "is-top-level": true
+            },
+            "processor":
+            {
+                "type": "simple-fft",
+                "name": "fft",
+                "is-top-level": true
+            },
+            "processor":
+            {
+                "type": "power-spectrum-averager",
+                "name": "psavg",
+                "is-top-level": true
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "fft",
+                "slot-name": "event"
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header",
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "psavg",
+                "slot-name": "event"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "psavg",
+                "slot-name": "header",
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "egg-done",
+                "slot-processor": "psavg",
+                "slot-name": "finish"
+            },
+            
+            "run-queue":
+            {
+                "processor": "egg"
+            }
+        },
+        
+
+        "egg":
+        {
+            "filename": "/path/to/file.egg",
+            "number-of-events": 1,
+            "output-data-name": "time-series"
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE",
+            "input-data-name": "time-series"
+        },
+        
+        "psavg":
+        {
+            "output-file-path": ""
+            "output-file-base": "average_power_spectrum",
+            "output-file-type": "png"
+        }
+    }
+}
