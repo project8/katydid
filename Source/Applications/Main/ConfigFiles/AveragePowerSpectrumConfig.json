@@ -27,7 +27,7 @@
                 "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "fft",
-                "slot-name": "event"
+                "slot-name": "event",
                 "group-order": 0
             },
             "connection":
@@ -35,21 +35,22 @@
                 "signal-processor": "egg",
                 "signal-name": "header",
                 "slot-processor": "fft",
-                "slot-name": "header",
+                "slot-name": "header"
             },
             "connection":
             {
                 "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "psavg",
-                "slot-name": "event"
+                "slot-name": "event",
+                "group-order": 1
             },
             "connection":
             {
                 "signal-processor": "egg",
                 "signal-name": "header",
                 "slot-processor": "psavg",
-                "slot-name": "header",
+                "slot-name": "header"
             },
             "connection":
             {
@@ -69,21 +70,23 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-events": 1,
+            "number-of-events": 10,
             "output-data-name": "time-series"
         },
         
         "fft":
         {
             "transform-flag": "ESTIMATE",
-            "input-data-name": "time-series"
+            "input-data-name": "time-series",
+            "output-data-name": "frequency-spectrum"
         },
         
         "psavg":
         {
             "output-file-path": ""
             "output-file-base": "average_power_spectrum",
-            "output-file-type": "png"
+            "output-file-type": "png",
+            "input-data-name": "frequency-spectrum"
         }
     }
 }
