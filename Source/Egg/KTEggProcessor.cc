@@ -48,7 +48,7 @@ namespace Katydid
 
         RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
         RegisterSignal("event", &fEventSignal, "boost::shared_ptr<KTEvent>");
-        RegisterSignal("egg_done", &fEggDoneSignal, "void ()");
+        RegisterSignal("egg-done", &fEggDoneSignal, "void ()");
     }
 
     KTEggProcessor::~KTEggProcessor()
