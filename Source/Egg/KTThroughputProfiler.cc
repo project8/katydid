@@ -12,6 +12,8 @@
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
+#include "MonarchTypes.hpp"
+
 #include <sstream>
 
 #ifdef __MACH__
@@ -40,6 +42,7 @@ namespace Katydid
             fEggHeader(),
             fTimeStart(),
             fTimeEnd(),
+            fNEventsProcessed(0),
             fMacTimebase(0.0),
             fMacTimestart(0)
     {
@@ -85,12 +88,14 @@ namespace Katydid
     {
         fEggHeader = *header;
         KTINFO(proflog, "Profiling started");
+        fNEventsProcessed = 0;
         Start();
         return;
     }
 
     void KTThroughputProfiler::ProcessEvent(shared_ptr<KTEvent> event)
     {
+        fNEventsProcessed++;
         return;
     }
 
@@ -100,6 +105,21 @@ namespace Katydid
         KTINFO(proflog, "Profiling stopped");
         timespec diffTime = Elapsed();
         KTINFO(proflog, "Process time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec");
+        Double_t totalSeconds = Double_t(diffTime.tv_sec) + Double_t(diffTime.tv_nsec) * 1.e-9;
+
+        // Data production rate in bytes per second
+        // Acquisition rate is in MHz, so multiply by 10^6
+        Double_t dataProductionRate = Double_t(fEggHeader.GetNChannels()) * fEggHeader.GetAcquisitionRate() * 1.e6 * Double_t(sizeof(DataType));
+
+        // Data throughput rate in bytes per second
+        Double_t dataThroughputRate = 0.;
+        if (totalSeconds != 0)
+            dataThroughputRate = Double_t(fEggHeader.GetRecordSize() * fEggHeader.GetNChannels() * fNEventsProcessed * sizeof(DataType)) / totalSeconds;
+
+        KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
+        KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");
+        KTINFO(proflog, "Analysis time factor: " << dataThroughputRate / dataProductionRate);
+
         return;
     }
 

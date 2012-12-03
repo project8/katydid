@@ -17,8 +17,14 @@
             },
             "processor":
             {
-                "type": "basic-root-writer",
+                "type": "basic-root",
                 "name": "writer",
+                "is-top-level": true
+            },
+            "processor":
+            {
+                "type": "throughput-profiler",
+                "name": "profiler",
                 "is-top-level": true
             },
             
@@ -27,14 +33,32 @@
                 "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "fft",
-                "slot-name": "event"
+                "slot-name": "event",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "profiler",
+                "slot-name": "event",
+                "group-order": 0
             },
             "connection":
             {
                 "signal-processor": "egg",
                 "signal-name": "header",
                 "slot-processor": "fft",
-                "slot-name": "header"
+                "slot-name": "header",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "profiler",
+                "slot-name": "start",
+                "group-order": 0
             },
             "connection":
             {
@@ -42,6 +66,13 @@
                 "signal-name": "fft",
                 "slot-processor": "writer",
                 "slot-name": "write-data"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "egg-done",
+                "slot-processor": "profiler",
+                "slot-name": "stop"
             },
             
             "run-queue":

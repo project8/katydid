@@ -66,6 +66,8 @@ namespace Katydid
             timespec fTimeStart;
             timespec fTimeEnd;
 
+            UInt_t fNEventsProcessed;
+
 #ifdef __MACH__
             double fMacTimebase;
             uint64_t fMacTimestart;

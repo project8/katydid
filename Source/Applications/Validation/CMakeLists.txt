@@ -71,6 +71,9 @@ if (ENABLE_TESTING)
     add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
     target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis KatydidOutput ${LIBS})
 
+    add_executable (TestThroughputProfiler ${CMAKE_CURRENT_SOURCE_DIR}/TestThroughputProfiler.cc)
+    target_link_libraries (TestThroughputProfiler KatydidUtility KatydidEgg ${LIBS})
+
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
 
@@ -92,6 +95,7 @@ if (ENABLE_TESTING)
                      TestSignalsAndSlots
                      TestSimpleFFT
                      TestSlidingWindowFFT
+                     TestThroughputProfiler
                      TestVector
                      TestWignerVille
     )
