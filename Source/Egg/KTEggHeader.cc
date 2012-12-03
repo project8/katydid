@@ -38,5 +38,16 @@ namespace Katydid
     {
     }
 
+    KTEggHeader& KTEggHeader::operator=(const KTEggHeader& rhs)
+    {
+        fFilename = rhs.fFilename;
+        fAcquisitionMode = rhs.fAcquisitionMode;
+        fNChannels = rhs.fNChannels;
+        fRecordSize = rhs.fRecordSize;
+        fMonarchRecordSize = rhs.fMonarchRecordSize;
+        fAcquisitionTime = rhs.fAcquisitionTime;
+        fAcquisitionRate = rhs.fAcquisitionRate;
+        return *this;
+    }
 
 } /* namespace Katydid */

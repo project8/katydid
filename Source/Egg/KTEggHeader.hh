@@ -21,6 +21,8 @@ namespace Katydid
             KTEggHeader(const KTEggHeader& orig);
             ~KTEggHeader();
 
+            KTEggHeader& operator=(const KTEggHeader& rhs);
+
         public:
             void SetFilename(const std::string& fname);
             const std::string& GetFilename() const;
@@ -47,10 +49,10 @@ namespace Katydid
             std::string fFilename;
             UInt_t fAcquisitionMode;
             UInt_t fNChannels;
-            std::size_t fMonarchRecordSize;
-            std::size_t fRecordSize;
+            std::size_t fMonarchRecordSize; /// Number of bins per record-written-to-disk
+            std::size_t fRecordSize; /// Number of bins per Katydid record
             UInt_t fAcquisitionTime;
-            Double_t fAcquisitionRate;
+            Double_t fAcquisitionRate; /// in Hz
 
     };
 

@@ -71,7 +71,7 @@ int main(int argc, char** argv)
         procEgg.ConnectASlot("header", &procEHunt, "header");
 
         // when procEgg is done with the file, procEHunt is notified
-        procEgg.ConnectASlot("egg_done", &procEHunt, "egg_done");
+        procEgg.ConnectASlot("egg-done", &procEHunt, "egg-done");
     }
     catch (std::exception& e)
     {

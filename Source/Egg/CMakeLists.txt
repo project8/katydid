@@ -12,6 +12,7 @@ set (EGG_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArrayFFTW.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTThroughputProfiler.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesChannelData.hh
@@ -31,6 +32,7 @@ set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArrayFFTW.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTThroughputProfiler.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesChannelData.cc

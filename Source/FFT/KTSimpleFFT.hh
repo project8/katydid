@@ -61,12 +61,12 @@ namespace Katydid
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      Slots:
-     \li \c void ProcessHeader(const KTEggHeader* header)
-     \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
-     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal* data)
+     \li \c void ProcessHeader(const KTEggHeader*)
+     \li \c void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
 
      Signals:
-     \li \c void (UInt_t, const KTSimpleFFT*) emitted upon performance of a transform.
+     \li \c void (const KTWriteableData*) emitted upon performance of a transform.
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor

@@ -43,9 +43,9 @@ namespace Katydid
      \li \c -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
-     \li \c void (KTEgg::HeaderInfo info) emitted when the file header is parsed.
-     \li \c void (UInt_t iEvent, const KTEvent* eventPtr) emitted when an event is read from the file.
-     \li \c void () emitted when a file is finished.
+     \li \c "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
+     \li \c "event": void (boost::shared_ptr<KTEvent>) -- emitted when an event is read from the file.
+     \li \c "egg-done": void () --  emitted when a file is finished.
     */
     class KTEggProcessor : public KTPrimaryProcessor
     {

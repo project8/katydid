@@ -17,14 +17,8 @@
             },
             "processor":
             {
-                "type": "basic-root",
-                "name": "writer",
-                "is-top-level": true
-            },
-            "processor":
-            {
-                "type": "throughput-profiler",
-                "name": "profiler",
+                "type": "power-spectrum-averager",
+                "name": "psavg",
                 "is-top-level": true
             },
             
@@ -34,14 +28,6 @@
                 "signal-name": "event",
                 "slot-processor": "fft",
                 "slot-name": "event",
-                "group-order": 1
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "event",
-                "slot-processor": "profiler",
-                "slot-name": "event",
                 "group-order": 0
             },
             "connection":
@@ -49,30 +35,29 @@
                 "signal-processor": "egg",
                 "signal-name": "header",
                 "slot-processor": "fft",
-                "slot-name": "header",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "psavg",
+                "slot-name": "event",
                 "group-order": 1
             },
             "connection":
             {
                 "signal-processor": "egg",
                 "signal-name": "header",
-                "slot-processor": "profiler",
-                "slot-name": "start",
-                "group-order": 0
-            },
-            "connection":
-            {
-                "signal-processor": "fft",
-                "signal-name": "fft",
-                "slot-processor": "writer",
-                "slot-name": "write-data"
+                "slot-processor": "psavg",
+                "slot-name": "header"
             },
             "connection":
             {
                 "signal-processor": "egg",
                 "signal-name": "egg-done",
-                "slot-processor": "profiler",
-                "slot-name": "stop"
+                "slot-processor": "psavg",
+                "slot-name": "finish"
             },
             
             "run-queue":
@@ -85,20 +70,23 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-events": 1,
+            "number-of-events": 10,
             "output-data-name": "time-series"
         },
         
         "fft":
         {
             "transform-flag": "ESTIMATE",
-            "input-data-name": "time-series"
+            "input-data-name": "time-series",
+            "output-data-name": "frequency-spectrum"
         },
         
-        "writer":
+        "psavg":
         {
-            "output-file": "/path/to/file.root",
-            "file-flag": "recreate"
+            "output-file-path": ""
+            "output-file-base": "average_power_spectrum",
+            "output-file-type": "png",
+            "input-data-name": "frequency-spectrum"
         }
     }
 }
