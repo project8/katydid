@@ -21,6 +21,8 @@ namespace Katydid
             KTEggHeader(const KTEggHeader& orig);
             ~KTEggHeader();
 
+            KTEggHeader& operator=(const KTEggHeader& rhs);
+
         public:
             void SetFilename(const std::string& fname);
             const std::string& GetFilename() const;
