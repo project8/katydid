@@ -231,7 +231,7 @@ namespace Katydid
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
         {
-            KTWARN(fftlog_sw_fftw, "Invalid tranform flag requested: " << flag << "\n\tNo change was made.");
+            KTWARN(fftlog_sw_fftw, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
             return;
         }
         fTransformFlag = flag;
