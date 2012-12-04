@@ -32,6 +32,8 @@ using std::map;
 using std::set;
 using std::string;
 
+using boost::shared_ptr;
+
 // I can't just use boost::spirit::qi because of naming conflicts with std
 using boost::spirit::qi::int_;
 // I had to take this out because of a naming conflict with boost::bind
@@ -48,6 +50,7 @@ namespace Katydid
     static KTDerivedRegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
 
     KTWignerVille::KTWignerVille() :
+            KTFFT(),
             KTProcessor(),
             fFullFFT(new KTComplexFFTW()),
             fWindowedFFT(new KTSlidingWindowFFTW()),
@@ -59,6 +62,15 @@ namespace Katydid
             fAAFSOutputDataName("aafs-wigner-ville"),
             fAATSOutputDataName("aats-wigner-ville"),
             fCMTSOutputDataName("cmts-wigner-ville"),
+            fFTPlan(NULL),
+            fInputArray(NULL),
+            fOutputArray(NULL),
+            fTransformFlag("MEASURE"),
+            fIsInitialized(kFALSE),
+            fOverlap(0),
+            fOverlapFrac(0.),
+            fUseOverlapFrac(kFALSE),
+            fWindowFunction(NULL),
             fWVSignal()
     {
         fConfigName = "wigner-ville";
@@ -69,11 +81,18 @@ namespace Katydid
         RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         //RegisterSlot("fs-data", this, &KTWignerVille::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event", this, &KTWignerVille::ProcessEvent, "void (KTEvent*)");
+
+        SetupTransformFlagMap();
     }
 
     KTWignerVille::~KTWignerVille()
     {
         delete fFullFFT;
+        fftw_destroy_plan(fFTPlan);
+        if (fInputArray != NULL) fftw_free(fInputArray);
+        if (fOutputArray != NULL) fftw_free(fOutputArray);
+        delete fWindowFunction;
+        delete fWindowedFFT;
     }
 
     Bool_t KTWignerVille::Configure(const KTPStoreNode* node)
@@ -81,6 +100,25 @@ namespace Katydid
         SetSaveAAFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveAAFrequencySpectrum));
         SetSaveAnalyticAssociate(node->GetData< Bool_t >("save-analytic-associate", fSaveAnalyticAssociate));
         SetSaveCrossMultipliedTimeSeries(node->GetData< Bool_t >("save-cross-multiplied-time-series", fSaveCrossMultipliedTimeSeries));
+
+        if (node->HasData("overlap-time")) SetOverlap(node->GetData< Double_t >("overlap-time", 0));
+        if (node->HasData("overlap-size")) SetOverlap(node->GetData< UInt_t >("overlap-size", 0));
+        if (node->HasData("overlap-frac")) SetOverlapFrac(node->GetData< Double_t >("overlap-frac", 0.));
+
+        string windowType = node->GetData< string >("window-function-type", "rectangular");
+        KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
+        if (tempWF == NULL)
+        {
+            KTERROR(fftlog_sw_fftw, "Invalid window function type given: <" << windowType << ">.");
+            return false;
+        }
+        SetWindowFunction(tempWF);
+
+        const KTPStoreNode* childNode = node->GetChild("window-function");
+        if (childNode != NULL)
+        {
+            fWindowFunction->Configure(childNode);
+        }
 
         SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
         SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
@@ -125,8 +163,56 @@ namespace Katydid
         return true;
     }
 
+    void KTWignerVille::InitializeFFT()
+    {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(wvlog, "No window function has been set. The FFT has not been initialized.");
+            return;
+        }
+
+        // fTransformFlag is guaranteed to be valid in the Set method.
+        KTDEBUG(wvlog, "Transform flag: " << fTransformFlag);
+        TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
+        Int_t transformFlag = iter->second;
+
+        KTDEBUG(wvlog, "Creating plan: " << fWindowFunction->GetSize() << " bins; forward FFT");
+        if (fFTPlan != NULL)
+            fftw_destroy_plan(fFTPlan);
+        fFTPlan = fftw_plan_dft_1d(fWindowFunction->GetSize(), fInputArray, fOutputArray, FFTW_FORWARD, transformFlag);
+        if (fFTPlan != NULL)
+        {
+            KTDEBUG(wvlog, "FFTW plan created");
+            fIsInitialized = true;
+        }
+        else
+        {
+            KTWARN(wvlog, "Unable to create FFTW plan!");
+            fIsInitialized = false;
+        }
+        return;
+    }
+
+
+
     KTSlidingWindowFSDataFFTW* KTWignerVille::TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData, KTTimeSeriesData** outputAAData, KTTimeSeriesData** outputCMTSData)
     {
+        if (! GetIsInitialized())
+        {
+            KTERROR(wvlog, "The FFT for the Wigner-Ville transform is not initialized! Aborting.");
+            return NULL;
+        }
+
+        // # of time bins in each windowed FFT, and the number of bins in the data
+        UInt_t windowSize = fWindowFunction->GetSize();
+        UInt_t dataSize = data->GetTimeSeries(0)->GetNTimeBins();
+        if (windowSize >= dataSize)
+        {
+            KTERROR(wvlog, "Window size is larger than time data: " << windowSize << " > " << dataSize << "\n" <<
+                    "No transform was performed!");
+            return NULL;
+        }
+
         if (fFullFFT == NULL)
         {
             KTERROR(wvlog, "Full FFT is not initialized; cannot perform the transform.");
@@ -142,6 +228,7 @@ namespace Katydid
             }
         }
 
+        /*
         if (fWindowedFFT == NULL)
         {
             KTERROR(wvlog, "Windowed FFT is not present; cannot perform the transform.");
@@ -156,6 +243,7 @@ namespace Katydid
                 return NULL;
             }
         }
+        */
 
         if (fPairs.empty())
         {
@@ -248,6 +336,65 @@ namespace Katydid
             channelAAs[*channelIt] = newTS;
         }
 
+
+
+
+        // Characteristics of the whole windowed FFT
+        UInt_t windowShift = windowSize - GetEffectiveOverlap();
+        UInt_t nWindows = (dataSize - windowSize) / windowShift + 1; // integer arithmetic gets truncated to the nearest integer
+        UInt_t nTimeBinsUsed = windowSize + (nWindows - 1) * windowShift;
+        UInt_t nTimeBinsNotUsed = dataSize - nTimeBinsUsed;
+
+        // Characteristics of the frequency spectrum
+        Double_t timeBinWidth = data->GetTimeSeries(0)->GetTimeBinWidth();
+        Double_t freqMin = GetMinFrequency(timeBinWidth);
+        Double_t freqMax = GetMaxFrequency(timeBinWidth);
+
+        Double_t timeMin = 0.;
+        Double_t timeMax = nTimeBinsUsed * timeBinWidth;
+
+        KTDEBUG(wvlog, "Performing windowed FFT characteristics:\n"
+                << "\tWindow size: " << windowSize << '\n'
+                << "\tWindow shift: " << windowShift << '\n'
+                << "\t# of windows: " << nWindows << '\n'
+                << "\t# of unused bins: " << nTimeBinsNotUsed)
+
+        KTSlidingWindowFSDataFFTW* newData = new KTSlidingWindowFSDataFFTW(fPairs.size());
+
+        // Do WV transform for each pair
+        UInt_t iPair = 0;
+        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
+        {
+            UInt_t firstChannel = (*pairIt).first;
+            UInt_t secondChannel = (*pairIt).second;
+
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nWindows, timeMin, timeMax);
+
+            KTDEBUG(wvlog, "Performing windowed FFT for channels " << firstChannel << " and " << secondChannel)
+
+            UInt_t windowStart = 0;
+            for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
+            {
+                //KTDEBUG(wvlog, "Window: " << iWindow << "; first bin: " << windowStart);
+                CrossMultiplyToInputArray(channelAAs[firstChannel], channelAAs[secondChannel], windowStart);
+                fftw_execute(fFTPlan);
+                (*newSpectra)(iWindow) = ExtractTransformResult(freqMin, freqMax);
+                windowStart += windowShift;
+            }
+            KTINFO(wvlog, "Windowed FFT complete (channels " << firstChannel << " and " << secondChannel << "); windows used: " << nWindows << "; time bins not used: " << nTimeBinsNotUsed);
+            newData->SetSpectra(newSpectra, iPair);
+            iPair++;
+       }
+
+       fWVSignal(newData);
+
+       return newData;
+
+
+
+
+
+/*
         // new KTTimeSeriesPairedData to hold the results of the cross multiplication
         KTTimeSeriesPairedData* crossMultipliedData = new KTTimeSeriesPairedData(fPairs.size());
         if (fSaveCrossMultipliedTimeSeries)
@@ -301,6 +448,7 @@ namespace Katydid
         fWVSignal(newSWFSData);
 
         return newSWFSData;
+*/
     }
 /*
     KTTimeSeriesFFTW* KTWignerVille::Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
@@ -419,10 +567,46 @@ namespace Katydid
         return product;
     }
 
+    void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
+    {
+        UInt_t size = GetSize();
+        UInt_t iPoint1 = offset;
+        UInt_t iPoint2 = size - 1 + offset;
+        for (UInt_t inPoint = 0; inPoint < size; inPoint++)
+        {
+            fInputArray[inPoint][0] = (*data1)(iPoint1)[0] * (*data2)(iPoint2)[0] + (*data1)(iPoint1)[1] * (*data2)(iPoint2)[1];
+            fInputArray[inPoint][1] = (*data1)(iPoint1)[0] * (*data2)(iPoint2)[1] - (*data1)(iPoint1)[1] * (*data2)(iPoint2)[0];
+            iPoint1++;
+            iPoint2--;
+        }
+        return;
+    }
+
+
+    KTFrequencySpectrumFFTW* KTWignerVille::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
+    {
+        UInt_t freqSize = GetFrequencySize();
+        Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
+
+        KTFrequencySpectrumFFTW* newSpect = new KTFrequencySpectrumFFTW(freqSize, freqMin, freqMax);
+        for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
+        {
+            (newSpect->GetData())[iPoint][0] = fOutputArray[iPoint][0] * normalization;
+            (newSpect->GetData())[iPoint][1] = fOutputArray[iPoint][1] * normalization;
+        }
+
+        return newSpect;
+    }
+
     void KTWignerVille::ProcessHeader(const KTEggHeader* header)
     {
         fFullFFT->ProcessHeader(header);
-        fWindowedFFT->ProcessHeader(header);
+
+        fWindowFunction->SetBinWidth(1. / header->GetAcquisitionRate());
+        RecreateFFT();
+        InitializeFFT();
+
+        //fWindowedFFT->ProcessHeader(header);
         return;
     }
 
@@ -467,7 +651,7 @@ namespace Katydid
         return;
     }
     */
-    void KTWignerVille::ProcessEvent(KTEvent* event)
+    void KTWignerVille::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
         if (tsData == NULL)
@@ -489,5 +673,77 @@ namespace Katydid
     {
         return fWindowedFFT;
     }
+
+    void KTWignerVille::RecreateFFT()
+    {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw_fftw, "No window function has been set. The FFT has not been recreated.");
+            return;
+        }
+
+        fftw_destroy_plan(fFTPlan);
+        fFTPlan = NULL;
+        fftw_free(fInputArray);
+        fftw_free(fOutputArray);
+        fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fWindowFunction->GetSize());
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fWindowFunction->GetSize());
+        fIsInitialized = false;
+    }
+
+    void KTWignerVille::SetTransformFlag(const std::string& flag)
+    {
+        if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
+        {
+            KTWARN(wvlog, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
+            return;
+        }
+        fTransformFlag = flag;
+        fIsInitialized = false;
+        return;
+    }
+
+    void KTWignerVille::SetWindowSize(UInt_t nBins)
+    {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw_fftw, "Window function has not been set.");
+            return;
+        }
+        fWindowFunction->SetSize(nBins);
+        RecreateFFT();
+        return;
+    }
+
+    void KTWignerVille::SetWindowLength(Double_t wlTime)
+    {
+        if (fWindowFunction == NULL)
+        {
+            KTERROR(fftlog_sw_fftw, "Window function has not been set.");
+            return;
+        }
+        fWindowFunction->SetLength(wlTime);
+        RecreateFFT();
+        return;
+    }
+
+    void KTWignerVille::SetWindowFunction(KTEventWindowFunction* wf)
+    {
+        delete fWindowFunction;
+        fWindowFunction = wf;
+        RecreateFFT();
+        return;
+    }
+
+    void KTWignerVille::SetupTransformFlagMap()
+    {
+        fTransformFlagMap.clear();
+        fTransformFlagMap["ESTIMATE"] = FFTW_ESTIMATE;
+        fTransformFlagMap["MEASURE"] = FFTW_MEASURE;
+        fTransformFlagMap["PATIENT"] = FFTW_PATIENT;
+        fTransformFlagMap["EXHAUSTIVE"] = FFTW_EXHAUSTIVE;
+        return;
+    }
+
 
 } /* namespace Katydid */
