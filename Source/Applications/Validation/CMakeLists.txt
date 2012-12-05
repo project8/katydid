@@ -32,6 +32,9 @@ if (ENABLE_TESTING)
     add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
     
+    add_executable (TestCacheDirectory ${CMAKE_CURRENT_SOURCE_DIR}/TestCacheDirectory.cc)
+    target_link_libraries (TestCacheDirectory KatydidUtility KatydidCore ${LIBS})
+    
     add_executable (TestComplexFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexFFTW.cc)
     target_link_libraries (TestComplexFFTW KatydidUtility KatydidEgg KatydidFFT ${LIBS})
     
@@ -83,6 +86,7 @@ if (ENABLE_TESTING)
     katydid_install_executables (
                      TestApplication
                      TestAxisProperties
+                     TestCacheDirectory
                      TestComplexFFTW
                      TestComplexPolar
                      TestCorrelator

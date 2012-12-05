@@ -19,8 +19,8 @@ katydid_prepare_project (0 9 1)
 
 #list (APPEND LIBS rt)
 
-# Boost
-find_package (Boost 1.36.0 REQUIRED COMPONENTS program_options thread)
+# Boost (1.46 required for filesystem version 3)
+find_package (Boost 1.46.0 REQUIRED COMPONENTS filesystem program_options system thread)
 include_directories (${Boost_INCLUDE_DIRS})
 list (APPEND LIBS ${Boost_LIBRARIES})
 
