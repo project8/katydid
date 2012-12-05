@@ -7,6 +7,7 @@
 
 #include "KTWignerVille.hh"
 
+#include "KTCacheDirectory.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
@@ -67,6 +68,8 @@ namespace Katydid
             fOutputArray(NULL),
             fTransformFlag("MEASURE"),
             fIsInitialized(kFALSE),
+            fUseWisdom(true),
+            fWisdomFilename("wisdom_wignerville.fftw3"),
             fOverlap(0),
             fOverlapFrac(0.),
             fUseOverlapFrac(kFALSE),
@@ -100,6 +103,11 @@ namespace Katydid
         SetSaveAAFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveAAFrequencySpectrum));
         SetSaveAnalyticAssociate(node->GetData< Bool_t >("save-analytic-associate", fSaveAnalyticAssociate));
         SetSaveCrossMultipliedTimeSeries(node->GetData< Bool_t >("save-cross-multiplied-time-series", fSaveCrossMultipliedTimeSeries));
+
+        SetTransformFlag(node->GetData< string >("transform-flag", fTransformFlag));
+
+        SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
+        SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
 
         if (node->HasData("overlap-time")) SetOverlap(node->GetData< Double_t >("overlap-time", 0));
         if (node->HasData("overlap-size")) SetOverlap(node->GetData< UInt_t >("overlap-size", 0));
@@ -160,6 +168,15 @@ namespace Katydid
             if (! fWindowedFFT->Configure(fftNode)) return false;
         }
 
+        if (fUseWisdom)
+        {
+            if (! KTCacheDirectory::GetInstance()->PrepareForUse())
+            {
+                KTWARN(wvlog, "Unable to use wisdom because cache directory is not ready.");
+                fUseWisdom = false;
+            }
+        }
+
         return true;
     }
 
@@ -176,6 +193,15 @@ namespace Katydid
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         Int_t transformFlag = iter->second;
 
+        if (fUseWisdom)
+        {
+            KTDEBUG(wvlog, "Reading wisdom from file <" << fWisdomFilename << ">");
+            if (fftw_import_wisdom_from_filename(fWisdomFilename.c_str()) == 0)
+            {
+                KTWARN(wvlog, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
+            }
+        }
+
         KTDEBUG(wvlog, "Creating plan: " << fWindowFunction->GetSize() << " bins; forward FFT");
         if (fFTPlan != NULL)
             fftw_destroy_plan(fFTPlan);
@@ -184,6 +210,13 @@ namespace Katydid
         {
             KTDEBUG(wvlog, "FFTW plan created");
             fIsInitialized = true;
+            if (fUseWisdom)
+            {
+                if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
+                {
+                    KTWARN(wvlog, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
+                }
+            }
         }
         else
         {

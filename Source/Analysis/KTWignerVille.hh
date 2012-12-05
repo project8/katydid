@@ -120,6 +120,8 @@ namespace Katydid
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
+            Bool_t GetUseWisdom() const;
+            const std::string& GetWisdomFilename() const;
 
             UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;
@@ -135,6 +137,8 @@ namespace Katydid
             KTEventWindowFunction* GetWindowFunction() const;
 
             void SetTransformFlag(const std::string& flag);
+            void SetUseWisdom(Bool_t flag);
+            void SetWisdomFilename(const std::string& fname);
             void SetWindowSize(UInt_t nBins);
             void SetWindowLength(Double_t wlTime);
             void SetOverlap(UInt_t nBins);
@@ -164,6 +168,8 @@ namespace Katydid
             TransformFlagMap fTransformFlagMap;
 
             Bool_t fIsInitialized;
+            Bool_t fUseWisdom;
+            std::string fWisdomFilename;
 
             UInt_t fOverlap;
             Double_t fOverlapFrac;
@@ -397,6 +403,28 @@ namespace Katydid
     inline void KTWignerVille::SetUseOverlapFrac(Bool_t useOverlapFrac)
     {
         fUseOverlapFrac = useOverlapFrac;
+        return;
+    }
+
+    inline Bool_t KTWignerVille::GetUseWisdom() const
+    {
+        return fUseWisdom;
+    }
+
+    inline const std::string& KTWignerVille::GetWisdomFilename() const
+    {
+        return fWisdomFilename;
+    }
+
+    inline void KTWignerVille::SetUseWisdom(Bool_t flag)
+    {
+        fUseWisdom = flag;
+        return;
+    }
+
+    inline void KTWignerVille::SetWisdomFilename(const std::string& fname)
+    {
+        fWisdomFilename = fname;
         return;
     }
 
