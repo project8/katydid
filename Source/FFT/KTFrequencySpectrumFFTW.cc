@@ -72,6 +72,27 @@ namespace Katydid
         return *this;
     }
 
+    KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::AnalyticAssociate()
+    {
+        // Note: the data storage array is accessed directly, so the FFTW data storage format is used.
+        // Nyquist bin(s) and negative frequency bins are set to 0 (from size/2 to the end of the array)
+        // DC bin stays as is (array position 0).
+        // Positive frequency bins are multiplied by 2 (from array position 1 to size/2).
+        UInt_t nBins = size();
+        UInt_t nyquistPos = nBins / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
+        for (UInt_t arrayPos=1; arrayPos<nyquistPos; arrayPos++)
+        {
+            fData[arrayPos][0] = fData[arrayPos][0] * 2.;
+            fData[arrayPos][1] = fData[arrayPos][1] * 2.;
+        }
+        for (UInt_t arrayPos=nyquistPos; arrayPos<nBins; arrayPos++)
+        {
+            fData[arrayPos][0] = 0.;
+            fData[arrayPos][1] = 0.;
+        }
+        return *this;
+    }
+
 
     KTPowerSpectrum* KTFrequencySpectrumFFTW::CreatePowerSpectrum() const
     {

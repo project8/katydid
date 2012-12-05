@@ -543,13 +543,8 @@ namespace Katydid
         // copy the address of the frequency spectrum to outputFS
         outputFS = &freqSpec;
 
-        // perform the actual W-V transform
-        if (! CalculateAnalyticAssociate(freqSpec))
-        {
-            KTERROR(wvlog, "Something went wrong with the W-V transform of the frequency spectrum.");
-            if (outputFS == NULL) delete freqSpec;
-            return NULL;
-        }
+        // Calculate the analytic associate in frequency space
+        freqSpec->AnalyticAssociate();
 
         // reverse FFT
         KTTimeSeriesFFTW* outputTS = fFullFFT->Transform(freqSpec);
@@ -563,7 +558,7 @@ namespace Katydid
         return outputTS;
     }
 
-
+    /*
     Bool_t KTWignerVille::CalculateAnalyticAssociate(KTFrequencySpectrumFFTW* freqSpectrum)
     {
         // Note: the data storage array is accessed directly, so the FFTW data storage format is used.
@@ -585,7 +580,8 @@ namespace Katydid
         }
         return true;
     }
-
+    */
+    /*
     KTTimeSeriesFFTW* KTWignerVille::CrossMultiply(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2)
     {
         KTTimeSeriesFFTW* product = new KTTimeSeriesFFTW(*data1);
@@ -602,7 +598,7 @@ namespace Katydid
 
         return product;
     }
-
+    */
     void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
     {
         UInt_t size = GetSize();

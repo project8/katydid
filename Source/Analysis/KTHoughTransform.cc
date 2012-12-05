@@ -86,6 +86,12 @@ namespace Katydid
             {
                 newData->SetTransform(newTransform, iChannel);
             }
+
+            for (UInt_t iPS = 0; iPS < inputSpectrum->size(); iPS++)
+            {
+                delete (*inputSpectrum)(iPS);
+            }
+            delete powerSpectrum;
         }
 
         newData->SetEvent(data->GetEvent());
@@ -158,73 +164,6 @@ namespace Katydid
                 }
             }
         }
-
-        /*
-        Double_t radius, value;
-        UInt_t iRadius;
-        for (UInt_t iTime = 0; iTime < nTimeBins; iTime++)
-        {
-            for (UInt_t iFreq = 3; iFreq < nFreqBins; iFreq++)
-            {
-                theta = 0.;
-                for (UInt_t iTheta = 0; iTheta < fNThetaPoints; iTheta++)
-                {
-                    radius = sqrt(Double_t(iTime*iTime + iFreq*iFreq)) * cos(theta - atan2(Double_t(iTime), Double_t(iFreq)));
-
-                    iRadius = (*newTransform)(iTheta)->FindBin(radius);
-
-                    value = (*(*powerSpectrum)(iTime))(iFreq);
-
-                    (*(*newTransform)(iTheta))(iRadius) = (*(*newTransform)(iTheta))(iRadius) + value;
-
-                    theta += deltaTheta;
-                }
-            }
-        }
-        */
-        /*
-        // loop over theta bins
-        Double_t cosTheta, sinTheta, tTerm, time, freq, radius, value;
-        UInt_t iRadius;
-        Double_t theta = newTransform->GetBinCenter(0);
-        for (UInt_t iTheta=0; iTheta < fNThetaPoints; iTheta++)
-        {
-            KTPhysicalArray< 1, Double_t >* newRArray = new KTPhysicalArray< 1, Double_t >(fNRPoints, -maxR, maxR);
-
-            cosTheta = cos(theta);
-            sinTheta = sin(theta);
-
-            // loop over time bins
-            time = powerSpectrum->GetBinCenter(0) * timeScaling;
-            for (UInt_t iTime=0; iTime < nTimeBins; iTime++)
-            {
-                tTerm = time * cosTheta;
-
-                // loop over freq bins
-                freq = (*powerSpectrum)(iTime)->GetBinCenter(0) * freqScaling;
-                for (UInt_t iFreq=0; iFreq < nFreqBins; iFreq++)
-                {
-                    radius = tTerm + freq * sinTheta;
-                    //iRadius = newRArray->FindBin(tTerm + freq * sinTheta);
-                    iRadius = newRArray->FindBin(radius);
-
-                    value = (*(*powerSpectrum)(iTime))(iFreq);
-
-                    //KTDEBUG(htlog, iTheta << "  " << iTime << "  " << iFreq << "  " << time << "  " << freq << "  " << tTerm << "  " << freq*sinTheta << "  " << radius << "  " << iRadius);
-                    //if (value > 1.e-4)
-                        (*newRArray)(iRadius) = (*newRArray)(iRadius) + value;
-
-                    freq += deltaFreq;
-                } // end loop over freq bins
-
-                time += deltaTime;
-            } // end loop over time bins
-
-            (*newTransform)(iTheta) = newRArray;
-
-            theta += deltaTheta;
-        } // end loop over theta bins
-        */
 
         return newTransform;
     }

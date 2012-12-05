@@ -152,9 +152,9 @@ namespace Katydid
             /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
             KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
             /// Calculates the AA in place.
-            Bool_t CalculateAnalyticAssociate(KTFrequencySpectrumFFTW* freqSpectrum);
+            //Bool_t CalculateAnalyticAssociate(KTFrequencySpectrumFFTW* freqSpectrum);
 
-            KTTimeSeriesFFTW* CrossMultiply(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2);
+            //KTTimeSeriesFFTW* CrossMultiply(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2);
 
             void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
             KTFrequencySpectrumFFTW* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;

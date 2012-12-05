@@ -62,7 +62,10 @@ namespace Katydid
 
             virtual KTFrequencySpectrumFFTW& operator=(const KTFrequencySpectrumFFTW& rhs);
 
+            /// In-place calculation of the complex conjugate
             virtual KTFrequencySpectrumFFTW& CConjugate();
+            /// In-place calculation of the analytic associate
+            virtual KTFrequencySpectrumFFTW& AnalyticAssociate();
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
