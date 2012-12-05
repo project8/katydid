@@ -135,6 +135,31 @@ namespace Katydid
             theta += deltaTheta;
         }
 
+        Double_t timeVal, freqVal, value, radius;
+        UInt_t iRadius;
+        for (UInt_t iTime = 0; iTime < nTimeBins; iTime++)
+        {
+            timeVal = Double_t(iTime);
+
+            for (UInt_t iFreq = 0; iFreq < nFreqBins; iFreq++)
+            {
+                value = (*(*powerSpectrum)(iTime))(iFreq);
+                if (value < 1.e-4) continue; // HARD CODED THRESHOLD
+
+                freqVal = Double_t(iFreq);
+
+                for (UInt_t iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+                {
+                    radius = timeVal * cosTheta[iTheta] + freqVal * sinTheta[iTheta];
+
+                    iRadius = (*newTransform)(iTheta)->FindBin(radius);
+
+                    (*(*newTransform)(iTheta))(iRadius) = (*(*newTransform)(iTheta))(iRadius) + value;
+                }
+            }
+        }
+
+        /*
         Double_t radius, value;
         UInt_t iRadius;
         for (UInt_t iTime = 0; iTime < nTimeBins; iTime++)
@@ -156,7 +181,7 @@ namespace Katydid
                 }
             }
         }
-
+        */
         /*
         // loop over theta bins
         Double_t cosTheta, sinTheta, tTerm, time, freq, radius, value;

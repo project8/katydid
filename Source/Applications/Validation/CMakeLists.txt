@@ -56,6 +56,9 @@ if (ENABLE_TESTING)
     add_executable (TestFrequencySpectrumFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestFrequencySpectrumFFTW.cc)
     target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidEgg KatydidFFT ${LIBS})
     
+    add_executable (TestHoughTransform ${CMAKE_CURRENT_SOURCE_DIR}/TestHoughTransform.cc)
+    target_link_libraries (TestHoughTransform KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis ${LIBS})
+        
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${LIBS})
     
@@ -94,6 +97,7 @@ if (ENABLE_TESTING)
                      TestCutableArray
                      TestEggHatching
                      TestFrequencySpectrumFFTW
+                     TestHoughTransform
                      TestLogger
                      TestParameterStore
                      TestSignalsAndSlots
@@ -108,6 +112,7 @@ if (ENABLE_TESTING)
     #add_test (Test_ExtractEvents ExtractEvents)
     add_test (Test_Application TestApplication)
     add_test (Test_AxisProperties TestAxisProperties)
+    add_test (Test_CacheDirectory TestCacheDirectory)
     add_test (Test_ComplexFFTW TestComplexFFTW)
     add_test (Test_ComplexPolar TestComplexPolar)
     add_test (Test_Correlator TestCorrelator)
@@ -115,11 +120,13 @@ if (ENABLE_TESTING)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_EggHatching TestEggHatching)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)
+    add_test (Test_HoughTransform TestHoughTransform)
     add_test (Test_Logger TestLogger)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
+    add_test (Test_ThroughputProfiler TestThroughputProfiler)
     add_test (Test_Vector TestVector)
     add_test (Test_WignerVille TestWignerVille)
     
