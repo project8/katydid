@@ -7,6 +7,7 @@
 
 #include "KTSimpleFFT.hh"
 
+#include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
 #include "KTFactory.hh"
@@ -18,8 +19,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 using std::copy;
+using std::stringstream;
 using std::string;
 using std::vector;
 using boost::shared_ptr;
@@ -38,6 +41,8 @@ namespace Katydid
             fOutputArray(NULL),
             fTransformFlag("MEASURE"),
             fIsInitialized(false),
+            fUseWisdom(true),
+            fWisdomFilenameBase("wisdom_simplefft_"),
             fInputDataName("time-series"),
             fOutputDataName("frequency-spectrum"),
             fFFTSignal()
@@ -66,10 +71,23 @@ namespace Katydid
         if (node != NULL)
         {
             SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
+
+            SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
+            SetWisdomFilenameBase(node->GetData<string>("wisdom-filename-base", fWisdomFilenameBase));
+
+            SetInputDataName(node->GetData<string>("input-data-name", fInputDataName));
+            SetOutputDataName(node->GetData<string>("output-data-name", fOutputDataName));
+
         }
 
-        SetInputDataName(node->GetData<string>("input-data-name", fInputDataName));
-        SetOutputDataName(node->GetData<string>("output-data-name", fOutputDataName));
+        if (fUseWisdom)
+        {
+            if (! KTCacheDirectory::GetInstance()->PrepareForUse())
+            {
+                KTWARN(fftlog_simp, "Unable to use wisdom because cache directory is not ready.");
+                fUseWisdom = false;
+            }
+        }
 
         // Command-line settings
         //SetTransformFlag(fCLHandler->GetCommandLineValue< string >("transform-flag", fTransformFlag));
@@ -83,6 +101,19 @@ namespace Katydid
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         Int_t transformFlag = iter->second;
 
+        string wisdomFilename;
+        if (fUseWisdom)
+        {
+            stringstream conv;
+            conv << fTimeSize;
+            wisdomFilename = KTCacheDirectory::GetInstance()->GetPath() + "/" + fWisdomFilenameBase + conv.str() + ".fftw3";
+            KTDEBUG(fftlog_simp, "Reading wisdom from file <" << wisdomFilename << ">");
+            if (fftw_import_wisdom_from_filename(wisdomFilename.c_str()) == 0)
+            {
+                KTWARN(fftlog_simp, "Unable to read FFTW wisdom from file <" << wisdomFilename << ">");
+            }
+        }
+
         fFTPlan = fftw_plan_dft_r2c_1d(fTimeSize, fInputArray, fOutputArray, transformFlag);
         if (fFTPlan != NULL)
         {
@@ -90,6 +121,13 @@ namespace Katydid
             KTDEBUG(fftlog_simp, "FFT is initialized" << '\n' <<
                     "\tTime-domain size: " << fTimeSize << '\n' <<
                     "\tFrequency-domain size: " << GetFrequencySize());
+            if (fUseWisdom)
+            {
+                if (fftw_export_wisdom_to_filename(wisdomFilename.c_str()) == 0)
+                {
+                    KTWARN(fftlog_simp, "Unable to write FFTW wisdom to file <" << wisdomFilename << ">");
+                }
+            }
         }
         else
         {

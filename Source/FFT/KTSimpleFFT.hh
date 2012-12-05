@@ -100,9 +100,13 @@ namespace Katydid
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
+            Bool_t GetUseWisdom() const;
+            const std::string& GetWisdomFilenameBase() const;
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
+            void SetUseWisdom(Bool_t flag);
+            void SetWisdomFilenameBase(const std::string& fnameBase);
 
             const std::string& GetInputDataName() const;
             void SetInputDataName(const std::string& name);
@@ -124,6 +128,8 @@ namespace Katydid
             TransformFlagMap fTransformFlagMap;
 
             Bool_t fIsInitialized;
+            Bool_t fUseWisdom;
+            std::string fWisdomFilenameBase;
 
             std::string fInputDataName;
             std::string fOutputDataName;
@@ -175,6 +181,28 @@ namespace Katydid
     inline Bool_t KTSimpleFFT::GetIsInitialized() const
     {
         return fIsInitialized;
+    }
+
+    inline Bool_t KTSimpleFFT::GetUseWisdom() const
+    {
+        return fUseWisdom;
+    }
+
+    inline const std::string& KTSimpleFFT::GetWisdomFilenameBase() const
+    {
+        return fWisdomFilenameBase;
+    }
+
+    inline void KTSimpleFFT::SetUseWisdom(Bool_t flag)
+    {
+        fUseWisdom = flag;
+        return;
+    }
+
+    inline void KTSimpleFFT::SetWisdomFilenameBase(const std::string& fnameBase)
+    {
+        fWisdomFilenameBase = fnameBase;
+        return;
     }
 
     inline const std::string& KTSimpleFFT::GetInputDataName() const
