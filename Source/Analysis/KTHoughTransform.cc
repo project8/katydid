@@ -13,7 +13,7 @@
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPowerSpectrum.hh"
+#include "KTFrequencySpectrum.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTWriteableData.hh"
@@ -75,9 +75,9 @@ namespace Katydid
         {
             const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum = data->GetSpectra(iChannel);
 
-            KTPhysicalArray< 1, KTPowerSpectrum* >* powerSpectrum = CreatePowerSpectrum(inputSpectrum);
+            KTPhysicalArray< 1, KTFrequencySpectrum* >* freqSpectra = RemoveNegativeFrequencies(inputSpectrum);
 
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = TransformSpectrum(powerSpectrum);
+            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = TransformSpectrum(freqSpectra);
             if (newTransform == NULL)
             {
                 KTERROR(htlog, "Something went wrong in transform " << iChannel);
@@ -87,11 +87,11 @@ namespace Katydid
                 newData->SetTransform(newTransform, iChannel);
             }
 
-            for (UInt_t iPS = 0; iPS < inputSpectrum->size(); iPS++)
+            for (UInt_t iPS = 0; iPS < freqSpectra->size(); iPS++)
             {
-                delete (*inputSpectrum)(iPS);
+                delete (*freqSpectra)(iPS);
             }
-            delete powerSpectrum;
+            delete freqSpectra;
         }
 
         newData->SetEvent(data->GetEvent());
@@ -102,32 +102,19 @@ namespace Katydid
         return newData;
     }
 
-    KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughTransform::TransformSpectrum(const KTPhysicalArray< 1, KTPowerSpectrum* >* powerSpectrum)
+    KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughTransform::TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrum* >* powerSpectrum)
     {
-        // The time and frequency axes are scaled so that their ranges are both 0-1 (+ half a bin width on either end)
-
-        //Double_t freqMin = fabs((*inputSpectrum)(0)->GetRangeMin());
-        //Double_t freqMax = fabs((*inputSpectrum)(0)->GetRangeMax());
-        //Double_t maxR = inputSpectrum->GetRangeMax() + (freqMax > freqMin ? freqMax : freqMin);
-
         UInt_t nTimeBins = powerSpectrum->size();
         UInt_t nFreqBins = (*powerSpectrum)(0)->size();
 
         KTINFO(htlog, "time info: " << nTimeBins << "  " << powerSpectrum->GetRangeMin() << "  " << powerSpectrum->GetRangeMax() << "  " << powerSpectrum->GetBinWidth());
         KTINFO(htlog, "freq info: " << nFreqBins << "  " << (*powerSpectrum)(0)->GetRangeMin() << "  " << (*powerSpectrum)(0)->GetRangeMax() << "  " << (*powerSpectrum)(0)->GetBinWidth());
 
-        //Double_t timeScaling = 1. / ((Double_t(nTimeBins) - 0.5) * powerSpectrum->GetBinWidth());
-        //Double_t freqScaling = 1. / ((Double_t(nFreqBins) - 0.5) * (*powerSpectrum)(0)->GetBinWidth());
-        //Double_t maxR = 2.;
         Double_t maxR = sqrt(Double_t(nTimeBins*nTimeBins + nFreqBins*nFreqBins));
 
         KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = new KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >(fNThetaPoints, 0., KTMath::Pi());
 
         Double_t deltaTheta = KTMath::Pi() / (Double_t)fNThetaPoints;
-        //Double_t deltaTime = powerSpectrum->GetBinWidth() * timeScaling;
-        //Double_t deltaFreq = (*powerSpectrum)(0)->GetBinWidth() * freqScaling;
-
-        //KTINFO(htlog, deltaTime << "  " << deltaFreq << "  " << timeScaling << "  " << freqScaling);
 
         // initial loop over theta bins to create the KTPhysicalArrays and to cache cosTheta and sinTheta values
         vector< Double_t > cosTheta(fNThetaPoints);
@@ -149,7 +136,7 @@ namespace Katydid
 
             for (UInt_t iFreq = 0; iFreq < nFreqBins; iFreq++)
             {
-                value = (*(*powerSpectrum)(iTime))(iFreq);
+                value = (*(*powerSpectrum)(iTime))(iFreq).abs();
                 if (value < 1.e-4) continue; // HARD CODED THRESHOLD
 
                 freqVal = Double_t(iFreq);
@@ -169,15 +156,15 @@ namespace Katydid
     }
 
 
-    KTPhysicalArray< 1, KTPowerSpectrum* >* KTHoughTransform::CreatePowerSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum)
+    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTHoughTransform::RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum)
     {
         UInt_t nTimeBins = inputSpectrum->size();
-        KTPhysicalArray< 1, KTPowerSpectrum* >* newPowerSpectrum = new KTPhysicalArray< 1, KTPowerSpectrum* >(nTimeBins, inputSpectrum->GetRangeMin(), inputSpectrum->GetRangeMax());
+        KTPhysicalArray< 1, KTFrequencySpectrum* >* newFrequencySpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(nTimeBins, inputSpectrum->GetRangeMin(), inputSpectrum->GetRangeMax());
 
         for (Int_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            KTPowerSpectrum* newSinglePS = (*inputSpectrum)(iTimeBin)->CreatePowerSpectrum();
-            (*newPowerSpectrum)(iTimeBin) = newSinglePS;
+            KTFrequencySpectrum* newSpectrum = (*inputSpectrum)(iTimeBin)->CreateFrequencySpectrum();
+            (*newFrequencySpectra)(iTimeBin) = newSpectrum;
         }
 /*
         TFile* f = new TFile("htpowerspect.root", "recreate");
@@ -202,7 +189,7 @@ namespace Katydid
         hist->Write();
         f->Close();
 */
-        return newPowerSpectrum;
+        return newFrequencySpectra;
     }
 
 
