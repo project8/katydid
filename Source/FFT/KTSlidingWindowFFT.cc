@@ -7,6 +7,7 @@
 
 #include "KTSlidingWindowFFT.hh"
 
+#include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
 #include "KTTimeSeriesChannelData.hh"
@@ -33,6 +34,8 @@ namespace Katydid
             fOutputArray(NULL),
             fTransformFlag("MEASURE"),
             fIsInitialized(kFALSE),
+            fUseWisdom(true),
+            fWisdomFilename("wisdom_slidingwindowfft.fftw3"),
             fOverlap(0),
             fOverlapFrac(0.),
             fUseOverlapFrac(kFALSE),
@@ -67,6 +70,9 @@ namespace Katydid
         // Config-file options
         SetTransformFlag(node->GetData< string >("transform-flag", fTransformFlag));
 
+        SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
+        SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
+
         if (node->HasData("overlap-time")) SetOverlap(node->GetData< Double_t >("overlap-time", 0));
         if (node->HasData("overlap-size")) SetOverlap(node->GetData< UInt_t >("overlap-size", 0));
         if (node->HasData("overlap-frac")) SetOverlapFrac(node->GetData< Double_t >("overlap-frac", 0.));
@@ -88,6 +94,15 @@ namespace Katydid
 
         SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
         SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
+
+        if (fUseWisdom)
+        {
+            if (! KTCacheDirectory::GetInstance()->PrepareForUse())
+            {
+                KTWARN(fftlog_sw, "Unable to use wisdom because cache directory is not ready.");
+                fUseWisdom = false;
+            }
+        }
 
         // No command-line options
 
@@ -138,12 +153,28 @@ namespace Katydid
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         Int_t transformFlag = iter->second;
 
+        if (fUseWisdom)
+        {
+            KTDEBUG(fftlog_sw, "Reading wisdom from file <" << fWisdomFilename << ">");
+            if (fftw_import_wisdom_from_filename(fWisdomFilename.c_str()) == 0)
+            {
+                KTWARN(fftlog_sw, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
+            }
+        }
+
         KTDEBUG(fftlog_sw, "Creating plan: " << fWindowFunction->GetSize() << " bins; forward FFT");
         if (fFTPlan != NULL)
             fftw_destroy_plan(fFTPlan);
         fFTPlan = fftw_plan_dft_r2c_1d(fWindowFunction->GetSize(), fInputArray, fOutputArray, transformFlag);
         if (fFTPlan != NULL)
         {
+            if (fUseWisdom)
+            {
+                if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
+                {
+                    KTWARN(fftlog_sw, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
+                }
+            }
             KTDEBUG(fftlog_sw, "FFTW plan created");
             fIsInitialized = true;
         }

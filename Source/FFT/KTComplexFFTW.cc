@@ -7,6 +7,7 @@
 
 #include "KTComplexFFTW.hh"
 
+#include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
 #include "KTEvent.hh"
 #include "KTFactory.hh"
@@ -39,6 +40,8 @@ namespace Katydid
             fTransformFlag("MEASURE"),
             fTransformFlagMap(),
             fIsInitialized(false),
+            fUseWisdom(true),
+            fWisdomFilename("wisdom_complexfft.fftw3"),
             fForwardInputDataName("time-series"),
             fForwardOutputDataName("frequency-spectrum"),
             fReverseInputDataName("frequency-spectrum"),
@@ -74,10 +77,22 @@ namespace Katydid
         {
             SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
 
+            SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
+            SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
+
             SetForwardInputDataName(node->GetData<string>("forward-input-data-name", fForwardInputDataName));
             SetForwardOutputDataName(node->GetData<string>("forward-output-data-name", fForwardOutputDataName));
             SetReverseInputDataName(node->GetData<string>("reverse-input-data-name", fReverseInputDataName));
             SetReverseOutputDataName(node->GetData<string>("reverse-output-data-name", fReverseOutputDataName));
+        }
+
+        if (fUseWisdom)
+        {
+            if (! KTCacheDirectory::GetInstance()->PrepareForUse())
+            {
+                KTWARN(fftlog_comp, "Unable to use wisdom because cache directory is not ready.");
+                fUseWisdom = false;
+            }
         }
 
         // Command-line settings
@@ -96,6 +111,15 @@ namespace Katydid
         // allocate the input and output arrays if they're not there already
         AllocateArrays();
 
+        if (fUseWisdom)
+        {
+            KTDEBUG(fftlog_comp, "Reading wisdom from file <" << fWisdomFilename << ">");
+            if (fftw_import_wisdom_from_filename(fWisdomFilename.c_str()) == 0)
+            {
+                KTWARN(fftlog_comp, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
+            }
+        }
+
         KTDEBUG(fftlog_comp, "Creating plan: " << fSize << " bins; forward FFT");
         fForwardPlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
         KTDEBUG(fftlog_comp, "Creating plan: " << fSize << " bins; backward FFT");
@@ -106,6 +130,13 @@ namespace Katydid
             fIsInitialized = true;
             // delete the input and output arrays to save memory, since they're not needed for the transform
             FreeArrays();
+            if (fUseWisdom)
+            {
+                if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
+                {
+                    KTWARN(fftlog_comp, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
+                }
+            }
             KTDEBUG(fftlog_comp, "FFTW plans created; Initialization complete.");
         }
         else

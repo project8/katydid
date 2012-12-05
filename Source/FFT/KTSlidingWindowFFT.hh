@@ -52,6 +52,8 @@ namespace Katydid
 
      Available configuration values:
      \li \c "transform-flag": string -- flag that determines how much planning is done prior to any transforms
+     \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
+     \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
      \li \c "overlap-time": float -- sets the overlap in time units
      \li \c "overlap-size": int -- sets the overlap in number of bins
      \li \c "overlap-frac": float -- sets the overlap in fraction of the window length
@@ -95,9 +97,13 @@ namespace Katydid
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
+            Bool_t GetUseWisdom() const;
+            const std::string& GetWisdomFilename() const;
 
             /// note: SetTransformFlag sets fIsInitialized to kFALSE.
             void SetTransformFlag(const std::string& flag);
+            void SetUseWisdom(Bool_t flag);
+            void SetWisdomFilename(const std::string& fname);
             void SetWindowSize(UInt_t nBins);
             void SetWindowLength(Double_t wlTime);
             void SetOverlap(UInt_t nBins);
@@ -125,6 +131,8 @@ namespace Katydid
             TransformFlagMap fTransformFlagMap;
 
             Bool_t fIsInitialized;
+            Bool_t fUseWisdom;
+            std::string fWisdomFilename;
 
             UInt_t fOverlap;
             Double_t fOverlapFrac;
@@ -251,6 +259,28 @@ namespace Katydid
     inline void KTSlidingWindowFFT::SetUseOverlapFrac(Bool_t useOverlapFrac)
     {
         fUseOverlapFrac = useOverlapFrac;
+        return;
+    }
+
+    inline Bool_t KTSlidingWindowFFT::GetUseWisdom() const
+    {
+        return fUseWisdom;
+    }
+
+    inline const std::string& KTSlidingWindowFFT::GetWisdomFilename() const
+    {
+        return fWisdomFilename;
+    }
+
+    inline void KTSlidingWindowFFT::SetUseWisdom(Bool_t flag)
+    {
+        fUseWisdom = flag;
+        return;
+    }
+
+    inline void KTSlidingWindowFFT::SetWisdomFilename(const std::string& fname)
+    {
+        fWisdomFilename = fname;
         return;
     }
 

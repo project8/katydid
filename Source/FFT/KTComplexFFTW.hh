@@ -51,6 +51,8 @@ namespace Katydid
 
      Available configuration values:
      \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
+     \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
+     \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
      \li \c "forward-input-data-name": string -- name of the data to find if processing an event in the forward direction
      \li \c "forward-output-data-name": string -- name to give to the data produced by a forward FFT
      \li \c "reverse-input-data-name": string -- name of the data to find if processing an event in the reverse direction
@@ -112,6 +114,8 @@ namespace Katydid
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
+            Bool_t GetUseWisdom() const;
+            const std::string& GetWisdomFilename() const;
 
             /// note: SetSize creates a new fTransform.
             ///       It also sets fIsInitialized to kFALSE.
@@ -119,6 +123,8 @@ namespace Katydid
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
+            void SetUseWisdom(Bool_t flag);
+            void SetWisdomFilename(const std::string& fname);
 
             const std::string& GetForwardInputDataName() const;
             void SetForwardInputDataName(const std::string& name);
@@ -148,6 +154,8 @@ namespace Katydid
             TransformFlagMap fTransformFlagMap;
 
             Bool_t fIsInitialized;
+            Bool_t fUseWisdom;
+            std::string fWisdomFilename;
 
             std::string fForwardInputDataName;
             std::string fForwardOutputDataName;
@@ -217,6 +225,28 @@ namespace Katydid
     inline Bool_t KTComplexFFTW::GetIsInitialized() const
     {
         return fIsInitialized;
+    }
+
+    inline Bool_t KTComplexFFTW::GetUseWisdom() const
+    {
+        return fUseWisdom;
+    }
+
+    inline const std::string& KTComplexFFTW::GetWisdomFilename() const
+    {
+        return fWisdomFilename;
+    }
+
+    inline void KTComplexFFTW::SetUseWisdom(Bool_t flag)
+    {
+        fUseWisdom = flag;
+        return;
+    }
+
+    inline void KTComplexFFTW::SetWisdomFilename(const std::string& fname)
+    {
+        fWisdomFilename = fname;
+        return;
     }
 
     inline const std::string& KTComplexFFTW::GetForwardInputDataName() const

@@ -49,6 +49,8 @@ namespace Katydid
 
      Available configuration values:
      \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
+     \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
+     \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
      \li \c "input-data-name": string -- name of the data to find when processing an event
      \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
@@ -100,9 +102,13 @@ namespace Katydid
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
+            Bool_t GetUseWisdom() const;
+            const std::string& GetWisdomFilename() const;
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
+            void SetUseWisdom(Bool_t flag);
+            void SetWisdomFilename(const std::string& fname);
 
             const std::string& GetInputDataName() const;
             void SetInputDataName(const std::string& name);
@@ -124,6 +130,8 @@ namespace Katydid
             TransformFlagMap fTransformFlagMap;
 
             Bool_t fIsInitialized;
+            Bool_t fUseWisdom;
+            std::string fWisdomFilename;
 
             std::string fInputDataName;
             std::string fOutputDataName;
@@ -175,6 +183,28 @@ namespace Katydid
     inline Bool_t KTSimpleFFT::GetIsInitialized() const
     {
         return fIsInitialized;
+    }
+
+    inline Bool_t KTSimpleFFT::GetUseWisdom() const
+    {
+        return fUseWisdom;
+    }
+
+    inline const std::string& KTSimpleFFT::GetWisdomFilename() const
+    {
+        return fWisdomFilename;
+    }
+
+    inline void KTSimpleFFT::SetUseWisdom(Bool_t flag)
+    {
+        fUseWisdom = flag;
+        return;
+    }
+
+    inline void KTSimpleFFT::SetWisdomFilename(const std::string& fname)
+    {
+        fWisdomFilename = fname;
+        return;
     }
 
     inline const std::string& KTSimpleFFT::GetInputDataName() const
