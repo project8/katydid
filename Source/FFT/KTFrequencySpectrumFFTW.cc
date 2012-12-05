@@ -88,15 +88,19 @@ namespace Katydid
         (*newPS)(0) = value * scaling;
 
         // All bins besides the Nyquist and DC bins
-        UInt_t totalBins = size(), iPosBin;
-        for (UInt_t iNegBin=1; iNegBin<nBins-1; iNegBin++)
+        UInt_t totalBins = size();
+        UInt_t iPosBin = fDCBin + 1;
+        UInt_t iNegBin = fDCBin - 1;
+        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
         {
+            //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
             // order matters, so use (*this)() to access values
-            iPosBin = totalBins - 1 - iNegBin;
             valueReal = (*this)(iNegBin)[0] + (*this)(iPosBin)[0];
             valueImag = (*this)(iNegBin)[1] + (*this)(iPosBin)[1];
             value = valueReal * valueReal + valueImag * valueImag;
-            (*newPS)(iNegBin) = value * scaling; // use iNegBin, even though the power spectrum only has positive frequencies
+            (*newPS)(iBin) = value * scaling; // use iNegBin, even though the power spectrum only has positive frequencies
+            iPosBin++;
+            iNegBin--;
         }
 
         // Nyquist bin
