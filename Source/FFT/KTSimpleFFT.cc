@@ -19,10 +19,8 @@
 
 #include <algorithm>
 #include <cmath>
-#include <sstream>
 
 using std::copy;
-using std::stringstream;
 using std::string;
 using std::vector;
 using boost::shared_ptr;
@@ -42,7 +40,7 @@ namespace Katydid
             fTransformFlag("MEASURE"),
             fIsInitialized(false),
             fUseWisdom(true),
-            fWisdomFilenameBase("wisdom_simplefft_"),
+            fWisdomFilename("wisdom_simplefft.fftw3"),
             fInputDataName("time-series"),
             fOutputDataName("frequency-spectrum"),
             fFFTSignal()
@@ -73,7 +71,7 @@ namespace Katydid
             SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
 
             SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
-            SetWisdomFilenameBase(node->GetData<string>("wisdom-filename-base", fWisdomFilenameBase));
+            SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
 
             SetInputDataName(node->GetData<string>("input-data-name", fInputDataName));
             SetOutputDataName(node->GetData<string>("output-data-name", fOutputDataName));
@@ -101,16 +99,12 @@ namespace Katydid
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         Int_t transformFlag = iter->second;
 
-        string wisdomFilename;
         if (fUseWisdom)
         {
-            stringstream conv;
-            conv << fTimeSize;
-            wisdomFilename = KTCacheDirectory::GetInstance()->GetPath() + "/" + fWisdomFilenameBase + conv.str() + ".fftw3";
-            KTDEBUG(fftlog_simp, "Reading wisdom from file <" << wisdomFilename << ">");
-            if (fftw_import_wisdom_from_filename(wisdomFilename.c_str()) == 0)
+            KTDEBUG(fftlog_simp, "Reading wisdom from file <" << fWisdomFilename << ">");
+            if (fftw_import_wisdom_from_filename(fWisdomFilename.c_str()) == 0)
             {
-                KTWARN(fftlog_simp, "Unable to read FFTW wisdom from file <" << wisdomFilename << ">");
+                KTWARN(fftlog_simp, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
             }
         }
 
@@ -123,9 +117,9 @@ namespace Katydid
                     "\tFrequency-domain size: " << GetFrequencySize());
             if (fUseWisdom)
             {
-                if (fftw_export_wisdom_to_filename(wisdomFilename.c_str()) == 0)
+                if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
                 {
-                    KTWARN(fftlog_simp, "Unable to write FFTW wisdom to file <" << wisdomFilename << ">");
+                    KTWARN(fftlog_simp, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
                 }
             }
         }
