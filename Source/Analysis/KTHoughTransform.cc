@@ -19,8 +19,15 @@
 #include "KTWriteableData.hh"
 
 #include <cmath>
+#include <vector>
+
+//#include "TFile.h"
+//#include "TH2.h"
+
+using boost::shared_ptr;
 
 using std::string;
+using std::vector;
 
 namespace Katydid
 {
@@ -103,20 +110,56 @@ namespace Katydid
         KTINFO(htlog, "time info: " << nTimeBins << "  " << powerSpectrum->GetRangeMin() << "  " << powerSpectrum->GetRangeMax() << "  " << powerSpectrum->GetBinWidth());
         KTINFO(htlog, "freq info: " << nFreqBins << "  " << (*powerSpectrum)(0)->GetRangeMin() << "  " << (*powerSpectrum)(0)->GetRangeMax() << "  " << (*powerSpectrum)(0)->GetBinWidth());
 
-        Double_t timeScaling = 1. / ((Double_t(nTimeBins) - 0.5) * powerSpectrum->GetBinWidth());
-        Double_t freqScaling = 1. / ((Double_t(nFreqBins) - 0.5) * (*powerSpectrum)(0)->GetBinWidth());
-        Double_t maxR = 2.;
+        //Double_t timeScaling = 1. / ((Double_t(nTimeBins) - 0.5) * powerSpectrum->GetBinWidth());
+        //Double_t freqScaling = 1. / ((Double_t(nFreqBins) - 0.5) * (*powerSpectrum)(0)->GetBinWidth());
+        //Double_t maxR = 2.;
+        Double_t maxR = sqrt(Double_t(nTimeBins*nTimeBins + nFreqBins*nFreqBins));
 
         KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = new KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >(fNThetaPoints, 0., KTMath::Pi());
 
         Double_t deltaTheta = KTMath::Pi() / (Double_t)fNThetaPoints;
-        Double_t deltaTime = powerSpectrum->GetBinWidth() * timeScaling;
-        Double_t deltaFreq = (*powerSpectrum)(0)->GetBinWidth() * freqScaling;
+        //Double_t deltaTime = powerSpectrum->GetBinWidth() * timeScaling;
+        //Double_t deltaFreq = (*powerSpectrum)(0)->GetBinWidth() * freqScaling;
 
-        KTINFO(htlog, deltaTime << "  " << deltaFreq << "  " << timeScaling << "  " << freqScaling);
+        //KTINFO(htlog, deltaTime << "  " << deltaFreq << "  " << timeScaling << "  " << freqScaling);
 
+        // initial loop over theta bins to create the KTPhysicalArrays and to cache cosTheta and sinTheta values
+        vector< Double_t > cosTheta(fNThetaPoints);
+        vector< Double_t > sinTheta(fNThetaPoints);
+        Double_t theta = newTransform->GetBinCenter(0);
+        for (UInt_t iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+        {
+            (*newTransform)(iTheta) = new KTPhysicalArray< 1, Double_t >(fNRPoints, -maxR, maxR);
+            cosTheta[iTheta] = cos(theta);
+            sinTheta[iTheta] = sin(theta);
+            theta += deltaTheta;
+        }
+
+        Double_t radius, value;
+        UInt_t iRadius;
+        for (UInt_t iTime = 0; iTime < nTimeBins; iTime++)
+        {
+            for (UInt_t iFreq = 3; iFreq < nFreqBins; iFreq++)
+            {
+                theta = 0.;
+                for (UInt_t iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+                {
+                    radius = sqrt(Double_t(iTime*iTime + iFreq*iFreq)) * cos(theta - atan2(Double_t(iTime), Double_t(iFreq)));
+
+                    iRadius = (*newTransform)(iTheta)->FindBin(radius);
+
+                    value = (*(*powerSpectrum)(iTime))(iFreq);
+
+                    (*(*newTransform)(iTheta))(iRadius) = (*(*newTransform)(iTheta))(iRadius) + value;
+
+                    theta += deltaTheta;
+                }
+            }
+        }
+
+        /*
         // loop over theta bins
-        Double_t cosTheta, sinTheta, tTerm, time, freq, radius;
+        Double_t cosTheta, sinTheta, tTerm, time, freq, radius, value;
         UInt_t iRadius;
         Double_t theta = newTransform->GetBinCenter(0);
         for (UInt_t iTheta=0; iTheta < fNThetaPoints; iTheta++)
@@ -140,8 +183,11 @@ namespace Katydid
                     //iRadius = newRArray->FindBin(tTerm + freq * sinTheta);
                     iRadius = newRArray->FindBin(radius);
 
+                    value = (*(*powerSpectrum)(iTime))(iFreq);
+
                     //KTDEBUG(htlog, iTheta << "  " << iTime << "  " << iFreq << "  " << time << "  " << freq << "  " << tTerm << "  " << freq*sinTheta << "  " << radius << "  " << iRadius);
-                    (*newRArray)(iRadius) = (*newRArray)(iRadius) + (*(*powerSpectrum)(iTime))(iFreq);
+                    //if (value > 1.e-4)
+                        (*newRArray)(iRadius) = (*newRArray)(iRadius) + value;
 
                     freq += deltaFreq;
                 } // end loop over freq bins
@@ -153,6 +199,7 @@ namespace Katydid
 
             theta += deltaTheta;
         } // end loop over theta bins
+        */
 
         return newTransform;
     }
@@ -168,7 +215,29 @@ namespace Katydid
             KTPowerSpectrum* newSinglePS = (*inputSpectrum)(iTimeBin)->CreatePowerSpectrum();
             (*newPowerSpectrum)(iTimeBin) = newSinglePS;
         }
+/*
+        TFile* f = new TFile("htpowerspect.root", "recreate");
+        TH2D* hist = new TH2D("powerspect", "PowerSpectrum",
+                newPowerSpectrum->size(), newPowerSpectrum->GetRangeMin(), newPowerSpectrum->GetRangeMax(),
+                (*newPowerSpectrum)(0)->size(), (*newPowerSpectrum)(0)->GetRangeMin(), (*newPowerSpectrum)(0)->GetRangeMax());
 
+        KTINFO("Frequency axis: " << (*newPowerSpectrum)(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
+        KTINFO("Time axis: " << newPowerSpectrum->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
+
+        for (Int_t iBinX=1; iBinX<=(Int_t)newPowerSpectrum->size(); iBinX++)
+        {
+            KTPowerSpectrum* fs = (*newPowerSpectrum)(iBinX-1);
+            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            {
+                hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1));
+            }
+        }
+
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Frequency (Hz)");
+        hist->Write();
+        f->Close();
+*/
         return newPowerSpectrum;
     }
 
@@ -199,7 +268,7 @@ namespace Katydid
         return;
     }
 
-    void KTHoughTransform::ProcessEvent(KTEvent* event)
+    void KTHoughTransform::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTSlidingWindowFSDataFFTW* data = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fInputDataName));
         if (data == NULL)

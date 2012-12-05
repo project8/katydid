@@ -12,6 +12,9 @@
 
 #include "KTPhysicalArray.hh"
 
+#include <boost/shared_ptr.hpp>
+
+
 namespace Katydid
 {
     class KTEvent;
@@ -73,7 +76,7 @@ namespace Katydid
 
          public:
              //void ProcessHeader(const KTEggHeader* header);
-             void ProcessEvent(KTEvent* event);
+             void ProcessEvent(boost::shared_ptr<KTEvent> event);
              void ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data);
 
 
