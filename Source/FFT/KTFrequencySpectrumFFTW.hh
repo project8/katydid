@@ -20,6 +20,7 @@ class TH1D;
 
 namespace Katydid
 {
+    class KTFrequencySpectrum;
     class KTPowerSpectrum;
 
     class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, fftw_complex >
@@ -67,6 +68,7 @@ namespace Katydid
             /// In-place calculation of the analytic associate
             virtual KTFrequencySpectrumFFTW& AnalyticAssociate();
 
+            virtual KTFrequencySpectrum* CreateFrequencySpectrum() const;
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
