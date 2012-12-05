@@ -243,7 +243,7 @@ namespace Katydid
                 return NULL;
             }
         }
-        */
+         */
 
         if (fPairs.empty())
         {
@@ -384,17 +384,20 @@ namespace Katydid
             KTINFO(wvlog, "Windowed FFT complete (channels " << firstChannel << " and " << secondChannel << "); windows used: " << nWindows << "; time bins not used: " << nTimeBinsNotUsed);
             newData->SetSpectra(newSpectra, iPair);
             iPair++;
-       }
+        }
 
-       fWVSignal(newData);
+        newData->SetEvent(data->GetEvent());
+        newData->SetName(fOutputDataName);
 
-       return newData;
+        fWVSignal(newData);
+
+        return newData;
 
 
 
 
 
-/*
+        /*
         // new KTTimeSeriesPairedData to hold the results of the cross multiplication
         KTTimeSeriesPairedData* crossMultipliedData = new KTTimeSeriesPairedData(fPairs.size());
         if (fSaveCrossMultipliedTimeSeries)
@@ -448,9 +451,9 @@ namespace Katydid
         fWVSignal(newSWFSData);
 
         return newSWFSData;
-*/
+         */
     }
-/*
+    /*
     KTTimeSeriesFFTW* KTWignerVille::Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
         if (fFullFFT == NULL)
@@ -493,7 +496,7 @@ namespace Katydid
 
         return CalculateAnalyticAssociate(freqSpectrum);
     }
-*/
+     */
 
     KTTimeSeriesFFTW* KTWignerVille::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
@@ -650,7 +653,7 @@ namespace Katydid
             fsData->GetEvent()->AddData(newData);
         return;
     }
-    */
+     */
     void KTWignerVille::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
