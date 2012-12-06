@@ -607,7 +607,7 @@ namespace Katydid
         for (UInt_t inPoint = 0; inPoint < size; inPoint++)
         {
             fInputArray[inPoint][0] = (*data1)(iPoint1)[0] * (*data2)(iPoint2)[0] + (*data1)(iPoint1)[1] * (*data2)(iPoint2)[1];
-            fInputArray[inPoint][1] = (*data1)(iPoint1)[0] * (*data2)(iPoint2)[1] - (*data1)(iPoint1)[1] * (*data2)(iPoint2)[0];
+            fInputArray[inPoint][1] = (*data1)(iPoint1)[1] * (*data2)(iPoint2)[0] - (*data1)(iPoint1)[0] * (*data2)(iPoint2)[1];
             iPoint1++;
             iPoint2--;
         }
