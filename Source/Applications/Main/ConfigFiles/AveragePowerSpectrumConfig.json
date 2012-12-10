@@ -6,20 +6,17 @@
             "processor":
             {
                 "type": "egg-processor",
-                "name": "egg",
-                "is-top-level": true
+                "name": "egg"
             },
             "processor":
             {
                 "type": "simple-fft",
-                "name": "fft",
-                "is-top-level": true
+                "name": "fft"
             },
             "processor":
             {
                 "type": "power-spectrum-averager",
-                "name": "psavg",
-                "is-top-level": true
+                "name": "psavg"
             },
             
             "connection":

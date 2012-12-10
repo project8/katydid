@@ -78,7 +78,7 @@ namespace Katydid
             /// Configure the toolbox: create the processors; connnect signals and slots; and setup the run queue.
             Bool_t Configure(const KTPStoreNode* node);
 
-            /// Configure top-level processors (i.e. those with top-level blocks in the config. file)
+            /// Configure processors (only those specified in the toolbox)
             Bool_t ConfigureProcessors(const KTPStoreNode* node);
 
         protected:
@@ -97,7 +97,6 @@ namespace Katydid
             struct ProcessorInfo
             {
                 KTProcessor* fProc;
-                Bool_t fIsTopLevel;
             };
             typedef std::map< std::string, ProcessorInfo > ProcessorMap;
             typedef ProcessorMap::iterator ProcMapIt;
