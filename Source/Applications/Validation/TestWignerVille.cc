@@ -9,9 +9,12 @@
  */
 
 #include "KTComplexFFTW.hh"
+#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTRectangularWindow.hh"
+#include "KTSlidingWindowFSData.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -70,11 +73,14 @@ int main()
     wvTransform.SetWindowFunction(windowFunc);
     wvTransform.AddPair(KTWVPair(0, 1));
 
+    wvTransform.RecreateFFT();
     wvTransform.InitializeFFT();
 
+    //KTSlidingWindowFSData* output = wvTransform.TransformData(&tsData);
     KTSlidingWindowFSDataFFTW* output = wvTransform.TransformData(&tsData);
 
 #ifdef ROOT_FOUND
+    //KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = output->GetSpectra(0);
     KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* spectra = output->GetSpectra(0);
     UInt_t nBinsX = spectra->size();
     UInt_t nBinsY = (*spectra)(0)->size();
@@ -82,9 +88,11 @@ int main()
     Double_t value;
     for (UInt_t iX=0; iX<nBinsX; iX++)
     {
+        //KTFrequencySpectrum* spectrum = (*spectra)(iX);
         KTFrequencySpectrumFFTW* spectrum = (*spectra)(iX);
         for (UInt_t iY=0; iY<nBinsY; iY++)
         {
+            //value = (*spectrum)(iY).abs();
             value = sqrt((*spectrum)(iY)[0] * (*spectrum)(iY)[0] + (*spectrum)(iY)[1] * (*spectrum)(iY)[1]);
             histOut->SetBinContent(iX+1, iY+1, value);
         }

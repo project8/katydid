@@ -26,9 +26,11 @@ namespace Katydid
     class KTComplexFFTW;
     class KTEggHeader;
     class KTEvent;
+    class KTFrequencySpectrum;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTSlidingWindowFFTW;
+    class KTSlidingWindowFSData;
     class KTSlidingWindowFSDataFFTW;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
@@ -105,6 +107,7 @@ namespace Katydid
             /// Performs the W-V transform on the given time series data.
             /// In the process, the data is FFTed, and then reverse FFTed; if you want to keep the intermediate frequency spectrum, pass a KTFrequencySpectrumDataFFTW** as the second parameter..
             /// @note A frequency spectrum data object can still be returned even if the full W-V transform fails!
+            //KTSlidingWindowFSData* TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData=NULL, KTTimeSeriesData** outputAAData=NULL, KTTimeSeriesData** outputCMTSData=NULL);
             KTSlidingWindowFSDataFFTW* TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData=NULL, KTTimeSeriesData** outputAAData=NULL, KTTimeSeriesData** outputCMTSData=NULL);
 
             /// Performs the W-V transform on the given time series.
@@ -123,7 +126,6 @@ namespace Katydid
             Bool_t GetUseWisdom() const;
             const std::string& GetWisdomFilename() const;
 
-            UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
             virtual Double_t GetMinFrequency(Double_t timeBinWidth) const;
@@ -157,8 +159,11 @@ namespace Katydid
             //KTTimeSeriesFFTW* CrossMultiply(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2);
 
             void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+            //KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             KTFrequencySpectrumFFTW* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
+
+            UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const;
 
             fftw_plan fFTPlan;
             fftw_complex* fInputArray;
@@ -309,39 +314,47 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTWignerVille::GetSize() const
+    inline UInt_t KTWignerVille::GetTimeSize() const
     {
         if (fWindowFunction == NULL) return 0;
         return fWindowFunction->GetSize();
     }
 
-    inline UInt_t KTWignerVille::GetTimeSize() const
-    {
-        return GetSize();
-    }
-
     inline UInt_t KTWignerVille::GetFrequencySize() const
     {
-        return GetSize();
+        //return CalculateNFrequencyBins(GetTimeSize());
+        return GetTimeSize();
     }
 
     inline Double_t KTWignerVille::GetMinFrequency(Double_t timeBinWidth) const
     {
+        //return -0.5 * GetFrequencyBinWidth(timeBinWidth);
+        /**/
         // There's one bin at the center, always: the DC bin.
         // # of bins on the negative side is nFreqBins/2 (rounded down because of integer division).
         // 0.5 is added to the # of bins because of the half of the DC bin on the negative frequency side.
-        return -GetFrequencyBinWidth(timeBinWidth) * (Double_t(GetSize()/2) + 0.5);
+        return -GetFrequencyBinWidth(timeBinWidth) * (Double_t(GetTimeSize()/2) + 0.5);
+        /**/
     }
 
     inline Double_t KTWignerVille::GetMaxFrequency(Double_t timeBinWidth) const
     {
+        //return GetFrequencyBinWidth(timeBinWidth) * ((Double_t)GetFrequencySize() - 0.5);
+        /**/
         // There's one bin at the center, always: the DC bin.
         // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
         // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
-        UInt_t nBins = GetSize();
+        UInt_t nBins = GetTimeSize();
         UInt_t nBinsToSide = nBins / 2;
         return GetFrequencyBinWidth(timeBinWidth) * (Double_t(nBinsToSide*2 == nBins ? nBinsToSide - 1 : nBinsToSide) + 0.5);
-   }
+        /**/
+    }
+
+    inline UInt_t KTWignerVille::CalculateNFrequencyBins(UInt_t nTimeBins) const
+    {
+        // Integer division is rounded down, per FFTW's instructions
+        return nTimeBins / 2 + 1;
+    }
 
     inline const std::string& KTWignerVille::GetTransformFlag() const
     {
