@@ -47,7 +47,6 @@ namespace Katydid
              <ul>
                  <li>type -- string specifying the processor type (matches the string given to the Registrar, which should be specified before the class implementation in each processor's .cc file).</li>
                  <li>name -- string giving the individual processor a name so that multiple processors of the same type can be created.</li>
-                 <li>is-top-level -- boolean specifying whether this processor is configured independent of other processors.</li>
              </ul>
          </li>
          <li>connection -- connect a signal to a slot (multiple connection options are allowed)
@@ -108,7 +107,7 @@ namespace Katydid
         public:
             KTProcessor* GetProcessor(const std::string& procName);
             const KTProcessor* GetProcessor(const std::string& procName) const;
-            Bool_t AddProcessor(const std::string& procName, KTProcessor* proc, Bool_t isTopLevel=false);
+            Bool_t AddProcessor(const std::string& procName, KTProcessor* proc);
             Bool_t RemoveProcessor(const std::string& procName);
             KTProcessor* ReleaseProcessor(const std::string& procName);
             void ClearProcessors();

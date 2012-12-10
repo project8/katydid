@@ -17,7 +17,7 @@
             },
             "processor":
             {
-                "type": "basic-root",
+                "type": "basic-root-writer",
                 "name": "writer",
                 "is-top-level": true
             },
@@ -65,7 +65,7 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "write-data"
+                "slot-name": "write-frequency-spectrum"
             },
             "connection":
             {

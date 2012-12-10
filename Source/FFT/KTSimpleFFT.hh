@@ -68,13 +68,13 @@ namespace Katydid
      \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
 
      Signals:
-     \li \c void (const KTWriteableData*) emitted upon performance of a transform.
+     \li \c void (const KTFrequencySpectrumData*) emitted upon performance of a transform.
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
+            typedef KTSignal< void (const KTFrequencySpectrumData*) >::signal FFTSignal;
 
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;

@@ -76,14 +76,15 @@ namespace Katydid
      \li \c "fs-data": void ProcessFrequencySpectrumData(const KTTimeSeriesDataFFTW* data)
 
      Signals:
-     \li \c "fft-forward": void (const KTWriteableData*) emitted upon performance of a forward transform.
+     \li \c "fft-forward": void (const KTFrequencySpectrumDataFFTW*) emitted upon performance of a forward transform.
      \li \c "fft-reverse": void (const KTWriteableData*) emitted upon performance of a reverse transform.
     */
 
     class KTComplexFFTW : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
+            typedef KTSignal< void (const KTFrequencySpectrumDataFFTW*) >::signal FFTForwardSignal;
+            typedef KTSignal< void (const KTTimeSeriesData*) >::signal FFTReverseSignal;
 
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
@@ -168,8 +169,8 @@ namespace Katydid
             //***************
 
         private:
-            FFTSignal fFFTForwardSignal;
-            FFTSignal fFFTReverseSignal;
+            FFTForwardSignal fFFTForwardSignal;
+            FFTReverseSignal fFFTReverseSignal;
 
             //***************
             // Slots

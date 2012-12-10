@@ -71,7 +71,7 @@
         {
             "writer":
             {
-                "type": "basic-root",
+                "type": "basic-root-writer",
                 "name": "brwriter",
                 "configuration":
                 {

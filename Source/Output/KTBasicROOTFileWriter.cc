@@ -27,8 +27,8 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedRegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root");
-    static KTDerivedRegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root");
+    static KTDerivedRegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root-writer");
+    static KTDerivedRegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root-writer");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter() :
             KTWriter(),
@@ -39,6 +39,12 @@ namespace Katydid
         fConfigName = "basic-root-writer";
 
         RegisterSlot("write-data", this, &KTBasicROOTFileWriter::Publish);
+
+        RegisterSlot("write-frequency-spectrum", this, &KTBasicROOTFileWriter::WriteFrequencySpectrumData);
+        RegisterSlot("write-frequency-spectrum-fftw", this, &KTBasicROOTFileWriter::WriteFrequencySpectrumDataFFTW);
+        RegisterSlot("write-correlation", this, &KTBasicROOTFileWriter::WriteCorrelationData);
+        RegisterSlot("write-sliding-window-fs", this, &KTBasicROOTFileWriter::WriteSlidingWindowFSData);
+        RegisterSlot("write-sliding-window-fs-fftw", this, &KTBasicROOTFileWriter::WriteSlidingWindowFSDataFFTW);
     }
 
     KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
@@ -100,6 +106,11 @@ namespace Katydid
 
     void KTBasicROOTFileWriter::Write(const KTFrequencySpectrumData* data)
     {
+        return WriteFrequencySpectrumData(data);
+    }
+
+    void KTBasicROOTFileWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;
         if (event != NULL) eventNumber = event->GetEventNumber();
@@ -126,6 +137,11 @@ namespace Katydid
     }
 
     void KTBasicROOTFileWriter::Write(const KTFrequencySpectrumDataFFTW* data)
+    {
+        return WriteFrequencySpectrumDataFFTW(data);
+    }
+
+    void KTBasicROOTFileWriter::WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;
@@ -157,6 +173,11 @@ namespace Katydid
     //************************
 
     void KTBasicROOTFileWriter::Write(const KTCorrelationData* data)
+    {
+        return WriteCorrelationData(data);
+    }
+
+    void KTBasicROOTFileWriter::WriteCorrelationData(const KTCorrelationData* data)
     {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;
@@ -193,6 +214,11 @@ namespace Katydid
 
     void KTBasicROOTFileWriter::Write(const KTSlidingWindowFSData* data)
     {
+        return WriteSlidingWindowFSData(data);
+    }
+
+    void KTBasicROOTFileWriter::WriteSlidingWindowFSData(const KTSlidingWindowFSData* data)
+    {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;
         if (event != NULL) eventNumber = event->GetEventNumber();
@@ -215,6 +241,11 @@ namespace Katydid
     }
 
     void KTBasicROOTFileWriter::Write(const KTSlidingWindowFSDataFFTW* data)
+    {
+        return WriteSlidingWindowFSDataFFTW(data);
+    }
+
+    void KTBasicROOTFileWriter::WriteSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data)
     {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;

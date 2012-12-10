@@ -41,7 +41,7 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "write-data"
+                "slot-name": "write-frequency-spectrum-fftw"
             },
             
             "run-queue":
