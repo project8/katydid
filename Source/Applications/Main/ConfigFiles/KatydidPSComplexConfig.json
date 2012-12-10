@@ -6,20 +6,17 @@
             "processor":
             {
                 "type": "egg-processor",
-                "name": "egg",
-                "is-top-level": true
+                "name": "egg"
             },
             "processor":
             {
                 "type": "complex-fftw",
-                "name": "fft",
-                "is-top-level": true
+                "name": "fft"
             },
             "processor":
             {
                 "type": "basic-root-writer",
-                "name": "writer",
-                "is-top-level": true
+                "name": "writer"
             },
             
             "connection":
@@ -41,7 +38,7 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "write-data"
+                "slot-name": "write-frequency-spectrum-fftw"
             },
             
             "run-queue":

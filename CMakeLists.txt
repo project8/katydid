@@ -17,7 +17,9 @@ include (KatydidBuild)
 # Set the version and associated variables
 katydid_prepare_project (0 9 1)
 
-#list (APPEND LIBS rt)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  list (APPEND LIBS rt)
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 # Boost (1.46 required for filesystem version 3)
 find_package (Boost 1.46.0 REQUIRED COMPONENTS filesystem program_options system thread)

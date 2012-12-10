@@ -6,26 +6,22 @@
             "processor":
             {
                 "type": "egg-processor",
-                "name": "egg",
-                "is-top-level": true
+                "name": "egg"
             },
             "processor":
             {
                 "type": "simple-fft",
-                "name": "fft",
-                "is-top-level": true
+                "name": "fft"
             },
             "processor":
             {
-                "type": "basic-root",
-                "name": "writer",
-                "is-top-level": true
+                "type": "basic-root-writer",
+                "name": "writer"
             },
             "processor":
             {
                 "type": "throughput-profiler",
-                "name": "profiler",
-                "is-top-level": true
+                "name": "profiler"
             },
             
             "connection":
@@ -65,7 +61,7 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "write-data"
+                "slot-name": "write-frequency-spectrum"
             },
             "connection":
             {

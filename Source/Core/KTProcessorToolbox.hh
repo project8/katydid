@@ -47,7 +47,6 @@ namespace Katydid
              <ul>
                  <li>type -- string specifying the processor type (matches the string given to the Registrar, which should be specified before the class implementation in each processor's .cc file).</li>
                  <li>name -- string giving the individual processor a name so that multiple processors of the same type can be created.</li>
-                 <li>is-top-level -- boolean specifying whether this processor is configured independent of other processors.</li>
              </ul>
          </li>
          <li>connection -- connect a signal to a slot (multiple connection options are allowed)
@@ -79,7 +78,7 @@ namespace Katydid
             /// Configure the toolbox: create the processors; connnect signals and slots; and setup the run queue.
             Bool_t Configure(const KTPStoreNode* node);
 
-            /// Configure top-level processors (i.e. those with top-level blocks in the config. file)
+            /// Configure processors (only those specified in the toolbox)
             Bool_t ConfigureProcessors(const KTPStoreNode* node);
 
         protected:
@@ -98,7 +97,6 @@ namespace Katydid
             struct ProcessorInfo
             {
                 KTProcessor* fProc;
-                Bool_t fIsTopLevel;
             };
             typedef std::map< std::string, ProcessorInfo > ProcessorMap;
             typedef ProcessorMap::iterator ProcMapIt;
@@ -108,7 +106,7 @@ namespace Katydid
         public:
             KTProcessor* GetProcessor(const std::string& procName);
             const KTProcessor* GetProcessor(const std::string& procName) const;
-            Bool_t AddProcessor(const std::string& procName, KTProcessor* proc, Bool_t isTopLevel=false);
+            Bool_t AddProcessor(const std::string& procName, KTProcessor* proc);
             Bool_t RemoveProcessor(const std::string& procName);
             KTProcessor* ReleaseProcessor(const std::string& procName);
             void ClearProcessors();

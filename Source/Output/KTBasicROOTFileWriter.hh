@@ -72,6 +72,8 @@ namespace Katydid
             // Frequency Spectrum Data
             //************************
         public:
+            void WriteFrequencySpectrumData(const KTFrequencySpectrumData* data);
+            void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
             void Write(const KTFrequencySpectrumData* data);
             void Write(const KTFrequencySpectrumDataFFTW* data);
 
@@ -79,12 +81,15 @@ namespace Katydid
             // Correlation Data
             //************************
         public:
+            void WriteCorrelationData(const KTCorrelationData* data);
             void Write(const KTCorrelationData* data);
 
             //************************
             // Sliding Window Data
             //************************
         public:
+            void WriteSlidingWindowFSData(const KTSlidingWindowFSData* data);
+            void WriteSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
             void Write(const KTSlidingWindowFSData* data);
             void Write(const KTSlidingWindowFSDataFFTW* data);
 

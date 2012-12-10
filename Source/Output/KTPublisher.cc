@@ -256,7 +256,7 @@ namespace Katydid
                 KTWriteableData* data = event->GetData< KTWriteableData >(dataName);
                 if (data != NULL)
                 {
-                    // Data exists and is writeable, to publish it!
+                    // Data exists and is writeable --- publish it!
                     writer->Publish(data);
                 }
             }

@@ -6,14 +6,12 @@
             "processor":
             {
                 "type": "egg-processor",
-                "name": "egg",
-                "is-top-level": true
+                "name": "egg"
             },
             "processor":
             {
                 "type": "wigner-ville",
-                "name": "wv",
-                "is-top-level": true
+                "name": "wv"
             },
             "processor":
             {
@@ -24,8 +22,7 @@
             "processor":
             {
                 "type": "basic-root-writer",
-                "name": "writer",
-                "is-top-level": true
+                "name": "writer"
             },
             
             "connection":
@@ -56,7 +53,7 @@
                 "signal-processor": "wv",
                 "signal-name": "wigner-ville",
                 "slot-processor": "writer",
-                "slot-name": "write-data"
+                "slot-name": "write-sliding-window-fs-fftw"
             },
             "connection":
             {

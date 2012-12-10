@@ -68,10 +68,10 @@ namespace Katydid
 
             UInt_t fNEventsProcessed;
 
-#ifdef __MACH__
+//#ifdef __MACH__
             double fMacTimebase;
             uint64_t fMacTimestart;
-#endif
+//#endif
 
     };
 

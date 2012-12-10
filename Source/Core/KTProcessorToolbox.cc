@@ -75,7 +75,7 @@ namespace Katydid
                 isTopLevel = subNode.GetData< Bool_t >("is-top-level");
             }
 
-            if (! AddProcessor(procName, newProc, isTopLevel))
+            if (! AddProcessor(procName, newProc))
             {
                 KTERROR(proclog, "Unable to add processor <" << procName << ">");
                 delete newProc;
@@ -216,35 +216,32 @@ namespace Katydid
     {
         for (ProcMapIt iter = fProcMap.begin(); iter != fProcMap.end(); iter++)
         {
-            if (iter->second.fIsTopLevel)
+            KTDEBUG(proclog, "Attempting to configure processor <" << iter->first << ">");
+            string procName = iter->first;
+            string nameUsed;
+            const KTPStoreNode* subNode = node->GetChild(procName);
+            if (subNode == NULL)
             {
-                KTDEBUG(proclog, "Attempting to configure top-level processor <" << iter->first << ">");
-                string procName = iter->first;
-                string nameUsed;
-                const KTPStoreNode* subNode = node->GetChild(procName);
+                string configName = iter->second.fProc->GetConfigName();
+                KTWARN(proclog, "Did not find a PSToreNode <" << procName << ">\n"
+                        "\tWill check using the generic name of the processor, <" << configName << ">.");
+                subNode = node->GetChild(configName);
                 if (subNode == NULL)
                 {
-                    string configName = iter->second.fProc->GetConfigName();
-                    KTWARN(proclog, "Did not find a PSToreNode <" << procName << ">\n"
-                            "\tWill check using the generic name of the processor, <" << configName << ">.");
-                    subNode = node->GetChild(configName);
-                    if (subNode == NULL)
-                    {
-                        KTWARN(proclog, "Did not find a PStoreNode <" << configName << ">\n"
-                                "\tProcessor <" << iter->first << "> was not configured.");
-                        continue;
-                    }
-                    nameUsed = configName;
+                    KTWARN(proclog, "Did not find a PStoreNode <" << configName << ">\n"
+                            "\tProcessor <" << iter->first << "> was not configured.");
+                    continue;
                 }
-                else
-                {
-                    nameUsed = procName;
-                }
-                if (! iter->second.fProc->Configure(subNode))
-                {
-                    KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << nameUsed << ">");
-                    return false;
-                }
+                nameUsed = configName;
+            }
+            else
+            {
+                nameUsed = procName;
+            }
+            if (! iter->second.fProc->Configure(subNode))
+            {
+                KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << nameUsed << ">");
+                return false;
             }
         }
         return true;
@@ -295,14 +292,13 @@ namespace Katydid
         return it->second.fProc;
     }
 
-    Bool_t KTProcessorToolbox::AddProcessor(const std::string& procName, KTProcessor* proc, Bool_t isTopLevel)
+    Bool_t KTProcessorToolbox::AddProcessor(const std::string& procName, KTProcessor* proc)
     {
         ProcMapIt it = fProcMap.find(procName);
         if (it == fProcMap.end())
         {
             ProcessorInfo pInfo;
             pInfo.fProc = proc;
-            pInfo.fIsTopLevel = isTopLevel;
             fProcMap.insert(ProcMapValue(procName, pInfo));
             KTDEBUG(proclog, "Added processor <" << procName << ">");
             return true;

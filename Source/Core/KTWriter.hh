@@ -10,8 +10,6 @@
 
 #include "KTProcessor.hh"
 
-#include <iostream>
-
 namespace Katydid
 {
     class KTWriteableData;

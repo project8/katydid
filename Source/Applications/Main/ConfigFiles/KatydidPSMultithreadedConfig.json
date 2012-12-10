@@ -6,20 +6,17 @@
             "processor":
             {
                 "type": "egg-processor",
-                "name": "egg",
-                "is-top-level": true
+                "name": "egg"
             },
             "processor":
             {
                 "type": "simple-fft",
-                "name": "fft",
-                "is-top-level": true
+                "name": "fft"
             },
             "processor":
             {
                 "type": "publisher",
-                "name": "publisher",
-                "is-top-level": true
+                "name": "publisher"
             },
             
             "connection":
@@ -71,7 +68,7 @@
         {
             "writer":
             {
-                "type": "basic-root",
+                "type": "basic-root-writer",
                 "name": "brwriter",
                 "configuration":
                 {
