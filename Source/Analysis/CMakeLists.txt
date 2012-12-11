@@ -1,35 +1,39 @@
 # CMakeLists for Katydid/Source/Analysis
 # Author: N. Oblath
 
-set (ANALYSIS_DICT_HEADERFILES
-)
-
-set (ANALYSIS_NODICT_HEADERFILES
+set (ANALYSIS_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
 )
 
-set (ANALYSIS_HEADERFILES ${ANALYSIS_DICT_HEADERFILES} ${ANALYSIS_NODICT_HEADERFILES})
+if (ROOT_FOUND)
+    set (ANALYSIS_HEADERFILES
+        ${ANALYSIS_HEADERFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.hh
+    )
+endif (ROOT_FOUND)
 
 set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
 )
 
-#set (ANALYSIS_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/AnalysisLinkDef.hh)
-#set (ANALYSIS_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/AnalysisDict.cxx)
+if (ROOT_FOUND)
+    set (ANALYSIS_SOURCEFILES
+        ${ANALYSIS_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
+    )
+endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
@@ -40,9 +44,7 @@ set (KATYDID_LIBS
 
 ##################################################
 
-#ROOT_GENERATE_DICTIONARY ("${ANALYSIS_DICT_HEADERFILES}" "${ANALYSIS_LINKDEF_HEADERFILE}" "${ANALYSIS_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
-
-add_library (KatydidAnalysis ${ANALYSIS_SOURCEFILES} ${ANALYSIS_DICT_OUTFILE})
+add_library (KatydidAnalysis ${ANALYSIS_SOURCEFILES})
 target_link_libraries (KatydidAnalysis ${KATYDID_LIBS} ${LIBS})
 
 katydid_install_libraries(KatydidAnalysis)

@@ -15,6 +15,7 @@
 #ifdef ROOT_FOUND
 #include "TH1.h"
 #endif
+#include "TSpline.h"
 
 #include <vector>
 
@@ -29,7 +30,7 @@ namespace Katydid
         protected:
             struct PerChannelData
             {
-                KTGainVariationProcessor::FitResult fFitResult;
+                TSpline* fSpline;
                 GainVariation* fGainVar;
             };
 
@@ -39,11 +40,12 @@ namespace Katydid
 
             const GainVariation* GetGainVariation(unsigned channelNum = 0) const;
             GainVariation* GetGainVariation(unsigned channelNum = 0);
-            const KTGainVariationProcessor::FitResult& GetFitResult(unsigned channelNum = 0) const;
+            const TSpline* GetSpline(unsigned channelNum = 0) const;
+            TSpline* GetSpline(unsigned channelNum = 0);
             unsigned GetNChannels() const;
 
             void SetGainVariation(GainVariation* record, unsigned channelNum = 0);
-            void SetFitResults(const KTGainVariationProcessor::FitResult& results, unsigned channelNum = 0);
+            void SetSpline(TSpline* spline, unsigned channelNum = 0);
             void SetNChannels(unsigned channels);
 
             void Accept(KTWriter* writer) const;
@@ -69,9 +71,14 @@ namespace Katydid
         return fChannelData[channelNum].fGainVar;
     }
 
-    inline const KTGainVariationProcessor::FitResult& KTGainVariationData::GetFitResult(unsigned channelNum) const
+    inline const TSpline* KTGainVariationData::GetSpline(unsigned channelNum) const
     {
-        return fChannelData[channelNum].fFitResult;
+        return fChannelData[channelNum].fSpline;
+    }
+
+    inline TSpline* KTGainVariationData::GetSpline(unsigned channelNum)
+    {
+        return fChannelData[channelNum].fSpline;
     }
 
     inline unsigned KTGainVariationData::GetNChannels() const
@@ -85,10 +92,10 @@ namespace Katydid
         fChannelData[channelNum].fGainVar = record;
     }
 
-    inline void KTGainVariationData::SetFitResults(const KTGainVariationProcessor::FitResult& results, unsigned channelNum)
+    inline void KTGainVariationData::SetSpline(TSpline* spline, unsigned channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fFitResult = results;
+        fChannelData[channelNum].fSpline = spline;
     }
 
     inline void KTGainVariationData::SetNChannels(unsigned channels)

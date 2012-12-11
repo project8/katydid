@@ -56,9 +56,6 @@ if (ENABLE_TESTING)
     add_executable (TestFrequencySpectrumFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestFrequencySpectrumFFTW.cc)
     target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
     
-    add_executable (TestGainVariation ${CMAKE_CURRENT_SOURCE_DIR}/TestGainVariation.cc)
-    target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis KatydidOutput ${LIBS})
-    
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${LIBS})
     
@@ -97,7 +94,6 @@ if (ENABLE_TESTING)
                      TestCutableArray
                      TestEggHatching
                      TestFrequencySpectrumFFTW
-                     TestGainVariation
                      TestLogger
                      TestParameterStore
                      TestSignalsAndSlots
@@ -133,8 +129,12 @@ if (ENABLE_TESTING)
         add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
         target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
         
+        add_executable (TestGainVariation ${CMAKE_CURRENT_SOURCE_DIR}/TestGainVariation.cc)
+        target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis KatydidOutput ${LIBS})
+    
         katydid_install_executables ( 
                     TestBasicROOTFileWriter
+                    TestGainVariation
         )
     
         add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)

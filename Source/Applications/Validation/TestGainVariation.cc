@@ -4,6 +4,8 @@
  *  Created on: Dec 10, 2012
  *      Author: nsoblath
  *
+ *      Test the gain variation processor against a parabola
+ *
  *      Usage:
  *      > TestGainVariation [nBins [nFitPoints [true_A true_B true_C [noise_sigma]]]]
  */
@@ -26,6 +28,17 @@ using namespace std;
 
 KTLOGGER(vallog, "katydid.applications.validation");
 
+struct Parameters
+{
+    // y = fA * x^2 + fB * x + fC
+    Double_t fA;
+    Double_t fB;
+    Double_t fC;
+};
+
+Double_t TestFunction(const Parameters& results, Double_t x);
+
+
 int main(int argc, char** argv)
 {
     KTINFO(vallog, "Commencing gain variation test");
@@ -34,10 +47,10 @@ int main(int argc, char** argv)
 
     UInt_t nFitPoints = 3;
 
-    KTGainVariationProcessor::FitResult trueValues;
-    trueValues.fA = 0.;
-    trueValues.fB = 0.;
-    trueValues.fC = 15.;
+    Parameters funcParams;
+    funcParams.fA = 0.;
+    funcParams.fB = 0.;
+    funcParams.fC = 15.;
 
     Double_t noiseSigma = 20.;
 
@@ -51,9 +64,9 @@ int main(int argc, char** argv)
 
             if (argc >= 6)
             {
-                trueValues.fA = atof(argv[3]);
-                trueValues.fB = atof(argv[4]);
-                trueValues.fC = atof(argv[5]);
+                funcParams.fA = atof(argv[3]);
+                funcParams.fB = atof(argv[4]);
+                funcParams.fC = atof(argv[5]);
 
                 if (argc >= 7)
                 {
@@ -64,10 +77,10 @@ int main(int argc, char** argv)
     }
 
     KTINFO(vallog, "Number of fit points: " << nFitPoints);
-    KTINFO(vallog, "True function parameters:\n" <<
-           "\tA: " << trueValues.fA << '\n' <<
-           "\tB: " << trueValues.fB << '\n' <<
-           "\tC: " << trueValues.fC << '\n');
+    KTINFO(vallog, "Function parameters:\n" <<
+           "\tA: " << funcParams.fA << '\n' <<
+           "\tB: " << funcParams.fB << '\n' <<
+           "\tC: " << funcParams.fC << '\n');
 
     KTGainVariationProcessor gainVarProc;
     gainVarProc.SetMinBin(0);
@@ -84,12 +97,14 @@ int main(int argc, char** argv)
     KTWARN(vallog, "No noise is being added");
 #endif
 
+    Double_t value;
     for (UInt_t iBin=0; iBin < nBins; iBin++)
     {
 #ifdef ROOT_FOUND
-        (*spectrum)(iBin) = rand.Gaus(gainVarProc.FitFunction(trueValues, spectrum->GetBinCenter(iBin)), noiseSigma);
+        value = TestFunction(funcParams, spectrum->GetBinCenter(iBin));
+        (*spectrum)(iBin) = rand.Gaus(value, value * noiseSigma);
 #else
-        (*spectrum)(iBin) = gainVarProc.FitFunction(trueValues, spectrum->GetBinCenter(iBin));
+        (*spectrum)(iBin) = gainVarProc.FitFunction(funcParams, spectrum->GetBinCenter(iBin));
 #endif
     }
 
@@ -104,14 +119,15 @@ int main(int argc, char** argv)
 
     KTINFO(vallog, "Performing fit");
 
-    KTGainVariationData* gvData = gainVarProc.PerformFit(&fsData);
+    KTGainVariationData* gvData = gainVarProc.CalculateGainVariation(&fsData);
 
+    /*
     KTGainVariationProcessor::FitResult fitResult = gvData->GetFitResult(0);
     KTINFO(vallog, "Fit function parameters:\n" <<
            "\tA: " << fitResult.fA << '\n' <<
            "\tB: " << fitResult.fB << '\n' <<
            "\tC: " << fitResult.fC << '\n');
-
+     */
 
 #ifdef ROOT_FOUND
     TH1D* fitHist = gvData->CreateGainVariationHistogram(0);
@@ -123,6 +139,9 @@ int main(int argc, char** argv)
     flatSpectrumHist->Divide(fitHist);
     flatSpectrumHist->SetLineColor(2);
     flatSpectrumHist->Write();
+
+    TSpline* spline = (TSpline*)gvData->GetSpline(0)->Clone();
+    spline->Write();
 #endif
 
     delete gvData;
@@ -134,3 +153,10 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+
+Double_t TestFunction(const Parameters& params, Double_t x)
+{
+    return params.fA * x * x + params.fB * x + params.fC;
+}
+

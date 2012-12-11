@@ -15,10 +15,10 @@
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
+#include "TSpline.h"
+
 #include <cmath>
 #include <vector>
-
-#include <iostream>
 
 using std::string;
 using std::vector;
@@ -85,7 +85,7 @@ namespace Katydid
         return true;
     }
 
-    KTGainVariationData* KTGainVariationProcessor::PerformFit(const KTFrequencySpectrumData* data)
+    KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumData* data)
     {
         if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
@@ -104,7 +104,8 @@ namespace Katydid
         {
             const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
 
-            vector< FitPoint > fitPoints(fNFitPoints);
+            Double_t* xVals = new Double_t[fNFitPoints];
+            Double_t* yVals = new Double_t[fNFitPoints];
 
             // Calculate fit points
             for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
@@ -114,7 +115,7 @@ namespace Katydid
 
                 Double_t leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
                 Double_t rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
-                fitPoints[iFitPoint].fX = leftEdge + 0.5 * (rightEdge - leftEdge);
+                xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
 
                 Double_t mean = 0.;
                 for (UInt_t iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
@@ -122,36 +123,22 @@ namespace Katydid
                     mean += (*spectrum)(iBin).abs();
                 }
                 mean /= (Double_t)nBinsPerFitPoint;
-                fitPoints[iFitPoint].fY = mean;
+                yVals[iFitPoint] = mean;
 
-                Double_t sigma = 0., diff;
-                for (UInt_t iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
-                {
-                    diff = (*spectrum)(iBin).abs() - mean;
-                    sigma += diff * diff;
-                }
-                fitPoints[iFitPoint].fSigma = sqrt(sigma * sigmaNorm);
-
-                if (fitPoints[iFitPoint].fSigma == 0.)
-                {
-                    KTWARN(gvlog, "Sigma is 0; using fake sigma of 1.");
-                    fitPoints[iFitPoint].fSigma = 1.;
-                }
-
-                KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << fitPoints[iFitPoint].fX << "  " << fitPoints[iFitPoint].fY << "  " << fitPoints[iFitPoint].fSigma);
+                KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
-            FitResult results = DoFit(fitPoints);
-            GainVariation* fitSpectrum = CreateFitGainVariation(results, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
+            TSpline3* spline = new TSpline3("gainVarSpline", xVals, yVals, fNFitPoints);
+            GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
-            newData->SetFitResults(results, iChannel);
-            newData->SetGainVariation(fitSpectrum, iChannel);
+            newData->SetSpline(spline, iChannel);
+            newData->SetGainVariation(gainVarResult, iChannel);
         }
 
         return newData;
     }
 
-    KTGainVariationData* KTGainVariationProcessor::PerformFit(const KTFrequencySpectrumDataFFTW* data)
+    KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data)
     {
         if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
@@ -164,93 +151,25 @@ namespace Katydid
         return NULL;
     }
 
-    KTGainVariationProcessor::FitResult KTGainVariationProcessor::DoFit(const vector< FitPoint >& fitPoints)
-    {
-        // I apologize for all of the short, non-standard variable names here.
-        // They're this way to match the algebra I worked out offline.
-        // -- Noah
-
-        Double_t S=0., S_x=0., S_xx=0., S_xxx=0., S_xxxx=0., S_y=0., S_xy=0., S_xxy=0.;
-        Double_t invSigmaSq, xTemp, xMultTemp, yTemp;
-        for (UInt_t iPoint=0; iPoint<fitPoints.size(); iPoint++)
-        {
-            invSigmaSq = 1. / (fitPoints[iPoint].fSigma * fitPoints[iPoint].fSigma);
-            xTemp = fitPoints[iPoint].fX;
-            yTemp = fitPoints[iPoint].fY;
-            xMultTemp = xTemp; // == x
-
-            S += invSigmaSq; // == 1 / sigma^2
-            S_y += yTemp * invSigmaSq; // == y / sigma^2
-            S_x += xMultTemp * invSigmaSq; // == x / sigma^2
-            S_xy += xMultTemp * yTemp * invSigmaSq; // == x * y / sigma^2
-            xMultTemp *= xTemp; // == x^2
-            S_xx += xMultTemp * invSigmaSq; // == x^2 / sigma^2
-            S_xxy += xMultTemp * yTemp * invSigmaSq; // == x^2 * y / sigma^2
-            xMultTemp *= xTemp; // == x^3
-            S_xxx += xMultTemp * invSigmaSq; // == x^3 / sigma^2
-            xMultTemp *= xTemp; // == x^4
-            S_xxxx += xMultTemp * invSigmaSq; // == x^4 / sigma^2
-        }
-
-
-        Double_t WX_denom = 1. / (S_xx * S_xx - S * S_xxxx);
-        Double_t W = (S_xx * S_y - S * S_xxy) * WX_denom;
-        Double_t X = (S * S_xxx - S_xx * S_x) * WX_denom;
-
-
-        Double_t UV_denom = 1. / (S * S - S_x * S_x);
-        Double_t U = (S * S_xy - S_x * S_y) * UV_denom;
-        Double_t V = (S_xx * S_x - S * S_xxx) * UV_denom;
-
-
-        FitResult results;
-        results.fA = (W + U * X) / (1 - V * X);
-        results.fB = U + results.fA * V;
-        results.fC = (S_y - results.fA * S_xx - results.fB * S_x) / S;
-
-        KTDEBUG(gvlog, "Linear regression calculation:\n" <<
-            "\tS = " << S << '\n' <<
-            "\tS_y = " << S_y << '\n' <<
-            "\tS_xy = " << S_xy << '\n' <<
-            "\tS_xxy = " << S_xxy << '\n' <<
-            "\tS_x = " << S_x << '\n' <<
-            "\tS_xx = " << S_xx << '\n' <<
-            "\tS_xxx = " << S_xxx << '\n' <<
-            "\tS_xxxx = " << S_xxxx << '\n' <<
-            "\tWX_denom = " << WX_denom << '\n' <<
-            "\tW = " << W << '\n' <<
-            "\tX = " << X << '\n' <<
-            "\tUV_denom = " << UV_denom << '\n' <<
-            "\tU = " << U << '\n' <<
-            "\tV = " << V << '\n' <<
-            "\tA = " << results.fA << '\n' <<
-            "\tB = " << results.fB << '\n'<<
-            "\tC = " << results.fC);
-
-        return results;
-    }
-
-    KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateFitGainVariation(const FitResult& results, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const
+    KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateGainVariation(TSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const
     {
         GainVariation* newGainVar = new GainVariation(nBins, rangeMin, rangeMax);
 
         // The fit region: [fMinBin, fMaxBin]
         // Keep track of the minimum value so we can shift it down to 1
-        Double_t minVal = FitFunction(results, Double_t(fMinBin));
+        Double_t minVal = spline->Eval(newGainVar->GetBinCenter(fMinBin));
         for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
-            (*newGainVar)(iBin) = FitFunction(results, newGainVar->GetBinCenter(iBin));
+            (*newGainVar)(iBin) = spline->Eval(newGainVar->GetBinCenter(iBin));
             if ((*newGainVar)(iBin) < minVal)
             {
                 minVal = (*newGainVar)(iBin);
             }
         }
-        /*
         for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
             (*newGainVar)(iBin) = (*newGainVar)(iBin) / minVal;
         }
-        */
 
         // Before the fit region: [0, fMinBin)
         for (UInt_t iBin = 0; iBin < fMinBin; iBin++)
@@ -267,17 +186,12 @@ namespace Katydid
         return newGainVar;
     }
 
-    Double_t KTGainVariationProcessor::FitFunction(const FitResult& results, Double_t x) const
-    {
-        return results.fA * x * x + results.fB * x + results.fC;
-    }
-
     void KTGainVariationProcessor::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fInputDataName));
         if (fsData != NULL)
         {
-            KTGainVariationData* newData = PerformFit(fsData);
+            KTGainVariationData* newData = CalculateGainVariation(fsData);
             event->AddData(newData);
             return;
         }
@@ -285,7 +199,7 @@ namespace Katydid
         const KTFrequencySpectrumDataFFTW* fsDataFFTW = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(fInputDataName));
         if (fsData != NULL)
         {
-            KTGainVariationData* newData = PerformFit(fsData);
+            KTGainVariationData* newData = CalculateGainVariation(fsData);
             event->AddData(newData);
             return;
         }
@@ -296,14 +210,14 @@ namespace Katydid
 
     void KTGainVariationProcessor::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
-        KTGainVariationData* newData = PerformFit(data);
+        KTGainVariationData* newData = CalculateGainVariation(data);
         if (data->GetEvent() != NULL)
             data->GetEvent()->AddData(newData);
         return;
     }
     void KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
-        KTGainVariationData* newData = PerformFit(data);
+        KTGainVariationData* newData = CalculateGainVariation(data);
         if (data->GetEvent() != NULL)
             data->GetEvent()->AddData(newData);
         return;

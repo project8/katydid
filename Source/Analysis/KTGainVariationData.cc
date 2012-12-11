@@ -22,6 +22,7 @@ namespace Katydid
         while (! fChannelData.empty())
         {
             delete fChannelData.back().fGainVar;
+            delete fChannelData.back().fSpline;
             fChannelData.pop_back();
         }
     }

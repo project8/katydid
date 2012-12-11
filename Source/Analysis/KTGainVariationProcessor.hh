@@ -14,6 +14,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+class TSpline;
 
 namespace Katydid
 {
@@ -58,22 +59,6 @@ namespace Katydid
 
             typedef KTPhysicalArray< 1, Double_t > GainVariation;
 
-            struct FitResult
-            {
-                // y = fA * x^2 + fB * x + fC
-                Double_t fA;
-                Double_t fB;
-                Double_t fC;
-            };
-
-        private:
-            struct FitPoint
-            {
-                Double_t fX;
-                Double_t fY;
-                Double_t fSigma;
-            };
-
         public:
             KTGainVariationProcessor();
             virtual ~KTGainVariationProcessor();
@@ -114,14 +99,11 @@ namespace Katydid
             std::string fOutputDataName;
 
         public:
-            KTGainVariationData* PerformFit(const KTFrequencySpectrumData* data);
-            KTGainVariationData* PerformFit(const KTFrequencySpectrumDataFFTW* data);
-
-            Double_t FitFunction(const FitResult& results, Double_t x) const;
+            KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumData* data);
+            KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data);
 
         private:
-            FitResult DoFit(const std::vector< FitPoint >& fitPoints);
-            GainVariation* CreateFitGainVariation(const FitResult& results, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
+            GainVariation* CreateGainVariation(TSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
 
             //***************
             // Signals
