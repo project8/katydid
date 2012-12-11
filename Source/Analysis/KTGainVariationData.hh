@@ -10,7 +10,7 @@
 
 #include "KTWriteableData.hh"
 
-#include "KTFrequencySpectrum.hh"
+#include "KTGainVariationProcessor.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -24,14 +24,26 @@ namespace Katydid
     class KTGainVariationData : public KTWriteableData
     {
         public:
+            typedef KTGainVariationProcessor::GainVariation GainVariation;
+
+        protected:
+            struct PerChannelData
+            {
+                KTGainVariationProcessor::FitResult fFitResult;
+                GainVariation* fGainVar;
+            };
+
+        public:
             KTGainVariationData(unsigned nChannels=1);
             virtual ~KTGainVariationData();
 
-            const KTFrequencySpectrum* GetSpectrum(unsigned channelNum = 0) const;
-            KTFrequencySpectrum* GetSpectrum(unsigned channelNum = 0);
+            const GainVariation* GetGainVariation(unsigned channelNum = 0) const;
+            GainVariation* GetGainVariation(unsigned channelNum = 0);
+            const KTGainVariationProcessor::FitResult& GetFitResult(unsigned channelNum = 0) const;
             unsigned GetNChannels() const;
 
-            void SetSpectrum(KTFrequencySpectrum* record, unsigned channelNum = 0);
+            void SetGainVariation(GainVariation* record, unsigned channelNum = 0);
+            void SetFitResults(const KTGainVariationProcessor::FitResult& results, unsigned channelNum = 0);
             void SetNChannels(unsigned channels);
 
             void Accept(KTWriter* writer) const;
@@ -39,7 +51,7 @@ namespace Katydid
         protected:
             static std::string fDefaultName;
 
-            std::vector< KTFrequencySpectrum* > fSpectra;
+            std::vector< PerChannelData > fChannelData;
 
 #ifdef ROOT_FOUND
         public:
@@ -47,39 +59,43 @@ namespace Katydid
 #endif
     };
 
-    inline const KTFrequencySpectrum* KTGainVariationData::GetSpectrum(unsigned channelNum) const
+    inline const KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(unsigned channelNum) const
     {
-        return fSpectra[channelNum];
+        return fChannelData[channelNum].fGainVar;
     }
 
-    inline KTFrequencySpectrum* KTGainVariationData::GetSpectrum(unsigned channelNum)
+    inline KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(unsigned channelNum)
     {
-        return fSpectra[channelNum];
+        return fChannelData[channelNum].fGainVar;
+    }
+
+    inline const KTGainVariationProcessor::FitResult& KTGainVariationData::GetFitResult(unsigned channelNum) const
+    {
+        return fChannelData[channelNum].fFitResult;
     }
 
     inline unsigned KTGainVariationData::GetNChannels() const
     {
-        return unsigned(fSpectra.size());
+        return unsigned(fChannelData.size());
     }
 
-    inline void KTGainVariationData::SetSpectrum(KTFrequencySpectrum* record, unsigned channelNum)
+    inline void KTGainVariationData::SetGainVariation(GainVariation* record, unsigned channelNum)
     {
-        if (channelNum >= fSpectra.size()) fSpectra.resize(channelNum+1);
-        fSpectra[channelNum] = record;
+        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
+        fChannelData[channelNum].fGainVar = record;
+    }
+
+    inline void KTGainVariationData::SetFitResults(const KTGainVariationProcessor::FitResult& results, unsigned channelNum)
+    {
+        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
+        fChannelData[channelNum].fFitResult = results;
     }
 
     inline void KTGainVariationData::SetNChannels(unsigned channels)
     {
-        fSpectra.resize(channels);
+        fChannelData.resize(channels);
         return;
     }
-
-#ifdef ROOT_FOUND
-    inline TH1D* KTGainVariationData::CreateGainVariationHistogram(unsigned channelNum, const std::string& name) const
-    {
-        return fSpectra[channelNum]->CreateMagnitudeHistogram(name);
-    }
-#endif
 
 
 } /* namespace Katydid */

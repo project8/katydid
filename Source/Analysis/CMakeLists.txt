@@ -9,8 +9,8 @@ set (ANALYSIS_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariation.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
 )
@@ -22,8 +22,8 @@ set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariation.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
 )
