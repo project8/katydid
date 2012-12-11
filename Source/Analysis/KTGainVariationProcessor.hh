@@ -1,15 +1,16 @@
 /*
- * KTGainVariation.hh
+ * KTGainVariationProcessor.hh
  *
  *  Created on: Dec 10, 2012
  *      Author: nsoblath
  */
 
-#ifndef KTGAINVARIATION_HH_
-#define KTGAINVARIATION_HH_
+#ifndef KTGAINVARIATIONPROCESSOR_HH_
+#define KTGAINVARIATIONPROCESSOR_HH_
 
 #include "KTProcessor.hh"
 
+#include "KTPhysicalArray.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -23,7 +24,7 @@ namespace Katydid
     class KTPStoreNode;
 
     /*!
-     @class KTGainVariation
+     @class KTGainVariationProcessor
      @author N. S. Oblath
 
      @brief Fit the gain variation
@@ -31,6 +32,7 @@ namespace Katydid
      @details
      Fit the gain variation to a parabola using linear regression.
      The fit is performed between fMinBin and fMaxBin, inclusive.  If the [min,max] range has been set by frequency, those frequencies are turned into bins the first time they're used.
+     The x-axis of the fit space is bin number, not frequency.
 
      Available configuration values:
      \li \c "min-frequency": double -- minimum frequency for the fit
@@ -46,21 +48,15 @@ namespace Katydid
      \li \c void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
 
      Signals:
-     \li \c void (const KTGainVariationData*) emitted upon performance of a fit.
+     \li \c void (const KTGainVariationProcessorData*) emitted upon performance of a fit.
     */
 
-    class KTGainVariation : public KTProcessor
+    class KTGainVariationProcessor : public KTProcessor
     {
         public:
             typedef KTSignal< void (const KTGainVariationData*) >::signal GainVarSignal;
 
-        private:
-            struct FitPoint
-            {
-                Double_t fX;
-                Double_t fY;
-                Double_t fSigma;
-            };
+            typedef KTPhysicalArray< 1, Double_t > GainVariation;
 
             struct FitResult
             {
@@ -70,9 +66,17 @@ namespace Katydid
                 Double_t fC;
             };
 
+        private:
+            struct FitPoint
+            {
+                Double_t fX;
+                Double_t fY;
+                Double_t fSigma;
+            };
+
         public:
-            KTGainVariation();
-            virtual ~KTGainVariation();
+            KTGainVariationProcessor();
+            virtual ~KTGainVariationProcessor();
 
             Bool_t Configure(const KTPStoreNode* node);
 
@@ -113,8 +117,11 @@ namespace Katydid
             KTGainVariationData* PerformFit(const KTFrequencySpectrumData* data);
             KTGainVariationData* PerformFit(const KTFrequencySpectrumDataFFTW* data);
 
+            Double_t FitFunction(const FitResult& results, Double_t x) const;
+
         private:
             FitResult DoFit(const std::vector< FitPoint >& fitPoints);
+            GainVariation* CreateFitGainVariation(const FitResult& results, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
 
             //***************
             // Signals
@@ -134,81 +141,81 @@ namespace Katydid
 
     };
 
-    Double_t KTGainVariation::GetMinFrequency() const
+    inline Double_t KTGainVariationProcessor::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    void KTGainVariation::SetMinFrequency(Double_t freq)
+    inline void KTGainVariationProcessor::SetMinFrequency(Double_t freq)
     {
         fMinFrequency = freq;
         fCalculateMinBin = true;
         return;
     }
 
-    Double_t KTGainVariation::GetMaxFrequency() const
+    inline Double_t KTGainVariationProcessor::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    void KTGainVariation::SetMaxFrequency(Double_t freq)
+    inline void KTGainVariationProcessor::SetMaxFrequency(Double_t freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;
         return;
     }
 
-    UInt_t KTGainVariation::GetMinBin() const
+    inline UInt_t KTGainVariationProcessor::GetMinBin() const
     {
         return fMinBin;
     }
 
-    void KTGainVariation::SetMinBin(UInt_t bin)
+    inline void KTGainVariationProcessor::SetMinBin(UInt_t bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
     }
 
-    UInt_t KTGainVariation::KTGainVariation::GetMaxBin() const
+    inline UInt_t KTGainVariationProcessor::KTGainVariationProcessor::GetMaxBin() const
     {
         return fMaxBin;
     }
 
-    void KTGainVariation::SetMaxBin(UInt_t bin)
+    inline void KTGainVariationProcessor::SetMaxBin(UInt_t bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;
         return;
     }
 
-    UInt_t KTGainVariation::GetNFitPoints() const
+    inline UInt_t KTGainVariationProcessor::GetNFitPoints() const
     {
         return fNFitPoints;
     }
 
-    void KTGainVariation::SetNFitPoints(UInt_t nPoints)
+    inline void KTGainVariationProcessor::SetNFitPoints(UInt_t nPoints)
     {
         fNFitPoints = nPoints;
     }
 
-    const std::string& KTGainVariation::GetInputDataName() const
+    inline const std::string& KTGainVariationProcessor::GetInputDataName() const
     {
         return fInputDataName;
     }
 
-    void KTGainVariation::SetInputDataName(const std::string& name)
+    inline void KTGainVariationProcessor::SetInputDataName(const std::string& name)
     {
         fInputDataName = name;
         return;
     }
 
-    const std::string& KTGainVariation::GetOutputDataName() const
+    inline const std::string& KTGainVariationProcessor::GetOutputDataName() const
     {
         return fOutputDataName;
     }
 
-    void KTGainVariation::SetOutputDataName(const std::string& name)
+    inline void KTGainVariationProcessor::SetOutputDataName(const std::string& name)
     {
         fOutputDataName = name;
         return;
@@ -216,4 +223,4 @@ namespace Katydid
 
 
 } /* namespace Katydid */
-#endif /* KTGAINVARIATION_HH_ */
+#endif /* KTGAINVARIATIONPROCESSOR_HH_ */
