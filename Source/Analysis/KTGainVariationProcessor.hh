@@ -33,7 +33,6 @@ namespace Katydid
      @details
      Fit the gain variation to a parabola using linear regression.
      The fit is performed between fMinBin and fMaxBin, inclusive.  If the [min,max] range has been set by frequency, those frequencies are turned into bins the first time they're used.
-     The x-axis of the fit space is bin number, not frequency.
 
      Available configuration values:
      \li \c "min-frequency": double -- minimum frequency for the fit
