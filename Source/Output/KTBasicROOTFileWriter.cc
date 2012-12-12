@@ -14,6 +14,7 @@
 
 #include "KTSlidingWindowFSData.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
+#include "KTGainVariationData.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -45,6 +46,7 @@ namespace Katydid
         RegisterSlot("write-correlation", this, &KTBasicROOTFileWriter::WriteCorrelationData);
         RegisterSlot("write-sliding-window-fs", this, &KTBasicROOTFileWriter::WriteSlidingWindowFSData);
         RegisterSlot("write-sliding-window-fs-fftw", this, &KTBasicROOTFileWriter::WriteSlidingWindowFSDataFFTW);
+        RegisterSlot("write-gain-variation", this, &KTBasicROOTFileWriter::WriteGainVariationData);
     }
 
     KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
@@ -269,5 +271,63 @@ namespace Katydid
     }
 
 
+    //************************
+    // Gain Variation Data
+    //************************
+
+    void KTBasicROOTFileWriter::Write(const KTGainVariationData* data)
+    {
+        return WriteGainVariationData(data);
+    }
+
+    void KTBasicROOTFileWriter::WriteGainVariationData(const KTGainVariationData* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nPlots = data->GetNChannels();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
+        {
+            stringstream conv;
+            conv << "histGV_" << eventNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH1D* gvHist = data->CreateGainVariationHistogram(iPlot, histName);
+            gvHist->SetDirectory(fFile);
+            gvHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            /* Spline histogram printing doesn't work because the internal histogram doesn't exist until TSpline::Draw or Paint is called, which segfaulted while I was testing it
+            conv << "histGVSpline_" << eventNumber << "_" << iPlot;
+            conv >> histName;
+            const TSpline* spline = data->GetSpline(iPlot);
+            if (spline == NULL)
+            {
+                KTDEBUG(publog, "No spline in the data");
+                continue;
+            }
+            // We use const_cast because we need to create the spline's internal histogram representation if it doesn't already exist (or if it needs to be updated).
+            // Calling TSpline::Draw is not a const operation.
+            // This is justified because the spline itself is not affected, only the histogram representation.
+            const_cast<TSpline*>(spline)->Paint();
+            TH1F* splineHist = spline->GetHistogram();
+            if (splineHist != NULL)
+            {
+                splineHist = (TH1F*)splineHist->Clone();
+                splineHist->SetName(histName.c_str());
+                splineHist->SetDirectory(fFile);
+                splineHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+            else
+            {
+                KTDEBUG(publog, "No spline histogram received");
+            }
+            */
+        }
+        return;
+    }
 
 } /* namespace Katydid */

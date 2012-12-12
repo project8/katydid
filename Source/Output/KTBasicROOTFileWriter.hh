@@ -86,6 +86,13 @@ namespace Katydid
             void Write(const KTSlidingWindowFSData* data);
             void Write(const KTSlidingWindowFSDataFFTW* data);
 
+            //************************
+            // Gain Variation Data
+            //************************
+        public:
+            void WriteGainVariationData(const KTGainVariationData* data);
+            void Write(const KTGainVariationData* data);
+
     };
 
     inline TFile* KTBasicROOTFileWriter::OpenFile(const std::string& filename, const std::string& flag)

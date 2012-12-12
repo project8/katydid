@@ -135,6 +135,11 @@ namespace Katydid
             newData->SetGainVariation(gainVarResult, iChannel);
         }
 
+        newData->SetName(fOutputDataName);
+        newData->SetEvent(data->GetEvent());
+
+        fGainVarSignal(newData);
+
         return newData;
     }
 

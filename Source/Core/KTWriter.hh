@@ -15,6 +15,7 @@ namespace Katydid
     class KTWriteableData;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
+    class KTGainVariationData;
     class KTCorrelationData;
     class KTSlidingWindowFSData;
     class KTSlidingWindowFSDataFFTW;
@@ -36,6 +37,8 @@ namespace Katydid
 
             virtual void Write(const KTSlidingWindowFSData* data) = 0;
             virtual void Write(const KTSlidingWindowFSDataFFTW* data) = 0;
+
+            virtual void Write(const KTGainVariationData* data) = 0;
 
     };
 
