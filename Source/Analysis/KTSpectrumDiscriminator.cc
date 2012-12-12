@@ -76,7 +76,7 @@ namespace Katydid
 
         KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
 
-        // Interval: [fMinBin, fMaxBin]
+        // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
         Double_t sigmaNorm = 1. / Double_t(nBins - 1);
 
@@ -88,7 +88,7 @@ namespace Katydid
             Double_t threshold = 0.;
 
             Double_t mean = 0.;
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
             {
                 mean += (*spectrum)(iBin).abs();
             }
@@ -99,6 +99,7 @@ namespace Katydid
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2
                 // In this case (i.e. KTFrequencySpectrum), A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
+                KTDEBUG(sdlog, "Discriminator threshold set at <" << threshold << "> (SNR mode)");
             }
             else if (fThresholdMode == eSigma)
             {
@@ -111,7 +112,10 @@ namespace Katydid
                 sigma = sqrt(sigma * sigmaNorm);
 
                 threshold = mean + fSigmaThreshold * sigma;
+                KTDEBUG(sdlog, "Discriminator threshold set at <" << threshold << "> (Sigma mode)");
             }
+
+            newData->SetThreshold(threshold, iChannel);
 
             // loop over bins, checking against the threshold
             Double_t value;
