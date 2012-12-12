@@ -158,7 +158,7 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTGainVariationProcessor::KTGainVariationProcessor::GetMaxBin() const
+    inline UInt_t KTGainVariationProcessor::GetMaxBin() const
     {
         return fMaxBin;
     }
