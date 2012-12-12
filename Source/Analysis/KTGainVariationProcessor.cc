@@ -90,7 +90,7 @@ namespace Katydid
         if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
 
-        UInt_t nTotalBins = fMaxBin - fMinBin + 1;
+        UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
         KTINFO(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
@@ -148,7 +148,7 @@ namespace Katydid
         if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
 
-        UInt_t nTotalBins = fMinBin - fMaxBin + 1;
+        UInt_t nTotalBins = fMinBin - fMaxBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
         KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << ", and " << nBinsPerFitPoint << " bins averaged per fit point.");
@@ -160,10 +160,10 @@ namespace Katydid
     {
         GainVariation* newGainVar = new GainVariation(nBins, rangeMin, rangeMax);
 
-        // The fit region: [fMinBin, fMaxBin]
+        // The fit region: [fMinBin, fMaxBin)
         // Keep track of the minimum value so we can shift it down to 1
         Double_t minVal = spline->Eval(newGainVar->GetBinCenter(fMinBin));
-        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        for (UInt_t iBin = fMinBin; iBin < fMaxBin; iBin++)
         {
             (*newGainVar)(iBin) = spline->Eval(newGainVar->GetBinCenter(iBin));
             if ((*newGainVar)(iBin) < minVal)
@@ -171,7 +171,7 @@ namespace Katydid
                 minVal = (*newGainVar)(iBin);
             }
         }
-        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        for (UInt_t iBin = fMinBin; iBin < fMaxBin; iBin++)
         {
             (*newGainVar)(iBin) = (*newGainVar)(iBin) / minVal;
         }
@@ -182,8 +182,8 @@ namespace Katydid
             (*newGainVar)(iBin) = 1.;
         }
 
-        // After the fit region: (fMaxBin, nBins)
-        for (UInt_t iBin = fMaxBin+1; iBin < nBins; iBin++)
+        // After the fit region: [fMaxBin, nBins)
+        for (UInt_t iBin = fMaxBin; iBin < nBins; iBin++)
         {
             (*newGainVar)(iBin) = 1.;
         }
@@ -227,7 +227,5 @@ namespace Katydid
             data->GetEvent()->AddData(newData);
         return;
     }
-
-
 
 } /* namespace Katydid */
