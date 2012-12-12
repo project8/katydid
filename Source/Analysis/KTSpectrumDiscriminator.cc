@@ -15,6 +15,8 @@
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
+#include <cmath>
+
 using std::string;
 
 namespace Katydid
@@ -26,6 +28,8 @@ namespace Katydid
     KTSpectrumDiscriminator::KTSpectrumDiscriminator() :
             KTProcessor(),
             fSNRThreshold(10.),
+            fSigmaThreshold(5.),
+            fThresholdMode(eSigma),
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
@@ -48,7 +52,14 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        SetSNRThreshold(node->GetData< Double_t >("snr-threshold", fSNRThreshold));
+        if (node->HasData("snr-threshold"))
+        {
+            SetSNRThreshold(node->GetData< Double_t >("snr-threshold"));
+        }
+        if (node->HasData("sigma-threshold"))
+        {
+            SetSigmaThreshold(node->GetData< Double_t >("sigma-threshold"));
+        }
 
         SetInputDataName(node->GetData<string>("input-data-name", fInputDataName));
         SetOutputDataName(node->GetData<string>("output-data-name", fOutputDataName));
@@ -67,11 +78,14 @@ namespace Katydid
 
         // Interval: [fMinBin, fMaxBin]
         UInt_t nBins = fMaxBin - fMinBin + 1;
+        Double_t sigmaNorm = 1. / Double_t(nBins - 1);
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
 
-            KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+
+            Double_t threshold = 0.;
 
             Double_t mean = 0.;
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
@@ -80,11 +94,41 @@ namespace Katydid
             }
             mean /= (Double_t)nBins;
 
+            if (fThresholdMode == eSNR)
+            {
+                // SNR = P_signal / P_noise = (A_signal / A_noise)^2
+                // In this case (i.e. KTFrequencySpectrum), A_noise = mean
+                threshold = sqrt(fSNRThreshold) * mean;
+            }
+            else if (fThresholdMode == eSigma)
+            {
+                Double_t sigma = 0., diff;
+                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                {
+                    diff = (*spectrum)(iBin).abs() - mean;
+                    sigma += diff * diff;
+                }
+                sigma = sqrt(sigma * sigmaNorm);
 
+                threshold = mean + fSigmaThreshold * sigma;
+            }
+
+            // loop over bins, checking against the threshold
+            Double_t value;
+            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+            {
+                value = (*spectrum)(iBin).abs();
+                if (value >= threshold) newData->AddPoint(iBin, value, iChannel);
+            }
 
         }
 
-        return NULL;
+        newData->SetName(fOutputDataName);
+        newData->SetEvent(data->GetEvent());
+
+        // emit signal
+
+        return newData;
     }
 
 

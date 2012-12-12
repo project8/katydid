@@ -20,6 +20,13 @@ namespace Katydid
 
     class KTSpectrumDiscriminator : public KTProcessor
     {
+        private:
+            enum ThresholdMode
+            {
+                eSNR,
+                eSigma
+            };
+
         public:
             KTSpectrumDiscriminator();
             virtual ~KTSpectrumDiscriminator();
@@ -28,6 +35,9 @@ namespace Katydid
 
             Double_t GetSNRThreshold() const;
             void SetSNRThreshold(Double_t thresh);
+
+            Double_t GetSigmaThreshold() const;
+            void SetSigmaThreshold(Double_t thresh);
 
             Double_t GetMinFrequency() const;
             void SetMinFrequency(Double_t freq);
@@ -50,6 +60,8 @@ namespace Katydid
         private:
 
             Double_t fSNRThreshold;
+            Double_t fSigmaThreshold;
+            ThresholdMode fThresholdMode;
 
             Double_t fMinFrequency;
             Double_t fMaxFrequency;
@@ -74,6 +86,31 @@ namespace Katydid
     inline void KTSpectrumDiscriminator::SetSNRThreshold(Double_t thresh)
     {
         fSNRThreshold = thresh;
+        fThresholdMode = eSNR;
+        return;
+    }
+
+    inline Double_t KTSpectrumDiscriminator::GetSigmaThreshold() const
+    {
+        return fSigmaThreshold;
+    }
+
+    inline void KTSpectrumDiscriminator::SetSigmaThreshold(Double_t thresh)
+    {
+        fSigmaThreshold = thresh;
+        fThresholdMode = eSigma;
+        return;
+    }
+
+    inline Double_t KTSpectrumDiscriminator::GetMinFrequency() const
+    {
+        return fMinFrequency;
+    }
+
+    inline void KTSpectrumDiscriminator::SetMinFrequency(Double_t freq)
+    {
+        fMinFrequency = freq;
+        fCalculateMinBin = true;
         return;
     }
 
@@ -101,6 +138,17 @@ namespace Katydid
         return;
     }
 
+    inline UInt_t KTSpectrumDiscriminator::GetMaxBin() const
+    {
+        return fMaxBin;
+    }
+
+    inline void KTSpectrumDiscriminator::SetMaxBin(UInt_t bin)
+    {
+        fMaxBin = bin;
+        fCalculateMaxBin = false;
+        return;
+    }
     inline const std::string& KTSpectrumDiscriminator::GetInputDataName() const
     {
         return fInputDataName;

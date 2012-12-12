@@ -12,7 +12,7 @@
 
 #include "Rtypes.h"
 
-#include <set>
+#include <map>
 #include <utility>
 #include <vector>
 
@@ -29,13 +29,13 @@ namespace Katydid
     class KTDiscriminatedPoints2DData : public KTData
     {
         public:
-            typedef std::set< std::pair< UInt_t, UInt_t >, KTPairCompare > SetOfPoints;
+            typedef std::map< std::pair< UInt_t, UInt_t >, Double_t, KTPairCompare > SetOfPoints;
 
         protected:
             struct PerChannelData
             {
                 SetOfPoints fPoints;
-                Double_t fSNRThreshold;
+                Double_t fThreshold;
             };
 
         public:
@@ -43,11 +43,11 @@ namespace Katydid
             virtual ~KTDiscriminatedPoints2DData();
 
             const SetOfPoints& GetSetOfPoints(UInt_t channelNum = 0) const;
-            Double_t GetSNRThreshold(UInt_t channelNum = 0) const;
+            Double_t GetThreshold(UInt_t channelNum = 0) const;
             UInt_t GetNChannels() const;
 
-            void AddPoint(UInt_t pointX, UInt_t pointY, UInt_t channelNum = 0);
-            void SetSNRThreshold(Double_t threshold, UInt_t channelNum = 0);
+            void AddPoint(UInt_t pointX, UInt_t pointY, Double_t value, UInt_t channelNum = 0);
+            void SetThreshold(Double_t threshold, UInt_t channelNum = 0);
             void SetNChannels(UInt_t channels);
 
         protected:
@@ -62,9 +62,9 @@ namespace Katydid
         return fChannelData[channelNum].fPoints;
     }
 
-    inline Double_t KTDiscriminatedPoints2DData::GetSNRThreshold(UInt_t channelNum) const
+    inline Double_t KTDiscriminatedPoints2DData::GetThreshold(UInt_t channelNum) const
     {
-        return fChannelData[channelNum].fSNRThreshold;
+        return fChannelData[channelNum].fThreshold;
     }
 
     inline UInt_t KTDiscriminatedPoints2DData::GetNChannels() const
@@ -72,16 +72,16 @@ namespace Katydid
         return UInt_t(fChannelData.size());
     }
 
-    inline void KTDiscriminatedPoints2DData::AddPoint(UInt_t pointX, UInt_t pointY, UInt_t channelNum)
+    inline void KTDiscriminatedPoints2DData::AddPoint(UInt_t pointX, UInt_t pointY, Double_t value, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fPoints.insert(std::make_pair(pointX, pointY));
+        fChannelData[channelNum].fPoints.insert(std::make_pair(std::make_pair(pointX, pointY), value));
     }
 
-    inline void KTDiscriminatedPoints2DData::SetSNRThreshold(Double_t threshold, UInt_t channelNum)
+    inline void KTDiscriminatedPoints2DData::SetThreshold(Double_t threshold, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fSNRThreshold = threshold;
+        fChannelData[channelNum].fThreshold = threshold;
     }
 
     inline void KTDiscriminatedPoints2DData::SetNChannels(UInt_t channels)
