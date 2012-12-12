@@ -299,33 +299,21 @@ namespace Katydid
             gvHist->SetDirectory(fFile);
             gvHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
-            /* Spline histogram printing doesn't work because the internal histogram doesn't exist until TSpline::Draw or Paint is called, which segfaulted while I was testing it
-            conv << "histGVSpline_" << eventNumber << "_" << iPlot;
-            conv >> histName;
+
+            stringstream conv2;
+            string splineName;
+            conv2 << "splineGV_" << eventNumber << "_" << iPlot;
+            conv2 >> splineName;
             const TSpline* spline = data->GetSpline(iPlot);
             if (spline == NULL)
             {
                 KTDEBUG(publog, "No spline in the data");
                 continue;
             }
-            // We use const_cast because we need to create the spline's internal histogram representation if it doesn't already exist (or if it needs to be updated).
-            // Calling TSpline::Draw is not a const operation.
-            // This is justified because the spline itself is not affected, only the histogram representation.
-            const_cast<TSpline*>(spline)->Paint();
-            TH1F* splineHist = spline->GetHistogram();
-            if (splineHist != NULL)
-            {
-                splineHist = (TH1F*)splineHist->Clone();
-                splineHist->SetName(histName.c_str());
-                splineHist->SetDirectory(fFile);
-                splineHist->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
-            }
-            else
-            {
-                KTDEBUG(publog, "No spline histogram received");
-            }
-            */
+            TSpline* splineClone = (TSpline*)spline->Clone();
+            splineClone->SetName(splineName.c_str());
+            splineClone->Write();
+            KTDEBUG(publog, "Spline <" << splineName << "> written to ROOT file");
         }
         return;
     }
