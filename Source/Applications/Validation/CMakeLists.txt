@@ -36,7 +36,7 @@ if (ENABLE_TESTING)
     target_link_libraries (TestCacheDirectory KatydidUtility KatydidCore ${LIBS})
     
     add_executable (TestComplexFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexFFTW.cc)
-    target_link_libraries (TestComplexFFTW KatydidUtility KatydidEgg KatydidFFT ${LIBS})
+    target_link_libraries (TestComplexFFTW KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
     
     add_executable (TestComplexPolar ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexPolar.cc)
     target_link_libraries (TestComplexPolar KatydidUtility ${LIBS})
@@ -54,7 +54,7 @@ if (ENABLE_TESTING)
     target_link_libraries (TestEggHatching KatydidUtility KatydidCore KatydidEgg ${LIBS})
     
     add_executable (TestFrequencySpectrumFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestFrequencySpectrumFFTW.cc)
-    target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidEgg KatydidFFT ${LIBS})
+    target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
     
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${LIBS})
@@ -69,13 +69,13 @@ if (ENABLE_TESTING)
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
-    target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
+    target_link_libraries (TestSimpleFFT KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
 
     add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
     target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis KatydidOutput ${LIBS})
 
     add_executable (TestThroughputProfiler ${CMAKE_CURRENT_SOURCE_DIR}/TestThroughputProfiler.cc)
-    target_link_libraries (TestThroughputProfiler KatydidUtility KatydidEgg ${LIBS})
+    target_link_libraries (TestThroughputProfiler KatydidUtility KatydidCore KatydidEgg ${LIBS})
 
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
@@ -129,8 +129,12 @@ if (ENABLE_TESTING)
         add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
         target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
         
+        add_executable (TestGainVariation ${CMAKE_CURRENT_SOURCE_DIR}/TestGainVariation.cc)
+        target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis KatydidOutput ${LIBS})
+    
         katydid_install_executables ( 
                     TestBasicROOTFileWriter
+                    TestGainVariation
         )
     
         add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)

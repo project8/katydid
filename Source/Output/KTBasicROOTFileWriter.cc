@@ -14,6 +14,7 @@
 
 #include "KTSlidingWindowFSData.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
+#include "KTGainVariationData.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -45,6 +46,7 @@ namespace Katydid
         RegisterSlot("write-correlation", this, &KTBasicROOTFileWriter::WriteCorrelationData);
         RegisterSlot("write-sliding-window-fs", this, &KTBasicROOTFileWriter::WriteSlidingWindowFSData);
         RegisterSlot("write-sliding-window-fs-fftw", this, &KTBasicROOTFileWriter::WriteSlidingWindowFSDataFFTW);
+        RegisterSlot("write-gain-variation", this, &KTBasicROOTFileWriter::WriteGainVariationData);
     }
 
     KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
@@ -269,5 +271,51 @@ namespace Katydid
     }
 
 
+    //************************
+    // Gain Variation Data
+    //************************
+
+    void KTBasicROOTFileWriter::Write(const KTGainVariationData* data)
+    {
+        return WriteGainVariationData(data);
+    }
+
+    void KTBasicROOTFileWriter::WriteGainVariationData(const KTGainVariationData* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nPlots = data->GetNChannels();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
+        {
+            stringstream conv;
+            conv << "histGV_" << eventNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH1D* gvHist = data->CreateGainVariationHistogram(iPlot, histName);
+            gvHist->SetDirectory(fFile);
+            gvHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+
+            stringstream conv2;
+            string splineName;
+            conv2 << "splineGV_" << eventNumber << "_" << iPlot;
+            conv2 >> splineName;
+            const TSpline* spline = data->GetSpline(iPlot);
+            if (spline == NULL)
+            {
+                KTDEBUG(publog, "No spline in the data");
+                continue;
+            }
+            TSpline* splineClone = (TSpline*)spline->Clone();
+            splineClone->SetName(splineName.c_str());
+            splineClone->Write();
+            KTDEBUG(publog, "Spline <" << splineName << "> written to ROOT file");
+        }
+        return;
+    }
 
 } /* namespace Katydid */
