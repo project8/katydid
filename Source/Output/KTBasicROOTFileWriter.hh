@@ -97,7 +97,15 @@ namespace Katydid
             // Hough Transform Data
             //************************
         public:
+            void WriteHoughData(const KTHoughData* data);
             void Write(const KTHoughData* data);
+
+            //************************
+            // Gain Variation Data
+            //************************
+        public:
+            void WriteGainVariationData(const KTGainVariationData* data);
+            void Write(const KTGainVariationData* data);
 
     };
 
