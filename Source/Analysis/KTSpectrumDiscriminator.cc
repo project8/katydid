@@ -25,6 +25,7 @@
 
 using std::string;
 using std::vector;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -48,7 +49,14 @@ namespace Katydid
     {
         fConfigName = "spectrum-discriminator";
 
-        //RegisterSlot(...);
+        RegisterSignal("disc-1d", &fDiscrim1DSignal, "void (const KTDiscriminatedPoints1DData*)");
+        RegisterSignal("disc-2d", &fDiscrim2DSignal, "void (const KTDiscriminatedPoints2DData*)");
+
+        RegisterSlot("event", this, &KTSpectrumDiscriminator::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("fsdata", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
+        RegisterSlot("fsdata-fftw", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
+        RegisterSlot("swfsdata", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSData, "void (const KTSlidingWindowFSData*)");
+        RegisterSlot("swfsdata-fftw", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW, "void (const KTSlidingWindowFSDataFFTW*)");
     }
 
     KTSpectrumDiscriminator::~KTSpectrumDiscriminator()
@@ -136,7 +144,7 @@ namespace Katydid
         newData->SetName(fOutputDataName);
         newData->SetEvent(data->GetEvent());
 
-        // emit signal
+        fDiscrim1DSignal(newData);
 
         return newData;
     }
@@ -210,7 +218,7 @@ namespace Katydid
         newData->SetName(fOutputDataName);
         newData->SetEvent(data->GetEvent());
 
-        // emit signal
+        fDiscrim1DSignal(newData);
 
         return newData;
     }
@@ -291,7 +299,7 @@ namespace Katydid
         newData->SetName(fOutputDataName);
         newData->SetEvent(data->GetEvent());
 
-        // emit signal
+        fDiscrim2DSignal(newData);
 
         return newData;
     }
@@ -379,10 +387,79 @@ namespace Katydid
         newData->SetName(fOutputDataName);
         newData->SetEvent(data->GetEvent());
 
-        // emit signal
+        fDiscrim2DSignal(newData);
 
         return newData;
     }
 
+    void KTSpectrumDiscriminator::ProcessEvent(shared_ptr<KTEvent> event)
+    {
+        const KTSlidingWindowFSData* swfsData = dynamic_cast< KTSlidingWindowFSData* >(event->GetData(fInputDataName));
+        if (swfsData != NULL)
+        {
+            KTDiscriminatedPoints2DData* newData = Discriminate(swfsData);
+            event->AddData(newData);
+            return;
+        }
+
+        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fInputDataName));
+        if (swfsDataFFTW != NULL)
+        {
+            KTDiscriminatedPoints2DData* newData = Discriminate(swfsDataFFTW);
+            event->AddData(newData);
+            return;
+        }
+
+        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fInputDataName));
+        if (fsData != NULL)
+        {
+            KTDiscriminatedPoints1DData* newData = Discriminate(fsData);
+            event->AddData(newData);
+            return;
+        }
+
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(fInputDataName));
+        if (fsDataFFTW != NULL)
+        {
+            KTDiscriminatedPoints1DData* newData = Discriminate(fsDataFFTW);
+            event->AddData(newData);
+            return;
+        }
+
+        KTWARN(sdlog, "No time series data named <" << fInputDataName << "> was available in the event");
+        return;
+    }
+
+    void KTSpectrumDiscriminator::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    {
+        KTDiscriminatedPoints1DData* newData = Discriminate(data);
+        if (data->GetEvent() != NULL)
+            data->GetEvent()->AddData(newData);
+        return;
+    }
+
+    void KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
+    {
+        KTDiscriminatedPoints1DData* newData = Discriminate(data);
+        if (data->GetEvent() != NULL)
+            data->GetEvent()->AddData(newData);
+        return;
+    }
+
+    void KTSpectrumDiscriminator::ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data)
+    {
+        KTDiscriminatedPoints2DData* newData = Discriminate(data);
+        if (data->GetEvent() != NULL)
+            data->GetEvent()->AddData(newData);
+        return;
+    }
+
+    void KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data)
+    {
+        KTDiscriminatedPoints2DData* newData = Discriminate(data);
+        if (data->GetEvent() != NULL)
+            data->GetEvent()->AddData(newData);
+        return;
+    }
 
 } /* namespace Katydid */

@@ -10,13 +10,14 @@
 
 #include "KTProcessor.hh"
 
-
+#include <boost/shared_ptr.hpp>
 
 
 namespace Katydid
 {
     class KTDiscriminatedPoints1DData;
     class KTDiscriminatedPoints2DData;
+    class KTEvent;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTSlidingWindowFSData;
@@ -24,6 +25,10 @@ namespace Katydid
 
     class KTSpectrumDiscriminator : public KTProcessor
     {
+        public:
+            typedef KTSignal< void (const KTDiscriminatedPoints1DData*) >::signal Discrim1DSignal;
+            typedef KTSignal< void (const KTDiscriminatedPoints2DData*) >::signal Discrim2DSignal;
+
         private:
             enum ThresholdMode
             {
@@ -82,6 +87,25 @@ namespace Katydid
             KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumDataFFTW* data);
             KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
             KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
+
+            //***************
+            // Signals
+            //***************
+
+        private:
+            Discrim1DSignal fDiscrim1DSignal;
+            Discrim2DSignal fDiscrim2DSignal;
+
+            //***************
+            // Slots
+            //***************
+
+        public:
+            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
+            void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
+            void ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data);
+            void ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
 
     };
 
