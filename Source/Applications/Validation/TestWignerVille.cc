@@ -37,7 +37,7 @@ int main()
     UInt_t nTimeBins = 32768;
 
     Double_t amplitude = 1.;
-    Double_t startFreq = 5000.; // Hz
+    Double_t startFreq = 2000.; // Hz
     Double_t deltaFreq = -10.; // Hz
     Double_t twoPi = 2. * KTMath::Pi();
 
