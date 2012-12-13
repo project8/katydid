@@ -295,7 +295,7 @@ namespace Katydid
             conv << "histGV_" << eventNumber << "_" << iPlot;
             string histName;
             conv >> histName;
-            TH1D* gvHist = data->CreateGainVariationHistogram(iPlot, histName);
+            TH1D* gvHist = data->CreateGainVariationHistogram(100, iPlot, histName);
             gvHist->SetDirectory(fFile);
             gvHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");

@@ -129,10 +129,10 @@ namespace Katydid
             }
 
             TSpline3* spline = new TSpline3("gainVarSpline", xVals, yVals, fNFitPoints);
-            GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
+            //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             newData->SetSpline(spline, iChannel);
-            newData->SetGainVariation(gainVarResult, iChannel);
+            //newData->SetGainVariation(gainVarResult, iChannel);
         }
 
         newData->SetName(fOutputDataName);
@@ -187,10 +187,10 @@ namespace Katydid
             }
 
             TSpline3* spline = new TSpline3("gainVarSpline", xVals, yVals, fNFitPoints);
-            GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
+            //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             newData->SetSpline(spline, iChannel);
-            newData->SetGainVariation(gainVarResult, iChannel);
+            //newData->SetGainVariation(gainVarResult, iChannel);
         }
 
         newData->SetName(fOutputDataName);
@@ -201,6 +201,7 @@ namespace Katydid
         return newData;
     }
 
+    /*
     KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateGainVariation(TSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const
     {
         GainVariation* newGainVar = new GainVariation(nBins, rangeMin, rangeMax);
@@ -235,6 +236,7 @@ namespace Katydid
 
         return newGainVar;
     }
+    */
 
     void KTGainVariationProcessor::ProcessEvent(shared_ptr<KTEvent> event)
     {

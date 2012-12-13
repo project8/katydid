@@ -25,28 +25,28 @@ namespace Katydid
     class KTGainVariationData : public KTWriteableData
     {
         public:
-            typedef KTGainVariationProcessor::GainVariation GainVariation;
+            //typedef KTGainVariationProcessor::GainVariation GainVariation;
 
         protected:
             struct PerChannelData
             {
                 TSpline* fSpline;
-                GainVariation* fGainVar;
+                //GainVariation* fGainVar;
             };
 
         public:
-            KTGainVariationData(unsigned nChannels=1);
+            KTGainVariationData(UInt_t nChannels=1);
             virtual ~KTGainVariationData();
 
-            const GainVariation* GetGainVariation(unsigned channelNum = 0) const;
-            GainVariation* GetGainVariation(unsigned channelNum = 0);
-            const TSpline* GetSpline(unsigned channelNum = 0) const;
-            TSpline* GetSpline(unsigned channelNum = 0);
-            unsigned GetNChannels() const;
+            //const GainVariation* GetGainVariation(UInt_t channelNum = 0) const;
+            //GainVariation* GetGainVariation(UInt_t channelNum = 0);
+            const TSpline* GetSpline(UInt_t channelNum = 0) const;
+            TSpline* GetSpline(UInt_t channelNum = 0);
+            UInt_t GetNChannels() const;
 
-            void SetGainVariation(GainVariation* record, unsigned channelNum = 0);
-            void SetSpline(TSpline* spline, unsigned channelNum = 0);
-            void SetNChannels(unsigned channels);
+            //void SetGainVariation(GainVariation* record, UInt_t channelNum = 0);
+            void SetSpline(TSpline* spline, UInt_t channelNum = 0);
+            void SetNChannels(UInt_t channels);
 
             void Accept(KTWriter* writer) const;
 
@@ -57,48 +57,48 @@ namespace Katydid
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateGainVariationHistogram(unsigned channelNum = 0, const std::string& name = "hGainVariation") const;
+            virtual TH1D* CreateGainVariationHistogram(UInt_t nBins, UInt_t channelNum = 0, const std::string& name = "hGainVariation") const;
 #endif
     };
-
-    inline const KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(unsigned channelNum) const
+/*
+    inline const KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fGainVar;
     }
 
-    inline KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(unsigned channelNum)
+    inline KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(UInt_t channelNum)
     {
         return fChannelData[channelNum].fGainVar;
     }
-
-    inline const TSpline* KTGainVariationData::GetSpline(unsigned channelNum) const
+*/
+    inline const TSpline* KTGainVariationData::GetSpline(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fSpline;
     }
 
-    inline TSpline* KTGainVariationData::GetSpline(unsigned channelNum)
+    inline TSpline* KTGainVariationData::GetSpline(UInt_t channelNum)
     {
         return fChannelData[channelNum].fSpline;
     }
 
-    inline unsigned KTGainVariationData::GetNChannels() const
+    inline UInt_t KTGainVariationData::GetNChannels() const
     {
-        return unsigned(fChannelData.size());
+        return UInt_t(fChannelData.size());
     }
-
-    inline void KTGainVariationData::SetGainVariation(GainVariation* record, unsigned channelNum)
+/*
+    inline void KTGainVariationData::SetGainVariation(GainVariation* record, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fGainVar = record;
     }
-
-    inline void KTGainVariationData::SetSpline(TSpline* spline, unsigned channelNum)
+*/
+    inline void KTGainVariationData::SetSpline(TSpline* spline, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fSpline = spline;
     }
 
-    inline void KTGainVariationData::SetNChannels(unsigned channels)
+    inline void KTGainVariationData::SetNChannels(UInt_t channels)
     {
         fChannelData.resize(channels);
         return;

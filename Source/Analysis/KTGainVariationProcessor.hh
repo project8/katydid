@@ -56,7 +56,7 @@ namespace Katydid
         public:
             typedef KTSignal< void (const KTGainVariationData*) >::signal GainVarSignal;
 
-            typedef KTPhysicalArray< 1, Double_t > GainVariation;
+            //typedef KTPhysicalArray< 1, Double_t > GainVariation;
 
         public:
             KTGainVariationProcessor();
@@ -102,7 +102,7 @@ namespace Katydid
             KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data);
 
         private:
-            GainVariation* CreateGainVariation(TSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
+            //GainVariation* CreateGainVariation(TSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
 
             //***************
             // Signals
