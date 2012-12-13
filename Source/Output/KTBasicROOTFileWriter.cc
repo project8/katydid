@@ -364,6 +364,7 @@ namespace Katydid
             gvHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
 
+            /*
             stringstream conv2;
             string splineName;
             conv2 << "splineGV_" << eventNumber << "_" << iPlot;
@@ -378,6 +379,7 @@ namespace Katydid
             splineClone->SetName(splineName.c_str());
             splineClone->Write();
             KTDEBUG(publog, "Spline <" << splineName << "> written to ROOT file");
+            */
         }
         return;
     }

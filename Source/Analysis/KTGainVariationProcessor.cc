@@ -14,8 +14,7 @@
 #include "KTGainVariationData.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-
-#include "TSpline.h"
+#include "KTSpline.hh"
 
 #include <cmath>
 #include <vector>
@@ -128,7 +127,7 @@ namespace Katydid
                 KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
-            TSpline3* spline = new TSpline3("gainVarSpline", xVals, yVals, fNFitPoints);
+            KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             newData->SetSpline(spline, iChannel);
@@ -186,7 +185,7 @@ namespace Katydid
                 KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
-            TSpline3* spline = new TSpline3("gainVarSpline", xVals, yVals, fNFitPoints);
+            KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             newData->SetSpline(spline, iChannel);

@@ -139,9 +139,6 @@ int main(int argc, char** argv)
     flatSpectrumHist->Divide(fitHist);
     flatSpectrumHist->SetLineColor(2);
     flatSpectrumHist->Write();
-
-    TSpline* spline = (TSpline*)gvData->GetSpline(0)->Clone();
-    spline->Write();
 #endif
 
     delete gvData;
