@@ -9,6 +9,8 @@
 
 #include "KTWriter.hh"
 
+#include <cmath>
+
 using std::vector;
 
 namespace Katydid
@@ -49,15 +51,15 @@ namespace Katydid
                 fSpectra[channelNum]->size(), fSpectra[channelNum]->GetRangeMin(), fSpectra[channelNum]->GetRangeMax(),
                 (*fSpectra[channelNum])(0)->size(), (*fSpectra[channelNum])(0)->GetRangeMin(), (*fSpectra[channelNum])(0)->GetRangeMax());
 
-        KTINFO("Frequency axis: " << (*fSpectra[channelNum])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
-        KTINFO("Time axis: " << fSpectra[channelNum]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
+        KTINFO("Frequency axis: " << (*fSpectra[channelNum])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz; bin width: " << hist->GetYaxis()->GetBinWidth(1) << " Hz");
+        KTINFO("Time axis: " << fSpectra[channelNum]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s; bin width: " << hist->GetXaxis()->GetBinWidth(1) << " s");
 
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[channelNum]->size(); iBinX++)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[channelNum])(iBinX-1);
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
-                hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1]);
+                hist->SetBinContent(iBinX, iBinY, sqrt((*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1]));
             }
         }
 
@@ -83,7 +85,7 @@ namespace Katydid
             KTFrequencySpectrumFFTW* fs = (*fSpectra[channelNum])(iBinX-1);
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
-                hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1]);
+                hist->SetBinContent(iBinX, iBinY, atan2((*fs)(iBinY-1)[1], (*fs)(iBinY-1)[0]));
             }
         }
 
@@ -111,7 +113,7 @@ namespace Katydid
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 value = (*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1];
-                hist->SetBinContent(iBinX, iBinY, value*value);
+                hist->SetBinContent(iBinX, iBinY, value);
             }
         }
 

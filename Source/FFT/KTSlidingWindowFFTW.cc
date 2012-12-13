@@ -47,8 +47,10 @@ namespace Katydid
             fSingleFFTSignal(),
             fFullFFTSignal()
     {
+        fConfigName = "sliding-window-fftw";
+
         RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrum*)");
-        RegisterSignal("full_fft", &fFullFFTSignal, "void (KTSlidingWindowFSData*)");
+        RegisterSignal("full_fft", &fFullFFTSignal, "void (KTWriteableData*)");
 
         RegisterSlot("header", this, &KTSlidingWindowFFTW::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("time-series", this, &KTSlidingWindowFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
@@ -81,7 +83,7 @@ namespace Katydid
         KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
         if (tempWF == NULL)
         {
-            KTERROR(fftlog_sw, "Invalid window function type given: <" << windowType << ">.");
+            KTERROR(fftlog_sw_fftw, "Invalid window function type given: <" << windowType << ">.");
             return false;
         }
         SetWindowFunction(tempWF);
@@ -99,7 +101,7 @@ namespace Katydid
         {
             if (! KTCacheDirectory::GetInstance()->PrepareForUse())
             {
-                KTWARN(fftlog_sw, "Unable to use wisdom because cache directory is not ready.");
+                KTWARN(fftlog_sw_fftw, "Unable to use wisdom because cache directory is not ready.");
                 fUseWisdom = false;
             }
         }
@@ -130,7 +132,7 @@ namespace Katydid
         const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
         if (tsData == NULL)
         {
-            KTWARN(fftlog_sw, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTWARN(fftlog_sw_fftw, "No time series data named <" << fInputDataName << "> was available in the event");
             return;
         }
 
@@ -144,42 +146,43 @@ namespace Katydid
     {
         if (fWindowFunction == NULL)
         {
-            KTERROR(fftlog_sw, "No window function has been set. The FFT has not been initialized.");
+            KTERROR(fftlog_sw_fftw, "No window function has been set. The FFT has not been initialized.");
             return;
         }
 
         // fTransformFlag is guaranteed to be valid in the Set method.
+        KTDEBUG(fftlog_sw_fftw, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         Int_t transformFlag = iter->second;
 
         if (fUseWisdom)
         {
-            KTDEBUG(fftlog_sw, "Reading wisdom from file <" << fWisdomFilename << ">");
+            KTDEBUG(fftlog_sw_fftw, "Reading wisdom from file <" << fWisdomFilename << ">");
             if (fftw_import_wisdom_from_filename(fWisdomFilename.c_str()) == 0)
             {
-                KTWARN(fftlog_sw, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
+                KTWARN(fftlog_sw_fftw, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
             }
         }
 
-        KTDEBUG(fftlog_sw, "Creating plan: " << fWindowFunction->GetSize() << " bins; forward FFT");
+        KTDEBUG(fftlog_sw_fftw, "Creating plan: " << fWindowFunction->GetSize() << " bins; forward FFT");
         if (fFTPlan != NULL)
             fftw_destroy_plan(fFTPlan);
         fFTPlan = fftw_plan_dft_1d(fWindowFunction->GetSize(), fInputArray, fOutputArray, FFTW_FORWARD, transformFlag);
         if (fFTPlan != NULL)
         {
+            KTDEBUG(fftlog_sw_fftw, "FFTW plan created");
             if (fUseWisdom)
             {
                 if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
                 {
-                    KTWARN(fftlog_sw, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
+                    KTWARN(fftlog_sw_fftw, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
                 }
             }
-            KTDEBUG(fftlog_sw, "FFTW plan created");
             fIsInitialized = true;
         }
         else
         {
-            KTWARN(fftlog_sw, "Unable to create FFTW plan!");
+            KTWARN(fftlog_sw_fftw, "Unable to create FFTW plan!");
             fIsInitialized = false;
         }
         return;
@@ -189,7 +192,7 @@ namespace Katydid
     {
         if (! fIsInitialized)
         {
-            KTWARN(fftlog_sw, "FFT must be initialized before the transform is performed.\n" <<
+            KTWARN(fftlog_sw_fftw, "FFT must be initialized before the transform is performed.\n" <<
                     "Please first call InitializeFFT(), and then perform the transform.");
             return NULL;
         }
@@ -201,7 +204,7 @@ namespace Katydid
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData->GetTimeSeries(iChannel));
             if (nextInput == NULL)
             {
-                KTERROR(fftlog_sw, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
+                KTERROR(fftlog_sw_fftw, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
                 return NULL;
             }
             KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newResults = NULL;
@@ -211,7 +214,7 @@ namespace Katydid
             }
             catch (std::exception& e)
             {
-                KTERROR(fftlog_sw, "Channel " << iChannel << " did not transform correctly:\n" << e.what());
+                KTERROR(fftlog_sw_fftw, "Channel " << iChannel << " did not transform correctly:\n" << e.what());
                 return NULL;
             }
             newData->SetSpectra(newResults, iChannel);
@@ -247,7 +250,7 @@ namespace Katydid
             Double_t timeMax = nTimeBinsUsed * timeBinWidth;
             KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nWindows, timeMin, timeMax);
 
-            KTDEBUG(fftlog_sw, "Performing windowed FFT\n"
+            KTDEBUG(fftlog_sw_fftw, "Performing windowed FFT\n"
                     << "\tWindow size: " << windowSize << '\n'
                     << "\tWindow shift: " << windowShift << '\n'
                     << "\t# of windows: " << nWindows << '\n'
@@ -256,7 +259,7 @@ namespace Katydid
             UInt_t windowStart = 0;
             for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
             {
-                KTDEBUG(fftlog_sw, "Window: " << iWindow << "; first bin: " << windowStart);
+                KTDEBUG(fftlog_sw_fftw, "Window: " << iWindow << "; first bin: " << windowStart);
                 memcpy(fInputArray, data->GetData() + windowStart, windowSize * sizeof(fftw_complex));
                 fftw_execute(fFTPlan);
                 (*newSpectra)(iWindow) = ExtractTransformResult(freqMin, freqMax);
@@ -264,11 +267,11 @@ namespace Katydid
                 fSingleFFTSignal(iWindow, (*newSpectra)(iWindow));
                 windowStart += windowShift;
             }
-            KTINFO(fftlog_sw, "FFTs complete; windows used: " << nWindows << "; time bins not used: " << nTimeBinsNotUsed);
+            KTINFO(fftlog_sw_fftw, "FFTs complete; windows used: " << nWindows << "; time bins not used: " << nTimeBinsNotUsed);
             return newSpectra;
        }
 
-       KTERROR(fftlog_sw, "Window size is larger than time data: " << windowSize << " > " << dataSize << "\n" <<
+       KTERROR(fftlog_sw_fftw, "Window size is larger than time data: " << windowSize << " > " << dataSize << "\n" <<
               "No transform was performed!");
        throw(std::length_error("Window size is larger than time data"));
        return NULL;
@@ -293,7 +296,7 @@ namespace Katydid
     {
         if (fWindowFunction == NULL)
         {
-            KTERROR(fftlog_sw, "Window function has not been set.");
+            KTERROR(fftlog_sw_fftw, "Window function has not been set.");
             return;
         }
         fWindowFunction->SetSize(nBins);
@@ -305,7 +308,7 @@ namespace Katydid
     {
         if (fWindowFunction == NULL)
         {
-            KTERROR(fftlog_sw, "Window function has not been set.");
+            KTERROR(fftlog_sw_fftw, "Window function has not been set.");
             return;
         }
         fWindowFunction->SetLength(wlTime);
@@ -325,7 +328,7 @@ namespace Katydid
     {
         if (fWindowFunction == NULL)
         {
-            KTERROR(fftlog_sw, "No window function has been set. The FFT has not been recreated.");
+            KTERROR(fftlog_sw_fftw, "No window function has been set. The FFT has not been recreated.");
             return;
         }
 

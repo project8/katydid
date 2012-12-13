@@ -27,7 +27,7 @@ using boost::shared_ptr;
 namespace Katydid
 {
 
-    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("complex-fft");
+    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("complex-fftw");
 
     KTComplexFFTW::KTComplexFFTW() :
             KTFFT(),
@@ -104,6 +104,7 @@ namespace Katydid
     void KTComplexFFTW::InitializeFFT()
     {
         // fTransformFlag is guaranteed to be valid in the Set method.
+        KTDEBUG(fftlog_comp, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         UInt_t transformFlag = iter->second;
 

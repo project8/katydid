@@ -18,6 +18,7 @@
 namespace Katydid
 {
     class KTPStoreNode;
+    class KTWriteableData;
 
     /*!
      @class KTEggProcessor
@@ -50,6 +51,7 @@ namespace Katydid
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
+            typedef KTSignal< void (const KTWriteableData*) >::signal DataSignal;
             typedef KTSignal< void (boost::shared_ptr<KTEvent>) >::signal EventSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 
@@ -110,6 +112,7 @@ namespace Katydid
 
         private:
             HeaderSignal fHeaderSignal;
+            DataSignal fDataSignal;
             EventSignal fEventSignal;
             EggDoneSignal fEggDoneSignal;
 

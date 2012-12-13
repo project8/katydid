@@ -12,6 +12,7 @@
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTCorrelationData.hh"
+#include "KTHoughData.hh"
 
 #include "TFile.h"
 
@@ -62,6 +63,12 @@ namespace Katydid
             void Write(const KTWriteableData* data);
 
             //************************
+            // Time Series Data
+            //************************
+        public:
+            void Write(const KTTimeSeriesData* data);
+
+            //************************
             // Frequency Spectrum Data
             //************************
         public:
@@ -92,6 +99,12 @@ namespace Katydid
         public:
             void WriteGainVariationData(const KTGainVariationData* data);
             void Write(const KTGainVariationData* data);
+
+            //************************
+            // Hough Transform Data
+            //************************
+        public:
+            void Write(const KTHoughData* data);
 
     };
 

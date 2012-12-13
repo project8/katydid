@@ -11,6 +11,8 @@
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTTimeSeries.hh"
+#include "KTTimeSeriesData.hh"
 
 #include "KTSlidingWindowFSData.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
@@ -101,6 +103,37 @@ namespace Katydid
         return;
     }
 
+
+    //************************
+    // Frequency Spectrum Data
+    //************************
+
+    void KTBasicROOTFileWriter::Write(const KTTimeSeriesData* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nChannels = data->GetNTimeSeries();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
+        {
+            const KTTimeSeries* spectrum = data->GetTimeSeries(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histTS_" << eventNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreateHistogram(histName);
+                powerSpectrum->SetDirectory(fFile);
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
 
     //************************
     // Frequency Spectrum Data
@@ -270,6 +303,32 @@ namespace Katydid
         return;
     }
 
+    //************************
+    // Hough Transform Data
+    //************************
+
+    void KTBasicROOTFileWriter::Write(const KTHoughData* data)
+    {
+        KTEvent* event = data->GetEvent();
+        UInt_t eventNumber = 0;
+        if (event != NULL) eventNumber = event->GetEventNumber();
+        UInt_t nPlots = data->GetNTransforms();
+
+        if (! OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
+        {
+            stringstream conv;
+            conv << "histHT_" << eventNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH2D* swHist = data->CreateHistogram(iPlot, histName);
+            swHist->SetDirectory(fFile);
+            swHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+        }
+        return;
+    }
 
     //************************
     // Gain Variation Data
