@@ -247,9 +247,9 @@ namespace Katydid
         }
 
         const KTFrequencySpectrumDataFFTW* fsDataFFTW = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(fInputDataName));
-        if (fsData != NULL)
+        if (fsDataFFTW != NULL)
         {
-            KTGainVariationData* newData = CalculateGainVariation(fsData);
+            KTGainVariationData* newData = CalculateGainVariation(fsDataFFTW);
             event->AddData(newData);
             return;
         }
