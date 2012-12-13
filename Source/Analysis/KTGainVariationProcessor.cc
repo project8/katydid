@@ -153,7 +153,52 @@ namespace Katydid
 
         KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << ", and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
-        return NULL;
+        UInt_t nChannels = data->GetNChannels();
+
+        KTGainVariationData* newData = new KTGainVariationData(nChannels);
+
+        Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
+        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = data->GetSpectrum(iChannel);
+
+            Double_t* xVals = new Double_t[fNFitPoints];
+            Double_t* yVals = new Double_t[fNFitPoints];
+
+            // Calculate fit points
+            for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+            {
+                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint;
+                UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
+
+                Double_t leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
+                Double_t rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
+                xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
+
+                Double_t mean = 0.;
+                for (UInt_t iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
+                {
+                    mean += sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
+                }
+                mean /= (Double_t)nBinsPerFitPoint;
+                yVals[iFitPoint] = mean;
+
+                KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
+            }
+
+            TSpline3* spline = new TSpline3("gainVarSpline", xVals, yVals, fNFitPoints);
+            GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
+
+            newData->SetSpline(spline, iChannel);
+            newData->SetGainVariation(gainVarResult, iChannel);
+        }
+
+        newData->SetName(fOutputDataName);
+        newData->SetEvent(data->GetEvent());
+
+        fGainVarSignal(newData);
+
+        return newData;
     }
 
     KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateGainVariation(TSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const
