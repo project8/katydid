@@ -10,6 +10,7 @@
 
 #include "KTProcessor.hh"
 
+#include "KTDiscriminatedPoints2DData.hh"
 #include "KTPhysicalArray.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -26,6 +27,9 @@ namespace Katydid
 
     class KTHoughTransform : public KTProcessor
     {
+        public:
+            typedef KTDiscriminatedPoints2DData::SetOfPoints SetOfPoints;
+
         protected:
             typedef KTSignal< void (const KTWriteableData*) >::signal HTSignal;
 
@@ -59,6 +63,10 @@ namespace Katydid
         public:
             KTHoughData* TransformData(const KTSlidingWindowFSDataFFTW* data);
             KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrum* >* powerSpectrum);
+
+            KTHoughData* TransformData(const KTDiscriminatedPoints2DData* data);
+            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSetOfPoints(const SetOfPoints& points, UInt_t nTimeBins, UInt_t nFreqBins);
+
 
         protected:
             KTPhysicalArray< 1, KTFrequencySpectrum* >* RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum);
