@@ -309,6 +309,11 @@ namespace Katydid
 
     void KTBasicROOTFileWriter::Write(const KTHoughData* data)
     {
+        return WriteHoughData(data);
+    }
+
+    void KTBasicROOTFileWriter::WriteHoughData(const KTHoughData* data)
+    {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;
         if (event != NULL) eventNumber = event->GetEventNumber();
