@@ -86,6 +86,7 @@ namespace Katydid
              //void ProcessHeader(const KTEggHeader* header);
              void ProcessEvent(boost::shared_ptr<KTEvent> event);
              void ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data);
+             void ProcessDiscriminatedData(const KTDiscriminatedPoints2DData* data);
 
 
     };

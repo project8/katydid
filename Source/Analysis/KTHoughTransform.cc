@@ -48,8 +48,9 @@ namespace Katydid
         RegisterSignal("hough-transform", &fHTSignal, "void (const KTWriteableData*)");
 
         //RegisterSlot("header", this, &KTHoughTransform::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
-        RegisterSlot("event", this, &KTHoughTransform::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("swfs-data", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
+        RegisterSlot("disc-data", this, &KTHoughTransform::ProcessDiscriminatedData, "void (const KTDiscriminatedPoints2DData*)");
+        RegisterSlot("event", this, &KTHoughTransform::ProcessEvent, "void (shared_ptr<KTEvent>)");
     }
 
     KTHoughTransform::~KTHoughTransform()
@@ -291,16 +292,43 @@ namespace Katydid
         return;
     }
 
-    void KTHoughTransform::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTHoughTransform::ProcessDiscriminatedData(const KTDiscriminatedPoints2DData* data)
     {
-        const KTSlidingWindowFSDataFFTW* data = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fInputDataName));
-        if (data == NULL)
+        KTHoughData* newData = TransformData(data);
+
+        if (newData == NULL)
         {
-            KTWARN(htlog, "No sliding-window frequency-spectrum data named <" << fInputDataName << "> was available in the event");
+            KTERROR(htlog, "Unable to transform data");
             return;
         }
 
-        ProcessSWFSData(data);
+        KTEvent* event = data->GetEvent();
+        if (event != NULL)
+        {
+            event->AddData(newData);
+        }
+
+        return;
+    }
+
+
+    void KTHoughTransform::ProcessEvent(shared_ptr<KTEvent> event)
+    {
+        const KTDiscriminatedPoints2DData* dpData = dynamic_cast< KTDiscriminatedPoints2DData* >(event->GetData(fInputDataName));
+        if (dpData != NULL)
+        {
+            ProcessDiscriminatedData(dpData);
+            return;
+        }
+
+        const KTSlidingWindowFSDataFFTW* swsfData = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fInputDataName));
+        if (swsfData != NULL)
+        {
+            ProcessSWFSData(swsfData);
+            return;
+        }
+
+        KTWARN(htlog, "No sliding-window frequency-spectrum data named <" << fInputDataName << "> was available in the event");
         return;
     }
 
