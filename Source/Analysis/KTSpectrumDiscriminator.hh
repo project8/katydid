@@ -16,7 +16,11 @@
 namespace Katydid
 {
     class KTDiscriminatedPoints1DData;
+    class KTDiscriminatedPoints2DData;
     class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataFFTW;
+    class KTSlidingWindowFSData;
+    class KTSlidingWindowFSDataFFTW;
 
     class KTSpectrumDiscriminator : public KTProcessor
     {
@@ -75,6 +79,9 @@ namespace Katydid
 
         public:
             KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumData* data);
+            KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumDataFFTW* data);
+            KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
+            KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
 
     };
 
