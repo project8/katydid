@@ -74,6 +74,9 @@ if (ENABLE_TESTING)
     add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
     target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis KatydidOutput ${LIBS})
 
+    add_executable (TestSpectrumDiscriminator ${CMAKE_CURRENT_SOURCE_DIR}/TestSpectrumDiscriminator.cc)
+    target_link_libraries (TestSpectrumDiscriminator KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
+
     add_executable (TestThroughputProfiler ${CMAKE_CURRENT_SOURCE_DIR}/TestThroughputProfiler.cc)
     target_link_libraries (TestThroughputProfiler KatydidUtility KatydidCore KatydidEgg ${LIBS})
 
@@ -99,6 +102,7 @@ if (ENABLE_TESTING)
                      TestSignalsAndSlots
                      TestSimpleFFT
                      TestSlidingWindowFFT
+                     TestSpectrumDiscriminator
                      TestThroughputProfiler
                      TestVector
                      TestWignerVille
@@ -120,6 +124,7 @@ if (ENABLE_TESTING)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
+    add_test (Test_SpectrumDiscriminator TestSpectrumDiscriminator)
     add_test (Test_Vector TestVector)
     add_test (Test_WignerVille TestWignerVille)
     

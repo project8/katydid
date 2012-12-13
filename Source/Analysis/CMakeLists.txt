@@ -4,9 +4,12 @@
 set (ANALYSIS_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints1DData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
 )
 
@@ -21,9 +24,12 @@ endif (ROOT_FOUND)
 set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints1DData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
 )
 
