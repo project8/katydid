@@ -232,6 +232,9 @@ namespace Katydid
 
         KTDiscriminatedPoints2DData* newData = new KTDiscriminatedPoints2DData(nChannels);
 
+        newData->SetNBinsX(data->GetSpectra(0)->size());
+        newData->SetNBinsY((*(data->GetSpectra(0)))(0)->size());
+
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
 
@@ -312,6 +315,9 @@ namespace Katydid
         UInt_t nChannels = data->GetNChannels();
 
         KTDiscriminatedPoints2DData* newData = new KTDiscriminatedPoints2DData(nChannels);
+
+        newData->SetNBinsX(data->GetSpectra(0)->size());
+        newData->SetNBinsY((*(data->GetSpectra(0)))(0)->size());
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
