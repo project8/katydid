@@ -26,7 +26,7 @@ namespace Katydid
     class KTGainNormalization : public KTProcessor
     {
         public:
-            //typedef KTSignal< void (const KTSlidingWindowFSData*) >::signal SWFSSignal;
+            typedef KTSignal< void (const KTSlidingWindowFSData*) >::signal SWFSSignal;
             typedef KTSignal< void (const KTSlidingWindowFSDataFFTW*) >::signal SWFSFFTWSignal;
 
         public:
@@ -35,13 +35,11 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            //void PrepareNormalization(KTFrequencySpectrum* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
-            void PrepareNormalizationFFTW(KTFrequencySpectrumFFTW* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
+            void Normalize(KTSlidingWindowFSData* swFSData);
+            void Normalize(KTFrequencySpectrum* frequencySpectrum);
 
-            //void NormalizeData(KTSlidingWindowFSData* swFSData);
-            //void NormalizeFrequencySpectrum(KTFrequencySpectrum* frequencySpectrum);
-            void NormalizeFFTWData(KTSlidingWindowFSDataFFTW* swFSData);
-            void NormalizeFFTWFrequencySpectrum(KTFrequencySpectrumFFTW* frequencySpectrum);
+            //void Normalize(KTSlidingWindowFSDataFFTW* swFSData);
+            //void Normalize(KTFrequencySpectrumFFTW* frequencySpectrum);
 
         private:
             KTFrequencySpectrum* fNormalization;
@@ -51,7 +49,7 @@ namespace Katydid
             //***************
 
         private:
-            //SWFSSignal fFSSignal
+            SWFSSignal fFSSignal;
             SWFSFFTWSignal fFFTWFSSignal;
 
             //***************
