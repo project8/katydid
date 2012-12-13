@@ -41,12 +41,14 @@ namespace Katydid
             fTimeSeriesType(kRealTimeSeries),
             fOutputDataName("time-series"),
             fHeaderSignal(),
+            fDataSignal(),
             fEventSignal(),
             fEggDoneSignal()
     {
         fConfigName = "egg-processor";
 
         RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
+        RegisterSignal("data", &fDataSignal, "void (const KTWriteableData*)");
         RegisterSignal("event", &fEventSignal, "boost::shared_ptr<KTEvent>");
         RegisterSignal("egg-done", &fEggDoneSignal, "void ()");
     }
@@ -153,6 +155,7 @@ namespace Katydid
             if (newData != NULL)
             {
                 KTDEBUG(egglog, "Time series data is present.");
+                fDataSignal(newData);
             }
             else
             {

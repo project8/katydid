@@ -15,6 +15,12 @@
             },
             "processor":
             {
+                "type": "hough-transform",
+                "name": "hough",
+                "is-top-level": true
+            },
+            "processor":
+            {
                 "type": "basic-root-writer",
                 "name": "writer"
             },
@@ -31,7 +37,16 @@
                 "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "wv",
-                "slot-name": "event"
+                "slot-name": "event",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "hough",
+                "slot-name": "event",
+                "group-order": 1
             },
             "connection":
             {
@@ -39,6 +54,13 @@
                 "signal-name": "wigner-ville",
                 "slot-processor": "writer",
                 "slot-name": "write-sliding-window-fs-fftw"
+            },
+            "connection":
+            {
+                "signal-processor": "hough",
+                "signal-name": "hough-transform",
+                "slot-processor": "writer",
+                "slot-name": "write-data"
             },
             
             "run-queue":
@@ -61,7 +83,8 @@
         {
             "wv-pair": "0, 1",
             "input-data-name": "time-series",
-            "complex-fft":
+            "output-data-name": "wigner-ville",
+            "complex-fftw":
             {
                 "transform-flag": "ESTIMATE"
             },
@@ -75,6 +98,13 @@
                     "size": 512
                 }
             }
+        },
+        
+        "hough":
+        {
+            "n-theta-points": 100,
+            "n-r-points": 100,
+            "input-data-name": "wigner-ville"
         },
         
         "writer":

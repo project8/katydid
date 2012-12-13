@@ -10,7 +10,7 @@
             },
             "processor":
             {
-                "type": "complex-fft",
+                "type": "complex-fftw",
                 "name": "fft"
             },
             "processor":
