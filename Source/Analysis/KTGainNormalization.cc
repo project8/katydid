@@ -7,11 +7,13 @@
 
 #include "KTGainNormalization.hh"
 
+#include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
+#include "KTGainVariationData.hh"
 #include "KTLogger.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
@@ -83,6 +85,55 @@ namespace Katydid
     }
 
 
+    KTFrequencySpectrumData* KTGainNormalization::Normalize(const KTFrequencySpectrumData* fsData, const KTGainVariationData* gvData)
+    {
+        UInt_t nChannels = fsData->GetNChannels();
+        if (nChannels != gvData->GetNChannels())
+        {
+            KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
+            return NULL;
+        }
+
+        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(nChannels);
+
+        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        {
+            KTFrequencySpectrum* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
+            if (newSpectrum == NULL)
+            {
+                KTERROR(gnlog, "Normalization of spectrum " << iChannel << " failed for some reason. Continuing processing.");
+                continue;
+            }
+            newData->SetSpectrum(newSpectrum, iChannel);
+        }
+
+        newData->SetName(fOutputDataName);
+        newData->SetEvent(fsData->GetEvent());
+
+        fFSSignal(newData);
+
+        return newData;
+    }
+
+    KTFrequencySpectrum* KTGainNormalization::Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline)
+    {
+        UInt_t nBins = frequencySpectrum->size();
+        Double_t freqMin = frequencySpectrum->GetRangeMin();
+        Double_t freqMax = frequencySpectrum->GetRangeMax();
+
+        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+
+        KTFrequencySpectrum* newSpectrum = new KTFrequencySpectrum(nBins, freqMin, freqMax);
+        for (UInt_t iBin=0; iBin < nBins; iBin++)
+        {
+            (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() * (*splineImp)(iBin), (*frequencySpectrum)(iBin).arg());
+        }
+
+        spline->AddToCache(splineImp);
+
+        return newSpectrum;
+    }
+
     void KTGainNormalization::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTGainVariationData* gvData = dynamic_cast< KTGainVariationData* >(event->GetData(fGVInputDataName));
@@ -95,7 +146,7 @@ namespace Katydid
         const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fFSInputDataName));
         if (fsData != NULL)
         {
-            KTGainVariationData* newData = Normalize(fsData, gvData);
+            KTFrequencySpectrumData* newData = Normalize(fsData, gvData);
             event->AddData(newData);
             return;
         }

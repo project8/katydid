@@ -20,9 +20,11 @@ namespace Katydid
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
+    class KTGainVariationData;
     class KTPStoreNode;
     class KTSlidingWindowFSData;
     class KTSlidingWindowFSDataFFTW;
+    class KTSpline;
 
     class KTGainNormalization : public KTProcessor
     {
@@ -77,7 +79,7 @@ namespace Katydid
             //void Normalize(KTFrequencySpectrumDataFFTW* fsData, const KTGainVariationData* gvData);
 
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
-            //void Normalize(KTFrequencySpectrum* frequencySpectrum, KTSpline* spline);
+            KTFrequencySpectrum* Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline);
 
             //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
             //void Normalize(KTFrequencySpectrumFFTW* frequencySpectrum, KTSpline* spline);
