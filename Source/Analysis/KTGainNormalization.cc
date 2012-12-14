@@ -126,7 +126,7 @@ namespace Katydid
         KTFrequencySpectrum* newSpectrum = new KTFrequencySpectrum(nBins, freqMin, freqMax);
         for (UInt_t iBin=0; iBin < nBins; iBin++)
         {
-            (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() * (*splineImp)(iBin), (*frequencySpectrum)(iBin).arg());
+            (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() / (*splineImp)(iBin), (*frequencySpectrum)(iBin).arg());
         }
 
         spline->AddToCache(splineImp);
