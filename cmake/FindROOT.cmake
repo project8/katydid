@@ -18,6 +18,8 @@ SET(ROOT_CONFIG_SEARCHPATH
   $ENV{ROOTSYS}/bin
 )
 
+DEFINE_PROPERTY (CACHED_VARIABLE PROPERTY ROOT_FOUND BRIEF_DOCS "Records whether ROOT has been found" FULL_DOCS "Records whether ROOT has been found") 
+
 SET(ROOT_DEFINITIONS "")
 
 SET(ROOT_INSTALLED_VERSION_TOO_OLD FALSE)
@@ -28,16 +30,17 @@ FIND_PROGRAM(ROOT_CONFIG_EXECUTABLE NAMES root-config PATHS
    ${ROOT_CONFIG_SEARCHPATH})
     
 IF (${ROOT_CONFIG_EXECUTABLE} MATCHES "ROOT_CONFIG_EXECUTABLE-NOTFOUND")
-  MESSAGE( FATAL_ERROR "ROOT not installed in the searchpath and ROOTSYS is not set. Please
+  MESSAGE( WARNING "ROOT not installed in the searchpath and ROOTSYS is not set. Please
  set ROOTSYS or add the path to your ROOT installation in the Macro FindROOT.cmake in the
  subdirectory cmake/modules.")
+  SET(ROOT_FOUND FALSE)
+  RETURN()
 ELSE (${ROOT_CONFIG_EXECUTABLE} MATCHES "ROOT_CONFIG_EXECUTABLE-NOTFOUND")
   STRING(REGEX REPLACE "(^.*)/bin/root-config" "\\1" test ${ROOT_CONFIG_EXECUTABLE}) 
   SET( ENV{ROOTSYS} ${test})
   set( ROOTSYS ${test})
 ENDIF (${ROOT_CONFIG_EXECUTABLE} MATCHES "ROOT_CONFIG_EXECUTABLE-NOTFOUND")  
 
-DEFINE_PROPERTY (CACHED_VARIABLE PROPERTY ROOT_FOUND BRIEF_DOCS "Records whether ROOT has been found" FULL_DOCS "Records whether ROOT has been found") 
  
 IF (ROOT_CONFIG_EXECUTABLE)
    
@@ -65,7 +68,8 @@ IF (ROOT_CONFIG_EXECUTABLE)
   STRING(REGEX REPLACE "^[0-9]+\\.[0-9][0-9]+\\/([0-9][0-9]+).*" "\\1" found_root_patch_vers "${ROOTVERSION}")
 
   IF (found_root_major_vers LESS 5)
-    MESSAGE( FATAL_ERROR "Invalid ROOT version \"${ROOTERSION}\", at least major version 4 is required, e.g. \"5.00/00\"")
+    MESSAGE( WARNING "Invalid ROOT version \"${ROOTERSION}\", at least major version 4 is required, e.g. \"5.00/00\"")
+    RETURN()
   ENDIF (found_root_major_vers LESS 5)
 
   # compute an overall version number which can be compared at once
