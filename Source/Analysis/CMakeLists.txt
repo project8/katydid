@@ -7,6 +7,7 @@ set (ANALYSIS_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints1DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughData.hh
@@ -30,6 +31,7 @@ set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints1DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughData.cc
