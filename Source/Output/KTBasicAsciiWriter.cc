@@ -1,1 +1,1 @@
-#include "KTBasicAsciiFileWriter.hh"
+#include "KTBasicAsciiWriter.hh"
