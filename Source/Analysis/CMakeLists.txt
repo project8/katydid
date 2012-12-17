@@ -2,6 +2,7 @@
 # Author: N. Oblath
 
 set (ANALYSIS_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTCluster1DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints1DData.hh
@@ -24,6 +25,7 @@ if (ROOT_FOUND)
 endif (ROOT_FOUND)
 
 set (ANALYSIS_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTCluster1DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints1DData.cc
