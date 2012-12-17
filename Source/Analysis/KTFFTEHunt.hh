@@ -13,7 +13,7 @@
 
 #include "KTSimpleFFT.hh"
 #include "KTSlidingWindowFFT.hh"
-#include "KTGainNormalization.hh"
+#include "KTOldGainNormalization.hh"
 #include "KTSimpleClustering.hh"
 
 #ifdef ROOT_FOUND
@@ -107,7 +107,7 @@ namespace Katydid
 
             KTSimpleFFT fSimpleFFT;
             KTSlidingWindowFFT fWindowFFT;
-            KTGainNormalization fGainNorm;
+            KTOldGainNormalization fGainNorm;
             KTSimpleClustering fClustering;
 
             std::string fTextFilename;

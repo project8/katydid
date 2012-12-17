@@ -11,11 +11,11 @@
 #include "KTWriteableData.hh"
 
 #include "KTGainVariationProcessor.hh"
+#include "KTSpline.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
 #endif
-#include "TSpline.h"
 
 #include <vector>
 
@@ -30,7 +30,7 @@ namespace Katydid
         protected:
             struct PerChannelData
             {
-                TSpline* fSpline;
+                KTSpline* fSpline;
                 //GainVariation* fGainVar;
             };
 
@@ -40,12 +40,12 @@ namespace Katydid
 
             //const GainVariation* GetGainVariation(UInt_t channelNum = 0) const;
             //GainVariation* GetGainVariation(UInt_t channelNum = 0);
-            const TSpline* GetSpline(UInt_t channelNum = 0) const;
-            TSpline* GetSpline(UInt_t channelNum = 0);
+            const KTSpline* GetSpline(UInt_t channelNum = 0) const;
+            KTSpline* GetSpline(UInt_t channelNum = 0);
             UInt_t GetNChannels() const;
 
             //void SetGainVariation(GainVariation* record, UInt_t channelNum = 0);
-            void SetSpline(TSpline* spline, UInt_t channelNum = 0);
+            void SetSpline(KTSpline* spline, UInt_t channelNum = 0);
             void SetNChannels(UInt_t channels);
 
             void Accept(KTWriter* writer) const;
@@ -71,12 +71,12 @@ namespace Katydid
         return fChannelData[channelNum].fGainVar;
     }
 */
-    inline const TSpline* KTGainVariationData::GetSpline(UInt_t channelNum) const
+    inline const KTSpline* KTGainVariationData::GetSpline(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fSpline;
     }
 
-    inline TSpline* KTGainVariationData::GetSpline(UInt_t channelNum)
+    inline KTSpline* KTGainVariationData::GetSpline(UInt_t channelNum)
     {
         return fChannelData[channelNum].fSpline;
     }
@@ -92,7 +92,7 @@ namespace Katydid
         fChannelData[channelNum].fGainVar = record;
     }
 */
-    inline void KTGainVariationData::SetSpline(TSpline* spline, UInt_t channelNum)
+    inline void KTGainVariationData::SetSpline(KTSpline* spline, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fSpline = spline;

@@ -14,8 +14,7 @@
 #include "KTGainVariationData.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-
-#include "TSpline.h"
+#include "KTSpline.hh"
 
 #include <cmath>
 #include <vector>
@@ -128,7 +127,18 @@ namespace Katydid
                 KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
-            TSpline3* spline = new TSpline3("gainVarSpline", xVals, yVals, fNFitPoints);
+            // Normalize the fit points to 1
+            Double_t minYVal = yVals[0];
+            for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+            {
+                if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
+            }
+            for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+            {
+                yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
+            }
+
+            KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             newData->SetSpline(spline, iChannel);
@@ -186,7 +196,19 @@ namespace Katydid
                 KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
-            TSpline3* spline = new TSpline3("gainVarSpline", xVals, yVals, fNFitPoints);
+            // Normalize the fit points to 1
+            Double_t minYVal = yVals[0];
+            for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+            {
+                if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
+            }
+            for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+            {
+                yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
+            }
+
+
+            KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             newData->SetSpline(spline, iChannel);

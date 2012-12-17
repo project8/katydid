@@ -8,9 +8,7 @@ if (LOG4CXX_FOUND)
     )
 endif (LOG4CXX_FOUND)
 
-set (UTILITY_DICT_HEADER_FILES)
-
-set (UTILITY_NODICT_HEADERFILES
+set (UTILITY_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_specialization.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_class.hh
@@ -28,26 +26,17 @@ set (UTILITY_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMath.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArray.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSingleton.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.hh
 )
-
-set (UTILITY_HEADERFILES ${UTILITY_DICT_HEADERFILES} ${UTILITY_NODICT_HEADERFILES})
 
 set (UTILITY_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar_specialization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.cc
 )
 
-#if (ROOT_FOUND)
-#    set (UTILITY_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/UtilityLinkDef.hh)
-#    set (UTILITY_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/UtilityDict.cxx)
-#endif (ROOT_FOUND)
-
 ##################################################
-
-#if (ROOT_FOUND)
-#    ROOT_GENERATE_DICTIONARY ("${UTILITY_DICT_HEADERFILES}" "${UTILITY_LINKDEF_HEADERFILE}" "${UTILITY_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
-#endif (ROOT_FOUND)
 
 add_library (KatydidUtility ${UTILITY_SOURCEFILES})
 target_link_libraries (KatydidUtility ${LIBS})
