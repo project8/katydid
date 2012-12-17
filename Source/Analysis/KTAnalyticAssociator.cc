@@ -215,9 +215,4 @@ namespace Katydid
         return;
     }
 
-    const KTComplexFFTW& KTAnalyticAssociator::GetFullFFT() const
-    {
-        return fFullFFT;
-    }
-
 } /* namespace Katydid */

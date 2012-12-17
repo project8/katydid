@@ -35,7 +35,7 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            const KTComplexFFTW& GetFullFFT() const;
+            KTComplexFFTW* GetFullFFT();
 
             const std::string& GetInputDataName() const;
             void SetInputDataName(const std::string& name);
@@ -86,6 +86,11 @@ namespace Katydid
              void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };
+
+    inline KTComplexFFTW* KTAnalyticAssociator::GetFullFFT()
+    {
+        return &fFullFFT;
+    }
 
     inline Bool_t KTAnalyticAssociator::GetSaveFrequencySpectrum() const
     {

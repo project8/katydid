@@ -40,11 +40,11 @@ namespace Katydid
 
     class KTWignerVille : public KTFFT, public KTProcessor
     {
-        protected:
+        private:
             typedef KTSignal< void (const KTWriteableData*) >::signal WVSignal;
             typedef std::vector< KTWVPair > PairVector;
 
-        protected:
+        private:
             typedef std::map< std::string, Int_t > TransformFlagMap;
 
         public:
@@ -52,17 +52,6 @@ namespace Katydid
             virtual ~KTWignerVille();
 
             Bool_t Configure(const KTPStoreNode* node);
-
-            KTComplexFFTW* GetFullFFT() const;
-            KTSlidingWindowFFTW* GetWindowedFFT() const;
-
-            Bool_t GetSaveAAFrequencySpectrum() const;
-            Bool_t GetSaveAnalyticAssociate() const;
-            Bool_t GetSaveCrossMultipliedTimeSeries() const;
-
-            void SetSaveAAFrequencySpectrum(Bool_t flag);
-            void SetSaveAnalyticAssociate(Bool_t flag);
-            void SetSaveCrossMultipliedTimeSeries(Bool_t flag);
 
             void AddPair(const KTWVPair& pair);
             void SetPairVector(const PairVector& pairs);
@@ -75,49 +64,13 @@ namespace Katydid
             const std::string& GetOutputDataName() const;
             void SetOutputDataName(const std::string& name);
 
-            const std::string& GetAAFSOutputDataName() const;
-            void SetAAFSOutputDataName(const std::string& name);
-
-            const std::string& GetAATSOutputDataName() const;
-            void SetAATSOutputDataName(const std::string& name);
-
-            const std::string& GetCMTSOutputDataName() const;
-            void SetCMTSOutputDataName(const std::string& name);
-
-        protected:
+        private:
             PairVector fPairs;
-
-
-        protected:
-            KTComplexFFTW* fFullFFT;
-            KTSlidingWindowFFTW* fWindowedFFT;
-
-            Bool_t fSaveAAFrequencySpectrum;
-            Bool_t fSaveAnalyticAssociate;
-            Bool_t fSaveCrossMultipliedTimeSeries;
 
             std::string fInputDataName;
             std::string fOutputDataName;
 
-            std::string fAAFSOutputDataName;
-            std::string fAATSOutputDataName;
-            std::string fCMTSOutputDataName;
-
         public:
-            /// Performs the W-V transform on the given time series data.
-            /// In the process, the data is FFTed, and then reverse FFTed; if you want to keep the intermediate frequency spectrum, pass a KTFrequencySpectrumDataFFTW** as the second parameter..
-            /// @note A frequency spectrum data object can still be returned even if the full W-V transform fails!
-            //KTSlidingWindowFSData* TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData=NULL, KTTimeSeriesData** outputAAData=NULL, KTTimeSeriesData** outputCMTSData=NULL);
-            KTSlidingWindowFSDataFFTW* TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData=NULL, KTTimeSeriesData** outputAAData=NULL, KTTimeSeriesData** outputCMTSData=NULL);
-
-            /// Performs the W-V transform on the given time series.
-            /// In the process, the data is FFTed, and then reverse FFTed. If you want to keep the intermediate frequency spectrum, pass a KTFrequencySpectrumFFTW** as the second parameter.
-            /// @note A frequency spectrum object can still be returned even if the full W-V transform fails.
-            //KTTimeSeriesFFTW* Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
-
-            /// Performs the W-V transform on the given frequency spectrum (in place! does NOT create a new FS)
-            //Bool_t Transform(KTFrequencySpectrumFFTW* freqSpectrum);
-
             void InitializeFFT();
             void RecreateFFT();
 
@@ -149,18 +102,7 @@ namespace Katydid
             void SetUseOverlapFrac(Bool_t useOverlapFrac);
             void SetWindowFunction(KTEventWindowFunction* wf);
 
-
         private:
-            /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
-            KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
-            /// Calculates the AA in place.
-            //Bool_t CalculateAnalyticAssociate(KTFrequencySpectrumFFTW* freqSpectrum);
-
-            //KTTimeSeriesFFTW* CrossMultiply(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2);
-
-            void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
-            //KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
-            KTFrequencySpectrumFFTW* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const;
@@ -183,6 +125,20 @@ namespace Katydid
             KTEventWindowFunction* fWindowFunction;
 
 
+        public:
+            /// Performs the W-V transform on the given time series data.
+            /// In the process, the data is FFTed, and then reverse FFTed; if you want to keep the intermediate frequency spectrum, pass a KTFrequencySpectrumDataFFTW** as the second parameter..
+            /// @note A frequency spectrum data object can still be returned even if the full W-V transform fails!
+            KTSlidingWindowFSDataFFTW* TransformData(const KTTimeSeriesData* data);
+
+        private:
+            /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
+            KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
+
+            void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+            KTFrequencySpectrumFFTW* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
+
+
 
             //***************
              // Signals
@@ -199,42 +155,8 @@ namespace Katydid
              void ProcessHeader(const KTEggHeader* header);
              void ProcessEvent(boost::shared_ptr<KTEvent> event);
              void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
-             //void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
     };
-
-    inline Bool_t KTWignerVille::GetSaveAAFrequencySpectrum() const
-    {
-        return fSaveAAFrequencySpectrum;
-    }
-
-    inline void KTWignerVille::SetSaveAAFrequencySpectrum(Bool_t flag)
-    {
-        fSaveAAFrequencySpectrum = flag;
-        return;
-    }
-
-    inline Bool_t KTWignerVille::GetSaveAnalyticAssociate() const
-    {
-        return fSaveAnalyticAssociate;
-    }
-
-    inline void KTWignerVille::SetSaveAnalyticAssociate(Bool_t flag)
-    {
-        fSaveAnalyticAssociate = flag;
-        return;
-    }
-
-    inline Bool_t KTWignerVille::GetSaveCrossMultipliedTimeSeries() const
-    {
-        return fSaveCrossMultipliedTimeSeries;
-    }
-
-    inline void KTWignerVille::SetSaveCrossMultipliedTimeSeries(Bool_t flag)
-    {
-        fSaveCrossMultipliedTimeSeries = flag;
-        return;
-    }
 
     inline void KTWignerVille::AddPair(const KTWVPair& pair)
     {
@@ -278,39 +200,6 @@ namespace Katydid
     inline void KTWignerVille::SetOutputDataName(const std::string& name)
     {
         fOutputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTWignerVille::GetAAFSOutputDataName() const
-    {
-        return fAAFSOutputDataName;
-    }
-
-    inline void KTWignerVille::SetAAFSOutputDataName(const std::string& name)
-    {
-        fAAFSOutputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTWignerVille::GetAATSOutputDataName() const
-    {
-        return fAATSOutputDataName;
-    }
-
-    inline void KTWignerVille::SetAATSOutputDataName(const std::string& name)
-    {
-        fAATSOutputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTWignerVille::GetCMTSOutputDataName() const
-    {
-        return fCMTSOutputDataName;
-    }
-
-    inline void KTWignerVille::SetCMTSOutputDataName(const std::string& name)
-    {
-        fCMTSOutputDataName = name;
         return;
     }
 

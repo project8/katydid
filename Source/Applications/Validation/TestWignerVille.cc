@@ -8,6 +8,7 @@
  *      > TestWignerVille filename.egg
  */
 
+#include "KTAnalyticAssociator.hh"
 #include "KTComplexFFTW.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -64,11 +65,15 @@ int main()
     tsData.SetTimeSeries(ts2, 1);
 
 
+    KTAnalyticAssociator aAssociator;
+    aAssociator.GetFullFFT()->SetTransformFlag("ESTIMATE");
+
+    KTTimeSeriesData* aaTSData = aAssociator.CreateAssociateData(&tsData);
+
+
     KTWignerVille wvTransform;
-    wvTransform.GetFullFFT()->SetTransformFlag("ESTIMATE");
-    wvTransform.GetFullFFT()->SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
     wvTransform.SetTransformFlag("ESTIMATE");
-    KTEventWindowFunction* windowFunc = new KTRectangularWindow(&tsData);
+    KTEventWindowFunction* windowFunc = new KTRectangularWindow(aaTSData);
     windowFunc->SetSize(512);
     wvTransform.SetWindowFunction(windowFunc);
     wvTransform.AddPair(KTWVPair(0, 1));
@@ -76,8 +81,8 @@ int main()
     wvTransform.RecreateFFT();
     wvTransform.InitializeFFT();
 
-    //KTSlidingWindowFSData* output = wvTransform.TransformData(&tsData);
-    KTSlidingWindowFSDataFFTW* output = wvTransform.TransformData(&tsData);
+    //KTSlidingWindowFSData* output = wvTransform.TransformData(aaTSData);
+    KTSlidingWindowFSDataFFTW* output = wvTransform.TransformData(aaTSData);
 
 #ifdef ROOT_FOUND
     //KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = output->GetSpectra(0);

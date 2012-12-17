@@ -57,16 +57,8 @@ namespace Katydid
     KTWignerVille::KTWignerVille() :
             KTFFT(),
             KTProcessor(),
-            fFullFFT(new KTComplexFFTW()),
-            fWindowedFFT(new KTSlidingWindowFFTW()),
-            fSaveAAFrequencySpectrum(false),
-            fSaveAnalyticAssociate(false),
-            fSaveCrossMultipliedTimeSeries(false),
             fInputDataName("time-series"),
             fOutputDataName("wigner-ville"),
-            fAAFSOutputDataName("aafs-wigner-ville"),
-            fAATSOutputDataName("aats-wigner-ville"),
-            fCMTSOutputDataName("cmts-wigner-ville"),
             fFTPlan(NULL),
             fInputArray(NULL),
             fOutputArray(NULL),
@@ -86,7 +78,6 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        //RegisterSlot("fs-data", this, &KTWignerVille::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("event", this, &KTWignerVille::ProcessEvent, "void (KTEvent*)");
 
         SetupTransformFlagMap();
@@ -94,20 +85,14 @@ namespace Katydid
 
     KTWignerVille::~KTWignerVille()
     {
-        delete fFullFFT;
         fftw_destroy_plan(fFTPlan);
         if (fInputArray != NULL) fftw_free(fInputArray);
         if (fOutputArray != NULL) fftw_free(fOutputArray);
         delete fWindowFunction;
-        delete fWindowedFFT;
     }
 
     Bool_t KTWignerVille::Configure(const KTPStoreNode* node)
     {
-        SetSaveAAFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveAAFrequencySpectrum));
-        SetSaveAnalyticAssociate(node->GetData< Bool_t >("save-analytic-associate", fSaveAnalyticAssociate));
-        SetSaveCrossMultipliedTimeSeries(node->GetData< Bool_t >("save-cross-multiplied-time-series", fSaveCrossMultipliedTimeSeries));
-
         SetTransformFlag(node->GetData< string >("transform-flag", fTransformFlag));
 
         SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
@@ -135,10 +120,6 @@ namespace Katydid
         SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
         SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
 
-        SetAAFSOutputDataName(node->GetData< string >("aa-ts-output-data-name", fAAFSOutputDataName));
-        SetAATSOutputDataName(node->GetData< string >("aa-fs-output-data-name", fAATSOutputDataName));
-        SetCMTSOutputDataName(node->GetData< string >("cm-ts-output-data-name", fCMTSOutputDataName));
-
         KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
         {
@@ -154,22 +135,6 @@ namespace Katydid
             }
             KTINFO(wvlog, "Adding WV pair " << first << ", " << second);
             this->AddPair(KTWVPair(first, second));
-        }
-
-        const KTPStoreNode* fftNode = node->GetChild("complex-fftw");
-        if (fftNode != NULL)
-        {
-            delete fFullFFT;
-            fFullFFT = new KTComplexFFTW();
-            if (! fFullFFT->Configure(fftNode)) return false;
-        }
-
-        fftNode = node->GetChild("sliding-window-fftw");
-        if (fftNode != NULL)
-        {
-            delete fWindowedFFT;
-            fWindowedFFT = new KTSlidingWindowFFTW();
-            if (! fWindowedFFT->Configure(fftNode)) return false;
         }
 
         if (fUseWisdom)
@@ -232,8 +197,7 @@ namespace Katydid
 
 
 
-    //KTSlidingWindowFSData* KTWignerVille::TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData, KTTimeSeriesData** outputAAData, KTTimeSeriesData** outputCMTSData)
-    KTSlidingWindowFSDataFFTW* KTWignerVille::TransformData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData, KTTimeSeriesData** outputAAData, KTTimeSeriesData** outputCMTSData)
+    KTSlidingWindowFSDataFFTW* KTWignerVille::TransformData(const KTTimeSeriesData* data)
     {
         if (! GetIsInitialized())
         {
@@ -251,131 +215,23 @@ namespace Katydid
             return NULL;
         }
 
-        if (fFullFFT == NULL)
-        {
-            KTERROR(wvlog, "Full FFT is not initialized; cannot perform the transform.");
-            return NULL;
-        }
-        if (! fFullFFT->GetIsInitialized())
-        {
-            fFullFFT->InitializeFFT();
-            if (! fFullFFT->GetIsInitialized())
-            {
-                KTERROR(wvlog, "Unable to initialize full FFT.");
-                return NULL;
-            }
-        }
-
-        /*
-        if (fWindowedFFT == NULL)
-        {
-            KTERROR(wvlog, "Windowed FFT is not present; cannot perform the transform.");
-            return NULL;
-        }
-        if (! fWindowedFFT->GetIsInitialized())
-        {
-            fWindowedFFT->InitializeFFT();
-            if (! fWindowedFFT->GetIsInitialized())
-            {
-                KTERROR(wvlog, "Unable to initialize windowed FFT.");
-                return NULL;
-            }
-        }
-         */
-
         if (fPairs.empty())
         {
             KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
             return NULL;
         }
 
-        if (fSaveAAFrequencySpectrum && outputFSData == NULL)
+        // cast all time series into KTTimeSeriesFFTW
+        vector< const KTTimeSeriesFFTW* > timeSeries(data->GetNTimeSeries());
+        for (UInt_t iTS=0; iTS < timeSeries.size(); iTS++)
         {
-            KTWARN(wvlog, "The flag for saving the AA frequency spectrum is set, but no KTFrequencySpectrumDataFFTW** was provided;\n"
-                    << "\tThe frequency spectrum will not be saved."
-                    << "\tfSaveFrequencySpectrum is being set to false");
-            fSaveAAFrequencySpectrum = false;
-        }
-
-        if (fSaveAnalyticAssociate && outputAAData == NULL)
-        {
-            KTWARN(wvlog, "The flag for saving the analytic associate is set, but no KTTimeSeriesData** was provided;\n"
-                    << "\tThe analytic associate will not be saved."
-                    << "\tfSaveAnalyticAssociate is being set to false");
-            fSaveAnalyticAssociate = false;
-        }
-
-        if (fSaveCrossMultipliedTimeSeries && outputCMTSData == NULL)
-        {
-            KTWARN(wvlog, "The flag for saving the cross-multiplied time series is set, but no KTTimeSeriesData** was provided;\n"
-                    << "\tThe cross-multiplied time series will not be saved."
-                    << "\tfSaveCrossMultipliedTimeSeries is being set to false");
-            fSaveCrossMultipliedTimeSeries = false;
-        }
-
-        // make a set of the channel numbers in use so that we can make the analytic associates of only the channels we need
-        set< UInt_t > channelsInUse;
-        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
-        {
-            channelsInUse.insert((*pairIt).first);
-            channelsInUse.insert((*pairIt).second);
-        }
-
-        // New data to hold the time series of the analytic associate
-        KTBasicTimeSeriesData* aaTSData = NULL;
-        if (fSaveAnalyticAssociate)
-        {
-            aaTSData = new KTBasicTimeSeriesData(data->GetNTimeSeries());
-            (*outputAAData) = (KTTimeSeriesData*)aaTSData;
-        }
-
-        KTFrequencySpectrumDataFFTW* aaFSData = NULL;
-        if (fSaveAAFrequencySpectrum)
-        {
-            aaFSData = new KTFrequencySpectrumDataFFTW(data->GetNTimeSeries());
-            aaFSData->SetName(fAAFSOutputDataName);
-            (*outputFSData) = aaFSData;
-        }
-
-        // Calculate the analytic associates
-        // Use this map to hold pointers to them so we don't have to dynamic cast later.
-        map< UInt_t, const KTTimeSeriesFFTW* > channelAAs;
-        for (set< UInt_t >::const_iterator channelIt = channelsInUse.begin(); channelIt != channelsInUse.end(); channelIt++)
-        {
-            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(data->GetTimeSeries(*channelIt));
-            if (nextInput == NULL)
+            timeSeries[iTS] = dynamic_cast< const KTTimeSeriesFFTW* >(data->GetTimeSeries(iTS));
+            if (timeSeries[iTS] == NULL)
             {
-                KTERROR(wvlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
-                delete aaTSData;
+                KTERROR(wvlog, "Time series " << iTS << " did not cast to a const KTTimeSeriesFFTW*. No transforms performed.");
                 return NULL;
             }
-
-            KTFrequencySpectrumFFTW* newFS = NULL;
-            KTTimeSeriesFFTW* newTS = NULL;
-            if (fSaveAAFrequencySpectrum)
-            {
-                newTS = CalculateAnalyticAssociate(nextInput, &newFS);
-                aaFSData->SetSpectrum(newFS, *channelIt);
-            }
-            else
-            {
-                newTS = CalculateAnalyticAssociate(nextInput);
-            }
-
-            if (newTS == NULL)
-            {
-                KTERROR(wvlog, "Channel <" << *channelIt << "> did not transform correctly.");
-                delete aaTSData;
-                return NULL;
-            }
-
-            if (fSaveAnalyticAssociate)
-                aaTSData->SetTimeSeries(newTS, *channelIt);
-            channelAAs[*channelIt] = newTS;
         }
-
-
-
 
         // Characteristics of the whole windowed FFT
         UInt_t windowShift = windowSize - GetEffectiveOverlap();
@@ -416,17 +272,9 @@ namespace Katydid
             for (UInt_t iWindow = 0; iWindow < nWindows; iWindow++)
             {
                 //KTDEBUG(wvlog, "Window: " << iWindow << "; first bin: " << windowStart);
-                CrossMultiplyToInputArray(channelAAs[firstChannel], channelAAs[secondChannel], windowStart);
+                CrossMultiplyToInputArray(timeSeries[firstChannel], timeSeries[secondChannel], windowStart);
                 fftw_execute(fFTPlan);
                 (*newSpectra)(iWindow) = ExtractTransformResult(freqMin, freqMax);
-                if (iWindow == 0)
-                {
-                    for (UInt_t i=0; i<GetFrequencySize(); i++)
-                    {
-                        //std::cout << "    " << i << "  --  " << fOutputArray[i][0] << "  " << fOutputArray[i][1] << "  --  " << (*(*newSpectra)(0))(i).abs() << "  " << (*(*newSpectra)(0))(i).arg() << std::endl;
-                        std::cout << "    " << i << "  --  " << fOutputArray[i][0] << "  " << fOutputArray[i][1] << "  --  " << (*(*newSpectra)(0))(i)[0] << "  " << (*(*newSpectra)(0))(i)[1] << std::endl;
-                    }
-                }
                 windowStart += windowShift;
             }
             KTINFO(wvlog, "Windowed FFT complete (channels " << firstChannel << " and " << secondChannel << "); windows used: " << nWindows << "; time bins not used: " << nTimeBinsNotUsed);
@@ -441,179 +289,8 @@ namespace Katydid
 
         return newData;
 
-
-
-
-
-        /*
-        // new KTTimeSeriesPairedData to hold the results of the cross multiplication
-        KTTimeSeriesPairedData* crossMultipliedData = new KTTimeSeriesPairedData(fPairs.size());
-        if (fSaveCrossMultipliedTimeSeries)
-        {
-            crossMultipliedData->SetName(fAATSOutputDataName);
-            (*outputCMTSData) = (KTTimeSeriesData*)crossMultipliedData;
-        }
-
-        // Cross-multiply pairs of channels
-        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
-        {
-            UInt_t firstChannel = (*pairIt).first;
-            UInt_t secondChannel = (*pairIt).second;
-
-            KTTimeSeriesFFTW* newTS = CrossMultiply(channelAAs[firstChannel], channelAAs[secondChannel]);
-            if (newTS == NULL)
-            {
-                KTERROR(wvlog, "Something went wrong in the cross multiplication of channels <" << firstChannel << "> and < " << secondChannel << ">.");
-                delete aaTSData;
-                delete crossMultipliedData;
-                return NULL;
-            }
-
-            crossMultipliedData->SetTimeSeries(newTS, firstChannel, secondChannel);
-        }
-
-        // Windowed FFT
-        KTSlidingWindowFSDataFFTW* newSWFSData = fWindowedFFT->TransformData(crossMultipliedData);
-
-        if (newSWFSData == NULL)
-        {
-            KTERROR(wvlog, "Something went wrong in the windowed FFT.");
-            delete crossMultipliedData;
-            return NULL;
-        }
-
-        if (! fSaveCrossMultipliedTimeSeries)
-        {
-            delete crossMultipliedData;
-        }
-        else
-        {
-            crossMultipliedData->SetName(fCMTSOutputDataName);
-        }
-
-        newSWFSData->SetEvent(data->GetEvent());
-        newSWFSData->SetName(fOutputDataName);
-
-        KTDEBUG(fftlog_comp, "W-V transform complete; " << newSWFSData->GetNChannels() << " pair(s) transformed");
-
-        fWVSignal(newSWFSData);
-
-        return newSWFSData;
-         */
-    }
-    /*
-    KTTimeSeriesFFTW* KTWignerVille::Transform(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
-    {
-        if (fFullFFT == NULL)
-        {
-            KTERROR(wvlog, "FFT is not initialized; cannot perform a transform on time series data.");
-            return NULL;
-        }
-
-        if (fSaveFrequencySpectrum && outputFS == NULL)
-        {
-            KTWARN(wvlog, "The flag for saving the frequency spectrum is set, but no KTFrequencySpectrumFFTW** was provide;\n"
-                    << "\tThe frequency spectrum will not be saved."
-                    << "\tfSaveFrequencySpectrum is being set to false");
-            fSaveFrequencySpectrum = false;
-        }
-        else if (! fSaveFrequencySpectrum && outputFS != NULL)
-        {
-            KTWARN(wvlog, "A KTFrequencySpectrumDataFFTW** was supplied to store the intermediate frequency spectrum, but fSaveFrequencySpectrum is false."
-                    << "\tTo avoid a potential memory leak, the frequency spectra will not be saved.");
-        }
-
-        // Calculate the analytic associate
-        KTFrequencySpectrumFFTW* tempOutputFS = NULL;
-        KTTimeSeriesFFTW* outputTS = CalculateAnalyticAssociate(inputTS, &tempOutputFS);
-
-        // Delete or reassign the intermediate FS
-        if (outputFS == NULL) delete tempOutputFS;
-        else outputFS = &tempOutputFS;
-
-        return outputTS;
     }
 
-    Bool_t KTWignerVille::Transform(KTFrequencySpectrumFFTW* freqSpectrum)
-    {
-        if (freqSpectrum == NULL)
-        {
-            KTERROR(wvlog, "Input frequency spectrum was NULL");
-            return false;
-        }
-
-        return CalculateAnalyticAssociate(freqSpectrum);
-    }
-     */
-
-    KTTimeSeriesFFTW* KTWignerVille::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
-    {
-        // Forward FFT
-        KTFrequencySpectrumFFTW* freqSpec = fFullFFT->Transform(inputTS);
-        if (freqSpec == NULL)
-        {
-            KTERROR(wvlog, "Something went wrong with the forward FFT on the time series.");
-            return NULL;
-        }
-        // copy the address of the frequency spectrum to outputFS
-        outputFS = &freqSpec;
-
-        // Calculate the analytic associate in frequency space
-        freqSpec->AnalyticAssociate();
-
-        // reverse FFT
-        KTTimeSeriesFFTW* outputTS = fFullFFT->Transform(freqSpec);
-        if (outputTS == NULL)
-        {
-            KTERROR(wvlog, "Something went wrong with the reverse FFT on the frequency spectrum.");
-            if (outputFS == NULL) delete freqSpec;
-            return NULL;
-        }
-
-        return outputTS;
-    }
-
-    /*
-    Bool_t KTWignerVille::CalculateAnalyticAssociate(KTFrequencySpectrumFFTW* freqSpectrum)
-    {
-        // Note: the data storage array is accessed directly, so the FFTW data storage format is used.
-        // Nyquist bin(s) and negative frequency bins are set to 0 (from size/2 to the end of the array)
-        // DC bin stays as is (array position 0).
-        // Positive frequency bins are multiplied by 2 (from array position 1 to size/2).
-        fftw_complex* data = freqSpectrum->GetData();
-        UInt_t arraySize = freqSpectrum->size();
-        UInt_t nyquistPos = arraySize / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
-        for (UInt_t arrayPos=1; arrayPos<nyquistPos; arrayPos++)
-        {
-            data[arrayPos][0] = data[arrayPos][0] * 2.;
-            data[arrayPos][1] = data[arrayPos][1] * 2.;
-        }
-        for (UInt_t arrayPos=nyquistPos; arrayPos<arraySize; arrayPos++)
-        {
-            data[arrayPos][0] = 0.;
-            data[arrayPos][1] = 0.;
-        }
-        return true;
-    }
-    */
-    /*
-    KTTimeSeriesFFTW* KTWignerVille::CrossMultiply(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2)
-    {
-        KTTimeSeriesFFTW* product = new KTTimeSeriesFFTW(*data1);
-
-        UInt_t size = data1->size();
-        UInt_t iBin2 = size - 1;
-        for (UInt_t iBin1 = 0; iBin1 < size; iBin1++)
-        {
-            // data1 * CC(data2)
-            (*product)(iBin1)[0] = (*data1)(iBin1)[0] * (*data2)(iBin2)[0] + (*data1)(iBin1)[1] * (*data2)(iBin2)[1];
-            (*product)(iBin1)[1] = (*data1)(iBin1)[0] * (*data2)(iBin2)[1] - (*data1)(iBin1)[1] * (*data2)(iBin2)[0];
-            iBin2--;
-        }
-
-        return product;
-    }
-    */
     void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
     {
         UInt_t size = GetTimeSize();
@@ -695,25 +372,15 @@ namespace Katydid
 
     void KTWignerVille::ProcessHeader(const KTEggHeader* header)
     {
-        fFullFFT->ProcessHeader(header);
-
         fWindowFunction->SetBinWidth(1. / header->GetAcquisitionRate());
         RecreateFFT();
         InitializeFFT();
-
-        //fWindowedFFT->ProcessHeader(header);
         return;
     }
 
     void KTWignerVille::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
-        //Pass these pointers in case the user wants to save these data.
-        KTFrequencySpectrumDataFFTW* saveAAFreqSpec = NULL;
-        KTTimeSeriesData* saveAA = NULL;
-        KTTimeSeriesData* saveCMTS = NULL;
-
-        //KTSlidingWindowFSData* newData = TransformData(tsData, &saveAAFreqSpec, &saveAA, &saveCMTS);
-        KTSlidingWindowFSDataFFTW* newData = TransformData(tsData, &saveAAFreqSpec, &saveAA, &saveCMTS);
+        KTSlidingWindowFSDataFFTW* newData = TransformData(tsData);
 
         if (newData == NULL)
         {
@@ -725,28 +392,11 @@ namespace Katydid
         if (event != NULL)
         {
             event->AddData(newData);
-
-            if (fSaveAAFrequencySpectrum) event->AddData(saveAAFreqSpec);
-            else delete saveAAFreqSpec;
-
-            if (fSaveAnalyticAssociate) event->AddData(saveAA);
-            else delete saveAA;
-
-            if (fSaveCrossMultipliedTimeSeries) event->AddData(saveCMTS);
-            else delete saveCMTS;
         }
 
         return;
     }
-    /*
-    void KTWignerVille::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
-    {
-        KTSlidingWindowFSDataFFTW* newData = TransformData(fsData);
-        if (fsData->GetEvent() != NULL)
-            fsData->GetEvent()->AddData(newData);
-        return;
-    }
-     */
+
     void KTWignerVille::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
@@ -758,16 +408,6 @@ namespace Katydid
 
         ProcessTimeSeriesData(tsData);
         return;
-    }
-
-    KTComplexFFTW* KTWignerVille::GetFullFFT() const
-    {
-        return fFullFFT;
-    }
-
-    KTSlidingWindowFFTW* KTWignerVille::GetWindowedFFT() const
-    {
-        return fWindowedFFT;
     }
 
     void KTWignerVille::RecreateFFT()
