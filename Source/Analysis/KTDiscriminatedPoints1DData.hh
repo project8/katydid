@@ -43,10 +43,20 @@ namespace Katydid
             void SetThreshold(Double_t threshold, UInt_t channelNum = 0);
             void SetNChannels(UInt_t channels);
 
+            UInt_t GetNBins() const;
+            Double_t GetBinWidth() const;
+
+            void SetNBins(UInt_t nBins);
+            void SetBinWidth(Double_t binWidth);
+
         protected:
             static std::string fDefaultName;
 
             std::vector< PerChannelData > fChannelData;
+
+            UInt_t fNBins;
+            Double_t fBinWidth;
+
 
     };
 
@@ -82,6 +92,29 @@ namespace Katydid
         fChannelData.resize(channels);
         return;
     }
+
+    inline UInt_t KTDiscriminatedPoints1DData::GetNBins() const
+    {
+        return fNBins;
+    }
+
+    inline Double_t KTDiscriminatedPoints1DData::GetBinWidth() const
+    {
+        return fBinWidth;
+    }
+
+    inline void KTDiscriminatedPoints1DData::SetNBins(UInt_t nBins)
+    {
+        fNBins = nBins;
+        return;
+    }
+
+    inline void KTDiscriminatedPoints1DData::SetBinWidth(Double_t binWidth)
+    {
+        fBinWidth = binWidth;
+        return;
+    }
+
 
 } /* namespace Katydid */
 
