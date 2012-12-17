@@ -1,0 +1,43 @@
+/*
+ * KTBasicAsciiFileWriter.hh
+ *
+ *  Created on: Dec 17, 2012
+ *      Author: kofron
+ */
+
+#ifndef __KT_ASCII_WRITER_HH
+#define __KT_ASCII_WRITER_HH
+
+#include "KTWriter.hh"
+#include "KTFrequencySpectrumData.hh"
+
+#include <fstream>
+
+namespace Katydid {
+
+  class KTBasicAsciiWriter : public KTWriter {
+    // Constructors/destructors
+  public:
+    KTBasicAsciiWriter();
+    virtual ~KTBasicAsciiWriter();
+
+    // Configuration
+  public:
+    Bool_t Configure(const KTPStoreNode* node);
+  protected:
+    std::ofstream* fOutputStream;
+    std::string fOutputFilename;
+    Bool_t OpenFile();
+    Bool_t CloseFile();
+
+    // Writing Frequency Spectrum Data
+    void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* dt);
+    void WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt);
+    void Write(const KTFrequencySpectrumData* dt);
+    void Write(const KTFrequencySpectrumDataFFTW* dt);
+
+  }; // class KTBasicAsciiWriter 
+}; // namespace Katydid
+
+
+#endif // __KT_ASCII_WRITER_HH
