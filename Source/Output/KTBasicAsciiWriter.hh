@@ -1,5 +1,5 @@
 /*
- * KTBasicAsciiFileWriter.hh
+ * KTBasicAsciiWriter.hh
  *
  *  Created on: Dec 17, 2012
  *      Author: kofron
