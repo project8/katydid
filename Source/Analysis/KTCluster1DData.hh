@@ -47,7 +47,7 @@ namespace Katydid
             Double_t GetThreshold(UInt_t channelNum = 0) const;
             UInt_t GetNChannels() const;
 
-            void AddPoint(UInt_t minPoint, UInt_t maxPoint, UInt_t channelNum = 0);
+            void AddCluster(UInt_t minPoint, UInt_t maxPoint, UInt_t channelNum = 0);
             void SetThreshold(Double_t threshold, UInt_t channelNum = 0);
             void SetNChannels(UInt_t channels);
 
@@ -83,7 +83,7 @@ namespace Katydid
         return UInt_t(fChannelData.size());
     }
 
-    inline void KTCluster1DData::AddPoint(UInt_t minPoint, UInt_t maxPoint, UInt_t channelNum)
+    inline void KTCluster1DData::AddCluster(UInt_t minPoint, UInt_t maxPoint, UInt_t channelNum)
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fClusters.insert(std::make_pair(minPoint, maxPoint));

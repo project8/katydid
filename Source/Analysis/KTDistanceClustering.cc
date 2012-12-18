@@ -19,9 +19,11 @@
 
 #include <cmath>
 #include <map>
+#include <set>
 
 using std::string;
 using std::map;
+using std::set;
 using boost::shared_ptr;
 
 namespace Katydid
@@ -75,26 +77,44 @@ namespace Katydid
     KTCluster1DData* KTDistanceClustering::FindClusters(const KTDiscriminatedPoints1DData* data)
     {
         typedef KTDiscriminatedPoints1DData::SetOfPoints OriginalPoints;
-        typedef map< Double_t, UInt_t > ResortedPoints;
+        typedef set< UInt_t > Cluster;
 
         if (fCalculateMaxBinDistance) SetMaxBinDistance(KTMath::Nint(fMaxFrequencyDistance / data->GetBinWidth()));
 
         UInt_t nChannels = data->GetNChannels();
 
         KTCluster1DData* newData = new KTCluster1DData(nChannels);
+        newData->SetNBins(data->GetNBins());
+        newData->SetBinWidth(data->GetBinWidth());
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
+            newData->SetThreshold(data->GetThreshold(iChannel), iChannel);
+
             const OriginalPoints points = data->GetSetOfPoints(iChannel);
-            ResortedPoints resortedPoints;
-            for (OriginalPoints::const_iterator pIt=points.begin(); pIt != points.end(); pIt++)
-            {
-                resortedPoints[*pIt->second] = *pIt->first;
-            }
 
-            for (ResortedPoints::const_iterator pIt=resortedPoints.begin(); pIt != resortedPoints.end(); pIt++)
+            if (! points.empty())
             {
+                OriginalPoints::const_iterator pIt = points.begin();
+                UInt_t thisPoint = pIt->first;
+                Cluster activeCluster;
+                activeCluster.insert(thisPoint);
+                UInt_t lastPointInActiveCluster = thisPoint;
 
+                for (pIt++; pIt != points.end(); pIt++)
+                {
+                    thisPoint = pIt->first;
+                    if (thisPoint - lastPointInActiveCluster > fMaxBinDistance)
+                    {
+                        KTDEBUG(sdlog, "Adding cluster: " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                        newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
+                        activeCluster.clear();
+                    }
+                    activeCluster.insert(thisPoint);
+                    lastPointInActiveCluster = thisPoint;
+                }
+                KTDEBUG(sdlog, "Adding cluster: " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
             }
         }
 

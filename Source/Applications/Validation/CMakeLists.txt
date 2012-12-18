@@ -50,6 +50,9 @@ if (ENABLE_TESTING)
     add_executable (TestCutableArray ${CMAKE_CURRENT_SOURCE_DIR}/TestCutableArray.cc)
     target_link_libraries (TestCutableArray KatydidUtility ${LIBS})
     
+    add_executable (TestDistanceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestDistanceClustering.cc)
+    target_link_libraries (TestDistanceClustering KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis ${LIBS})
+        
     add_executable (TestEggHatching ${CMAKE_CURRENT_SOURCE_DIR}/TestEggHatching.cc)
     target_link_libraries (TestEggHatching KatydidUtility KatydidCore KatydidEgg ${LIBS})
     
@@ -98,6 +101,7 @@ if (ENABLE_TESTING)
                      TestCorrelator
                      TestCutIterator
                      TestCutableArray
+                     TestDistanceClustering
                      TestEggHatching
                      TestFrequencySpectrumFFTW
                      TestHoughTransform
@@ -122,6 +126,7 @@ if (ENABLE_TESTING)
     add_test (Test_Correlator TestCorrelator)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
+    add_test (Test_DistanceClustering TestDistanceClustering)
     add_test (Test_EggHatching TestEggHatching)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)
     add_test (Test_HoughTransform TestHoughTransform)
