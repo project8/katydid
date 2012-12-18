@@ -5,7 +5,7 @@
 
 namespace Katydid {
 
-  KTLOGGER(publog, "katydid.output.ascii");
+  KTLOGGER(asciilog, "katydid.output.ascii");
   
   static KTDerivedRegistrar< KTWriter, KTBasicAsciiWriter > 
   sAWR("basic-ascii-writer");
@@ -39,7 +39,7 @@ namespace Katydid {
     if (n != NULL) {
       fOutputFilename = n->GetData<std::string>("output-file",fOutputFilename);
       if( this->OpenFile() == false ) {
-	KTWARN(publog, "ASCII writer couldn't open output file - no data will be written!");
+	KTWARN(asciilog, "ASCII writer couldn't open output file - no data will be written!");
       }
     }
 
@@ -51,7 +51,7 @@ namespace Katydid {
     if( fOutputStream->is_open() == false ) {
       delete fOutputStream;
       fOutputStream = NULL;
-      KTERROR(publog, "Output file " << fOutputFilename << " could not be opened!");
+      KTERROR(asciilog, "Output file " << fOutputFilename << " could not be opened!");
       return false;
     }
     return true;
@@ -64,8 +64,26 @@ namespace Katydid {
   void KTBasicAsciiWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt) {
     KTEvent* ev = dt->GetEvent();
     uint64_t evN = (ev == NULL) ? 0 : ev->GetEventNumber();
-    if( fOutputStream->is_open() ) {
-      (*fOutputStream) << "hi" << std::endl;
+    uint64_t nCh = dt->GetNChannels();
+
+    if( fOutputStream && fOutputStream->is_open() ) {
+      for( unsigned iCh = 0; iCh < nCh; iCh++ ) {
+	const KTFrequencySpectrum* spectrum = dt->GetSpectrum(iCh);
+	for( unsigned iB = 0; iB < spectrum->size(); iB++ ) {
+	  
+	  (*fOutputStream) << evN
+			   << ","
+			   << iCh
+			   << ","
+			   << (*spectrum)(iB).abs() 
+			   << "," 
+			   << (*spectrum)(iB).arg() 
+			   << std::endl;
+	}
+      }
+    }
+    else {
+      KTWARN(asciilog, "no file open, no data written!");
     }
   }
 
