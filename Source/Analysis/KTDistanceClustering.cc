@@ -18,10 +18,10 @@
 #include "KTPStoreNode.hh"
 
 #include <cmath>
-#include <vector>
+#include <map>
 
 using std::string;
-using std::vector;
+using std::map;
 using boost::shared_ptr;
 
 namespace Katydid
@@ -74,6 +74,9 @@ namespace Katydid
 
     KTCluster1DData* KTDistanceClustering::FindClusters(const KTDiscriminatedPoints1DData* data)
     {
+        typedef KTDiscriminatedPoints1DData::SetOfPoints OriginalPoints;
+        typedef map< Double_t, UInt_t > ResortedPoints;
+
         if (fCalculateMaxBinDistance) SetMaxBinDistance(KTMath::Nint(fMaxFrequencyDistance / data->GetBinWidth()));
 
         UInt_t nChannels = data->GetNChannels();
@@ -82,6 +85,17 @@ namespace Katydid
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
+            const OriginalPoints points = data->GetSetOfPoints(iChannel);
+            ResortedPoints resortedPoints;
+            for (OriginalPoints::const_iterator pIt=points.begin(); pIt != points.end(); pIt++)
+            {
+                resortedPoints[*pIt->second] = *pIt->first;
+            }
+
+            for (ResortedPoints::const_iterator pIt=resortedPoints.begin(); pIt != resortedPoints.end(); pIt++)
+            {
+
+            }
         }
 
         newData->SetName(fOutputDataName);
