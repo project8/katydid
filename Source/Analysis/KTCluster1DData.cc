@@ -9,9 +9,11 @@
 
 namespace Katydid
 {
-    KTCluster1DData::KTCluster1DData(UInt_t nChannels) :
+    KTCluster1DData::KTCluster1DData(UInt_t nGroups) :
             KTData(),
-            fChannelData(nChannels)
+            fGroupData(nGroups),
+            fNBins(1),
+            fBinWidth(1.)
     {
     }
 

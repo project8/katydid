@@ -33,23 +33,23 @@ namespace Katydid
             typedef std::set< std::pair< UInt_t, UInt_t>, PairCompare > SetOfClusters;
 
         protected:
-            struct PerChannelData
+            struct PerGroupData
             {
                 SetOfClusters fClusters;
                 Double_t fThreshold;
             };
 
         public:
-            KTCluster1DData(UInt_t nChannels=1);
+            KTCluster1DData(UInt_t nGroups=1);
             virtual ~KTCluster1DData();
 
             const SetOfClusters& GetSetOfClusters(UInt_t channelNum = 0) const;
             Double_t GetThreshold(UInt_t channelNum = 0) const;
-            UInt_t GetNChannels() const;
+            UInt_t GetNGroups() const;
 
-            void AddCluster(UInt_t minPoint, UInt_t maxPoint, UInt_t channelNum = 0);
+            void AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t channelNum = 0);
             void SetThreshold(Double_t threshold, UInt_t channelNum = 0);
-            void SetNChannels(UInt_t channels);
+            void SetNGroups(UInt_t channels);
 
             UInt_t GetNBins() const;
             Double_t GetBinWidth() const;
@@ -60,7 +60,7 @@ namespace Katydid
         protected:
             static std::string fDefaultName;
 
-            std::vector< PerChannelData > fChannelData;
+            std::vector< PerGroupData > fGroupData;
 
             UInt_t fNBins;
             Double_t fBinWidth;
@@ -70,34 +70,34 @@ namespace Katydid
 
     inline const KTCluster1DData::SetOfClusters& KTCluster1DData::GetSetOfClusters(UInt_t channelNum) const
     {
-        return fChannelData[channelNum].fClusters;
+        return fGroupData[channelNum].fClusters;
     }
 
     inline Double_t KTCluster1DData::GetThreshold(UInt_t channelNum) const
     {
-        return fChannelData[channelNum].fThreshold;
+        return fGroupData[channelNum].fThreshold;
     }
 
-    inline UInt_t KTCluster1DData::GetNChannels() const
+    inline UInt_t KTCluster1DData::GetNGroups() const
     {
-        return UInt_t(fChannelData.size());
+        return UInt_t(fGroupData.size());
     }
 
-    inline void KTCluster1DData::AddCluster(UInt_t minPoint, UInt_t maxPoint, UInt_t channelNum)
+    inline void KTCluster1DData::AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t channelNum)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fClusters.insert(std::make_pair(minPoint, maxPoint));
+        if (channelNum >= fGroupData.size()) fGroupData.resize(channelNum+1);
+        fGroupData[channelNum].fClusters.insert(std::make_pair(firstPoint, lastPoint));
     }
 
     inline void KTCluster1DData::SetThreshold(Double_t threshold, UInt_t channelNum)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fThreshold = threshold;
+        if (channelNum >= fGroupData.size()) fGroupData.resize(channelNum+1);
+        fGroupData[channelNum].fThreshold = threshold;
     }
 
-    inline void KTCluster1DData::SetNChannels(UInt_t channels)
+    inline void KTCluster1DData::SetNGroups(UInt_t channels)
     {
-        fChannelData.resize(channels);
+        fGroupData.resize(channels);
         return;
     }
 
