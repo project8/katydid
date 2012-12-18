@@ -28,6 +28,8 @@ namespace Katydid {
   protected:
     std::ofstream* fOutputStream;
     std::string fOutputFilename;
+
+  public:
     Bool_t OpenFile();
 
     // Basic publish and write
