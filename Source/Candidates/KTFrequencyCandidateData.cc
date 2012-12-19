@@ -10,7 +10,11 @@
 namespace Katydid
 {
 
-    KTFrequencyCandidateData::KTFrequencyCandidateData()
+    KTFrequencyCandidateData::KTFrequencyCandidateData(UInt_t nGroups) :
+            KTWriteableData(),
+            fGroupData(nGroups),
+            fNBins(1),
+            fBinWidth(1.)
     {
     }
 

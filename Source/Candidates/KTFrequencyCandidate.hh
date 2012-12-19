@@ -17,7 +17,10 @@ namespace Katydid
     {
         public:
             KTFrequencyCandidate();
+            KTFrequencyCandidate(const KTFrequencyCandidate& orig);
             virtual ~KTFrequencyCandidate();
+
+            KTFrequencyCandidate& operator=(const KTFrequencyCandidate& rhs);
 
             UInt_t GetFirstBin() const;
             void SetFirstBin(UInt_t bin);

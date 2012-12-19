@@ -17,10 +17,23 @@ namespace Katydid
     {
     }
 
+    KTFrequencyCandidate::KTFrequencyCandidate(const KTFrequencyCandidate& orig) :
+            fFirstBin(orig.fFirstBin),
+            fLastBin(orig.fLastBin),
+            fMeanFrequency(orig.fMeanFrequency)
+    {
+    }
+
     KTFrequencyCandidate::~KTFrequencyCandidate()
     {
     }
 
-
+    KTFrequencyCandidate& KTFrequencyCandidate::operator=(const KTFrequencyCandidate& rhs)
+    {
+        fFirstBin = rhs.fFirstBin;
+        fLastBin = rhs.fLastBin;
+        fMeanFrequency = rhs.fMeanFrequency;
+        return *this;
+    }
 
 } /* namespace Katydid */

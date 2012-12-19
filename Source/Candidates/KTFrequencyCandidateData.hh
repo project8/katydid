@@ -30,7 +30,7 @@ namespace Katydid
             };
 
         public:
-            KTFrequencyCandidateData();
+            KTFrequencyCandidateData(UInt_t nGroups=1);
             virtual ~KTFrequencyCandidateData();
 
             void Accept(KTWriter* writer) const;
@@ -50,8 +50,6 @@ namespace Katydid
             void SetBinWidth(Double_t binWidth);
 
         protected:
-            static std::string fDefaultName;
-
             std::vector< PerGroupData > fGroupData;
 
             UInt_t fNBins;
