@@ -34,13 +34,13 @@ namespace Katydid {
 
     // Basic publish and write
   public:
-    void Publish(const KTWriteableData* dt) {};
-    void Write(const KTWriteableData* dt) {};
+    void Publish(const KTWriteableData* dt);
+    void Write(const KTWriteableData* dt);
 
     // Unused write methods (for now)
-    void Write(const KTCorrelationData* dt) {};
-    void Write(const KTSlidingWindowFSData* dt) {};
-    void Write(const KTSlidingWindowFSDataFFTW* dt) {};
+    void Write(const KTCorrelationData* dt);
+    void Write(const KTSlidingWindowFSData* dt);
+    void Write(const KTSlidingWindowFSDataFFTW* dt);
 
     // Writing Frequency Spectrum Data
     void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* dt);
