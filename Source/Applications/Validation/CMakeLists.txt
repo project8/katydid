@@ -36,7 +36,7 @@ if (ENABLE_TESTING)
     target_link_libraries (TestCacheDirectory KatydidUtility KatydidCore ${LIBS})
     
     add_executable (TestComplexFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexFFTW.cc)
-    target_link_libraries (TestComplexFFTW KatydidUtility KatydidEgg KatydidFFT ${LIBS})
+    target_link_libraries (TestComplexFFTW KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
     
     add_executable (TestComplexPolar ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexPolar.cc)
     target_link_libraries (TestComplexPolar KatydidUtility ${LIBS})
@@ -50,12 +50,18 @@ if (ENABLE_TESTING)
     add_executable (TestCutableArray ${CMAKE_CURRENT_SOURCE_DIR}/TestCutableArray.cc)
     target_link_libraries (TestCutableArray KatydidUtility ${LIBS})
     
+    add_executable (TestDistanceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestDistanceClustering.cc)
+    target_link_libraries (TestDistanceClustering KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis ${LIBS})
+        
     add_executable (TestEggHatching ${CMAKE_CURRENT_SOURCE_DIR}/TestEggHatching.cc)
     target_link_libraries (TestEggHatching KatydidUtility KatydidCore KatydidEgg ${LIBS})
     
     add_executable (TestFrequencySpectrumFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestFrequencySpectrumFFTW.cc)
-    target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidEgg KatydidFFT ${LIBS})
+    target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
     
+    add_executable (TestHoughTransform ${CMAKE_CURRENT_SOURCE_DIR}/TestHoughTransform.cc)
+    target_link_libraries (TestHoughTransform KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis ${LIBS})
+        
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${LIBS})
     
@@ -69,13 +75,16 @@ if (ENABLE_TESTING)
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
-    target_link_libraries (TestSimpleFFT KatydidUtility KatydidEgg KatydidFFT ${LIBS})
+    target_link_libraries (TestSimpleFFT KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
 
     add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
     target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis KatydidOutput ${LIBS})
 
+    add_executable (TestSpectrumDiscriminator ${CMAKE_CURRENT_SOURCE_DIR}/TestSpectrumDiscriminator.cc)
+    target_link_libraries (TestSpectrumDiscriminator KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
+
     add_executable (TestThroughputProfiler ${CMAKE_CURRENT_SOURCE_DIR}/TestThroughputProfiler.cc)
-    target_link_libraries (TestThroughputProfiler KatydidUtility KatydidEgg ${LIBS})
+    target_link_libraries (TestThroughputProfiler KatydidUtility KatydidCore KatydidEgg ${LIBS})
 
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${LIBS})
@@ -95,13 +104,16 @@ if (ENABLE_TESTING)
                      TestCorrelator
                      TestCutIterator
                      TestCutableArray
+                     TestDistanceClustering
                      TestEggHatching
                      TestFrequencySpectrumFFTW
+                     TestHoughTransform
                      TestLogger
                      TestParameterStore
                      TestSignalsAndSlots
                      TestSimpleFFT
                      TestSlidingWindowFFT
+                     TestSpectrumDiscriminator
                      TestThroughputProfiler
                      TestVector
                      TestWignerVille
@@ -112,18 +124,23 @@ if (ENABLE_TESTING)
     #add_test (Test_ExtractEvents ExtractEvents)
     add_test (Test_Application TestApplication)
     add_test (Test_AxisProperties TestAxisProperties)
+    add_test (Test_CacheDirectory TestCacheDirectory)
     add_test (Test_ComplexFFTW TestComplexFFTW)
     add_test (Test_ComplexPolar TestComplexPolar)
     add_test (Test_Correlator TestCorrelator)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
+    add_test (Test_DistanceClustering TestDistanceClustering)
     add_test (Test_EggHatching TestEggHatching)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)
+    add_test (Test_HoughTransform TestHoughTransform)
     add_test (Test_Logger TestLogger)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
+    add_test (Test_SpectrumDiscriminator TestSpectrumDiscriminator)
+    add_test (Test_ThroughputProfiler TestThroughputProfiler)
     add_test (Test_Vector TestVector)
     add_test (Test_WignerVille TestWignerVille)
     
@@ -133,8 +150,12 @@ if (ENABLE_TESTING)
         add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
         target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
         
+        add_executable (TestGainVariation ${CMAKE_CURRENT_SOURCE_DIR}/TestGainVariation.cc)
+        target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis KatydidOutput ${LIBS})
+    
         katydid_install_executables ( 
                     TestBasicROOTFileWriter
+                    TestGainVariation
         )
     
         add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)

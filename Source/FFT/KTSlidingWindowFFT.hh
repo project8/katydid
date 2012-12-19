@@ -35,6 +35,7 @@ namespace Katydid
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
     class KTPStoreNode;
+    class KTWriteableData;
 
     /*!
      @class KTSlidingWindowFFT
@@ -65,7 +66,7 @@ namespace Katydid
     {
         public:
             typedef KTSignal< void (UInt_t, KTFrequencySpectrum*) >::signal SingleFFTSignal;
-            typedef KTSignal< void (KTSlidingWindowFSData*) >::signal FullFFTSignal;
+            typedef KTSignal< void (const KTWriteableData*) >::signal FullFFTSignal;
 
         protected:
             typedef std::map< std::string, Int_t > TransformFlagMap;

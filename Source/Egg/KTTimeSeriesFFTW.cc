@@ -78,12 +78,12 @@ namespace Katydid
     {
         Double_t tMaxMag = -1.;
         Double_t tMinMag = 1.e9;
-        UInt_t nBins = GetNBins();
+        UInt_t nBins = GetNTimeBins();
         Double_t value;
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin)[0];
-            value *= value;
+            //value *= value;
             if (value < tMinMag) tMinMag = value;
             if (value > tMaxMag) tMaxMag = value;
         }
@@ -91,8 +91,9 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
-            value = (*this)(iBin)[0];
-            hist->Fill(value*value);
+            //value = (*this)(iBin)[0];
+            //hist->Fill(value*value);
+            hist->Fill((*this)(iBin)[0]);
         }
         hist->SetXTitle("Voltage (V)");
         return hist;

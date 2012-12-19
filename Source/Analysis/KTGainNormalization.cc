@@ -7,91 +7,179 @@
 
 #include "KTGainNormalization.hh"
 
+#include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumFFTW.hh"
+#include "KTGainVariationData.hh"
+#include "KTLogger.hh"
 #include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlidingWindowFSData.hh"
-#include "KTPowerSpectrum.hh"
+#include "KTSlidingWindowFSDataFFTW.hh"
 
-#include <algorithm>
-#include <iostream>
+using std::string;
+using boost::shared_ptr;
 
 namespace Katydid
 {
+    KTLOGGER(gnlog, "katydid.analysis");
+
     static KTDerivedRegistrar< KTProcessor, KTGainNormalization > sGainNormRegistrar("gain-normalization");
 
     KTGainNormalization::KTGainNormalization() :
             KTProcessor(),
-            fNormalization(NULL)
+            fMinFrequency(0.),
+            fMaxFrequency(1.),
+            fMinBin(0),
+            fMaxBin(1),
+            fCalculateMinBin(true),
+            fCalculateMaxBin(true),
+            fGVInputDataName("gain-variation"),
+            fFSInputDataName("frequency-spectrum"),
+            fOutputDataName("gain-variation")
     {
         fConfigName = "gain-normalization";
 
-        RegisterSlot("freq_spect", this, &KTGainNormalization::ProcessFrequencySpectrum, "void (UInt_t, KTFrequencySpectrum*)");
+        RegisterSignal("gain-norm-fs", &fFSSignal, "void (const KTFrequencySpectrumData*)");
+        RegisterSignal("gain-norm-fs-fftw", &fFSFFTWSignal, "void (const KTFrequencySpectrumDataFFTW*)");
+        RegisterSignal("gain-norm-sw-fs", &fSWFSSignal, "void (const KTSlidingWindowFSData*)");
+        RegisterSignal("gain-norm-sw-fs-fftw", &fSWFSFFTWSignal, "void (const KTSlidingWindowFSDataFFTW*)");
+
+        RegisterSlot("event", this, &KTGainNormalization::ProcessEvent, "void (shared_ptr<KTEvent>)");
     }
 
     KTGainNormalization::~KTGainNormalization()
     {
-        delete fNormalization;
     }
 
     Bool_t KTGainNormalization::Configure(const KTPStoreNode* node)
     {
+        if (node == NULL) return false;
+
+        if (node->HasData("min-frequency"))
+        {
+            SetMinFrequency(node->GetData< Double_t >("min-frequency"));
+        }
+        if (node->HasData("max-frequency"))
+        {
+            SetMaxFrequency(node->GetData< Double_t >("max-frequency"));
+        }
+
+        if (node->HasData("min-bin"))
+        {
+            SetMinBin(node->GetData< UInt_t >("min-bin"));
+        }
+        if (node->HasData("max-bin"))
+        {
+            SetMaxBin(node->GetData< UInt_t >("max-bin"));
+        }
+
+        SetGVInputDataName(node->GetData< string >("gv-input-data-name", fGVInputDataName));
+        SetFSInputDataName(node->GetData< string >("fs-input-data-name", fFSInputDataName));
+        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
+
         return true;
     }
 
 
-    void KTGainNormalization::PrepareNormalization(KTFrequencySpectrum* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth)
+    KTFrequencySpectrumData* KTGainNormalization::Normalize(const KTFrequencySpectrumData* fsData, const KTGainVariationData* gvData)
     {
-        delete fNormalization;
-        fNormalization = new KTFrequencySpectrum(reducedNBins, -0.5*reducedBinWidth, reducedBinWidth * ((Double_t)reducedNBins-0.5));
-
-        Int_t veryLastBinInFullPS = (Int_t)fullArray->size() - 1;
-        for (UInt_t iBin=0; iBin<reducedNBins; iBin++)
+        UInt_t nChannels = fsData->GetNChannels();
+        if (nChannels != gvData->GetNChannels())
         {
-            Double_t freqBinMin = fNormalization->GetBinLowEdge(iBin);
-            Double_t freqBinMax = fNormalization->GetBinLowEdge(iBin+1);
-            Int_t firstBinFullPS = std::max((Int_t)fullArray->FindBin(freqBinMin), 0);
-            Int_t lastBinFullPS = std::min((Int_t)fullArray->FindBin(freqBinMax), veryLastBinInFullPS);
-            //std::cout << iBin << "  " << freqBinMin << "  " << freqBinMax << "  " << firstBinFullPS << "  " << lastBinFullPS << std::endl;
-            complexpolar<Double_t> meanBinContent;
-            Int_t nBinsInSum = 0;
-            for (Int_t iSubBin=firstBinFullPS; iSubBin<=lastBinFullPS; iSubBin++)
+            KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
+            return NULL;
+        }
+
+        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(nChannels);
+
+        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        {
+            KTFrequencySpectrum* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
+            if (newSpectrum == NULL)
             {
-                    meanBinContent += (*fullArray)(iSubBin);
-                    nBinsInSum++;
+                KTERROR(gnlog, "Normalization of spectrum " << iChannel << " failed for some reason. Continuing processing.");
+                continue;
             }
-            //if (nBinsInSum != 0) meanBinContent /= (Double_t)nBinsInSum;
-            (*fNormalization)(iBin) = meanBinContent;
-            //cout << "Gain norm bin " << iBin << "  content: " << meanBinContent << endl;
+            newData->SetSpectrum(newSpectrum, iChannel);
         }
 
+        newData->SetName(fOutputDataName);
+        newData->SetEvent(fsData->GetEvent());
 
-        return;
+        fFSSignal(newData);
+
+        return newData;
     }
 
-    void KTGainNormalization::ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData)
+    KTFrequencySpectrum* KTGainNormalization::Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline)
     {
-        KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = swFSData->GetSpectra(0);
-        UInt_t nPowerSpectra = spectra->size();
-        for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
+        UInt_t nBins = frequencySpectrum->size();
+        Double_t freqMin = frequencySpectrum->GetRangeMin();
+        Double_t freqMax = frequencySpectrum->GetRangeMax();
+
+        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+
+        KTFrequencySpectrum* newSpectrum = new KTFrequencySpectrum(nBins, freqMin, freqMax);
+        for (UInt_t iBin=0; iBin < nBins; iBin++)
         {
-            ProcessFrequencySpectrum(iPS, (*spectra)(iPS));
+            (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() / (*splineImp)(iBin), (*frequencySpectrum)(iBin).arg());
         }
 
-        return;
+        spline->AddToCache(splineImp);
+
+        return newSpectrum;
     }
 
-    void KTGainNormalization::ProcessFrequencySpectrum(UInt_t /*psNum*/, KTFrequencySpectrum* freqSpectrum)
+    void KTGainNormalization::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        if (freqSpectrum->size() != fNormalization->size())
+        const KTGainVariationData* gvData = dynamic_cast< KTGainVariationData* >(event->GetData(fGVInputDataName));
+        if (gvData == NULL)
         {
-            std::cout << "Error in KTGainNormalization::ProcessArray: Array sizes do not match!" << std::endl;
+            KTWARN(gnlog, "No gain variation data named <" << fGVInputDataName << "> was available in the event");
             return;
         }
 
-        (*freqSpectrum) /= (*fNormalization);
+        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fFSInputDataName));
+        if (fsData != NULL)
+        {
+            KTFrequencySpectrumData* newData = Normalize(fsData, gvData);
+            event->AddData(newData);
+            return;
+        }
 
+        /*
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(fFSInputDataName));
+        if (fsDataFFTW != NULL)
+        {
+            KTGainVariationData* newData = Normalize(fsDataFFTW, gvData);
+            event->AddData(newData);
+            return;
+        }
+        */
+        /*
+        const KTSlidingWindowFSData* swfsData = dynamic_cast< KTSlidingWindowFSData* >(event->GetData(fFSInputDataName));
+        if (swfsData != NULL)
+        {
+            KTGainVariationData* newData = Normalize(swfsData, gvData);
+            event->AddData(newData);
+            return;
+        }
+        */
+        /*
+        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fFSInputDataName));
+        if (swfsDataFFTW != NULL)
+        {
+            KTGainVariationData* newData = Normalize(swfsDataFFTW, gvData);
+            event->AddData(newData);
+            return;
+        }
+        */
+
+        KTWARN(gnlog, "No time series data named <" << fFSInputDataName << "> was available in the event");
         return;
     }
 
