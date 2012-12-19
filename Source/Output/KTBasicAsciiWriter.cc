@@ -99,4 +99,23 @@ namespace Katydid {
     }
   }
 
+  /*
+   *  The following methods are unimplemented and just warn!
+   */
+  void KTBasicAsciiWriter::Publish(const KTWriteableData* dt) {
+    KTWARN(asciilog, "stub Publish(const KTWriteableData*) called! no data written!");
+  };
+  void KTBasicAsciiWriter::Write(const KTWriteableData* dt) {
+    KTWARN(asciilog, "stub Write(const KTWriteableData*) called! no data written!");
+  };
+  void KTBasicAsciiWriter::Write(const KTCorrelationData* dt) {
+    KTWARN(asciilog, "stub Write(const KTCorrelationData*) called! no data written!");
+  };
+  void KTBasicAsciiWriter::Write(const KTSlidingWindowFSData* dt) {
+    KTWARN(asciilog, "stub Write(const KTSlidingWindowFSData*) called! no data written!");
+  };
+  void KTBasicAsciiWriter::Write(const KTSlidingWindowFSDataFFTW* dt) {
+    KTWARN(asciilog, "stub Write(const KTSlidingWindowFSDataFFTW*) called! no data written!");
+  };
+
 }; // namespace Katydid
