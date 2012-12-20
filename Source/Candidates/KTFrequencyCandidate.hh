@@ -59,5 +59,16 @@ namespace Katydid
         return;
     }
 
+    inline Double_t KTFrequencyCandidate::GetMeanFrequency() const
+    {
+        return fMeanFrequency;
+    }
+
+    inline void KTFrequencyCandidate::SetMeanFrequency(Double_t freq)
+    {
+        fMeanFrequency = freq;
+        return;
+    }
+
 } /* namespace Katydid */
 #endif /* KTFREQUENCYCANDIDATE_HH_ */
