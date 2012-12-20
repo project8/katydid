@@ -29,13 +29,13 @@ namespace Katydid
 {
     KTLOGGER(aalog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTAnalyticAssociator > sWVRegistrar("analytic-associator");
+    static KTDerivedRegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
 
     KTAnalyticAssociator::KTAnalyticAssociator() :
             KTProcessor(),
             fFullFFT(),
             fInputDataName("time-series"),
-            fOutputDataName("wigner-ville"),
+            fOutputDataName("analytic-associate"),
             fSaveFrequencySpectrum(false),
             fFSOutputDataName("frequency-spectrum-from-aa")
 
@@ -144,6 +144,47 @@ namespace Katydid
         return aaTSData;
     }
 
+    KTTimeSeriesData* KTAnalyticAssociator::CreateAssociateData(const KTFrequencySpectrumDataFFTW* data)
+    {
+        if (! fFullFFT.GetIsInitialized())
+        {
+            fFullFFT.InitializeFFT();
+            if (! fFullFFT.GetIsInitialized())
+            {
+                KTERROR(aalog, "Unable to initialize full FFT.");
+                return NULL;
+            }
+        }
+
+        // New data to hold the time series of the analytic associate
+        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(data->GetNChannels());
+
+        // Calculate the analytic associates
+        for (UInt_t iChannel = 0; iChannel < data->GetNChannels(); iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* nextInput = data->GetSpectrum(iChannel);
+
+            KTTimeSeriesFFTW* newTS = CalculateAnalyticAssociate(nextInput);
+
+            if (newTS == NULL)
+            {
+                KTERROR(aalog, "Channel <" << iChannel << "> did not transform correctly.");
+                delete aaTSData;
+                return NULL;
+            }
+
+            aaTSData->SetTimeSeries(newTS, iChannel);
+        }
+
+        aaTSData->SetEvent(data->GetEvent());
+        aaTSData->SetName(fOutputDataName);
+
+        fAASignal(aaTSData);
+
+        return aaTSData;
+    }
+
+
     KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
         // Forward FFT
@@ -165,7 +206,23 @@ namespace Katydid
         {
             KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
             if (outputFS == NULL) delete freqSpec;
-            return NULL;
+        }
+
+        return outputTS;
+    }
+
+    KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTFrequencySpectrumFFTW* inputFS)
+    {
+        KTFrequencySpectrumFFTW aaFS(*inputFS);
+
+        // Calculate the analytic associate in frequency space
+        aaFS.AnalyticAssociate();
+
+        // reverse FFT
+        KTTimeSeriesFFTW* outputTS = fFullFFT.Transform(&aaFS);
+        if (outputTS == NULL)
+        {
+            KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
         }
 
         return outputTS;
