@@ -52,6 +52,7 @@ if (LOG4CXX_FOUND)
 endif (LOG4CXX_FOUND)
 
 # External packages distributed with Katydid
+include_directories ("${PROJECT_SOURCE_DIR}/External/RapidJSON")
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
 include_directories ("${PROJECT_SOURCE_DIR}/External/CImg")
 
