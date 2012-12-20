@@ -48,6 +48,7 @@ namespace Katydid
             UInt_t GetNGroups() const;
 
             void AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t groupNum = 0);
+            void AddClusters(const SetOfClusters& clusters, UInt_t groupNum = 0);
             void SetThreshold(Double_t threshold, UInt_t groupNum = 0);
             void SetNGroups(UInt_t channels);
 
@@ -93,6 +94,13 @@ namespace Katydid
     {
         if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
         fGroupData[groupNum].fThreshold = threshold;
+    }
+
+    inline void KTCluster1DData::AddClusters(const SetOfClusters& clusters, UInt_t groupNum)
+    {
+        if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
+        fGroupData[groupNum].fClusters.insert(clusters.begin(), clusters.end());
+        return;
     }
 
     inline void KTCluster1DData::SetNGroups(UInt_t channels)

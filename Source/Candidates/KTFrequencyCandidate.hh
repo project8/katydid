@@ -37,23 +37,23 @@ namespace Katydid
             Double_t fMeanFrequency;
     };
 
-    UInt_t KTFrequencyCandidate::GetFirstBin() const
+    inline UInt_t KTFrequencyCandidate::GetFirstBin() const
     {
         return fFirstBin;
     }
 
-    void KTFrequencyCandidate::SetFirstBin(UInt_t bin)
+    inline void KTFrequencyCandidate::SetFirstBin(UInt_t bin)
     {
         fFirstBin = bin;
         return;
     }
 
-    UInt_t KTFrequencyCandidate::GetLastBin() const
+    inline UInt_t KTFrequencyCandidate::GetLastBin() const
     {
         return fLastBin;
     }
 
-    void KTFrequencyCandidate::SetLastBin(UInt_t bin)
+    inline void KTFrequencyCandidate::SetLastBin(UInt_t bin)
     {
         fLastBin = bin;
         return;

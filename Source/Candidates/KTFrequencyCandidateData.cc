@@ -7,6 +7,8 @@
 
 #include "KTFrequencyCandidateData.hh"
 
+#include "KTWriter.hh"
+
 namespace Katydid
 {
 
