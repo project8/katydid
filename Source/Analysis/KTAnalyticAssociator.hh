@@ -82,6 +82,7 @@ namespace Katydid
              void ProcessHeader(const KTEggHeader* header);
              void ProcessEvent(boost::shared_ptr<KTEvent> event);
              void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 
     };
 

@@ -46,6 +46,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTAnalyticAssociator::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTAnalyticAssociator::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("fs-data", this, &KTAnalyticAssociator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("event", this, &KTAnalyticAssociator::ProcessEvent, "void (shared_ptr<KTEvent>)");
     }
 
@@ -259,16 +260,42 @@ namespace Katydid
         return;
     }
 
-    void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTAnalyticAssociator::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
     {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
-        if (tsData == NULL)
+        KTTimeSeriesData* newData = CreateAssociateData(fsData);
+
+        if (newData == NULL)
         {
-            KTWARN(aalog, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTERROR(aalog, "Unable to transform data");
             return;
         }
 
-        ProcessTimeSeriesData(tsData);
+        KTEvent* event = fsData->GetEvent();
+        if (event != NULL)
+        {
+            event->AddData(newData);
+        }
+
+        return;
+    }
+
+    void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTEvent> event)
+    {
+        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
+        if (tsData != NULL)
+        {
+            ProcessTimeSeriesData(tsData);
+            return;
+        }
+
+        const KTFrequencySpectrumDataFFTW* fsData = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        if (fsData != NULL)
+        {
+            ProcessFrequencySpectrumData(fsData);
+            return;
+        }
+
+        KTWARN(aalog, "No data (time series of frequency spectrum FFTW) named <" << fInputDataName << "> was available in the event");
         return;
     }
 
