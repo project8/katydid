@@ -71,7 +71,7 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
-    #${PROJECT_SOURCE_DIR}/Source/Waterfall
+    ${PROJECT_SOURCE_DIR}/Source/Candidates
     ${PROJECT_SOURCE_DIR}/Source/Output
 )
 
@@ -80,6 +80,7 @@ add_subdirectory (Source/Core)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
+add_subdirectory (Source/Candidates)
 add_subdirectory (Source/Output)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Validation)
