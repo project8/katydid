@@ -14,7 +14,6 @@
 
 #include <boost/shared_ptr.hpp>
 
-class TSpline;
 
 namespace Katydid
 {
@@ -23,6 +22,7 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTW;
     class KTGainVariationData;
     class KTPStoreNode;
+    //class KTSpline;
 
     /*!
      @class KTGainVariationProcessor
@@ -102,7 +102,7 @@ namespace Katydid
             KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data);
 
         private:
-            //GainVariation* CreateGainVariation(TSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
+            //GainVariation* CreateGainVariation(KTSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
 
             //***************
             // Signals

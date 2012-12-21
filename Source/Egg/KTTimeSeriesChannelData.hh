@@ -42,10 +42,6 @@ namespace Katydid
 
             void Accept(KTWriter* writer) const;
 
-        private:
-            static std::string fDefaultName;
-
-
         public:
             UInt_t GetNTimeSeries() const;
 

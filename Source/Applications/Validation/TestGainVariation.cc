@@ -10,6 +10,7 @@
  *      > TestGainVariation [nBins [nFitPoints [true_A true_B true_C [noise_sigma]]]]
  */
 
+#include "KTGainNormalization.hh"
 #include "KTGainVariationData.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTLogger.hh"
@@ -98,13 +99,18 @@ int main(int argc, char** argv)
 #endif
 
     Double_t value;
+    Double_t value0 = TestFunction(funcParams, spectrum->GetBinCenter(0));
     for (UInt_t iBin=0; iBin < nBins; iBin++)
     {
 #ifdef ROOT_FOUND
         value = TestFunction(funcParams, spectrum->GetBinCenter(iBin));
-        (*spectrum)(iBin) = rand.Gaus(value, value * noiseSigma);
+        (*spectrum)(iBin).set_polar(rand.Gaus(value, value * noiseSigma / value0), 0.);
+        if (iBin < 100)
+        {
+            KTDEBUG(vallog, "Point " << iBin << "   " << (*spectrum)(iBin));
+        }
 #else
-        (*spectrum)(iBin) = gainVarProc.FitFunction(funcParams, spectrum->GetBinCenter(iBin));
+        (*spectrum)(iBin).set_polar(TestFunction(funcParams, spectrum->GetBinCenter(iBin)));
 #endif
     }
 
@@ -117,7 +123,7 @@ int main(int argc, char** argv)
     spectrumHist->Write();
 #endif
 
-    KTINFO(vallog, "Performing fit");
+    KTINFO(vallog, "Performing variation calculation");
 
     KTGainVariationData* gvData = gainVarProc.CalculateGainVariation(&fsData);
 
@@ -130,21 +136,34 @@ int main(int argc, char** argv)
      */
 
 #ifdef ROOT_FOUND
-    TH1D* fitHist = gvData->CreateGainVariationHistogram(0);
+    TH1D* fitHist = gvData->CreateGainVariationHistogram(100, 0, "hGainVar");
     fitHist->SetLineColor(8);
     fitHist->Write();
-
+/*
     TH1D* flatSpectrumHist = (TH1D*)spectrumHist->Clone();
     flatSpectrumHist->SetName("hOutputMag");
     flatSpectrumHist->Divide(fitHist);
     flatSpectrumHist->SetLineColor(2);
     flatSpectrumHist->Write();
+    */
+#endif
 
-    TSpline* spline = (TSpline*)gvData->GetSpline(0)->Clone();
-    spline->Write();
+    KTGainNormalization gainNorm;
+    gainNorm.SetMinBin(0);
+    gainNorm.SetMaxBin(nBins-1);
+
+    KTINFO(vallog, "Normalizing the spectrum");
+    KTFrequencySpectrumData* normData = gainNorm.Normalize(&fsData, gvData);
+
+    KTINFO(vallog, "Processing complete");
+#ifdef ROOT_FOUND
+    TH1D* normalizedHist = normData->GetSpectrum(0)->CreateMagnitudeHistogram("hOutputMag");
+    normalizedHist->SetLineColor(2);
+    normalizedHist->Write();
 #endif
 
     delete gvData;
+    delete normData;
 
 #ifdef ROOT_FOUND
     file->Close();

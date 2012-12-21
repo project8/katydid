@@ -52,9 +52,13 @@ namespace Katydid
 
             UInt_t GetNBinsX() const;
             UInt_t GetNBinsY() const;
+            Double_t GetBinWidthX() const;
+            Double_t GetBinWidthY() const;
 
             void SetNBinsX(UInt_t nBins);
             void SetNBinsY(UInt_t nBins);
+            void SetBinWidthX(Double_t binWidth);
+            void SetBinWidthY(Double_t binWidth);
 
         protected:
             static std::string fDefaultName;
@@ -63,6 +67,8 @@ namespace Katydid
 
             UInt_t fNBinsX;
             UInt_t fNBinsY;
+            Double_t fBinWidthX;
+            Double_t fBinWidthY;
 
     };
 
@@ -109,6 +115,16 @@ namespace Katydid
         return fNBinsY;
     }
 
+    inline Double_t KTDiscriminatedPoints2DData::GetBinWidthX() const
+    {
+        return fBinWidthX;
+    }
+
+    inline Double_t KTDiscriminatedPoints2DData::GetBinWidthY() const
+    {
+        return fBinWidthY;
+    }
+
     inline void KTDiscriminatedPoints2DData::SetNBinsX(UInt_t nBins)
     {
         fNBinsX = nBins;
@@ -121,6 +137,17 @@ namespace Katydid
         return;
     }
 
+    inline void KTDiscriminatedPoints2DData::SetBinWidthX(Double_t binWidth)
+    {
+        fBinWidthX = binWidth;
+        return;
+    }
+
+    inline void KTDiscriminatedPoints2DData::SetBinWidthY(Double_t binWidth)
+    {
+        fBinWidthY = binWidth;
+        return;
+    }
 
 } /* namespace Katydid */
 

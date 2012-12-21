@@ -37,8 +37,6 @@ namespace Katydid
             void Accept(KTWriter* writer) const;
 
         protected:
-            static std::string fDefaultName;
-
             std::vector< KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* > fSpectra;
 
 #ifdef ROOT_FOUND

@@ -91,6 +91,9 @@ namespace Katydid
 
         KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
 
+        newData->SetNBins(data->GetSpectrum(0)->size());
+        newData->SetBinWidth(data->GetSpectrum(0)->GetBinWidth());
+
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
         Double_t sigmaNorm = 1. / Double_t(nBins - 1);
@@ -157,6 +160,9 @@ namespace Katydid
         UInt_t nChannels = data->GetNChannels();
 
         KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
+
+        newData->SetNBins(data->GetSpectrum(0)->size());
+        newData->SetBinWidth(data->GetSpectrum(0)->GetBinWidth());
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
@@ -234,6 +240,8 @@ namespace Katydid
 
         newData->SetNBinsX(data->GetSpectra(0)->size());
         newData->SetNBinsY((*(data->GetSpectra(0)))(0)->size());
+        newData->SetBinWidthX(data->GetSpectra(0)->GetBinWidth());
+        newData->SetBinWidthY((*(data->GetSpectra(0)))(0)->GetBinWidth());
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
@@ -318,6 +326,8 @@ namespace Katydid
 
         newData->SetNBinsX(data->GetSpectra(0)->size());
         newData->SetNBinsY((*(data->GetSpectra(0)))(0)->size());
+        newData->SetBinWidthX(data->GetSpectra(0)->GetBinWidth());
+        newData->SetBinWidthY((*(data->GetSpectra(0)))(0)->GetBinWidth());
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;

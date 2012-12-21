@@ -11,7 +11,11 @@ namespace Katydid
 {
     KTDiscriminatedPoints2DData::KTDiscriminatedPoints2DData(UInt_t nChannels) :
             KTData(),
-            fChannelData(nChannels)
+            fChannelData(nChannels),
+            fNBinsX(1),
+            fNBinsY(1),
+            fBinWidthX(1.),
+            fBinWidthY(1.)
     {
     }
 
