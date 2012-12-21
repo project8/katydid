@@ -30,9 +30,6 @@ namespace Katydid
             KTCorrelationData(unsigned nChannels=1);
             virtual ~KTCorrelationData();
 
-            const std::string& GetDefaultName() const;
-            static const std::string& StaticGetDefaultName();
-
             const KTFrequencySpectrum* GetCorrelation(UInt_t pairNum = 0) const;
             KTFrequencySpectrum* GetCorrelation(UInt_t pairNum = 0);
             UInt_t GetFirstChannel(UInt_t pairNum = 0) const;
@@ -45,16 +42,9 @@ namespace Katydid
             void Accept(KTWriter* writer) const;
 
         protected:
-            static std::string fDefaultName;
-
             std::vector< PerPairData > fData;
 
     };
-
-    inline const std::string& KTCorrelationData::GetDefaultName() const
-    {
-        return fDefaultName;
-    }
 
     inline const KTFrequencySpectrum* KTCorrelationData::GetCorrelation(UInt_t pairNum) const
     {
