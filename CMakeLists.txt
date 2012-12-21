@@ -51,6 +51,13 @@ if (LOG4CXX_FOUND)
     include_directories (${LOG4CXX_INCLUDE_DIRS})
 endif (LOG4CXX_FOUND)
 
+# eigen
+find_package (Eigen3)
+if (EIGEN_FOUND)
+   message (STATUS "Eigen found.")
+   include_directories (${EIGEN3_INCLUDE_DIR})
+endif (EIGEN_FOUND)
+
 # External packages distributed with Katydid
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidJSON")
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")

@@ -199,7 +199,7 @@ namespace Katydid
     void KTInverseSimpleFFT::ProcessEvent(KTEvent* event)
     {
         KTDEBUG(fftlog_simp, "Performing FFT of event " << event->GetEventNumber());
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(KTTimeSeriesData::StaticGetName()));
+        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(KTTimeSeriesData::StaticGetName());
         if (tsData == NULL)
         {
             KTWARN(fftlog_simp, "No time series data was available in the event");

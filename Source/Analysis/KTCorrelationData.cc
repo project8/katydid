@@ -12,13 +12,6 @@
 
 namespace Katydid
 {
-    std::string KTCorrelationData::fDefaultName("correlation");
-
-    const std::string& KTCorrelationData::StaticGetDefaultName()
-    {
-        return fDefaultName;
-    }
-
     KTCorrelationData::KTCorrelationData(UInt_t nPairs) :
             KTWriteableData(),
             fData(nPairs)
