@@ -14,8 +14,22 @@ namespace Katydid
 {
     class KTTimeSeriesData;
 
-    class KTBasicROOTTypeWriterEgg : public KTBasicROOTTypeWriter
+    class KTTypeWriterEgg
     {
+        public:
+            KTTypeWriterEgg();
+            virtual ~KTTypeWriterEgg();
+
+        protected:
+            virtual void WriteTimeSeriesDataByVisitor(const KTWriteableData* data) = 0;
+    };
+
+
+    class KTBasicROOTTypeWriterEgg : public KTBasicROOTTypeWriter, public KTTypeWriterEgg
+    {
+        public:
+            friend class KTTimeSeriesData;
+
         public:
             KTBasicROOTTypeWriterEgg();
             virtual ~KTBasicROOTTypeWriterEgg();
@@ -24,6 +38,9 @@ namespace Katydid
 
         public:
             void WriteTimeSeriesData(const KTTimeSeriesData* data);
+
+        protected:
+            void WriteTimeSeriesDataByVisitor(const KTWriteableData* data);
 
     };
 
