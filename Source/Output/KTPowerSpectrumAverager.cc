@@ -72,7 +72,7 @@ namespace Katydid
 
     void KTPowerSpectrumAverager::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fInputDataName));
+        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData == NULL)
         {
             KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");

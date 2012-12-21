@@ -190,7 +190,7 @@ namespace Katydid
             fTextFile << "Event " << iEvent << '\n';
         }
 
-        const KTProgenitorTimeSeriesData* tsData = dynamic_cast<const KTProgenitorTimeSeriesData*>(event->GetData(fInputDataName));
+        const KTProgenitorTimeSeriesData* tsData = event->GetData< KTProgenitorTimeSeriesData >(fInputDataName);
 
         // Perform a 1-D FFT on the entire event
         const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetTimeSeries(0));
