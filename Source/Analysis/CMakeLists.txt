@@ -44,6 +44,7 @@ set (ANALYSIS_SOURCEFILES
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
+    KatydidOutput
     KatydidEgg
     KatydidFFT
 )

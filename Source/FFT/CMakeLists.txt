@@ -54,6 +54,7 @@ set (FFT_SOURCEFILES
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
+    KatydidOutput
     KatydidEgg
 )
 

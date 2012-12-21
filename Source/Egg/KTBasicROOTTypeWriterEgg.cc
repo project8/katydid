@@ -34,29 +34,20 @@ namespace Katydid
     KTBasicROOTTypeWriterEgg::~KTBasicROOTTypeWriterEgg()
     {
     }
-    /*
-    Bool_t KTBasicROOTFileWriter::Configure(const KTPStoreNode* node)
+
+
+    void KTBasicROOTTypeWriterEgg::RegisterSlots()
     {
-        // Config-file settings
-        if (node != NULL)
-        {
-            SetFilename(node->GetData<string>("output-file", fFilename));
-            SetFileFlag(node->GetData<string>("file-flag", fFileFlag));
-        }
-
-        // Command-line settings
-        //SetFilename(fCLHandler->GetCommandLineValue< string >("broot-output-file", fTransformFlag));
-
-        return true;
+        fFileWriter->RegisterSlot("ts-data", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData, "void (const KTTimeSeriesData*)");
+        return;
     }
-    */
 
 
     //*****************
     // Time Series Data
     //*****************
 
-    void KTBasicROOTTypeWriterEgg::Write(const KTTimeSeriesData* data)
+    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesData(const KTTimeSeriesData* data)
     {
         KTEvent* event = data->GetEvent();
         UInt_t eventNumber = 0;

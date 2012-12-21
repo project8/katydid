@@ -20,20 +20,12 @@ namespace Katydid
             KTBasicROOTTypeWriterEgg();
             virtual ~KTBasicROOTTypeWriterEgg();
 
-            //Bool_t Configure(const KTPStoreNode* node);
-
             void RegisterSlots();
 
         public:
-            void Write(const KTTimeSeriesData* data);
+            void WriteTimeSeriesData(const KTTimeSeriesData* data);
 
     };
-
-    inline void KTBasicROOTTypeWriterEgg::RegisterSlots()
-    {
-        fFileWriter->RegisterSlot("ts-data", this, &KTBasicROOTTypeWriterEgg::Write, "void (const KTTimeSeriesData*)");
-        return;
-    }
 
 } /* namespace Katydid */
 #endif /* KTBASICROOTFILETYPEWRITER_HH_ */
