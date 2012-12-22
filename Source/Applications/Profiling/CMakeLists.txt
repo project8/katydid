@@ -20,11 +20,12 @@ if (Katydid_ENABLE_PROFILING)
     
     # Executables that do NOT require ROOT
     
-    #add_executable (TestAxisProperties ${CMAKE_CURRENT_SOURCE_DIR}/TestAxisProperties.cc)
-    #target_link_libraries (TestAxisProperties KatydidUtility ${LIBS})
+    add_executable (ProfileFFTWandMonarch ${CMAKE_CURRENT_SOURCE_DIR}/ProfileFFTWandMonarch.cc)
+    target_link_libraries (ProfileFFTWandMonarch KatydidUtility KatydidCore KatydidEgg ${LIBS})
 
-    #katydid_install_executables (
-    #)
+    katydid_install_executables (
+        ProfileFFTWandMonarch
+    )
              
     # executables that DO require ROOT
     if (ROOT_FOUND)
