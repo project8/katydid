@@ -10,7 +10,6 @@ set (ANALYSIS_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.hh
@@ -30,7 +29,6 @@ set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
@@ -40,6 +38,15 @@ set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
 )
+
+if (ROOT_FOUND)
+   set (ANALYSIS_HEADERFILES 
+   ${ANALYSIS_HEADERFILES}   
+   ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh)
+   set (ANALYSIS_SOURCEFILES
+   ${ANALYSIS_SOURCEFILES}
+   ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc)
+endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
