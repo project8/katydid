@@ -27,6 +27,7 @@ set (UTILITY_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArray.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSingleton.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTECDF.hh
 )
 
 set (UTILITY_SOURCEFILES
@@ -34,6 +35,7 @@ set (UTILITY_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTECDF.cc
 )
 
 ##################################################
