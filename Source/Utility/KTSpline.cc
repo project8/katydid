@@ -89,6 +89,11 @@ namespace Katydid
 
     Double_t KTSpline::Evaluate(Double_t xValue)
     {
+      return 1.;
+    }
+
+    Double_t KTSpline::Evaluate(Double_t xValue) const
+    {
         return 1.;
     }
 
