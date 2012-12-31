@@ -10,7 +10,7 @@
 
 #include <Eigen/Dense>
 
-namespace katydid {
+namespace Katydid {
 
   typedef Eigen::MatrixXf KTBiasedACM;
 
