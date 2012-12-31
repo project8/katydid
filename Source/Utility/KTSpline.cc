@@ -35,6 +35,11 @@ namespace Katydid
         ClearCache();
     }
 
+    Double_t KTSpline::Evaluate(Double_t xValue)
+    {
+        return fSpline.Eval(xValue);
+    }
+
     Double_t KTSpline::Evaluate(Double_t xValue) const
     {
         return fSpline.Eval(xValue);
