@@ -19,14 +19,15 @@
 #include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTPStoreNode.hh"
+#include "KTData.hh"
+#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesReal.hh"
 
 #include "boost/shared_ptr.hpp"
 
 namespace Katydid {
 
   KTLOGGER(nrq_log, "katydid.nrq");
-
-  class KTTimeSeriesData;
 
   class KTRQProcessor : public KTProcessor {
 
@@ -51,6 +52,7 @@ namespace Katydid {
      * Slots and signals.
      */
   public:
+    typedef Eigen::Map<const Eigen::RowVectorXd> DataMapType;
     typedef KTSignal< void (const double*) >::signal RQSignal;
 
     void ProcessNoiseData(const KTTimeSeriesData* noise);
@@ -64,8 +66,30 @@ namespace Katydid {
      * Internal state related to processing
      */ 
   private:
+    /* The chunk size is the number of time samples that are processed
+     * in one iteration by the RQ processor.  It is also the rank of the
+     * autocorrelation matrix that is stored in the internal state of the
+     * object.
+     */ 
     unsigned fChunkSize;
+
+    /*
+     * The Naive Rayleigh Quotient method utilizes properties of the 
+     * estimated autocorrelation matrix for the noise process it is
+     * observing.
+     */
     KTBiasedACM* fNoiseACM;
+
+    /*
+     * We abstract away the external data representation and use a Mapped
+     * version of the data to work with internally.
+     */
+    DataMapType* fDataMap;
+
+    /*
+     * This is the name of the data that is used to generate the noise ACM
+     * estimate.  For now we rely on KTEvent generated noise.
+     */
     std::string fNoiseName;
     
   }; // class KTRQProcessor
