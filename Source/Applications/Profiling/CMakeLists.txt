@@ -21,7 +21,7 @@ if (Katydid_ENABLE_PROFILING)
     # Executables that do NOT require ROOT
     
     add_executable (ProfileFFTWandMonarch ${CMAKE_CURRENT_SOURCE_DIR}/ProfileFFTWandMonarch.cc)
-    target_link_libraries (ProfileFFTWandMonarch KatydidUtility KatydidCore KatydidEgg ${LIBS})
+    target_link_libraries (ProfileFFTWandMonarch KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
 
     katydid_install_executables (
         ProfileFFTWandMonarch

@@ -71,7 +71,7 @@ int main(const int argc, const char** argv)
     KTINFO(proflog, "Setting up the FFT");
     fftw_complex* tInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * tSize);
     fftw_complex* tOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * tSize);
-    fftw_plan tPlan = fftw_plan_dft_1d(tSize, tInputArray, tOutputArray, FFTW_FORWARD, FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+    fftw_plan tPlan = fftw_plan_dft_1d(tSize, tInputArray, tOutputArray, FFTW_FORWARD, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT);
 
     KTINFO(proflog, "FFT setup complete");
 
