@@ -47,6 +47,8 @@ namespace Katydid {
     void SetChunkSize(unsigned newsize);
     std::string GetNoiseDataName();
     void SetNoiseDataName(std::string noisename);
+    Bool_t GetNACMConverged();
+    void SetNACMConverged(Bool_t newval);
 
     /*
      * Slots and signals.
@@ -76,8 +78,10 @@ namespace Katydid {
     /*
      * The Naive Rayleigh Quotient method utilizes properties of the 
      * estimated autocorrelation matrix for the noise process it is
-     * observing.
+     * observing.  We also store a flag which indicates if the Noise ACM
+     * is ready to be used (has converged).
      */
+    bool fNACMDidConverge;
     KTBiasedACM* fNoiseACM;
 
     /*
