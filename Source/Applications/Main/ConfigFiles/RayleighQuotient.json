@@ -1,0 +1,45 @@
+{
+    "katydid":
+    {
+	"processor-toolbox":
+	{
+	    "processor":
+	    {
+		"type": "egg-processor",
+		"name": "noise-egg"
+	    },
+
+	    "processor":
+	    {
+		"type": "rayleigh-quotient",
+		"name": "nrq-est"
+	    },
+
+	    "connection":
+	    {
+		"signal-processor": "noise-egg",
+		"signal-name": "event",
+		"slot-processor": "nrq-est",
+		"slot-name": "process-noise-event"
+	    },
+	    
+	    "run-queue":
+	    {
+		"processor": "noise-egg"
+	    }
+	},
+
+	"noise-egg":
+	{
+	    "filename": "run2012_11_5_tone.egg",
+	    "number-of-events": 10,
+	    "output-data-name": "noise-time-series"
+	},
+	
+	"nrq-est":
+	{
+	    "chunk-size": 512,
+	    "noise-data-name": "noise-time-series"
+	}
+    }
+}
