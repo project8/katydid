@@ -8,7 +8,8 @@ namespace Katydid {
     fRQSignal(),
     fChunkSize(512),
     fNACMDidConverge(false),
-    fNoiseACM(NULL)
+    fNoiseACM(NULL),
+    fDataMap(NULL)
   {
     fConfigName = "rayleigh-quotient";
     RegisterSignal("rq-calc", 
@@ -42,6 +43,7 @@ namespace Katydid {
       // initialize the new matrix.
       if( fNoiseACM == NULL ) {
 	fNoiseACM = new KTBiasedACM(fChunkSize, fChunkSize);
+	fDataMap = new DataMapType(NULL, fChunkSize);
       }
       else {
 	KTWARN(nrq_log, "Config requested for RQProc (chunk size) but already configured...");
@@ -105,15 +107,15 @@ namespace Katydid {
       // Now we point the data map at the first fChunkSize piece of data and process it. 
       // For now we only use the first chunk to form the ACM.  Despite the fact that this
       // looks like allocating memory, it isn't.
-      new (&(this->fDataMap)) DataMapType(rawPtr, this->fChunkSize);
+      new (this->fDataMap) DataMapType(rawPtr, this->fChunkSize);
         
       // Update noise estimate with current noise sample.
       KTINFO(nrq_log,"using noise to update NACM estimate...");
 
       // Calculate first row.  The NACM is a Toeplitz matrix which means we only need to
       // calculate the first row.
-      for(unsigned rowIdx = 0; rowIdx < this->fChunkSize; rowIdx++) {
-	(*this->fNoiseACM)(rowIdx, 0) = 1.0;
+      for(unsigned colIdx = 0; colIdx < this->fChunkSize; colIdx++) {
+	(*this->fNoiseACM)(0, colIdx) = KTRQProcessor::LaggedACF(this->fDataMap, colIdx);
       }
 
       for(unsigned row = 1; row < this->fChunkSize; row++) {
@@ -142,6 +144,16 @@ namespace Katydid {
     else {
       KTWARN(nrq_log,"time series " << fNoiseName << " not found in event!  skipping...");
     }
+  }
+
+  double KTRQProcessor::LaggedACF(const DataMapType* data, unsigned lag) 
+  {
+    double result = 0.0;
+    unsigned len = data->size();
+    for(unsigned idx = 0; idx < (len - 1 - lag); idx++) {
+      result += (*data)(idx) * (*data)(idx + lag);
+    }
+    return result/len;
   }
 
   void KTRQProcessor::ProcessNoiseData(const KTTimeSeriesData* noise)
