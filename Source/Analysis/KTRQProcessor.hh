@@ -95,6 +95,15 @@ namespace Katydid {
      * estimate.  For now we rely on KTEvent generated noise.
      */
     std::string fNoiseName;
+
+    /*
+     * Calculates the lagged autocorrelation of a sequence of doubles stored
+     * in a DataMap.  This should eventually get refactored into its own place
+     * but for now it's a static member function as it does not rely on state.
+     */
+  public:
+    static double LaggedACF(const DataMapType* data, unsigned lag);
+
     
   }; // class KTRQProcessor
 
