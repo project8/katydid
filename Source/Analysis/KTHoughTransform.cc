@@ -314,14 +314,14 @@ namespace Katydid
 
     void KTHoughTransform::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        const KTDiscriminatedPoints2DData* dpData = dynamic_cast< KTDiscriminatedPoints2DData* >(event->GetData(fInputDataName));
+        const KTDiscriminatedPoints2DData* dpData = event->GetData< KTDiscriminatedPoints2DData >(fInputDataName);
         if (dpData != NULL)
         {
             ProcessDiscriminatedData(dpData);
             return;
         }
 
-        const KTSlidingWindowFSDataFFTW* swsfData = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fInputDataName));
+        const KTSlidingWindowFSDataFFTW* swsfData = event->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
         if (swsfData != NULL)
         {
             ProcessSWFSData(swsfData);

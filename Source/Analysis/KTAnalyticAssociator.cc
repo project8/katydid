@@ -204,7 +204,7 @@ namespace Katydid
 
     void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        const KTTimeSeriesData* tsData = dynamic_cast< KTTimeSeriesData* >(event->GetData(fInputDataName));
+        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)
         {
             KTWARN(aalog, "No time series data named <" << fInputDataName << "> was available in the event");
