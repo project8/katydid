@@ -13,9 +13,13 @@ namespace Katydid
 {
 
     KTEvent::KTEvent() :
+            fDataTypeIDCounter(0),
             fEventNum(0),
+            fIsLastEvent(false),
+            fDataMapFactory(KTFactory< KTDataMap >::GetInstance()),
             fDataMap()
     {
+
     }
 
     KTEvent::~KTEvent()

@@ -12,17 +12,41 @@
 #ifndef KTEVENT_HH_
 #define KTEVENT_HH_
 
+#include "KTFactory.hh"
+
 #include <boost/unordered_map.hpp>
 
 namespace Katydid
 {
     class KTData;
+    class KTDataMap;
 
     class KTEvent
     {
         protected:
             typedef boost::unordered_map< std::string, KTData* > DataMap;
             typedef DataMap::value_type DataMapVal;
+
+            typedef unsigned data_type_id;
+            typedef boost::unordered_map< data_type_id, KTDataMap > MapOfDataMaps;
+
+            data_type_id fDataTypeIDCounter;
+
+            template< class XDataType >
+            class DataClassID
+            {
+                public:
+                    static data_type_id GetID()
+                    {
+                        static data_type_id classID = DataClassID::NextID();
+                        return classID;
+                    }
+
+                    static data_type_id NextID()
+                    {
+                        return ++fDataTypeIDCounter;
+                    }
+            };
 
         public:
             KTEvent();
@@ -45,7 +69,21 @@ namespace Katydid
             //*****************************
             // Extensible data
             //*****************************
+
         public:
+            // Data class types
+
+
+        protected:
+            KTFactory< KTDataMap >* fDataMapFactory; // singleton; not owned by KTEvent
+
+            MapOfDataMaps fAllDataMaps;
+
+
+
+
+        public:
+            // Data access
             KTData* GetData(const std::string& name) const;
             template< typename DerivedData >
             DerivedData* GetData(const std::string& name) const;
