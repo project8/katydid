@@ -54,7 +54,7 @@ namespace Katydid
     template< class XBaseType >
     class KTFactory : public KTSingleton< KTFactory< XBaseType > >
     {
-        protected:
+        public:
             typedef std::map< std::string, const KTRegistrar< XBaseType >* > FactoryMap;
             typedef typename FactoryMap::value_type FactoryEntry;
             typedef typename FactoryMap::iterator FactoryIt;
@@ -62,7 +62,11 @@ namespace Katydid
 
         public:
             XBaseType* Create(const std::string& className);
+            XBaseType* Create(const FactoryCIt& iter);
             void Register(const std::string& className, const KTRegistrar< XBaseType >* registrar);
+
+            FactoryCIt GetFactoryMapBegin() const;
+            FactoryCIt GetFactoryMapEnd() const;
 
         protected:
             FactoryMap* fMap;
@@ -89,6 +93,12 @@ namespace Katydid
     }
 
     template< class XBaseType >
+    XBaseType* KTFactory< XBaseType >::Create(const FactoryCIt& iter)
+    {
+        return iter->second->Create();
+    }
+
+    template< class XBaseType >
     void KTFactory< XBaseType >::Register(const std::string& className, const KTRegistrar< XBaseType >* registrar)
     {
         FactoryCIt it = fMap->find(className);
@@ -110,6 +120,18 @@ namespace Katydid
     KTFactory< XBaseType >::~KTFactory()
     {
         delete fMap;
+    }
+
+    template< class XBaseType >
+    typename KTFactory< XBaseType >::FactoryCIt KTFactory< XBaseType >::GetFactoryMapBegin() const
+    {
+        return fMap->begin();
+    }
+
+    template< class XBaseType >
+    typename KTFactory< XBaseType >::FactoryCIt KTFactory< XBaseType >::GetFactoryMapEnd() const
+    {
+        return fMap->end();
     }
 
 
