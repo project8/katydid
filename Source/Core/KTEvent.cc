@@ -13,23 +13,28 @@ namespace Katydid
 {
 
     KTEvent::KTEvent() :
-            fDataTypeIDCounter(0),
             fEventNum(0),
             fIsLastEvent(false),
-            fDataMapFactory(KTFactory< KTDataMap >::GetInstance()),
-            fDataMap()
+            fDataMapFactory(KTTIFactory< KTDataMap >::GetInstance()),
+            fMapOfDataMaps(),
+            fDataNameMap()
     {
-
+        // Use the data map factories to build the data maps
+        KTTIFactory< KTDataMap >::FactoryCIt endFactory = fDataMapFactory->GetFactoryMapEnd();
+        for (KTTIFactory< KTDataMap >::FactoryCIt factIt = fDataMapFactory->GetFactoryMapBegin(); factIt != endFactory; factIt++)
+        {
+            fMapOfDataMaps.insert(MapOfDataMaps::value_type(factIt->first, fDataMapFactory->Create(factIt)));
+        }
     }
 
     KTEvent::~KTEvent()
     {
-        for (DataMap::iterator it=fDataMap.begin(); it != fDataMap.end(); it++)
+        for (MapOfDataMaps::iterator it=fMapOfDataMaps.begin(); it != fMapOfDataMaps.end(); it++)
         {
             delete it->second;
         }
     }
-
+    /*
     bool KTEvent::AddData(KTData* newData)
     {
         return AddData(newData->GetName(), newData);
@@ -40,9 +45,6 @@ namespace Katydid
         newData->fEvent = this;
         return (fDataMap.insert(DataMapVal(name, newData))).second;
     }
-
-
-
-
+    */
 
 } /* namespace Katydid */

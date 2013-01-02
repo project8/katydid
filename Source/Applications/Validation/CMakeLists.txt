@@ -117,7 +117,7 @@ if (Katydid_ENABLE_TESTING)
                      TestThroughputProfiler
                      TestVector
                      TestWignerVille
-		     TestASCIIFileWriter
+#		     TestASCIIFileWriter
     )
              
     # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.

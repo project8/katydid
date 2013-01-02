@@ -12,41 +12,25 @@
 #ifndef KTEVENT_HH_
 #define KTEVENT_HH_
 
-#include "KTFactory.hh"
+#include "KTDataMap.hh"
+#include "KTTypeIndexFactory.hh"
+#include "KTLogger.hh"
+
+#include "Rtypes.h"
 
 #include <boost/unordered_map.hpp>
 
 namespace Katydid
 {
+    KTLOGGER(corelog_event, "katydid.core");
+
     class KTData;
-    class KTDataMap;
 
     class KTEvent
     {
         protected:
-            typedef boost::unordered_map< std::string, KTData* > DataMap;
-            typedef DataMap::value_type DataMapVal;
-
-            typedef unsigned data_type_id;
-            typedef boost::unordered_map< data_type_id, KTDataMap > MapOfDataMaps;
-
-            data_type_id fDataTypeIDCounter;
-
-            template< class XDataType >
-            class DataClassID
-            {
-                public:
-                    static data_type_id GetID()
-                    {
-                        static data_type_id classID = DataClassID::NextID();
-                        return classID;
-                    }
-
-                    static data_type_id NextID()
-                    {
-                        return ++fDataTypeIDCounter;
-                    }
-            };
+            typedef boost::unordered_map< const std::type_info*, KTDataMap* > MapOfDataMaps;
+            typedef boost::unordered_map< std::string, KTDataMap* > DataNameMap;
 
         public:
             KTEvent();
@@ -59,32 +43,19 @@ namespace Katydid
             unsigned GetEventNumber() const;
             void SetEventNumber(unsigned num);
 
-            bool GetIsLastEvent() const;
-            void SetIsLastEvent(bool flag);
+            Bool_t GetIsLastEvent() const;
+            void SetIsLastEvent(Bool_t flag);
 
         protected:
             unsigned fEventNum;
-            bool fIsLastEvent;
+            Bool_t fIsLastEvent;
 
             //*****************************
             // Extensible data
             //*****************************
-
         public:
-            // Data class types
+            //KTData* GetData(const std::string& name) const;
 
-
-        protected:
-            KTFactory< KTDataMap >* fDataMapFactory; // singleton; not owned by KTEvent
-
-            MapOfDataMaps fAllDataMaps;
-
-
-
-
-        public:
-            // Data access
-            KTData* GetData(const std::string& name) const;
             template< typename DerivedData >
             DerivedData* GetData(const std::string& name) const;
 
@@ -93,19 +64,25 @@ namespace Katydid
              *    - Uses KTData::GetName() to extract the name for the key
              *    - Assumes ownership of the data.
              */
-            bool AddData(KTData* newData);
+            template< typename DerivedData >
+            Bool_t AddData(DerivedData* newData);
 
             /** @brief Adds a data object to the extensible event
              *  @details
              *    - Takes a key value as a parameter for custom key selection.
              *    - Assumes ownership of the data.
              */
-            bool AddData(const std::string& name, KTData* newData);
+            template< typename DerivedData >
+            Bool_t AddData(const std::string& name, DerivedData* newData);
 
-            bool RemoveData(const std::string& name);
+            Bool_t RemoveData(const std::string& name);
 
         protected:
-            DataMap fDataMap;
+            KTTIFactory< KTDataMap >* fDataMapFactory; // singleton; not owned by KTEvent
+
+            MapOfDataMaps fMapOfDataMaps;
+
+            DataNameMap fDataNameMap;
 
     };
 
@@ -121,12 +98,12 @@ namespace Katydid
         return;
     }
 
-    inline bool KTEvent::GetIsLastEvent() const
+    inline Bool_t KTEvent::GetIsLastEvent() const
     {
         return fIsLastEvent;
     }
 
-    inline void KTEvent::SetIsLastEvent(bool flag)
+    inline void KTEvent::SetIsLastEvent(Bool_t flag)
     {
         fIsLastEvent = flag;
         return;
@@ -135,26 +112,68 @@ namespace Katydid
     template< typename DerivedData >
     DerivedData* KTEvent::GetData(const std::string& name) const
     {
-        KTData* dataPtr = GetData(name);
-        if (dataPtr == NULL) return NULL;
-        return dynamic_cast< DerivedData* >(dataPtr);
+        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(DerivedData));
+        if (modmIt == fMapOfDataMaps.end())
+        {
+            KTERROR(corelog_event, "Attempt to retrieve data called <" << name << "> failed because there is no data class registered with type <" << typeid(DerivedData).name() << ">");
+            return NULL;
+        }
+
+        KTData* dataPtr = modmIt->second->GetData(name);
+        if (dataPtr == NULL)
+        {
+            KTERROR(corelog_event, "Unable to find data called <" << name << "> with type <" << typeid(DerivedData).name() << ">");
+            return NULL;
+        }
+        return static_cast< DerivedData* >(dataPtr);
     }
 
-    inline KTData* KTEvent::GetData(const std::string& name) const
+    template< typename DerivedData >
+    Bool_t KTEvent::AddData(DerivedData* newData)
     {
-        try
-        {
-            return fDataMap.at(name);
-        }
-        catch (std::out_of_range& e)
-        {
-        }
-        return NULL;
+        return AddData(newData->GetName(), newData);
     }
 
-    inline bool KTEvent::RemoveData(const std::string& name)
+    template< typename DerivedData >
+    Bool_t KTEvent::AddData(const std::string& name, DerivedData* newData)
     {
-        return bool(fDataMap.erase(name) > 0);
+        if (fDataNameMap.find(name) != fDataNameMap.end())
+        {
+            KTERROR(corelog_event, "There is already a data object named <" << name << "> attached to this event.");
+            return false;
+        }
+
+        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(DerivedData));
+        if (modmIt == fMapOfDataMaps.end())
+        {
+            KTERROR(corelog_event, "Attempt to add data called <" << name << "> failed because there is no data class registered with type <" << typeid(DerivedData).name() << ">");
+            return false;
+        }
+        // If the data map has been found, we can reasonably assume its derived type will matched the derived data type.
+
+        KTDerivedDataMap< DerivedData >* ddm = static_cast< KTDerivedDataMap< DerivedData >* >(modmIt->second);
+        if (! ddm->AddData(name, newData))
+        {
+            KTERROR(corelog_event, "Attempt to add data called <" << name << "> to data map failed.");
+            return false;
+        }
+
+        newData->fEvent = this;
+        return true;
+    }
+
+
+    inline Bool_t KTEvent::RemoveData(const std::string& name)
+    {
+        DataNameMap::const_iterator nmIt = fDataNameMap.find(name);
+        if (nmIt == fDataNameMap.end()) return false;
+
+        fDataNameMap.erase(name);
+        if (! nmIt->second->RemoveData(name))
+        {
+            KTWARN(corelog_event, "While removing data called <" << name << ">, data was not found in the data map");
+        }
+        return true;
     }
 
 } /* namespace Katydid */
