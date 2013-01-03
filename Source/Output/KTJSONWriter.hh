@@ -33,16 +33,17 @@ namespace Katydid
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
 
-            const std::string& GetFileFlag() const;
-            void SetFileFlag(const std::string& flag);
+            const std::string& GetFileMode() const;
+            void SetFileMode(const std::string& mode);
 
-            //TFile* GetFile();
+            Bool_t GetPrettyJSONFlag() const;
+            void SetPrettyJSONFlag(Bool_t flag);
 
         protected:
             std::string fFilename;
-            std::string fFileFlag;
+            std::string fFileMode;
 
-            //TFile* fFile;
+            Bool_t fPrettyJSONFlag;
 
             //************************
             // Basic Publish and Write
@@ -74,21 +75,28 @@ namespace Katydid
         return;
     }
 
-    inline const std::string& KTJSONWriter::GetFileFlag() const
+    inline const std::string& KTJSONWriter::GetFileMode() const
     {
-        return fFileFlag;
+        return fFileMode;
     }
-    inline void KTJSONWriter::SetFileFlag(const std::string& flag)
+    inline void KTJSONWriter::SetFileMode(const std::string& mode)
     {
-        fFileFlag = flag;
+        if (mode == "w" || mode == "a" || mode == "r+" || mode == "w+" || mode == "a+")
+        {
+            fFileMode = mode;
+        }
         return;
     }
-/*
-    inline TFile* KTJSONWriter::GetFile()
+
+    inline Bool_t KTJSONWriter::GetPrettyJSONFlag() const
     {
-        return fFile;
+        return fPrettyJSONFlag;
     }
-*/
+    inline void KTJSONWriter::SetPrettyJSONFlag(Bool_t flag)
+    {
+        fPrettyJSONFlag = flag;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTJSONWRITER_HH_ */
