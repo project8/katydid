@@ -62,6 +62,15 @@ endif (EIGEN_FOUND)
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidJSON")
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
 
+# add an option to build the validation tests
+option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
+if (Katydid_ENABLE_TESTING)
+    enable_testing ()
+endif (Katydid_ENABLE_TESTING)
+
+# add an option to build the profiling tests
+option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
+
 # Monarch
 include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
 add_subdirectory (Source/Egg/Monarch)
@@ -75,21 +84,22 @@ endif ("${isSystemDir}" STREQUAL "-1")
 include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Utility
     ${PROJECT_SOURCE_DIR}/Source/Core
+    ${PROJECT_SOURCE_DIR}/Source/Output
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Candidates
-    ${PROJECT_SOURCE_DIR}/Source/Output
 )
 
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Core)
+add_subdirectory (Source/Output)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
 add_subdirectory (Source/Candidates)
-add_subdirectory (Source/Output)
 add_subdirectory (Source/Applications/Main)
+add_subdirectory (Source/Applications/Profiling)
 add_subdirectory (Source/Applications/Validation)
 
 if (NOT ROOT_FOUND)

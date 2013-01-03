@@ -1,7 +1,7 @@
 # CMakeLists for Katydid/Source/Applications/Validation
 # Author: N. Oblath
 
-if (ENABLE_TESTING)
+if (Katydid_ENABLE_TESTING)
 
     # Config files
     set (VALIDATION_CONFIGFILES
@@ -92,8 +92,8 @@ if (ENABLE_TESTING)
     add_executable (TestWignerVille ${CMAKE_CURRENT_SOURCE_DIR}/TestWignerVille.cc)
     target_link_libraries (TestWignerVille KatydidUtility KatydidEgg KatydidFFT KatydidCore KatydidAnalysis KatydidOutput ${LIBS})
     
-    add_executable (TestASCIIFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestASCIIFileWriter.cc)
-    target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidFFT KatydidOutput ${LIBS})
+    #add_executable (TestASCIIFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestASCIIFileWriter.cc)
+    #target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidFFT KatydidOutput ${LIBS})
 
     katydid_install_executables (
                      TestApplication
@@ -117,7 +117,7 @@ if (ENABLE_TESTING)
                      TestThroughputProfiler
                      TestVector
                      TestWignerVille
-		     TestASCIIFileWriter
+#		     TestASCIIFileWriter
     )
              
     # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.
@@ -148,7 +148,7 @@ if (ENABLE_TESTING)
     # executables that DO require ROOT
     if (ROOT_FOUND)
         add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
-        target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
+        target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT ${LIBS})
         
         add_executable (TestGainVariation ${CMAKE_CURRENT_SOURCE_DIR}/TestGainVariation.cc)
         target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis KatydidOutput ${LIBS})
@@ -161,4 +161,4 @@ if (ENABLE_TESTING)
         add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)
     endif (ROOT_FOUND)
         
-endif (ENABLE_TESTING) 
+endif (Katydid_ENABLE_TESTING) 

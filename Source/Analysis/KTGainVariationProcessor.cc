@@ -262,7 +262,7 @@ namespace Katydid
 
     void KTGainVariationProcessor::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fInputDataName));
+        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
         {
             KTGainVariationData* newData = CalculateGainVariation(fsData);
@@ -270,7 +270,7 @@ namespace Katydid
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(fInputDataName));
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsDataFFTW != NULL)
         {
             KTGainVariationData* newData = CalculateGainVariation(fsDataFFTW);

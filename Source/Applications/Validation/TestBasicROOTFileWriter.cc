@@ -6,6 +6,7 @@
  */
 
 #include "KTBasicROOTFileWriter.hh"
+#include "KTBasicROOTTypeWriterFFT.hh"
 #include "KTEvent.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
@@ -40,7 +41,7 @@ int main()
     writer->SetFileFlag("recreate");
 
     // Writer the data
-    writer->Publish(data);
+    writer->GetTypeWriter< KTBasicROOTTypeWriterFFT >()->WriteFrequencySpectrumData(data);
 
     // Set up next data
     (*spectrum1)(3).set_polar(10., .5);
@@ -48,7 +49,7 @@ int main()
     event->SetEventNumber(1);
 
     // Publish the data
-    writer->Publish(data);
+    writer->GetTypeWriter< KTBasicROOTTypeWriterFFT >()->WriteFrequencySpectrumData(data);
 
     // Clean up
     delete data;

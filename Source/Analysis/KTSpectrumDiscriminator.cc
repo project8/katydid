@@ -410,7 +410,7 @@ namespace Katydid
 
     void KTSpectrumDiscriminator::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        const KTSlidingWindowFSData* swfsData = dynamic_cast< KTSlidingWindowFSData* >(event->GetData(fInputDataName));
+        const KTSlidingWindowFSData* swfsData = event->GetData< KTSlidingWindowFSData >(fInputDataName);
         if (swfsData != NULL)
         {
             KTDiscriminatedPoints2DData* newData = Discriminate(swfsData);
@@ -418,7 +418,7 @@ namespace Katydid
             return;
         }
 
-        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fInputDataName));
+        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = event->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
         if (swfsDataFFTW != NULL)
         {
             KTDiscriminatedPoints2DData* newData = Discriminate(swfsDataFFTW);
@@ -426,7 +426,7 @@ namespace Katydid
             return;
         }
 
-        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fInputDataName));
+        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
         {
             KTDiscriminatedPoints1DData* newData = Discriminate(fsData);
@@ -434,7 +434,7 @@ namespace Katydid
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(fInputDataName));
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsDataFFTW != NULL)
         {
             KTDiscriminatedPoints1DData* newData = Discriminate(fsDataFFTW);

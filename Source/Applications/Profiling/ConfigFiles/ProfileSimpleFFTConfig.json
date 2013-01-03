@@ -10,13 +10,13 @@
             },
             "processor":
             {
-                "type": "complex-fftw",
+                "type": "simple-fft",
                 "name": "fft"
             },
             "processor":
             {
-                "type": "basic-root-writer",
-                "name": "writer"
+                "type": "throughput-profiler",
+                "name": "profiler"
             },
             
             "connection":
@@ -24,21 +24,39 @@
                 "signal-processor": "egg",
                 "signal-name": "event",
                 "slot-processor": "fft",
-                "slot-name": "event"
+                "slot-name": "event",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "profiler",
+                "slot-name": "event",
+                "group-order": 1
             },
             "connection":
             {
                 "signal-processor": "egg",
                 "signal-name": "header",
                 "slot-processor": "fft",
-                "slot-name": "header"
+                "slot-name": "header",
+                "group-order": 0
             },
             "connection":
             {
-                "signal-processor": "fft",
-                "signal-name": "fft",
-                "slot-processor": "writer",
-                "slot-name": "fs-data-fftw"
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "profiler",
+                "slot-name": "start",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "egg-done",
+                "slot-processor": "profiler",
+                "slot-name": "stop"
             },
             
             "run-queue":
@@ -59,12 +77,7 @@
         {
             "transform-flag": "ESTIMATE",
             "input-data-name": "time-series"
-        },
-        
-        "writer":
-        {
-            "output-file": "/path/to/file.root",
-            "file-flag": "recreate"
         }
+        
     }
 }

@@ -151,7 +151,7 @@ namespace Katydid
 
             if (iEvent == fNEvents - 1) event->SetIsLastEvent(true);
 
-            KTTimeSeriesData* newData = event->GetData<KTProgenitorTimeSeriesData>(fOutputDataName);
+            KTTimeSeriesData* newData = event->GetData< KTTimeSeriesData >(fOutputDataName);
             if (newData != NULL)
             {
                 KTDEBUG(egglog, "Time series data is present.");
