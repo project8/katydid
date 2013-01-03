@@ -404,7 +404,7 @@ namespace Katydid
         FreeArrays();
         if (fInputArray == NULL)
         {
-            fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fSize);
+            fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
         }
         if (fOutputArray == NULL)
         {

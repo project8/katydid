@@ -1,7 +1,7 @@
 # CMakeLists for Katydid/Source/Applications/Validation
 # Author: N. Oblath
 
-if (ENABLE_TESTING)
+if (Katydid_ENABLE_TESTING)
 
     # Config files
     set (VALIDATION_CONFIGFILES
@@ -117,7 +117,7 @@ if (ENABLE_TESTING)
                      TestThroughputProfiler
                      TestVector
                      TestWignerVille
-                     #TestASCIIFileWriter
+#		     TestASCIIFileWriter
     )
              
     # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.
@@ -161,4 +161,4 @@ if (ENABLE_TESTING)
         add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)
     endif (ROOT_FOUND)
         
-endif (ENABLE_TESTING) 
+endif (Katydid_ENABLE_TESTING) 

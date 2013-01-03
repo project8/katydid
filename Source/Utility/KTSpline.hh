@@ -34,6 +34,7 @@ namespace Katydid
             KTSpline(Double_t* xVals, Double_t* yVals, UInt_t nVals);
             virtual ~KTSpline();
 
+            Double_t Evaluate(Double_t xValue);
             Double_t Evaluate(Double_t xValue) const;
 
             Implementation* Implement(UInt_t nBins, Double_t xMin, Double_t xMax) const;

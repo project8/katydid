@@ -33,12 +33,6 @@ set (BUILD_SHARED_LIBS ON)
 # global property to hold the names of katydid library targets
 set_property (GLOBAL PROPERTY ${PROJECT_NAME}_LIBRARIES)
 
-# add an option to build the validation tests
-option (ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
-if (ENABLE_TESTING)
-    enable_testing ()
-endif (ENABLE_TESTING)
-
 # deal with the rpath settings (from http://www.cmake.org/Wiki/CMake_RPATH_handling)
 # use (i.e. don't skip) the full RPATH for the build tree
 #SET(CMAKE_SKIP_BUILD_RPATH  FALSE)

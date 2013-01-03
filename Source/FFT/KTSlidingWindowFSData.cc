@@ -7,13 +7,17 @@
 
 #include "KTSlidingWindowFSData.hh"
 
+#include "KTDataMap.hh"
 #include "KTFrequencySpectrum.hh"
+#include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
 using std::vector;
 
 namespace Katydid
 {
+    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTSlidingWindowFSData > > sSWFSDMRegistrar;
+
     KTSlidingWindowFSData::KTSlidingWindowFSData(unsigned nChannels) :
             KTWriteableData(),
             fSpectra(nChannels)

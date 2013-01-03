@@ -62,6 +62,15 @@ endif (EIGEN_FOUND)
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
 include_directories ("${PROJECT_SOURCE_DIR}/External/CImg")
 
+# add an option to build the validation tests
+option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
+if (Katydid_ENABLE_TESTING)
+    enable_testing ()
+endif (Katydid_ENABLE_TESTING)
+
+# add an option to build the profiling tests
+option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
+
 # Monarch
 include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
 add_subdirectory (Source/Egg/Monarch)
@@ -89,6 +98,7 @@ add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
 add_subdirectory (Source/Applications/Main)
+add_subdirectory (Source/Applications/Profiling)
 add_subdirectory (Source/Applications/Validation)
 
 if (NOT ROOT_FOUND)
