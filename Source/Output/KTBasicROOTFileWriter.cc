@@ -7,40 +7,23 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
-#include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTWriteableData.hh"
 
-#include <sstream>
-
-using std::stringstream;
 using std::string;
 
 namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-/*
-    KTBasicROOTTypeWriter::KTBasicROOTTypeWriter() :
-            //KTTypeWriter(),
-            fFileWriter(NULL)
-    {
-    }
-
-    KTBasicROOTTypeWriter::~KTBasicROOTTypeWriter()
-    {
-    }
-*/
 
     static KTDerivedRegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root-writer");
     static KTDerivedRegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root-writer");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter() :
             KTWriterWithTypists< KTBasicROOTFileWriter >(),
-            //KTWriter(),
-            //fTypeWriters(),
             fFilename("basic_output.root"),
             fFileFlag("recreate"),
             fFile(NULL)
@@ -48,29 +31,10 @@ namespace Katydid
         fConfigName = "basic-root-writer";
 
         RegisterSlot("write-data", this, &KTBasicROOTFileWriter::Publish);
-/*
-        KTTIFactory< KTBasicROOTTypeWriter >* twFactory = KTTIFactory< KTBasicROOTTypeWriter >::GetInstance();
-        for (KTTIFactory< KTBasicROOTTypeWriter >::FactoryCIt factoryIt = twFactory->GetFactoryMapBegin();
-                factoryIt != twFactory->GetFactoryMapEnd();
-                factoryIt++)
-        {
-            KTBasicROOTTypeWriter* newTypeWriter = twFactory->Create(factoryIt);
-            newTypeWriter->fWriter = this;
-            newTypeWriter->RegisterSlots();
-            fTypeWriters.push_back(newTypeWriter);
-        }
-*/
     }
 
     KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
     {
-/*
-        while (! fTypeWriters.empty())
-        {
-            delete fTypeWriters.back();
-            fTypeWriters.pop_back();
-        }
-*/
         if (fFile != NULL)
         {
             fFile->Close();
@@ -86,9 +50,6 @@ namespace Katydid
             SetFilename(node->GetData<string>("output-file", fFilename));
             SetFileFlag(node->GetData<string>("file-flag", fFileFlag));
         }
-
-        // Command-line settings
-        //SetFilename(fCLHandler->GetCommandLineValue< string >("broot-output-file", fTransformFlag));
 
         return true;
     }
