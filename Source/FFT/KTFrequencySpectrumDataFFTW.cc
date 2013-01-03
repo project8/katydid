@@ -7,11 +7,15 @@
 
 #include "KTFrequencySpectrumDataFFTW.hh"
 
+#include "KTDataMap.hh"
 #include "KTFrequencySpectrumFFTW.hh"
+#include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
 namespace Katydid
 {
+    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencySpectrumDataFFTW > > sFSFFTWDMMRegistrar;
+
     KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW(unsigned nChannels) :
             KTWriteableData(),
             fSpectra(nChannels)

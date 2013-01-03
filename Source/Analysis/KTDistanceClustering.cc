@@ -128,7 +128,7 @@ namespace Katydid
 
     void KTDistanceClustering::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        const KTDiscriminatedPoints1DData* dp1Data = dynamic_cast< KTDiscriminatedPoints1DData* >(event->GetData(fInputDataName));
+        const KTDiscriminatedPoints1DData* dp1Data = event->GetData< KTDiscriminatedPoints1DData >(fInputDataName);
         if (dp1Data != NULL)
         {
             KTCluster1DData* newData = FindClusters(dp1Data);

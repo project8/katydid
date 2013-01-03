@@ -5,6 +5,7 @@ set (FFT_DICT_HEADERFILES
 )
 
 set (FFT_NODICT_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTComplexFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEventWindowFunction.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFT.hh
@@ -24,9 +25,17 @@ set (FFT_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
 )
 
+if (ROOT_FOUND)
+    set (FFT_NODICT_HEADERFILES
+        ${FFT_NODICT_HEADERFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrumAverager.hh
+    )
+endif (ROOT_FOUND)
+
 set (FFT_HEADERFILES ${FFT_DICT_HEADERFILES} ${FFT_NODICT_HEADERFILES})
 
 set (FFT_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTComplexFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEventWindowFunction.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFT.cc
@@ -46,6 +55,13 @@ set (FFT_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
 )
 
+if (ROOT_FOUND)
+    set (FFT_SOURCEFILES
+        ${FFT_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrumAverager.cc
+    )
+endif (ROOT_FOUND)
+
 #if (ROOT_FOUND)
 #    set (FFT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/FFTLinkDef.hh)
 #    set (FFT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/FFTDict.cxx)
@@ -54,6 +70,7 @@ set (FFT_SOURCEFILES
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
+    KatydidOutput
     KatydidEgg
 )
 
