@@ -8,7 +8,7 @@
 #include "KTBasicROOTTypeWriterEgg.hh"
 
 #include "KTEvent.hh"
-#include "KTFactory.hh"
+#include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
@@ -41,7 +41,7 @@ namespace Katydid
 */
 
 
-    static KTDerivedRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterEgg > sBRTWERegistrar("basic-root-type-writer-egg");
+    static KTDerivedTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterEgg > sBRTWERegistrar;
 
     KTBasicROOTTypeWriterEgg::KTBasicROOTTypeWriterEgg() :
             KTBasicROOTTypeWriter()
@@ -56,7 +56,7 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEgg::RegisterSlots()
     {
-        fFileWriter->RegisterSlot("ts-data", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData, "void (const KTTimeSeriesData*)");
+        fWriter->RegisterSlot("ts-data", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData, "void (const KTTimeSeriesData*)");
         return;
     }
 
@@ -72,7 +72,7 @@ namespace Katydid
         if (event != NULL) eventNumber = event->GetEventNumber();
         UInt_t nChannels = data->GetNTimeSeries();
 
-        if (! fFileWriter->OpenAndVerifyFile()) return;
+        if (! fWriter->OpenAndVerifyFile()) return;
 
         for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
         {
@@ -84,7 +84,7 @@ namespace Katydid
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreateHistogram(histName);
-                powerSpectrum->SetDirectory(fFileWriter->GetFile());
+                powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }

@@ -39,6 +39,7 @@ namespace Katydid
         public:
             void WriteTimeSeriesData(const KTTimeSeriesData* data);
 
+
         //protected:
             //void WriteTimeSeriesDataByVisitor(const KTWriteableData* data);
 
