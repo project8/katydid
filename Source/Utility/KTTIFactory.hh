@@ -1,12 +1,14 @@
 /*
- * KTFactory.hh
+ * KTTIFactory.hh
  *
- *  Created on: Jul 31, 2012
+ *  Created on: Jan 2, 2013
  *      Author: nsoblath
+ *
+ *      Type-Indexed Factory and Registrars
  */
 
-#ifndef KTTYPEINDEXFACTORY_HH_
-#define KTTYPEINDEXFACTORY_HH_
+#ifndef KTTIFACTORY_HH_
+#define KTTIFACTORY_HH_
 
 #include "KTSingleton.hh"
 #include "KTLogger.hh"
@@ -178,4 +180,4 @@ namespace Katydid
 
 
 } /* namespace Katydid */
-#endif /* KTTYPEINDEXFACTORY_HH_ */
+#endif /* KTTIFACTORY_HH_ */
