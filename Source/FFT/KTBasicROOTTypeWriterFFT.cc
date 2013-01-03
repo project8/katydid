@@ -1,7 +1,7 @@
 /*
- * KTBasicROOTFileWriter.cc
+ * KTBasicROOTTypeWriterFFT.cc
  *
- *  Created on: Aug 24, 2012
+ *  Created on: Jan 3, 2013
  *      Author: nsoblath
  */
 
@@ -33,7 +33,6 @@ namespace Katydid
 
     KTBasicROOTTypeWriterFFT::KTBasicROOTTypeWriterFFT() :
             KTBasicROOTTypeWriter()
-            //KTTypeWriterEgg()
     {
     }
 
