@@ -24,23 +24,6 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-/*
-    KTTypeWriterEgg::KTTypeWriterEgg()
-    {
-    }
-
-    KTBasicROOTTypeWriterEgg::~KTBasicROOTTypeWriterEgg()
-    {
-    }
-
-    void WriteTimeSeriesData(const KTTimeSeriesData* data)
-    {
-        KTWARN(publog, "Time series data writing has not been enabled");
-        return;
-    }
-*/
-
-
     static KTDerivedTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterEgg > sBRTWERegistrar;
 
     KTBasicROOTTypeWriterEgg::KTBasicROOTTypeWriterEgg() :
@@ -91,10 +74,5 @@ namespace Katydid
         }
         return;
     }
-/*
-    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataByVisitor(const KTWriteableData* data)
-    {
-        return WriteTimeSeriesData(static_cast< KTTimeSeriesData* >(data));
-    }
-*/
+
 } /* namespace Katydid */
