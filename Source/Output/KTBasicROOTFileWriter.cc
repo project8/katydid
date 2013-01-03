@@ -22,6 +22,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
+/*
     KTBasicROOTTypeWriter::KTBasicROOTTypeWriter() :
             //KTTypeWriter(),
             fFileWriter(NULL)
@@ -31,15 +32,15 @@ namespace Katydid
     KTBasicROOTTypeWriter::~KTBasicROOTTypeWriter()
     {
     }
-
+*/
 
     static KTDerivedRegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root-writer");
     static KTDerivedRegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root-writer");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter() :
-            KTWriter(),
-            fTypeWriterFactory(KTFactory< KTBasicROOTTypeWriter >::GetInstance()),
-            fTypeWriters(),
+            KTWriterWithTypists< KTBasicROOTFileWriter >(),
+            //KTWriter(),
+            //fTypeWriters(),
             fFilename("basic_output.root"),
             fFileFlag("recreate"),
             fFile(NULL)
@@ -47,27 +48,29 @@ namespace Katydid
         fConfigName = "basic-root-writer";
 
         RegisterSlot("write-data", this, &KTBasicROOTFileWriter::Publish);
-
-        for (KTFactory< KTBasicROOTTypeWriter >::FactoryCIt factoryIt = fTypeWriterFactory->GetFactoryMapBegin();
-                factoryIt != fTypeWriterFactory->GetFactoryMapEnd();
+/*
+        KTTIFactory< KTBasicROOTTypeWriter >* twFactory = KTTIFactory< KTBasicROOTTypeWriter >::GetInstance();
+        for (KTTIFactory< KTBasicROOTTypeWriter >::FactoryCIt factoryIt = twFactory->GetFactoryMapBegin();
+                factoryIt != twFactory->GetFactoryMapEnd();
                 factoryIt++)
         {
-            KTBasicROOTTypeWriter* newTypeWriter = fTypeWriterFactory->Create(factoryIt);
-            newTypeWriter->fFileWriter = this;
+            KTBasicROOTTypeWriter* newTypeWriter = twFactory->Create(factoryIt);
+            newTypeWriter->fWriter = this;
             newTypeWriter->RegisterSlots();
             fTypeWriters.push_back(newTypeWriter);
         }
-
+*/
     }
 
     KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
     {
+/*
         while (! fTypeWriters.empty())
         {
             delete fTypeWriters.back();
             fTypeWriters.pop_back();
         }
-
+*/
         if (fFile != NULL)
         {
             fFile->Close();

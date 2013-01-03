@@ -10,14 +10,14 @@
 
 #include "KTWriter.hh"
 
-#include "KTFactory.hh"
-
 #include "TFile.h"
 
 namespace Katydid
 {
     class KTBasicROOTFileWriter;
 
+    typedef KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
+/*
     class KTBasicROOTTypeWriter //: public KTTypeWriter
     {
         protected:
@@ -32,10 +32,10 @@ namespace Katydid
         protected:
             KTBasicROOTFileWriter* fFileWriter;
     };
+*/
 
 
-
-    class KTBasicROOTFileWriter : public KTWriter
+    class KTBasicROOTFileWriter : public KTWriterWithTypists< KTBasicROOTFileWriter >//public KTWriter
     {
         public:
             KTBasicROOTFileWriter();
@@ -46,10 +46,8 @@ namespace Katydid
             //*************
             // Type writers
             //*************
-        private:
-            KTFactory< KTBasicROOTTypeWriter >* fTypeWriterFactory; // singleton; not owned by this class
-
-            std::vector< KTBasicROOTTypeWriter* > fTypeWriters;
+        //private:
+            //std::vector< KTBasicROOTTypeWriter* > fTypeWriters;
 
 
             //***************************
