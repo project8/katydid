@@ -13,7 +13,7 @@
 #define KTEVENT_HH_
 
 #include "KTDataMap.hh"
-#include "KTTypeIndexFactory.hh"
+#include "KTTIFactory.hh"
 #include "KTLogger.hh"
 
 #include "Rtypes.h"
@@ -112,10 +112,10 @@ namespace Katydid
     template< typename DerivedData >
     DerivedData* KTEvent::GetData(const std::string& name) const
     {
-        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(DerivedData));
+        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(KTDerivedDataMap< DerivedData >));
         if (modmIt == fMapOfDataMaps.end())
         {
-            KTERROR(corelog_event, "Attempt to retrieve data called <" << name << "> failed because there is no data class registered with type <" << typeid(DerivedData).name() << ">");
+            KTERROR(corelog_event, "Attempt to retrieve data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
             return NULL;
         }
 
@@ -143,10 +143,10 @@ namespace Katydid
             return false;
         }
 
-        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(DerivedData));
+        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(KTDerivedDataMap< DerivedData >));
         if (modmIt == fMapOfDataMaps.end())
         {
-            KTERROR(corelog_event, "Attempt to add data called <" << name << "> failed because there is no data class registered with type <" << typeid(DerivedData).name() << ">");
+            KTERROR(corelog_event, "Attempt to add data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
             return false;
         }
         // If the data map has been found, we can reasonably assume its derived type will matched the derived data type.
