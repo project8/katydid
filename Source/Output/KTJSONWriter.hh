@@ -38,8 +38,6 @@ namespace Katydid
 
             //TFile* GetFile();
 
-            Bool_t OpenAndVerifyFile();
-
         protected:
             std::string fFilename;
             std::string fFileFlag;
