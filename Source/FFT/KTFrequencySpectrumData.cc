@@ -8,7 +8,7 @@
 #include "KTFrequencySpectrumData.hh"
 
 #include "KTFrequencySpectrum.hh"
-#include "KTTypeIndexFactory.hh"
+#include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
 namespace Katydid
