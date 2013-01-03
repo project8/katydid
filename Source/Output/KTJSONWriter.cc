@@ -24,8 +24,8 @@ namespace Katydid
     KTJSONWriter::KTJSONWriter() :
             KTWriterWithTypists< KTJSONWriter >(),
             fFilename("basic_output.root"),
-            fFileFlag("recreate")
-            //fFile(NULL)
+            fFileMode("w+"),
+            fPrettyJSONFlag(true)
     {
         fConfigName = "basic-root-writer";
 
@@ -34,13 +34,6 @@ namespace Katydid
 
     KTJSONWriter::~KTJSONWriter()
     {
-        /*
-        if (fFile != NULL)
-        {
-            fFile->Close();
-        }
-        delete fFile;
-        */
     }
 
     Bool_t KTJSONWriter::Configure(const KTPStoreNode* node)
@@ -49,7 +42,8 @@ namespace Katydid
         if (node != NULL)
         {
             SetFilename(node->GetData<string>("output-file", fFilename));
-            SetFileFlag(node->GetData<string>("file-flag", fFileFlag));
+            SetFileMode(node->GetData<string>("file-mode", fFileMode));
+            SetPrettyJSONFlag(node->GetData<Bool_t>("pretty-json", fPrettyJSONFlag));
         }
 
         return true;
