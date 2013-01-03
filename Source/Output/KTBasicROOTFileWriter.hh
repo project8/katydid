@@ -17,22 +17,7 @@ namespace Katydid
     class KTBasicROOTFileWriter;
 
     typedef KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
-/*
-    class KTBasicROOTTypeWriter //: public KTTypeWriter
-    {
-        protected:
-            friend class KTBasicROOTFileWriter;
 
-        public:
-            KTBasicROOTTypeWriter();
-            virtual ~KTBasicROOTTypeWriter();
-
-            virtual void RegisterSlots() = 0;
-
-        protected:
-            KTBasicROOTFileWriter* fFileWriter;
-    };
-*/
 
 
     class KTBasicROOTFileWriter : public KTWriterWithTypists< KTBasicROOTFileWriter >//public KTWriter
@@ -43,16 +28,6 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            //*************
-            // Type writers
-            //*************
-        //private:
-            //std::vector< KTBasicROOTTypeWriter* > fTypeWriters;
-
-
-            //***************************
-            // ROOT-file-specific members
-            //***************************
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);
             void CloseFile();
