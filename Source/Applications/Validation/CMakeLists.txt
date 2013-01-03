@@ -148,7 +148,7 @@ if (Katydid_ENABLE_TESTING)
     # executables that DO require ROOT
     if (ROOT_FOUND)
         add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
-        target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidOutput ${LIBS})
+        target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT ${LIBS})
         
         add_executable (TestGainVariation ${CMAKE_CURRENT_SOURCE_DIR}/TestGainVariation.cc)
         target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis KatydidOutput ${LIBS})
