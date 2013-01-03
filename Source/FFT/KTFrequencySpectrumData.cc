@@ -7,6 +7,7 @@
 
 #include "KTFrequencySpectrumData.hh"
 
+#include "KTDataMap.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTTIFactory.hh"
 #include "KTWriter.hh"

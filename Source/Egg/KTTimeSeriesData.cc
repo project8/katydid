@@ -7,11 +7,12 @@
 
 #include "KTTimeSeriesData.hh"
 
+#include "KTDataMap.hh"
 #include "KTTIFactory.hh"
 
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTTimeSeriesData > > sTSRegistrar;
+    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTTimeSeriesData > > sTSDMRegistrar;
 
     KTTimeSeriesData::KTTimeSeriesData() :
             KTWriteableData()

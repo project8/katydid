@@ -8,8 +8,6 @@
 #ifndef KTDATA_HH_
 #define KTDATA_HH_
 
-#include "KTDataMap.hh"
-
 #include <string>
 
 namespace Katydid
