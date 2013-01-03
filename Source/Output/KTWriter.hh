@@ -12,7 +12,8 @@
 
 #include "KTTIFactory.hh"
 
-#include <vector>
+#include <map>
+#include <typeinfo>
 
 namespace Katydid
 {
@@ -82,12 +83,17 @@ namespace Katydid
     template< class XWriter >
     class KTWriterWithTypists : public KTWriter
     {
+        private:
+            typedef std::map< const std::type_info*, KTDerivedTypeWriter< XWriter >* > TypeWriterMap;
         public:
             KTWriterWithTypists();
             virtual ~KTWriterWithTypists();
 
+            template< class XTypeWriter >
+            XTypeWriter* GetTypeWriter();
+
         private:
-            std::vector< KTDerivedTypeWriter< XWriter >* > fTypeWriters;
+            TypeWriterMap fTypeWriters;
 
     };
 
@@ -105,7 +111,7 @@ namespace Katydid
             KTDerivedTypeWriter< XWriter >* newTypeWriter = twFactory->Create(factoryIt);
             newTypeWriter->SetWriter(static_cast< XWriter* >(this));
             newTypeWriter->RegisterSlots();
-            fTypeWriters.push_back(newTypeWriter);
+            fTypeWriters.insert(typename TypeWriterMap::value_type(factoryIt->first, newTypeWriter));
         }
     }
 
@@ -114,12 +120,22 @@ namespace Katydid
     {
         while (! fTypeWriters.empty())
         {
-            delete fTypeWriters.back();
-            fTypeWriters.pop_back();
+            delete fTypeWriters.begin()->second;
+            fTypeWriters.erase(fTypeWriters.begin());
         }
     }
 
-
+    template< class XWriter >
+    template< class XTypeWriter >
+    XTypeWriter* KTWriterWithTypists< XWriter >::GetTypeWriter()
+    {
+        typename TypeWriterMap::const_iterator it = fTypeWriters.find(&typeid(XTypeWriter));
+        if (it == fTypeWriters.end())
+        {
+            return NULL;
+        }
+        return static_cast< XTypeWriter* >(it->second);
+    }
 
 
 
