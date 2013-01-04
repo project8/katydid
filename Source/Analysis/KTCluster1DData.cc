@@ -7,8 +7,13 @@
 
 #include "KTCluster1DData.hh"
 
+#include "KTDataMap.hh"
+#include "KTTIFactory.hh"
+
 namespace Katydid
 {
+    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTCluster1DData > > sC1DDMRegistrar;
+
     KTCluster1DData::KTCluster1DData(UInt_t nGroups) :
             KTData(),
             fGroupData(nGroups),

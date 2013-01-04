@@ -106,10 +106,7 @@ namespace Katydid
             for (UInt_t iChannel=0; iChannel < fsData->GetNChannels(); iChannel++)
             {
                 TH1D* newPS = fsData->GetSpectrum(iChannel)->CreatePowerHistogram();
-                if (! fAveragePSHists[iChannel]->Add(newPS))
-                {
-                    KTWARN(psavglog, "Addition of histograms failed(channel " << iChannel << "); check TH1::Add for failure conditions.");
-                }
+                fAveragePSHists[iChannel]->Add(newPS);
                 delete newPS;
             }
         }

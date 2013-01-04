@@ -259,6 +259,9 @@ namespace Katydid
         // Get the executable name
         if (fNArgs >= 1) fExecutableName = string(fArgV[0]);
 
+        // If no arguments were given, print the help message and exit
+        if (fNArgs == 1) PrintHelpMessageAndExit();
+
         // Define general options, and add them to the complete option list
         po::options_description tGeneralOpts("General options");
         tGeneralOpts.add_options()("help,h", "Print help message")("help-config", "Print help message after reading config file")("version,v", "Print version information");
@@ -365,7 +368,8 @@ namespace Katydid
     void KTCommandLineHandler::PrintHelpMessageAndExit()
     {
         KTINFO(utillog, "\nUsage: " << fExecutableName << " [options]\n\n" <<
-               "  config file options can be modified using --address.of.option=\"value\"\n" <<
+               "  For basic/typical usage you should specify the configuration file:  -c config_file.json\n" <<
+               "  Config file options can be modified using:  --address.of.option=\"value\"\n" <<
                fPrintHelpOptions);
 
         exit(0);

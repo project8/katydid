@@ -7,8 +7,6 @@
 
 #include "KTWriter.hh"
 
-#include "KTWriteableData.hh"
-
 namespace Katydid
 {
 
@@ -20,6 +18,17 @@ namespace Katydid
     KTWriter::~KTWriter()
     {
     }
+
+
+
+    KTTypeWriter::KTTypeWriter()
+    {
+    }
+
+    KTTypeWriter::~KTTypeWriter()
+    {
+    }
+
 
 
 } /* namespace Katydid */

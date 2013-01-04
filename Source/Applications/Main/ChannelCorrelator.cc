@@ -51,7 +51,7 @@ int main(int argc, char** argv)
         procEgg.ConnectASlot("event", &procCorr, "event", 1);
 
         // This will get the output histogram when an FFT and correlation are complete
-        procCorr.ConnectASlot("correlation", &procPub, "write-data");
+        procCorr.ConnectASlot("correlation", &procPub, "corr-data");
     }
     catch (std::exception& e)
     {

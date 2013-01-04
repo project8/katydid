@@ -4,29 +4,31 @@
 set (OUTPUT_DICT_HEADER_FILES)
 
 set (OUTPUT_NODICT_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPublisher.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTPublisher.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWriteableData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWriter.hh
 )
 
 if (ROOT_FOUND)
     set (OUTPUT_NODICT_HEADERFILES
         ${OUTPUT_NODICT_HEADERFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrumAverager.hh
     )
 endif (ROOT_FOUND)
 
 set (OUTPUT_HEADERFILES ${OUTPUT_DICT_HEADERFILES} ${OUTPUT_NODICT_HEADERFILES})
 
 set (OUTPUT_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPublisher.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTPublisher.cc
     #${CMAKE_CURRENT_SOURCE_DIR}/KTBasicAsciiWriter.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWriteableData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWriter.cc
 )
 
 if (ROOT_FOUND)
     set (OUTPUT_SOURCEFILES
         ${OUTPUT_SOURCEFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrumAverager.cc
     )
 endif (ROOT_FOUND)
 
@@ -39,8 +41,6 @@ endif (ROOT_FOUND)
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
-    KatydidEgg
-    KatydidFFT
 )
 
 ##################################################

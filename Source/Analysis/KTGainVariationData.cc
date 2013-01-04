@@ -7,10 +7,14 @@
 
 #include "KTGainVariationData.hh"
 
+#include "KTDataMap.hh"
+#include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
 namespace Katydid
 {
+    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTGainVariationData > > sGVDMRegistrar;
+
     KTGainVariationData::KTGainVariationData(UInt_t nChannels) :
             KTWriteableData(),
             fChannelData(nChannels)
