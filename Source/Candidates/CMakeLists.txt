@@ -5,17 +5,20 @@ set (CANDIDATES_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidate.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.hh
 )
 
 set (CANDIDATES_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidate.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.cc
 )
 
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
+    KatydidOutput
     KatydidEgg
     KatydidFFT
     KatydidAnalysis
