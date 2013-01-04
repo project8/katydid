@@ -87,15 +87,24 @@ namespace Katydid
             fJSONMaker = new rapidjson::Writer< rapidjson::FileStream >(*fFileStream);
         }
 
+        fJSONMaker->StartObject();
+
         return true;
     }
 
     void KTJSONWriter::CloseFile()
     {
-        delete fJSONMaker;
-        fJSONMaker = NULL;
-        delete fFileStream;
-        fFileStream = NULL;
+        if (fJSONMaker != NULL)
+        {
+            fJSONMaker->EndObject();
+            delete fJSONMaker;
+            fJSONMaker = NULL;
+        }
+        if (fFileStream != NULL)
+        {
+            delete fFileStream;
+            fFileStream = NULL;
+        }
         if (fFile != NULL)
         {
             fclose(fFile);
