@@ -6,7 +6,15 @@
 	    "processor":
 	    {
 		"type": "egg-processor",
-		"name": "noise-egg"
+		"name": "noise-egg",
+		"group-order": 0
+	    },
+
+	    "processor":
+	    {
+		"type": "egg-processor",
+		"name": "candidate-egg",
+		"group-order": 1
 	    },
 
 	    "processor":
@@ -22,10 +30,19 @@
 		"slot-processor": "nrq-est",
 		"slot-name": "process-noise-event"
 	    },
+
+	    "connection":
+	    {
+		"signal-processor": "candidate-egg",
+		"signal-name": "event",
+		"slot-processor": "nrq-est",
+		"slot-name": "process-candidate-event"
+	    },
 	    
 	    "run-queue":
 	    {
-		"processor": "noise-egg"
+		"processor": "noise-egg",
+		"processor": "candidate-egg"
 	    }
 	},
 
@@ -35,11 +52,19 @@
 	    "number-of-events": 10,
 	    "output-data-name": "noise-time-series"
 	},
+
+	"candidate-egg":
+	{
+	    "filename": "run2012_11_5_tone.egg",
+	    "number-of-events": 10,
+	    "output-data-name": "candidate-time-series"
+	},
 	
 	"nrq-est":
 	{
 	    "chunk-size": 512,
-	    "noise-data-name": "noise-time-series"
+	    "noise-data-name": "noise-time-series",
+	    "candidate-data-name": "candidate-time-series"
 	}
     }
 }
