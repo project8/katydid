@@ -7,11 +7,15 @@
 
 #include "KTCorrelationData.hh"
 
+#include "KTDataMap.hh"
 #include "KTFrequencySpectrum.hh"
+#include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
 namespace Katydid
 {
+    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTCorrelationData > > sCDMRegistrar;
+
     KTCorrelationData::KTCorrelationData(UInt_t nPairs) :
             KTWriteableData(),
             fData(nPairs)

@@ -42,12 +42,23 @@ set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/MonarchPP.cc
 )
 
+if (ROOT_FOUND) 
+   set (EGG_NODICT_HEADERFILES
+   ${EGG_NODICT_HEADERFILES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterEgg.hh)
+
+    set (EGG_SOURCEFILES
+    ${EGG_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterEgg.cc)		
+endif (ROOT_FOUND)
+
 #set (EGG_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/EggLinkDef.hh)
 #set (EGG_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EggDict.cxx)
 
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
+    KatydidOutput
     ${Monarch_LIBRARIES}
 )
 

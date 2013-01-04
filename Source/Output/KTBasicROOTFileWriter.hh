@@ -9,19 +9,18 @@
 #define KTBASICROOTFILEWRITER_HH_
 
 #include "KTWriter.hh"
-#include "KTFrequencySpectrumData.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTCorrelationData.hh"
-#include "KTHoughData.hh"
 
 #include "TFile.h"
 
 namespace Katydid
 {
-    class KTSlidingWindowFSData;
-    class KTSlidingWindowFSDataFFTW;
+    class KTBasicROOTFileWriter;
 
-    class KTBasicROOTFileWriter : public KTWriter
+    typedef KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
+
+
+
+    class KTBasicROOTFileWriter : public KTWriterWithTypists< KTBasicROOTFileWriter >//public KTWriter
     {
         public:
             KTBasicROOTFileWriter();
@@ -29,9 +28,6 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            //***************************
-           // ROOT-file-specific members
-            //***************************
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);
             void CloseFile();
@@ -44,7 +40,6 @@ namespace Katydid
 
             TFile* GetFile();
 
-        protected:
             Bool_t OpenAndVerifyFile();
 
         protected:
@@ -61,51 +56,6 @@ namespace Katydid
             void Publish(const KTWriteableData* data);
 
             void Write(const KTWriteableData* data);
-
-            //************************
-            // Time Series Data
-            //************************
-        public:
-            void Write(const KTTimeSeriesData* data);
-
-            //************************
-            // Frequency Spectrum Data
-            //************************
-        public:
-            void WriteFrequencySpectrumData(const KTFrequencySpectrumData* data);
-            void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
-            void Write(const KTFrequencySpectrumData* data);
-            void Write(const KTFrequencySpectrumDataFFTW* data);
-
-            //************************
-            // Correlation Data
-            //************************
-        public:
-            void WriteCorrelationData(const KTCorrelationData* data);
-            void Write(const KTCorrelationData* data);
-
-            //************************
-            // Sliding Window Data
-            //************************
-        public:
-            void WriteSlidingWindowFSData(const KTSlidingWindowFSData* data);
-            void WriteSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
-            void Write(const KTSlidingWindowFSData* data);
-            void Write(const KTSlidingWindowFSDataFFTW* data);
-
-            //************************
-            // Hough Transform Data
-            //************************
-        public:
-            void WriteHoughData(const KTHoughData* data);
-            void Write(const KTHoughData* data);
-
-            //************************
-            // Gain Variation Data
-            //************************
-        public:
-            void WriteGainVariationData(const KTGainVariationData* data);
-            void Write(const KTGainVariationData* data);
 
     };
 

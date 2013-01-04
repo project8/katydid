@@ -61,7 +61,7 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "write-frequency-spectrum"
+                "slot-name": "fs-data"
             },
             "connection":
             {

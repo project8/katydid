@@ -84,19 +84,19 @@ endif ("${isSystemDir}" STREQUAL "-1")
 include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Utility
     ${PROJECT_SOURCE_DIR}/Source/Core
+    ${PROJECT_SOURCE_DIR}/Source/Output
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
     #${PROJECT_SOURCE_DIR}/Source/Waterfall
-    ${PROJECT_SOURCE_DIR}/Source/Output
 )
 
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Core)
+add_subdirectory (Source/Output)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
-add_subdirectory (Source/Output)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Profiling)
 add_subdirectory (Source/Applications/Validation)

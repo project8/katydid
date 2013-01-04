@@ -7,12 +7,16 @@
 
 #include "KTHoughData.hh"
 
+#include "KTDataMap.hh"
+#include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
 using std::vector;
 
 namespace Katydid
 {
+    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTHoughData > > sHDMRegistrar;
+
     KTHoughData::KTHoughData(unsigned nTransforms) :
             KTWriteableData(),
             fTransforms(nTransforms)

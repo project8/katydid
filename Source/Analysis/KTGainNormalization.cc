@@ -136,14 +136,14 @@ namespace Katydid
 
     void KTGainNormalization::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        const KTGainVariationData* gvData = dynamic_cast< KTGainVariationData* >(event->GetData(fGVInputDataName));
+        const KTGainVariationData* gvData = event->GetData< KTGainVariationData >(fGVInputDataName);
         if (gvData == NULL)
         {
             KTWARN(gnlog, "No gain variation data named <" << fGVInputDataName << "> was available in the event");
             return;
         }
 
-        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(fFSInputDataName));
+        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fFSInputDataName);
         if (fsData != NULL)
         {
             KTFrequencySpectrumData* newData = Normalize(fsData, gvData);
