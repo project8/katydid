@@ -1,7 +1,7 @@
 /*
  * KTJSONWriter.cc
  *
- *  Created on: Aug 24, 2012
+ *  Created on: Jan 3, 2013
  *      Author: nsoblath
  */
 
@@ -11,10 +11,6 @@
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTWriteableData.hh"
-
-#include "prettywriter.h"
-
-#include <cstdio>
 
 using std::string;
 
@@ -80,11 +76,11 @@ namespace Katydid
 
         if (fPrettyJSONFlag)
         {
-            fJSONMaker = new rapidjson::PrettyWriter< rapidjson::FileStream >(*fFileStream);
+            fJSONMaker = new KTJSONMakerPretty< rapidjson::FileStream >(*fFileStream);
         }
         else
         {
-            fJSONMaker = new rapidjson::Writer< rapidjson::FileStream >(*fFileStream);
+            fJSONMaker = new KTJSONMakerCompact< rapidjson::FileStream >(*fFileStream);
         }
 
         fJSONMaker->StartObject();

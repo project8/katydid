@@ -10,22 +10,21 @@
 
 #include "KTWriter.hh"
 
-#include "filestream.h"
-#include "writer.h"
+#include "KTJSONMaker.hh"
 
 #include <cstdio>
+
 
 namespace Katydid
 {
     class KTJSONWriter;
-
     typedef KTDerivedTypeWriter< KTJSONWriter > KTJSONTypeWriter;
 
 
     class KTJSONWriter : public KTWriterWithTypists< KTJSONWriter >
     {
         public:
-            typedef rapidjson::Writer< rapidjson::FileStream > JSONMaker;
+            typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;
 
         public:
             KTJSONWriter();
@@ -48,7 +47,7 @@ namespace Katydid
             Bool_t GetPrettyJSONFlag() const;
             void SetPrettyJSONFlag(Bool_t flag);
 
-            JSONMaker* GetJSONMaker();
+            KTJSONMaker< rapidjson::FileStream >* GetJSONMaker() const;
 
         protected:
             std::string fFilename;
@@ -58,7 +57,7 @@ namespace Katydid
 
             FILE* fFile;
             rapidjson::FileStream* fFileStream;
-            JSONMaker* fJSONMaker;
+            KTJSONMaker< rapidjson::FileStream >* fJSONMaker;
 
 
             //************************
@@ -105,7 +104,7 @@ namespace Katydid
         return;
     }
 
-    inline KTJSONWriter::JSONMaker* KTJSONWriter::GetJSONMaker()
+    inline KTJSONMaker< rapidjson::FileStream >* KTJSONWriter::GetJSONMaker() const
     {
         return fJSONMaker;
     }
