@@ -23,6 +23,10 @@ namespace Katydid {
 		 this,
 		 &KTRQProcessor::ProcessNoiseEvent,
 		 "void (boost::shared_ptr<KTEvent>)");
+    RegisterSlot("process-candidate-event",
+		 this,
+		 &KTRQProcessor::ProcessCandidateEvent,
+		 "void (boost::shared_ptr<KTEvent>)");
   }
 
   KTRQProcessor::~KTRQProcessor() 
@@ -94,52 +98,53 @@ namespace Katydid {
   {
     // Grab time series data from event
     const KTTimeSeriesData* noise = event->GetData<KTTimeSeriesData>(fNoiseName);
-    if( noise != NULL && !(this->fNACMDidConverge) ) {
-      // Grab the first channel of data out to use. 
-      const KTTimeSeriesReal* noiseDt = dynamic_cast<const KTTimeSeriesReal*>(noise->GetTimeSeries(0));
+    if( noise != NULL ) {
+      if( !(this->fNACMDidConverge) ) {
+	// Grab the first channel of data out to use. 
+	const KTTimeSeriesReal* noiseDt = dynamic_cast<const KTTimeSeriesReal*>(noise->GetTimeSeries(0));
 
-      // We need to iterate over the chunks in the time series and produce our 
-      // own time series.  First things first, get the pointer to the raw data
-      // held in the time series.
-      unsigned nElem = (noiseDt->GetData()).data().size();
-      const double* rawPtr = (noiseDt->GetData()).data().begin();
+	// We need to iterate over the chunks in the time series and produce our 
+	// own time series.  First things first, get the pointer to the raw data
+	// held in the time series.
+	unsigned nElem = (noiseDt->GetData()).data().size();
+	const double* rawPtr = (noiseDt->GetData()).data().begin();
 
-      // Now we point the data map at the first fChunkSize piece of data and process it. 
-      // For now we only use the first chunk to form the ACM.  Despite the fact that this
-      // looks like allocating memory, it isn't.
-      new (this->fDataMap) DataMapType(rawPtr, this->fChunkSize);
+	// Now we point the data map at the first fChunkSize piece of data and process it. 
+	// For now we only use the first chunk to form the ACM.  Despite the fact that this
+	// looks like allocating memory, it isn't.
+	new (this->fDataMap) DataMapType(rawPtr, this->fChunkSize);
         
-      // Update noise estimate with current noise sample.
-      KTINFO(nrq_log,"using noise to update NACM estimate...");
+	// Update noise estimate with current noise sample.
+	KTINFO(nrq_log,"using noise to update NACM estimate...");
 
-      // Calculate first row.  The NACM is a Toeplitz matrix which means we only need to
-      // calculate the first row.
-      for(unsigned colIdx = 0; colIdx < this->fChunkSize; colIdx++) {
-	(*this->fNoiseACM)(0, colIdx) = KTRQProcessor::LaggedACF(this->fDataMap, colIdx);
-      }
+	// Calculate first row.  The NACM is a Toeplitz matrix which means we only need to
+	// calculate the first row.
+	for(unsigned colIdx = 0; colIdx < this->fChunkSize; colIdx++) {
+	  (*this->fNoiseACM)(0, colIdx) = KTRQProcessor::LaggedACF(this->fDataMap, colIdx);
+	}
 
-      for(unsigned row = 1; row < this->fChunkSize; row++) {
-	for(unsigned col = 0; col < this->fChunkSize; col++) {
-	  // If row = col, we are on the diagonal, which means this element is equal to
-	  // row = 0, col = 0.
-	  if( row == col ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(0,0);
-	  // If row < col, we are below the diagonal, so use the transposed element for
-	  // assignment.
-	  if( col < row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(col,row);
-	  // If row > col, we are above the diagonal.  Look above and to the left to get this
-	  // element.
-	  if( col > row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(row-1, col-1);
+	for(unsigned row = 1; row < this->fChunkSize; row++) {
+	  for(unsigned col = 0; col < this->fChunkSize; col++) {
+	    // If row = col, we are on the diagonal, which means this element is equal to
+	    // row = 0, col = 0.
+	    if( row == col ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(0,0);
+	    // If row < col, we are below the diagonal, so use the transposed element for
+	    // assignment.
+	    if( col < row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(col,row);
+	    // If row > col, we are above the diagonal.  Look above and to the left to get this
+	    // element.
+	    if( col > row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(row-1, col-1);
+	  }
+	}
+
+	// Check convergence criterion (TEMPORARILY JUST TRUE) and set convergence flag if
+	// appropriate.
+	if(true) {
+	  this->SetNACMConverged(true);
+	  KTINFO(nrq_log,"NACM has converged.");
+	  KTWARN(nrq_log,"DON'T BELIEVE CONVERGE MSG, TEMPORARY CONVERGENCE CRITERION USED.");
 	}
       }
-
-      // Check convergence criterion (TEMPORARILY JUST TRUE) and set convergence flag if
-      // appropriate.
-      if(true) {
-	this->SetNACMConverged(true);
-	KTINFO(nrq_log,"NACM has converged.");
-	KTWARN(nrq_log,"DON'T BELIEVE CONVERGE MSG, TEMPORARY CONVERGENCE CRITERION USED.");
-      }
-
     }
     else {
       KTWARN(nrq_log,"time series " << fNoiseName << " not found in event!  skipping...");
@@ -161,9 +166,13 @@ namespace Katydid {
     KTWARN(nrq_log,"unimplemented processing of noise called!");
   }
 
-  void KTRQProcessor::ProcessCandidateData(const KTTimeSeriesData* signal) 
+  void KTRQProcessor::ProcessCandidateEvent(boost::shared_ptr<KTEvent> event) 
   {
-    KTWARN(nrq_log,"unimplemented processing of signal called!");
+    if( this->fNACMDidConverge ) {
+    }
+    else {
+      KTWARN(nrq_log,"NACM has not converged - no NRQ calculation performed.");
+    }
   }
 
 }; // namespace katydid
