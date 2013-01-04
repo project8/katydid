@@ -50,8 +50,8 @@ namespace Katydid
 
     Bool_t KTFrequencyCandidateIdentifier::Configure(const KTPStoreNode* node)
     {
-        SetFSInputDataName(node->GetData< string >("input-data-name", fFSInputDataName));
-        SetClusterInputDataName(node->GetData< string >("input-data-name", fClusterInputDataName));
+        SetFSInputDataName(node->GetData< string >("fs-input-data-name", fFSInputDataName));
+        SetClusterInputDataName(node->GetData< string >("cluster-input-data-name", fClusterInputDataName));
         SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
 
         return true;
