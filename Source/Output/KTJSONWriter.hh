@@ -10,16 +10,23 @@
 
 #include "KTWriter.hh"
 
+#include "filestream.h"
+#include "writer.h"
+
+#include <cstdio>
 
 namespace Katydid
 {
     class KTJSONWriter;
 
-    typedef KTDerivedTypeWriter< KTJSONWriter > KTBasicROOTTypeWriter;
+    typedef KTDerivedTypeWriter< KTJSONWriter > KTJSONTypeWriter;
 
 
     class KTJSONWriter : public KTWriterWithTypists< KTJSONWriter >
     {
+        public:
+            typedef rapidjson::Writer< rapidjson::FileStream > JSONMaker;
+
         public:
             KTJSONWriter();
             virtual ~KTJSONWriter();
@@ -27,8 +34,10 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
         public:
-            void OpenFile(const std::string& filename, const std::string& flag);
+            Bool_t OpenFile();
             void CloseFile();
+
+            Bool_t OpenAndVerifyFile();
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
@@ -39,11 +48,18 @@ namespace Katydid
             Bool_t GetPrettyJSONFlag() const;
             void SetPrettyJSONFlag(Bool_t flag);
 
+            JSONMaker* GetJSONMaker();
+
         protected:
             std::string fFilename;
             std::string fFileMode;
 
             Bool_t fPrettyJSONFlag;
+
+            FILE* fFile;
+            rapidjson::FileStream* fFileStream;
+            JSONMaker* fJSONMaker;
+
 
             //************************
             // Basic Publish and Write
@@ -55,15 +71,6 @@ namespace Katydid
             void Write(const KTWriteableData* data);
 
     };
-
-    inline void KTJSONWriter::OpenFile(const std::string& filename, const std::string& flag)
-    {
-        return;
-    }
-    inline void KTJSONWriter::CloseFile()
-    {
-        return;
-    }
 
     inline const std::string& KTJSONWriter::GetFilename() const
     {
@@ -96,6 +103,11 @@ namespace Katydid
     {
         fPrettyJSONFlag = flag;
         return;
+    }
+
+    inline KTJSONWriter::JSONMaker* KTJSONWriter::GetJSONMaker()
+    {
+        return fJSONMaker;
     }
 
 } /* namespace Katydid */

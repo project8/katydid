@@ -12,6 +12,10 @@
 #include "KTPStoreNode.hh"
 #include "KTWriteableData.hh"
 
+#include "prettywriter.h"
+
+#include <cstdio>
+
 using std::string;
 
 namespace Katydid
@@ -25,15 +29,19 @@ namespace Katydid
             KTWriterWithTypists< KTJSONWriter >(),
             fFilename("basic_output.root"),
             fFileMode("w+"),
-            fPrettyJSONFlag(true)
+            fPrettyJSONFlag(true),
+            fFile(NULL),
+            fFileStream(NULL),
+            fJSONMaker(NULL)
     {
-        fConfigName = "basic-root-writer";
+        fConfigName = "json-writer";
 
         RegisterSlot("write-data", this, &KTJSONWriter::Publish);
     }
 
     KTJSONWriter::~KTJSONWriter()
     {
+        CloseFile();
     }
 
     Bool_t KTJSONWriter::Configure(const KTPStoreNode* node)
@@ -46,6 +54,65 @@ namespace Katydid
             SetPrettyJSONFlag(node->GetData<Bool_t>("pretty-json", fPrettyJSONFlag));
         }
 
+        return true;
+    }
+
+    Bool_t KTJSONWriter::OpenFile()
+    {
+        CloseFile();
+
+        if (fFilename == "stdout")
+        {
+            fFileStream = new rapidjson::FileStream(stdout);
+        }
+        else
+        {
+            fFile = fopen(fFilename.c_str(), fFileMode.c_str());
+            if (fFile == NULL)
+            {
+                KTERROR(publog, "File did not open\n" <<
+                        "\tFilename: " << fFilename <<
+                        "\tMode: " << fFileMode);
+                return false;
+            }
+            fFileStream = new rapidjson::FileStream(fFile);
+        }
+
+        if (fPrettyJSONFlag)
+        {
+            fJSONMaker = new rapidjson::PrettyWriter< rapidjson::FileStream >(*fFileStream);
+        }
+        else
+        {
+            fJSONMaker = new rapidjson::Writer< rapidjson::FileStream >(*fFileStream);
+        }
+
+        return true;
+    }
+
+    void KTJSONWriter::CloseFile()
+    {
+        delete fJSONMaker;
+        fJSONMaker = NULL;
+        delete fFileStream;
+        fFileStream = NULL;
+        if (fFile != NULL)
+        {
+            fclose(fFile);
+            fFile = NULL;
+        }
+        return;
+    }
+
+    Bool_t KTJSONWriter::OpenAndVerifyFile()
+    {
+        if (fFileStream == NULL || fJSONMaker == NULL)
+        {
+            if (! OpenFile())
+            {
+                return false;
+            }
+        }
         return true;
     }
 
