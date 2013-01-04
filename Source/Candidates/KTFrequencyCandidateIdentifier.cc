@@ -40,7 +40,7 @@ namespace Katydid
 
         RegisterSignal("frequency-candidates", &fFCSignal, "void (const KTFrequencyCandidateData*)");
 
-        RegisterSlot("clusters", this, &KTFrequencyCandidateIdentifier::ProcessClusterData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("clusters", this, &KTFrequencyCandidateIdentifier::ProcessClusterData, "void (const KTCluster1DData*)");
         RegisterSlot("event", this, &KTFrequencyCandidateIdentifier::ProcessEvent, "void (shared_ptr<KTEvent>)");
     }
 
