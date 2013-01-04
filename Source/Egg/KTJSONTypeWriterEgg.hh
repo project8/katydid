@@ -17,9 +17,6 @@ namespace Katydid
     class KTJSONTypeWriterEgg : public KTJSONTypeWriter//, public KTTypeWriterEgg
     {
         public:
-            friend class KTTimeSeriesData;
-
-        public:
             KTJSONTypeWriterEgg();
             virtual ~KTJSONTypeWriterEgg();
 
