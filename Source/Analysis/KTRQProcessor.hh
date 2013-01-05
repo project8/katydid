@@ -20,7 +20,7 @@
 #include "KTFactory.hh"
 #include "KTPStoreNode.hh"
 #include "KTData.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesReal.hh"
 
 #include "boost/shared_ptr.hpp"
@@ -47,6 +47,8 @@ namespace Katydid {
     void SetChunkSize(unsigned newsize);
     std::string GetNoiseDataName();
     void SetNoiseDataName(std::string noisename);
+    std::string GetCandidateDataName();
+    void SetCandidateDataName(std::string noisename);
     Bool_t GetNACMConverged();
     void SetNACMConverged(Bool_t newval);
 
@@ -55,7 +57,7 @@ namespace Katydid {
      */
   public:
     typedef Eigen::Map<const Eigen::RowVectorXd> DataMapType;
-    typedef KTSignal< void (const double*) >::signal RQSignal;
+    typedef KTSignal< void (const KTTimeSeriesData*) >::signal RQSignal;
 
     void ProcessNoiseData(const KTTimeSeriesData* noise);
     void ProcessCandidateEvent(boost::shared_ptr<KTEvent> event);
@@ -97,12 +99,28 @@ namespace Katydid {
     std::string fNoiseName;
 
     /*
+     * This is the name of data that we actually evaluate the RQ for.
+     */
+    std::string fCandidateName;
+
+    /*
+     * This is the output data name.
+     */
+    std::string fOutputDataName;
+
+    /*
      * Calculates the lagged autocorrelation of a sequence of doubles stored
      * in a DataMap.  This should eventually get refactored into its own place
      * but for now it's a static member function as it does not rely on state.
      */
   public:
     static double LaggedACF(const DataMapType* data, unsigned lag);
+
+    /*
+     * Calculates the Rayleigh Quotient over the stored noise autocorrelation
+     * matrix given a data map containing time series data.
+     */
+    double RayleighQuotient(const DataMapType* tsptr);
 
     
   }; // class KTRQProcessor
