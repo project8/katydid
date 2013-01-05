@@ -53,8 +53,9 @@ namespace Katydid {
 	KTWARN(nrq_log, "Config requested for RQProc (chunk size) but already configured...");
       }
 
-      // grab the noise data name.
+      // grab the noise and candidate data names.
       this->SetNoiseDataName(node->GetData<std::string>("noise-data-name", fNoiseName));
+      this->SetCandidateDataName(node->GetData<std::string>("candidate-data-name", fCandidateName));
     }
     else {
       KTWARN(nrq_log, "NULL config node passed to Configure!");
@@ -82,6 +83,16 @@ namespace Katydid {
   std::string KTRQProcessor::GetNoiseDataName()
   {
     return fNoiseName;
+  }
+
+  void KTRQProcessor::SetCandidateDataName(std::string newname)
+  {
+    fCandidateName = newname;
+  }
+
+  std::string KTRQProcessor::GetCandidateDataName()
+  {
+    return fCandidateName;
   }
 
   void KTRQProcessor::SetNACMConverged(Bool_t newval)
@@ -161,6 +172,11 @@ namespace Katydid {
     return result/len;
   }
 
+  double KTRQProcessor::RayleighQuotient(const DataMapType* tsptr)
+  {
+    return 1.0;
+  }
+
   void KTRQProcessor::ProcessNoiseData(const KTTimeSeriesData* noise)
   {
     KTWARN(nrq_log,"unimplemented processing of noise called!");
@@ -169,6 +185,50 @@ namespace Katydid {
   void KTRQProcessor::ProcessCandidateEvent(boost::shared_ptr<KTEvent> event) 
   {
     if( this->fNACMDidConverge ) {
+      // grab data from the event.
+      const KTTimeSeriesData* c = event->GetData<KTTimeSeriesData>(fCandidateName);
+      if( c != NULL ) {
+	// cast data to time series real data.  
+	const KTTimeSeriesReal* cDt = dynamic_cast<const KTTimeSeriesReal*>(c->GetTimeSeries(0));
+
+	// We need to iterate over the chunks in the time series and produce our 
+	// own time series.  First things first, get the pointer to the raw data
+	// held in the time series.
+	unsigned nElem = (cDt->GetData()).data().size();
+	const double* rawPtr = (cDt->GetData()).data().begin();
+
+	// Now here is our time series.  The number of elements is equal to the floor of the 
+	// number of elements in the incoming time series divided by the chunk size.
+	unsigned nOut = nElem/fChunkSize;
+	KTBasicTimeSeriesData* nDt = new KTBasicTimeSeriesData(1);
+	KTTimeSeriesReal* rqOut = new KTTimeSeriesReal(nElem);
+
+	/*
+	 * Iterate over the data in the event, pointing the data map at each chunk consecutively.
+	 * first we need to know 
+	 */
+	for(unsigned offset = 0; offset < nOut; offset++) {
+	  new (this->fDataMap) DataMapType(rawPtr + (offset*fChunkSize), this->fChunkSize);
+	  
+	  // Now we should be able to compute the rayleigh quotient for this chunk.
+	  double rq = this->RayleighQuotient(this->fDataMap);
+
+	  // Now set the data in the output time series.
+	  rqOut->SetValue(offset, rq);
+	}
+
+	/*
+	 * Attach the new data to the KTEvent and fire the signal that indicates we have 
+	 * compressed this time series.
+	 */
+	nDt->SetName(fOutputDataName);
+	nDt->SetTimeSeries(rqOut);
+	event->AddData(nDt);
+	fRQSignal(nDt);	
+      }
+      else {
+	KTWARN(nrq_log,"no data named " << fCandidateName << " found in event!  skipping...");
+      }
     }
     else {
       KTWARN(nrq_log,"NACM has not converged - no NRQ calculation performed.");
