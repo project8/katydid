@@ -27,6 +27,9 @@ namespace Katydid {
     RegisterSlot("write-frequency-spectrum-fftw", 
 		 this, 
 		 &KTBasicAsciiWriter::WriteFrequencySpectrumDataFFTW);
+    RegisterSlot("write-time-series",
+		 this,
+		 &KTBasicAsciiWriter::WriteTimeSeriesData);
   } // default constructor
 
   KTBasicAsciiWriter::~KTBasicAsciiWriter() {
@@ -97,6 +100,14 @@ namespace Katydid {
     if( fOutputStream->is_open() ) {
       (*fOutputStream) << "hi" << std::endl;
     }
+  }
+
+  void KTBasicAsciiWriter::Write(const KTTimeSeriesData* ts) {
+    return this->WriteTimeSeriesData(ts);
+  }
+
+  void KTBasicAsciiWriter::WriteTimeSeriesData(const KTTimeSeriesData* ts) {
+    KTWARN(asciilog, "hahiihhi!!!!");
   }
 
   /*
