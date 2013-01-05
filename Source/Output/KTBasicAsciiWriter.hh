@@ -16,7 +16,7 @@
 
 namespace Katydid {
 
-  class KTBasicAsciiWriter : public KTWriter {
+  class KTBasicAsciiWriter : public KTWriterWithTypists< KTBasicAsciiWriter > {
     // Constructors/destructors
   public:
     KTBasicAsciiWriter();
@@ -47,6 +47,10 @@ namespace Katydid {
     void WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt);
     void Write(const KTFrequencySpectrumData* dt);
     void Write(const KTFrequencySpectrumDataFFTW* dt);
+
+    // Writing time series Data
+    void WriteTimeSeriesData(const KTTimeSeriesData* ts);
+    void Write(const KTTimeSeriesData* ts);
 
   }; // class KTBasicAsciiWriter 
 }; // namespace Katydid
