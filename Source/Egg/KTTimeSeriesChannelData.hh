@@ -14,6 +14,7 @@
 #include "KTTimeSeriesData.hh"
 
 #include "KTTimeSeries.hh"
+#include "KTDataMap.hh"
 
 #include "MonarchTypes.hpp"
 
