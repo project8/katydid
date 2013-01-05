@@ -23,6 +23,12 @@
 		"name": "nrq-est"
 	    },
 
+	    "processor":
+	    {
+		"type": "basic-ascii-writer",
+		"name": "ascii-out"
+	    },
+
 	    "connection":
 	    {
 		"signal-processor": "noise-egg",
@@ -49,7 +55,7 @@
 	"noise-egg":
 	{
 	    "filename": "run2012_11_5_tone.egg",
-	    "number-of-events": 10,
+	    "number-of-events": 1,
 	    "output-data-name": "noise-time-series"
 	},
 
