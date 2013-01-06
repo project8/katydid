@@ -67,6 +67,7 @@ namespace Katydid
             KTERROR(publog, "Output file <" << fFilename << "> did not open!");
             return false;
         }
+        fFile->cd();
         return true;
     }
 
