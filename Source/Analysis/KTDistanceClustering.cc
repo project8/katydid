@@ -106,14 +106,14 @@ namespace Katydid
                     thisPoint = pIt->first;
                     if (thisPoint - lastPointInActiveCluster > fMaxBinDistance)
                     {
-                        KTDEBUG(sdlog, "Adding cluster: " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                        KTDEBUG(sdlog, "Adding cluster (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                         newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
                         activeCluster.clear();
                     }
                     activeCluster.insert(thisPoint);
                     lastPointInActiveCluster = thisPoint;
                 }
-                KTDEBUG(sdlog, "Adding cluster: " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                KTDEBUG(sdlog, "Adding cluster: (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                 newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
             }
         }
