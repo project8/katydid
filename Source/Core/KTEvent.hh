@@ -77,6 +77,8 @@ namespace Katydid
 
             Bool_t RemoveData(const std::string& name);
 
+            void PrintAttachedData() const;
+
         protected:
             KTTIFactory< KTDataMap >* fDataMapFactory; // singleton; not owned by KTEvent
 

@@ -47,4 +47,16 @@ namespace Katydid
     }
     */
 
+    void KTEvent::PrintAttachedData() const
+    {
+        for (MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.begin(); modmIt != fMapOfDataMaps.end(); modmIt++)
+        {
+            if (! modmIt->second->Empty())
+            {
+                KTDEBUG(corelog_event, "Data type: " << modmIt->first->name());
+                modmIt->second->PrintMap();
+            }
+        }
+    }
+
 } /* namespace Katydid */
