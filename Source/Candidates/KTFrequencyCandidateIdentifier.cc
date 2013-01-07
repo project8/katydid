@@ -70,10 +70,10 @@ namespace Katydid
 
         for (UInt_t iGroup = 0; iGroup < clusterData->GetNGroups(); iGroup++)
         {
-            const KTCluster1DData::SetOfClusters clusters = clusterData->GetSetOfClusters(iGroup);
+            const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iGroup);
             const KTFrequencySpectrum* freqSpec = fsData->GetSpectrum(iGroup);
 
-            fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec));
+            fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iGroup);
             fcData->SetThreshold(clusterData->GetThreshold(iGroup), iGroup);
         }
 
