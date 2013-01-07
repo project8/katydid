@@ -76,6 +76,24 @@ namespace Katydid
             SetSigmaThreshold(node->GetData< Double_t >("sigma-threshold"));
         }
 
+        if (node->HasData("min-frequency"))
+        {
+            SetMinFrequency(node->GetData< Double_t >("min-frequency"));
+        }
+        if (node->HasData("max-frequency"))
+        {
+            SetMaxFrequency(node->GetData< Double_t >("max-frequency"));
+        }
+
+        if (node->HasData("min-bin"))
+        {
+            SetMinBin(node->GetData< UInt_t >("min-bin"));
+        }
+        if (node->HasData("max-bin"))
+        {
+            SetMaxBin(node->GetData< UInt_t >("max-bin"));
+        }
+
         SetInputDataName(node->GetData<string>("input-data-name", fInputDataName));
         SetOutputDataName(node->GetData<string>("output-data-name", fOutputDataName));
 
@@ -84,8 +102,16 @@ namespace Katydid
 
     KTDiscriminatedPoints1DData* KTSpectrumDiscriminator::Discriminate(const KTFrequencySpectrumData* data)
     {
-        if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin)
+        {
+            SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
+            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+        }
 
         UInt_t nChannels = data->GetNChannels();
 
@@ -116,7 +142,7 @@ namespace Katydid
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2
                 // In this case (i.e. KTFrequencySpectrum), A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
-                KTDEBUG(sdlog, "Discriminator threshold set at <" << threshold << "> (SNR mode)");
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (SNR mode)");
             }
             else if (fThresholdMode == eSigma)
             {
@@ -129,7 +155,7 @@ namespace Katydid
                 sigma = sqrt(sigma * sigmaNorm);
 
                 threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold set at <" << threshold << "> (Sigma mode)");
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (Sigma mode)");
             }
 
             newData->SetThreshold(threshold, iChannel);
@@ -154,8 +180,16 @@ namespace Katydid
 
     KTDiscriminatedPoints1DData* KTSpectrumDiscriminator::Discriminate(const KTFrequencySpectrumDataFFTW* data)
     {
-        if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin)
+        {
+            SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
+            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+        }
 
         UInt_t nChannels = data->GetNChannels();
 
@@ -193,7 +227,7 @@ namespace Katydid
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2
                 // In this case (i.e. KTFrequencySpectrum), A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
-                KTDEBUG(sdlog, "Discriminator threshold set at <" << threshold << "> (SNR mode)");
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (SNR mode)");
             }
             else if (fThresholdMode == eSigma)
             {
@@ -206,7 +240,7 @@ namespace Katydid
                 sigma = sqrt(sigma * sigmaNorm);
 
                 threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold set at <" << threshold << "> (Sigma mode)");
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (Sigma mode)");
             }
 
             newData->SetThreshold(threshold, iChannel);

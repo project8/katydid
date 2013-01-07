@@ -59,8 +59,8 @@ if (EIGEN_FOUND)
 endif (EIGEN_FOUND)
 
 # External packages distributed with Katydid
+include_directories ("${PROJECT_SOURCE_DIR}/External/RapidJSON")
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
-include_directories ("${PROJECT_SOURCE_DIR}/External/CImg")
 
 # add an option to build the validation tests
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
@@ -88,7 +88,7 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
-    #${PROJECT_SOURCE_DIR}/Source/Waterfall
+    ${PROJECT_SOURCE_DIR}/Source/Candidates
 )
 
 add_subdirectory (Source/Utility)
@@ -97,6 +97,7 @@ add_subdirectory (Source/Output)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
+add_subdirectory (Source/Candidates)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Profiling)
 add_subdirectory (Source/Applications/Validation)
