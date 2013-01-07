@@ -61,7 +61,9 @@ namespace Katydid
     {
         if (clusterData->GetBinWidth() != fsData->GetSpectrum(0)->GetBinWidth())
         {
-
+            KTWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
+                    "\tCluster data: " << clusterData->GetBinWidth() << '\n' <<
+                    "\tFrequency spectrum: " << fsData->GetSpectrum(0)->GetBinWidth());
         }
 
         KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
@@ -72,6 +74,36 @@ namespace Katydid
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iGroup);
             const KTFrequencySpectrum* freqSpec = fsData->GetSpectrum(iGroup);
+
+            fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iGroup);
+            fcData->SetThreshold(clusterData->GetThreshold(iGroup), iGroup);
+        }
+
+        fcData->SetEvent(clusterData->GetEvent());
+        fcData->SetName(fOutputDataName);
+
+        fFCSignal(fcData);
+
+        return fcData;
+    }
+
+    KTFrequencyCandidateData* KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataFFTW* fsData)
+    {
+        if (clusterData->GetBinWidth() != fsData->GetSpectrum(0)->GetBinWidth())
+        {
+            KTWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
+                    "\tCluster data: " << clusterData->GetBinWidth() << '\n' <<
+                    "\tFrequency spectrum: " << fsData->GetSpectrum(0)->GetBinWidth());
+        }
+
+        KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
+        fcData->SetBinWidth(clusterData->GetBinWidth());
+        fcData->SetNBins(clusterData->GetNBins());
+
+        for (UInt_t iGroup = 0; iGroup < clusterData->GetNGroups(); iGroup++)
+        {
+            const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iGroup);
+            const KTFrequencySpectrumFFTW* freqSpec = fsData->GetSpectrum(iGroup);
 
             fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iGroup);
             fcData->SetThreshold(clusterData->GetThreshold(iGroup), iGroup);
@@ -114,6 +146,49 @@ namespace Katydid
             {
                 weightedMean += freqSpec->GetBinCenter(iBin) * (*freqSpec)(iBin).abs();
                 integral += (*freqSpec)(iBin).abs();
+            }
+            weightedMean /= integral;
+            newCandidate.SetMeanFrequency(weightedMean);
+
+            candidates[iCandidate] = newCandidate;
+            iCandidate++;
+        }
+
+        return candidates;
+    }
+
+
+    KTFrequencyCandidateData::Candidates KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumFFTW* freqSpec)
+    {
+        KTFrequencyCandidateData::Candidates candidates(clusters.size());
+
+        KTFrequencyCandidate newCandidate;
+        UInt_t iCandidate = 0;
+        for (KTCluster1DData::SetOfClusters::const_iterator it=clusters.begin(); it != clusters.end(); it++)
+        {
+            UInt_t firstBin = it->first;
+            UInt_t lastBin = it->second;
+
+            if (firstBin >= freqSpec->size() || lastBin >= freqSpec->size())
+            {
+                KTWARN(fcilog, "First bin and/or last bin it outside the range of the given frequency spectrum:\n" <<
+                        "\tFirst bin: " << firstBin << '\n' <<
+                        "\tLast bin: " << lastBin << '\n' <<
+                        "\tFS size: " << freqSpec->size());
+                continue;
+            }
+
+            newCandidate.SetFirstBin(firstBin);
+            newCandidate.SetLastBin(lastBin);
+
+            Double_t weightedMean = 0.;
+            Double_t integral = 0.;
+            Double_t value = 0.;
+            for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
+            {
+                value = sqrt((*freqSpec)(iBin)[0] * (*freqSpec)(iBin)[0] + (*freqSpec)(iBin)[1] * (*freqSpec)(iBin)[1]);
+                weightedMean += freqSpec->GetBinCenter(iBin) * value;
+                integral += value;
             }
             weightedMean /= integral;
             newCandidate.SetMeanFrequency(weightedMean);
