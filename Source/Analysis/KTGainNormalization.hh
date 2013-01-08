@@ -75,14 +75,13 @@ namespace Katydid
 
         public:
             KTFrequencySpectrumData* Normalize(const KTFrequencySpectrumData* fsData, const KTGainVariationData* gvData);
-
-            //void Normalize(KTFrequencySpectrumDataFFTW* fsData, const KTGainVariationData* gvData);
+            KTFrequencySpectrumDataFFTW* Normalize(const KTFrequencySpectrumDataFFTW* fsData, const KTGainVariationData* gvData);
 
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
-            KTFrequencySpectrum* Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline);
-
             //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
-            //void Normalize(KTFrequencySpectrumFFTW* frequencySpectrum, KTSpline* spline);
+
+            KTFrequencySpectrum* Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline);
+            KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline);
 
         private:
 

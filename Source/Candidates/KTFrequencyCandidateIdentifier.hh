@@ -22,8 +22,7 @@ namespace Katydid
     class KTFrequencySpectrum;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
-    class KTTimeSeriesData;
-    class KTTimeSeriesFFTW;
+    class KTFrequencySpectrumFFTW;
 
     class KTFrequencyCandidateIdentifier : public KTProcessor
     {
@@ -53,8 +52,10 @@ namespace Katydid
 
         public:
             KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumData* fsData);
+            KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataFFTW* fsData);
 
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrum* freqSpec);
+            KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumFFTW* freqSpec);
 
 
             //***************

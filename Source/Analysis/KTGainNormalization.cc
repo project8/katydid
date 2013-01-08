@@ -115,6 +115,36 @@ namespace Katydid
         return newData;
     }
 
+    KTFrequencySpectrumDataFFTW* KTGainNormalization::Normalize(const KTFrequencySpectrumDataFFTW* fsData, const KTGainVariationData* gvData)
+    {
+        UInt_t nChannels = fsData->GetNChannels();
+        if (nChannels != gvData->GetNChannels())
+        {
+            KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
+            return NULL;
+        }
+
+        KTFrequencySpectrumDataFFTW* newData = new KTFrequencySpectrumDataFFTW(nChannels);
+
+        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        {
+            KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
+            if (newSpectrum == NULL)
+            {
+                KTERROR(gnlog, "Normalization of spectrum " << iChannel << " failed for some reason. Continuing processing.");
+                continue;
+            }
+            newData->SetSpectrum(newSpectrum, iChannel);
+        }
+
+        newData->SetName(fOutputDataName);
+        newData->SetEvent(fsData->GetEvent());
+
+        fFSFFTWSignal(newData);
+
+        return newData;
+    }
+
     KTFrequencySpectrum* KTGainNormalization::Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline)
     {
         UInt_t nBins = frequencySpectrum->size();
@@ -127,6 +157,28 @@ namespace Katydid
         for (UInt_t iBin=0; iBin < nBins; iBin++)
         {
             (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() / (*splineImp)(iBin), (*frequencySpectrum)(iBin).arg());
+        }
+
+        spline->AddToCache(splineImp);
+
+        return newSpectrum;
+    }
+
+    KTFrequencySpectrumFFTW* KTGainNormalization::Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline)
+    {
+        UInt_t nBins = frequencySpectrum->size();
+        Double_t freqMin = frequencySpectrum->GetRangeMin();
+        Double_t freqMax = frequencySpectrum->GetRangeMax();
+
+        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+
+        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
+        Double_t scaling = 1.;
+        for (UInt_t iBin=0; iBin < nBins; iBin++)
+        {
+            scaling = 1. / (*splineImp)(iBin);
+            (*newSpectrum)(iBin)[0] = (*frequencySpectrum)(iBin)[0] * scaling;
+            (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1] * scaling;
         }
 
         spline->AddToCache(splineImp);
@@ -151,20 +203,19 @@ namespace Katydid
             return;
         }
 
-        /*
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = dynamic_cast< KTFrequencySpectrumDataFFTW* >(event->GetData(fFSInputDataName));
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
         if (fsDataFFTW != NULL)
         {
-            KTGainVariationData* newData = Normalize(fsDataFFTW, gvData);
+            KTFrequencySpectrumDataFFTW* newData = Normalize(fsDataFFTW, gvData);
             event->AddData(newData);
             return;
         }
-        */
+
         /*
         const KTSlidingWindowFSData* swfsData = dynamic_cast< KTSlidingWindowFSData* >(event->GetData(fFSInputDataName));
         if (swfsData != NULL)
         {
-            KTGainVariationData* newData = Normalize(swfsData, gvData);
+            KTSlidingWindowFSData* newData = Normalize(swfsData, gvData);
             event->AddData(newData);
             return;
         }
@@ -173,7 +224,7 @@ namespace Katydid
         const KTSlidingWindowFSDataFFTW* swfsDataFFTW = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fFSInputDataName));
         if (swfsDataFFTW != NULL)
         {
-            KTGainVariationData* newData = Normalize(swfsDataFFTW, gvData);
+            KTSlidingWindowFSDataFFTW* newData = Normalize(swfsDataFFTW, gvData);
             event->AddData(newData);
             return;
         }

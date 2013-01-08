@@ -5,18 +5,17 @@
  *      Author: nsoblath
  *
  *  Usage:
- *      > TestWignerVille filename.egg
+ *      > TestWignerVille
  */
 
 #include "KTAnalyticAssociator.hh"
 #include "KTComplexFFTW.hh"
 #include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTRectangularWindow.hh"
-#include "KTSlidingWindowFSData.hh"
-#include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTWignerVille.hh"
@@ -42,8 +41,6 @@ int main()
     Double_t deltaFreq = -10.; // Hz
     Double_t twoPi = 2. * KTMath::Pi();
 
-    KTBasicTimeSeriesData tsData(2);
-
     KTTimeSeriesFFTW* ts1 = new KTTimeSeriesFFTW(nTimeBins, 0., 1.);
     KTTimeSeriesFFTW* ts2 = new KTTimeSeriesFFTW(nTimeBins, 0., 1.);
     for (UInt_t iBin=0; iBin<nTimeBins; iBin++)
@@ -61,43 +58,76 @@ int main()
     hTS->Write();
 #endif
 
-    tsData.SetTimeSeries(ts1, 0);
-    tsData.SetTimeSeries(ts2, 1);
 
+    UInt_t wvSize = 512;
 
     KTAnalyticAssociator aAssociator;
     aAssociator.GetFullFFT()->SetTransformFlag("ESTIMATE");
-
-    KTTimeSeriesData* aaTSData = aAssociator.CreateAssociateData(&tsData);
-
+    aAssociator.GetFullFFT()->SetSize(wvSize);
+    aAssociator.GetFullFFT()->InitializeFFT();
 
     KTWignerVille wvTransform;
-    wvTransform.SetTransformFlag("ESTIMATE");
-    KTEventWindowFunction* windowFunc = new KTRectangularWindow(aaTSData);
-    windowFunc->SetSize(512);
-    wvTransform.SetWindowFunction(windowFunc);
+    wvTransform.GetFFT()->SetTransformFlag("ESTIMATE");
+    wvTransform.GetFFT()->SetSize(/*2 */ wvSize);
+    wvTransform.GetFFT()->InitializeFFT();
     wvTransform.AddPair(KTWVPair(0, 1));
 
-    wvTransform.RecreateFFT();
-    wvTransform.InitializeFFT();
+    UInt_t nWindows = nTimeBins / wvSize;
 
-    //KTSlidingWindowFSData* output = wvTransform.TransformData(aaTSData);
-    KTSlidingWindowFSDataFFTW* output = wvTransform.TransformData(aaTSData);
+    vector< KTFrequencySpectrumDataFFTW* > allOutput(nWindows);
+    KTPhysicalArray< 1, KTFrequencySpectrumFFTW* > spectra(nWindows, 0., 1.);
+
+    KTINFO(testlog, nWindows << " will be used");
+
+    UInt_t iWindow = 0;
+    for (UInt_t windowStart = 0; windowStart < wvSize * nWindows; windowStart += wvSize)
+    {
+        KTINFO(testlog, "window: " << iWindow);
+        //KTBasicTimeSeriesData windowData(2);
+        KTTimeSeriesFFTW* windowTS1 = new KTTimeSeriesFFTW(wvSize, ts1->GetBinLowEdge(windowStart), ts1->GetBinLowEdge(windowStart) + ts1->GetBinWidth() * (Double_t)wvSize);
+        KTTimeSeriesFFTW* windowTS2 = new KTTimeSeriesFFTW(wvSize, ts2->GetBinLowEdge(windowStart), ts2->GetBinLowEdge(windowStart) + ts2->GetBinWidth() * (Double_t)wvSize);
+
+        for (UInt_t iBin=windowStart; iBin < windowStart+wvSize; iBin++)
+        {
+            windowTS1->SetValue(iBin-windowStart, ts1->GetValue(iBin));
+            windowTS2->SetValue(iBin-windowStart, ts2->GetValue(iBin));
+        }
+
+        //windowData.SetTimeSeries(windowTS1, 0);
+        //windowData.SetTimeSeries(windowTS2, 1);
+
+        //KTTimeSeriesData* aaTSData = aAssociator.CreateAssociateData(&windowData);
+        KTTimeSeriesFFTW* aaTS1 = aAssociator.CalculateAnalyticAssociate(windowTS1);
+        KTTimeSeriesFFTW* aaTS2 = aAssociator.CalculateAnalyticAssociate(windowTS2);
+
+        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(2);
+        aaTSData->SetTimeSeries(aaTS1, 0);
+        aaTSData->SetTimeSeries(aaTS2, 1);
+        //aaTSData->SetTimeSeries(windowTS1, 0);
+        //aaTSData->SetTimeSeries(windowTS2, 1);
+
+        KTFrequencySpectrumDataFFTW* output = wvTransform.TransformData(aaTSData);
+
+        allOutput[iWindow] = output;
+        spectra(iWindow) = output->GetSpectrum(0);
+
+        delete windowTS1;
+        delete windowTS2;
+        delete aaTSData;
+
+        iWindow++;
+    }
 
 #ifdef ROOT_FOUND
-    //KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = output->GetSpectra(0);
-    KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* spectra = output->GetSpectra(0);
-    UInt_t nBinsX = spectra->size();
-    UInt_t nBinsY = (*spectra)(0)->size();
-    TH2D* histOut = new TH2D("wv", "Wigner-Ville", nBinsX, spectra->GetRangeMin(), spectra->GetRangeMax(), nBinsY, (*spectra)(0)->GetRangeMin(), (*spectra)(0)->GetRangeMax());
+    UInt_t nBinsX = spectra.size();
+    UInt_t nBinsY = spectra(0)->size();
+    TH2D* histOut = new TH2D("wv", "Wigner-Ville", nBinsX, spectra.GetRangeMin(), spectra.GetRangeMax(), nBinsY, spectra(0)->GetRangeMin(), spectra(0)->GetRangeMax());
     Double_t value;
     for (UInt_t iX=0; iX<nBinsX; iX++)
     {
-        //KTFrequencySpectrum* spectrum = (*spectra)(iX);
-        KTFrequencySpectrumFFTW* spectrum = (*spectra)(iX);
+        KTFrequencySpectrumFFTW* spectrum = spectra(iX);
         for (UInt_t iY=0; iY<nBinsY; iY++)
         {
-            //value = (*spectrum)(iY).abs();
             value = sqrt((*spectrum)(iY)[0] * (*spectrum)(iY)[0] + (*spectrum)(iY)[1] * (*spectrum)(iY)[1]);
             histOut->SetBinContent(iX+1, iY+1, value);
         }
@@ -105,7 +135,14 @@ int main()
     histOut->Write();
 #endif
 
-    delete output;
+    for (UInt_t iWindow=0; iWindow < nWindows; iWindow++)
+    {
+        delete allOutput[iWindow];
+        spectra(iWindow) = NULL;
+    }
+
+    delete ts1;
+    delete ts2;
 
 #ifdef ROOT_FOUND
     file->Close();
