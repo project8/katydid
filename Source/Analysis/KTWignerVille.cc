@@ -139,6 +139,7 @@ namespace Katydid
             CrossMultiplyToInputArray(timeSeries[firstChannel], timeSeries[secondChannel], 0);
 
             KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
+            newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
 
             newData->SetSpectrum(newSpectrum, iPair);
             iPair++;
@@ -156,11 +157,15 @@ namespace Katydid
     void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
     {
         UInt_t size = data1->size();
-        if (fInputArray->size() != 2*size)
+        if (fInputArray->size() != /*2*/size)
         {
             delete fInputArray;
-            fInputArray = new KTTimeSeriesFFTW(2*size, data1->GetRangeMin(), data1->GetRangeMax() + 0.5 * data1->GetBinWidth());
+            fInputArray = new KTTimeSeriesFFTW(/*2*/size, data1->GetRangeMin(), data1->GetRangeMax() + 0.5 * data1->GetBinWidth());
             KTWARN(wvlog, "Setting the input array size to " << 2 * size);
+        }
+        else
+        {
+            fInputArray->SetRange(data1->GetRangeMin(), data1->GetRangeMax());
         }
         /*  // For non-interpolating version
         UInt_t iPoint1 = offset;
@@ -169,40 +174,31 @@ namespace Katydid
         /**/ // For the interpolating version
         Double_t real1, real2, imag1, imag2;
 
+        /*
         real1 = (*data1)(offset)[0];
         imag1 = (*data1)(offset)[1];
         real2 = (*data2)(size - 1 + offset)[0] + 0.5 * ((*data2)(size - 1 + offset)[0] - (*data2)(size - 2 + offset)[0]);
         imag2 = (*data2)(size - 1 + offset)[1] + 0.5 * ((*data2)(size - 1 + offset)[1] - (*data2)(size - 2 + offset)[1]);
         (*fInputArray)(0)[0] = real1 * real2 + imag1 * imag2;
         (*fInputArray)(0)[1] = imag1 * real2 - real1 * imag2;
-        /*
-        if (offset == 0)
-        {
-            std::cout << "0  " << size - 1 + offset + 0.5 << "  " << offset << "  --   " << (*fInputArray)(0)[0] << ", " << (*fInputArray)(0)[1] << std::endl;
-        }
         */
-
         UInt_t iPoint1 = offset + 1;
         UInt_t iPoint2 = size - 1 + offset;
         /**/
-        for (UInt_t inPoint = 2; inPoint < 2*size; inPoint+=2)
-        //for (UInt_t inPoint = 0; inPoint < size; inPoint++)
+        //for (UInt_t inPoint = 2; inPoint < 2*size; inPoint+=2)
+        for (UInt_t inPoint = 0; inPoint < size; inPoint++)
         {
-            /*  // Non-interpolating
-            fInputArray[inPoint][0] = (*data1)(iPoint1)[0] * (*data2)(iPoint2)[0] + (*data1)(iPoint1)[1] * (*data2)(iPoint2)[1];
-            fInputArray[inPoint][1] = (*data1)(iPoint1)[1] * (*data2)(iPoint2)[0] - (*data1)(iPoint1)[0] * (*data2)(iPoint2)[1];
-            if (offset == 0)
-            {
-                std::cout << inPoint << "  " << iPoint1 << "  " << iPoint2 << "  --   " << (*fInputArray)(inPoint)[0] << ", " << (*fInputArray)(inPoint)[1] << std::endl;
-            }
-            */
+            /**/  // Non-interpolating
+            (*fInputArray)(inPoint)[0] = (*data1)(iPoint1)[0] * (*data2)(iPoint2)[0] + (*data1)(iPoint1)[1] * (*data2)(iPoint2)[1];
+            (*fInputArray)(inPoint)[1] = (*data1)(iPoint1)[1] * (*data2)(iPoint2)[0] - (*data1)(iPoint1)[0] * (*data2)(iPoint2)[1];
+            /**/
             /*
             fInputArray[inPoint][0] = (*data1)(iPoint1)[0] * (*data2)(iPoint2)[0] + (*data1)(iPoint1)[1] * (*data2)(iPoint2)[1];
             fInputArray[inPoint][1] = (*data1)(iPoint1)[1] * (*data2)(iPoint2)[0] - (*data1)(iPoint1)[0] * (*data2)(iPoint2)[1];
             fInputArray[inPoint-1][0] = 0.5 * (fInputArray[inPoint-2][0] + fInputArray[inPoint][0]);
             fInputArray[inPoint-1][1] = 0.5 * (fInputArray[inPoint-2][1] + fInputArray[inPoint][1]);
             */
-            /**/ // Interpolating
+            /* // Interpolating
             real1 = (*data1)(iPoint1)[0];
             imag1 = (*data1)(iPoint1)[1];
             real2 = 0.5 * ((*data2)(iPoint2-1)[0] + (*data2)(iPoint2)[0]);
@@ -215,38 +211,25 @@ namespace Katydid
             imag2 = (*data2)(iPoint2)[1];
             (*fInputArray)(inPoint-1)[0] = real1 * real2 + imag1 * imag2;
             (*fInputArray)(inPoint-1)[1] = imag1 * real2 - real1 * imag2;
-            /*
-            if (offset == 0)
-            {
-                std::cout << " " << inPoint-1 << "  " << iPoint1 - 0.5 << "  " << iPoint2 << "  --   " << (*fInputArray)(inPoint-1)[0] << ", " << (*fInputArray)(inPoint-1)[1] << std::endl;
-                std::cout << inPoint << "  " << iPoint1 << "  " << iPoint2 - 0.5 << "  --   " << (*fInputArray)(inPoint)[0] << ", " << (*fInputArray)(inPoint)[1] << std::endl;
-            }
             */
-            /**/
             iPoint1++;
             iPoint2--;
         }
-
+        /*
         real1 = (*data1)(size - 1 + offset)[0] + 0.5 * ((*data1)(size - 1 + offset)[0] - (*data1)(size - 2 + offset)[0]);
         imag1 = (*data1)(size - 1 + offset)[1] + 0.5 * ((*data1)(size - 1 + offset)[1] - (*data1)(size - 2 + offset)[1]);
         real2 = (*data2)(offset)[0];
         imag2 = (*data2)(offset)[1];
         (*fInputArray)(2*size - 1)[0] = real1 * real2 + imag1 * imag2;
         (*fInputArray)(2*size - 1)[1] = imag1 * real2 - real1 * imag2;
-        /*
-        if (offset == 0)
-        {
-            std::cout << 2*size-1 << "  " << size - 1 + offset + 0.5 << "  " << offset << "  --   " << (*fInputArray)(2*size - 1)[0] << ", " << (*fInputArray)(2*size - 1)[1] << std::endl;
-        }
         */
-
         return;
     }
 
 
     void KTWignerVille::ProcessHeader(const KTEggHeader* header)
     {
-        UInt_t nBins = 2 * header->GetRecordSize();
+        UInt_t nBins = /*2 */ header->GetRecordSize();
         fFFT->SetSize(nBins);
         fFFT->InitializeFFT();
         delete fInputArray;

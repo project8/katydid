@@ -68,7 +68,7 @@ int main()
 
     KTWignerVille wvTransform;
     wvTransform.GetFFT()->SetTransformFlag("ESTIMATE");
-    wvTransform.GetFFT()->SetSize(2 * wvSize);
+    wvTransform.GetFFT()->SetSize(/*2 */ wvSize);
     wvTransform.GetFFT()->InitializeFFT();
     wvTransform.AddPair(KTWVPair(0, 1));
 
@@ -89,9 +89,10 @@ int main()
 
         for (UInt_t iBin=windowStart; iBin < windowStart+wvSize; iBin++)
         {
-            windowTS1->SetValue(iBin, (*ts1)(iBin)[0]);
-            windowTS2->SetValue(iBin, (*ts2)(iBin)[1]);
+            windowTS1->SetValue(iBin-windowStart, ts1->GetValue(iBin));
+            windowTS2->SetValue(iBin-windowStart, ts2->GetValue(iBin));
         }
+
         //windowData.SetTimeSeries(windowTS1, 0);
         //windowData.SetTimeSeries(windowTS2, 1);
 
@@ -102,6 +103,8 @@ int main()
         KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(2);
         aaTSData->SetTimeSeries(aaTS1, 0);
         aaTSData->SetTimeSeries(aaTS2, 1);
+        //aaTSData->SetTimeSeries(windowTS1, 0);
+        //aaTSData->SetTimeSeries(windowTS2, 1);
 
         KTFrequencySpectrumDataFFTW* output = wvTransform.TransformData(aaTSData);
 
@@ -114,7 +117,6 @@ int main()
 
         iWindow++;
     }
-
 
 #ifdef ROOT_FOUND
     UInt_t nBinsX = spectra.size();
