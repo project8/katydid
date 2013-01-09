@@ -7,38 +7,27 @@ namespace Katydid {
 
   KTLOGGER(asciilog, "katydid.output.ascii");
   
-  static KTDerivedRegistrar< KTWriter, KTBasicAsciiWriter > 
+  static KTDerivedRegistrar< KTWriter, KTBasicASCIIWriter > 
   sAWR("basic-ascii-writer");
 
-  static KTDerivedRegistrar< KTProcessor, KTBasicAsciiWriter > 
+  static KTDerivedRegistrar< KTProcessor, KTBasicASCIIWriter > 
   sAPR("basic-ascii-writer");
 
-  KTBasicAsciiWriter::KTBasicAsciiWriter() :
-    KTWriter(),
+  KTBasicASCIIWriter::KTBasicASCIIWriter() :
+    KTWriterWithTypists<KTBasicASCIIWriter>(),
     fOutputFilename("basic_ascii_output.txt"),
     fOutputStream(NULL)
   {
     fConfigName = "basic-ascii-writer";
-
-    // This writer so far only knows how to write frequency spectrum data.
-    RegisterSlot("write-frequency-spectrum", 
-		 this, 
-		 &KTBasicAsciiWriter::WriteFrequencySpectrumData);
-    RegisterSlot("write-frequency-spectrum-fftw", 
-		 this, 
-		 &KTBasicAsciiWriter::WriteFrequencySpectrumDataFFTW);
-    RegisterSlot("write-time-series",
-		 this,
-		 &KTBasicAsciiWriter::WriteTimeSeriesData);
   } // default constructor
 
-  KTBasicAsciiWriter::~KTBasicAsciiWriter() {
+  KTBasicASCIIWriter::~KTBasicASCIIWriter() {
     if( this->fOutputStream->is_open() ) this->fOutputStream->close();
     delete this->fOutputStream;
   }
 
   // Configuration method
-  Bool_t KTBasicAsciiWriter::Configure(const KTPStoreNode* n) {
+  Bool_t KTBasicASCIIWriter::Configure(const KTPStoreNode* n) {
     if (n != NULL) {
       fOutputFilename = n->GetData<std::string>("output-file",fOutputFilename);
       if( this->OpenFile() == false ) {
@@ -49,7 +38,7 @@ namespace Katydid {
     return true;
   }
 
-  Bool_t KTBasicAsciiWriter::OpenFile() {
+  Bool_t KTBasicASCIIWriter::OpenFile() {
     fOutputStream = new std::ofstream(fOutputFilename.c_str(), std::ios_base::out);
     if( fOutputStream->is_open() == false ) {
       delete fOutputStream;
@@ -60,73 +49,48 @@ namespace Katydid {
     return true;
   }
 
-  void KTBasicAsciiWriter::Write(const KTFrequencySpectrumData* dt) {
-    return this->WriteFrequencySpectrumData(dt);
+  bool KTBasicASCIIWriter::CanWrite() {
+    return (this->fOutputStream != NULL) && (this->fOutputStream->is_open());
   }
 
-  void KTBasicAsciiWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt) {
-    KTEvent* ev = dt->GetEvent();
-    uint64_t evN = (ev == NULL) ? 0 : ev->GetEventNumber();
-    uint64_t nCh = dt->GetNChannels();
+  std::ofstream* KTBasicASCIIWriter::GetStream() {
+    return this->fOutputStream;
+  }
 
-    if( fOutputStream && fOutputStream->is_open() ) {
-      for( unsigned iCh = 0; iCh < nCh; iCh++ ) {
-	const KTFrequencySpectrum* spectrum = dt->GetSpectrum(iCh);
-	for( unsigned iB = 0; iB < spectrum->size(); iB++ ) {
+  // void KTBasicASCIIWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt) {
+  //   KTEvent* ev = dt->GetEvent();
+  //   uint64_t evN = (ev == NULL) ? 0 : ev->GetEventNumber();
+  //   uint64_t nCh = dt->GetNChannels();
+
+  //   if( fOutputStream && fOutputStream->is_open() ) {
+  //     for( unsigned iCh = 0; iCh < nCh; iCh++ ) {
+  // 	const KTFrequencySpectrum* spectrum = dt->GetSpectrum(iCh);
+  // 	for( unsigned iB = 0; iB < spectrum->size(); iB++ ) {
 	  
-	  (*fOutputStream) << evN
-			   << ","
-			   << iCh
-			   << ","
-			   << (*spectrum)(iB).abs() 
-			   << "," 
-			   << (*spectrum)(iB).arg() 
-			   << std::endl;
-	}
-      }
-    }
-    else {
-      KTWARN(asciilog, "no file open, no data written!");
-    }
-  }
-
-  void KTBasicAsciiWriter::Write(const KTFrequencySpectrumDataFFTW* dt) {
-    return this->WriteFrequencySpectrumDataFFTW(dt);
-  }
-
-  void KTBasicAsciiWriter::WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* dt) {
-    KTEvent* ev = dt->GetEvent();
-    uint64_t evN = (ev == NULL) ? 0 : ev->GetEventNumber();
-    if( fOutputStream->is_open() ) {
-      (*fOutputStream) << "hi" << std::endl;
-    }
-  }
-
-  void KTBasicAsciiWriter::Write(const KTTimeSeriesData* ts) {
-    return this->WriteTimeSeriesData(ts);
-  }
-
-  void KTBasicAsciiWriter::WriteTimeSeriesData(const KTTimeSeriesData* ts) {
-    KTWARN(asciilog, "hahiihhi!!!!");
-  }
+  // 	  (*fOutputStream) << evN
+  // 			   << ","
+  // 			   << iCh
+  // 			   << ","
+  // 			   << (*spectrum)(iB).abs() 
+  // 			   << "," 
+  // 			   << (*spectrum)(iB).arg() 
+  // 			   << std::endl;
+  // 	}
+  //     }
+  //   }
+  //   else {
+  //     KTWARN(asciilog, "no file open, no data written!");
+  //   }
+  // }
 
   /*
    *  The following methods are unimplemented and just warn!
    */
-  void KTBasicAsciiWriter::Publish(const KTWriteableData* dt) {
+  void KTBasicASCIIWriter::Publish(const KTWriteableData* dt) {
     KTWARN(asciilog, "stub Publish(const KTWriteableData*) called! no data written!");
   };
-  void KTBasicAsciiWriter::Write(const KTWriteableData* dt) {
+  void KTBasicASCIIWriter::Write(const KTWriteableData* dt) {
     KTWARN(asciilog, "stub Write(const KTWriteableData*) called! no data written!");
-  };
-  void KTBasicAsciiWriter::Write(const KTCorrelationData* dt) {
-    KTWARN(asciilog, "stub Write(const KTCorrelationData*) called! no data written!");
-  };
-  void KTBasicAsciiWriter::Write(const KTSlidingWindowFSData* dt) {
-    KTWARN(asciilog, "stub Write(const KTSlidingWindowFSData*) called! no data written!");
-  };
-  void KTBasicAsciiWriter::Write(const KTSlidingWindowFSDataFFTW* dt) {
-    KTWARN(asciilog, "stub Write(const KTSlidingWindowFSDataFFTW*) called! no data written!");
   };
 
 }; // namespace Katydid
