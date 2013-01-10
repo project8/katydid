@@ -4,6 +4,13 @@
  *  Created on: Oct 19, 2012
  *      Author: nsoblath
  */
+/**
+ @file KTWignerVille.hh
+ @brief Contains KTWignerVille
+ @details 
+ @author: N. S. Oblath
+ @date: Oct 19, 2012
+ */
 
 #ifndef KTWIGNERVILLE_HH_
 #define KTWIGNERVILLE_HH_
@@ -37,6 +44,29 @@ namespace Katydid
     class KTWriteableData;
 
     typedef std::pair< UInt_t, UInt_t > KTWVPair;
+
+    /*!
+     @class KTWignerVille
+     @author N. S. Oblath
+
+     @brief 
+
+     @details
+
+     Available configuration values:
+     \li \c "complex-fftw": string -- 
+     \li \c "wv-pair": bool -- 
+          \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by an (?)
+
+     Slots:
+     \li \c "header": void ProcessHeader(const KTEggHeader*)
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
+
+     Signals:
+     \li \c "wigner-ville": void (const KTWriteableData*) emitted upon performance of a (?)
+    */
 
     class KTWignerVille : public KTProcessor
     {

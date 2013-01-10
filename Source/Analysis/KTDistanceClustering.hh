@@ -1,9 +1,12 @@
-/*
- * KTDistanceClustering.hh
- *
- *  Created on: Dec 17, 2012
- *      Author: nsoblath
+
+/**
+ @file KTDistanceClustering.hh
+ @brief Contains KTDistanceClustering
+ @details 
+ @author: N. S. Oblath
+ @date: Dec, 17, 2012
  */
+
 
 #ifndef KTDISTANCECLUSTERING_HH_
 #define KTDISTANCECLUSTERING_HH_
@@ -21,6 +24,27 @@ namespace Katydid
     //class KTDiscriminatedPoints2DData;
     class KTEvent;
 
+    /*!
+     @class KTDistanceClustering
+     @author N. S. Oblath
+
+     @brief
+
+     @details
+
+     Available configuration values:
+     \li \c "max-frequency-distance": (?) -- 
+     \li \c "max-bin-distance":(?) -- 
+     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by an FFT
+
+      Slots:
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "disc-1d-data": void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
+
+     Signals:
+     \li \c "cluster-1d": void (const KTCluster1DData*) 
+    */
     class KTDistanceClustering : public KTProcessor
     {
         public:

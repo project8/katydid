@@ -1,8 +1,9 @@
-/*
- * KTGainVariationProcessor.hh
- *
- *  Created on: Dec 10, 2012
- *      Author: nsoblath
+/**
+ @file KTGainVariationProcessor.hh
+ @brief Contains KTGainVariationProcessor
+ @details Processes the gain variation.
+ @author: N. S. Oblath
+ @date: Dec 10, 2012
  */
 
 #ifndef KTGAINVARIATIONPROCESSOR_HH_
@@ -43,12 +44,12 @@ namespace Katydid
      \li \c "output-data-name": string -- name to give to the data produced
 
      Slots:
-     \li \c void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c void ProcessFrequencySpectrumData(const KTFrequencySpectrumData*)
-     \li \c void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "fsdata": void ProcessFrequencySpectrumData(const KTFrequencySpectrumData*)
+     \li \c "fsdata-fftw": void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
 
      Signals:
-     \li \c void (const KTGainVariationProcessorData*) emitted upon performance of a fit.
+     \li \c "gain-var": void (const KTGainVariationProcessorData*) emitted upon performance of a fit.
     */
 
     class KTGainVariationProcessor : public KTProcessor

@@ -4,6 +4,13 @@
  *  Created on: Dec 17, 2012
  *      Author: nsoblath
  */
+/**
+ @file KTAnalyticAssociator.hh
+ @brief Contains KTAnalyticAssociator
+ @details (?)
+ @author: N. S. Oblath
+ @date: Dec 17, 2012
+ */
 
 #ifndef KTANALYTICASSOCIATOR_HH_
 #define KTANALYTICASSOCIATOR_HH_
@@ -23,6 +30,29 @@ namespace Katydid
     class KTFrequencySpectrumFFTW;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
+
+    /*!
+     @class KTAnalyticAssociator
+     @author N. S. Oblath
+
+     @brief A one-dimensional real-to-complex FFT class.
+
+     @details
+ 
+     Available configuration values:
+     \li \c "save-frequency-spectrum": bool -- 
+     \li \c "aa-ts-output-data-name": string - -
+     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by an analyticassociator
+
+     Slots:
+     \li \c "header": void ProcessHeader(const KTEggHeader*)
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesData*)
+
+     Signals:
+     \li \c void (const KTFrequencySpectrumData*) emitted upon performance of a transform.
+    */
 
     class KTAnalyticAssociator : public KTProcessor
     {

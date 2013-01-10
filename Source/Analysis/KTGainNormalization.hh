@@ -1,3 +1,4 @@
+
 /**
  @file KTGainNormalization.hh
  @brief Contains KTGainNormalization
@@ -25,6 +26,34 @@ namespace Katydid
     class KTSlidingWindowFSData;
     class KTSlidingWindowFSDataFFTW;
     class KTSpline;
+ 
+
+   /*!
+     @class KTGainNormalization
+     @author N. S. Oblath
+
+     @brief Normalize gain by using FFT(?)
+
+     @details
+ 
+     Available configuration values:
+     \li \c "min-bin": unsigned -- minimum bin
+     \li \c "max-bin": unsigned -- maximum bin
+     \li \c "min-frequency": double -- minimum frequency
+     \li \c "max-frequency": double -- maximum frequency
+     \li \c "gv-input-data-name": string -- name of the data to find when processing an event
+     \li \c "fs-input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by an FFT
+
+     Slots:
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+
+     Signals:
+     \li \c "gain-norm-fs": void (const KTFrequencySpectrumData*) emitted upon performance of a transform.
+     \li \c "gain-norm-fs-fftw": void (const KTFrequencySpectrumDataFFTW*) emitted upon performance of a transform.
+     \li \c "gain-norm-sw-fs": void (const KTSlidingWindowFSData*) emitted upon performance of a transform.
+     \li \c "gain-norm-sw-fs-fftw": void (const KTSlidingWindowFSDataFFTW*) emitted upon performance of a transform.
+    */
 
     class KTGainNormalization : public KTProcessor
     {
