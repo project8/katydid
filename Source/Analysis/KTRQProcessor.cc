@@ -128,6 +128,9 @@ namespace Katydid {
 	// Update noise estimate with current noise sample.
 	KTINFO(nrq_log,"using noise to update NACM estimate...");
 
+  // Grab a tick to calculate elapsed time.
+  std::clock_t t0 = clock();
+
 	// Calculate first row.  The NACM is a Toeplitz matrix which means we only need to
 	// calculate the first row.
 	for(unsigned colIdx = 0; colIdx < this->fChunkSize; colIdx++) {
@@ -147,6 +150,11 @@ namespace Katydid {
 	    if( col > row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(row-1, col-1);
 	  }
 	}
+
+  // all done, check elapsed time.
+  std::clock_t tf = clock();
+  double elapsed = (tf-t0)/CLOCKS_PER_SEC;
+  KTINFO("Noise event processed in " << elapsed << " seconds.");
 
 	// Check convergence criterion (TEMPORARILY JUST TRUE) and set convergence flag if
 	// appropriate.
@@ -203,6 +211,9 @@ namespace Katydid {
 	KTBasicTimeSeriesData* nDt = new KTBasicTimeSeriesData(1);
 	KTTimeSeriesReal* rqOut = new KTTimeSeriesReal(nOut);
 
+  // Grab clock tick for elapsed time calculation
+  std::clock_t t0 = clock();
+
 	/*
 	 * Iterate over the data in the event, pointing the data map at each chunk consecutively.
 	 * first we need to know 
@@ -224,6 +235,12 @@ namespace Katydid {
 	nDt->SetName(fOutputDataName);
 	nDt->SetTimeSeries(rqOut);
 	event->AddData(nDt);
+
+  // all done, check elapsed time.
+  std::clock_t tf = clock();
+  double elapsed = (tf-t0)/CLOCKS_PER_SEC;
+  KTINFO("Candidate record processed by NRQ processor in " << elapsed << " seconds.");
+
 	fRQSignal(nDt);	
       }
       else {
