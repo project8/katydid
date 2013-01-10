@@ -11,11 +11,12 @@ set (ANALYSIS_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTOldSimpleClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
@@ -31,11 +32,12 @@ set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTOldSimpleClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc

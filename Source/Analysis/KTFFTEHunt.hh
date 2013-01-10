@@ -14,7 +14,7 @@
 #include "KTSimpleFFT.hh"
 #include "KTSlidingWindowFFT.hh"
 #include "KTOldGainNormalization.hh"
-#include "KTSimpleClustering.hh"
+#include "KTOldSimpleClustering.hh"
 
 #ifdef ROOT_FOUND
 #include "TFile.h"
@@ -108,7 +108,7 @@ namespace Katydid
             KTSimpleFFT fSimpleFFT;
             KTSlidingWindowFFT fWindowFFT;
             KTOldGainNormalization fGainNorm;
-            KTSimpleClustering fClustering;
+            KTOldSimpleClustering fClustering;
 
             std::string fTextFilename;
             std::string fROOTFilename;
