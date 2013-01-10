@@ -31,16 +31,24 @@ namespace Katydid
     if( fWriter->CanWrite() == true ) {
 
       for(unsigned iCh = 0; iCh < nCh; iCh++) {
-	std::ofstream* file_ptr = fWriter->GetStream();
-	const KTTimeSeries* sCh = data->GetTimeSeries(iCh);
-	if(sCh != NULL) {
-	  (*file_ptr) << "hi" << std::endl;
-	}
-	else {
-	  KTWARN(ats_log, "Channel #" << iCh << " was missing from event!  Logic error?");
-	}
+        	std::ofstream* file_ptr = fWriter->GetStream();
+        	const KTTimeSeries* sCh = data->GetTimeSeries(iCh);
+        	if(sCh != NULL) {
+            for(unsigned iB = 0; iB < sCh->GetNTimeBins(); iB++) {
+              (*file_ptr) << eventNumber 
+                          << ","  
+                          << iCh
+                          << ","
+                          << iB
+                          << ","
+                          << sCh->GetValue(iB)
+                          << std::endl;
+            }
+	       }
+        else {
+      	  KTWARN(ats_log, "Channel #" << iCh << " was missing from event!  Logic error?");
+      	}
       }
-
     } // if CanWrite
     else {
       KTWARN(ats_log, "Writer for ASCII TS type-writer cannot write.  No data will be written!");

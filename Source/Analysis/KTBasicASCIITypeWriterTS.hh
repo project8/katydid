@@ -9,6 +9,7 @@
  *  The TypeWriter which is responsible for writing Time Series data.
  */
 
+#include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTBasicASCIIWriter.hh"
 
