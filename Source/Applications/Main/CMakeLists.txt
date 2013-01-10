@@ -18,13 +18,17 @@ katydid_install_config (${VALIDATION_CONFIGFILES})
 
 # Executables
 
+add_executable (ConfigCheck ${CMAKE_CURRENT_SOURCE_DIR}/ConfigCheck.cc)
+target_link_libraries (ConfigCheck KatydidUtility KatydidCore ${LIBS})
+
 add_executable (Katydid ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
-target_link_libraries (Katydid KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
+target_link_libraries (Katydid KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${LIBS})
 
 add_executable (Truncate ${CMAKE_CURRENT_SOURCE_DIR}/Truncate.cc)
 target_link_libraries (Truncate KatydidUtility ${LIBS})
 
 katydid_install_executables ( 
+    ConfigCheck
     Katydid
     Truncate
 )

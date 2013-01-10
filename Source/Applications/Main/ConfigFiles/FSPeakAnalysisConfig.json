@@ -1,0 +1,264 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg"
+            },
+            "processor":
+            {
+                "type": "simple-fft",
+                "name": "fft"
+            },
+            "processor":
+            {
+                "type": "gain-variation",
+                "name": "gainvar"
+            },
+            "processor":
+            {
+                "type": "gain-normalization",
+                "name": "gainnorm"
+            },
+            "processor":
+            {
+                "type": "spectrum-discriminator",
+                "name": "discrim"
+            },
+            "processor":
+            {
+                "type": "distance-clustering",
+                "name": "clustering"
+            },
+            "processor":
+            {
+                "type": "frequency-candidate-identifier",
+                "name": "fcident"
+            },
+
+            "processor":
+            {
+                "type": "basic-root-writer",
+                "name": "rootwriter"
+            },
+            "processor":
+            {
+                "type": "basic-root-writer",
+                "name": "rootwriter-prenorm"
+            },
+            "processor":
+            {
+                "type": "json-writer",
+                "name": "jsonwriter"
+            },
+            
+            "processor":
+            {
+                "type": "throughput-profiler",
+                "name": "profiler"
+            },
+            
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "profiler",
+                "slot-name": "start",
+                "group-order": 2
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "profiler",
+                "slot-name": "event",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "fft",
+                "slot-name": "event",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "fft",
+                "signal-name": "fft",
+                "slot-processor": "gainvar",
+                "slot-name": "fsdata"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "gainnorm",
+                "slot-name": "event",
+                "group-order": 2
+            },
+            "connection":
+            {
+                "signal-processor": "gainnorm",
+                "signal-name": "gain-norm-fs",
+                "slot-processor": "discrim",
+                "slot-name": "fsdata",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "discrim",
+                "signal-name": "disc-1d",
+                "slot-processor": "clustering",
+                "slot-name": "disc-1d-data"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "event",
+                "slot-processor": "fcident",
+                "slot-name": "event",
+                "group-order": 3
+            },
+            
+            "connection":
+            {
+                "signal-processor": "gainvar",
+                "signal-name": "gain-var",
+                "slot-processor": "rootwriter",
+                "slot-name": "gain-var-data"
+            },
+            "connection":
+            {
+                "signal-processor": "gainnorm",
+                "signal-name": "gain-norm-fs",
+                "slot-processor": "rootwriter",
+                "slot-name": "fs-data",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "fft",
+                "signal-name": "fft",
+                "slot-processor": "rootwriter-prenorm",
+                "slot-name": "fs-data"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "jsonwriter",
+                "slot-name": "header",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "fcident",
+                "signal-name": "frequency-candidates",
+                "slot-processor": "jsonwriter",
+                "slot-name": "frequency-candidates"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "egg-done",
+                "slot-processor": "profiler",
+                "slot-name": "stop"
+            },
+            
+            "run-queue":
+            {
+                "processor": "egg"
+            }
+        },
+        
+
+        "egg":
+        {
+            "filename": "../../../data/run2012_11_5_tone.egg",
+            "number-of-events": 1,
+            "output-data-name": "time-series"
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE",
+            "input-data-name": "time-series",
+            "output-data-name": "freq-spectrum"
+        },
+        
+        "gainvar":
+        {
+            "min-frequency": 6e6,
+            "max-frequency": 95e6,
+            "fit-points": 20,
+            "input-data-name": "freq-spectrum",
+            "output-data-name": "gain-variations"
+        },
+        
+        "gainnorm":
+        {
+            "min-frequency": 6e6,
+            "max-frequency": 95e6,
+            "gv-input-data-name": "gain-variations",
+            "fs-input-data-name": "freq-spectrum",
+            "output-data-name": "norm-freq-spectrum"
+        },
+        
+        "discrim":
+        {
+            "min-frequency": 6e6,
+            "max-frequency": 95e6,
+            "snr-threshold": 20.0,
+            "input-data-name": "norm-freq-spectrum",
+            "output-data-name": "peak-points"
+        },
+        
+        "clustering":
+        {
+            "max-frequency-distance": 2000.0,
+            "input-data-name": "peak-points",
+            "output-data-name": "peaks"
+        },
+        
+        "fcident":
+        {
+            "fs-input-data-name": "norm-freq-spectrum",
+            "cluster-input-data-name": "peaks",
+            "output-data-name": "candidates"
+        },
+        
+        "rootwriter":
+        {
+            "output-file": "norm_ps.root",
+            "file-flag": "recreate"
+        },
+        "rootwriter-prenorm":
+        {
+            "output-file": "prenorm_ps.root",
+            "file-flag": "recreate"
+        },
+        
+        "jsonwriter":
+        {
+            "output-file": "candidates.json",
+            "file-mode": "w+",
+            "pretty-json": true
+        }
+    }
+}

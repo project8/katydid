@@ -10,6 +10,8 @@
 
 #include "KTWriteableData.hh"
 
+#include "KTFrequencyCandidate.hh"
+
 #include "Rtypes.h"
 
 #include <vector>
@@ -30,7 +32,7 @@ namespace Katydid
             };
 
         public:
-            KTFrequencyCandidateData();
+            KTFrequencyCandidateData(UInt_t nGroups=1);
             virtual ~KTFrequencyCandidateData();
 
             void Accept(KTWriter* writer) const;
@@ -40,6 +42,7 @@ namespace Katydid
             UInt_t GetNGroups() const;
 
             void AddCandidate(const KTFrequencyCandidate& candidate, UInt_t groupNum = 0);
+            void AddCandidates(const Candidates& candidates, UInt_t groupNum = 0);
             void SetThreshold(Double_t threshold, UInt_t groupNum = 0);
             void SetNGroups(UInt_t channels);
 
@@ -50,8 +53,6 @@ namespace Katydid
             void SetBinWidth(Double_t binWidth);
 
         protected:
-            static std::string fDefaultName;
-
             std::vector< PerGroupData > fGroupData;
 
             UInt_t fNBins;
@@ -78,12 +79,21 @@ namespace Katydid
     {
         if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
         fGroupData[groupNum].fCandidates.push_back(candidate);
+        return;
+    }
+
+    inline void KTFrequencyCandidateData::AddCandidates(const Candidates& candidates, UInt_t groupNum)
+    {
+        if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
+        fGroupData[groupNum].fCandidates.insert(fGroupData[groupNum].fCandidates.end(), candidates.begin(), candidates.end());
+        return;
     }
 
     inline void KTFrequencyCandidateData::SetThreshold(Double_t threshold, UInt_t groupNum)
     {
         if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
         fGroupData[groupNum].fThreshold = threshold;
+        return;
     }
 
     inline void KTFrequencyCandidateData::SetNGroups(UInt_t channels)

@@ -47,7 +47,7 @@ namespace Katydid
     {
         fConfigName = "simple-fft";
 
-        RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
+        RegisterSignal("fft", &fFFTSignal, "void (const KTFrequencySpectrumData*)");
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");

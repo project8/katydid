@@ -17,7 +17,10 @@ namespace Katydid
     {
         public:
             KTFrequencyCandidate();
+            KTFrequencyCandidate(const KTFrequencyCandidate& orig);
             virtual ~KTFrequencyCandidate();
+
+            KTFrequencyCandidate& operator=(const KTFrequencyCandidate& rhs);
 
             UInt_t GetFirstBin() const;
             void SetFirstBin(UInt_t bin);
@@ -34,25 +37,36 @@ namespace Katydid
             Double_t fMeanFrequency;
     };
 
-    UInt_t KTFrequencyCandidate::GetFirstBin() const
+    inline UInt_t KTFrequencyCandidate::GetFirstBin() const
     {
         return fFirstBin;
     }
 
-    void KTFrequencyCandidate::SetFirstBin(UInt_t bin)
+    inline void KTFrequencyCandidate::SetFirstBin(UInt_t bin)
     {
         fFirstBin = bin;
         return;
     }
 
-    UInt_t KTFrequencyCandidate::GetLastBin() const
+    inline UInt_t KTFrequencyCandidate::GetLastBin() const
     {
         return fLastBin;
     }
 
-    void KTFrequencyCandidate::SetLastBin(UInt_t bin)
+    inline void KTFrequencyCandidate::SetLastBin(UInt_t bin)
     {
         fLastBin = bin;
+        return;
+    }
+
+    inline Double_t KTFrequencyCandidate::GetMeanFrequency() const
+    {
+        return fMeanFrequency;
+    }
+
+    inline void KTFrequencyCandidate::SetMeanFrequency(Double_t freq)
+    {
+        fMeanFrequency = freq;
         return;
     }
 

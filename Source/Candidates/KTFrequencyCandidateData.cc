@@ -9,13 +9,18 @@
 
 #include "KTDataMap.hh"
 #include "KTTIFactory.hh"
+#include "KTWriter.hh"
 
 namespace Katydid
 {
 
     static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencyCandidateData > > sFCDMRegistrar;
 
-    KTFrequencyCandidateData::KTFrequencyCandidateData()
+    KTFrequencyCandidateData::KTFrequencyCandidateData(UInt_t nGroups) :
+            KTWriteableData(),
+            fGroupData(nGroups),
+            fNBins(1),
+            fBinWidth(1.)
     {
     }
 

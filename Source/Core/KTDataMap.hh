@@ -14,6 +14,7 @@
 
 #include <boost/unordered_map.hpp>
 
+#include <sstream>
 #include <string>
 
 namespace Katydid
@@ -35,6 +36,12 @@ namespace Katydid
             virtual KTData* GetData(const std::string& name) = 0;
 
             virtual Bool_t RemoveData(const std::string& name) = 0;
+
+            virtual Bool_t Empty() = 0;
+
+            virtual UInt_t Size() = 0;
+
+            virtual void PrintMap() = 0;
     };
 
 
@@ -47,6 +54,10 @@ namespace Katydid
     {
         public:
             typedef boost::unordered_map< std::string, XDerivedData* > DataMap;
+            typedef XDerivedData MapType;
+            typedef typename DataMap::value_type DataMapValue;
+            typedef typename DataMap::iterator DataMapIt;
+            typedef typename DataMap::const_iterator DataMapCIt;
 
         public:
             KTDerivedDataMap();
@@ -54,9 +65,23 @@ namespace Katydid
 
             Bool_t AddData(const std::string& name, XDerivedData* data);
 
-            KTData* GetData(const std::string& name);
+            MapType* GetData(const std::string& name);
 
             Bool_t RemoveData(const std::string& name);
+
+            Bool_t Empty();
+
+            UInt_t Size();
+
+            void PrintMap();
+
+            DataMapIt Begin();
+            DataMapCIt Begin() const;
+            DataMapCIt ConstBegin() const;
+
+            DataMapIt End();
+            DataMapCIt End() const;
+            DataMapCIt ConstEnd() const;
 
         protected:
             DataMap fDataMap;
@@ -91,7 +116,7 @@ namespace Katydid
     }
 
     template< class XDerivedData >
-    KTData* KTDerivedDataMap< XDerivedData >::GetData(const std::string& name)
+    typename KTDerivedDataMap< XDerivedData >::MapType* KTDerivedDataMap< XDerivedData >::GetData(const std::string& name)
     {
         typename DataMap::const_iterator it = fDataMap.find(name);
         if (it == fDataMap.end()) return NULL;
@@ -99,10 +124,68 @@ namespace Katydid
     }
 
     template< class XDerivedData >
-    Bool_t KTDerivedDataMap< XDerivedData>::RemoveData(const std::string& name)
+    Bool_t KTDerivedDataMap< XDerivedData >::RemoveData(const std::string& name)
     {
         return Bool_t(fDataMap.erase(name) > 0);
     }
+
+    template< class XDerivedData >
+    Bool_t KTDerivedDataMap< XDerivedData >::Empty()
+    {
+        return fDataMap.empty();
+    }
+
+    template< class XDerivedData >
+    UInt_t KTDerivedDataMap< XDerivedData >::Size()
+    {
+        return (UInt_t)fDataMap.size();
+    }
+
+    template< class XDerivedData >
+    void KTDerivedDataMap< XDerivedData >::PrintMap()
+    {
+        std::stringstream outStream;
+        outStream << "Data objects:\n";
+        for (DataMapCIt iter=fDataMap.cbegin(); iter != fDataMap.cend(); iter++)
+        {
+            outStream << '\t' << iter->second->GetName() << '\n';
+        }
+        KTDEBUG(corelog_data, outStream.str());
+        return;
+    }
+
+    template< class XDerivedData >
+    typename KTDerivedDataMap< XDerivedData >::DataMapIt KTDerivedDataMap< XDerivedData >::Begin()
+    {
+        return fDataMap.end();
+    }
+    template< class XDerivedData >
+    typename KTDerivedDataMap< XDerivedData >::DataMapCIt KTDerivedDataMap< XDerivedData >::Begin() const
+    {
+        return fDataMap.cbegin();
+    }
+    template< class XDerivedData >
+    typename KTDerivedDataMap< XDerivedData >::DataMapCIt KTDerivedDataMap< XDerivedData >::ConstBegin() const
+    {
+        return fDataMap.cbegin();
+    }
+
+    template< class XDerivedData >
+    typename KTDerivedDataMap< XDerivedData >::DataMapIt KTDerivedDataMap< XDerivedData >::End()
+    {
+        return fDataMap.end();
+    }
+    template< class XDerivedData >
+    typename KTDerivedDataMap< XDerivedData >::DataMapCIt KTDerivedDataMap< XDerivedData >::End() const
+    {
+        return fDataMap.cend();
+    }
+    template< class XDerivedData >
+    typename KTDerivedDataMap< XDerivedData >::DataMapCIt KTDerivedDataMap< XDerivedData >::ConstEnd() const
+    {
+        return fDataMap.cend();
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTDATAMAP_HH_ */
