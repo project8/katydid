@@ -26,6 +26,8 @@
 #include "boost/shared_ptr.hpp"
 #include <Eigen/Sparse>
 
+#include <ctime>
+
 namespace Katydid {
 
   KTLOGGER(nrq_log, "katydid.nrq");
