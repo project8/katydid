@@ -12,7 +12,7 @@
 
 namespace Katydid {
 
-  typedef Eigen::MatrixXf KTBiasedACM;
+  typedef Eigen::MatrixXd KTBiasedACM;
 
 }; // namespace katydid
 
