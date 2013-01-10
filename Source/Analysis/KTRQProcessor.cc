@@ -14,7 +14,7 @@ namespace Katydid {
     fConfigName = "rayleigh-quotient";
     RegisterSignal("rq-calc", 
 		   &fRQSignal, 
-		   "void (const double*)");
+		   "void (const KTTimeSeriesData*)");
     RegisterSlot("ts-noise", 
 		 this, 
 		 &KTRQProcessor::ProcessNoiseData, 
@@ -174,7 +174,7 @@ namespace Katydid {
 
   double KTRQProcessor::RayleighQuotient(const DataMapType* tsptr)
   {
-    return 1.0;
+    return (tsptr->normalized())*(*(this->fNoiseACM))*(tsptr->adjoint());
   }
 
   void KTRQProcessor::ProcessNoiseData(const KTTimeSeriesData* noise)
@@ -201,7 +201,7 @@ namespace Katydid {
 	// number of elements in the incoming time series divided by the chunk size.
 	unsigned nOut = nElem/fChunkSize;
 	KTBasicTimeSeriesData* nDt = new KTBasicTimeSeriesData(1);
-	KTTimeSeriesReal* rqOut = new KTTimeSeriesReal(nElem);
+	KTTimeSeriesReal* rqOut = new KTTimeSeriesReal(nOut);
 
 	/*
 	 * Iterate over the data in the event, pointing the data map at each chunk consecutively.

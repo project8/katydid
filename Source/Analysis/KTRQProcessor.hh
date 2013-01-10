@@ -24,6 +24,7 @@
 #include "KTTimeSeriesReal.hh"
 
 #include "boost/shared_ptr.hpp"
+#include <Eigen/Sparse>
 
 namespace Katydid {
 
