@@ -44,6 +44,14 @@
 		"slot-processor": "nrq-est",
 		"slot-name": "process-candidate-event"
 	    },
+
+	    "connection":
+	    {
+	    	"signal-processor": "nrq-est",
+	    	"signal-name": "rq-calc",
+	    	"slot-processor": "ascii-out",
+	    	"slot-name": "ts-data"
+	    },
 	    
 	    "run-queue":
 	    {
@@ -71,6 +79,11 @@
 	    "chunk-size": 512,
 	    "noise-data-name": "noise-time-series",
 	    "candidate-data-name": "candidate-time-series"
+	},
+
+	"ascii-out":
+	{
+		"output-file": "ascii.txt"
 	}
     }
 }
