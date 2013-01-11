@@ -1,9 +1,11 @@
-/*
- * KTSlidingWindowFSDataFFTW.hh
- *
- *  Created on: Aug 24, 2012
- *      Author: nsoblath
+/**
+ @file KTSlidingWindowFSDataFFTW.hh
+ @brief Contains KTSlidingWindowFSDataFFTW
+ @details 
+ @author: N. S. Oblath
+ @date: Aug 24, 2012
  */
+
 
 #ifndef KTSLIDINGWINDOWFSDATAFFTW_HH_
 #define KTSLIDINGWINDOWFSDATAFFTW_HH_

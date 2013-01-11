@@ -1,8 +1,9 @@
-/*
- * KTFrequencySpectrumFFTW.hh
- *
- *  Created on: Aug 28, 2012
- *      Author: nsoblath
+/**
+ @file KTFrequencySpectrumFFTW.hh
+ @brief Contains KTFrequencySpectrum
+ @details 
+ @author: N. S. Oblath
+ @date: Aug 28, 2012
  */
 
 #ifndef KTFREQUENCYSPECTRUMFFTW_HH_
