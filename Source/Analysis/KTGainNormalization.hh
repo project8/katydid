@@ -1,8 +1,7 @@
-
 /**
  @file KTGainNormalization.hh
  @brief Contains KTGainNormalization
- @details Removes slow variations in the baseline of a histogram
+ @details Normalizes a frequency spectrum using a KTGainVariationData object.
  @author: N. S. Oblath
  @date: Jan 24, 2012
  */
@@ -32,27 +31,27 @@ namespace Katydid
      @class KTGainNormalization
      @author N. S. Oblath
 
-     @brief Normalize gain by using FFT(?)
+     @brief Normalizes a frequency spectrum using a KTGainVariationData object.
 
      @details
  
      Available configuration values:
-     \li \c "min-bin": unsigned -- minimum bin
-     \li \c "max-bin": unsigned -- maximum bin
-     \li \c "min-frequency": double -- minimum frequency
-     \li \c "max-frequency": double -- maximum frequency
-     \li \c "gv-input-data-name": string -- name of the data to find when processing an event
-     \li \c "fs-input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name to give to the data produced by an FFT
+     \li \c "min-bin": unsigned -- Set the lower bound of the range that gets normalized by bin number.
+     \li \c "max-bin": unsigned -- Set the upper bound of the range that gets nornalized by bin number.
+     \li \c "min-frequency": double -- Set the lower bound of the range that gets normalized by frequency.
+     \li \c "max-frequency": double -- Set the upper bound of the range that gets normalized by frequency.
+     \li \c "gv-input-data-name": string -- name of the gain variation data to use when processing an event
+     \li \c "fs-input-data-name": string -- name of the frequency spectrum data to use when processing an event
+     \li \c "output-data-name": string -- name to give to the normalized frequency spectrum.
 
      Slots:
      \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
 
      Signals:
-     \li \c "gain-norm-fs": void (const KTFrequencySpectrumData*) emitted upon performance of a transform.
-     \li \c "gain-norm-fs-fftw": void (const KTFrequencySpectrumDataFFTW*) emitted upon performance of a transform.
-     \li \c "gain-norm-sw-fs": void (const KTSlidingWindowFSData*) emitted upon performance of a transform.
-     \li \c "gain-norm-sw-fs-fftw": void (const KTSlidingWindowFSDataFFTW*) emitted upon performance of a transform.
+     \li \c "gain-norm-fs": void (const KTFrequencySpectrumData*) emitted upon performance of a normalization of a KTFrequencySpectrumData object
+     \li \c "gain-norm-fs-fftw": void (const KTFrequencySpectrumDataFFTW*) emitted upon performance normalization of a KTFrequencySpectrumDataFFTW object
+     \li \c "gain-norm-sw-fs": void (const KTSlidingWindowFSData*) emitted upon performance of a normalization of a KTSlidingWindowFSData object
+     \li \c "gain-norm-sw-fs-fftw": void (const KTSlidingWindowFSDataFFTW*) emitted upon performance of a normalization of a KTSlidingWindowFSDataFFTW object
     */
 
     class KTGainNormalization : public KTProcessor

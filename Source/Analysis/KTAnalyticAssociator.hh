@@ -1,13 +1,7 @@
-/*
- * KTAnalyticAssociator.hh
- *
- *  Created on: Dec 17, 2012
- *      Author: nsoblath
- */
 /**
  @file KTAnalyticAssociator.hh
  @brief Contains KTAnalyticAssociator
- @details (?)
+ @details Creates an analytic associate of a time series
  @author: N. S. Oblath
  @date: Dec 17, 2012
  */
@@ -35,15 +29,15 @@ namespace Katydid
      @class KTAnalyticAssociator
      @author N. S. Oblath
 
-     @brief A one-dimensional real-to-complex FFT class.
+     @brief Creates an analytic associate of a time series
 
      @details
  
      Available configuration values:
-     \li \c "save-frequency-spectrum": bool -- 
-     \li \c "aa-ts-output-data-name": string - -
+     \li \c "save-frequency-spectrum": bool -- Option to save the intermediate frequency spectrum that is calculated while creating the analytic associate
+     \li \c "aa-fs-output-data-name": string -- If saving the intermediate frequency spectrum, the will be the name given to the FS data.
      \li \c "input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name to give to the data produced by an analyticassociator
+     \li \c "output-data-name": string -- name given to the analytic associate data
 
      Slots:
      \li \c "header": void ProcessHeader(const KTEggHeader*)
@@ -51,7 +45,7 @@ namespace Katydid
      \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesData*)
 
      Signals:
-     \li \c void (const KTFrequencySpectrumData*) emitted upon performance of a transform.
+     \li \c "analytic-associate": void (const KTFrequencySpectrumData*) emitted upon creation of an analytic associate
     */
 
     class KTAnalyticAssociator : public KTProcessor

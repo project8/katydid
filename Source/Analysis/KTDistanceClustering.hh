@@ -1,8 +1,7 @@
-
 /**
  @file KTDistanceClustering.hh
  @brief Contains KTDistanceClustering
- @details 
+ @details Simple 1-D clustering based on distance between discriminated points from a frequency spectrum
  @author: N. S. Oblath
  @date: Dec, 17, 2012
  */
@@ -28,19 +27,19 @@ namespace Katydid
      @class KTDistanceClustering
      @author N. S. Oblath
 
-     @brief
+     @brief Simple 1-D clustering based on distance between discriminated points from a frequency spectrum
 
      @details
 
      Available configuration values:
-     \li \c "max-frequency-distance": (?) -- 
-     \li \c "max-bin-distance":(?) -- 
+     \li \c "max-frequency-distance": double -- Set maximum separation within a cluster by frequency
+     \li \c "max-bin-distance": unsigned int -- Set maximum separation within a cluster by bin
      \li \c "input-data-name": string -- name of the data to find when processing an event
      \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
       Slots:
      \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c "disc-1d-data": void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
+     \li \c "disc-1d-data": void ProcessTimeSeriesData(const KTDiscriminatedPoints1DData*)
 
      Signals:
      \li \c "cluster-1d": void (const KTCluster1DData*) 

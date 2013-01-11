@@ -1,9 +1,10 @@
-/*
- * KTJSONWriter.hh
- *
- *  Created on: Jan 3, 2013
- *      Author: nsoblath
- */
+/**
+ @file KTJSONWriter.hh
+ @brief Contains KTJSONWriter
+ @details 
+ @author: N. S. Oblath
+ @date: Jan 3, 2013
+*/
 
 #ifndef KTJSONWRITER_HH_
 #define KTJSONWRITER_HH_
@@ -19,6 +20,24 @@ namespace Katydid
 {
     class KTJSONWriter;
     typedef KTDerivedTypeWriter< KTJSONWriter > KTJSONTypeWriter;
+
+    /*!
+     @class KTJSONWriter
+     @author N. S. Oblath
+
+     @brief JSON file writer
+
+     @details
+
+     Available configuration values:
+     \li \c "output-file": string -- output filename
+     \li \c "pretty-json": bool -- if true, prints a human-readable file
+     \li \c "file-mode": string -- cstdio FILE mode: w, a, r+, w+ or a+
+
+     Slots:
+     \li \c "frequency-candidates": void WriteFrequencyCandidates(const KTFrequencyCandidateData*)
+     \li \c "header": void WriteEggHeader(const KTEggHeader*)
+    */
 
 
     class KTJSONWriter : public KTWriterWithTypists< KTJSONWriter >

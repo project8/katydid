@@ -59,7 +59,7 @@ namespace Katydid
         SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
 
         SetSaveFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveFrequencySpectrum));
-        SetFSOutputDataName(node->GetData< string >("aa-ts-output-data-name", fFSOutputDataName));
+        SetFSOutputDataName(node->GetData< string >("aa-fs-output-data-name", fFSOutputDataName));
 
         const KTPStoreNode* fftNode = node->GetChild("complex-fftw");
         if (fftNode != NULL)
