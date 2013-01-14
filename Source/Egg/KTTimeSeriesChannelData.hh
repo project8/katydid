@@ -115,7 +115,6 @@ namespace Katydid
             struct PerChannelData
             {
                 ClockType fTimeStamp;
-                ChIdType fChannelID;
                 AcqIdType fAcquisitionID;
                 RecIdType fRecordID;
                 KTTimeSeries* fRecord;
@@ -139,7 +138,6 @@ namespace Katydid
             Double_t GetBinWidth() const;
 
             ClockType GetTimeStamp(UInt_t channelNum = 0) const;
-            ChIdType GetChannelID(UInt_t channelNum = 0) const;
             AcqIdType GetAcquisitionID(UInt_t channelNum = 0) const;
             RecIdType GetRecordID(UInt_t channelNum = 0) const;
 
@@ -155,7 +153,6 @@ namespace Katydid
             void CalculateBinWidthAndRecordLength();
 
             void SetTimeStamp(ClockType timeStamp, UInt_t channelNum = 0);
-            void SetChannelID(ChIdType chId, UInt_t channelNum = 0);
             void SetAcquisitionID(AcqIdType acqId, UInt_t channelNum = 0);
             void SetRecordID(RecIdType recId, UInt_t channelNum = 0);
 
@@ -199,11 +196,6 @@ namespace Katydid
     inline ClockType KTProgenitorTimeSeriesData::GetTimeStamp(UInt_t channelNum) const
     {
         return fChannelData[channelNum].fTimeStamp;
-    }
-
-    inline ChIdType KTProgenitorTimeSeriesData::GetChannelID(UInt_t channelNum) const
-    {
-        return fChannelData[channelNum].fChannelID;
     }
 
     inline AcqIdType KTProgenitorTimeSeriesData::GetAcquisitionID(UInt_t channelNum) const
@@ -263,13 +255,6 @@ namespace Katydid
     {
         if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
         fChannelData[channelNum].fTimeStamp = timeStamp;
-        return;
-    }
-
-    inline void KTProgenitorTimeSeriesData::SetChannelID(ChIdType chId, UInt_t channelNum)
-    {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fChannelID = chId;
         return;
     }
 
