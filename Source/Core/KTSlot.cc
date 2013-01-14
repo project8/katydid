@@ -1,29 +1,22 @@
 /*
  * KTSlot.cc
  *
- *  Created on: Feb 10, 2012
+ *  Created on: Jan 13, 2013
  *      Author: nsoblath
  */
 
 #include "KTSlot.hh"
 
-#include "KTSignal.hh"
-
 namespace Katydid
 {
-    SlotException::SlotException (std::string const& why)
-      : std::logic_error(why)
-    {}
 
-    KTSlotWrapper::KTSlotWrapper() :
-            fSlotWrapper(NULL),
-            fConnection()
+    KTSlot::KTSlot()
     {
+
     }
 
-    KTSlotWrapper::~KTSlotWrapper()
+    KTSlot::~KTSlot()
     {
-        this->Disconnect();
     }
 
 } /* namespace Katydid */

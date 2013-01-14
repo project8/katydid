@@ -43,13 +43,15 @@ namespace Katydid
             fWisdomFilename("wisdom_simplefft.fftw3"),
             fInputDataName("time-series"),
             fOutputDataName("frequency-spectrum"),
-            fFFTSignal()
+            fFFTSignal(),
+            fHeaderSlot(this)
     {
         fConfigName = "simple-fft";
 
         RegisterSignal("fft", &fFFTSignal, "void (const KTFrequencySpectrumData*)");
 
-        RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
+        //RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
+        fHeaderSlot.RegisterSlot("header", &KTSimpleFFT::InitializeWithHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
 
@@ -128,6 +130,13 @@ namespace Katydid
         {
             fIsInitialized = false;
         }
+        return;
+    }
+
+    void KTSimpleFFT::InitializeWithHeader(const KTEggHeader* header)
+    {
+        SetTimeSize(header->GetRecordSize());
+        InitializeFFT();
         return;
     }
 
@@ -239,13 +248,6 @@ namespace Katydid
         }
         fTransformFlag = flag;
         fIsInitialized = false;
-        return;
-    }
-
-    void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
-    {
-        SetTimeSize(header->GetRecordSize());
-        InitializeFFT();
         return;
     }
 

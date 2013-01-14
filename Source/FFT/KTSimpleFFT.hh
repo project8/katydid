@@ -86,6 +86,7 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
             virtual void InitializeFFT();
+            void InitializeWithHeader(const KTEggHeader* header);
 
             virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
@@ -148,7 +149,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessHeader(const KTEggHeader* header);
+            KTSlotOneArg< KTSimpleFFT, void, const KTEggHeader* > fHeaderSlot;
             void ProcessEvent(boost::shared_ptr<KTEvent> event);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 

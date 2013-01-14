@@ -1,128 +1,131 @@
 /*
  * KTSlot.hh
  *
- *  Created on: Feb 10, 2012
+ *  Created on: Jan 13, 2013
  *      Author: nsoblath
  */
 
 #ifndef KTSLOT_HH_
 #define KTSLOT_HH_
 
-#include "KTConnection.hh"
-#include "KTSignal.hh"
-#include "KTSignalSlotSignature.hh"
-
-#include <boost/function.hpp>
-#include <boost/signals2.hpp>
+#include <string>
 
 namespace Katydid
 {
-    class SlotException : public std::logic_error
+    class KTSlot
     {
         public:
-            SlotException(std::string const& why);
+            KTSlot();
+            virtual ~KTSlot();
     };
 
-    class KTSlotWrapper : public boost::noncopyable
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    class KTSlotOneArg : public KTSlot
     {
-        private:
-            class KTInternalSlotWrapper
-            {
-                public:
-                    KTInternalSlotWrapper() {}
-                    virtual ~KTInternalSlotWrapper() {}
-
-                    virtual KTConnection Connect(KTSignalWrapper* signalWrap, int groupNum=-1) = 0;
-            };
-
-            template< typename XSignature, typename XTypeContainer >
-            class KTSpecifiedInternalSlotWrapper : public KTInternalSlotWrapper, public boost::noncopyable
-            {
-                public:
-                    KTSpecifiedInternalSlotWrapper(XSignature* funcPtr, XTypeContainer* typeCont=NULL) :
-                            fSlot(funcPtr)
-                    {}
-                    virtual ~KTSpecifiedInternalSlotWrapper()
-                    {
-                        //delete fSlot;
-                    }
-
-                    virtual KTConnection Connect(KTSignalWrapper* signalWrap, int groupNum=-1)
-                    {
-                        typedef KTSignalWrapper::KTInternalSignalWrapper SignalWrapperBase;
-                        typedef KTSignalWrapper::KTSpecifiedInternalSignalWrapper< typename XTypeContainer::signal > SignalWrapper;
-
-                        SignalWrapperBase* internalSignalWrap = signalWrap->GetInternal();
-                        SignalWrapper* derivedSignalWrapper = dynamic_cast< SignalWrapper* >(internalSignalWrap);
-                        if (derivedSignalWrapper == NULL)
-                        {
-                            throw SignalException("In KTSpecifiedInternalSlotWrapper::Connect:\nUnable to cast from KTInternalSignalWrapper* to derived type.");
-                        }
-                        if (groupNum >= 0)
-                        {
-                            return derivedSignalWrapper->GetSignal()->connect(groupNum, *fSlot);
-                        }
-                        return derivedSignalWrapper->GetSignal()->connect(*fSlot);
-                    }
-
-                private:
-                    XSignature* fSlot; // is owned by this KTSlot
-            };
+        public:
+            typedef XProcessorType processor_type;
+            typedef XReturnType return_type;
+            typedef XArgumentType argument_type;
 
         public:
-            template< typename XSignature, typename XTypeContainer >
-            KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont, const std::string& signature);
-            ~KTSlotWrapper();
+            KTSlotOneArg(XProcessorType* proc);
+            virtual ~KTSlotOneArg();
 
-            const KTSignalSlotSignature& GetSignature() const;
+            XReturnType operator()(XArgumentType arg);
 
-        private:
-            KTSlotWrapper();
+            void RegisterSlot(const std::string& name, XReturnType (XProcessorType::*func)(XArgumentType), const std::string& signature);
 
-            KTInternalSlotWrapper* fSlotWrapper;
+        protected:
+            XProcessorType* fProcessor;
 
-            KTSignalSlotSignature fSignature;
-
-        public:
-            void SetConnection(KTConnection conn);
-            void SetConnection(KTSignalWrapper* signalWrap, int groupNum=-1);
-            void Disconnect();
-
-        private:
-            KTConnection fConnection;
-
+            XReturnType (XProcessorType::*fFuncPtr)(XArgumentType);
     };
 
-    template< typename XSignature, typename XTypeContainer >
-    KTSlotWrapper::KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont, const std::string& signature) :
-            fSlotWrapper(new KTSpecifiedInternalSlotWrapper< XSignature, XTypeContainer >(signalPtr, typeCont)),
-            fSignature(signature),
-            fConnection()
-    {}
-
-    inline void KTSlotWrapper::SetConnection(KTConnection conn)
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    KTSlotOneArg< XProcessorType, XReturnType, XArgumentType >::KTSlotOneArg(XProcessorType* proc) :
+            KTSlot(),
+            fProcessor(proc),
+            fFuncPtr(NULL)
     {
-        fConnection = conn;
+    }
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    KTSlotOneArg< XProcessorType, XReturnType, XArgumentType >::~KTSlotOneArg()
+    {
+    }
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    XReturnType KTSlotOneArg< XProcessorType, XReturnType, XArgumentType >::operator()(XArgumentType arg)
+    {
+        return fProcessor->fFuncPtr(arg);
+    }
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    void KTSlotOneArg< XProcessorType, XReturnType, XArgumentType >::RegisterSlot(const std::string& name, XReturnType (XProcessorType::*func)(XArgumentType), const std::string& signature)
+    {
+        fFuncPtr = func;
+        fProcessor->template RegisterSlot< XProcessorType, void, XArgumentType >(name, fProcessor, fFuncPtr, signature);
         return;
     }
 
-    inline void KTSlotWrapper::SetConnection(KTSignalWrapper* signalWrap, int groupNum)
+
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    class KTDataSlotOneArg : public KTSlot
     {
-        fConnection = this->fSlotWrapper->Connect(signalWrap, groupNum);
+        public:
+            typedef XProcessorType processor_type;
+            typedef XReturnType return_type;
+            typedef XArgumentType argument_type;
+
+        public:
+            KTDataSlotOneArg(XProcessorType* proc);
+            virtual ~KTDataSlotOneArg();
+
+            XReturnType operator()(XArgumentType arg);
+
+            void RegisterSlot(const std::string& name, XReturnType (XProcessorType::*func)(XArgumentType), const std::string& signature);
+
+        protected:
+            XProcessorType* fProcessor;
+
+            XReturnType (XProcessorType::*fFuncPtr)(XArgumentType);
+    };
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    KTDataSlotOneArg< XProcessorType, XReturnType, XArgumentType >::KTDataSlotOneArg(XProcessorType* proc) :
+            KTSlot(),
+            fProcessor(proc),
+            fFuncPtr(NULL)
+    {
+    }
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    KTDataSlotOneArg< XProcessorType, XReturnType, XArgumentType >::~KTDataSlotOneArg()
+    {
+    }
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    XReturnType KTDataSlotOneArg< XProcessorType, XReturnType, XArgumentType >::operator()(XArgumentType arg)
+    {
+        const XReturnType& retVal = fProcessor->fFuncPtr(arg);
+        KTEvent* event = retVal->GetEvent();
+        if (event != NULL)
+        {
+            retVal->SetEvent(event);
+            event->AddData(retVal);
+        }
+        return retVal;
+    }
+
+    template< class XProcessorType, class XReturnType, class XArgumentType >
+    void KTDataSlotOneArg< XProcessorType, XReturnType, XArgumentType >::RegisterSlot(const std::string& name, XReturnType (XProcessorType::*func)(XArgumentType), const std::string& signature)
+    {
+        fFuncPtr = func;
+        fProcessor->template RegisterSlot< XProcessorType, void, XArgumentType >(name, fProcessor, fFuncPtr, signature);
         return;
     }
-
-    inline void KTSlotWrapper::Disconnect()
-    {
-        fConnection.disconnect();
-        return;
-    }
-
-    inline const KTSignalSlotSignature& KTSlotWrapper::GetSignature() const
-    {
-        return fSignature;
-    }
-
 
 } /* namespace Katydid */
 #endif /* KTSLOT_HH_ */
