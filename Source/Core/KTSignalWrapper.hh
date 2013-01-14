@@ -5,8 +5,8 @@
  *      Author: nsoblath
  */
 
-#ifndef KTSIGNAL_HH_
-#define KTSIGNAL_HH_
+#ifndef KTSIGNALWRAPPER_HH_
+#define KTSIGNALWRAPPER_HH_
 
 #include "KTSignalSlotSignature.hh"
 
@@ -97,4 +97,4 @@ namespace Katydid
     }
 
 } /* namespace Katydid */
-#endif /* KTSIGNAL_HH_ */
+#endif /* KTSIGNALWRAPPER_HH_ */

@@ -1,15 +1,15 @@
 /*
- * KTSlot.hh
+ * KTSlotWrapper.hh
  *
  *  Created on: Feb 10, 2012
  *      Author: nsoblath
  */
 
-#ifndef KTSLOT_HH_
-#define KTSLOT_HH_
+#ifndef KTSLOTWRAPPER_HH_
+#define KTSLOTWRAPPER_HH_
 
 #include "KTConnection.hh"
-#include "KTSignal.hh"
+#include "KTSignalWrapper.hh"
 #include "KTSignalSlotSignature.hh"
 
 #include <boost/function.hpp>
@@ -125,4 +125,4 @@ namespace Katydid
 
 
 } /* namespace Katydid */
-#endif /* KTSLOT_HH_ */
+#endif /* KTSLOTWRAPPER_HH_ */
