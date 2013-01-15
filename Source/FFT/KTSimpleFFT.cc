@@ -44,7 +44,9 @@ namespace Katydid
             fInputDataName("time-series"),
             fOutputDataName("frequency-spectrum"),
             fFFTSignal(),
-            fHeaderSlot(this)
+            fHeaderSlot(this),
+            fEventSlot(this),
+            fTimeSeriesSlot(this)
     {
         fConfigName = "simple-fft";
 
@@ -52,8 +54,14 @@ namespace Katydid
 
         //RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         fHeaderSlot.RegisterSlot("header", &KTSimpleFFT::InitializeWithHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
+
+        //RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        fTimeSeriesSlot.RegisterSlot("ts-data", &KTSimpleFFT::TransformData, "void (const KTTimeSeriesData*)");
+        fTimeSeriesSlot.SetSignal(&fFFTSignal);
+
+        //RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
+        fEventSlot.RegisterSlot("event", &fInputDataName);
+        fEventSlot.AddDataSlot(&fTimeSeriesSlot);
 
         SetupTransformFlagMap();
     }
@@ -250,7 +258,7 @@ namespace Katydid
         fIsInitialized = false;
         return;
     }
-
+/*
     void KTSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTFrequencySpectrumData* newData = TransformData(tsData);
@@ -258,7 +266,8 @@ namespace Katydid
             tsData->GetEvent()->AddData(newData);
         return;
     }
-
+*/
+/*
     void KTSimpleFFT::ProcessEvent(shared_ptr<KTEvent> event)
     {
         const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
@@ -272,6 +281,7 @@ namespace Katydid
         event->AddData(newData);
         return;
     }
+*/
 
     void KTSimpleFFT::SetupTransformFlagMap()
     {

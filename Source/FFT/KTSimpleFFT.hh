@@ -141,7 +141,7 @@ namespace Katydid
             // Signals
             //***************
 
-        private:
+        public:
             FFTSignal fFFTSignal;
 
             //***************
@@ -149,9 +149,11 @@ namespace Katydid
             //***************
 
         public:
-            KTSlotOneArg< KTSimpleFFT, void, const KTEggHeader* > fHeaderSlot;
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
-            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+            KTSlotOneArg< KTSimpleFFT, const KTEggHeader* > fHeaderSlot;
+            KTEventSlotOneArg< KTSimpleFFT > fEventSlot;
+            //void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            KTDataSlotOneArg< KTSimpleFFT, KTFrequencySpectrumData, KTTimeSeriesData > fTimeSeriesSlot;
+            //void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };
 
