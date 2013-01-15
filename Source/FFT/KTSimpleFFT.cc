@@ -43,14 +43,15 @@ namespace Katydid
             fWisdomFilename("wisdom_simplefft.fftw3"),
             fInputDataName("time-series"),
             fOutputDataName("frequency-spectrum"),
-            fFFTSignal(),
+            fFFTSignal(this),
             fHeaderSlot(this),
             fEventSlot(this),
             fTimeSeriesSlot(this)
     {
         fConfigName = "simple-fft";
 
-        RegisterSignal("fft", &fFFTSignal, "void (const KTFrequencySpectrumData*)");
+        //RegisterSignal("fft", &fFFTSignal, "void (const KTFrequencySpectrumData*)");
+        fFFTSignal.RegisterSignal("fft", "void (const KTFrequencySpectrumData*)");
 
         //RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         fHeaderSlot.RegisterSlot("header", &KTSimpleFFT::InitializeWithHeader, "void (const KTEggHeader*)");

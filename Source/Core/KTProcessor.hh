@@ -15,6 +15,7 @@
 #include "KTSignalWrapper.hh"
 #include "KTSlotWrapper.hh"
 
+#include "KTSignal.hh"
 #include "KTSlot.hh"
 
 #include <boost/bind.hpp>

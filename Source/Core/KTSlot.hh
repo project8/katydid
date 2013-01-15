@@ -9,6 +9,7 @@
 #define KTSLOT_HH_
 
 #include "KTEvent.hh"
+#include "KTSignal.hh"
 #include "KTSignalWrapper.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -125,7 +126,7 @@ namespace Katydid
             typedef XReturnDataType return_type;
             typedef XDataType argument_type;
 
-            typedef typename KTSignal< void (const XReturnDataType* ) >::signal signal_type;
+            typedef KTDataSignal< XProcessorType, XReturnDataType > signal_type;
 
         public:
             KTDataSlotOneArg(XProcessorType* proc);
@@ -135,8 +136,7 @@ namespace Katydid
 
             void RegisterSlot(const std::string& name, XReturnDataType* (XProcessorType::*func)(const XDataType*), const std::string& signature);
 
-            template< typename XSignal >
-            void SetSignal(XSignal* signalPtr);
+            void SetSignal(signal_type* signalPtr);
 
         protected:
             XProcessorType* fProcessor;
@@ -177,7 +177,7 @@ namespace Katydid
         // If there's a signal pointer, emit the signal
         if (fSignalPtr != NULL)
         {
-            (*fSignalPtr)(newData);
+            fSignalPtr->EmitSignal(newData);
         }
         return;
     }
@@ -191,10 +191,9 @@ namespace Katydid
     }
 
     template< class XProcessorType, class XReturnDataType, class XDataType >
-    template< typename XSignal >
-    void KTDataSlotOneArg< XProcessorType, XReturnDataType, XDataType >::SetSignal(XSignal* signalPtr)
+    void KTDataSlotOneArg< XProcessorType, XReturnDataType, XDataType >::SetSignal(signal_type* signalPtr)
     {
-        fSignalPtr = (signal_type*)signal;
+        fSignalPtr = signalPtr;
         return;
     }
 

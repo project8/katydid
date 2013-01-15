@@ -73,9 +73,6 @@ namespace Katydid
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
     {
-        public:
-            typedef KTSignal< void (const KTFrequencySpectrumData*) >::signal FFTSignal;
-
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
 
@@ -142,7 +139,7 @@ namespace Katydid
             //***************
 
         public:
-            FFTSignal fFFTSignal;
+            KTDataSignal< KTSimpleFFT, KTFrequencySpectrumData > fFFTSignal;
 
             //***************
             // Slots
