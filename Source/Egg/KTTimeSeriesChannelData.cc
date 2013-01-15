@@ -23,6 +23,8 @@ namespace Katydid
     }
 
 
+  static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTBasicTimeSeriesData > > sBTSDRegistrar;
+
     KTBasicTimeSeriesData::KTBasicTimeSeriesData(UInt_t nChannels) :
             KTTimeSeriesChannelData()
     {

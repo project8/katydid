@@ -1,0 +1,89 @@
+{
+    "katydid":
+    {
+	"processor-toolbox":
+	{
+	    "processor":
+	    {
+		"type": "egg-processor",
+		"name": "noise-egg",
+		"group-order": 0
+	    },
+
+	    "processor":
+	    {
+		"type": "egg-processor",
+		"name": "candidate-egg",
+		"group-order": 1
+	    },
+
+	    "processor":
+	    {
+		"type": "rayleigh-quotient",
+		"name": "nrq-est"
+	    },
+
+	    "processor":
+	    {
+		"type": "basic-ascii-writer",
+		"name": "ascii-out"
+	    },
+
+	    "connection":
+	    {
+		"signal-processor": "noise-egg",
+		"signal-name": "event",
+		"slot-processor": "nrq-est",
+		"slot-name": "process-noise-event"
+	    },
+
+	    "connection":
+	    {
+		"signal-processor": "candidate-egg",
+		"signal-name": "event",
+		"slot-processor": "nrq-est",
+		"slot-name": "process-candidate-event"
+	    },
+
+	    "connection":
+	    {
+	    	"signal-processor": "nrq-est",
+	    	"signal-name": "rq-calc",
+	    	"slot-processor": "ascii-out",
+	    	"slot-name": "ts-data"
+	    },
+	    
+	    "run-queue":
+	    {
+		"processor": "noise-egg",
+		"processor": "candidate-egg"
+	    }
+	},
+
+	"noise-egg":
+	{
+	    "filename": "run2012_11_5_tone.egg",
+	    "number-of-events": 1,
+	    "output-data-name": "noise-time-series"
+	},
+
+	"candidate-egg":
+	{
+	    "filename": "run2012_11_5_tone.egg",
+	    "number-of-events": 10,
+	    "output-data-name": "candidate-time-series"
+	},
+	
+	"nrq-est":
+	{
+	    "chunk-size": 512,
+	    "noise-data-name": "noise-time-series",
+	    "candidate-data-name": "candidate-time-series"
+	},
+
+	"ascii-out":
+	{
+		"output-file": "ascii.txt"
+	}
+    }
+}

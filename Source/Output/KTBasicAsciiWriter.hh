@@ -8,6 +8,7 @@
 #ifndef __KT_ASCII_WRITER_HH
 #define __KT_ASCII_WRITER_HH
 
+#include "KTEvent.hh"
 #include "KTWriter.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -16,11 +17,11 @@
 
 namespace Katydid {
 
-  class KTBasicAsciiWriter : public KTWriter {
+  class KTBasicASCIIWriter : public KTWriterWithTypists< KTBasicASCIIWriter > {
     // Constructors/destructors
   public:
-    KTBasicAsciiWriter();
-    virtual ~KTBasicAsciiWriter();
+    KTBasicASCIIWriter();
+    virtual ~KTBasicASCIIWriter();
 
     // Configuration
   public:
@@ -34,21 +35,15 @@ namespace Katydid {
 
     // Basic publish and write
   public:
+    bool CanWrite();
+    std::ofstream* GetStream();   
+
     void Publish(const KTWriteableData* dt);
     void Write(const KTWriteableData* dt);
 
-    // Unused write methods (for now)
-    void Write(const KTCorrelationData* dt);
-    void Write(const KTSlidingWindowFSData* dt);
-    void Write(const KTSlidingWindowFSDataFFTW* dt);
+  }; // class KTBasicASCIIWriter 
 
-    // Writing Frequency Spectrum Data
-    void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* dt);
-    void WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt);
-    void Write(const KTFrequencySpectrumData* dt);
-    void Write(const KTFrequencySpectrumDataFFTW* dt);
-
-  }; // class KTBasicAsciiWriter 
+  typedef KTDerivedTypeWriter< KTBasicASCIIWriter > KTBasicASCIITypeWriter;
 }; // namespace Katydid
 
 
