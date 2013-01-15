@@ -194,9 +194,9 @@ namespace Katydid
         newData->SetName(fOutputDataName);
         // just sets the event pointer; doesn't actually add the data to the event
         // this way anything receiving the signal can use the event pointer
-        newData->SetEvent(tsData->GetEvent());
+        //newData->SetEvent(tsData->GetEvent());
 
-        fFFTSignal(newData);
+        //fFFTSignal(newData);
 
         return newData;
     }
