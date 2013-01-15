@@ -251,9 +251,6 @@ namespace Katydid
             return NULL;
         }
 
-        // channel number is always 0
-        eventData->SetChannelID(0);
-
         // read the frame size
         readBuffer = new unsigned char [fHeaderInfo.fFrameIDSize];
         fEggStream.read((char*)(&readBuffer[0]), fHeaderInfo.fFrameIDSize);

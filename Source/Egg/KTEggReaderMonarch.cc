@@ -147,7 +147,6 @@ namespace Katydid
         for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
         {
             monarchRecords[iChannel] = fMonarch->GetRecord(iChannel);
-            eventData->SetChannelID(monarchRecords[iChannel]->fCId, iChannel);
             eventData->SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
             eventData->SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
             eventData->SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
@@ -188,7 +187,6 @@ namespace Katydid
                 // reset event data
                 for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
                 {
-                    eventData->SetChannelID(monarchRecords[iChannel]->fCId, iChannel);
                     eventData->SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
                     eventData->SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
                     eventData->SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
