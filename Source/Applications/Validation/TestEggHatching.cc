@@ -53,7 +53,9 @@ int main(int argc, char** argv)
     if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
     {
         KTINFO(testegg, "Using 2011 egg reader");
-        egg->SetReader(new KTEggReader2011());
+        KTEggReader2011* reader = new KTEggReader2011();
+        reader->SetOutputDataName("time-series");
+        egg->SetReader(reader);
     }
     else
     {
@@ -62,6 +64,7 @@ int main(int argc, char** argv)
         KTINFO(testegg, "Record size should be " << recordSize << " (if 0, it should be the same as the Monarch record size)");
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
         reader->SetTimeSeriesSizeRequest(recordSize);
+        reader->SetOutputDataName("time-series");
         egg->SetReader(reader);
     }
 
@@ -97,7 +100,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    KTTimeSeriesData* tsData = event->GetData<KTProgenitorTimeSeriesData>("time-series");
+    KTTimeSeriesData* tsData = event->GetData<KTTimeSeriesData>("time-series");
     if (tsData == NULL)
     {
         KTWARN(testegg, "No time-series data present in event");
