@@ -207,6 +207,11 @@ namespace Katydid
      @brief Creates a slot function that calls a Processor member function taking an event pointer as the argument.
 
      @details
+     KTEventSlotOneArg uses a type erasure pattern to hold and use Data slots that deal with different types of input and output data.
+     Pointers to the individual Data slots are held in a std::deque after wrapping them in a KTInternalSlotFunction object.
+     The specified slot type is hidden in the derived KTSpecifiedInternalSlotFunction class.
+     KTEventSlotOneArg uses the Data slot via the generic function KTInternalSlotFunction::FindAndProcessData.
+
      Usage:
      To use this slot type your processor must one ore more KTDataSlotOneArg members that you wish to use.
 
