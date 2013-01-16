@@ -31,7 +31,7 @@ using std::pair;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTOldSimpleClustering > sSimpClustRegistrar("simple-clustering");
+    static KTDerivedRegistrar< KTProcessor, KTOldSimpleClustering > sSimpClustRegistrar("old-simple-clustering");
 
     KTOldSimpleClustering::KTOldSimpleClustering() :
             KTProcessor(),
@@ -45,7 +45,7 @@ namespace Katydid
             fFirstBinToUse(0),
             fDrawFlag(kFALSE)
     {
-        fConfigName = "sliding-window-fft";
+        fConfigName = "old-simple-clustering";
 
         RegisterSlot("freq_spect", this, &KTOldSimpleClustering::ProcessFrequencySpectrum, "void (UInt_t, KTFrequencySpectrum*)");
     }
