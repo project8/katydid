@@ -19,6 +19,7 @@ katydid_prepare_project (0 9 1)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   list (APPEND LIBS rt)
+  set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 # Boost (1.46 required for filesystem version 3)
