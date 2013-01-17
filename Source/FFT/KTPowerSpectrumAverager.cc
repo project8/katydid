@@ -126,7 +126,7 @@ namespace Katydid
         }
 
         const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
-        if (fsData != NULL)
+        if (fsDataFFTW != NULL)
         {
             AddFrequencySpectrumData(fsDataFFTW);
             return;
