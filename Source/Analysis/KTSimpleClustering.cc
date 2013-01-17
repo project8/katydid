@@ -7,6 +7,271 @@
 
 #include "KTSimpleClustering.hh"
 
+#include "KTDiscriminatedPoints1DData.hh"
+#include "KTEvent.hh"
+#include "KTFactory.hh"
+#include "KTPStoreNode.hh"
+
+#include <set>
+
+using boost::shared_ptr;
+
+using std::deque;
+using std::list;
+using std::set;
+using std::string;
+using std::vector;
+
+namespace Katydid
+{
+    static KTDerivedRegistrar< KTProcessor, KTSimpleClustering > sSimpClustRegistrar("simple-clustering");
+
+    KTSimpleClustering::KTSimpleClustering() :
+            KTProcessor(),
+            fMaxFreqSep(1.),
+            fMaxTimeSep(1.),
+            fMaxFreqSepBins(1),
+            fMaxTimeSepBins(1),
+            fCalculateMaxFreqSepBins(false),
+            fCalculateMaxTimeSepBins(false),
+            fTimeBin(0),
+            fTimeBinWidth(1.),
+            fFreqBinWidth(1.)
+    {
+        fConfigName = "simple-clustering";
+
+    }
+
+    KTSimpleClustering::~KTSimpleClustering()
+    {
+    }
+
+    Bool_t KTSimpleClustering::Configure(const KTPStoreNode* node)
+    {
+        if (node == NULL) return false;
+
+        if (node->HasData("max-frequency-sep"))
+        {
+            SetMaxFrequencySeparation(node->GetData< Double_t >("max-frequency-sep"));
+        }
+        if (node->HasData("max-time-sep"))
+        {
+            SetMaxTimeSeparation(node->GetData< Double_t >("max-time-sep"));
+        }
+
+        if (node->HasData("max-frequency-sep-bins"))
+        {
+            SetMaxFrequencySeparationBins(node->GetData< UInt_t >("max-frequency-sep-bins"));
+        }
+        if (node->HasData("max-time-sep-bins"))
+        {
+            SetMaxTimeSeparationBins(node->GetData< UInt_t >("max-time-sep-bins"));
+        }
+
+        SetInputDataName(node->GetData< string >("fs-input-data-name", fInputDataName));
+        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
+
+        return true;
+    }
+
+    KTSimpleClustering::NewEventList* KTSimpleClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData)
+    {
+        if (dpData->GetBinWidth() != fFreqBinWidth)
+            SetFrequencyBinWidth(dpData->GetBinWidth());
+        if (dpData->GetBinWidth() * Double_t(dpData->GetNBins()) != fTimeBinWidth)
+            SetTimeBinWidth(dpData->GetBinWidth() * Double_t(dpData->GetNBins()));
+
+        UInt_t nComponents = dpData->GetNChannels();
+
+        NewEventList* newEventsAC = new NewEventList();
+
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        {
+            NewEventList* eventsFromComponent = AddPointsToClusters(dpData->GetSetOfPoints(iComponent), iComponent);
+            newEventsAC->splice(newEventsAC->end(), *eventsFromComponent);
+            delete eventsFromComponent;
+        }
+
+        fTimeBin++;
+
+        return newEventsAC;
+    }
+
+    KTSimpleClustering::NewEventList* KTSimpleClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component)
+    {
+        // Process a single time bin's worth of frequency bins
+
+        typedef list< SetOfDiscriminatedPoints > FreqBinClusters;
+        FreqBinClusters freqBinClusters;
+
+        // First cluster the frequency bins in this time bin
+        if (! points.empty())
+        {
+            // loop over all of the points
+            SetOfDiscriminatedPoints::const_iterator pIt = points.begin();
+            SetOfDiscriminatedPoints activeFBCluster;
+            activeFBCluster.insert(*pIt);
+            UInt_t thisPoint;
+            UInt_t lastPointInActiveCluster = pIt->first;
+
+            for (pIt++; pIt != points.end(); pIt++)
+            {
+                thisPoint = pIt->first;
+                if (thisPoint - lastPointInActiveCluster > fMaxFreqSepBins)
+                {
+                    //KTDEBUG(sdlog, "Adding cluster (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                    freqBinClusters.push_back(activeFBCluster);
+                    activeFBCluster.clear();
+                }
+                activeFBCluster.insert(*pIt);
+                lastPointInActiveCluster = thisPoint;
+            }
+            //KTDEBUG(sdlog, "Adding cluster: (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+            freqBinClusters.push_back(activeFBCluster);
+        }
+
+
+        // loop over all of the active clusters to determine their active range in frequency (i.e. the range over which new frequency bins can be added)
+        deque< std::pair< UInt_t, UInt_t > > activeClusterFBRanges;
+        for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++)
+        {
+            std::pair< UInt_t, UInt_t > activeRange(1, 0);
+            std::deque< std::pair< UInt_t, UInt_t > >::const_iterator frIt = (*acIt).fFreqRanges.begin();
+            UInt_t nTimeBinsBack = 1;
+            for (; frIt != (*acIt).fFreqRanges.end() && nTimeBinsBack <= fMaxTimeSepBins; frIt++, nTimeBinsBack++)
+            {
+                if (frIt->first < frIt->second)
+                {
+                    activeRange.first = frIt->first;
+                    activeRange.second = frIt->second;
+                    break;
+                }
+            }
+            if (activeRange.first > activeRange.second)
+            {
+                // ERROR! this active cluster should not be active anymore; nothing within the time separation range had active bins
+            }
+
+            for (; frIt != (*acIt).fFreqRanges.end() && nTimeBinsBack <= fMaxTimeSepBins; frIt++, nTimeBinsBack++)
+            {
+                if (frIt->first < frIt->second)
+                {
+                    if (frIt->first < activeRange.first) activeRange.first = frIt->first;
+                    if (frIt->second > activeRange.second) activeRange.second = frIt->second;
+                }
+            }
+
+            // we're guaranteed that activeRange is a valid range
+            activeClusterFBRanges.push_back(activeRange);
+        }
+
+
+
+        // loop over all of the active clusters
+        deque< std::pair< UInt_t, UInt_t > >::const_iterator arIt = activeClusterFBRanges.begin();
+        for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++, arIt++)
+        {
+            // loop over all of the frequency-bin clusters
+            for (FreqBinClusters::const_iterator fbIt = freqBinClusters.begin(); fbIt != points.end(); fbIt++)
+            {
+                // check for overlap
+                // y1 <= x2+sep  && x1 <= y2+sep
+                // x1 = (fbIt->begin())->first; x2 = (fbIt->rbegin())->first
+                // y1 = arIt->first; y2 = arIt->second
+                if (arIt->first <= (fbIt->rbegin())->first + fMaxFreqSepBins &&
+                    (fbIt->begin())->first <= arIt->second + fMaxFreqSepBins)
+                {
+                    // assign this frequency-bin cluster (at fbIt) to the current active cluster (at acIt)
+                    // add points to acIt->fPoints
+                    for (SetOfDiscriminatedPoints::const_iterator fbPointsIt = fbIt->begin(); fbPointsIt != fbIt->end(); fbPointsIt++)
+                    {
+                        ClusterPoint newPoint;
+                        newPoint.fTimeBin = this->fTimeBin;
+                        newPoint.fFreqBin = fbPointsIt->first;
+                        newPoint.fAmplitude = fbPointsIt->second;
+                        acIt->fPoints.push_back(newPoint);
+                    }
+                    // add range to acIt->fFreqRanges
+
+                }
+            }
+        }
+
+
+
+        return CompleteInactiveClusters(component);
+    }
+
+
+    KTSimpleClustering::NewEventList* KTSimpleClustering::CompleteAllClusters(UInt_t component)
+    {
+        NewEventList* newEvents = new NewEventList();
+
+        for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end();)
+        {
+            newEvents->push_back(CreateEventFromCluster(*acIt));
+            acIt = fActiveClusters[component].erase(acIt);
+        }
+
+        return newEvents;
+    }
+
+    KTSimpleClustering::NewEventList* KTSimpleClustering::CompleteInactiveClusters(UInt_t component)
+    {
+        NewEventList* newEvents = new NewEventList();
+
+        for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end();)
+        {
+            UInt_t lastTimeBinInCluster = (*acIt).fPoints.back().fTimeBin;
+            if (fTimeBin - lastTimeBinInCluster > fMaxTimeSepBins)
+            {
+                newEvents->push_back(CreateEventFromCluster(*acIt));
+                acIt = fActiveClusters[component].erase(acIt);
+            }
+            else
+            {
+                acIt++;
+            }
+        }
+
+        return newEvents;
+    }
+
+    void KTSimpleClustering::Reset()
+    {
+        fActiveClusters.clear();
+        fTimeBin = 0;
+        return;
+    }
+
+    shared_ptr<KTEvent> KTSimpleClustering::CreateEventFromCluster(const Cluster& cluster)
+    {
+        shared_ptr<KTEvent> event(new KTEvent());
+
+        //KTSingleCluster2DData* newData = new KTSingleCluster2DData();
+
+        // fill in the data
+
+        //data->SetEvent(event);
+        //event->AddData(newData);
+
+        return event;
+    }
+
+
+
+} /* namespace Katydid */
+
+
+
+
+
+
+
+
+
+#ifdef BLAH
+
 #include "KTFactory.hh"
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
@@ -230,5 +495,5 @@ namespace Katydid
 
         return;
     }
-
 } /* namespace Katydid */
+
