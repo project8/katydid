@@ -56,6 +56,7 @@ namespace Katydid
         RegisterSlot("event", this, &KTSpectrumDiscriminator::ProcessEvent, "void (shared_ptr<KTEvent>)");
         RegisterSlot("fsdata", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fsdata-fftw", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
+        RegisterSlot("corrdata", this, &KTSpectrumDiscriminator::ProcessCorrelationData, "void (const KTCorrelationData*)");
         RegisterSlot("swfsdata", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSData, "void (const KTSlidingWindowFSData*)");
         RegisterSlot("swfsdata-fftw", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW, "void (const KTSlidingWindowFSDataFFTW*)");
     }
