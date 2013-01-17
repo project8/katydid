@@ -229,16 +229,45 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        Double_t value;
+        UInt_t nBins = fDCBin + 1;
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, -0.5 * GetBinWidth(), GetRangeMax());
+        Double_t value, valueImag, valueReal;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+
+        // DC bin
+        value = (*this)(fDCBin)[0] * (*this)(fDCBin)[0] + (*this)(fDCBin)[1] * (*this)(fDCBin)[1];
+        hist->SetBinContent(1, value * scaling);
+
+        // All bins besides the Nyquist and DC bins
+        UInt_t totalBins = size();
+        UInt_t iPosBin = fDCBin + 1;
+        UInt_t iNegBin = fDCBin - 1;
+        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
         {
+            //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
             // order matters, so use (*this)() to access values
-            value = (*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1];
-            hist->SetBinContent((Int_t)iBin + 1, value * scaling);
+            valueReal = (*this)(iNegBin)[0] + (*this)(iPosBin)[0];
+            valueImag = (*this)(iNegBin)[1] + (*this)(iPosBin)[1];
+            value = valueReal * valueReal + valueImag * valueImag;
+            hist->SetBinContent(iBin + 1, value * scaling);
+            iPosBin++;
+            iNegBin--;
         }
+
+        // Nyquist bin
+        if (fIsSizeEven)
+        {
+            value = (*this)(0)[0] * (*this)(0)[0] + (*this)(0)[1] * (*this)(0)[1];
+            hist->SetBinContent(nBins, value * scaling);
+        }
+        else
+        {
+            valueReal = (*this)(0)[0] + (*this)(totalBins-1)[0];
+            valueImag = (*this)(0)[1] + (*this)(totalBins-1)[1];
+            value = valueReal * valueReal + valueImag * valueImag;
+            hist->SetBinContent(nBins, value * scaling);
+        }
+
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Power (W)");
         return hist;

@@ -9,12 +9,14 @@
 
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
+#include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 #include "TCanvas.h"
-#include "TH1.h"
 #include "TStyle.h"
 
 #include <sstream>
@@ -65,56 +67,25 @@ namespace Katydid
         return true;
     }
 
-    void KTPowerSpectrumAverager::ProcessHeader(const KTEggHeader* header)
+    void KTPowerSpectrumAverager::SetToStartNewHistogram()
     {
         fStartNewHistFlag = true;
-    }
-
-    void KTPowerSpectrumAverager::ProcessEvent(shared_ptr<KTEvent> event)
-    {
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
-        if (fsData == NULL)
-        {
-            KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");
-            return;
-        }
-
-        if (fStartNewHistFlag)
-        {
-            fStartNewHistFlag = false;
-
-            for (vector<TH1D*>::iterator it=fAveragePSHists.begin(); it != fAveragePSHists.end(); it++)
-            {
-                delete *it;
-            }
-            fAveragePSHists.clear();
-            if (fAveragePSHists.size() != fsData->GetNChannels())
-                fAveragePSHists.resize(fsData->GetNChannels());
-
-            string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < fsData->GetNChannels(); iChannel++)
-            {
-                stringstream conv;
-                conv << iChannel;
-                string histName = histNameBase + conv.str();
-                TH1D* newPS = fsData->GetSpectrum(iChannel)->CreatePowerHistogram(histName);
-                fAveragePSHists[iChannel] = newPS;
-            }
-        }
-        else
-        {
-            for (UInt_t iChannel=0; iChannel < fsData->GetNChannels(); iChannel++)
-            {
-                TH1D* newPS = fsData->GetSpectrum(iChannel)->CreatePowerHistogram();
-                fAveragePSHists[iChannel]->Add(newPS);
-                delete newPS;
-            }
-        }
-
         return;
     }
 
-    void KTPowerSpectrumAverager::Finish()
+    void KTPowerSpectrumAverager::AddFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    {
+        AddFSData(data);
+        return;
+    }
+
+    void KTPowerSpectrumAverager::AddFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* data)
+    {
+        AddFSData(data);
+        return;
+    }
+
+    void KTPowerSpectrumAverager::CreateHistograms()
     {
         gStyle->SetOptStat(0);
         for (UInt_t iChannel=0; iChannel < fAveragePSHists.size(); iChannel++)
@@ -134,6 +105,41 @@ namespace Katydid
         }
 
         fStartNewHistFlag = true;
+        return;
+    }
+
+
+
+    void KTPowerSpectrumAverager::ProcessHeader(const KTEggHeader* header)
+    {
+        SetToStartNewHistogram();
+        return;
+    }
+
+    void KTPowerSpectrumAverager::ProcessEvent(shared_ptr<KTEvent> event)
+    {
+        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
+        if (fsData != NULL)
+        {
+            AddFrequencySpectrumData(fsData);
+            return;
+        }
+
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        if (fsDataFFTW != NULL)
+        {
+            AddFrequencySpectrumData(fsDataFFTW);
+            return;
+        }
+
+        KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");
+
+        return;
+    }
+
+    void KTPowerSpectrumAverager::Finish()
+    {
+        CreateHistograms();
         return;
     }
 

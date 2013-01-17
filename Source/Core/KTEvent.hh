@@ -124,7 +124,7 @@ namespace Katydid
         KTData* dataPtr = modmIt->second->GetData(name);
         if (dataPtr == NULL)
         {
-            KTERROR(corelog_event, "Unable to find data called <" << name << "> with type <" << typeid(DerivedData).name() << ">");
+            //KTERROR(corelog_event, "Unable to find data called <" << name << "> with type <" << typeid(DerivedData).name() << ">");
             return NULL;
         }
         return static_cast< DerivedData* >(dataPtr);

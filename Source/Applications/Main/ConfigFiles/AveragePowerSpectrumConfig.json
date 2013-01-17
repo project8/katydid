@@ -80,7 +80,7 @@
         
         "psavg":
         {
-            "output-file-path": ""
+            "output-file-path": "",
             "output-file-base": "average_power_spectrum",
             "output-file-type": "png",
             "input-data-name": "frequency-spectrum"
