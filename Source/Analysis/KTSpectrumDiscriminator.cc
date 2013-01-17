@@ -7,6 +7,7 @@
 
 #include "KTSpectrumDiscriminator.hh"
 
+#include "KTCorrelationData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDiscriminatedPoints2DData.hh"
 #include "KTEvent.hh"
@@ -55,6 +56,7 @@ namespace Katydid
         RegisterSlot("event", this, &KTSpectrumDiscriminator::ProcessEvent, "void (shared_ptr<KTEvent>)");
         RegisterSlot("fsdata", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fsdata-fftw", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
+        RegisterSlot("corrdata", this, &KTSpectrumDiscriminator::ProcessCorrelationData, "void (const KTCorrelationData*)");
         RegisterSlot("swfsdata", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSData, "void (const KTSlidingWindowFSData*)");
         RegisterSlot("swfsdata-fftw", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW, "void (const KTSlidingWindowFSDataFFTW*)");
     }
@@ -263,6 +265,85 @@ namespace Katydid
         return newData;
     }
 
+    KTDiscriminatedPoints1DData* KTSpectrumDiscriminator::Discriminate(const KTCorrelationData* data)
+    {
+        if (fCalculateMinBin)
+        {
+            SetMinBin(data->GetCorrelation(0)->FindBin(fMinFrequency));
+            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(data->GetCorrelation(0)->FindBin(fMaxFrequency));
+            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+        }
+
+        UInt_t nChannels = data->GetNPairs();
+
+        KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
+
+        newData->SetNBins(data->GetCorrelation(0)->size());
+        newData->SetBinWidth(data->GetCorrelation(0)->GetBinWidth());
+
+        // Interval: [fMinBin, fMaxBin)
+        UInt_t nBins = fMaxBin - fMinBin + 1;
+        Double_t sigmaNorm = 1. / Double_t(nBins - 1);
+
+        // Temporary storage for magnitude values
+        vector< Double_t > magnitude(data->GetCorrelation(0)->size());
+
+        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        {
+            const KTFrequencySpectrum* spectrum = data->GetCorrelation(iChannel);
+
+            Double_t mean = 0.;
+            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+            {
+                mean += (*spectrum)(iBin).abs();
+            }
+            mean /= (Double_t)nBins;
+
+            Double_t threshold = 0.;
+            if (fThresholdMode == eSNR)
+            {
+                // SNR = P_signal / P_noise = (A_signal / A_noise)^2
+                // In this case (i.e. KTFrequencySpectrum), A_noise = mean
+                threshold = sqrt(fSNRThreshold) * mean;
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (SNR mode)");
+            }
+            else if (fThresholdMode == eSigma)
+            {
+                Double_t sigma = 0., diff;
+                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                {
+                    diff = (*spectrum)(iBin).abs() - mean;
+                    sigma += diff * diff;
+                }
+                sigma = sqrt(sigma * sigmaNorm);
+
+                threshold = mean + fSigmaThreshold * sigma;
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (Sigma mode)");
+            }
+
+            newData->SetThreshold(threshold, iChannel);
+
+            // loop over bins, checking against the threshold
+            Double_t value;
+            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+            {
+                value = (*spectrum)(iBin).abs();
+                if (value >= threshold) newData->AddPoint(iBin, value, iChannel);
+            }
+        }
+
+        newData->SetName(fOutputDataName);
+        newData->SetEvent(data->GetEvent());
+
+        fDiscrim1DSignal(newData);
+
+        return newData;
+    }
+
     KTDiscriminatedPoints2DData* KTSpectrumDiscriminator::Discriminate(const KTSlidingWindowFSData* data)
     {
         if (fCalculateMinBin) SetMinBin((*(data->GetSpectra(0)))(0)->FindBin(fMinFrequency));
@@ -444,35 +525,38 @@ namespace Katydid
 
     void KTSpectrumDiscriminator::ProcessEvent(shared_ptr<KTEvent> event)
     {
-        const KTSlidingWindowFSData* swfsData = event->GetData< KTSlidingWindowFSData >(fInputDataName);
-        if (swfsData != NULL)
-        {
-            KTDiscriminatedPoints2DData* newData = Discriminate(swfsData);
-            event->AddData(newData);
-            return;
-        }
-
-        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = event->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
-        if (swfsDataFFTW != NULL)
-        {
-            KTDiscriminatedPoints2DData* newData = Discriminate(swfsDataFFTW);
-            event->AddData(newData);
-            return;
-        }
-
         const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
         {
-            KTDiscriminatedPoints1DData* newData = Discriminate(fsData);
-            event->AddData(newData);
+            ProcessFrequencySpectrumData(fsData);
             return;
         }
 
         const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsDataFFTW != NULL)
         {
-            KTDiscriminatedPoints1DData* newData = Discriminate(fsDataFFTW);
-            event->AddData(newData);
+            ProcessFrequencySpectrumDataFFTW(fsDataFFTW);
+            return;
+        }
+
+        const KTCorrelationData* corrData = event->GetData< KTCorrelationData >(fInputDataName);
+        if (corrData != NULL)
+        {
+            ProcessCorrelationData(corrData);
+            return;
+        }
+
+        const KTSlidingWindowFSData* swfsData = event->GetData< KTSlidingWindowFSData >(fInputDataName);
+        if (swfsData != NULL)
+        {
+            ProcessSlidingWindowFSData(swfsData);
+            return;
+        }
+
+        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = event->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
+        if (swfsDataFFTW != NULL)
+        {
+            ProcessSlidingWindowFSDataFFTW(swfsDataFFTW);
             return;
         }
 
@@ -489,6 +573,14 @@ namespace Katydid
     }
 
     void KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
+    {
+        KTDiscriminatedPoints1DData* newData = Discriminate(data);
+        if (data->GetEvent() != NULL)
+            data->GetEvent()->AddData(newData);
+        return;
+    }
+
+    void KTSpectrumDiscriminator::ProcessCorrelationData(const KTCorrelationData* data)
     {
         KTDiscriminatedPoints1DData* newData = Discriminate(data);
         if (data->GetEvent() != NULL)
