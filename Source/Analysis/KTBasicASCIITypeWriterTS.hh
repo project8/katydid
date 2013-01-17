@@ -11,7 +11,7 @@
 
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
-#include "KTBasicASCIIWriter.hh"
+#include "KTBasicAsciiWriter.hh"
 
 namespace Katydid {
 
