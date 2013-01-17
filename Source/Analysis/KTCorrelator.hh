@@ -21,14 +21,15 @@ namespace Katydid
     class KTEvent;
     class KTFrequencySpectrum;
     class KTFrequencySpectrumData;
-    class KTWriteableData;
+    class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumFFTW;
 
     typedef std::pair< UInt_t, UInt_t > KTCorrelationPair;
 
     class KTCorrelator : public KTProcessor
     {
         protected:
-            typedef KTSignal< void (const KTWriteableData*) >::signal CorrelationSignal;
+            typedef KTSignal< void (const KTCorrelationData*) >::signal CorrelationSignal;
             typedef std::vector< KTCorrelationPair > PairVector;
 
         public:
@@ -57,11 +58,13 @@ namespace Katydid
         public:
 
             KTCorrelationData* Correlate(const KTFrequencySpectrumData* data);
+            KTCorrelationData* Correlate(const KTFrequencySpectrumDataFFTW* data);
             //KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs);
             //KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair);
 
         protected:
             KTFrequencySpectrum* DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum);
+            KTFrequencySpectrum* DoCorrelation(const KTFrequencySpectrumFFTW* firstSpectrum, const KTFrequencySpectrumFFTW* secondSpectrum);
 
             //***************
             // Signals
@@ -75,7 +78,8 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessFFTData(const KTFrequencySpectrumData* tsData);
+            void ProcessFFTData(const KTFrequencySpectrumData* fsData);
+            void ProcessFFTWData(const KTFrequencySpectrumDataFFTW* fsData);
             void ProcessEvent(boost::shared_ptr<KTEvent> event);
 
 
