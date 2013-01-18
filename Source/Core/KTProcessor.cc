@@ -57,7 +57,9 @@ namespace Katydid
         {
             string errorMsg = string("Exception caught in KTProcessor::ConnectASignal; signal: ") +
                     signalName + string(", slot: ") + slotName + string("\n") + e.what() + string("\n") +
-                    string("Check that the signatures of the signal and slot match exactly.");
+                    string("\tIf the signal wrapper cannot be cast correctly, check that the signatures of the signal and slot match exactly.\n") +
+                    string("\tIf the signal pointer is NULL, you may have the signal name wrong.\n") +
+                    string("\tIf the slot pointer is NULL, you may have the slot name wrong.");
             throw std::logic_error(errorMsg);
         }
         KTINFO(proclog, "Connected signal <" << signalName << "> to slot <" << slotName << ">");
