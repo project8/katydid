@@ -51,8 +51,8 @@ namespace Katydid
     {
         fConfigName = "complex-fftw";
 
-        RegisterSignal("fft-forward", &fFFTForwardSignal, "void (const KTWriteableData*)");
-        RegisterSignal("fft-reverse", &fFFTReverseSignal, "void (const KTWriteableData*)");
+        RegisterSignal("fft-forward", &fFFTForwardSignal, "void (const KTFrequencySpectrumDataFFTW*)");
+        RegisterSignal("fft-reverse", &fFFTReverseSignal, "void (const KTTimeSeriesData*)");
 
         RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
@@ -345,16 +345,22 @@ namespace Katydid
     void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        if (tsData->GetEvent() != NULL)
-            tsData->GetEvent()->AddData(newData);
+        if (newData != NULL)
+        {
+            if (tsData->GetEvent() != NULL)
+                tsData->GetEvent()->AddData(newData);
+        }
         return;
     }
 
     void KTComplexFFTW::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
     {
         KTTimeSeriesData* newData = TransformData(fsData);
-        if (fsData->GetEvent() != NULL)
-            fsData->GetEvent()->AddData(newData);
+        if (newData != NULL)
+        {
+            if (fsData->GetEvent() != NULL)
+                fsData->GetEvent()->AddData(newData);
+        }
         return;
     }
 
@@ -368,8 +374,7 @@ namespace Katydid
             return;
         }
 
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        event->AddData(newData);
+        ProcessTimeSeriesData(tsData);
         return;
     }
 
@@ -383,8 +388,7 @@ namespace Katydid
             return;
         }
 
-        KTTimeSeriesData* newData = TransformData(fsData);
-        event->AddData(newData);
+        ProcessFrequencySpectrumData(fsData);
         return;
     }
 
