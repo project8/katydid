@@ -106,11 +106,7 @@ namespace Katydid
             iPair++;
         }
 
-        newData->SetEvent(data->GetEvent());
         newData->SetName(fOutputDataName);
-
-        //data->GetEvent()->AddData(newData);
-        fCorrSignal(newData);
 
         KTDEBUG(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
         return newData;
@@ -138,11 +134,7 @@ namespace Katydid
             iPair++;
         }
 
-        newData->SetEvent(data->GetEvent());
         newData->SetName(fOutputDataName);
-
-        //data->GetEvent()->AddData(newData);
-        fCorrSignal(newData);
 
         KTDEBUG(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
         return newData;
@@ -232,14 +224,28 @@ namespace Katydid
     void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumData* fsData)
     {
         KTCorrelationData* newData = Correlate(fsData);
-        fsData->GetEvent()->AddData(newData);
+        if (newData != NULL)
+        {
+            KTEvent* event = fsData->GetEvent();
+            newData->SetEvent(event);
+            if (event != NULL)
+                event->AddData(newData);
+            fCorrSignal(newData);
+        }
         return;
     }
 
     void KTCorrelator::ProcessFFTWData(const KTFrequencySpectrumDataFFTW* fsData)
     {
         KTCorrelationData* newData = Correlate(fsData);
-        fsData->GetEvent()->AddData(newData);
+        if (newData != NULL)
+        {
+            KTEvent* event = fsData->GetEvent();
+            newData->SetEvent(event);
+            if (event != NULL)
+                event->AddData(newData);
+            fCorrSignal(newData);
+        }
         return;
     }
 
