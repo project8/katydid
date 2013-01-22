@@ -29,6 +29,10 @@ namespace Katydid
 
     KTEvent::~KTEvent()
     {
+#ifdef KATYDID_DEBUG
+        KTDEBUG(corelog_event, "Data inventory at time of event deletion:");
+        PrintAttachedData();
+#endif
         for (MapOfDataMaps::iterator it=fMapOfDataMaps.begin(); it != fMapOfDataMaps.end(); it++)
         {
             delete it->second;
