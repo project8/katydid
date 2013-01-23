@@ -211,14 +211,7 @@ namespace Katydid
         newSpectFFTW.CConjugate();
         newSpectFFTW *= (*secondSpectrum);
 
-        UInt_t nBins = newSpectFFTW.size();
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(nBins, newSpectFFTW.GetRangeMin(), newSpectFFTW.GetRangeMax());
-        for (UInt_t iBin=0; iBin < nBins; iBin++)
-        {
-            (*newSpect)(iBin).set_rect(newSpectFFTW(iBin)[0], newSpectFFTW(iBin)[1]);
-        }
-
-        return newSpect;
+        return newSpectFFTW.CreateFrequencySpectrum();
     }
 
     void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumData* fsData)
