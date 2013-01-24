@@ -36,15 +36,21 @@ namespace Katydid
             UInt_t GetSecondChannel(UInt_t pairNum = 0) const;
             UInt_t GetNTimeSeries() const;
 
+            Double_t GetTimeInRun() const;
+
             void SetTimeSeries(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
             void SetTimeSeries(KTTimeSeries* record, UInt_t pairNum = 0);
 
             void SetNTimeSeries(unsigned pairs);
 
+            void SetTimeInRun(Double_t tir);
+
             void Accept(KTWriter* writer) const;
 
         protected:
             std::vector< PerPairData > fData;
+
+            Double_t fTimeInRun;
 
     };
 
@@ -73,6 +79,11 @@ namespace Katydid
         return UInt_t(fData.size());
     }
 
+    inline Double_t KTTimeSeriesPairedData::GetTimeInRun() const
+    {
+        return fTimeInRun;
+    }
+
     inline void KTTimeSeriesPairedData::SetTimeSeries(KTTimeSeries* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum)
     {
         if (pairNum >= fData.size()) fData.resize(pairNum+1);
@@ -92,6 +103,12 @@ namespace Katydid
     inline void KTTimeSeriesPairedData::SetNTimeSeries(unsigned pairs)
     {
         fData.resize(pairs);
+        return;
+    }
+
+    inline void KTTimeSeriesPairedData::SetTimeInRun(Double_t tir)
+    {
+        fTimeInRun = tir;
         return;
     }
 

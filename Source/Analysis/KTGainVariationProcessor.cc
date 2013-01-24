@@ -109,7 +109,7 @@ namespace Katydid
             // Calculate fit points
             for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
             {
-                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint;
+                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
                 Double_t leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
@@ -155,13 +155,15 @@ namespace Katydid
 
     KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data)
     {
+        // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
         if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+        KTDEBUG(gvlog, fMinFrequency << "  " << fMaxFrequency << "  " << fMinBin << "  " << fMaxBin << "  " << data->GetSpectrum(0)->GetRangeMin() << "  " << data->GetSpectrum(0)->GetRangeMax());
 
-        UInt_t nTotalBins = fMinBin - fMaxBin;
+        UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
-        KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << ", and " << nBinsPerFitPoint << " bins averaged per fit point.");
+        KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         UInt_t nChannels = data->GetNChannels();
 
@@ -178,7 +180,7 @@ namespace Katydid
             // Calculate fit points
             for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
             {
-                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint;
+                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
                 Double_t leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);

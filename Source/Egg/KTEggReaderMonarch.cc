@@ -35,7 +35,10 @@ namespace Katydid
             fNumberOfChannels(),
             fSampleRateUnitsInHz(1.e6),
             fFullVoltageScale(0.5),
-            fNADCLevels(256)
+            fNADCLevels(256),
+            fMonarchRecordsRead(0),
+            fMonarchRecordSize(0),
+            fBinWidth(0.)
     {
         fReadState.fStatus = MonarchReadState::kInvalid;
         fReadState.fAcquisitionID = 0;
@@ -104,6 +107,10 @@ namespace Katydid
         fReadState.fAcquisitionID = 0;
         fReadState.fDataPtrOffset = 0;
 
+        fMonarchRecordsRead = 0;
+        fMonarchRecordSize = fHeader.GetMonarchRecordSize();
+        fBinWidth = 1. / fHeader.GetAcquisitionRate();
+
         return new KTEggHeader(fHeader);
     }
 
@@ -128,6 +135,7 @@ namespace Katydid
                 KTERROR(eggreadlog, "File appears to contain no events.");
                 return NULL;
             }
+            fMonarchRecordsRead = 0;
             fReadState.fStatus = MonarchReadState::kContinueReading;
         }
 
@@ -137,6 +145,7 @@ namespace Katydid
         eventData->SetSampleRate(fHeader.GetAcquisitionRate());
         eventData->SetRecordSize(fHeader.GetRecordSize());
         eventData->CalculateBinWidthAndRecordLength();
+        eventData->SetTimeInRun(GetTimeInRun());
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
@@ -163,6 +172,12 @@ namespace Katydid
             }
             newRecords[iChannel] = newRecord;
         }
+
+        KTDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
+                "\tbin width = " << fBinWidth << '\n' <<
+                "\tmonarch records read = " << fMonarchRecordsRead << '\n' <<
+                "\tmonarch record size = " << fMonarchRecordSize << '\n' <<
+                "\tpointer offset = " << fReadState.fDataPtrOffset);
 
         // Loop over bins
         for (UInt_t iBin = 0; iBin < fHeader.GetRecordSize(); iBin++)
@@ -193,6 +208,13 @@ namespace Katydid
                 }
                 // reset bin count to 0
                 iBin = 0;
+                // change the time in run since we're going back to the beginning of the record
+                eventData->SetTimeInRun(GetTimeInRun());
+                KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
+                        "\tbin width = " << fBinWidth << '\n' <<
+                        "\tmonarch records read = " << fMonarchRecordsRead << '\n' <<
+                        "\tmonarch record size = " << fMonarchRecordSize << '\n' <<
+                        "\tpointer offset = " << fReadState.fDataPtrOffset);
                 // change status
                 fReadState.fStatus = MonarchReadState::kContinueReading;
             }
@@ -207,7 +229,7 @@ namespace Katydid
             // advance the pointer
             fReadState.fDataPtrOffset++;
             // check if we've reached the end of a monarch record
-            if (fReadState.fDataPtrOffset > fHeader.GetMonarchRecordSize())
+            if (fReadState.fDataPtrOffset >= fHeader.GetMonarchRecordSize())
             {
                 KTDEBUG(eggreadlog, "End of Monarch record reached; attempting to read a new one.");
                 // try reading the next record
@@ -226,6 +248,7 @@ namespace Katydid
                         fReadState.fStatus = MonarchReadState::kAcquisitionIDHasChanged;
                         KTDEBUG(eggreadlog, "New acquisition ID found: " << fReadState.fAcquisitionID);
                     }
+                    fMonarchRecordsRead++;
                 }
                 fReadState.fDataPtrOffset = 0;
             }

@@ -20,7 +20,8 @@ namespace Katydid
             KTWriteableData(),
             fGroupData(nGroups),
             fNBins(1),
-            fBinWidth(1.)
+            fBinWidth(1.),
+            fTimeInRun(0.)
     {
     }
 

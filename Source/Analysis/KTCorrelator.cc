@@ -106,11 +106,9 @@ namespace Katydid
             iPair++;
         }
 
-        newData->SetEvent(data->GetEvent());
-        newData->SetName(fOutputDataName);
+        newData->SetTimeInRun(data->GetTimeInRun());
 
-        //data->GetEvent()->AddData(newData);
-        fCorrSignal(newData);
+        newData->SetName(fOutputDataName);
 
         KTDEBUG(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
         return newData;
@@ -138,11 +136,9 @@ namespace Katydid
             iPair++;
         }
 
-        newData->SetEvent(data->GetEvent());
-        newData->SetName(fOutputDataName);
+        newData->SetTimeInRun(data->GetTimeInRun());
 
-        //data->GetEvent()->AddData(newData);
-        fCorrSignal(newData);
+        newData->SetName(fOutputDataName);
 
         KTDEBUG(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
         return newData;
@@ -219,27 +215,34 @@ namespace Katydid
         newSpectFFTW.CConjugate();
         newSpectFFTW *= (*secondSpectrum);
 
-        UInt_t nBins = newSpectFFTW.size();
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(nBins, newSpectFFTW.GetRangeMin(), newSpectFFTW.GetRangeMax());
-        for (UInt_t iBin=0; iBin < nBins; iBin++)
-        {
-            (*newSpect)(iBin).set_rect(newSpectFFTW(iBin)[0], newSpectFFTW(iBin)[1]);
-        }
-
-        return newSpect;
+        return newSpectFFTW.CreateFrequencySpectrum();
     }
 
     void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumData* fsData)
     {
         KTCorrelationData* newData = Correlate(fsData);
-        fsData->GetEvent()->AddData(newData);
+        if (newData != NULL)
+        {
+            KTEvent* event = fsData->GetEvent();
+            newData->SetEvent(event);
+            if (event != NULL)
+                event->AddData(newData);
+            fCorrSignal(newData);
+        }
         return;
     }
 
     void KTCorrelator::ProcessFFTWData(const KTFrequencySpectrumDataFFTW* fsData)
     {
         KTCorrelationData* newData = Correlate(fsData);
-        fsData->GetEvent()->AddData(newData);
+        if (newData != NULL)
+        {
+            KTEvent* event = fsData->GetEvent();
+            newData->SetEvent(event);
+            if (event != NULL)
+                event->AddData(newData);
+            fCorrSignal(newData);
+        }
         return;
     }
 

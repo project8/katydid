@@ -16,9 +16,10 @@ namespace Katydid
 {
     static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencySpectrumData > > sFSDMMRegistrar;
 
-    KTFrequencySpectrumData::KTFrequencySpectrumData(unsigned nChannels) :
+    KTFrequencySpectrumData::KTFrequencySpectrumData(UInt_t nChannels) :
             KTWriteableData(),
-            fSpectra(nChannels)
+            fSpectra(nChannels),
+            fTimeInRun(0.)
     {
     }
 

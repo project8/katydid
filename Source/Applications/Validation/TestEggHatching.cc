@@ -47,15 +47,17 @@ int main(int argc, char** argv)
         readerOption = argv[2];
     }
 
+    UInt_t nEvents = 5;
+
     KTINFO(testegg, "Test of hatching egg file <" << filename << ">");
 
-    KTEgg* egg = new KTEgg();
+    KTEgg egg;
     if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
     {
         KTINFO(testegg, "Using 2011 egg reader");
         KTEggReader2011* reader = new KTEggReader2011();
         reader->SetOutputDataName("time-series");
-        egg->SetReader(reader);
+        egg.SetReader(reader);
     }
     else
     {
@@ -65,12 +67,12 @@ int main(int argc, char** argv)
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
         reader->SetTimeSeriesSizeRequest(recordSize);
         reader->SetOutputDataName("time-series");
-        egg->SetReader(reader);
+        egg.SetReader(reader);
     }
 
 
     KTINFO(testegg, "Opening file");
-    if (egg->BreakEgg(filename))
+    if (egg.BreakEgg(filename))
     {
         KTINFO(testegg, "Egg opened successfully");
     }
@@ -80,7 +82,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    const KTEggHeader* header = egg->GetHeader();
+    const KTEggHeader* header = egg.GetHeader();
     if (header == NULL)
     {
         KTERROR(testegg, "No header received");
@@ -92,32 +94,35 @@ int main(int argc, char** argv)
            << "\tRecord Size: " << header->GetRecordSize() << '\n'
            << "\tMonarch Record Size: " << header->GetMonarchRecordSize());
 
-    KTINFO(testegg, "Hatching event");
-    boost::shared_ptr<KTEvent> event = egg->HatchNextEvent();
-    if (event.get() == NULL)
+    KTINFO(testegg, "Hatching events");
+    for (UInt_t iEvent=0; iEvent < nEvents; iEvent++)
     {
-        KTERROR(testegg, "Event did not hatch");
-        return -1;
-    }
+        KTINFO(testegg, "Event " << iEvent);
+        boost::shared_ptr<KTEvent> event = egg.HatchNextEvent();
+        if (event.get() == NULL)
+        {
+            KTERROR(testegg, "Event did not hatch");
+            return -1;
+        }
 
-    KTTimeSeriesData* tsData = event->GetData<KTTimeSeriesData>("time-series");
-    if (tsData == NULL)
-    {
-        KTWARN(testegg, "No time-series data present in event");
-        return -1;
-    }
+        KTTimeSeriesData* tsData = event->GetData<KTTimeSeriesData>("time-series");
+        if (tsData == NULL)
+        {
+            KTWARN(testegg, "No time-series data present in event");
+            return -1;
+        }
 
-    unsigned nRecords = tsData->GetNTimeSeries();
-    KTINFO(testegg, "This event contains " << nRecords << " records");
-    if (nRecords >= 1)
-    {
-        KTINFO(testegg, "Record 0 has " << tsData->GetTimeSeries(0)->GetNTimeBins() << " bins");
-        KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetTimeSeries(0)->GetValue(0));
+        UInt_t nRecords = tsData->GetNTimeSeries();
+        KTINFO(testegg, "This event contains " << nRecords << " records");
+        if (nRecords >= 1)
+        {
+            KTINFO(testegg, "Record 0 has " << tsData->GetTimeSeries(0)->GetNTimeBins() << " bins");
+            KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetTimeSeries(0)->GetValue(0));
+        }
     }
 
     KTINFO(testegg, "Test complete; cleaning up");
-    egg->CloseEgg();
-    delete egg;
+    egg.CloseEgg();
 
     return 0;
 }

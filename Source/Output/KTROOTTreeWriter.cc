@@ -1,11 +1,11 @@
 /*
- * KTBasicROOTFileWriter.cc
+ * KTROOTTreeWriter.cc
  *
- *  Created on: Aug 24, 2012
+ *  Created on: Jan 23, 2013
  *      Author: nsoblath
  */
 
-#include "KTBasicROOTFileWriter.hh"
+#include "KTROOTTreeWriter.hh"
 
 #include "KTFactory.hh"
 #include "KTLogger.hh"
@@ -19,26 +19,30 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root-writer");
-    static KTDerivedRegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root-writer");
+    static KTDerivedRegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
+    static KTDerivedRegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
 
-    KTBasicROOTFileWriter::KTBasicROOTFileWriter() :
-            KTWriterWithTypists< KTBasicROOTFileWriter >(),
-            fFilename("basic_output.root"),
+    KTROOTTreeWriter::KTROOTTreeWriter() :
+            KTWriterWithTypists< KTROOTTreeWriter >(),
+            fFilename("tree_output.root"),
             fFileFlag("recreate"),
             fFile(NULL)
     {
-        fConfigName = "basic-root-writer";
+        fConfigName = "root-tree-writer";
 
-        RegisterSlot("write-data", this, &KTBasicROOTFileWriter::Publish);
+        RegisterSlot("write-data", this, &KTROOTTreeWriter::Publish);
     }
 
-    KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
+    KTROOTTreeWriter::~KTROOTTreeWriter()
     {
-        CloseFile();
+        if (fFile != NULL)
+        {
+            fFile->Close();
+        }
+        delete fFile;
     }
 
-    Bool_t KTBasicROOTFileWriter::Configure(const KTPStoreNode* node)
+    Bool_t KTROOTTreeWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
@@ -50,7 +54,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTBasicROOTFileWriter::OpenAndVerifyFile()
+    Bool_t KTROOTTreeWriter::OpenAndVerifyFile()
     {
         if (fFile == NULL)
         {
@@ -67,13 +71,13 @@ namespace Katydid
         return true;
     }
 
-    void KTBasicROOTFileWriter::Publish(const KTWriteableData* data)
+    void KTROOTTreeWriter::Publish(const KTWriteableData* data)
     {
         data->Accept(this);
         return;
     }
 
-    void KTBasicROOTFileWriter::Write(const KTWriteableData* data)
+    void KTROOTTreeWriter::Write(const KTWriteableData* data)
     {
         KTWARN(publog, "Generic Write function called; no data written");
         return;

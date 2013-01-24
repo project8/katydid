@@ -48,16 +48,21 @@ namespace Katydid
 
             UInt_t GetRecordSize() const;
             Double_t GetBinWidth() const;
+            Double_t GetTimeInRun() const;
 
             const KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0) const;
             KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0);
 
             void SetNTimeSeries(UInt_t channels);
 
+            void SetTimeInRun(Double_t tir);
+
             void SetTimeSeries(KTTimeSeries* record, UInt_t channelNum = 0);
 
         protected:
             std::vector< KTTimeSeries* > fChannelData;
+
+            Double_t fTimeInRun;
 
     };
 
@@ -84,6 +89,11 @@ namespace Katydid
         return 0.;
     }
 
+    inline Double_t KTBasicTimeSeriesData::GetTimeInRun() const
+    {
+        return fTimeInRun;
+    }
+
     inline KTTimeSeries* KTBasicTimeSeriesData::GetTimeSeries(UInt_t channelNum)
     {
         return fChannelData[channelNum];
@@ -97,6 +107,12 @@ namespace Katydid
     inline void KTBasicTimeSeriesData::SetNTimeSeries(UInt_t channels)
     {
         fChannelData.resize(channels);
+        return;
+    }
+
+    inline void KTBasicTimeSeriesData::SetTimeInRun(Double_t tir)
+    {
+        fTimeInRun = tir;
         return;
     }
 
@@ -141,6 +157,8 @@ namespace Katydid
             AcqIdType GetAcquisitionID(UInt_t channelNum = 0) const;
             RecIdType GetRecordID(UInt_t channelNum = 0) const;
 
+            Double_t GetTimeInRun() const;
+
             const KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0) const;
             KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0);
 
@@ -151,6 +169,7 @@ namespace Katydid
             void SetRecordLength(Double_t recordLength);
             void SetBinWidth(Double_t binWidth);
             void CalculateBinWidthAndRecordLength();
+            void SetTimeInRun(Double_t tir);
 
             void SetTimeStamp(ClockType timeStamp, UInt_t channelNum = 0);
             void SetAcquisitionID(AcqIdType acqId, UInt_t channelNum = 0);
@@ -163,6 +182,8 @@ namespace Katydid
             Double_t fSampleRate; // in Hz
             Double_t fRecordLength; // in sec
             Double_t fBinWidth; // in sec
+
+            Double_t fTimeInRun; // in sec
 
             std::vector< PerChannelData > fChannelData;
 
@@ -191,6 +212,11 @@ namespace Katydid
     inline Double_t KTProgenitorTimeSeriesData::GetBinWidth() const
     {
         return fBinWidth;
+    }
+
+    inline Double_t KTProgenitorTimeSeriesData::GetTimeInRun() const
+    {
+        return fTimeInRun;
     }
 
     inline ClockType KTProgenitorTimeSeriesData::GetTimeStamp(UInt_t channelNum) const
@@ -243,6 +269,11 @@ namespace Katydid
         SetBinWidth(1. / fSampleRate);
         SetRecordLength(Double_t(fRecordSize) * fBinWidth);
         return;
+    }
+
+    inline void KTProgenitorTimeSeriesData::SetTimeInRun(Double_t tir)
+    {
+        fTimeInRun = tir;
     }
 
     inline void KTProgenitorTimeSeriesData::SetNTimeSeries(UInt_t channels)

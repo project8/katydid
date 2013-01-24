@@ -25,10 +25,14 @@ namespace Katydid
 
             virtual UInt_t GetNTimeSeries() const = 0;
 
+            virtual Double_t GetTimeInRun() const = 0;
+
             virtual const KTTimeSeries* GetTimeSeries(UInt_t tsNum = 0) const = 0;
             virtual KTTimeSeries* GetTimeSeries(UInt_t tsNum = 0) = 0;
 
             virtual void SetNTimeSeries(UInt_t num) = 0;
+
+            virtual void SetTimeInRun(Double_t tir) = 0;
 
     };
 

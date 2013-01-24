@@ -197,14 +197,11 @@ namespace Katydid
             newData->SetSpectrum(nextResult, iChannel);
         }
 
+        newData->SetTimeInRun(tsData->GetTimeInRun());
+
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
         newData->SetName(fForwardOutputDataName);
-        // just sets the event pointer; doesn't actually add the data to the event
-        // this way anything receiving the signal can use the event pointer
-        newData->SetEvent(tsData->GetEvent());
-
-        fFFTForwardSignal(newData);
 
         return newData;
     }
@@ -252,14 +249,11 @@ namespace Katydid
             newData->SetTimeSeries(nextResult, iChannel);
         }
 
+        newData->SetTimeInRun(fsData->GetTimeInRun());
+
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNTimeSeries() << " channel(s) transformed");
 
         newData->SetName(fReverseOutputDataName);
-        // just sets the event pointer; doesn't actually add the data to the event
-        // this way anything receiving the signal can use the event pointer
-        newData->SetEvent(fsData->GetEvent());
-
-        fFFTReverseSignal(newData);
 
         return newData;
     }
@@ -347,8 +341,11 @@ namespace Katydid
         KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
         if (newData != NULL)
         {
-            if (tsData->GetEvent() != NULL)
-                tsData->GetEvent()->AddData(newData);
+            KTEvent* event = tsData->GetEvent();
+            newData->SetEvent(event);
+            if (event != NULL)
+                event->AddData(newData);
+            fFFTForwardSignal(newData);
         }
         return;
     }
@@ -358,8 +355,11 @@ namespace Katydid
         KTTimeSeriesData* newData = TransformData(fsData);
         if (newData != NULL)
         {
-            if (fsData->GetEvent() != NULL)
-                fsData->GetEvent()->AddData(newData);
+            KTEvent* event = fsData->GetEvent();
+            newData->SetEvent(event);
+            if (event != NULL)
+                event->AddData(newData);
+            fFFTReverseSignal(newData);
         }
         return;
     }
