@@ -119,8 +119,6 @@ int main(int argc, char** argv)
             KTINFO(testegg, "Record 0 has " << tsData->GetTimeSeries(0)->GetNTimeBins() << " bins");
             KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetTimeSeries(0)->GetValue(0));
         }
-
-        delete tsData;
     }
 
     KTINFO(testegg, "Test complete; cleaning up");
