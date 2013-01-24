@@ -35,14 +35,18 @@ namespace Katydid
             UInt_t GetFirstChannel(UInt_t pairNum = 0) const;
             UInt_t GetSecondChannel(UInt_t pairNum = 0) const;
             UInt_t GetNPairs() const;
+            Double_t GetTimeInRun() const;
 
             void SetCorrelation(KTFrequencySpectrum* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
             void SetNPairs(unsigned pairs);
+            void SetTimeInRun(Double_t tir);
 
             void Accept(KTWriter* writer) const;
 
         protected:
             std::vector< PerPairData > fData;
+
+            Double_t fTimeInRun;
 
     };
 
@@ -71,6 +75,11 @@ namespace Katydid
         return UInt_t(fData.size());
     }
 
+    inline Double_t KTCorrelationData::GetTimeInRun() const
+    {
+        return fTimeInRun;
+    }
+
     inline void KTCorrelationData::SetCorrelation(KTFrequencySpectrum* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum)
     {
         if (pairNum >= fData.size()) fData.resize(pairNum+1);
@@ -82,6 +91,12 @@ namespace Katydid
     inline void KTCorrelationData::SetNPairs(unsigned pairs)
     {
         fData.resize(pairs);
+        return;
+    }
+
+    inline void KTCorrelationData::SetTimeInRun(Double_t tir)
+    {
+        fTimeInRun = tir;
         return;
     }
 

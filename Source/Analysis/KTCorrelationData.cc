@@ -18,7 +18,8 @@ namespace Katydid
 
     KTCorrelationData::KTCorrelationData(UInt_t nPairs) :
             KTWriteableData(),
-            fData(nPairs)
+            fData(nPairs),
+            fTimeInRun(0.)
     {
     }
 
