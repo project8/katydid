@@ -70,6 +70,7 @@ namespace Katydid
         KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
+        fcData->SetTimeInRun(fsData->GetTimeInRun());
 
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
@@ -100,6 +101,7 @@ namespace Katydid
         KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
+        fcData->SetTimeInRun(fsData->GetTimeInRun());
 
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
@@ -130,6 +132,7 @@ namespace Katydid
         KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
+        fcData->SetTimeInRun(fsData->GetTimeInRun());
 
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
