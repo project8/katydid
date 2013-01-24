@@ -172,6 +172,8 @@ namespace Katydid
             newData->SetSpectrum(nextResult, iChannel);
         }
 
+        newData->SetTimeInRun(tsData->GetTimeInRun());
+
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
         newData->SetName(fOutputDataName);

@@ -106,6 +106,8 @@ namespace Katydid
             iPair++;
         }
 
+        newData->SetTimeInRun(data->GetTimeInRun());
+
         newData->SetName(fOutputDataName);
 
         KTDEBUG(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
@@ -133,6 +135,8 @@ namespace Katydid
             }
             iPair++;
         }
+
+        newData->SetTimeInRun(data->GetTimeInRun());
 
         newData->SetName(fOutputDataName);
 
