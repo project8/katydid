@@ -11,6 +11,7 @@
 #include "KTWriter.hh"
 
 #include "TFile.h"
+#include "TTree.h"
 
 namespace Katydid
 {
