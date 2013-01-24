@@ -35,7 +35,10 @@ namespace Katydid
             fNumberOfChannels(),
             fSampleRateUnitsInHz(1.e6),
             fFullVoltageScale(0.5),
-            fNADCLevels(256)
+            fNADCLevels(256),
+            fMonarchRecordsRead(0),
+            fMonarchRecordSize(0),
+            fBinWidth(0.)
     {
         fReadState.fStatus = MonarchReadState::kInvalid;
         fReadState.fAcquisitionID = 0;
@@ -104,6 +107,9 @@ namespace Katydid
         fReadState.fAcquisitionID = 0;
         fReadState.fDataPtrOffset = 0;
 
+        fMonarchRecordSize = fHeader.GetMonarchRecordSize();
+        fBinWidth = 1. / fHeader.GetAcquisitionRate();
+
         return new KTEggHeader(fHeader);
     }
 
@@ -128,6 +134,7 @@ namespace Katydid
                 KTERROR(eggreadlog, "File appears to contain no events.");
                 return NULL;
             }
+            fMonarchRecordsRead = 0;
             fReadState.fStatus = MonarchReadState::kContinueReading;
         }
 
@@ -226,6 +233,7 @@ namespace Katydid
                         fReadState.fStatus = MonarchReadState::kAcquisitionIDHasChanged;
                         KTDEBUG(eggreadlog, "New acquisition ID found: " << fReadState.fAcquisitionID);
                     }
+                    fMonarchRecordsRead++;
                 }
                 fReadState.fDataPtrOffset = 0;
             }

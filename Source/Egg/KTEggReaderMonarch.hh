@@ -93,16 +93,27 @@ namespace Katydid
             AcquisitionModeMap fNumberOfChannels;
 
         public:
-            Double_t GetSampleRateUnitsInHz();
+            Double_t GetSampleRateUnitsInHz() const;
 
-            Double_t GetFullVoltageScale();
-            UInt_t GetNADCLevels();
+            Double_t GetFullVoltageScale() const;
+            UInt_t GetNADCLevels() const;
+
+            UInt_t GetMonarchRecordsRead() const;
+            UInt_t GetMonarchRecordSize() const;
+            Double_t GetBinWidth() const;
+
+            /// Returns the time since the run started in seconds
+            Double_t GetTimeInRun() const;
 
         protected:
             Double_t fSampleRateUnitsInHz;
 
             Double_t fFullVoltageScale;
             UInt_t fNADCLevels;
+
+            UInt_t fMonarchRecordsRead;
+            UInt_t fMonarchRecordSize;
+            Double_t fBinWidth;
 
     };
 
@@ -138,6 +149,40 @@ namespace Katydid
         fOutputDataName = name;
         return;
     }
+
+    inline Double_t KTEggReaderMonarch::GetSampleRateUnitsInHz() const
+    {
+        return fSampleRateUnitsInHz;
+    }
+
+    inline Double_t KTEggReaderMonarch::GetFullVoltageScale() const
+    {
+        return fFullVoltageScale;
+    }
+    inline UInt_t KTEggReaderMonarch::GetNADCLevels() const
+    {
+        return fNADCLevels;
+    }
+
+
+    inline UInt_t KTEggReaderMonarch::GetMonarchRecordsRead() const
+    {
+        return fMonarchRecordsRead;
+    }
+    inline UInt_t KTEggReaderMonarch::GetMonarchRecordSize() const
+    {
+        return fMonarchRecordSize;
+    }
+    inline Double_t KTEggReaderMonarch::GetBinWidth() const
+    {
+        return fBinWidth;
+    }
+
+    inline Double_t KTEggReaderMonarch::GetTimeInRun() const
+    {
+        return fBinWidth * Double_t(fMonarchRecordsRead * fMonarchRecordSize + fReadState.fDataPtrOffset);
+    }
+
 
 
 } /* namespace Katydid */
