@@ -283,6 +283,7 @@ namespace Katydid
         eventData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
         eventData->SetRecordSize(fHeaderInfo.fRecordSize);
         eventData->SetRecordLength(double(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
+        eventData->SetTimeInRun(GetTimeInRun());
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];

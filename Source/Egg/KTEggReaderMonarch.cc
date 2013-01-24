@@ -145,6 +145,7 @@ namespace Katydid
         eventData->SetSampleRate(fHeader.GetAcquisitionRate());
         eventData->SetRecordSize(fHeader.GetRecordSize());
         eventData->CalculateBinWidthAndRecordLength();
+        eventData->SetTimeInRun(GetTimeInRun());
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
@@ -201,6 +202,8 @@ namespace Katydid
                 }
                 // reset bin count to 0
                 iBin = 0;
+                // change the time in run since we're going back to the beginning of the record
+                eventData->SetTimeInRun(GetTimeInRun());
                 // change status
                 fReadState.fStatus = MonarchReadState::kContinueReading;
             }

@@ -14,7 +14,8 @@ namespace Katydid
 {
     KTTimeSeriesPairedData::KTTimeSeriesPairedData(UInt_t nPairs) :
             KTTimeSeriesData(),
-            fData(nPairs)
+            fData(nPairs),
+            fTimeInRun(0.)
     {
     }
 

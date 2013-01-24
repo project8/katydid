@@ -26,7 +26,8 @@ namespace Katydid
   static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTBasicTimeSeriesData > > sBTSDRegistrar;
 
     KTBasicTimeSeriesData::KTBasicTimeSeriesData(UInt_t nChannels) :
-            KTTimeSeriesChannelData()
+            KTTimeSeriesChannelData(),
+            fTimeInRun(0.)
     {
     }
 
@@ -53,6 +54,7 @@ namespace Katydid
             fRecordLength(0.),
             fBinWidth(1.),
             fRecordSize(0),
+            fTimeInRun(0.),
             fChannelData(nChannels)
     {
     }
