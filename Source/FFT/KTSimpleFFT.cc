@@ -177,11 +177,6 @@ namespace Katydid
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
         newData->SetName(fOutputDataName);
-        // just sets the event pointer; doesn't actually add the data to the event
-        // this way anything receiving the signal can use the event pointer
-        newData->SetEvent(tsData->GetEvent());
-
-        fFFTSignal(newData);
 
         return newData;
     }
@@ -255,7 +250,12 @@ namespace Katydid
     {
         KTFrequencySpectrumData* newData = TransformData(tsData);
         if (tsData->GetEvent() != NULL)
-            tsData->GetEvent()->AddData(newData);
+        {
+            KTEvent* event = tsData->GetEvent();
+            newData->SetEvent(event);
+            event->AddData(newData);
+            fFFTSignal(newData);
+        }
         return;
     }
 
@@ -268,8 +268,7 @@ namespace Katydid
             return;
         }
 
-        KTFrequencySpectrumData* newData = TransformData(tsData);
-        event->AddData(newData);
+        ProcessTimeSeriesData(tsData);
         return;
     }
 
