@@ -19,8 +19,8 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTROOTTreeWriter > sBRFWriterRegistrar("root-tree-writer");
-    static KTDerivedRegistrar< KTProcessor, KTROOTTreeWriter > sBRFWProcRegistrar("root-tree-writer");
+    static KTDerivedRegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
+    static KTDerivedRegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
 
     KTROOTTreeWriter::KTROOTTreeWriter() :
             KTWriterWithTypists< KTROOTTreeWriter >(),
