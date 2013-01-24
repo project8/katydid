@@ -59,6 +59,11 @@ namespace Katydid
             virtual KTTimeSeriesData* HatchNextEvent();
             virtual bool CloseEgg();
 
+            UInt_t GetRecordsRead() const;
+
+            /// Returns the time since the run started in seconds
+            Double_t GetTimeInRun() const;
+
         private:
             template< typename XReturnType, typename XArrayType >
             XReturnType ConvertFromArray(XArrayType* value);
@@ -70,6 +75,8 @@ namespace Katydid
             std::string fHeader;
 
             HeaderInfo fHeaderInfo;
+
+            UInt_t fRecordsRead;
 
             static const std::ifstream::pos_type sPreludeSize;  // the prelude size is currently restricted to eight bytes
 
@@ -94,6 +101,16 @@ namespace Katydid
     {
         fOutputDataName = name;
         return;
+    }
+
+    inline UInt_t KTEggReader2011::GetRecordsRead() const
+    {
+        return fRecordsRead;
+    }
+
+    inline Double_t KTEggReader2011::GetTimeInRun() const
+    {
+        return Double_t(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
     }
 
 

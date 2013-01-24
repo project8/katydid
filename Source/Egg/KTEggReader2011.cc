@@ -39,7 +39,8 @@ namespace Katydid
             fPrelude(),
             fHeaderSize(0),
             fHeader(),
-            fHeaderInfo()
+            fHeaderInfo(),
+            fRecordsRead(0)
     {
     }
 
@@ -201,6 +202,8 @@ namespace Katydid
              << "\tRun Length: " << fHeaderInfo.fRunLength << " s" << '\n'
              << "\tSample Rate: " << fHeaderInfo.fSampleRate << " Hz ");
 
+        fRecordsRead = 0;
+
         // Everything should have been done correctly at this point,
         // and we're ready to create, fill, and return the KTEggHeader
 
@@ -304,6 +307,7 @@ namespace Katydid
             }
             delete [] readBuffer;
             eventData->SetTimeSeries(newRecord);
+            fRecordsRead++;
         }
         if (! fEggStream.good())
         {

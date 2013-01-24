@@ -107,6 +107,7 @@ namespace Katydid
         fReadState.fAcquisitionID = 0;
         fReadState.fDataPtrOffset = 0;
 
+        fMonarchRecordsRead = 0;
         fMonarchRecordSize = fHeader.GetMonarchRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
