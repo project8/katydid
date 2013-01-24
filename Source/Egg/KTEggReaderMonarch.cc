@@ -173,6 +173,12 @@ namespace Katydid
             newRecords[iChannel] = newRecord;
         }
 
+        KTDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
+                "\tbin width = " << fBinWidth << '\n' <<
+                "\tmonarch records read = " << fMonarchRecordsRead << '\n' <<
+                "\tmonarch record size = " << fMonarchRecordSize << '\n' <<
+                "\tpointer offset = " << fReadState.fDataPtrOffset);
+
         // Loop over bins
         for (UInt_t iBin = 0; iBin < fHeader.GetRecordSize(); iBin++)
         {
@@ -204,6 +210,11 @@ namespace Katydid
                 iBin = 0;
                 // change the time in run since we're going back to the beginning of the record
                 eventData->SetTimeInRun(GetTimeInRun());
+                KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
+                        "\tbin width = " << fBinWidth << '\n' <<
+                        "\tmonarch records read = " << fMonarchRecordsRead << '\n' <<
+                        "\tmonarch record size = " << fMonarchRecordSize << '\n' <<
+                        "\tpointer offset = " << fReadState.fDataPtrOffset);
                 // change status
                 fReadState.fStatus = MonarchReadState::kContinueReading;
             }
