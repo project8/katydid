@@ -229,7 +229,7 @@ namespace Katydid
             // advance the pointer
             fReadState.fDataPtrOffset++;
             // check if we've reached the end of a monarch record
-            if (fReadState.fDataPtrOffset > fHeader.GetMonarchRecordSize())
+            if (fReadState.fDataPtrOffset >= fHeader.GetMonarchRecordSize())
             {
                 KTDEBUG(eggreadlog, "End of Monarch record reached; attempting to read a new one.");
                 // try reading the next record
