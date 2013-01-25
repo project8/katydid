@@ -1,0 +1,16 @@
+#ifdef __CINT__
+
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
+#pragma link C++ nestedclasses;
+#pragma link C++ nestedtypedefs;
+
+#pragma link C++ namespace Katydid;
+
+#pragma link C++ class Katydid::TFrequencyCandidateData+;
+#pragma link C++ class Katydid::TFrequencyCandidateDataComponent+;
+#pragma link C++ class Katydid::TFrequencyCandidateDataCandidate+;
+
+#endif

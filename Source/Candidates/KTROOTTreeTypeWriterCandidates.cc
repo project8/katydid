@@ -21,10 +21,10 @@ namespace Katydid
 {
     //KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTJSONTypeWriter, KTROOTTreeTypeWriterCandidates > sRTTWCRegistrar;
+    static KTDerivedTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterCandidates > sRTTWCRegistrar;
 
     KTROOTTreeTypeWriterCandidates::KTROOTTreeTypeWriterCandidates() :
-            KTJSONTypeWriter(),
+            KTROOTTreeTypeWriter(),
             //KTTypeWriterCandidates()
             fFreqCandidateTree(NULL)
     {
@@ -95,42 +95,5 @@ namespace Katydid
 
 } /* namespace Katydid */
 
-Double_t TFrequencyCandidateData::GetBinWidth() const
-{
-    return fBinWidth;
-}
 
-void TFrequencyCandidateData::SetBinWidth(Double_t binWidth)
-{
-    fBinWidth = binWidth;
-}
 
-const TClonesArray*& TFrequencyCandidateData::GetComponentData() const
-{
-    return fComponentData;
-}
-
-void TFrequencyCandidateData::SetComponentData(const TClonesArray*& componentData)
-{
-    fComponentData = componentData;
-}
-
-UInt_t TFrequencyCandidateData::GetNBins() const
-{
-    return fNBins;
-}
-
-void TFrequencyCandidateData::SetNBins(UInt_t nBins)
-{
-    fNBins = nBins;
-}
-
-Double_t TFrequencyCandidateData::GetTimeInRun() const
-{
-    return fTimeInRun;
-}
-
-void TFrequencyCandidateData::SetTimeInRun(Double_t timeInRun)
-{
-    fTimeInRun = timeInRun;
-}

@@ -17,7 +17,7 @@ namespace Katydid
 {
     class KTROOTTreeWriter;
 
-    typedef KTDerivedTypeWriter< KTROOTTreeWriter > KTBasicROOTTypeWriter;
+    typedef KTDerivedTypeWriter< KTROOTTreeWriter > KTROOTTreeTypeWriter;
 
 
 
