@@ -12,6 +12,11 @@
 #include "KTTIFactory.hh"
 //#include "KTLogger.hh"
 
+#include "TFrequencyCandidateData.hh"
+
+#include "TFile.h"
+#include "TTree.h"
+
 #include <sstream>
 
 using std::stringstream;
@@ -26,12 +31,15 @@ namespace Katydid
     KTROOTTreeTypeWriterCandidates::KTROOTTreeTypeWriterCandidates() :
             KTROOTTreeTypeWriter(),
             //KTTypeWriterCandidates()
-            fFreqCandidateTree(NULL)
+            fFreqCandidateTree(NULL),
+            fFreqCandidateData(NULL)
     {
     }
 
     KTROOTTreeTypeWriterCandidates::~KTROOTTreeTypeWriterCandidates()
     {
+        //delete fFreqCandidateTree;
+        delete fFreqCandidateData;
     }
 
 
@@ -49,46 +57,25 @@ namespace Katydid
     void KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates(const KTFrequencyCandidateData* data)
     {
         if (! fWriter->OpenAndVerifyFile()) return;
+
         if (fFreqCandidateTree == NULL) SetupFrequencyCandidateTree();
-/*
-        stringstream conv;
 
-        KTJSONWriter::JSONMaker* jsonMaker = fWriter->GetJSONMaker();
+        // Load() also clears any existing data
+        fFreqCandidateData->Load(*data);
 
-        jsonMaker->String("candidates");
-        jsonMaker->StartObject();
+        fFreqCandidateTree->Fill();
 
-        for (UInt_t iGroup=0; iGroup < data->GetNGroups(); iGroup++)
-        {
-            const KTFrequencyCandidateData::Candidates& candidates = data->GetCandidates(iGroup);
-            conv << iGroup;
-            jsonMaker->String(conv.str().c_str());
-            jsonMaker->StartArray();
-
-            for (KTFrequencyCandidateData::Candidates::const_iterator candIt = candidates.begin(); candIt != candidates.end(); candIt++)
-            {
-                jsonMaker->StartObject();
-                jsonMaker->String("first-bin");
-                jsonMaker->Uint(candIt->GetFirstBin());
-
-                jsonMaker->String("last-bin");
-                jsonMaker->Uint(candIt->GetLastBin());
-
-                jsonMaker->String("mean-frequency");
-                jsonMaker->Double(candIt->GetMeanFrequency());
-                jsonMaker->EndObject();
-            }
-
-            jsonMaker->EndArray();
-        }
-
-        jsonMaker->EndObject();
-*/
         return;
     }
 
     void KTROOTTreeTypeWriterCandidates::SetupFrequencyCandidateTree()
     {
+        fFreqCandidateTree = new TTree("freqCand", "Frequency Candidates");
+        fWriter->AddTree(fFreqCandidateTree);
+
+        fFreqCandidateData = new TFrequencyCandidateData();
+
+        fFreqCandidateTree->Branch("freqCandidates", "Katydid::TFrequencyCandidateData", &fFreqCandidateData);
 
         return;
     }
