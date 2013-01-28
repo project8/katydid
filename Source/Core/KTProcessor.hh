@@ -107,6 +107,8 @@ namespace Katydid
     template< class XTarget, typename XReturn, typename XArg1 >
     void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1), const std::string& signature)
     {
+        KTDEBUG(processorlog, "Registering slot <" << name << "> in processor <" << fConfigName << ">; signature is <" << signature << ">");
+
         KTSignal< XReturn (XArg1) > signalConcept;
 
         boost::function< XReturn (XArg1) > *func = new boost::function< XReturn (XArg1) >(boost::bind(funcPtr, target, _1));
@@ -119,6 +121,8 @@ namespace Katydid
     template< class XTarget, typename XReturn, typename XArg1, typename XArg2 >
     void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2), const std::string& signature)
     {
+        KTDEBUG(processorlog, "Registering slot <" << name << "> in processor <" << fConfigName << ">; signature is <" << signature << ">");
+
         KTSignal< XReturn (XArg1, XArg2) > signalConcept;
 
         boost::function< XReturn (XArg1, XArg2) > *func = new boost::function< XReturn (XArg1, XArg2) >(boost::bind(funcPtr, target, _1, _2));

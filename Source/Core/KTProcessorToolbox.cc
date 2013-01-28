@@ -300,7 +300,7 @@ namespace Katydid
             ProcessorInfo pInfo;
             pInfo.fProc = proc;
             fProcMap.insert(ProcMapValue(procName, pInfo));
-            KTDEBUG(proclog, "Added processor <" << procName << ">");
+            KTDEBUG(proclog, "Added processor <" << procName << "> (a.k.a. " << proc->GetConfigName() << ")");
             return true;
         }
         KTWARN(proclog, "Processor <" << procName << "> already exists; new processor was not added.");
