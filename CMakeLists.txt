@@ -121,4 +121,8 @@ katydid_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Scr
 # this is apparently not the right way to run the link_dylibs script
 #execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)
 
-install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)")
+if (ROOT_FOUND)
+    install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${LIB_INSTALL_DIR})")
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Scripts/LoadLibraries.C.in ${PROJECT_BINARY_DIR}/LoadLibraries.C)
+    install (FILES ${PROJECT_BINARY_DIR}/LoadLibraries.C DESTINATION ${LIB_INSTALL_DIR})
+endif (ROOT_FOUND)
