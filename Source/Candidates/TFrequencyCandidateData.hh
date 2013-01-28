@@ -8,7 +8,9 @@
 #ifndef TFREQUENCYCANDIDATEDATA_HH_
 #define TFREQUENCYCANDIDATEDATA_HH_
 
-#include "TClonesArray.h"
+#include "TObject.h"
+
+class TClonesArray;
 
 namespace Katydid
 {
@@ -25,6 +27,8 @@ namespace Katydid
             TFrequencyCandidateData();
             TFrequencyCandidateData(const KTFrequencyCandidateData& data);
             virtual ~TFrequencyCandidateData();
+
+            void Load(const KTFrequencyCandidateData& data);
 
             void Clear();
 
@@ -44,13 +48,6 @@ namespace Katydid
 
             ClassDef(TFrequencyCandidateData, 1);
     };
-
-    inline void TFrequencyCandidateData::Clear()
-    {
-        fComponentData->Clear("C");
-        TObject::Clear();
-        return;
-    }
 
     inline Double_t TFrequencyCandidateData::GetBinWidth() const
     {
@@ -102,6 +99,8 @@ namespace Katydid
             TFrequencyCandidateDataComponent(const Candidates& candidates, Double_t threshold);
             virtual ~TFrequencyCandidateDataComponent();
 
+            void Load(const Candidates& candidates, Double_t threshold);
+
             void Clear();
 
             TClonesArray* GetCandidates() const;
@@ -114,12 +113,6 @@ namespace Katydid
 
             ClassDef(TFrequencyCandidateDataComponent, 1);
     };
-
-    inline void TFrequencyCandidateDataComponent::Clear()
-    {
-        fCandidates->Clear();
-        TObject::Clear();
-    }
 
     inline TClonesArray* TFrequencyCandidateDataComponent::GetCandidates() const
     {
@@ -148,6 +141,8 @@ namespace Katydid
             TFrequencyCandidateDataCandidate();
             TFrequencyCandidateDataCandidate(const KTFrequencyCandidate& candidate);
             virtual ~TFrequencyCandidateDataCandidate();
+
+            void Load(const KTFrequencyCandidate& candidate);
 
             UInt_t GetFirstBin() const;
             void SetFirstBin(UInt_t bin);

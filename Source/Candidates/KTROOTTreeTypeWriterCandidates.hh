@@ -10,14 +10,13 @@
 
 #include "KTROOTTreeWriter.hh"
 
-#include "KTFrequencyCandidate.hh"
-#include "KTFrequencyCandidateData.hh"
-
-#include "TClonesArray.h"
+class TTree;
 
 namespace Katydid
 {
     class KTFrequencyCandidateData;
+
+    class TFrequencyCandidateData;
 
     class KTROOTTreeTypeWriterCandidates : public KTROOTTreeTypeWriter//, public KTTypeWriterCandidates
     {
@@ -37,6 +36,8 @@ namespace Katydid
             void SetupFrequencyCandidateTree();
 
             TTree* fFreqCandidateTree;
+
+            TFrequencyCandidateData* fFreqCandidateData;
 
     };
 

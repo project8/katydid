@@ -10,8 +10,10 @@
 
 #include "KTWriter.hh"
 
-#include "TFile.h"
-#include "TTree.h"
+#include <set>
+
+class TFile;
+class TTree;
 
 namespace Katydid
 {
@@ -42,12 +44,17 @@ namespace Katydid
             TFile* GetFile();
 
             Bool_t OpenAndVerifyFile();
+            void AddTree(TTree* newTree);
+
+            void WriteTrees();
 
         protected:
             std::string fFilename;
             std::string fFileFlag;
 
             TFile* fFile;
+
+            std::set< TTree* > fTrees; // Trees are not owned by this writer; they're owned by their respective TypeWriters.
 
             //************************
             // Basic Publish and Write
@@ -59,23 +66,6 @@ namespace Katydid
             void Write(const KTWriteableData* data);
 
     };
-
-    inline TFile* KTROOTTreeWriter::OpenFile(const std::string& filename, const std::string& flag)
-    {
-        CloseFile();
-        fFile = new TFile(filename.c_str(), flag.c_str());
-        return fFile;
-    }
-    inline void KTROOTTreeWriter::CloseFile()
-    {
-        if (fFile != NULL)
-        {
-            fFile->Close();
-            delete fFile;
-            fFile = NULL;
-        }
-        return;
-    }
 
     inline const std::string& KTROOTTreeWriter::GetFilename() const
     {
