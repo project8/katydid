@@ -40,7 +40,7 @@ namespace Katydid
 
             void AddFrequencySpectrumData(const KTFrequencySpectrumData* data);
 
-            void AddCorrelationData(const KTCorrelationData* data);
+//            void AddCorrelationData(const KTCorrelationData* data);
 
             void AddFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* data);
 
@@ -82,7 +82,7 @@ namespace Katydid
 
             void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
             
-            void ProcessCorrelationData(const KTCorrelationData* data);
+ //           void ProcessCorrelationData(const KTCorrelationData* data);
 
             void Finish();
 

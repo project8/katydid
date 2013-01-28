@@ -19,8 +19,8 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTMultiEventROOTWriter > sBRFWriterRegistrar("multi-event-root-writer");
-    static KTDerivedRegistrar< KTProcessor, KTMultiEventROOTWriter > sBRFWProcRegistrar("multi-event-writer");
+    static KTDerivedRegistrar< KTWriter, KTMultiEventROOTWriter > sMERWriterRegistrar("multi-event-root-writer");
+    static KTDerivedRegistrar< KTProcessor, KTMultiEventROOTWriter > sMERWProcRegistrar("multi-event-root-writer");
 
     KTMultiEventROOTWriter::KTMultiEventROOTWriter() :
             KTWriterWithTypists< KTMultiEventROOTWriter >(),
@@ -28,7 +28,7 @@ namespace Katydid
             fFileFlag("recreate"),
             fFile(NULL)
     {
-        fConfigName = "multi-event-writer";
+        fConfigName = "multi-event-root-writer";
 
         RegisterSlot("start", this, &KTMultiEventROOTWriter::Start, "void ()");
         RegisterSlot("finish", this, &KTMultiEventROOTWriter::Finish, "void ()");

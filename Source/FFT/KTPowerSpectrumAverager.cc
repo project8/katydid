@@ -7,7 +7,8 @@
 
 #include "KTPowerSpectrumAverager.hh"
 
-#include "KTCorrelationData.hh"
+
+// #include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
@@ -85,7 +86,7 @@ namespace Katydid
         AddFSData(data);
         return;
     }
-
+/*
     void KTPowerSpectrumAverager::AddCorrelationData(const KTCorrelationData* data)
     {
         if (fStartNewHistFlag)
@@ -121,6 +122,7 @@ namespace Katydid
         }
         return;
     }
+*/
     void KTPowerSpectrumAverager::CreateHistograms()
     {
         gStyle->SetOptStat(0);
@@ -167,21 +169,21 @@ namespace Katydid
             AddFrequencySpectrumData(fsDataFFTW);
             return;
         }
-
+/*
         const KTCorrelationData* corrData = event->GetData< KTCorrelationData >(fInputDataName);
         if (corrData != NULL)
         {
             AddCorrelationData(corrData);
             return;
         }
-
+*/
         KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");
 
         return;
     }
     void KTPowerSpectrumAverager::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
-        AddFrequncySpectrumData(data);
+        AddFrequencySpectrumData(data);
         return;
     }
     void KTPowerSpectrumAverager::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
@@ -189,13 +191,13 @@ namespace Katydid
         AddFrequencySpectrumData(data);
         return;
     }
-
+/*
     void KTPowerSpectrumAverager::ProcessCorrelationData(const KTCorrelationData* data)
     {
         AddCorrelationData(data);
         return;
     }
-
+*/
 
     void KTPowerSpectrumAverager::Finish()
     {
