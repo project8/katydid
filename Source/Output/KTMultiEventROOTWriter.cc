@@ -83,11 +83,6 @@ namespace Katydid
         }
         return;
     }
-    void KTMultiEventROOTWriter::ProcessHeader(const KTEggHeader* header)
-    {
-        Start();
-        return;
-    }
 
     void KTMultiEventROOTWriter::Finish()
     {

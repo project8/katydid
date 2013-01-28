@@ -10,8 +10,11 @@
 
 #include "KTMultiEventROOTWriter.hh"
 
+class TH1D;
+
 namespace Katydid
 {
+    class KTEggHeader;
     class KTTimeSeriesData;
 
     class KTMultiEventROOTTypeWriterEgg : public KTMultiEventROOTTypeWriter//, public KTTypeWriterEgg

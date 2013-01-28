@@ -15,6 +15,7 @@
 #include "KTTimeSeriesData.hh"
 
 #include "TH1.h"
+#include "TStyle.h"
 
 #include <sstream>
 
@@ -40,14 +41,14 @@ namespace Katydid
         ClearHistograms();
     }
 
-    virtual void KTMultiEventROOTTypeWriterEgg::StartNewHistograms()
+    void KTMultiEventROOTTypeWriterEgg::StartNewHistograms()
     {
         ClearHistograms();
         // At this point the vector is size 0
         return;
     }
 
-    virtual void KTMultiEventROOTTypeWriterEgg::FinishHistograms()
+    void KTMultiEventROOTTypeWriterEgg::FinishHistograms()
     {
         OutputHistograms();
         ClearHistograms();
@@ -99,6 +100,13 @@ namespace Katydid
         fWriter->RegisterSlot("start-by-header", this, &KTMultiEventROOTTypeWriterEgg::StartByHeader, "void (const KTEggHeader*)");
 
         fWriter->RegisterSlot("ts-data", this, &KTMultiEventROOTTypeWriterEgg::AddTimeSeriesData, "void (const KTTimeSeriesData*)");
+        return;
+    }
+
+
+    void KTMultiEventROOTTypeWriterEgg::StartByHeader(const KTEggHeader* header)
+    {
+        fWriter->Start();
         return;
     }
 
