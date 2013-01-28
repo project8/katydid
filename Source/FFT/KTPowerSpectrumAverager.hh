@@ -40,6 +40,8 @@ namespace Katydid
 
             void AddFrequencySpectrumData(const KTFrequencySpectrumData* data);
 
+            void AddCorrelationData(const KTCorrelationData* data);
+
             void AddFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* data);
 
             void CreateHistograms();
@@ -68,12 +70,19 @@ namespace Katydid
             Bool_t fStartNewHistFlag;
             std::vector< TH1D* > fAveragePSHists;
 
+        public:
             //************
             // Slots
             //************
             void ProcessHeader(const KTEggHeader* header);
 
             void ProcessEvent(boost::shared_ptr<KTEvent> event);
+
+            void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
+
+            void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
+            
+            void ProcessCorrelationData(const KTCorrelationData* data);
 
             void Finish();
 
