@@ -110,8 +110,10 @@ namespace Katydid
             newData->SetSpectrum(newSpectrum, iChannel);
         }
 
+        newData->SetTimeInRun(fsData->GetTimeInRun());
+        newData->SetSliceNumber(fsData->GetSliceNumber());
+
         newData->SetName(fOutputDataName);
-        newData->SetEvent(fsData->GetEvent());
 
         fFSSignal(newData);
 
@@ -142,6 +144,9 @@ namespace Katydid
             }
             newData->SetSpectrum(newSpectrum, iChannel);
         }
+
+        newData->SetTimeInRun(fsData->GetTimeInRun());
+        newData->SetSliceNumber(fsData->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
 
