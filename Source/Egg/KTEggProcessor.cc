@@ -48,7 +48,7 @@ namespace Katydid
         fConfigName = "egg-processor";
 
         RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
-        RegisterSignal("data", &fDataSignal, "void (const KTWriteableData*)");
+        RegisterSignal("data", &fDataSignal, "void (const KTTimeSeriesData*)");
         RegisterSignal("event", &fEventSignal, "boost::shared_ptr<KTEvent>");
         RegisterSignal("egg-done", &fEggDoneSignal, "void ()");
     }
