@@ -74,7 +74,6 @@ namespace Katydid
                 fFreqCandidateData.fFirstBin = it->GetFirstBin();
                 fFreqCandidateData.fLastBin = it->GetLastBin();
                 fFreqCandidateData.fMeanFrequency = it->GetMeanFrequency();
-                //fFreqCandidateData.fPeakAmplitude = it->GetPeakAmplitude();
                 fFreqCandidateData.fPeakAmplitude = it->GetPeakAmplitude();
                 fFreqCandidateData.fAmplitudeSum = it->GetAmplitudeSum();
 
