@@ -38,7 +38,8 @@ namespace Katydid
             fNADCLevels(256),
             fMonarchRecordsRead(0),
             fMonarchRecordSize(0),
-            fBinWidth(0.)
+            fBinWidth(0.),
+            fSliceNumber(0)
     {
         fReadState.fStatus = MonarchReadState::kInvalid;
         fReadState.fAcquisitionID = 0;
@@ -111,6 +112,8 @@ namespace Katydid
         fMonarchRecordSize = fHeader.GetMonarchRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
+        fSliceNumber = 0;
+
         return new KTEggHeader(fHeader);
     }
 
@@ -136,6 +139,7 @@ namespace Katydid
                 return NULL;
             }
             fMonarchRecordsRead = 0;
+            fSliceNumber = 0;
             fReadState.fStatus = MonarchReadState::kContinueReading;
         }
 
@@ -146,6 +150,7 @@ namespace Katydid
         eventData->SetRecordSize(fHeader.GetRecordSize());
         eventData->CalculateBinWidthAndRecordLength();
         eventData->SetTimeInRun(GetTimeInRun());
+        eventData->SetSliceNumber(fSliceNumber);
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
@@ -215,6 +220,7 @@ namespace Katydid
                         "\tmonarch records read = " << fMonarchRecordsRead << '\n' <<
                         "\tmonarch record size = " << fMonarchRecordSize << '\n' <<
                         "\tpointer offset = " << fReadState.fDataPtrOffset);
+                eventData->SetSliceNumber(fSliceNumber);
                 // change status
                 fReadState.fStatus = MonarchReadState::kContinueReading;
             }
@@ -261,6 +267,8 @@ namespace Katydid
         }
 
         eventData->SetName(fOutputDataName);
+
+        fSliceNumber++;
 
         return eventData;
     }

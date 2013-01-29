@@ -49,6 +49,7 @@ namespace Katydid
             UInt_t GetRecordSize() const;
             Double_t GetBinWidth() const;
             Double_t GetTimeInRun() const;
+            ULong64_t GetSliceNumber() const;
 
             const KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0) const;
             KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0);
@@ -56,6 +57,7 @@ namespace Katydid
             void SetNTimeSeries(UInt_t channels);
 
             void SetTimeInRun(Double_t tir);
+            void SetSliceNumber(ULong64_t slice);
 
             void SetTimeSeries(KTTimeSeries* record, UInt_t channelNum = 0);
 
@@ -63,6 +65,7 @@ namespace Katydid
             std::vector< KTTimeSeries* > fChannelData;
 
             Double_t fTimeInRun;
+            ULong64_t fSliceNumber;
 
     };
 
@@ -94,6 +97,11 @@ namespace Katydid
         return fTimeInRun;
     }
 
+    inline ULong64_t KTBasicTimeSeriesData::GetSliceNumber() const
+    {
+        return fSliceNumber;
+    }
+
     inline KTTimeSeries* KTBasicTimeSeriesData::GetTimeSeries(UInt_t channelNum)
     {
         return fChannelData[channelNum];
@@ -113,6 +121,12 @@ namespace Katydid
     inline void KTBasicTimeSeriesData::SetTimeInRun(Double_t tir)
     {
         fTimeInRun = tir;
+        return;
+    }
+
+    inline void KTBasicTimeSeriesData::SetSliceNumber(ULong64_t slice)
+    {
+        fSliceNumber = slice;
         return;
     }
 
@@ -158,6 +172,7 @@ namespace Katydid
             RecIdType GetRecordID(UInt_t channelNum = 0) const;
 
             Double_t GetTimeInRun() const;
+            ULong64_t GetSliceNumber() const;
 
             const KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0) const;
             KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0);
@@ -170,6 +185,7 @@ namespace Katydid
             void SetBinWidth(Double_t binWidth);
             void CalculateBinWidthAndRecordLength();
             void SetTimeInRun(Double_t tir);
+            void SetSliceNumber(ULong64_t slice);
 
             void SetTimeStamp(ClockType timeStamp, UInt_t channelNum = 0);
             void SetAcquisitionID(AcqIdType acqId, UInt_t channelNum = 0);
@@ -184,6 +200,7 @@ namespace Katydid
             Double_t fBinWidth; // in sec
 
             Double_t fTimeInRun; // in sec
+            ULong64_t fSliceNumber;
 
             std::vector< PerChannelData > fChannelData;
 
@@ -217,6 +234,11 @@ namespace Katydid
     inline Double_t KTProgenitorTimeSeriesData::GetTimeInRun() const
     {
         return fTimeInRun;
+    }
+
+    inline ULong64_t KTProgenitorTimeSeriesData::GetSliceNumber() const
+    {
+        return fSliceNumber;
     }
 
     inline ClockType KTProgenitorTimeSeriesData::GetTimeStamp(UInt_t channelNum) const
@@ -274,6 +296,12 @@ namespace Katydid
     inline void KTProgenitorTimeSeriesData::SetTimeInRun(Double_t tir)
     {
         fTimeInRun = tir;
+    }
+
+    inline void KTProgenitorTimeSeriesData::SetSliceNumber(ULong64_t slice)
+    {
+        fSliceNumber = slice;
+        return;
     }
 
     inline void KTProgenitorTimeSeriesData::SetNTimeSeries(UInt_t channels)

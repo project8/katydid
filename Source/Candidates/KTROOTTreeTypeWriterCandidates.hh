@@ -19,7 +19,7 @@ namespace Katydid
     struct TFrequencyCandidateData
     {
         UShort_t fComponent;
-        UInt_t fSlice;
+        ULong64_t fSlice;
         Double_t fTimeInRun;
         Double_t fThreshold;
         UInt_t fFirstBin;

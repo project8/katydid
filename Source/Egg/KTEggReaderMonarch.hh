@@ -115,6 +115,8 @@ namespace Katydid
             UInt_t fMonarchRecordSize;
             Double_t fBinWidth;
 
+            ULong64_t fSliceNumber;
+
     };
 
     inline KTEggReaderMonarch::TimeSeriesType KTEggReaderMonarch::GetTimeSeriesType() const

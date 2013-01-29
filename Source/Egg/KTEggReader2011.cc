@@ -284,6 +284,7 @@ namespace Katydid
         eventData->SetRecordSize(fHeaderInfo.fRecordSize);
         eventData->SetRecordLength(double(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
         eventData->SetTimeInRun(GetTimeInRun());
+        eventData->SetSliceNumber((ULong64_t)fRecordsRead);
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];
