@@ -30,7 +30,7 @@ namespace Katydid
     static KTDerivedTIRegistrar< KTMultiEventROOTTypeWriter, KTMultiEventROOTTypeWriterEgg > sMERTWERegistrar;
 
     KTMultiEventROOTTypeWriterEgg::KTMultiEventROOTTypeWriterEgg() :
-            KTMultiEventROOTTypeWriter(),
+            KTMEROOTTypeWriterBase(),
             //KTTypeWriterEgg()
             fTSHists()
     {

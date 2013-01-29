@@ -17,7 +17,7 @@ namespace Katydid
     class KTEggHeader;
     class KTTimeSeriesData;
 
-    class KTMultiEventROOTTypeWriterEgg : public KTMultiEventROOTTypeWriter//, public KTTypeWriterEgg
+    class KTMultiEventROOTTypeWriterEgg : public KTMEROOTTypeWriterBase//, public KTTypeWriterEgg
     {
         public:
             friend class KTTimeSeriesData;

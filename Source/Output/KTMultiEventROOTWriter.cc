@@ -79,7 +79,7 @@ namespace Katydid
     {
         for (TypeWriterMap::iterator it = fTypeWriters.begin(); it != fTypeWriters.end(); it++)
         {
-            static_cast< KTMultiEventROOTTypeWriter* >(it->second)->StartNewHistograms();
+            static_cast< KTMEROOTTypeWriterBase* >(it->second)->StartNewHistograms();
         }
         return;
     }
@@ -88,7 +88,7 @@ namespace Katydid
     {
         for (TypeWriterMap::iterator it = fTypeWriters.begin(); it != fTypeWriters.end(); it++)
         {
-            static_cast< KTMultiEventROOTTypeWriter* >(it->second)->FinishHistograms();
+            static_cast< KTMEROOTTypeWriterBase* >(it->second)->FinishHistograms();
         }
         return;
     }

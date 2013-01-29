@@ -16,12 +16,12 @@ namespace Katydid
 {
     class KTMultiEventROOTWriter;
 
-    //typedef KTDerivedTypeWriter< KTMultiEventROOTWriter > KTMultiEventROOTTypeWriter;
-    class KTMultiEventROOTTypeWriter : public KTDerivedTypeWriter< KTMultiEventROOTWriter >
+    typedef KTDerivedTypeWriter< KTMultiEventROOTWriter > KTMultiEventROOTTypeWriter;
+    class KTMEROOTTypeWriterBase : public KTMultiEventROOTTypeWriter
     {
         public:
-            KTMultiEventROOTTypeWriter() {}
-            virtual ~KTMultiEventROOTTypeWriter() {}
+            KTMEROOTTypeWriterBase() {}
+            virtual ~KTMEROOTTypeWriterBase() {}
 
             virtual void StartNewHistograms() = 0;
 
