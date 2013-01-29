@@ -12,7 +12,7 @@
 #include "KTTIFactory.hh"
 //#include "KTLogger.hh"
 
-#include "TFrequencyCandidateData.hh"
+//#include "TFrequencyCandidateData.hh"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -32,14 +32,14 @@ namespace Katydid
             KTROOTTreeTypeWriter(),
             //KTTypeWriterCandidates()
             fFreqCandidateTree(NULL),
-            fFreqCandidateData(NULL)
+            fFreqCandidateData()
     {
     }
 
     KTROOTTreeTypeWriterCandidates::~KTROOTTreeTypeWriterCandidates()
     {
         //delete fFreqCandidateTree;
-        delete fFreqCandidateData;
+        //delete fFreqCandidateData;
     }
 
 
@@ -61,9 +61,25 @@ namespace Katydid
         if (fFreqCandidateTree == NULL) SetupFrequencyCandidateTree();
 
         // Load() also clears any existing data
-        fFreqCandidateData->Load(*data);
+        //fFreqCandidateData->Load(*data);
+        //fFreqCandidateData.fSlice = data->GetSlice();
+        fFreqCandidateData.fSlice = 999;
+        fFreqCandidateData.fTimeInRun = data->GetTimeInRun();
+        for (fFreqCandidateData.fComponent = 0; fFreqCandidateData.fComponent < data->GetNGroups(); fFreqCandidateData.fComponent++)
+        {
+            fFreqCandidateData.fThreshold = data->GetThreshold(fFreqCandidateData.fComponent);
+            const KTFrequencyCandidateData::Candidates& candidates = data->GetCandidates(fFreqCandidateData.fComponent);
+            for (KTFrequencyCandidateData::Candidates::const_iterator it = candidates.begin(); it != candidates.end(); it++)
+            {
+                fFreqCandidateData.fFirstBin = it->GetFirstBin();
+                fFreqCandidateData.fLastBin = it->GetLastBin();
+                fFreqCandidateData.fMeanFrequency = it->GetMeanFrequency();
+                //fFreqCandidateData.fPeakAmplitude = it->GetPeakAmplitude();
+                fFreqCandidateData.fPeakAmplitude = -999.;
 
-        fFreqCandidateTree->Fill();
+                fFreqCandidateTree->Fill();
+           }
+        }
 
         return;
     }
@@ -73,9 +89,10 @@ namespace Katydid
         fFreqCandidateTree = new TTree("freqCand", "Frequency Candidates");
         fWriter->AddTree(fFreqCandidateTree);
 
-        fFreqCandidateData = new TFrequencyCandidateData();
+        //fFreqCandidateData = new TFrequencyCandidateData();
 
-        fFreqCandidateTree->Branch("freqCandidates", "Katydid::TFrequencyCandidateData", &fFreqCandidateData);
+        //fFreqCandidateTree->Branch("freqCandidates", "Katydid::TFrequencyCandidateData", &fFreqCandidateData);
+        fFreqCandidateTree->Branch("freqCandidates", &fFreqCandidateData.fComponent, "fComponent/s:fSlice/i:fTimeInRun/d:fThreshold/d:fFirstBin/i:fLastBin/i:fMeanFrequency/d:fPeakAmplitude/d");
 
         return;
     }

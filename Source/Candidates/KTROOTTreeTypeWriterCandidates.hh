@@ -16,7 +16,17 @@ namespace Katydid
 {
     class KTFrequencyCandidateData;
 
-    class TFrequencyCandidateData;
+    struct TFrequencyCandidateData
+    {
+        UShort_t fComponent;
+        UInt_t fSlice;
+        Double_t fTimeInRun;
+        Double_t fThreshold;
+        UInt_t fFirstBin;
+        UInt_t fLastBin;
+        Double_t fMeanFrequency;
+        Double_t fPeakAmplitude;
+    };
 
     class KTROOTTreeTypeWriterCandidates : public KTROOTTreeTypeWriter//, public KTTypeWriterCandidates
     {
@@ -37,7 +47,7 @@ namespace Katydid
 
             TTree* fFreqCandidateTree;
 
-            TFrequencyCandidateData* fFreqCandidateData;
+            TFrequencyCandidateData fFreqCandidateData;
 
     };
 
@@ -45,6 +55,9 @@ namespace Katydid
     {
         return fFreqCandidateTree;
     }
+
+
+
 
 } /* namespace Katydid */
 

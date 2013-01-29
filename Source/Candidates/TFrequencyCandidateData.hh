@@ -187,6 +187,5 @@ namespace Katydid
         return;
     }
 
-
 } /* namespace Katydid */
 #endif /* TFREQUENCYCANDIDATEDATA_HH_ */

@@ -97,6 +97,7 @@ namespace Katydid
         fFile->cd();
         for (set< TTree* >::iterator it = fTrees.begin(); it != fTrees.end(); it++)
         {
+            KTWARN(publog, "Tree being written has " << (*it)->GetEntries() << " entries");
             (*it)->Write();
         }
         fFile->Write();
