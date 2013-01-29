@@ -176,13 +176,17 @@ namespace Katydid
 
             Double_t weightedMean = 0.;
             Double_t integral = 0.;
+            Double_t peakValue = 0.;
             for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 weightedMean += freqSpec->GetBinCenter(iBin) * (*freqSpec)(iBin).abs();
                 integral += (*freqSpec)(iBin).abs();
+                if ((*freqSpec)(iBin).abs() > peakValue) peakValue = (*freqSpec)(iBin).abs();
             }
             weightedMean /= integral;
             newCandidate.SetMeanFrequency(weightedMean);
+            newCandidate.SetPeakAmplitude(peakValue);
+            newCandidate.SetAmplitudeSum(integral);
 
             candidates[iCandidate] = newCandidate;
             iCandidate++;

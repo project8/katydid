@@ -26,6 +26,7 @@ namespace Katydid
         UInt_t fLastBin;
         Double_t fMeanFrequency;
         Double_t fPeakAmplitude;
+        Double_t fAmplitudeSum;
     };
 
     class KTROOTTreeTypeWriterCandidates : public KTROOTTreeTypeWriter//, public KTTypeWriterCandidates
