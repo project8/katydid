@@ -71,6 +71,7 @@ namespace Katydid
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
         fcData->SetTimeInRun(fsData->GetTimeInRun());
+        fcData->SetSliceNumber(fsData->GetSliceNumber());
 
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {

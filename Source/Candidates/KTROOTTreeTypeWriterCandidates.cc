@@ -62,8 +62,7 @@ namespace Katydid
 
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
-        //fFreqCandidateData.fSlice = data->GetSlice();
-        fFreqCandidateData.fSlice = 999;
+        fFreqCandidateData.fSlice = data->GetSliceNumber();
         fFreqCandidateData.fTimeInRun = data->GetTimeInRun();
         for (fFreqCandidateData.fComponent = 0; fFreqCandidateData.fComponent < data->GetNGroups(); fFreqCandidateData.fComponent++)
         {
