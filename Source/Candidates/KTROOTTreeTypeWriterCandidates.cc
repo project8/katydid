@@ -10,7 +10,7 @@
 #include "KTFrequencyCandidate.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
-//#include "KTLogger.hh"
+#include "KTLogger.hh"
 
 //#include "TFrequencyCandidateData.hh"
 
@@ -24,7 +24,7 @@ using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "katydid.output");
 
     static KTDerivedTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterCandidates > sRTTWCRegistrar;
 
