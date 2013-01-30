@@ -107,6 +107,8 @@ namespace Katydid
         }
 
         newData->SetTimeInRun(data->GetTimeInRun());
+        newData->SetSliceNumber(data->GetSliceNumber());
+        KTWARN(corrlog, "slice: " << data->GetSliceNumber() << "   " << newData->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
 
@@ -137,6 +139,7 @@ namespace Katydid
         }
 
         newData->SetTimeInRun(data->GetTimeInRun());
+        newData->SetSliceNumber(data->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
 
