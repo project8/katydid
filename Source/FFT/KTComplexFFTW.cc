@@ -198,6 +198,7 @@ namespace Katydid
         }
 
         newData->SetTimeInRun(tsData->GetTimeInRun());
+        newData->SetSliceNumber(tsData->GetSliceNumber());
 
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
@@ -250,6 +251,7 @@ namespace Katydid
         }
 
         newData->SetTimeInRun(fsData->GetTimeInRun());
+        newData->SetSliceNumber(fsData->GetSliceNumber());
 
         KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNTimeSeries() << " channel(s) transformed");
 

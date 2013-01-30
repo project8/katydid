@@ -49,10 +49,12 @@ namespace Katydid
             UInt_t GetNBins() const;
             Double_t GetBinWidth() const;
             Double_t GetTimeInRun() const;
+            ULong64_t GetSliceNumber() const;
 
             void SetNBins(UInt_t nBins);
             void SetBinWidth(Double_t binWidth);
             void SetTimeInRun(Double_t tir);
+            void SetSliceNumber(ULong64_t slice);
 
         protected:
             std::vector< PerGroupData > fGroupData;
@@ -61,6 +63,7 @@ namespace Katydid
             Double_t fBinWidth;
 
             Double_t fTimeInRun;
+            ULong64_t fSliceNumber;
 
     };
 
@@ -121,6 +124,11 @@ namespace Katydid
         return fTimeInRun;
     }
 
+    inline ULong64_t KTFrequencyCandidateData::GetSliceNumber() const
+    {
+        return fSliceNumber;
+    }
+
     inline void KTFrequencyCandidateData::SetNBins(UInt_t nBins)
     {
         fNBins = nBins;
@@ -136,6 +144,12 @@ namespace Katydid
     inline void KTFrequencyCandidateData::SetTimeInRun(Double_t tir)
     {
         fTimeInRun = tir;
+        return;
+    }
+
+    inline void KTFrequencyCandidateData::SetSliceNumber(ULong64_t slice)
+    {
+        fSliceNumber = slice;
         return;
     }
 

@@ -13,14 +13,18 @@ namespace Katydid
     KTFrequencyCandidate::KTFrequencyCandidate() :
             fFirstBin(0),
             fLastBin(0),
-            fMeanFrequency(0.)
+            fMeanFrequency(0.),
+            fPeakAmplitude(0.),
+            fAmplitudeSum(0.)
     {
     }
 
     KTFrequencyCandidate::KTFrequencyCandidate(const KTFrequencyCandidate& orig) :
             fFirstBin(orig.fFirstBin),
             fLastBin(orig.fLastBin),
-            fMeanFrequency(orig.fMeanFrequency)
+            fMeanFrequency(orig.fMeanFrequency),
+            fPeakAmplitude(orig.fPeakAmplitude),
+            fAmplitudeSum(orig.fAmplitudeSum)
     {
     }
 
@@ -33,6 +37,8 @@ namespace Katydid
         fFirstBin = rhs.fFirstBin;
         fLastBin = rhs.fLastBin;
         fMeanFrequency = rhs.fMeanFrequency;
+        fPeakAmplitude = rhs.fPeakAmplitude;
+        fAmplitudeSum = rhs.fAmplitudeSum;
         return *this;
     }
 

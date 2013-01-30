@@ -27,7 +27,8 @@ namespace Katydid
 
     KTBasicTimeSeriesData::KTBasicTimeSeriesData(UInt_t nChannels) :
             KTTimeSeriesChannelData(),
-            fTimeInRun(0.)
+            fTimeInRun(0.),
+            fSliceNumber(0)
     {
     }
 
@@ -55,6 +56,7 @@ namespace Katydid
             fBinWidth(1.),
             fRecordSize(0),
             fTimeInRun(0.),
+            fSliceNumber(0),
             fChannelData(nChannels)
     {
     }

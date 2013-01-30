@@ -21,7 +21,8 @@ namespace Katydid
             fGroupData(nGroups),
             fNBins(1),
             fBinWidth(1.),
-            fTimeInRun(0.)
+            fTimeInRun(0.),
+            fSliceNumber(0)
     {
     }
 

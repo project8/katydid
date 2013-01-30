@@ -71,6 +71,7 @@ namespace Katydid
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
         fcData->SetTimeInRun(fsData->GetTimeInRun());
+        fcData->SetSliceNumber(fsData->GetSliceNumber());
 
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
@@ -102,6 +103,7 @@ namespace Katydid
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
         fcData->SetTimeInRun(fsData->GetTimeInRun());
+        fcData->SetSliceNumber(fsData->GetSliceNumber());
 
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
@@ -133,6 +135,7 @@ namespace Katydid
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
         fcData->SetTimeInRun(fsData->GetTimeInRun());
+        fcData->SetSliceNumber(fsData->GetSliceNumber());
 
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
@@ -176,13 +179,17 @@ namespace Katydid
 
             Double_t weightedMean = 0.;
             Double_t integral = 0.;
+            Double_t peakValue = 0.;
             for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 weightedMean += freqSpec->GetBinCenter(iBin) * (*freqSpec)(iBin).abs();
                 integral += (*freqSpec)(iBin).abs();
+                if ((*freqSpec)(iBin).abs() > peakValue) peakValue = (*freqSpec)(iBin).abs();
             }
             weightedMean /= integral;
             newCandidate.SetMeanFrequency(weightedMean);
+            newCandidate.SetPeakAmplitude(peakValue);
+            newCandidate.SetAmplitudeSum(integral);
 
             candidates[iCandidate] = newCandidate;
             iCandidate++;
@@ -218,14 +225,18 @@ namespace Katydid
             Double_t weightedMean = 0.;
             Double_t integral = 0.;
             Double_t value = 0.;
+            Double_t peakValue = 0.;
             for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 value = sqrt((*freqSpec)(iBin)[0] * (*freqSpec)(iBin)[0] + (*freqSpec)(iBin)[1] * (*freqSpec)(iBin)[1]);
                 weightedMean += freqSpec->GetBinCenter(iBin) * value;
                 integral += value;
+                if (value > peakValue) peakValue = value;
             }
             weightedMean /= integral;
             newCandidate.SetMeanFrequency(weightedMean);
+            newCandidate.SetPeakAmplitude(peakValue);
+            newCandidate.SetAmplitudeSum(integral);
 
             candidates[iCandidate] = newCandidate;
             iCandidate++;

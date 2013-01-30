@@ -116,6 +116,8 @@ namespace Katydid
                 KTDEBUG(sdlog, "Adding cluster: (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                 newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
             }
+
+            KTDEBUG(sdlog, newData->GetSetOfClusters(iChannel).size() << " clusters added on channel " << iChannel);
         }
 
         newData->SetName(fOutputDataName);

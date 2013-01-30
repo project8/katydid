@@ -31,11 +31,12 @@ namespace Katydid
             KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0);
             UInt_t GetNChannels() const;
             Double_t GetTimeInRun() const;
-
+            ULong64_t GetSliceNumber() const;
 
             void SetSpectrum(KTFrequencySpectrum* record, UInt_t channelNum = 0);
             void SetNChannels(UInt_t channels);
             void SetTimeInRun(Double_t tir);
+            void SetSliceNumber(ULong64_t slice);
 
             void Accept(KTWriter* writer) const;
 
@@ -43,6 +44,7 @@ namespace Katydid
             std::vector< KTFrequencySpectrum* > fSpectra;
 
             Double_t fTimeInRun;
+            ULong64_t fSliceNumber;
 
 #ifdef ROOT_FOUND
         public:
@@ -75,6 +77,11 @@ namespace Katydid
         return fTimeInRun;
     }
 
+    inline ULong64_t KTFrequencySpectrumData::GetSliceNumber() const
+    {
+        return fSliceNumber;
+    }
+
     inline void KTFrequencySpectrumData::SetSpectrum(KTFrequencySpectrum* record, UInt_t channelNum)
     {
         if (channelNum >= fSpectra.size()) fSpectra.resize(channelNum+1);
@@ -90,6 +97,12 @@ namespace Katydid
     inline void KTFrequencySpectrumData::SetTimeInRun(Double_t tir)
     {
         fTimeInRun = tir;
+        return;
+    }
+
+    inline void KTFrequencySpectrumData::SetSliceNumber(ULong64_t slice)
+    {
+        fSliceNumber = slice;
         return;
     }
 

@@ -12,6 +12,10 @@
 #include "KTPStoreNode.hh"
 #include "KTWriteableData.hh"
 
+#include "TFile.h"
+#include "TTree.h"
+
+using std::set;
 using std::string;
 
 namespace Katydid
@@ -26,7 +30,8 @@ namespace Katydid
             KTWriterWithTypists< KTROOTTreeWriter >(),
             fFilename("tree_output.root"),
             fFileFlag("recreate"),
-            fFile(NULL)
+            fFile(NULL),
+            fTrees()
     {
         fConfigName = "root-tree-writer";
 
@@ -37,7 +42,7 @@ namespace Katydid
     {
         if (fFile != NULL)
         {
-            fFile->Close();
+            CloseFile();
         }
         delete fFile;
     }
@@ -70,6 +75,50 @@ namespace Katydid
         fFile->cd();
         return true;
     }
+
+    void KTROOTTreeWriter::AddTree(TTree* newTree)
+    {
+        newTree->SetDirectory(fFile);
+        fTrees.insert(newTree);
+        return;
+    }
+
+
+    TFile* KTROOTTreeWriter::OpenFile(const std::string& filename, const std::string& flag)
+    {
+        CloseFile();
+        fFile = new TFile(filename.c_str(), flag.c_str());
+        return fFile;
+    }
+
+    void KTROOTTreeWriter::WriteTrees()
+    {
+        KTWARN(publog, "writing trees");
+        fFile->cd();
+        for (set< TTree* >::iterator it = fTrees.begin(); it != fTrees.end(); it++)
+        {
+            KTWARN(publog, "Tree being written has " << (*it)->GetEntries() << " entries");
+            (*it)->Write();
+        }
+        fFile->Write();
+        return;
+    }
+
+    void KTROOTTreeWriter::CloseFile()
+    {
+        if (fFile != NULL)
+        {
+            WriteTrees();
+            fTrees.clear();
+
+            fFile->Close();
+            delete fFile;
+            fFile = NULL;
+        }
+        return;
+    }
+
+
 
     void KTROOTTreeWriter::Publish(const KTWriteableData* data)
     {

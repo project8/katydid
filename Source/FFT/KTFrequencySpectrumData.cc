@@ -19,7 +19,8 @@ namespace Katydid
     KTFrequencySpectrumData::KTFrequencySpectrumData(UInt_t nChannels) :
             KTWriteableData(),
             fSpectra(nChannels),
-            fTimeInRun(0.)
+            fTimeInRun(0.),
+            fSliceNumber(0)
     {
     }
 
