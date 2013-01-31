@@ -49,6 +49,8 @@ namespace Katydid
         RegisterSlot("header", this, &KTPowerSpectrumAverager::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("event", this, &KTPowerSpectrumAverager::ProcessEvent, "void (shared_ptr<KTEvent>)");
         RegisterSlot("finish", this, &KTPowerSpectrumAverager::Finish, "void ()");
+
+        KTWARN(psavglog, "Please note: KTPowerSpectrumAverager is now deprecated. Please use KTMultiEventROOTWriter instead.");
     };
 
     KTPowerSpectrumAverager::~KTPowerSpectrumAverager()
