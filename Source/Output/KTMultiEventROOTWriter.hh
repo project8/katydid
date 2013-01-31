@@ -41,19 +41,40 @@ namespace Katydid
             TFile* OpenFile(const std::string& filename, const std::string& flag);
             void CloseFile();
 
-            const std::string& GetFilename() const;
-            void SetFilename(const std::string& filename);
+            Bool_t GetUseTFile() const;
+            void SetUseTFile(Bool_t flag);
 
-            const std::string& GetFileFlag() const;
-            void SetFileFlag(const std::string& flag);
+            const std::string& GetTFilename() const;
+            void SetTFilename(const std::string& filename);
+
+            const std::string& GetTFileFlag() const;
+            void SetTFileFlag(const std::string& flag);
+
+            Bool_t GetUseGraphics() const;
+            void SetUseGraphics(Bool_t flag);
+
+            const std::string& GetGraphicsFilePath() const;
+            void SetGraphicsFilePath(const std::string& path);
+
+            const std::string& GetGraphicsFilenameBase() const;
+            void SetGraphicsFilenameBase(const std::string& fname);
+
+            const std::string& GetGraphicsFileType() const;
+            void SetGraphicsFileType(const std::string& type);
 
             TFile* GetFile();
 
             Bool_t OpenAndVerifyFile();
 
         private:
-            std::string fFilename;
-            std::string fFileFlag;
+            Bool_t fUseTFile;
+            std::string fTFilename;
+            std::string fTFileFlag;
+
+            Bool_t fUseGraphics;
+            std::string fGraphicsFilePath;
+            std::string fGraphicsFilenameBase;
+            std::string fGraphicsFileType;
 
             TFile* fFile;
 
@@ -94,23 +115,76 @@ namespace Katydid
         return;
     }
 
-    inline const std::string& KTMultiEventROOTWriter::GetFilename() const
+    inline Bool_t KTMultiEventROOTWriter::GetUseTFile() const
     {
-        return fFilename;
+        return fUseTFile;
     }
-    inline void KTMultiEventROOTWriter::SetFilename(const std::string& filename)
+    inline void KTMultiEventROOTWriter::SetUseTFile(Bool_t flag)
     {
-        fFilename = filename;
+        fUseTFile = flag;
         return;
     }
 
-    inline const std::string& KTMultiEventROOTWriter::GetFileFlag() const
+    inline const std::string& KTMultiEventROOTWriter::GetTFilename() const
     {
-        return fFileFlag;
+        return fTFilename;
     }
-    inline void KTMultiEventROOTWriter::SetFileFlag(const std::string& flag)
+    inline void KTMultiEventROOTWriter::SetTFilename(const std::string& filename)
     {
-        fFileFlag = flag;
+        fTFilename = filename;
+        return;
+    }
+
+    inline const std::string& KTMultiEventROOTWriter::GetTFileFlag() const
+    {
+        return fTFileFlag;
+    }
+    inline void KTMultiEventROOTWriter::SetTFileFlag(const std::string& flag)
+    {
+        fTFileFlag = flag;
+        return;
+    }
+
+    inline Bool_t KTMultiEventROOTWriter::GetUseGraphics() const
+    {
+        return fUseGraphics;
+    }
+    inline void KTMultiEventROOTWriter::SetUseGraphics(Bool_t flag)
+    {
+        fUseGraphics = flag;
+        return;
+    }
+
+    inline const std::string& KTMultiEventROOTWriter::GetGraphicsFilePath() const
+    {
+        return fGraphicsFilePath;
+    }
+
+    inline void KTMultiEventROOTWriter::SetGraphicsFilePath(const std::string& path)
+    {
+        fGraphicsFilePath = path;
+        return;
+    }
+
+    inline const std::string& KTMultiEventROOTWriter::GetGraphicsFilenameBase() const
+    {
+        return fGraphicsFilenameBase;
+    }
+
+    inline void KTMultiEventROOTWriter::SetGraphicsFilenameBase(const std::string& fname)
+    {
+        fGraphicsFilenameBase = fname;
+        return;
+    }
+
+    inline const std::string& KTMultiEventROOTWriter::GetGraphicsFileType() const
+    {
+        return fGraphicsFileType;
+    }
+
+    inline void KTMultiEventROOTWriter::SetGraphicsFileType(const std::string& type)
+    {
+        fGraphicsFileType = type;
         return;
     }
 

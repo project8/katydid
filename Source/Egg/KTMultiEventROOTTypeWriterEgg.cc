@@ -14,6 +14,7 @@
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 
+#include "TCanvas.h"
 #include "TH1.h"
 #include "TStyle.h"
 
@@ -62,20 +63,19 @@ namespace Katydid
         gStyle->SetOptStat(0);
         for (UInt_t iChannel=0; iChannel < fTSHists.size(); iChannel++)
         {
-            /*// code for priting to image files
+            // Printing to graphics files
             stringstream conv;
-            conv << "_" << iChannel << "." << fOutputFileType;
-            string fileName = fOutputFilenameBase + conv.str();
-            if (! fOutputFilePath.empty()) fileName = fOutputFilePath + '/' + fileName;
+            conv << "_ts_" << iChannel << "." << fWriter->GetGraphicsFileType();
+            string fileName = fWriter->GetGraphicsFilenameBase() + conv.str();
+            if (! fWriter->GetGraphicsFilePath().empty()) fileName = fWriter->GetGraphicsFilePath() + '/' + fileName;
 
             TCanvas* cPrint = new TCanvas("cPrint", "cPrint");
             cPrint->SetLogy(1);
-            fAveragePSHists[iChannel]->Draw();
+            fTSHists[iChannel]->Draw();
 
-            cPrint->Print(fileName.c_str(), fOutputFileType.c_str());
-            KTINFO(psavglog, "Printed file " << fileName);
+            cPrint->Print(fileName.c_str(), fWriter->GetGraphicsFileType().c_str());
+            KTINFO(publog, "Printed file " << fileName);
             delete cPrint;
-            */
 
             // Writing to ROOT file
             fTSHists[iChannel]->SetDirectory(fWriter->GetFile());

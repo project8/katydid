@@ -24,8 +24,13 @@ namespace Katydid
 
     KTMultiEventROOTWriter::KTMultiEventROOTWriter() :
             KTWriterWithTypists< KTMultiEventROOTWriter >(),
-            fFilename("basic_output.root"),
-            fFileFlag("recreate"),
+            fUseTFile(true),
+            fTFilename("multi_event.root"),
+            fTFileFlag("recreate"),
+            fUseGraphics(false),
+            fGraphicsFilePath(),
+            fGraphicsFilenameBase("multi_event"),
+            fGraphicsFileType("png"),
             fFile(NULL)
     {
         fConfigName = "multi-event-root-writer";
@@ -51,8 +56,14 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetData<string>("output-file", fFilename));
-            SetFileFlag(node->GetData<string>("file-flag", fFileFlag));
+            SetUseTFile(node->GetData<Bool_t>("use-tfile", fUseTFile));
+            SetTFilename(node->GetData<string>("output-tfile", fTFilename));
+            SetTFileFlag(node->GetData<string>("tfile-flag", fTFileFlag));
+
+            SetUseGraphics(node->GetData<Bool_t>("use-graphics", fUseGraphics));
+            SetGraphicsFilePath(node->GetData<string>("graphics-file-path", fGraphicsFilePath));
+            SetGraphicsFilenameBase(node->GetData<string>("graphics-filename-base", fGraphicsFilenameBase));
+            SetGraphicsFileType(node->GetData<string>("graphics-file-type", fGraphicsFileType));
         }
 
         return true;
@@ -60,18 +71,21 @@ namespace Katydid
 
     Bool_t KTMultiEventROOTWriter::OpenAndVerifyFile()
     {
-        if (fFile == NULL)
+        if (fUseTFile)
         {
-            fFile = new TFile(fFilename.c_str(), fFileFlag.c_str());
+            if (fFile == NULL)
+            {
+                fFile = new TFile(fTFilename.c_str(), fTFileFlag.c_str());
+            }
+            if (! fFile->IsOpen())
+            {
+                delete fFile;
+                fFile = NULL;
+                KTERROR(publog, "Output file <" << fTFilename << "> did not open!");
+                return false;
+            }
+            fFile->cd();
         }
-        if (! fFile->IsOpen())
-        {
-            delete fFile;
-            fFile = NULL;
-            KTERROR(publog, "Output file <" << fFilename << "> did not open!");
-            return false;
-        }
-        fFile->cd();
         return true;
     }
 
