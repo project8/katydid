@@ -58,6 +58,15 @@ if (EIGEN3_FOUND)
    include_directories (${EIGEN3_INCLUDE_DIR})
 endif (EIGEN3_FOUND)
 
+# OpenMP
+find_package (OpenMP)
+if (OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+else (OPENMP_FOUND)
+    message (STATUS "It looks like OpenMP wasn't found, and you just saw a bunch of error messages; don't worry, it's OK!  The build must go on!")
+endif (OPENMP_FOUND)
+
 # External packages distributed with Katydid
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidJSON")
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")

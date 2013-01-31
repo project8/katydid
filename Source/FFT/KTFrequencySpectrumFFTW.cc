@@ -17,6 +17,10 @@
 
 #include <sstream>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 using std::stringstream;
 
 namespace Katydid
@@ -65,6 +69,7 @@ namespace Katydid
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::CConjugate()
     {
         UInt_t nBins = size();
+#pragma omp parallel for
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             // order doesn't matter, so use fData[] to access values
@@ -81,11 +86,13 @@ namespace Katydid
         // Positive frequency bins are multiplied by 2 (from array position 1 to size/2).
         UInt_t nBins = size();
         UInt_t nyquistPos = nBins / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
+#pragma omp parallel for
         for (UInt_t arrayPos=1; arrayPos<nyquistPos; arrayPos++)
         {
             fData[arrayPos][0] = fData[arrayPos][0] * 2.;
             fData[arrayPos][1] = fData[arrayPos][1] * 2.;
         }
+#pragma omp parallel for
         for (UInt_t arrayPos=nyquistPos; arrayPos<nBins; arrayPos++)
         {
             fData[arrayPos][0] = 0.;
@@ -109,6 +116,7 @@ namespace Katydid
 
         // All bins besides the Nyquist and DC bins
         UInt_t totalBins = size();
+        /*
         UInt_t iPosBin = fDCBin + 1;
         UInt_t iNegBin = fDCBin - 1;
         for (UInt_t iBin=1; iBin<nBins-1; iBin++)
@@ -120,6 +128,14 @@ namespace Katydid
             (*newFS)(iBin).set_rect(valueReal, valueImag);
             iPosBin++;
             iNegBin--;
+        }
+         */
+#pragma omp parallel for private(valueReal, valueImag)
+        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+        {
+            valueReal = (*this)(fDCBin - iBin)[0] + (*this)(fDCBin + iBin)[0];
+            valueImag = (*this)(fDCBin - iBin)[1] + (*this)(fDCBin + iBin)[1];
+            (*newFS)(iBin).set_rect(valueReal, valueImag);
         }
 
         // Nyquist bin
@@ -153,6 +169,7 @@ namespace Katydid
 
         // All bins besides the Nyquist and DC bins
         UInt_t totalBins = size();
+        /*
         UInt_t iPosBin = fDCBin + 1;
         UInt_t iNegBin = fDCBin - 1;
         for (UInt_t iBin=1; iBin<nBins-1; iBin++)
@@ -165,6 +182,15 @@ namespace Katydid
             (*newPS)(iBin) = value * scaling;
             iPosBin++;
             iNegBin--;
+        }
+        */
+#pragma omp parallel for private(valueReal, valueImag)
+        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+        {
+            valueReal = (*this)(fDCBin - iBin)[0] + (*this)(fDCBin + iBin)[0];
+            valueImag = (*this)(fDCBin - iBin)[1] + (*this)(fDCBin + iBin)[1];
+            value = valueReal * valueReal + valueImag * valueImag;
+            (*newPS)(iBin) = value * scaling;
         }
 
         // Nyquist bin

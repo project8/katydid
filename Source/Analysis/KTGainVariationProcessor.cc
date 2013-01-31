@@ -19,6 +19,10 @@
 #include <cmath>
 #include <vector>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 using std::string;
 using std::vector;
 using boost::shared_ptr;
@@ -107,6 +111,7 @@ namespace Katydid
             Double_t* yVals = new Double_t[fNFitPoints];
 
             // Calculate fit points
+#pragma omp parallel for default(shared)
             for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
             {
                 UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
@@ -178,6 +183,7 @@ namespace Katydid
             Double_t* yVals = new Double_t[fNFitPoints];
 
             // Calculate fit points
+#pragma omp parallel for default(shared)
             for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
             {
                 UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
