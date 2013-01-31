@@ -7,6 +7,8 @@
 
 #include "KTPowerSpectrumAverager.hh"
 
+
+// #include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
@@ -47,6 +49,8 @@ namespace Katydid
         RegisterSlot("header", this, &KTPowerSpectrumAverager::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("event", this, &KTPowerSpectrumAverager::ProcessEvent, "void (shared_ptr<KTEvent>)");
         RegisterSlot("finish", this, &KTPowerSpectrumAverager::Finish, "void ()");
+
+        KTWARN(psavglog, "Please note: KTPowerSpectrumAverager is now deprecated. Please use KTMultiEventROOTWriter instead.");
     };
 
     KTPowerSpectrumAverager::~KTPowerSpectrumAverager()
@@ -84,7 +88,43 @@ namespace Katydid
         AddFSData(data);
         return;
     }
+/*
+    void KTPowerSpectrumAverager::AddCorrelationData(const KTCorrelationData* data)
+    {
+        if (fStartNewHistFlag)
+        {
+            fStartNewHistFlag = false;
 
+            for (std::vector<TH1D*>::iterator it=fAveragePSHists.begin(); it != fAveragePSHists.end(); it++)
+            {
+                delete *it;
+            }
+            fAveragePSHists.clear();
+            if (fAveragePSHists.size() != data->GetNPairs())
+                fAveragePSHists.resize(data->GetNPairs());
+
+            std::string histNameBase("PowerSpectrum");
+            for (UInt_t iChannel=0; iChannel < data->GetNPairs(); iChannel++)
+            {
+                std::stringstream conv;
+                conv << iChannel;
+                std::string histName = histNameBase + conv.str();
+                TH1D* newPS = data->GetSpectrum(iChannel)->CreateMagnitudeHistogram(histName);
+                fAveragePSHists[iChannel] = newPS;
+            }
+        }
+        else
+        {
+            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            {
+                TH1D* newPS = data->GetSpectrum(iChannel)->CreateMagnitudeHistogram();
+                fAveragePSHists[iChannel]->Add(newPS);
+                delete newPS;
+            }
+        }
+        return;
+    }
+*/
     void KTPowerSpectrumAverager::CreateHistograms()
     {
         gStyle->SetOptStat(0);
@@ -131,16 +171,40 @@ namespace Katydid
             AddFrequencySpectrumData(fsDataFFTW);
             return;
         }
-
+/*
+        const KTCorrelationData* corrData = event->GetData< KTCorrelationData >(fInputDataName);
+        if (corrData != NULL)
+        {
+            AddCorrelationData(corrData);
+            return;
+        }
+*/
         KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");
 
         return;
     }
+    void KTPowerSpectrumAverager::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    {
+        AddFrequencySpectrumData(data);
+        return;
+    }
+    void KTPowerSpectrumAverager::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
+    {
+        AddFrequencySpectrumData(data);
+        return;
+    }
+/*
+    void KTPowerSpectrumAverager::ProcessCorrelationData(const KTCorrelationData* data)
+    {
+        AddCorrelationData(data);
+        return;
+    }
+*/
 
     void KTPowerSpectrumAverager::Finish()
     {
         CreateHistograms();
-        return;
+        return; 
     }
 
 } /* namespace Katydid */

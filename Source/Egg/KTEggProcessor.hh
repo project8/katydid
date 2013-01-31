@@ -18,7 +18,7 @@
 namespace Katydid
 {
     class KTPStoreNode;
-    class KTWriteableData;
+    class KTTimeSeriesData;
 
     /*!
      @class KTEggProcessor
@@ -44,6 +44,7 @@ namespace Katydid
 
      Signals:
      \li \c "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
+     \li \c "data": void (const KTTimeSeriesData*) -- emitted when the new time series is produced.
      \li \c "event": void (boost::shared_ptr<KTEvent>) -- emitted when an event is read from the file.
      \li \c "egg-done": void () --  emitted when a file is finished.
     */
@@ -51,7 +52,7 @@ namespace Katydid
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
-            typedef KTSignal< void (const KTWriteableData*) >::signal DataSignal;
+            typedef KTSignal< void (const KTTimeSeriesData*) >::signal DataSignal;
             typedef KTSignal< void (boost::shared_ptr<KTEvent>) >::signal EventSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 
