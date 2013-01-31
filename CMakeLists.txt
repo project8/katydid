@@ -30,6 +30,11 @@ list (APPEND LIBS ${Boost_LIBRARIES})
 find_package(FFTW REQUIRED)
 include_directories (${FFTW_INCLUDE_DIR})
 list (APPEND LIBS ${FFTW_LIBRARIES})
+if (FFTW_THREADS_FOUND)
+    set (FFTW_NTHREADS 1 CACHE STRING "Number of threads to use for FFTW processes")
+    add_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
+    message (STATUS "FFTW configured to use up to ${FFTW_NTHREADS} threads.")
+endif (FFTW_THREADS_FOUND)
 
 # ROOT
 find_package (ROOT 5.28)

@@ -68,6 +68,7 @@ namespace Katydid
         FreeArrays();
         fftw_destroy_plan(fForwardPlan);
         fftw_destroy_plan(fReversePlan);
+        fftw_cleanup_threads();
     }
 
     Bool_t KTComplexFFTW::Configure(const KTPStoreNode* node)
@@ -119,6 +120,12 @@ namespace Katydid
                 KTWARN(fftlog_comp, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
             }
         }
+
+#ifdef FFTW_NTHREADS
+        fftw_init_threads();
+        fftw_plan_with_nthreads(FFTW_NTHREADS);
+        KTDEBUG(fftlog_comp, "Configuring FFTW to use up to " << FFTW_NTHREADS << " threads.");
+#endif
 
         KTDEBUG(fftlog_comp, "Creating plan: " << fSize << " bins; forward FFT");
         fForwardPlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
