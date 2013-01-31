@@ -24,6 +24,10 @@
 #include <cmath>
 #include <vector>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 using std::string;
 using std::vector;
 using boost::shared_ptr;
@@ -132,6 +136,7 @@ namespace Katydid
             const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
 
             Double_t mean = 0.;
+#pragma omp parallel for reduction(+:mean)
             for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
             {
                 mean += (*spectrum)(iBin).abs();
@@ -149,6 +154,7 @@ namespace Katydid
             else if (fThresholdMode == eSigma)
             {
                 Double_t sigma = 0., diff;
+#pragma omp parallel for private(diff) reduction(+:sigma)
                 for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
                 {
                     diff = (*spectrum)(iBin).abs() - mean;
@@ -164,6 +170,7 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             Double_t value;
+#pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
             {
                 value = (*spectrum)(iBin).abs();
@@ -216,6 +223,7 @@ namespace Katydid
             }
 
             Double_t mean = 0.;
+#pragma omp parallel for reduction(+:mean)
             for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
             {
                 magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
@@ -234,6 +242,7 @@ namespace Katydid
             else if (fThresholdMode == eSigma)
             {
                 Double_t sigma = 0., diff;
+#pragma omp parallel for private(diff) reduction(+:sigma)
                 for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
                 {
                     diff = magnitude[iBin] - mean;
@@ -249,6 +258,7 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             Double_t value;
+#pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
             {
                 value = magnitude[iBin];

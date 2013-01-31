@@ -3,11 +3,11 @@
 # Parts of this script are based on work done by Sebastian Voecking and Marco Haag in the Kasper package
 # Convenient macros and default variable settings for the Katydid build.
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "DEBUG")
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
     add_definitions(-DKATYDID_DEBUG)
-else (${CMAKE_BUILD_TYPE} STREQUAL "DEBUG")
+else ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
     remove_definitions(-DKATYDID_DEBUG)    
-endif (${CMAKE_BUILD_TYPE} STREQUAL "DEBUG")
+endif ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
 
 # Setup the default install prefix
 # This gets set to the binary directory upon first configuring.
