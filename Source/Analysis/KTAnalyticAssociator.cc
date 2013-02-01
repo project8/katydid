@@ -29,13 +29,13 @@ namespace Katydid
 {
     KTLOGGER(aalog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTAnalyticAssociator > sWVRegistrar("analytic-associator");
+    static KTDerivedRegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
 
     KTAnalyticAssociator::KTAnalyticAssociator() :
             KTProcessor(),
             fFullFFT(),
             fInputDataName("time-series"),
-            fOutputDataName("wigner-ville"),
+            fOutputDataName("analytic-associate"),
             fSaveFrequencySpectrum(false),
             fFSOutputDataName("frequency-spectrum-from-aa")
 
@@ -46,6 +46,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTAnalyticAssociator::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTAnalyticAssociator::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
+        RegisterSlot("fs-data", this, &KTAnalyticAssociator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("event", this, &KTAnalyticAssociator::ProcessEvent, "void (shared_ptr<KTEvent>)");
     }
 
@@ -144,6 +145,47 @@ namespace Katydid
         return aaTSData;
     }
 
+    KTTimeSeriesData* KTAnalyticAssociator::CreateAssociateData(const KTFrequencySpectrumDataFFTW* data)
+    {
+        if (! fFullFFT.GetIsInitialized())
+        {
+            fFullFFT.InitializeFFT();
+            if (! fFullFFT.GetIsInitialized())
+            {
+                KTERROR(aalog, "Unable to initialize full FFT.");
+                return NULL;
+            }
+        }
+
+        // New data to hold the time series of the analytic associate
+        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(data->GetNChannels());
+
+        // Calculate the analytic associates
+        for (UInt_t iChannel = 0; iChannel < data->GetNChannels(); iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* nextInput = data->GetSpectrum(iChannel);
+
+            KTTimeSeriesFFTW* newTS = CalculateAnalyticAssociate(nextInput);
+
+            if (newTS == NULL)
+            {
+                KTERROR(aalog, "Channel <" << iChannel << "> did not transform correctly.");
+                delete aaTSData;
+                return NULL;
+            }
+
+            aaTSData->SetTimeSeries(newTS, iChannel);
+        }
+
+        aaTSData->SetEvent(data->GetEvent());
+        aaTSData->SetName(fOutputDataName);
+
+        fAASignal(aaTSData);
+
+        return aaTSData;
+    }
+
+
     KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
         // Forward FFT
@@ -165,7 +207,23 @@ namespace Katydid
         {
             KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
             if (outputFS == NULL) delete freqSpec;
-            return NULL;
+        }
+
+        return outputTS;
+    }
+
+    KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTFrequencySpectrumFFTW* inputFS)
+    {
+        KTFrequencySpectrumFFTW aaFS(*inputFS);
+
+        // Calculate the analytic associate in frequency space
+        aaFS.AnalyticAssociate();
+
+        // reverse FFT
+        KTTimeSeriesFFTW* outputTS = fFullFFT.Transform(&aaFS);
+        if (outputTS == NULL)
+        {
+            KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
         }
 
         return outputTS;
@@ -202,16 +260,42 @@ namespace Katydid
         return;
     }
 
-    void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTAnalyticAssociator::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
     {
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
-        if (tsData == NULL)
+        KTTimeSeriesData* newData = CreateAssociateData(fsData);
+
+        if (newData == NULL)
         {
-            KTWARN(aalog, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTERROR(aalog, "Unable to transform data");
             return;
         }
 
-        ProcessTimeSeriesData(tsData);
+        KTEvent* event = fsData->GetEvent();
+        if (event != NULL)
+        {
+            event->AddData(newData);
+        }
+
+        return;
+    }
+
+    void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTEvent> event)
+    {
+        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
+        if (tsData != NULL)
+        {
+            ProcessTimeSeriesData(tsData);
+            return;
+        }
+
+        const KTFrequencySpectrumDataFFTW* fsData = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        if (fsData != NULL)
+        {
+            ProcessFrequencySpectrumData(fsData);
+            return;
+        }
+
+        KTWARN(aalog, "No data (time series of frequency spectrum FFTW) named <" << fInputDataName << "> was available in the event");
         return;
     }
 
