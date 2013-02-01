@@ -172,7 +172,7 @@ namespace Katydid
         for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++, arIt++)
         {
             // loop over all of the frequency-bin clusters
-            for (FreqBinClusters::const_iterator fbIt = freqBinClusters.begin(); fbIt != points.end(); fbIt++)
+            for (FreqBinClusters::const_iterator fbIt = freqBinClusters.begin(); fbIt != freqBinClusters.end(); fbIt++)
             {
                 // check for overlap
                 // y1 <= x2+sep  && x1 <= y2+sep
@@ -496,4 +496,4 @@ namespace Katydid
         return;
     }
 } /* namespace Katydid */
-
+#endif

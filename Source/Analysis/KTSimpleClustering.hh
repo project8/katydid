@@ -11,6 +11,7 @@
 
 #include "KTProcessor.hh"
 
+#include "KTDiscriminatedPoints1DData.hh"
 #include "KTMath.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -23,13 +24,12 @@
 
 namespace Katydid
 {
-    class KTDiscriminatedPoints1DData;
     class KTEvent;
 
     class KTSimpleClustering : public KTProcessor
     {
         public:
-            typedef typename KTDiscriminatedPoints1DData::SetOfPoints SetOfDiscriminatedPoints;
+            typedef KTDiscriminatedPoints1DData::SetOfPoints SetOfDiscriminatedPoints;
 
             typedef std::list< boost::shared_ptr<KTEvent> > NewEventList;
 
@@ -59,12 +59,6 @@ namespace Katydid
 
             Double_t GetMaxTimeSeparation() const;
             void SetMaxTimeSeparation(Double_t timeSep);
-
-            UInt_t GetMaxFrequencySeparation() const;
-            void SetMaxFrequencySeparation(UInt_t bins);
-
-            UInt_t GetMaxTimeSeparation() const;
-            void SetMaxTimeSeparation(UInt_t bins);
 
             UInt_t GetMaxFrequencySeparationBins() const;
             void SetMaxFrequencySeparationBins(UInt_t bins);
