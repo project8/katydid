@@ -11,7 +11,9 @@
 #include "KTPrimaryProcessor.hh"
 #include "KTPStoreNode.hh"
 
+#ifndef SINGLETHREADED
 #include <boost/thread.hpp>
+#endif
 
 #include <vector>
 
@@ -174,6 +176,8 @@ namespace Katydid
         }
 
         // Finally, deal with processor-run specifications
+        // In the current implementation there is only one ThreadGroup, and all processors specified will be run in separate threads in parallel.
+        // In single threaded mode all threads will be run sequentially in the order they were specified.
         const KTPStoreNode* subNodePtr = node->GetChild("run-queue");
         if (subNodePtr != NULL)
         {
@@ -252,6 +256,15 @@ namespace Katydid
         UInt_t iGroup = 0;
         for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); rqIter++)
         {
+#ifdef SINGLETHREADED
+            for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); tgIter++)
+            {
+                if (! (*tgIter)->Run())
+                {
+                    return false;
+                }
+            }
+#else
             KTDEBUG(proclog, "Starting thread group " << iGroup);
             boost::thread_group parallelThreads;
             UInt_t iThread = 0;
@@ -266,6 +279,7 @@ namespace Katydid
             // wait for execution to complete
             parallelThreads.join_all();
             iGroup++;
+#endif
         }
         return true;
     }

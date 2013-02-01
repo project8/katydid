@@ -19,7 +19,7 @@
 #include <cmath>
 #include <vector>
 
-#ifdef _OPENMP
+#ifdef USE_OPENMP
 #include <omp.h>
 #endif
 

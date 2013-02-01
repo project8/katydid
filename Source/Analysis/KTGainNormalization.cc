@@ -20,7 +20,7 @@
 #include "KTSlidingWindowFSData.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
 
-#ifdef _OPENMP
+#ifdef USE_OPENMP
 #include <omp.h>
 #endif
 

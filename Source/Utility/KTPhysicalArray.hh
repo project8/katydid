@@ -15,7 +15,7 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/bind.hpp>
 
-#ifdef _OPENMP
+#ifdef USE_OPENMP
 #include <omp.h>
 #endif
 
