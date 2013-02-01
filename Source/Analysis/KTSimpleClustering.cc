@@ -18,6 +18,7 @@ using boost::shared_ptr;
 
 using std::deque;
 using std::list;
+using std::pair;
 using std::set;
 using std::string;
 using std::vector;
@@ -101,7 +102,6 @@ namespace Katydid
     {
         // Process a single time bin's worth of frequency bins
 
-        typedef list< SetOfDiscriminatedPoints > FreqBinClusters;
         FreqBinClusters freqBinClusters;
 
         // First cluster the frequency bins in this time bin
@@ -109,27 +109,32 @@ namespace Katydid
         {
             // loop over all of the points
             SetOfDiscriminatedPoints::const_iterator pIt = points.begin();
-            SetOfDiscriminatedPoints activeFBCluster;
-            activeFBCluster.insert(*pIt);
+            FreqBinCluster activeFBCluster;
+            activeFBCluster.fPoints.insert(*pIt);
+            activeFBCluster.fFirstPoint = pIt->first;
+            activeFBCluster.fLastPoint = pIt->first;
+            activeFBCluster.fAddedToActiveCluster = false;
             UInt_t thisPoint;
-            UInt_t lastPointInActiveCluster = pIt->first;
 
             for (pIt++; pIt != points.end(); pIt++)
             {
                 thisPoint = pIt->first;
-                if (thisPoint - lastPointInActiveCluster > fMaxFreqSepBins)
+                if (thisPoint - activeFBCluster.fLastPoint > fMaxFreqSepBins)
                 {
                     //KTDEBUG(sdlog, "Adding cluster (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                     freqBinClusters.push_back(activeFBCluster);
-                    activeFBCluster.clear();
+                    activeFBCluster.fPoints.clear();
+                    activeFBCluster.fFirstPoint = thisPoint;
                 }
-                activeFBCluster.insert(*pIt);
-                lastPointInActiveCluster = thisPoint;
+                activeFBCluster.fPoints.insert(*pIt);
+                activeFBCluster.fLastPoint = thisPoint;
             }
             //KTDEBUG(sdlog, "Adding cluster: (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
             freqBinClusters.push_back(activeFBCluster);
         }
 
+
+        /*// this stuff is no longer necessary since we're not skipping bins in time
 
         // loop over all of the active clusters to determine their active range in frequency (i.e. the range over which new frequency bins can be added)
         deque< std::pair< UInt_t, UInt_t > > activeClusterFBRanges;
@@ -165,41 +170,104 @@ namespace Katydid
             activeClusterFBRanges.push_back(activeRange);
         }
 
+         */
 
 
-        // loop over all of the active clusters
-        deque< std::pair< UInt_t, UInt_t > >::const_iterator arIt = activeClusterFBRanges.begin();
-        for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++, arIt++)
+
+        // Make a bool for each active cluster to indicate whether or not it had frequency-bin clusters added to it from this frequency bin
+        vector< Bool_t > acHasBeenAddedTo(fActiveClusters[component].size(), false);
+        // Make a vector of pairs to hold the frequency-axis ranges from the current frequency bin
+        vector< pair< UInt_t, UInt_t > > acNewFreqRange(fActiveClusters[component].size());
+
+        // Assign frequency bin clusters to active clusters
+        ClusterPoint newPoint;
+        UInt_t iCluster;
+        // loop over all of the frequency-bin clusters
+        for (FreqBinClusters::iterator fbIt = freqBinClusters.begin(); fbIt != freqBinClusters.end(); fbIt++)
         {
-            // loop over all of the frequency-bin clusters
-            for (FreqBinClusters::const_iterator fbIt = freqBinClusters.begin(); fbIt != freqBinClusters.end(); fbIt++)
+            // loop over all of the active clusters and look for overlaps with the frequency-bin clusters
+            iCluster = 0;
+            for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++)
             {
                 // check for overlap
                 // y1 <= x2+sep  && x1 <= y2+sep
-                // x1 = (fbIt->begin())->first; x2 = (fbIt->rbegin())->first
-                // y1 = arIt->first; y2 = arIt->second
-                if (arIt->first <= (fbIt->rbegin())->first + fMaxFreqSepBins &&
-                    (fbIt->begin())->first <= arIt->second + fMaxFreqSepBins)
+                // x1 = fbIt->fFirstPoint; x2 = fbIt->fLastPoint
+                // y1 = acIt->EndMinFreqPoint(); y2 = acIt->EndMaxFreqPoint()
+                if (acIt->EndMinFreqPoint() <= fbIt->fLastPoint + fMaxFreqSepBins &&
+                    fbIt->fFirstPoint <= acIt->EndMaxFreqPoint() + fMaxFreqSepBins)
                 {
+                    if (acHasBeenAddedTo[iCluster])
+                    {
+                        acHasBeenAddedTo[iCluster] = true;
+                        acNewFreqRange[iCluster] = pair< UInt_t, UInt_t >(fbIt->fFirstPoint, fbIt->fLastPoint);
+                    }
+                    else
+                    {
+                        if (fbIt->fFirstPoint < acNewFreqRange[iCluster].first) acNewFreqRange[iCluster].first = fbIt->fFirstPoint;
+                        if (fbIt->fLastPoint > acNewFreqRange[iCluster].second) acNewFreqRange[iCluster].second = fbIt->fLastPoint;
+                    }
                     // assign this frequency-bin cluster (at fbIt) to the current active cluster (at acIt)
                     // add points to acIt->fPoints
-                    for (SetOfDiscriminatedPoints::const_iterator fbPointsIt = fbIt->begin(); fbPointsIt != fbIt->end(); fbPointsIt++)
+                    for (SetOfDiscriminatedPoints::const_iterator fbPointsIt = fbIt->fPoints.begin(); fbPointsIt != fbIt->fPoints.end(); fbPointsIt++)
                     {
-                        ClusterPoint newPoint;
                         newPoint.fTimeBin = this->fTimeBin;
                         newPoint.fFreqBin = fbPointsIt->first;
                         newPoint.fAmplitude = fbPointsIt->second;
                         acIt->fPoints.push_back(newPoint);
                     }
-                    // add range to acIt->fFreqRanges
-
+                    fbIt->fAddedToActiveCluster = true;
                 }
+                iCluster++;
+            } // end loop over active clusters
+        } // end loop over frequency-bin clusters
+
+
+        // Update frequency ranges of clusters that were added to this time around
+        iCluster = 0;
+        for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++)
+        {
+            if (acHasBeenAddedTo[iCluster])
+            {
+                acIt->fFreqRanges.push_back(acNewFreqRange[iCluster]);
             }
+            iCluster++;
+        }
+
+        // Deal with no-longer-active clusters
+        NewEventList* newEvents = new NewEventList();
+        iCluster = 0;
+        for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++)
+        {
+            if (! acHasBeenAddedTo[iCluster])
+            {
+                newEvents->push_back(CreateEventFromCluster(*acIt));
+                acIt = fActiveClusters[component].erase(acIt);
+            }
+            iCluster++;
         }
 
 
+        // Add unassigned frequency clusters as new clusters
+        Cluster newCluster;
+        for (FreqBinClusters::const_iterator fbIt = freqBinClusters.begin(); fbIt != freqBinClusters.end(); fbIt++)
+        {
+            if (! fbIt->fAddedToActiveCluster)
+            {
+                newCluster.fPoints.clear();
+                for (SetOfDiscriminatedPoints::const_iterator fbPointsIt = fbIt->fPoints.begin(); fbPointsIt != fbIt->fPoints.end(); fbPointsIt++)
+                {
+                    newPoint.fTimeBin = this->fTimeBin;
+                    newPoint.fFreqBin = fbPointsIt->first;
+                    newPoint.fAmplitude = fbPointsIt->second;
+                    newCluster.fPoints.push_back(newPoint);
+                }
+                newCluster.fFreqRanges.clear();
+                newCluster.fFreqRanges.push_back(pair< UInt_t, UInt_t >(fbIt->fFirstPoint, fbIt->fLastPoint));
+                fActiveClusters[component].push_back(newCluster);
+            }
+        }
 
-        return CompleteInactiveClusters(component);
+        return newEvents; //CompleteInactiveClusters(component);
     }
 
 

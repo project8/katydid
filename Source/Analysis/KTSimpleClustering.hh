@@ -33,6 +33,15 @@ namespace Katydid
 
             typedef std::list< boost::shared_ptr<KTEvent> > NewEventList;
 
+            struct FreqBinCluster
+            {
+                SetOfDiscriminatedPoints fPoints;
+                UInt_t fFirstPoint;
+                UInt_t fLastPoint;
+                Bool_t fAddedToActiveCluster;
+            };
+            typedef std::list< FreqBinCluster > FreqBinClusters;
+
             struct ClusterPoint
             {
                  UInt_t fTimeBin;
@@ -44,6 +53,9 @@ namespace Katydid
             {
                 std::deque< ClusterPoint > fPoints; // every point in the cluster
                 std::deque< std::pair< UInt_t, UInt_t > > fFreqRanges; // first and last frequency bins for each time bin
+
+                UInt_t EndMinFreqPoint() {return fFreqRanges.back().first;}
+                UInt_t EndMaxFreqPoint() {return fFreqRanges.back().second;}
             };
 
             typedef std::list< Cluster > ActiveClusters;
