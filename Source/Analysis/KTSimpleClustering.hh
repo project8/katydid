@@ -11,14 +11,217 @@
 
 #include "KTProcessor.hh"
 
-#include "KTFrequencySpectrum.hh"
-#include "KTMaskedArray.hh"
+#include "KTMath.hh"
 
+#include <boost/shared_ptr.hpp>
+
+#include <deque>
 #include <list>
-#include <map>
+//#include <map>
+//#include <set>
+#include <utility>
 
 namespace Katydid
 {
+    class KTDiscriminatedPoints1DData;
+    class KTEvent;
+
+    class KTSimpleClustering : public KTProcessor
+    {
+        public:
+            typedef typename KTDiscriminatedPoints1DData::SetOfPoints SetOfDiscriminatedPoints;
+
+            typedef std::list< boost::shared_ptr<KTEvent> > NewEventList;
+
+            struct ClusterPoint
+            {
+                 UInt_t fTimeBin;
+                 UInt_t fFreqBin;
+                 Double_t fAmplitude;
+            };
+            //typedef std::deque< ClusterPoint > Cluster;
+            struct Cluster
+            {
+                std::deque< ClusterPoint > fPoints; // every point in the cluster
+                std::deque< std::pair< UInt_t, UInt_t > > fFreqRanges; // first and last frequency bins for each time bin
+            };
+
+            typedef std::list< Cluster > ActiveClusters;
+
+        public:
+            KTSimpleClustering();
+            virtual ~KTSimpleClustering();
+
+            Bool_t Configure(const KTPStoreNode* node);
+
+            Double_t GetMaxFrequencySeparation() const;
+            void SetMaxFrequencySeparation(Double_t freqSep);
+
+            Double_t GetMaxTimeSeparation() const;
+            void SetMaxTimeSeparation(Double_t timeSep);
+
+            UInt_t GetMaxFrequencySeparation() const;
+            void SetMaxFrequencySeparation(UInt_t bins);
+
+            UInt_t GetMaxTimeSeparation() const;
+            void SetMaxTimeSeparation(UInt_t bins);
+
+            UInt_t GetMaxFrequencySeparationBins() const;
+            void SetMaxFrequencySeparationBins(UInt_t bins);
+
+            UInt_t GetMaxTimeSeparationBins() const;
+            void SetMaxTimeSeparationBins(UInt_t bins);
+
+            const std::string& GetInputDataName() const;
+            void SetInputDataName(const std::string& name);
+
+            const std::string& GetOutputDataName() const;
+            void SetOutputDataName(const std::string& name);
+
+        private:
+            Double_t fMaxFreqSep;
+            Double_t fMaxTimeSep;
+            UInt_t fMaxFreqSepBins;
+            UInt_t fMaxTimeSepBins;
+            Bool_t fCalculateMaxFreqSepBins;
+            Bool_t fCalculateMaxTimeSepBins;
+
+            std::string fInputDataName;
+            std::string fOutputDataName;
+
+        public:
+            NewEventList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData);
+
+            NewEventList*  AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component);
+
+            NewEventList* CompleteAllClusters(UInt_t component);
+            NewEventList* CompleteInactiveClusters(UInt_t component);
+
+            void Reset();
+            UInt_t GetTimeBin() const;
+
+            Double_t GetTimeBinWidth() const;
+            void SetTimeBinWidth(Double_t bw);
+
+            Double_t GetFrequencyBinWidth() const;
+            void SetFrequencyBinWidth(Double_t bw);
+
+        private:
+            boost::shared_ptr<KTEvent> CreateEventFromCluster(const Cluster& cluster);
+
+            UInt_t fTimeBin;
+            Double_t fTimeBinWidth;
+            Double_t fFreqBinWidth;
+
+            std::vector< ActiveClusters > fActiveClusters;
+    };
+
+
+    inline Double_t KTSimpleClustering::GetMaxFrequencySeparation() const
+    {
+        return fMaxFreqSep;
+    }
+
+    inline void KTSimpleClustering::SetMaxFrequencySeparation(Double_t freqSep)
+    {
+        fMaxFreqSep = freqSep;
+        fCalculateMaxFreqSepBins = true;
+        return;
+    }
+
+    inline Double_t KTSimpleClustering::GetMaxTimeSeparation() const
+    {
+        return fMaxTimeSep;
+    }
+
+    inline void KTSimpleClustering::SetMaxTimeSeparation(Double_t timeSep)
+    {
+        fMaxTimeSep = timeSep;
+        fCalculateMaxTimeSepBins = true;
+        return;
+    }
+
+    inline UInt_t KTSimpleClustering::GetMaxFrequencySeparationBins() const
+    {
+        return fMaxFreqSepBins;
+    }
+
+    inline void KTSimpleClustering::SetMaxFrequencySeparationBins(UInt_t bins)
+    {
+        fMaxFreqSepBins = bins;
+        fCalculateMaxFreqSepBins = false;
+        return;
+    }
+
+    inline UInt_t KTSimpleClustering::GetMaxTimeSeparationBins() const
+    {
+        return fMaxTimeSepBins;
+    }
+
+    inline void KTSimpleClustering::SetMaxTimeSeparationBins(UInt_t bins)
+    {
+        fMaxTimeSepBins = bins;
+        fCalculateMaxTimeSepBins = false;
+        return;
+    }
+
+    inline const std::string& KTSimpleClustering::GetInputDataName() const
+    {
+        return fInputDataName;
+    }
+
+    inline void KTSimpleClustering::SetInputDataName(const std::string& name)
+    {
+        fInputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTSimpleClustering::GetOutputDataName() const
+    {
+        return fOutputDataName;
+    }
+
+    inline void KTSimpleClustering::SetOutputDataName(const std::string& name)
+    {
+        fOutputDataName = name;
+        return;
+    }
+
+    inline UInt_t KTSimpleClustering::GetTimeBin() const
+    {
+        return fTimeBin;
+    }
+
+    inline Double_t KTSimpleClustering::GetTimeBinWidth() const
+    {
+        return fTimeBinWidth;
+    }
+
+    inline void KTSimpleClustering::SetTimeBinWidth(Double_t bw)
+    {
+        fTimeBinWidth = bw;
+        if (fCalculateMaxTimeSepBins)
+            fMaxTimeSepBins = KTMath::Nint(fMaxTimeSep / fTimeBinWidth);
+        return;
+    }
+
+    inline Double_t KTSimpleClustering::GetFrequencyBinWidth() const
+    {
+        return fFreqBinWidth;
+    }
+
+    inline void KTSimpleClustering::SetFrequencyBinWidth(Double_t bw)
+    {
+        fFreqBinWidth = bw;
+        if (fCalculateMaxFreqSepBins)
+            fMaxFreqSepBins = KTMath::Nint(fMaxFreqSep / fFreqBinWidth);
+        return;
+    }
+
+
+
+
+    /*
     class KTSlidingWindowFSData;
     class KTPStoreNode;
     class KTSlidingWindowFFT;
@@ -80,6 +283,7 @@ namespace Katydid
         fMinimumGroupSize = size;
         return;
     }
+    */
 
 } /* namespace Katydid */
 #endif /* KTSIMPLECLUSTERING_HH_ */
