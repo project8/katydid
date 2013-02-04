@@ -31,17 +31,6 @@ namespace Katydid
         public:
             typedef KTDiscriminatedPoints1DData::SetOfPoints SetOfDiscriminatedPoints;
 
-            typedef std::list< boost::shared_ptr<KTEvent> > NewEventList;
-
-            struct FreqBinCluster
-            {
-                SetOfDiscriminatedPoints fPoints;
-                UInt_t fFirstPoint;
-                UInt_t fLastPoint;
-                Bool_t fAddedToActiveCluster;
-            };
-            typedef std::list< FreqBinCluster > FreqBinClusters;
-
             struct ClusterPoint
             {
                  UInt_t fTimeBin;
@@ -59,6 +48,20 @@ namespace Katydid
             };
 
             typedef std::list< Cluster > ActiveClusters;
+
+            struct FreqBinCluster
+            {
+                SetOfDiscriminatedPoints fPoints;
+                UInt_t fFirstPoint;
+                UInt_t fLastPoint;
+                Bool_t fAddedToActiveCluster;
+                ActiveClusters::iterator fActiveCluster;
+                UInt_t fACNumber;
+            };
+            typedef std::list< FreqBinCluster > FreqBinClusters;
+
+            typedef std::list< boost::shared_ptr<KTEvent> > NewEventList;
+
 
         public:
             KTSimpleClustering();
