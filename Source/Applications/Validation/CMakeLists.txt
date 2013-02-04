@@ -77,6 +77,9 @@ if (Katydid_ENABLE_TESTING)
     )
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
+    add_executable (TestSimpleClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleClustering.cc)
+    target_link_libraries (TestSimpleClustering KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
+
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
     target_link_libraries (TestSimpleFFT KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT ${LIBS})
 
@@ -115,6 +118,7 @@ if (Katydid_ENABLE_TESTING)
                      TestLogger
                      TestParameterStore
                      TestSignalsAndSlots
+                     TestSimpleClustering
                      TestSimpleFFT
                      TestSlidingWindowFFT
                      TestSpectrumDiscriminator
@@ -142,6 +146,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_Logger TestLogger)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
+    add_test (Test_SimpleClustering TestSimpleClustering)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     add_test (Test_SpectrumDiscriminator TestSpectrumDiscriminator)
