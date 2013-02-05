@@ -23,8 +23,12 @@ if (Katydid_ENABLE_PROFILING)
     add_executable (ProfileFFTWandMonarch ${CMAKE_CURRENT_SOURCE_DIR}/ProfileFFTWandMonarch.cc)
     target_link_libraries (ProfileFFTWandMonarch KatydidUtility KatydidCore KatydidEgg KatydidFFT ${LIBS})
 
+    add_executable (ProfileManualAnalysis ${CMAKE_CURRENT_SOURCE_DIR}/ProfileManualAnalysis.cc)
+    target_link_libraries (ProfileManualAnalysis KatydidUtility KatydidCore KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${LIBS})
+
     katydid_install_executables (
         ProfileFFTWandMonarch
+        ProfileManualAnalysis
     )
              
     # executables that DO require ROOT
