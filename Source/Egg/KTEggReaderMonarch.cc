@@ -156,7 +156,7 @@ namespace Katydid
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
 
         // Setup pointers to monarch and new katydid records
-        vector< const Record* > monarchRecords(fHeader.GetNChannels());
+        vector< const MonarchRecord* > monarchRecords(fHeader.GetNChannels());
         vector< KTTimeSeries* > newRecords(fHeader.GetNChannels());
         for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
         {
