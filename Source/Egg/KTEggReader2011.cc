@@ -222,7 +222,7 @@ namespace Katydid
     {
         if (! fEggStream.good()) return NULL;
 
-        KTProgenitorTimeSeriesData* eventData = new KTProgenitorTimeSeriesData(1);
+        KTProgenitorTimeSeriesData* bundleData = new KTProgenitorTimeSeriesData(1);
 
         unsigned char* readBuffer;
 
@@ -241,7 +241,7 @@ namespace Katydid
             //vector< unsigned > newTimeStamp(readBuffer, readBuffer + fHeaderInfo.fTimeStampSize/sizeof(unsigned char));
             unsigned long int newTimeStamp = ConvertFromArray< unsigned long >(readBuffer);
             delete [] readBuffer;
-            eventData->SetTimeStamp(newTimeStamp);
+            bundleData->SetTimeStamp(newTimeStamp);
             //std::cout << "Time stamp (" << newTimeStamp.size() << " chars): ";
             //for (int i=0; i<newTimeStamp.size(); i++)
             //    std::cout << newTimeStamp[i];
@@ -250,7 +250,7 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading time stamp size");
-            delete eventData;
+            delete bundleData;
             return NULL;
         }
 
@@ -269,22 +269,22 @@ namespace Katydid
             //vector< unsigned > newFrameID(readBuffer, readBuffer + fHeaderInfo.fFrameIDSize()/sizeof(unsigned char));
             unsigned newFrameID = ConvertFromArray< unsigned >(readBuffer);
             delete [] readBuffer;
-            eventData->SetAcquisitionID(newFrameID);
+            bundleData->SetAcquisitionID(newFrameID);
         }
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading frame size");
-            delete eventData;
+            delete bundleData;
             return NULL;
         }
 
         // Other information
-        eventData->SetSampleRate(double(fHeaderInfo.fSampleRate));
-        eventData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
-        eventData->SetRecordSize(fHeaderInfo.fRecordSize);
-        eventData->SetRecordLength(double(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
-        eventData->SetTimeInRun(GetTimeInRun());
-        eventData->SetSliceNumber((ULong64_t)fRecordsRead);
+        bundleData->SetSampleRate(double(fHeaderInfo.fSampleRate));
+        bundleData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
+        bundleData->SetRecordSize(fHeaderInfo.fRecordSize);
+        bundleData->SetRecordLength(double(fHeaderInfo.fRecordSize) * bundleData->GetBinWidth());
+        bundleData->SetTimeInRun(GetTimeInRun());
+        bundleData->SetSliceNumber((ULong64_t)fRecordsRead);
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];
@@ -295,30 +295,30 @@ namespace Katydid
                     << "\tExpected: :" << fHeaderInfo.fRecordSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
-            delete eventData;
+            delete bundleData;
             return NULL;
         }
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
+            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * bundleData->GetBinWidth());
             for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
                 //(*newRecord)(iBin) = Double_t(readBuffer[iBin]);
                 newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));
             }
             delete [] readBuffer;
-            eventData->SetTimeSeries(newRecord);
+            bundleData->SetTimeSeries(newRecord);
             fRecordsRead++;
         }
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this event.");
+            KTERROR(eggreadlog, "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this bundle.");
         }
 
-        eventData->SetName(fOutputDataName);
+        bundleData->SetName(fOutputDataName);
 
-        return eventData;
+        return bundleData;
     }
 
     bool KTEggReader2011::CloseEgg()

@@ -1,7 +1,7 @@
 /**
  @file ChannelCorrelator.cc
  @brief Executable to produce correlations between channels
- @details Produces correlations between channels from Egg events
+ @details Produces correlations between channels from Egg bundles
  @author: N. S. Oblath
  @date: Sept 5, 2012
  */
@@ -46,9 +46,9 @@ int main(int argc, char** argv)
         // When procEgg parses the header, the info is passed to PrepareFFT
         procEgg.ConnectASlot("header", &procFFT, "header");
 
-        // When procEgg hatches an event, procFFT.ProcessEvent and procCorr.ProcessEvent will be called
-        procEgg.ConnectASlot("event", &procFFT, "event", 0);
-        procEgg.ConnectASlot("event", &procCorr, "event", 1);
+        // When procEgg hatches an bundle, procFFT.ProcessEvent and procCorr.ProcessEvent will be called
+        procEgg.ConnectASlot("bundle", &procFFT, "bundle", 0);
+        procEgg.ConnectASlot("bundle", &procCorr, "bundle", 1);
 
         // This will get the output histogram when an FFT and correlation are complete
         procCorr.ConnectASlot("correlation", &procPub, "corr-data");

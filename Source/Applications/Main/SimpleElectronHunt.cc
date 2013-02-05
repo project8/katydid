@@ -6,18 +6,18 @@
  *
  *      Search for electrons with very basic peak finding and grouping
  *
- *      Usage: SimpleElectronHunt [-e egg filename] [-p ps filename] [-n # events; -1 for all] [-c control case option]
+ *      Usage: SimpleElectronHunt [-e egg filename] [-p ps filename] [-n # bundles; -1 for all] [-c control case option]
  *      Command line options
  *       -e: The input data file name
  *       -p: The output file name base (there will be .root and .ps files)
- *       -n: The number of events to analyze; use -1 for all
+ *       -n: The number of bundles to analyze; use -1 for all
  *       -t: Threshold in multiples of the mean (default is 10)
  *       -c: Use this to run one of the control setups. -1 reverses the high and low margins; -2 uses large negative margins.
  *       -d: Include this flag to draw waterfall plots
  */
 
 #include "KTEgg.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTHannWindow.hh"
@@ -165,15 +165,15 @@ int main(int argc, char** argv)
     {
         if (iEvent >= numEvents) break;
         txtOutFile << "Event " << iEvent << endl;
-        txtOutFile << "   Candidate event frequencies (MHz): ";
+        txtOutFile << "   Candidate bundle frequencies (MHz): ";
 
-        // Hatch the event
-        KTEvent* event = egg.HatchNextEvent();
-        if (event == NULL) break;
-        KTProgenitorTimeSeriesData* data = event->GetData< KTProgenitorTimeSeriesData >("time-series");
+        // Hatch the bundle
+        KTBundle* bundle = egg.HatchNextEvent();
+        if (bundle == NULL) break;
+        KTProgenitorTimeSeriesData* data = bundle->GetData< KTProgenitorTimeSeriesData >("time-series");
         if (data == NULL) break;
 
-        // FFT of the entire event, which will be used to normalize the gain fluctuations
+        // FFT of the entire bundle, which will be used to normalize the gain fluctuations
         KTSimpleFFT fullFFT;
         fullFFT.SetTimeSize(data->GetRecordSize());
         fullFFT.SetTransformFlag("ES");
@@ -195,7 +195,7 @@ int main(int argc, char** argv)
         Double_t fullPSFreqBinWidth = histFullPS->GetBinWidth(1);
 
         // Now the windowed FFT
-        KTEventWindowFunction* wfunc = new KTHannWindow(data);
+        KTBundleWindowFunction* wfunc = new KTHannWindow(data);
         wfunc->SetLength(1.e-5);
         cout << "window length: " << wfunc->GetLength() << " s; bin width: " << wfunc->GetBinWidth() << " s; size: " << wfunc->GetSize() << endl;
 
@@ -290,15 +290,15 @@ int main(int argc, char** argv)
         }
         /**/
 
-        // Rebin the full-event power spectrum
+        // Rebin the full-bundle power spectrum
         //Int_t rebinFactor = TMath::FloorNint((Double_t)histFullPS->GetNbinsX() / (Double_t)freqHistNBins);
         //histFullPS->Rebin(rebinFactor);
         //histFullPS->Scale(1. / (Double_t)rebinFactor);
 
         delete histProj;
 
-        list< multimap< Int_t, Int_t >* > eventPeakBins;
-        //list< multimap< Int_t, Int_t >* > eventPeakBinsActive;
+        list< multimap< Int_t, Int_t >* > bundlePeakBins;
+        //list< multimap< Int_t, Int_t >* > bundlePeakBinsActive;
 
         // Look for the highest-peaked bins
         cout << "selecting peaked bins and grouping them" << endl;
@@ -377,7 +377,7 @@ int main(int argc, char** argv)
             /*
             // Attach peak bins to groups or form new groups
             //cout << "; grouping" << flush;
-            for (list< multimap< Int_t, Int_t >* >::iterator iEPBA=eventPeakBinsActive.begin(); iEPBA!=eventPeakBinsActive.end(); iEPBA++)
+            for (list< multimap< Int_t, Int_t >* >::iterator iEPBA=bundlePeakBinsActive.begin(); iEPBA!=bundlePeakBinsActive.end(); iEPBA++)
             {
                 multimap< Int_t, Int_t >* groupMap = *iEPBA;
                 multimap< Int_t, Int_t >::iterator lastGroup = groupMap->end();
@@ -390,13 +390,13 @@ int main(int argc, char** argv)
                     if (groupMap->size() <= 2)
                     {
                         delete groupMap;
-                        iEPBA = eventPeakBinsActive.erase(iEPBA);
+                        iEPBA = bundlePeakBinsActive.erase(iEPBA);
                         iEPBA--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
                         continue;
                     }
                     // otherwise, transfer it to completed groups list
-                    eventPeakBins.push_back(groupMap);
-                    eventPeakBinsActive.erase(iEPBA);
+                    bundlePeakBins.push_back(groupMap);
+                    bundlePeakBinsActive.erase(iEPBA);
                     continue;
                 }
 
@@ -470,7 +470,7 @@ int main(int argc, char** argv)
                 }
                 multimap< Int_t, Int_t >* newGroupMap = new multimap< Int_t, Int_t >();
                 newGroupMap->insert( pair< Int_t, Int_t >(ifft, pbVal) );
-                eventPeakBins.push_back(newGroupMap);
+                bundlePeakBins.push_back(newGroupMap);
                 lastNewGroupMap = newGroupMap;
                 lastPBVal = pbVal;
             }
@@ -486,7 +486,7 @@ int main(int argc, char** argv)
             {
                 Int_t pbVal = *iPB;
                 Bool_t foundGroup = kFALSE;
-                for (list< multimap< Int_t, Int_t >* >::iterator iEPB=eventPeakBins.begin(); iEPB!=eventPeakBins.end(); iEPB++)
+                for (list< multimap< Int_t, Int_t >* >::iterator iEPB=bundlePeakBins.begin(); iEPB!=bundlePeakBins.end(); iEPB++)
                 {
                     multimap< Int_t, Int_t >* groupMap = *iEPB;
                     multimap< Int_t, Int_t >::iterator lastGroup = groupMap->end();
@@ -496,7 +496,7 @@ int main(int argc, char** argv)
                     if (lastFFT < ifft - 1 && groupMap->size() <= 2)
                     {
                         delete groupMap;
-                        iEPB = eventPeakBins.erase(iEPB);
+                        iEPB = bundlePeakBins.erase(iEPB);
                         iEPB--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
                         continue;
                     }
@@ -536,7 +536,7 @@ int main(int argc, char** argv)
                 // no match to existing groups, so add a new one
                 multimap< Int_t, Int_t >* newGroupMap = new multimap< Int_t, Int_t >();
                 newGroupMap->insert( pair< Int_t, Int_t >(ifft, pbVal) );
-                eventPeakBins.push_back(newGroupMap);
+                bundlePeakBins.push_back(newGroupMap);
             } // for loop over peakBins, for grouping purposes
 
             //cout << "; done" << endl;
@@ -546,40 +546,40 @@ int main(int argc, char** argv)
             // peak bins have been found and checked for inclusion in previous groups.
             // a new group was created if a peak bin did not correspond to a previous group.
 
-        } // for loop over ffts in an event
+        } // for loop over ffts in an bundle
 
         delete histGainNorm;
 
         /*
         // do a final loop over the remaining active groups; discard if too small or add to the final list of groups
-        for (list< multimap< Int_t, Int_t >* >::iterator iEPBA=eventPeakBinsActive.begin(); iEPBA!=eventPeakBinsActive.end(); iEPBA++)
+        for (list< multimap< Int_t, Int_t >* >::iterator iEPBA=bundlePeakBinsActive.begin(); iEPBA!=bundlePeakBinsActive.end(); iEPBA++)
         {
             multimap< Int_t, Int_t >* groupMap = *iEPBA;
             // if the group is too small, remove it
             if (groupMap->size() <= 2)
             {
                 delete groupMap;
-                iEPBA = eventPeakBinsActive.erase(iEPBA);
+                iEPBA = bundlePeakBinsActive.erase(iEPBA);
                 iEPBA--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
                 continue;
             }
             // otherwise, transfer it to completed groups list
-            eventPeakBins.push_back(groupMap);
-            eventPeakBinsActive.erase(iEPBA);
+            bundlePeakBins.push_back(groupMap);
+            bundlePeakBinsActive.erase(iEPBA);
             continue;
         }
         */
 
-        // now we will scan over the groups in the event and draw them.
+        // now we will scan over the groups in the bundle and draw them.
         // there's still a chance that the groups finished in the last fft are too small, so we'll check the group size.
 
-        cout << "scanning over groups in the event" << endl;
+        cout << "scanning over groups in the bundle" << endl;
         Int_t iCandidate = 0;
         // when we make the plot of the group we want a frame of a few bins around the actual group
         Int_t frameFFT = 5;
         Int_t frameFreqBin = 5;
-        list< multimap< Int_t, Int_t >* >::iterator iEPB=eventPeakBins.begin();
-        while (! eventPeakBins.empty())
+        list< multimap< Int_t, Int_t >* >::iterator iEPB=bundlePeakBins.begin();
+        while (! bundlePeakBins.empty())
         {
             // for each group we need to get the min and max FFT, and min and max frequency bins.
             // then we will remove the group from the list.
@@ -603,7 +603,7 @@ int main(int argc, char** argv)
 
             // we're done with this multimap object; all we need is min/maxFFT and min/maxFreqBin
             delete groupMap;
-            iEPB = eventPeakBins.erase(iEPB); // move the iterator back one so we don't skip anything when the for loop advances the iterator
+            iEPB = bundlePeakBins.erase(iEPB); // move the iterator back one so we don't skip anything when the for loop advances the iterator
 
             // check if this group is too small in time (this shouldn't happen, but just to be sure . . .)
             if (maxFFT - minFFT < 2) continue;
@@ -662,13 +662,13 @@ int main(int argc, char** argv)
         //c1->WaitPrimitive();
 
         //delete histProj;
-        //eventPeakBins->Delete();
-        //delete eventPeakBins;
+        //bundlePeakBins->Delete();
+        //delete bundlePeakBins;
         //delete hist;
         //delete c1;
 
         delete histFullPS;
-        delete event;
+        delete bundle;
 
         iEvent++;
         totalCandidates += iCandidate;

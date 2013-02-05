@@ -1,6 +1,6 @@
 #include "KTBasicAsciiWriter.hh"
 #include "KTFactory.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTPStoreNode.hh"
 
 namespace Katydid {
@@ -58,7 +58,7 @@ namespace Katydid {
   }
 
   // void KTBasicASCIIWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt) {
-  //   KTEvent* ev = dt->GetEvent();
+  //   KTBundle* ev = dt->GetEvent();
   //   uint64_t evN = (ev == NULL) ? 0 : ev->GetEventNumber();
   //   uint64_t nCh = dt->GetNChannels();
 

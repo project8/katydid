@@ -4,7 +4,7 @@
         "egg-processor":
         {
             "input-file": "/path/to/file.egg",
-            "number-of-events": 1,
+            "number-of-bundles": 1,
             "output-data-name": "time-series"
         },
         

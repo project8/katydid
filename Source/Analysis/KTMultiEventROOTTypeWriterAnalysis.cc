@@ -8,7 +8,7 @@
 #include "KTMultiEventROOTTypeWriterAnalysis.hh"
 
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTFrequencySpectrum.hh"

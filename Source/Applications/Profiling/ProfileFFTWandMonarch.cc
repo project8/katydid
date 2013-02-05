@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTThroughputProfiler.hh"
@@ -28,7 +28,7 @@ int main(const int argc, const char** argv)
     if (argc < 2)
     {
         KTWARN(proflog, "Usage:\n" <<
-                "\tProfileFFTWandMonarch <input egg file> <# of events to read>");
+                "\tProfileFFTWandMonarch <input egg file> <# of bundles to read>");
         return -1;
     }
 
@@ -64,8 +64,8 @@ int main(const int argc, const char** argv)
 
     KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
-    // Dummy event pointer
-    boost::shared_ptr<KTEvent> eventPtr(new KTEvent());
+    // Dummy bundle pointer
+    boost::shared_ptr<KTBundle> bundlePtr(new KTBundle());
 
     // Create FFT
     KTINFO(proflog, "Setting up the FFT");
@@ -89,7 +89,7 @@ int main(const int argc, const char** argv)
         KTINFO(proflog, "Event " << iEvent);
         if (tReadTest->ReadRecord() == false)
         {
-            KTERROR(proflog, "Problem reading records at event " << iEvent);
+            KTERROR(proflog, "Problem reading records at bundle " << iEvent);
             break;
         }
 
@@ -111,7 +111,7 @@ int main(const int argc, const char** argv)
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
 
-        profiler.ProcessEvent(eventPtr);
+        profiler.ProcessEvent(bundlePtr);
     }
 
     // Stop the timer and print info

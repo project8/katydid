@@ -18,7 +18,7 @@
 namespace Katydid
 {
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTTimeSeriesData;
@@ -80,7 +80,7 @@ namespace Katydid
 
          public:
              void ProcessHeader(const KTEggHeader* header);
-             void ProcessEvent(boost::shared_ptr<KTEvent> event);
+             void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
              void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
              void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 

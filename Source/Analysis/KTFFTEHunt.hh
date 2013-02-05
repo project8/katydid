@@ -41,7 +41,7 @@ namespace Katydid
      @brief Performs an FFT-based electron hunt.
 
      @details
-     Uses a windows FFT of Egg events to search for clusters of high-peaked bins moving up in frequency.
+     Uses a windows FFT of Egg bundles to search for clusters of high-peaked bins moving up in frequency.
 
      Available configuration values:
      \li \c output-filename_base --
@@ -51,7 +51,7 @@ namespace Katydid
      \li \c group-bins-margin-high --
      \li \c group-bins-margin-low --
      \li \c group-bins-margin-same_time --
-     \li \c input-data-name -- name used to find data when processing an event
+     \li \c input-data-name -- name used to find data when processing an bundle
 
     */
 
@@ -69,7 +69,7 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
 
             void FinishHunt();
 

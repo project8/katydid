@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    class KTEvent;
+    class KTBundle;
     class KTFrequencySpectrumFFTW;
     class KTHoughData;
     class KTFrequencySpectrum;
@@ -84,7 +84,7 @@ namespace Katydid
 
          public:
              //void ProcessHeader(const KTEggHeader* header);
-             void ProcessEvent(boost::shared_ptr<KTEvent> event);
+             void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
              void ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data);
              void ProcessDiscriminatedData(const KTDiscriminatedPoints2DData* data);
 

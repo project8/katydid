@@ -9,7 +9,7 @@
 #ifndef KTRECTANGULARWINDOW_HH_
 #define KTRECTANGULARWINDOW_HH_
 
-#include "KTEventWindowFunction.hh"
+#include "KTBundleWindowFunction.hh"
 
 namespace Katydid
 {
@@ -27,7 +27,7 @@ namespace Katydid
       none
     */
 
-    class KTRectangularWindow : public KTEventWindowFunction
+    class KTRectangularWindow : public KTBundleWindowFunction
     {
         public:
             KTRectangularWindow();

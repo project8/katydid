@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    class KTEvent;
+    class KTBundle;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTGainVariationData;
@@ -39,11 +39,11 @@ namespace Katydid
      \li \c "max-frequency": double -- maximum frequency for the fit
      \li \c "min-bin": unsigned -- minimum bin for the fit
      \li \c "max-bin": unsigned -- maximum bin for the fit
-     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "input-data-name": string -- name of the data to find when processing an bundle
      \li \c "output-data-name": string -- name to give to the data produced
 
      Slots:
-     \li \c void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c void ProcessEvent(boost::shared_ptr<KTBundle>)
      \li \c void ProcessFrequencySpectrumData(const KTFrequencySpectrumData*)
      \li \c void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
 
@@ -116,7 +116,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
             void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
 

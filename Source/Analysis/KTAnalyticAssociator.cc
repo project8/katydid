@@ -10,7 +10,7 @@
 #include "KTCacheDirectory.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -47,7 +47,7 @@ namespace Katydid
         RegisterSlot("header", this, &KTAnalyticAssociator::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTAnalyticAssociator::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("fs-data", this, &KTAnalyticAssociator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
-        RegisterSlot("event", this, &KTAnalyticAssociator::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTAnalyticAssociator::ProcessEvent, "void (shared_ptr<KTBundle>)");
     }
 
     KTAnalyticAssociator::~KTAnalyticAssociator()
@@ -248,12 +248,12 @@ namespace Katydid
             return;
         }
 
-        KTEvent* event = tsData->GetEvent();
-        if (event != NULL)
+        KTBundle* bundle = tsData->GetEvent();
+        if (bundle != NULL)
         {
-            event->AddData(newData);
+            bundle->AddData(newData);
 
-            if (fSaveFrequencySpectrum) event->AddData(saveFreqSpec);
+            if (fSaveFrequencySpectrum) bundle->AddData(saveFreqSpec);
             else delete saveFreqSpec;
         }
 
@@ -270,32 +270,32 @@ namespace Katydid
             return;
         }
 
-        KTEvent* event = fsData->GetEvent();
-        if (event != NULL)
+        KTBundle* bundle = fsData->GetEvent();
+        if (bundle != NULL)
         {
-            event->AddData(newData);
+            bundle->AddData(newData);
         }
 
         return;
     }
 
-    void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
+        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData != NULL)
         {
             ProcessTimeSeriesData(tsData);
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsData = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        const KTFrequencySpectrumDataFFTW* fsData = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsData != NULL)
         {
             ProcessFrequencySpectrumData(fsData);
             return;
         }
 
-        KTWARN(aalog, "No data (time series of frequency spectrum FFTW) named <" << fInputDataName << "> was available in the event");
+        KTWARN(aalog, "No data (time series of frequency spectrum FFTW) named <" << fInputDataName << "> was available in the bundle");
         return;
     }
 

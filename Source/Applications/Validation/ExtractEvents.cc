@@ -7,7 +7,7 @@
  */
 
 #include "KTEgg.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 
 #include "Rtypes.h"
 

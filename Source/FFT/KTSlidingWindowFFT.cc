@@ -9,7 +9,7 @@
 
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesPairedData.hh"
 #include "KTTimeSeriesReal.hh"
@@ -52,7 +52,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSlidingWindowFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("bundle", this, &KTSlidingWindowFFT::ProcessEvent, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -78,7 +78,7 @@ namespace Katydid
         if (node->HasData("overlap-frac")) SetOverlapFrac(node->GetData< Double_t >("overlap-frac", 0.));
 
         string windowType = node->GetData< string >("window-function-type", "rectangular");
-        KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
+        KTBundleWindowFunction* tempWF = KTFactory< KTBundleWindowFunction >::GetInstance()->Create(windowType);
         if (tempWF == NULL)
         {
             KTERROR(fftlog_sw, "Invalid window function type given: <" << windowType << ">.");
@@ -126,17 +126,17 @@ namespace Katydid
     }
 
 
-    void KTSlidingWindowFFT::ProcessEvent(KTEvent* event)
+    void KTSlidingWindowFFT::ProcessEvent(KTBundle* bundle)
     {
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
+        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)
         {
-            KTWARN(fftlog_sw, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTWARN(fftlog_sw, "No time series data named <" << fInputDataName << "> was available in the bundle");
             return;
         }
 
         KTSlidingWindowFSData* newData = TransformData(tsData);
-        event->AddData(newData);
+        bundle->AddData(newData);
         return;
     }
 
@@ -316,7 +316,7 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::SetWindowFunction(KTEventWindowFunction* wf)
+    void KTSlidingWindowFFT::SetWindowFunction(KTBundleWindowFunction* wf)
     {
         delete fWindowFunction;
         fWindowFunction = wf;

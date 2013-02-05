@@ -10,7 +10,7 @@
 #include "KTCacheDirectory.hh"
 #include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
@@ -42,7 +42,7 @@ namespace Katydid
         RegisterSignal("frequency-candidates", &fFCSignal, "void (const KTFrequencyCandidateData*)");
 
         RegisterSlot("clusters", this, &KTFrequencyCandidateIdentifier::ProcessClusterData, "void (const KTCluster1DData*)");
-        RegisterSlot("event", this, &KTFrequencyCandidateIdentifier::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTFrequencyCandidateIdentifier::ProcessEvent, "void (shared_ptr<KTBundle>)");
     }
 
     KTFrequencyCandidateIdentifier::~KTFrequencyCandidateIdentifier()
@@ -248,48 +248,48 @@ namespace Katydid
 
     void KTFrequencyCandidateIdentifier::ProcessClusterData(const KTCluster1DData* clusterData)
     {
-        KTEvent* event = clusterData->GetEvent();
-        if (event == NULL)
+        KTBundle* bundle = clusterData->GetEvent();
+        if (bundle == NULL)
         {
-            KTERROR(fcilog, "Cluster data must be associated with an event.");
+            KTERROR(fcilog, "Cluster data must be associated with an bundle.");
             return;
         }
 
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fFSInputDataName);
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fFSInputDataName);
         if (fsData != NULL)
         {
             KTFrequencyCandidateData* newData = newData = this->IdentifyCandidates(clusterData, fsData);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
         if (fsDataFFTW != NULL)
         {
             KTFrequencyCandidateData* newData = newData = this->IdentifyCandidates(clusterData, fsDataFFTW);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
 
-        const KTCorrelationData* corrData = event->GetData< KTCorrelationData >(fFSInputDataName);
+        const KTCorrelationData* corrData = bundle->GetData< KTCorrelationData >(fFSInputDataName);
         if (corrData != NULL)
         {
             KTFrequencyCandidateData* newData = newData = this->IdentifyCandidates(clusterData, corrData);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
 
-        KTERROR(fcilog, "The event associated with the cluster data must have a frequency spectrum by the name <" << fFSInputDataName << ">");
+        KTERROR(fcilog, "The bundle associated with the cluster data must have a frequency spectrum by the name <" << fFSInputDataName << ">");
 
         return;
     }
 
-    void KTFrequencyCandidateIdentifier::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTFrequencyCandidateIdentifier::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTCluster1DData* clusterData = event->GetData< KTCluster1DData >(fClusterInputDataName);
+        const KTCluster1DData* clusterData = bundle->GetData< KTCluster1DData >(fClusterInputDataName);
         if (clusterData == NULL)
         {
-            KTWARN(fcilog, "No cluster data named <" << fClusterInputDataName << "> was available in the event");
+            KTWARN(fcilog, "No cluster data named <" << fClusterInputDataName << "> was available in the bundle");
             return;
         }
 

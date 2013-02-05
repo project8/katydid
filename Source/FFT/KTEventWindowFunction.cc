@@ -1,11 +1,11 @@
 /*
- * KTEventWindowFunction.cc
+ * KTBundleWindowFunction.cc
  *
  *  Created on: Sep 18, 2011
  *      Author: nsoblath
  */
 
-#include "KTEventWindowFunction.hh"
+#include "KTBundleWindowFunction.hh"
 
 #include "KTFrequencySpectrum.hh"
 #include "KTLogger.hh"
@@ -28,7 +28,7 @@ namespace Katydid
 {
     KTLOGGER(fftlog, "katydid.fft");
 
-    KTEventWindowFunction::KTEventWindowFunction() :
+    KTBundleWindowFunction::KTBundleWindowFunction() :
             KTWindowFunction(),
             fWindowFunction(1),
             fLength(1.),
@@ -38,7 +38,7 @@ namespace Katydid
     {
     }
 
-    KTEventWindowFunction::KTEventWindowFunction(const KTTimeSeriesData* tsData) :
+    KTBundleWindowFunction::KTBundleWindowFunction(const KTTimeSeriesData* tsData) :
             KTWindowFunction(),
             fWindowFunction(1),
             fLength(1.),
@@ -50,27 +50,27 @@ namespace Katydid
         fLength = (Double_t)fSize * fBinWidth;
     }
 
-    KTEventWindowFunction::~KTEventWindowFunction()
+    KTBundleWindowFunction::~KTBundleWindowFunction()
     {
     }
 
-    Bool_t KTEventWindowFunction::ConfigureWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTBundleWindowFunction::ConfigureWindowFunctionSubclass(const KTPStoreNode* node)
     {
         return ConfigureEventWindowFunctionSubclass(node);
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
+    Double_t KTBundleWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
     {
         return this->SetBinWidth(tsData->GetTimeSeries(0)->GetTimeBinWidth());
     }
 
-    Double_t KTEventWindowFunction::AdaptTo(const KTTimeSeriesData* tsData, Double_t length)
+    Double_t KTBundleWindowFunction::AdaptTo(const KTTimeSeriesData* tsData, Double_t length)
     {
         return this->SetBinWidthAndLength(tsData->GetTimeSeries(0)->GetTimeBinWidth(), length);
     }
 
 #ifdef ROOT_FOUND
-    TH1D* KTEventWindowFunction::CreateHistogram(const string& name) const
+    TH1D* KTBundleWindowFunction::CreateHistogram(const string& name) const
     {
         Int_t sideBands = KTMath::Nint(0.2 * fSize);
         Int_t totalSize = fSize + 2 * sideBands;
@@ -89,12 +89,12 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KTEventWindowFunction::CreateHistogram() const
+    TH1D* KTBundleWindowFunction::CreateHistogram() const
     {
         return CreateHistogram("hWindowFunction");
     }
 
-    TH1D* KTEventWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
+    TH1D* KTBundleWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
     {
         Int_t sideBands = KTMath::Nint(0.2 * fSize);
         Int_t totalSize = fSize + 2 * sideBands;
@@ -119,28 +119,28 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KTEventWindowFunction::CreateFrequencyResponseHistogram() const
+    TH1D* KTBundleWindowFunction::CreateFrequencyResponseHistogram() const
     {
         return CreateFrequencyResponseHistogram("hFrequencyResponse");
     }
 #endif
 
-    Double_t KTEventWindowFunction::GetLength() const
+    Double_t KTBundleWindowFunction::GetLength() const
     {
         return fLength;
     }
 
-    UInt_t KTEventWindowFunction::GetSize() const
+    UInt_t KTBundleWindowFunction::GetSize() const
     {
         return fSize;
     }
 
-    Double_t KTEventWindowFunction::GetBinWidth() const
+    Double_t KTBundleWindowFunction::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    Double_t KTEventWindowFunction::SetLength(Double_t length)
+    Double_t KTBundleWindowFunction::SetLength(Double_t length)
     {
         fLength = fabs(length);
         if (fLastSetParameter == kBinWidth)
@@ -159,7 +159,7 @@ namespace Katydid
         return fBinWidth;
     }
 
-    Double_t KTEventWindowFunction::SetBinWidth(Double_t bw)
+    Double_t KTBundleWindowFunction::SetBinWidth(Double_t bw)
     {
         fBinWidth = fabs(bw);
         if (fLastSetParameter == kSize || fLastSetParameter == kBinWidth)
@@ -178,7 +178,7 @@ namespace Katydid
         return fLength;
     }
 
-    Double_t KTEventWindowFunction::SetBinWidthAndLength(Double_t bw, Double_t length)
+    Double_t KTBundleWindowFunction::SetBinWidthAndLength(Double_t bw, Double_t length)
     {
         fBinWidth = fabs(bw);
         Double_t prelimNBins = fabs(length) / fBinWidth;
@@ -189,7 +189,7 @@ namespace Katydid
         return fLength;
     }
 
-    Double_t KTEventWindowFunction::SetLengthAndBinWidth(Double_t length, Double_t bw)
+    Double_t KTBundleWindowFunction::SetLengthAndBinWidth(Double_t length, Double_t bw)
     {
         fLength = fabs(length);
         Double_t prelimNBins = fLength / fabs(bw);
@@ -200,7 +200,7 @@ namespace Katydid
         return fBinWidth;
     }
 
-    Double_t KTEventWindowFunction::SetSize(UInt_t wib)
+    Double_t KTBundleWindowFunction::SetSize(UInt_t wib)
     {
         fSize = wib;
         if (fLastSetParameter == kBinWidth || fLastSetParameter == kSize)

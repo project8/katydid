@@ -40,7 +40,7 @@ namespace Katydid
             void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
             void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
 
-            void SetEventPeakBinsList(epbList* eventPeakBinsList); /// does NOT take ownership of eventPeakBinsList
+            void SetEventPeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
             void SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
 

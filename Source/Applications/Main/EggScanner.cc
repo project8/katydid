@@ -13,7 +13,7 @@
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
 #include "KTEggReaderMonarch.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeriesChannelData.hh"
 

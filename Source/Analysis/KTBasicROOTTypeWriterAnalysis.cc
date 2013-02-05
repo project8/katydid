@@ -7,7 +7,7 @@
 
 #include "KTBasicROOTTypeWriterAnalysis.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTCorrelationData.hh"
@@ -55,9 +55,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterAnalysis::WriteCorrelationData(const KTCorrelationData* data)
     {
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nPairs = data->GetNPairs();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -68,12 +68,12 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histCorr_" << eventNumber << "_" << iPair;
+                conv << "histCorr_" << bundleNumber << "_" << iPair;
                 string histName;
                 conv >> histName;
                 TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
                 stringstream titleStream;
-                titleStream << "Event " << eventNumber << ", Correlation " << iPair << ", "
+                titleStream << "Event " << bundleNumber << ", Correlation " << iPair << ", "
                         "Channels (" << data->GetFirstChannel(iPair) << ", " << data->GetSecondChannel(iPair) << ")";
                 corrHist->SetTitle(titleStream.str().c_str());
                 corrHist->SetDirectory(fWriter->GetFile());
@@ -90,9 +90,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterAnalysis::WriteHoughData(const KTHoughData* data)
     {
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nPlots = data->GetNTransforms();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -100,7 +100,7 @@ namespace Katydid
         for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
         {
             stringstream conv;
-            conv << "histHT_" << eventNumber << "_" << iPlot;
+            conv << "histHT_" << bundleNumber << "_" << iPlot;
             string histName;
             conv >> histName;
             TH2D* swHist = data->CreateHistogram(iPlot, histName);
@@ -117,9 +117,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterAnalysis::WriteGainVariationData(const KTGainVariationData* data)
     {
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -127,7 +127,7 @@ namespace Katydid
         for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
         {
             stringstream conv;
-            conv << "histGV_" << eventNumber << "_" << iPlot;
+            conv << "histGV_" << bundleNumber << "_" << iPlot;
             string histName;
             conv >> histName;
             TH1D* gvHist = data->CreateGainVariationHistogram(100, iPlot, histName);
@@ -138,7 +138,7 @@ namespace Katydid
             /*
             stringstream conv2;
             string splineName;
-            conv2 << "splineGV_" << eventNumber << "_" << iPlot;
+            conv2 << "splineGV_" << bundleNumber << "_" << iPlot;
             conv2 >> splineName;
             const TSpline* spline = data->GetSpline(iPlot);
             if (spline == NULL)

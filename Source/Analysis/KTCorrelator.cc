@@ -8,7 +8,7 @@
 #include "KTCorrelator.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
@@ -52,7 +52,7 @@ namespace Katydid
 
         RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fftw-data", this, &KTCorrelator::ProcessFFTWData, "void (const KTFrequencySpectrumDataFFTW*)");
-        RegisterSlot("event", this, &KTCorrelator::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTCorrelator::ProcessEvent, "void (shared_ptr<KTBundle>)");
     }
 
     KTCorrelator::~KTCorrelator()
@@ -226,10 +226,10 @@ namespace Katydid
         KTCorrelationData* newData = Correlate(fsData);
         if (newData != NULL)
         {
-            KTEvent* event = fsData->GetEvent();
-            newData->SetEvent(event);
-            if (event != NULL)
-                event->AddData(newData);
+            KTBundle* bundle = fsData->GetEvent();
+            newData->SetEvent(bundle);
+            if (bundle != NULL)
+                bundle->AddData(newData);
             fCorrSignal(newData);
         }
         return;
@@ -240,32 +240,32 @@ namespace Katydid
         KTCorrelationData* newData = Correlate(fsData);
         if (newData != NULL)
         {
-            KTEvent* event = fsData->GetEvent();
-            newData->SetEvent(event);
-            if (event != NULL)
-                event->AddData(newData);
+            KTBundle* bundle = fsData->GetEvent();
+            newData->SetEvent(bundle);
+            if (bundle != NULL)
+                bundle->AddData(newData);
             fCorrSignal(newData);
         }
         return;
     }
 
-    void KTCorrelator::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTCorrelator::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
         {
             ProcessFFTData(fsData);
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsDataFFTW != NULL)
         {
             ProcessFFTWData(fsDataFFTW);
             return;
         }
 
-        KTWARN(corrlog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");
+        KTWARN(corrlog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the bundle");
         return;
 
     }

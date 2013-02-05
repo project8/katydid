@@ -9,7 +9,7 @@
 
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTTimeSeriesChannelData.hh"
@@ -51,7 +51,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTSimpleFFT::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("bundle", this, &KTSimpleFFT::ProcessEvent, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -252,20 +252,20 @@ namespace Katydid
         KTFrequencySpectrumData* newData = TransformData(tsData);
         if (tsData->GetEvent() != NULL)
         {
-            KTEvent* event = tsData->GetEvent();
-            newData->SetEvent(event);
-            event->AddData(newData);
+            KTBundle* bundle = tsData->GetEvent();
+            newData->SetEvent(bundle);
+            bundle->AddData(newData);
             fFFTSignal(newData);
         }
         return;
     }
 
-    void KTSimpleFFT::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTSimpleFFT::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
+        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)
         {
-            KTWARN(fftlog_simp, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTWARN(fftlog_simp, "No time series data named <" << fInputDataName << "> was available in the bundle");
             return;
         }
 

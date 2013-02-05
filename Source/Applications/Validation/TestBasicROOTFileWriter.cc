@@ -7,7 +7,7 @@
 
 #include "KTBasicROOTFileWriter.hh"
 #include "KTBasicROOTTypeWriterFFT.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "complexpolar.hh"
@@ -19,13 +19,13 @@ using namespace std;
 
 int main()
 {
-    // Set up a dummy event
-    KTEvent* event = new KTEvent();
+    // Set up a dummy bundle
+    KTBundle* bundle = new KTBundle();
 
     // Set up the data
     KTFrequencySpectrumData* data = new KTFrequencySpectrumData(2);
-    data->SetEvent(event);
-    event->SetEventNumber(0);
+    data->SetEvent(bundle);
+    bundle->SetEventNumber(0);
 
     KTFrequencySpectrum* spectrum1 = new KTFrequencySpectrum(10, -0.5, 9.5);
     (*spectrum1)(3).set_polar(5., 1.);
@@ -46,7 +46,7 @@ int main()
     // Set up next data
     (*spectrum1)(3).set_polar(10., .5);
     (*spectrum2)(8).set_polar(12., 2.1);
-    event->SetEventNumber(1);
+    bundle->SetEventNumber(1);
 
     // Publish the data
     writer->GetTypeWriter< KTBasicROOTTypeWriterFFT >()->WriteFrequencySpectrumData(data);

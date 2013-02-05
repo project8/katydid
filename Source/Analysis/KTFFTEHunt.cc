@@ -8,7 +8,7 @@
 #include "KTFFTEHunt.hh"
 
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTMaskedArray.hh"
@@ -65,8 +65,8 @@ namespace Katydid
         fConfigName = "fft-e-hunt";
 
         RegisterSlot("header", this, &KTFFTEHunt::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("event", this, &KTFFTEHunt::ProcessEvent, " void (shared_ptr<KTEvent>)");
-        RegisterSlot("event_done", this, &KTFFTEHunt::FinishHunt, "void ()");
+        RegisterSlot("bundle", this, &KTFFTEHunt::ProcessEvent, " void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle_done", this, &KTFFTEHunt::FinishHunt, "void ()");
 
         fWindowFFT.ConnectASlot("full_fft", &fGainNorm, "freq_spect", 0);
         fWindowFFT.ConnectASlot("full_fft", &fClustering, "freq_spect", 1);
@@ -182,17 +182,17 @@ namespace Katydid
         return;
     }
 
-    void KTFFTEHunt::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTFFTEHunt::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        UInt_t iEvent = event->GetEventNumber();
+        UInt_t iEvent = bundle->GetEventNumber();
         if (fWriteTextFileFlag)
         {
             fTextFile << "Event " << iEvent << '\n';
         }
 
-        const KTProgenitorTimeSeriesData* tsData = event->GetData< KTProgenitorTimeSeriesData >(fInputDataName);
+        const KTProgenitorTimeSeriesData* tsData = bundle->GetData< KTProgenitorTimeSeriesData >(fInputDataName);
 
-        // Perform a 1-D FFT on the entire event
+        // Perform a 1-D FFT on the entire bundle
         const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetTimeSeries(0));
         KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
@@ -200,7 +200,7 @@ namespace Katydid
         fGainNorm.PrepareNormalization(freqSpect, (UInt_t)fWindowFFT.GetFrequencySize(), fFrequencyBinWidth);
 
         // Prepare to run the windowed FFT
-        //list< multimap< Int_t, Int_t >* > eventPeakBins;
+        //list< multimap< Int_t, Int_t >* > bundlePeakBins;
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
         KTSlidingWindowFSData* windowedFFTData = fWindowFFT.TransformData(tsData);

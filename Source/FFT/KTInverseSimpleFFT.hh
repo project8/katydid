@@ -27,7 +27,7 @@ namespace Katydid
     KTLOGGER(fftlog_simp, "katydid.fft");
 
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
     class KTPStoreNode;
     class KTTimeSeries;
     class KTTimeSeriesData;
@@ -58,7 +58,7 @@ namespace Katydid
 
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
-     \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
+     \li \c void ProcessEvent(UInt_t iEvent, const KTBundle* bundle)
 
      Signals:
      \li \c void (UInt_t, const KTInverseSimpleFFT*) emitted upon performance of a transform.
@@ -126,7 +126,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(KTEvent* event);
+            void ProcessEvent(KTBundle* bundle);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };

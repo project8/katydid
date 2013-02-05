@@ -47,7 +47,7 @@ namespace Katydid
         fConfigName = "power-spectrum-averager";
 
         RegisterSlot("header", this, &KTPowerSpectrumAverager::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("event", this, &KTPowerSpectrumAverager::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTPowerSpectrumAverager::ProcessEvent, "void (shared_ptr<KTBundle>)");
         RegisterSlot("finish", this, &KTPowerSpectrumAverager::Finish, "void ()");
 
         KTWARN(psavglog, "Please note: KTPowerSpectrumAverager is now deprecated. Please use KTMultiEventROOTWriter instead.");
@@ -156,30 +156,30 @@ namespace Katydid
         return;
     }
 
-    void KTPowerSpectrumAverager::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTPowerSpectrumAverager::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
         {
             AddFrequencySpectrumData(fsData);
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsDataFFTW != NULL)
         {
             AddFrequencySpectrumData(fsDataFFTW);
             return;
         }
 /*
-        const KTCorrelationData* corrData = event->GetData< KTCorrelationData >(fInputDataName);
+        const KTCorrelationData* corrData = bundle->GetData< KTCorrelationData >(fInputDataName);
         if (corrData != NULL)
         {
             AddCorrelationData(corrData);
             return;
         }
 */
-        KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");
+        KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the bundle");
 
         return;
     }

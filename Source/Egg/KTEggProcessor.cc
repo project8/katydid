@@ -1,7 +1,7 @@
 /**
  @file KTEggProcessor.hh
  @brief Contains KTEggProcessor
- @details KTEggProcessor iterates over the events in an Egg file
+ @details KTEggProcessor iterates over the bundles in an Egg file
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
@@ -13,7 +13,7 @@
 #include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTEggReader2011.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -24,7 +24,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    static KTCommandLineOption< int > sNEventsCLO("Egg Processor", "Number of events to process", "n-events", 'n');
+    static KTCommandLineOption< int > sNEventsCLO("Egg Processor", "Number of bundles to process", "n-bundles", 'n');
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
     static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
@@ -49,7 +49,7 @@ namespace Katydid
 
         RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
         RegisterSignal("data", &fDataSignal, "void (const KTTimeSeriesData*)");
-        RegisterSignal("event", &fEventSignal, "boost::shared_ptr<KTEvent>");
+        RegisterSignal("bundle", &fEventSignal, "boost::shared_ptr<KTBundle>");
         RegisterSignal("egg-done", &fEggDoneSignal, "void ()");
     }
 
@@ -62,7 +62,7 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNEvents(node->GetData< UInt_t >("number-of-events", fNEvents));
+            SetNEvents(node->GetData< UInt_t >("number-of-bundles", fNEvents));
             SetFilename(node->GetData< string >("filename", fFilename));
 
             // choose the egg reader
@@ -93,7 +93,7 @@ namespace Katydid
         }
 
         // Command-line settings
-        SetNEvents(fCLHandler->GetCommandLineValue< Int_t >("n-events", fNEvents));
+        SetNEvents(fCLHandler->GetCommandLineValue< Int_t >("n-bundles", fNEvents));
         SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
         if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
         {
@@ -136,7 +136,7 @@ namespace Katydid
 
         KTINFO(egglog, "The egg file has been opened successfully"
                 "\n\tand the header parsed and processed;"
-                "\n\tProceeding with event processing");
+                "\n\tProceeding with bundle processing");
 
         UInt_t iEvent = 0;
         while (kTRUE)
@@ -145,13 +145,13 @@ namespace Katydid
 
             KTINFO(egglog, "Event " << iEvent);
 
-            // Hatch the event
-            shared_ptr<KTEvent> event = egg.HatchNextEvent();
-            if (event.get() == NULL) break;
+            // Hatch the bundle
+            shared_ptr<KTBundle> bundle = egg.HatchNextEvent();
+            if (bundle.get() == NULL) break;
 
-            if (iEvent == fNEvents - 1) event->SetIsLastEvent(true);
+            if (iEvent == fNEvents - 1) bundle->SetIsLastEvent(true);
 
-            KTTimeSeriesData* newData = event->GetData< KTTimeSeriesData >(fOutputDataName);
+            KTTimeSeriesData* newData = bundle->GetData< KTTimeSeriesData >(fOutputDataName);
             if (newData != NULL)
             {
                 KTDEBUG(egglog, "Time series data is present.");
@@ -159,11 +159,11 @@ namespace Katydid
             }
             else
             {
-                KTWARN(egglog, "No time-series data present in event");
+                KTWARN(egglog, "No time-series data present in bundle");
             }
 
-            // Pass the event to any subscribers
-            fEventSignal(event);
+            // Pass the bundle to any subscribers
+            fEventSignal(bundle);
 
             iEvent++;
         }

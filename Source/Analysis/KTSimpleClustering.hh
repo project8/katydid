@@ -24,7 +24,7 @@
 
 namespace Katydid
 {
-    class KTEvent;
+    class KTBundle;
 
     class KTSimpleClustering : public KTProcessor
     {
@@ -60,7 +60,7 @@ namespace Katydid
             };
             typedef std::list< FreqBinCluster > FreqBinClusters;
 
-            typedef std::list< boost::shared_ptr<KTEvent> > NewEventList;
+            typedef std::list< boost::shared_ptr<KTBundle> > NewEventList;
 
 
         public:
@@ -116,7 +116,7 @@ namespace Katydid
             void SetFrequencyBinWidth(Double_t bw);
 
         private:
-            boost::shared_ptr<KTEvent> CreateEventFromCluster(const Cluster& cluster);
+            boost::shared_ptr<KTBundle> CreateEventFromCluster(const Cluster& cluster);
 
             UInt_t fTimeBin;
             Double_t fTimeBinWidth;
@@ -252,7 +252,7 @@ namespace Katydid
             void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
             void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
 
-            void SetEventPeakBinsList(epbList* eventPeakBinsList); /// does NOT take ownership of eventPeakBinsList
+            void SetEventPeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
             void SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
 

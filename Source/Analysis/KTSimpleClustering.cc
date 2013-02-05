@@ -8,7 +8,7 @@
 #include "KTSimpleClustering.hh"
 
 #include "KTDiscriminatedPoints1DData.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -92,9 +92,9 @@ namespace Katydid
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            NewEventList* eventsFromComponent = AddPointsToClusters(dpData->GetSetOfPoints(iComponent), iComponent);
-            newEventsAC->splice(newEventsAC->end(), *eventsFromComponent);
-            delete eventsFromComponent;
+            NewEventList* bundlesFromComponent = AddPointsToClusters(dpData->GetSetOfPoints(iComponent), iComponent);
+            newEventsAC->splice(newEventsAC->end(), *bundlesFromComponent);
+            delete bundlesFromComponent;
         }
 
         fTimeBin++;
@@ -290,7 +290,7 @@ namespace Katydid
             }
             else if (! acHasBeenAddedTo[iCluster])
             {
-                KTDEBUG(sclog, "    no longer active; creating an event");
+                KTDEBUG(sclog, "    no longer active; creating an bundle");
                 newEvents->push_back(CreateEventFromCluster(*acIt));
                 acIt = fActiveClusters[component].erase(acIt); // the iterator returned is the next position in the cluster
                 acIt--; // back up the iterator so that when processing hits the beginning of the loop, the iterator is returned to the "next" position
@@ -367,18 +367,18 @@ namespace Katydid
         return;
     }
 
-    shared_ptr<KTEvent> KTSimpleClustering::CreateEventFromCluster(const Cluster& cluster)
+    shared_ptr<KTBundle> KTSimpleClustering::CreateEventFromCluster(const Cluster& cluster)
     {
-        shared_ptr<KTEvent> event(new KTEvent());
+        shared_ptr<KTBundle> bundle(new KTBundle());
 
         //KTSingleCluster2DData* newData = new KTSingleCluster2DData();
 
         // fill in the data
 
-        //data->SetEvent(event);
-        //event->AddData(newData);
+        //data->SetEvent(bundle);
+        //bundle->AddData(newData);
 
-        return event;
+        return bundle;
     }
 
 

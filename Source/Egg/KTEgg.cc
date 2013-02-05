@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTEggReader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeriesChannelData.hh"
 
@@ -50,22 +50,22 @@ namespace Katydid
         return true;
     }
 
-    shared_ptr<KTEvent> KTEgg::HatchNextEvent()
+    shared_ptr<KTBundle> KTEgg::HatchNextEvent()
     {
         if (fReader == NULL || fHeader == NULL)
         {
-            KTWARN(egglog, "Not prepared to hatch an event");
-            return shared_ptr<KTEvent>();
+            KTWARN(egglog, "Not prepared to hatch an bundle");
+            return shared_ptr<KTBundle>();
         }
 
         KTTimeSeriesData* data = fReader->HatchNextEvent();
         if (data == NULL)
         {
-            return shared_ptr<KTEvent>();
+            return shared_ptr<KTBundle>();
         }
         fEventCounter++;
 
-        shared_ptr<KTEvent> newEvent(new KTEvent());
+        shared_ptr<KTBundle> newEvent(new KTBundle());
         newEvent->SetEventNumber(unsigned(fEventCounter));
         newEvent->AddData(data);
 

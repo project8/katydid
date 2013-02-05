@@ -10,7 +10,7 @@
 #include "KTCacheDirectory.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -68,7 +68,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTWignerVille::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("bundle", this, &KTWignerVille::ProcessEvent, "void (KTBundle*)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -248,21 +248,21 @@ namespace Katydid
             return;
         }
 
-        KTEvent* event = tsData->GetEvent();
-        if (event != NULL)
+        KTBundle* bundle = tsData->GetEvent();
+        if (bundle != NULL)
         {
-            event->AddData(newData);
+            bundle->AddData(newData);
         }
 
         return;
     }
 
-    void KTWignerVille::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTWignerVille::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
+        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)
         {
-            KTWARN(wvlog, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTWARN(wvlog, "No time series data named <" << fInputDataName << "> was available in the bundle");
             return;
         }
 

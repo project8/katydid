@@ -12,12 +12,12 @@
 
 namespace Katydid
 {
-    class KTEvent;
+    class KTBundle;
 
     class KTData
     {
         private:
-            friend class KTEvent;
+            friend class KTBundle;
 
         public:
             KTData();
@@ -31,22 +31,22 @@ namespace Katydid
             std::string fName;
 
         public:
-            /// Returns a pointer to the event from which this data object originates
-            virtual KTEvent* GetEvent() const;
-            void SetEvent(KTEvent* event);
+            /// Returns a pointer to the bundle from which this data object originates
+            virtual KTBundle* GetEvent() const;
+            void SetEvent(KTBundle* bundle);
 
         protected:
-            KTEvent* fEvent; // not owned by this object
+            KTBundle* fEvent; // not owned by this object
     };
 
-    inline KTEvent* KTData::GetEvent() const
+    inline KTBundle* KTData::GetEvent() const
     {
         return fEvent;
     }
 
-    inline void KTData::SetEvent(KTEvent* event)
+    inline void KTData::SetEvent(KTBundle* bundle)
     {
-        fEvent = event;
+        fEvent = bundle;
         return;
     }
 

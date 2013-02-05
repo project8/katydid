@@ -7,7 +7,7 @@
 
 #include "KTGainVariationProcessor.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -49,7 +49,7 @@ namespace Katydid
 
         RegisterSignal("gain-var", &fGainVarSignal, "void (const KTGainVariationData*)");
 
-        RegisterSlot("event", this, &KTGainVariationProcessor::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTGainVariationProcessor::ProcessEvent, "void (shared_ptr<KTBundle>)");
         RegisterSlot("fsdata", this, &KTGainVariationProcessor::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fsdata-fftw", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
     }
@@ -268,25 +268,25 @@ namespace Katydid
     }
     */
 
-    void KTGainVariationProcessor::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTGainVariationProcessor::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
         {
             KTGainVariationData* newData = CalculateGainVariation(fsData);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsDataFFTW != NULL)
         {
             KTGainVariationData* newData = CalculateGainVariation(fsDataFFTW);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
 
-        KTWARN(gvlog, "No time series data named <" << fInputDataName << "> was available in the event");
+        KTWARN(gvlog, "No time series data named <" << fInputDataName << "> was available in the bundle");
         return;
     }
 

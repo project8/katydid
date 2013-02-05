@@ -1,10 +1,10 @@
 /**
- @file KTEvent.hh
- @brief Contains KTEvent
- @details An event represents the information recorded over a certain period of time.
- An event is extensible: it can include a variety of types of data (i.e. from a particular analysis)
+ @file KTBundle.hh
+ @brief Contains KTBundle
+ @details An bundle represents the information recorded over a certain period of time.
+ An bundle is extensible: it can include a variety of types of data (i.e. from a particular analysis)
  The added data objects are stored in an unordered map.
- @note: Prior to August 24, 2012, KTEvent was the current KTTimeSeriesData.
+ @note: Prior to August 24, 2012, KTBundle was the current KTTimeSeriesData.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */
@@ -22,19 +22,19 @@
 
 namespace Katydid
 {
-    KTLOGGER(corelog_event, "katydid.core");
+    KTLOGGER(corelog_bundle, "katydid.core");
 
     class KTData;
 
-    class KTEvent
+    class KTBundle
     {
         protected:
             typedef boost::unordered_map< const std::type_info*, KTDataMap* > MapOfDataMaps;
             typedef boost::unordered_map< std::string, KTDataMap* > DataNameMap;
 
         public:
-            KTEvent();
-            virtual ~KTEvent();
+            KTBundle();
+            virtual ~KTBundle();
 
             //*****************************
             // Intrinsic data
@@ -59,7 +59,7 @@ namespace Katydid
             template< typename DerivedData >
             DerivedData* GetData(const std::string& name) const;
 
-            /** @brief Adds a data object to the extensible event
+            /** @brief Adds a data object to the extensible bundle
              *  @details
              *    - Uses KTData::GetName() to extract the name for the key
              *    - Assumes ownership of the data.
@@ -67,7 +67,7 @@ namespace Katydid
             template< typename DerivedData >
             Bool_t AddData(DerivedData* newData);
 
-            /** @brief Adds a data object to the extensible event
+            /** @brief Adds a data object to the extensible bundle
              *  @details
              *    - Takes a key value as a parameter for custom key selection.
              *    - Assumes ownership of the data.
@@ -80,7 +80,7 @@ namespace Katydid
             void PrintAttachedData() const;
 
         protected:
-            KTTIFactory< KTDataMap >* fDataMapFactory; // singleton; not owned by KTEvent
+            KTTIFactory< KTDataMap >* fDataMapFactory; // singleton; not owned by KTBundle
 
             MapOfDataMaps fMapOfDataMaps;
 
@@ -89,66 +89,66 @@ namespace Katydid
     };
 
 
-    inline unsigned KTEvent::GetEventNumber() const
+    inline unsigned KTBundle::GetEventNumber() const
     {
         return fEventNum;
     }
 
-    inline void KTEvent::SetEventNumber(unsigned num)
+    inline void KTBundle::SetEventNumber(unsigned num)
     {
         fEventNum = num;
         return;
     }
 
-    inline Bool_t KTEvent::GetIsLastEvent() const
+    inline Bool_t KTBundle::GetIsLastEvent() const
     {
         return fIsLastEvent;
     }
 
-    inline void KTEvent::SetIsLastEvent(Bool_t flag)
+    inline void KTBundle::SetIsLastEvent(Bool_t flag)
     {
         fIsLastEvent = flag;
         return;
     }
 
     template< typename DerivedData >
-    DerivedData* KTEvent::GetData(const std::string& name) const
+    DerivedData* KTBundle::GetData(const std::string& name) const
     {
         MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(KTDerivedDataMap< DerivedData >));
         if (modmIt == fMapOfDataMaps.end())
         {
-            KTERROR(corelog_event, "Attempt to retrieve data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
+            KTERROR(corelog_bundle, "Attempt to retrieve data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
             return NULL;
         }
 
         KTData* dataPtr = modmIt->second->GetData(name);
         if (dataPtr == NULL)
         {
-            //KTERROR(corelog_event, "Unable to find data called <" << name << "> with type <" << typeid(DerivedData).name() << ">");
+            //KTERROR(corelog_bundle, "Unable to find data called <" << name << "> with type <" << typeid(DerivedData).name() << ">");
             return NULL;
         }
         return static_cast< DerivedData* >(dataPtr);
     }
 
     template< typename DerivedData >
-    Bool_t KTEvent::AddData(DerivedData* newData)
+    Bool_t KTBundle::AddData(DerivedData* newData)
     {
         return AddData(newData->GetName(), newData);
     }
 
     template< typename DerivedData >
-    Bool_t KTEvent::AddData(const std::string& name, DerivedData* newData)
+    Bool_t KTBundle::AddData(const std::string& name, DerivedData* newData)
     {
         if (fDataNameMap.find(name) != fDataNameMap.end())
         {
-            KTERROR(corelog_event, "There is already a data object named <" << name << "> attached to this event.");
+            KTERROR(corelog_bundle, "There is already a data object named <" << name << "> attached to this bundle.");
             return false;
         }
 
         MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(KTDerivedDataMap< DerivedData >));
         if (modmIt == fMapOfDataMaps.end())
         {
-            KTERROR(corelog_event, "Attempt to add data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
+            KTERROR(corelog_bundle, "Attempt to add data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
             return false;
         }
         // If the data map has been found, we can reasonably assume its derived type will matched the derived data type.
@@ -156,7 +156,7 @@ namespace Katydid
         KTDerivedDataMap< DerivedData >* ddm = static_cast< KTDerivedDataMap< DerivedData >* >(modmIt->second);
         if (! ddm->AddData(name, newData))
         {
-            KTERROR(corelog_event, "Attempt to add data called <" << name << "> to data map failed.");
+            KTERROR(corelog_bundle, "Attempt to add data called <" << name << "> to data map failed.");
             return false;
         }
 
@@ -165,7 +165,7 @@ namespace Katydid
     }
 
 
-    inline Bool_t KTEvent::RemoveData(const std::string& name)
+    inline Bool_t KTBundle::RemoveData(const std::string& name)
     {
         DataNameMap::const_iterator nmIt = fDataNameMap.find(name);
         if (nmIt == fDataNameMap.end()) return false;
@@ -173,7 +173,7 @@ namespace Katydid
         fDataNameMap.erase(name);
         if (! nmIt->second->RemoveData(name))
         {
-            KTWARN(corelog_event, "While removing data called <" << name << ">, data was not found in the data map");
+            KTWARN(corelog_bundle, "While removing data called <" << name << ">, data was not found in the data map");
         }
         return true;
     }

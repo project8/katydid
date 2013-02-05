@@ -18,7 +18,7 @@ namespace Katydid
     class KTCorrelationData;
     class KTDiscriminatedPoints1DData;
     class KTDiscriminatedPoints2DData;
-    class KTEvent;
+    class KTBundle;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTSlidingWindowFSData;
@@ -103,7 +103,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
             void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
             void ProcessCorrelationData(const KTCorrelationData* data);

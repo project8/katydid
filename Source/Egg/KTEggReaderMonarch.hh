@@ -1,7 +1,7 @@
 /**
  @file KTEgg.hh
  @brief Contains KTEgg
- @details Reads Egg data files: parses the header and produces events.
+ @details Reads Egg data files: parses the header and produces bundles.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */
@@ -77,7 +77,7 @@ namespace Katydid
         public:
             /// Opens the egg file and returns a new copy of the header information.
             KTEggHeader* BreakEgg(const std::string& filename);
-            /// Returns the next event's time series data.
+            /// Returns the next bundle's time series data.
             KTTimeSeriesData* HatchNextEvent();
             /// Closes the file.
             Bool_t CloseEgg();

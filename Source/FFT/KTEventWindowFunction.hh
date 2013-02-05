@@ -1,7 +1,7 @@
 /**
- @file KTEventWindowFunction.hh
- @brief Contains KTEventWindowFunction
- @details Abstract base class for event-adapted window functions.
+ @file KTBundleWindowFunction.hh
+ @brief Contains KTBundleWindowFunction
+ @details Abstract base class for bundle-adapted window functions.
  @author: N. S. Oblath
  @date: Created on: Sep 18, 2011
  */
@@ -19,17 +19,17 @@ namespace Katydid
     class KTTimeSeriesData;
 
     /*!
-     @class KTEventWindowFunction
+     @class KTBundleWindowFunction
      @author N. S. Oblath
 
-     @brief Abstract base class for event-adapted window functions
+     @brief Abstract base class for bundle-adapted window functions
 
      @details
      Available configuration values:
       none
     */
 
-   class KTEventWindowFunction : public KTWindowFunction
+   class KTBundleWindowFunction : public KTWindowFunction
     {
         protected:
             enum ParameterName
@@ -40,18 +40,18 @@ namespace Katydid
             };
 
         public:
-            KTEventWindowFunction();
-            KTEventWindowFunction(const KTTimeSeriesData* tsData);
-            virtual ~KTEventWindowFunction();
+            KTBundleWindowFunction();
+            KTBundleWindowFunction(const KTTimeSeriesData* tsData);
+            virtual ~KTBundleWindowFunction();
 
             virtual Bool_t ConfigureWindowFunctionSubclass(const KTPStoreNode* node);
             virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node) = 0;
 
-            /// Sets fBinWidth to event->GetBinWidth(), and adapts the length to be the integral number of bins closest to the current fLength.
+            /// Sets fBinWidth to bundle->GetBinWidth(), and adapts the length to be the integral number of bins closest to the current fLength.
             /// Returns the adapted length.
             /// If you also need to set the length, it is recommended that you use AdaptTo(const TEvent*, Double_t) instead of separately setting the length.
             virtual Double_t AdaptTo(const KTTimeSeriesData* tsData);
-            /// Sets fBinWidth to event->GetBinWidth(), and adapts the length to be the integer multiple of the bin width closest to the given length.
+            /// Sets fBinWidth to bundle->GetBinWidth(), and adapts the length to be the integer multiple of the bin width closest to the given length.
             /// Returns the adapted length.
             virtual Double_t AdaptTo(const KTTimeSeriesData* tsData, Double_t length);
 

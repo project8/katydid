@@ -82,17 +82,17 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "bundle",
                 "slot-processor": "profiler",
-                "slot-name": "event",
+                "slot-name": "bundle",
                 "group-order": 0
             },
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "bundle",
                 "slot-processor": "fft",
-                "slot-name": "event",
+                "slot-name": "bundle",
                 "group-order": 1
             },
             "connection":
@@ -105,9 +105,9 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "bundle",
                 "slot-processor": "gainnorm",
-                "slot-name": "event",
+                "slot-name": "bundle",
                 "group-order": 2
             },
             "connection":
@@ -128,9 +128,9 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "bundle",
                 "slot-processor": "fcident",
-                "slot-name": "event",
+                "slot-name": "bundle",
                 "group-order": 3
             },
             
@@ -191,7 +191,7 @@
         "egg":
         {
             "filename": "../../../data/run2012_11_5_tone.egg",
-            "number-of-events": 1,
+            "number-of-bundles": 1,
             "output-data-name": "time-series"
         },
         

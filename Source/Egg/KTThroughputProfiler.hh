@@ -15,7 +15,7 @@
 #include "KTProcessor.hh"
 
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -42,7 +42,7 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
 
             void Finish();
 

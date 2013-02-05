@@ -7,7 +7,7 @@
 
 #include "KTGainNormalization.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
@@ -52,7 +52,7 @@ namespace Katydid
         RegisterSignal("gain-norm-sw-fs", &fSWFSSignal, "void (const KTSlidingWindowFSData*)");
         RegisterSignal("gain-norm-sw-fs-fftw", &fSWFSFFTWSignal, "void (const KTSlidingWindowFSDataFFTW*)");
 
-        RegisterSlot("event", this, &KTGainNormalization::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTGainNormalization::ProcessEvent, "void (shared_ptr<KTBundle>)");
     }
 
     KTGainNormalization::~KTGainNormalization()
@@ -304,65 +304,65 @@ namespace Katydid
         return newSpectrum;
     }
 
-    void KTGainNormalization::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTGainNormalization::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTGainVariationData* gvData = event->GetData< KTGainVariationData >(fGVInputDataName);
+        const KTGainVariationData* gvData = bundle->GetData< KTGainVariationData >(fGVInputDataName);
         if (gvData == NULL)
         {
-            KTWARN(gnlog, "No gain variation data named <" << fGVInputDataName << "> was available in the event");
+            KTWARN(gnlog, "No gain variation data named <" << fGVInputDataName << "> was available in the bundle");
             return;
         }
 
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fFSInputDataName);
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fFSInputDataName);
         if (fsData != NULL)
         {
             KTFrequencySpectrumData* newData = Normalize(fsData, gvData);
             if (newData != NULL)
             {
-                KTEvent* event = fsData->GetEvent();
-                newData->SetEvent(event);
-                if (event != NULL)
-                    event->AddData(newData);
+                KTBundle* bundle = fsData->GetEvent();
+                newData->SetEvent(bundle);
+                if (bundle != NULL)
+                    bundle->AddData(newData);
                 fFSSignal(newData);
             }
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
         if (fsDataFFTW != NULL)
         {
             KTFrequencySpectrumDataFFTW* newData = Normalize(fsDataFFTW, gvData);
             if (newData != NULL)
             {
-                KTEvent* event = fsDataFFTW->GetEvent();
-                newData->SetEvent(event);
-                if (event != NULL)
-                    event->AddData(newData);
+                KTBundle* bundle = fsDataFFTW->GetEvent();
+                newData->SetEvent(bundle);
+                if (bundle != NULL)
+                    bundle->AddData(newData);
                 fFSFFTWSignal(newData);
             }
             return;
         }
 
         /*
-        const KTSlidingWindowFSData* swfsData = dynamic_cast< KTSlidingWindowFSData* >(event->GetData(fFSInputDataName));
+        const KTSlidingWindowFSData* swfsData = dynamic_cast< KTSlidingWindowFSData* >(bundle->GetData(fFSInputDataName));
         if (swfsData != NULL)
         {
             KTSlidingWindowFSData* newData = Normalize(swfsData, gvData);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
         */
         /*
-        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = dynamic_cast< KTSlidingWindowFSDataFFTW* >(event->GetData(fFSInputDataName));
+        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = dynamic_cast< KTSlidingWindowFSDataFFTW* >(bundle->GetData(fFSInputDataName));
         if (swfsDataFFTW != NULL)
         {
             KTSlidingWindowFSDataFFTW* newData = Normalize(swfsDataFFTW, gvData);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
         */
 
-        KTWARN(gnlog, "No time series data named <" << fFSInputDataName << "> was available in the event");
+        KTWARN(gnlog, "No time series data named <" << fFSInputDataName << "> was available in the bundle");
         return;
     }
 

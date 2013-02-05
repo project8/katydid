@@ -1,5 +1,5 @@
 /*
- * KTEventQueueProcessor.hh
+ * KTBundleQueueProcessor.hh
  *
  *  Created on: Jan 10, 2013
  *      Author: nsoblath
@@ -11,7 +11,7 @@
 #include "KTPrimaryProcessor.hh"
 
 #include "KTConcurrentQueue.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTLogger.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -21,10 +21,10 @@ namespace Katydid
     KTLOGGER(eqplog, "katydid.core");
 
     template< class XProcessorType >
-    class KTEventQueueProcessor : public KTPrimaryProcessor
+    class KTBundleQueueProcessor : public KTPrimaryProcessor
     {
         public:
-            typedef KTConcurrentQueue< boost::shared_ptr<KTEvent> > Queue;
+            typedef KTConcurrentQueue< boost::shared_ptr<KTBundle> > Queue;
 
             enum Status
             {
@@ -33,11 +33,11 @@ namespace Katydid
             };
 
         public:
-            KTEventQueueProcessor();
-            virtual ~KTEventQueueProcessor();
+            KTBundleQueueProcessor();
+            virtual ~KTBundleQueueProcessor();
 
             Status GetStatus() const;
-            void SetStatus(KTEventQueueProcessor< XProcessorType >::Status);
+            void SetStatus(KTBundleQueueProcessor< XProcessorType >::Status);
 
         protected:
             Status fStatus;
@@ -46,10 +46,10 @@ namespace Katydid
             // Derived Processor function pointer
             //**************************************
         public:
-            void SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTEvent>));
+            void SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTBundle>));
 
         protected:
-            void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTEvent>);
+            void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTBundle>);
 
 
             //*********
@@ -74,15 +74,15 @@ namespace Katydid
             // Slots
             //*********
         public:
-            /// Queue an event
-            /// Assumes ownership of the event
-            void QueueEvent(boost::shared_ptr<KTEvent> event);
+            /// Queue an bundle
+            /// Assumes ownership of the bundle
+            void QueueEvent(boost::shared_ptr<KTBundle> bundle);
 
 
     };
 
     template< class XProcessorType >
-    KTEventQueueProcessor< XProcessorType >::KTEventQueueProcessor() :
+    KTBundleQueueProcessor< XProcessorType >::KTBundleQueueProcessor() :
             KTPrimaryProcessor(),
             fStatus(kStopped),
             fFuncPtr(NULL),
@@ -91,19 +91,19 @@ namespace Katydid
     }
 
     template< class XProcessorType >
-    KTEventQueueProcessor< XProcessorType >::~KTEventQueueProcessor()
+    KTBundleQueueProcessor< XProcessorType >::~KTBundleQueueProcessor()
     {
     }
 
     template< class XProcessorType >
-    Bool_t KTEventQueueProcessor< XProcessorType >::Run()
+    Bool_t KTBundleQueueProcessor< XProcessorType >::Run()
     {
         fStatus = kRunning;
         return ProcessQueue();
     }
 
     template< class XProcessorType >
-    void KTEventQueueProcessor< XProcessorType >::Stop()
+    void KTBundleQueueProcessor< XProcessorType >::Stop()
     {
         fStatus = kStopped;
         fQueue.interrupt();
@@ -111,7 +111,7 @@ namespace Katydid
     }
 
     template< class XProcessorType >
-    void KTEventQueueProcessor< XProcessorType >::SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTEvent>))
+    void KTBundleQueueProcessor< XProcessorType >::SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTBundle>))
     {
         fFuncPtr = ptr;
         return;
@@ -119,40 +119,40 @@ namespace Katydid
 
 
     template< class XProcessorType >
-    Bool_t KTEventQueueProcessor< XProcessorType >::ProcessQueue()
+    Bool_t KTBundleQueueProcessor< XProcessorType >::ProcessQueue()
     {
         KTDEBUG(eqplog, "Beginning to process publication queue");
         while (fStatus != kStopped)
         {
             KTDEBUG(eqplog, "processing . . .");
-            boost::shared_ptr<KTEvent> eventToPublish;
-            if (fQueue.wait_and_pop(eventToPublish))
+            boost::shared_ptr<KTBundle> bundleToPublish;
+            if (fQueue.wait_and_pop(bundleToPublish))
             {
                 KTDEBUG(eqplog, "Event acquired for publishing");
-                fFuncPtr(eventToPublish);
-                if (eventToPublish->GetIsLastEvent()) fStatus = kStopped;
+                fFuncPtr(bundleToPublish);
+                if (bundleToPublish->GetIsLastEvent()) fStatus = kStopped;
             }
         }
         return true;
     }
 
     template< class XProcessorType >
-    void KTEventQueueProcessor< XProcessorType >::ClearQueue()
+    void KTBundleQueueProcessor< XProcessorType >::ClearQueue()
     {
         while (! fQueue.empty())
         {
-            boost::shared_ptr<KTEvent> eventToDelete;
-            fQueue.wait_and_pop(eventToDelete);
+            boost::shared_ptr<KTBundle> bundleToDelete;
+            fQueue.wait_and_pop(bundleToDelete);
         }
         return;
     }
 
 
     template< class XProcessorType >
-    void KTEventQueueProcessor< XProcessorType >::Queue(boost::shared_ptr<KTEvent> event)
+    void KTBundleQueueProcessor< XProcessorType >::Queue(boost::shared_ptr<KTBundle> bundle)
     {
-        KTDEBUG(eqplog, "Queueing event");
-        fQueue.push(event);
+        KTDEBUG(eqplog, "Queueing bundle");
+        fQueue.push(bundle);
         return;
     }
 

@@ -135,7 +135,7 @@ namespace Katydid
         {
             if (! fMonarch->ReadRecord())
             {
-                KTERROR(eggreadlog, "File appears to contain no events.");
+                KTERROR(eggreadlog, "File appears to contain no bundles.");
                 return NULL;
             }
             fMonarchRecordsRead = 0;
@@ -143,14 +143,14 @@ namespace Katydid
             fReadState.fStatus = MonarchReadState::kContinueReading;
         }
 
-        KTProgenitorTimeSeriesData* eventData = new KTProgenitorTimeSeriesData(fHeader.GetNChannels());
+        KTProgenitorTimeSeriesData* bundleData = new KTProgenitorTimeSeriesData(fHeader.GetNChannels());
 
-        // Fill out event information
-        eventData->SetSampleRate(fHeader.GetAcquisitionRate());
-        eventData->SetRecordSize(fHeader.GetRecordSize());
-        eventData->CalculateBinWidthAndRecordLength();
-        eventData->SetTimeInRun(GetTimeInRun());
-        eventData->SetSliceNumber(fSliceNumber);
+        // Fill out bundle information
+        bundleData->SetSampleRate(fHeader.GetAcquisitionRate());
+        bundleData->SetRecordSize(fHeader.GetRecordSize());
+        bundleData->CalculateBinWidthAndRecordLength();
+        bundleData->SetTimeInRun(GetTimeInRun());
+        bundleData->SetSliceNumber(fSliceNumber);
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
@@ -161,19 +161,19 @@ namespace Katydid
         for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
         {
             monarchRecords[iChannel] = fMonarch->GetRecord(iChannel);
-            eventData->SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
-            eventData->SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
-            eventData->SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
+            bundleData->SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
+            bundleData->SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
+            bundleData->SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
 
-            //eventData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iChannel);
+            //bundleData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iChannel);
             KTTimeSeries* newRecord;
             if (fTimeSeriesType == kRealTimeSeries)
             {
-                newRecord = new KTTimeSeriesReal(fHeader.GetRecordSize(), 0., Double_t(fHeader.GetRecordSize()) * eventData->GetBinWidth());
+                newRecord = new KTTimeSeriesReal(fHeader.GetRecordSize(), 0., Double_t(fHeader.GetRecordSize()) * bundleData->GetBinWidth());
             }
             else
             {
-                newRecord = new KTTimeSeriesFFTW(fHeader.GetRecordSize(), 0., Double_t(fHeader.GetRecordSize()) * eventData->GetBinWidth());
+                newRecord = new KTTimeSeriesFFTW(fHeader.GetRecordSize(), 0., Double_t(fHeader.GetRecordSize()) * bundleData->GetBinWidth());
             }
             newRecords[iChannel] = newRecord;
         }
@@ -191,7 +191,7 @@ namespace Katydid
             {
                 KTINFO(eggreadlog, "End of file reached.\n"
                         << "\tNumber of unused bins: " << iBin - 1);
-                delete eventData;
+                delete bundleData;
                 for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
                 {
                     delete newRecords[iChannel];
@@ -202,25 +202,25 @@ namespace Katydid
             {
                 // this means that a new monarch record has come up, and it has a different acquisition id.
                 // in this situation we need to start the time series over with the new monarch record
-                KTDEBUG(eggreadlog, "Acquisition ID change; resetting event to start with this monarch record.\n"
+                KTDEBUG(eggreadlog, "Acquisition ID change; resetting bundle to start with this monarch record.\n"
                         << "\tNumber of unused bins: " << iBin - 1);
-                // reset event data
+                // reset bundle data
                 for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
                 {
-                    eventData->SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
-                    eventData->SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
-                    eventData->SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
+                    bundleData->SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
+                    bundleData->SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
+                    bundleData->SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
                 }
                 // reset bin count to 0
                 iBin = 0;
                 // change the time in run since we're going back to the beginning of the record
-                eventData->SetTimeInRun(GetTimeInRun());
+                bundleData->SetTimeInRun(GetTimeInRun());
                 KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
                         "\tbin width = " << fBinWidth << '\n' <<
                         "\tmonarch records read = " << fMonarchRecordsRead << '\n' <<
                         "\tmonarch record size = " << fMonarchRecordSize << '\n' <<
                         "\tpointer offset = " << fReadState.fDataPtrOffset);
-                eventData->SetSliceNumber(fSliceNumber);
+                bundleData->SetSliceNumber(fSliceNumber);
                 // change status
                 fReadState.fStatus = MonarchReadState::kContinueReading;
             }
@@ -263,14 +263,14 @@ namespace Katydid
         // finally, set the records in the new data object
         for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
         {
-            eventData->SetTimeSeries(newRecords[iChannel], iChannel);
+            bundleData->SetTimeSeries(newRecords[iChannel], iChannel);
         }
 
-        eventData->SetName(fOutputDataName);
+        bundleData->SetName(fOutputDataName);
 
         fSliceNumber++;
 
-        return eventData;
+        return bundleData;
     }
 
     Bool_t KTEggReaderMonarch::CloseEgg()

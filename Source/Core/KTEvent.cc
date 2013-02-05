@@ -1,18 +1,18 @@
 /*
- * KTEvent.cc
+ * KTBundle.cc
  *
  *  Created on: Sep 9, 2011
  *      Author: nsoblath
  */
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 
 #include "KTData.hh"
 
 namespace Katydid
 {
 
-    KTEvent::KTEvent() :
+    KTBundle::KTBundle() :
             fEventNum(0),
             fIsLastEvent(false),
             fDataMapFactory(KTTIFactory< KTDataMap >::GetInstance()),
@@ -27,10 +27,10 @@ namespace Katydid
         }
     }
 
-    KTEvent::~KTEvent()
+    KTBundle::~KTBundle()
     {
 #ifdef KATYDID_DEBUG
-        KTDEBUG(corelog_event, "Data inventory at time of event deletion:");
+        KTDEBUG(corelog_bundle, "Data inventory at time of bundle deletion:");
         PrintAttachedData();
 #endif
         for (MapOfDataMaps::iterator it=fMapOfDataMaps.begin(); it != fMapOfDataMaps.end(); it++)
@@ -39,25 +39,25 @@ namespace Katydid
         }
     }
     /*
-    bool KTEvent::AddData(KTData* newData)
+    bool KTBundle::AddData(KTData* newData)
     {
         return AddData(newData->GetName(), newData);
     }
 
-    bool KTEvent::AddData(const std::string& name, KTData* newData)
+    bool KTBundle::AddData(const std::string& name, KTData* newData)
     {
         newData->fEvent = this;
         return (fDataMap.insert(DataMapVal(name, newData))).second;
     }
     */
 
-    void KTEvent::PrintAttachedData() const
+    void KTBundle::PrintAttachedData() const
     {
         for (MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.begin(); modmIt != fMapOfDataMaps.end(); modmIt++)
         {
             if (! modmIt->second->Empty())
             {
-                KTDEBUG(corelog_event, "Data type: " << modmIt->first->name());
+                KTDEBUG(corelog_bundle, "Data type: " << modmIt->first->name());
                 modmIt->second->PrintMap();
             }
         }

@@ -29,7 +29,7 @@ namespace Katydid
     KTLOGGER(fftlog_simp, "katydid.fft");
 
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
     class KTPStoreNode;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
@@ -51,7 +51,7 @@ namespace Katydid
      \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
      \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
      \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "input-data-name": string -- name of the data to find when processing an bundle
      \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
      Transform flags control how FFTW performs the FFT.
@@ -64,7 +64,7 @@ namespace Katydid
 
      Slots:
      \li \c void ProcessHeader(const KTEggHeader*)
-     \li \c void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c void ProcessEvent(boost::shared_ptr<KTBundle>)
      \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
 
      Signals:
@@ -149,7 +149,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };

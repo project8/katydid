@@ -15,7 +15,7 @@
 #ifndef KTHANNWINDOW_HH_
 #define KTHANNWINDOW_HH_
 
-#include "KTEventWindowFunction.hh"
+#include "KTBundleWindowFunction.hh"
 
 namespace Katydid
 {
@@ -36,7 +36,7 @@ namespace Katydid
       none
     */
 
-    class KTHannWindow : public KTEventWindowFunction
+    class KTHannWindow : public KTBundleWindowFunction
     {
         public:
             KTHannWindow();

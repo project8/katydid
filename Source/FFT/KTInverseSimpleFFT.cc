@@ -8,7 +8,7 @@
 #include "KTInverseSimpleFFT.hh"
 
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTPStoreNode.hh"
@@ -41,7 +41,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTInverseSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTInverseSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTInverseSimpleFFT::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("bundle", this, &KTInverseSimpleFFT::ProcessEvent, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -64,7 +64,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTInverseSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTInverseSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTInverseSimpleFFT::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("bundle", this, &KTInverseSimpleFFT::ProcessEvent, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -196,17 +196,17 @@ namespace Katydid
         return;
     }
 
-    void KTInverseSimpleFFT::ProcessEvent(KTEvent* event)
+    void KTInverseSimpleFFT::ProcessEvent(KTBundle* bundle)
     {
-        KTDEBUG(fftlog_simp, "Performing FFT of event " << event->GetEventNumber());
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(KTTimeSeriesData::StaticGetName());
+        KTDEBUG(fftlog_simp, "Performing FFT of bundle " << bundle->GetEventNumber());
+        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(KTTimeSeriesData::StaticGetName());
         if (tsData == NULL)
         {
-            KTWARN(fftlog_simp, "No time series data was available in the event");
+            KTWARN(fftlog_simp, "No time series data was available in the bundle");
             return;
         }
         KTFrequencySpectrumData* newData = TransformData(tsData);
-        event->AddData(newData);
+        bundle->AddData(newData);
         return;
     }
 

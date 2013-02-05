@@ -9,7 +9,7 @@
 #ifndef KTHAMMINGWINDOW_HH_
 #define KTHAMMINGWINDOW_HH_
 
-#include "KTEventWindowFunction.hh"
+#include "KTBundleWindowFunction.hh"
 
 namespace Katydid
 {
@@ -30,7 +30,7 @@ namespace Katydid
       none
     */
 
-    class KTHammingWindow : public KTEventWindowFunction
+    class KTHammingWindow : public KTBundleWindowFunction
     {
         public:
             KTHammingWindow();

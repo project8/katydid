@@ -16,7 +16,7 @@
 #include "KTProcessor.hh"
 #include "KTLogger.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTPStoreNode.hh"
 #include "KTData.hh"
@@ -63,8 +63,8 @@ namespace Katydid {
     typedef KTSignal< void (const KTTimeSeriesData*) >::signal RQSignal;
 
     void ProcessNoiseData(const KTTimeSeriesData* noise);
-    void ProcessCandidateEvent(boost::shared_ptr<KTEvent> event);
-    void ProcessNoiseEvent(boost::shared_ptr<KTEvent> event);
+    void ProcessCandidateEvent(boost::shared_ptr<KTBundle> bundle);
+    void ProcessNoiseEvent(boost::shared_ptr<KTBundle> bundle);
 
   private:
     RQSignal fRQSignal;
@@ -97,7 +97,7 @@ namespace Katydid {
 
     /*
      * This is the name of the data that is used to generate the noise ACM
-     * estimate.  For now we rely on KTEvent generated noise.
+     * estimate.  For now we rely on KTBundle generated noise.
      */
     std::string fNoiseName;
 
@@ -113,7 +113,7 @@ namespace Katydid {
 
     /*
      * Calculates the lagged autocorrelation of a sequence of doubles stored
-     * in a DataMap.  This should eventually get refactored into its own place
+     * in a DataMap.  This should bundleually get refactored into its own place
      * but for now it's a static member function as it does not rely on state.
      */
   public:

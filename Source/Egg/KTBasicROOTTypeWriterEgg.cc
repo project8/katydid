@@ -7,7 +7,7 @@
 
 #include "KTBasicROOTTypeWriterEgg.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeries.hh"
@@ -50,9 +50,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEgg::WriteTimeSeriesData(const KTTimeSeriesData* data)
     {
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nChannels = data->GetNTimeSeries();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -63,7 +63,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histTS_" << eventNumber << "_" << iChannel;
+                conv << "histTS_" << bundleNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreateHistogram(histName);

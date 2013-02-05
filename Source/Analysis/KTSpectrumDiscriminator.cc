@@ -10,7 +10,7 @@
 #include "KTCorrelationData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDiscriminatedPoints2DData.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrum.hh"
 #include "KTFrequencySpectrumData.hh"
@@ -57,7 +57,7 @@ namespace Katydid
         RegisterSignal("disc-1d", &fDiscrim1DSignal, "void (const KTDiscriminatedPoints1DData*)");
         RegisterSignal("disc-2d", &fDiscrim2DSignal, "void (const KTDiscriminatedPoints2DData*)");
 
-        RegisterSlot("event", this, &KTSpectrumDiscriminator::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTSpectrumDiscriminator::ProcessEvent, "void (shared_ptr<KTBundle>)");
         RegisterSlot("fsdata", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fsdata-fftw", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("corrdata", this, &KTSpectrumDiscriminator::ProcessCorrelationData, "void (const KTCorrelationData*)");
@@ -533,44 +533,44 @@ namespace Katydid
         return newData;
     }
 
-    void KTSpectrumDiscriminator::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTSpectrumDiscriminator::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
         {
             ProcessFrequencySpectrumData(fsData);
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsDataFFTW != NULL)
         {
             ProcessFrequencySpectrumDataFFTW(fsDataFFTW);
             return;
         }
 
-        const KTCorrelationData* corrData = event->GetData< KTCorrelationData >(fInputDataName);
+        const KTCorrelationData* corrData = bundle->GetData< KTCorrelationData >(fInputDataName);
         if (corrData != NULL)
         {
             ProcessCorrelationData(corrData);
             return;
         }
 
-        const KTSlidingWindowFSData* swfsData = event->GetData< KTSlidingWindowFSData >(fInputDataName);
+        const KTSlidingWindowFSData* swfsData = bundle->GetData< KTSlidingWindowFSData >(fInputDataName);
         if (swfsData != NULL)
         {
             ProcessSlidingWindowFSData(swfsData);
             return;
         }
 
-        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = event->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
+        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = bundle->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
         if (swfsDataFFTW != NULL)
         {
             ProcessSlidingWindowFSDataFFTW(swfsDataFFTW);
             return;
         }
 
-        KTWARN(sdlog, "No time series data named <" << fInputDataName << "> was available in the event");
+        KTWARN(sdlog, "No time series data named <" << fInputDataName << "> was available in the bundle");
         return;
     }
 

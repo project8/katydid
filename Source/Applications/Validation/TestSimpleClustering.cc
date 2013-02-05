@@ -94,7 +94,7 @@ int main()
 
         KTINFO(vallog, "Adding points to clusters");
         KTSimpleClustering::NewEventList* newEvents = clustering.AddPointsToClusters(&dataIn);
-        KTINFO(vallog, "New events produced: " << newEvents->size());
+        KTINFO(vallog, "New bundles produced: " << newEvents->size());
 
         allNewEvents.splice(allNewEvents.end(), *newEvents);
         delete newEvents;
@@ -102,12 +102,12 @@ int main()
 
     KTINFO(vallog, "Cleaning up remaining active clusters");
     KTSimpleClustering::NewEventList* newEvents = clustering.CompleteAllClusters(0);
-    KTINFO(vallog, "New events produced: " << newEvents->size());
+    KTINFO(vallog, "New bundles produced: " << newEvents->size());
 
     allNewEvents.splice(allNewEvents.end(), *newEvents);
     delete newEvents;
 
-    KTINFO(vallog, "Test complete; " << allNewEvents.size() << " new events were created.");
+    KTINFO(vallog, "Test complete; " << allNewEvents.size() << " new bundles were created.");
 
     return 0;
 }

@@ -7,7 +7,7 @@
 
 #include "KTROOTImageWriter.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -77,9 +77,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTFrequencySpectrumData* data)
     {
         /*
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nChannels = data->GetNChannels();
 
         if (! OpenAndVerifyFile()) return;
@@ -90,7 +90,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histPS_" << eventNumber << "_" << iChannel;
+                conv << "histPS_" << bundleNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
@@ -106,9 +106,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTFrequencySpectrumDataFFTW* data)
     {
         /*
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nChannels = data->GetNChannels();
 
         if (! OpenAndVerifyFile()) return;
@@ -119,7 +119,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histPS_" << eventNumber << "_" << iChannel;
+                conv << "histPS_" << bundleNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
@@ -139,9 +139,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTCorrelationData* data)
     {
         /*
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nPairs = data->GetNPairs();
 
         if (! OpenAndVerifyFile()) return;
@@ -152,12 +152,12 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histCorr_" << eventNumber << "_" << iPair;
+                conv << "histCorr_" << bundleNumber << "_" << iPair;
                 string histName;
                 conv >> histName;
                 TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
                 stringstream titleStream;
-                titleStream << "Event " << eventNumber << ", Correlation " << iPair << ", "
+                titleStream << "Event " << bundleNumber << ", Correlation " << iPair << ", "
                         "Channels (" << data->GetFirstChannel(iPair) << ", " << data->GetSecondChannel(iPair) << ")";
                 corrHist->SetTitle(titleStream.str().c_str());
                 corrHist->SetDirectory(fFile);
@@ -176,9 +176,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTSlidingWindowFSData* data)
     {
         /*
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! OpenAndVerifyFile()) return;
@@ -186,7 +186,7 @@ namespace Katydid
         for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
         {
             stringstream conv;
-            conv << "histSW_" << eventNumber << "_" << iPlot;
+            conv << "histSW_" << bundleNumber << "_" << iPlot;
             string histName;
             conv >> histName;
             TH2D* swHist = data->CreateMagnitudeHistogram(iPlot, histName);
@@ -201,9 +201,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTSlidingWindowFSDataFFTW* data)
     {
         /*
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetEvent();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! OpenAndVerifyFile()) return;
@@ -211,7 +211,7 @@ namespace Katydid
         for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
         {
             stringstream conv;
-            conv << "histSW_" << eventNumber << "_" << iPlot;
+            conv << "histSW_" << bundleNumber << "_" << iPlot;
             string histName;
             conv >> histName;
             TH2D* swHist = data->CreateMagnitudeHistogram(iPlot, histName);

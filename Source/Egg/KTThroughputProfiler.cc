@@ -49,7 +49,7 @@ namespace Katydid
         fConfigName = "throughput-profiler";
 
         RegisterSlot("start", this, &KTThroughputProfiler::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("event", this, &KTThroughputProfiler::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTThroughputProfiler::ProcessEvent, "void (shared_ptr<KTBundle>)");
         RegisterSlot("stop", this, &KTThroughputProfiler::Finish, "void ()");
     };
 
@@ -93,7 +93,7 @@ namespace Katydid
         return;
     }
 
-    void KTThroughputProfiler::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTThroughputProfiler::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
         fNEventsProcessed++;
         return;
@@ -104,7 +104,7 @@ namespace Katydid
         Stop();
         KTINFO(proflog, "Profiling stopped");
         timespec diffTime = Elapsed();
-        KTINFO(proflog, fNEventsProcessed << " events processed");
+        KTINFO(proflog, fNEventsProcessed << " bundles processed");
         Double_t totalSeconds = Double_t(diffTime.tv_sec) + Double_t(diffTime.tv_nsec) * 1.e-9;
         KTINFO(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
 

@@ -19,21 +19,21 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTMultiEventROOTWriter > sMERWriterRegistrar("multi-event-root-writer");
-    static KTDerivedRegistrar< KTProcessor, KTMultiEventROOTWriter > sMERWProcRegistrar("multi-event-root-writer");
+    static KTDerivedRegistrar< KTWriter, KTMultiEventROOTWriter > sMERWriterRegistrar("multi-bundle-root-writer");
+    static KTDerivedRegistrar< KTProcessor, KTMultiEventROOTWriter > sMERWProcRegistrar("multi-bundle-root-writer");
 
     KTMultiEventROOTWriter::KTMultiEventROOTWriter() :
             KTWriterWithTypists< KTMultiEventROOTWriter >(),
             fUseTFile(true),
-            fTFilename("multi_event.root"),
+            fTFilename("multi_bundle.root"),
             fTFileFlag("recreate"),
             fUseGraphics(false),
             fGraphicsFilePath(),
-            fGraphicsFilenameBase("multi_event"),
+            fGraphicsFilenameBase("multi_bundle"),
             fGraphicsFileType("png"),
             fFile(NULL)
     {
-        fConfigName = "multi-event-root-writer";
+        fConfigName = "multi-bundle-root-writer";
 
         RegisterSlot("start", this, &KTMultiEventROOTWriter::Start, "void ()");
         RegisterSlot("finish", this, &KTMultiEventROOTWriter::Finish, "void ()");

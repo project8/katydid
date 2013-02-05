@@ -18,7 +18,7 @@
 #include "KTROOTTreeTypeWriterCandidates.hh"
 #include "KTThroughputProfiler.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
@@ -123,13 +123,13 @@ int main()
 
         KTINFO(proflog, "Event " << iEvent);
 
-        // Hatch the event
-        boost::shared_ptr<KTEvent> event = egg.HatchNextEvent();
-        if (event.get() == NULL) break;
+        // Hatch the bundle
+        boost::shared_ptr<KTBundle> bundle = egg.HatchNextEvent();
+        if (bundle.get() == NULL) break;
 
-        if (iEvent == nEvents - 1) event->SetIsLastEvent(true);
+        if (iEvent == nEvents - 1) bundle->SetIsLastEvent(true);
 
-        KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >("time-series");
+        KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >("time-series");
         if (tsData != NULL)
         {
             KTDEBUG(proflog, "Time series data is present.");
@@ -137,13 +137,13 @@ int main()
         }
         else
         {
-            KTWARN(proflog, "No time-series data present in event");
+            KTWARN(proflog, "No time-series data present in bundle");
         }
 
-        // Pass the event to any subscribers
-        //fEventSignal(event);
+        // Pass the bundle to any subscribers
+        //fEventSignal(bundle);
 
-        prof.ProcessEvent(event);
+        prof.ProcessEvent(bundle);
 
         KTFrequencySpectrumDataFFTW* fsData = compFFT.TransformData(tsData);
 

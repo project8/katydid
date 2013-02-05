@@ -19,7 +19,7 @@ namespace Katydid
     //class KTCluster2DData;
     class KTDiscriminatedPoints1DData;
     //class KTDiscriminatedPoints2DData;
-    class KTEvent;
+    class KTBundle;
 
     class KTDistanceClustering : public KTProcessor
     {
@@ -72,7 +72,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
             void Process1DData(const KTDiscriminatedPoints1DData* data);
             //void Process2DData(const KTDiscriminatedPoints2DData* data);
 

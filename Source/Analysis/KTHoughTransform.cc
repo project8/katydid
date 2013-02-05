@@ -7,7 +7,7 @@
 
 #include "KTHoughTransform.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTHoughData.hh"
@@ -50,7 +50,7 @@ namespace Katydid
         //RegisterSlot("header", this, &KTHoughTransform::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("swfs-data", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
         RegisterSlot("disc-data", this, &KTHoughTransform::ProcessDiscriminatedData, "void (const KTDiscriminatedPoints2DData*)");
-        RegisterSlot("event", this, &KTHoughTransform::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTHoughTransform::ProcessEvent, "void (shared_ptr<KTBundle>)");
     }
 
     KTHoughTransform::~KTHoughTransform()
@@ -283,10 +283,10 @@ namespace Katydid
             return;
         }
 
-        KTEvent* event = data->GetEvent();
-        if (event != NULL)
+        KTBundle* bundle = data->GetEvent();
+        if (bundle != NULL)
         {
-            event->AddData(newData);
+            bundle->AddData(newData);
         }
 
         return;
@@ -302,33 +302,33 @@ namespace Katydid
             return;
         }
 
-        KTEvent* event = data->GetEvent();
-        if (event != NULL)
+        KTBundle* bundle = data->GetEvent();
+        if (bundle != NULL)
         {
-            event->AddData(newData);
+            bundle->AddData(newData);
         }
 
         return;
     }
 
 
-    void KTHoughTransform::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTHoughTransform::ProcessEvent(shared_ptr<KTBundle> bundle)
     {
-        const KTDiscriminatedPoints2DData* dpData = event->GetData< KTDiscriminatedPoints2DData >(fInputDataName);
+        const KTDiscriminatedPoints2DData* dpData = bundle->GetData< KTDiscriminatedPoints2DData >(fInputDataName);
         if (dpData != NULL)
         {
             ProcessDiscriminatedData(dpData);
             return;
         }
 
-        const KTSlidingWindowFSDataFFTW* swsfData = event->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
+        const KTSlidingWindowFSDataFFTW* swsfData = bundle->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
         if (swsfData != NULL)
         {
             ProcessSWFSData(swsfData);
             return;
         }
 
-        KTWARN(htlog, "No sliding-window frequency-spectrum data named <" << fInputDataName << "> was available in the event");
+        KTWARN(htlog, "No sliding-window frequency-spectrum data named <" << fInputDataName << "> was available in the bundle");
         return;
     }
 

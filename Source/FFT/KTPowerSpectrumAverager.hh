@@ -10,7 +10,7 @@
 
 #include "KTProcessor.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 
 #include "TH1.h"
 
@@ -76,7 +76,7 @@ namespace Katydid
             //************
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
 
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
 

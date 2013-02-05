@@ -22,9 +22,9 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "bundle",
                 "slot-processor": "fft",
-                "slot-name": "event",
+                "slot-name": "bundle",
                 "group-order": 0
             },
             "connection":
@@ -37,9 +37,9 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "bundle",
                 "slot-processor": "psavg",
-                "slot-name": "event",
+                "slot-name": "bundle",
                 "group-order": 1
             },
             "connection":
@@ -67,7 +67,7 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-events": 10,
+            "number-of-bundles": 10,
             "output-data-name": "time-series"
         },
         

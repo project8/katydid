@@ -1,7 +1,7 @@
 /**
  @file KTEgg.hh
  @brief Contains KTEgg
- @details Reads Egg data files: parses the header and produces events.
+ @details Reads Egg data files: parses the header and produces bundles.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */
@@ -17,7 +17,7 @@ namespace Katydid
 {
     class KTEggReader;
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
 
     class KTEgg
     {
@@ -26,7 +26,7 @@ namespace Katydid
             virtual ~KTEgg();
 
             bool BreakEgg(const std::string& filename);
-            boost::shared_ptr<KTEvent> HatchNextEvent();
+            boost::shared_ptr<KTBundle> HatchNextEvent();
             bool CloseEgg();
 
             /// Assumes ownership of the egg reader
