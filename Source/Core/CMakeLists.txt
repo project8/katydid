@@ -36,6 +36,7 @@ set (CORE_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataMap.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBundle.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTBundleQueueProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTParameterStore.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc

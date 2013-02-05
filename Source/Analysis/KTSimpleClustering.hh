@@ -101,10 +101,10 @@ namespace Katydid
         public:
             NewBundleList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData);
 
-            NewBundleList*  AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component);
+            NewBundleList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component);
 
             NewBundleList* CompleteAllClusters(UInt_t component);
-            NewBundleList* CompleteInactiveClusters(UInt_t component);
+            //NewBundleList* CompleteInactiveClusters(UInt_t component);
 
             void Reset();
             UInt_t GetTimeBin() const;
