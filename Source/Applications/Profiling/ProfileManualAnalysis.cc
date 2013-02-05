@@ -91,13 +91,13 @@ int main()
     //******************************
 
     // Prepare the egg reader
-    KTEggReaderMonarch eggReader;
-    eggReader.SetTimeSeriesSizeRequest(recordSize);
-    eggReader.SetTimeSeriesType(tsType);
+    KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+    eggReader->SetTimeSeriesSizeRequest(recordSize);
+    eggReader->SetTimeSeriesType(tsType);
 
     // Prepare and break the egg
     KTEgg egg;
-    egg.SetReader(&eggReader);
+    egg.SetReader(eggReader);
 
     if (! egg.BreakEgg(filename))
     {

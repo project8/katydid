@@ -29,6 +29,7 @@ namespace Katydid
             boost::shared_ptr<KTEvent> HatchNextEvent();
             bool CloseEgg();
 
+            /// Assumes ownership of the egg reader
             void SetReader(KTEggReader* reader);
             const KTEggReader* GetReader() const;
 
