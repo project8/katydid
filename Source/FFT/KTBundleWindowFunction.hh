@@ -6,8 +6,8 @@
  @date: Created on: Sep 18, 2011
  */
 
-#ifndef KTEVENTWINDOWFUNCTION_HH_
-#define KTEVENTWINDOWFUNCTION_HH_
+#ifndef KTBUNDLEWINDOWFUNCTION_HH_
+#define KTBUNDLEWINDOWFUNCTION_HH_
 
 #include "KTWindowFunction.hh"
 
@@ -106,4 +106,4 @@ namespace Katydid
     };
 
 } /* namespace Katydid */
-#endif /* KTEVENTWINDOWFUNCTION_HH_ */
+#endif /* KTBUNDLEWINDOWFUNCTION_HH_ */

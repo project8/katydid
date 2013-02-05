@@ -5,8 +5,8 @@
  *      Author: nsoblath
  */
 
-#ifndef KTEVENTQUEUEPROCESSOR_HH_
-#define KTEVENTQUEUEPROCESSOR_HH_
+#ifndef KTBUNDLEQUEUEPROCESSOR_HH_
+#define KTBUNDLEQUEUEPROCESSOR_HH_
 
 #include "KTPrimaryProcessor.hh"
 
@@ -158,4 +158,4 @@ namespace Katydid
 
 
 } /* namespace Katydid */
-#endif /* KTEVENTQUEUEPROCESSOR_HH_ */
+#endif /* KTBUNDLEQUEUEPROCESSOR_HH_ */

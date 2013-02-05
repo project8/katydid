@@ -5,8 +5,8 @@
  *      Author: nsoblath
  */
 
-#ifndef KTMULTIEVENTROOTWRITER_HH_
-#define KTMULTIEVENTROOTWRITER_HH_
+#ifndef KTMULTIBUNDLEROOTWRITER_HH_
+#define KTMULTIBUNDLEROOTWRITER_HH_
 
 #include "KTWriter.hh"
 
@@ -195,4 +195,4 @@ namespace Katydid
 
 
 } /* namespace Katydid */
-#endif /* KTMULTIEVENTROOTWRITER_HH_ */
+#endif /* KTMULTIBUNDLEROOTWRITER_HH_ */

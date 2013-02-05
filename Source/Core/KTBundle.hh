@@ -9,8 +9,8 @@
  @date: Sep 9, 2011
  */
 
-#ifndef KTEVENT_HH_
-#define KTEVENT_HH_
+#ifndef KTBUNDLE_HH_
+#define KTBUNDLE_HH_
 
 #include "KTDataMap.hh"
 #include "KTTIFactory.hh"
@@ -180,4 +180,4 @@ namespace Katydid
 
 } /* namespace Katydid */
 
-#endif /* KTEVENT_HH_ */
+#endif /* KTBUNDLE_HH_ */
