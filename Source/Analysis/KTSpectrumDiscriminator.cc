@@ -183,9 +183,6 @@ namespace Katydid
         newData->SetSliceNumber(data->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
-        newData->SetBundle(data->GetBundle());
-
-        fDiscrim1DSignal(newData);
 
         return newData;
     }
@@ -274,9 +271,6 @@ namespace Katydid
         newData->SetSliceNumber(data->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
-        newData->SetBundle(data->GetBundle());
-
-        fDiscrim1DSignal(newData);
 
         return newData;
     }
@@ -356,9 +350,6 @@ namespace Katydid
         newData->SetSliceNumber(data->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
-        newData->SetBundle(data->GetBundle());
-
-        fDiscrim1DSignal(newData);
 
         return newData;
     }
@@ -445,9 +436,6 @@ namespace Katydid
         //newData->SetSliceNumber(0);
 
         newData->SetName(fOutputDataName);
-        newData->SetBundle(data->GetBundle());
-
-        fDiscrim2DSignal(newData);
 
         return newData;
     }
@@ -541,9 +529,6 @@ namespace Katydid
         //newData->SetSliceNumber(0);
 
         newData->SetName(fOutputDataName);
-        newData->SetBundle(data->GetBundle());
-
-        fDiscrim2DSignal(newData);
 
         return newData;
     }
@@ -592,40 +577,65 @@ namespace Katydid
     void KTSpectrumDiscriminator::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
         KTDiscriminatedPoints1DData* newData = Discriminate(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
+        KTBundle* bundle = data->GetBundle();
+        if (bundle != NULL)
+        {
+            bundle->AddData(newData);
+            newData->SetBundle(bundle);
+            fDiscrim1DSignal(newData);
+        }
         return;
     }
 
     void KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
         KTDiscriminatedPoints1DData* newData = Discriminate(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
+        KTBundle* bundle = data->GetBundle();
+        if (bundle != NULL)
+        {
+            bundle->AddData(newData);
+            newData->SetBundle(bundle);
+            fDiscrim1DSignal(newData);
+        }
         return;
     }
 
     void KTSpectrumDiscriminator::ProcessCorrelationData(const KTCorrelationData* data)
     {
         KTDiscriminatedPoints1DData* newData = Discriminate(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
+        KTBundle* bundle = data->GetBundle();
+        if (bundle != NULL)
+        {
+            bundle->AddData(newData);
+            newData->SetBundle(bundle);
+            fDiscrim1DSignal(newData);
+        }
         return;
     }
 
     void KTSpectrumDiscriminator::ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data)
     {
         KTDiscriminatedPoints2DData* newData = Discriminate(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
+        KTBundle* bundle = data->GetBundle();
+        if (bundle != NULL)
+        {
+            bundle->AddData(newData);
+            newData->SetBundle(bundle);
+            fDiscrim2DSignal(newData);
+        }
         return;
     }
 
     void KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data)
     {
         KTDiscriminatedPoints2DData* newData = Discriminate(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
+        KTBundle* bundle = data->GetBundle();
+        if (bundle != NULL)
+        {
+            bundle->AddData(newData);
+            newData->SetBundle(bundle);
+            fDiscrim2DSignal(newData);
+        }
         return;
     }
 
