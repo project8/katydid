@@ -338,7 +338,7 @@ namespace Katydid
 
         return newBundles;
     }
-
+/*
     KTSimpleClustering::NewBundleList* KTSimpleClustering::CompleteInactiveClusters(UInt_t component)
     {
         NewBundleList* newBundles = new NewBundleList();
@@ -359,7 +359,7 @@ namespace Katydid
 
         return newBundles;
     }
-
+*/
     void KTSimpleClustering::Reset()
     {
         fActiveClusters.clear();
