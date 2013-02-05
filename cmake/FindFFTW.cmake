@@ -67,6 +67,8 @@ if(FFTW_INCLUDE_DIR AND FFTW_LIBRARY)
     if(NOT FFTW_FIND_QUIETLY)
       message(STATUS "Found fftw3 threads and pthreads libraries at ${FFTW_THREADS_LIBRARY}")
     endif()
+  else()
+    unset(FFTW_THREADS_LIBRARY)
   endif()
 endif()
 
