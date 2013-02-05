@@ -46,13 +46,13 @@ if (ROOT_FOUND)
     set (EGG_NODICT_HEADERFILES
         ${EGG_NODICT_HEADERFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterEgg.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiEventROOTTypeWriterEgg.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiBundleROOTTypeWriterEgg.hh
     )
 
     set (EGG_SOURCEFILES
         ${EGG_SOURCEFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterEgg.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiEventROOTTypeWriterEgg.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiBundleROOTTypeWriterEgg.cc
     )		
 endif (ROOT_FOUND)
 

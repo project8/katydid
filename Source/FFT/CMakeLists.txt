@@ -29,7 +29,7 @@ if (ROOT_FOUND)
         ${FFT_NODICT_HEADERFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrumAverager.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiEventROOTTypeWriterFFT.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiBundleROOTTypeWriterFFT.hh
     )
 endif (ROOT_FOUND)
 
@@ -60,7 +60,7 @@ if (ROOT_FOUND)
         ${FFT_SOURCEFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrumAverager.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.cc	
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiEventROOTTypeWriterFFT.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiBundleROOTTypeWriterFFT.cc
     )
 endif (ROOT_FOUND)
 
