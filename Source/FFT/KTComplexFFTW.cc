@@ -340,7 +340,7 @@ namespace Katydid
 
     void KTComplexFFTW::ProcessHeader(const KTEggHeader* header)
     {
-        SetSize(header->GetRecordSize());
+        SetSize(header->GetSliceSize());
         InitializeFFT();
         return;
     }

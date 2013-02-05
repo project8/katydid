@@ -91,8 +91,8 @@ int main(int argc, char** argv)
     KTINFO(testegg, "Some header information:\n"
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
-           << "\tRecord Size: " << header->GetRecordSize() << '\n'
-           << "\tMonarch Record Size: " << header->GetMonarchRecordSize());
+           << "\tRecord Size: " << header->GetSliceSize() << '\n'
+           << "\tRecord Size: " << header->GetRecordSize());
 
     KTINFO(testegg, "Hatching bundles");
     for (UInt_t iEvent=0; iEvent < nEvents; iEvent++)

@@ -29,7 +29,7 @@ namespace Katydid
             virtual ~KTTimeSeriesChannelData();
 
             // relic functions from previous incarnations of this class
-            virtual UInt_t GetRecordSize() const = 0;
+            virtual UInt_t GetSliceSize() const = 0;
             virtual Double_t GetBinWidth() const = 0;
 
     };
@@ -46,7 +46,7 @@ namespace Katydid
         public:
             UInt_t GetNTimeSeries() const;
 
-            UInt_t GetRecordSize() const;
+            UInt_t GetSliceSize() const;
             Double_t GetBinWidth() const;
             Double_t GetTimeInRun() const;
             ULong64_t GetSliceNumber() const;
@@ -74,7 +74,7 @@ namespace Katydid
         return UInt_t(fChannelData.size());
     }
 
-    inline UInt_t KTBasicTimeSeriesData::GetRecordSize() const
+    inline UInt_t KTBasicTimeSeriesData::GetSliceSize() const
     {
         if (fChannelData.size() > 0)
         {
@@ -162,7 +162,7 @@ namespace Katydid
         public:
             UInt_t GetNTimeSeries() const;
 
-            UInt_t GetRecordSize() const;
+            UInt_t GetSliceSize() const;
             Double_t GetSampleRate() const;
             Double_t GetRecordLength() const;
             Double_t GetBinWidth() const;
@@ -179,7 +179,7 @@ namespace Katydid
 
             void SetNTimeSeries(UInt_t channels);
 
-            void SetRecordSize(UInt_t size);
+            void SetSliceSize(UInt_t size);
             void SetSampleRate(Double_t sampleRate);
             void SetRecordLength(Double_t recordLength);
             void SetBinWidth(Double_t binWidth);
@@ -211,7 +211,7 @@ namespace Katydid
         return UInt_t(fChannelData.size());
     }
 
-    inline UInt_t KTProgenitorTimeSeriesData::GetRecordSize() const
+    inline UInt_t KTProgenitorTimeSeriesData::GetSliceSize() const
     {
         return fRecordSize;
     }
@@ -266,7 +266,7 @@ namespace Katydid
         return fChannelData[channelNum].fRecord;
     }
 
-    inline void KTProgenitorTimeSeriesData::SetRecordSize(UInt_t recordSize)
+    inline void KTProgenitorTimeSeriesData::SetSliceSize(UInt_t recordSize)
     {
         this->fRecordSize = recordSize;
     }

@@ -36,8 +36,8 @@ namespace Katydid
             fSampleRateUnitsInHz(1.e6),
             fFullVoltageScale(0.5),
             fNADCLevels(256),
-            fMonarchRecordsRead(0),
-            fMonarchRecordSize(0),
+            fRecordsRead(0),
+            fRecordSize(0),
             fBinWidth(0.),
             fSliceNumber(0)
     {
@@ -87,19 +87,19 @@ namespace Katydid
         CopyHeaderInformation(fMonarch->GetHeader());
         if (fTimeSeriesSizeRequest == 0)
         {
-            fHeader.SetRecordSize(fHeader.GetMonarchRecordSize());
+            fHeader.SetSliceSize(fHeader.GetRecordSize());
         }
         else
         {
-            fHeader.SetRecordSize(fTimeSeriesSizeRequest);
+            fHeader.SetSliceSize(fTimeSeriesSizeRequest);
         }
 
         KTDEBUG("Parsed header:\n"
              << "\tFilename: " << fHeader.GetFilename() << '\n'
              << "\tAcuisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
              << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'
+             << "\tRecord Size: " << fHeader.GetSliceSize() << '\n'
              << "\tRecord Size: " << fHeader.GetRecordSize() << '\n'
-             << "\tMonarch Record Size: " << fHeader.GetMonarchRecordSize() << '\n'
              << "\tAcquisition Time: " << fHeader.GetAcquisitionTime() << " s" << '\n'
              << "\tAcquisition Rate: " << fHeader.GetAcquisitionRate() << " Hz ");
 
@@ -108,8 +108,8 @@ namespace Katydid
         fReadState.fAcquisitionID = 0;
         fReadState.fDataPtrOffset = 0;
 
-        fMonarchRecordsRead = 0;
-        fMonarchRecordSize = fHeader.GetMonarchRecordSize();
+        fRecordsRead = 0;
+        fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
         fSliceNumber = 0;
@@ -138,7 +138,7 @@ namespace Katydid
                 KTERROR(eggreadlog, "File appears to contain no bundles.");
                 return NULL;
             }
-            fMonarchRecordsRead = 0;
+            fRecordsRead = 0;
             fSliceNumber = 0;
             fReadState.fStatus = MonarchReadState::kContinueReading;
         }
@@ -147,7 +147,7 @@ namespace Katydid
 
         // Fill out bundle information
         bundleData->SetSampleRate(fHeader.GetAcquisitionRate());
-        bundleData->SetRecordSize(fHeader.GetRecordSize());
+        bundleData->SetSliceSize(fHeader.GetSliceSize());
         bundleData->CalculateBinWidthAndRecordLength();
         bundleData->SetTimeInRun(GetTimeInRun());
         bundleData->SetSliceNumber(fSliceNumber);
@@ -156,7 +156,7 @@ namespace Katydid
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
 
         // Setup pointers to monarch and new katydid records
-        vector< const MonarchRecord* > monarchRecords(fHeader.GetNChannels());
+        vector< const Record* > monarchRecords(fHeader.GetNChannels());
         vector< KTTimeSeries* > newRecords(fHeader.GetNChannels());
         for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
         {
@@ -165,27 +165,27 @@ namespace Katydid
             bundleData->SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
             bundleData->SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
 
-            //bundleData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetRecordSize()), iChannel);
+            //bundleData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
             KTTimeSeries* newRecord;
             if (fTimeSeriesType == kRealTimeSeries)
             {
-                newRecord = new KTTimeSeriesReal(fHeader.GetRecordSize(), 0., Double_t(fHeader.GetRecordSize()) * bundleData->GetBinWidth());
+                newRecord = new KTTimeSeriesReal(fHeader.GetSliceSize(), 0., Double_t(fHeader.GetSliceSize()) * bundleData->GetBinWidth());
             }
             else
             {
-                newRecord = new KTTimeSeriesFFTW(fHeader.GetRecordSize(), 0., Double_t(fHeader.GetRecordSize()) * bundleData->GetBinWidth());
+                newRecord = new KTTimeSeriesFFTW(fHeader.GetSliceSize(), 0., Double_t(fHeader.GetSliceSize()) * bundleData->GetBinWidth());
             }
             newRecords[iChannel] = newRecord;
         }
 
         KTDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
                 "\tbin width = " << fBinWidth << '\n' <<
-                "\tmonarch records read = " << fMonarchRecordsRead << '\n' <<
-                "\tmonarch record size = " << fMonarchRecordSize << '\n' <<
+                "\tmonarch records read = " << fRecordsRead << '\n' <<
+                "\tmonarch record size = " << fRecordSize << '\n' <<
                 "\tpointer offset = " << fReadState.fDataPtrOffset);
 
         // Loop over bins
-        for (UInt_t iBin = 0; iBin < fHeader.GetRecordSize(); iBin++)
+        for (UInt_t iBin = 0; iBin < fHeader.GetSliceSize(); iBin++)
         {
             if (fReadState.fStatus == MonarchReadState::kAtEndOfFile)
             {
@@ -217,8 +217,8 @@ namespace Katydid
                 bundleData->SetTimeInRun(GetTimeInRun());
                 KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
                         "\tbin width = " << fBinWidth << '\n' <<
-                        "\tmonarch records read = " << fMonarchRecordsRead << '\n' <<
-                        "\tmonarch record size = " << fMonarchRecordSize << '\n' <<
+                        "\tmonarch records read = " << fRecordsRead << '\n' <<
+                        "\tmonarch record size = " << fRecordSize << '\n' <<
                         "\tpointer offset = " << fReadState.fDataPtrOffset);
                 bundleData->SetSliceNumber(fSliceNumber);
                 // change status
@@ -235,7 +235,7 @@ namespace Katydid
             // advance the pointer
             fReadState.fDataPtrOffset++;
             // check if we've reached the end of a monarch record
-            if (fReadState.fDataPtrOffset >= fHeader.GetMonarchRecordSize())
+            if (fReadState.fDataPtrOffset >= fHeader.GetRecordSize())
             {
                 KTDEBUG(eggreadlog, "End of Monarch record reached; attempting to read a new one.");
                 // try reading the next record
@@ -254,7 +254,7 @@ namespace Katydid
                         fReadState.fStatus = MonarchReadState::kAcquisitionIDHasChanged;
                         KTDEBUG(eggreadlog, "New acquisition ID found: " << fReadState.fAcquisitionID);
                     }
-                    fMonarchRecordsRead++;
+                    fRecordsRead++;
                 }
                 fReadState.fDataPtrOffset = 0;
             }
@@ -287,7 +287,7 @@ namespace Katydid
         fHeader.SetFilename(monarchHeader->GetFilename());
         fHeader.SetAcquisitionMode(monarchHeader->GetAcqMode());
         fHeader.SetNChannels(fNumberOfChannels[fHeader.GetAcquisitionMode()]);
-        fHeader.SetMonarchRecordSize(monarchHeader->GetRecordSize());
+        fHeader.SetRecordSize(monarchHeader->GetRecordSize());
         fHeader.SetAcquisitionTime(monarchHeader->GetAcqTime());
         fHeader.SetAcquisitionRate(monarchHeader->GetAcqRate() * fSampleRateUnitsInHz);
         return;

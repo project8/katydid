@@ -114,7 +114,7 @@ namespace Katydid
         // Data throughput rate in bytes per second
         Double_t dataThroughputRate = 0.;
         if (totalSeconds != 0)
-            dataThroughputRate = Double_t(fEggHeader.GetRecordSize() * fEggHeader.GetNChannels() * fNEventsProcessed * sizeof(DataType)) / totalSeconds;
+            dataThroughputRate = Double_t(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNEventsProcessed * sizeof(DataType)) / totalSeconds;
 
         KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
         KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");

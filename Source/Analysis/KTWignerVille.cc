@@ -229,7 +229,7 @@ namespace Katydid
 
     void KTWignerVille::ProcessHeader(const KTEggHeader* header)
     {
-        UInt_t nBins = /*2 */ header->GetRecordSize();
+        UInt_t nBins = /*2 */ header->GetSliceSize();
         fFFT->SetSize(nBins);
         fFFT->InitializeFFT();
         delete fInputArray;

@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 
         // FFT of the entire bundle, which will be used to normalize the gain fluctuations
         KTSimpleFFT fullFFT;
-        fullFFT.SetTimeSize(data->GetRecordSize());
+        fullFFT.SetTimeSize(data->GetSliceSize());
         fullFFT.SetTransformFlag("ES");
         fullFFT.InitializeFFT();
         KTFrequencySpectrumData* freqSpectData = fullFFT.TransformData(data);

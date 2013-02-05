@@ -98,8 +98,8 @@ namespace Katydid
             Double_t GetFullVoltageScale() const;
             UInt_t GetNADCLevels() const;
 
-            UInt_t GetMonarchRecordsRead() const;
-            UInt_t GetMonarchRecordSize() const;
+            UInt_t GetRecordsRead() const;
+            UInt_t GetRecordSize() const;
             Double_t GetBinWidth() const;
 
             /// Returns the time since the run started in seconds
@@ -111,8 +111,8 @@ namespace Katydid
             Double_t fFullVoltageScale;
             UInt_t fNADCLevels;
 
-            UInt_t fMonarchRecordsRead;
-            UInt_t fMonarchRecordSize;
+            UInt_t fRecordsRead;
+            UInt_t fRecordSize;
             Double_t fBinWidth;
 
             ULong64_t fSliceNumber;
@@ -167,13 +167,13 @@ namespace Katydid
     }
 
 
-    inline UInt_t KTEggReaderMonarch::GetMonarchRecordsRead() const
+    inline UInt_t KTEggReaderMonarch::GetRecordsRead() const
     {
-        return fMonarchRecordsRead;
+        return fRecordsRead;
     }
-    inline UInt_t KTEggReaderMonarch::GetMonarchRecordSize() const
+    inline UInt_t KTEggReaderMonarch::GetRecordSize() const
     {
-        return fMonarchRecordSize;
+        return fRecordSize;
     }
     inline Double_t KTEggReaderMonarch::GetBinWidth() const
     {
@@ -182,7 +182,7 @@ namespace Katydid
 
     inline Double_t KTEggReaderMonarch::GetTimeInRun() const
     {
-        return fBinWidth * Double_t(fMonarchRecordsRead * fMonarchRecordSize + fReadState.fDataPtrOffset);
+        return fBinWidth * Double_t(fRecordsRead * fRecordSize + fReadState.fDataPtrOffset);
     }
 
 

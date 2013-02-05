@@ -82,8 +82,8 @@ int main(int argc, char** argv)
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
            << "\tNumber of Channels: " << header->GetNChannels() << '\n'
-           << "\tSlice Size: " << header->GetRecordSize() << '\n'
-           << "\tMonarch Record Size: " << header->GetMonarchRecordSize() << '\n'
+           << "\tSlice Size: " << header->GetSliceSize() << '\n'
+           << "\tRecord Size: " << header->GetRecordSize() << '\n'
            << "\tAcquisition Time: " << header->GetAcquisitionTime() << " s\n"
            << "\tAcquisition Rate: " << header->GetAcquisitionRate() << " Hz");
 

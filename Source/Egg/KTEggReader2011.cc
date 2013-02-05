@@ -210,8 +210,8 @@ namespace Katydid
         KTEggHeader* eggHeader = new KTEggHeader();
         eggHeader->SetFilename(filename);
         eggHeader->SetAcquisitionMode(sOneChannel);
+        eggHeader->SetSliceSize(fHeaderInfo.fRecordSize);
         eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
-        eggHeader->SetMonarchRecordSize(fHeaderInfo.fRecordSize);
         eggHeader->SetAcquisitionTime(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
         eggHeader->SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
 
@@ -281,7 +281,7 @@ namespace Katydid
         // Other information
         bundleData->SetSampleRate(double(fHeaderInfo.fSampleRate));
         bundleData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
-        bundleData->SetRecordSize(fHeaderInfo.fRecordSize);
+        bundleData->SetSliceSize(fHeaderInfo.fRecordSize);
         bundleData->SetRecordLength(double(fHeaderInfo.fRecordSize) * bundleData->GetBinWidth());
         bundleData->SetTimeInRun(GetTimeInRun());
         bundleData->SetSliceNumber((ULong64_t)fRecordsRead);

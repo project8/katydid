@@ -82,13 +82,13 @@ namespace Katydid
             UInt_t GetNEvents() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
-            UInt_t GetRecordSizeRequest() const;
+            UInt_t GetSliceSizeRequest() const;
             TimeSeriesType GetTimeSeriesType() const;
 
             void SetNEvents(UInt_t nEvents);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
-            void SetRecordSizeRequest(UInt_t size);
+            void SetSliceSizeRequest(UInt_t size);
             void SetTimeSeriesType(TimeSeriesType type);
 
             const std::string& GetOutputDataName() const;
@@ -157,12 +157,12 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTEggProcessor::GetRecordSizeRequest() const
+    inline UInt_t KTEggProcessor::GetSliceSizeRequest() const
     {
         return fRecordSizeRequest;
     }
 
-    inline void KTEggProcessor::SetRecordSizeRequest(UInt_t size)
+    inline void KTEggProcessor::SetSliceSizeRequest(UInt_t size)
     {
         fRecordSizeRequest = size;
         return;

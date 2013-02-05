@@ -242,7 +242,7 @@ namespace Katydid
 
     void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
     {
-        SetTimeSize(header->GetRecordSize());
+        SetTimeSize(header->GetSliceSize());
         InitializeFFT();
         return;
     }

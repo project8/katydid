@@ -46,8 +46,8 @@ int main(const int argc, const char** argv)
     tEggHeader.SetFilename(tReadHeader->GetFilename());
     tEggHeader.SetAcquisitionMode(tReadHeader->GetAcqMode());
     tEggHeader.SetNChannels(2);
-    tEggHeader.SetMonarchRecordSize(tReadHeader->GetRecordSize());
-    tEggHeader.SetRecordSize(tReadHeader->GetRecordSize());
+    tEggHeader.SetRecordSize(tReadHeader->GetSliceSize());
+    tEggHeader.SetSliceSize(tReadHeader->GetSliceSize());
     tEggHeader.SetAcquisitionTime(tReadHeader->GetAcqTime());
     tEggHeader.SetAcquisitionRate(tReadHeader->GetAcqRate() * 1.e6);
 
@@ -55,12 +55,12 @@ int main(const int argc, const char** argv)
          << "\tFilename: " << tEggHeader.GetFilename() << '\n'
          << "\tAcuisition Mode: " << tEggHeader.GetAcquisitionMode() << '\n'
          << "\tNumber of Channels: " << tEggHeader.GetNChannels() << '\n'
+         << "\tRecord Size: " << tEggHeader.GetSliceSize() << '\n'
          << "\tRecord Size: " << tEggHeader.GetRecordSize() << '\n'
-         << "\tMonarch Record Size: " << tEggHeader.GetMonarchRecordSize() << '\n'
          << "\tAcquisition Time: " << tEggHeader.GetAcquisitionTime() << " s" << '\n'
          << "\tAcquisition Rate: " << tEggHeader.GetAcquisitionRate() << " Hz ");
 
-    unsigned tSize = tEggHeader.GetMonarchRecordSize();
+    unsigned tSize = tEggHeader.GetRecordSize();
 
     KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
@@ -82,8 +82,8 @@ int main(const int argc, const char** argv)
     KTINFO(proflog, "Starting profiling");
     profiler.ProcessHeader(&tEggHeader);
 
-    const MonarchRecord* tRecord1 = tReadTest->GetRecordOne();
-    const MonarchRecord* tRecord2 = tReadTest->GetRecordTwo();
+    const Record* tRecord1 = tReadTest->GetRecordOne();
+    const Record* tRecord2 = tReadTest->GetRecordTwo();
     for (unsigned iEvent=0; iEvent < nEvents; iEvent++)
     {
         KTINFO(proflog, "Event " << iEvent);
@@ -95,7 +95,7 @@ int main(const int argc, const char** argv)
 
         // first record
         // copy the data
-        for (unsigned index=0; index < tReadHeader->GetRecordSize(); index++)
+        for (unsigned index=0; index < tReadHeader->GetSliceSize(); index++)
         {
             tInputArray[index][0] = double((unsigned char)(tRecord1->fDataPtr[index]));
         }
@@ -104,7 +104,7 @@ int main(const int argc, const char** argv)
 
         // second record
         // copy the data
-        for (unsigned index=0; index < tReadHeader->GetRecordSize(); index++)
+        for (unsigned index=0; index < tReadHeader->GetSliceSize(); index++)
         {
             tInputArray[index][0] = double((unsigned char)(tRecord2->fDataPtr[index]));
         }

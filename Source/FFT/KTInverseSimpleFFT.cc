@@ -109,9 +109,9 @@ namespace Katydid
 
     KTFrequencySpectrumData* KTInverseSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
     {
-        if (tsData->GetRecordSize() != GetTimeSize())
+        if (tsData->GetSliceSize() != GetTimeSize())
         {
-            SetTimeSize(tsData->GetRecordSize());
+            SetTimeSize(tsData->GetSliceSize());
             InitializeFFT();
         }
 
@@ -184,7 +184,7 @@ namespace Katydid
 
     void KTInverseSimpleFFT::ProcessHeader(const KTEggHeader* header)
     {
-        SetTimeSize(header->GetRecordSize());
+        SetTimeSize(header->GetSliceSize());
         InitializeFFT();
         return;
     }
