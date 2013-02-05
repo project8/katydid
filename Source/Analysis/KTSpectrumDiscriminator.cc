@@ -179,6 +179,9 @@ namespace Katydid
 
         }
 
+        newData->SetTimeInRun(data->GetTimeInRun());
+        newData->SetSliceNumber(data->GetSliceNumber());
+
         newData->SetName(fOutputDataName);
         newData->SetBundle(data->GetBundle());
 
@@ -267,6 +270,9 @@ namespace Katydid
 
         }
 
+        newData->SetTimeInRun(data->GetTimeInRun());
+        newData->SetSliceNumber(data->GetSliceNumber());
+
         newData->SetName(fOutputDataName);
         newData->SetBundle(data->GetBundle());
 
@@ -345,6 +351,9 @@ namespace Katydid
                 if (value >= threshold) newData->AddPoint(iBin, value, iChannel);
             }
         }
+
+        newData->SetTimeInRun(data->GetTimeInRun());
+        newData->SetSliceNumber(data->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
         newData->SetBundle(data->GetBundle());
@@ -431,6 +440,9 @@ namespace Katydid
             }
 
         }
+
+        //newData->SetTimeInRun(-1.);
+        //newData->SetSliceNumber(0);
 
         newData->SetName(fOutputDataName);
         newData->SetBundle(data->GetBundle());
@@ -524,6 +536,9 @@ namespace Katydid
                 }
             }
         }
+
+        //newData->SetTimeInRun(-1.);
+        //newData->SetSliceNumber(0);
 
         newData->SetName(fOutputDataName);
         newData->SetBundle(data->GetBundle());
