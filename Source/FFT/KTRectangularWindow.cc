@@ -30,7 +30,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTRectangularWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTRectangularWindow::ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node)
     {
         return true;
     }

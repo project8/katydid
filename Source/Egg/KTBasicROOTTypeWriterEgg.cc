@@ -50,9 +50,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEgg::WriteTimeSeriesData(const KTTimeSeriesData* data)
     {
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nChannels = data->GetNTimeSeries();
 
         if (! fWriter->OpenAndVerifyFile()) return;

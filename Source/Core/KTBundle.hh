@@ -40,15 +40,15 @@ namespace Katydid
             // Intrinsic data
             //*****************************
         public:
-            unsigned GetEventNumber() const;
-            void SetEventNumber(unsigned num);
+            unsigned GetBundleNumber() const;
+            void SetBundleNumber(unsigned num);
 
-            Bool_t GetIsLastEvent() const;
-            void SetIsLastEvent(Bool_t flag);
+            Bool_t GetIsLastBundle() const;
+            void SetIsLastBundle(Bool_t flag);
 
         protected:
-            unsigned fEventNum;
-            Bool_t fIsLastEvent;
+            unsigned fBundleNum;
+            Bool_t fIsLastBundle;
 
             //*****************************
             // Extensible data
@@ -89,25 +89,25 @@ namespace Katydid
     };
 
 
-    inline unsigned KTBundle::GetEventNumber() const
+    inline unsigned KTBundle::GetBundleNumber() const
     {
-        return fEventNum;
+        return fBundleNum;
     }
 
-    inline void KTBundle::SetEventNumber(unsigned num)
+    inline void KTBundle::SetBundleNumber(unsigned num)
     {
-        fEventNum = num;
+        fBundleNum = num;
         return;
     }
 
-    inline Bool_t KTBundle::GetIsLastEvent() const
+    inline Bool_t KTBundle::GetIsLastBundle() const
     {
-        return fIsLastEvent;
+        return fIsLastBundle;
     }
 
-    inline void KTBundle::SetIsLastEvent(Bool_t flag)
+    inline void KTBundle::SetIsLastBundle(Bool_t flag)
     {
-        fIsLastEvent = flag;
+        fIsLastBundle = flag;
         return;
     }
 
@@ -160,7 +160,7 @@ namespace Katydid
             return false;
         }
 
-        newData->fEvent = this;
+        newData->fBundle = this;
         return true;
     }
 

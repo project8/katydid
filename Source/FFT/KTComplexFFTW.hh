@@ -70,8 +70,8 @@ namespace Katydid
 
      Slots:
      \li \c "header": void ProcessHeader(const KTEggHeader* header)
-     \li \c "bundle-forward": void ProcessEventForward(const KTBundle* bundle)
-     \li \c "bundle-reverse": void ProcessEventReverse(const KTBundle* bundle)
+     \li \c "bundle-forward": void ProcessBundleForward(const KTBundle* bundle)
+     \li \c "bundle-reverse": void ProcessBundleReverse(const KTBundle* bundle)
      \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* data)
      \li \c "fs-data": void ProcessFrequencySpectrumData(const KTTimeSeriesDataFFTW* data)
 
@@ -178,8 +178,8 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEventForward(boost::shared_ptr<KTBundle> bundle);
-            void ProcessEventReverse(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundleForward(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundleReverse(boost::shared_ptr<KTBundle> bundle);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 

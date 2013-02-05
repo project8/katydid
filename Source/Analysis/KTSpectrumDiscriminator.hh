@@ -103,7 +103,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
             void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
             void ProcessCorrelationData(const KTCorrelationData* data);

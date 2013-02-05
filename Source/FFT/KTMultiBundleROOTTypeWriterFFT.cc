@@ -1,11 +1,11 @@
 /*
- * KTMultiEventROOTTypeWriterFFT.cc
+ * KTMultiBundleROOTTypeWriterFFT.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTMultiEventROOTTypeWriterFFT.hh"
+#include "KTMultiBundleROOTTypeWriterFFT.hh"
 
 #include "KTEggHeader.hh"
 #include "KTBundle.hh"
@@ -30,9 +30,9 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTMultiEventROOTTypeWriter, KTMultiEventROOTTypeWriterFFT > sMERTWFRegistrar;
+    static KTDerivedTIRegistrar< KTMultiBundleROOTTypeWriter, KTMultiBundleROOTTypeWriterFFT > sMERTWFRegistrar;
 
-    KTMultiEventROOTTypeWriterFFT::KTMultiEventROOTTypeWriterFFT() :
+    KTMultiBundleROOTTypeWriterFFT::KTMultiBundleROOTTypeWriterFFT() :
             KTMEROOTTypeWriterBase(),
             //KTTypeWriterFFT()
             fFSHists(),
@@ -40,26 +40,26 @@ namespace Katydid
     {
     }
 
-    KTMultiEventROOTTypeWriterFFT::~KTMultiEventROOTTypeWriterFFT()
+    KTMultiBundleROOTTypeWriterFFT::~KTMultiBundleROOTTypeWriterFFT()
     {
         ClearHistograms();
     }
 
-    void KTMultiEventROOTTypeWriterFFT::StartNewHistograms()
+    void KTMultiBundleROOTTypeWriterFFT::StartNewHistograms()
     {
         ClearHistograms();
         // At this point the vector is size 0
         return;
     }
 
-    void KTMultiEventROOTTypeWriterFFT::FinishHistograms()
+    void KTMultiBundleROOTTypeWriterFFT::FinishHistograms()
     {
         OutputHistograms();
         ClearHistograms();
         return;
     }
 
-    void KTMultiEventROOTTypeWriterFFT::OutputHistograms()
+    void KTMultiBundleROOTTypeWriterFFT::OutputHistograms()
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -108,7 +108,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiEventROOTTypeWriterFFT::ClearHistograms()
+    void KTMultiBundleROOTTypeWriterFFT::ClearHistograms()
     {
         for (vector<TH1D*>::iterator it=fFSHists.begin(); it != fFSHists.end(); it++)
         {
@@ -123,10 +123,10 @@ namespace Katydid
         return;
     }
 
-    void KTMultiEventROOTTypeWriterFFT::RegisterSlots()
+    void KTMultiBundleROOTTypeWriterFFT::RegisterSlots()
     {
-        fWriter->RegisterSlot("fs-data", this, &KTMultiEventROOTTypeWriterFFT::AddFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
-        fWriter->RegisterSlot("fs-fftw-data", this, &KTMultiEventROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
+        fWriter->RegisterSlot("fs-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
+        fWriter->RegisterSlot("fs-fftw-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
         return;
     }
 
@@ -135,7 +135,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiEventROOTTypeWriterFFT::AddFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    void KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
         if (fFSHists.size() == 0)
         {
@@ -163,7 +163,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiEventROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
+    void KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
         if (fFSFFTWHists.size() == 0)
         {

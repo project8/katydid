@@ -87,10 +87,10 @@ int main(int argc, char** argv)
 
     KTINFO(testsw, "Hatching bundle");
     // Hatch the bundle
-    boost::shared_ptr<KTBundle> bundle = egg.HatchNextEvent();
+    boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
     if (bundle.get() == NULL)
     {
-        KTERROR(testsw, "Event did not hatch");
+        KTERROR(testsw, "Bundle did not hatch");
         egg.CloseEgg();
         return -1;
     }
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
         fft.InitializeFFT();
 
         // Transform the data.
-        // The data is not owned by the bundle because TransformData was used, not ProcessEvent.
+        // The data is not owned by the bundle because TransformData was used, not ProcessBundle.
         KTINFO(testsw, "Transforming data");
         KTSlidingWindowFSData* swData = fft.TransformData(tsData);
 
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
         fft.InitializeFFT();
 
         // Transform the data.
-        // The data is not owned by the bundle because TransformData was used, not ProcessEvent.
+        // The data is not owned by the bundle because TransformData was used, not ProcessBundle.
         KTINFO(testsw, "Transforming data");
         KTSlidingWindowFSDataFFTW* swData = fft.TransformData(tsData);
 

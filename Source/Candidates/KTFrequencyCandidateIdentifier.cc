@@ -42,7 +42,7 @@ namespace Katydid
         RegisterSignal("frequency-candidates", &fFCSignal, "void (const KTFrequencyCandidateData*)");
 
         RegisterSlot("clusters", this, &KTFrequencyCandidateIdentifier::ProcessClusterData, "void (const KTCluster1DData*)");
-        RegisterSlot("bundle", this, &KTFrequencyCandidateIdentifier::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTFrequencyCandidateIdentifier::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTFrequencyCandidateIdentifier::~KTFrequencyCandidateIdentifier()
@@ -82,7 +82,7 @@ namespace Katydid
             fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);
         }
 
-        fcData->SetEvent(clusterData->GetEvent());
+        fcData->SetBundle(clusterData->GetBundle());
         fcData->SetName(fOutputDataName);
 
         fFCSignal(fcData);
@@ -114,7 +114,7 @@ namespace Katydid
             fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);
         }
 
-        fcData->SetEvent(clusterData->GetEvent());
+        fcData->SetBundle(clusterData->GetBundle());
         fcData->SetName(fOutputDataName);
 
         fFCSignal(fcData);
@@ -146,7 +146,7 @@ namespace Katydid
             fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);
         }
 
-        fcData->SetEvent(clusterData->GetEvent());
+        fcData->SetBundle(clusterData->GetBundle());
         fcData->SetName(fOutputDataName);
 
         fFCSignal(fcData);
@@ -248,7 +248,7 @@ namespace Katydid
 
     void KTFrequencyCandidateIdentifier::ProcessClusterData(const KTCluster1DData* clusterData)
     {
-        KTBundle* bundle = clusterData->GetEvent();
+        KTBundle* bundle = clusterData->GetBundle();
         if (bundle == NULL)
         {
             KTERROR(fcilog, "Cluster data must be associated with an bundle.");
@@ -284,7 +284,7 @@ namespace Katydid
         return;
     }
 
-    void KTFrequencyCandidateIdentifier::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTFrequencyCandidateIdentifier::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTCluster1DData* clusterData = bundle->GetData< KTCluster1DData >(fClusterInputDataName);
         if (clusterData == NULL)

@@ -221,9 +221,9 @@ namespace Katydid
             shared_ptr<KTBundle> bundleToPublish;
             if (fPubQueue.wait_and_pop(bundleToPublish))
             {
-                KTDEBUG(publog, "Event acquired for publishing");
+                KTDEBUG(publog, "Bundle acquired for publishing");
                 Publish(bundleToPublish);
-                if (bundleToPublish->GetIsLastEvent()) fStatus = kStopped;
+                if (bundleToPublish->GetIsLastBundle()) fStatus = kStopped;
             }
         }
         return true;

@@ -47,7 +47,7 @@ namespace Katydid
         RegisterSlot("header", this, &KTAnalyticAssociator::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTAnalyticAssociator::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("fs-data", this, &KTAnalyticAssociator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
-        RegisterSlot("bundle", this, &KTAnalyticAssociator::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTAnalyticAssociator::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTAnalyticAssociator::~KTAnalyticAssociator()
@@ -137,7 +137,7 @@ namespace Katydid
             aaTSData->SetTimeSeries(newTS, iChannel);
         }
 
-        aaTSData->SetEvent(data->GetEvent());
+        aaTSData->SetBundle(data->GetBundle());
         aaTSData->SetName(fOutputDataName);
 
         fAASignal(aaTSData);
@@ -177,7 +177,7 @@ namespace Katydid
             aaTSData->SetTimeSeries(newTS, iChannel);
         }
 
-        aaTSData->SetEvent(data->GetEvent());
+        aaTSData->SetBundle(data->GetBundle());
         aaTSData->SetName(fOutputDataName);
 
         fAASignal(aaTSData);
@@ -248,7 +248,7 @@ namespace Katydid
             return;
         }
 
-        KTBundle* bundle = tsData->GetEvent();
+        KTBundle* bundle = tsData->GetBundle();
         if (bundle != NULL)
         {
             bundle->AddData(newData);
@@ -270,7 +270,7 @@ namespace Katydid
             return;
         }
 
-        KTBundle* bundle = fsData->GetEvent();
+        KTBundle* bundle = fsData->GetBundle();
         if (bundle != NULL)
         {
             bundle->AddData(newData);
@@ -279,7 +279,7 @@ namespace Katydid
         return;
     }
 
-    void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTAnalyticAssociator::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData != NULL)

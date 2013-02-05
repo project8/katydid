@@ -1,11 +1,11 @@
 /*
- * KTMultiEventROOTTypeWriterAnalysis.cc
+ * KTMultiBundleROOTTypeWriterAnalysis.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTMultiEventROOTTypeWriterAnalysis.hh"
+#include "KTMultiBundleROOTTypeWriterAnalysis.hh"
 
 #include "KTEggHeader.hh"
 #include "KTBundle.hh"
@@ -28,35 +28,35 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTMultiEventROOTTypeWriter, KTMultiEventROOTTypeWriterAnalysis > sMERTWARegistrar;
+    static KTDerivedTIRegistrar< KTMultiBundleROOTTypeWriter, KTMultiBundleROOTTypeWriterAnalysis > sMERTWARegistrar;
 
-    KTMultiEventROOTTypeWriterAnalysis::KTMultiEventROOTTypeWriterAnalysis() :
+    KTMultiBundleROOTTypeWriterAnalysis::KTMultiBundleROOTTypeWriterAnalysis() :
             KTMEROOTTypeWriterBase(),
             //KTTypeWriterAnalysis()
             fCorrHists()
     {
     }
 
-    KTMultiEventROOTTypeWriterAnalysis::~KTMultiEventROOTTypeWriterAnalysis()
+    KTMultiBundleROOTTypeWriterAnalysis::~KTMultiBundleROOTTypeWriterAnalysis()
     {
         ClearHistograms();
     }
 
-    void KTMultiEventROOTTypeWriterAnalysis::StartNewHistograms()
+    void KTMultiBundleROOTTypeWriterAnalysis::StartNewHistograms()
     {
         ClearHistograms();
         // At this point the vector is size 0
         return;
     }
 
-    void KTMultiEventROOTTypeWriterAnalysis::FinishHistograms()
+    void KTMultiBundleROOTTypeWriterAnalysis::FinishHistograms()
     {
         OutputHistograms();
         ClearHistograms();
         return;
     }
 
-    void KTMultiEventROOTTypeWriterAnalysis::OutputHistograms()
+    void KTMultiBundleROOTTypeWriterAnalysis::OutputHistograms()
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -84,7 +84,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiEventROOTTypeWriterAnalysis::ClearHistograms()
+    void KTMultiBundleROOTTypeWriterAnalysis::ClearHistograms()
     {
         for (vector<TH1D*>::iterator it=fCorrHists.begin(); it != fCorrHists.end(); it++)
         {
@@ -94,9 +94,9 @@ namespace Katydid
         return;
     }
 
-    void KTMultiEventROOTTypeWriterAnalysis::RegisterSlots()
+    void KTMultiBundleROOTTypeWriterAnalysis::RegisterSlots()
     {
-        fWriter->RegisterSlot("corr-data", this, &KTMultiEventROOTTypeWriterAnalysis::AddCorrelationData, "void (const KTCorrelationData*)");
+        fWriter->RegisterSlot("corr-data", this, &KTMultiBundleROOTTypeWriterAnalysis::AddCorrelationData, "void (const KTCorrelationData*)");
         return;
     }
 
@@ -105,7 +105,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiEventROOTTypeWriterAnalysis::AddCorrelationData(const KTCorrelationData* data)
+    void KTMultiBundleROOTTypeWriterAnalysis::AddCorrelationData(const KTCorrelationData* data)
     {
         if (fCorrHists.size() == 0)
         {

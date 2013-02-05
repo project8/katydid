@@ -77,9 +77,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTFrequencySpectrumData* data)
     {
         /*
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nChannels = data->GetNChannels();
 
         if (! OpenAndVerifyFile()) return;
@@ -106,9 +106,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTFrequencySpectrumDataFFTW* data)
     {
         /*
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nChannels = data->GetNChannels();
 
         if (! OpenAndVerifyFile()) return;
@@ -139,9 +139,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTCorrelationData* data)
     {
         /*
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPairs = data->GetNPairs();
 
         if (! OpenAndVerifyFile()) return;
@@ -157,7 +157,7 @@ namespace Katydid
                 conv >> histName;
                 TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
                 stringstream titleStream;
-                titleStream << "Event " << bundleNumber << ", Correlation " << iPair << ", "
+                titleStream << "Bundle " << bundleNumber << ", Correlation " << iPair << ", "
                         "Channels (" << data->GetFirstChannel(iPair) << ", " << data->GetSecondChannel(iPair) << ")";
                 corrHist->SetTitle(titleStream.str().c_str());
                 corrHist->SetDirectory(fFile);
@@ -176,9 +176,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTSlidingWindowFSData* data)
     {
         /*
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! OpenAndVerifyFile()) return;
@@ -201,9 +201,9 @@ namespace Katydid
     void KTROOTImageWriter::Write(const KTSlidingWindowFSDataFFTW* data)
     {
         /*
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! OpenAndVerifyFile()) return;

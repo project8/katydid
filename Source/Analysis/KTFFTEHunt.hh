@@ -58,7 +58,7 @@ namespace Katydid
     class KTFFTEHunt : public KTProcessor
     {
         private:
-            typedef std::list< std::multimap< Int_t, Int_t >* > EventPeakBinsList;
+            typedef std::list< std::multimap< Int_t, Int_t >* > BundlePeakBinsList;
             typedef std::pair< Double_t, Double_t > CutRange;
 
         public:
@@ -69,12 +69,12 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 
             void FinishHunt();
 
         private:
-            void EmptyEventPeakBins();
+            void EmptyBundlePeakBins();
 
         public:
             const std::string& GetTextFilename() const;
@@ -99,7 +99,7 @@ namespace Katydid
             //void SetOutputDataName(const std::string& name);
 
         private:
-            EventPeakBinsList fEventPeakBins;
+            BundlePeakBinsList fBundlePeakBins;
 
             UInt_t fMinimumGroupSize;
 

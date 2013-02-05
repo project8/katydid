@@ -80,7 +80,7 @@ namespace Katydid
         public:
             void ProcessFFTData(const KTFrequencySpectrumData* fsData);
             void ProcessFFTWData(const KTFrequencySpectrumDataFFTW* fsData);
-            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 
 
     };

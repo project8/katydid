@@ -8,7 +8,7 @@
 #ifndef KTMULTIBUNDLEROOTTYPEWRITEREGG_HH_
 #define KTMULTIBUNDLEROOTTYPEWRITEREGG_HH_
 
-#include "KTMultiEventROOTWriter.hh"
+#include "KTMultiBundleROOTWriter.hh"
 
 class TH1D;
 
@@ -17,14 +17,14 @@ namespace Katydid
     class KTEggHeader;
     class KTTimeSeriesData;
 
-    class KTMultiEventROOTTypeWriterEgg : public KTMEROOTTypeWriterBase//, public KTTypeWriterEgg
+    class KTMultiBundleROOTTypeWriterEgg : public KTMEROOTTypeWriterBase//, public KTTypeWriterEgg
     {
         public:
             friend class KTTimeSeriesData;
 
         public:
-            KTMultiEventROOTTypeWriterEgg();
-            virtual ~KTMultiEventROOTTypeWriterEgg();
+            KTMultiBundleROOTTypeWriterEgg();
+            virtual ~KTMultiBundleROOTTypeWriterEgg();
 
             void RegisterSlots();
 

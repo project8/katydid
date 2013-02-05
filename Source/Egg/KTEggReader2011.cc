@@ -162,7 +162,7 @@ namespace Katydid
         }
         fHeaderInfo.fRecordSize = ConvertFromArray< int >(attr->value());
 
-        fHeaderInfo.fEventSize = fHeaderInfo.fFrameIDSize + fHeaderInfo.fTimeStampSize + fHeaderInfo.fRecordSize;
+        fHeaderInfo.fBundleSize = fHeaderInfo.fFrameIDSize + fHeaderInfo.fTimeStampSize + fHeaderInfo.fRecordSize;
 
         rapidxml::xml_node<char>* nodeDigitizer = nodeHeader->first_node("digitizer");
         if (nodeDigitizer == NULL)
@@ -218,7 +218,7 @@ namespace Katydid
         return eggHeader;
     }
 
-    KTTimeSeriesData* KTEggReader2011::HatchNextEvent()
+    KTTimeSeriesData* KTEggReader2011::HatchNextBundle()
     {
         if (! fEggStream.good()) return NULL;
 
@@ -282,7 +282,7 @@ namespace Katydid
         tsData->SetSampleRate(double(fHeaderInfo.fSampleRate));
         tsData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
         tsData->SetSliceSize(fHeaderInfo.fRecordSize);
-        tsData->SetRecordLength(double(fHeaderInfo.fRecordSize) * tsData->GetBinWidth());
+        tsData->SetSliceLength(double(fHeaderInfo.fRecordSize) * tsData->GetBinWidth());
         tsData->SetTimeInRun(GetTimeInRun());
         tsData->SetSliceNumber((ULong64_t)fRecordsRead);
 
@@ -313,7 +313,7 @@ namespace Katydid
         }
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this bundle.");
+            KTERROR(eggreadlog, "Warning from KTEgg::HatchNextBundle: Egg stream state is not good after reading in this bundle.");
         }
 
         tsData->SetName(fOutputDataName);

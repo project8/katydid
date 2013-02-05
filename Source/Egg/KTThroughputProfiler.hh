@@ -42,7 +42,7 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 
             void Finish();
 
@@ -66,7 +66,7 @@ namespace Katydid
             timespec fTimeStart;
             timespec fTimeEnd;
 
-            UInt_t fNEventsProcessed;
+            UInt_t fNBundlesProcessed;
 
 //#ifdef __MACH__
             double fMacTimebase;

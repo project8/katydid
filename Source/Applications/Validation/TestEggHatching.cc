@@ -47,7 +47,7 @@ int main(int argc, char** argv)
         readerOption = argv[2];
     }
 
-    UInt_t nEvents = 5;
+    UInt_t nBundles = 5;
 
     KTINFO(testegg, "Test of hatching egg file <" << filename << ">");
 
@@ -95,13 +95,13 @@ int main(int argc, char** argv)
            << "\tRecord Size: " << header->GetRecordSize());
 
     KTINFO(testegg, "Hatching bundles");
-    for (UInt_t iEvent=0; iEvent < nEvents; iEvent++)
+    for (UInt_t iBundle=0; iBundle < nBundles; iBundle++)
     {
-        KTINFO(testegg, "Event " << iEvent);
-        boost::shared_ptr<KTBundle> bundle = egg.HatchNextEvent();
+        KTINFO(testegg, "Bundle " << iBundle);
+        boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
         if (bundle.get() == NULL)
         {
-            KTERROR(testegg, "Event did not hatch");
+            KTERROR(testegg, "Bundle did not hatch");
             return -1;
         }
 

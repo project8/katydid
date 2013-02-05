@@ -51,7 +51,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("bundle", this, &KTSimpleFFT::ProcessEvent, "void (KTBundle*)");
+        RegisterSlot("bundle", this, &KTSimpleFFT::ProcessBundle, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -250,17 +250,17 @@ namespace Katydid
     void KTSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTFrequencySpectrumData* newData = TransformData(tsData);
-        if (tsData->GetEvent() != NULL)
+        if (tsData->GetBundle() != NULL)
         {
-            KTBundle* bundle = tsData->GetEvent();
-            newData->SetEvent(bundle);
+            KTBundle* bundle = tsData->GetBundle();
+            newData->SetBundle(bundle);
             bundle->AddData(newData);
             fFFTSignal(newData);
         }
         return;
     }
 
-    void KTSimpleFFT::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTSimpleFFT::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)

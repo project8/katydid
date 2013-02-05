@@ -76,7 +76,7 @@ namespace Katydid
         public:
             /// Queue an bundle
             /// Assumes ownership of the bundle
-            void QueueEvent(boost::shared_ptr<KTBundle> bundle);
+            void QueueBundle(boost::shared_ptr<KTBundle> bundle);
 
 
     };
@@ -128,9 +128,9 @@ namespace Katydid
             boost::shared_ptr<KTBundle> bundleToPublish;
             if (fQueue.wait_and_pop(bundleToPublish))
             {
-                KTDEBUG(eqplog, "Event acquired for publishing");
+                KTDEBUG(eqplog, "Bundle acquired for publishing");
                 fFuncPtr(bundleToPublish);
-                if (bundleToPublish->GetIsLastEvent()) fStatus = kStopped;
+                if (bundleToPublish->GetIsLastBundle()) fStatus = kStopped;
             }
         }
         return true;

@@ -100,7 +100,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 
     };
 

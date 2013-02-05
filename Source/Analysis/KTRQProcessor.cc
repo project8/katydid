@@ -21,11 +21,11 @@ namespace Katydid {
 		 "void (const KTTimeSeriesData*)");
     RegisterSlot("process-noise-bundle",
 		 this,
-		 &KTRQProcessor::ProcessNoiseEvent,
+		 &KTRQProcessor::ProcessNoiseBundle,
 		 "void (boost::shared_ptr<KTBundle>)");
     RegisterSlot("process-candidate-bundle",
 		 this,
-		 &KTRQProcessor::ProcessCandidateEvent,
+		 &KTRQProcessor::ProcessCandidateBundle,
 		 "void (boost::shared_ptr<KTBundle>)");
   }
 
@@ -105,7 +105,7 @@ namespace Katydid {
     return this->fNACMDidConverge;
   }
   
-  void KTRQProcessor::ProcessNoiseEvent(boost::shared_ptr<KTBundle> bundle)
+  void KTRQProcessor::ProcessNoiseBundle(boost::shared_ptr<KTBundle> bundle)
   {
     // Grab time series data from bundle
     const KTTimeSeriesData* noise = bundle->GetData<KTTimeSeriesData>(fNoiseName);
@@ -190,7 +190,7 @@ namespace Katydid {
     KTWARN(nrq_log,"unimplemented processing of noise called!");
   }
 
-  void KTRQProcessor::ProcessCandidateEvent(boost::shared_ptr<KTBundle> bundle) 
+  void KTRQProcessor::ProcessCandidateBundle(boost::shared_ptr<KTBundle> bundle) 
   {
     if( this->fNACMDidConverge ) {
       // grab data from the bundle.

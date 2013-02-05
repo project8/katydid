@@ -42,14 +42,14 @@ namespace Katydid
             fEggHeader(),
             fTimeStart(),
             fTimeEnd(),
-            fNEventsProcessed(0),
+            fNBundlesProcessed(0),
             fMacTimebase(0.0),
             fMacTimestart(0)
     {
         fConfigName = "throughput-profiler";
 
         RegisterSlot("start", this, &KTThroughputProfiler::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("bundle", this, &KTThroughputProfiler::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTThroughputProfiler::ProcessBundle, "void (shared_ptr<KTBundle>)");
         RegisterSlot("stop", this, &KTThroughputProfiler::Finish, "void ()");
     };
 
@@ -88,14 +88,14 @@ namespace Katydid
     {
         fEggHeader = *header;
         KTINFO(proflog, "Profiling started");
-        fNEventsProcessed = 0;
+        fNBundlesProcessed = 0;
         Start();
         return;
     }
 
-    void KTThroughputProfiler::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTThroughputProfiler::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        fNEventsProcessed++;
+        fNBundlesProcessed++;
         return;
     }
 
@@ -104,7 +104,7 @@ namespace Katydid
         Stop();
         KTINFO(proflog, "Profiling stopped");
         timespec diffTime = Elapsed();
-        KTINFO(proflog, fNEventsProcessed << " bundles processed");
+        KTINFO(proflog, fNBundlesProcessed << " bundles processed");
         Double_t totalSeconds = Double_t(diffTime.tv_sec) + Double_t(diffTime.tv_nsec) * 1.e-9;
         KTINFO(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
 
@@ -114,7 +114,7 @@ namespace Katydid
         // Data throughput rate in bytes per second
         Double_t dataThroughputRate = 0.;
         if (totalSeconds != 0)
-            dataThroughputRate = Double_t(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNEventsProcessed * sizeof(DataType)) / totalSeconds;
+            dataThroughputRate = Double_t(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNBundlesProcessed * sizeof(DataType)) / totalSeconds;
 
         KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
         KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");

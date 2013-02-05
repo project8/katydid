@@ -8,7 +8,7 @@
 #ifndef KTMULTIBUNDLEROOTTYPEWRITERANALYSIS_HH_
 #define KTMULTIBUNDLEROOTTYPEWRITERANALYSIS_HH_
 
-#include "KTMultiEventROOTWriter.hh"
+#include "KTMultiBundleROOTWriter.hh"
 
 class TH1D;
 
@@ -16,12 +16,12 @@ namespace Katydid
 {
     class KTCorrelationData;
 
-    class KTMultiEventROOTTypeWriterAnalysis : public KTMEROOTTypeWriterBase//, public KTTypeWriterAnalysis
+    class KTMultiBundleROOTTypeWriterAnalysis : public KTMEROOTTypeWriterBase//, public KTTypeWriterAnalysis
     {
 
         public:
-            KTMultiEventROOTTypeWriterAnalysis();
-            virtual ~KTMultiEventROOTTypeWriterAnalysis();
+            KTMultiBundleROOTTypeWriterAnalysis();
+            virtual ~KTMultiBundleROOTTypeWriterAnalysis();
 
             void RegisterSlots();
 

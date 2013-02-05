@@ -32,21 +32,21 @@ namespace Katydid
 
         public:
             /// Returns a pointer to the bundle from which this data object originates
-            virtual KTBundle* GetEvent() const;
-            void SetEvent(KTBundle* bundle);
+            virtual KTBundle* GetBundle() const;
+            void SetBundle(KTBundle* bundle);
 
         protected:
-            KTBundle* fEvent; // not owned by this object
+            KTBundle* fBundle; // not owned by this object
     };
 
-    inline KTBundle* KTData::GetEvent() const
+    inline KTBundle* KTData::GetBundle() const
     {
-        return fEvent;
+        return fBundle;
     }
 
-    inline void KTData::SetEvent(KTBundle* bundle)
+    inline void KTData::SetBundle(KTBundle* bundle)
     {
-        fEvent = bundle;
+        fBundle = bundle;
         return;
     }
 

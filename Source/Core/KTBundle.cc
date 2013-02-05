@@ -13,8 +13,8 @@ namespace Katydid
 {
 
     KTBundle::KTBundle() :
-            fEventNum(0),
-            fIsLastEvent(false),
+            fBundleNum(0),
+            fIsLastBundle(false),
             fDataMapFactory(KTTIFactory< KTDataMap >::GetInstance()),
             fMapOfDataMaps(),
             fDataNameMap()
@@ -46,7 +46,7 @@ namespace Katydid
 
     bool KTBundle::AddData(const std::string& name, KTData* newData)
     {
-        newData->fEvent = this;
+        newData->fBundle = this;
         return (fDataMap.insert(DataMapVal(name, newData))).second;
     }
     */

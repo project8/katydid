@@ -1,5 +1,5 @@
 /*
- * KTMultiEventROOTWriter.hh
+ * KTMultiBundleROOTWriter.hh
  *
  *  Created on: Jan 28, 2013
  *      Author: nsoblath
@@ -14,10 +14,10 @@
 
 namespace Katydid
 {
-    class KTMultiEventROOTWriter;
+    class KTMultiBundleROOTWriter;
 
-    typedef KTDerivedTypeWriter< KTMultiEventROOTWriter > KTMultiEventROOTTypeWriter;
-    class KTMEROOTTypeWriterBase : public KTMultiEventROOTTypeWriter
+    typedef KTDerivedTypeWriter< KTMultiBundleROOTWriter > KTMultiBundleROOTTypeWriter;
+    class KTMEROOTTypeWriterBase : public KTMultiBundleROOTTypeWriter
     {
         public:
             KTMEROOTTypeWriterBase() {}
@@ -29,11 +29,11 @@ namespace Katydid
     };
 
 
-    class KTMultiEventROOTWriter : public KTWriterWithTypists< KTMultiEventROOTWriter >//public KTWriter
+    class KTMultiBundleROOTWriter : public KTWriterWithTypists< KTMultiBundleROOTWriter >//public KTWriter
     {
         public:
-            KTMultiEventROOTWriter();
-            virtual ~KTMultiEventROOTWriter();
+            KTMultiBundleROOTWriter();
+            virtual ~KTMultiBundleROOTWriter();
 
             Bool_t Configure(const KTPStoreNode* node);
 
@@ -98,13 +98,13 @@ namespace Katydid
 
     };
 
-    inline TFile* KTMultiEventROOTWriter::OpenFile(const std::string& filename, const std::string& flag)
+    inline TFile* KTMultiBundleROOTWriter::OpenFile(const std::string& filename, const std::string& flag)
     {
         CloseFile();
         fFile = new TFile(filename.c_str(), flag.c_str());
         return fFile;
     }
-    inline void KTMultiEventROOTWriter::CloseFile()
+    inline void KTMultiBundleROOTWriter::CloseFile()
     {
         if (fFile != NULL)
         {
@@ -115,80 +115,80 @@ namespace Katydid
         return;
     }
 
-    inline Bool_t KTMultiEventROOTWriter::GetUseTFile() const
+    inline Bool_t KTMultiBundleROOTWriter::GetUseTFile() const
     {
         return fUseTFile;
     }
-    inline void KTMultiEventROOTWriter::SetUseTFile(Bool_t flag)
+    inline void KTMultiBundleROOTWriter::SetUseTFile(Bool_t flag)
     {
         fUseTFile = flag;
         return;
     }
 
-    inline const std::string& KTMultiEventROOTWriter::GetTFilename() const
+    inline const std::string& KTMultiBundleROOTWriter::GetTFilename() const
     {
         return fTFilename;
     }
-    inline void KTMultiEventROOTWriter::SetTFilename(const std::string& filename)
+    inline void KTMultiBundleROOTWriter::SetTFilename(const std::string& filename)
     {
         fTFilename = filename;
         return;
     }
 
-    inline const std::string& KTMultiEventROOTWriter::GetTFileFlag() const
+    inline const std::string& KTMultiBundleROOTWriter::GetTFileFlag() const
     {
         return fTFileFlag;
     }
-    inline void KTMultiEventROOTWriter::SetTFileFlag(const std::string& flag)
+    inline void KTMultiBundleROOTWriter::SetTFileFlag(const std::string& flag)
     {
         fTFileFlag = flag;
         return;
     }
 
-    inline Bool_t KTMultiEventROOTWriter::GetUseGraphics() const
+    inline Bool_t KTMultiBundleROOTWriter::GetUseGraphics() const
     {
         return fUseGraphics;
     }
-    inline void KTMultiEventROOTWriter::SetUseGraphics(Bool_t flag)
+    inline void KTMultiBundleROOTWriter::SetUseGraphics(Bool_t flag)
     {
         fUseGraphics = flag;
         return;
     }
 
-    inline const std::string& KTMultiEventROOTWriter::GetGraphicsFilePath() const
+    inline const std::string& KTMultiBundleROOTWriter::GetGraphicsFilePath() const
     {
         return fGraphicsFilePath;
     }
 
-    inline void KTMultiEventROOTWriter::SetGraphicsFilePath(const std::string& path)
+    inline void KTMultiBundleROOTWriter::SetGraphicsFilePath(const std::string& path)
     {
         fGraphicsFilePath = path;
         return;
     }
 
-    inline const std::string& KTMultiEventROOTWriter::GetGraphicsFilenameBase() const
+    inline const std::string& KTMultiBundleROOTWriter::GetGraphicsFilenameBase() const
     {
         return fGraphicsFilenameBase;
     }
 
-    inline void KTMultiEventROOTWriter::SetGraphicsFilenameBase(const std::string& fname)
+    inline void KTMultiBundleROOTWriter::SetGraphicsFilenameBase(const std::string& fname)
     {
         fGraphicsFilenameBase = fname;
         return;
     }
 
-    inline const std::string& KTMultiEventROOTWriter::GetGraphicsFileType() const
+    inline const std::string& KTMultiBundleROOTWriter::GetGraphicsFileType() const
     {
         return fGraphicsFileType;
     }
 
-    inline void KTMultiEventROOTWriter::SetGraphicsFileType(const std::string& type)
+    inline void KTMultiBundleROOTWriter::SetGraphicsFileType(const std::string& type)
     {
         fGraphicsFileType = type;
         return;
     }
 
-    inline TFile* KTMultiEventROOTWriter::GetFile()
+    inline TFile* KTMultiBundleROOTWriter::GetFile()
     {
         return fFile;
     }

@@ -78,7 +78,7 @@ namespace Katydid
         return true;
     }
 
-    KTSimpleClustering::NewEventList* KTSimpleClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData)
+    KTSimpleClustering::NewBundleList* KTSimpleClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData)
     {
         if (dpData->GetBinWidth() != fFreqBinWidth)
             SetFrequencyBinWidth(dpData->GetBinWidth());
@@ -88,21 +88,21 @@ namespace Katydid
         UInt_t nComponents = dpData->GetNChannels();
         if (fActiveClusters.size() < nComponents) fActiveClusters.resize(nComponents);
 
-        NewEventList* newEventsAC = new NewEventList();
+        NewBundleList* newBundlesAC = new NewBundleList();
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            NewEventList* bundlesFromComponent = AddPointsToClusters(dpData->GetSetOfPoints(iComponent), iComponent);
-            newEventsAC->splice(newEventsAC->end(), *bundlesFromComponent);
+            NewBundleList* bundlesFromComponent = AddPointsToClusters(dpData->GetSetOfPoints(iComponent), iComponent);
+            newBundlesAC->splice(newBundlesAC->end(), *bundlesFromComponent);
             delete bundlesFromComponent;
         }
 
         fTimeBin++;
 
-        return newEventsAC;
+        return newBundlesAC;
     }
 
-    KTSimpleClustering::NewEventList* KTSimpleClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component)
+    KTSimpleClustering::NewBundleList* KTSimpleClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component)
     {
         // Process a single time bin's worth of frequency bins
 
@@ -276,7 +276,7 @@ namespace Katydid
         }
 
         // Deal with no-longer-active clusters and clusters that were merged with other clusters
-        NewEventList* newEvents = new NewEventList();
+        NewBundleList* newBundles = new NewBundleList();
         iCluster = 0;
         KTDEBUG(sclog, "dealing with no-longer-active clusters and clusters that were merged");
         for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++)
@@ -291,7 +291,7 @@ namespace Katydid
             else if (! acHasBeenAddedTo[iCluster])
             {
                 KTDEBUG(sclog, "    no longer active; creating an bundle");
-                newEvents->push_back(CreateEventFromCluster(*acIt));
+                newBundles->push_back(CreateBundleFromCluster(*acIt));
                 acIt = fActiveClusters[component].erase(acIt); // the iterator returned is the next position in the cluster
                 acIt--; // back up the iterator so that when processing hits the beginning of the loop, the iterator is returned to the "next" position
             }
@@ -322,33 +322,33 @@ namespace Katydid
             }
         }
 
-        return newEvents; //CompleteInactiveClusters(component);
+        return newBundles; //CompleteInactiveClusters(component);
     }
 
 
-    KTSimpleClustering::NewEventList* KTSimpleClustering::CompleteAllClusters(UInt_t component)
+    KTSimpleClustering::NewBundleList* KTSimpleClustering::CompleteAllClusters(UInt_t component)
     {
-        NewEventList* newEvents = new NewEventList();
+        NewBundleList* newBundles = new NewBundleList();
 
         for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end();)
         {
-            newEvents->push_back(CreateEventFromCluster(*acIt));
+            newBundles->push_back(CreateBundleFromCluster(*acIt));
             acIt = fActiveClusters[component].erase(acIt);
         }
 
-        return newEvents;
+        return newBundles;
     }
 
-    KTSimpleClustering::NewEventList* KTSimpleClustering::CompleteInactiveClusters(UInt_t component)
+    KTSimpleClustering::NewBundleList* KTSimpleClustering::CompleteInactiveClusters(UInt_t component)
     {
-        NewEventList* newEvents = new NewEventList();
+        NewBundleList* newBundles = new NewBundleList();
 
         for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end();)
         {
             UInt_t lastTimeBinInCluster = (*acIt).fPoints.back().fTimeBin;
             if (fTimeBin - lastTimeBinInCluster > fMaxTimeSepBins)
             {
-                newEvents->push_back(CreateEventFromCluster(*acIt));
+                newBundles->push_back(CreateBundleFromCluster(*acIt));
                 acIt = fActiveClusters[component].erase(acIt);
             }
             else
@@ -357,7 +357,7 @@ namespace Katydid
             }
         }
 
-        return newEvents;
+        return newBundles;
     }
 
     void KTSimpleClustering::Reset()
@@ -367,7 +367,7 @@ namespace Katydid
         return;
     }
 
-    shared_ptr<KTBundle> KTSimpleClustering::CreateEventFromCluster(const Cluster& cluster)
+    shared_ptr<KTBundle> KTSimpleClustering::CreateBundleFromCluster(const Cluster& cluster)
     {
         shared_ptr<KTBundle> bundle(new KTBundle());
 
@@ -375,7 +375,7 @@ namespace Katydid
 
         // fill in the data
 
-        //data->SetEvent(bundle);
+        //data->SetBundle(bundle);
         //bundle->AddData(newData);
 
         return bundle;
@@ -423,7 +423,7 @@ namespace Katydid
 
     KTSimpleClustering::KTSimpleClustering() :
             KTProcessor(),
-            fEventPeakBins(NULL),
+            fBundlePeakBins(NULL),
             fThresholdMult(8.),
             fBinCuts(NULL),
             fMinimumGroupSize(2),
@@ -563,7 +563,7 @@ namespace Katydid
         {
             Int_t pbVal = *iPB;
             Bool_t foundGroup = kFALSE;
-            for (list< multimap< Int_t, Int_t >* >::iterator iEPB=fEventPeakBins->begin(); iEPB!=fEventPeakBins->end(); iEPB++)
+            for (list< multimap< Int_t, Int_t >* >::iterator iEPB=fBundlePeakBins->begin(); iEPB!=fBundlePeakBins->end(); iEPB++)
             {
                 multimap< Int_t, Int_t >* groupMap = *iEPB;
                 multimap< Int_t, Int_t >::iterator lastGroup = groupMap->end();
@@ -573,7 +573,7 @@ namespace Katydid
                 if (lastFFT < psNum - 1 && (UInt_t)groupMap->size() <= fMinimumGroupSize)
                 {
                     delete groupMap;
-                    iEPB = fEventPeakBins->erase(iEPB);
+                    iEPB = fBundlePeakBins->erase(iEPB);
                     iEPB--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
                     continue;
                 }
@@ -613,7 +613,7 @@ namespace Katydid
             // no match to existing groups, so add a new one
             multimap< Int_t, Int_t >* newGroupMap = new multimap< Int_t, Int_t >();
             newGroupMap->insert( pair< Int_t, Int_t >((Int_t)psNum, pbVal) );
-            fEventPeakBins->push_back(newGroupMap);
+            fBundlePeakBins->push_back(newGroupMap);
         }
 
         return;

@@ -160,7 +160,7 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
-            void ProcessEvent(KTBundle* bundle);
+            void ProcessBundle(KTBundle* bundle);
 
     };
 

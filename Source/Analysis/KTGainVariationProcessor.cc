@@ -49,7 +49,7 @@ namespace Katydid
 
         RegisterSignal("gain-var", &fGainVarSignal, "void (const KTGainVariationData*)");
 
-        RegisterSlot("bundle", this, &KTGainVariationProcessor::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTGainVariationProcessor::ProcessBundle, "void (shared_ptr<KTBundle>)");
         RegisterSlot("fsdata", this, &KTGainVariationProcessor::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fsdata-fftw", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
     }
@@ -151,7 +151,7 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fGainVarSignal(newData);
 
@@ -224,7 +224,7 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fGainVarSignal(newData);
 
@@ -268,7 +268,7 @@ namespace Katydid
     }
     */
 
-    void KTGainVariationProcessor::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTGainVariationProcessor::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
@@ -293,15 +293,15 @@ namespace Katydid
     void KTGainVariationProcessor::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
         KTGainVariationData* newData = CalculateGainVariation(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
     void KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
         KTGainVariationData* newData = CalculateGainVariation(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
 

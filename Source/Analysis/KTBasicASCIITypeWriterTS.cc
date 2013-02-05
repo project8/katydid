@@ -24,8 +24,8 @@ namespace Katydid
 
   void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(const KTTimeSeriesData* data)
   {
-    KTBundle* bundle = data->GetEvent();
-    UInt_t bundleNumber = (bundle == NULL) ? 0 : bundle->GetEventNumber();
+    KTBundle* bundle = data->GetBundle();
+    UInt_t bundleNumber = (bundle == NULL) ? 0 : bundle->GetBundleNumber();
     UInt_t nCh = data->GetNTimeSeries();
 
     if( fWriter->CanWrite() == true ) {

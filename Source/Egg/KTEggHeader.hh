@@ -49,7 +49,7 @@ namespace Katydid
             std::string fFilename;
             UInt_t fAcquisitionMode;
             UInt_t fNChannels;
-            std::size_t fRecordSize; /// Number of bins per record-written-to-disk
+            std::size_t fSliceSize; /// Number of bins per record-written-to-disk
             std::size_t fRecordSize; /// Number of bins per Katydid record
             UInt_t fAcquisitionTime;
             Double_t fAcquisitionRate; /// in Hz
@@ -89,20 +89,20 @@ namespace Katydid
         return fNChannels;
     }
 
-    inline void KTEggHeader::SetSliceSize(std::size_t recsize)
+    inline void KTEggHeader::SetSliceSize(std::size_t slicesize)
     {
-        fRecordSize = recsize;
+        fSliceSize = slicesize;
         return;
     }
 
     inline std::size_t KTEggHeader::GetSliceSize() const
     {
-        return fRecordSize;
+        return fSliceSize;
     }
 
-    inline void KTEggHeader::SetRecordSize(std::size_t mrecsize)
+    inline void KTEggHeader::SetRecordSize(std::size_t recsize)
     {
-        fRecordSize = mrecsize;
+        fRecordSize = recsize;
         return;
     }
 

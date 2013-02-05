@@ -50,7 +50,7 @@ namespace Katydid
         //RegisterSlot("header", this, &KTHoughTransform::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("swfs-data", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
         RegisterSlot("disc-data", this, &KTHoughTransform::ProcessDiscriminatedData, "void (const KTDiscriminatedPoints2DData*)");
-        RegisterSlot("bundle", this, &KTHoughTransform::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTHoughTransform::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTHoughTransform::~KTHoughTransform()
@@ -95,7 +95,7 @@ namespace Katydid
             delete freqSpectra;
         }
 
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
         newData->SetName(fOutputDataName);
 
         fHTSignal(newData);
@@ -176,7 +176,7 @@ namespace Katydid
             }
         }
 
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
         newData->SetName(fOutputDataName);
 
         fHTSignal(newData);
@@ -283,7 +283,7 @@ namespace Katydid
             return;
         }
 
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         if (bundle != NULL)
         {
             bundle->AddData(newData);
@@ -302,7 +302,7 @@ namespace Katydid
             return;
         }
 
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         if (bundle != NULL)
         {
             bundle->AddData(newData);
@@ -312,7 +312,7 @@ namespace Katydid
     }
 
 
-    void KTHoughTransform::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTHoughTransform::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTDiscriminatedPoints2DData* dpData = bundle->GetData< KTDiscriminatedPoints2DData >(fInputDataName);
         if (dpData != NULL)

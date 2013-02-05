@@ -43,7 +43,7 @@ namespace Katydid
      \li \c "output-data-name": string -- name to give to the data produced
 
      Slots:
-     \li \c void ProcessEvent(boost::shared_ptr<KTBundle>)
+     \li \c void ProcessBundle(boost::shared_ptr<KTBundle>)
      \li \c void ProcessFrequencySpectrumData(const KTFrequencySpectrumData*)
      \li \c void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
 
@@ -116,7 +116,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
             void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
 

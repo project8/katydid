@@ -24,8 +24,8 @@ int main()
 
     // Set up the data
     KTFrequencySpectrumData* data = new KTFrequencySpectrumData(2);
-    data->SetEvent(bundle);
-    bundle->SetEventNumber(0);
+    data->SetBundle(bundle);
+    bundle->SetBundleNumber(0);
 
     KTFrequencySpectrum* spectrum1 = new KTFrequencySpectrum(10, -0.5, 9.5);
     (*spectrum1)(3).set_polar(5., 1.);
@@ -46,7 +46,7 @@ int main()
     // Set up next data
     (*spectrum1)(3).set_polar(10., .5);
     (*spectrum2)(8).set_polar(12., 2.1);
-    bundle->SetEventNumber(1);
+    bundle->SetBundleNumber(1);
 
     // Publish the data
     writer->GetTypeWriter< KTBasicROOTTypeWriterFFT >()->WriteFrequencySpectrumData(data);

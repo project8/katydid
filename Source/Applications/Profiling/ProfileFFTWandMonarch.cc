@@ -32,7 +32,7 @@ int main(const int argc, const char** argv)
         return -1;
     }
 
-    unsigned nEvents = atoi(argv[2]);
+    unsigned nBundles = atoi(argv[2]);
 
     const Monarch* tReadTest = Monarch::OpenForReading(argv[1]);
     if (tReadTest->ReadHeader() == false)
@@ -46,8 +46,8 @@ int main(const int argc, const char** argv)
     tEggHeader.SetFilename(tReadHeader->GetFilename());
     tEggHeader.SetAcquisitionMode(tReadHeader->GetAcqMode());
     tEggHeader.SetNChannels(2);
-    tEggHeader.SetRecordSize(tReadHeader->GetSliceSize());
-    tEggHeader.SetSliceSize(tReadHeader->GetSliceSize());
+    tEggHeader.SetRecordSize(tReadHeader->GetRecordSize());
+    tEggHeader.SetSliceSize(tReadHeader->GetRecordSize());
     tEggHeader.SetAcquisitionTime(tReadHeader->GetAcqTime());
     tEggHeader.SetAcquisitionRate(tReadHeader->GetAcqRate() * 1.e6);
 
@@ -82,20 +82,20 @@ int main(const int argc, const char** argv)
     KTINFO(proflog, "Starting profiling");
     profiler.ProcessHeader(&tEggHeader);
 
-    const Record* tRecord1 = tReadTest->GetRecordOne();
-    const Record* tRecord2 = tReadTest->GetRecordTwo();
-    for (unsigned iEvent=0; iEvent < nEvents; iEvent++)
+    const MonarchRecord* tRecord1 = tReadTest->GetRecordOne();
+    const MonarchRecord* tRecord2 = tReadTest->GetRecordTwo();
+    for (unsigned iBundle=0; iBundle < nBundles; iBundle++)
     {
-        KTINFO(proflog, "Event " << iEvent);
+        KTINFO(proflog, "Bundle " << iBundle);
         if (tReadTest->ReadRecord() == false)
         {
-            KTERROR(proflog, "Problem reading records at bundle " << iEvent);
+            KTERROR(proflog, "Problem reading records at bundle " << iBundle);
             break;
         }
 
         // first record
         // copy the data
-        for (unsigned index=0; index < tReadHeader->GetSliceSize(); index++)
+        for (unsigned index=0; index < tReadHeader->GetRecordSize(); index++)
         {
             tInputArray[index][0] = double((unsigned char)(tRecord1->fDataPtr[index]));
         }
@@ -104,14 +104,14 @@ int main(const int argc, const char** argv)
 
         // second record
         // copy the data
-        for (unsigned index=0; index < tReadHeader->GetSliceSize(); index++)
+        for (unsigned index=0; index < tReadHeader->GetRecordSize(); index++)
         {
             tInputArray[index][0] = double((unsigned char)(tRecord2->fDataPtr[index]));
         }
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
 
-        profiler.ProcessEvent(bundlePtr);
+        profiler.ProcessBundle(bundlePtr);
     }
 
     // Stop the timer and print info

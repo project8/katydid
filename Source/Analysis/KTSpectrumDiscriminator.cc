@@ -57,7 +57,7 @@ namespace Katydid
         RegisterSignal("disc-1d", &fDiscrim1DSignal, "void (const KTDiscriminatedPoints1DData*)");
         RegisterSignal("disc-2d", &fDiscrim2DSignal, "void (const KTDiscriminatedPoints2DData*)");
 
-        RegisterSlot("bundle", this, &KTSpectrumDiscriminator::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTSpectrumDiscriminator::ProcessBundle, "void (shared_ptr<KTBundle>)");
         RegisterSlot("fsdata", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fsdata-fftw", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("corrdata", this, &KTSpectrumDiscriminator::ProcessCorrelationData, "void (const KTCorrelationData*)");
@@ -180,7 +180,7 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fDiscrim1DSignal(newData);
 
@@ -268,7 +268,7 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fDiscrim1DSignal(newData);
 
@@ -347,7 +347,7 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fDiscrim1DSignal(newData);
 
@@ -433,7 +433,7 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fDiscrim2DSignal(newData);
 
@@ -526,14 +526,14 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fDiscrim2DSignal(newData);
 
         return newData;
     }
 
-    void KTSpectrumDiscriminator::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTSpectrumDiscriminator::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
@@ -577,40 +577,40 @@ namespace Katydid
     void KTSpectrumDiscriminator::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
         KTDiscriminatedPoints1DData* newData = Discriminate(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
 
     void KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
         KTDiscriminatedPoints1DData* newData = Discriminate(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
 
     void KTSpectrumDiscriminator::ProcessCorrelationData(const KTCorrelationData* data)
     {
         KTDiscriminatedPoints1DData* newData = Discriminate(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
 
     void KTSpectrumDiscriminator::ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data)
     {
         KTDiscriminatedPoints2DData* newData = Discriminate(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
 
     void KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data)
     {
         KTDiscriminatedPoints2DData* newData = Discriminate(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
 

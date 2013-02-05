@@ -52,7 +52,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSlidingWindowFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("bundle", this, &KTSlidingWindowFFT::ProcessEvent, "void (KTBundle*)");
+        RegisterSlot("bundle", this, &KTSlidingWindowFFT::ProcessBundle, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -120,13 +120,13 @@ namespace Katydid
     void KTSlidingWindowFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTSlidingWindowFSData* newData = TransformData(tsData);
-        if (tsData->GetEvent() != NULL)
-            tsData->GetEvent()->AddData(newData);
+        if (tsData->GetBundle() != NULL)
+            tsData->GetBundle()->AddData(newData);
         return;
     }
 
 
-    void KTSlidingWindowFFT::ProcessEvent(KTBundle* bundle)
+    void KTSlidingWindowFFT::ProcessBundle(KTBundle* bundle)
     {
         const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)
@@ -218,7 +218,7 @@ namespace Katydid
             newData->SetSpectra(newResults, iChannel);
         }
 
-        newData->SetEvent(tsData->GetEvent());
+        newData->SetBundle(tsData->GetBundle());
         newData->SetName(fOutputDataName);
 
         fFullFFTSignal(newData);

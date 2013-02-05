@@ -56,7 +56,7 @@ namespace Katydid
 
     Bool_t KTBundleWindowFunction::ConfigureWindowFunctionSubclass(const KTPStoreNode* node)
     {
-        return ConfigureEventWindowFunctionSubclass(node);
+        return ConfigureBundleWindowFunctionSubclass(node);
     }
 
     Double_t KTBundleWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)

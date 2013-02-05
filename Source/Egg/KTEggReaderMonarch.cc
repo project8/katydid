@@ -117,7 +117,7 @@ namespace Katydid
         return new KTEggHeader(fHeader);
     }
 
-    KTTimeSeriesData* KTEggReaderMonarch::HatchNextEvent()
+    KTTimeSeriesData* KTEggReaderMonarch::HatchNextBundle()
     {
         if (fMonarch == NULL)
         {
@@ -148,7 +148,7 @@ namespace Katydid
         // Fill out bundle information
         tsData->SetSampleRate(fHeader.GetAcquisitionRate());
         tsData->SetSliceSize(fHeader.GetSliceSize());
-        tsData->CalculateBinWidthAndRecordLength();
+        tsData->CalculateBinWidthAndSliceLength();
         tsData->SetTimeInRun(GetTimeInRun());
         tsData->SetSliceNumber(fSliceNumber);
 

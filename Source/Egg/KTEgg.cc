@@ -23,7 +23,7 @@ namespace Katydid
     KTEgg::KTEgg() :
             fReader(NULL),
             fHeader(NULL),
-            fEventCounter(-1)
+            fBundleCounter(-1)
     {
     }
 
@@ -46,11 +46,11 @@ namespace Katydid
             KTWARN(egglog, "No header was received");
             return false;
         }
-        fEventCounter = -1;
+        fBundleCounter = -1;
         return true;
     }
 
-    shared_ptr<KTBundle> KTEgg::HatchNextEvent()
+    shared_ptr<KTBundle> KTEgg::HatchNextBundle()
     {
         if (fReader == NULL || fHeader == NULL)
         {
@@ -58,18 +58,18 @@ namespace Katydid
             return shared_ptr<KTBundle>();
         }
 
-        KTTimeSeriesData* data = fReader->HatchNextEvent();
+        KTTimeSeriesData* data = fReader->HatchNextBundle();
         if (data == NULL)
         {
             return shared_ptr<KTBundle>();
         }
-        fEventCounter++;
+        fBundleCounter++;
 
-        shared_ptr<KTBundle> newEvent(new KTBundle());
-        newEvent->SetEventNumber(unsigned(fEventCounter));
-        newEvent->AddData(data);
+        shared_ptr<KTBundle> newBundle(new KTBundle());
+        newBundle->SetBundleNumber(unsigned(fBundleCounter));
+        newBundle->AddData(data);
 
-        return newEvent;
+        return newBundle;
     }
 
     bool KTEgg::CloseEgg()

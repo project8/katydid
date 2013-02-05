@@ -45,7 +45,7 @@ namespace Katydid
         RegisterSignal("cluster-1d", &fCluster1DSignal, "void (const KTCluster1DData*)");
         //RegisterSignal("cluster-2d", &fCluster2DSignal, "void (const KTCluster2DData*)");
 
-        RegisterSlot("bundle", this, &KTDistanceClustering::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTDistanceClustering::ProcessBundle, "void (shared_ptr<KTBundle>)");
         RegisterSlot("disc-1d-data", this, &KTDistanceClustering::Process1DData, "void (const KTDiscriminatedPoints1DData*)");
         //RegisterSlot("disc-2d-data", this, &KTDistanceClustering::Process2DData, "void (const KTDiscriminatedPoints2DData*)");
     }
@@ -121,14 +121,14 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fCluster1DSignal(newData);
 
         return newData;
     }
 
-    void KTDistanceClustering::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTDistanceClustering::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTDiscriminatedPoints1DData* dp1Data = bundle->GetData< KTDiscriminatedPoints1DData >(fInputDataName);
         if (dp1Data != NULL)
@@ -153,16 +153,16 @@ namespace Katydid
     void KTDistanceClustering::Process1DData(const KTDiscriminatedPoints1DData* data)
     {
         KTCluster1DData* newData = FindClusters(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
     /*
     void KTDistanceClustering::Process2DData(const KTDiscriminatedPoints2DData* data)
     {
         KTCluster2DData* newData = FindClusters(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
     */

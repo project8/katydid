@@ -45,11 +45,11 @@ namespace Katydid
             virtual ~KTBundleWindowFunction();
 
             virtual Bool_t ConfigureWindowFunctionSubclass(const KTPStoreNode* node);
-            virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node) = 0;
+            virtual Bool_t ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node) = 0;
 
             /// Sets fBinWidth to bundle->GetBinWidth(), and adapts the length to be the integral number of bins closest to the current fLength.
             /// Returns the adapted length.
-            /// If you also need to set the length, it is recommended that you use AdaptTo(const TEvent*, Double_t) instead of separately setting the length.
+            /// If you also need to set the length, it is recommended that you use AdaptTo(const TBundle*, Double_t) instead of separately setting the length.
             virtual Double_t AdaptTo(const KTTimeSeriesData* tsData);
             /// Sets fBinWidth to bundle->GetBinWidth(), and adapts the length to be the integer multiple of the bin width closest to the given length.
             /// Returns the adapted length.

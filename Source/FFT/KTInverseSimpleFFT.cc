@@ -41,7 +41,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTInverseSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTInverseSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("bundle", this, &KTInverseSimpleFFT::ProcessEvent, "void (KTBundle*)");
+        RegisterSlot("bundle", this, &KTInverseSimpleFFT::ProcessBundle, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -64,7 +64,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTInverseSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTInverseSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("bundle", this, &KTInverseSimpleFFT::ProcessEvent, "void (KTBundle*)");
+        RegisterSlot("bundle", this, &KTInverseSimpleFFT::ProcessBundle, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -138,7 +138,7 @@ namespace Katydid
 
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
-        newData->SetEvent(tsData->GetEvent());
+        newData->SetBundle(tsData->GetBundle());
 
         fFFTSignal(newData);
 
@@ -192,13 +192,13 @@ namespace Katydid
     void KTInverseSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTFrequencySpectrumData* newData = TransformData(tsData);
-        tsData->GetEvent()->AddData(newData);
+        tsData->GetBundle()->AddData(newData);
         return;
     }
 
-    void KTInverseSimpleFFT::ProcessEvent(KTBundle* bundle)
+    void KTInverseSimpleFFT::ProcessBundle(KTBundle* bundle)
     {
-        KTDEBUG(fftlog_simp, "Performing FFT of bundle " << bundle->GetEventNumber());
+        KTDEBUG(fftlog_simp, "Performing FFT of bundle " << bundle->GetBundleNumber());
         const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(KTTimeSeriesData::StaticGetName());
         if (tsData == NULL)
         {

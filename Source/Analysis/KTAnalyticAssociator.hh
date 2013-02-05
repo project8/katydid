@@ -80,7 +80,7 @@ namespace Katydid
 
          public:
              void ProcessHeader(const KTEggHeader* header);
-             void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
+             void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
              void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
              void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 

@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 
     try
     {
-        // every time procEgg hatches an bundle, procEHunt.ProcessEvent will be called
+        // every time procEgg hatches an bundle, procEHunt.ProcessBundle will be called
         procEgg.ConnectASlot("bundle", &procEHunt, "bundle");
 
         // when procEgg parses the header, the info is passed to procEHunt::ProcessHeader

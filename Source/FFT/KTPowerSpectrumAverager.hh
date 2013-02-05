@@ -76,7 +76,7 @@ namespace Katydid
             //************
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
 

@@ -57,8 +57,8 @@ namespace Katydid
         RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
         RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
-        RegisterSlot("bundle-forward", this, &KTComplexFFTW::ProcessEventForward, "void (KTBundle*)");
-        RegisterSlot("bundle-reverse", this, &KTComplexFFTW::ProcessEventReverse, "void (KTBundle*)");
+        RegisterSlot("bundle-forward", this, &KTComplexFFTW::ProcessBundleForward, "void (KTBundle*)");
+        RegisterSlot("bundle-reverse", this, &KTComplexFFTW::ProcessBundleReverse, "void (KTBundle*)");
 
         SetupInternalMaps();
     }
@@ -350,8 +350,8 @@ namespace Katydid
         KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
         if (newData != NULL)
         {
-            KTBundle* bundle = tsData->GetEvent();
-            newData->SetEvent(bundle);
+            KTBundle* bundle = tsData->GetBundle();
+            newData->SetBundle(bundle);
             if (bundle != NULL)
                 bundle->AddData(newData);
             fFFTForwardSignal(newData);
@@ -364,8 +364,8 @@ namespace Katydid
         KTTimeSeriesData* newData = TransformData(fsData);
         if (newData != NULL)
         {
-            KTBundle* bundle = fsData->GetEvent();
-            newData->SetEvent(bundle);
+            KTBundle* bundle = fsData->GetBundle();
+            newData->SetBundle(bundle);
             if (bundle != NULL)
                 bundle->AddData(newData);
             fFFTReverseSignal(newData);
@@ -373,9 +373,9 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessEventForward(shared_ptr<KTBundle> bundle)
+    void KTComplexFFTW::ProcessBundleForward(shared_ptr<KTBundle> bundle)
     {
-        KTDEBUG(fftlog_comp, "Performing forward FFT of bundle " << bundle->GetEventNumber());
+        KTDEBUG(fftlog_comp, "Performing forward FFT of bundle " << bundle->GetBundleNumber());
         const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fForwardInputDataName);
         if (tsData == NULL)
         {
@@ -387,9 +387,9 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessEventReverse(shared_ptr<KTBundle> bundle)
+    void KTComplexFFTW::ProcessBundleReverse(shared_ptr<KTBundle> bundle)
     {
-        KTDEBUG(fftlog_comp, "Performing reverse FFT of bundle " << bundle->GetEventNumber());
+        KTDEBUG(fftlog_comp, "Performing reverse FFT of bundle " << bundle->GetBundleNumber());
         const KTFrequencySpectrumDataFFTW* fsData = bundle->GetData< KTFrequencySpectrumDataFFTW >(fReverseInputDataName);
         if (fsData == NULL)
         {

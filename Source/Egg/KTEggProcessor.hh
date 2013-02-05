@@ -27,7 +27,7 @@ namespace Katydid
      @brief Iterates over the bundles in an Egg file.
 
      @details
-     Iterates over bundles in an egg file; bundles are extracted until fNEvents is reached.
+     Iterates over bundles in an egg file; bundles are extracted until fNBundles is reached.
 
      Available configuration options:
      \li \c "number-of-bundles": UInt_t -- Number of bundles to process
@@ -53,7 +53,7 @@ namespace Katydid
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
             typedef KTSignal< void (const KTTimeSeriesData*) >::signal DataSignal;
-            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal EventSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:
@@ -79,13 +79,13 @@ namespace Katydid
 
             Bool_t ProcessEgg();
 
-            UInt_t GetNEvents() const;
+            UInt_t GetNBundles() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
             UInt_t GetSliceSizeRequest() const;
             TimeSeriesType GetTimeSeriesType() const;
 
-            void SetNEvents(UInt_t nEvents);
+            void SetNBundles(UInt_t nBundles);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
             void SetSliceSizeRequest(UInt_t size);
@@ -95,13 +95,13 @@ namespace Katydid
             void SetOutputDataName(const std::string& name);
 
         private:
-            UInt_t fNEvents;
+            UInt_t fNBundles;
 
             std::string fFilename;
 
             EggReaderType fEggReaderType;
 
-            UInt_t fRecordSizeRequest;
+            UInt_t fSliceSizeRequest;
 
             TimeSeriesType fTimeSeriesType;
 
@@ -114,7 +114,7 @@ namespace Katydid
         private:
             HeaderSignal fHeaderSignal;
             DataSignal fDataSignal;
-            EventSignal fEventSignal;
+            BundleSignal fBundleSignal;
             EggDoneSignal fEggDoneSignal;
 
     };
@@ -124,14 +124,14 @@ namespace Katydid
         return ProcessEgg();
     }
 
-    inline UInt_t KTEggProcessor::GetNEvents() const
+    inline UInt_t KTEggProcessor::GetNBundles() const
     {
-        return fNEvents;
+        return fNBundles;
     }
 
-    inline void KTEggProcessor::SetNEvents(UInt_t nEvents)
+    inline void KTEggProcessor::SetNBundles(UInt_t nBundles)
     {
-        fNEvents = nEvents;
+        fNBundles = nBundles;
         return;
     }
 
@@ -159,12 +159,12 @@ namespace Katydid
 
     inline UInt_t KTEggProcessor::GetSliceSizeRequest() const
     {
-        return fRecordSizeRequest;
+        return fSliceSizeRequest;
     }
 
     inline void KTEggProcessor::SetSliceSizeRequest(UInt_t size)
     {
-        fRecordSizeRequest = size;
+        fSliceSizeRequest = size;
         return;
     }
 

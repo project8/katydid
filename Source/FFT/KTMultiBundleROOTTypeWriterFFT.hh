@@ -8,7 +8,7 @@
 #ifndef KTMULTIBUNDLEROOTTYPEWRITERFFT_HH_
 #define KTMULTIBUNDLEROOTTYPEWRITERFFT_HH_
 
-#include "KTMultiEventROOTWriter.hh"
+#include "KTMultiBundleROOTWriter.hh"
 
 class TH1D;
 
@@ -17,14 +17,14 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumData;
 
-    class KTMultiEventROOTTypeWriterFFT : public KTMEROOTTypeWriterBase//, public KTTypeWriterFFT
+    class KTMultiBundleROOTTypeWriterFFT : public KTMEROOTTypeWriterBase//, public KTTypeWriterFFT
     {
         public:
             friend class KTFrequencySpectrumData;
 
         public:
-            KTMultiEventROOTTypeWriterFFT();
-            virtual ~KTMultiEventROOTTypeWriterFFT();
+            KTMultiBundleROOTTypeWriterFFT();
+            virtual ~KTMultiBundleROOTTypeWriterFFT();
 
             void RegisterSlots();
 

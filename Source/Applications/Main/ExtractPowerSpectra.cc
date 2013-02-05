@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
     try
     {
-        // this will ensure that every time procEgg hatches an bundle, procFFT.ProcessEvent will be called
+        // this will ensure that every time procEgg hatches an bundle, procFFT.ProcessBundle will be called
         procEgg.ConnectASlot("bundle", &procFFT, "bundle");
 
         // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT

@@ -46,7 +46,7 @@ int main(int argc, char** argv)
         // When procEgg parses the header, the info is passed to PrepareFFT
         procEgg.ConnectASlot("header", &procFFT, "header");
 
-        // When procEgg hatches an bundle, procFFT.ProcessEvent and procCorr.ProcessEvent will be called
+        // When procEgg hatches an bundle, procFFT.ProcessBundle and procCorr.ProcessBundle will be called
         procEgg.ConnectASlot("bundle", &procFFT, "bundle", 0);
         procEgg.ConnectASlot("bundle", &procCorr, "bundle", 1);
 

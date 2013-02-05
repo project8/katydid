@@ -60,7 +60,7 @@ namespace Katydid
             };
             typedef std::list< FreqBinCluster > FreqBinClusters;
 
-            typedef std::list< boost::shared_ptr<KTBundle> > NewEventList;
+            typedef std::list< boost::shared_ptr<KTBundle> > NewBundleList;
 
 
         public:
@@ -99,12 +99,12 @@ namespace Katydid
             std::string fOutputDataName;
 
         public:
-            NewEventList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData);
+            NewBundleList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData);
 
-            NewEventList*  AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component);
+            NewBundleList*  AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component);
 
-            NewEventList* CompleteAllClusters(UInt_t component);
-            NewEventList* CompleteInactiveClusters(UInt_t component);
+            NewBundleList* CompleteAllClusters(UInt_t component);
+            NewBundleList* CompleteInactiveClusters(UInt_t component);
 
             void Reset();
             UInt_t GetTimeBin() const;
@@ -116,7 +116,7 @@ namespace Katydid
             void SetFrequencyBinWidth(Double_t bw);
 
         private:
-            boost::shared_ptr<KTBundle> CreateEventFromCluster(const Cluster& cluster);
+            boost::shared_ptr<KTBundle> CreateBundleFromCluster(const Cluster& cluster);
 
             UInt_t fTimeBin;
             Double_t fTimeBinWidth;
@@ -252,12 +252,12 @@ namespace Katydid
             void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
             void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
 
-            void SetEventPeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
+            void SetBundlePeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
             void SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
 
         private:
-            epbList* fEventPeakBins;
+            epbList* fBundlePeakBins;
             Double_t fThresholdMult;
 
             KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* fBinCuts;
@@ -274,9 +274,9 @@ namespace Katydid
 
     };
 
-    inline void KTSimpleClustering::SetEventPeakBinsList(epbList* list)
+    inline void KTSimpleClustering::SetBundlePeakBinsList(epbList* list)
     {
-        fEventPeakBins = list;
+        fBundlePeakBins = list;
         return;
     }
 

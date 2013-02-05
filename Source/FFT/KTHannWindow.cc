@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHannWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTHannWindow::ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node)
     {
         return true;
     }

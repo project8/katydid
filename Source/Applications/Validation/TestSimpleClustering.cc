@@ -75,7 +75,7 @@ int main()
     clustering.SetFrequencyBinWidth(freqBW);
     clustering.SetMaxFrequencySeparationBins(1);
 
-    KTSimpleClustering::NewEventList allNewEvents;
+    KTSimpleClustering::NewBundleList allNewBundles;
 
     KTINFO(vallog, "Commencing with the clustering process");
     for (vector< KTDiscriminatedPoints1DData::SetOfPoints >::const_iterator setIt = allPoints.begin(); setIt != allPoints.end(); setIt++)
@@ -93,21 +93,21 @@ int main()
         KTINFO(vallog, "Time bin created");
 
         KTINFO(vallog, "Adding points to clusters");
-        KTSimpleClustering::NewEventList* newEvents = clustering.AddPointsToClusters(&dataIn);
-        KTINFO(vallog, "New bundles produced: " << newEvents->size());
+        KTSimpleClustering::NewBundleList* newBundles = clustering.AddPointsToClusters(&dataIn);
+        KTINFO(vallog, "New bundles produced: " << newBundles->size());
 
-        allNewEvents.splice(allNewEvents.end(), *newEvents);
-        delete newEvents;
+        allNewBundles.splice(allNewBundles.end(), *newBundles);
+        delete newBundles;
     }
 
     KTINFO(vallog, "Cleaning up remaining active clusters");
-    KTSimpleClustering::NewEventList* newEvents = clustering.CompleteAllClusters(0);
-    KTINFO(vallog, "New bundles produced: " << newEvents->size());
+    KTSimpleClustering::NewBundleList* newBundles = clustering.CompleteAllClusters(0);
+    KTINFO(vallog, "New bundles produced: " << newBundles->size());
 
-    allNewEvents.splice(allNewEvents.end(), *newEvents);
-    delete newEvents;
+    allNewBundles.splice(allNewBundles.end(), *newBundles);
+    delete newBundles;
 
-    KTINFO(vallog, "Test complete; " << allNewEvents.size() << " new bundles were created.");
+    KTINFO(vallog, "Test complete; " << allNewBundles.size() << " new bundles were created.");
 
     return 0;
 }

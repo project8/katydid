@@ -34,7 +34,7 @@ namespace Katydid
             KTRectangularWindow(const KTTimeSeriesData* tsData);
             virtual ~KTRectangularWindow();
 
-            virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node);
+            virtual Bool_t ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node);
 
             virtual Double_t GetWeight(Double_t time) const;
             virtual Double_t GetWeight(UInt_t bin) const;

@@ -55,9 +55,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterAnalysis::WriteCorrelationData(const KTCorrelationData* data)
     {
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPairs = data->GetNPairs();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -73,7 +73,7 @@ namespace Katydid
                 conv >> histName;
                 TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
                 stringstream titleStream;
-                titleStream << "Event " << bundleNumber << ", Correlation " << iPair << ", "
+                titleStream << "Bundle " << bundleNumber << ", Correlation " << iPair << ", "
                         "Channels (" << data->GetFirstChannel(iPair) << ", " << data->GetSecondChannel(iPair) << ")";
                 corrHist->SetTitle(titleStream.str().c_str());
                 corrHist->SetDirectory(fWriter->GetFile());
@@ -90,9 +90,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterAnalysis::WriteHoughData(const KTHoughData* data)
     {
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPlots = data->GetNTransforms();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -117,9 +117,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterAnalysis::WriteGainVariationData(const KTGainVariationData* data)
     {
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;

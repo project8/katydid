@@ -52,7 +52,7 @@ namespace Katydid
         RegisterSignal("gain-norm-sw-fs", &fSWFSSignal, "void (const KTSlidingWindowFSData*)");
         RegisterSignal("gain-norm-sw-fs-fftw", &fSWFSFFTWSignal, "void (const KTSlidingWindowFSDataFFTW*)");
 
-        RegisterSlot("bundle", this, &KTGainNormalization::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTGainNormalization::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTGainNormalization::~KTGainNormalization()
@@ -304,7 +304,7 @@ namespace Katydid
         return newSpectrum;
     }
 
-    void KTGainNormalization::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTGainNormalization::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTGainVariationData* gvData = bundle->GetData< KTGainVariationData >(fGVInputDataName);
         if (gvData == NULL)
@@ -319,8 +319,8 @@ namespace Katydid
             KTFrequencySpectrumData* newData = Normalize(fsData, gvData);
             if (newData != NULL)
             {
-                KTBundle* bundle = fsData->GetEvent();
-                newData->SetEvent(bundle);
+                KTBundle* bundle = fsData->GetBundle();
+                newData->SetBundle(bundle);
                 if (bundle != NULL)
                     bundle->AddData(newData);
                 fFSSignal(newData);
@@ -334,8 +334,8 @@ namespace Katydid
             KTFrequencySpectrumDataFFTW* newData = Normalize(fsDataFFTW, gvData);
             if (newData != NULL)
             {
-                KTBundle* bundle = fsDataFFTW->GetEvent();
-                newData->SetEvent(bundle);
+                KTBundle* bundle = fsDataFFTW->GetBundle();
+                newData->SetBundle(bundle);
                 if (bundle != NULL)
                     bundle->AddData(newData);
                 fFSFFTWSignal(newData);

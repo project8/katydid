@@ -47,10 +47,10 @@ namespace Katydid
         fConfigName = "power-spectrum-averager";
 
         RegisterSlot("header", this, &KTPowerSpectrumAverager::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("bundle", this, &KTPowerSpectrumAverager::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTPowerSpectrumAverager::ProcessBundle, "void (shared_ptr<KTBundle>)");
         RegisterSlot("finish", this, &KTPowerSpectrumAverager::Finish, "void ()");
 
-        KTWARN(psavglog, "Please note: KTPowerSpectrumAverager is now deprecated. Please use KTMultiEventROOTWriter instead.");
+        KTWARN(psavglog, "Please note: KTPowerSpectrumAverager is now deprecated. Please use KTMultiBundleROOTWriter instead.");
     };
 
     KTPowerSpectrumAverager::~KTPowerSpectrumAverager()
@@ -156,7 +156,7 @@ namespace Katydid
         return;
     }
 
-    void KTPowerSpectrumAverager::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTPowerSpectrumAverager::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)

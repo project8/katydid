@@ -57,9 +57,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nChannels = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -84,9 +84,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nChannels = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -115,9 +115,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData(const KTSlidingWindowFSData* data)
     {
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -138,9 +138,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data)
     {
-        KTBundle* bundle = data->GetEvent();
+        KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetEventNumber();
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;

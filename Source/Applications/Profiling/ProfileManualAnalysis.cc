@@ -50,7 +50,7 @@ int main()
     //***********************************
 
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
-    UInt_t nEvents = 50;
+    UInt_t nBundles = 50;
     UInt_t recordSize = 32768;
     KTEggReaderMonarch::TimeSeriesType tsType = KTEggReaderMonarch::kFFTWTimeSeries;
 
@@ -116,18 +116,18 @@ int main()
     // Do the processing work
     //**************************
 
-    UInt_t iEvent = 0;
+    UInt_t iBundle = 0;
     while (kTRUE)
     {
-        if (iEvent >= nEvents) break;
+        if (iBundle >= nBundles) break;
 
-        KTINFO(proflog, "Event " << iEvent);
+        KTINFO(proflog, "Bundle " << iBundle);
 
         // Hatch the bundle
-        boost::shared_ptr<KTBundle> bundle = egg.HatchNextEvent();
+        boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
         if (bundle.get() == NULL) break;
 
-        if (iEvent == nEvents - 1) bundle->SetIsLastEvent(true);
+        if (iBundle == nBundles - 1) bundle->SetIsLastBundle(true);
 
         KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >("time-series");
         if (tsData != NULL)
@@ -141,9 +141,9 @@ int main()
         }
 
         // Pass the bundle to any subscribers
-        //fEventSignal(bundle);
+        //fBundleSignal(bundle);
 
-        prof.ProcessEvent(bundle);
+        prof.ProcessBundle(bundle);
 
         KTFrequencySpectrumDataFFTW* fsData = compFFT.TransformData(tsData);
 
@@ -169,7 +169,7 @@ int main()
         delete clusterData;
         delete freqCandData;
 
-        iEvent++;
+        iBundle++;
     }
 
     //*******************************

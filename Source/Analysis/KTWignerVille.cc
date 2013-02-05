@@ -68,7 +68,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("bundle", this, &KTWignerVille::ProcessEvent, "void (KTBundle*)");
+        RegisterSlot("bundle", this, &KTWignerVille::ProcessBundle, "void (KTBundle*)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -145,7 +145,7 @@ namespace Katydid
             iPair++;
         }
 
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
         newData->SetName(fOutputDataName);
 
         fWVSignal(newData);
@@ -248,7 +248,7 @@ namespace Katydid
             return;
         }
 
-        KTBundle* bundle = tsData->GetEvent();
+        KTBundle* bundle = tsData->GetBundle();
         if (bundle != NULL)
         {
             bundle->AddData(newData);
@@ -257,7 +257,7 @@ namespace Katydid
         return;
     }
 
-    void KTWignerVille::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTWignerVille::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)

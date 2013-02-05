@@ -58,7 +58,7 @@ namespace Katydid
 
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
-     \li \c void ProcessEvent(UInt_t iEvent, const KTBundle* bundle)
+     \li \c void ProcessBundle(UInt_t iBundle, const KTBundle* bundle)
 
      Signals:
      \li \c void (UInt_t, const KTInverseSimpleFFT*) emitted upon performance of a transform.
@@ -126,7 +126,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(KTBundle* bundle);
+            void ProcessBundle(KTBundle* bundle);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };

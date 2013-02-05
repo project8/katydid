@@ -164,7 +164,7 @@ namespace Katydid
 
             UInt_t GetSliceSize() const;
             Double_t GetSampleRate() const;
-            Double_t GetRecordLength() const;
+            Double_t GetSliceLength() const;
             Double_t GetBinWidth() const;
 
             ClockType GetTimeStamp(UInt_t channelNum = 0) const;
@@ -181,9 +181,9 @@ namespace Katydid
 
             void SetSliceSize(UInt_t size);
             void SetSampleRate(Double_t sampleRate);
-            void SetRecordLength(Double_t recordLength);
+            void SetSliceLength(Double_t recordLength);
             void SetBinWidth(Double_t binWidth);
-            void CalculateBinWidthAndRecordLength();
+            void CalculateBinWidthAndSliceLength();
             void SetTimeInRun(Double_t tir);
             void SetSliceNumber(ULong64_t slice);
 
@@ -194,9 +194,9 @@ namespace Katydid
             void SetTimeSeries(KTTimeSeries* record, UInt_t channelNum = 0);
 
         private:
-            UInt_t fRecordSize; // number of bins
+            UInt_t fSliceSize; // number of bins
             Double_t fSampleRate; // in Hz
-            Double_t fRecordLength; // in sec
+            Double_t fSliceLength; // in sec
             Double_t fBinWidth; // in sec
 
             Double_t fTimeInRun; // in sec
@@ -213,12 +213,12 @@ namespace Katydid
 
     inline UInt_t KTProgenitorTimeSeriesData::GetSliceSize() const
     {
-        return fRecordSize;
+        return fSliceSize;
     }
 
-    inline Double_t KTProgenitorTimeSeriesData::GetRecordLength() const
+    inline Double_t KTProgenitorTimeSeriesData::GetSliceLength() const
     {
-        return fRecordLength;
+        return fSliceLength;
     }
 
     inline Double_t KTProgenitorTimeSeriesData::GetSampleRate() const
@@ -268,12 +268,12 @@ namespace Katydid
 
     inline void KTProgenitorTimeSeriesData::SetSliceSize(UInt_t recordSize)
     {
-        this->fRecordSize = recordSize;
+        this->fSliceSize = recordSize;
     }
 
-    inline void KTProgenitorTimeSeriesData::SetRecordLength(Double_t recordLength)
+    inline void KTProgenitorTimeSeriesData::SetSliceLength(Double_t recordLength)
     {
-        this->fRecordLength = recordLength;
+        this->fSliceLength = recordLength;
     }
 
     inline void KTProgenitorTimeSeriesData::SetSampleRate(Double_t sampleRate)
@@ -286,10 +286,10 @@ namespace Katydid
         this->fBinWidth = binWidth;
     }
 
-    inline void KTProgenitorTimeSeriesData::CalculateBinWidthAndRecordLength()
+    inline void KTProgenitorTimeSeriesData::CalculateBinWidthAndSliceLength()
     {
         SetBinWidth(1. / fSampleRate);
-        SetRecordLength(Double_t(fRecordSize) * fBinWidth);
+        SetSliceLength(Double_t(fSliceSize) * fBinWidth);
         return;
     }
 

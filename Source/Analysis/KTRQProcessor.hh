@@ -63,8 +63,8 @@ namespace Katydid {
     typedef KTSignal< void (const KTTimeSeriesData*) >::signal RQSignal;
 
     void ProcessNoiseData(const KTTimeSeriesData* noise);
-    void ProcessCandidateEvent(boost::shared_ptr<KTBundle> bundle);
-    void ProcessNoiseEvent(boost::shared_ptr<KTBundle> bundle);
+    void ProcessCandidateBundle(boost::shared_ptr<KTBundle> bundle);
+    void ProcessNoiseBundle(boost::shared_ptr<KTBundle> bundle);
 
   private:
     RQSignal fRQSignal;

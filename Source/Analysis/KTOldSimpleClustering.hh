@@ -40,12 +40,12 @@ namespace Katydid
             void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
             void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
 
-            void SetEventPeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
+            void SetBundlePeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
             void SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
 
         private:
-            epbList* fEventPeakBins;
+            epbList* fBundlePeakBins;
             Double_t fThresholdMult;
 
             KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* fBinCuts;
@@ -62,9 +62,9 @@ namespace Katydid
 
     };
 
-    inline void KTOldSimpleClustering::SetEventPeakBinsList(epbList* list)
+    inline void KTOldSimpleClustering::SetBundlePeakBinsList(epbList* list)
     {
-        fEventPeakBins = list;
+        fBundlePeakBins = list;
         return;
     }
 

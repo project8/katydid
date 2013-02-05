@@ -1,11 +1,11 @@
 /*
- * KTMultiEventROOTWriter.cc
+ * KTMultiBundleROOTWriter.cc
  *
  *  Created on: Jan 28, 2013
  *      Author: nsoblath
  */
 
-#include "KTMultiEventROOTWriter.hh"
+#include "KTMultiBundleROOTWriter.hh"
 
 #include "KTFactory.hh"
 #include "KTLogger.hh"
@@ -19,11 +19,11 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTMultiEventROOTWriter > sMERWriterRegistrar("multi-bundle-root-writer");
-    static KTDerivedRegistrar< KTProcessor, KTMultiEventROOTWriter > sMERWProcRegistrar("multi-bundle-root-writer");
+    static KTDerivedRegistrar< KTWriter, KTMultiBundleROOTWriter > sMERWriterRegistrar("multi-bundle-root-writer");
+    static KTDerivedRegistrar< KTProcessor, KTMultiBundleROOTWriter > sMERWProcRegistrar("multi-bundle-root-writer");
 
-    KTMultiEventROOTWriter::KTMultiEventROOTWriter() :
-            KTWriterWithTypists< KTMultiEventROOTWriter >(),
+    KTMultiBundleROOTWriter::KTMultiBundleROOTWriter() :
+            KTWriterWithTypists< KTMultiBundleROOTWriter >(),
             fUseTFile(true),
             fTFilename("multi_bundle.root"),
             fTFileFlag("recreate"),
@@ -35,14 +35,14 @@ namespace Katydid
     {
         fConfigName = "multi-bundle-root-writer";
 
-        RegisterSlot("start", this, &KTMultiEventROOTWriter::Start, "void ()");
-        RegisterSlot("finish", this, &KTMultiEventROOTWriter::Finish, "void ()");
+        RegisterSlot("start", this, &KTMultiBundleROOTWriter::Start, "void ()");
+        RegisterSlot("finish", this, &KTMultiBundleROOTWriter::Finish, "void ()");
 
 
-        RegisterSlot("write-data", this, &KTMultiEventROOTWriter::Publish);
+        RegisterSlot("write-data", this, &KTMultiBundleROOTWriter::Publish);
     }
 
-    KTMultiEventROOTWriter::~KTMultiEventROOTWriter()
+    KTMultiBundleROOTWriter::~KTMultiBundleROOTWriter()
     {
         if (fFile != NULL)
         {
@@ -51,7 +51,7 @@ namespace Katydid
         delete fFile;
     }
 
-    Bool_t KTMultiEventROOTWriter::Configure(const KTPStoreNode* node)
+    Bool_t KTMultiBundleROOTWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
@@ -69,7 +69,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiEventROOTWriter::OpenAndVerifyFile()
+    Bool_t KTMultiBundleROOTWriter::OpenAndVerifyFile()
     {
         if (fUseTFile)
         {
@@ -89,7 +89,7 @@ namespace Katydid
         return true;
     }
 
-    void KTMultiEventROOTWriter::Start()
+    void KTMultiBundleROOTWriter::Start()
     {
         for (TypeWriterMap::iterator it = fTypeWriters.begin(); it != fTypeWriters.end(); it++)
         {
@@ -98,7 +98,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiEventROOTWriter::Finish()
+    void KTMultiBundleROOTWriter::Finish()
     {
         for (TypeWriterMap::iterator it = fTypeWriters.begin(); it != fTypeWriters.end(); it++)
         {
@@ -108,13 +108,13 @@ namespace Katydid
     }
 
 
-    void KTMultiEventROOTWriter::Publish(const KTWriteableData* data)
+    void KTMultiBundleROOTWriter::Publish(const KTWriteableData* data)
     {
         data->Accept(this);
         return;
     }
 
-    void KTMultiEventROOTWriter::Write(const KTWriteableData* data)
+    void KTMultiBundleROOTWriter::Write(const KTWriteableData* data)
     {
         KTWARN(publog, "Generic Write function called; no data written");
         return;

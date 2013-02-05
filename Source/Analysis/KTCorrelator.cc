@@ -52,7 +52,7 @@ namespace Katydid
 
         RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fftw-data", this, &KTCorrelator::ProcessFFTWData, "void (const KTFrequencySpectrumDataFFTW*)");
-        RegisterSlot("bundle", this, &KTCorrelator::ProcessEvent, "void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle", this, &KTCorrelator::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTCorrelator::~KTCorrelator()
@@ -166,9 +166,9 @@ namespace Katydid
             }
         }
 
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
-        //data->GetEvent()->AddData(newData);
+        //data->GetBundle()->AddData(newData);
         fCorrSignal(newData);
 
         KTDEBUG(corrlog, "Correlations complete");
@@ -187,9 +187,9 @@ namespace Katydid
 
             KTCorrelationData* newData = new KTCorrelationData();
             newData->SetCorrelation(result, firstChannel, secondChannel, 0);
-            data->GetEvent()->AddData(newData);
+            data->GetBundle()->AddData(newData);
 
-            newData->SetEvent(data->GetEvent());
+            newData->SetBundle(data->GetBundle());
 
             fCorrSignal(newData);
 
@@ -226,8 +226,8 @@ namespace Katydid
         KTCorrelationData* newData = Correlate(fsData);
         if (newData != NULL)
         {
-            KTBundle* bundle = fsData->GetEvent();
-            newData->SetEvent(bundle);
+            KTBundle* bundle = fsData->GetBundle();
+            newData->SetBundle(bundle);
             if (bundle != NULL)
                 bundle->AddData(newData);
             fCorrSignal(newData);
@@ -240,8 +240,8 @@ namespace Katydid
         KTCorrelationData* newData = Correlate(fsData);
         if (newData != NULL)
         {
-            KTBundle* bundle = fsData->GetEvent();
-            newData->SetEvent(bundle);
+            KTBundle* bundle = fsData->GetBundle();
+            newData->SetBundle(bundle);
             if (bundle != NULL)
                 bundle->AddData(newData);
             fCorrSignal(newData);
@@ -249,7 +249,7 @@ namespace Katydid
         return;
     }
 
-    void KTCorrelator::ProcessEvent(shared_ptr<KTBundle> bundle)
+    void KTCorrelator::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
         const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)

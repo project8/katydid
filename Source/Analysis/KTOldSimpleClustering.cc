@@ -35,7 +35,7 @@ namespace Katydid
 
     KTOldSimpleClustering::KTOldSimpleClustering() :
             KTProcessor(),
-            fEventPeakBins(NULL),
+            fBundlePeakBins(NULL),
             fThresholdMult(8.),
             fBinCuts(NULL),
             fMinimumGroupSize(2),
@@ -175,7 +175,7 @@ namespace Katydid
         {
             Int_t pbVal = *iPB;
             Bool_t foundGroup = kFALSE;
-            for (list< multimap< Int_t, Int_t >* >::iterator iEPB=fEventPeakBins->begin(); iEPB!=fEventPeakBins->end(); iEPB++)
+            for (list< multimap< Int_t, Int_t >* >::iterator iEPB=fBundlePeakBins->begin(); iEPB!=fBundlePeakBins->end(); iEPB++)
             {
                 multimap< Int_t, Int_t >* groupMap = *iEPB;
                 multimap< Int_t, Int_t >::iterator lastGroup = groupMap->end();
@@ -185,7 +185,7 @@ namespace Katydid
                 if (lastFFT < psNum - 1 && (UInt_t)groupMap->size() <= fMinimumGroupSize)
                 {
                     delete groupMap;
-                    iEPB = fEventPeakBins->erase(iEPB);
+                    iEPB = fBundlePeakBins->erase(iEPB);
                     iEPB--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
                     continue;
                 }
@@ -225,7 +225,7 @@ namespace Katydid
             // no match to existing groups, so add a new one
             multimap< Int_t, Int_t >* newGroupMap = new multimap< Int_t, Int_t >();
             newGroupMap->insert( pair< Int_t, Int_t >((Int_t)psNum, pbVal) );
-            fEventPeakBins->push_back(newGroupMap);
+            fBundlePeakBins->push_back(newGroupMap);
         }
 
         return;

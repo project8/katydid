@@ -22,7 +22,7 @@ namespace Katydid
         public:
             struct HeaderInfo
             {
-                int fEventSize;
+                int fBundleSize;
                 int fFrameIDSize;
                 int fRecordSize;
                 int fTimeStampSize;
@@ -35,7 +35,7 @@ namespace Katydid
                     fTimeStampSize(0),
                     fFrameIDSize(0),
                     fRecordSize(0),
-                    fEventSize(0),
+                    fBundleSize(0),
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),
@@ -56,7 +56,7 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string& filename);
-            virtual KTTimeSeriesData* HatchNextEvent();
+            virtual KTTimeSeriesData* HatchNextBundle();
             virtual bool CloseEgg();
 
             UInt_t GetRecordsRead() const;

@@ -24,7 +24,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    static KTCommandLineOption< int > sNEventsCLO("Egg Processor", "Number of bundles to process", "n-bundles", 'n');
+    static KTCommandLineOption< int > sNBundlesCLO("Egg Processor", "Number of bundles to process", "n-bundles", 'n');
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
     static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
@@ -34,22 +34,22 @@ namespace Katydid
 
     KTEggProcessor::KTEggProcessor() :
             KTPrimaryProcessor(),
-            fNEvents(0),
+            fNBundles(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
-            fRecordSizeRequest(0),
+            fSliceSizeRequest(0),
             fTimeSeriesType(kRealTimeSeries),
             fOutputDataName("time-series"),
             fHeaderSignal(),
             fDataSignal(),
-            fEventSignal(),
+            fBundleSignal(),
             fEggDoneSignal()
     {
         fConfigName = "egg-processor";
 
         RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
         RegisterSignal("data", &fDataSignal, "void (const KTTimeSeriesData*)");
-        RegisterSignal("bundle", &fEventSignal, "boost::shared_ptr<KTBundle>");
+        RegisterSignal("bundle", &fBundleSignal, "boost::shared_ptr<KTBundle>");
         RegisterSignal("egg-done", &fEggDoneSignal, "void ()");
     }
 
@@ -62,7 +62,7 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNEvents(node->GetData< UInt_t >("number-of-bundles", fNEvents));
+            SetNBundles(node->GetData< UInt_t >("number-of-bundles", fNBundles));
             SetFilename(node->GetData< string >("filename", fFilename));
 
             // choose the egg reader
@@ -76,7 +76,7 @@ namespace Katydid
             }
 
             // specify the length of the time series (0 for use Monarch's record size)
-            fRecordSizeRequest = node->GetData< UInt_t >("time-series-size", fRecordSizeRequest);
+            fSliceSizeRequest = node->GetData< UInt_t >("time-series-size", fSliceSizeRequest);
 
             // type of time series
             string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
@@ -93,7 +93,7 @@ namespace Katydid
         }
 
         // Command-line settings
-        SetNEvents(fCLHandler->GetCommandLineValue< Int_t >("n-bundles", fNEvents));
+        SetNBundles(fCLHandler->GetCommandLineValue< Int_t >("n-bundles", fNBundles));
         SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
         if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
         {
@@ -111,7 +111,7 @@ namespace Katydid
         if (fEggReaderType == kMonarchEggReader)
         {
             KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
-            eggReader->SetTimeSeriesSizeRequest(fRecordSizeRequest);
+            eggReader->SetTimeSeriesSizeRequest(fSliceSizeRequest);
             if (fTimeSeriesType == kRealTimeSeries)
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)
@@ -138,18 +138,18 @@ namespace Katydid
                 "\n\tand the header parsed and processed;"
                 "\n\tProceeding with bundle processing");
 
-        UInt_t iEvent = 0;
+        UInt_t iBundle = 0;
         while (kTRUE)
         {
-            if (iEvent >= fNEvents) break;
+            if (iBundle >= fNBundles) break;
 
-            KTINFO(egglog, "Event " << iEvent);
+            KTINFO(egglog, "Bundle " << iBundle);
 
             // Hatch the bundle
-            shared_ptr<KTBundle> bundle = egg.HatchNextEvent();
+            shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
             if (bundle.get() == NULL) break;
 
-            if (iEvent == fNEvents - 1) bundle->SetIsLastEvent(true);
+            if (iBundle == fNBundles - 1) bundle->SetIsLastBundle(true);
 
             KTTimeSeriesData* newData = bundle->GetData< KTTimeSeriesData >(fOutputDataName);
             if (newData != NULL)
@@ -163,9 +163,9 @@ namespace Katydid
             }
 
             // Pass the bundle to any subscribers
-            fEventSignal(bundle);
+            fBundleSignal(bundle);
 
-            iEvent++;
+            iBundle++;
         }
 
         fEggDoneSignal();

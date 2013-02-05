@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 {
     string outputFileNameBase("candidates");
     string inputFileName("");
-    Int_t numEvents = 1;
+    Int_t numBundles = 1;
 
     Double_t thresholdMult = 10.;
 
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
                 outputFileNameBase = string(optarg);
                 break;
             case 'n':
-                numEvents = atoi(optarg);
+                numBundles = atoi(optarg);
                 break;
             case 't':
                 thresholdMult = atof(optarg);
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
     string outputFileNamePS = outputFileNameBase + string(".ps");
     string outputFileNameText = outputFileNameBase + string(".txt");
 
-    if (numEvents == -1) numEvents = 999999999;
+    if (numBundles == -1) numBundles = 999999999;
 
     ofstream txtOutFile(outputFileNameText.c_str());
     txtOutFile << "Egg file: " << inputFileName << endl;
@@ -160,15 +160,15 @@ int main(int argc, char** argv)
     vector< Int_t > globalPeakFreqBins;
 
     Int_t totalCandidates = 0;
-    Int_t iEvent = 0;
+    Int_t iBundle = 0;
     while (kTRUE)
     {
-        if (iEvent >= numEvents) break;
-        txtOutFile << "Event " << iEvent << endl;
+        if (iBundle >= numBundles) break;
+        txtOutFile << "Bundle " << iBundle << endl;
         txtOutFile << "   Candidate bundle frequencies (MHz): ";
 
         // Hatch the bundle
-        KTBundle* bundle = egg.HatchNextEvent();
+        KTBundle* bundle = egg.HatchNextBundle();
         if (bundle == NULL) break;
         KTProgenitorTimeSeriesData* data = bundle->GetData< KTProgenitorTimeSeriesData >("time-series");
         if (data == NULL) break;
@@ -213,7 +213,7 @@ int main(int argc, char** argv)
 
         stringstream conv;
         string histName;
-        conv << iEvent;
+        conv << iBundle;
         conv >> histName;
         histName = string("histWindowedPS") + histName;
         TH2D* hist = swFSData->CreatePowerHistogram(0, histName);
@@ -614,8 +614,8 @@ int main(int argc, char** argv)
             if (drawWaterfall)
             {
                 Char_t histname[256], histtitle[256];
-                sprintf(histname, "hCandidate_%i_%i", iEvent, iCandidate);
-                sprintf(histtitle, "Candidate Group - Event %i - Candidate %i", iEvent, iCandidate);
+                sprintf(histname, "hCandidate_%i_%i", iBundle, iCandidate);
+                sprintf(histtitle, "Candidate Group - Bundle %i - Candidate %i", iBundle, iCandidate);
                 minFFT = TMath::Max(1, minFFT-frameFFT);
                 maxFFT = TMath::Min(hist->GetNbinsX(), maxFFT+frameFFT);
                 Double_t minValFFT = hist->GetBinLowEdge(minFFT);
@@ -670,7 +670,7 @@ int main(int argc, char** argv)
         delete histFullPS;
         delete bundle;
 
-        iEvent++;
+        iBundle++;
         totalCandidates += iCandidate;
         /*
         for (Int_t iCandidate=0; iCandidate<candidates->GetEntriesFast(); iCandidate++)
@@ -688,7 +688,7 @@ int main(int argc, char** argv)
     }
 
     txtOutFile << "Total candidates found in this file: " << totalCandidates << endl;
-    txtOutFile << "Events analyzed: " << iEvent << endl;
+    txtOutFile << "Bundles analyzed: " << iBundle << endl;
     txtOutFile << "------------------------------------" << endl;
     txtOutFile.close();
 
