@@ -78,7 +78,7 @@ if (Katydid_ENABLE_TESTING)
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
     add_executable (TestSimpleClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleClustering.cc)
-    target_link_libraries (TestSimpleClustering KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
+    target_link_libraries (TestSimpleClustering KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${LIBS})
 
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
     target_link_libraries (TestSimpleFFT KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT ${LIBS})
