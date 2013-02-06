@@ -113,6 +113,13 @@ namespace Katydid
         private:
             BundleSignal fBundleSignal;
 
+            //*********
+            // Slots
+            //*********
+        //public:
+            // QueueBundle from KTBundleQueueProcessorTemplate
+            // QueueBundles from KTBundleQueueProcessorTemplate
+
     };
 
 
@@ -135,6 +142,7 @@ namespace Katydid
     template< class XProcessorType >
     KTBundleQueueProcessorTemplate< XProcessorType >::~KTBundleQueueProcessorTemplate()
     {
+        ClearQueue();
     }
 
     template< class XProcessorType >
@@ -171,7 +179,7 @@ namespace Katydid
             if (fQueue.wait_and_pop(bundleToPublish))
             {
                 KTDEBUG(eqplog, "Bundle acquired for publishing");
-                (static_cast<XProcessorType*>(this)->fFuncPtr)(bundleToPublish);
+                (static_cast<XProcessorType*>(this)->*fFuncPtr)(bundleToPublish);
                 if (bundleToPublish->GetIsLastBundle()) fStatus = kStopped;
             }
         }
