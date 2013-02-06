@@ -25,6 +25,10 @@
 namespace Katydid
 {
     class KTBundle;
+    class KTCorrelationData;
+    class KTData;
+    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataFFTW;
 
     class KTSimpleClustering : public KTBundleQueueProcessorTemplate< KTSimpleClustering >
     {
@@ -36,6 +40,7 @@ namespace Katydid
                  UInt_t fTimeBin;
                  UInt_t fFreqBin;
                  Double_t fAmplitude;
+                 boost::shared_ptr<KTData>;
             };
             //typedef std::deque< ClusterPoint > Cluster;
             struct Cluster
@@ -47,7 +52,7 @@ namespace Katydid
                 UInt_t EndMaxFreqPoint() {return fFreqRanges.back().second;}
             };
 
-            typedef std::list< Cluster > ActiveClusters;
+            typedef std::list< Cluster > ClusterList;
 
             struct FreqBinCluster
             {
@@ -55,12 +60,14 @@ namespace Katydid
                 UInt_t fFirstPoint;
                 UInt_t fLastPoint;
                 Bool_t fAddedToActiveCluster;
-                ActiveClusters::iterator fActiveCluster;
+                ClusterList::iterator fActiveCluster;
                 UInt_t fACNumber;
             };
             typedef std::list< FreqBinCluster > FreqBinClusters;
 
-            typedef std::list< boost::shared_ptr<KTBundle> > NewBundleList;
+
+            typedef std::list< boost::shared_ptr<KTBundle> > BundleList;
+
 
             typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
             //typedef KTSignal< void (const KTWaterfallCandidateData*) >::signal CandidateSignal;
@@ -83,10 +90,13 @@ namespace Katydid
             UInt_t GetMaxTimeSeparationBins() const;
             void SetMaxTimeSeparationBins(UInt_t bins);
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
+            const std::string& GetDPInputDataName() const;
+            void SetDPInputDataName(const std::string& name);
 
-            const std::string& GetOutputDataName() const;
+            const std::string& GetFSInputDataName() const;
+            void SetFSInputDataName(const std::string& name);
+
+           const std::string& GetOutputDataName() const;
             void SetOutputDataName(const std::string& name);
 
         private:
@@ -97,16 +107,27 @@ namespace Katydid
             Bool_t fCalculateMaxFreqSepBins;
             Bool_t fCalculateMaxTimeSepBins;
 
-            std::string fInputDataName;
+            std::string fDPInputDataName;
+            std::string fFSInputDataName;
             std::string fOutputDataName;
 
         public:
-            NewBundleList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData);
+            /// Add points from dpData to the active clusters and create candidates
+            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTFrequencySpectrumData* fsData);
+            /// Add points from dpData to the active clusters and create candidates
+            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTFrequencySpectrumDataFFTW* fsData);
+            /// Add points from dpData to the active clusters and create candidates
+            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTCorrelationData* corrData);
 
-            NewBundleList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component);
+            /// Add points from dpData to the active clusters
+            ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> data);
 
-            NewBundleList* CompleteAllClusters(UInt_t component);
-            //NewBundleList* CompleteInactiveClusters(UInt_t component);
+            /// Add points from a set of points to the active clusters
+            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, boost::shared_ptr<KTData> data);
+
+            /// Complete all remaining active clusters
+            ClusterList* CompleteAllClusters(UInt_t component);
+            //BundleList* CompleteInactiveClusters(UInt_t component);
 
             void Reset();
             UInt_t GetTimeBin() const;
@@ -124,7 +145,7 @@ namespace Katydid
             Double_t fTimeBinWidth;
             Double_t fFreqBinWidth;
 
-            std::vector< ActiveClusters > fActiveClusters;
+            std::vector< ClusterList > fActiveClusters;
 
 
             //***************
@@ -150,7 +171,7 @@ namespace Katydid
             void ProcessOneSliceBundle(boost::shared_ptr<KTBundle> bundle);
 
          private:
-            void RunBundleLoop(NewBundleList* bundles);
+            void RunBundleLoop(BundleList* bundles);
 
     };
 
@@ -203,14 +224,25 @@ namespace Katydid
         return;
     }
 
-    inline const std::string& KTSimpleClustering::GetInputDataName() const
+    inline const std::string& KTSimpleClustering::GetDPInputDataName() const
     {
-        return fInputDataName;
+        return fDPInputDataName;
     }
 
-    inline void KTSimpleClustering::SetInputDataName(const std::string& name)
+    inline void KTSimpleClustering::SetDPInputDataName(const std::string& name)
     {
-        fInputDataName = name;
+        fDPInputDataName = name;
+        return;
+    }
+
+    inline const std::string& KTSimpleClustering::GetFSInputDataName() const
+    {
+        return fFSInputDataName;
+    }
+
+    inline void KTSimpleClustering::SetFSInputDataName(const std::string& name)
+    {
+        fFSInputDataName = name;
         return;
     }
 
