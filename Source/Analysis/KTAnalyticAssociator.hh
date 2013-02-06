@@ -68,8 +68,8 @@ namespace Katydid
             KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTFrequencySpectrumFFTW* inputFS);
 
             //***************
-             // Signals
-             //***************
+            // Signals
+            //***************
 
          private:
              AASignal fAASignal;
