@@ -31,7 +31,7 @@ namespace Katydid
     static KTDerivedRegistrar< KTProcessor, KTSimpleClustering > sSimpClustRegistrar("simple-clustering");
 
     KTSimpleClustering::KTSimpleClustering() :
-            KTProcessor(),
+            KTBundleQueueProcessorTemplate< KTSimpleClustering >(),
             fMaxFreqSep(1.),
             fMaxTimeSep(1.),
             fMaxFreqSepBins(1),
@@ -44,6 +44,9 @@ namespace Katydid
     {
         fConfigName = "simple-clustering";
 
+        // QueueBundle and QueueBundles are registered in KTBundleQueueProcessorTemplate constructor
+
+        this->SetFuncPtr(&KTSimpleClustering::ProcessOneSliceBundle);
     }
 
     KTSimpleClustering::~KTSimpleClustering()
@@ -381,6 +384,47 @@ namespace Katydid
         return bundle;
     }
 
+    void KTSimpleClustering::ProcessOneSliceBundle(boost::shared_ptr<KTBundle> bundle)
+    {
+        KTDiscriminatedPoints1DData* discData = bundle->GetData< KTDiscriminatedPoints1DData >(fInputDataName);
+        if (discData == NULL)
+        {
+            KTWARN(sclog, "No discriminated-points data was present in the bundle");
+            return;
+        }
+
+        NewBundleList* clusteredBundles = AddPointsToClusters(discData);
+
+        // signal for any continued use of this bundle
+        fOneSliceBundleSignal(bundle);
+
+        RunBundleLoop(clusteredBundles);
+
+        return;
+    }
+
+    void KTSimpleClustering::RunBundleLoop(NewBundleList* bundles)
+    {
+        while (! bundles->empty())
+        {
+            /*
+            KTWaterfallCandidateData* wfCandData = bundles->front()->GetData< KTWaterfallCandidateData >(fOutputDataName);
+            if (wfCandData == NULL)
+            {
+                KTWARN(sclog, "Bundle does not contain waterfall-candidate data with name <" << fOutputDataName << ">!");
+            }
+            else
+            {
+                fWaterfallCandidateSignal(wfCandData);
+            }
+            */
+            fClusteredBundleSignal(bundles->front());
+            bundles->pop_front();
+        }
+
+        delete bundles;
+        return;
+    }
 
 
 } /* namespace Katydid */

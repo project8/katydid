@@ -9,7 +9,7 @@
 #ifndef KTSIMPLECLUSTERING_HH_
 #define KTSIMPLECLUSTERING_HH_
 
-#include "KTProcessor.hh"
+#include "KTBundleQueueProcessor.hh"
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTMath.hh"
@@ -26,7 +26,7 @@ namespace Katydid
 {
     class KTBundle;
 
-    class KTSimpleClustering : public KTProcessor
+    class KTSimpleClustering : public KTBundleQueueProcessorTemplate< KTSimpleClustering >
     {
         public:
             typedef KTDiscriminatedPoints1DData::SetOfPoints SetOfDiscriminatedPoints;
@@ -62,6 +62,8 @@ namespace Katydid
 
             typedef std::list< boost::shared_ptr<KTBundle> > NewBundleList;
 
+            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
+            //typedef KTSignal< void (const KTWaterfallCandidateData*) >::signal CandidateSignal;
 
         public:
             KTSimpleClustering();
@@ -123,6 +125,33 @@ namespace Katydid
             Double_t fFreqBinWidth;
 
             std::vector< ActiveClusters > fActiveClusters;
+
+
+            //***************
+            // Signals
+            //***************
+
+         private:
+            BundleSignal fOneSliceBundleSignal;
+            BundleSignal fClusteredBundleSignal;
+            //CandidateSignal fWaterfallCandidateSignal;
+
+
+             //***************
+             // Slots
+             //***************
+
+         public:
+            // QueueBundle from KTBundleQueueProcessorTemplate
+            // QueueBundles from KTBundleQueueProcessorTemplate
+
+         private:
+            /// non-queueing bundle processing
+            void ProcessOneSliceBundle(boost::shared_ptr<KTBundle> bundle);
+
+         private:
+            void RunBundleLoop(NewBundleList* bundles);
+
     };
 
 
