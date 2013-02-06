@@ -56,9 +56,6 @@ namespace Katydid
         public:
             //KTData* GetData(const std::string& name) const;
 
-            template< typename DerivedData >
-            DerivedData* GetData(const std::string& name) const;
-
             /** @brief Adds a data object to the extensible bundle
              *  @details
              *    - Uses KTData::GetName() to extract the name for the key
@@ -75,6 +72,15 @@ namespace Katydid
             template< typename DerivedData >
             Bool_t AddData(const std::string& name, DerivedData* newData);
 
+            /// Finds the data object specified and returns a pointer to it
+            template< typename DerivedData >
+            DerivedData* GetData(const std::string& name) const;
+
+            /// Finds the data object specified and returns a pointer to it; ownership is transferred to the caller
+            template< typename DerivedData >
+            DerivedData* ExtractData(const std::string& name) const;
+
+            /// Deletes the data object specified
             Bool_t RemoveData(const std::string& name);
 
             void PrintAttachedData() const;
@@ -112,25 +118,6 @@ namespace Katydid
     }
 
     template< typename DerivedData >
-    DerivedData* KTBundle::GetData(const std::string& name) const
-    {
-        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(KTDerivedDataMap< DerivedData >));
-        if (modmIt == fMapOfDataMaps.end())
-        {
-            KTERROR(corelog_bundle, "Attempt to retrieve data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
-            return NULL;
-        }
-
-        KTData* dataPtr = modmIt->second->GetData(name);
-        if (dataPtr == NULL)
-        {
-            //KTERROR(corelog_bundle, "Unable to find data called <" << name << "> with type <" << typeid(DerivedData).name() << ">");
-            return NULL;
-        }
-        return static_cast< DerivedData* >(dataPtr);
-    }
-
-    template< typename DerivedData >
     Bool_t KTBundle::AddData(DerivedData* newData)
     {
         return AddData(newData->GetName(), newData);
@@ -164,6 +151,44 @@ namespace Katydid
         return true;
     }
 
+
+    template< typename DerivedData >
+    DerivedData* KTBundle::GetData(const std::string& name) const
+    {
+        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(KTDerivedDataMap< DerivedData >));
+        if (modmIt == fMapOfDataMaps.end())
+        {
+            KTERROR(corelog_bundle, "Attempt to retrieve data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
+            return NULL;
+        }
+
+        KTData* dataPtr = modmIt->second->GetData(name);
+        if (dataPtr == NULL)
+        {
+            //KTERROR(corelog_bundle, "Unable to find data called <" << name << "> with type <" << typeid(DerivedData).name() << ">");
+            return NULL;
+        }
+        return static_cast< DerivedData* >(dataPtr);
+    }
+
+    template< typename DerivedData >
+    DerivedData* KTBundle::ExtractData(const std::string& name) const
+    {
+        MapOfDataMaps::const_iterator modmIt = fMapOfDataMaps.find(&typeid(KTDerivedDataMap< DerivedData >));
+        if (modmIt == fMapOfDataMaps.end())
+        {
+            KTERROR(corelog_bundle, "Attempt to extract data called <" << name << "> failed because there is no data class registered under map type <" << typeid(KTDerivedDataMap< DerivedData >).name() << ">");
+            return NULL;
+        }
+
+        KTData* dataPtr = modmIt->second->ExtractData(name);
+        if (dataPtr == NULL)
+        {
+            //KTERROR(corelog_bundle, "Unable to find data called <" << name << "> with type <" << typeid(DerivedData).name() << ">");
+            return NULL;
+        }
+        return static_cast< DerivedData* >(dataPtr);
+    }
 
     inline Bool_t KTBundle::RemoveData(const std::string& name)
     {
