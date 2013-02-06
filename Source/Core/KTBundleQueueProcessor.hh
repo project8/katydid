@@ -94,6 +94,9 @@ namespace Katydid
 
     class KTBundleQueueProcessor : public KTBundleQueueProcessorTemplate< KTBundleQueueProcessor >
     {
+        protected:
+            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
+
         public:
             KTBundleQueueProcessor();
             virtual ~KTBundleQueueProcessor();
@@ -101,7 +104,14 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
         public:
-            void EmitBundleSignal();
+            void EmitBundleSignal(boost::shared_ptr<KTBundle> bundle);
+
+            //***************
+            // Signals
+            //***************
+
+        private:
+            BundleSignal fBundleSignal;
 
     };
 
@@ -118,6 +128,8 @@ namespace Katydid
             fFuncPtr(NULL),
             fQueue()
     {
+            RegisterSlot("bundle", this, &KTBundleQueueProcessorTemplate< XProcessorType >::QueueBundle, "void (shared_ptr<KTBundle>)");
+            RegisterSlot("bundle-list", this, &KTBundleQueueProcessorTemplate< XProcessorType >::QueueBundles, "void (list< shared_ptr<KTBundle> >)");
     }
 
     template< class XProcessorType >
@@ -159,7 +171,7 @@ namespace Katydid
             if (fQueue.wait_and_pop(bundleToPublish))
             {
                 KTDEBUG(eqplog, "Bundle acquired for publishing");
-                fFuncPtr(bundleToPublish);
+                (static_cast<XProcessorType*>(this)->fFuncPtr)(bundleToPublish);
                 if (bundleToPublish->GetIsLastBundle()) fStatus = kStopped;
             }
         }
