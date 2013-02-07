@@ -32,7 +32,8 @@ namespace Katydid
             KTFrequencySpectrum(),
             fIsSizeEven(true),
             fNegFreqOffset(0),
-            fDCBin(0)
+            fDCBin(0),
+            fPointCache()
     {
     }
 
@@ -41,7 +42,8 @@ namespace Katydid
             KTFrequencySpectrum(),
             fIsSizeEven(nBins%2 == 0),
             fNegFreqOffset((nBins+1)/2),
-            fDCBin(nBins/2)
+            fDCBin(nBins/2),
+            fPointCache()
     {
         //KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
         //KTINFO(fslog, "neg freq offset: " << fNegFreqOffset);
@@ -52,7 +54,8 @@ namespace Katydid
             KTFrequencySpectrum(),
             fIsSizeEven(orig.fIsSizeEven),
             fNegFreqOffset(orig.fNegFreqOffset),
-            fDCBin(orig.fDCBin)
+            fDCBin(orig.fDCBin),
+            fPointCache()
     {
     }
 

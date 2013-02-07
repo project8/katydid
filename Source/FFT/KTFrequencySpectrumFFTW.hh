@@ -13,6 +13,7 @@
 
 #include "Rtypes.h"
 
+#include <cmath>
 #include <string>
 
 #ifdef ROOT_FOUND
@@ -95,6 +96,9 @@ namespace Katydid
 
             virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
+
+        protected:
+            mutable const fftw_complex* fPointCache;
     };
 
     inline Bool_t KTFrequencySpectrumFFTW::GetIsSizeEven() const
@@ -124,39 +128,45 @@ namespace Katydid
         //return fData[i];
     }
 
-    inline Double_t KTFrequencySpectrumPolar::GetReal(UInt_t bin) const
+    inline Double_t KTFrequencySpectrumFFTW::GetReal(UInt_t bin) const
     {
-        return (*this)(bin).fAbs * std::cos((*this)(bin).fArg);
+        return (*this)(bin)[0];
     }
 
-    inline Double_t KTFrequencySpectrumPolar::GetImag(UInt_t bin) const
+    inline Double_t KTFrequencySpectrumFFTW::GetImag(UInt_t bin) const
     {
-        return (*this)(bin).fAbs * std::sin((*this)(bin).fArg);
+        return (*this)(bin)[1];
     }
 
-    inline void KTFrequencySpectrumPolar::SetRect(UInt_t bin, Double_t real, Double_t imag)
+    inline void KTFrequencySpectrumFFTW::SetRect(UInt_t bin, Double_t real, Double_t imag)
     {
-        (*this)(bin).set_rect(real, imag);
+        fPointCache = &(*this)(bin);
+        (*const_cast< fftw_complex* >(fPointCache))[0] = real;
+        (*const_cast< fftw_complex* >(fPointCache))[1] = imag;
         return;
     }
 
-    inline Double_t KTFrequencySpectrumPolar::GetAbs(UInt_t bin) const
+    inline Double_t KTFrequencySpectrumFFTW::GetAbs(UInt_t bin) const
     {
-        return (*this)(bin).fAbs;
+        fPointCache = &(*this)(bin);
+        return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
     }
 
-    inline Double_t KTFrequencySpectrumPolar::GetArg(UInt_t bin) const
+    inline Double_t KTFrequencySpectrumFFTW::GetArg(UInt_t bin) const
     {
-        return (*this)(bin).fArg;
+        fPointCache = &(*this)(bin);
+        return atan2((*fPointCache)[1], (*fPointCache)[0]);
     }
 
-    inline void KTFrequencySpectrumPolar::SetPolar(UInt_t bin, Double_t abs, Double_t arg)
+    inline void KTFrequencySpectrumFFTW::SetPolar(UInt_t bin, Double_t abs, Double_t arg)
     {
-        (*this)(bin).set_polar(abs, arg);
+        fPointCache = &(*this)(bin);
+        (*const_cast< fftw_complex* >(fPointCache))[0] = sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
+        (*const_cast< fftw_complex* >(fPointCache))[1] = atan2((*fPointCache)[1], (*fPointCache)[0]);
         return;
     }
 
-    inline UInt_t KTFrequencySpectrumPolar::GetNFrequencyBins() const
+    inline UInt_t KTFrequencySpectrumFFTW::GetNFrequencyBins() const
     {
         return size();
     }

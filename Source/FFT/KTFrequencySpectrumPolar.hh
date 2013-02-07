@@ -66,12 +66,12 @@ namespace Katydid
 
     inline Double_t KTFrequencySpectrumPolar::GetReal(UInt_t bin) const
     {
-        return (*this)(bin).fAbs * std::cos((*this)(bin).fArg);
+        return (*this)(bin).abs() * std::cos((*this)(bin).arg());
     }
 
     inline Double_t KTFrequencySpectrumPolar::GetImag(UInt_t bin) const
     {
-        return (*this)(bin).fAbs * std::sin((*this)(bin).fArg);
+        return (*this)(bin).abs() * std::sin((*this)(bin).arg());
     }
 
     inline void KTFrequencySpectrumPolar::SetRect(UInt_t bin, Double_t real, Double_t imag)
@@ -82,12 +82,12 @@ namespace Katydid
 
     inline Double_t KTFrequencySpectrumPolar::GetAbs(UInt_t bin) const
     {
-        return (*this)(bin).fAbs;
+        return (*this)(bin).abs();
     }
 
     inline Double_t KTFrequencySpectrumPolar::GetArg(UInt_t bin) const
     {
-        return (*this)(bin).fArg;
+        return (*this)(bin).arg();
     }
 
     inline void KTFrequencySpectrumPolar::SetPolar(UInt_t bin, Double_t abs, Double_t arg)
