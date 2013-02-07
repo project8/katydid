@@ -41,7 +41,6 @@ namespace Katydid
                  UInt_t fFreqBin;
                  Double_t fAmplitude;
                  boost::shared_ptr<KTData> fDataPtr;
-                 UInt_t fDataComponent;
             };
             //typedef std::deque< ClusterPoint > Cluster;
             struct Cluster
@@ -51,6 +50,9 @@ namespace Katydid
 
                 UInt_t EndMinFreqPoint() {return fFreqRanges.back().first;}
                 UInt_t EndMaxFreqPoint() {return fFreqRanges.back().second;}
+
+                UInt_t fDataComponent;
+
             };
 
             typedef std::list< Cluster > ClusterList;

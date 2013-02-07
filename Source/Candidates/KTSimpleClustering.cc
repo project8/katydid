@@ -247,7 +247,6 @@ namespace Katydid
         // Assign frequency bin clusters to active clusters
         ClusterPoint newPoint;
         newPoint.fDataPtr = data;
-        newPoint.fDataComponent = component;
         UInt_t iCluster;
         // loop over all of the frequency-bin clusters
         KTDEBUG(sclog, "assigning FB clusters to active clusters");
@@ -360,6 +359,7 @@ namespace Katydid
 
         // Add unassigned frequency clusters as new clusters
         Cluster newCluster;
+        newCluster.fDataComponent = component;
         KTDEBUG(sclog, "adding unassigned fb clusters as new clusters");
         for (FreqBinClusters::const_iterator fbIt = freqBinClusters.begin(); fbIt != freqBinClusters.end(); fbIt++)
         {
@@ -388,7 +388,7 @@ namespace Katydid
     KTSimpleClustering::ClusterList* KTSimpleClustering::CompleteAllClusters(UInt_t component)
     {
         ClusterList* newClusters = new ClusterList(fActiveClusters[component].begin(), fActiveClusters[component].end());
-        /*
+        /*// old version
         for (ClusterList::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end();)
         {
             newBundles->push_back(CreateBundleFromCluster(*acIt));
@@ -397,7 +397,7 @@ namespace Katydid
         */
         return newClusters;
     }
-/*
+/*// no longer needed
     KTSimpleClustering::BundleList* KTSimpleClustering::CompleteInactiveClusters(UInt_t component)
     {
         BundleList* newBundles = new BundleList();
