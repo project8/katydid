@@ -88,7 +88,22 @@ namespace Katydid
         return true;
     }
 
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTFrequencySpectrumData* fsData)
+    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTData> fsData)
+    {
+        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTData>(fsData));
+
+        BundleList* newBundles = new BundleList();
+
+        for (ClusterList::iterator acIt = completedClusters->begin(); acIt != completedClusters->end();)
+        {
+            newBundles->push_back(CreateBundleFromCluster(*acIt));
+            acIt = completedClusters->erase(acIt);
+        }
+
+        return newBundles;
+    }
+/*
+    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTData> fsData)
     {
         ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTData>(fsData));
 
@@ -103,7 +118,7 @@ namespace Katydid
         return newBundles;
     }
 
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTFrequencySpectrumData* fsData)
+    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTData> fsData)
     {
         ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTData>(fsData));
 
@@ -117,22 +132,7 @@ namespace Katydid
 
         return newBundles;
     }
-
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTFrequencySpectrumData* fsData)
-    {
-        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTData>(fsData));
-
-        BundleList* newBundles = new BundleList();
-
-        for (ClusterList::iterator acIt = completedClusters->begin(); acIt != completedClusters->end();)
-        {
-            newBundles->push_back(CreateBundleFromCluster(*acIt));
-            acIt = completedClusters->erase(acIt);
-        }
-
-        return newBundles;
-    }
-
+*/
     KTSimpleClustering::ClusterList* KTSimpleClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTData> data)
     {
         if (dpData->GetBinWidth() != fFreqBinWidth)
@@ -246,6 +246,8 @@ namespace Katydid
 
         // Assign frequency bin clusters to active clusters
         ClusterPoint newPoint;
+        newPoint.fDataPtr = data;
+        newPoint.fDataComponent = component;
         UInt_t iCluster;
         // loop over all of the frequency-bin clusters
         KTDEBUG(sclog, "assigning FB clusters to active clusters");
@@ -385,7 +387,7 @@ namespace Katydid
 
     KTSimpleClustering::ClusterList* KTSimpleClustering::CompleteAllClusters(UInt_t component)
     {
-        ClusterList* newClusters = new ClusterList(fActiveClusters.begin(), fActiveClusters.end());
+        ClusterList* newClusters = new ClusterList(fActiveClusters[component].begin(), fActiveClusters[component].end());
         /*
         for (ClusterList::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end();)
         {
@@ -440,6 +442,11 @@ namespace Katydid
 
     void KTSimpleClustering::ProcessOneSliceBundle(boost::shared_ptr<KTBundle> bundle)
     {
+        // This function removes the frequency spectrum data from the bundle.
+        // Therefore it should be the last thing done to the one-slice bundle.
+        // The one-slice-bundle signal is called before anything else does, to give other processors an opportunity to use the bundle.
+        // The existence of the extracted data is maintained by smart pointers from each cluster.
+
         // signal for any continued use of this bundle
         fOneSliceBundleSignal(bundle);
 
@@ -452,24 +459,28 @@ namespace Katydid
 
         BundleList* clusteredBundles = NULL;
 
-        KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fFSInputDataName);
+        // ExtractData is used instead of the standard GetData so that the data object is removed from the bundle.
+        KTFrequencySpectrumData* fsData = bundle->ExtractData< KTFrequencySpectrumData >(fFSInputDataName);
         if (fsData != NULL)
         {
-            clusteredBundles = FindClusters(discData, fsData);
+            shared_ptr<KTData> ptr(fsData);
+            clusteredBundles = FindClusters(discData, ptr);
         }
         else
         {
-            KTFrequencySpectrumData* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
+            KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->ExtractData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
             if (fsDataFFTW != NULL)
             {
-                clusteredBundles = FindClusters(discData, fsDataFFTW);
+                shared_ptr<KTData> ptr(fsDataFFTW);
+                clusteredBundles = FindClusters(discData, ptr);
             }
             else
             {
-                KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fFSInputDataName);
+                KTCorrelationData* corrData = bundle->ExtractData< KTCorrelationData >(fFSInputDataName);
                 if (fsData != NULL)
                 {
-                    clusteredBundles = FindClusters(discData, fsData);
+                    shared_ptr<KTData> ptr(corrData);
+                    clusteredBundles = FindClusters(discData, ptr);
                 }
                 else
                 {

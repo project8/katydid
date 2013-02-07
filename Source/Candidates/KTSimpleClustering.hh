@@ -40,7 +40,8 @@ namespace Katydid
                  UInt_t fTimeBin;
                  UInt_t fFreqBin;
                  Double_t fAmplitude;
-                 boost::shared_ptr<KTData>;
+                 boost::shared_ptr<KTData> fDataPtr;
+                 UInt_t fDataComponent;
             };
             //typedef std::deque< ClusterPoint > Cluster;
             struct Cluster
@@ -113,11 +114,11 @@ namespace Katydid
 
         public:
             /// Add points from dpData to the active clusters and create candidates
-            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTFrequencySpectrumData* fsData);
+            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> fsData);
             /// Add points from dpData to the active clusters and create candidates
-            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTFrequencySpectrumDataFFTW* fsData);
+            //BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> fsData);
             /// Add points from dpData to the active clusters and create candidates
-            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, const KTCorrelationData* corrData);
+            //BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> corrData);
 
             /// Add points from dpData to the active clusters
             ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> data);
@@ -311,17 +312,17 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
             void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
-            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
+            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrumPolar* powerSpectrum);
 
             void SetBundlePeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
-            void SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
+            void SetBinCuts(KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
 
         private:
             epbList* fBundlePeakBins;
             Double_t fThresholdMult;
 
-            KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* fBinCuts;
+            KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* fBinCuts;
 
             UInt_t fMinimumGroupSize;
 
@@ -341,7 +342,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTSimpleClustering::SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts)
+    inline void KTSimpleClustering::SetBinCuts(KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* binCuts)
     {
         delete fBinCuts;
         fBinCuts = binCuts;
