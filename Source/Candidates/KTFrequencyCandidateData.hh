@@ -19,32 +19,32 @@
 namespace Katydid
 {
 
-    class KTFrequencyCandidateData : public Katydid::KTWriteableData
+    class KTFrequencyCandidateData : public KTWriteableData
     {
         public:
             typedef std::vector< KTFrequencyCandidate > Candidates;
 
         protected:
-            struct PerGroupData
+            struct PerComponentData
             {
                 Candidates fCandidates;
                 Double_t fThreshold;
             };
 
         public:
-            KTFrequencyCandidateData(UInt_t nGroups=1);
+            KTFrequencyCandidateData(UInt_t nComponents=1);
             virtual ~KTFrequencyCandidateData();
 
             void Accept(KTWriter* writer) const;
 
             const Candidates& GetCandidates(UInt_t groupNum = 0) const;
             Double_t GetThreshold(UInt_t groupNum = 0) const;
-            UInt_t GetNGroups() const;
+            UInt_t GetNComponents() const;
 
-            void AddCandidate(const KTFrequencyCandidate& candidate, UInt_t groupNum = 0);
-            void AddCandidates(const Candidates& candidates, UInt_t groupNum = 0);
+            void AddCandidate(const KTFrequencyCandidate& candidate, UInt_t component = 0);
+            void AddCandidates(const Candidates& candidates, UInt_t component = 0);
             void SetThreshold(Double_t threshold, UInt_t groupNum = 0);
-            void SetNGroups(UInt_t channels);
+            void SetNComponents(UInt_t channels);
 
             UInt_t GetNBins() const;
             Double_t GetBinWidth() const;
@@ -57,7 +57,7 @@ namespace Katydid
             void SetSliceNumber(ULong64_t slice);
 
         protected:
-            std::vector< PerGroupData > fGroupData;
+            std::vector< PerComponentData > fComponentData;
 
             UInt_t fNBins;
             Double_t fBinWidth;
@@ -69,43 +69,43 @@ namespace Katydid
 
     inline const KTFrequencyCandidateData::Candidates& KTFrequencyCandidateData::GetCandidates(UInt_t groupNum) const
     {
-        return fGroupData[groupNum].fCandidates;
+        return fComponentData[groupNum].fCandidates;
     }
 
     inline Double_t KTFrequencyCandidateData::GetThreshold(UInt_t groupNum) const
     {
-        return fGroupData[groupNum].fThreshold;
+        return fComponentData[groupNum].fThreshold;
     }
 
-    inline UInt_t KTFrequencyCandidateData::GetNGroups() const
+    inline UInt_t KTFrequencyCandidateData::GetNComponents() const
     {
-        return UInt_t(fGroupData.size());
+        return UInt_t(fComponentData.size());
     }
 
-    inline void KTFrequencyCandidateData::AddCandidate(const KTFrequencyCandidate& candidate, UInt_t groupNum)
+    inline void KTFrequencyCandidateData::AddCandidate(const KTFrequencyCandidate& candidate, UInt_t component)
     {
-        if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
-        fGroupData[groupNum].fCandidates.push_back(candidate);
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fCandidates.push_back(candidate);
         return;
     }
 
-    inline void KTFrequencyCandidateData::AddCandidates(const Candidates& candidates, UInt_t groupNum)
+    inline void KTFrequencyCandidateData::AddCandidates(const Candidates& candidates, UInt_t component)
     {
-        if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
-        fGroupData[groupNum].fCandidates.insert(fGroupData[groupNum].fCandidates.end(), candidates.begin(), candidates.end());
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fCandidates.insert(fComponentData[component].fCandidates.end(), candidates.begin(), candidates.end());
         return;
     }
 
     inline void KTFrequencyCandidateData::SetThreshold(Double_t threshold, UInt_t groupNum)
     {
-        if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
-        fGroupData[groupNum].fThreshold = threshold;
+        if (groupNum >= fComponentData.size()) fComponentData.resize(groupNum+1);
+        fComponentData[groupNum].fThreshold = threshold;
         return;
     }
 
-    inline void KTFrequencyCandidateData::SetNGroups(UInt_t channels)
+    inline void KTFrequencyCandidateData::SetNComponents(UInt_t channels)
     {
-        fGroupData.resize(channels);
+        fComponentData.resize(channels);
         return;
     }
 
