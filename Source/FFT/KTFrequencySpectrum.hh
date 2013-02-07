@@ -26,6 +26,19 @@ namespace Katydid
             KTFrequencySpectrum();
             virtual ~KTFrequencySpectrum();
 
+            /// Get the size of the array using the KTFrequencySpectrum interface
+            virtual UInt_t GetNFrequencyBins() const = 0;
+
+            virtual Double_t GetReal(UInt_t bin) const = 0;
+            virtual Double_t GetImag(UInt_t bin) const = 0;
+
+            virtual void SetRect(UInt_t bin, Double_t real, Double_t imag) = 0;
+
+            virtual Double_t GetAbs(UInt_t bin) const = 0;
+            virtual Double_t GetArg(UInt_t bin) const = 0;
+
+            virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg) = 0;
+
             virtual KTFrequencySpectrum& CConjugate() = 0;
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const= 0;

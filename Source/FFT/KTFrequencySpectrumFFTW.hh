@@ -49,6 +49,18 @@ namespace Katydid
             const fftw_complex& operator()(unsigned i) const;
             fftw_complex& operator()(unsigned i);
 
+            virtual Double_t GetReal(UInt_t bin) const;
+            virtual Double_t GetImag(UInt_t bin) const;
+
+            virtual void SetRect(UInt_t bin, Double_t real, Double_t imag);
+
+            virtual Double_t GetAbs(UInt_t bin) const;
+            virtual Double_t GetArg(UInt_t bin) const;
+
+            virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg);
+
+            virtual UInt_t GetNFrequencyBins() const;
+
             /// Returns the size of the positive-frequency part of the array
             //size_t size() const;
             /// Returns the isze of the positive-frequency part of the array
@@ -112,7 +124,42 @@ namespace Katydid
         //return fData[i];
     }
 
+    inline Double_t KTFrequencySpectrumPolar::GetReal(UInt_t bin) const
+    {
+        return (*this)(bin).fAbs * std::cos((*this)(bin).fArg);
+    }
 
+    inline Double_t KTFrequencySpectrumPolar::GetImag(UInt_t bin) const
+    {
+        return (*this)(bin).fAbs * std::sin((*this)(bin).fArg);
+    }
+
+    inline void KTFrequencySpectrumPolar::SetRect(UInt_t bin, Double_t real, Double_t imag)
+    {
+        (*this)(bin).set_rect(real, imag);
+        return;
+    }
+
+    inline Double_t KTFrequencySpectrumPolar::GetAbs(UInt_t bin) const
+    {
+        return (*this)(bin).fAbs;
+    }
+
+    inline Double_t KTFrequencySpectrumPolar::GetArg(UInt_t bin) const
+    {
+        return (*this)(bin).fArg;
+    }
+
+    inline void KTFrequencySpectrumPolar::SetPolar(UInt_t bin, Double_t abs, Double_t arg)
+    {
+        (*this)(bin).set_polar(abs, arg);
+        return;
+    }
+
+    inline UInt_t KTFrequencySpectrumPolar::GetNFrequencyBins() const
+    {
+        return size();
+    }
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYSPECTRUMFFTW_HH_ */
