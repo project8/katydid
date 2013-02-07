@@ -64,7 +64,7 @@ namespace Katydid
         //fFreqCandidateData->Load(*data);
         fFreqCandidateData.fSlice = data->GetSliceNumber();
         fFreqCandidateData.fTimeInRun = data->GetTimeInRun();
-        for (fFreqCandidateData.fComponent = 0; fFreqCandidateData.fComponent < data->GetNGroups(); fFreqCandidateData.fComponent++)
+        for (fFreqCandidateData.fComponent = 0; fFreqCandidateData.fComponent < data->GetNComponents(); fFreqCandidateData.fComponent++)
         {
             fFreqCandidateData.fThreshold = data->GetThreshold(fFreqCandidateData.fComponent);
             const KTFrequencyCandidateData::Candidates& candidates = data->GetCandidates(fFreqCandidateData.fComponent);

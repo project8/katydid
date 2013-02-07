@@ -12,13 +12,10 @@ namespace Katydid
 
     KTWaterfallCandidateData::KTWaterfallCandidateData()
     {
-        // TODO Auto-generated constructor stub
-
     }
 
     KTWaterfallCandidateData::~KTWaterfallCandidateData()
     {
-        // TODO Auto-generated destructor stub
     }
 
 } /* namespace Katydid */
