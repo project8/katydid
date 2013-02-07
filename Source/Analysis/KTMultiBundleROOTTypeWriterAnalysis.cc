@@ -11,7 +11,7 @@
 #include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTCorrelationData.hh"
 
 #include "TCanvas.h"

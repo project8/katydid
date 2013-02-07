@@ -8,6 +8,7 @@
 #ifndef KTFREQUENCYSPECTRUMFFTW_HH_
 #define KTFREQUENCYSPECTRUMFFTW_HH_
 
+#include "KTFrequencySpectrum.hh"
 #include "KTPhysicalArrayFFTW.hh"
 
 #include "Rtypes.h"
@@ -20,10 +21,10 @@ class TH1D;
 
 namespace Katydid
 {
-    class KTFrequencySpectrum;
+    class KTFrequencySpectrumPolar;
     class KTPowerSpectrum;
 
-    class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, fftw_complex >
+    class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, fftw_complex >, public KTFrequencySpectrum
     {
         public:
             KTFrequencySpectrumFFTW();
@@ -59,7 +60,7 @@ namespace Katydid
             //size_t GetNBinsTotal() const;
 
         public:
-            // normal KTFrequencySpectrum functions
+            // normal KTFrequencySpectrumPolar functions
 
             virtual KTFrequencySpectrumFFTW& operator=(const KTFrequencySpectrumFFTW& rhs);
 
@@ -68,7 +69,7 @@ namespace Katydid
             /// In-place calculation of the analytic associate
             virtual KTFrequencySpectrumFFTW& AnalyticAssociate();
 
-            virtual KTFrequencySpectrum* CreateFrequencySpectrum() const;
+            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrum() const;
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;

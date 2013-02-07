@@ -14,7 +14,7 @@
 
 #include "KTMath.hh"
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTBundleWindowFunction.hh"
 
 #include <complex>
@@ -65,7 +65,7 @@ namespace Katydid
    class KTSlidingWindowFFT : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (UInt_t, KTFrequencySpectrum*) >::signal SingleFFTSignal;
+            typedef KTSignal< void (UInt_t, KTFrequencySpectrumPolar*) >::signal SingleFFTSignal;
             typedef KTSignal< void (const KTWriteableData*) >::signal FullFFTSignal;
 
         protected:
@@ -82,7 +82,7 @@ namespace Katydid
 
             KTSlidingWindowFSData* TransformData(const KTTimeSeriesData* tsData);
 
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* Transform(const KTTimeSeriesReal* data) const;
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* Transform(const KTTimeSeriesReal* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -120,7 +120,7 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            virtual KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
+            virtual KTFrequencySpectrumPolar* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;

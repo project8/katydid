@@ -16,7 +16,7 @@
 namespace Katydid
 {
     class KTBundle;
-    class KTFrequencySpectrum;
+    class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
@@ -80,7 +80,7 @@ namespace Katydid
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
             //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
 
-            KTFrequencySpectrum* Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline);
+            KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline);
             KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline);
 
         private:

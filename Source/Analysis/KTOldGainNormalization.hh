@@ -13,7 +13,7 @@
 
 namespace Katydid
 {
-    class KTFrequencySpectrum;
+    class KTFrequencySpectrumPolar;
     class KTPStoreNode;
     class KTSlidingWindowFSData;
     class KTPowerSpectrum;
@@ -29,13 +29,13 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            void PrepareNormalization(KTFrequencySpectrum* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
+            void PrepareNormalization(KTFrequencySpectrumPolar* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
 
             void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
-            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
+            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrumPolar* powerSpectrum);
 
         private:
-            KTFrequencySpectrum* fNormalization;
+            KTFrequencySpectrumPolar* fNormalization;
 
     };
 

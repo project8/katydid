@@ -11,7 +11,7 @@
 // #include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"

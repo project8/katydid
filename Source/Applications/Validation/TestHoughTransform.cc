@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTHoughTransform.hh"
 #include "KTMath.hh"
 #include "KTLogger.hh"
@@ -28,10 +28,10 @@ int main()
     UInt_t nBinsX = 100;
     UInt_t nBinsY = 150;
 
-    KTPhysicalArray< 1, KTFrequencySpectrum* > input(nBinsX, 0., 100.);
+    KTPhysicalArray< 1, KTFrequencySpectrumPolar* > input(nBinsX, 0., 100.);
     for (UInt_t iPS=0; iPS<nBinsX; iPS++)
     {
-        input(iPS) = new KTFrequencySpectrum(nBinsY, 0., 150.);
+        input(iPS) = new KTFrequencySpectrumPolar(nBinsY, 0., 150.);
         // Make a horizontal line in the input
         if (iPS >= 10 && iPS < 20)
         {
@@ -45,7 +45,7 @@ int main()
     TH2D* hInput = new TH2D("hInput", "Input", nBinsX, 0., 100., nBinsY, 0., 100.);
     for (UInt_t iX=0; iX<nBinsX; iX++)
     {
-        KTFrequencySpectrum* xSpect = input(iX);
+        KTFrequencySpectrumPolar* xSpect = input(iX);
         for (UInt_t iY=0; iY<nBinsY; iY++)
         {
             hInput->SetBinContent(iX+1, iY+1, (*xSpect)(iY).abs());

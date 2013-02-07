@@ -13,7 +13,7 @@
 #include "KTProcessor.hh"
 
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -89,7 +89,7 @@ namespace Katydid
 
             virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
-            KTFrequencySpectrum* Transform(const KTTimeSeriesReal* data) const;
+            KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -118,7 +118,7 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
+            KTFrequencySpectrumPolar* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;

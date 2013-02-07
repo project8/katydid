@@ -8,7 +8,7 @@
 #include "KTBasicROOTFileWriter.hh"
 #include "KTBasicROOTTypeWriterFFT.hh"
 #include "KTBundle.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "complexpolar.hh"
 
@@ -27,11 +27,11 @@ int main()
     data->SetBundle(bundle);
     bundle->SetBundleNumber(0);
 
-    KTFrequencySpectrum* spectrum1 = new KTFrequencySpectrum(10, -0.5, 9.5);
+    KTFrequencySpectrumPolar* spectrum1 = new KTFrequencySpectrumPolar(10, -0.5, 9.5);
     (*spectrum1)(3).set_polar(5., 1.);
     data->SetSpectrum(spectrum1, 0);
 
-    KTFrequencySpectrum* spectrum2 = new KTFrequencySpectrum(10, -0.5, 9.5);
+    KTFrequencySpectrumPolar* spectrum2 = new KTFrequencySpectrumPolar(10, -0.5, 9.5);
     (*spectrum2)(8).set_polar(3., 2.);
     data->SetSpectrum(spectrum2, 1);
 

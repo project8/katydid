@@ -10,7 +10,7 @@
 #include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTSlidingWindowFSData.hh"
@@ -66,7 +66,7 @@ namespace Katydid
 
         for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
                 stringstream conv;

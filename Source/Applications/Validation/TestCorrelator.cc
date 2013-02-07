@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     /*
     KTFrequencySpectrumData* dataInput = new KTFrequencySpectrumData(2);
 
-    KTFrequencySpectrum* spectrum0 = new KTFrequencySpectrum(10, 0, 10);
+    KTFrequencySpectrumPolar* spectrum0 = new KTFrequencySpectrumPolar(10, 0, 10);
     (*spectrum0)(0) = 0.;
     (*spectrum0)(1) = 0.;
     (*spectrum0)(2) = 1.;
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     (*spectrum0)(8) = complexpolar<double>(0., 1.);
     (*spectrum0)(9) = complexpolar<double>(0., 10.);
 
-    KTFrequencySpectrum* spectrum1 = new KTFrequencySpectrum(10, 0, 10);
+    KTFrequencySpectrumPolar* spectrum1 = new KTFrequencySpectrumPolar(10, 0, 10);
     (*spectrum1)(0) = 0.;
     (*spectrum1)(1) = 0.;
     (*spectrum1)(2) = 0.;

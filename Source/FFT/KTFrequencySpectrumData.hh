@@ -10,7 +10,7 @@
 
 #include "KTWriteableData.hh"
 
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -27,13 +27,13 @@ namespace Katydid
             KTFrequencySpectrumData(unsigned nChannels=1);
             virtual ~KTFrequencySpectrumData();
 
-            const KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0) const;
-            KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0);
+            const KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0) const;
+            KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0);
             UInt_t GetNChannels() const;
             Double_t GetTimeInRun() const;
             ULong64_t GetSliceNumber() const;
 
-            void SetSpectrum(KTFrequencySpectrum* record, UInt_t channelNum = 0);
+            void SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t channelNum = 0);
             void SetNChannels(UInt_t channels);
             void SetTimeInRun(Double_t tir);
             void SetSliceNumber(ULong64_t slice);
@@ -41,7 +41,7 @@ namespace Katydid
             void Accept(KTWriter* writer) const;
 
         protected:
-            std::vector< KTFrequencySpectrum* > fSpectra;
+            std::vector< KTFrequencySpectrumPolar* > fSpectra;
 
             Double_t fTimeInRun;
             ULong64_t fSliceNumber;
@@ -57,12 +57,12 @@ namespace Katydid
 #endif
     };
 
-    inline const KTFrequencySpectrum* KTFrequencySpectrumData::GetSpectrum(UInt_t channelNum) const
+    inline const KTFrequencySpectrumPolar* KTFrequencySpectrumData::GetSpectrum(UInt_t channelNum) const
     {
         return fSpectra[channelNum];
     }
 
-    inline KTFrequencySpectrum* KTFrequencySpectrumData::GetSpectrum(UInt_t channelNum)
+    inline KTFrequencySpectrumPolar* KTFrequencySpectrumData::GetSpectrum(UInt_t channelNum)
     {
         return fSpectra[channelNum];
     }
@@ -82,7 +82,7 @@ namespace Katydid
         return fSliceNumber;
     }
 
-    inline void KTFrequencySpectrumData::SetSpectrum(KTFrequencySpectrum* record, UInt_t channelNum)
+    inline void KTFrequencySpectrumData::SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t channelNum)
     {
         if (channelNum >= fSpectra.size()) fSpectra.resize(channelNum+1);
         fSpectra[channelNum] = record;

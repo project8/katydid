@@ -47,7 +47,7 @@ namespace Katydid
     {
         fConfigName = "sliding-window-fft";
 
-        RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrum*)");
+        RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrumPolar*)");
         RegisterSignal("full_fft", &fFullFFTSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
@@ -205,7 +205,7 @@ namespace Katydid
                 KTERROR(fftlog_sw, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
                 return NULL;
             }
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* newResults = NULL;
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* newResults = NULL;
             try
             {
                 newResults = Transform(nextInput);
@@ -226,7 +226,7 @@ namespace Katydid
         return newData;
     }
 
-    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFFT::Transform(const KTTimeSeriesReal* data) const
+    KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTSlidingWindowFFT::Transform(const KTTimeSeriesReal* data) const
     {
         // # of time bins in each FFT, and the number of bins in the data
         UInt_t windowSize = fWindowFunction->GetSize();
@@ -247,7 +247,7 @@ namespace Katydid
             // Characteristics of the time axis
             Double_t timeMin = 0.;
             Double_t timeMax = nTimeBinsUsed * timeBinWidth;
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(nWindows, timeMin, timeMax);
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumPolar* >(nWindows, timeMin, timeMax);
 
             KTDEBUG(fftlog_sw, "Performing windowed FFT\n"
                     << "\tWindow size: " << windowSize << '\n'
@@ -276,13 +276,13 @@ namespace Katydid
        return NULL;
     }
 
-    KTFrequencySpectrum* KTSlidingWindowFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
+    KTFrequencySpectrumPolar* KTSlidingWindowFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
     {
         UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
+        KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
             (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);

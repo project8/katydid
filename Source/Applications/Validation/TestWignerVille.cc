@@ -10,7 +10,7 @@
 
 #include "KTAnalyticAssociator.hh"
 #include "KTComplexFFTW.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"

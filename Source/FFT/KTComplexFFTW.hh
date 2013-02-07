@@ -13,7 +13,7 @@
 #include "KTProcessor.hh"
 
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #include <boost/shared_ptr.hpp>
 

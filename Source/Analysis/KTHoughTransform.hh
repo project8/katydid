@@ -21,7 +21,7 @@ namespace Katydid
     class KTBundle;
     class KTFrequencySpectrumFFTW;
     class KTHoughData;
-    class KTFrequencySpectrum;
+    class KTFrequencySpectrumPolar;
     class KTSlidingWindowFSDataFFTW;
     class KTWriteableData;
 
@@ -62,14 +62,14 @@ namespace Katydid
 
         public:
             KTHoughData* TransformData(const KTSlidingWindowFSDataFFTW* data);
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrum* >* powerSpectrum);
+            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum);
 
             KTHoughData* TransformData(const KTDiscriminatedPoints2DData* data);
             KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSetOfPoints(const SetOfPoints& points, UInt_t nTimeBins, UInt_t nFreqBins);
 
 
         protected:
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum);
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum);
 
             //***************
              // Signals

@@ -6,7 +6,7 @@
  */
 
 #include "KTDiscriminatedPoints1DData.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTLogger.hh"
 #include "KTSpectrumDiscriminator.hh"
@@ -41,7 +41,7 @@ int main()
 #endif
 
     KTFrequencySpectrumData data(1);
-    KTFrequencySpectrum* spectrum = new KTFrequencySpectrum(nBins, minFreq, maxFreq);
+    KTFrequencySpectrumPolar* spectrum = new KTFrequencySpectrumPolar(nBins, minFreq, maxFreq);
 
     // Fill in the noise
     KTINFO(testlog, "Creating the baseline and noise");

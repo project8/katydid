@@ -49,7 +49,7 @@ namespace Katydid
     {
         fConfigName = "sliding-window-fftw";
 
-        RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrum*)");
+        RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrumPolar*)");
         RegisterSignal("full_fft", &fFullFFTSignal, "void (KTWriteableData*)");
 
         RegisterSlot("header", this, &KTSlidingWindowFFTW::ProcessHeader, "void (const KTEggHeader*)");

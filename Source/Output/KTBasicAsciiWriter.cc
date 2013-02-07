@@ -64,7 +64,7 @@ namespace Katydid {
 
   //   if( fOutputStream && fOutputStream->is_open() ) {
   //     for( unsigned iCh = 0; iCh < nCh; iCh++ ) {
-  // 	const KTFrequencySpectrum* spectrum = dt->GetSpectrum(iCh);
+  // 	const KTFrequencySpectrumPolar* spectrum = dt->GetSpectrum(iCh);
   // 	for( unsigned iB = 0; iB < spectrum->size(); iB++ ) {
 	  
   // 	  (*fOutputStream) << evN

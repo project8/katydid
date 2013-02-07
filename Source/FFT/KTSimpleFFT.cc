@@ -162,7 +162,7 @@ namespace Katydid
                 delete newData;
                 return NULL;
             }
-            KTFrequencySpectrum* nextResult = Transform(nextInput);
+            KTFrequencySpectrumPolar* nextResult = Transform(nextInput);
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_simp, "One of the channels did not transform correctly.");
@@ -182,7 +182,7 @@ namespace Katydid
         return newData;
     }
 
-    KTFrequencySpectrum* KTSimpleFFT::Transform(const KTTimeSeriesReal* data) const
+    KTFrequencySpectrumPolar* KTSimpleFFT::Transform(const KTTimeSeriesReal* data) const
     {
         UInt_t nTimeBins = (UInt_t)data->size();
         if (nTimeBins != fTimeSize)
@@ -201,13 +201,13 @@ namespace Katydid
         return ExtractTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
     }
 
-    KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
+    KTFrequencySpectrumPolar* KTSimpleFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
     {
         UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
+        KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
             (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);

@@ -12,7 +12,7 @@
 #include "KTDiscriminatedPoints2DData.hh"
 #include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -133,7 +133,7 @@ namespace Katydid
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
 
-            const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrum(iChannel);
 
             Double_t mean = 0.;
 #pragma omp parallel for reduction(+:mean)
@@ -147,7 +147,7 @@ namespace Katydid
             if (fThresholdMode == eSNR)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2
-                // In this case (i.e. KTFrequencySpectrum), A_noise = mean
+                // In this case (i.e. KTFrequencySpectrumPolar), A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (SNR mode)");
             }
@@ -235,7 +235,7 @@ namespace Katydid
             if (fThresholdMode == eSNR)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2
-                // In this case (i.e. KTFrequencySpectrum), A_noise = mean
+                // In this case (i.e. KTFrequencySpectrumPolar), A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (SNR mode)");
             }
@@ -304,7 +304,7 @@ namespace Katydid
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrum* spectrum = data->GetCorrelation(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetCorrelation(iChannel);
 
             Double_t mean = 0.;
             for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
@@ -317,7 +317,7 @@ namespace Katydid
             if (fThresholdMode == eSNR)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2
-                // In this case (i.e. KTFrequencySpectrum), A_noise = mean
+                // In this case (i.e. KTFrequencySpectrumPolar), A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iChannel << " set at <" << threshold << "> (SNR mode)");
             }
@@ -374,14 +374,14 @@ namespace Katydid
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
 
-            const KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = data->GetSpectra(iChannel);
+            const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra = data->GetSpectra(iChannel);
 
             Double_t sigmaNorm = 1. / Double_t((nBins * spectra->size()) - 1);
 
             Double_t mean = 0.;
             for (UInt_t iSpectrum=0; iSpectrum<spectra->size(); iSpectrum++)
             {
-                KTFrequencySpectrum* spectrum = (*spectra)(iSpectrum);
+                KTFrequencySpectrumPolar* spectrum = (*spectra)(iSpectrum);
 
                 for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
                 {
@@ -394,7 +394,7 @@ namespace Katydid
             if (fThresholdMode == eSNR)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2
-                // In this case (i.e. KTFrequencySpectrum), A_noise = mean
+                // In this case (i.e. KTFrequencySpectrumPolar), A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
                 KTDEBUG(sdlog, "Discriminator threshold set at <" << threshold << "> (SNR mode)");
             }
@@ -403,7 +403,7 @@ namespace Katydid
                 Double_t sigma = 0., diff;
                 for (UInt_t iSpectrum=0; iSpectrum<spectra->size(); iSpectrum++)
                 {
-                    KTFrequencySpectrum* spectrum = (*spectra)(iSpectrum);
+                    KTFrequencySpectrumPolar* spectrum = (*spectra)(iSpectrum);
                     for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
                     {
                         diff = (*spectrum)(iBin).abs() - mean;
@@ -422,7 +422,7 @@ namespace Katydid
             Double_t value;
             for (UInt_t iSpectrum=0; iSpectrum<spectra->size(); iSpectrum++)
             {
-                KTFrequencySpectrum* spectrum = (*spectra)(iSpectrum);
+                KTFrequencySpectrumPolar* spectrum = (*spectra)(iSpectrum);
                 for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
                 {
                     value = (*spectrum)(iBin).abs();
@@ -488,7 +488,7 @@ namespace Katydid
             if (fThresholdMode == eSNR)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2
-                // In this case (i.e. KTFrequencySpectrum), A_noise = mean
+                // In this case (i.e. KTFrequencySpectrumPolar), A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
                 KTDEBUG(sdlog, "Discriminator threshold set at <" << threshold << "> (SNR mode)");
             }

@@ -13,7 +13,7 @@
 #include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
 #include <fftw3/fftw3.h>
@@ -83,7 +83,7 @@ namespace Katydid
 
             virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
-            KTFrequencySpectrum* Transform(const KTTimeSeries* data) const;
+            KTFrequencySpectrumPolar* Transform(const KTTimeSeries* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -100,7 +100,7 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
+            KTFrequencySpectrumPolar* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;

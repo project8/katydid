@@ -13,7 +13,7 @@
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTWriteableData.hh"
@@ -76,7 +76,7 @@ namespace Katydid
         {
             const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum = data->GetSpectra(iChannel);
 
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* freqSpectra = RemoveNegativeFrequencies(inputSpectrum);
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* freqSpectra = RemoveNegativeFrequencies(inputSpectrum);
 
             KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = TransformSpectrum(freqSpectra);
             if (newTransform == NULL)
@@ -103,7 +103,7 @@ namespace Katydid
         return newData;
     }
 
-    KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughTransform::TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrum* >* powerSpectrum)
+    KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughTransform::TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum)
     {
         UInt_t nTimeBins = powerSpectrum->size();
         UInt_t nFreqBins = (*powerSpectrum)(0)->size();
@@ -229,14 +229,14 @@ namespace Katydid
     }
 
 
-    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTHoughTransform::RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum)
+    KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTHoughTransform::RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum)
     {
         UInt_t nTimeBins = inputSpectrum->size();
-        KTPhysicalArray< 1, KTFrequencySpectrum* >* newFrequencySpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(nTimeBins, inputSpectrum->GetRangeMin(), inputSpectrum->GetRangeMax());
+        KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* newFrequencySpectra = new KTPhysicalArray< 1, KTFrequencySpectrumPolar* >(nTimeBins, inputSpectrum->GetRangeMin(), inputSpectrum->GetRangeMax());
 
         for (Int_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            KTFrequencySpectrum* newSpectrum = (*inputSpectrum)(iTimeBin)->CreateFrequencySpectrum();
+            KTFrequencySpectrumPolar* newSpectrum = (*inputSpectrum)(iTimeBin)->CreateFrequencySpectrum();
             (*newFrequencySpectra)(iTimeBin) = newSpectrum;
         }
 /*

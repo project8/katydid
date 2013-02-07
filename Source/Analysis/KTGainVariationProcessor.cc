@@ -105,7 +105,7 @@ namespace Katydid
         Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrum(iChannel);
 
             Double_t* xVals = new Double_t[fNFitPoints];
             Double_t* yVals = new Double_t[fNFitPoints];

@@ -26,7 +26,7 @@ namespace Katydid
     class KTComplexFFTW;
     class KTEggHeader;
     class KTBundle;
-    class KTFrequencySpectrum;
+    class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTSlidingWindowFFTW;

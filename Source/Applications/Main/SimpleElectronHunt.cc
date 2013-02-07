@@ -18,7 +18,7 @@
 
 #include "KTEgg.hh"
 #include "KTBundle.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTHannWindow.hh"
 #include "KTPowerSpectrum.hh"

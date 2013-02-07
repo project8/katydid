@@ -20,7 +20,7 @@ namespace Katydid
 {
     class KTCorrelationData;
     class KTBundle;
-    class KTFrequencySpectrum;
+    class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
@@ -56,7 +56,7 @@ namespace Katydid
             KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataFFTW* fsData);
             KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTCorrelationData* fsData);
 
-            KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrum* freqSpec);
+            KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec);
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumFFTW* freqSpec);
 
 

@@ -10,7 +10,7 @@
 #include "KTFactory.hh"
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlidingWindowFFT.hh"
 #include "KTSlidingWindowFSData.hh"
@@ -47,7 +47,7 @@ namespace Katydid
     {
         fConfigName = "old-simple-clustering";
 
-        RegisterSlot("freq_spect", this, &KTOldSimpleClustering::ProcessFrequencySpectrum, "void (UInt_t, KTFrequencySpectrum*)");
+        RegisterSlot("freq_spect", this, &KTOldSimpleClustering::ProcessFrequencySpectrum, "void (UInt_t, KTFrequencySpectrumPolar*)");
     }
 
     KTOldSimpleClustering::~KTOldSimpleClustering()
@@ -75,7 +75,7 @@ namespace Katydid
 
     void KTOldSimpleClustering::ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData)
     {
-        KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = swFSData->GetSpectra(0);
+        KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra = swFSData->GetSpectra(0);
         UInt_t nPowerSpectra = spectra->size();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
         {
@@ -85,21 +85,21 @@ namespace Katydid
         return;
     }
 
-    void KTOldSimpleClustering::ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* freqSpectrum)
+    void KTOldSimpleClustering::ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrumPolar* freqSpectrum)
     {
         // Look for the highest-peaked bins in this power spectrum
 
         // this will hold the bin numbers that are above the threshold
         set< Int_t > peakBins;
 
-        KTFrequencySpectrum::array_type dataArray = freqSpectrum->GetData().data();
+        KTFrequencySpectrumPolar::array_type dataArray = freqSpectrum->GetData().data();
         UInt_t nBins = (UInt_t)freqSpectrum->size();
 
-        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* localBinCuts = fBinCuts;
+        KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* localBinCuts = fBinCuts;
         if (nBins != fBinCuts->GetArraySize())
         {
             std::cout << "Warning from KTOldSimpleClustering::ProcessPowerSpectrum: size from power spectrum does not match bin cut array size" << std::endl;
-            localBinCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(dataArray, nBins);
+            localBinCuts = new KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >(dataArray, nBins);
         }
         else
         {

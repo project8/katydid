@@ -7,7 +7,7 @@
 
 #include "KTBundleWindowFunction.hh"
 
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPowerSpectrum.hh"
@@ -112,7 +112,7 @@ namespace Katydid
         fft.SetTimeSize(totalSize);
         fft.SetTransformFlag("ESTIMATE");
         fft.InitializeFFT();
-        KTFrequencySpectrum* freqSpect = fft.Transform(&timeData);
+        KTFrequencySpectrumPolar* freqSpect = fft.Transform(&timeData);
         TH1D* hist = freqSpect->CreatePowerHistogram(name);
         hist->SetYTitle("Weight");
         delete freqSpect;

@@ -12,7 +12,7 @@
 #include "KTEggHeader.hh"
 #include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"

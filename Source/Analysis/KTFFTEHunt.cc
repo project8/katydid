@@ -145,12 +145,12 @@ namespace Katydid
         fFrequencyBinWidth = fWindowFFT.GetFrequencyBinWidth(timeBinWidth);
         Double_t freqMin = fWindowFFT.GetMaxFrequency(timeBinWidth);
         Double_t freqMax = fWindowFFT.GetMinFrequency(timeBinWidth);
-        // create KTFrequencySpectrum w/ number of bins; set bin width
+        // create KTFrequencySpectrumPolar w/ number of bins; set bin width
         // binFinder will go out of scope at the end of this function.
         // therefore, from that point until fClusteringProc sets a new array, binCuts should NOT be used to access array values!
-        KTFrequencySpectrum binFinder(nFreqBins, freqMin, freqMax);
+        KTFrequencySpectrumPolar binFinder(nFreqBins, freqMin, freqMax);
         // create KTMaskedArray based on power spectrum magnitude array
-        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(binFinder.GetData().data(), nFreqBins);
+        KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >(binFinder.GetData().data(), nFreqBins);
         // convert cut frequency ranges to bins, and cut bins from the masked array
         for (vector< CutRange >::const_iterator itCutRange = fCutRanges.begin(); itCutRange != fCutRanges.end(); itCutRange++)
         {
@@ -194,7 +194,7 @@ namespace Katydid
 
         // Perform a 1-D FFT on the entire bundle
         const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetTimeSeries(0));
-        KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
+        KTFrequencySpectrumPolar* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
         // Use the data from the full FFT to create a gain normalization
         fGainNorm.PrepareNormalization(freqSpect, (UInt_t)fWindowFFT.GetFrequencySize(), fFrequencyBinWidth);

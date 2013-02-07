@@ -9,7 +9,7 @@
 
 #include "KTLogger.hh"
 #include "KTPowerSpectrum.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -29,6 +29,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW() :
             KTPhysicalArray< 1, fftw_complex >(),
+            KTFrequencySpectrum(),
             fIsSizeEven(true),
             fNegFreqOffset(0),
             fDCBin(0)
@@ -37,6 +38,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax),
+            KTFrequencySpectrum(),
             fIsSizeEven(nBins%2 == 0),
             fNegFreqOffset((nBins+1)/2),
             fDCBin(nBins/2)
@@ -47,6 +49,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
             KTPhysicalArray< 1, fftw_complex >(orig),
+            KTFrequencySpectrum(),
             fIsSizeEven(orig.fIsSizeEven),
             fNegFreqOffset(orig.fNegFreqOffset),
             fDCBin(orig.fDCBin)
@@ -102,13 +105,13 @@ namespace Katydid
     }
 
 
-    KTFrequencySpectrum* KTFrequencySpectrumFFTW::CreateFrequencySpectrum() const
+    KTFrequencySpectrumPolar* KTFrequencySpectrumFFTW::CreateFrequencySpectrum() const
     {
         // The negative frequency values will be combined with the positive ones,
         // so the power spectrum will go from the DC bin to the max frequency
 
         UInt_t nBins = fDCBin + 1;
-        KTFrequencySpectrum* newFS = new KTFrequencySpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
+        KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar(nBins, -0.5 * GetBinWidth(), GetRangeMax());
         Double_t valueImag, valueReal;
 
         // DC bin

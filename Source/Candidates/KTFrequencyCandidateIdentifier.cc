@@ -12,7 +12,7 @@
 #include "KTEggHeader.hh"
 #include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -76,7 +76,7 @@ namespace Katydid
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iComponent);
-            const KTFrequencySpectrum* freqSpec = fsData->GetSpectrum(iComponent);
+            const KTFrequencySpectrumPolar* freqSpec = fsData->GetSpectrum(iComponent);
 
             fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iComponent);
             fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);
@@ -140,7 +140,7 @@ namespace Katydid
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iComponent);
-            const KTFrequencySpectrum* freqSpec = fsData->GetCorrelation(iComponent);
+            const KTFrequencySpectrumPolar* freqSpec = fsData->GetCorrelation(iComponent);
 
             fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iComponent);
             fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);
@@ -154,7 +154,7 @@ namespace Katydid
         return fcData;
     }
 
-    KTFrequencyCandidateData::Candidates KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrum* freqSpec)
+    KTFrequencyCandidateData::Candidates KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec)
     {
         KTFrequencyCandidateData::Candidates candidates(clusters.size());
 

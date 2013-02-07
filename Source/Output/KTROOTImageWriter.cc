@@ -86,7 +86,7 @@ namespace Katydid
 
         for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
                 stringstream conv;
@@ -148,7 +148,7 @@ namespace Katydid
 
         for (unsigned iPair=0; iPair<nPairs; iPair++)
         {
-            const KTFrequencySpectrum* spectrum = data->GetCorrelation(iPair);
+            const KTFrequencySpectrumPolar* spectrum = data->GetCorrelation(iPair);
             if (spectrum != NULL)
             {
                 stringstream conv;

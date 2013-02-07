@@ -10,7 +10,7 @@
 #include "KTCorrelationData.hh"
 #include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -94,7 +94,7 @@ namespace Katydid
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
-            KTFrequencySpectrum* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
             if (result == NULL)
             {
                 KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
@@ -126,7 +126,7 @@ namespace Katydid
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
-            KTFrequencySpectrum* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
             if (result == NULL)
             {
                 KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
@@ -155,7 +155,7 @@ namespace Katydid
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
-            KTFrequencySpectrum* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
             if (result == NULL)
             {
                 KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
@@ -179,7 +179,7 @@ namespace Katydid
     {
         UInt_t firstChannel = pair.first;
         UInt_t secondChannel = pair.second;
-        KTFrequencySpectrum* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+        KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
 
         if (result != NULL)
         {
@@ -202,16 +202,16 @@ namespace Katydid
     }
 
     */
-    KTFrequencySpectrum* KTCorrelator::DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum)
+    KTFrequencySpectrumPolar* KTCorrelator::DoCorrelation(const KTFrequencySpectrumPolar* firstSpectrum, const KTFrequencySpectrumPolar* secondSpectrum)
     {
         // Performs cc(firstSpectrum) * secondSpectrum
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(*firstSpectrum);
+        KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(*firstSpectrum);
         newSpect->CConjugate();
         (*newSpect) *= (*secondSpectrum);
         return newSpect;
     }
 
-    KTFrequencySpectrum* KTCorrelator::DoCorrelation(const KTFrequencySpectrumFFTW* firstSpectrum, const KTFrequencySpectrumFFTW* secondSpectrum)
+    KTFrequencySpectrumPolar* KTCorrelator::DoCorrelation(const KTFrequencySpectrumFFTW* firstSpectrum, const KTFrequencySpectrumFFTW* secondSpectrum)
     {
         // Performs cc(firstSpectrum) * secondSpectrum
         KTFrequencySpectrumFFTW newSpectFFTW(*firstSpectrum);

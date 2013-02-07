@@ -11,7 +11,7 @@
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTCorrelationData.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTHoughData.hh"
 #include "KTGainVariationData.hh"
 
@@ -64,7 +64,7 @@ namespace Katydid
 
         for (unsigned iPair=0; iPair<nPairs; iPair++)
         {
-            const KTFrequencySpectrum* spectrum = data->GetCorrelation(iPair);
+            const KTFrequencySpectrumPolar* spectrum = data->GetCorrelation(iPair);
             if (spectrum != NULL)
             {
                 stringstream conv;

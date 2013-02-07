@@ -8,7 +8,7 @@
 #include "KTSlidingWindowFSData.hh"
 
 #include "KTDataMap.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
@@ -28,8 +28,8 @@ namespace Katydid
     {
         while (! fSpectra.empty())
         {
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* backSpectra = fSpectra.back();
-            for (KTPhysicalArray< 1, KTFrequencySpectrum* >::iterator iter = backSpectra->begin(); iter != backSpectra->end(); iter++)
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* backSpectra = fSpectra.back();
+            for (KTPhysicalArray< 1, KTFrequencySpectrumPolar* >::iterator iter = backSpectra->begin(); iter != backSpectra->end(); iter++)
             {
                 delete *iter;
             }
@@ -59,7 +59,7 @@ namespace Katydid
 
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[channelNum]->size(); iBinX++)
         {
-            KTFrequencySpectrum* fs = (*fSpectra[channelNum])(iBinX-1);
+            KTFrequencySpectrumPolar* fs = (*fSpectra[channelNum])(iBinX-1);
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1).abs());
@@ -85,7 +85,7 @@ namespace Katydid
 
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[channelNum]->size(); iBinX++)
         {
-            KTFrequencySpectrum* fs = (*fSpectra[channelNum])(iBinX-1);
+            KTFrequencySpectrumPolar* fs = (*fSpectra[channelNum])(iBinX-1);
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1).arg());
@@ -112,7 +112,7 @@ namespace Katydid
         Double_t value;
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[channelNum]->size(); iBinX++)
         {
-            KTFrequencySpectrum* fs = (*fSpectra[channelNum])(iBinX-1);
+            KTFrequencySpectrumPolar* fs = (*fSpectra[channelNum])(iBinX-1);
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 value =(*fs)(iBinY-1).abs();

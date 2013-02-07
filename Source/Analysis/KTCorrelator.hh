@@ -19,7 +19,7 @@ namespace Katydid
 {
     class KTCorrelationData;
     class KTBundle;
-    class KTFrequencySpectrum;
+    class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
@@ -63,8 +63,8 @@ namespace Katydid
             //KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair);
 
         protected:
-            KTFrequencySpectrum* DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum);
-            KTFrequencySpectrum* DoCorrelation(const KTFrequencySpectrumFFTW* firstSpectrum, const KTFrequencySpectrumFFTW* secondSpectrum);
+            KTFrequencySpectrumPolar* DoCorrelation(const KTFrequencySpectrumPolar* firstSpectrum, const KTFrequencySpectrumPolar* secondSpectrum);
+            KTFrequencySpectrumPolar* DoCorrelation(const KTFrequencySpectrumFFTW* firstSpectrum, const KTFrequencySpectrumFFTW* secondSpectrum);
 
             //***************
             // Signals

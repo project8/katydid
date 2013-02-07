@@ -9,7 +9,7 @@
 
 #include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -105,7 +105,7 @@ namespace Katydid
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            KTFrequencySpectrum* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
+            KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
             if (newSpectrum == NULL)
             {
                 KTERROR(gnlog, "Normalization of spectrum " << iChannel << " failed for some reason. Continuing processing.");
@@ -157,7 +157,7 @@ namespace Katydid
         return newData;
     }
 
-    KTFrequencySpectrum* KTGainNormalization::Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline)
+    KTFrequencySpectrumPolar* KTGainNormalization::Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline)
     {
         UInt_t nBins = fMaxBin - fMinBin + 1;
         Double_t freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
@@ -169,7 +169,7 @@ namespace Katydid
         Double_t freqSpectrumMin = frequencySpectrum->GetRangeMin();
         Double_t freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
-        KTFrequencySpectrum* newSpectrum = new KTFrequencySpectrum(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
+        KTFrequencySpectrumPolar* newSpectrum = new KTFrequencySpectrumPolar(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
 
         // First directly copy data that's outside the scaling range
         UInt_t iBin;
