@@ -22,6 +22,8 @@ set (FFT_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSDataFFTW.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeFrequency.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeFrequencyPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
 )
 
@@ -54,6 +56,8 @@ set (FFT_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSDataFFTW.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeFrequency.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeFrequencyPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
 )
 
