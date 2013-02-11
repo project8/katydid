@@ -46,6 +46,9 @@ namespace Katydid
             virtual UInt_t GetNTimeBins() const;
             virtual UInt_t GetNFrequencyBins() const;
 
+            virtual Double_t GetTimeBinWidth() const;
+            virtual Double_t GetFrequencyBinWidth() const;
+
             virtual KTTimeFrequencyPolar& CConjugate();
 
             //virtual KTPowerSpectrum* CreatePowerSpectrum() const;
@@ -104,6 +107,16 @@ namespace Katydid
     inline UInt_t KTTimeFrequencyPolar::GetNFrequencyBins() const
     {
         return size(2);
+    }
+
+    inline Double_t KTTimeFrequencyPolar::GetTimeBinWidth() const
+    {
+        return GetBinWidth(1);
+    }
+
+    inline Double_t KTTimeFrequencyPolar::GetFrequencyBinWidth() const
+    {
+        return GetBinWidth(2);
     }
 
 

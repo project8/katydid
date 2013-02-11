@@ -30,6 +30,9 @@ namespace Katydid
             virtual UInt_t GetNTimeBins() const = 0;
             virtual UInt_t GetNFrequencyBins() const = 0;
 
+            virtual Double_t GetTimeBinWidth() const = 0;
+            virtual Double_t GetFrequencyBinWidth() const = 0;
+
             virtual Double_t GetReal(UInt_t timebin, UInt_t freqbin) const = 0;
             virtual Double_t GetImag(UInt_t timebin, UInt_t freqbin) const = 0;
 

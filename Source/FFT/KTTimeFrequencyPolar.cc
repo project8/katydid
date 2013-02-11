@@ -27,7 +27,7 @@ namespace Katydid
     KTLOGGER(fslog, "katydid.fft");
 
     KTTimeFrequencyPolar::KTTimeFrequencyPolar() :
-            KTPhysicalArray< 1, complexpolar< Double_t > >(),
+            KTPhysicalArray< 2, complexpolar< Double_t > >(),
             KTTimeFrequency()
     {
     }
