@@ -91,8 +91,8 @@ namespace Katydid
 
     KTFrequencySpectrumData* KTGainNormalization::Normalize(const KTFrequencySpectrumData* fsData, const KTGainVariationData* gvData)
     {
-        if (fCalculateMinBin) SetMinBin(fsData->GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrum(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin) SetMinBin(fsData->GetSpectrumPolar(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrumPolar(0)->FindBin(fMaxFrequency));
 
         UInt_t nChannels = fsData->GetNChannels();
         if (nChannels != gvData->GetNChannels())
@@ -105,7 +105,7 @@ namespace Katydid
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
+            KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData->GetSpectrumPolar(iChannel), gvData->GetSpline(iChannel));
             if (newSpectrum == NULL)
             {
                 KTERROR(gnlog, "Normalization of spectrum " << iChannel << " failed for some reason. Continuing processing.");
@@ -126,8 +126,8 @@ namespace Katydid
 
     KTFrequencySpectrumDataFFTW* KTGainNormalization::Normalize(const KTFrequencySpectrumDataFFTW* fsData, const KTGainVariationData* gvData)
     {
-        if (fCalculateMinBin) SetMinBin(fsData->GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrum(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin) SetMinBin(fsData->GetSpectrumFFTW(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
 
         UInt_t nChannels = fsData->GetNChannels();
         if (nChannels != gvData->GetNChannels())
@@ -140,7 +140,7 @@ namespace Katydid
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
+            KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData->GetSpectrumFFTW(iChannel), gvData->GetSpline(iChannel));
             if (newSpectrum == NULL)
             {
                 KTERROR(gnlog, "Normalization of spectrum " << iChannel << " failed for some reason. Continuing processing.");

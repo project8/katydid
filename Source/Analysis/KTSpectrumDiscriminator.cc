@@ -110,12 +110,12 @@ namespace Katydid
     {
         if (fCalculateMinBin)
         {
-            SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
+            SetMinBin(data->GetSpectrumPolar(0)->FindBin(fMinFrequency));
             KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
-            SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+            SetMaxBin(data->GetSpectrumPolar(0)->FindBin(fMaxFrequency));
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
@@ -123,8 +123,8 @@ namespace Katydid
 
         KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
 
-        newData->SetNBins(data->GetSpectrum(0)->size());
-        newData->SetBinWidth(data->GetSpectrum(0)->GetBinWidth());
+        newData->SetNBins(data->GetSpectrumPolar(0)->size());
+        newData->SetBinWidth(data->GetSpectrumPolar(0)->GetBinWidth());
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
@@ -133,7 +133,7 @@ namespace Katydid
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
 
-            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrumPolar(iChannel);
 
             Double_t mean = 0.;
 #pragma omp parallel for reduction(+:mean)
@@ -191,12 +191,12 @@ namespace Katydid
     {
         if (fCalculateMinBin)
         {
-            SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
+            SetMinBin(data->GetSpectrumFFTW(0)->FindBin(fMinFrequency));
             KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
-            SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+            SetMaxBin(data->GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
@@ -204,19 +204,19 @@ namespace Katydid
 
         KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
 
-        newData->SetNBins(data->GetSpectrum(0)->size());
-        newData->SetBinWidth(data->GetSpectrum(0)->GetBinWidth());
+        newData->SetNBins(data->GetSpectrumFFTW(0)->size());
+        newData->SetBinWidth(data->GetSpectrumFFTW(0)->GetBinWidth());
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
         Double_t sigmaNorm = 1. / Double_t(nBins - 1);
 
         // Temporary storage for magnitude values
-        vector< Double_t > magnitude(data->GetSpectrum(0)->size());
+        vector< Double_t > magnitude(data->GetSpectrumFFTW(0)->size());
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrumFFTW* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumFFTW* spectrum = data->GetSpectrumFFTW(iChannel);
             if (spectrum->size() != magnitude.size())
             {
                 magnitude.resize(spectrum->size());

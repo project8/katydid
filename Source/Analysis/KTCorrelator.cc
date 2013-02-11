@@ -94,7 +94,7 @@ namespace Katydid
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
-            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrumPolar(firstChannel), data->GetSpectrumPolar(secondChannel));
             if (result == NULL)
             {
                 KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
@@ -126,7 +126,7 @@ namespace Katydid
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
-            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrumFFTW(firstChannel), data->GetSpectrumFFTW(secondChannel));
             if (result == NULL)
             {
                 KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
@@ -155,7 +155,7 @@ namespace Katydid
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
-            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+            KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrumPolar(firstChannel), data->GetSpectrumPolar(secondChannel));
             if (result == NULL)
             {
                 KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
@@ -179,7 +179,7 @@ namespace Katydid
     {
         UInt_t firstChannel = pair.first;
         UInt_t secondChannel = pair.second;
-        KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+        KTFrequencySpectrumPolar* result = DoCorrelation(data->GetSpectrumPolar(firstChannel), data->GetSpectrumPolar(secondChannel));
 
         if (result != NULL)
         {

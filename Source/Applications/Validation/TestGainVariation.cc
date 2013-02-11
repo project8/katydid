@@ -157,7 +157,7 @@ int main(int argc, char** argv)
 
     KTINFO(vallog, "Processing complete");
 #ifdef ROOT_FOUND
-    TH1D* normalizedHist = normData->GetSpectrum(0)->CreateMagnitudeHistogram("hOutputMag");
+    TH1D* normalizedHist = normData->GetSpectrumPolar(0)->CreateMagnitudeHistogram("hOutputMag");
     normalizedHist->SetLineColor(2);
     normalizedHist->Write();
 #endif

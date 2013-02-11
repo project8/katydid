@@ -221,9 +221,9 @@ namespace Katydid
             KTWARN(fftlog_comp, "Data has no channels!");
             return NULL;
         }
-        if (fsData->GetSpectrum(0)->size() != GetSize())
+        if (fsData->GetSpectrumFFTW(0)->size() != GetSize())
         {
-            SetSize(fsData->GetSpectrum(0)->size());
+            SetSize(fsData->GetSpectrumFFTW(0)->size());
             InitializeFFT();
         }
 
@@ -238,7 +238,7 @@ namespace Katydid
 
         for (UInt_t iChannel = 0; iChannel < fsData->GetNChannels(); iChannel++)
         {
-            const KTFrequencySpectrumFFTW* nextInput = fsData->GetSpectrum(iChannel);
+            const KTFrequencySpectrumFFTW* nextInput = fsData->GetSpectrumFFTW(iChannel);
             if (nextInput == NULL)
             {
                 KTERROR(fftlog_comp, "Frequency spectrum <" << iChannel << "> does not appear to be present.");

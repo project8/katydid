@@ -27,6 +27,9 @@ namespace Katydid
             KTFrequencySpectrumData(unsigned nChannels=1);
             virtual ~KTFrequencySpectrumData();
 
+            const KTFrequencySpectrumPolar* GetSpectrumPolar(UInt_t channelNum = 0) const;
+            KTFrequencySpectrumPolar* GetSpectrumPolar(UInt_t channelNum = 0);
+
             const KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0) const;
             KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0);
             UInt_t GetNChannels() const;
@@ -34,6 +37,7 @@ namespace Katydid
             ULong64_t GetSliceNumber() const;
 
             void SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t channelNum = 0);
+
             void SetNChannels(UInt_t channels);
             void SetTimeInRun(Double_t tir);
             void SetSliceNumber(ULong64_t slice);
@@ -56,6 +60,16 @@ namespace Katydid
             virtual TH1D* CreatePowerDistributionHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
     };
+
+    inline const KTFrequencySpectrumPolar* KTFrequencySpectrumData::GetSpectrumPolar(UInt_t channelNum) const
+    {
+        return fSpectra[channelNum];
+    }
+
+    inline KTFrequencySpectrumPolar* KTFrequencySpectrumData::GetSpectrumPolar(UInt_t channelNum)
+    {
+        return fSpectra[channelNum];
+    }
 
     inline const KTFrequencySpectrumPolar* KTFrequencySpectrumData::GetSpectrum(UInt_t channelNum) const
     {

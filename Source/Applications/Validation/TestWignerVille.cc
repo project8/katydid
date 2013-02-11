@@ -109,7 +109,7 @@ int main()
         KTFrequencySpectrumDataFFTW* output = wvTransform.TransformData(aaTSData);
 
         allOutput[iWindow] = output;
-        spectra(iWindow) = output->GetSpectrum(0);
+        spectra(iWindow) = output->GetSpectrumFFTW(0);
 
         delete windowTS1;
         delete windowTS2;

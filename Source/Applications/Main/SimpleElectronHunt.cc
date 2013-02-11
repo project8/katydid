@@ -180,7 +180,7 @@ int main(int argc, char** argv)
         fullFFT.InitializeFFT();
         KTFrequencySpectrumData* freqSpectData = fullFFT.TransformData(data);
 
-        TH1D* histFullPS = freqSpectData->GetSpectrum(0)->CreatePowerHistogram();
+        TH1D* histFullPS = freqSpectData->GetSpectrumPolar(0)->CreatePowerHistogram();
         /**/// DEBUG
         if (drawWaterfall)
         {

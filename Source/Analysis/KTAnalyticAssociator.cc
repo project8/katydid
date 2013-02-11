@@ -163,7 +163,7 @@ namespace Katydid
         // Calculate the analytic associates
         for (UInt_t iChannel = 0; iChannel < data->GetNChannels(); iChannel++)
         {
-            const KTFrequencySpectrumFFTW* nextInput = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumFFTW* nextInput = data->GetSpectrumFFTW(iChannel);
 
             KTTimeSeriesFFTW* newTS = CalculateAnalyticAssociate(nextInput);
 

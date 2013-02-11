@@ -147,7 +147,7 @@ namespace Katydid
                 std::stringstream conv;
                 conv << iChannel;
                 std::string histName = histNameBase + conv.str();
-                TH1D* newPS = data->GetSpectrum(iChannel)->CreatePowerHistogram(histName);
+                TH1D* newPS = data->GetSpectrumPolar(iChannel)->CreatePowerHistogram(histName);
                 fFSHists[iChannel] = newPS;
             }
         }
@@ -155,7 +155,7 @@ namespace Katydid
         {
             for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
             {
-                TH1D* newPS = data->GetSpectrum(iChannel)->CreatePowerHistogram();
+                TH1D* newPS = data->GetSpectrumPolar(iChannel)->CreatePowerHistogram();
                 fFSHists[iChannel]->Add(newPS);
                 delete newPS;
             }
@@ -175,7 +175,7 @@ namespace Katydid
                 std::stringstream conv;
                 conv << iChannel;
                 std::string histName = histNameBase + conv.str();
-                TH1D* newPS = data->GetSpectrum(iChannel)->CreatePowerHistogram(histName);
+                TH1D* newPS = data->GetSpectrumFFTW(iChannel)->CreatePowerHistogram(histName);
                 fFSFFTWHists[iChannel] = newPS;
             }
         }
@@ -183,7 +183,7 @@ namespace Katydid
         {
             for (UInt_t iChannel=0; iChannel <data->GetNChannels(); iChannel++)
             {
-                TH1D* newPS = data->GetSpectrum(iChannel)->CreatePowerHistogram();
+                TH1D* newPS = data->GetSpectrumFFTW(iChannel)->CreatePowerHistogram();
                 fFSFFTWHists[iChannel]->Add(newPS);
                 delete newPS;
             }

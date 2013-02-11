@@ -90,8 +90,8 @@ namespace Katydid
 
     KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumData* data)
     {
-        if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin) SetMinBin(data->GetSpectrumPolar(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(data->GetSpectrumPolar(0)->FindBin(fMaxFrequency));
 
         UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
@@ -105,7 +105,7 @@ namespace Katydid
         Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrumPolar(iChannel);
 
             Double_t* xVals = new Double_t[fNFitPoints];
             Double_t* yVals = new Double_t[fNFitPoints];
@@ -161,9 +161,9 @@ namespace Katydid
     KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data)
     {
         // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
-        if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
-        KTDEBUG(gvlog, fMinFrequency << "  " << fMaxFrequency << "  " << fMinBin << "  " << fMaxBin << "  " << data->GetSpectrum(0)->GetRangeMin() << "  " << data->GetSpectrum(0)->GetRangeMax());
+        if (fCalculateMinBin) SetMinBin(data->GetSpectrumFFTW(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(data->GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
+        KTDEBUG(gvlog, fMinFrequency << "  " << fMaxFrequency << "  " << fMinBin << "  " << fMaxBin << "  " << data->GetSpectrumFFTW(0)->GetRangeMin() << "  " << data->GetSpectrumFFTW(0)->GetRangeMax());
 
         UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
@@ -177,7 +177,7 @@ namespace Katydid
         Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrumFFTW* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumFFTW* spectrum = data->GetSpectrumFFTW(iChannel);
 
             Double_t* xVals = new Double_t[fNFitPoints];
             Double_t* yVals = new Double_t[fNFitPoints];
