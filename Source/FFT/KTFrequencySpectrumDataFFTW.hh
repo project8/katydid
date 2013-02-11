@@ -8,7 +8,7 @@
 #ifndef KTFREQUENCYSPECTRUMDATAFFTW_HH_
 #define KTFREQUENCYSPECTRUMDATAFFTW_HH_
 
-#include "KTWriteableData.hh"
+#include "KTFrequencySpectrumData.hh"
 
 #include "KTFrequencySpectrumFFTW.hh"
 
@@ -21,7 +21,7 @@
 namespace Katydid
 {
 
-    class KTFrequencySpectrumDataFFTW : public KTWriteableData
+    class KTFrequencySpectrumDataFFTW : public KTFrequencySpectrumData
     {
         public:
             KTFrequencySpectrumDataFFTW(UInt_t nChannels=1);
@@ -34,12 +34,14 @@ namespace Katydid
             KTFrequencySpectrumFFTW* GetSpectrum(UInt_t channelNum = 0);
             unsigned GetNChannels() const;
             Double_t GetTimeInRun() const;
+            Double_t GetTimeLength() const;
             ULong64_t GetSliceNumber() const;
 
             void SetSpectrum(KTFrequencySpectrumFFTW* record, unsigned channelNum = 0);
 
             void SetNChannels(UInt_t channels);
             void SetTimeInRun(Double_t tir);
+            void SetTimeLength(Double_t length);
             void SetSliceNumber(ULong64_t slice);
 
             void Accept(KTWriter* writer) const;
@@ -48,6 +50,7 @@ namespace Katydid
             std::vector< KTFrequencySpectrumFFTW* > fSpectra;
 
             Double_t fTimeInRun;
+            Double_t fTimeLength;
             ULong64_t fSliceNumber;
 
 #ifdef ROOT_FOUND
@@ -91,6 +94,11 @@ namespace Katydid
         return fTimeInRun;
     }
 
+    inline Double_t KTFrequencySpectrumDataFFTW::GetTimeLength() const
+    {
+        return fTimeLength;
+    }
+
     inline ULong64_t KTFrequencySpectrumDataFFTW::GetSliceNumber() const
     {
         return fSliceNumber;
@@ -111,6 +119,12 @@ namespace Katydid
     inline void KTFrequencySpectrumDataFFTW::SetTimeInRun(Double_t tir)
     {
         fTimeInRun = tir;
+        return;
+    }
+
+    inline void KTFrequencySpectrumDataFFTW::SetTimeLength(Double_t length)
+    {
+        fTimeLength = length;
         return;
     }
 
