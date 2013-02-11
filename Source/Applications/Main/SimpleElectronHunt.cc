@@ -19,7 +19,7 @@
 #include "KTEgg.hh"
 #include "KTBundle.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTHannWindow.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTSimpleFFT.hh"
@@ -178,7 +178,7 @@ int main(int argc, char** argv)
         fullFFT.SetTimeSize(data->GetSliceSize());
         fullFFT.SetTransformFlag("ES");
         fullFFT.InitializeFFT();
-        KTFrequencySpectrumData* freqSpectData = fullFFT.TransformData(data);
+        KTFrequencySpectrumDataPolar* freqSpectData = fullFFT.TransformData(data);
 
         TH1D* histFullPS = freqSpectData->GetSpectrumPolar(0)->CreatePowerHistogram();
         /**/// DEBUG

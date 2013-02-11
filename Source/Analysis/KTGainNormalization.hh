@@ -17,7 +17,7 @@ namespace Katydid
 {
     class KTBundle;
     class KTFrequencySpectrumPolar;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTGainVariationData;
@@ -29,7 +29,7 @@ namespace Katydid
     class KTGainNormalization : public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTFrequencySpectrumData*) >::signal FSSignal;
+            typedef KTSignal< void (const KTFrequencySpectrumDataPolar*) >::signal FSSignal;
             typedef KTSignal< void (const KTFrequencySpectrumDataFFTW*) >::signal FSFFTWSignal;
             typedef KTSignal< void (const KTSlidingWindowFSData*) >::signal SWFSSignal;
             typedef KTSignal< void (const KTSlidingWindowFSDataFFTW*) >::signal SWFSFFTWSignal;
@@ -74,7 +74,7 @@ namespace Katydid
             std::string fOutputDataName;
 
         public:
-            KTFrequencySpectrumData* Normalize(const KTFrequencySpectrumData* fsData, const KTGainVariationData* gvData);
+            KTFrequencySpectrumDataPolar* Normalize(const KTFrequencySpectrumDataPolar* fsData, const KTGainVariationData* gvData);
             KTFrequencySpectrumDataFFTW* Normalize(const KTFrequencySpectrumDataFFTW* fsData, const KTGainVariationData* gvData);
 
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);

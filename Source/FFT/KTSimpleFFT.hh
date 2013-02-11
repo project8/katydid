@@ -33,7 +33,7 @@ namespace Katydid
     class KTPStoreNode;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTWriteableData;
 
     /*!
@@ -68,13 +68,13 @@ namespace Katydid
      \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
 
      Signals:
-     \li \c void (const KTFrequencySpectrumData*) emitted upon performance of a transform.
+     \li \c void (const KTFrequencySpectrumDataPolar*) emitted upon performance of a transform.
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTFrequencySpectrumData*) >::signal FFTSignal;
+            typedef KTSignal< void (const KTFrequencySpectrumDataPolar*) >::signal FFTSignal;
 
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
@@ -87,7 +87,7 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
+            virtual KTFrequencySpectrumDataPolar* TransformData(const KTTimeSeriesData* tsData);
 
             KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
 

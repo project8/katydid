@@ -20,7 +20,7 @@ namespace Katydid
     class KTCorrelationData;
     class KTBundle;
     class KTFrequencySpectrumPolar;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
 
@@ -57,10 +57,10 @@ namespace Katydid
 
         public:
 
-            KTCorrelationData* Correlate(const KTFrequencySpectrumData* data);
+            KTCorrelationData* Correlate(const KTFrequencySpectrumDataPolar* data);
             KTCorrelationData* Correlate(const KTFrequencySpectrumDataFFTW* data);
-            //KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs);
-            //KTCorrelationData* Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair);
+            //KTCorrelationData* Correlate(const KTFrequencySpectrumDataPolar* data, const PairVector& pairs);
+            //KTCorrelationData* Correlate(const KTFrequencySpectrumDataPolar* data, const KTCorrelationPair& pair);
 
         protected:
             KTFrequencySpectrumPolar* DoCorrelation(const KTFrequencySpectrumPolar* firstSpectrum, const KTFrequencySpectrumPolar* secondSpectrum);
@@ -78,7 +78,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessFFTData(const KTFrequencySpectrumData* fsData);
+            void ProcessFFTData(const KTFrequencySpectrumDataPolar* fsData);
             void ProcessFFTWData(const KTFrequencySpectrumDataFFTW* fsData);
             void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 

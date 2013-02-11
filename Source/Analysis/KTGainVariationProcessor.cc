@@ -9,7 +9,7 @@
 
 #include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
 #include "KTLogger.hh"
@@ -50,7 +50,7 @@ namespace Katydid
         RegisterSignal("gain-var", &fGainVarSignal, "void (const KTGainVariationData*)");
 
         RegisterSlot("bundle", this, &KTGainVariationProcessor::ProcessBundle, "void (shared_ptr<KTBundle>)");
-        RegisterSlot("fsdata", this, &KTGainVariationProcessor::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
+        RegisterSlot("fsdata", this, &KTGainVariationProcessor::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataPolar*)");
         RegisterSlot("fsdata-fftw", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
     }
 
@@ -88,7 +88,7 @@ namespace Katydid
         return true;
     }
 
-    KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumData* data)
+    KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumDataPolar* data)
     {
         if (fCalculateMinBin) SetMinBin(data->GetSpectrumPolar(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data->GetSpectrumPolar(0)->FindBin(fMaxFrequency));
@@ -270,7 +270,7 @@ namespace Katydid
 
     void KTGainVariationProcessor::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumDataPolar* fsData = bundle->GetData< KTFrequencySpectrumDataPolar >(fInputDataName);
         if (fsData != NULL)
         {
             KTGainVariationData* newData = CalculateGainVariation(fsData);
@@ -290,7 +290,7 @@ namespace Katydid
         return;
     }
 
-    void KTGainVariationProcessor::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    void KTGainVariationProcessor::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
     {
         KTGainVariationData* newData = CalculateGainVariation(data);
         if (data->GetBundle() != NULL)

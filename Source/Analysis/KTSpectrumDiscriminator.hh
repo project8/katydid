@@ -19,7 +19,7 @@ namespace Katydid
     class KTDiscriminatedPoints1DData;
     class KTDiscriminatedPoints2DData;
     class KTBundle;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTSlidingWindowFSData;
     class KTSlidingWindowFSDataFFTW;
@@ -84,7 +84,7 @@ namespace Katydid
             std::string fOutputDataName;
 
         public:
-            KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumData* data);
+            KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumDataPolar* data);
             KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumDataFFTW* data);
             KTDiscriminatedPoints1DData* Discriminate(const KTCorrelationData* data);
             KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
@@ -104,7 +104,7 @@ namespace Katydid
 
         public:
             void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-            void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
+            void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
             void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
             void ProcessCorrelationData(const KTCorrelationData* data);
             void ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data);

@@ -31,7 +31,7 @@ namespace Katydid
     class KTPStoreNode;
     class KTTimeSeries;
     class KTTimeSeriesData;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTWriteableData;
 
     /*!
@@ -81,7 +81,7 @@ namespace Katydid
 
             virtual void InitializeFFT();
 
-            virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
+            virtual KTFrequencySpectrumDataPolar* TransformData(const KTTimeSeriesData* tsData);
 
             KTFrequencySpectrumPolar* Transform(const KTTimeSeries* data) const;
 

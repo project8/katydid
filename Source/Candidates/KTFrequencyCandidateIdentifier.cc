@@ -13,7 +13,7 @@
 #include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
@@ -58,7 +58,7 @@ namespace Katydid
         return true;
     }
 
-    KTFrequencyCandidateData* KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumData* fsData)
+    KTFrequencyCandidateData* KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataPolar* fsData)
     {
         if (clusterData->GetBinWidth() != fsData->GetSpectrumPolar(0)->GetBinWidth())
         {
@@ -255,7 +255,7 @@ namespace Katydid
             return;
         }
 
-        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fFSInputDataName);
+        const KTFrequencySpectrumDataPolar* fsData = bundle->GetData< KTFrequencySpectrumDataPolar >(fFSInputDataName);
         if (fsData != NULL)
         {
             KTFrequencyCandidateData* newData = newData = this->IdentifyCandidates(clusterData, fsData);

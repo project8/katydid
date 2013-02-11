@@ -15,12 +15,12 @@ class TH1D;
 namespace Katydid
 {
     class KTFrequencySpectrumDataFFTW;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
 
     class KTMultiBundleROOTTypeWriterFFT : public KTMEROOTTypeWriterBase//, public KTTypeWriterFFT
     {
         public:
-            friend class KTFrequencySpectrumData;
+            friend class KTFrequencySpectrumDataPolar;
 
         public:
             KTMultiBundleROOTTypeWriterFFT();
@@ -37,7 +37,7 @@ namespace Katydid
 
         public:
 
-            void AddFrequencySpectrumData(const KTFrequencySpectrumData* data);
+            void AddFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
             void AddFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
 
         private:

@@ -13,7 +13,7 @@
 #include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
@@ -58,7 +58,7 @@ namespace Katydid
         RegisterSignal("disc-2d", &fDiscrim2DSignal, "void (const KTDiscriminatedPoints2DData*)");
 
         RegisterSlot("bundle", this, &KTSpectrumDiscriminator::ProcessBundle, "void (shared_ptr<KTBundle>)");
-        RegisterSlot("fsdata", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
+        RegisterSlot("fsdata", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataPolar*)");
         RegisterSlot("fsdata-fftw", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("corrdata", this, &KTSpectrumDiscriminator::ProcessCorrelationData, "void (const KTCorrelationData*)");
         RegisterSlot("swfsdata", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSData, "void (const KTSlidingWindowFSData*)");
@@ -106,7 +106,7 @@ namespace Katydid
         return true;
     }
 
-    KTDiscriminatedPoints1DData* KTSpectrumDiscriminator::Discriminate(const KTFrequencySpectrumData* data)
+    KTDiscriminatedPoints1DData* KTSpectrumDiscriminator::Discriminate(const KTFrequencySpectrumDataPolar* data)
     {
         if (fCalculateMinBin)
         {
@@ -535,7 +535,7 @@ namespace Katydid
 
     void KTSpectrumDiscriminator::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumDataPolar* fsData = bundle->GetData< KTFrequencySpectrumDataPolar >(fInputDataName);
         if (fsData != NULL)
         {
             ProcessFrequencySpectrumData(fsData);
@@ -574,7 +574,7 @@ namespace Katydid
         return;
     }
 
-    void KTSpectrumDiscriminator::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    void KTSpectrumDiscriminator::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
     {
         KTDiscriminatedPoints1DData* newData = Discriminate(data);
         KTBundle* bundle = data->GetBundle();

@@ -9,7 +9,7 @@
 #define KTROOTIMAGEWRITER_HH_
 
 #include "KTWriter.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTCorrelationData.hh"
 
@@ -41,7 +41,7 @@ namespace Katydid
             // Frequency Spectrum Data
             //************************
         public:
-            void Write(const KTFrequencySpectrumData* data);
+            void Write(const KTFrequencySpectrumDataPolar* data);
             void Write(const KTFrequencySpectrumDataFFTW* data);
 
             const std::string& GetFilenameBaseFrequencySpectrum() const;

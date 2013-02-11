@@ -9,7 +9,7 @@
 #include "KTBasicROOTTypeWriterFFT.hh"
 #include "KTBundle.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "complexpolar.hh"
 
 #include <iostream>
@@ -23,7 +23,7 @@ int main()
     KTBundle* bundle = new KTBundle();
 
     // Set up the data
-    KTFrequencySpectrumData* data = new KTFrequencySpectrumData(2);
+    KTFrequencySpectrumDataPolar* data = new KTFrequencySpectrumDataPolar(2);
     data->SetBundle(bundle);
     bundle->SetBundleNumber(0);
 

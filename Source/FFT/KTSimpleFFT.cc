@@ -11,7 +11,7 @@
 #include "KTEggHeader.hh"
 #include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesPairedData.hh"
 #include "KTTimeSeriesReal.hh"
@@ -47,7 +47,7 @@ namespace Katydid
     {
         fConfigName = "simple-fft";
 
-        RegisterSignal("fft", &fFFTSignal, "void (const KTFrequencySpectrumData*)");
+        RegisterSignal("fft", &fFFTSignal, "void (const KTFrequencySpectrumDataPolar*)");
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
@@ -131,7 +131,7 @@ namespace Katydid
         return;
     }
 
-    KTFrequencySpectrumData* KTSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
+    KTFrequencySpectrumDataPolar* KTSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
     {
         if (tsData->GetNTimeSeries() < 1)
         {
@@ -151,7 +151,7 @@ namespace Katydid
             return NULL;
         }
 
-        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNTimeSeries());
+        KTFrequencySpectrumDataPolar* newData = new KTFrequencySpectrumDataPolar(tsData->GetNTimeSeries());
 
         for (UInt_t iChannel = 0; iChannel < tsData->GetNTimeSeries(); iChannel++)
         {
@@ -249,7 +249,7 @@ namespace Katydid
 
     void KTSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
-        KTFrequencySpectrumData* newData = TransformData(tsData);
+        KTFrequencySpectrumDataPolar* newData = TransformData(tsData);
         if (tsData->GetBundle() != NULL)
         {
             KTBundle* bundle = tsData->GetBundle();

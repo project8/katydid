@@ -7,7 +7,7 @@
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTLogger.hh"
 #include "KTSpectrumDiscriminator.hh"
 
@@ -40,7 +40,7 @@ int main()
     TRandom3 rand(0);
 #endif
 
-    KTFrequencySpectrumData data(1);
+    KTFrequencySpectrumDataPolar data(1);
     KTFrequencySpectrumPolar* spectrum = new KTFrequencySpectrumPolar(nBins, minFreq, maxFreq);
 
     // Fill in the noise

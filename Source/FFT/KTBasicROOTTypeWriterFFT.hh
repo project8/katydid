@@ -12,7 +12,7 @@
 
 namespace Katydid
 {
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTSlidingWindowFSData;
     class KTSlidingWindowFSDataFFTW;
@@ -33,7 +33,7 @@ namespace Katydid
             // Frequency Spectrum Data
             //************************
         public:
-            void WriteFrequencySpectrumData(const KTFrequencySpectrumData* data);
+            void WriteFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
             void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
 
             //************************

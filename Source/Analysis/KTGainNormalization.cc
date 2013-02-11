@@ -10,7 +10,7 @@
 #include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTGainVariationData.hh"
@@ -47,7 +47,7 @@ namespace Katydid
     {
         fConfigName = "gain-normalization";
 
-        RegisterSignal("gain-norm-fs", &fFSSignal, "void (const KTFrequencySpectrumData*)");
+        RegisterSignal("gain-norm-fs", &fFSSignal, "void (const KTFrequencySpectrumDataPolar*)");
         RegisterSignal("gain-norm-fs-fftw", &fFSFFTWSignal, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSignal("gain-norm-sw-fs", &fSWFSSignal, "void (const KTSlidingWindowFSData*)");
         RegisterSignal("gain-norm-sw-fs-fftw", &fSWFSFFTWSignal, "void (const KTSlidingWindowFSDataFFTW*)");
@@ -89,7 +89,7 @@ namespace Katydid
     }
 
 
-    KTFrequencySpectrumData* KTGainNormalization::Normalize(const KTFrequencySpectrumData* fsData, const KTGainVariationData* gvData)
+    KTFrequencySpectrumDataPolar* KTGainNormalization::Normalize(const KTFrequencySpectrumDataPolar* fsData, const KTGainVariationData* gvData)
     {
         if (fCalculateMinBin) SetMinBin(fsData->GetSpectrumPolar(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrumPolar(0)->FindBin(fMaxFrequency));
@@ -101,7 +101,7 @@ namespace Katydid
             return NULL;
         }
 
-        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(nChannels);
+        KTFrequencySpectrumDataPolar* newData = new KTFrequencySpectrumDataPolar(nChannels);
 
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
@@ -313,10 +313,10 @@ namespace Katydid
             return;
         }
 
-        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fFSInputDataName);
+        const KTFrequencySpectrumDataPolar* fsData = bundle->GetData< KTFrequencySpectrumDataPolar >(fFSInputDataName);
         if (fsData != NULL)
         {
-            KTFrequencySpectrumData* newData = Normalize(fsData, gvData);
+            KTFrequencySpectrumDataPolar* newData = Normalize(fsData, gvData);
             if (newData != NULL)
             {
                 KTBundle* bundle = fsData->GetBundle();

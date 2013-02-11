@@ -24,7 +24,7 @@ namespace Katydid
 {
     class KTEggHeader;
     class KTPStoreNode;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
 
     class KTPowerSpectrumAverager : public KTProcessor
@@ -38,7 +38,7 @@ namespace Katydid
 
             void SetToStartNewHistogram();
 
-            void AddFrequencySpectrumData(const KTFrequencySpectrumData* data);
+            void AddFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
 
 //            void AddCorrelationData(const KTCorrelationData* data);
 
@@ -78,7 +78,7 @@ namespace Katydid
 
             void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 
-            void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
+            void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
 
             void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
             

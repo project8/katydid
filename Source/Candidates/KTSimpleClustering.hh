@@ -27,7 +27,7 @@ namespace Katydid
     class KTBundle;
     class KTCorrelationData;
     class KTData;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
 
     class KTSimpleClustering : public KTBundleQueueProcessorTemplate< KTSimpleClustering >

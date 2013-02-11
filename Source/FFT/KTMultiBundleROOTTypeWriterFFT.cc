@@ -13,7 +13,7 @@
 #include "KTLogger.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 
 #include "TCanvas.h"
@@ -125,7 +125,7 @@ namespace Katydid
 
     void KTMultiBundleROOTTypeWriterFFT::RegisterSlots()
     {
-        fWriter->RegisterSlot("fs-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
+        fWriter->RegisterSlot("fs-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumData, "void (const KTFrequencySpectrumDataPolar*)");
         fWriter->RegisterSlot("fs-fftw-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
         return;
     }
@@ -135,7 +135,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    void KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
     {
         if (fFSHists.size() == 0)
         {

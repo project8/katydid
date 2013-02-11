@@ -12,7 +12,7 @@
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
@@ -77,7 +77,7 @@ namespace Katydid
         return;
     }
 
-    void KTPowerSpectrumAverager::AddFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    void KTPowerSpectrumAverager::AddFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
     {
         AddFSData(data);
         return;
@@ -158,7 +158,7 @@ namespace Katydid
 
     void KTPowerSpectrumAverager::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumDataPolar* fsData = bundle->GetData< KTFrequencySpectrumDataPolar >(fInputDataName);
         if (fsData != NULL)
         {
             AddFrequencySpectrumData(fsData);
@@ -183,7 +183,7 @@ namespace Katydid
 
         return;
     }
-    void KTPowerSpectrumAverager::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    void KTPowerSpectrumAverager::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
     {
         AddFrequencySpectrumData(data);
         return;

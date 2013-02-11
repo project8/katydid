@@ -8,7 +8,7 @@
 #include "complexpolar.hh"
 #include "KTCorrelator.hh"
 #include "KTCorrelationData.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 
@@ -20,9 +20,9 @@ int main(int argc, char** argv)
 {
     // Prepare the input data
 
-    // KTFrequencySpectrumData option
+    // KTFrequencySpectrumDataPolar option
     /*
-    KTFrequencySpectrumData* dataInput = new KTFrequencySpectrumData(2);
+    KTFrequencySpectrumDataPolar* dataInput = new KTFrequencySpectrumDataPolar(2);
 
     KTFrequencySpectrumPolar* spectrum0 = new KTFrequencySpectrumPolar(10, 0, 10);
     (*spectrum0)(0) = 0.;

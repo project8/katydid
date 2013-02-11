@@ -11,7 +11,7 @@
 #include "KTCorrelationData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -466,7 +466,7 @@ namespace Katydid
         BundleList* clusteredBundles = NULL;
 
         // ExtractData is used instead of the standard GetData so that the data object is removed from the bundle.
-        KTFrequencySpectrumData* fsData = bundle->ExtractData< KTFrequencySpectrumData >(fFSInputDataName);
+        KTFrequencySpectrumDataPolar* fsData = bundle->ExtractData< KTFrequencySpectrumDataPolar >(fFSInputDataName);
         if (fsData != NULL)
         {
             shared_ptr<KTData> ptr(fsData);

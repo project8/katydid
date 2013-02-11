@@ -21,7 +21,7 @@ namespace Katydid
     class KTCorrelationData;
     class KTBundle;
     class KTFrequencySpectrumPolar;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
 
@@ -52,7 +52,7 @@ namespace Katydid
 
 
         public:
-            KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumData* fsData);
+            KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataPolar* fsData);
             KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataFFTW* fsData);
             KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTCorrelationData* fsData);
 

@@ -18,7 +18,7 @@
 namespace Katydid
 {
     class KTBundle;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTGainVariationData;
     class KTPStoreNode;
@@ -44,7 +44,7 @@ namespace Katydid
 
      Slots:
      \li \c void ProcessBundle(boost::shared_ptr<KTBundle>)
-     \li \c void ProcessFrequencySpectrumData(const KTFrequencySpectrumData*)
+     \li \c void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar*)
      \li \c void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
 
      Signals:
@@ -98,7 +98,7 @@ namespace Katydid
             std::string fOutputDataName;
 
         public:
-            KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumData* data);
+            KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumDataPolar* data);
             KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data);
 
         private:
@@ -117,7 +117,7 @@ namespace Katydid
 
         public:
             void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-            void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
+            void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
             void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
 
     };

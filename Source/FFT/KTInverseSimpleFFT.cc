@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTBundle.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTPStoreNode.hh"
 
@@ -107,7 +107,7 @@ namespace Katydid
         return;
     }
 
-    KTFrequencySpectrumData* KTInverseSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
+    KTFrequencySpectrumDataPolar* KTInverseSimpleFFT::TransformData(const KTTimeSeriesData* tsData)
     {
         if (tsData->GetSliceSize() != GetTimeSize())
         {
@@ -122,7 +122,7 @@ namespace Katydid
             return NULL;
         }
 
-        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(tsData->GetNTimeSeries());
+        KTFrequencySpectrumDataPolar* newData = new KTFrequencySpectrumDataPolar(tsData->GetNTimeSeries());
 
         for (UInt_t iChannel = 0; iChannel < tsData->GetNTimeSeries(); iChannel++)
         {
@@ -191,7 +191,7 @@ namespace Katydid
 
     void KTInverseSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
-        KTFrequencySpectrumData* newData = TransformData(tsData);
+        KTFrequencySpectrumDataPolar* newData = TransformData(tsData);
         tsData->GetBundle()->AddData(newData);
         return;
     }
@@ -205,7 +205,7 @@ namespace Katydid
             KTWARN(fftlog_simp, "No time series data was available in the bundle");
             return;
         }
-        KTFrequencySpectrumData* newData = TransformData(tsData);
+        KTFrequencySpectrumDataPolar* newData = TransformData(tsData);
         bundle->AddData(newData);
         return;
     }

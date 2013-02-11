@@ -10,7 +10,7 @@
 
 #include "KTBundle.hh"
 #include "KTWriter.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 
 #include <fstream>

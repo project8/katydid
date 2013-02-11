@@ -12,7 +12,7 @@
 
 #include "KTGainNormalization.hh"
 #include "KTGainVariationData.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTLogger.hh"
 
 #ifdef ROOT_FOUND
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
     gainVarProc.SetMaxBin(nBins-1);
     gainVarProc.SetNFitPoints(nFitPoints);
 
-    KTFrequencySpectrumData fsData(1);
+    KTFrequencySpectrumDataPolar fsData(1);
     KTFrequencySpectrumPolar* spectrum = new KTFrequencySpectrumPolar(nBins, 0., 100.);
 
 #ifdef ROOT_FOUND
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
     gainNorm.SetMaxBin(nBins-1);
 
     KTINFO(vallog, "Normalizing the spectrum");
-    KTFrequencySpectrumData* normData = gainNorm.Normalize(&fsData, gvData);
+    KTFrequencySpectrumDataPolar* normData = gainNorm.Normalize(&fsData, gvData);
 
     KTINFO(vallog, "Processing complete");
 #ifdef ROOT_FOUND

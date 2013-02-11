@@ -11,7 +11,7 @@
 #include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
@@ -50,7 +50,7 @@ namespace Katydid
 
         RegisterSignal("correlation", &fCorrSignal, "void (const KTCorrelationData*)");
 
-        RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData, "void (const KTFrequencySpectrumData*)");
+        RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData, "void (const KTFrequencySpectrumDataPolar*)");
         RegisterSlot("fftw-data", this, &KTCorrelator::ProcessFFTWData, "void (const KTFrequencySpectrumDataFFTW*)");
         RegisterSlot("bundle", this, &KTCorrelator::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
@@ -84,7 +84,7 @@ namespace Katydid
         return true;
     }
 
-    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumData* data)
+    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumDataPolar* data)
     {
         KTCorrelationData* newData = new KTCorrelationData();
         newData->SetNPairs(fPairs.size());
@@ -147,7 +147,7 @@ namespace Katydid
         return newData;
     }
 /*
-    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs)
+    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumDataPolar* data, const PairVector& pairs)
     {
         KTCorrelationData* newData = new KTCorrelationData();
 
@@ -175,7 +175,7 @@ namespace Katydid
         return newData;
     }
 
-    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair)
+    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumDataPolar* data, const KTCorrelationPair& pair)
     {
         UInt_t firstChannel = pair.first;
         UInt_t secondChannel = pair.second;
@@ -221,7 +221,7 @@ namespace Katydid
         return newSpectFFTW.CreateFrequencySpectrum();
     }
 
-    void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumData* fsData)
+    void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumDataPolar* fsData)
     {
         KTCorrelationData* newData = Correlate(fsData);
         if (newData != NULL)
@@ -251,7 +251,7 @@ namespace Katydid
 
     void KTCorrelator::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumDataPolar* fsData = bundle->GetData< KTFrequencySpectrumDataPolar >(fInputDataName);
         if (fsData != NULL)
         {
             ProcessFFTData(fsData);

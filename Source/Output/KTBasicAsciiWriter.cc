@@ -57,7 +57,7 @@ namespace Katydid {
     return this->fOutputStream;
   }
 
-  // void KTBasicASCIIWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt) {
+  // void KTBasicASCIIWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumDataPolar* dt) {
   //   KTBundle* ev = dt->GetBundle();
   //   uint64_t evN = (ev == NULL) ? 0 : ev->GetBundleNumber();
   //   uint64_t nCh = dt->GetNChannels();

@@ -74,7 +74,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTROOTImageWriter::Write(const KTFrequencySpectrumData* data)
+    void KTROOTImageWriter::Write(const KTFrequencySpectrumDataPolar* data)
     {
         /*
         KTBundle* bundle = data->GetBundle();

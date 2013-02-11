@@ -11,7 +11,7 @@
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTSlidingWindowFSData.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
@@ -43,7 +43,7 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::RegisterSlots()
     {
-        fWriter->RegisterSlot("fs-data", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
+        fWriter->RegisterSlot("fs-data", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData, "void (const KTFrequencySpectrumDataPolar*)");
         fWriter->RegisterSlot("fs-data-fftw", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
         fWriter->RegisterSlot("swfs-data", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData, "void (const WriteSlidingWindowFSData*)");
         fWriter->RegisterSlot("swfs-data-fftw", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW, "void (const WriteSlidingWindowFSDataFFTW*)");
@@ -55,7 +55,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
     {
         KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
