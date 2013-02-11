@@ -15,6 +15,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTWaterfallCandidateData.hh"
 
 #include <set>
 
@@ -430,7 +431,12 @@ namespace Katydid
     {
         shared_ptr<KTBundle> bundle(new KTBundle());
 
-        //KTWaterfallCandidateData* newData = new KTWaterfallCandidateData();
+        KTWaterfallCandidateData* newData = new KTWaterfallCandidateData();
+        newData->SetComponent(cluster.fDataComponent);
+        newData->SetTimeInRun(cluster.fPoints.front()->fDataPtr->GetTimeInRun());
+        newData->SetFirstSliceNumber(cluster.fPoints.front()->fDataPtr->GetSliceNumber());
+        newData->SetLastSliceNumber(cluster.fPoints.back()->fDataPtr->GetSliceNumber());
+
 
         // fill in the data
 
