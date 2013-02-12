@@ -36,11 +36,13 @@ namespace Katydid
             UInt_t GetSecondChannel(UInt_t pairNum = 0) const;
             UInt_t GetNPairs() const;
             Double_t GetTimeInRun() const;
+            Double_t GetTimeLength() const;
             ULong64_t GetSliceNumber() const;
 
             void SetCorrelation(KTFrequencySpectrumPolar* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
             void SetNPairs(unsigned pairs);
             void SetTimeInRun(Double_t tir);
+            void SetTimeLength(Double_t length);
             void SetSliceNumber(ULong64_t slice);
 
             void Accept(KTWriter* writer) const;
@@ -49,6 +51,7 @@ namespace Katydid
             std::vector< PerPairData > fData;
 
             Double_t fTimeInRun;
+            Double_t fLength;
             ULong64_t fSliceNumber;
     };
 
@@ -82,6 +85,11 @@ namespace Katydid
         return fTimeInRun;
     }
 
+    inline Double_t KTCorrelationData::GetTimeLength() const
+    {
+        return fLength;
+    }
+
     inline ULong64_t KTCorrelationData::GetSliceNumber() const
     {
         return fSliceNumber;
@@ -104,6 +112,12 @@ namespace Katydid
     inline void KTCorrelationData::SetTimeInRun(Double_t tir)
     {
         fTimeInRun = tir;
+        return;
+    }
+
+    inline void KTCorrelationData::SetTimeLength(Double_t length)
+    {
+        fLength = length;
         return;
     }
 

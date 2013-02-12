@@ -20,6 +20,7 @@ namespace Katydid
             KTWriteableData(),
             fData(nPairs),
             fTimeInRun(0.),
+            fLength(0.),
             fSliceNumber(0)
     {
     }

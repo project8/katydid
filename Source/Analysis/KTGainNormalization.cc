@@ -115,6 +115,7 @@ namespace Katydid
         }
 
         newData->SetTimeInRun(fsData->GetTimeInRun());
+        newData->SetTimeLength(fsData->GetTimeLength());
         newData->SetSliceNumber(fsData->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
@@ -150,6 +151,7 @@ namespace Katydid
         }
 
         newData->SetTimeInRun(fsData->GetTimeInRun());
+        newData->SetTimeLength(fsData->GetTimeLength());
         newData->SetSliceNumber(fsData->GetSliceNumber());
 
         newData->SetName(fOutputDataName);
