@@ -38,7 +38,7 @@ namespace Katydid
             virtual void SetTimeInRun(Double_t tir) = 0;
             virtual void SetTimeLength(Double_t length) = 0;
             virtual void SetSliceNumber(ULong64_t slice) = 0;
-
+/*
 #ifdef ROOT_FOUND
         public:
             virtual TH1D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumMag") const = 0;
@@ -48,6 +48,7 @@ namespace Katydid
 
             virtual TH1D* CreatePowerDistributionHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const = 0;
 #endif
+*/
     };
 
 } /* namespace Katydid */

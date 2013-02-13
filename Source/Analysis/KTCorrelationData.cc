@@ -17,7 +17,7 @@ namespace Katydid
     static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTCorrelationData > > sCDMRegistrar;
 
     KTCorrelationData::KTCorrelationData(UInt_t nPairs) :
-            KTWriteableData(),
+            KTFrequencySpectrumData(),
             fData(nPairs),
             fTimeInRun(0.),
             fLength(0.),

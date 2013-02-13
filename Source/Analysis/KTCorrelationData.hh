@@ -68,6 +68,16 @@ namespace Katydid
         return fData[pairNum].fCorrelation;
     }
 
+    inline const KTFrequencySpectrum* KTCorrelationData::GetSpectrum(UInt_t pairNum) const
+    {
+        return fData[pairNum].fCorrelation;
+    }
+
+    inline KTFrequencySpectrum* KTCorrelationData::GetSpectrum(UInt_t pairNum)
+    {
+        return fData[pairNum].fCorrelation;
+    }
+
     inline UInt_t KTCorrelationData::GetFirstChannel(UInt_t pairNum) const
     {
         return fData[pairNum].fFirstChannel;
