@@ -100,11 +100,11 @@ namespace Katydid
                 delete *it;
             }
             fAveragePSHists.clear();
-            if (fAveragePSHists.size() != data->GetNPairs())
-                fAveragePSHists.resize(data->GetNPairs());
+            if (fAveragePSHists.size() != data->GetNComponents())
+                fAveragePSHists.resize(data->GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < data->GetNPairs(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;

@@ -109,10 +109,10 @@ namespace Katydid
     {
         if (fCorrHists.size() == 0)
         {
-            fCorrHists.resize(data->GetNPairs());
+            fCorrHists.resize(data->GetNComponents());
 
             std::string histNameBase("Correlation");
-            for (UInt_t iChannel=0; iChannel < data->GetNPairs(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;
@@ -123,7 +123,7 @@ namespace Katydid
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel < data->GetNPairs(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 TH1D* newCorr = data->GetCorrelation(iChannel)->CreateMagnitudeHistogram();
                 fCorrHists[iChannel]->Add(newCorr);

@@ -58,7 +58,7 @@ namespace Katydid
         KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
         if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nPairs = data->GetNPairs();
+        UInt_t nPairs = data->GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 

@@ -87,7 +87,7 @@ namespace Katydid
     KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumDataPolar* data)
     {
         KTCorrelationData* newData = new KTCorrelationData();
-        newData->SetNPairs(fPairs.size());
+        newData->SetNComponents(fPairs.size());
 
         UInt_t iPair = 0;
         for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
@@ -120,7 +120,7 @@ namespace Katydid
     KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumDataFFTW* data)
     {
         KTCorrelationData* newData = new KTCorrelationData();
-        newData->SetNPairs(fPairs.size());
+        newData->SetNComponents(fPairs.size());
 
         UInt_t iPair = 0;
         for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)

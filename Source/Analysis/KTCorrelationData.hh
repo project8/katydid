@@ -8,7 +8,7 @@
 #ifndef KTCORRELATIONDATA_HH_
 #define KTCORRELATIONDATA_HH_
 
-#include "KTWriteableData.hh"
+#include "KTFrequencySpectrumData.hh"
 
 #include <vector>
 
@@ -16,7 +16,7 @@ namespace Katydid
 {
     class KTFrequencySpectrumPolar;
 
-    class KTCorrelationData : public KTWriteableData
+    class KTCorrelationData : public KTFrequencySpectrumData
     {
         protected:
             struct PerPairData
@@ -32,20 +32,23 @@ namespace Katydid
 
             const KTFrequencySpectrumPolar* GetCorrelation(UInt_t pairNum = 0) const;
             KTFrequencySpectrumPolar* GetCorrelation(UInt_t pairNum = 0);
+
+            virtual const KTFrequencySpectrum* GetSpectrum(UInt_t pairNum = 0) const;
+            virtual KTFrequencySpectrum* GetSpectrum(UInt_t pairNum = 0);
             UInt_t GetFirstChannel(UInt_t pairNum = 0) const;
             UInt_t GetSecondChannel(UInt_t pairNum = 0) const;
-            UInt_t GetNPairs() const;
-            Double_t GetTimeInRun() const;
-            Double_t GetTimeLength() const;
-            ULong64_t GetSliceNumber() const;
+            virtual UInt_t GetNComponents() const;
+            virtual Double_t GetTimeInRun() const;
+            virtual Double_t GetTimeLength() const;
+            virtual ULong64_t GetSliceNumber() const;
 
             void SetCorrelation(KTFrequencySpectrumPolar* record, UInt_t firstChannel, UInt_t secondChannel, UInt_t pairNum = 0);
-            void SetNPairs(unsigned pairs);
-            void SetTimeInRun(Double_t tir);
-            void SetTimeLength(Double_t length);
-            void SetSliceNumber(ULong64_t slice);
+            virtual void SetNComponents(unsigned pairs);
+            virtual void SetTimeInRun(Double_t tir);
+            virtual void SetTimeLength(Double_t length);
+            virtual void SetSliceNumber(ULong64_t slice);
 
-            void Accept(KTWriter* writer) const;
+            virtual void Accept(KTWriter* writer) const;
 
         protected:
             std::vector< PerPairData > fData;
@@ -75,7 +78,7 @@ namespace Katydid
         return fData[pairNum].fSecondChannel;
     }
 
-    inline UInt_t KTCorrelationData::GetNPairs() const
+    inline UInt_t KTCorrelationData::GetNComponents() const
     {
         return UInt_t(fData.size());
     }
@@ -103,7 +106,7 @@ namespace Katydid
         fData[pairNum].fSecondChannel = secondChannel;
     }
 
-    inline void KTCorrelationData::SetNPairs(unsigned pairs)
+    inline void KTCorrelationData::SetNComponents(unsigned pairs)
     {
         fData.resize(pairs);
         return;

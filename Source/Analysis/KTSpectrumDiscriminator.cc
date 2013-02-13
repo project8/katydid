@@ -288,7 +288,7 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
-        UInt_t nChannels = data->GetNPairs();
+        UInt_t nChannels = data->GetNComponents();
 
         KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
 

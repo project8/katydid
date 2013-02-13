@@ -95,8 +95,8 @@ int main(int argc, char** argv)
 
     KTCorrelationData* dataOutput = correlator->Correlate(dataInput);
 
-    KTINFO(corrtestlog, "There are " << dataOutput->GetNPairs() << " ouptut spectra");
-    for (unsigned iSpectrum=0; iSpectrum < dataOutput->GetNPairs(); iSpectrum++)
+    KTINFO(corrtestlog, "There are " << dataOutput->GetNComponents() << " ouptut spectra");
+    for (unsigned iSpectrum=0; iSpectrum < dataOutput->GetNComponents(); iSpectrum++)
     {
         KTINFO(corrtestlog, "Output Spectrum " << iSpectrum << "; "
                 "pair (" << dataOutput->GetFirstChannel(iSpectrum) << ", " <<
