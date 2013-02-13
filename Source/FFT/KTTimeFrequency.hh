@@ -12,9 +12,9 @@
 
 //#include <string>
 
-//#ifdef ROOT_FOUND
-//class TH1D;
-//#endif
+#ifdef ROOT_FOUND
+class TH2D;
+#endif
 
 namespace Katydid
 {
@@ -46,17 +46,17 @@ namespace Katydid
             virtual KTTimeFrequency& CConjugate() = 0;
 
             //virtual KTPowerSpectrum* CreatePowerSpectrum() const= 0;
-/*
+
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const = 0;
-            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const = 0;
+            //virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const = 0;
+            //virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const = 0;
 
-            virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const = 0;
+            virtual TH2D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const = 0;
 
-            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const = 0;
+            //virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const = 0;
 #endif
-*/
+
     };
 
 } /* namespace Katydid */

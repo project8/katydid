@@ -15,9 +15,9 @@
 #include <cmath>
 //#include <string>
 
-//#ifdef ROOT_FOUND
-//class TH1D;
-//#endif
+#ifdef ROOT_FOUND
+class TH2D;
+#endif
 
 namespace Katydid
 {
@@ -54,17 +54,17 @@ namespace Katydid
             //virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             //void Print(unsigned startPrint, unsigned nToPrint) const;
-/*
+
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const;
-            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const;
+            //virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const;
+            //virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const;
 
-            virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const;
+            virtual TH2D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const;
 
-            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
+            //virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
-*/
+
     };
 
     inline Double_t KTTimeFrequencyPolar::GetReal(UInt_t timebin, UInt_t freqbin) const

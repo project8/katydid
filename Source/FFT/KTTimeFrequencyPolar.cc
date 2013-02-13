@@ -11,7 +11,7 @@
 #include "KTPowerSpectrum.hh"
 
 #ifdef ROOT_FOUND
-#include "TH1.h"
+#include "TH2.h"
 #endif
 
 #include <sstream>
@@ -96,8 +96,9 @@ namespace Katydid
         return;
     }
 */
-/*
+
 #ifdef ROOT_FOUND
+    /*
     TH1D* KTTimeFrequencyPolar::CreateMagnitudeHistogram(const std::string& name) const
     {
         UInt_t nBins = size();
@@ -110,7 +111,7 @@ namespace Katydid
         hist->SetYTitle("Voltage (V)");
         return hist;
     }
-
+    *//*
     TH1D* KTTimeFrequencyPolar::CreatePhaseHistogram(const std::string& name) const
     {
         UInt_t nBins = size();
@@ -123,23 +124,28 @@ namespace Katydid
         hist->SetYTitle("Phase");
         return hist;
     }
-
-    TH1D* KTTimeFrequencyPolar::CreatePowerHistogram(const std::string& name) const
+    */
+    TH2D* KTTimeFrequencyPolar::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        UInt_t nTimeBins = size(1);
+        UInt_t nFreqBins = size(2);
+        TH1D* hist = new TH2D(name.c_str(), "Power Spectrum", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            value = (*this)(iBin).abs();
-            hist->SetBinContent((Int_t)iBin + 1, value * value * scaling);
+            for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
+            {
+                value = (*this)(iTimeBin, iFreqBin).abs();
+                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, value * value * scaling);
+            }
         }
-        hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Power (W)");
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Frequency (Hz)");
+        hist->SetZTitle("Power (W)");
         return hist;
     }
-
+    /*
     TH1D* KTTimeFrequencyPolar::CreatePowerDistributionHistogram(const std::string& name) const
     {
         Double_t tMaxMag = -1.;
@@ -164,7 +170,7 @@ namespace Katydid
         hist->SetXTitle("Power (W)");
         return hist;
     }
-
+    */
 #endif
 */
 
