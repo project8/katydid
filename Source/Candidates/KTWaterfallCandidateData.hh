@@ -8,6 +8,7 @@
 #ifndef KTWATERFALLCANDIDATEDATA_HH_
 #define KTWATERFALLCANDIDATEDATA_HH_
 
+#include "KTTimeFrequency.hh"
 #include "KTWriteableData.hh"
 
 namespace Katydid
@@ -35,6 +36,7 @@ namespace Katydid
             Double_t GetTimeLength() const;
             ULong64_t GetFirstSliceNumber() const;
             ULong64_t GetLastSliceNumber() const;
+            Double_t GetFrequencyWidth() const;
 
             void SetCandidate(KTTimeFrequency* candidate);
             void SetComponent(UInt_t component);
@@ -43,6 +45,7 @@ namespace Katydid
             void SetTimeLength(Double_t length);
             void SetFirstSliceNumber(ULong64_t slice);
             void SetLastSliceNumber(ULong64_t slice);
+            void SetFrequencyWidth(Double_t width);
 
         protected:
             KTTimeFrequency* fCandidate;
@@ -52,6 +55,7 @@ namespace Katydid
             Double_t fTimeLength;
             ULong64_t fFirstSliceNumber;
             ULong64_t fLastSliceNumber;
+            Double_t fFrequencyWidth;
     };
 
     inline KTTimeFrequency* KTWaterfallCandidateData::GetCandidate() const
@@ -79,7 +83,7 @@ namespace Katydid
         return fCandidate->GetTimeBinWidth();
     }
 
-    inline Double_t KTWaterfallCandidateData::GetTimeBinWidth() const
+    inline Double_t KTWaterfallCandidateData::GetFreqBinWidth() const
     {
         return fCandidate->GetFrequencyBinWidth();
     }
@@ -102,6 +106,11 @@ namespace Katydid
     inline ULong64_t KTWaterfallCandidateData::GetLastSliceNumber() const
     {
         return fLastSliceNumber;
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetFrequencyWidth() const
+    {
+        return fFrequencyWidth;
     }
 
     inline void KTWaterfallCandidateData::SetComponent(UInt_t component)
@@ -131,6 +140,12 @@ namespace Katydid
     inline void KTWaterfallCandidateData::SetLastSliceNumber(ULong64_t slice)
     {
         fLastSliceNumber = slice;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetFrequencyWidth(Double_t width)
+    {
+        fFrequencyWidth = width;
         return;
     }
 

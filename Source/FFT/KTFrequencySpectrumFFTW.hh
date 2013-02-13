@@ -61,6 +61,7 @@ namespace Katydid
             virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg);
 
             virtual UInt_t GetNFrequencyBins() const;
+            virtual Double_t GetFrequencyBinWidth() const;
 
             /// Returns the size of the positive-frequency part of the array
             //size_t size() const;
@@ -170,6 +171,12 @@ namespace Katydid
     {
         return size();
     }
+
+    inline Double_t KTFrequencySpectrumFFTW::GetFrequencyBinWidth() const
+    {
+        return GetBinWidth();
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYSPECTRUMFFTW_HH_ */

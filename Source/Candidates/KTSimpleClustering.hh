@@ -27,8 +27,7 @@ namespace Katydid
     class KTBundle;
     class KTCorrelationData;
     class KTData;
-    class KTFrequencySpectrumDataPolar;
-    class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumData;
 
     class KTSimpleClustering : public KTBundleQueueProcessorTemplate< KTSimpleClustering >
     {
@@ -40,7 +39,7 @@ namespace Katydid
                  UInt_t fTimeBin;
                  UInt_t fFreqBin;
                  Double_t fAmplitude;
-                 boost::shared_ptr<KTData> fDataPtr;
+                 boost::shared_ptr<KTFrequencySpectrumData> fDataPtr;
             };
             //typedef std::deque< ClusterPoint > Cluster;
             struct Cluster
@@ -48,8 +47,11 @@ namespace Katydid
                 std::deque< ClusterPoint > fPoints; // every point in the cluster
                 std::deque< std::pair< UInt_t, UInt_t > > fFreqRanges; // first and last frequency bins for each time bin
 
-                UInt_t EndMinFreqPoint() {return fFreqRanges.back().first;}
-                UInt_t EndMaxFreqPoint() {return fFreqRanges.back().second;}
+                UInt_t FirstTimeBin() const {return fPoints.front().fTimeBin;}
+                UInt_t LastTimeBin() const {return fPoints.back().fTimeBin;}
+
+                UInt_t EndMinFreqPoint() const {return fFreqRanges.back().first;}
+                UInt_t EndMaxFreqPoint() const {return fFreqRanges.back().second;}
 
                 UInt_t fDataComponent;
 
@@ -116,17 +118,17 @@ namespace Katydid
 
         public:
             /// Add points from dpData to the active clusters and create candidates
-            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> fsData);
+            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTFrequencySpectrumData> fsData);
             /// Add points from dpData to the active clusters and create candidates
-            //BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> fsData);
+            //BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTFrequencySpectrumData> fsData);
             /// Add points from dpData to the active clusters and create candidates
-            //BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> corrData);
+            //BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTFrequencySpectrumData> corrData);
 
             /// Add points from dpData to the active clusters
-            ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTData> data);
+            ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTFrequencySpectrumData> data);
 
             /// Add points from a set of points to the active clusters
-            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, boost::shared_ptr<KTData> data);
+            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, boost::shared_ptr<KTFrequencySpectrumData> data);
 
             /// Complete all remaining active clusters
             ClusterList* CompleteAllClusters(UInt_t component);

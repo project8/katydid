@@ -15,11 +15,15 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTTimeFrequencyPolar.hh"
 #include "KTWaterfallCandidateData.hh"
+
+#include <boost/weak_ptr.hpp>
 
 #include <set>
 
 using boost::shared_ptr;
+using boost::weak_ptr;
 
 using std::deque;
 using std::list;
@@ -89,9 +93,9 @@ namespace Katydid
         return true;
     }
 
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTData> fsData)
+    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
     {
-        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTData>(fsData));
+        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
 
         BundleList* newBundles = new BundleList();
 
@@ -104,9 +108,9 @@ namespace Katydid
         return newBundles;
     }
 /*
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTData> fsData)
+    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
     {
-        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTData>(fsData));
+        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
 
         BundleList* newBundles = new BundleList();
 
@@ -119,9 +123,9 @@ namespace Katydid
         return newBundles;
     }
 
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTData> fsData)
+    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
     {
-        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTData>(fsData));
+        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
 
         BundleList* newBundles = new BundleList();
 
@@ -134,7 +138,7 @@ namespace Katydid
         return newBundles;
     }
 */
-    KTSimpleClustering::ClusterList* KTSimpleClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTData> data)
+    KTSimpleClustering::ClusterList* KTSimpleClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> data)
     {
         if (dpData->GetBinWidth() != fFreqBinWidth)
             SetFrequencyBinWidth(dpData->GetBinWidth());
@@ -158,7 +162,7 @@ namespace Katydid
         return newClustersAC;
     }
 
-    KTSimpleClustering::ClusterList* KTSimpleClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, shared_ptr<KTData> data)
+    KTSimpleClustering::ClusterList* KTSimpleClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, shared_ptr<KTFrequencySpectrumData> data)
     {
         // Process a single time bin's worth of frequency bins
 
@@ -433,15 +437,49 @@ namespace Katydid
 
         KTWaterfallCandidateData* newData = new KTWaterfallCandidateData();
         newData->SetComponent(cluster.fDataComponent);
-        newData->SetTimeInRun(cluster.fPoints.front()->fDataPtr->GetTimeInRun());
-        newData->SetFirstSliceNumber(cluster.fPoints.front()->fDataPtr->GetSliceNumber());
-        newData->SetLastSliceNumber(cluster.fPoints.back()->fDataPtr->GetSliceNumber());
 
+        UInt_t firstTimeBin = cluster.FirstTimeBin();
+        UInt_t lastTimeBin = cluster.LastTimeBin();
 
-        // fill in the data
+        deque< pair< UInt_t, UInt_t > >::const_iterator frIt = cluster.fFreqRanges.begin();
+        UInt_t firstFreqBin = frIt->first;
+        UInt_t lastFreqBin = frIt->second;
+        for (frIt++; frIt != cluster.fFreqRanges.end(); frIt++)
+        {
+            if (frIt->first < firstFreqBin) firstFreqBin = frIt->first;
+            if (frIt->second > lastFreqBin) lastFreqBin = frIt->second;
+        }
 
-        //data->SetBundle(bundle);
-        //bundle->AddData(newData);
+        Double_t timeBinWidth = cluster.fPoints.front().fDataPtr->GetTimeLength();
+        Double_t freqBinWidth = cluster.fPoints.front().fDataPtr->GetSpectrum(0)->GetFrequencyBinWidth();
+        UInt_t nTimeBins = lastTimeBin - firstTimeBin + 1;
+        UInt_t nFreqBins = lastFreqBin - firstFreqBin + 1;
+
+        vector< boost::weak_ptr<KTFrequencySpectrumData> > spectra(nFreqBins);
+        for (deque< ClusterPoint >::const_iterator it = cluster.fPoints.begin(); it != cluster.fPoints.end(); it++)
+        {
+            spectra[it->fTimeBin - nTimeBins] = boost::weak_ptr<KTFrequencySpectrumData>(it->fDataPtr);
+        }
+
+        newData->SetTimeInRun(cluster.fPoints.front().fDataPtr->GetTimeInRun());
+        newData->SetFirstSliceNumber(cluster.fPoints.front().fDataPtr->GetSliceNumber());
+        newData->SetLastSliceNumber(cluster.fPoints.back().fDataPtr->GetSliceNumber());
+        newData->SetTimeLength(timeBinWidth * Double_t(nTimeBins));
+        newData->SetFrequencyWidth(freqBinWidth * Double_t(nFreqBins));
+
+        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBins, timeBinWidth * Double_t(firstTimeBin), timeBinWidth * Double_t(firstTimeBin + nTimeBins), nFreqBins, freqBinWidth * Double_t(firstFreqBin), freqBinWidth * Double_t(firstFreqBin + nFreqBins));
+        for (UInt_t iTBin=firstTimeBin; iTBin <= lastTimeBin; iTBin++)
+        {
+            const KTFrequencySpectrum* spectrum = spectra[iTBin].lock()->GetSpectrum(cluster.fDataComponent);
+            for (UInt_t iFBin=firstFreqBin; iFBin <= lastFreqBin; iFBin++)
+            {
+                tf->SetPolar(iTBin - firstTimeBin, iFBin - firstFreqBin, spectrum->GetAbs(iFBin), spectrum->GetArg(iFBin));
+            }
+        }
+        newData->SetCandidate(tf);
+
+        newData->SetBundle(bundle.get());
+        bundle->AddData(newData);
 
         return bundle;
     }
@@ -469,7 +507,7 @@ namespace Katydid
         KTFrequencySpectrumDataPolar* fsData = bundle->ExtractData< KTFrequencySpectrumDataPolar >(fFSInputDataName);
         if (fsData != NULL)
         {
-            shared_ptr<KTData> ptr(fsData);
+            shared_ptr<KTFrequencySpectrumData> ptr(fsData);
             clusteredBundles = FindClusters(discData, ptr);
         }
         else
@@ -477,7 +515,7 @@ namespace Katydid
             KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->ExtractData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
             if (fsDataFFTW != NULL)
             {
-                shared_ptr<KTData> ptr(fsDataFFTW);
+                shared_ptr<KTFrequencySpectrumData> ptr(fsDataFFTW);
                 clusteredBundles = FindClusters(discData, ptr);
             }
             else
@@ -485,7 +523,7 @@ namespace Katydid
                 KTCorrelationData* corrData = bundle->ExtractData< KTCorrelationData >(fFSInputDataName);
                 if (fsData != NULL)
                 {
-                    shared_ptr<KTData> ptr(corrData);
+                    shared_ptr<KTFrequencySpectrumData> ptr(corrData);
                     clusteredBundles = FindClusters(discData, ptr);
                 }
                 else

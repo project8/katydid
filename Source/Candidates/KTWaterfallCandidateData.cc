@@ -8,7 +8,7 @@
 #include "KTWaterfallCandidateData.hh"
 
 #include "KTDataMap.hh"
-#include "KTTimeFrequency.hh"
+//#include "KTTimeFrequency.hh"
 #include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
@@ -20,8 +20,9 @@ namespace Katydid
             KTWriteableData(),
             fCandidate(NULL),
             fComponent(0),
-            fTimeInRun(-1.),
-            fTimeLength(-1.),
+            fTimeInRun(0.),
+            fTimeLength(0.),
+            fFrequencyWidth(0.),
             fFirstSliceNumber(0),
             fLastSliceNumber(0)
     {

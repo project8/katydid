@@ -30,21 +30,21 @@ namespace Katydid
             const KTFrequencySpectrumFFTW* GetSpectrumFFTW(UInt_t channelNum = 0) const;
             KTFrequencySpectrumFFTW* GetSpectrumFFTW(UInt_t channelNum = 0);
 
-            const KTFrequencySpectrumFFTW* GetSpectrum(UInt_t channelNum = 0) const;
-            KTFrequencySpectrumFFTW* GetSpectrum(UInt_t channelNum = 0);
-            unsigned GetNChannels() const;
-            Double_t GetTimeInRun() const;
-            Double_t GetTimeLength() const;
-            ULong64_t GetSliceNumber() const;
+            virtual const KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0) const;
+            virtual KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0);
+            virtual unsigned GetNChannels() const;
+            virtual Double_t GetTimeInRun() const;
+            virtual Double_t GetTimeLength() const;
+            virtual ULong64_t GetSliceNumber() const;
 
             void SetSpectrum(KTFrequencySpectrumFFTW* record, unsigned channelNum = 0);
 
-            void SetNChannels(UInt_t channels);
-            void SetTimeInRun(Double_t tir);
-            void SetTimeLength(Double_t length);
-            void SetSliceNumber(ULong64_t slice);
+            virtual void SetNChannels(UInt_t channels);
+            virtual void SetTimeInRun(Double_t tir);
+            virtual void SetTimeLength(Double_t length);
+            virtual void SetSliceNumber(ULong64_t slice);
 
-            void Accept(KTWriter* writer) const;
+            virtual void Accept(KTWriter* writer) const;
 
         protected:
             std::vector< KTFrequencySpectrumFFTW* > fSpectra;
@@ -74,12 +74,12 @@ namespace Katydid
         return fSpectra[channelNum];
     }
 
-    inline const KTFrequencySpectrumFFTW* KTFrequencySpectrumDataFFTW::GetSpectrum(UInt_t channelNum) const
+    inline const KTFrequencySpectrum* KTFrequencySpectrumDataFFTW::GetSpectrum(UInt_t channelNum) const
     {
         return fSpectra[channelNum];
     }
 
-    inline KTFrequencySpectrumFFTW* KTFrequencySpectrumDataFFTW::GetSpectrum(UInt_t channelNum)
+    inline KTFrequencySpectrum* KTFrequencySpectrumDataFFTW::GetSpectrum(UInt_t channelNum)
     {
         return fSpectra[channelNum];
     }

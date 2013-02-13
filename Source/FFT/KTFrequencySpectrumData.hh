@@ -27,17 +27,17 @@ namespace Katydid
             KTFrequencySpectrumData();
             virtual ~KTFrequencySpectrumData();
 
-            const KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0) const = 0;
-            KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0) = 0;
-            UInt_t GetNChannels() const = 0;
-            Double_t GetTimeInRun() const = 0;
-            Double_t GetTimeLength() const = 0;
-            ULong64_t GetSliceNumber() const = 0;
+            virtual const KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0) const = 0;
+            virtual KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0) = 0;
+            virtual UInt_t GetNChannels() const = 0;
+            virtual Double_t GetTimeInRun() const = 0;
+            virtual Double_t GetTimeLength() const = 0;
+            virtual ULong64_t GetSliceNumber() const = 0;
 
-            void SetNChannels(UInt_t channels) = 0;
-            void SetTimeInRun(Double_t tir) = 0;
-            void SetTimeLength(Double_t length) = 0;
-            void SetSliceNumber(ULong64_t slice) = 0;
+            virtual void SetNChannels(UInt_t channels) = 0;
+            virtual void SetTimeInRun(Double_t tir) = 0;
+            virtual void SetTimeLength(Double_t length) = 0;
+            virtual void SetSliceNumber(ULong64_t slice) = 0;
 
 #ifdef ROOT_FOUND
         public:

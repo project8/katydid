@@ -30,21 +30,21 @@ namespace Katydid
             const KTFrequencySpectrumPolar* GetSpectrumPolar(UInt_t channelNum = 0) const;
             KTFrequencySpectrumPolar* GetSpectrumPolar(UInt_t channelNum = 0);
 
-            const KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0) const;
-            KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0);
-            UInt_t GetNChannels() const;
-            Double_t GetTimeInRun() const;
-            Double_t GetTimeLength() const;
-            ULong64_t GetSliceNumber() const;
+            virtual const KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0) const;
+            virtual KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0);
+            virtual UInt_t GetNChannels() const;
+            virtual Double_t GetTimeInRun() const;
+            virtual Double_t GetTimeLength() const;
+            virtual ULong64_t GetSliceNumber() const;
 
             void SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t channelNum = 0);
 
-            void SetNChannels(UInt_t channels);
-            void SetTimeInRun(Double_t tir);
-            void SetTimeLength(Double_t length);
-            void SetSliceNumber(ULong64_t slice);
+            virtual void SetNChannels(UInt_t channels);
+            virtual void SetTimeInRun(Double_t tir);
+            virtual void SetTimeLength(Double_t length);
+            virtual void SetSliceNumber(ULong64_t slice);
 
-            void Accept(KTWriter* writer) const;
+            virtual void Accept(KTWriter* writer) const;
 
         protected:
             std::vector< KTFrequencySpectrumPolar* > fSpectra;
@@ -74,12 +74,12 @@ namespace Katydid
         return fSpectra[channelNum];
     }
 
-    inline const KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolar::GetSpectrum(UInt_t channelNum) const
+    inline const KTFrequencySpectrum* KTFrequencySpectrumDataPolar::GetSpectrum(UInt_t channelNum) const
     {
         return fSpectra[channelNum];
     }
 
-    inline KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolar::GetSpectrum(UInt_t channelNum)
+    inline KTFrequencySpectrum* KTFrequencySpectrumDataPolar::GetSpectrum(UInt_t channelNum)
     {
         return fSpectra[channelNum];
     }
