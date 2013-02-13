@@ -139,10 +139,10 @@ namespace Katydid
     {
         if (fFSHists.size() == 0)
         {
-            fFSHists.resize(data->GetNChannels());
+            fFSHists.resize(data->GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;
@@ -153,7 +153,7 @@ namespace Katydid
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 TH1D* newPS = data->GetSpectrumPolar(iChannel)->CreatePowerHistogram();
                 fFSHists[iChannel]->Add(newPS);
@@ -167,10 +167,10 @@ namespace Katydid
     {
         if (fFSFFTWHists.size() == 0)
         {
-            fFSFFTWHists.resize(data->GetNChannels());
+            fFSFFTWHists.resize(data->GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;
@@ -181,7 +181,7 @@ namespace Katydid
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel <data->GetNChannels(); iChannel++)
+            for (UInt_t iChannel=0; iChannel <data->GetNComponents(); iChannel++)
             {
                 TH1D* newPS = data->GetSpectrumFFTW(iChannel)->CreatePowerHistogram();
                 fFSFFTWHists[iChannel]->Add(newPS);

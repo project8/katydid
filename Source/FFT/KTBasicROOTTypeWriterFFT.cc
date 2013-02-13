@@ -60,7 +60,7 @@ namespace Katydid
         KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
         if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -87,7 +87,7 @@ namespace Katydid
         KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
         if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -118,7 +118,7 @@ namespace Katydid
         KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
         if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nPlots = data->GetNChannels();
+        UInt_t nPlots = data->GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -141,7 +141,7 @@ namespace Katydid
         KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
         if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nPlots = data->GetNChannels();
+        UInt_t nPlots = data->GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 

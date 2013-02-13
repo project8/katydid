@@ -81,7 +81,7 @@ namespace Katydid
 
         if (fCalculateMaxBinDistance) SetMaxBinDistance(KTMath::Nint(fMaxFrequencyDistance / data->GetBinWidth()));
 
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         KTCluster1DData* newData = new KTCluster1DData(nChannels);
         newData->SetNBins(data->GetNBins());

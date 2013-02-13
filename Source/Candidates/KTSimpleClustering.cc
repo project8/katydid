@@ -145,7 +145,7 @@ namespace Katydid
         if (dpData->GetBinWidth() * Double_t(dpData->GetNBins()) != fTimeBinWidth)
             SetTimeBinWidth(dpData->GetBinWidth() * Double_t(dpData->GetNBins()));
 
-        UInt_t nComponents = dpData->GetNChannels();
+        UInt_t nComponents = dpData->GetNComponents();
         if (fActiveClusters.size() < nComponents) fActiveClusters.resize(nComponents);
 
         ClusterList* newClustersAC = new ClusterList();

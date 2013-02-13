@@ -136,7 +136,7 @@ namespace Katydid
             newData->SetSpectrum(nextResult, iChannel);
         }
 
-        KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
+        KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNComponents() << " channel(s) transformed");
 
         newData->SetBundle(tsData->GetBundle());
 

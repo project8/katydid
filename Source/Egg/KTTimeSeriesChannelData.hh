@@ -51,15 +51,15 @@ namespace Katydid
             Double_t GetTimeInRun() const;
             ULong64_t GetSliceNumber() const;
 
-            const KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0) const;
-            KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0);
+            const KTTimeSeries* GetTimeSeries(UInt_t component = 0) const;
+            KTTimeSeries* GetTimeSeries(UInt_t component = 0);
 
             void SetNTimeSeries(UInt_t channels);
 
             void SetTimeInRun(Double_t tir);
             void SetSliceNumber(ULong64_t slice);
 
-            void SetTimeSeries(KTTimeSeries* record, UInt_t channelNum = 0);
+            void SetTimeSeries(KTTimeSeries* record, UInt_t component = 0);
 
         protected:
             std::vector< KTTimeSeries* > fChannelData;
@@ -102,14 +102,14 @@ namespace Katydid
         return fSliceNumber;
     }
 
-    inline KTTimeSeries* KTBasicTimeSeriesData::GetTimeSeries(UInt_t channelNum)
+    inline KTTimeSeries* KTBasicTimeSeriesData::GetTimeSeries(UInt_t component)
     {
-        return fChannelData[channelNum];
+        return fChannelData[component];
     }
 
-    inline const KTTimeSeries* KTBasicTimeSeriesData::GetTimeSeries(UInt_t channelNum) const
+    inline const KTTimeSeries* KTBasicTimeSeriesData::GetTimeSeries(UInt_t component) const
     {
-        return fChannelData[channelNum];
+        return fChannelData[component];
     }
 
     inline void KTBasicTimeSeriesData::SetNTimeSeries(UInt_t channels)
@@ -130,10 +130,10 @@ namespace Katydid
         return;
     }
 
-    inline void KTBasicTimeSeriesData::SetTimeSeries(KTTimeSeries* record, UInt_t channelNum)
+    inline void KTBasicTimeSeriesData::SetTimeSeries(KTTimeSeries* record, UInt_t component)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum] = record;
+        if (component >= fChannelData.size()) fChannelData.resize(component+1);
+        fChannelData[component] = record;
         return;
     }
 
@@ -167,15 +167,15 @@ namespace Katydid
             Double_t GetSliceLength() const;
             Double_t GetBinWidth() const;
 
-            ClockType GetTimeStamp(UInt_t channelNum = 0) const;
-            AcqIdType GetAcquisitionID(UInt_t channelNum = 0) const;
-            RecIdType GetRecordID(UInt_t channelNum = 0) const;
+            ClockType GetTimeStamp(UInt_t component = 0) const;
+            AcqIdType GetAcquisitionID(UInt_t component = 0) const;
+            RecIdType GetRecordID(UInt_t component = 0) const;
 
             Double_t GetTimeInRun() const;
             ULong64_t GetSliceNumber() const;
 
-            const KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0) const;
-            KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0);
+            const KTTimeSeries* GetTimeSeries(UInt_t component = 0) const;
+            KTTimeSeries* GetTimeSeries(UInt_t component = 0);
 
             void SetNTimeSeries(UInt_t channels);
 
@@ -187,11 +187,11 @@ namespace Katydid
             void SetTimeInRun(Double_t tir);
             void SetSliceNumber(ULong64_t slice);
 
-            void SetTimeStamp(ClockType timeStamp, UInt_t channelNum = 0);
-            void SetAcquisitionID(AcqIdType acqId, UInt_t channelNum = 0);
-            void SetRecordID(RecIdType recId, UInt_t channelNum = 0);
+            void SetTimeStamp(ClockType timeStamp, UInt_t component = 0);
+            void SetAcquisitionID(AcqIdType acqId, UInt_t component = 0);
+            void SetRecordID(RecIdType recId, UInt_t component = 0);
 
-            void SetTimeSeries(KTTimeSeries* record, UInt_t channelNum = 0);
+            void SetTimeSeries(KTTimeSeries* record, UInt_t component = 0);
 
         private:
             UInt_t fSliceSize; // number of bins
@@ -241,29 +241,29 @@ namespace Katydid
         return fSliceNumber;
     }
 
-    inline ClockType KTProgenitorTimeSeriesData::GetTimeStamp(UInt_t channelNum) const
+    inline ClockType KTProgenitorTimeSeriesData::GetTimeStamp(UInt_t component) const
     {
-        return fChannelData[channelNum].fTimeStamp;
+        return fChannelData[component].fTimeStamp;
     }
 
-    inline AcqIdType KTProgenitorTimeSeriesData::GetAcquisitionID(UInt_t channelNum) const
+    inline AcqIdType KTProgenitorTimeSeriesData::GetAcquisitionID(UInt_t component) const
     {
-        return fChannelData[channelNum].fAcquisitionID;
+        return fChannelData[component].fAcquisitionID;
     }
 
-    inline RecIdType KTProgenitorTimeSeriesData::GetRecordID(UInt_t channelNum) const
+    inline RecIdType KTProgenitorTimeSeriesData::GetRecordID(UInt_t component) const
     {
-        return fChannelData[channelNum].fRecordID;
+        return fChannelData[component].fRecordID;
     }
 
-    inline const KTTimeSeries* KTProgenitorTimeSeriesData::GetTimeSeries(UInt_t channelNum) const
+    inline const KTTimeSeries* KTProgenitorTimeSeriesData::GetTimeSeries(UInt_t component) const
     {
-        return fChannelData[channelNum].fRecord;
+        return fChannelData[component].fRecord;
     }
 
-    inline KTTimeSeries* KTProgenitorTimeSeriesData::GetTimeSeries(UInt_t channelNum)
+    inline KTTimeSeries* KTProgenitorTimeSeriesData::GetTimeSeries(UInt_t component)
     {
-        return fChannelData[channelNum].fRecord;
+        return fChannelData[component].fRecord;
     }
 
     inline void KTProgenitorTimeSeriesData::SetSliceSize(UInt_t recordSize)
@@ -310,31 +310,31 @@ namespace Katydid
         return;
     }
 
-    inline void KTProgenitorTimeSeriesData::SetTimeStamp(ClockType timeStamp, UInt_t channelNum)
+    inline void KTProgenitorTimeSeriesData::SetTimeStamp(ClockType timeStamp, UInt_t component)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fTimeStamp = timeStamp;
+        if (component >= fChannelData.size()) fChannelData.resize(component+1);
+        fChannelData[component].fTimeStamp = timeStamp;
         return;
     }
 
-    inline void KTProgenitorTimeSeriesData::SetAcquisitionID(AcqIdType acqId, UInt_t channelNum)
+    inline void KTProgenitorTimeSeriesData::SetAcquisitionID(AcqIdType acqId, UInt_t component)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fAcquisitionID = acqId;
+        if (component >= fChannelData.size()) fChannelData.resize(component+1);
+        fChannelData[component].fAcquisitionID = acqId;
         return;
     }
 
-    inline void KTProgenitorTimeSeriesData::SetRecordID(RecIdType recId, UInt_t channelNum)
+    inline void KTProgenitorTimeSeriesData::SetRecordID(RecIdType recId, UInt_t component)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fRecordID = recId;
+        if (component >= fChannelData.size()) fChannelData.resize(component+1);
+        fChannelData[component].fRecordID = recId;
         return;
     }
 
-    inline void KTProgenitorTimeSeriesData::SetTimeSeries(KTTimeSeries* record, UInt_t channelNum)
+    inline void KTProgenitorTimeSeriesData::SetTimeSeries(KTTimeSeries* record, UInt_t component)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fRecord = record;
+        if (component >= fChannelData.size()) fChannelData.resize(component+1);
+        fChannelData[component].fRecord = record;
         return;
     }
 

@@ -120,7 +120,7 @@ namespace Katydid
         KTBundle* bundle = data->GetBundle();
         UInt_t bundleNumber = 0;
         if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nPlots = data->GetNChannels();
+        UInt_t nPlots = data->GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 

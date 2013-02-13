@@ -115,7 +115,7 @@ namespace Katydid
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 TH1D* newPS = data->GetSpectrum(iChannel)->CreateMagnitudeHistogram();
                 fAveragePSHists[iChannel]->Add(newPS);

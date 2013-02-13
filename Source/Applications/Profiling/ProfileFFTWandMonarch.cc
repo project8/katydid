@@ -45,7 +45,7 @@ int main(const int argc, const char** argv)
     KTEggHeader tEggHeader;
     tEggHeader.SetFilename(tReadHeader->GetFilename());
     tEggHeader.SetAcquisitionMode(tReadHeader->GetAcqMode());
-    tEggHeader.SetNChannels(2);
+    tEggHeader.SetNComponents(2);
     tEggHeader.SetRecordSize(tReadHeader->GetRecordSize());
     tEggHeader.SetSliceSize(tReadHeader->GetRecordSize());
     tEggHeader.SetAcquisitionTime(tReadHeader->GetAcqTime());
@@ -54,7 +54,7 @@ int main(const int argc, const char** argv)
     KTDEBUG(proflog, "Parsed header:\n"
          << "\tFilename: " << tEggHeader.GetFilename() << '\n'
          << "\tAcuisition Mode: " << tEggHeader.GetAcquisitionMode() << '\n'
-         << "\tNumber of Channels: " << tEggHeader.GetNChannels() << '\n'
+         << "\tNumber of Channels: " << tEggHeader.GetNComponents() << '\n'
          << "\tRecord Size: " << tEggHeader.GetSliceSize() << '\n'
          << "\tRecord Size: " << tEggHeader.GetRecordSize() << '\n'
          << "\tAcquisition Time: " << tEggHeader.GetAcquisitionTime() << " s" << '\n'

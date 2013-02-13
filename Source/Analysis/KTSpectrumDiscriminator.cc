@@ -119,7 +119,7 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
 
@@ -200,7 +200,7 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         KTDiscriminatedPoints1DData* newData = new KTDiscriminatedPoints1DData(nChannels);
 
@@ -359,7 +359,7 @@ namespace Katydid
         if (fCalculateMinBin) SetMinBin((*(data->GetSpectra(0)))(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin((*(data->GetSpectra(0)))(0)->FindBin(fMaxFrequency));
 
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         KTDiscriminatedPoints2DData* newData = new KTDiscriminatedPoints2DData(nChannels);
 
@@ -445,7 +445,7 @@ namespace Katydid
         if (fCalculateMinBin) SetMinBin((*(data->GetSpectra(0)))(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin((*(data->GetSpectra(0)))(0)->FindBin(fMaxFrequency));
 
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         KTDiscriminatedPoints2DData* newData = new KTDiscriminatedPoints2DData(nChannels);
 

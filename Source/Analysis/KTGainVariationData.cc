@@ -38,9 +38,9 @@ namespace Katydid
     }
 
 #ifdef ROOT_FOUND
-    TH1D* KTGainVariationData::CreateGainVariationHistogram(UInt_t nBins, UInt_t channelNum, const std::string& name) const
+    TH1D* KTGainVariationData::CreateGainVariationHistogram(UInt_t nBins, UInt_t component, const std::string& name) const
     {
-        KTSpline* spline = fChannelData[channelNum].fSpline;
+        KTSpline* spline = fChannelData[component].fSpline;
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", nBins, spline->GetXMin(), spline->GetXMax());
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {

@@ -27,26 +27,26 @@ namespace Katydid
             KTFrequencySpectrumData();
             virtual ~KTFrequencySpectrumData();
 
-            virtual const KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0) const = 0;
-            virtual KTFrequencySpectrum* GetSpectrum(UInt_t channelNum = 0) = 0;
-            virtual UInt_t GetNChannels() const = 0;
+            virtual const KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) const = 0;
+            virtual KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) = 0;
+            virtual UInt_t GetNComponents() const = 0;
             virtual Double_t GetTimeInRun() const = 0;
             virtual Double_t GetTimeLength() const = 0;
             virtual ULong64_t GetSliceNumber() const = 0;
 
-            virtual void SetNChannels(UInt_t channels) = 0;
+            virtual void SetNComponents(UInt_t channels) = 0;
             virtual void SetTimeInRun(Double_t tir) = 0;
             virtual void SetTimeLength(Double_t length) = 0;
             virtual void SetSliceNumber(ULong64_t slice) = 0;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateMagnitudeHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumMag") const = 0;
-            virtual TH1D* CreatePhaseHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumPhase") const = 0;
+            virtual TH1D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumMag") const = 0;
+            virtual TH1D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPhase") const = 0;
 
-            virtual TH1D* CreatePowerHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumPower") const = 0;
+            virtual TH1D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPower") const = 0;
 
-            virtual TH1D* CreatePowerDistributionHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumPowerDist") const = 0;
+            virtual TH1D* CreatePowerDistributionHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const = 0;
 #endif
     };
 

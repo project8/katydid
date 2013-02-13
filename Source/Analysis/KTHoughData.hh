@@ -47,14 +47,14 @@ namespace Katydid
 
     };
 
-    inline const KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughData::GetTransform(unsigned channelNum) const
+    inline const KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughData::GetTransform(unsigned component) const
     {
-        return fTransforms[channelNum];
+        return fTransforms[component];
     }
 
-    inline KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughData::GetTransform(unsigned channelNum)
+    inline KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughData::GetTransform(unsigned component)
     {
-        return fTransforms[channelNum];
+        return fTransforms[component];
     }
 
     inline unsigned KTHoughData::GetNTransforms() const

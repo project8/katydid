@@ -144,11 +144,11 @@ namespace Katydid
                 delete *it;
             }
             fAveragePSHists.clear();
-            if (fAveragePSHists.size() != data->GetNChannels())
-                fAveragePSHists.resize(data->GetNChannels());
+            if (fAveragePSHists.size() != data->GetNComponents())
+                fAveragePSHists.resize(data->GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;
@@ -159,7 +159,7 @@ namespace Katydid
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
             {
                 TH1D* newPS = data->GetSpectrum(iChannel)->CreatePowerHistogram();
                 fAveragePSHists[iChannel]->Add(newPS);

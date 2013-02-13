@@ -70,9 +70,9 @@ namespace Katydid
 
     KTHoughData* KTHoughTransform::TransformData(const KTSlidingWindowFSDataFFTW* data)
     {
-        KTHoughData* newData = new KTHoughData(data->GetNChannels());
+        KTHoughData* newData = new KTHoughData(data->GetNComponents());
 
-        for (UInt_t iChannel=0; iChannel<data->GetNChannels(); iChannel++)
+        for (UInt_t iChannel=0; iChannel<data->GetNComponents(); iChannel++)
         {
             const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum = data->GetSpectra(iChannel);
 
@@ -159,9 +159,9 @@ namespace Katydid
 
     KTHoughData* KTHoughTransform::TransformData(const KTDiscriminatedPoints2DData* data)
     {
-        KTHoughData* newData = new KTHoughData(data->GetNChannels());
+        KTHoughData* newData = new KTHoughData(data->GetNComponents());
 
-        for (UInt_t iChannel=0; iChannel<data->GetNChannels(); iChannel++)
+        for (UInt_t iChannel=0; iChannel<data->GetNComponents(); iChannel++)
         {
             const KTDiscriminatedPoints2DData::SetOfPoints inputPoints = data->GetSetOfPoints(iChannel);
 

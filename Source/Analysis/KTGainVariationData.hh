@@ -38,15 +38,15 @@ namespace Katydid
             KTGainVariationData(UInt_t nChannels=1);
             virtual ~KTGainVariationData();
 
-            //const GainVariation* GetGainVariation(UInt_t channelNum = 0) const;
-            //GainVariation* GetGainVariation(UInt_t channelNum = 0);
-            const KTSpline* GetSpline(UInt_t channelNum = 0) const;
-            KTSpline* GetSpline(UInt_t channelNum = 0);
-            UInt_t GetNChannels() const;
+            //const GainVariation* GetGainVariation(UInt_t component = 0) const;
+            //GainVariation* GetGainVariation(UInt_t component = 0);
+            const KTSpline* GetSpline(UInt_t component = 0) const;
+            KTSpline* GetSpline(UInt_t component = 0);
+            UInt_t GetNComponents() const;
 
-            //void SetGainVariation(GainVariation* record, UInt_t channelNum = 0);
-            void SetSpline(KTSpline* spline, UInt_t channelNum = 0);
-            void SetNChannels(UInt_t channels);
+            //void SetGainVariation(GainVariation* record, UInt_t component = 0);
+            void SetSpline(KTSpline* spline, UInt_t component = 0);
+            void SetNComponents(UInt_t channels);
 
             void Accept(KTWriter* writer) const;
 
@@ -57,48 +57,48 @@ namespace Katydid
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateGainVariationHistogram(UInt_t nBins, UInt_t channelNum = 0, const std::string& name = "hGainVariation") const;
+            virtual TH1D* CreateGainVariationHistogram(UInt_t nBins, UInt_t component = 0, const std::string& name = "hGainVariation") const;
 #endif
     };
 /*
-    inline const KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(UInt_t channelNum) const
+    inline const KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(UInt_t component) const
     {
-        return fChannelData[channelNum].fGainVar;
+        return fChannelData[component].fGainVar;
     }
 
-    inline KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(UInt_t channelNum)
+    inline KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(UInt_t component)
     {
-        return fChannelData[channelNum].fGainVar;
+        return fChannelData[component].fGainVar;
     }
 */
-    inline const KTSpline* KTGainVariationData::GetSpline(UInt_t channelNum) const
+    inline const KTSpline* KTGainVariationData::GetSpline(UInt_t component) const
     {
-        return fChannelData[channelNum].fSpline;
+        return fChannelData[component].fSpline;
     }
 
-    inline KTSpline* KTGainVariationData::GetSpline(UInt_t channelNum)
+    inline KTSpline* KTGainVariationData::GetSpline(UInt_t component)
     {
-        return fChannelData[channelNum].fSpline;
+        return fChannelData[component].fSpline;
     }
 
-    inline UInt_t KTGainVariationData::GetNChannels() const
+    inline UInt_t KTGainVariationData::GetNComponents() const
     {
         return UInt_t(fChannelData.size());
     }
 /*
-    inline void KTGainVariationData::SetGainVariation(GainVariation* record, UInt_t channelNum)
+    inline void KTGainVariationData::SetGainVariation(GainVariation* record, UInt_t component)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fGainVar = record;
+        if (component >= fChannelData.size()) fChannelData.resize(component+1);
+        fChannelData[component].fGainVar = record;
     }
 */
-    inline void KTGainVariationData::SetSpline(KTSpline* spline, UInt_t channelNum)
+    inline void KTGainVariationData::SetSpline(KTSpline* spline, UInt_t component)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fSpline = spline;
+        if (component >= fChannelData.size()) fChannelData.resize(component+1);
+        fChannelData[component].fSpline = spline;
     }
 
-    inline void KTGainVariationData::SetNChannels(UInt_t channels)
+    inline void KTGainVariationData::SetNComponents(UInt_t channels)
     {
         fChannelData.resize(channels);
         return;

@@ -208,7 +208,7 @@ namespace Katydid
         newData->SetTimeLength(Double_t(tsData->GetTimeSeries(0)->GetNTimeBins()) * tsData->GetTimeSeries(0)->GetTimeBinWidth());
         newData->SetSliceNumber(tsData->GetSliceNumber());
 
-        KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
+        KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNComponents() << " channel(s) transformed");
 
         newData->SetName(fForwardOutputDataName);
 
@@ -217,7 +217,7 @@ namespace Katydid
 
     KTTimeSeriesData* KTComplexFFTW::TransformData(const KTFrequencySpectrumDataFFTW* fsData)
     {
-        if (fsData->GetNChannels() < 1)
+        if (fsData->GetNComponents() < 1)
         {
             KTWARN(fftlog_comp, "Data has no channels!");
             return NULL;
@@ -235,9 +235,9 @@ namespace Katydid
             return NULL;
         }
 
-        KTBasicTimeSeriesData* newData = new KTBasicTimeSeriesData(fsData->GetNChannels());
+        KTBasicTimeSeriesData* newData = new KTBasicTimeSeriesData(fsData->GetNComponents());
 
-        for (UInt_t iChannel = 0; iChannel < fsData->GetNChannels(); iChannel++)
+        for (UInt_t iChannel = 0; iChannel < fsData->GetNComponents(); iChannel++)
         {
             const KTFrequencySpectrumFFTW* nextInput = fsData->GetSpectrumFFTW(iChannel);
             if (nextInput == NULL)

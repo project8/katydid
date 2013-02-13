@@ -98,7 +98,7 @@ namespace Katydid
 
         KTINFO(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         KTGainVariationData* newData = new KTGainVariationData(nChannels);
 
@@ -170,7 +170,7 @@ namespace Katydid
 
         KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nChannels = data->GetNComponents();
 
         KTGainVariationData* newData = new KTGainVariationData(nChannels);
 

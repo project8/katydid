@@ -94,8 +94,8 @@ namespace Katydid
         if (fCalculateMinBin) SetMinBin(fsData->GetSpectrumPolar(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrumPolar(0)->FindBin(fMaxFrequency));
 
-        UInt_t nChannels = fsData->GetNChannels();
-        if (nChannels != gvData->GetNChannels())
+        UInt_t nChannels = fsData->GetNComponents();
+        if (nChannels != gvData->GetNComponents())
         {
             KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
             return NULL;
@@ -130,8 +130,8 @@ namespace Katydid
         if (fCalculateMinBin) SetMinBin(fsData->GetSpectrumFFTW(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
 
-        UInt_t nChannels = fsData->GetNChannels();
-        if (nChannels != gvData->GetNChannels())
+        UInt_t nChannels = fsData->GetNComponents();
+        if (nChannels != gvData->GetNComponents())
         {
             KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
             return NULL;

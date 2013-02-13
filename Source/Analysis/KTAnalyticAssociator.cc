@@ -158,10 +158,10 @@ namespace Katydid
         }
 
         // New data to hold the time series of the analytic associate
-        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(data->GetNChannels());
+        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(data->GetNComponents());
 
         // Calculate the analytic associates
-        for (UInt_t iChannel = 0; iChannel < data->GetNChannels(); iChannel++)
+        for (UInt_t iChannel = 0; iChannel < data->GetNComponents(); iChannel++)
         {
             const KTFrequencySpectrumFFTW* nextInput = data->GetSpectrumFFTW(iChannel);
 

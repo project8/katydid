@@ -27,12 +27,12 @@ namespace Katydid
             KTSlidingWindowFSData(unsigned nChannels=1);
             virtual ~KTSlidingWindowFSData();
 
-            const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(unsigned channelNum = 0) const;
-            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(unsigned channelNum = 0);
-            unsigned GetNChannels() const;
+            const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(unsigned component = 0) const;
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(unsigned component = 0);
+            unsigned GetNComponents() const;
 
-            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, unsigned channelNum = 0);
-            void SetNChannels(unsigned channels);
+            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, unsigned component = 0);
+            void SetNComponents(unsigned channels);
 
             void Accept(KTWriter* writer) const;
 
@@ -41,37 +41,37 @@ namespace Katydid
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH2D* CreateMagnitudeHistogram(unsigned channelNum = 0, const std::string& name = "hFrequencySpectrumMag") const;
-            virtual TH2D* CreatePhaseHistogram(unsigned channelNum = 0, const std::string& name = "hFrequencySpectrumPhase") const;
+            virtual TH2D* CreateMagnitudeHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumMag") const;
+            virtual TH2D* CreatePhaseHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPhase") const;
 
-            virtual TH2D* CreatePowerHistogram(unsigned channelNum = 0, const std::string& name = "hFrequencySpectrumPower") const;
+            virtual TH2D* CreatePowerHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPower") const;
 #endif
 
 
     };
 
-    inline const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTSlidingWindowFSData::GetSpectra(unsigned channelNum) const
+    inline const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTSlidingWindowFSData::GetSpectra(unsigned component) const
     {
-        return fSpectra[channelNum];
+        return fSpectra[component];
     }
 
-    inline KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTSlidingWindowFSData::GetSpectra(unsigned channelNum)
+    inline KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTSlidingWindowFSData::GetSpectra(unsigned component)
     {
-        return fSpectra[channelNum];
+        return fSpectra[component];
     }
 
-    inline unsigned KTSlidingWindowFSData::GetNChannels() const
+    inline unsigned KTSlidingWindowFSData::GetNComponents() const
     {
         return unsigned(fSpectra.size());
     }
 
-    inline void KTSlidingWindowFSData::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, unsigned channelNum)
+    inline void KTSlidingWindowFSData::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, unsigned component)
     {
-        if (channelNum >= fSpectra.size()) fSpectra.resize(channelNum+1);
-        fSpectra[channelNum] = spectra;
+        if (component >= fSpectra.size()) fSpectra.resize(component+1);
+        fSpectra[component] = spectra;
     }
 
-    inline void KTSlidingWindowFSData::SetNChannels(unsigned channels)
+    inline void KTSlidingWindowFSData::SetNComponents(unsigned channels)
     {
         fSpectra.resize(channels);
         return;
