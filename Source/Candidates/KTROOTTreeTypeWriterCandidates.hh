@@ -16,6 +16,7 @@ class TTree;
 namespace Katydid
 {
     class KTFrequencyCandidateData;
+    class KTWaterfallCandidateData;
 
     struct TFrequencyCandidateData
     {

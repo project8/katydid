@@ -11,6 +11,7 @@
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
+#include "KTWaterfallCandidateData.hh"
 
 //#include "TFrequencyCandidateData.hh"
 

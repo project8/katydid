@@ -129,7 +129,7 @@ namespace Katydid
     {
         UInt_t nTimeBins = size(1);
         UInt_t nFreqBins = size(2);
-        TH1D* hist = new TH2D(name.c_str(), "Power Spectrum", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        TH2D* hist = new TH2D(name.c_str(), "Power Spectrum", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
         for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
@@ -172,6 +172,5 @@ namespace Katydid
     }
     */
 #endif
-*/
 
 } /* namespace Katydid */
