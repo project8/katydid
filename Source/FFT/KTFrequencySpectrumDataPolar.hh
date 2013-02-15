@@ -8,7 +8,7 @@
 #ifndef KTFREQUENCYSPECTRUMDATAPOLAR_HH_
 #define KTFREQUENCYSPECTRUMDATAPOLAR_HH_
 
-#include "KTFrequencySpectrumData.hh"
+#include "KTData.hh"
 
 #include "KTFrequencySpectrumPolar.hh"
 
@@ -21,46 +21,35 @@
 namespace Katydid
 {
 
-    class KTFrequencySpectrumDataPolar : public KTFrequencySpectrumData
+    class KTFrequencySpectrumDataPolar : public KTData< KTFrequencySpectrumDataPolar >
     {
         public:
             KTFrequencySpectrumDataPolar(UInt_t nChannels=1);
             virtual ~KTFrequencySpectrumDataPolar();
 
+            UInt_t GetNComponents() const;
+
             const KTFrequencySpectrumPolar* GetSpectrumPolar(UInt_t component = 0) const;
             KTFrequencySpectrumPolar* GetSpectrumPolar(UInt_t component = 0);
 
-            virtual const KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) const;
-            virtual KTFrequencySpectrum* GetSpectrum(UInt_t component = 0);
-            virtual UInt_t GetNComponents() const;
-            virtual Double_t GetTimeInRun() const;
-            virtual Double_t GetTimeLength() const;
-            virtual ULong64_t GetSliceNumber() const;
+            const KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) const;
+            KTFrequencySpectrum* GetSpectrum(UInt_t component = 0);
 
             void SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component = 0);
 
-            virtual void SetNComponents(UInt_t channels);
-            virtual void SetTimeInRun(Double_t tir);
-            virtual void SetTimeLength(Double_t length);
-            virtual void SetSliceNumber(ULong64_t slice);
-
-            virtual void Accept(KTWriter* writer) const;
+            KTFrequencySpectrumPolar& SetNComponents(UInt_t channels);
 
         protected:
             std::vector< KTFrequencySpectrumPolar* > fSpectra;
 
-            Double_t fTimeInRun;
-            Double_t fTimeLength;
-            ULong64_t fSliceNumber;
-
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumMag") const;
-            virtual TH1D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPhase") const;
+            TH1D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumMag") const;
+            TH1D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPhase") const;
 
-            virtual TH1D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPower") const;
+            TH1D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPower") const;
 
-            virtual TH1D* CreatePowerDistributionHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
+            TH1D* CreatePowerDistributionHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
     };
 
@@ -89,49 +78,17 @@ namespace Katydid
         return UInt_t(fSpectra.size());
     }
 
-    inline Double_t KTFrequencySpectrumDataPolar::GetTimeInRun() const
-    {
-        return fTimeInRun;
-    }
-
-    inline Double_t KTFrequencySpectrumDataPolar::GetTimeLength() const
-    {
-        return fTimeLength;
-    }
-
-    inline ULong64_t KTFrequencySpectrumDataPolar::GetSliceNumber() const
-    {
-        return fSliceNumber;
-    }
-
     inline void KTFrequencySpectrumDataPolar::SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component)
     {
         if (component >= fSpectra.size()) fSpectra.resize(component+1);
         fSpectra[component] = record;
+        return;
     }
 
-    inline void KTFrequencySpectrumDataPolar::SetNComponents(UInt_t channels)
+    inline KTFrequencySpectrumPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t channels)
     {
         fSpectra.resize(channels);
-        return;
-    }
-
-    inline void KTFrequencySpectrumDataPolar::SetTimeInRun(Double_t tir)
-    {
-        fTimeInRun = tir;
-        return;
-    }
-
-    inline void KTFrequencySpectrumDataPolar::SetTimeLength(Double_t length)
-    {
-        fTimeLength = length;
-        return;
-    }
-
-    inline void KTFrequencySpectrumDataPolar::SetSliceNumber(ULong64_t slice)
-    {
-        fSliceNumber = slice;
-        return;
+        return *this;
     }
 
 #ifdef ROOT_FOUND

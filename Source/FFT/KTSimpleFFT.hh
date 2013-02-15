@@ -29,12 +29,10 @@ namespace Katydid
     KTLOGGER(fftlog_simp, "katydid.fft");
 
     class KTEggHeader;
-    class KTBundle;
     class KTPStoreNode;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
     class KTFrequencySpectrumDataPolar;
-    class KTWriteableData;
 
     /*!
      @class KTSimpleFFT
@@ -51,8 +49,6 @@ namespace Katydid
      \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
      \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
      \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     \li \c "input-data-name": string -- name of the data to find when processing an bundle
-     \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -64,17 +60,16 @@ namespace Katydid
 
      Slots:
      \li \c void ProcessHeader(const KTEggHeader*)
-     \li \c void ProcessBundle(boost::shared_ptr<KTBundle>)
-     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
+     \li \c void ProcessTimeSeriesData(shared_ptr<KTData>)
 
      Signals:
-     \li \c void (const KTFrequencySpectrumDataPolar*) emitted upon performance of a transform.
+     \li \c void (shared_ptr<KTData>) emitted upon performance of a transform.
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTFrequencySpectrumDataPolar*) >::signal FFTSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal FFTSignal;
 
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
@@ -85,9 +80,9 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            virtual void InitializeFFT();
+            void InitializeFFT();
 
-            virtual KTFrequencySpectrumDataPolar* TransformData(const KTTimeSeriesData* tsData);
+            Bool_t TransformData(const KTData* data);
 
             KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
 
@@ -110,12 +105,6 @@ namespace Katydid
             void SetUseWisdom(Bool_t flag);
             void SetWisdomFilename(const std::string& fname);
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
             KTFrequencySpectrumPolar* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
@@ -133,9 +122,6 @@ namespace Katydid
             Bool_t fUseWisdom;
             std::string fWisdomFilename;
 
-            std::string fInputDataName;
-            std::string fOutputDataName;
-
             //***************
             // Signals
             //***************
@@ -149,8 +135,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+            void ProcessTimeSeriesData(const KTData* data);
 
     };
 
@@ -204,28 +189,6 @@ namespace Katydid
     inline void KTSimpleFFT::SetWisdomFilename(const std::string& fname)
     {
         fWisdomFilename = fname;
-        return;
-    }
-
-    inline const std::string& KTSimpleFFT::GetInputDataName() const
-    {
-        return fInputDataName;
-    }
-
-    inline void KTSimpleFFT::SetInputDataName(const std::string& name)
-    {
-        fInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTSimpleFFT::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTSimpleFFT::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
         return;
     }
 

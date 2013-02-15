@@ -20,24 +20,19 @@
 
 namespace Katydid
 {
-
-    class KTFrequencySpectrumData : public KTWriteableData
+    template< class XDataType >
+    class KTFrequencySpectrumData : public KTExtensibleData< XDataType >
     {
         public:
             KTFrequencySpectrumData();
             virtual ~KTFrequencySpectrumData();
 
+            virtual UInt_t GetNComponents() const = 0;
+
             virtual const KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) const = 0;
             virtual KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) = 0;
-            virtual UInt_t GetNComponents() const = 0;
-            virtual Double_t GetTimeInRun() const = 0;
-            virtual Double_t GetTimeLength() const = 0;
-            virtual ULong64_t GetSliceNumber() const = 0;
 
             virtual void SetNComponents(UInt_t channels) = 0;
-            virtual void SetTimeInRun(Double_t tir) = 0;
-            virtual void SetTimeLength(Double_t length) = 0;
-            virtual void SetSliceNumber(ULong64_t slice) = 0;
 /*
 #ifdef ROOT_FOUND
         public:
@@ -50,6 +45,18 @@ namespace Katydid
 #endif
 */
     };
+
+    template< class XDataType >
+    KTFrequencySpectrumData< XDataType >::KTFrequencySpectrumData() :
+            KTExtensibleData< XDataType >()
+    {
+    }
+
+    template< class XDataType >
+    KTFrequencySpectrumData< XDataType >::~KTFrequencySpectrumData()
+    {
+    }
+
 
 } /* namespace Katydid */
 
