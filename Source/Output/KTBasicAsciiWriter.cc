@@ -86,11 +86,4 @@ namespace Katydid {
   /*
    *  The following methods are unimplemented and just warn!
    */
-  void KTBasicASCIIWriter::Publish(const KTWriteableData* dt) {
-    KTWARN(asciilog, "stub Publish(const KTWriteableData*) called! no data written!");
-  };
-  void KTBasicASCIIWriter::Write(const KTWriteableData* dt) {
-    KTWARN(asciilog, "stub Write(const KTWriteableData*) called! no data written!");
-  };
-
 }; // namespace Katydid

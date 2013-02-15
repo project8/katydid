@@ -56,15 +56,6 @@ namespace Katydid
 
             std::set< TTree* > fTrees; // Trees are not owned by this writer; they're owned by their respective TypeWriters.
 
-            //************************
-            // Basic Publish and Write
-            //************************
-        public:
-
-            void Publish(const KTWriteableData* data);
-
-            void Write(const KTWriteableData* data);
-
     };
 
     inline const std::string& KTROOTTreeWriter::GetFilename() const

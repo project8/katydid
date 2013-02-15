@@ -108,16 +108,4 @@ namespace Katydid
     }
 
 
-    void KTMultiBundleROOTWriter::Publish(const KTWriteableData* data)
-    {
-        data->Accept(this);
-        return;
-    }
-
-    void KTMultiBundleROOTWriter::Write(const KTWriteableData* data)
-    {
-        KTWARN(publog, "Generic Write function called; no data written");
-        return;
-    }
-
 } /* namespace Katydid */

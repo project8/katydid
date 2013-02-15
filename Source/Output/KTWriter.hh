@@ -10,18 +10,11 @@
 
 #include "KTProcessor.hh"
 
-#include "KTTIFactory.hh"
-
 #include <map>
 #include <typeinfo>
 
 namespace Katydid
 {
-    class KTWriteableData;
-
-
-
-
     class KTTypeWriter
     {
         public:
@@ -73,10 +66,6 @@ namespace Katydid
         public:
             KTWriter();
             virtual ~KTWriter();
-
-            virtual void Publish(const KTWriteableData* data) = 0;
-
-            virtual void Write(const KTWriteableData* data) = 0;
 
     };
 

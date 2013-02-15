@@ -87,15 +87,6 @@ namespace Katydid
 
             void Finish();
 
-            //************************
-            // Basic Publish and Write
-            //************************
-        public:
-
-            void Publish(const KTWriteableData* data);
-
-            void Write(const KTWriteableData* data);
-
     };
 
     inline TFile* KTMultiBundleROOTWriter::OpenFile(const std::string& filename, const std::string& flag)

@@ -59,16 +59,6 @@ namespace Katydid
             rapidjson::FileStream* fFileStream;
             KTJSONMaker< rapidjson::FileStream >* fJSONMaker;
 
-
-            //************************
-            // Basic Publish and Write
-            //************************
-        public:
-
-            void Publish(const KTWriteableData* data);
-
-            void Write(const KTWriteableData* data);
-
     };
 
     inline const std::string& KTJSONWriter::GetFilename() const

@@ -10,7 +10,6 @@
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTWriteableData.hh"
 
 using std::string;
 
@@ -29,8 +28,6 @@ namespace Katydid
             fFile(NULL)
     {
         fConfigName = "basic-root-writer";
-
-        RegisterSlot("write-data", this, &KTBasicROOTFileWriter::Publish);
     }
 
     KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
@@ -65,18 +62,6 @@ namespace Katydid
         }
         fFile->cd();
         return true;
-    }
-
-    void KTBasicROOTFileWriter::Publish(const KTWriteableData* data)
-    {
-        data->Accept(this);
-        return;
-    }
-
-    void KTBasicROOTFileWriter::Write(const KTWriteableData* data)
-    {
-        KTWARN(publog, "Generic Write function called; no data written");
-        return;
     }
 
 } /* namespace Katydid */

@@ -48,15 +48,6 @@ namespace Katydid
 
             TFile* fFile;
 
-            //************************
-            // Basic Publish and Write
-            //************************
-        public:
-
-            void Publish(const KTWriteableData* data);
-
-            void Write(const KTWriteableData* data);
-
     };
 
     inline TFile* KTBasicROOTFileWriter::OpenFile(const std::string& filename, const std::string& flag)
