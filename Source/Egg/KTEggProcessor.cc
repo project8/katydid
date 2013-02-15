@@ -17,6 +17,7 @@
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTTimeSeriesData.hh"
 
 using std::string;
 using boost::shared_ptr;
@@ -142,13 +143,12 @@ namespace Katydid
             shared_ptr<KTData> data = egg.HatchNextSlice();
             if (data.get() == NULL) break;
 
-            if (iSlice == fNSlices - 1) data->Of< KTData >().fLastData(true);
+            if (iSlice == fNSlices - 1) data->Of< KTData >().fLastData = true;
 
-            KTTimeSeriesData* newData = data->Of< KTTimeSeriesData >();
-            if (newData != NULL)
+            if (data->Has< KTTimeSeriesData >())
             {
                 KTDEBUG(egglog, "Time series data is present.");
-                fDataSignal(newData);
+                fDataSignal(data);
             }
             else
             {

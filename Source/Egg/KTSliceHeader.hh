@@ -59,16 +59,13 @@ namespace Katydid
                 RecIdType fRecordID;
             };
 
-            Double_t fTimeInRun;
+            Double_t fTimeInRun; // in sed
             ULong64_t fSliceNumber;
 
             UInt_t fSliceSize; // number of bins
             Double_t fSliceLength; // in sec
             Double_t fSampleRate; // in Hz
             Double_t fBinWidth; // in sec
-
-            Double_t fTimeInRun; // in sec
-            ULong64_t fSliceNumber;
 
             std::vector< PerComponentData > fComponentData;
 

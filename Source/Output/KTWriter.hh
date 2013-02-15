@@ -10,6 +10,8 @@
 
 #include "KTProcessor.hh"
 
+#include "KTTIFactory.hh"
+
 #include <map>
 #include <typeinfo>
 

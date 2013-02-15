@@ -9,6 +9,7 @@
 
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 

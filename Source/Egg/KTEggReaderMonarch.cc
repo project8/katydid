@@ -17,6 +17,8 @@
 #include "MonarchPP.hh"
 #include "MonarchHeader.hpp"
 
+using boost::shared_ptr;
+
 using std::map;
 using std::string;
 using std::vector;
@@ -122,12 +124,12 @@ namespace Katydid
         if (fMonarch == NULL)
         {
             KTERROR(eggreadlog, "Monarch file has not been opened");
-            return NULL;
+            return shared_ptr< KTData >();
         }
         if (fReadState.fStatus == MonarchReadState::kInvalid)
         {
             KTERROR(eggreadlog, "Read state status is <invalid>. Did you hatch the egg first?");
-            return NULL;
+            return shared_ptr< KTData >();
         }
 
         // if we're at the beginning of the run, load the first records
@@ -136,7 +138,7 @@ namespace Katydid
             if (! fMonarch->ReadRecord())
             {
                 KTERROR(eggreadlog, "File appears to contain no bundles.");
-                return NULL;
+                return shared_ptr< KTData >();
             }
             fRecordsRead = 0;
             fSliceNumber = 0;
@@ -192,12 +194,11 @@ namespace Katydid
             {
                 KTINFO(eggreadlog, "End of file reached.\n"
                         << "\tNumber of unused bins: " << iBin - 1);
-                delete newData;
                 for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
                 {
                     delete newRecords[iChannel];
                 }
-                return NULL;
+                return shared_ptr< KTData >();
             }
             else if (fReadState.fStatus == MonarchReadState::kAcquisitionIDHasChanged)
             {
@@ -270,7 +271,7 @@ namespace Katydid
 
         fSliceNumber++;
 
-        return tsData;
+        return newData;
     }
 
     Bool_t KTEggReaderMonarch::CloseEgg()

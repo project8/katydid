@@ -37,9 +37,6 @@ namespace Katydid
 
         RegisterSlot("start", this, &KTMultiBundleROOTWriter::Start, "void ()");
         RegisterSlot("finish", this, &KTMultiBundleROOTWriter::Finish, "void ()");
-
-
-        RegisterSlot("write-data", this, &KTMultiBundleROOTWriter::Publish);
     }
 
     KTMultiBundleROOTWriter::~KTMultiBundleROOTWriter()

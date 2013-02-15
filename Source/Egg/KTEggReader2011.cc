@@ -220,7 +220,7 @@ namespace Katydid
 
     boost::shared_ptr< KTData > KTEggReader2011::HatchNextSlice()
     {
-        if (! fEggStream.good()) return NULL;
+        if (! fEggStream.good()) return boost::shared_ptr< KTData >();
 
         boost::shared_ptr< KTData > newData(new KTData());
 

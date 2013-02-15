@@ -11,7 +11,6 @@
 #include "KTEggHeader.hh"
 #include "KTEggReader.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesChannelData.hh"
 
 using std::string;
 using boost::shared_ptr;
@@ -55,7 +54,7 @@ namespace Katydid
         if (fReader == NULL || fHeader == NULL)
         {
             KTWARN(egglog, "Not prepared to hatch an bundle");
-            return shared_ptr<KTBundle>();
+            return shared_ptr<KTData>();
         }
 
         shared_ptr<KTData> data = fReader->HatchNextSlice();

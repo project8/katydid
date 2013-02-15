@@ -17,9 +17,6 @@ namespace Katydid
             fSliceLength(0.),
             fSampleRate(0.),
             fBinWidth(1.),
-            fSliceSize(0),
-            fTimeInRun(0.),
-            fSliceNumber(0),
             fComponentData(1)
     {
     }

@@ -7,13 +7,8 @@
 
 #include "KTTimeSeriesData.hh"
 
-#include "KTDataMap.hh"
-#include "KTTIFactory.hh"
-
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTTimeSeriesData > > sTSDMRegistrar;
-
     KTTimeSeriesData::KTTimeSeriesData() :
             KTExtensibleData< KTTimeSeriesData >()
     {
@@ -21,6 +16,11 @@ namespace Katydid
 
     KTTimeSeriesData::~KTTimeSeriesData()
     {
+        while (! fComponentData.empty())
+        {
+            delete fComponentData.back();
+            fComponentData.pop_back();
+        }
     }
 
 } /* namespace Katydid */

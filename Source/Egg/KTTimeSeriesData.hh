@@ -13,6 +13,8 @@
 
 #include "KTData.hh"
 
+#include "KTTimeSeries.hh"
+
 #include <vector>
 
 namespace Katydid
