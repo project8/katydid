@@ -17,7 +17,7 @@ namespace Katydid
 {
     class KTEggReader;
     class KTEggHeader;
-    class KTBundle;
+    class KTData;
 
     class KTEgg
     {
@@ -26,7 +26,7 @@ namespace Katydid
             virtual ~KTEgg();
 
             bool BreakEgg(const std::string& filename);
-            boost::shared_ptr<KTBundle> HatchNextBundle();
+            boost::shared_ptr<KTData> HatchNextSlice();
             bool CloseEgg();
 
             /// Assumes ownership of the egg reader
@@ -36,14 +36,14 @@ namespace Katydid
             void SetHeader(KTEggHeader* header);
             const KTEggHeader* GetHeader() const;
 
-            void SetBundleCounter(int count);
-            int GetBundleCounter() const;
+            void SetSliceCounter(int count);
+            int GetSliceCounter() const;
 
         private:
             KTEggReader* fReader;
             KTEggHeader* fHeader;
 
-            int fBundleCounter;
+            int fSliceCounter;
 
     };
 
@@ -57,15 +57,15 @@ namespace Katydid
         return fHeader;
     }
 
-    inline void KTEgg::SetBundleCounter(int count)
+    inline void KTEgg::SetSliceCounter(int count)
     {
-        fBundleCounter = count;
+        fSliceCounter = count;
         return;
     }
 
-    inline int KTEgg::GetBundleCounter() const
+    inline int KTEgg::GetSliceCounter() const
     {
-        return fBundleCounter;
+        return fSliceCounter;
     }
 
 } /* namespace Katydid */

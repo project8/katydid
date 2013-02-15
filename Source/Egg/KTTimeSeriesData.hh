@@ -11,32 +11,61 @@
 #ifndef KTTIMESERIESDATA_HH_
 #define KTTIMESERIESDATA_HH_
 
-#include "KTWriteableData.hh"
+#include "KTData.hh"
+
+#include <vector>
 
 namespace Katydid
 {
     class KTTimeSeries;
 
-    class KTTimeSeriesData : public KTWriteableData
+    class KTTimeSeriesData : public KTExtensibleData< KTTimeSeriesData >
     {
         public:
             KTTimeSeriesData();
             virtual ~KTTimeSeriesData();
 
-            virtual UInt_t GetNTimeSeries() const = 0;
+            UInt_t GetNComponents() const;
 
-            virtual Double_t GetTimeInRun() const = 0;
-            virtual ULong64_t GetSliceNumber() const = 0;
+            const KTTimeSeries* GetTimeSeries(UInt_t component = 0) const;
+            KTTimeSeries* GetTimeSeries(UInt_t component = 0);
 
-            virtual const KTTimeSeries* GetTimeSeries(UInt_t tsNum = 0) const = 0;
-            virtual KTTimeSeries* GetTimeSeries(UInt_t tsNum = 0) = 0;
+            KTTimeSeriesData& SetNComponents(UInt_t num);
 
-            virtual void SetNTimeSeries(UInt_t num) = 0;
+            void SetTimeSeries(KTTimeSeries* record, UInt_t component = 0);
 
-            virtual void SetTimeInRun(Double_t tir) = 0;
-            virtual void SetSliceNumber(ULong64_t slice) = 0;
-
+        protected:
+            std::vector< KTTimeSeries* > fComponentData;
     };
+
+    inline UInt_t KTTimeSeriesData::GetNComponents() const
+    {
+        return UInt_t(fComponentData.size());
+    }
+
+    inline KTTimeSeries* KTTimeSeriesData::GetTimeSeries(UInt_t component)
+    {
+        return fComponentData[component];
+    }
+
+    inline const KTTimeSeries* KTTimeSeriesData::GetTimeSeries(UInt_t component) const
+    {
+        return fComponentData[component];
+    }
+
+    inline KTTimeSeriesData& KTTimeSeriesData::SetNComponents(UInt_t num)
+    {
+        fComponentData.resize(num);
+        return *this;
+    }
+
+    inline void KTTimeSeriesData::SetTimeSeries(KTTimeSeries* record, UInt_t component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component] = record;
+        return;
+    }
+
 
 } /* namespace Katydid */
 

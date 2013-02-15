@@ -15,7 +15,7 @@ namespace Katydid
     static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTTimeSeriesData > > sTSDMRegistrar;
 
     KTTimeSeriesData::KTTimeSeriesData() :
-            KTWriteableData()
+            KTExtensibleData< KTTimeSeriesData >()
     {
     }
 

@@ -7,9 +7,9 @@
 
 #include "KTEgg.hh"
 
+#include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader.hh"
-#include "KTBundle.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeriesChannelData.hh"
 
@@ -23,7 +23,7 @@ namespace Katydid
     KTEgg::KTEgg() :
             fReader(NULL),
             fHeader(NULL),
-            fBundleCounter(-1)
+            fSliceCounter(-1)
     {
     }
 
@@ -46,11 +46,11 @@ namespace Katydid
             KTWARN(egglog, "No header was received");
             return false;
         }
-        fBundleCounter = -1;
+        fSliceCounter = -1;
         return true;
     }
 
-    shared_ptr<KTBundle> KTEgg::HatchNextBundle()
+    shared_ptr<KTData> KTEgg::HatchNextSlice()
     {
         if (fReader == NULL || fHeader == NULL)
         {
@@ -58,18 +58,15 @@ namespace Katydid
             return shared_ptr<KTBundle>();
         }
 
-        KTTimeSeriesData* data = fReader->HatchNextBundle();
-        if (data == NULL)
+        shared_ptr<KTData> data = fReader->HatchNextSlice();
+        fSliceCounter++;
+
+        if (data)
         {
-            return shared_ptr<KTBundle>();
+            data->fCounter = (unsigned)fSliceCounter;
         }
-        fBundleCounter++;
 
-        shared_ptr<KTBundle> newBundle(new KTBundle());
-        newBundle->SetBundleNumber(unsigned(fBundleCounter));
-        newBundle->AddData(data);
-
-        return newBundle;
+        return data;
     }
 
     bool KTEgg::CloseEgg()

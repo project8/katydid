@@ -10,18 +10,17 @@
 
 #include "KTMultiBundleROOTWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 class TH1D;
 
 namespace Katydid
 {
     class KTEggHeader;
-    class KTTimeSeriesData;
+    class KTData;
 
     class KTMultiBundleROOTTypeWriterEgg : public KTMEROOTTypeWriterBase//, public KTTypeWriterEgg
     {
-        public:
-            friend class KTTimeSeriesData;
-
         public:
             KTMultiBundleROOTTypeWriterEgg();
             virtual ~KTMultiBundleROOTTypeWriterEgg();
@@ -38,7 +37,7 @@ namespace Katydid
         public:
             void StartByHeader(const KTEggHeader* header);
 
-            void AddTimeSeriesData(const KTTimeSeriesData* data);
+            void AddTimeSeriesData(boost::shared_ptr<KTData> data);
 
         private:
             std::vector< TH1D* > fTSHists;

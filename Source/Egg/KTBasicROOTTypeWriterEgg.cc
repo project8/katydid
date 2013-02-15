@@ -7,7 +7,6 @@
 
 #include "KTBasicROOTTypeWriterEgg.hh"
 
-#include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeries.hh"
@@ -16,6 +15,8 @@
 #include "TH1.h"
 
 #include <sstream>
+
+using boost::shared_ptr;
 
 using std::stringstream;
 using std::string;
@@ -39,7 +40,7 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEgg::RegisterSlots()
     {
-        fWriter->RegisterSlot("ts-data", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData, "void (const KTTimeSeriesData*)");
+        fWriter->RegisterSlot("ts-data", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData, "void (shared_ptr<KTData>)");
         return;
     }
 
@@ -48,22 +49,24 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesData(const KTTimeSeriesData* data)
+    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesData(boost::shared_ptr<KTData> data)
     {
-        KTBundle* bundle = data->GetBundle();
-        UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nChannels = data->GetNTimeSeries();
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
+        UInt_t nComponents = tsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            const KTTimeSeries* spectrum = data->GetTimeSeries(iChannel);
+            const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histTS_" << bundleNumber << "_" << iChannel;
+                conv << "histTS_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreateHistogram(histName);

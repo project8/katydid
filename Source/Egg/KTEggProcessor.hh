@@ -24,13 +24,13 @@ namespace Katydid
      @class KTEggProcessor
      @author N. S. Oblath
 
-     @brief Iterates over the bundles in an Egg file.
+     @brief Iterates over the slices in an Egg file.
 
      @details
-     Iterates over bundles in an egg file; bundles are extracted until fNBundles is reached.
+     Iterates over slices in an egg file; slices are extracted until fNSlices is reached.
 
      Available configuration options:
-     \li \c "number-of-bundles": UInt_t -- Number of bundles to process
+     \li \c "number-of-slices": UInt_t -- Number of slices to process
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
      \li \c "time-series-size": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
@@ -38,22 +38,22 @@ namespace Katydid
      \li \c "output-data-name": string -- Name to give to the data produced
 
      Command-line options defined
-     \li \c -n (n-bundles): Number of bundles to process
+     \li \c -n (n-slices): Number of slices to process
      \li \c -e (egg-file): Egg filename to use
      \li \c -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
      \li \c "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     \li \c "data": void (const KTTimeSeriesData*) -- emitted when the new time series is produced.
-     \li \c "bundle": void (boost::shared_ptr<KTBundle>) -- emitted when an bundle is read from the file.
+     \li \c "data": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced.
+     <!--\li \c "bundle": void (boost::shared_ptr<KTBundle>) -- emitted when an bundle is read from the file.-->
      \li \c "egg-done": void () --  emitted when a file is finished.
     */
     class KTEggProcessor : public KTPrimaryProcessor
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
-            typedef KTSignal< void (const KTTimeSeriesData*) >::signal DataSignal;
-            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
+            //typedef KTSignal< void (const KTTimeSeriesData*) >::signal DataSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal DataSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:
@@ -79,23 +79,20 @@ namespace Katydid
 
             Bool_t ProcessEgg();
 
-            UInt_t GetNBundles() const;
+            UInt_t GetNSlices() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
             UInt_t GetSliceSizeRequest() const;
             TimeSeriesType GetTimeSeriesType() const;
 
-            void SetNBundles(UInt_t nBundles);
+            void SetNSlices(UInt_t nSlices);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
             void SetSliceSizeRequest(UInt_t size);
             void SetTimeSeriesType(TimeSeriesType type);
 
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         private:
-            UInt_t fNBundles;
+            UInt_t fNSlices;
 
             std::string fFilename;
 
@@ -105,8 +102,6 @@ namespace Katydid
 
             TimeSeriesType fTimeSeriesType;
 
-            std::string fOutputDataName;
-
             //***************
             // Signals
             //***************
@@ -114,7 +109,7 @@ namespace Katydid
         private:
             HeaderSignal fHeaderSignal;
             DataSignal fDataSignal;
-            BundleSignal fBundleSignal;
+            //BundleSignal fBundleSignal;
             EggDoneSignal fEggDoneSignal;
 
     };
@@ -124,14 +119,14 @@ namespace Katydid
         return ProcessEgg();
     }
 
-    inline UInt_t KTEggProcessor::GetNBundles() const
+    inline UInt_t KTEggProcessor::GetNSlices() const
     {
-        return fNBundles;
+        return fNSlices;
     }
 
-    inline void KTEggProcessor::SetNBundles(UInt_t nBundles)
+    inline void KTEggProcessor::SetNSlices(UInt_t nSlices)
     {
-        fNBundles = nBundles;
+        fNSlices = nSlices;
         return;
     }
 
@@ -176,17 +171,6 @@ namespace Katydid
     inline void KTEggProcessor::SetTimeSeriesType(TimeSeriesType type)
     {
         fTimeSeriesType = type;
-        return;
-    }
-
-    inline const std::string& KTEggProcessor::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTEggProcessor::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
         return;
     }
 

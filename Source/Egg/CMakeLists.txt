@@ -13,11 +13,12 @@ set (EGG_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEgg.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArrayFFTW.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSliceHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTThroughputProfiler.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesChannelData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesPairedData.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesChannelData.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesPairedData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesReal.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/MonarchPP.hh
@@ -32,11 +33,12 @@ set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEgg.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArrayFFTW.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSliceHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTThroughputProfiler.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesChannelData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesPairedData.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesChannelData.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesPairedData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTTimeSeriesReal.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/MonarchPP.cc

@@ -9,22 +9,21 @@
 #include "KTEggProcessor.hh"
 
 #include "KTCommandLineOption.hh"
+#include "KTData.hh"
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTEggReader2011.hh"
-#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesChannelData.hh"
 
 using std::string;
 using boost::shared_ptr;
 
 namespace Katydid
 {
-    static KTCommandLineOption< int > sNBundlesCLO("Egg Processor", "Number of bundles to process", "n-bundles", 'n');
+    static KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of bundles to process", "n-bundles", 'n');
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
     static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
@@ -34,22 +33,21 @@ namespace Katydid
 
     KTEggProcessor::KTEggProcessor() :
             KTPrimaryProcessor(),
-            fNBundles(0),
+            fNSlices(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
             fSliceSizeRequest(0),
             fTimeSeriesType(kRealTimeSeries),
-            fOutputDataName("time-series"),
             fHeaderSignal(),
             fDataSignal(),
-            fBundleSignal(),
+            //fSignal(),
             fEggDoneSignal()
     {
         fConfigName = "egg-processor";
 
         RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
-        RegisterSignal("data", &fDataSignal, "void (const KTTimeSeriesData*)");
-        RegisterSignal("bundle", &fBundleSignal, "boost::shared_ptr<KTBundle>");
+        RegisterSignal("data", &fDataSignal, "void (boost::shared_ptr<KTData>)");
+        //RegisterSignal("bundle", &fBundleSignal, "boost::shared_ptr<KTBundle>");
         RegisterSignal("egg-done", &fEggDoneSignal, "void ()");
     }
 
@@ -62,7 +60,7 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNBundles(node->GetData< UInt_t >("number-of-bundles", fNBundles));
+            SetNSlices(node->GetData< UInt_t >("number-of-slices", fNSlices));
             SetFilename(node->GetData< string >("filename", fFilename));
 
             // choose the egg reader
@@ -87,13 +85,10 @@ namespace Katydid
                 KTERROR(egglog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
                 return false;
             }
-
-            // output data name
-            SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
         }
 
         // Command-line settings
-        SetNBundles(fCLHandler->GetCommandLineValue< Int_t >("n-bundles", fNBundles));
+        SetNSlices(fCLHandler->GetCommandLineValue< Int_t >("n-bundles", fNSlices));
         SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
         if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
         {
@@ -116,13 +111,11 @@ namespace Katydid
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
-            eggReader->SetOutputDataName(fOutputDataName);
             egg.SetReader(eggReader);
         }
         else
         {
             KTEggReader2011* eggReader = new KTEggReader2011();
-            eggReader->SetOutputDataName(fOutputDataName);
             egg.SetReader(eggReader);
         }
 
@@ -138,20 +131,20 @@ namespace Katydid
                 "\n\tand the header parsed and processed;"
                 "\n\tProceeding with bundle processing");
 
-        UInt_t iBundle = 0;
+        UInt_t iSlice = 0;
         while (kTRUE)
         {
-            if (iBundle >= fNBundles) break;
+            if (iSlice >= fNSlices) break;
 
-            KTINFO(egglog, "Bundle " << iBundle);
+            KTINFO(egglog, "Slice " << iSlice);
 
             // Hatch the bundle
-            shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
-            if (bundle.get() == NULL) break;
+            shared_ptr<KTData> data = egg.HatchNextSlice();
+            if (data.get() == NULL) break;
 
-            if (iBundle == fNBundles - 1) bundle->SetIsLastBundle(true);
+            if (iSlice == fNSlices - 1) data->Of< KTData >().fLastData(true);
 
-            KTTimeSeriesData* newData = bundle->GetData< KTTimeSeriesData >(fOutputDataName);
+            KTTimeSeriesData* newData = data->Of< KTTimeSeriesData >();
             if (newData != NULL)
             {
                 KTDEBUG(egglog, "Time series data is present.");
@@ -163,9 +156,9 @@ namespace Katydid
             }
 
             // Pass the bundle to any subscribers
-            fBundleSignal(bundle);
+            //fBundleSignal(bundle);
 
-            iBundle++;
+            iSlice++;
         }
 
         fEggDoneSignal();
