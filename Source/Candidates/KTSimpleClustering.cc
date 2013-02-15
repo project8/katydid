@@ -55,7 +55,10 @@ namespace Katydid
     {
         fConfigName = "simple-clustering";
 
-        // QueueBundle and QueueBundles are registered in KTBundleQueueProcessorTemplate constructor
+        // QueueBundle ("bundle") and QueueBundles ("bundle-list") are registered in KTBundleQueueProcessorTemplate constructor
+
+        RegisterSignal("one-slice-bundle", &fOneSliceBundleSignal, "void (shared_ptr<KTBundle>)");
+        RegisterSignal("clustered-bundle", &fClusteredBundleSignal, "void (shared_ptr<KTBundle>)");
 
         this->SetFuncPtr(&KTSimpleClustering::ProcessOneSliceBundle);
     }
