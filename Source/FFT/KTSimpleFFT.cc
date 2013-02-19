@@ -12,6 +12,7 @@
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTPStoreNode.hh"
 
 #include <algorithm>
@@ -121,7 +122,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTSimpleFFT::TransformData(const KTData* data)
+    Bool_t KTSimpleFFT::TransformData(shared_ptr<KTData> data)
     {
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
 
@@ -228,7 +229,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessTimeSeriesData(const KTData* data)
+    void KTSimpleFFT::ProcessTimeSeriesData(shared_ptr<KTData> data)
     {
         if (! TransformData(data))
         {

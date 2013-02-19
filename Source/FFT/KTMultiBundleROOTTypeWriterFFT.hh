@@ -10,18 +10,16 @@
 
 #include "KTMultiBundleROOTWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 class TH1D;
 
 namespace Katydid
 {
-    class KTFrequencySpectrumDataFFTW;
-    class KTFrequencySpectrumDataPolar;
+    class KTData;
 
     class KTMultiBundleROOTTypeWriterFFT : public KTMEROOTTypeWriterBase//, public KTTypeWriterFFT
     {
-        public:
-            friend class KTFrequencySpectrumDataPolar;
-
         public:
             KTMultiBundleROOTTypeWriterFFT();
             virtual ~KTMultiBundleROOTTypeWriterFFT();
@@ -37,8 +35,8 @@ namespace Katydid
 
         public:
 
-            void AddFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
-            void AddFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
+            void AddFrequencySpectrumDataPolar(boost::shared_ptr<KTData> data);
+            void AddFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data);
 
         private:
             std::vector< TH1D* > fFSHists;

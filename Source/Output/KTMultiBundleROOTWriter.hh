@@ -17,6 +17,7 @@ namespace Katydid
     class KTMultiBundleROOTWriter;
 
     typedef KTDerivedTypeWriter< KTMultiBundleROOTWriter > KTMultiBundleROOTTypeWriter;
+
     class KTMEROOTTypeWriterBase : public KTMultiBundleROOTTypeWriter
     {
         public:

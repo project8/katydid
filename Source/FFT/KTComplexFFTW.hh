@@ -26,6 +26,7 @@ namespace Katydid
 {
     KTLOGGER(fftlog_comp, "katydid.fft");
 
+    class KTData;
     class KTEggHeader;
     class KTPStoreNode;
     class KTTimeSeriesFFTW;
@@ -70,8 +71,8 @@ namespace Katydid
     class KTComplexFFTW : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (shared_ptr<KTData>) >::signal FFTForwardSignal;
-            typedef KTSignal< void (shared_ptr<KTData>) >::signal FFTReverseSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal FFTForwardSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal FFTReverseSignal;
 
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
@@ -85,14 +86,14 @@ namespace Katydid
             virtual void InitializeFFT();
 
             /// Forward FFT
-            Bool_t TransformData(boost::shared_ptr<KTData> data);
+            Bool_t TransformDataForward(boost::shared_ptr<KTData> data);
             /// Reverse FFT
-            Bool_t TransformData(boost::shared_ptr<KTData> data);
+            Bool_t TransformDataReverse(boost::shared_ptr<KTData> data);
 
             /// Forward FFT
-            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
+            KTFrequencySpectrumFFTW* TransformForward(const KTTimeSeriesFFTW* data) const;
             /// Reverse FFT
-            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* data) const;
+            KTTimeSeriesFFTW* TransformReverse(const KTFrequencySpectrumFFTW* data) const;
 
             virtual UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;

@@ -148,7 +148,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTComplexFFTW::TransformData(shared_ptr<KTData> data)
+    Bool_t KTComplexFFTW::TransformDataForward(shared_ptr<KTData> data)
     {
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
 
@@ -178,7 +178,7 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = TransformForward(nextInput);
 
             if (nextResult == NULL)
             {
@@ -193,7 +193,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTComplexFFTW::TransformData(shared_ptr<KTData> data)
+    Bool_t KTComplexFFTW::TransformDataReverse(shared_ptr<KTData> data)
     {
         KTFrequencySpectrumDataFFTW& fsData = data->Of< KTFrequencySpectrumDataFFTW >();
 
@@ -207,40 +207,38 @@ namespace Katydid
         {
             KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
                     << "   Please first call InitializeFFT(), then perform the transform.");
-            return NULL;
+            return false;
         }
 
         UInt_t nComponents = fsData.GetNComponents();
 
-        KTBasicTimeSeriesData* newData = new KTBasicTimeSeriesData(nComponents);
+        KTTimeSeriesData& newData = data->Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (UInt_t iChannel = 0; iChannel < nComponents; iChannel++)
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
-            const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iChannel);
+            const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
             if (nextInput == NULL)
             {
-                KTERROR(fftlog_comp, "Frequency spectrum <" << iChannel << "> does not appear to be present.");
-                delete newData;
-                return NULL;
+                KTERROR(fftlog_comp, "Frequency spectrum <" << iComponent << "> does not appear to be present.");
+                return false;
             }
 
-            KTTimeSeriesFFTW* nextResult = Transform(nextInput);
+            KTTimeSeriesFFTW* nextResult = TransformReverse(nextInput);
 
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_comp, "One of the channels did not transform correctly.");
-                delete newData;
-                return NULL;
+                return false;
             }
-            newData->SetTimeSeries(nextResult, iChannel);
+            newData.SetTimeSeries(nextResult, iComponent);
         }
 
-        KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNTimeSeries() << " channel(s) transformed");
+        KTDEBUG(fftlog_comp, "FFT complete; " << nComponents << " component(s) transformed");
 
-        return newData;
+        return true;
     }
 
-    KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
+    KTFrequencySpectrumFFTW* KTComplexFFTW::TransformForward(const KTTimeSeriesFFTW* data) const
     {
         UInt_t nBins = data->size();
         if (nBins != fSize)
@@ -263,7 +261,7 @@ namespace Katydid
         return newSpectrum;
     }
 
-    KTTimeSeriesFFTW* KTComplexFFTW::Transform(const KTFrequencySpectrumFFTW* data) const
+    KTTimeSeriesFFTW* KTComplexFFTW::TransformReverse(const KTFrequencySpectrumFFTW* data) const
     {
         UInt_t nBins = data->size();
         if (nBins != fSize)
@@ -320,7 +318,7 @@ namespace Katydid
 
     void KTComplexFFTW::ProcessTimeSeriesData(shared_ptr<KTData> data)
     {
-        if (! TransformData(data))
+        if (! TransformDataForward(data))
         {
             KTERROR(fftlog_comp, "Something went wrong while performing a forward FFT");
             return;
@@ -331,7 +329,7 @@ namespace Katydid
 
     void KTComplexFFTW::ProcessFrequencySpectrumData(shared_ptr<KTData> data)
     {
-        if (! TransformData(data))
+        if (! TransformDataReverse(data))
         {
             KTERROR(fftlog_comp, "Something went wrong while performing a forward FFT");
             return;

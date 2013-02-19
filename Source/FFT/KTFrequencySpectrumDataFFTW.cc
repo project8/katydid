@@ -11,9 +11,9 @@
 
 namespace Katydid
 {
-    KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW(UInt_t nChannels) :
-            KTData< KTFrequencySpectrumDataFFTW >(),
-            fSpectra(nChannels)
+    KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW() :
+            KTExtensibleData< KTFrequencySpectrumDataFFTW >(),
+            fSpectra(1)
     {
     }
 

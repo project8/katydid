@@ -21,10 +21,10 @@
 namespace Katydid
 {
 
-    class KTFrequencySpectrumDataFFTW : public KTData< KTFrequencySpectrumFFTW >
+    class KTFrequencySpectrumDataFFTW : public KTExtensibleData< KTFrequencySpectrumDataFFTW >
     {
         public:
-            KTFrequencySpectrumDataFFTW(UInt_t nChannels=1);
+            KTFrequencySpectrumDataFFTW();
             virtual ~KTFrequencySpectrumDataFFTW();
 
             unsigned GetNComponents() const;

@@ -14,14 +14,10 @@
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
 #include "KTEggReaderMonarch.hh"
-#include "KTBundle.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesChannelData.hh"
-
-#include <boost/shared_ptr.hpp>
+#include "KTTimeSeriesData.hh"
 
 #include <iostream>
-#include <string>
 
 
 using namespace std;
@@ -56,7 +52,6 @@ int main(int argc, char** argv)
     {
         KTINFO(testegg, "Using 2011 egg reader");
         KTEggReader2011* reader = new KTEggReader2011();
-        reader->SetOutputDataName("time-series");
         egg.SetReader(reader);
     }
     else
@@ -66,7 +61,6 @@ int main(int argc, char** argv)
         KTINFO(testegg, "Record size should be " << recordSize << " (if 0, it should be the same as the Monarch record size)");
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
         reader->SetTimeSeriesSizeRequest(recordSize);
-        reader->SetOutputDataName("time-series");
         egg.SetReader(reader);
     }
 
@@ -98,26 +92,27 @@ int main(int argc, char** argv)
     for (UInt_t iBundle=0; iBundle < nBundles; iBundle++)
     {
         KTINFO(testegg, "Bundle " << iBundle);
-        boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
-        if (bundle.get() == NULL)
+        boost::shared_ptr<KTData> data = egg.HatchNextSlice();
+        if (! data)
         {
             KTERROR(testegg, "Bundle did not hatch");
             return -1;
         }
 
-        KTTimeSeriesData* tsData = bundle->GetData<KTTimeSeriesData>("time-series");
-        if (tsData == NULL)
+        if (! data->Has< KTTimeSeriesData >())
         {
             KTWARN(testegg, "No time-series data present in bundle");
             return -1;
         }
 
-        UInt_t nRecords = tsData->GetNTimeSeries();
+        KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
+
+        UInt_t nRecords = tsData.GetNComponents();
         KTINFO(testegg, "This bundle contains " << nRecords << " records");
         if (nRecords >= 1)
         {
-            KTINFO(testegg, "Record 0 has " << tsData->GetTimeSeries(0)->GetNTimeBins() << " bins");
-            KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetTimeSeries(0)->GetValue(0));
+            KTINFO(testegg, "Record 0 has " << tsData.GetTimeSeries(0)->GetNTimeBins() << " bins");
+            KTINFO(testegg, "Bin 0 of record 0 is " << tsData.GetTimeSeries(0)->GetValue(0));
         }
     }
 

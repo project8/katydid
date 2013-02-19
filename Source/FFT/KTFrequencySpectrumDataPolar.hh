@@ -21,10 +21,10 @@
 namespace Katydid
 {
 
-    class KTFrequencySpectrumDataPolar : public KTData< KTFrequencySpectrumDataPolar >
+    class KTFrequencySpectrumDataPolar : public KTExtensibleData< KTFrequencySpectrumDataPolar >
     {
         public:
-            KTFrequencySpectrumDataPolar(UInt_t nChannels=1);
+            KTFrequencySpectrumDataPolar();
             virtual ~KTFrequencySpectrumDataPolar();
 
             UInt_t GetNComponents() const;
@@ -37,7 +37,7 @@ namespace Katydid
 
             void SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component = 0);
 
-            KTFrequencySpectrumPolar& SetNComponents(UInt_t channels);
+            KTFrequencySpectrumDataPolar& SetNComponents(UInt_t channels);
 
         protected:
             std::vector< KTFrequencySpectrumPolar* > fSpectra;
@@ -85,7 +85,7 @@ namespace Katydid
         return;
     }
 
-    inline KTFrequencySpectrumPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t channels)
+    inline KTFrequencySpectrumDataPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t channels)
     {
         fSpectra.resize(channels);
         return *this;

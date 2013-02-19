@@ -11,9 +11,9 @@
 
 namespace Katydid
 {
-    KTFrequencySpectrumDataPolar::KTFrequencySpectrumDataPolar(UInt_t nChannels) :
-            KTData< KTFrequencySpectrumDataPolar >(),
-            fSpectra(nChannels)
+    KTFrequencySpectrumDataPolar::KTFrequencySpectrumDataPolar() :
+            KTExtensibleData< KTFrequencySpectrumDataPolar >(),
+            fSpectra()
     {
     }
 

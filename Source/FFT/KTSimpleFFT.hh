@@ -28,6 +28,7 @@ namespace Katydid
 {
     KTLOGGER(fftlog_simp, "katydid.fft");
 
+    class KTData;
     class KTEggHeader;
     class KTPStoreNode;
     class KTTimeSeriesReal;
@@ -82,7 +83,7 @@ namespace Katydid
 
             void InitializeFFT();
 
-            Bool_t TransformData(const KTData* data);
+            Bool_t TransformData(boost::shared_ptr<KTData> data);
 
             KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
 
@@ -135,7 +136,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessTimeSeriesData(const KTData* data);
+            void ProcessTimeSeriesData(boost::shared_ptr<KTData> data);
 
     };
 
