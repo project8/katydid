@@ -83,7 +83,7 @@ namespace Katydid
 
             void InitializeFFT();
 
-            Bool_t TransformData(boost::shared_ptr<KTData> data);
+            Bool_t TransformData(KTTimeSeriesData& tsData);
 
             KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
 

@@ -148,10 +148,8 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTComplexFFTW::TransformDataForward(shared_ptr<KTData> data)
+    Bool_t KTComplexFFTW::TransformData(KTTimeSeriesData& tsData)
     {
-        KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
-
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetSize())
         {
             SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
@@ -167,7 +165,7 @@ namespace Katydid
 
         UInt_t nComponents = tsData.GetNComponents();
 
-        KTFrequencySpectrumDataFFTW& newData = data->Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
+        KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
 
         for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
@@ -193,10 +191,8 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTComplexFFTW::TransformDataReverse(shared_ptr<KTData> data)
+    Bool_t KTComplexFFTW::TransformData(KTFrequencySpectrumDataFFTW& fsData)
     {
-        KTFrequencySpectrumDataFFTW& fsData = data->Of< KTFrequencySpectrumDataFFTW >();
-
         if (fsData.GetSpectrumFFTW(0)->size() != GetSize())
         {
             SetSize(fsData.GetSpectrumFFTW(0)->size());
@@ -212,7 +208,7 @@ namespace Katydid
 
         UInt_t nComponents = fsData.GetNComponents();
 
-        KTTimeSeriesData& newData = data->Of< KTTimeSeriesData >().SetNComponents(nComponents);
+        KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
         for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
@@ -318,7 +314,12 @@ namespace Katydid
 
     void KTComplexFFTW::ProcessTimeSeriesData(shared_ptr<KTData> data)
     {
-        if (! TransformDataForward(data))
+        if (! data->Has< KTTimeSeriesData >())
+        {
+            KTERROR(fftlog_comp, "No time series data was present");
+            return;
+        }
+        if (! TransformData(data->Of< KTTimeSeriesData >()))
         {
             KTERROR(fftlog_comp, "Something went wrong while performing a forward FFT");
             return;
@@ -329,7 +330,12 @@ namespace Katydid
 
     void KTComplexFFTW::ProcessFrequencySpectrumData(shared_ptr<KTData> data)
     {
-        if (! TransformDataReverse(data))
+        if (! data->Has< KTFrequencySpectrumDataFFTW >())
+        {
+            KTERROR(fftlog_comp, "No frequency spectrum data was present");
+            return;
+        }
+        if (! TransformData(data->Of< KTFrequencySpectrumDataFFTW >()))
         {
             KTERROR(fftlog_comp, "Something went wrong while performing a forward FFT");
             return;

@@ -86,9 +86,9 @@ namespace Katydid
             virtual void InitializeFFT();
 
             /// Forward FFT
-            Bool_t TransformDataForward(boost::shared_ptr<KTData> data);
+            Bool_t TransformData(KTTimeSeriesData& tsData);
             /// Reverse FFT
-            Bool_t TransformDataReverse(boost::shared_ptr<KTData> data);
+            Bool_t TransformData(KTFrequencySpectrumDataFFTW& fsData);
 
             /// Forward FFT
             KTFrequencySpectrumFFTW* TransformForward(const KTTimeSeriesFFTW* data) const;

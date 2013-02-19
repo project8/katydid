@@ -122,10 +122,8 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTSimpleFFT::TransformData(shared_ptr<KTData> data)
+    Bool_t KTSimpleFFT::TransformData(KTTimeSeriesData& tsData)
     {
-        KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
-
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
             SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
@@ -140,7 +138,7 @@ namespace Katydid
         }
 
         UInt_t nComponents = tsData.GetNComponents();
-        KTFrequencySpectrumDataPolar& newData = data->Of< KTFrequencySpectrumDataPolar >().SetNComponents(nComponents);
+        KTFrequencySpectrumDataPolar& newData = tsData.Of< KTFrequencySpectrumDataPolar >().SetNComponents(nComponents);
 
         for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
@@ -231,7 +229,12 @@ namespace Katydid
 
     void KTSimpleFFT::ProcessTimeSeriesData(shared_ptr<KTData> data)
     {
-        if (! TransformData(data))
+        if (! data->Has< KTTimeSeriesData >())
+        {
+            KTERROR(fftlog_comp, "No time series data was present");
+            return;
+        }
+        if (! TransformData(data->Of< KTTimeSeriesData >()))
         {
             KTERROR(fftlog_simp, "Something went wrong while performing the FFT");
             return;
