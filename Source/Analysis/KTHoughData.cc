@@ -7,19 +7,13 @@
 
 #include "KTHoughData.hh"
 
-#include "KTDataMap.hh"
-#include "KTTIFactory.hh"
-#include "KTWriter.hh"
-
 using std::vector;
 
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTHoughData > > sHDMRegistrar;
-
-    KTHoughData::KTHoughData(unsigned nTransforms) :
-            KTWriteableData(),
-            fTransforms(nTransforms)
+    KTHoughData::KTHoughData() :
+            KTData< KTHoughData >(),
+            fTransforms(1)
     {
     }
 
@@ -35,12 +29,6 @@ namespace Katydid
             delete backTransform;
             fTransforms.pop_back();
         }
-    }
-
-    void KTHoughData::Accept(KTWriter* writer) const
-    {
-        writer->Write(this);
-        return;
     }
 
 #ifdef ROOT_FOUND

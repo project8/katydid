@@ -7,21 +7,13 @@
 
 #include "KTCorrelationData.hh"
 
-#include "KTDataMap.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTTIFactory.hh"
-#include "KTWriter.hh"
 
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTCorrelationData > > sCDMRegistrar;
-
-    KTCorrelationData::KTCorrelationData(UInt_t nPairs) :
-            KTFrequencySpectrumData(),
-            fData(nPairs),
-            fTimeInRun(0.),
-            fLength(0.),
-            fSliceNumber(0)
+    KTCorrelationData::KTCorrelationData() :
+            KTData< KTCorrelationData >(),
+            fData(1)
     {
     }
 
@@ -33,13 +25,6 @@ namespace Katydid
             fData.pop_back();
         }
     }
-
-    void KTCorrelationData::Accept(KTWriter* writer) const
-    {
-        writer->Write(this);
-        return;
-    }
-
 
 } /* namespace Katydid */
 

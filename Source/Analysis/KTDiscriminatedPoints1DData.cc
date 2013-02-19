@@ -7,16 +7,13 @@
 
 #include "KTDiscriminatedPoints1DData.hh"
 
-#include "KTDataMap.hh"
-#include "KTTIFactory.hh"
-
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTDiscriminatedPoints1DData > > sDP1DDMRegistrar;
-
-    KTDiscriminatedPoints1DData::KTDiscriminatedPoints1DData(UInt_t nChannels) :
+    KTDiscriminatedPoints1DData::KTDiscriminatedPoints1DData() :
             KTData(),
-            fChannelData(nChannels)
+            fComponentData(1),
+            fNBins(1),
+            fBinWidth(1.)
     {
     }
 
