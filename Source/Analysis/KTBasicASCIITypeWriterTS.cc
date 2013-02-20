@@ -1,58 +1,66 @@
 #include "KTBasicASCIITypeWriterTS.hh"
 
+#include "KTTimeSeries.hh"
+#include "KTTimeSeriesData.hh"
+
+using boost::shared_ptr;
+
 namespace Katydid 
 {
-  
-  KTLOGGER(ats_log, "katydid.output.ascii.tw.ts");
 
-  static KTDerivedTIRegistrar< KTBasicASCIITypeWriter, KTBasicASCIITypeWriterTS > sBATWReg;
+    KTLOGGER(ats_log, "katydid.output.ascii.tw.ts");
 
-  KTBasicASCIITypeWriterTS::KTBasicASCIITypeWriterTS() :
-    KTBasicASCIITypeWriter()
-  {/* no-op */}
+    static KTDerivedTIRegistrar< KTBasicASCIITypeWriter, KTBasicASCIITypeWriterTS > sBATWReg;
 
-  KTBasicASCIITypeWriterTS::~KTBasicASCIITypeWriterTS()
-  {/* no-op */}
+    KTBasicASCIITypeWriterTS::KTBasicASCIITypeWriterTS() :
+            KTBasicASCIITypeWriter()
+    {/* no-op */}
 
-  void KTBasicASCIITypeWriterTS::RegisterSlots() 
-  {
-    fWriter->RegisterSlot("ts-data", 
-			  this,
-			  &KTBasicASCIITypeWriterTS::WriteTimeSeriesData,
-			  "void (const KTTimeSeriesData*)");
-  }
+    KTBasicASCIITypeWriterTS::~KTBasicASCIITypeWriterTS()
+    {/* no-op */}
 
-  void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(const KTTimeSeriesData* data)
-  {
-    KTBundle* bundle = data->GetBundle();
-    UInt_t bundleNumber = (bundle == NULL) ? 0 : bundle->GetBundleNumber();
-    UInt_t nCh = data->GetNTimeSeries();
+    void KTBasicASCIITypeWriterTS::RegisterSlots()
+    {
+        fWriter->RegisterSlot("ts-data",
+                this,
+                &KTBasicASCIITypeWriterTS::WriteTimeSeriesData,
+                "void (shared_ptr< KTData >)");
+    }
 
-    if( fWriter->CanWrite() == true ) {
+    void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(const KTTimeSeriesData* data)
+    {
+        if (! data) return;
 
-      for(unsigned iCh = 0; iCh < nCh; iCh++) {
-        	std::ofstream* file_ptr = fWriter->GetStream();
-        	const KTTimeSeries* sCh = data->GetTimeSeries(iCh);
-        	if(sCh != NULL) {
-            for(unsigned iB = 0; iB < sCh->GetNTimeBins(); iB++) {
-              (*file_ptr) << bundleNumber 
-                          << ","  
-                          << iCh
-                          << ","
-                          << iB
-                          << ","
-                          << sCh->GetValue(iB)
-                          << std::endl;
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
+        UInt_t nCh = tsData.GetNComponents();
+
+        if( fWriter->CanWrite() == true ) {
+
+            for(UInt_t iCh = 0; iCh < nCh; iCh++) {
+                std::ofstream* file_ptr = fWriter->GetStream();
+                const KTTimeSeries* sCh = data->GetTimeSeries(iCh);
+                if(sCh != NULL) {
+                    for(UInt_t iB = 0; iB < sCh->GetNTimeBins(); iB++) {
+                        (*file_ptr) << sliceNumber
+                                << ","
+                                << iCh
+                                << ","
+                                << iB
+                                << ","
+                                << sCh->GetValue(iB)
+                                << std::endl;
+                    }
+                }
+                else {
+                    KTWARN(ats_log, "Channel #" << iCh << " was missing from bundle!  Logic error?");
+                }
             }
-	       }
+        } // if CanWrite
         else {
-      	  KTWARN(ats_log, "Channel #" << iCh << " was missing from bundle!  Logic error?");
-      	}
-      }
-    } // if CanWrite
-    else {
-      KTWARN(ats_log, "Writer for ASCII TS type-writer cannot write.  No data will be written!");
-    } // if cannot write
-  }
+            KTWARN(ats_log, "Writer for ASCII TS type-writer cannot write.  No data will be written!");
+        } // if cannot write
+    }
 
 }; // namespace katydid

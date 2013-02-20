@@ -10,11 +10,13 @@
 
 #include "KTMultiBundleROOTWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 class TH1D;
 
 namespace Katydid
 {
-    class KTCorrelationData;
+    class KTData;
 
     class KTMultiBundleROOTTypeWriterAnalysis : public KTMEROOTTypeWriterBase//, public KTTypeWriterAnalysis
     {
@@ -34,7 +36,7 @@ namespace Katydid
 
         public:
 
-            void AddCorrelationData(const KTCorrelationData* data);
+            void AddCorrelationData(boost::shared_ptr< KTData >);
 
         private:
             std::vector< TH1D* > fCorrHists;

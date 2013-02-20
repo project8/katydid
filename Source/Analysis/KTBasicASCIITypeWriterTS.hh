@@ -9,27 +9,28 @@
  *  The TypeWriter which is responsible for writing Time Series data.
  */
 
-#include "KTTimeSeries.hh"
-#include "KTTimeSeriesData.hh"
+//#include "KTTimeSeries.hh"
+//#include "KTTimeSeriesData.hh"
 #include "KTBasicAsciiWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 namespace Katydid {
+    class KTData;
 
-  class KTBasicASCIITypeWriterTS : public KTBasicASCIITypeWriter {
+    class KTBasicASCIITypeWriterTS : public KTBasicASCIITypeWriter
+    {
+
+        public:
+            KTBasicASCIITypeWriterTS();
+            virtual ~KTBasicASCIITypeWriterTS();
     
-  public:
-    friend class KTTimeSeriesData;
-
-  public:
-    KTBasicASCIITypeWriterTS();
-    virtual ~KTBasicASCIITypeWriterTS();
-
-    void RegisterSlots();
+            void RegisterSlots();
     
-  public:
-    void WriteTimeSeriesData(const KTTimeSeriesData* data);
+        public:
+            void WriteTimeSeriesData(boost::shared_ptr< KTData >);
 
-  }; // class definition
+    }; // class definition
 
 };
 
