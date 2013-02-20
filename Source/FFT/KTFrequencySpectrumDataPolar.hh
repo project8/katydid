@@ -21,11 +21,11 @@
 namespace Katydid
 {
 
-    class KTFrequencySpectrumDataPolar : public KTExtensibleData< KTFrequencySpectrumDataPolar >
+    class KTFrequencySpectrumDataPolarCore
     {
         public:
-            KTFrequencySpectrumDataPolar();
-            virtual ~KTFrequencySpectrumDataPolar();
+            KTFrequencySpectrumDataPolarCore();
+            virtual ~KTFrequencySpectrumDataPolarCore();
 
             UInt_t GetNComponents() const;
 
@@ -37,7 +37,7 @@ namespace Katydid
 
             void SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component = 0);
 
-            KTFrequencySpectrumDataPolar& SetNComponents(UInt_t channels);
+            virtual KTFrequencySpectrumDataPolarCore& SetNComponents(UInt_t channels) = 0;
 
         protected:
             std::vector< KTFrequencySpectrumPolar* > fSpectra;
@@ -53,64 +53,77 @@ namespace Katydid
 #endif
     };
 
-    inline const KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolar::GetSpectrumPolar(UInt_t component) const
+    inline const KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolarCore::GetSpectrumPolar(UInt_t component) const
     {
         return fSpectra[component];
     }
 
-    inline KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolar::GetSpectrumPolar(UInt_t component)
+    inline KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolarCore::GetSpectrumPolar(UInt_t component)
     {
         return fSpectra[component];
     }
 
-    inline const KTFrequencySpectrum* KTFrequencySpectrumDataPolar::GetSpectrum(UInt_t component) const
+    inline const KTFrequencySpectrum* KTFrequencySpectrumDataPolarCore::GetSpectrum(UInt_t component) const
     {
         return fSpectra[component];
     }
 
-    inline KTFrequencySpectrum* KTFrequencySpectrumDataPolar::GetSpectrum(UInt_t component)
+    inline KTFrequencySpectrum* KTFrequencySpectrumDataPolarCore::GetSpectrum(UInt_t component)
     {
         return fSpectra[component];
     }
 
-    inline UInt_t KTFrequencySpectrumDataPolar::GetNComponents() const
+    inline UInt_t KTFrequencySpectrumDataPolarCore::GetNComponents() const
     {
         return UInt_t(fSpectra.size());
     }
 
-    inline void KTFrequencySpectrumDataPolar::SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component)
+    inline void KTFrequencySpectrumDataPolarCore::SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component)
     {
-        if (component >= fSpectra.size()) fSpectra.resize(component+1);
+        if (component >= fSpectra.size()) SetNComponents(component+1);
         fSpectra[component] = record;
         return;
     }
+
+#ifdef ROOT_FOUND
+    inline TH1D* KTFrequencySpectrumDataPolarCore::CreateMagnitudeHistogram(UInt_t component, const std::string& name) const
+    {
+        return fSpectra[component]->CreateMagnitudeHistogram(name);
+    }
+    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePhaseHistogram(UInt_t component, const std::string& name) const
+    {
+        return fSpectra[component]->CreatePhaseHistogram(name);
+    }
+
+    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePowerHistogram(UInt_t component, const std::string& name) const
+    {
+        return fSpectra[component]->CreatePowerHistogram(name);
+    }
+
+    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePowerDistributionHistogram(UInt_t component, const std::string& name) const
+    {
+        return fSpectra[component]->CreatePowerDistributionHistogram(name);
+    }
+#endif
+
+
+
+
+
+    class KTFrequencySpectrumDataPolar : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTFrequencySpectrumDataPolar >
+    {
+        public:
+            KTFrequencySpectrumDataPolar();
+            virtual ~KTFrequencySpectrumDataPolar();
+
+            KTFrequencySpectrumDataPolar& SetNComponents(UInt_t channels);
+    };
 
     inline KTFrequencySpectrumDataPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t channels)
     {
         fSpectra.resize(channels);
         return *this;
     }
-
-#ifdef ROOT_FOUND
-    inline TH1D* KTFrequencySpectrumDataPolar::CreateMagnitudeHistogram(UInt_t component, const std::string& name) const
-    {
-        return fSpectra[component]->CreateMagnitudeHistogram(name);
-    }
-    inline TH1D* KTFrequencySpectrumDataPolar::CreatePhaseHistogram(UInt_t component, const std::string& name) const
-    {
-        return fSpectra[component]->CreatePhaseHistogram(name);
-    }
-
-    inline TH1D* KTFrequencySpectrumDataPolar::CreatePowerHistogram(UInt_t component, const std::string& name) const
-    {
-        return fSpectra[component]->CreatePowerHistogram(name);
-    }
-
-    inline TH1D* KTFrequencySpectrumDataPolar::CreatePowerDistributionHistogram(UInt_t component, const std::string& name) const
-    {
-        return fSpectra[component]->CreatePowerDistributionHistogram(name);
-    }
-#endif
 
 
 } /* namespace Katydid */

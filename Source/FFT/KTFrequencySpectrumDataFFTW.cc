@@ -7,23 +7,31 @@
 
 #include "KTFrequencySpectrumDataFFTW.hh"
 
-#include "KTFrequencySpectrumFFTW.hh"
-
 namespace Katydid
 {
-    KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW() :
-            KTExtensibleData< KTFrequencySpectrumDataFFTW >(),
+    KTFrequencySpectrumDataFFTWCore::KTFrequencySpectrumDataFFTWCore() :
             fSpectra(1)
     {
     }
 
-    KTFrequencySpectrumDataFFTW::~KTFrequencySpectrumDataFFTW()
+    KTFrequencySpectrumDataFFTWCore::~KTFrequencySpectrumDataFFTWCore()
     {
         while (! fSpectra.empty())
         {
             delete fSpectra.back();
             fSpectra.pop_back();
         }
+    }
+
+
+    KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW() :
+            KTFrequencySpectrumDataFFTWCore(),
+            KTExtensibleData< KTFrequencySpectrumDataFFTW >()
+    {
+    }
+
+    KTFrequencySpectrumDataFFTW::~KTFrequencySpectrumDataFFTW()
+    {
     }
 
 } /* namespace Katydid */

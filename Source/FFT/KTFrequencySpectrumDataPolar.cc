@@ -7,23 +7,31 @@
 
 #include "KTFrequencySpectrumDataPolar.hh"
 
-#include "KTFrequencySpectrumPolar.hh"
-
 namespace Katydid
 {
-    KTFrequencySpectrumDataPolar::KTFrequencySpectrumDataPolar() :
-            KTExtensibleData< KTFrequencySpectrumDataPolar >(),
+    KTFrequencySpectrumDataPolarCore::KTFrequencySpectrumDataPolarCore() :
             fSpectra()
     {
     }
 
-    KTFrequencySpectrumDataPolar::~KTFrequencySpectrumDataPolar()
+    KTFrequencySpectrumDataPolarCore::~KTFrequencySpectrumDataPolarCore()
     {
         while (! fSpectra.empty())
         {
             delete fSpectra.back();
             fSpectra.pop_back();
         }
+    }
+
+
+    KTFrequencySpectrumDataPolar::KTFrequencySpectrumDataPolar() :
+            KTFrequencySpectrumDataPolarCore(),
+            KTExtensibleData< KTFrequencySpectrumDataPolar >()
+    {
+    }
+
+    KTFrequencySpectrumDataPolar::~KTFrequencySpectrumDataPolar()
+    {
     }
 
 } /* namespace Katydid */

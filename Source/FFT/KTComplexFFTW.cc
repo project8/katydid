@@ -176,7 +176,7 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = TransformForward(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
 
             if (nextResult == NULL)
             {
@@ -219,7 +219,7 @@ namespace Katydid
                 return false;
             }
 
-            KTTimeSeriesFFTW* nextResult = TransformReverse(nextInput);
+            KTTimeSeriesFFTW* nextResult = Transform(nextInput);
 
             if (nextResult == NULL)
             {
@@ -234,7 +234,7 @@ namespace Katydid
         return true;
     }
 
-    KTFrequencySpectrumFFTW* KTComplexFFTW::TransformForward(const KTTimeSeriesFFTW* data) const
+    KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
     {
         UInt_t nBins = data->size();
         if (nBins != fSize)
@@ -257,7 +257,7 @@ namespace Katydid
         return newSpectrum;
     }
 
-    KTTimeSeriesFFTW* KTComplexFFTW::TransformReverse(const KTFrequencySpectrumFFTW* data) const
+    KTTimeSeriesFFTW* KTComplexFFTW::Transform(const KTFrequencySpectrumFFTW* data) const
     {
         UInt_t nBins = data->size();
         if (nBins != fSize)

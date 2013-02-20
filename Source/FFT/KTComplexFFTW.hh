@@ -91,9 +91,9 @@ namespace Katydid
             Bool_t TransformData(KTFrequencySpectrumDataFFTW& fsData);
 
             /// Forward FFT
-            KTFrequencySpectrumFFTW* TransformForward(const KTTimeSeriesFFTW* data) const;
+            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
             /// Reverse FFT
-            KTTimeSeriesFFTW* TransformReverse(const KTFrequencySpectrumFFTW* data) const;
+            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* data) const;
 
             virtual UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;
