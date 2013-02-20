@@ -7,7 +7,6 @@
 
 #include "KTCorrelator.hh"
 
-#include "KTCorrelationData.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
@@ -95,7 +94,8 @@ namespace Katydid
             }
             else
             {
-                newData.SetCorrelation(result, firstChannel, secondChannel, iPair);
+                newData.SetSpectrum(result, iPair);
+                newData.SetInputPair(firstChannel, secondChannel, iPair);
             }
             iPair++;
         }

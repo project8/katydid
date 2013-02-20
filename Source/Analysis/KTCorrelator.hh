@@ -8,6 +8,7 @@
 #ifndef KTCORRELATOR_HH_
 #define KTCORRELATOR_HH_
 
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessor.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -17,8 +18,48 @@
 
 namespace Katydid
 {
-    class KTFrequencySpectrumPolar;
-    class KTFrequencySpectrumDataPolar;
+    class KTCorrelationData : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTCorrelationData >
+    {
+        public:
+            KTCorrelationData() :
+                    KTFrequencySpectrumDataPolarCore(),
+                    KTExtensibleData< KTCorrelationData >()
+            {}
+            virtual ~KTCorrelationData()
+            {}
+
+            const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const;
+
+            void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0);
+
+            KTCorrelationData& SetNComponents(UInt_t components);
+
+        protected:
+            std::vector< std::pair< UInt_t, UInt_t > > fWVComponentData;
+    };
+
+    inline const std::pair< UInt_t, UInt_t >& KTCorrelationData::GetInputPair(UInt_t component) const
+    {
+        return fWVComponentData[component];
+    }
+
+    inline void KTCorrelationData::SetInputPair(UInt_t first, UInt_t second, UInt_t component)
+    {
+        if (component >= fSpectra.size()) SetNComponents(component+1);
+        fWVComponentData[component].first = first;
+        fWVComponentData[component].second = second;
+        return;
+    }
+
+    inline KTCorrelationData& KTCorrelationData::SetNComponents(UInt_t components)
+    {
+        fSpectra.resize(components);
+        fWVComponentData.resize(components);
+        return *this;
+    }
+
+
+
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
 

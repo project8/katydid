@@ -58,7 +58,7 @@ namespace Katydid
 
     inline void KTTimeSeriesDataCore::SetTimeSeries(KTTimeSeries* record, UInt_t component)
     {
-        if (component >= fTimeSeries.size()) fTimeSeries.resize(component+1);
+        if (component >= fTimeSeries.size()) SetNComponents(component+1);
         fTimeSeries[component] = record;
         return;
     }

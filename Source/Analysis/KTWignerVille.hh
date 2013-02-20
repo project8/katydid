@@ -11,37 +11,77 @@
 #include "KTFFT.hh"
 #include "KTProcessor.hh"
 
+#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTMath.hh"
-
-#include "KTBundleWindowFunction.hh"
 
 #include <boost/shared_ptr.hpp>
 
 #include <complex>
-#include <fftw3.h>
+#include <utility>
 
 
 namespace Katydid
 {
+    class KTWignerVilleData : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTWignerVilleData >
+    {
+        public:
+            KTWignerVilleData() :
+                    KTFrequencySpectrumDataFFTWCore(),
+                    KTExtensibleData< KTWignerVilleData >()
+            {}
+            virtual ~KTWignerVilleData()
+            {}
+
+            const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const;
+
+            void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0);
+
+            KTWignerVilleData& SetNComponents(UInt_t components);
+
+        protected:
+            std::vector< std::pair< UInt_t, UInt_t > > fWVComponentData;
+    };
+
+    inline const std::pair< UInt_t, UInt_t >& KTWignerVilleData::GetInputPair(UInt_t component) const
+    {
+        return fWVComponentData[component];
+    }
+
+    inline void KTWignerVilleData::SetInputPair(UInt_t first, UInt_t second, UInt_t component)
+    {
+        if (component >= fSpectra.size()) SetNComponents(component+1);
+        fWVComponentData[component].first = first;
+        fWVComponentData[component].second = second;
+        return;
+    }
+
+    inline KTWignerVilleData& KTWignerVilleData::SetNComponents(UInt_t components)
+    {
+        fSpectra.resize(components);
+        fWVComponentData.resize(components);
+        return *this;
+    }
+
+
+
     class KTComplexFFTW;
+    class KTData;
     class KTEggHeader;
-    class KTBundle;
-    class KTFrequencySpectrumPolar;
-    class KTFrequencySpectrumDataFFTW;
-    class KTFrequencySpectrumFFTW;
-    class KTSlidingWindowFFTW;
-    class KTSlidingWindowFSData;
-    class KTSlidingWindowFSDataFFTW;
+    //class KTFrequencySpectrumPolar;
+    //class KTFrequencySpectrumDataFFTW;
+    //class KTFrequencySpectrumFFTW;
+    //class KTSlidingWindowFFTW;
+    //class KTSlidingWindowFSData;
+    //class KTSlidingWindowFSDataFFTW;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
-    class KTWriteableData;
 
     typedef std::pair< UInt_t, UInt_t > KTWVPair;
 
     class KTWignerVille : public KTProcessor
     {
         private:
-            typedef KTSignal< void (const KTWriteableData*) >::signal WVSignal;
+            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal WVSignal;
             typedef std::vector< KTWVPair > PairVector;
 
         private:
@@ -58,20 +98,11 @@ namespace Katydid
             const PairVector& GetPairVector() const;
             void ClearPairs();
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
 
         private:
             PairVector fPairs;
-
-            std::string fInputDataName;
-            std::string fOutputDataName;
 
             KTComplexFFTW* fFFT;
             KTTimeSeriesFFTW* fInputArray;
@@ -79,8 +110,7 @@ namespace Katydid
 
         public:
             /// Performs the W-V transform on the given time series data.
-            /// @note A frequency spectrum data object can still be returned even if the full W-V transform fails!
-            KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesData* data);
+            Bool_t TransformData(KTTimeSeriesData& data);
 
         private:
             void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
@@ -100,8 +130,7 @@ namespace Katydid
 
          public:
              void ProcessHeader(const KTEggHeader* header);
-             void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
+             void ProcessTimeSeriesData(boost::shared_ptr< KTData > data);
 
     };
 
@@ -125,28 +154,6 @@ namespace Katydid
     inline void KTWignerVille::ClearPairs()
     {
         fPairs.clear();
-        return;
-    }
-
-    inline const std::string& KTWignerVille::GetInputDataName() const
-    {
-        return fInputDataName;
-    }
-
-    inline void KTWignerVille::SetInputDataName(const std::string& name)
-    {
-        fInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTWignerVille::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTWignerVille::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
         return;
     }
 

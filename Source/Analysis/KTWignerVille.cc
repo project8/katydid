@@ -7,21 +7,15 @@
 
 #include "KTWignerVille.hh"
 
-#include "KTCacheDirectory.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
-#include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTSlidingWindowFFTW.hh"
-#include "KTSlidingWindowFSData.hh"
-#include "KTSlidingWindowFSDataFFTW.hh"
-#include "KTTimeSeriesChannelData.hh"
-#include "KTTimeSeriesPairedData.hh"
+//#include "KTSlidingWindowFFTW.hh"
+//#include "KTSlidingWindowFSData.hh"
+//#include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
@@ -33,9 +27,9 @@
 
 #include <iostream>
 
-using std::map;
-using std::set;
+using std::pair;
 using std::string;
+using std::vector;
 
 using boost::shared_ptr;
 
@@ -56,8 +50,6 @@ namespace Katydid
 
     KTWignerVille::KTWignerVille() :
             KTProcessor(),
-            fInputDataName("time-series"),
-            fOutputDataName("wigner-ville"),
             fFFT(new KTComplexFFTW()),
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
             fWVSignal()
@@ -67,8 +59,7 @@ namespace Katydid
         RegisterSignal("wigner-ville", &fWVSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("bundle", this, &KTWignerVille::ProcessBundle, "void (KTBundle*)");
+        RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (shared_ptr< KTData >)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -83,9 +74,6 @@ namespace Katydid
         {
             fFFT->Configure(childNode);
         }
-
-        SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
-        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
 
         KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
@@ -107,27 +95,29 @@ namespace Katydid
         return true;
     }
 
-    KTFrequencySpectrumDataFFTW* KTWignerVille::TransformData(const KTTimeSeriesData* data)
+    Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data)
     {
         if (fPairs.empty())
         {
             KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
-            return NULL;
+            return false;
         }
 
+        UInt_t nComponents = data.GetNComponents();
+
         // cast all time series into KTTimeSeriesFFTW
-        vector< const KTTimeSeriesFFTW* > timeSeries(data->GetNTimeSeries());
-        for (UInt_t iTS=0; iTS < timeSeries.size(); iTS++)
+        vector< const KTTimeSeriesFFTW* > timeSeries(nComponents);
+        for (UInt_t iTS=0; iTS < nComponents; iTS++)
         {
-            timeSeries[iTS] = dynamic_cast< const KTTimeSeriesFFTW* >(data->GetTimeSeries(iTS));
+            timeSeries[iTS] = dynamic_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(iTS));
             if (timeSeries[iTS] == NULL)
             {
                 KTERROR(wvlog, "Time series " << iTS << " did not cast to a const KTTimeSeriesFFTW*. No transforms performed.");
-                return NULL;
+                return false;
             }
         }
 
-        KTFrequencySpectrumDataFFTW* newData = new KTFrequencySpectrumDataFFTW(fPairs.size());
+        KTWignerVilleData& newData = data.Of< KTWignerVilleData >().SetNComponents(nComponents);
 
         // Do WV transform for each pair
         UInt_t iPair = 0;
@@ -141,17 +131,12 @@ namespace Katydid
             KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
             newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
 
-            newData->SetSpectrum(newSpectrum, iPair);
+            newData.SetSpectrum(newSpectrum, iPair);
+            newData.SetInputPair(firstChannel, secondChannel, iPair);
             iPair++;
         }
 
-        newData->SetBundle(data->GetBundle());
-        newData->SetName(fOutputDataName);
-
-        fWVSignal(newData);
-
         return newData;
-
     }
 
     void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
@@ -238,35 +223,19 @@ namespace Katydid
         return;
     }
 
-    void KTWignerVille::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
+    void KTWignerVille::ProcessTimeSeriesData(shared_ptr< KTData > data)
     {
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-
-        if (newData == NULL)
+        if (! data->Has< KTTimeSeriesData >())
         {
-            KTERROR(wvlog, "Unable to transform data");
+            KTERROR(wvlog, "No time series data was present");
             return;
         }
-
-        KTBundle* bundle = tsData->GetBundle();
-        if (bundle != NULL)
+        if (! TransformData(data->Of< KTTimeSeriesData >()))
         {
-            bundle->AddData(newData);
-        }
-
-        return;
-    }
-
-    void KTWignerVille::ProcessBundle(shared_ptr<KTBundle> bundle)
-    {
-        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
-        if (tsData == NULL)
-        {
-            KTWARN(wvlog, "No time series data named <" << fInputDataName << "> was available in the bundle");
+            KTERROR(wvlog, "Something went wrong while performing a Wigner-Ville transform");
             return;
         }
-
-        ProcessTimeSeriesData(tsData);
+        fWVSignal(data);
         return;
     }
 
