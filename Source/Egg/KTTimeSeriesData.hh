@@ -21,52 +21,65 @@ namespace Katydid
 {
     class KTTimeSeries;
 
-    class KTTimeSeriesData : public KTExtensibleData< KTTimeSeriesData >
+    class KTTimeSeriesDataCore
     {
         public:
-            KTTimeSeriesData();
-            virtual ~KTTimeSeriesData();
+            KTTimeSeriesDataCore();
+            virtual ~KTTimeSeriesDataCore();
 
             UInt_t GetNComponents() const;
 
             const KTTimeSeries* GetTimeSeries(UInt_t component = 0) const;
             KTTimeSeries* GetTimeSeries(UInt_t component = 0);
 
-            KTTimeSeriesData& SetNComponents(UInt_t num);
+            virtual KTTimeSeriesDataCore& SetNComponents(UInt_t num) = 0;
 
             void SetTimeSeries(KTTimeSeries* record, UInt_t component = 0);
 
         protected:
-            std::vector< KTTimeSeries* > fComponentData;
+            std::vector< KTTimeSeries* > fTimeSeries;
     };
 
-    inline UInt_t KTTimeSeriesData::GetNComponents() const
+
+    inline UInt_t KTTimeSeriesDataCore::GetNComponents() const
     {
-        return UInt_t(fComponentData.size());
+        return UInt_t(fTimeSeries.size());
     }
 
-    inline KTTimeSeries* KTTimeSeriesData::GetTimeSeries(UInt_t component)
+    inline KTTimeSeries* KTTimeSeriesDataCore::GetTimeSeries(UInt_t component)
     {
-        return fComponentData[component];
+        return fTimeSeries[component];
     }
 
-    inline const KTTimeSeries* KTTimeSeriesData::GetTimeSeries(UInt_t component) const
+    inline const KTTimeSeries* KTTimeSeriesDataCore::GetTimeSeries(UInt_t component) const
     {
-        return fComponentData[component];
+        return fTimeSeries[component];
     }
+
+    inline void KTTimeSeriesDataCore::SetTimeSeries(KTTimeSeries* record, UInt_t component)
+    {
+        if (component >= fTimeSeries.size()) fTimeSeries.resize(component+1);
+        fTimeSeries[component] = record;
+        return;
+    }
+
+
+
+    class KTTimeSeriesData : public KTTimeSeriesDataCore, public KTExtensibleData< KTTimeSeriesData >
+    {
+        public:
+            KTTimeSeriesData();
+            virtual ~KTTimeSeriesData();
+
+            virtual KTTimeSeriesData& SetNComponents(UInt_t num);
+    };
 
     inline KTTimeSeriesData& KTTimeSeriesData::SetNComponents(UInt_t num)
     {
-        fComponentData.resize(num);
+        fTimeSeries.resize(num);
         return *this;
     }
 
-    inline void KTTimeSeriesData::SetTimeSeries(KTTimeSeries* record, UInt_t component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component] = record;
-        return;
-    }
 
 
 } /* namespace Katydid */

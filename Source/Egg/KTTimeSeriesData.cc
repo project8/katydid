@@ -9,18 +9,28 @@
 
 namespace Katydid
 {
+    KTTimeSeriesDataCore::KTTimeSeriesDataCore() :
+            fTimeSeries(1)
+    {
+    }
+
+    KTTimeSeriesDataCore::~KTTimeSeriesDataCore()
+    {
+        while (! fTimeSeries.empty())
+        {
+            delete fTimeSeries.back();
+            fTimeSeries.pop_back();
+        }
+    }
+
     KTTimeSeriesData::KTTimeSeriesData() :
+            KTTimeSeriesDataCore(),
             KTExtensibleData< KTTimeSeriesData >()
     {
     }
 
     KTTimeSeriesData::~KTTimeSeriesData()
     {
-        while (! fComponentData.empty())
-        {
-            delete fComponentData.back();
-            fComponentData.pop_back();
-        }
     }
 
 } /* namespace Katydid */
