@@ -15,16 +15,14 @@
 
 namespace Katydid
 {
-    class KTCluster1DData;
-    //class KTCluster2DData;
+    class KTData;
     class KTDiscriminatedPoints1DData;
     //class KTDiscriminatedPoints2DData;
-    class KTBundle;
 
     class KTDistanceClustering : public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTCluster1DData*) >::signal Cluster1DSignal;
+            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal Cluster1DSignal;
             //typedef KTSignal< void (const KTCluster2DData*) >::signal Cluster2DSignal;
 
 
@@ -40,23 +38,14 @@ namespace Katydid
             UInt_t GetMaxBinDistance() const;
             void SetMaxBinDistance(UInt_t bin);
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         private:
 
             Double_t fMaxFrequencyDistance;
             UInt_t fMaxBinDistance;
             Bool_t fCalculateMaxBinDistance;
 
-            std::string fInputDataName;
-            std::string fOutputDataName;
-
         public:
-            KTCluster1DData* FindClusters(const KTDiscriminatedPoints1DData* data);
+            Bool_t FindClusters(KTDiscriminatedPoints1DData& data);
             //KTCluster2DData* FindClusters(const KTDiscriminatedPoints2DData* data);
 
             //***************
@@ -72,8 +61,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-            void Process1DData(const KTDiscriminatedPoints1DData* data);
+            void Process1DData(boost::shared_ptr< KTData > data);
             //void Process2DData(const KTDiscriminatedPoints2DData* data);
 
     };
@@ -99,27 +87,6 @@ namespace Katydid
     {
         fMaxBinDistance = bin;
         fCalculateMaxBinDistance = false;
-        return;
-    }
-    inline const std::string& KTDistanceClustering::GetInputDataName() const
-    {
-        return fInputDataName;
-    }
-
-    inline void KTDistanceClustering::SetInputDataName(const std::string& name)
-    {
-        fInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTDistanceClustering::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTDistanceClustering::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
         return;
     }
 

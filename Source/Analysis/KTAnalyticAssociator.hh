@@ -9,6 +9,7 @@
 #define KTANALYTICASSOCIATOR_HH_
 
 #include "KTProcessor.hh"
+#include "KTTimeSeriesData.hh"
 
 #include "KTComplexFFTW.hh"
 
@@ -18,16 +19,35 @@
 namespace Katydid
 {
     class KTEggHeader;
-    class KTBundle;
+    class KTData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
-    class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
+
+
+    class KTAnalyticAssociateData : public KTTimeSeriesDataCore, public KTExtensibleData< KTAnalyticAssociateData >
+    {
+        public:
+            KTAnalyticAssociateData() :
+                KTTimeSeriesDataCore(),
+                KTExtensibleData< KTAnalyticAssociateData >()
+            {}
+            virtual ~KTAnalyticAssociateData()
+            {}
+
+            virtual KTAnalyticAssociateData& SetNComponents(UInt_t num)
+            {
+                fTimeSeries.resize(num);
+                return *this;
+            }
+    };
+
+
 
     class KTAnalyticAssociator : public KTProcessor
     {
         protected:
-            typedef KTSignal< void (const KTTimeSeriesData*) >::signal AASignal;
+            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal AASignal;
 
         public:
             KTAnalyticAssociator();
@@ -37,31 +57,17 @@ namespace Katydid
 
             KTComplexFFTW* GetFullFFT();
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
             Bool_t GetSaveFrequencySpectrum() const;
             void SetSaveFrequencySpectrum(Bool_t flag);
-
-            const std::string& GetFSOutputDataName() const;
-            void SetFSOutputDataName(const std::string& name);
 
         protected:
             KTComplexFFTW fFullFFT;
 
-            std::string fInputDataName;
-            std::string fOutputDataName;
-
             Bool_t fSaveFrequencySpectrum;
-            std::string fFSOutputDataName;
-
 
         public:
-            KTTimeSeriesData* CreateAssociateData(const KTTimeSeriesData* data, KTFrequencySpectrumDataFFTW** outputFSData=NULL);
-            KTTimeSeriesData* CreateAssociateData(const KTFrequencySpectrumDataFFTW* inputFSData);
+            Bool_t CreateAssociateData(KTTimeSeriesData& tsData);
+            Bool_t CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData);
 
            /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
             KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
@@ -80,9 +86,8 @@ namespace Katydid
 
          public:
              void ProcessHeader(const KTEggHeader* header);
-             void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
-             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
+             void ProcessTimeSeriesData(boost::shared_ptr<KTData> data);
+             void ProcessFrequencySpectrumData(boost::shared_ptr<KTData> data);
 
     };
 
@@ -99,39 +104,6 @@ namespace Katydid
     inline void KTAnalyticAssociator::SetSaveFrequencySpectrum(Bool_t flag)
     {
         fSaveFrequencySpectrum = flag;
-        return;
-    }
-
-    inline const std::string& KTAnalyticAssociator::GetInputDataName() const
-    {
-        return fInputDataName;
-    }
-
-    inline void KTAnalyticAssociator::SetInputDataName(const std::string& name)
-    {
-        fInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTAnalyticAssociator::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTAnalyticAssociator::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTAnalyticAssociator::GetFSOutputDataName() const
-    {
-        return fFSOutputDataName;
-    }
-
-    inline void KTAnalyticAssociator::SetFSOutputDataName(const std::string& name)
-    {
-        fFSOutputDataName = name;
         return;
     }
 

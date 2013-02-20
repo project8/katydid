@@ -12,7 +12,7 @@
 namespace Katydid
 {
     KTCorrelationData::KTCorrelationData() :
-            KTData< KTCorrelationData >(),
+            KTExtensibleData< KTCorrelationData >(),
             fData(1)
     {
     }

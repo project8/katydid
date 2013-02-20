@@ -10,7 +10,7 @@
 namespace Katydid
 {
     KTDiscriminatedPoints2DData::KTDiscriminatedPoints2DData() :
-            KTData< KTDiscriminatedPoints2DData >(),
+            KTExtensibleData< KTDiscriminatedPoints2DData >(),
             fComponentData(1),
             fNBinsX(1),
             fNBinsY(1),

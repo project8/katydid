@@ -22,7 +22,7 @@
 namespace Katydid
 {
 
-    class KTGainVariationData : public KTData< KTGainVariationData >
+    class KTGainVariationData : public KTExtensibleData< KTGainVariationData >
     {
         public:
             //typedef KTGainVariationProcessor::GainVariation GainVariation;

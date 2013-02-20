@@ -21,27 +21,27 @@
 namespace Katydid
 {
 
-    class KTHoughData : public KTData< KTHoughData >
+    class KTHoughData : public KTExtensibleData< KTHoughData >
     {
         public:
             KTHoughData();
             virtual ~KTHoughData();
 
-            const KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* GetTransform(UInt_t transformNum = 0) const;
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* GetTransform(UInt_t transformNum = 0);
+            const KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* GetTransform(UInt_t component = 0) const;
+            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* GetTransform(UInt_t component = 0);
 
-            UInt_t GetNTransforms() const;
+            UInt_t GetNComponents() const;
 
-            void SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t transformNum = 0);
+            void SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t component = 0);
 
-            KTHoughData& SetNTransforms(UInt_t nTransforms);
+            KTHoughData& SetNComponents(UInt_t nTransforms);
 
         protected:
             std::vector< KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* > fTransforms;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH2D* CreateHistogram(UInt_t transformNum = 0, const std::string& name = "hHoughSpace") const;
+            virtual TH2D* CreateHistogram(UInt_t component = 0, const std::string& name = "hHoughSpace") const;
 #endif
 
 
@@ -57,20 +57,20 @@ namespace Katydid
         return fTransforms[component];
     }
 
-    inline UInt_t KTHoughData::GetNTransforms() const
+    inline UInt_t KTHoughData::GetNComponents() const
     {
         return UInt_t(fTransforms.size());
     }
 
-    inline void KTHoughData::SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t transformNum)
+    inline void KTHoughData::SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t component)
     {
-        if (transformNum >= fTransforms.size()) fTransforms.resize(transformNum+1);
-        fTransforms[transformNum] = transform;
+        if (component >= fTransforms.size()) fTransforms.resize(component+1);
+        fTransforms[component] = transform;
     }
 
-    inline KTHoughData& KTHoughData::SetNTransforms(UInt_t channels)
+    inline KTHoughData& KTHoughData::SetNComponents(UInt_t chomponents)
     {
-        fTransforms.resize(channels);
+        fTransforms.resize(chomponents);
         return *this;
     }
 

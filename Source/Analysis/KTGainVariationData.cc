@@ -11,7 +11,7 @@
 namespace Katydid
 {
     KTGainVariationData::KTGainVariationData() :
-            KTWriteableData(),
+            KTExtensibleData< KTGainVariationData >(),
             fComponentData(1)
     {
     }

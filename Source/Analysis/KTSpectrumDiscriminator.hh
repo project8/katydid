@@ -16,19 +16,17 @@
 namespace Katydid
 {
     class KTCorrelationData;
-    class KTDiscriminatedPoints1DData;
-    class KTDiscriminatedPoints2DData;
-    class KTBundle;
+    class KTData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
-    class KTSlidingWindowFSData;
-    class KTSlidingWindowFSDataFFTW;
+    //class KTSlidingWindowFSData;
+    //class KTSlidingWindowFSDataFFTW;
 
     class KTSpectrumDiscriminator : public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTDiscriminatedPoints1DData*) >::signal Discrim1DSignal;
-            typedef KTSignal< void (const KTDiscriminatedPoints2DData*) >::signal Discrim2DSignal;
+            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal Discrim1DSignal;
+            //typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal Discrim2DSignal;
 
         private:
             enum ThresholdMode
@@ -61,12 +59,6 @@ namespace Katydid
             UInt_t GetMaxBin() const;
             void SetMaxBin(UInt_t bin);
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         private:
 
             Double_t fSNRThreshold;
@@ -80,15 +72,12 @@ namespace Katydid
             Bool_t fCalculateMinBin;
             Bool_t fCalculateMaxBin;
 
-            std::string fInputDataName;
-            std::string fOutputDataName;
-
         public:
-            KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumDataPolar* data);
-            KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumDataFFTW* data);
-            KTDiscriminatedPoints1DData* Discriminate(const KTCorrelationData* data);
-            KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
-            KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
+            Bool_t Discriminate(KTFrequencySpectrumDataPolar& data);
+            Bool_t Discriminate(KTFrequencySpectrumDataFFTW& data);
+            Bool_t Discriminate(KTCorrelationData& data);
+            //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
+            //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
 
             //***************
             // Signals
@@ -96,19 +85,18 @@ namespace Katydid
 
         private:
             Discrim1DSignal fDiscrim1DSignal;
-            Discrim2DSignal fDiscrim2DSignal;
+            //Discrim2DSignal fDiscrim2DSignal;
 
             //***************
             // Slots
             //***************
 
         public:
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-            void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
-            void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
-            void ProcessCorrelationData(const KTCorrelationData* data);
-            void ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data);
-            void ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
+            void ProcessFrequencySpectrumData(boost::shared_ptr< KTData > data);
+            void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr< KTData > data);
+            void ProcessCorrelationData(boost::shared_ptr< KTData > data);
+            //void ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data);
+            //void ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
 
     };
 
@@ -183,27 +171,5 @@ namespace Katydid
         fCalculateMaxBin = false;
         return;
     }
-    inline const std::string& KTSpectrumDiscriminator::GetInputDataName() const
-    {
-        return fInputDataName;
-    }
-
-    inline void KTSpectrumDiscriminator::SetInputDataName(const std::string& name)
-    {
-        fInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTSpectrumDiscriminator::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTSpectrumDiscriminator::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
-
 } /* namespace Katydid */
 #endif /* KTSPECTRUMDISCRIMINATOR_HH_ */

@@ -10,7 +10,7 @@
 namespace Katydid
 {
     KTDiscriminatedPoints1DData::KTDiscriminatedPoints1DData() :
-            KTData(),
+            KTExtensibleData< KTDiscriminatedPoints1DData >(),
             fComponentData(1),
             fNBins(1),
             fBinWidth(1.)

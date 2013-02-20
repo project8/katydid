@@ -17,8 +17,6 @@
 
 namespace Katydid
 {
-    class KTCorrelationData;
-    class KTBundle;
     class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
@@ -29,7 +27,7 @@ namespace Katydid
     class KTCorrelator : public KTProcessor
     {
         protected:
-            typedef KTSignal< void (const KTCorrelationData*) >::signal CorrelationSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal CorrelationSignal;
             typedef std::vector< KTCorrelationPair > PairVector;
 
         public:
@@ -43,22 +41,13 @@ namespace Katydid
             const PairVector& GetPairVector() const;
             void ClearPairs();
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         protected:
             PairVector fPairs;
 
-            std::string fInputDataName;
-            std::string fOutputDataName;
-
         public:
 
-            KTCorrelationData* Correlate(const KTFrequencySpectrumDataPolar* data);
-            KTCorrelationData* Correlate(const KTFrequencySpectrumDataFFTW* data);
+            Bool_t Correlate(KTFrequencySpectrumDataPolar& data);
+            Bool_t Correlate(KTFrequencySpectrumDataFFTW& data);
             //KTCorrelationData* Correlate(const KTFrequencySpectrumDataPolar* data, const PairVector& pairs);
             //KTCorrelationData* Correlate(const KTFrequencySpectrumDataPolar* data, const KTCorrelationPair& pair);
 
@@ -78,11 +67,8 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessFFTData(const KTFrequencySpectrumDataPolar* fsData);
-            void ProcessFFTWData(const KTFrequencySpectrumDataFFTW* fsData);
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-
-
+            void ProcessFFTData(boost::shared_ptr<KTData>);
+            void ProcessFFTWData(boost::shared_ptr<KTData>);
     };
 
     inline void KTCorrelator::AddPair(const KTCorrelationPair& pair)
@@ -107,29 +93,6 @@ namespace Katydid
         fPairs.clear();
         return;
     }
-
-    inline const std::string& KTCorrelator::GetInputDataName() const
-    {
-        return fInputDataName;
-    }
-
-    inline void KTCorrelator::SetInputDataName(const std::string& name)
-    {
-        fInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTCorrelator::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTCorrelator::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
-
 
 } /* namespace Katydid */
 #endif /* KTCORRELATOR_HH_ */

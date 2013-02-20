@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-    class KTBundle;
+    class KTData;
     class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
@@ -29,10 +29,10 @@ namespace Katydid
     class KTGainNormalization : public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTFrequencySpectrumDataPolar*) >::signal FSSignal;
-            typedef KTSignal< void (const KTFrequencySpectrumDataFFTW*) >::signal FSFFTWSignal;
-            typedef KTSignal< void (const KTSlidingWindowFSData*) >::signal SWFSSignal;
-            typedef KTSignal< void (const KTSlidingWindowFSDataFFTW*) >::signal SWFSFFTWSignal;
+            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal FSPolarSignal;
+            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal FSFFTWSignal;
+            //typedef KTSignal< void (const KTSlidingWindowFSData*) >::signal SWFSSignal;
+            //typedef KTSignal< void (const KTSlidingWindowFSDataFFTW*) >::signal SWFSFFTWSignal;
 
         public:
             KTGainNormalization();
@@ -52,15 +52,6 @@ namespace Katydid
             UInt_t GetMaxBin() const;
             void SetMaxBin(UInt_t bin);
 
-            const std::string& GetGVInputDataName() const;
-            void SetGVInputDataName(const std::string& name);
-
-            const std::string& GetFSInputDataName() const;
-            void SetFSInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         private:
             Double_t fMinFrequency;
             Double_t fMaxFrequency;
@@ -69,13 +60,9 @@ namespace Katydid
             Bool_t fCalculateMinBin;
             Bool_t fCalculateMaxBin;
 
-            std::string fGVInputDataName;
-            std::string fFSInputDataName;
-            std::string fOutputDataName;
-
         public:
-            KTFrequencySpectrumDataPolar* Normalize(const KTFrequencySpectrumDataPolar* fsData, const KTGainVariationData* gvData);
-            KTFrequencySpectrumDataFFTW* Normalize(const KTFrequencySpectrumDataFFTW* fsData, const KTGainVariationData* gvData);
+            Bool_t Normalize(KTFrequencySpectrumDataPolar& fsData, const KTGainVariationData& gvData);
+            Bool_t Normalize(KTFrequencySpectrumDataFFTW& fsData, const KTGainVariationData& gvData);
 
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
             //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
@@ -90,17 +77,18 @@ namespace Katydid
             //***************
 
         private:
-            FSSignal fFSSignal;
+            FSPolarSignal fFSPolarSignal;
             FSFFTWSignal fFSFFTWSignal;
-            SWFSSignal fSWFSSignal;
-            SWFSFFTWSignal fSWFSFFTWSignal;
+            //SWFSSignal fSWFSSignal;
+            //SWFSFFTWSignal fSWFSFFTWSignal;
 
             //***************
             // Slots
             //***************
 
         public:
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
+            void ProcessFSPolarData(boost::shared_ptr< KTData > data);
+            void ProcessFSFFTWData(boost::shared_ptr< KTData > data);
 
     };
 
@@ -151,40 +139,6 @@ namespace Katydid
         fCalculateMaxBin = false;
         return;
     }
-
-    inline const std::string& KTGainNormalization::GetGVInputDataName() const
-    {
-        return fGVInputDataName;
-    }
-
-    inline void KTGainNormalization::SetGVInputDataName(const std::string& name)
-    {
-        fGVInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTGainNormalization::GetFSInputDataName() const
-    {
-        return fFSInputDataName;
-    }
-
-    inline void KTGainNormalization::SetFSInputDataName(const std::string& name)
-    {
-        fFSInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTGainNormalization::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTGainNormalization::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
-
 
 } /* namespace Katydid */
 #endif /* KTGAINNORMALIZATION_HH_ */

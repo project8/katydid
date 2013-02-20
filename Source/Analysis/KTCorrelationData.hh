@@ -16,7 +16,7 @@ namespace Katydid
 {
     class KTFrequencySpectrumPolar;
 
-    class KTCorrelationData : public KTData< KTCorrelationData >
+    class KTCorrelationData : public KTExtensibleData< KTCorrelationData >
     {
         protected:
             struct PerPairData

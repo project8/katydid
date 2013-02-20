@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    class KTBundle;
+    class KTData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTGainVariationData;
@@ -39,22 +39,19 @@ namespace Katydid
      \li \c "max-frequency": double -- maximum frequency for the fit
      \li \c "min-bin": unsigned -- minimum bin for the fit
      \li \c "max-bin": unsigned -- maximum bin for the fit
-     \li \c "input-data-name": string -- name of the data to find when processing an bundle
-     \li \c "output-data-name": string -- name to give to the data produced
 
      Slots:
-     \li \c void ProcessBundle(boost::shared_ptr<KTBundle>)
-     \li \c void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar*)
-     \li \c void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
+     \li \c "fs-polar": void ProcessFrequencySpectrumData(shared_ptr< KTData >)
+     \li \c "fs-fftw": void ProcessFrequencySpectrumDataFFTW(shared_ptr< KTData >)
 
      Signals:
-     \li \c void (const KTGainVariationProcessorData*) emitted upon performance of a fit.
+     \li \c "gain-var": void (shared_ptr< KTData >) emitted upon performance of a fit.
     */
 
     class KTGainVariationProcessor : public KTProcessor
     {
         public:
-            typedef KTSignal< void (const KTGainVariationData*) >::signal GainVarSignal;
+            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal GainVarSignal;
 
             //typedef KTPhysicalArray< 1, Double_t > GainVariation;
 
@@ -79,12 +76,6 @@ namespace Katydid
             UInt_t GetNFitPoints() const;
             void SetNFitPoints(UInt_t nPoints);
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         private:
             Double_t fMinFrequency;
             Double_t fMaxFrequency;
@@ -94,12 +85,9 @@ namespace Katydid
             Bool_t fCalculateMinBin;
             Bool_t fCalculateMaxBin;
 
-            std::string fInputDataName;
-            std::string fOutputDataName;
-
         public:
-            KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumDataPolar* data);
-            KTGainVariationData* CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data);
+            Bool_t CalculateGainVariation(KTFrequencySpectrumDataPolar& data);
+            Bool_t CalculateGainVariation(KTFrequencySpectrumDataFFTW& data);
 
         private:
             //GainVariation* CreateGainVariation(KTSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
@@ -116,9 +104,8 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-            void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data);
-            void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
+            void ProcessFrequencySpectrumData(boost::shared_ptr< KTData > data);
+            void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr< KTData > data);
 
     };
 
@@ -179,29 +166,6 @@ namespace Katydid
     {
         fNFitPoints = nPoints;
     }
-
-    inline const std::string& KTGainVariationProcessor::GetInputDataName() const
-    {
-        return fInputDataName;
-    }
-
-    inline void KTGainVariationProcessor::SetInputDataName(const std::string& name)
-    {
-        fInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTGainVariationProcessor::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTGainVariationProcessor::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
-
 
 } /* namespace Katydid */
 #endif /* KTGAINVARIATIONPROCESSOR_HH_ */

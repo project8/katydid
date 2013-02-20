@@ -10,7 +10,7 @@
 namespace Katydid
 {
     KTCluster1DData::KTCluster1DData() :
-            KTData(),
+            KTExtensibleData< KTCluster1DData >(),
             fComponentData(),
             fNBins(1),
             fBinWidth(1.)

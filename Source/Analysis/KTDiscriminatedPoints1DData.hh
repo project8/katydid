@@ -17,7 +17,7 @@
 namespace Katydid
 {
 
-    class KTDiscriminatedPoints1DData : public KTData< KTDiscriminatedPoints1DData >
+    class KTDiscriminatedPoints1DData : public KTExtensibleData< KTDiscriminatedPoints1DData >
     {
         public:
             typedef std::map< UInt_t, Double_t > SetOfPoints;

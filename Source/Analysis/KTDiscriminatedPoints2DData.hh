@@ -24,7 +24,7 @@ namespace Katydid
         }
     };
 
-    class KTDiscriminatedPoints2DData : public KTData< KTDiscriminatedPoints2DData >
+    class KTDiscriminatedPoints2DData : public KTExtensibleData< KTDiscriminatedPoints2DData >
     {
         public:
             typedef std::map< std::pair< UInt_t, UInt_t >, Double_t, KTPairCompare > SetOfPoints;
