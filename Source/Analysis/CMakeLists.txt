@@ -18,7 +18,7 @@ set (ANALYSIS_HEADERFILES
     #${CMAKE_CURRENT_SOURCE_DIR}/KTOldSimpleClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.hh
 )
 
 set (ANALYSIS_SOURCEFILES
@@ -38,7 +38,7 @@ set (ANALYSIS_SOURCEFILES
     #${CMAKE_CURRENT_SOURCE_DIR}/KTOldSimpleClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.cc
 )
 
 if (ROOT_FOUND)
