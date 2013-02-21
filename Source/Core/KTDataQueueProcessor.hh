@@ -90,7 +90,7 @@ namespace Katydid
 
             /// Queue a list of data objects
             /// Assumes ownership of all data objects and the list; original shared pointers will be nullified
-            void DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>));
+            //void DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>));
     };
 
 
@@ -129,7 +129,7 @@ namespace Katydid
 
             /// Queue a list of data objects; will emit data signal
             /// Assumes ownership of all data objects and the list; original shared pointers will be nullified
-            void QueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList);
+            //void QueueDataList(std::list< boost::shared_ptr<KTData> >* dataList);
 
     };
 
@@ -184,12 +184,12 @@ namespace Katydid
         while (fStatus != kStopped)
         {
             KTDEBUG(eqplog, "processing . . .");
-            boost::shared_ptr<KTData> dataToPublish;
-            if (fQueue.wait_and_pop(dataToPublish))
+            DataAndFunc daf;
+            if (fQueue.wait_and_pop(daf))
             {
                 KTDEBUG(eqplog, "Data acquired for publishing");
-                (static_cast<XProcessorType*>(this)->*fFuncPtr)(dataToPublish);
-                if (dataToPublish->fLastData) fStatus = kStopped;
+                (static_cast<XProcessorType*>(this)->*(daf.fFuncPtr))(daf.fData);
+                if (daf.fData->fLastData) fStatus = kStopped;
             }
         }
         return true;
@@ -200,8 +200,8 @@ namespace Katydid
     {
         while (! fQueue.empty())
         {
-            boost::shared_ptr<KTData> dataToDelete;
-            fQueue.wait_and_pop(dataToDelete);
+            DataAndFunc daf;
+            fQueue.wait_and_pop(daf);
         }
         return;
     }
@@ -212,12 +212,13 @@ namespace Katydid
     {
         KTDEBUG(eqplog, "Queueing data");
         DataAndFunc daf;
-        daf.fData = &data; // using move semantics
+        daf.fData = data; // using move semantics
+        data.reset();
         daf.fFuncPtr = func;
         fQueue.push(daf);
         return;
     }
-
+/*
     template< class XProcessorType >
     void KTDataQueueProcessorTemplate< XProcessorType >::DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*func)(boost::shared_ptr<KTData>))
     {
@@ -235,7 +236,7 @@ namespace Katydid
         delete dataList;
         return;
     }
-
+*/
 
 } /* namespace Katydid */
 #endif /* KTDATAQUEUEPROCESSOR_HH_ */

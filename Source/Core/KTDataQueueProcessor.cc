@@ -12,7 +12,7 @@
 
 using boost::shared_ptr;
 
-using std::list;
+//using std::list;
 
 namespace Katydid
 {
@@ -26,7 +26,7 @@ namespace Katydid
         RegisterSignal("bundle", &fDataSignal, "void (shared_ptr<KTData>)");
 
         RegisterSlot("data", this, &KTDataQueueProcessor::QueueData, "void (shared_ptr<KTData>&)");
-        RegisterSlot("data-list", this, &KTDataQueueProcessor::QueueDataList, "void (list< shared_ptr<KTData>& >)");
+        //RegisterSlot("data-list", this, &KTDataQueueProcessor::QueueDataList, "void (list< shared_ptr<KTData> >)");
     }
 
     KTDataQueueProcessor::~KTDataQueueProcessor()
@@ -49,9 +49,10 @@ namespace Katydid
     {
         return DoQueueData(data, &KTDataQueueProcessor::EmitDataSignal);
     }
-
-    void KTDataQueueProcessor::QueueDataList(list< shared_ptr< KTData >& >* dataList)
+/*
+    void KTDataQueueProcessor::QueueDataList(list< shared_ptr< KTData > >* dataList)
     {
         return DoQueueDataList(dataList, &KTDataQueueProcessor::EmitDataSignal);
     }
+*/
 }
