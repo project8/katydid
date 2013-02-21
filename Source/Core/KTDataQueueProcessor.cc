@@ -1,40 +1,40 @@
 /*
- * KTBundleQueueProcessor.cc
+ * KTDataQueueProcessor.cc
  *
  *  Created on: Feb 5, 2013
  *      Author: nsoblath
  */
 
-#include "KTBundleQueueProcessor.hh"
+#include "KTDataQueueProcessor.hh"
 
 #include "KTFactory.hh"
 #include "KTPStoreNode.hh"
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTBundleQueueProcessor > sSimpClustRegistrar("bundle-queue");
+    static KTDerivedRegistrar< KTProcessor, KTDataQueueProcessor > sSimpClustRegistrar("data-queue");
 
-    KTBundleQueueProcessor::KTBundleQueueProcessor() :
-        KTBundleQueueProcessorTemplate< KTBundleQueueProcessor >()
+    KTDataQueueProcessor::KTDataQueueProcessor() :
+        KTDataQueueProcessorTemplate< KTDataQueueProcessor >()
     {
         fConfigName = "bundle-queue";
 
-        RegisterSignal("bundle", &fDataSignal, "void (shared_ptr<KTBundle>)");
+        RegisterSignal("bundle", &fDataSignal, "void (shared_ptr<KTData>)");
 
-        SetFuncPtr(&KTBundleQueueProcessor::EmitDataSignal);
+        SetFuncPtr(&KTDataQueueProcessor::EmitDataSignal);
     }
 
-    KTBundleQueueProcessor::~KTBundleQueueProcessor()
+    KTDataQueueProcessor::~KTDataQueueProcessor()
     {
 
     }
 
-    Bool_t KTBundleQueueProcessor::Configure(const KTPStoreNode* node)
+    Bool_t KTDataQueueProcessor::Configure(const KTPStoreNode* node)
     {
         return true;
     }
 
-    void KTBundleQueueProcessor::EmitDataSignal(boost::shared_ptr<KTData> data)
+    void KTDataQueueProcessor::EmitDataSignal(boost::shared_ptr<KTData> data)
     {
         fDataSignal(data);
         return;
