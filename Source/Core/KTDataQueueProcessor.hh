@@ -28,7 +28,13 @@ namespace Katydid
     class KTDataQueueProcessorTemplate : public KTPrimaryProcessor
     {
         public:
-            typedef KTConcurrentQueue< boost::shared_ptr<KTData> > Queue;
+            struct DataAndFunc
+            {
+                boost::shared_ptr< KTData > fData;
+                void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>);
+            };
+
+            typedef KTConcurrentQueue< DataAndFunc > Queue;
 
             enum Status
             {
@@ -75,16 +81,16 @@ namespace Katydid
             Queue fQueue;
 
             //*********
-            // Slots
+            // Queueing functions for slots
             //*********
-        public:
+        protected:
             /// Queue an data object
-            /// Assumes ownership of the data
-            void QueueData(boost::shared_ptr<KTData> data);
+            /// Assumes ownership of the data; original shared pointer will be nullified
+            void DoQueueData(boost::shared_ptr<KTData>& data, void (XProcessorType::*func)(boost::shared_ptr<KTData>));
 
             /// Queue a list of data objects
-            /// Assumes ownership of all data objects and the list
-            void QueueDataList(std::list< boost::shared_ptr<KTData> >* dataList);
+            /// Assumes ownership of all data objects and the list; original shared pointers will be nullified
+            void DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>));
     };
 
 
@@ -116,9 +122,14 @@ namespace Katydid
             //*********
             // Slots
             //*********
-        //public:
-            // QueueData from KTDataQueueProcessorTemplate
-            // QueueDatas from KTDataQueueProcessorTemplate
+        public:
+            /// Queue an data object; will emit data signal
+            /// Assumes ownership of the data; original shared pointer will be nullified
+            void QueueData(boost::shared_ptr<KTData>& data);
+
+            /// Queue a list of data objects; will emit data signal
+            /// Assumes ownership of all data objects and the list; original shared pointers will be nullified
+            void QueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList);
 
     };
 
@@ -135,8 +146,6 @@ namespace Katydid
             fFuncPtr(NULL),
             fQueue()
     {
-            RegisterSlot("data", this, &KTDataQueueProcessorTemplate< XProcessorType >::QueueData, "void (shared_ptr<KTData>)");
-            RegisterSlot("data-list", this, &KTDataQueueProcessorTemplate< XProcessorType >::QueueDataList, "void (list< shared_ptr<KTData> >)");
     }
 
     template< class XProcessorType >
@@ -199,23 +208,29 @@ namespace Katydid
 
 
     template< class XProcessorType >
-    void KTDataQueueProcessorTemplate< XProcessorType >::QueueData(boost::shared_ptr<KTData> data)
+    void KTDataQueueProcessorTemplate< XProcessorType >::DoQueueData(boost::shared_ptr<KTData>& data, void (XProcessorType::*func)(boost::shared_ptr<KTData>))
     {
         KTDEBUG(eqplog, "Queueing data");
-        fQueue.push(data);
+        DataAndFunc daf;
+        daf.fData = &data; // using move semantics
+        daf.fFuncPtr = func;
+        fQueue.push(daf);
         return;
     }
 
     template< class XProcessorType >
-    void KTDataQueueProcessorTemplate< XProcessorType >::QueueDataList(std::list< boost::shared_ptr<KTData> >* dataList)
+    void KTDataQueueProcessorTemplate< XProcessorType >::DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*func)(boost::shared_ptr<KTData>))
     {
         typedef std::list< boost::shared_ptr<KTData> > DataList;
 
         KTDEBUG(eqplog, "Queueing bundles");
+        DataAndFunc daf;
         while (! dataList->empty())
         {
-            fQueue.push(dataList->front());
+            daf.fData = &(dataList->front()); // using move semantics
+            daf.fFuncPtr = func;
             dataList->pop_front();
+            fQueue.push(daf);
         }
         delete dataList;
         return;
