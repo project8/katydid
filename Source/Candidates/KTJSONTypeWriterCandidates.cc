@@ -14,6 +14,8 @@
 
 #include <sstream>
 
+using boost::shared_ptr;
+
 using std::stringstream;
 using std::string;
 
@@ -36,7 +38,7 @@ namespace Katydid
 
     void KTJSONTypeWriterCandidates::RegisterSlots()
     {
-        fWriter->RegisterSlot("frequency-candidates", this, &KTJSONTypeWriterCandidates::WriteFrequencyCandidates, "void (const KTFrequencyCandidateData*)");
+        fWriter->RegisterSlot("frequency-candidates", this, &KTJSONTypeWriterCandidates::WriteFrequencyCandidates, "void (shared_ptr< KTData >)");
         return;
     }
 
@@ -45,9 +47,13 @@ namespace Katydid
     // Frequency Candidates
     //*********************
 
-    void KTJSONTypeWriterCandidates::WriteFrequencyCandidates(const KTFrequencyCandidateData* data)
+    void KTJSONTypeWriterCandidates::WriteFrequencyCandidates(shared_ptr< KTData > data)
     {
         using rapidjson::SizeType;
+
+        KTFrequencyCandidateData& fcData = data->Of< KTFrequencyCandidateData >();
+
+        UInt_t nComponents = fcData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -58,9 +64,9 @@ namespace Katydid
         jsonMaker->String("candidates");
         jsonMaker->StartObject();
 
-        for (UInt_t iGroup=0; iGroup < data->GetNComponents(); iGroup++)
+        for (UInt_t iGroup=0; iGroup < nComponents; iGroup++)
         {
-            const KTFrequencyCandidateData::Candidates& candidates = data->GetCandidates(iGroup);
+            const KTFrequencyCandidateData::Candidates& candidates = fcData.GetCandidates(iGroup);
             conv << iGroup;
             jsonMaker->String(conv.str().c_str());
             jsonMaker->StartArray();

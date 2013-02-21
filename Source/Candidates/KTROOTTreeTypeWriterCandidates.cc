@@ -11,6 +11,7 @@
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
+#include "KTSliceHeader.hh"
 #include "KTWaterfallCandidateData.hh"
 
 //#include "TFrequencyCandidateData.hh"
@@ -20,6 +21,8 @@
 #include "TTree.h"
 
 #include <sstream>
+
+using boost::shared_ptr;
 
 using std::stringstream;
 using std::string;
@@ -49,8 +52,8 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterCandidates::RegisterSlots()
     {
-        fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates, "void (const KTFrequencyCandidateData*)");
-        fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate, "void (const KTWaterfallCandidateData*)");
+        fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates, "void (shared_ptr< KTData > data)");
+        fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate, "void (shared_ptr< KTData > data)");
         return;
     }
 
@@ -59,20 +62,23 @@ namespace Katydid
     // Frequency Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates(const KTFrequencyCandidateData* data)
+    void KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates(shared_ptr< KTData > data)
     {
+        KTFrequencyCandidateData& fcData = data->Of< KTFrequencyCandidateData >();
+        KTSliceHeader& header = data->Of< KTSliceHeader >();
+
         if (! fWriter->OpenAndVerifyFile()) return;
 
         if (fFreqCandidateTree == NULL) SetupFrequencyCandidateTree();
 
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
-        fFreqCandidateData.fSlice = data->GetSliceNumber();
-        fFreqCandidateData.fTimeInRun = data->GetTimeInRun();
-        for (fFreqCandidateData.fComponent = 0; fFreqCandidateData.fComponent < data->GetNComponents(); fFreqCandidateData.fComponent++)
+        fFreqCandidateData.fSlice = header.GetSliceNumber();
+        fFreqCandidateData.fTimeInRun = header.GetTimeInRun();
+        for (fFreqCandidateData.fComponent = 0; fFreqCandidateData.fComponent < fcData.GetNComponents(); fFreqCandidateData.fComponent++)
         {
-            fFreqCandidateData.fThreshold = data->GetThreshold(fFreqCandidateData.fComponent);
-            const KTFrequencyCandidateData::Candidates& candidates = data->GetCandidates(fFreqCandidateData.fComponent);
+            fFreqCandidateData.fThreshold = fcData.GetThreshold(fFreqCandidateData.fComponent);
+            const KTFrequencyCandidateData::Candidates& candidates = fcData.GetCandidates(fFreqCandidateData.fComponent);
             for (KTFrequencyCandidateData::Candidates::const_iterator it = candidates.begin(); it != candidates.end(); it++)
             {
                 fFreqCandidateData.fFirstBin = it->GetFirstBin();
@@ -114,21 +120,23 @@ namespace Katydid
     // Waterfall Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate(const KTWaterfallCandidateData* data)
+    void KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate(shared_ptr< KTData > data)
     {
+        KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
+
         if (! fWriter->OpenAndVerifyFile()) return;
 
         if (fWaterfallCandidateTree == NULL) SetupWaterfallCandidateTree();
 
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
-        fWaterfallCandidateData.fComponent = data->GetComponent();
-        fWaterfallCandidateData.fTimeInRun = data->GetTimeInRun();
-        fWaterfallCandidateData.fTimeLength = data->GetTimeLength();
-        fWaterfallCandidateData.fFirstSliceNumber = data->GetFirstSliceNumber();
-        fWaterfallCandidateData.fLastSliceNumber = data->GetLastSliceNumber();
-        fWaterfallCandidateData.fFrequencyWidth = data->GetFrequencyWidth();
-        fWaterfallCandidateData.fCandidate = data->GetCandidate()->CreatePowerHistogram();
+        fWaterfallCandidateData.fComponent = wcData.GetComponent();
+        fWaterfallCandidateData.fTimeInRun = wcData.GetTimeInRun();
+        fWaterfallCandidateData.fTimeLength = wcData.GetTimeLength();
+        fWaterfallCandidateData.fFirstSliceNumber = wcData.GetFirstSliceNumber();
+        fWaterfallCandidateData.fLastSliceNumber = wcData.GetLastSliceNumber();
+        fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
+        fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
 
         return;
     }
