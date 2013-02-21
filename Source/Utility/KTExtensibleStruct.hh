@@ -152,6 +152,11 @@ namespace Katydid
         XStructType* next = dynamic_cast<XStructType*>(fNext);
         if (next)
         {
+            if (next->fNext)
+            {
+                fNext = next->fNext;
+                next->fNext = NULL;
+            }
             return next;
         }
         return fNext->Detatch<XStructType>();
