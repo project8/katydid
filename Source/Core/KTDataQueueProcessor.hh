@@ -212,7 +212,7 @@ namespace Katydid
     {
         KTDEBUG(eqplog, "Queueing data");
         DataAndFunc daf;
-        daf.fData = data; // using move semantics
+        daf.fData = data; // I'd like to use move semantics here (operator=(shared_ptr&&)), but they didn't work, so I bootstrapped with copy and reset.
         data.reset();
         daf.fFuncPtr = func;
         fQueue.push(daf);
