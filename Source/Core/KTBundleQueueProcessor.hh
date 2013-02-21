@@ -11,7 +11,7 @@
 #include "KTPrimaryProcessor.hh"
 
 #include "KTConcurrentQueue.hh"
-#include "KTBundle.hh"
+#include "KTData.hh"
 #include "KTLogger.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -28,7 +28,7 @@ namespace Katydid
     class KTBundleQueueProcessorTemplate : public KTPrimaryProcessor
     {
         public:
-            typedef KTConcurrentQueue< boost::shared_ptr<KTBundle> > Queue;
+            typedef KTConcurrentQueue< boost::shared_ptr<KTData> > Queue;
 
             enum Status
             {
@@ -50,7 +50,7 @@ namespace Katydid
             // Derived Processor function pointer
             //**************************************
         public:
-            void SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTBundle>));
+            void SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTData>));
 
         protected:
             void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTBundle>);
@@ -78,13 +78,13 @@ namespace Katydid
             // Slots
             //*********
         public:
-            /// Queue an bundle
-            /// Assumes ownership of the bundle
-            void QueueBundle(boost::shared_ptr<KTBundle> bundle);
+            /// Queue an data object
+            /// Assumes ownership of the data
+            void QueueData(boost::shared_ptr<KTData> data);
 
-            /// Queue a list of bundles
-            /// Assumes ownership of all bundles and the list
-            void QueueBundles(std::list< boost::shared_ptr<KTBundle> >* bundleList);
+            /// Queue a list of data objects
+            /// Assumes ownership of all data objects and the list
+            void QueueDataList(std::list< boost::shared_ptr<KTData> >* dataList);
     };
 
 
@@ -95,7 +95,7 @@ namespace Katydid
     class KTBundleQueueProcessor : public KTBundleQueueProcessorTemplate< KTBundleQueueProcessor >
     {
         protected:
-            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal DataSignal;
 
         public:
             KTBundleQueueProcessor();
@@ -104,14 +104,14 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
         public:
-            void EmitBundleSignal(boost::shared_ptr<KTBundle> bundle);
+            void EmitDataSignal(boost::shared_ptr<KTData> data);
 
             //***************
             // Signals
             //***************
 
         private:
-            BundleSignal fBundleSignal;
+            DataSignal fDataSignal;
 
             //*********
             // Slots
@@ -135,8 +135,8 @@ namespace Katydid
             fFuncPtr(NULL),
             fQueue()
     {
-            RegisterSlot("bundle", this, &KTBundleQueueProcessorTemplate< XProcessorType >::QueueBundle, "void (shared_ptr<KTBundle>)");
-            RegisterSlot("bundle-list", this, &KTBundleQueueProcessorTemplate< XProcessorType >::QueueBundles, "void (list< shared_ptr<KTBundle> >)");
+            RegisterSlot("data", this, &KTBundleQueueProcessorTemplate< XProcessorType >::QueueData, "void (shared_ptr<KTData>)");
+            RegisterSlot("data-list", this, &KTBundleQueueProcessorTemplate< XProcessorType >::QueueDataList, "void (list< shared_ptr<KTData> >)");
     }
 
     template< class XProcessorType >
@@ -161,7 +161,7 @@ namespace Katydid
     }
 
     template< class XProcessorType >
-    void KTBundleQueueProcessorTemplate< XProcessorType >::SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTBundle>))
+    void KTBundleQueueProcessorTemplate< XProcessorType >::SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTData>))
     {
         fFuncPtr = ptr;
         return;
@@ -175,12 +175,12 @@ namespace Katydid
         while (fStatus != kStopped)
         {
             KTDEBUG(eqplog, "processing . . .");
-            boost::shared_ptr<KTBundle> bundleToPublish;
-            if (fQueue.wait_and_pop(bundleToPublish))
+            boost::shared_ptr<KTData> dataToPublish;
+            if (fQueue.wait_and_pop(dataToPublish))
             {
                 KTDEBUG(eqplog, "Bundle acquired for publishing");
-                (static_cast<XProcessorType*>(this)->*fFuncPtr)(bundleToPublish);
-                if (bundleToPublish->GetIsLastBundle()) fStatus = kStopped;
+                (static_cast<XProcessorType*>(this)->*fFuncPtr)(dataToPublish);
+                if (dataToPublish->fLastData) fStatus = kStopped;
             }
         }
         return true;
@@ -191,33 +191,33 @@ namespace Katydid
     {
         while (! fQueue.empty())
         {
-            boost::shared_ptr<KTBundle> bundleToDelete;
-            fQueue.wait_and_pop(bundleToDelete);
+            boost::shared_ptr<KTData> dataToDelete;
+            fQueue.wait_and_pop(dataToDelete);
         }
         return;
     }
 
 
     template< class XProcessorType >
-    void KTBundleQueueProcessorTemplate< XProcessorType >::QueueBundle(boost::shared_ptr<KTBundle> bundle)
+    void KTBundleQueueProcessorTemplate< XProcessorType >::QueueData(boost::shared_ptr<KTData> data)
     {
-        KTDEBUG(eqplog, "Queueing bundle");
-        fQueue.push(bundle);
+        KTDEBUG(eqplog, "Queueing data");
+        fQueue.push(data);
         return;
     }
 
     template< class XProcessorType >
-    void KTBundleQueueProcessorTemplate< XProcessorType >::QueueBundles(std::list< boost::shared_ptr<KTBundle> >* bundleList)
+    void KTBundleQueueProcessorTemplate< XProcessorType >::QueueDataList(std::list< boost::shared_ptr<KTData> >* dataList)
     {
         typedef std::list< boost::shared_ptr<KTBundle> > BundleList;
 
         KTDEBUG(eqplog, "Queueing bundles");
-        while (! bundleList->empty())
+        while (! dataList->empty())
         {
-            fQueue.push(bundleList->front());
-            bundleList->pop_front();
+            fQueue.push(dataList->front());
+            dataList->pop_front();
         }
-        delete bundleList;
+        delete dataList;
         return;
     }
 

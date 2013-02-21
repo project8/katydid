@@ -19,9 +19,9 @@ namespace Katydid
     {
         fConfigName = "bundle-queue";
 
-        RegisterSignal("bundle", &fBundleSignal, "void (shared_ptr<KTBundle>)");
+        RegisterSignal("bundle", &fDataSignal, "void (shared_ptr<KTBundle>)");
 
-        SetFuncPtr(&KTBundleQueueProcessor::EmitBundleSignal);
+        SetFuncPtr(&KTBundleQueueProcessor::EmitDataSignal);
     }
 
     KTBundleQueueProcessor::~KTBundleQueueProcessor()
@@ -34,9 +34,9 @@ namespace Katydid
         return true;
     }
 
-    void KTBundleQueueProcessor::EmitBundleSignal(boost::shared_ptr<KTBundle> bundle)
+    void KTBundleQueueProcessor::EmitDataSignal(boost::shared_ptr<KTData> data)
     {
-        fBundleSignal(bundle);
+        fDataSignal(data);
         return;
     }
 }
