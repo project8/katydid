@@ -26,7 +26,11 @@ namespace Katydid
 {
     class KTCorrelationData;
     class KTData;
-    class KTFrequencySpectrumData;
+    class KTFrequencySpectrum;
+    class KTFrequencySpectrumDataPolar;
+    class KTFrequencySpectrumDataFFTW;
+    class KTSliceHeader;
+    class KTWignerVilleData;
 
     class KTMultiSliceClustering : public KTDataQueueProcessorTemplate< KTMultiSliceClustering >
     {
@@ -38,7 +42,8 @@ namespace Katydid
                  UInt_t fTimeBin;
                  UInt_t fFreqBin;
                  Double_t fAmplitude;
-                 boost::shared_ptr<KTFrequencySpectrumData> fDataPtr;
+                 boost::shared_ptr< KTSliceHeader > fHeaderPtr;
+                 boost::shared_ptr< KTFrequencySpectrumDataPolar > fSpectrumPtr;
             };
             //typedef std::deque< ClusterPoint > Cluster;
             struct Cluster
@@ -70,7 +75,7 @@ namespace Katydid
             typedef std::list< FreqBinCluster > FreqBinClusters;
 
 
-            typedef std::list< boost::shared_ptr<KTBundle> > BundleList;
+            typedef std::list< boost::shared_ptr<KTData> > DataList;
 
 
             typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal DataSignal;
@@ -103,17 +108,19 @@ namespace Katydid
 
         public:
             /// Add points from dpData to the active clusters and create candidates
-            BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTFrequencySpectrumData> fsData);
+            DataList* FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataPolar& fsData, const KTSliceHeader& header);
             /// Add points from dpData to the active clusters and create candidates
-            //BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTFrequencySpectrumData> fsData);
+            DataList* FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataFFTW& fsData, const KTSliceHeader& header);
             /// Add points from dpData to the active clusters and create candidates
-            //BundleList* FindClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTFrequencySpectrumData> corrData);
+            DataList* FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTCorrelationData& corrData, const KTSliceHeader& header);
+            /// Add points from dpData to the active clusters and create candidates
+            DataList* FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTWignerVilleData& wvData, const KTSliceHeader& header);
 
             /// Add points from dpData to the active clusters
-            ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, boost::shared_ptr<KTFrequencySpectrumData> data);
+            ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, boost::shared_ptr<KTFrequencySpectrumDataPolar>& spectrumDataPtr, boost::shared_ptr< KTSliceHeader >& header);
 
             /// Add points from a set of points to the active clusters
-            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, boost::shared_ptr<KTFrequencySpectrumData> data);
+            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, boost::shared_ptr<KTFrequencySpectrumDataPolar>& spectrumDataPtr, boost::shared_ptr< KTSliceHeader >& header);
 
             /// Complete all remaining active clusters
             ClusterList* CompleteAllClusters(UInt_t component);
@@ -129,7 +136,7 @@ namespace Katydid
             void SetFrequencyBinWidth(Double_t bw);
 
         private:
-            boost::shared_ptr<KTBundle> CreateBundleFromCluster(const Cluster& cluster);
+            boost::shared_ptr<KTData> CreateDataFromCluster(const Cluster& cluster);
 
             UInt_t fTimeBin;
             Double_t fTimeBinWidth;
@@ -152,15 +159,19 @@ namespace Katydid
              //***************
 
          public:
-            // QueueData from KTDataQueueProcessorTemplate
-            // QueueDataList from KTDataQueueProcessorTemplate
+            void QueueFSPolarData(boost::shared_ptr< KTData >& data);
+            void QueueFSFFTWData(boost::shared_ptr< KTData >& data);
+            void QueueCorrelationData(boost::shared_ptr< KTData >& data);
+            void QueueWVData(boost::shared_ptr< KTData >& data);
 
          private:
-            /// non-queueing bundle processing
-            void ProcessOneSliceData(boost::shared_ptr<KTData> data);
+            void ProcessOneSliceFSPolarData(boost::shared_ptr<KTData> data);
+            void ProcessOneSliceFSFFTWData(boost::shared_ptr<KTData> data);
+            void ProcessOneSliceCorrelationData(boost::shared_ptr<KTData> data);
+            void ProcessOneSliceWVData(boost::shared_ptr<KTData> data);
 
          private:
-            void RunDataLoop(BundleList* dataList);
+            void RunDataLoop(DataList* dataList);
 
     };
 
@@ -243,6 +254,28 @@ namespace Katydid
             fMaxFreqSepBins = KTMath::Nint(fMaxFreqSep / fFreqBinWidth);
         return;
     }
+
+    inline void KTMultiSliceClustering::QueueFSPolarData(shared_ptr< KTData >& data)
+    {
+        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceFSPolarData);
+    }
+
+    inline void KTMultiSliceClustering::QueueFSFFTWData(shared_ptr< KTData >& data)
+    {
+        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceFSFFTWData);
+    }
+
+    inline void KTMultiSliceClustering::QueueCorrelationData(shared_ptr< KTData >& data)
+    {
+        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceCorrelationData);
+    }
+
+    inline void KTMultiSliceClustering::QueueWVData(shared_ptr< KTData >& data)
+    {
+        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceWVData);
+    }
+
+
 
 } /* namespace Katydid */
 #endif /* KTMULTISLICECLUSTERING_HH_ */

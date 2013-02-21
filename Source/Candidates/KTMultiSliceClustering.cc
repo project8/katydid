@@ -7,16 +7,17 @@
 
 #include "KTMultiSliceClustering.hh"
 
-#include "KTBundle.hh"
-#include "KTCorrelationData.hh"
+#include "KTCorrelator.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeFrequencyPolar.hh"
 #include "KTWaterfallCandidateData.hh"
+#include "KTWignerVille.hh"
 
 #include <boost/weak_ptr.hpp>
 
@@ -36,7 +37,7 @@ namespace Katydid
 {
     KTLOGGER(sclog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTMultiSliceClustering > sSimpClustRegistrar("multi-slice-clustering");
+    static KTDerivedRegistrar< KTProcessor, KTMultiSliceClustering > sMSClustRegistrar("multi-slice-clustering");
 
     KTMultiSliceClustering::KTMultiSliceClustering() :
             KTBundleQueueProcessorTemplate< KTMultiSliceClustering >(),
@@ -52,9 +53,13 @@ namespace Katydid
     {
         fConfigName = "multi-slice-clustering";
 
-        // QueueBundle and QueueBundles are registered in KTBundleQueueProcessorTemplate constructor
+        RegisterSignal("one-slice", &fOneSliceDataSignal, "void (shared_ptr< KTData >)");
+        RegisterSignal("cluster", &fClusteredDataSignal, "void (shared_ptr< KTData >)");
 
-        this->SetFuncPtr(&KTMultiSliceClustering::ProcessOneSliceBundle);
+        RegisterSlot("fs-polar", this, &KTMultiSliceClustering::QueueFSPolarData, "void (shared_ptr< KTData >)");
+        RegisterSlot("fs-fftw", this, &KTMultiSliceClustering::QueueFSFFTWData, "void (shared_ptr< KTData >)");
+        RegisterSlot("correlation", this, &KTMultiSliceClustering::QueueCorrelationData, "void (shared_ptr< KTData >)");
+        RegisterSlot("wigner-ville", this, &KTMultiSliceClustering::QueueWVData, "void (shared_ptr< KTData >)");
     }
 
     KTMultiSliceClustering::~KTMultiSliceClustering()
@@ -83,73 +88,130 @@ namespace Katydid
             SetMaxTimeSeparationBins(node->GetData< UInt_t >("max-time-sep-bins"));
         }
 
-        SetDPInputDataName(node->GetData< string >("dp-input-data-name", fDPInputDataName));
-        SetFSInputDataName(node->GetData< string >("fs-input-data-name", fFSInputDataName));
-        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
-
         return true;
     }
 
-    KTMultiSliceClustering::BundleList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
+    KTMultiSliceClustering::DataList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataPolar& fsData, const KTSliceHeader& header)
     {
-        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
+        // Make a copy of the spectrum data
+        shared_ptr< KTFrequencySpectrumDataPolar > cachedSpectrumData(new KTFrequencySpectrumDataPolar());
+        UInt_t nComponents = fsData.GetNComponents();
+        cachedSpectrumData->SetNComponents(nComponents);
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            cachedSpectrumData->SetSpectrum(new KTFrequencySpectrumPolar(*(fsData.GetSpectrumPolar(iComponent))), iComponent);
+        }
 
-        BundleList* newBundles = new BundleList();
+        shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader(header));
+
+        ClusterList* completedClusters = AddPointsToClusters(dpData, cachedSpectrumData, headerPtr);
+
+        DataList* newDataList = new DataList();
 
         for (ClusterList::iterator acIt = completedClusters->begin(); acIt != completedClusters->end();)
         {
-            newBundles->push_back(CreateBundleFromCluster(*acIt));
+            newDataList->push_back(CreateDataFromCluster(*acIt));
             acIt = completedClusters->erase(acIt);
         }
 
-        return newBundles;
+        return newDataList;
     }
-/*
-    KTMultiSliceClustering::BundleList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
-    {
-        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
 
-        BundleList* newBundles = new BundleList();
+    KTMultiSliceClustering::DataList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataFFTW& fsData, const KTSliceHeader& header)
+    {
+        // Make a copy of the spectrum data
+        shared_ptr< KTFrequencySpectrumDataPolar > cachedSpectrumData(new KTFrequencySpectrumDataPolar());
+        UInt_t nComponents = fsData.GetNComponents();
+        cachedSpectrumData->SetNComponents(nComponents);
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            cachedSpectrumData->SetSpectrum(fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrum(), iComponent);
+        }
+
+        shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader(header));
+
+        ClusterList* completedClusters = AddPointsToClusters(dpData, cachedSpectrumData, headerPtr);
+
+        DataList* newDataList = new DataList();
 
         for (ClusterList::iterator acIt = completedClusters->begin(); acIt != completedClusters->end();)
         {
-            newBundles->push_back(CreateBundleFromCluster(*acIt));
+            newDataList->push_back(CreateDataFromCluster(*acIt));
             acIt = completedClusters->erase(acIt);
         }
 
-        return newBundles;
+        return newDataList;
     }
 
-    KTMultiSliceClustering::BundleList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
+    KTMultiSliceClustering::DataList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTCorrelationData& corrData, const KTSliceHeader& header)
     {
-        ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
+        // Make a copy of the spectrum data
+        shared_ptr< KTFrequencySpectrumDataPolar > cachedSpectrumData(new KTFrequencySpectrumDataPolar());
+        UInt_t nComponents = corrData.GetNComponents();
+        cachedSpectrumData->SetNComponents(nComponents);
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            cachedSpectrumData->SetSpectrum(new KTFrequencySpectrumPolar(*(corrData.GetSpectrumPolar(iComponent))), iComponent);
+        }
 
-        BundleList* newBundles = new BundleList();
+        shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader(header));
+
+        ClusterList* completedClusters = AddPointsToClusters(dpData, cachedSpectrumData, headerPtr);
+
+        DataList* newDataList = new DataList();
 
         for (ClusterList::iterator acIt = completedClusters->begin(); acIt != completedClusters->end();)
         {
-            newBundles->push_back(CreateBundleFromCluster(*acIt));
+            newDataList->push_back(CreateDataFromCluster(*acIt));
             acIt = completedClusters->erase(acIt);
         }
 
-        return newBundles;
+        return newDataList;
     }
-*/
-    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> data)
-    {
-        if (dpData->GetBinWidth() != fFreqBinWidth)
-            SetFrequencyBinWidth(dpData->GetBinWidth());
-        if (dpData->GetBinWidth() * Double_t(dpData->GetNBins()) != fTimeBinWidth)
-            SetTimeBinWidth(dpData->GetBinWidth() * Double_t(dpData->GetNBins()));
 
-        UInt_t nComponents = dpData->GetNComponents();
+    KTMultiSliceClustering::DataList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTWignerVilleData& wvData, const KTSliceHeader& header)
+    {
+        // Make a copy of the spectrum data
+        shared_ptr< KTFrequencySpectrumDataPolar > cachedSpectrumData(new KTFrequencySpectrumDataPolar());
+        UInt_t nComponents = wvData.GetNComponents();
+        cachedSpectrumData->SetNComponents(nComponents);
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            cachedSpectrumData->SetSpectrum(wvData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrum(), iComponent);
+        }
+
+        shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader(header));
+
+        ClusterList* completedClusters = AddPointsToClusters(dpData, cachedSpectrumData, headerPtr);
+
+        DataList* newDataList = new DataList();
+
+        for (ClusterList::iterator acIt = completedClusters->begin(); acIt != completedClusters->end();)
+        {
+            newDataList->push_back(CreateDataFromCluster(*acIt));
+            acIt = completedClusters->erase(acIt);
+        }
+
+        return newDataList;
+    }
+
+
+
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, shared_ptr< KTFrequencySpectrumDataPolar >& spectrumDataPtr, shared_ptr< KTSliceHeader >& headerPtr)
+    {
+        if (dpData.GetBinWidth() != fFreqBinWidth)
+            SetFrequencyBinWidth(dpData.GetBinWidth());
+        if (headerPtr->GetSliceSize() != fTimeBinWidth)
+            SetTimeBinWidth(headerPtr->GetSliceSize());
+
+        UInt_t nComponents = dpData.GetNComponents();
         if (fActiveClusters.size() < nComponents) fActiveClusters.resize(nComponents);
 
         ClusterList* newClustersAC = new ClusterList();
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            ClusterList* clustersFromComponent = AddPointsToClusters(dpData->GetSetOfPoints(iComponent), iComponent, data);
+            ClusterList* clustersFromComponent = AddPointsToClusters(dpData.GetSetOfPoints(iComponent), iComponent, spectrumDataPtr, headerPtr);
             newClustersAC->splice(newClustersAC->end(), *clustersFromComponent);
             delete clustersFromComponent;
         }
@@ -159,7 +221,7 @@ namespace Katydid
         return newClustersAC;
     }
 
-    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, shared_ptr<KTFrequencySpectrumData> data)
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, shared_ptr< KTFrequencySpectrumDataPolar >& spectrumDataPtr, shared_ptr< KTSliceHeader >& headerPtr)
     {
         // Process a single time bin's worth of frequency bins
 
@@ -248,7 +310,8 @@ namespace Katydid
 
         // Assign frequency bin clusters to active clusters
         ClusterPoint newPoint;
-        newPoint.fDataPtr = data;
+        newPoint.fSpectrumPtr = spectrumDataPtr;
+        newPoint.fHeaderPtr = headerPtr;
         UInt_t iCluster;
         // loop over all of the frequency-bin clusters
         KTDEBUG(sclog, "assigning FB clusters to active clusters");
@@ -428,12 +491,12 @@ namespace Katydid
         return;
     }
 
-    shared_ptr<KTBundle> KTMultiSliceClustering::CreateBundleFromCluster(const Cluster& cluster)
+    shared_ptr<KTData> KTMultiSliceClustering::CreateDataFromCluster(const Cluster& cluster)
     {
-        shared_ptr<KTBundle> bundle(new KTBundle());
+        shared_ptr< KTData > data(new KTData());
 
-        KTWaterfallCandidateData* newData = new KTWaterfallCandidateData();
-        newData->SetComponent(cluster.fDataComponent);
+        KTWaterfallCandidateData& wfcData = data->Of< KTWaterfallCandidateData >();
+        wfcData.SetComponent(cluster.fDataComponent);
 
         UInt_t firstTimeBin = cluster.FirstTimeBin();
         UInt_t lastTimeBin = cluster.LastTimeBin();
@@ -447,22 +510,22 @@ namespace Katydid
             if (frIt->second > lastFreqBin) lastFreqBin = frIt->second;
         }
 
-        Double_t timeBinWidth = cluster.fPoints.front().fDataPtr->GetTimeLength();
-        Double_t freqBinWidth = cluster.fPoints.front().fDataPtr->GetSpectrum(0)->GetFrequencyBinWidth();
+        Double_t timeBinWidth = cluster.fPoints.front().fHeaderPtr->GetSliceLength();
+        Double_t freqBinWidth = cluster.fPoints.front().fSpectrumPtr->GetSpectrumPolar(0)->GetBinWidth();
         UInt_t nTimeBins = lastTimeBin - firstTimeBin + 1;
         UInt_t nFreqBins = lastFreqBin - firstFreqBin + 1;
 
-        vector< boost::weak_ptr<KTFrequencySpectrumData> > spectra(nFreqBins);
+        vector< boost::weak_ptr< KTFrequencySpectrumDataPolar > > spectra(nFreqBins);
         for (deque< ClusterPoint >::const_iterator it = cluster.fPoints.begin(); it != cluster.fPoints.end(); it++)
         {
-            spectra[it->fTimeBin - nTimeBins] = boost::weak_ptr<KTFrequencySpectrumData>(it->fDataPtr);
+            spectra[it->fTimeBin - nTimeBins] = boost::weak_ptr<KTFrequencySpectrumDataPolar>(it->fSpectrumPtr);
         }
 
-        newData->SetTimeInRun(cluster.fPoints.front().fDataPtr->GetTimeInRun());
-        newData->SetFirstSliceNumber(cluster.fPoints.front().fDataPtr->GetSliceNumber());
-        newData->SetLastSliceNumber(cluster.fPoints.back().fDataPtr->GetSliceNumber());
-        newData->SetTimeLength(timeBinWidth * Double_t(nTimeBins));
-        newData->SetFrequencyWidth(freqBinWidth * Double_t(nFreqBins));
+        wfcData.SetTimeInRun(cluster.fPoints.front().fHeaderPtr->GetTimeInRun());
+        wfcData.SetFirstSliceNumber(cluster.fPoints.front().fHeaderPtr->GetSliceNumber());
+        wfcData.SetLastSliceNumber(cluster.fPoints.back().fHeaderPtr->GetSliceNumber());
+        wfcData.SetTimeLength(timeBinWidth * Double_t(nTimeBins));
+        wfcData.SetFrequencyWidth(freqBinWidth * Double_t(nFreqBins));
 
         KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBins, timeBinWidth * Double_t(firstTimeBin), timeBinWidth * Double_t(firstTimeBin + nTimeBins), nFreqBins, freqBinWidth * Double_t(firstFreqBin), freqBinWidth * Double_t(firstFreqBin + nFreqBins));
         for (UInt_t iTBin=firstTimeBin; iTBin <= lastTimeBin; iTBin++)
@@ -473,74 +536,104 @@ namespace Katydid
                 tf->SetPolar(iTBin - firstTimeBin, iFBin - firstFreqBin, spectrum->GetAbs(iFBin), spectrum->GetArg(iFBin));
             }
         }
-        newData->SetCandidate(tf);
+        wfcData.SetCandidate(tf);
 
-        newData->SetBundle(bundle.get());
-        bundle->AddData(newData);
-
-        return bundle;
+        return wfcData;
     }
 
-    void KTMultiSliceClustering::ProcessOneSliceBundle(boost::shared_ptr<KTBundle> bundle)
+
+
+    void KTMultiSliceClustering::ProcessOneSliceFSPolarData(shared_ptr<KTData> data)
     {
-        // This function removes the frequency spectrum data from the bundle.
-        // Therefore it should be the last thing done to the one-slice bundle.
-        // The one-slice-bundle signal is called before anything else does, to give other processors an opportunity to use the bundle.
-        // The existence of the extracted data is maintained by smart pointers from each cluster.
-
-        // signal for any continued use of this bundle
-        fOneSliceBundleSignal(bundle);
-
-        KTDiscriminatedPoints1DData* discData = bundle->GetData< KTDiscriminatedPoints1DData >(fDPInputDataName);
-        if (discData == NULL)
+        if (! data->Has< KTDiscriminatedPoints1DData >())
         {
-            KTWARN(sclog, "No discriminated-points data was present in the bundle");
+            KTWARN(sclog, "No discriminated-points data was present");
             return;
         }
-
-        BundleList* clusteredBundles = NULL;
-
-        // ExtractData is used instead of the standard GetData so that the data object is removed from the bundle.
-        KTFrequencySpectrumDataPolar* fsData = bundle->ExtractData< KTFrequencySpectrumDataPolar >(fFSInputDataName);
-        if (fsData != NULL)
+        if (! data->Has< KTFrequencySpectrumDataPolar >())
         {
-            shared_ptr<KTFrequencySpectrumData> ptr(fsData);
-            clusteredBundles = FindClusters(discData, ptr);
+            KTWARN(sclog, "No frequency spectrum (polar) data was present");
+            return;
         }
-        else
+        // signal for any continued use of the input data
+        fOneSliceDataSignal(data);
+        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< KTFrequencySpectrumDataPolar >(), data->Of< KTSliceHeader >());
+        if (clusteredData != NULL)
         {
-            KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->ExtractData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
-            if (fsDataFFTW != NULL)
-            {
-                shared_ptr<KTFrequencySpectrumData> ptr(fsDataFFTW);
-                clusteredBundles = FindClusters(discData, ptr);
-            }
-            else
-            {
-                KTCorrelationData* corrData = bundle->ExtractData< KTCorrelationData >(fFSInputDataName);
-                if (fsData != NULL)
-                {
-                    shared_ptr<KTFrequencySpectrumData> ptr(corrData);
-                    clusteredBundles = FindClusters(discData, ptr);
-                }
-                else
-                {
-                    KTWARN(sclog, "No spectrum data was found with name <" << fFSInputDataName << ">");
-                    return;
-                }
-            }
-        }
-
-        if (clusteredBundles != NULL)
-        {
-            RunBundleLoop(clusteredBundles);
+            RunDataLoop(clusteredData);
         }
         return;
     }
 
-    void KTMultiSliceClustering::RunBundleLoop(BundleList* bundles)
+    void KTMultiSliceClustering::ProcessOneSliceFSFFTWData(shared_ptr<KTData> data)
     {
-        while (! bundles->empty())
+        if (! data->Has< KTDiscriminatedPoints1DData >())
+        {
+            KTWARN(sclog, "No discriminated-points data was present");
+            return;
+        }
+        if (! data->Has< KTFrequencySpectrumDataFFTW >())
+        {
+            KTWARN(sclog, "No frequency spectrum (FFTW) data was present");
+            return;
+        }
+        // signal for any continued use of the input data
+        fOneSliceDataSignal(data);
+        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< KTFrequencySpectrumDataFFTW >(), data->Of< KTSliceHeader >());
+        if (clusteredData != NULL)
+        {
+            RunDataLoop(clusteredData);
+        }
+        return;
+    }
+
+    void KTMultiSliceClustering::ProcessOneSliceCorrelationData(shared_ptr<KTData> data)
+    {
+        if (! data->Has< KTDiscriminatedPoints1DData >())
+        {
+            KTWARN(sclog, "No discriminated-points data was present");
+            return;
+        }
+        if (! data->Has< KTCorrelationData >())
+        {
+            KTWARN(sclog, "No Correlation data was present");
+            return;
+        }
+        // signal for any continued use of the input data
+        fOneSliceDataSignal(data);
+        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< KTCorrelationData >(), data->Of< KTSliceHeader >());
+        if (clusteredData != NULL)
+        {
+            RunDataLoop(clusteredData);
+        }
+        return;
+    }
+
+    void KTMultiSliceClustering::ProcessOneSliceWVData(shared_ptr<KTData> data)
+    {
+        if (! data->Has< KTDiscriminatedPoints1DData >())
+        {
+            KTWARN(sclog, "No discriminated-points data was present");
+            return;
+        }
+        if (! data->Has< KTWignerVilleData >())
+        {
+            KTWARN(sclog, "No Wigner-Ville data was present");
+            return;
+        }
+        // signal for any continued use of the input data
+        fOneSliceDataSignal(data);
+        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< KTWignerVilleData >(), data->Of< KTSliceHeader >());
+        if (clusteredData != NULL)
+        {
+            RunDataLoop(clusteredData);
+        }
+        return;
+    }
+
+    void KTMultiSliceClustering::RunDataLoop(DataList* dataList)
+    {
+        while (! dataList->empty())
         {
             /*
             KTWaterfallCandidateData* wfCandData = bundles->front()->GetData< KTWaterfallCandidateData >(fOutputDataName);
@@ -553,11 +646,11 @@ namespace Katydid
                 fWaterfallCandidateSignal(wfCandData);
             }
             */
-            fClusteredBundleSignal(bundles->front());
-            bundles->pop_front();
+            fClusteredDataSignal(dataList->front());
+            dataList->pop_front();
         }
 
-        delete bundles;
+        delete dataList;
         return;
     }
 
