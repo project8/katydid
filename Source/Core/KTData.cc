@@ -11,11 +11,8 @@ namespace Katydid
 {
 
     KTData::KTData() :
-            fBundle(NULL)
-    {
-    }
-
-    KTData::~KTData()
+            fCounter(0),
+            fLastData(false)
     {
     }
 

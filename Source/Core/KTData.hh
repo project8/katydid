@@ -22,14 +22,11 @@ namespace Katydid
     struct KTExtensibleData : KTExtensibleStruct< XDerivedType, KTDataGroup >
     {};
 
-    struct KTData : KTExtensibleData< KTData >
+    struct KTData : public KTExtensibleData< KTData >
     {
-        UInt_t fCounter;
-        Bool_t fLastData;
-        KTData() :
-            fCounter(0),
-            fLastData(false)
-        {};
+            KTData();
+            UInt_t fCounter;
+            Bool_t fLastData;
     };
 
 } /* namespace Katydid */

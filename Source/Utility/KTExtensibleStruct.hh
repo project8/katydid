@@ -17,7 +17,7 @@ namespace Katydid
 
 
     template<class XGroupType=void>
-    class KTExtensibleStructCore
+    struct KTExtensibleStructCore
     {
         public:
             KTExtensibleStructCore(void);
@@ -38,7 +38,7 @@ namespace Katydid
 
 
     template<class XInstanceType, class XGroupType=void>
-    class KTExtensibleStruct : KTExtensibleStructCore< XGroupType >
+    struct KTExtensibleStruct : KTExtensibleStructCore< XGroupType >
     {
         public:
             KTExtensibleStruct(void);
@@ -147,7 +147,7 @@ namespace Katydid
     {
         if (! fNext)
         {
-            return NULL;
+            return 0;
         }
         XStructType* next = dynamic_cast<XStructType*>(fNext);
         if (next)
@@ -155,7 +155,7 @@ namespace Katydid
             if (next->fNext)
             {
                 fNext = next->fNext;
-                next->fNext = NULL;
+                next->fNext = 0;
             }
             return next;
         }
