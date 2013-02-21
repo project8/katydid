@@ -7,15 +7,8 @@
 
 #include "KTFrequencyCandidateData.hh"
 
-#include "KTDataMap.hh"
-#include "KTTIFactory.hh"
-#include "KTWriter.hh"
-
 namespace Katydid
 {
-
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencyCandidateData > > sFCDMRegistrar;
-
     KTFrequencyCandidateData::KTFrequencyCandidateData() :
             KTExtensibleData< KTFrequencyCandidateData >(),
             fComponentData(1),

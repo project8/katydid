@@ -15,6 +15,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeFrequencyPolar.hh"
 #include "KTWaterfallCandidateData.hh"
 #include "KTWignerVille.hh"
@@ -40,7 +41,7 @@ namespace Katydid
     static KTDerivedRegistrar< KTProcessor, KTMultiSliceClustering > sMSClustRegistrar("multi-slice-clustering");
 
     KTMultiSliceClustering::KTMultiSliceClustering() :
-            KTBundleQueueProcessorTemplate< KTMultiSliceClustering >(),
+            KTDataQueueProcessorTemplate< KTMultiSliceClustering >(),
             fMaxFreqSep(1.),
             fMaxTimeSep(1.),
             fMaxFreqSepBins(1),
@@ -538,7 +539,7 @@ namespace Katydid
         }
         wfcData.SetCandidate(tf);
 
-        return wfcData;
+        return data;
     }
 
 

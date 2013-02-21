@@ -32,7 +32,7 @@ int main(const int argc, const char** argv)
         return -1;
     }
 
-    unsigned nBundles = atoi(argv[2]);
+    unsigned nSlices = atoi(argv[2]);
 
     const Monarch* tReadTest = Monarch::OpenForReading(argv[1]);
     if (tReadTest->ReadHeader() == false)
@@ -64,8 +64,8 @@ int main(const int argc, const char** argv)
 
     KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
-    // Dummy bundle pointer
-    boost::shared_ptr<KTBundle> bundlePtr(new KTBundle());
+    // Dummy data pointer
+    boost::shared_ptr<KTData> dataPtr(new KTData());
 
     // Create FFT
     KTINFO(proflog, "Setting up the FFT");
@@ -84,12 +84,12 @@ int main(const int argc, const char** argv)
 
     const MonarchRecord* tRecord1 = tReadTest->GetRecordOne();
     const MonarchRecord* tRecord2 = tReadTest->GetRecordTwo();
-    for (unsigned iBundle=0; iBundle < nBundles; iBundle++)
+    for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
     {
-        KTINFO(proflog, "Bundle " << iBundle);
+        KTINFO(proflog, "Slice " << iSlice);
         if (tReadTest->ReadRecord() == false)
         {
-            KTERROR(proflog, "Problem reading records at bundle " << iBundle);
+            KTERROR(proflog, "Problem reading records at slice " << iSlice);
             break;
         }
 
@@ -111,7 +111,7 @@ int main(const int argc, const char** argv)
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
 
-        profiler.ProcessBundle(bundlePtr);
+        profiler.ProcessData(dataPtr);
     }
 
     // Stop the timer and print info

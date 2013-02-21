@@ -10,7 +10,7 @@
 namespace Katydid
 {
     KTWaterfallCandidateData::KTWaterfallCandidateData() :
-            KTData< KTWaterfallCandidateData >(),
+            KTExtensibleData< KTWaterfallCandidateData >(),
             fCandidate(NULL),
             fComponent(0),
             fTimeInRun(0.),

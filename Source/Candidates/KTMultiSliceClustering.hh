@@ -11,6 +11,7 @@
 
 #include "KTDataQueueProcessor.hh"
 
+#include "KTData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTMath.hh"
 
@@ -25,7 +26,6 @@
 namespace Katydid
 {
     class KTCorrelationData;
-    class KTData;
     class KTFrequencySpectrum;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
@@ -255,22 +255,22 @@ namespace Katydid
         return;
     }
 
-    inline void KTMultiSliceClustering::QueueFSPolarData(shared_ptr< KTData >& data)
+    inline void KTMultiSliceClustering::QueueFSPolarData(boost::shared_ptr< KTData >& data)
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceFSPolarData);
     }
 
-    inline void KTMultiSliceClustering::QueueFSFFTWData(shared_ptr< KTData >& data)
+    inline void KTMultiSliceClustering::QueueFSFFTWData(boost::shared_ptr< KTData >& data)
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceFSFFTWData);
     }
 
-    inline void KTMultiSliceClustering::QueueCorrelationData(shared_ptr< KTData >& data)
+    inline void KTMultiSliceClustering::QueueCorrelationData(boost::shared_ptr< KTData >& data)
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceCorrelationData);
     }
 
-    inline void KTMultiSliceClustering::QueueWVData(shared_ptr< KTData >& data)
+    inline void KTMultiSliceClustering::QueueWVData(boost::shared_ptr< KTData >& data)
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceWVData);
     }

@@ -88,7 +88,8 @@ int main(int argc, char** argv)
     gainVarProc.SetMaxBin(nBins-1);
     gainVarProc.SetNFitPoints(nFitPoints);
 
-    KTFrequencySpectrumDataPolar fsData(1);
+    KTFrequencySpectrumDataPolar fsData;
+    fsData.SetNComponents(1);
     KTFrequencySpectrumPolar* spectrum = new KTFrequencySpectrumPolar(nBins, 0., 100.);
 
 #ifdef ROOT_FOUND
@@ -125,7 +126,12 @@ int main(int argc, char** argv)
 
     KTINFO(vallog, "Performing variation calculation");
 
-    KTGainVariationData* gvData = gainVarProc.CalculateGainVariation(&fsData);
+    if (! gainVarProc.CalculateGainVariation(fsData))
+    {
+        KTERROR(vallog, "Gain variation failed");
+        return -1;
+    }
+    KTGainVariationData& gvData = fsData.Of< KTGainVariationData >();
 
     /*
     KTGainVariationProcessor::FitResult fitResult = gvData->GetFitResult(0);
@@ -136,7 +142,7 @@ int main(int argc, char** argv)
      */
 
 #ifdef ROOT_FOUND
-    TH1D* fitHist = gvData->CreateGainVariationHistogram(100, 0, "hGainVar");
+    TH1D* fitHist = gvData.CreateGainVariationHistogram(100, 0, "hGainVar");
     fitHist->SetLineColor(8);
     fitHist->Write();
 /*
@@ -153,17 +159,19 @@ int main(int argc, char** argv)
     gainNorm.SetMaxBin(nBins-1);
 
     KTINFO(vallog, "Normalizing the spectrum");
-    KTFrequencySpectrumDataPolar* normData = gainNorm.Normalize(&fsData, gvData);
+    if (! gainNorm.Normalize(fsData, gvData))
+    {
+        KTERROR(vallog, "Somethign went wrong during gain normalization");
+        return -1;
+    }
+    KTFrequencySpectrumDataPolar& normData = fsData.Of< KTFrequencySpectrumDataPolar >();
 
     KTINFO(vallog, "Processing complete");
 #ifdef ROOT_FOUND
-    TH1D* normalizedHist = normData->GetSpectrumPolar(0)->CreateMagnitudeHistogram("hOutputMag");
+    TH1D* normalizedHist = normData.GetSpectrumPolar(0)->CreateMagnitudeHistogram("hOutputMag");
     normalizedHist->SetLineColor(2);
     normalizedHist->Write();
 #endif
-
-    delete gvData;
-    delete normData;
 
 #ifdef ROOT_FOUND
     file->Close();

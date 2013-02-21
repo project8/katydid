@@ -73,7 +73,7 @@ namespace Katydid
             fcData.SetThreshold(clusterData.GetThreshold(iComponent), iComponent);
         }
 
-        return fcData;
+        return true;
     }
 
     Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTW& fsData)
@@ -100,16 +100,16 @@ namespace Katydid
             fcData.SetThreshold(clusterData.GetThreshold(iComponent), iComponent);
         }
 
-        return fcData;
+        return true;
     }
 
     Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, const KTCorrelationData& fsData)
     {
-        if (clusterData.GetBinWidth() != fsData.GetCorrelation(0)->GetBinWidth())
+        if (clusterData.GetBinWidth() != fsData.GetSpectrumPolar(0)->GetBinWidth())
         {
             KTWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
                     "\tCluster data: " << clusterData.GetBinWidth() << '\n' <<
-                    "\tFrequency spectrum: " << fsData.GetCorrelation(0)->GetBinWidth());
+                    "\tFrequency spectrum: " << fsData.GetSpectrumPolar(0)->GetBinWidth());
         }
 
         UInt_t nComponents = clusterData.GetNComponents();
@@ -121,13 +121,13 @@ namespace Katydid
         for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData.GetSetOfClusters(iComponent);
-            const KTFrequencySpectrumPolar* freqSpec = fsData.GetSpectrum(iComponent);
+            const KTFrequencySpectrumPolar* freqSpec = fsData.GetSpectrumPolar(iComponent);
 
             fcData.AddCandidates(IdentifyCandidates(clusters, freqSpec), iComponent);
             fcData.SetThreshold(clusterData.GetThreshold(iComponent), iComponent);
         }
 
-        return fcData;
+        return true;
     }
 
     KTFrequencyCandidateData::Candidates KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec)

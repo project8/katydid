@@ -16,7 +16,7 @@ namespace Katydid
 {
     class KTTimeFrequency;
 
-    class KTWaterfallCandidateData : public KTData< KTWaterfallCandidateData >
+    class KTWaterfallCandidateData : public KTExtensibleData< KTWaterfallCandidateData >
     {
         public:
             KTWaterfallCandidateData();

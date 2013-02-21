@@ -7,7 +7,6 @@
 
 #include "complexpolar.hh"
 #include "KTCorrelator.hh"
-#include "KTCorrelationData.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
@@ -51,7 +50,8 @@ int main(int argc, char** argv)
 
     // KTFrequencySpectrumDataFFTW option
     /**/
-    KTFrequencySpectrumDataFFTW* dataInput = new KTFrequencySpectrumDataFFTW(2);
+    KTFrequencySpectrumDataFFTW* dataInput = new KTFrequencySpectrumDataFFTW();
+    dataInput->SetNComponents(2);
 
     KTFrequencySpectrumFFTW* spectrum0 = new KTFrequencySpectrumFFTW(10, 0, 10);
     (*spectrum0)(0)[0] = 0.; (*spectrum0)(0)[1] = 0.;
@@ -93,20 +93,24 @@ int main(int argc, char** argv)
     correlator->AddPair(KTCorrelationPair(0, 1));
     KTINFO(corrtestlog, "The correlator has " << correlator->GetPairVector().size() << " correlation pairs");
 
-    KTCorrelationData* dataOutput = correlator->Correlate(dataInput);
+    if (! correlator->Correlate(*dataInput))
+    {
+        KTERROR(corrtestlog, "Something went wrong during the correlation");
+        return -1;
+    }
+    KTCorrelationData& dataOutput = dataInput->Of< KTCorrelationData >();
 
-    KTINFO(corrtestlog, "There are " << dataOutput->GetNComponents() << " ouptut spectra");
-    for (unsigned iSpectrum=0; iSpectrum < dataOutput->GetNComponents(); iSpectrum++)
+    KTINFO(corrtestlog, "There are " << dataOutput.GetNComponents() << " ouptut spectra");
+    for (unsigned iSpectrum=0; iSpectrum < dataOutput.GetNComponents(); iSpectrum++)
     {
         KTINFO(corrtestlog, "Output Spectrum " << iSpectrum << "; "
-                "pair (" << dataOutput->GetFirstChannel(iSpectrum) << ", " <<
-                dataOutput->GetSecondChannel(iSpectrum) << ")");
-        dataOutput->GetSpectrum(iSpectrum)->Print(0, 10);
+                "pair (" << dataOutput.GetInputPair().first << ", " <<
+                dataOutput.GetInputPair().second << ")");
+        dataOutput.GetSpectrumPolar(iSpectrum)->Print(0, 10);
     }
 
     // Clean up
     delete dataInput;
-    delete dataOutput;
     delete correlator;
 
     return 0;

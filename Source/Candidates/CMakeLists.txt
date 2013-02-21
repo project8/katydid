@@ -9,7 +9,7 @@ set (CANDIDATES_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWaterfallCandidateData.hh
 )
 
@@ -30,7 +30,7 @@ set (CANDIDATES_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWaterfallCandidateData.cc
 )
 
