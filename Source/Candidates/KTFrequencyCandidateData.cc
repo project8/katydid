@@ -16,25 +16,16 @@ namespace Katydid
 
     static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencyCandidateData > > sFCDMRegistrar;
 
-    KTFrequencyCandidateData::KTFrequencyCandidateData(UInt_t nComponents) :
-            KTWriteableData(),
-            fComponentData(nComponents),
+    KTFrequencyCandidateData::KTFrequencyCandidateData() :
+            KTExtensibleData< KTFrequencyCandidateData >(),
+            fComponentData(1),
             fNBins(1),
-            fBinWidth(1.),
-            fTimeInRun(0.),
-            fSliceNumber(0)
+            fBinWidth(1.)
     {
     }
 
     KTFrequencyCandidateData::~KTFrequencyCandidateData()
     {
     }
-
-    void KTFrequencyCandidateData::Accept(KTWriter* writer) const
-    {
-        writer->Write(this);
-        return;
-    }
-
 
 } /* namespace Katydid */

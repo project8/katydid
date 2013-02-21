@@ -8,20 +8,19 @@
 #ifndef KTWATERFALLCANDIDATEDATA_HH_
 #define KTWATERFALLCANDIDATEDATA_HH_
 
+#include "KTData.hh"
+
 #include "KTTimeFrequency.hh"
-#include "KTWriteableData.hh"
 
 namespace Katydid
 {
     class KTTimeFrequency;
 
-    class KTWaterfallCandidateData : public KTWriteableData
+    class KTWaterfallCandidateData : public KTData< KTWaterfallCandidateData >
     {
         public:
             KTWaterfallCandidateData();
             virtual ~KTWaterfallCandidateData();
-
-            void Accept(KTWriter* writer) const;
 
             KTTimeFrequency* GetCandidate() const;
             UInt_t GetComponent() const;

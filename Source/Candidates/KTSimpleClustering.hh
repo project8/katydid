@@ -1,15 +1,15 @@
 /**
- @file KTSimpleClustering.hh
- @brief Contains KTSimpleClustering
+ @file KTMultiSliceClustering.hh
+ @brief Contains KTMultiSliceClustering
  @details Simple cluster-finding algorithm that works by looking for lines of high-peaked bins increasing in frequency
  @author: N. S. Oblath
  @date: Jan 24, 2012
  */
 
-#ifndef KTSIMPLECLUSTERING_HH_
-#define KTSIMPLECLUSTERING_HH_
+#ifndef KTMULTISLICECLUSTERING_HH_
+#define KTMULTISLICECLUSTERING_HH_
 
-#include "KTBundleQueueProcessor.hh"
+#include "KTDataQueueProcessor.hh"
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTMath.hh"
@@ -24,12 +24,11 @@
 
 namespace Katydid
 {
-    class KTBundle;
     class KTCorrelationData;
     class KTData;
     class KTFrequencySpectrumData;
 
-    class KTSimpleClustering : public KTBundleQueueProcessorTemplate< KTSimpleClustering >
+    class KTMultiSliceClustering : public KTDataQueueProcessorTemplate< KTMultiSliceClustering >
     {
         public:
             typedef KTDiscriminatedPoints1DData::SetOfPoints SetOfDiscriminatedPoints;
@@ -74,12 +73,11 @@ namespace Katydid
             typedef std::list< boost::shared_ptr<KTBundle> > BundleList;
 
 
-            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
-            //typedef KTSignal< void (const KTWaterfallCandidateData*) >::signal CandidateSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal DataSignal;
 
         public:
-            KTSimpleClustering();
-            virtual ~KTSimpleClustering();
+            KTMultiSliceClustering();
+            virtual ~KTMultiSliceClustering();
 
             Bool_t Configure(const KTPStoreNode* node);
 
@@ -95,15 +93,6 @@ namespace Katydid
             UInt_t GetMaxTimeSeparationBins() const;
             void SetMaxTimeSeparationBins(UInt_t bins);
 
-            const std::string& GetDPInputDataName() const;
-            void SetDPInputDataName(const std::string& name);
-
-            const std::string& GetFSInputDataName() const;
-            void SetFSInputDataName(const std::string& name);
-
-           const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         private:
             Double_t fMaxFreqSep;
             Double_t fMaxTimeSep;
@@ -111,10 +100,6 @@ namespace Katydid
             UInt_t fMaxTimeSepBins;
             Bool_t fCalculateMaxFreqSepBins;
             Bool_t fCalculateMaxTimeSepBins;
-
-            std::string fDPInputDataName;
-            std::string fFSInputDataName;
-            std::string fOutputDataName;
 
         public:
             /// Add points from dpData to the active clusters and create candidates
@@ -158,9 +143,8 @@ namespace Katydid
             //***************
 
          private:
-            BundleSignal fOneSliceBundleSignal;
-            BundleSignal fClusteredBundleSignal;
-            //CandidateSignal fWaterfallCandidateSignal;
+            DataSignal fOneSliceDataSignal;
+            DataSignal fClusteredDataSignal;
 
 
              //***************
@@ -168,111 +152,78 @@ namespace Katydid
              //***************
 
          public:
-            // QueueBundle from KTBundleQueueProcessorTemplate
-            // QueueBundles from KTBundleQueueProcessorTemplate
+            // QueueData from KTDataQueueProcessorTemplate
+            // QueueDataList from KTDataQueueProcessorTemplate
 
          private:
             /// non-queueing bundle processing
-            void ProcessOneSliceBundle(boost::shared_ptr<KTBundle> bundle);
+            void ProcessOneSliceData(boost::shared_ptr<KTData> data);
 
          private:
-            void RunBundleLoop(BundleList* bundles);
+            void RunDataLoop(BundleList* dataList);
 
     };
 
 
-    inline Double_t KTSimpleClustering::GetMaxFrequencySeparation() const
+    inline Double_t KTMultiSliceClustering::GetMaxFrequencySeparation() const
     {
         return fMaxFreqSep;
     }
 
-    inline void KTSimpleClustering::SetMaxFrequencySeparation(Double_t freqSep)
+    inline void KTMultiSliceClustering::SetMaxFrequencySeparation(Double_t freqSep)
     {
         fMaxFreqSep = freqSep;
         fCalculateMaxFreqSepBins = true;
         return;
     }
 
-    inline Double_t KTSimpleClustering::GetMaxTimeSeparation() const
+    inline Double_t KTMultiSliceClustering::GetMaxTimeSeparation() const
     {
         return fMaxTimeSep;
     }
 
-    inline void KTSimpleClustering::SetMaxTimeSeparation(Double_t timeSep)
+    inline void KTMultiSliceClustering::SetMaxTimeSeparation(Double_t timeSep)
     {
         fMaxTimeSep = timeSep;
         fCalculateMaxTimeSepBins = true;
         return;
     }
 
-    inline UInt_t KTSimpleClustering::GetMaxFrequencySeparationBins() const
+    inline UInt_t KTMultiSliceClustering::GetMaxFrequencySeparationBins() const
     {
         return fMaxFreqSepBins;
     }
 
-    inline void KTSimpleClustering::SetMaxFrequencySeparationBins(UInt_t bins)
+    inline void KTMultiSliceClustering::SetMaxFrequencySeparationBins(UInt_t bins)
     {
         fMaxFreqSepBins = bins;
         fCalculateMaxFreqSepBins = false;
         return;
     }
 
-    inline UInt_t KTSimpleClustering::GetMaxTimeSeparationBins() const
+    inline UInt_t KTMultiSliceClustering::GetMaxTimeSeparationBins() const
     {
         return fMaxTimeSepBins;
     }
 
-    inline void KTSimpleClustering::SetMaxTimeSeparationBins(UInt_t bins)
+    inline void KTMultiSliceClustering::SetMaxTimeSeparationBins(UInt_t bins)
     {
         fMaxTimeSepBins = bins;
         fCalculateMaxTimeSepBins = false;
         return;
     }
 
-    inline const std::string& KTSimpleClustering::GetDPInputDataName() const
-    {
-        return fDPInputDataName;
-    }
-
-    inline void KTSimpleClustering::SetDPInputDataName(const std::string& name)
-    {
-        fDPInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTSimpleClustering::GetFSInputDataName() const
-    {
-        return fFSInputDataName;
-    }
-
-    inline void KTSimpleClustering::SetFSInputDataName(const std::string& name)
-    {
-        fFSInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTSimpleClustering::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTSimpleClustering::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
-
-    inline UInt_t KTSimpleClustering::GetTimeBin() const
+    inline UInt_t KTMultiSliceClustering::GetTimeBin() const
     {
         return fTimeBin;
     }
 
-    inline Double_t KTSimpleClustering::GetTimeBinWidth() const
+    inline Double_t KTMultiSliceClustering::GetTimeBinWidth() const
     {
         return fTimeBinWidth;
     }
 
-    inline void KTSimpleClustering::SetTimeBinWidth(Double_t bw)
+    inline void KTMultiSliceClustering::SetTimeBinWidth(Double_t bw)
     {
         fTimeBinWidth = bw;
         if (fCalculateMaxTimeSepBins)
@@ -280,12 +231,12 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTSimpleClustering::GetFrequencyBinWidth() const
+    inline Double_t KTMultiSliceClustering::GetFrequencyBinWidth() const
     {
         return fFreqBinWidth;
     }
 
-    inline void KTSimpleClustering::SetFrequencyBinWidth(Double_t bw)
+    inline void KTMultiSliceClustering::SetFrequencyBinWidth(Double_t bw)
     {
         fFreqBinWidth = bw;
         if (fCalculateMaxFreqSepBins)
@@ -293,72 +244,5 @@ namespace Katydid
         return;
     }
 
-
-
-
-    /*
-    class KTSlidingWindowFSData;
-    class KTPStoreNode;
-    class KTSlidingWindowFFT;
-
-    template< size_t NDims, typename XDataType >
-    class KTPhysicalArray;
-
-    class KTSimpleClustering : public KTProcessor
-    {
-        private:
-            typedef std::list< std::multimap< Int_t, Int_t >* > epbList;
-
-        public:
-            KTSimpleClustering();
-            virtual ~KTSimpleClustering();
-
-            Bool_t Configure(const KTPStoreNode* node);
-
-            void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
-            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrumPolar* powerSpectrum);
-
-            void SetBundlePeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
-            void SetBinCuts(KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
-            void SetMinimumGroupSize(UInt_t size);
-
-        private:
-            epbList* fBundlePeakBins;
-            Double_t fThresholdMult;
-
-            KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* fBinCuts;
-
-            UInt_t fMinimumGroupSize;
-
-            Int_t fGroupBinsMarginLow;
-            Int_t fGroupBinsMarginHigh;
-            Int_t fGroupBinsMarginSameTime;
-
-            UInt_t fFirstBinToUse;
-
-            Bool_t fDrawFlag;
-
-    };
-
-    inline void KTSimpleClustering::SetBundlePeakBinsList(epbList* list)
-    {
-        fBundlePeakBins = list;
-        return;
-    }
-
-    inline void KTSimpleClustering::SetBinCuts(KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* binCuts)
-    {
-        delete fBinCuts;
-        fBinCuts = binCuts;
-        return;
-    }
-
-    inline void KTSimpleClustering::SetMinimumGroupSize(UInt_t size)
-    {
-        fMinimumGroupSize = size;
-        return;
-    }
-    */
-
 } /* namespace Katydid */
-#endif /* KTSIMPLECLUSTERING_HH_ */
+#endif /* KTMULTISLICECLUSTERING_HH_ */

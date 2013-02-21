@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTSimpleClustering.hh"
+#include "KTMultiSliceClustering.hh"
 
 #include "KTBundle.hh"
 #include "KTCorrelationData.hh"
@@ -36,35 +36,32 @@ namespace Katydid
 {
     KTLOGGER(sclog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTSimpleClustering > sSimpClustRegistrar("simple-clustering");
+    static KTDerivedRegistrar< KTProcessor, KTMultiSliceClustering > sSimpClustRegistrar("multi-slice-clustering");
 
-    KTSimpleClustering::KTSimpleClustering() :
-            KTBundleQueueProcessorTemplate< KTSimpleClustering >(),
+    KTMultiSliceClustering::KTMultiSliceClustering() :
+            KTBundleQueueProcessorTemplate< KTMultiSliceClustering >(),
             fMaxFreqSep(1.),
             fMaxTimeSep(1.),
             fMaxFreqSepBins(1),
             fMaxTimeSepBins(1),
             fCalculateMaxFreqSepBins(false),
             fCalculateMaxTimeSepBins(false),
-            fDPInputDataName("disc-points"),
-            fFSInputDataName("frequency-spectrum"),
-            fOutputDataName("waterfall-candidate"),
             fTimeBin(0),
             fTimeBinWidth(1.),
             fFreqBinWidth(1.)
     {
-        fConfigName = "simple-clustering";
+        fConfigName = "multi-slice-clustering";
 
         // QueueBundle and QueueBundles are registered in KTBundleQueueProcessorTemplate constructor
 
-        this->SetFuncPtr(&KTSimpleClustering::ProcessOneSliceBundle);
+        this->SetFuncPtr(&KTMultiSliceClustering::ProcessOneSliceBundle);
     }
 
-    KTSimpleClustering::~KTSimpleClustering()
+    KTMultiSliceClustering::~KTMultiSliceClustering()
     {
     }
 
-    Bool_t KTSimpleClustering::Configure(const KTPStoreNode* node)
+    Bool_t KTMultiSliceClustering::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -93,7 +90,7 @@ namespace Katydid
         return true;
     }
 
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
+    KTMultiSliceClustering::BundleList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
     {
         ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
 
@@ -108,7 +105,7 @@ namespace Katydid
         return newBundles;
     }
 /*
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
+    KTMultiSliceClustering::BundleList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
     {
         ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
 
@@ -123,7 +120,7 @@ namespace Katydid
         return newBundles;
     }
 
-    KTSimpleClustering::BundleList* KTSimpleClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
+    KTMultiSliceClustering::BundleList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> fsData)
     {
         ClusterList* completedClusters = AddPointsToClusters(dpData, shared_ptr<KTFrequencySpectrumData>(fsData));
 
@@ -138,7 +135,7 @@ namespace Katydid
         return newBundles;
     }
 */
-    KTSimpleClustering::ClusterList* KTSimpleClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> data)
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData* dpData, shared_ptr<KTFrequencySpectrumData> data)
     {
         if (dpData->GetBinWidth() != fFreqBinWidth)
             SetFrequencyBinWidth(dpData->GetBinWidth());
@@ -162,7 +159,7 @@ namespace Katydid
         return newClustersAC;
     }
 
-    KTSimpleClustering::ClusterList* KTSimpleClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, shared_ptr<KTFrequencySpectrumData> data)
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, shared_ptr<KTFrequencySpectrumData> data)
     {
         // Process a single time bin's worth of frequency bins
 
@@ -390,7 +387,7 @@ namespace Katydid
     }
 
 
-    KTSimpleClustering::ClusterList* KTSimpleClustering::CompleteAllClusters(UInt_t component)
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::CompleteAllClusters(UInt_t component)
     {
         ClusterList* newClusters = new ClusterList(fActiveClusters[component].begin(), fActiveClusters[component].end());
         /*// old version
@@ -403,7 +400,7 @@ namespace Katydid
         return newClusters;
     }
 /*// no longer needed
-    KTSimpleClustering::BundleList* KTSimpleClustering::CompleteInactiveClusters(UInt_t component)
+    KTMultiSliceClustering::BundleList* KTMultiSliceClustering::CompleteInactiveClusters(UInt_t component)
     {
         BundleList* newBundles = new BundleList();
 
@@ -424,14 +421,14 @@ namespace Katydid
         return newBundles;
     }
 */
-    void KTSimpleClustering::Reset()
+    void KTMultiSliceClustering::Reset()
     {
         fActiveClusters.clear();
         fTimeBin = 0;
         return;
     }
 
-    shared_ptr<KTBundle> KTSimpleClustering::CreateBundleFromCluster(const Cluster& cluster)
+    shared_ptr<KTBundle> KTMultiSliceClustering::CreateBundleFromCluster(const Cluster& cluster)
     {
         shared_ptr<KTBundle> bundle(new KTBundle());
 
@@ -484,7 +481,7 @@ namespace Katydid
         return bundle;
     }
 
-    void KTSimpleClustering::ProcessOneSliceBundle(boost::shared_ptr<KTBundle> bundle)
+    void KTMultiSliceClustering::ProcessOneSliceBundle(boost::shared_ptr<KTBundle> bundle)
     {
         // This function removes the frequency spectrum data from the bundle.
         // Therefore it should be the last thing done to the one-slice bundle.
@@ -541,7 +538,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleClustering::RunBundleLoop(BundleList* bundles)
+    void KTMultiSliceClustering::RunBundleLoop(BundleList* bundles)
     {
         while (! bundles->empty())
         {

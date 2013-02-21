@@ -19,7 +19,6 @@
 namespace Katydid
 {
     class KTCorrelationData;
-    class KTBundle;
     class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
@@ -28,7 +27,7 @@ namespace Katydid
     class KTFrequencyCandidateIdentifier : public KTProcessor
     {
         protected:
-            typedef KTSignal< void (const KTFrequencyCandidateData*) >::signal FCSignal;
+            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal FCSignal;
 
         public:
             KTFrequencyCandidateIdentifier();
@@ -36,25 +35,13 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            const std::string& GetFSInputDataName() const;
-            void SetFSInputDataName(const std::string& name);
-
-            const std::string& GetClusterInputDataName() const;
-            void SetClusterInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         protected:
-            std::string fFSInputDataName;
-            std::string fClusterInputDataName;
-            std::string fOutputDataName;
 
 
         public:
-            KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataPolar* fsData);
-            KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataFFTW* fsData);
-            KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTCorrelationData* fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolar& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTW& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTCorrelationData& fsData);
 
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec);
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumFFTW* freqSpec);
@@ -72,43 +59,11 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-            void ProcessClusterData(const KTCluster1DData* tsData);
+            void ProcessClusterAndFSPolarData(boost::shared_ptr< KTData >);
+            void ProcessClusterAndFSFFTWData(boost::shared_ptr< KTData >);
+            void ProcessClusterAndCorrelationData(boost::shared_ptr< KTData >);
 
     };
-
-    inline const std::string& KTFrequencyCandidateIdentifier::GetFSInputDataName() const
-    {
-        return fFSInputDataName;
-    }
-
-    inline void KTFrequencyCandidateIdentifier::SetFSInputDataName(const std::string& name)
-    {
-        fFSInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTFrequencyCandidateIdentifier::GetClusterInputDataName() const
-    {
-        return fClusterInputDataName;
-    }
-
-    inline void KTFrequencyCandidateIdentifier::SetClusterInputDataName(const std::string& name)
-    {
-        fClusterInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTFrequencyCandidateIdentifier::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTFrequencyCandidateIdentifier::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYCANDIDATEIDENTIFIER_HH_ */
