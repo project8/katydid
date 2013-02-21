@@ -13,7 +13,9 @@
 #include "KTGainVariationData.hh"
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
+#include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
+#include "KTWignerVille.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -106,7 +108,7 @@ namespace Katydid
 
         for (UInt_t iPair=0; iPair<nComponents; iPair++)
         {
-            const KTFrequencySpectrumPolar* spectrum = corrData.GetSpectrum(iPair);
+            const KTFrequencySpectrumPolar* spectrum = corrData.GetSpectrumPolar(iPair);
             if (spectrum != NULL)
             {
                 stringstream conv;
@@ -218,7 +220,7 @@ namespace Katydid
 
         for (UInt_t iPair=0; iPair<nComponents; iPair++)
         {
-            const KTFrequencySpectrumPolar* spectrum = wvData.GetSpectrum(iPair);
+            const KTFrequencySpectrumFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
             if (spectrum != NULL)
             {
                 stringstream conv;
