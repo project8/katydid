@@ -17,7 +17,7 @@ namespace Katydid
 
 
     template<class XGroupType=void>
-    struct KTExtensibleStructCore
+    class KTExtensibleStructCore
     {
         public:
             KTExtensibleStructCore(void);
@@ -28,6 +28,7 @@ namespace Katydid
             template<class XStructType> inline XStructType& Of(void);
             template<class XStructType> inline const XStructType& Of(void) const;
             template<class XStructType> inline bool Has(void) const;
+            template<class XStructType> inline XStructType* Detatch(void);
             virtual KTExtensibleStructCore* Clone(void) const = 0;
             virtual void Pull(const KTExtensibleStructCore<XGroupType>& object) = 0;
         protected:
@@ -37,16 +38,17 @@ namespace Katydid
 
 
     template<class XInstanceType, class XGroupType=void>
-    struct KTExtensibleStruct : KTExtensibleStructCore< XGroupType >
+    class KTExtensibleStruct : KTExtensibleStructCore< XGroupType >
     {
-        KTExtensibleStruct(void);
-        KTExtensibleStruct(const KTExtensibleStruct& object);
-        virtual ~KTExtensibleStruct();
-        KTExtensibleStruct& operator=(const KTExtensibleStruct& object);
-        virtual KTExtensibleStructCore<XGroupType>* Clone(void) const;
-        virtual void Pull(const KTExtensibleStructCore<XGroupType>& object);
+        public:
+            KTExtensibleStruct(void);
+            KTExtensibleStruct(const KTExtensibleStruct& object);
+            virtual ~KTExtensibleStruct();
+            KTExtensibleStruct& operator=(const KTExtensibleStruct& object);
+            virtual KTExtensibleStructCore<XGroupType>* Clone(void) const;
+            virtual void Pull(const KTExtensibleStructCore<XGroupType>& object);
         private:
-        bool fIsCopyDisabled;
+            bool fIsCopyDisabled;
     };
 
 
@@ -135,6 +137,24 @@ namespace Katydid
         }
 
         return false;
+    }
+
+
+
+    template<class XGroupType>
+    template<class XStructType>
+    inline XStructType* KTExtensibleStructCore<XGroupType>::Detatch(void)
+    {
+        if (! fNext)
+        {
+            return NULL;
+        }
+        XStructType* next = dynamic_cast<XStructType*>(fNext);
+        if (next)
+        {
+            return next;
+        }
+        return fNext->Detatch<XStructType>();
     }
 
 
