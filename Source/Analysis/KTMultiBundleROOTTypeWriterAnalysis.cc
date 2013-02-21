@@ -125,7 +125,7 @@ namespace Katydid
                 std::stringstream conv;
                 conv << iComponent;
                 std::string histName = histNameBase + conv.str();
-                TH1D* newCorr = corrData.GetCorrelation(iComponent)->CreateMagnitudeHistogram(histName);
+                TH1D* newCorr = corrData.GetSpectrum(iComponent)->CreateMagnitudeHistogram(histName);
                 fCorrHists[iComponent] = newCorr;
             }
         }
@@ -133,7 +133,7 @@ namespace Katydid
         {
             for (UInt_t iComponent=0; iComponent < nComponents; iComponent++)
             {
-                TH1D* newCorr = corrData.GetCorrelation(iComponent)->CreateMagnitudeHistogram();
+                TH1D* newCorr = corrData.GetSpectrum(iComponent)->CreateMagnitudeHistogram();
                 fCorrHists[iComponent]->Add(newCorr);
                 delete newCorr;
             }

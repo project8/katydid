@@ -30,6 +30,7 @@ namespace Katydid
     class KTEggHeader;
     class KTPStoreNode;
     class KTTimeSeriesFFTW;
+    class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
 
     /*!

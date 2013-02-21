@@ -288,17 +288,17 @@ namespace Katydid
     {
         if (! data->Has< KTGainVariationData >())
         {
-            KTERROR(fftlog_comp, "No gain variation data was present");
+            KTERROR(gnlog, "No gain variation data was present");
             return;
         }
         if (!  data->Has< KTFrequencySpectrumDataPolar >())
         {
-            KTERROR(fftlog_comp, "No frequency spectrum data was present");
+            KTERROR(gnlog, "No frequency spectrum data was present");
             return;
         }
         if (! Normalize(data->Of< KTFrequencySpectrumDataPolar >(), data->Of< KTGainVariationData >()))
         {
-            KTERROR(fftlog_comp, "Something went wrong while performing a normalization");
+            KTERROR(gnlog, "Something went wrong while performing a normalization");
             return;
         }
         fFSPolarSignal(data);
@@ -310,17 +310,17 @@ namespace Katydid
     {
         if (! data->Has< KTGainVariationData >())
         {
-            KTERROR(fftlog_comp, "No gain variation data was present");
+            KTERROR(gnlog, "No gain variation data was present");
             return;
         }
         if (!  data->Has< KTFrequencySpectrumDataFFTW >())
         {
-            KTERROR(fftlog_comp, "No frequency spectrum data was present");
+            KTERROR(gnlog, "No frequency spectrum data was present");
             return;
         }
         if (! Normalize(data->Of< KTFrequencySpectrumDataFFTW >(), data->Of< KTGainVariationData >()))
         {
-            KTERROR(fftlog_comp, "Something went wrong while performing a normalization");
+            KTERROR(gnlog, "Something went wrong while performing a normalization");
             return;
         }
         fFSFFTWSignal(data);

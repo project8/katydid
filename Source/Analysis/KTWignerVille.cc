@@ -136,7 +136,7 @@ namespace Katydid
             iPair++;
         }
 
-        return newData;
+        return true;
     }
 
     void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)

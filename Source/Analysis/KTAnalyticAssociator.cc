@@ -75,14 +75,14 @@ namespace Katydid
 
         UInt_t nComponents = tsData.GetNComponents();
 
-        KTFrequencySpectrumDataFFTW& fsData;
+        KTFrequencySpectrumDataFFTW* fsData = NULL;
         if (fSaveFrequencySpectrum)
         {
-            fsData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
+            fsData = &(tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents));
         }
 
         // New data to hold the time series of the analytic associate
-        KTBasicTimeSeriesData& aaTSData = tsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
+        KTAnalyticAssociateData& aaTSData = tsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
 
         // Calculate the analytic associates
         for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
@@ -99,7 +99,7 @@ namespace Katydid
             if (fSaveFrequencySpectrum)
             {
                 newTS = CalculateAnalyticAssociate(nextInput, &newFS);
-                fsData.SetSpectrum(newFS, iComponent);
+                fsData->SetSpectrum(newFS, iComponent);
             }
             else
             {
@@ -114,8 +114,6 @@ namespace Katydid
 
             aaTSData.SetTimeSeries(newTS, iComponent);
         }
-
-        fAASignal(aaTSData);
 
         return true;
     }
@@ -135,7 +133,7 @@ namespace Katydid
         UInt_t nComponents = fsData.GetNComponents();
 
         // New data to hold the time series of the analytic associate
-        KTBasicTimeSeriesData& aaTSData = fsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
+        KTAnalyticAssociateData& aaTSData = fsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
 
         // Calculate the analytic associates
         for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
@@ -153,16 +151,14 @@ namespace Katydid
             aaTSData.SetTimeSeries(newTS, iComponent);
         }
 
-        fAASignal(aaTSData);
-
-        return aaTSData;
+        return true;
     }
 
 
     KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
         // Forward FFT
-        KTFrequencySpectrumFFTW* freqSpec = fFullFFT.TransformForward(inputTS);
+        KTFrequencySpectrumFFTW* freqSpec = fFullFFT.Transform(inputTS);
         if (freqSpec == NULL)
         {
             KTERROR(aalog, "Something went wrong with the forward FFT on the time series.");
@@ -175,7 +171,7 @@ namespace Katydid
         freqSpec->AnalyticAssociate();
 
         // reverse FFT
-        KTTimeSeriesFFTW* outputTS = fFullFFT.TransformReverse(freqSpec);
+        KTTimeSeriesFFTW* outputTS = fFullFFT.Transform(freqSpec);
         if (outputTS == NULL)
         {
             KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
@@ -193,7 +189,7 @@ namespace Katydid
         aaFS.AnalyticAssociate();
 
         // reverse FFT
-        KTTimeSeriesFFTW* outputTS = fFullFFT.TransformReverse(&aaFS);
+        KTTimeSeriesFFTW* outputTS = fFullFFT.Transform(&aaFS);
         if (outputTS == NULL)
         {
             KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
@@ -217,7 +213,7 @@ namespace Katydid
         }
         if (! CreateAssociateData(data->Of< KTTimeSeriesData >()))
         {
-            KTERROR(fftlog_comp, "Something went wrong while calculating the analytic associate from a time series");
+            KTERROR(aalog, "Something went wrong while calculating the analytic associate from a time series");
             return;
         }
         fAASignal(data);
@@ -233,7 +229,7 @@ namespace Katydid
         }
         if (! CreateAssociateData(data->Of< KTFrequencySpectrumDataFFTW >()))
         {
-            KTERROR(fftlog_comp, "Something went wrong while calculating the analytic associate from a frequency spectrum");
+            KTERROR(aalog, "Something went wrong while calculating the analytic associate from a frequency spectrum");
             return;
         }
         fAASignal(data);

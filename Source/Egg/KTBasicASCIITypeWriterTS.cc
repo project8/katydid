@@ -1,5 +1,6 @@
 #include "KTBasicASCIITypeWriterTS.hh"
 
+#include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 
@@ -27,7 +28,7 @@ namespace Katydid
                 "void (shared_ptr< KTData >)");
     }
 
-    void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(const KTTimeSeriesData* data)
+    void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(shared_ptr< KTData > data)
     {
         if (! data) return;
 
@@ -40,7 +41,7 @@ namespace Katydid
 
             for(UInt_t iCh = 0; iCh < nCh; iCh++) {
                 std::ofstream* file_ptr = fWriter->GetStream();
-                const KTTimeSeries* sCh = data->GetTimeSeries(iCh);
+                const KTTimeSeries* sCh = tsData.GetTimeSeries(iCh);
                 if(sCh != NULL) {
                     for(UInt_t iB = 0; iB < sCh->GetNTimeBins(); iB++) {
                         (*file_ptr) << sliceNumber

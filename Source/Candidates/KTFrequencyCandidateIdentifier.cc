@@ -124,11 +124,11 @@ namespace Katydid
 
     KTFrequencyCandidateData* KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData* clusterData, const KTCorrelationData* fsData)
     {
-        if (clusterData->GetBinWidth() != fsData->GetCorrelation(0)->GetBinWidth())
+        if (clusterData->GetBinWidth() != fsData->GetSpectrum(0)->GetBinWidth())
         {
             KTWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
                     "\tCluster data: " << clusterData->GetBinWidth() << '\n' <<
-                    "\tFrequency spectrum: " << fsData->GetCorrelation(0)->GetBinWidth());
+                    "\tFrequency spectrum: " << fsData->GetSpectrum(0)->GetBinWidth());
         }
 
         KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
@@ -140,7 +140,7 @@ namespace Katydid
         for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iComponent);
-            const KTFrequencySpectrumPolar* freqSpec = fsData->GetCorrelation(iComponent);
+            const KTFrequencySpectrumPolar* freqSpec = fsData->GetSpectrum(iComponent);
 
             fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iComponent);
             fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);

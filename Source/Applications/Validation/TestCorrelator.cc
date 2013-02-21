@@ -101,7 +101,7 @@ int main(int argc, char** argv)
         KTINFO(corrtestlog, "Output Spectrum " << iSpectrum << "; "
                 "pair (" << dataOutput->GetFirstChannel(iSpectrum) << ", " <<
                 dataOutput->GetSecondChannel(iSpectrum) << ")");
-        dataOutput->GetCorrelation(iSpectrum)->Print(0, 10);
+        dataOutput->GetSpectrum(iSpectrum)->Print(0, 10);
     }
 
     // Clean up

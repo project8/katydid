@@ -7,7 +7,6 @@
 
 #include "KTHoughTransform.hh"
 
-#include "KTDiscriminatedPoints2DData.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTHoughData.hh"
@@ -257,12 +256,12 @@ namespace Katydid
     {
         if (! data->Has< KTDiscriminatedPoints2DData >())
         {
-            KTERROR(fftlog_comp, "No discriminated-points data was present");
+            KTERROR(htlog, "No discriminated-points data was present");
             return;
         }
         if (! TransformData(data->Of< KTDiscriminatedPoints2DData >()))
         {
-            KTERROR(fftlog_comp, "Something went wrong while performing a Hough transform");
+            KTERROR(htlog, "Something went wrong while performing a Hough transform");
             return;
         }
         fHTSignal(data);

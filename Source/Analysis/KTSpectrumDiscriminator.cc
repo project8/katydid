@@ -7,7 +7,7 @@
 
 #include "KTSpectrumDiscriminator.hh"
 
-#include "KTCorrelationData.hh"
+#include "KTCorrelator.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 //#include "KTDiscriminatedPoints2DData.hh"
 #include "KTFactory.hh"
@@ -262,12 +262,12 @@ namespace Katydid
     {
         if (fCalculateMinBin)
         {
-            SetMinBin(data.GetCorrelation(0)->FindBin(fMinFrequency));
+            SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
             KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
         }
         if (fCalculateMaxBin)
         {
-            SetMaxBin(data.GetCorrelation(0)->FindBin(fMaxFrequency));
+            SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
@@ -275,19 +275,19 @@ namespace Katydid
 
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(nComponents);
 
-        newData.SetNBins(data.GetCorrelation(0)->size());
-        newData.SetBinWidth(data.GetCorrelation(0)->GetBinWidth());
+        newData.SetNBins(data.GetSpectrumPolar(0)->size());
+        newData.SetBinWidth(data.GetSpectrumPolar(0)->GetBinWidth());
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
         Double_t sigmaNorm = 1. / Double_t(nBins - 1);
 
         // Temporary storage for magnitude values
-        vector< Double_t > magnitude(data.GetCorrelation(0)->size());
+        vector< Double_t > magnitude(data.GetSpectrumPolar(0)->size());
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            const KTFrequencySpectrumPolar* spectrum = data.GetCorrelation(iComponent);
+            const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
 
             Double_t mean = 0.;
             for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)

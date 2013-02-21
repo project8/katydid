@@ -231,7 +231,7 @@ namespace Katydid
     {
         if (! data->Has< KTTimeSeriesData >())
         {
-            KTERROR(fftlog_comp, "No time series data was present");
+            KTERROR(fftlog_simp, "No time series data was present");
             return;
         }
         if (! TransformData(data->Of< KTTimeSeriesData >()))

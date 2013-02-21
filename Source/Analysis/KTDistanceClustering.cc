@@ -120,12 +120,12 @@ namespace Katydid
     {
         if (! data->Has< KTDiscriminatedPoints1DData >())
         {
-            KTERROR(fftlog_comp, "No discriminated-points data was present");
+            KTERROR(sdlog, "No discriminated-points data was present");
             return;
         }
         if (! FindClusters(data->Of< KTDiscriminatedPoints1DData >()))
         {
-            KTERROR(fftlog_comp, "Something went wrong while performing the cluster-finding");
+            KTERROR(sdlog, "Something went wrong while performing the cluster-finding");
             return;
         }
         fCluster1DSignal(data);

@@ -10,6 +10,7 @@
 
 #include "KTProcessor.hh"
 
+#include "KTDiscriminatedPoints2DData.hh"
 #include "KTPhysicalArray.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -18,7 +19,6 @@
 namespace Katydid
 {
     class KTData;
-    class KTDiscriminatedPoints2DData;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     //class KTSlidingWindowFSDataFFTW;

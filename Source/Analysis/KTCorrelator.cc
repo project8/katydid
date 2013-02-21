@@ -120,7 +120,8 @@ namespace Katydid
             }
             else
             {
-                newData.SetCorrelation(result, firstChannel, secondChannel, iPair);
+                newData.SetSpectrum(result, iPair);
+                newData.SetInputPair(firstChannel, secondChannel, iPair);
             }
             iPair++;
         }
@@ -207,12 +208,12 @@ namespace Katydid
     {
         if (! data->Has< KTFrequencySpectrumDataPolar >())
         {
-            KTERROR(fftlog_comp, "No polar frequency spectrum data was present");
+            KTERROR(corrlog, "No polar frequency spectrum data was present");
             return;
         }
         if (! Correlate(data->Of< KTFrequencySpectrumDataPolar >()))
         {
-            KTERROR(fftlog_comp, "Something went wrong while performing the correlation(s)");
+            KTERROR(corrlog, "Something went wrong while performing the correlation(s)");
             return;
         }
         fCorrSignal(data);
@@ -223,12 +224,12 @@ namespace Katydid
     {
         if (! data->Has< KTFrequencySpectrumDataFFTW >())
         {
-            KTERROR(fftlog_comp, "No polar frequency spectrum data was present");
+            KTERROR(corrlog, "No polar frequency spectrum data was present");
             return;
         }
         if (! Correlate(data->Of< KTFrequencySpectrumDataFFTW >()))
         {
-            KTERROR(fftlog_comp, "Something went wrong while performing the correlation(s)");
+            KTERROR(corrlog, "Something went wrong while performing the correlation(s)");
             return;
         }
         fCorrSignal(data);
