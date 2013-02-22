@@ -9,14 +9,11 @@
  */
 
 #include "KTAnalyticAssociator.hh"
-#include "KTComplexFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTRectangularWindow.hh"
-#include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTWignerVille.hh"
 
@@ -74,7 +71,7 @@ int main()
 
     UInt_t nWindows = nTimeBins / wvSize;
 
-    vector< KTFrequencySpectrumDataFFTW* > allOutput(nWindows);
+    vector< KTWignerVilleData* > allOutput(nWindows);
     KTPhysicalArray< 1, KTFrequencySpectrumFFTW* > spectra(nWindows, 0., 1.);
 
     KTINFO(testlog, nWindows << " will be used");
@@ -100,20 +97,24 @@ int main()
         KTTimeSeriesFFTW* aaTS1 = aAssociator.CalculateAnalyticAssociate(windowTS1);
         KTTimeSeriesFFTW* aaTS2 = aAssociator.CalculateAnalyticAssociate(windowTS2);
 
-        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(2);
-        aaTSData->SetTimeSeries(aaTS1, 0);
-        aaTSData->SetTimeSeries(aaTS2, 1);
+        KTAnalyticAssociateData aaData;
+        aaData.SetNComponents(2);
+        aaData.SetTimeSeries(aaTS1, 0);
+        aaData.SetTimeSeries(aaTS2, 1);
         //aaTSData->SetTimeSeries(windowTS1, 0);
         //aaTSData->SetTimeSeries(windowTS2, 1);
 
-        KTFrequencySpectrumDataFFTW* output = wvTransform.TransformData(aaTSData);
+        if (! wvTransform.TransformData(aaData))
+        {
+            KTERROR(testlog, "Something went wrong while computing the Wigner-Ville transform");
+        }
+        KTWignerVilleData& output = aaData.Of< KTWignerVilleData >();
 
-        allOutput[iWindow] = output;
-        spectra(iWindow) = output->GetSpectrumFFTW(0);
+        allOutput[iWindow] = &output;
+        spectra(iWindow) = output.GetSpectrumFFTW(0);
 
         delete windowTS1;
         delete windowTS2;
-        delete aaTSData;
 
         iWindow++;
     }
