@@ -11,7 +11,9 @@
 #include "KTFFT.hh"
 #include "KTProcessor.hh"
 
+#include "KTComplexFFTW.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTLogger.hh"
 #include "KTMath.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -22,6 +24,8 @@
 
 namespace Katydid
 {
+    KTLOGGER(wvlog, "katydid.analysis");
+
     class KTWignerVilleData : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTWignerVilleData >
     {
         public:
@@ -32,38 +36,32 @@ namespace Katydid
             virtual ~KTWignerVilleData()
             {}
 
-            const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const;
+            inline const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const
+            {
+                return fWVComponentData[component];
+            }
 
-            void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0);
+            inline void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0)
+            {
+                if (component >= fSpectra.size()) SetNComponents(component+1);
+                fWVComponentData[component].first = first;
+                fWVComponentData[component].second = second;
+                return;
+            }
 
-            KTWignerVilleData& SetNComponents(UInt_t components);
+            inline virtual KTWignerVilleData& SetNComponents(UInt_t components)
+            {
+                fSpectra.resize(components);
+                fWVComponentData.resize(components);
+                return *this;
+            }
 
         protected:
             std::vector< std::pair< UInt_t, UInt_t > > fWVComponentData;
     };
 
-    inline const std::pair< UInt_t, UInt_t >& KTWignerVilleData::GetInputPair(UInt_t component) const
-    {
-        return fWVComponentData[component];
-    }
 
-    inline void KTWignerVilleData::SetInputPair(UInt_t first, UInt_t second, UInt_t component)
-    {
-        if (component >= fSpectra.size()) SetNComponents(component+1);
-        fWVComponentData[component].first = first;
-        fWVComponentData[component].second = second;
-        return;
-    }
-
-    inline KTWignerVilleData& KTWignerVilleData::SetNComponents(UInt_t components)
-    {
-        fSpectra.resize(components);
-        fWVComponentData.resize(components);
-        return *this;
-    }
-
-
-
+    class KTAnalyticAssociateData;
     class KTComplexFFTW;
     class KTData;
     class KTEggHeader;
@@ -111,8 +109,13 @@ namespace Katydid
         public:
             /// Performs the W-V transform on the given time series data.
             Bool_t TransformData(KTTimeSeriesData& data);
+            /// Performs the WV transform on the given analytic associate data.
+            Bool_t TransformData(KTAnalyticAssociateData& data);
 
         private:
+            template< class XDataType >
+            Bool_t TransformFFTWBasedData(XDataType& data);
+
             void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
 
 
@@ -131,6 +134,7 @@ namespace Katydid
          public:
              void ProcessHeader(const KTEggHeader* header);
              void ProcessTimeSeriesData(boost::shared_ptr< KTData > data);
+             void ProcessAnalyticAssociateData(boost::shared_ptr< KTData > data);
 
     };
 
@@ -165,6 +169,51 @@ namespace Katydid
     inline const KTComplexFFTW* KTWignerVille::GetFFT() const
     {
         return fFFT;
+    }
+
+    template< class XDataType >
+    Bool_t KTWignerVille::TransformFFTWBasedData(XDataType& data)
+    {
+        if (fPairs.empty())
+        {
+            KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
+            return false;
+        }
+
+        UInt_t nComponents = data.GetNComponents();
+
+        // cast all time series into KTTimeSeriesFFTW
+        std::vector< const KTTimeSeriesFFTW* > timeSeries(nComponents);
+        for (UInt_t iTS=0; iTS < nComponents; iTS++)
+        {
+            timeSeries[iTS] = dynamic_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(iTS));
+            if (timeSeries[iTS] == NULL)
+            {
+                KTERROR(wvlog, "Time series " << iTS << " did not cast to a const KTTimeSeriesFFTW*. No transforms performed.");
+                return false;
+            }
+        }
+
+        KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nComponents);
+
+        // Do WV transform for each pair
+        UInt_t iPair = 0;
+        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
+        {
+            UInt_t firstChannel = (*pairIt).first;
+            UInt_t secondChannel = (*pairIt).second;
+
+            CrossMultiplyToInputArray(timeSeries[firstChannel], timeSeries[secondChannel], 0);
+
+            KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
+            newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
+
+            newData.SetSpectrum(newSpectrum, iPair);
+            newData.SetInputPair(firstChannel, secondChannel, iPair);
+            iPair++;
+        }
+
+        return true;
     }
 
 

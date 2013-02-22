@@ -7,11 +7,10 @@
 
 #include "KTWignerVille.hh"
 
-#include "KTComplexFFTW.hh"
+#include "KTAnalyticAssociator.hh"
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 //#include "KTSlidingWindowFFTW.hh"
 //#include "KTSlidingWindowFSData.hh"
@@ -44,7 +43,6 @@ using boost::phoenix::ref;
 
 namespace Katydid
 {
-    KTLOGGER(wvlog, "katydid.analysis");
 
     static KTDerivedRegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
 
@@ -60,6 +58,7 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (shared_ptr< KTData >)");
+        RegisterSlot("aa-data", this, &KTWignerVille::ProcessAnalyticAssociateData, "void (shared_ptr< KTData >)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -97,46 +96,12 @@ namespace Katydid
 
     Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data)
     {
-        if (fPairs.empty())
-        {
-            KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
-            return false;
-        }
+        return TransformFFTWBasedData(data);
+    }
 
-        UInt_t nComponents = data.GetNComponents();
-
-        // cast all time series into KTTimeSeriesFFTW
-        vector< const KTTimeSeriesFFTW* > timeSeries(nComponents);
-        for (UInt_t iTS=0; iTS < nComponents; iTS++)
-        {
-            timeSeries[iTS] = dynamic_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(iTS));
-            if (timeSeries[iTS] == NULL)
-            {
-                KTERROR(wvlog, "Time series " << iTS << " did not cast to a const KTTimeSeriesFFTW*. No transforms performed.");
-                return false;
-            }
-        }
-
-        KTWignerVilleData& newData = data.Of< KTWignerVilleData >().SetNComponents(nComponents);
-
-        // Do WV transform for each pair
-        UInt_t iPair = 0;
-        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
-        {
-            UInt_t firstChannel = (*pairIt).first;
-            UInt_t secondChannel = (*pairIt).second;
-
-            CrossMultiplyToInputArray(timeSeries[firstChannel], timeSeries[secondChannel], 0);
-
-            KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
-            newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
-
-            newData.SetSpectrum(newSpectrum, iPair);
-            newData.SetInputPair(firstChannel, secondChannel, iPair);
-            iPair++;
-        }
-
-        return true;
+    Bool_t KTWignerVille::TransformData(KTAnalyticAssociateData& data)
+    {
+        return TransformFFTWBasedData(data);
     }
 
     void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
@@ -231,6 +196,22 @@ namespace Katydid
             return;
         }
         if (! TransformData(data->Of< KTTimeSeriesData >()))
+        {
+            KTERROR(wvlog, "Something went wrong while performing a Wigner-Ville transform");
+            return;
+        }
+        fWVSignal(data);
+        return;
+    }
+
+    void KTWignerVille::ProcessAnalyticAssociateData(shared_ptr< KTData > data)
+    {
+        if (! data->Has< KTAnalyticAssociateData >())
+        {
+            KTERROR(wvlog, "No analytic-associate data was present");
+            return;
+        }
+        if (! TransformData(data->Of< KTAnalyticAssociateData >()))
         {
             KTERROR(wvlog, "Something went wrong while performing a Wigner-Ville transform");
             return;
