@@ -9,16 +9,49 @@
 #ifndef KTGAINNORMALIZATION_HH_
 #define KTGAINNORMALIZATION_HH_
 
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessor.hh"
 
 #include <boost/shared_ptr.hpp>
 
 namespace Katydid
 {
+
+    class KTNormalizedFSDataPolar : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTNormalizedFSDataPolar >
+    {
+        public:
+            KTNormalizedFSDataPolar()
+            {}
+            virtual ~KTNormalizedFSDataPolar()
+            {}
+
+            inline KTNormalizedFSDataPolar& SetNComponents(UInt_t components)
+            {
+                fSpectra.resize(components);
+                return *this;
+            }
+    };
+
+    class KTNormalizedFSDataFFTW : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTNormalizedFSDataFFTW >
+    {
+        public:
+            KTNormalizedFSDataFFTW()
+            {}
+            virtual ~KTNormalizedFSDataFFTW()
+            {}
+
+            inline KTNormalizedFSDataFFTW& SetNComponents(UInt_t components)
+            {
+                fSpectra.resize(components);
+                return *this;
+            }
+    };
+
+
+
     class KTData;
     class KTFrequencySpectrumPolar;
-    class KTFrequencySpectrumDataPolar;
-    class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTGainVariationData;
     class KTPStoreNode;

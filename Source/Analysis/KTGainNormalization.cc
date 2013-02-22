@@ -93,7 +93,7 @@ namespace Katydid
             return false;
         }
 
-        KTFrequencySpectrumDataPolar& newData = fsData.Of< KTFrequencySpectrumDataPolar >().SetNComponents(nComponents);
+        KTNormalizedFSDataPolar& newData = fsData.Of< KTNormalizedFSDataPolar >().SetNComponents(nComponents);
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
@@ -121,7 +121,7 @@ namespace Katydid
             return NULL;
         }
 
-        KTFrequencySpectrumDataFFTW& newData = fsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
+        KTNormalizedFSDataFFTW& newData = fsData.Of< KTNormalizedFSDataFFTW >().SetNComponents(nComponents);
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
