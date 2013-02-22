@@ -113,12 +113,12 @@ namespace Katydid
             KTFrequencySpectrumDataFFTW();
             virtual ~KTFrequencySpectrumDataFFTW();
 
-            virtual KTFrequencySpectrumDataFFTW& SetNComponents(UInt_t channels);
+            virtual KTFrequencySpectrumDataFFTW& SetNComponents(UInt_t components);
     };
 
-    inline KTFrequencySpectrumDataFFTW& KTFrequencySpectrumDataFFTW::SetNComponents(UInt_t channels)
+    inline KTFrequencySpectrumDataFFTW& KTFrequencySpectrumDataFFTW::SetNComponents(UInt_t components)
     {
-        fSpectra.resize(channels);
+        fSpectra.resize(components);
         return *this;
     }
 

@@ -116,12 +116,12 @@ namespace Katydid
             KTFrequencySpectrumDataPolar();
             virtual ~KTFrequencySpectrumDataPolar();
 
-            KTFrequencySpectrumDataPolar& SetNComponents(UInt_t channels);
+            KTFrequencySpectrumDataPolar& SetNComponents(UInt_t component);
     };
 
-    inline KTFrequencySpectrumDataPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t channels)
+    inline KTFrequencySpectrumDataPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t component)
     {
-        fSpectra.resize(channels);
+        fSpectra.resize(component);
         return *this;
     }
 
