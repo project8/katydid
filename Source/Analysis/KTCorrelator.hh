@@ -28,40 +28,37 @@ namespace Katydid
             virtual ~KTCorrelationData()
             {}
 
-            const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const;
+            inline const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const
+            {
+                return fComponentData[component];
+            }
 
-            void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0);
+            inline void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0)
+            {
+                if (component >= fSpectra.size()) SetNComponents(component+1);
+                fComponentData[component].first = first;
+                fComponentData[component].second = second;
+                return;
+            }
 
-            KTCorrelationData& SetNComponents(UInt_t components);
+            inline virtual KTCorrelationData& SetNComponents(UInt_t components)
+            {
+                fSpectra.resize(components);
+                fComponentData.resize(components);
+                return *this;
+            }
 
         protected:
-            std::vector< std::pair< UInt_t, UInt_t > > fWVComponentData;
+            std::vector< std::pair< UInt_t, UInt_t > > fComponentData;
     };
-
-    inline const std::pair< UInt_t, UInt_t >& KTCorrelationData::GetInputPair(UInt_t component) const
-    {
-        return fWVComponentData[component];
-    }
-
-    inline void KTCorrelationData::SetInputPair(UInt_t first, UInt_t second, UInt_t component)
-    {
-        if (component >= fSpectra.size()) SetNComponents(component+1);
-        fWVComponentData[component].first = first;
-        fWVComponentData[component].second = second;
-        return;
-    }
-
-    inline KTCorrelationData& KTCorrelationData::SetNComponents(UInt_t components)
-    {
-        fSpectra.resize(components);
-        fWVComponentData.resize(components);
-        return *this;
-    }
 
 
 
     class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumFFTW;
+    class KTNormalizedFSDataPolar;
+    class KTNormalizedFSDataFFTW;
 
     typedef std::pair< UInt_t, UInt_t > KTCorrelationPair;
 
@@ -89,10 +86,13 @@ namespace Katydid
 
             Bool_t Correlate(KTFrequencySpectrumDataPolar& data);
             Bool_t Correlate(KTFrequencySpectrumDataFFTW& data);
-            //KTCorrelationData* Correlate(const KTFrequencySpectrumDataPolar* data, const PairVector& pairs);
-            //KTCorrelationData* Correlate(const KTFrequencySpectrumDataPolar* data, const KTCorrelationPair& pair);
+            Bool_t Correlate(KTNormalizedFSDataPolar& data);
+            Bool_t Correlate(KTNormalizedFSDataFFTW& data);
 
         protected:
+            Bool_t CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData);
+            Bool_t CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData);
+
             KTFrequencySpectrumPolar* DoCorrelation(const KTFrequencySpectrumPolar* firstSpectrum, const KTFrequencySpectrumPolar* secondSpectrum);
             KTFrequencySpectrumPolar* DoCorrelation(const KTFrequencySpectrumFFTW* firstSpectrum, const KTFrequencySpectrumFFTW* secondSpectrum);
 
@@ -108,8 +108,10 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessFFTData(boost::shared_ptr<KTData>);
-            void ProcessFFTWData(boost::shared_ptr<KTData>);
+            void ProcessPolarData(boost::shared_ptr< KTData > data);
+            void ProcessFFTWData(boost::shared_ptr< KTData > data);
+            void ProcessNormalizedPolarData(boost::shared_ptr< KTData > data);
+            void ProcessNormalizedFFTWData(boost::shared_ptr< KTData > data);
     };
 
     inline void KTCorrelator::AddPair(const KTCorrelationPair& pair)
