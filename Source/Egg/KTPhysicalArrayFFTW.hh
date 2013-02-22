@@ -45,6 +45,7 @@ namespace Katydid
 
         protected:
             array_type fData;
+            fftw_complex fTempCache;
 
         public:
             const fftw_complex& operator()(unsigned i) const;
