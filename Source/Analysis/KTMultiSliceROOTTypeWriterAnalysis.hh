@@ -5,10 +5,10 @@
  *      Author: nsoblath
  */
 
-#ifndef KTMULTIBUNDLEROOTTYPEWRITERANALYSIS_HH_
-#define KTMULTIBUNDLEROOTTYPEWRITERANALYSIS_HH_
+#ifndef KTMULTISLICEROOTTYPEWRITERANALYSIS_HH_
+#define KTMULTISLICEROOTTYPEWRITERANALYSIS_HH_
 
-#include "KTMultiBundleROOTWriter.hh"
+#include "KTMultiSliceROOTWriter.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -18,12 +18,12 @@ namespace Katydid
 {
     class KTData;
 
-    class KTMultiBundleROOTTypeWriterAnalysis : public KTMEROOTTypeWriterBase//, public KTTypeWriterAnalysis
+    class KTMultiSliceROOTTypeWriterAnalysis : public KTMEROOTTypeWriterBase//, public KTTypeWriterAnalysis
     {
 
         public:
-            KTMultiBundleROOTTypeWriterAnalysis();
-            virtual ~KTMultiBundleROOTTypeWriterAnalysis();
+            KTMultiSliceROOTTypeWriterAnalysis();
+            virtual ~KTMultiSliceROOTTypeWriterAnalysis();
 
             void RegisterSlots();
 
@@ -45,4 +45,4 @@ namespace Katydid
 
 
 } /* namespace Katydid */
-#endif /* KTMULTIBUNDLEROOTTYPEWRITERANALYSIS_HH_ */
+#endif /* KTMULTISLICEROOTTYPEWRITERANALYSIS_HH_ */

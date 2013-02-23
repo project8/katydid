@@ -1,11 +1,11 @@
 /*
- * KTMultiBundleROOTWriter.cc
+ * KTMultiSliceROOTWriter.cc
  *
  *  Created on: Jan 28, 2013
  *      Author: nsoblath
  */
 
-#include "KTMultiBundleROOTWriter.hh"
+#include "KTMultiSliceROOTWriter.hh"
 
 #include "KTFactory.hh"
 #include "KTLogger.hh"
@@ -19,11 +19,11 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTMultiBundleROOTWriter > sMERWriterRegistrar("multi-bundle-root-writer");
-    static KTDerivedRegistrar< KTProcessor, KTMultiBundleROOTWriter > sMERWProcRegistrar("multi-bundle-root-writer");
+    static KTDerivedRegistrar< KTWriter, KTMultiSliceROOTWriter > sMERWriterRegistrar("multi-bundle-root-writer");
+    static KTDerivedRegistrar< KTProcessor, KTMultiSliceROOTWriter > sMERWProcRegistrar("multi-bundle-root-writer");
 
-    KTMultiBundleROOTWriter::KTMultiBundleROOTWriter() :
-            KTWriterWithTypists< KTMultiBundleROOTWriter >(),
+    KTMultiSliceROOTWriter::KTMultiSliceROOTWriter() :
+            KTWriterWithTypists< KTMultiSliceROOTWriter >(),
             fUseTFile(true),
             fTFilename("multi_bundle.root"),
             fTFileFlag("recreate"),
@@ -35,11 +35,11 @@ namespace Katydid
     {
         fConfigName = "multi-bundle-root-writer";
 
-        RegisterSlot("start", this, &KTMultiBundleROOTWriter::Start, "void ()");
-        RegisterSlot("finish", this, &KTMultiBundleROOTWriter::Finish, "void ()");
+        RegisterSlot("start", this, &KTMultiSliceROOTWriter::Start, "void ()");
+        RegisterSlot("finish", this, &KTMultiSliceROOTWriter::Finish, "void ()");
     }
 
-    KTMultiBundleROOTWriter::~KTMultiBundleROOTWriter()
+    KTMultiSliceROOTWriter::~KTMultiSliceROOTWriter()
     {
         if (fFile != NULL)
         {
@@ -48,7 +48,7 @@ namespace Katydid
         delete fFile;
     }
 
-    Bool_t KTMultiBundleROOTWriter::Configure(const KTPStoreNode* node)
+    Bool_t KTMultiSliceROOTWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
@@ -66,7 +66,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiBundleROOTWriter::OpenAndVerifyFile()
+    Bool_t KTMultiSliceROOTWriter::OpenAndVerifyFile()
     {
         if (fUseTFile)
         {
@@ -86,7 +86,7 @@ namespace Katydid
         return true;
     }
 
-    void KTMultiBundleROOTWriter::Start()
+    void KTMultiSliceROOTWriter::Start()
     {
         for (TypeWriterMap::iterator it = fTypeWriters.begin(); it != fTypeWriters.end(); it++)
         {
@@ -95,7 +95,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiBundleROOTWriter::Finish()
+    void KTMultiSliceROOTWriter::Finish()
     {
         for (TypeWriterMap::iterator it = fTypeWriters.begin(); it != fTypeWriters.end(); it++)
         {

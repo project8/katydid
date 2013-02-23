@@ -1,11 +1,11 @@
 /*
- * KTMultiBundleROOTTypeWriterEgg.cc
+ * KTMultiSliceROOTTypeWriterEgg.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTMultiBundleROOTTypeWriterEgg.hh"
+#include "KTMultiSliceROOTTypeWriterEgg.hh"
 
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
@@ -29,35 +29,35 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTMultiBundleROOTTypeWriter, KTMultiBundleROOTTypeWriterEgg > sMERTWERegistrar;
+    static KTDerivedTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterEgg > sMERTWERegistrar;
 
-    KTMultiBundleROOTTypeWriterEgg::KTMultiBundleROOTTypeWriterEgg() :
+    KTMultiSliceROOTTypeWriterEgg::KTMultiSliceROOTTypeWriterEgg() :
             KTMEROOTTypeWriterBase(),
             //KTTypeWriterEgg()
             fTSHists()
     {
     }
 
-    KTMultiBundleROOTTypeWriterEgg::~KTMultiBundleROOTTypeWriterEgg()
+    KTMultiSliceROOTTypeWriterEgg::~KTMultiSliceROOTTypeWriterEgg()
     {
         ClearHistograms();
     }
 
-    void KTMultiBundleROOTTypeWriterEgg::StartNewHistograms()
+    void KTMultiSliceROOTTypeWriterEgg::StartNewHistograms()
     {
         ClearHistograms();
         // At this point the vector is size 0
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterEgg::FinishHistograms()
+    void KTMultiSliceROOTTypeWriterEgg::FinishHistograms()
     {
         OutputHistograms();
         ClearHistograms();
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterEgg::OutputHistograms()
+    void KTMultiSliceROOTTypeWriterEgg::OutputHistograms()
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -86,7 +86,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterEgg::ClearHistograms()
+    void KTMultiSliceROOTTypeWriterEgg::ClearHistograms()
     {
         for (vector<TH1D*>::iterator it=fTSHists.begin(); it != fTSHists.end(); it++)
         {
@@ -96,16 +96,16 @@ namespace Katydid
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterEgg::RegisterSlots()
+    void KTMultiSliceROOTTypeWriterEgg::RegisterSlots()
     {
-        fWriter->RegisterSlot("start-by-header", this, &KTMultiBundleROOTTypeWriterEgg::StartByHeader, "void (const KTEggHeader*)");
+        fWriter->RegisterSlot("start-by-header", this, &KTMultiSliceROOTTypeWriterEgg::StartByHeader, "void (const KTEggHeader*)");
 
-        fWriter->RegisterSlot("ts", this, &KTMultiBundleROOTTypeWriterEgg::AddTimeSeriesData, "void (shared_ptr<KTData>)");
+        fWriter->RegisterSlot("ts", this, &KTMultiSliceROOTTypeWriterEgg::AddTimeSeriesData, "void (shared_ptr<KTData>)");
         return;
     }
 
 
-    void KTMultiBundleROOTTypeWriterEgg::StartByHeader(const KTEggHeader* header)
+    void KTMultiSliceROOTTypeWriterEgg::StartByHeader(const KTEggHeader* header)
     {
         fWriter->Start();
         return;
@@ -116,7 +116,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiBundleROOTTypeWriterEgg::AddTimeSeriesData(shared_ptr<KTData> data)
+    void KTMultiSliceROOTTypeWriterEgg::AddTimeSeriesData(shared_ptr<KTData> data)
     {
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
         if (fTSHists.size() == 0)

@@ -1,12 +1,12 @@
 /*
- * KTMultiBundleROOTWriter.hh
+ * KTMultiSliceROOTWriter.hh
  *
  *  Created on: Jan 28, 2013
  *      Author: nsoblath
  */
 
-#ifndef KTMULTIBUNDLEROOTWRITER_HH_
-#define KTMULTIBUNDLEROOTWRITER_HH_
+#ifndef KTMULTISLICEROOTWRITER_HH_
+#define KTMULTISLICEROOTWRITER_HH_
 
 #include "KTWriter.hh"
 
@@ -14,11 +14,11 @@
 
 namespace Katydid
 {
-    class KTMultiBundleROOTWriter;
+    class KTMultiSliceROOTWriter;
 
-    typedef KTDerivedTypeWriter< KTMultiBundleROOTWriter > KTMultiBundleROOTTypeWriter;
+    typedef KTDerivedTypeWriter< KTMultiSliceROOTWriter > KTMultiSliceROOTTypeWriter;
 
-    class KTMEROOTTypeWriterBase : public KTMultiBundleROOTTypeWriter
+    class KTMEROOTTypeWriterBase : public KTMultiSliceROOTTypeWriter
     {
         public:
             KTMEROOTTypeWriterBase() {}
@@ -30,11 +30,11 @@ namespace Katydid
     };
 
 
-    class KTMultiBundleROOTWriter : public KTWriterWithTypists< KTMultiBundleROOTWriter >//public KTWriter
+    class KTMultiSliceROOTWriter : public KTWriterWithTypists< KTMultiSliceROOTWriter >//public KTWriter
     {
         public:
-            KTMultiBundleROOTWriter();
-            virtual ~KTMultiBundleROOTWriter();
+            KTMultiSliceROOTWriter();
+            virtual ~KTMultiSliceROOTWriter();
 
             Bool_t Configure(const KTPStoreNode* node);
 
@@ -90,13 +90,13 @@ namespace Katydid
 
     };
 
-    inline TFile* KTMultiBundleROOTWriter::OpenFile(const std::string& filename, const std::string& flag)
+    inline TFile* KTMultiSliceROOTWriter::OpenFile(const std::string& filename, const std::string& flag)
     {
         CloseFile();
         fFile = new TFile(filename.c_str(), flag.c_str());
         return fFile;
     }
-    inline void KTMultiBundleROOTWriter::CloseFile()
+    inline void KTMultiSliceROOTWriter::CloseFile()
     {
         if (fFile != NULL)
         {
@@ -107,84 +107,84 @@ namespace Katydid
         return;
     }
 
-    inline Bool_t KTMultiBundleROOTWriter::GetUseTFile() const
+    inline Bool_t KTMultiSliceROOTWriter::GetUseTFile() const
     {
         return fUseTFile;
     }
-    inline void KTMultiBundleROOTWriter::SetUseTFile(Bool_t flag)
+    inline void KTMultiSliceROOTWriter::SetUseTFile(Bool_t flag)
     {
         fUseTFile = flag;
         return;
     }
 
-    inline const std::string& KTMultiBundleROOTWriter::GetTFilename() const
+    inline const std::string& KTMultiSliceROOTWriter::GetTFilename() const
     {
         return fTFilename;
     }
-    inline void KTMultiBundleROOTWriter::SetTFilename(const std::string& filename)
+    inline void KTMultiSliceROOTWriter::SetTFilename(const std::string& filename)
     {
         fTFilename = filename;
         return;
     }
 
-    inline const std::string& KTMultiBundleROOTWriter::GetTFileFlag() const
+    inline const std::string& KTMultiSliceROOTWriter::GetTFileFlag() const
     {
         return fTFileFlag;
     }
-    inline void KTMultiBundleROOTWriter::SetTFileFlag(const std::string& flag)
+    inline void KTMultiSliceROOTWriter::SetTFileFlag(const std::string& flag)
     {
         fTFileFlag = flag;
         return;
     }
 
-    inline Bool_t KTMultiBundleROOTWriter::GetUseGraphics() const
+    inline Bool_t KTMultiSliceROOTWriter::GetUseGraphics() const
     {
         return fUseGraphics;
     }
-    inline void KTMultiBundleROOTWriter::SetUseGraphics(Bool_t flag)
+    inline void KTMultiSliceROOTWriter::SetUseGraphics(Bool_t flag)
     {
         fUseGraphics = flag;
         return;
     }
 
-    inline const std::string& KTMultiBundleROOTWriter::GetGraphicsFilePath() const
+    inline const std::string& KTMultiSliceROOTWriter::GetGraphicsFilePath() const
     {
         return fGraphicsFilePath;
     }
 
-    inline void KTMultiBundleROOTWriter::SetGraphicsFilePath(const std::string& path)
+    inline void KTMultiSliceROOTWriter::SetGraphicsFilePath(const std::string& path)
     {
         fGraphicsFilePath = path;
         return;
     }
 
-    inline const std::string& KTMultiBundleROOTWriter::GetGraphicsFilenameBase() const
+    inline const std::string& KTMultiSliceROOTWriter::GetGraphicsFilenameBase() const
     {
         return fGraphicsFilenameBase;
     }
 
-    inline void KTMultiBundleROOTWriter::SetGraphicsFilenameBase(const std::string& fname)
+    inline void KTMultiSliceROOTWriter::SetGraphicsFilenameBase(const std::string& fname)
     {
         fGraphicsFilenameBase = fname;
         return;
     }
 
-    inline const std::string& KTMultiBundleROOTWriter::GetGraphicsFileType() const
+    inline const std::string& KTMultiSliceROOTWriter::GetGraphicsFileType() const
     {
         return fGraphicsFileType;
     }
 
-    inline void KTMultiBundleROOTWriter::SetGraphicsFileType(const std::string& type)
+    inline void KTMultiSliceROOTWriter::SetGraphicsFileType(const std::string& type)
     {
         fGraphicsFileType = type;
         return;
     }
 
-    inline TFile* KTMultiBundleROOTWriter::GetFile()
+    inline TFile* KTMultiSliceROOTWriter::GetFile()
     {
         return fFile;
     }
 
 
 } /* namespace Katydid */
-#endif /* KTMULTIBUNDLEROOTWRITER_HH_ */
+#endif /* KTMULTISICEROOTWRITER_HH_ */
