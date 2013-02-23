@@ -22,8 +22,8 @@ if (Katydid_ENABLE_TESTING)
     
     # Executables that do NOT require ROOT
     
-    #add_executable (ExtractEvents ${CMAKE_CURRENT_SOURCE_DIR}/ExtractEvents.cc)
-    #target_link_libraries (ExtractEvents KatydidUtility KatydidEgg ${LIBS})
+    #add_executable (ExtractBundles ${CMAKE_CURRENT_SOURCE_DIR}/ExtractBundles.cc)
+    #target_link_libraries (ExtractBundles KatydidUtility KatydidEgg ${LIBS})
     
     add_executable (TestApplication ${CMAKE_CURRENT_SOURCE_DIR}/TestApplication.cc
                                     ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
@@ -77,6 +77,9 @@ if (Katydid_ENABLE_TESTING)
     )
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
+    #add_executable (TestSimpleClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleClustering.cc)
+    #target_link_libraries (TestSimpleClustering KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${LIBS})
+
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
     target_link_libraries (TestSimpleFFT KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT ${LIBS})
 
@@ -115,6 +118,7 @@ if (Katydid_ENABLE_TESTING)
                      TestLogger
                      TestParameterStore
                      TestSignalsAndSlots
+                     #TestSimpleClustering
                      TestSimpleFFT
                      TestSlidingWindowFFT
                      TestSpectrumDiscriminator
@@ -124,8 +128,8 @@ if (Katydid_ENABLE_TESTING)
 #		     TestASCIIFileWriter
     )
              
-    # this command won't run; ExtractEvents needs arguments; I still need to add a data file to the repository to use here.
-    #add_test (Test_ExtractEvents ExtractEvents)
+    # this command won't run; ExtractBundles needs arguments; I still need to add a data file to the repository to use here.
+    #add_test (Test_ExtractBundles ExtractBundles)
     add_test (Test_Application TestApplication)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_CacheDirectory TestCacheDirectory)
@@ -142,6 +146,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_Logger TestLogger)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
+    #add_test (Test_SimpleClustering TestSimpleClustering)
     add_test (Test_SimpleFFT TestSimpleFFT)
     add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
     add_test (Test_SpectrumDiscriminator TestSpectrumDiscriminator)

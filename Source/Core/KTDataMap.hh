@@ -33,14 +33,22 @@ namespace Katydid
             KTDataMap();
             virtual ~KTDataMap();
 
+            /// Returns a pointer to the data object, if it exists in the map
             virtual KTData* GetData(const std::string& name) = 0;
 
+            /// Returns a pointer to the data object, if it exists in the map, and removes the object from the map
+            virtual KTData* ExtractData(const std::string& name) = 0;
+
+            /// Removes the object from the map and deletes it
             virtual Bool_t RemoveData(const std::string& name) = 0;
 
+            /// Returns true if the map is empty
             virtual Bool_t Empty() = 0;
 
+            /// Returns the number of data objects in the map
             virtual UInt_t Size() = 0;
 
+            /// Prints the contents of the map
             virtual void PrintMap() = 0;
     };
 
@@ -66,6 +74,8 @@ namespace Katydid
             Bool_t AddData(const std::string& name, XDerivedData* data);
 
             MapType* GetData(const std::string& name);
+
+            MapType* ExtractData(const std::string& name);
 
             Bool_t RemoveData(const std::string& name);
 
@@ -124,8 +134,20 @@ namespace Katydid
     }
 
     template< class XDerivedData >
+    typename KTDerivedDataMap< XDerivedData >::MapType* KTDerivedDataMap< XDerivedData >::ExtractData(const std::string& name)
+    {
+        typename DataMap::const_iterator it = fDataMap.find(name);
+        if (it == fDataMap.end()) return NULL;
+        fDataMap.erase(name);
+        return it->second;
+    }
+
+    template< class XDerivedData >
     Bool_t KTDerivedDataMap< XDerivedData >::RemoveData(const std::string& name)
     {
+        typename DataMap::iterator it = fDataMap.find(name);
+        if (it == fDataMap.end()) return true;
+        delete it->second;
         return Bool_t(fDataMap.erase(name) > 0);
     }
 

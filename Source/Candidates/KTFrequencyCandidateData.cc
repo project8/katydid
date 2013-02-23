@@ -16,11 +16,13 @@ namespace Katydid
 
     static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencyCandidateData > > sFCDMRegistrar;
 
-    KTFrequencyCandidateData::KTFrequencyCandidateData(UInt_t nGroups) :
+    KTFrequencyCandidateData::KTFrequencyCandidateData(UInt_t nComponents) :
             KTWriteableData(),
-            fGroupData(nGroups),
+            fComponentData(nComponents),
             fNBins(1),
-            fBinWidth(1.)
+            fBinWidth(1.),
+            fTimeInRun(0.),
+            fSliceNumber(0)
     {
     }
 

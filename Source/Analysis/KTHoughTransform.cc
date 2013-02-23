@@ -7,13 +7,13 @@
 
 #include "KTHoughTransform.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTWriteableData.hh"
@@ -50,7 +50,7 @@ namespace Katydid
         //RegisterSlot("header", this, &KTHoughTransform::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("swfs-data", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
         RegisterSlot("disc-data", this, &KTHoughTransform::ProcessDiscriminatedData, "void (const KTDiscriminatedPoints2DData*)");
-        RegisterSlot("event", this, &KTHoughTransform::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTHoughTransform::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTHoughTransform::~KTHoughTransform()
@@ -76,7 +76,7 @@ namespace Katydid
         {
             const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum = data->GetSpectra(iChannel);
 
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* freqSpectra = RemoveNegativeFrequencies(inputSpectrum);
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* freqSpectra = RemoveNegativeFrequencies(inputSpectrum);
 
             KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = TransformSpectrum(freqSpectra);
             if (newTransform == NULL)
@@ -95,7 +95,7 @@ namespace Katydid
             delete freqSpectra;
         }
 
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
         newData->SetName(fOutputDataName);
 
         fHTSignal(newData);
@@ -103,7 +103,7 @@ namespace Katydid
         return newData;
     }
 
-    KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughTransform::TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrum* >* powerSpectrum)
+    KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughTransform::TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum)
     {
         UInt_t nTimeBins = powerSpectrum->size();
         UInt_t nFreqBins = (*powerSpectrum)(0)->size();
@@ -176,7 +176,7 @@ namespace Katydid
             }
         }
 
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
         newData->SetName(fOutputDataName);
 
         fHTSignal(newData);
@@ -229,14 +229,14 @@ namespace Katydid
     }
 
 
-    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTHoughTransform::RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum)
+    KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTHoughTransform::RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum)
     {
         UInt_t nTimeBins = inputSpectrum->size();
-        KTPhysicalArray< 1, KTFrequencySpectrum* >* newFrequencySpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(nTimeBins, inputSpectrum->GetRangeMin(), inputSpectrum->GetRangeMax());
+        KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* newFrequencySpectra = new KTPhysicalArray< 1, KTFrequencySpectrumPolar* >(nTimeBins, inputSpectrum->GetRangeMin(), inputSpectrum->GetRangeMax());
 
         for (Int_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            KTFrequencySpectrum* newSpectrum = (*inputSpectrum)(iTimeBin)->CreateFrequencySpectrum();
+            KTFrequencySpectrumPolar* newSpectrum = (*inputSpectrum)(iTimeBin)->CreateFrequencySpectrum();
             (*newFrequencySpectra)(iTimeBin) = newSpectrum;
         }
 /*
@@ -283,10 +283,10 @@ namespace Katydid
             return;
         }
 
-        KTEvent* event = data->GetEvent();
-        if (event != NULL)
+        KTBundle* bundle = data->GetBundle();
+        if (bundle != NULL)
         {
-            event->AddData(newData);
+            bundle->AddData(newData);
         }
 
         return;
@@ -302,33 +302,33 @@ namespace Katydid
             return;
         }
 
-        KTEvent* event = data->GetEvent();
-        if (event != NULL)
+        KTBundle* bundle = data->GetBundle();
+        if (bundle != NULL)
         {
-            event->AddData(newData);
+            bundle->AddData(newData);
         }
 
         return;
     }
 
 
-    void KTHoughTransform::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTHoughTransform::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTDiscriminatedPoints2DData* dpData = event->GetData< KTDiscriminatedPoints2DData >(fInputDataName);
+        const KTDiscriminatedPoints2DData* dpData = bundle->GetData< KTDiscriminatedPoints2DData >(fInputDataName);
         if (dpData != NULL)
         {
             ProcessDiscriminatedData(dpData);
             return;
         }
 
-        const KTSlidingWindowFSDataFFTW* swsfData = event->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
+        const KTSlidingWindowFSDataFFTW* swsfData = bundle->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
         if (swsfData != NULL)
         {
             ProcessSWFSData(swsfData);
             return;
         }
 
-        KTWARN(htlog, "No sliding-window frequency-spectrum data named <" << fInputDataName << "> was available in the event");
+        KTWARN(htlog, "No sliding-window frequency-spectrum data named <" << fInputDataName << "> was available in the bundle");
         return;
     }
 

@@ -13,7 +13,7 @@
 #include "KTConfigurable.hh"
 
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
 #include <fftw3/fftw3.h>
@@ -27,7 +27,7 @@ namespace Katydid
     KTLOGGER(fftlog_simp, "katydid.fft");
 
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
     class KTPStoreNode;
     class KTTimeSeries;
     class KTTimeSeriesData;
@@ -58,7 +58,7 @@ namespace Katydid
 
      Slots:
      \li \c void ProcessHeader(const KTEggHeader* header)
-     \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
+     \li \c void ProcessBundle(UInt_t iBundle, const KTBundle* bundle)
 
      Signals:
      \li \c void (UInt_t, const KTInverseSimpleFFT*) emitted upon performance of a transform.
@@ -83,7 +83,7 @@ namespace Katydid
 
             virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
-            KTFrequencySpectrum* Transform(const KTTimeSeries* data) const;
+            KTFrequencySpectrumPolar* Transform(const KTTimeSeries* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -100,7 +100,7 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
+            KTFrequencySpectrumPolar* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;
@@ -126,7 +126,7 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(KTEvent* event);
+            void ProcessBundle(KTBundle* bundle);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };

@@ -35,11 +35,7 @@ namespace Katydid
 
     KTBasicROOTFileWriter::~KTBasicROOTFileWriter()
     {
-        if (fFile != NULL)
-        {
-            fFile->Close();
-        }
-        delete fFile;
+        CloseFile();
     }
 
     Bool_t KTBasicROOTFileWriter::Configure(const KTPStoreNode* node)

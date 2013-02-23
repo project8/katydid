@@ -9,13 +9,17 @@
 
 #include "KTLogger.hh"
 #include "KTPowerSpectrum.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
 #endif
 
 #include <sstream>
+
+#ifdef USE_OPENMP
+#include <omp.h>
+#endif
 
 using std::stringstream;
 
@@ -25,17 +29,21 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW() :
             KTPhysicalArray< 1, fftw_complex >(),
+            KTFrequencySpectrum(),
             fIsSizeEven(true),
             fNegFreqOffset(0),
-            fDCBin(0)
+            fDCBin(0),
+            fPointCache()
     {
     }
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax),
+            KTFrequencySpectrum(),
             fIsSizeEven(nBins%2 == 0),
             fNegFreqOffset((nBins+1)/2),
-            fDCBin(nBins/2)
+            fDCBin(nBins/2),
+            fPointCache()
     {
         //KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
         //KTINFO(fslog, "neg freq offset: " << fNegFreqOffset);
@@ -43,9 +51,11 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
             KTPhysicalArray< 1, fftw_complex >(orig),
+            KTFrequencySpectrum(),
             fIsSizeEven(orig.fIsSizeEven),
             fNegFreqOffset(orig.fNegFreqOffset),
-            fDCBin(orig.fDCBin)
+            fDCBin(orig.fDCBin),
+            fPointCache()
     {
     }
 
@@ -65,6 +75,7 @@ namespace Katydid
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::CConjugate()
     {
         UInt_t nBins = size();
+#pragma omp parallel for
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             // order doesn't matter, so use fData[] to access values
@@ -81,11 +92,13 @@ namespace Katydid
         // Positive frequency bins are multiplied by 2 (from array position 1 to size/2).
         UInt_t nBins = size();
         UInt_t nyquistPos = nBins / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
+#pragma omp parallel for
         for (UInt_t arrayPos=1; arrayPos<nyquistPos; arrayPos++)
         {
             fData[arrayPos][0] = fData[arrayPos][0] * 2.;
             fData[arrayPos][1] = fData[arrayPos][1] * 2.;
         }
+#pragma omp parallel for
         for (UInt_t arrayPos=nyquistPos; arrayPos<nBins; arrayPos++)
         {
             fData[arrayPos][0] = 0.;
@@ -95,13 +108,13 @@ namespace Katydid
     }
 
 
-    KTFrequencySpectrum* KTFrequencySpectrumFFTW::CreateFrequencySpectrum() const
+    KTFrequencySpectrumPolar* KTFrequencySpectrumFFTW::CreateFrequencySpectrum() const
     {
         // The negative frequency values will be combined with the positive ones,
         // so the power spectrum will go from the DC bin to the max frequency
 
         UInt_t nBins = fDCBin + 1;
-        KTFrequencySpectrum* newFS = new KTFrequencySpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
+        KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar(nBins, -0.5 * GetBinWidth(), GetRangeMax());
         Double_t valueImag, valueReal;
 
         // DC bin
@@ -109,6 +122,7 @@ namespace Katydid
 
         // All bins besides the Nyquist and DC bins
         UInt_t totalBins = size();
+        /*
         UInt_t iPosBin = fDCBin + 1;
         UInt_t iNegBin = fDCBin - 1;
         for (UInt_t iBin=1; iBin<nBins-1; iBin++)
@@ -120,6 +134,14 @@ namespace Katydid
             (*newFS)(iBin).set_rect(valueReal, valueImag);
             iPosBin++;
             iNegBin--;
+        }
+         */
+#pragma omp parallel for private(valueReal, valueImag)
+        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+        {
+            valueReal = (*this)(fDCBin - iBin)[0] + (*this)(fDCBin + iBin)[0];
+            valueImag = (*this)(fDCBin - iBin)[1] + (*this)(fDCBin + iBin)[1];
+            (*newFS)(iBin).set_rect(valueReal, valueImag);
         }
 
         // Nyquist bin
@@ -153,6 +175,7 @@ namespace Katydid
 
         // All bins besides the Nyquist and DC bins
         UInt_t totalBins = size();
+        /*
         UInt_t iPosBin = fDCBin + 1;
         UInt_t iNegBin = fDCBin - 1;
         for (UInt_t iBin=1; iBin<nBins-1; iBin++)
@@ -165,6 +188,15 @@ namespace Katydid
             (*newPS)(iBin) = value * scaling;
             iPosBin++;
             iNegBin--;
+        }
+        */
+#pragma omp parallel for private(valueReal, valueImag)
+        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+        {
+            valueReal = (*this)(fDCBin - iBin)[0] + (*this)(fDCBin + iBin)[0];
+            valueImag = (*this)(fDCBin - iBin)[1] + (*this)(fDCBin + iBin)[1];
+            value = valueReal * valueReal + valueImag * valueImag;
+            (*newPS)(iBin) = value * scaling;
         }
 
         // Nyquist bin
@@ -229,16 +261,45 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        Double_t value;
+        UInt_t nBins = fDCBin + 1;
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, -0.5 * GetBinWidth(), GetRangeMax());
+        Double_t value, valueImag, valueReal;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+
+        // DC bin
+        value = (*this)(fDCBin)[0] * (*this)(fDCBin)[0] + (*this)(fDCBin)[1] * (*this)(fDCBin)[1];
+        hist->SetBinContent(1, value * scaling);
+
+        // All bins besides the Nyquist and DC bins
+        UInt_t totalBins = size();
+        UInt_t iPosBin = fDCBin + 1;
+        UInt_t iNegBin = fDCBin - 1;
+        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
         {
+            //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
             // order matters, so use (*this)() to access values
-            value = (*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1];
-            hist->SetBinContent((Int_t)iBin + 1, value * scaling);
+            valueReal = (*this)(iNegBin)[0] + (*this)(iPosBin)[0];
+            valueImag = (*this)(iNegBin)[1] + (*this)(iPosBin)[1];
+            value = valueReal * valueReal + valueImag * valueImag;
+            hist->SetBinContent(iBin + 1, value * scaling);
+            iPosBin++;
+            iNegBin--;
         }
+
+        // Nyquist bin
+        if (fIsSizeEven)
+        {
+            value = (*this)(0)[0] * (*this)(0)[0] + (*this)(0)[1] * (*this)(0)[1];
+            hist->SetBinContent(nBins, value * scaling);
+        }
+        else
+        {
+            valueReal = (*this)(0)[0] + (*this)(totalBins-1)[0];
+            valueImag = (*this)(0)[1] + (*this)(totalBins-1)[1];
+            value = valueReal * valueReal + valueImag * valueImag;
+            hist->SetBinContent(nBins, value * scaling);
+        }
+
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Power (W)");
         return hist;

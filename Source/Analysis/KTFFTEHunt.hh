@@ -14,7 +14,7 @@
 #include "KTSimpleFFT.hh"
 #include "KTSlidingWindowFFT.hh"
 #include "KTOldGainNormalization.hh"
-#include "KTSimpleClustering.hh"
+#include "KTOldSimpleClustering.hh"
 
 #ifdef ROOT_FOUND
 #include "TFile.h"
@@ -41,7 +41,7 @@ namespace Katydid
      @brief Performs an FFT-based electron hunt.
 
      @details
-     Uses a windows FFT of Egg events to search for clusters of high-peaked bins moving up in frequency.
+     Uses a windows FFT of Egg bundles to search for clusters of high-peaked bins moving up in frequency.
 
      Available configuration values:
      \li \c output-filename_base --
@@ -51,14 +51,14 @@ namespace Katydid
      \li \c group-bins-margin-high --
      \li \c group-bins-margin-low --
      \li \c group-bins-margin-same_time --
-     \li \c input-data-name -- name used to find data when processing an event
+     \li \c input-data-name -- name used to find data when processing an bundle
 
     */
 
     class KTFFTEHunt : public KTProcessor
     {
         private:
-            typedef std::list< std::multimap< Int_t, Int_t >* > EventPeakBinsList;
+            typedef std::list< std::multimap< Int_t, Int_t >* > BundlePeakBinsList;
             typedef std::pair< Double_t, Double_t > CutRange;
 
         public:
@@ -69,12 +69,12 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 
             void FinishHunt();
 
         private:
-            void EmptyEventPeakBins();
+            void EmptyBundlePeakBins();
 
         public:
             const std::string& GetTextFilename() const;
@@ -99,7 +99,7 @@ namespace Katydid
             //void SetOutputDataName(const std::string& name);
 
         private:
-            EventPeakBinsList fEventPeakBins;
+            BundlePeakBinsList fBundlePeakBins;
 
             UInt_t fMinimumGroupSize;
 
@@ -108,7 +108,7 @@ namespace Katydid
             KTSimpleFFT fSimpleFFT;
             KTSlidingWindowFFT fWindowFFT;
             KTOldGainNormalization fGainNorm;
-            KTSimpleClustering fClustering;
+            KTOldSimpleClustering fClustering;
 
             std::string fTextFilename;
             std::string fROOTFilename;

@@ -39,7 +39,8 @@ namespace Katydid
             fPrelude(),
             fHeaderSize(0),
             fHeader(),
-            fHeaderInfo()
+            fHeaderInfo(),
+            fRecordsRead(0)
     {
     }
 
@@ -161,7 +162,7 @@ namespace Katydid
         }
         fHeaderInfo.fRecordSize = ConvertFromArray< int >(attr->value());
 
-        fHeaderInfo.fEventSize = fHeaderInfo.fFrameIDSize + fHeaderInfo.fTimeStampSize + fHeaderInfo.fRecordSize;
+        fHeaderInfo.fBundleSize = fHeaderInfo.fFrameIDSize + fHeaderInfo.fTimeStampSize + fHeaderInfo.fRecordSize;
 
         rapidxml::xml_node<char>* nodeDigitizer = nodeHeader->first_node("digitizer");
         if (nodeDigitizer == NULL)
@@ -201,25 +202,27 @@ namespace Katydid
              << "\tRun Length: " << fHeaderInfo.fRunLength << " s" << '\n'
              << "\tSample Rate: " << fHeaderInfo.fSampleRate << " Hz ");
 
+        fRecordsRead = 0;
+
         // Everything should have been done correctly at this point,
         // and we're ready to create, fill, and return the KTEggHeader
 
         KTEggHeader* eggHeader = new KTEggHeader();
         eggHeader->SetFilename(filename);
         eggHeader->SetAcquisitionMode(sOneChannel);
+        eggHeader->SetSliceSize(fHeaderInfo.fRecordSize);
         eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
-        eggHeader->SetMonarchRecordSize(fHeaderInfo.fRecordSize);
         eggHeader->SetAcquisitionTime(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
         eggHeader->SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
 
         return eggHeader;
     }
 
-    KTTimeSeriesData* KTEggReader2011::HatchNextEvent()
+    KTTimeSeriesData* KTEggReader2011::HatchNextBundle()
     {
         if (! fEggStream.good()) return NULL;
 
-        KTProgenitorTimeSeriesData* eventData = new KTProgenitorTimeSeriesData(1);
+        KTProgenitorTimeSeriesData* tsData = new KTProgenitorTimeSeriesData(1);
 
         unsigned char* readBuffer;
 
@@ -238,7 +241,7 @@ namespace Katydid
             //vector< unsigned > newTimeStamp(readBuffer, readBuffer + fHeaderInfo.fTimeStampSize/sizeof(unsigned char));
             unsigned long int newTimeStamp = ConvertFromArray< unsigned long >(readBuffer);
             delete [] readBuffer;
-            eventData->SetTimeStamp(newTimeStamp);
+            tsData->SetTimeStamp(newTimeStamp);
             //std::cout << "Time stamp (" << newTimeStamp.size() << " chars): ";
             //for (int i=0; i<newTimeStamp.size(); i++)
             //    std::cout << newTimeStamp[i];
@@ -247,7 +250,7 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading time stamp size");
-            delete eventData;
+            delete tsData;
             return NULL;
         }
 
@@ -266,20 +269,22 @@ namespace Katydid
             //vector< unsigned > newFrameID(readBuffer, readBuffer + fHeaderInfo.fFrameIDSize()/sizeof(unsigned char));
             unsigned newFrameID = ConvertFromArray< unsigned >(readBuffer);
             delete [] readBuffer;
-            eventData->SetAcquisitionID(newFrameID);
+            tsData->SetAcquisitionID(newFrameID);
         }
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading frame size");
-            delete eventData;
+            delete tsData;
             return NULL;
         }
 
         // Other information
-        eventData->SetSampleRate(double(fHeaderInfo.fSampleRate));
-        eventData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
-        eventData->SetRecordSize(fHeaderInfo.fRecordSize);
-        eventData->SetRecordLength(double(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
+        tsData->SetSampleRate(double(fHeaderInfo.fSampleRate));
+        tsData->SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
+        tsData->SetSliceSize(fHeaderInfo.fRecordSize);
+        tsData->SetSliceLength(double(fHeaderInfo.fRecordSize) * tsData->GetBinWidth());
+        tsData->SetTimeInRun(GetTimeInRun());
+        tsData->SetSliceNumber((ULong64_t)fRecordsRead);
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];
@@ -290,29 +295,30 @@ namespace Katydid
                     << "\tExpected: :" << fHeaderInfo.fRecordSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
-            delete eventData;
+            delete tsData;
             return NULL;
         }
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * eventData->GetBinWidth());
+            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * tsData->GetBinWidth());
             for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
                 //(*newRecord)(iBin) = Double_t(readBuffer[iBin]);
                 newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));
             }
             delete [] readBuffer;
-            eventData->SetTimeSeries(newRecord);
+            tsData->SetTimeSeries(newRecord);
+            fRecordsRead++;
         }
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Warning from KTEgg::HatchNextEvent: Egg stream state is not good after reading in this event.");
+            KTERROR(eggreadlog, "Warning from KTEgg::HatchNextBundle: Egg stream state is not good after reading in this bundle.");
         }
 
-        eventData->SetName(fOutputDataName);
+        tsData->SetName(fOutputDataName);
 
-        return eventData;
+        return tsData;
     }
 
     bool KTEggReader2011::CloseEgg()

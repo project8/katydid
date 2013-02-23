@@ -13,7 +13,7 @@
 #include "KTProcessor.hh"
 
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -29,7 +29,7 @@ namespace Katydid
     KTLOGGER(fftlog_simp, "katydid.fft");
 
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
     class KTPStoreNode;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
@@ -51,7 +51,7 @@ namespace Katydid
      \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
      \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
      \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "input-data-name": string -- name of the data to find when processing an bundle
      \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
      Transform flags control how FFTW performs the FFT.
@@ -64,7 +64,7 @@ namespace Katydid
 
      Slots:
      \li \c void ProcessHeader(const KTEggHeader*)
-     \li \c void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c void ProcessBundle(boost::shared_ptr<KTBundle>)
      \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
 
      Signals:
@@ -87,7 +87,7 @@ namespace Katydid
 
             virtual KTFrequencySpectrumData* TransformData(const KTTimeSeriesData* tsData);
 
-            KTFrequencySpectrum* Transform(const KTTimeSeriesReal* data) const;
+            KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -116,7 +116,7 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrum* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
+            KTFrequencySpectrumPolar* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fFTPlan;

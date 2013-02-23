@@ -8,10 +8,12 @@
 #ifndef KTFREQUENCYSPECTRUMFFTW_HH_
 #define KTFREQUENCYSPECTRUMFFTW_HH_
 
+#include "KTFrequencySpectrum.hh"
 #include "KTPhysicalArrayFFTW.hh"
 
 #include "Rtypes.h"
 
+#include <cmath>
 #include <string>
 
 #ifdef ROOT_FOUND
@@ -20,10 +22,10 @@ class TH1D;
 
 namespace Katydid
 {
-    class KTFrequencySpectrum;
+    class KTFrequencySpectrumPolar;
     class KTPowerSpectrum;
 
-    class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, fftw_complex >
+    class KTFrequencySpectrumFFTW : public KTPhysicalArray< 1, fftw_complex >, public KTFrequencySpectrum
     {
         public:
             KTFrequencySpectrumFFTW();
@@ -48,6 +50,18 @@ namespace Katydid
             const fftw_complex& operator()(unsigned i) const;
             fftw_complex& operator()(unsigned i);
 
+            virtual Double_t GetReal(UInt_t bin) const;
+            virtual Double_t GetImag(UInt_t bin) const;
+
+            virtual void SetRect(UInt_t bin, Double_t real, Double_t imag);
+
+            virtual Double_t GetAbs(UInt_t bin) const;
+            virtual Double_t GetArg(UInt_t bin) const;
+
+            virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg);
+
+            virtual UInt_t GetNFrequencyBins() const;
+
             /// Returns the size of the positive-frequency part of the array
             //size_t size() const;
             /// Returns the isze of the positive-frequency part of the array
@@ -59,7 +73,7 @@ namespace Katydid
             //size_t GetNBinsTotal() const;
 
         public:
-            // normal KTFrequencySpectrum functions
+            // normal KTFrequencySpectrumPolar functions
 
             virtual KTFrequencySpectrumFFTW& operator=(const KTFrequencySpectrumFFTW& rhs);
 
@@ -68,7 +82,7 @@ namespace Katydid
             /// In-place calculation of the analytic associate
             virtual KTFrequencySpectrumFFTW& AnalyticAssociate();
 
-            virtual KTFrequencySpectrum* CreateFrequencySpectrum() const;
+            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrum() const;
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
@@ -82,6 +96,9 @@ namespace Katydid
 
             virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
+
+        protected:
+            mutable const fftw_complex* fPointCache;
     };
 
     inline Bool_t KTFrequencySpectrumFFTW::GetIsSizeEven() const
@@ -111,7 +128,48 @@ namespace Katydid
         //return fData[i];
     }
 
+    inline Double_t KTFrequencySpectrumFFTW::GetReal(UInt_t bin) const
+    {
+        return (*this)(bin)[0];
+    }
 
+    inline Double_t KTFrequencySpectrumFFTW::GetImag(UInt_t bin) const
+    {
+        return (*this)(bin)[1];
+    }
+
+    inline void KTFrequencySpectrumFFTW::SetRect(UInt_t bin, Double_t real, Double_t imag)
+    {
+        fPointCache = &(*this)(bin);
+        (*const_cast< fftw_complex* >(fPointCache))[0] = real;
+        (*const_cast< fftw_complex* >(fPointCache))[1] = imag;
+        return;
+    }
+
+    inline Double_t KTFrequencySpectrumFFTW::GetAbs(UInt_t bin) const
+    {
+        fPointCache = &(*this)(bin);
+        return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
+    }
+
+    inline Double_t KTFrequencySpectrumFFTW::GetArg(UInt_t bin) const
+    {
+        fPointCache = &(*this)(bin);
+        return atan2((*fPointCache)[1], (*fPointCache)[0]);
+    }
+
+    inline void KTFrequencySpectrumFFTW::SetPolar(UInt_t bin, Double_t abs, Double_t arg)
+    {
+        fPointCache = &(*this)(bin);
+        (*const_cast< fftw_complex* >(fPointCache))[0] = sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
+        (*const_cast< fftw_complex* >(fPointCache))[1] = atan2((*fPointCache)[1], (*fPointCache)[0]);
+        return;
+    }
+
+    inline UInt_t KTFrequencySpectrumFFTW::GetNFrequencyBins() const
+    {
+        return size();
+    }
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYSPECTRUMFFTW_HH_ */

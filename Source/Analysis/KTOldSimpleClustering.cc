@@ -5,12 +5,12 @@
  *      Author: nsoblath
  */
 
-#include "KTSimpleClustering.hh"
+#include "KTOldSimpleClustering.hh"
 
 #include "KTFactory.hh"
 #include "KTMaskedArray.hh"
 #include "KTPhysicalArray.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlidingWindowFFT.hh"
 #include "KTSlidingWindowFSData.hh"
@@ -31,11 +31,11 @@ using std::pair;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTSimpleClustering > sSimpClustRegistrar("simple-clustering");
+    static KTDerivedRegistrar< KTProcessor, KTOldSimpleClustering > sSimpClustRegistrar("old-simple-clustering");
 
-    KTSimpleClustering::KTSimpleClustering() :
+    KTOldSimpleClustering::KTOldSimpleClustering() :
             KTProcessor(),
-            fEventPeakBins(NULL),
+            fBundlePeakBins(NULL),
             fThresholdMult(8.),
             fBinCuts(NULL),
             fMinimumGroupSize(2),
@@ -45,17 +45,17 @@ namespace Katydid
             fFirstBinToUse(0),
             fDrawFlag(kFALSE)
     {
-        fConfigName = "sliding-window-fft";
+        fConfigName = "old-simple-clustering";
 
-        RegisterSlot("freq_spect", this, &KTSimpleClustering::ProcessFrequencySpectrum, "void (UInt_t, KTFrequencySpectrum*)");
+        RegisterSlot("freq_spect", this, &KTOldSimpleClustering::ProcessFrequencySpectrum, "void (UInt_t, KTFrequencySpectrumPolar*)");
     }
 
-    KTSimpleClustering::~KTSimpleClustering()
+    KTOldSimpleClustering::~KTOldSimpleClustering()
     {
         delete fBinCuts;
     }
 
-    Bool_t KTSimpleClustering::Configure(const KTPStoreNode* node)
+    Bool_t KTOldSimpleClustering::Configure(const KTPStoreNode* node)
     {
         if (node != NULL)
         {
@@ -73,9 +73,9 @@ namespace Katydid
     }
 
 
-    void KTSimpleClustering::ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData)
+    void KTOldSimpleClustering::ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData)
     {
-        KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra = swFSData->GetSpectra(0);
+        KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra = swFSData->GetSpectra(0);
         UInt_t nPowerSpectra = spectra->size();
         for (UInt_t iPS=0; iPS<nPowerSpectra; iPS++)
         {
@@ -85,21 +85,21 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleClustering::ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* freqSpectrum)
+    void KTOldSimpleClustering::ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrumPolar* freqSpectrum)
     {
         // Look for the highest-peaked bins in this power spectrum
 
         // this will hold the bin numbers that are above the threshold
         set< Int_t > peakBins;
 
-        KTFrequencySpectrum::array_type dataArray = freqSpectrum->GetData().data();
+        KTFrequencySpectrumPolar::array_type dataArray = freqSpectrum->GetData().data();
         UInt_t nBins = (UInt_t)freqSpectrum->size();
 
-        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* localBinCuts = fBinCuts;
+        KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* localBinCuts = fBinCuts;
         if (nBins != fBinCuts->GetArraySize())
         {
-            std::cout << "Warning from KTSimpleClustering::ProcessPowerSpectrum: size from power spectrum does not match bin cut array size" << std::endl;
-            localBinCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(dataArray, nBins);
+            std::cout << "Warning from KTOldSimpleClustering::ProcessPowerSpectrum: size from power spectrum does not match bin cut array size" << std::endl;
+            localBinCuts = new KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >(dataArray, nBins);
         }
         else
         {
@@ -175,7 +175,7 @@ namespace Katydid
         {
             Int_t pbVal = *iPB;
             Bool_t foundGroup = kFALSE;
-            for (list< multimap< Int_t, Int_t >* >::iterator iEPB=fEventPeakBins->begin(); iEPB!=fEventPeakBins->end(); iEPB++)
+            for (list< multimap< Int_t, Int_t >* >::iterator iEPB=fBundlePeakBins->begin(); iEPB!=fBundlePeakBins->end(); iEPB++)
             {
                 multimap< Int_t, Int_t >* groupMap = *iEPB;
                 multimap< Int_t, Int_t >::iterator lastGroup = groupMap->end();
@@ -185,7 +185,7 @@ namespace Katydid
                 if (lastFFT < psNum - 1 && (UInt_t)groupMap->size() <= fMinimumGroupSize)
                 {
                     delete groupMap;
-                    iEPB = fEventPeakBins->erase(iEPB);
+                    iEPB = fBundlePeakBins->erase(iEPB);
                     iEPB--; // move the iterator back one so we don't skip anything when the for loop advances the iterator
                     continue;
                 }
@@ -225,7 +225,7 @@ namespace Katydid
             // no match to existing groups, so add a new one
             multimap< Int_t, Int_t >* newGroupMap = new multimap< Int_t, Int_t >();
             newGroupMap->insert( pair< Int_t, Int_t >((Int_t)psNum, pbVal) );
-            fEventPeakBins->push_back(newGroupMap);
+            fBundlePeakBins->push_back(newGroupMap);
         }
 
         return;

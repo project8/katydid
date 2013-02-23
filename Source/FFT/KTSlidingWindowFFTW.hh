@@ -1,7 +1,7 @@
 /**
  @file KTSlidingWindowFFTW.hh
  @brief Contains KTSlidingWindowFFTW
- @details Creates a 2-D (frequency vs. time) power spectrum from an event
+ @details Creates a 2-D (frequency vs. time) power spectrum from an bundle
  @author: N. S. Oblath
  @date: Sep 12, 2011
  */
@@ -15,7 +15,7 @@
 #include "KTMath.hh"
 #include "KTLogger.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTEventWindowFunction.hh"
+#include "KTBundleWindowFunction.hh"
 
 #include <complex>
 #include <fftw3.h>
@@ -30,7 +30,7 @@ namespace Katydid
     KTLOGGER(fftlog_sw_fftw, "katydid.fft");
 
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
     class KTSlidingWindowFSDataFFTW;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesData;
@@ -41,7 +41,7 @@ namespace Katydid
      @class KTSlidingWindowFFTW
      @author N. S. Oblath
 
-     @brief Creates a 2-D (frequency vs. time) power spectrum from an event
+     @brief Creates a 2-D (frequency vs. time) power spectrum from an bundle
 
      @details
      Slides a window along the length of the (time-domain) data, performing Fourier Transforms as the window moves.
@@ -59,7 +59,7 @@ namespace Katydid
      \li \c "overlap-frac": float -- sets the overlap in fraction of the window length
      \li \c "window-function-type": string -- sets the type of window function to be used
      \li \c "window-function": subtree -- parent node for the window function configuration
-     \li \c "input-data-name": string -- name used to find data when processing events
+     \li \c "input-data-name": string -- name used to find data when processing bundles
     */
 
    class KTSlidingWindowFFTW : public KTFFT, public KTProcessor
@@ -95,7 +95,7 @@ namespace Katydid
             UInt_t GetEffectiveOverlap() const;
             Double_t GetOverlapFrac() const;
             Bool_t GetUseOverlapFrac() const;
-            KTEventWindowFunction* GetWindowFunction() const;
+            KTBundleWindowFunction* GetWindowFunction() const;
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
@@ -112,7 +112,7 @@ namespace Katydid
             void SetOverlap(Double_t overlapTime);
             void SetOverlapFrac(Double_t overlapFrac);
             void SetUseOverlapFrac(Bool_t useOverlapFrac);
-            void SetWindowFunction(KTEventWindowFunction* wf);
+            void SetWindowFunction(KTBundleWindowFunction* wf);
 
             const std::string& GetInputDataName() const;
             void SetInputDataName(const std::string& name);
@@ -139,7 +139,7 @@ namespace Katydid
             Double_t fOverlapFrac;
             Bool_t fUseOverlapFrac;
 
-            KTEventWindowFunction* fWindowFunction;
+            KTBundleWindowFunction* fWindowFunction;
             //std::vector< std::vector< KTPowerSpectrum* >* > fPowerSpectra;
 
             std::string fInputDataName;
@@ -161,7 +161,7 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
-            void ProcessEvent(KTEvent* event);
+            void ProcessBundle(KTBundle* bundle);
 
     };
 
@@ -230,7 +230,7 @@ namespace Katydid
         return fOverlap;
     }
 
-    inline KTEventWindowFunction* KTSlidingWindowFFTW::GetWindowFunction() const
+    inline KTBundleWindowFunction* KTSlidingWindowFFTW::GetWindowFunction() const
     {
         return fWindowFunction;
     }

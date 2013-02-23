@@ -83,7 +83,7 @@ namespace log4cxx {
             virtual ~KTColoredPatternLayout();
 
         protected:
-            virtual void format(LogString& output, const spi::LoggingEventPtr& event, helpers::Pool& pool) const;
+            virtual void format(LogString& output, const spi::LoggingEventPtr& bundle, helpers::Pool& pool) const;
             virtual std::string getColor(const LevelPtr& level) const;
 
         protected:

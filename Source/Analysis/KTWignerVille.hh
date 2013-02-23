@@ -13,7 +13,7 @@
 
 #include "KTMath.hh"
 
-#include "KTEventWindowFunction.hh"
+#include "KTBundleWindowFunction.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -25,8 +25,8 @@ namespace Katydid
 {
     class KTComplexFFTW;
     class KTEggHeader;
-    class KTEvent;
-    class KTFrequencySpectrum;
+    class KTBundle;
+    class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTSlidingWindowFFTW;
@@ -100,7 +100,7 @@ namespace Katydid
 
          public:
              void ProcessHeader(const KTEggHeader* header);
-             void ProcessEvent(boost::shared_ptr<KTEvent> event);
+             void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
              void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
 
     };

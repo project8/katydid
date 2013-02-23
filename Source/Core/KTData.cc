@@ -11,7 +11,7 @@ namespace Katydid
 {
 
     KTData::KTData() :
-            fEvent(NULL)
+            fBundle(NULL)
     {
     }
 

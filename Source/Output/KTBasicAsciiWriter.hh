@@ -8,7 +8,7 @@
 #ifndef __KT_ASCII_WRITER_HH
 #define __KT_ASCII_WRITER_HH
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTWriter.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"

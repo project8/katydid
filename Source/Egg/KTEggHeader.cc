@@ -16,8 +16,8 @@ namespace Katydid
             fFilename(),
             fAcquisitionMode(sOneChannel),
             fNChannels(1),
+            fSliceSize(0),
             fRecordSize(0),
-            fMonarchRecordSize(0),
             fAcquisitionTime(0),
             fAcquisitionRate(0)
     {
@@ -27,8 +27,8 @@ namespace Katydid
             fFilename(orig.fFilename),
             fAcquisitionMode(orig.fAcquisitionMode),
             fNChannels(orig.fNChannels),
+            fSliceSize(orig.fSliceSize),
             fRecordSize(orig.fRecordSize),
-            fMonarchRecordSize(orig.fMonarchRecordSize),
             fAcquisitionTime(orig.fAcquisitionTime),
             fAcquisitionRate(orig.fAcquisitionRate)
     {
@@ -43,8 +43,8 @@ namespace Katydid
         fFilename = rhs.fFilename;
         fAcquisitionMode = rhs.fAcquisitionMode;
         fNChannels = rhs.fNChannels;
+        fSliceSize = rhs.fSliceSize;
         fRecordSize = rhs.fRecordSize;
-        fMonarchRecordSize = rhs.fMonarchRecordSize;
         fAcquisitionTime = rhs.fAcquisitionTime;
         fAcquisitionRate = rhs.fAcquisitionRate;
         return *this;

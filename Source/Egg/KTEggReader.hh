@@ -25,7 +25,7 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string&) = 0;
-            virtual KTTimeSeriesData* HatchNextEvent() = 0;
+            virtual KTTimeSeriesData* HatchNextBundle() = 0;
             virtual Bool_t CloseEgg() = 0;
 
     };

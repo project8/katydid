@@ -7,7 +7,7 @@
 
 #include "KTPublisher.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -31,8 +31,8 @@ namespace Katydid
     {
         fConfigName = "publisher";
 
-        this->RegisterSlot("publish-event", this, &KTPublisher::Publish, "void (const KTEvent*)");
-        this->RegisterSlot("queue-event", this, &KTPublisher::Queue, "void (KTEvent*)");
+        this->RegisterSlot("publish-bundle", this, &KTPublisher::Publish, "void (const KTBundle*)");
+        this->RegisterSlot("queue-bundle", this, &KTPublisher::Queue, "void (KTBundle*)");
     }
 
     KTPublisher::~KTPublisher()
@@ -218,12 +218,12 @@ namespace Katydid
         while (fStatus != kStopped)
         {
             KTDEBUG(publog, "processing . . .");
-            shared_ptr<KTEvent> eventToPublish;
-            if (fPubQueue.wait_and_pop(eventToPublish))
+            shared_ptr<KTBundle> bundleToPublish;
+            if (fPubQueue.wait_and_pop(bundleToPublish))
             {
-                KTDEBUG(publog, "Event acquired for publishing");
-                Publish(eventToPublish);
-                if (eventToPublish->GetIsLastEvent()) fStatus = kStopped;
+                KTDEBUG(publog, "Bundle acquired for publishing");
+                Publish(bundleToPublish);
+                if (bundleToPublish->GetIsLastBundle()) fStatus = kStopped;
             }
         }
         return true;
@@ -233,14 +233,14 @@ namespace Katydid
     {
         while (! fPubQueue.empty())
         {
-            shared_ptr<KTEvent> eventToDelete;
-            fPubQueue.wait_and_pop(eventToDelete);
+            shared_ptr<KTBundle> bundleToDelete;
+            fPubQueue.wait_and_pop(bundleToDelete);
         }
         return;
     }
 
 
-    void KTPublisher::Publish(shared_ptr<KTEvent> event)
+    void KTPublisher::Publish(shared_ptr<KTBundle> bundle)
     {
         if (fStatus == kStopped) return;
 
@@ -252,8 +252,8 @@ namespace Katydid
             for (DataListIter dlIter = pmIter->second.fDataList.begin(); dlIter != pmIter->second.fDataList.end(); dlIter++)
             {
                 const string dataName = *dlIter;
-                // Attempt to get data from the event with this name
-                KTWriteableData* data = event->GetData< KTWriteableData >(dataName);
+                // Attempt to get data from the bundle with this name
+                KTWriteableData* data = bundle->GetData< KTWriteableData >(dataName);
                 if (data != NULL)
                 {
                     // Data exists and is writeable --- publish it!
@@ -264,10 +264,10 @@ namespace Katydid
         return;
     }
 
-    void KTPublisher::Queue(shared_ptr<KTEvent> event)
+    void KTPublisher::Queue(shared_ptr<KTBundle> bundle)
     {
-        KTDEBUG(publog, "Queueing event");
-        fPubQueue.push(event);
+        KTDEBUG(publog, "Queueing bundle");
+        fPubQueue.push(bundle);
         return;
     }
 

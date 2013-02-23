@@ -58,7 +58,7 @@ namespace Katydid
         jsonMaker->String("candidates");
         jsonMaker->StartObject();
 
-        for (UInt_t iGroup=0; iGroup < data->GetNGroups(); iGroup++)
+        for (UInt_t iGroup=0; iGroup < data->GetNComponents(); iGroup++)
         {
             const KTFrequencyCandidateData::Candidates& candidates = data->GetCandidates(iGroup);
             conv << iGroup;

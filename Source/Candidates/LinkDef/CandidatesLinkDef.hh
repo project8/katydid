@@ -9,7 +9,8 @@
 
 #pragma link C++ namespace Katydid;
 
-#pragma link C++ class Katydid::KTWaterfallCandidate+;
-#pragma link C++ class Katydid::KTWaterfallTree+;
+#pragma link C++ class Katydid::TFrequencyCandidateData+;
+#pragma link C++ class Katydid::TFrequencyCandidateDataComponent+;
+#pragma link C++ class Katydid::TFrequencyCandidateDataCandidate+;
 
 #endif

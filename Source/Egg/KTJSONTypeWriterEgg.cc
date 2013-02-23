@@ -62,10 +62,10 @@ namespace Katydid
         jsonMaker->Uint(header->GetNChannels());
 
         jsonMaker->String("record-size");
-        jsonMaker->Uint((UInt_t)header->GetRecordSize());
+        jsonMaker->Uint((UInt_t)header->GetSliceSize());
 
         jsonMaker->String("monarch-record-size");
-        jsonMaker->Uint((UInt_t)header->GetMonarchRecordSize());
+        jsonMaker->Uint((UInt_t)header->GetRecordSize());
 
         jsonMaker->String("acquisition-time");
         jsonMaker->Uint(header->GetAcquisitionTime());

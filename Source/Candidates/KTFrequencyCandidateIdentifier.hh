@@ -18,8 +18,9 @@
 
 namespace Katydid
 {
-    class KTEvent;
-    class KTFrequencySpectrum;
+    class KTCorrelationData;
+    class KTBundle;
+    class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
@@ -53,25 +54,26 @@ namespace Katydid
         public:
             KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumData* fsData);
             KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTFrequencySpectrumDataFFTW* fsData);
+            KTFrequencyCandidateData* IdentifyCandidates(const KTCluster1DData* clusterData, const KTCorrelationData* fsData);
 
-            KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrum* freqSpec);
+            KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec);
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumFFTW* freqSpec);
 
 
             //***************
-             // Signals
-             //***************
+            // Signals
+            //***************
 
-         private:
-             FCSignal fFCSignal;
+        private:
+            FCSignal fFCSignal;
 
-             //***************
-             // Slots
-             //***************
+            //***************
+            // Slots
+            //***************
 
-         public:
-             void ProcessEvent(boost::shared_ptr<KTEvent> event);
-             void ProcessClusterData(const KTCluster1DData* tsData);
+        public:
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
+            void ProcessClusterData(const KTCluster1DData* tsData);
 
     };
 

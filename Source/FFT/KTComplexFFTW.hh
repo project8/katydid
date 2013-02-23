@@ -13,7 +13,7 @@
 #include "KTProcessor.hh"
 
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -28,7 +28,7 @@ namespace Katydid
     KTLOGGER(fftlog_comp, "katydid.fft");
 
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
     class KTPStoreNode;
     class KTBasicTimeSeriesData;
     class KTTimeSeriesFFTW;
@@ -53,9 +53,9 @@ namespace Katydid
      \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
      \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
      \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     \li \c "forward-input-data-name": string -- name of the data to find if processing an event in the forward direction
+     \li \c "forward-input-data-name": string -- name of the data to find if processing an bundle in the forward direction
      \li \c "forward-output-data-name": string -- name to give to the data produced by a forward FFT
-     \li \c "reverse-input-data-name": string -- name of the data to find if processing an event in the reverse direction
+     \li \c "reverse-input-data-name": string -- name of the data to find if processing an bundle in the reverse direction
      \li \c "reverse-output-data-name": string -- name of give to the data produced by a reverse FFT
 
      Transform flags control how FFTW performs the FFT.
@@ -70,8 +70,8 @@ namespace Katydid
 
      Slots:
      \li \c "header": void ProcessHeader(const KTEggHeader* header)
-     \li \c "event-forward": void ProcessEventForward(const KTEvent* event)
-     \li \c "event-reverse": void ProcessEventReverse(const KTEvent* event)
+     \li \c "bundle-forward": void ProcessBundleForward(const KTBundle* bundle)
+     \li \c "bundle-reverse": void ProcessBundleReverse(const KTBundle* bundle)
      \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* data)
      \li \c "fs-data": void ProcessFrequencySpectrumData(const KTTimeSeriesDataFFTW* data)
 
@@ -178,8 +178,8 @@ namespace Katydid
 
         public:
             void ProcessHeader(const KTEggHeader* header);
-            void ProcessEventForward(boost::shared_ptr<KTEvent> event);
-            void ProcessEventReverse(boost::shared_ptr<KTEvent> event);
+            void ProcessBundleForward(boost::shared_ptr<KTBundle> bundle);
+            void ProcessBundleReverse(boost::shared_ptr<KTBundle> bundle);
             void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
             void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
 

@@ -10,18 +10,22 @@
 
 #include "KTProcessor.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
+
+#include "TH1.h"
 
 #include <boost/shared_ptr.hpp>
 
+#include <sstream>
 #include <string>
-
-class TH1D;
+#include <vector>
 
 namespace Katydid
 {
     class KTEggHeader;
     class KTPStoreNode;
+    class KTFrequencySpectrumData;
+    class KTFrequencySpectrumDataFFTW;
 
     class KTPowerSpectrumAverager : public KTProcessor
     {
@@ -32,11 +36,15 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            void ProcessHeader(const KTEggHeader* header);
+            void SetToStartNewHistogram();
 
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void AddFrequencySpectrumData(const KTFrequencySpectrumData* data);
 
-            void Finish();
+//            void AddCorrelationData(const KTCorrelationData* data);
+
+            void AddFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* data);
+
+            void CreateHistograms();
 
             const std::string& GetOutputFilePath() const;
             void SetOutputFilePath(const std::string& path);
@@ -51,6 +59,9 @@ namespace Katydid
             void SetInputDataName(const std::string& name);
 
         private:
+            template< class FSDataType >
+            void AddFSData(const FSDataType* data);
+
             std::string fOutputFilePath;
             std::string fOutputFilenameBase;
             std::string fOutputFileType;
@@ -58,6 +69,23 @@ namespace Katydid
 
             Bool_t fStartNewHistFlag;
             std::vector< TH1D* > fAveragePSHists;
+
+        public:
+            //************
+            // Slots
+            //************
+            void ProcessHeader(const KTEggHeader* header);
+
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
+
+            void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
+
+            void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
+            
+ //           void ProcessCorrelationData(const KTCorrelationData* data);
+
+            void Finish();
+
     };
 
     inline const std::string& KTPowerSpectrumAverager::GetOutputFilePath() const
@@ -103,6 +131,44 @@ namespace Katydid
         fInputDataName = name;
         return;
     }
+
+    template< class FSDataType >
+    void KTPowerSpectrumAverager::AddFSData(const FSDataType* data)
+    {
+        if (fStartNewHistFlag)
+        {
+            fStartNewHistFlag = false;
+
+            for (std::vector<TH1D*>::iterator it=fAveragePSHists.begin(); it != fAveragePSHists.end(); it++)
+            {
+                delete *it;
+            }
+            fAveragePSHists.clear();
+            if (fAveragePSHists.size() != data->GetNChannels())
+                fAveragePSHists.resize(data->GetNChannels());
+
+            std::string histNameBase("PowerSpectrum");
+            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            {
+                std::stringstream conv;
+                conv << iChannel;
+                std::string histName = histNameBase + conv.str();
+                TH1D* newPS = data->GetSpectrum(iChannel)->CreatePowerHistogram(histName);
+                fAveragePSHists[iChannel] = newPS;
+            }
+        }
+        else
+        {
+            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
+            {
+                TH1D* newPS = data->GetSpectrum(iChannel)->CreatePowerHistogram();
+                fAveragePSHists[iChannel]->Add(newPS);
+                delete newPS;
+            }
+        }
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTPOWERSPECTRUMAVERAGER_HH_ */

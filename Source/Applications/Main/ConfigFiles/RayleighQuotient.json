@@ -32,17 +32,17 @@
 	    "connection":
 	    {
 		"signal-processor": "noise-egg",
-		"signal-name": "event",
+		"signal-name": "bundle",
 		"slot-processor": "nrq-est",
-		"slot-name": "process-noise-event"
+		"slot-name": "process-noise-bundle"
 	    },
 
 	    "connection":
 	    {
 		"signal-processor": "candidate-egg",
-		"signal-name": "event",
+		"signal-name": "bundle",
 		"slot-processor": "nrq-est",
-		"slot-name": "process-candidate-event"
+		"slot-name": "process-candidate-bundle"
 	    },
 
 	    "connection":
@@ -63,14 +63,14 @@
 	"noise-egg":
 	{
 	    "filename": "run2012_11_5_tone.egg",
-	    "number-of-events": 1,
+	    "number-of-bundles": 1,
 	    "output-data-name": "noise-time-series"
 	},
 
 	"candidate-egg":
 	{
 	    "filename": "run2012_11_5_tone.egg",
-	    "number-of-events": 10,
+	    "number-of-bundles": 10,
 	    "output-data-name": "candidate-time-series"
 	},
 	

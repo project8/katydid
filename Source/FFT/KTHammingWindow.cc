@@ -15,15 +15,15 @@
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTEventWindowFunction, KTHammingWindow > sEWFHammRegistrar("hamming");
+    static KTDerivedRegistrar< KTBundleWindowFunction, KTHammingWindow > sEWFHammRegistrar("hamming");
 
     KTHammingWindow::KTHammingWindow() :
-            KTEventWindowFunction()
+            KTBundleWindowFunction()
     {
     }
 
     KTHammingWindow::KTHammingWindow(const KTTimeSeriesData* tsData) :
-            KTEventWindowFunction(tsData)
+            KTBundleWindowFunction(tsData)
     {
     }
 
@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHammingWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTHammingWindow::ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node)
     {
         return true;
     }

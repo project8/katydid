@@ -1,7 +1,7 @@
 /**
  @file KTEgg.hh
  @brief Contains KTEgg
- @details Reads Egg data files: parses the header and produces events.
+ @details Reads Egg data files: parses the header and produces bundles.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */
@@ -77,8 +77,8 @@ namespace Katydid
         public:
             /// Opens the egg file and returns a new copy of the header information.
             KTEggHeader* BreakEgg(const std::string& filename);
-            /// Returns the next event's time series data.
-            KTTimeSeriesData* HatchNextEvent();
+            /// Returns the next bundle's time series data.
+            KTTimeSeriesData* HatchNextBundle();
             /// Closes the file.
             Bool_t CloseEgg();
 
@@ -93,16 +93,29 @@ namespace Katydid
             AcquisitionModeMap fNumberOfChannels;
 
         public:
-            Double_t GetSampleRateUnitsInHz();
+            Double_t GetSampleRateUnitsInHz() const;
 
-            Double_t GetFullVoltageScale();
-            UInt_t GetNADCLevels();
+            Double_t GetFullVoltageScale() const;
+            UInt_t GetNADCLevels() const;
+
+            UInt_t GetRecordsRead() const;
+            UInt_t GetRecordSize() const;
+            Double_t GetBinWidth() const;
+
+            /// Returns the time since the run started in seconds
+            Double_t GetTimeInRun() const;
 
         protected:
             Double_t fSampleRateUnitsInHz;
 
             Double_t fFullVoltageScale;
             UInt_t fNADCLevels;
+
+            UInt_t fRecordsRead;
+            UInt_t fRecordSize;
+            Double_t fBinWidth;
+
+            ULong64_t fSliceNumber;
 
     };
 
@@ -138,6 +151,40 @@ namespace Katydid
         fOutputDataName = name;
         return;
     }
+
+    inline Double_t KTEggReaderMonarch::GetSampleRateUnitsInHz() const
+    {
+        return fSampleRateUnitsInHz;
+    }
+
+    inline Double_t KTEggReaderMonarch::GetFullVoltageScale() const
+    {
+        return fFullVoltageScale;
+    }
+    inline UInt_t KTEggReaderMonarch::GetNADCLevels() const
+    {
+        return fNADCLevels;
+    }
+
+
+    inline UInt_t KTEggReaderMonarch::GetRecordsRead() const
+    {
+        return fRecordsRead;
+    }
+    inline UInt_t KTEggReaderMonarch::GetRecordSize() const
+    {
+        return fRecordSize;
+    }
+    inline Double_t KTEggReaderMonarch::GetBinWidth() const
+    {
+        return fBinWidth;
+    }
+
+    inline Double_t KTEggReaderMonarch::GetTimeInRun() const
+    {
+        return fBinWidth * Double_t(fRecordsRead * fRecordSize + fReadState.fDataPtrOffset);
+    }
+
 
 
 } /* namespace Katydid */

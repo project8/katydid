@@ -10,7 +10,7 @@
 
 #include "KTAnalyticAssociator.hh"
 #include "KTComplexFFTW.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
@@ -168,7 +168,7 @@ int main()
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTLogger.hh"
 #include "KTRectangularWindow.hh"
 #include "KTSlidingWindowFFTW.hh"
@@ -229,21 +229,21 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    KTINFO(testwv, "Hatching event");
-    boost::shared_ptr<KTEvent> event = egg.HatchNextEvent();
-    if (event == NULL)
+    KTINFO(testwv, "Hatching bundle");
+    boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
+    if (bundle == NULL)
     {
-        KTERROR(testwv, "Event did not hatch");
+        KTERROR(testwv, "Bundle did not hatch");
         egg.CloseEgg();
         return -1;
     }
 
-    // Get the time-series data from the event.
-    // The data is still owned by the event.
-    KTTimeSeriesData* tsData = event->GetData<KTProgenitorTimeSeriesData>("time-series");
+    // Get the time-series data from the bundle.
+    // The data is still owned by the bundle.
+    KTTimeSeriesData* tsData = bundle->GetData<KTProgenitorTimeSeriesData>("time-series");
     if (tsData == NULL)
     {
-        KTWARN(testwv, "No time-series data present in event");
+        KTWARN(testwv, "No time-series data present in bundle");
         egg.CloseEgg();
         return -1;
     }
@@ -253,7 +253,7 @@ int main(int argc, char** argv)
     KTWignerVille wvTransform;
     wvTransform.GetFullFFT()->SetTransformFlag("ESTIMATE");
     wvTransform.GetFullFFT()->SetSize(tsData->GetTimeSeries(0)->GetNTimeBins());
-    KTEventWindowFunction* windowFunc = new KTRectangularWindow(tsData);
+    KTBundleWindowFunction* windowFunc = new KTRectangularWindow(tsData);
     windowFunc->SetSize(5000);
     wvTransform.GetWindowedFFT()->SetTransformFlag("ESTIMATE");
     wvTransform.GetWindowedFFT()->SetWindowFunction(windowFunc);
@@ -261,7 +261,7 @@ int main(int argc, char** argv)
     wvTransform.AddPair(KTWVPair(0, 1));
 
     // Transform the data.
-    // The data is not owned by the event because TransformData was used, not ProcessEvent.
+    // The data is not owned by the bundle because TransformData was used, not ProcessBundle.
     KTINFO(testwv, "Transforming data");
     KTSlidingWindowFSDataFFTW* wvData = wvTransform.TransformData(tsData);
 

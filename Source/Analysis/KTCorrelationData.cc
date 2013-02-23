@@ -8,7 +8,7 @@
 #include "KTCorrelationData.hh"
 
 #include "KTDataMap.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
@@ -18,7 +18,9 @@ namespace Katydid
 
     KTCorrelationData::KTCorrelationData(UInt_t nPairs) :
             KTWriteableData(),
-            fData(nPairs)
+            fData(nPairs),
+            fTimeInRun(0.),
+            fSliceNumber(0)
     {
     }
 

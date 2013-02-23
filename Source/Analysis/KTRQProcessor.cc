@@ -19,14 +19,14 @@ namespace Katydid {
 		 this, 
 		 &KTRQProcessor::ProcessNoiseData, 
 		 "void (const KTTimeSeriesData*)");
-    RegisterSlot("process-noise-event",
+    RegisterSlot("process-noise-bundle",
 		 this,
-		 &KTRQProcessor::ProcessNoiseEvent,
-		 "void (boost::shared_ptr<KTEvent>)");
-    RegisterSlot("process-candidate-event",
+		 &KTRQProcessor::ProcessNoiseBundle,
+		 "void (boost::shared_ptr<KTBundle>)");
+    RegisterSlot("process-candidate-bundle",
 		 this,
-		 &KTRQProcessor::ProcessCandidateEvent,
-		 "void (boost::shared_ptr<KTEvent>)");
+		 &KTRQProcessor::ProcessCandidateBundle,
+		 "void (boost::shared_ptr<KTBundle>)");
   }
 
   KTRQProcessor::~KTRQProcessor() 
@@ -105,10 +105,10 @@ namespace Katydid {
     return this->fNACMDidConverge;
   }
   
-  void KTRQProcessor::ProcessNoiseEvent(boost::shared_ptr<KTEvent> event)
+  void KTRQProcessor::ProcessNoiseBundle(boost::shared_ptr<KTBundle> bundle)
   {
-    // Grab time series data from event
-    const KTTimeSeriesData* noise = event->GetData<KTTimeSeriesData>(fNoiseName);
+    // Grab time series data from bundle
+    const KTTimeSeriesData* noise = bundle->GetData<KTTimeSeriesData>(fNoiseName);
     if( noise != NULL ) {
       if( !(this->fNACMDidConverge) ) {
 	// Grab the first channel of data out to use. 
@@ -154,7 +154,7 @@ namespace Katydid {
   // all done, check elapsed time.
   std::clock_t tf = clock();
   double elapsed = (tf-t0)/CLOCKS_PER_SEC;
-  KTINFO("Noise event processed in " << elapsed << " seconds.");
+  KTINFO("Noise bundle processed in " << elapsed << " seconds.");
 
 	// Check convergence criterion (TEMPORARILY JUST TRUE) and set convergence flag if
 	// appropriate.
@@ -166,7 +166,7 @@ namespace Katydid {
       }
     }
     else {
-      KTWARN(nrq_log,"time series " << fNoiseName << " not found in event!  skipping...");
+      KTWARN(nrq_log,"time series " << fNoiseName << " not found in bundle!  skipping...");
     }
   }
 
@@ -190,11 +190,11 @@ namespace Katydid {
     KTWARN(nrq_log,"unimplemented processing of noise called!");
   }
 
-  void KTRQProcessor::ProcessCandidateEvent(boost::shared_ptr<KTEvent> event) 
+  void KTRQProcessor::ProcessCandidateBundle(boost::shared_ptr<KTBundle> bundle) 
   {
     if( this->fNACMDidConverge ) {
-      // grab data from the event.
-      const KTTimeSeriesData* c = event->GetData<KTTimeSeriesData>(fCandidateName);
+      // grab data from the bundle.
+      const KTTimeSeriesData* c = bundle->GetData<KTTimeSeriesData>(fCandidateName);
       if( c != NULL ) {
 	// cast data to time series real data.  
 	const KTTimeSeriesReal* cDt = dynamic_cast<const KTTimeSeriesReal*>(c->GetTimeSeries(0));
@@ -215,7 +215,7 @@ namespace Katydid {
   std::clock_t t0 = clock();
 
 	/*
-	 * Iterate over the data in the event, pointing the data map at each chunk consecutively.
+	 * Iterate over the data in the bundle, pointing the data map at each chunk consecutively.
 	 * first we need to know 
 	 */
 	for(unsigned offset = 0; offset < nOut; offset++) {
@@ -229,12 +229,12 @@ namespace Katydid {
 	}
 
 	/*
-	 * Attach the new data to the KTEvent and fire the signal that indicates we have 
+	 * Attach the new data to the KTBundle and fire the signal that indicates we have 
 	 * compressed this time series.
 	 */
 	nDt->SetName(fOutputDataName);
 	nDt->SetTimeSeries(rqOut);
-	event->AddData(nDt);
+	bundle->AddData(nDt);
 
   // all done, check elapsed time.
   std::clock_t tf = clock();
@@ -244,7 +244,7 @@ namespace Katydid {
 	fRQSignal(nDt);	
       }
       else {
-	KTWARN(nrq_log,"no data named " << fCandidateName << " found in event!  skipping...");
+	KTWARN(nrq_log,"no data named " << fCandidateName << " found in bundle!  skipping...");
       }
     }
     else {

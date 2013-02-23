@@ -7,10 +7,10 @@
 
 #include "KTBasicROOTTypeWriterFFT.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTSlidingWindowFSData.hh"
@@ -57,20 +57,20 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetBundle();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nChannels = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
         for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrum(iChannel);
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histPS_" << eventNumber << "_" << iChannel;
+                conv << "histPS_" << bundleNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
@@ -84,9 +84,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetBundle();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nChannels = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -97,7 +97,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histPS_" << eventNumber << "_" << iChannel;
+                conv << "histPS_" << bundleNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
@@ -115,9 +115,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData(const KTSlidingWindowFSData* data)
     {
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetBundle();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -125,7 +125,7 @@ namespace Katydid
         for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
         {
             stringstream conv;
-            conv << "histSW_" << eventNumber << "_" << iPlot;
+            conv << "histSW_" << bundleNumber << "_" << iPlot;
             string histName;
             conv >> histName;
             TH2D* swHist = data->CreateMagnitudeHistogram(iPlot, histName);
@@ -138,9 +138,9 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data)
     {
-        KTEvent* event = data->GetEvent();
-        UInt_t eventNumber = 0;
-        if (event != NULL) eventNumber = event->GetEventNumber();
+        KTBundle* bundle = data->GetBundle();
+        UInt_t bundleNumber = 0;
+        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
         UInt_t nPlots = data->GetNChannels();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -148,7 +148,7 @@ namespace Katydid
         for (unsigned iPlot=0; iPlot<nPlots; iPlot++)
         {
             stringstream conv;
-            conv << "histSW_" << eventNumber << "_" << iPlot;
+            conv << "histSW_" << bundleNumber << "_" << iPlot;
             string histName;
             conv >> histName;
             TH2D* swHist = data->CreateMagnitudeHistogram(iPlot, histName);

@@ -8,10 +8,11 @@
 #include "KTFrequencyCandidateIdentifier.hh"
 
 #include "KTCacheDirectory.hh"
+#include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -41,7 +42,7 @@ namespace Katydid
         RegisterSignal("frequency-candidates", &fFCSignal, "void (const KTFrequencyCandidateData*)");
 
         RegisterSlot("clusters", this, &KTFrequencyCandidateIdentifier::ProcessClusterData, "void (const KTCluster1DData*)");
-        RegisterSlot("event", this, &KTFrequencyCandidateIdentifier::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTFrequencyCandidateIdentifier::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTFrequencyCandidateIdentifier::~KTFrequencyCandidateIdentifier()
@@ -69,17 +70,19 @@ namespace Katydid
         KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
+        fcData->SetTimeInRun(fsData->GetTimeInRun());
+        fcData->SetSliceNumber(fsData->GetSliceNumber());
 
-        for (UInt_t iGroup = 0; iGroup < clusterData->GetNGroups(); iGroup++)
+        for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
-            const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iGroup);
-            const KTFrequencySpectrum* freqSpec = fsData->GetSpectrum(iGroup);
+            const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iComponent);
+            const KTFrequencySpectrumPolar* freqSpec = fsData->GetSpectrum(iComponent);
 
-            fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iGroup);
-            fcData->SetThreshold(clusterData->GetThreshold(iGroup), iGroup);
+            fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iComponent);
+            fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);
         }
 
-        fcData->SetEvent(clusterData->GetEvent());
+        fcData->SetBundle(clusterData->GetBundle());
         fcData->SetName(fOutputDataName);
 
         fFCSignal(fcData);
@@ -99,17 +102,19 @@ namespace Katydid
         KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
         fcData->SetBinWidth(clusterData->GetBinWidth());
         fcData->SetNBins(clusterData->GetNBins());
+        fcData->SetTimeInRun(fsData->GetTimeInRun());
+        fcData->SetSliceNumber(fsData->GetSliceNumber());
 
-        for (UInt_t iGroup = 0; iGroup < clusterData->GetNGroups(); iGroup++)
+        for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
         {
-            const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iGroup);
-            const KTFrequencySpectrumFFTW* freqSpec = fsData->GetSpectrum(iGroup);
+            const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iComponent);
+            const KTFrequencySpectrumFFTW* freqSpec = fsData->GetSpectrum(iComponent);
 
-            fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iGroup);
-            fcData->SetThreshold(clusterData->GetThreshold(iGroup), iGroup);
+            fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iComponent);
+            fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);
         }
 
-        fcData->SetEvent(clusterData->GetEvent());
+        fcData->SetBundle(clusterData->GetBundle());
         fcData->SetName(fOutputDataName);
 
         fFCSignal(fcData);
@@ -117,7 +122,39 @@ namespace Katydid
         return fcData;
     }
 
-    KTFrequencyCandidateData::Candidates KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrum* freqSpec)
+    KTFrequencyCandidateData* KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData* clusterData, const KTCorrelationData* fsData)
+    {
+        if (clusterData->GetBinWidth() != fsData->GetCorrelation(0)->GetBinWidth())
+        {
+            KTWARN(fcilog, "There is a mismatch between the bin widths:\n" <<
+                    "\tCluster data: " << clusterData->GetBinWidth() << '\n' <<
+                    "\tFrequency spectrum: " << fsData->GetCorrelation(0)->GetBinWidth());
+        }
+
+        KTFrequencyCandidateData* fcData = new KTFrequencyCandidateData(clusterData->GetNGroups());
+        fcData->SetBinWidth(clusterData->GetBinWidth());
+        fcData->SetNBins(clusterData->GetNBins());
+        fcData->SetTimeInRun(fsData->GetTimeInRun());
+        fcData->SetSliceNumber(fsData->GetSliceNumber());
+
+        for (UInt_t iComponent = 0; iComponent < clusterData->GetNGroups(); iComponent++)
+        {
+            const KTCluster1DData::SetOfClusters& clusters = clusterData->GetSetOfClusters(iComponent);
+            const KTFrequencySpectrumPolar* freqSpec = fsData->GetCorrelation(iComponent);
+
+            fcData->AddCandidates(IdentifyCandidates(clusters, freqSpec), iComponent);
+            fcData->SetThreshold(clusterData->GetThreshold(iComponent), iComponent);
+        }
+
+        fcData->SetBundle(clusterData->GetBundle());
+        fcData->SetName(fOutputDataName);
+
+        fFCSignal(fcData);
+
+        return fcData;
+    }
+
+    KTFrequencyCandidateData::Candidates KTFrequencyCandidateIdentifier::IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec)
     {
         KTFrequencyCandidateData::Candidates candidates(clusters.size());
 
@@ -142,13 +179,17 @@ namespace Katydid
 
             Double_t weightedMean = 0.;
             Double_t integral = 0.;
+            Double_t peakValue = 0.;
             for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 weightedMean += freqSpec->GetBinCenter(iBin) * (*freqSpec)(iBin).abs();
                 integral += (*freqSpec)(iBin).abs();
+                if ((*freqSpec)(iBin).abs() > peakValue) peakValue = (*freqSpec)(iBin).abs();
             }
             weightedMean /= integral;
             newCandidate.SetMeanFrequency(weightedMean);
+            newCandidate.SetPeakAmplitude(peakValue);
+            newCandidate.SetAmplitudeSum(integral);
 
             candidates[iCandidate] = newCandidate;
             iCandidate++;
@@ -184,14 +225,18 @@ namespace Katydid
             Double_t weightedMean = 0.;
             Double_t integral = 0.;
             Double_t value = 0.;
+            Double_t peakValue = 0.;
             for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 value = sqrt((*freqSpec)(iBin)[0] * (*freqSpec)(iBin)[0] + (*freqSpec)(iBin)[1] * (*freqSpec)(iBin)[1]);
                 weightedMean += freqSpec->GetBinCenter(iBin) * value;
                 integral += value;
+                if (value > peakValue) peakValue = value;
             }
             weightedMean /= integral;
             newCandidate.SetMeanFrequency(weightedMean);
+            newCandidate.SetPeakAmplitude(peakValue);
+            newCandidate.SetAmplitudeSum(integral);
 
             candidates[iCandidate] = newCandidate;
             iCandidate++;
@@ -203,39 +248,48 @@ namespace Katydid
 
     void KTFrequencyCandidateIdentifier::ProcessClusterData(const KTCluster1DData* clusterData)
     {
-        KTEvent* event = clusterData->GetEvent();
-        if (event == NULL)
+        KTBundle* bundle = clusterData->GetBundle();
+        if (bundle == NULL)
         {
-            KTERROR(fcilog, "Cluster data must be associated with an event.");
+            KTERROR(fcilog, "Cluster data must be associated with an bundle.");
             return;
         }
 
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fFSInputDataName);
-        if (fsData == NULL)
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fFSInputDataName);
+        if (fsData != NULL)
         {
-            KTERROR(fcilog, "The event associated with the cluster data must have a frequency spectrum by the name <" << fFSInputDataName << ">");
+            KTFrequencyCandidateData* newData = newData = this->IdentifyCandidates(clusterData, fsData);
+            bundle->AddData(newData);
             return;
         }
 
-        KTFrequencyCandidateData* newData = this->IdentifyCandidates(clusterData, fsData);
-
-        if (newData == NULL)
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
+        if (fsDataFFTW != NULL)
         {
-            KTERROR(fcilog, "Unable to extract candidates");
+            KTFrequencyCandidateData* newData = newData = this->IdentifyCandidates(clusterData, fsDataFFTW);
+            bundle->AddData(newData);
             return;
         }
 
-        event->AddData(newData);
+        const KTCorrelationData* corrData = bundle->GetData< KTCorrelationData >(fFSInputDataName);
+        if (corrData != NULL)
+        {
+            KTFrequencyCandidateData* newData = newData = this->IdentifyCandidates(clusterData, corrData);
+            bundle->AddData(newData);
+            return;
+        }
+
+        KTERROR(fcilog, "The bundle associated with the cluster data must have a frequency spectrum by the name <" << fFSInputDataName << ">");
 
         return;
     }
 
-    void KTFrequencyCandidateIdentifier::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTFrequencyCandidateIdentifier::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTCluster1DData* clusterData = event->GetData< KTCluster1DData >(fClusterInputDataName);
+        const KTCluster1DData* clusterData = bundle->GetData< KTCluster1DData >(fClusterInputDataName);
         if (clusterData == NULL)
         {
-            KTWARN(fcilog, "No cluster data named <" << fClusterInputDataName << "> was available in the event");
+            KTWARN(fcilog, "No cluster data named <" << fClusterInputDataName << "> was available in the bundle");
             return;
         }
 

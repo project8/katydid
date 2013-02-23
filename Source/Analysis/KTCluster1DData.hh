@@ -20,17 +20,20 @@ namespace Katydid
 {
     class KTCluster1DData : public KTData
     {
+        public:
+            typedef std::pair< UInt_t, UInt_t > Cluster; // first unsigned: first bin in cluster; second unsigned: last bin in cluster
+
         protected:
-            struct PairCompare
+            struct ClusterCompare
             {
-                    bool operator() (const std::pair< UInt_t, UInt_t >& lhs, const std::pair< UInt_t, UInt_t >& rhs)
+                    bool operator() (const Cluster& lhs, const Cluster& rhs)
                     {
                         return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.first < rhs.first);
                     }
             };
 
         public:
-            typedef std::set< std::pair< UInt_t, UInt_t>, PairCompare > SetOfClusters;
+            typedef std::set< Cluster, ClusterCompare > SetOfClusters;
 
         protected:
             struct PerGroupData

@@ -8,7 +8,7 @@
 #include "KTFFTEHunt.hh"
 
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTMaskedArray.hh"
@@ -44,7 +44,7 @@ namespace Katydid
 
     KTFFTEHunt::KTFFTEHunt() :
             KTProcessor(),
-            fEventPeakBins(),
+            fBundlePeakBins(),
             fMinimumGroupSize(2),
             fCutRanges(),
             fSimpleFFT(),
@@ -65,8 +65,8 @@ namespace Katydid
         fConfigName = "fft-e-hunt";
 
         RegisterSlot("header", this, &KTFFTEHunt::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("event", this, &KTFFTEHunt::ProcessEvent, " void (shared_ptr<KTEvent>)");
-        RegisterSlot("event_done", this, &KTFFTEHunt::FinishHunt, "void ()");
+        RegisterSlot("bundle", this, &KTFFTEHunt::ProcessBundle, " void (shared_ptr<KTBundle>)");
+        RegisterSlot("bundle_done", this, &KTFFTEHunt::FinishHunt, "void ()");
 
         fWindowFFT.ConnectASlot("full_fft", &fGainNorm, "freq_spect", 0);
         fWindowFFT.ConnectASlot("full_fft", &fClustering, "freq_spect", 1);
@@ -74,7 +74,7 @@ namespace Katydid
 
     KTFFTEHunt::~KTFFTEHunt()
     {
-        EmptyEventPeakBins();
+        EmptyBundlePeakBins();
 #ifdef ROOT_FOUND
         if (fROOTFile.IsOpen()) fROOTFile.Close();
 #endif
@@ -145,12 +145,12 @@ namespace Katydid
         fFrequencyBinWidth = fWindowFFT.GetFrequencyBinWidth(timeBinWidth);
         Double_t freqMin = fWindowFFT.GetMaxFrequency(timeBinWidth);
         Double_t freqMax = fWindowFFT.GetMinFrequency(timeBinWidth);
-        // create KTFrequencySpectrum w/ number of bins; set bin width
+        // create KTFrequencySpectrumPolar w/ number of bins; set bin width
         // binFinder will go out of scope at the end of this function.
         // therefore, from that point until fClusteringProc sets a new array, binCuts should NOT be used to access array values!
-        KTFrequencySpectrum binFinder(nFreqBins, freqMin, freqMax);
+        KTFrequencySpectrumPolar binFinder(nFreqBins, freqMin, freqMax);
         // create KTMaskedArray based on power spectrum magnitude array
-        KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >(binFinder.GetData().data(), nFreqBins);
+        KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* binCuts = new KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >(binFinder.GetData().data(), nFreqBins);
         // convert cut frequency ranges to bins, and cut bins from the masked array
         for (vector< CutRange >::const_iterator itCutRange = fCutRanges.begin(); itCutRange != fCutRanges.end(); itCutRange++)
         {
@@ -161,8 +161,8 @@ namespace Katydid
         // give the masked array to fClusteringProc
         fClustering.SetBinCuts(binCuts);
 
-        EmptyEventPeakBins();
-        fClustering.SetEventPeakBinsList(&fEventPeakBins);
+        EmptyBundlePeakBins();
+        fClustering.SetBundlePeakBinsList(&fBundlePeakBins);
 
         if (fWriteTextFileFlag)
         {
@@ -182,25 +182,25 @@ namespace Katydid
         return;
     }
 
-    void KTFFTEHunt::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTFFTEHunt::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        UInt_t iEvent = event->GetEventNumber();
+        UInt_t iBundle = bundle->GetBundleNumber();
         if (fWriteTextFileFlag)
         {
-            fTextFile << "Event " << iEvent << '\n';
+            fTextFile << "Bundle " << iBundle << '\n';
         }
 
-        const KTProgenitorTimeSeriesData* tsData = event->GetData< KTProgenitorTimeSeriesData >(fInputDataName);
+        const KTProgenitorTimeSeriesData* tsData = bundle->GetData< KTProgenitorTimeSeriesData >(fInputDataName);
 
-        // Perform a 1-D FFT on the entire event
+        // Perform a 1-D FFT on the entire bundle
         const KTTimeSeriesReal* tsDataVect = dynamic_cast< const KTTimeSeriesReal* >(tsData->GetTimeSeries(0));
-        KTFrequencySpectrum* freqSpect = fSimpleFFT.Transform(tsDataVect);
+        KTFrequencySpectrumPolar* freqSpect = fSimpleFFT.Transform(tsDataVect);
 
         // Use the data from the full FFT to create a gain normalization
         fGainNorm.PrepareNormalization(freqSpect, (UInt_t)fWindowFFT.GetFrequencySize(), fFrequencyBinWidth);
 
         // Prepare to run the windowed FFT
-        //list< multimap< Int_t, Int_t >* > eventPeakBins;
+        //list< multimap< Int_t, Int_t >* > bundlePeakBins;
 
         // Run the windowed FFT; the grouping algorithm is triggered at each FFT from fWindowFFTProc.
         KTSlidingWindowFSData* windowedFFTData = fWindowFFT.TransformData(tsData);
@@ -214,8 +214,8 @@ namespace Katydid
         // when we make the plot of the group we want a frame of a few bins around the actual group
         Int_t frameFFT = 5;
         Int_t frameFreqBin = 5;
-        EventPeakBinsList::iterator iEPB = fEventPeakBins.begin();
-        while (! fEventPeakBins.empty())
+        BundlePeakBinsList::iterator iEPB = fBundlePeakBins.begin();
+        while (! fBundlePeakBins.empty())
         {
             // for each group we need to get the min and max FFT, and min and max frequency bins.
             // then we will remove the group from the list.
@@ -239,7 +239,7 @@ namespace Katydid
 
             // we're done with this multimap object; all we need is min/maxFFT and min/maxFreqBin
             delete groupMap;
-            iEPB = fEventPeakBins.erase(iEPB); // move the iterator back one so we don't skip anything when the for loop advances the iterator
+            iEPB = fBundlePeakBins.erase(iEPB); // move the iterator back one so we don't skip anything when the for loop advances the iterator
 
             // check if this group is too small in time
             if (maxFFT - minFFT < 2) continue;
@@ -255,15 +255,15 @@ namespace Katydid
             {
                 stringstream conv;
                 string histName;
-                conv << iEvent;
+                conv << iBundle;
                 conv >> histName;
                 histName = string("histWindowedPS") + histName;
                 TH2D* histWaterfall = windowedFFTData->CreatePowerHistogram(0, histName);
                 Double_t timeBinWidth = histWaterfall->GetXaxis()->GetBinWidth(1);
 
                 Char_t histname[256], histtitle[256];
-                sprintf(histname, "hCandidate_%i_%i", iEvent, iCandidate);
-                sprintf(histtitle, "Candidate Group - Event %i - Candidate %i", iEvent, iCandidate);
+                sprintf(histname, "hCandidate_%i_%i", iBundle, iCandidate);
+                sprintf(histtitle, "Candidate Group - Bundle %i - Candidate %i", iBundle, iCandidate);
                 minFFT = TMath::Max(1, minFFT-frameFFT);
                 maxFFT = TMath::Min(histWaterfall->GetNbinsX(), maxFFT+frameFFT);
                 Double_t minValFFT = histWaterfall->GetBinLowEdge(minFFT);
@@ -327,12 +327,12 @@ namespace Katydid
         return;
     }
 
-    void KTFFTEHunt::EmptyEventPeakBins()
+    void KTFFTEHunt::EmptyBundlePeakBins()
     {
-        while (! fEventPeakBins.empty())
+        while (! fBundlePeakBins.empty())
         {
-            delete fEventPeakBins.back();
-            fEventPeakBins.pop_back();
+            delete fBundlePeakBins.back();
+            fBundlePeakBins.pop_back();
         }
         return;
     }

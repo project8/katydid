@@ -9,7 +9,7 @@
 
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTTimeSeriesChannelData.hh"
@@ -180,7 +180,7 @@ namespace Katydid
                 delete newData;
                 return NULL;
             }
-            KTFrequencySpectrum* nextResult = Transform(nextInput);
+            KTFrequencySpectrumPolar* nextResult = Transform(nextInput);
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_simp, "One of the channels did not transform correctly.");
@@ -189,6 +189,9 @@ namespace Katydid
             }
             newData->SetSpectrum(nextResult, iChannel);
         }
+
+        newData->SetTimeInRun(tsData->GetTimeInRun());
+        newData->SetSliceNumber(tsData->GetSliceNumber());
 
         KTDEBUG(fftlog_simp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
 
@@ -202,7 +205,7 @@ namespace Katydid
         return newData;
     }
 
-    KTFrequencySpectrum* KTSimpleFFT::Transform(const KTTimeSeriesReal* data) const
+    KTFrequencySpectrumPolar* KTSimpleFFT::Transform(const KTTimeSeriesReal* data) const
     {
         UInt_t nTimeBins = (UInt_t)data->size();
         if (nTimeBins != fTimeSize)
@@ -221,13 +224,13 @@ namespace Katydid
         return ExtractTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
     }
 
-    KTFrequencySpectrum* KTSimpleFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
+    KTFrequencySpectrumPolar* KTSimpleFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
     {
         UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
+        KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
             (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
@@ -259,27 +262,40 @@ namespace Katydid
         fIsInitialized = false;
         return;
     }
+
+
 /*
+    void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
+    {
+        SetTimeSize(header->GetSliceSize());
+        InitializeFFT();
+        return;
+    }
+
     void KTSimpleFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTFrequencySpectrumData* newData = TransformData(tsData);
-        if (tsData->GetEvent() != NULL)
-            tsData->GetEvent()->AddData(newData);
+        if (tsData->GetBundle() != NULL)
+        {
+            KTBundle* bundle = tsData->GetBundle();
+            newData->SetBundle(bundle);
+            bundle->AddData(newData);
+            fFFTSignal(newData);
+        }
         return;
     }
 */
 /*
-    void KTSimpleFFT::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTSimpleFFT::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
+        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)
         {
-            KTWARN(fftlog_simp, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTWARN(fftlog_simp, "No time series data named <" << fInputDataName << "> was available in the bundle");
             return;
         }
 
-        KTFrequencySpectrumData* newData = TransformData(tsData);
-        event->AddData(newData);
+        ProcessTimeSeriesData(tsData);
         return;
     }
 */

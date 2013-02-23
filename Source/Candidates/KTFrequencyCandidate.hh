@@ -31,10 +31,18 @@ namespace Katydid
             Double_t GetMeanFrequency() const;
             void SetMeanFrequency(Double_t freq);
 
+            Double_t GetPeakAmplitude() const;
+            void SetPeakAmplitude(Double_t amp);
+
+            Double_t GetAmplitudeSum() const;
+            void SetAmplitudeSum(Double_t amp);
+
         protected:
             UInt_t fFirstBin;
             UInt_t fLastBin;
             Double_t fMeanFrequency;
+            Double_t fPeakAmplitude;
+            Double_t fAmplitudeSum;
     };
 
     inline UInt_t KTFrequencyCandidate::GetFirstBin() const
@@ -69,6 +77,29 @@ namespace Katydid
         fMeanFrequency = freq;
         return;
     }
+
+    inline Double_t KTFrequencyCandidate::GetPeakAmplitude() const
+    {
+        return fPeakAmplitude;
+    }
+
+    inline void KTFrequencyCandidate::SetPeakAmplitude(Double_t amp)
+    {
+        fPeakAmplitude = amp;
+        return;
+    }
+
+    inline Double_t KTFrequencyCandidate::GetAmplitudeSum() const
+    {
+        return fAmplitudeSum;
+    }
+
+    inline void KTFrequencyCandidate::SetAmplitudeSum(Double_t amp)
+    {
+        fAmplitudeSum = amp;
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYCANDIDATE_HH_ */

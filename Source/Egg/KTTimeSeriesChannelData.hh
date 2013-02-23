@@ -1,9 +1,9 @@
 /**
  @file KTTimeSeriesChannelData.hh
  @brief Contains KTTimeSeriesChannelData
- @details Contains the information from a single Egg event in the form of a 1-D std::vector of UInt_tegers.
- The data are the time series of the event.
- @note Prior to August 24, 2012, this class was called KTEvent.
+ @details Contains the information from a single Egg bundle in the form of a 1-D std::vector of UInt_tegers.
+ The data are the time series of the bundle.
+ @note Prior to August 24, 2012, this class was called KTBundle.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */
@@ -29,7 +29,7 @@ namespace Katydid
             virtual ~KTTimeSeriesChannelData();
 
             // relic functions from previous incarnations of this class
-            virtual UInt_t GetRecordSize() const = 0;
+            virtual UInt_t GetSliceSize() const = 0;
             virtual Double_t GetBinWidth() const = 0;
 
     };
@@ -46,18 +46,26 @@ namespace Katydid
         public:
             UInt_t GetNTimeSeries() const;
 
-            UInt_t GetRecordSize() const;
+            UInt_t GetSliceSize() const;
             Double_t GetBinWidth() const;
+            Double_t GetTimeInRun() const;
+            ULong64_t GetSliceNumber() const;
 
             const KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0) const;
             KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0);
 
             void SetNTimeSeries(UInt_t channels);
 
+            void SetTimeInRun(Double_t tir);
+            void SetSliceNumber(ULong64_t slice);
+
             void SetTimeSeries(KTTimeSeries* record, UInt_t channelNum = 0);
 
         protected:
             std::vector< KTTimeSeries* > fChannelData;
+
+            Double_t fTimeInRun;
+            ULong64_t fSliceNumber;
 
     };
 
@@ -66,7 +74,7 @@ namespace Katydid
         return UInt_t(fChannelData.size());
     }
 
-    inline UInt_t KTBasicTimeSeriesData::GetRecordSize() const
+    inline UInt_t KTBasicTimeSeriesData::GetSliceSize() const
     {
         if (fChannelData.size() > 0)
         {
@@ -84,6 +92,16 @@ namespace Katydid
         return 0.;
     }
 
+    inline Double_t KTBasicTimeSeriesData::GetTimeInRun() const
+    {
+        return fTimeInRun;
+    }
+
+    inline ULong64_t KTBasicTimeSeriesData::GetSliceNumber() const
+    {
+        return fSliceNumber;
+    }
+
     inline KTTimeSeries* KTBasicTimeSeriesData::GetTimeSeries(UInt_t channelNum)
     {
         return fChannelData[channelNum];
@@ -97,6 +115,18 @@ namespace Katydid
     inline void KTBasicTimeSeriesData::SetNTimeSeries(UInt_t channels)
     {
         fChannelData.resize(channels);
+        return;
+    }
+
+    inline void KTBasicTimeSeriesData::SetTimeInRun(Double_t tir)
+    {
+        fTimeInRun = tir;
+        return;
+    }
+
+    inline void KTBasicTimeSeriesData::SetSliceNumber(ULong64_t slice)
+    {
+        fSliceNumber = slice;
         return;
     }
 
@@ -132,25 +162,30 @@ namespace Katydid
         public:
             UInt_t GetNTimeSeries() const;
 
-            UInt_t GetRecordSize() const;
+            UInt_t GetSliceSize() const;
             Double_t GetSampleRate() const;
-            Double_t GetRecordLength() const;
+            Double_t GetSliceLength() const;
             Double_t GetBinWidth() const;
 
             ClockType GetTimeStamp(UInt_t channelNum = 0) const;
             AcqIdType GetAcquisitionID(UInt_t channelNum = 0) const;
             RecIdType GetRecordID(UInt_t channelNum = 0) const;
 
+            Double_t GetTimeInRun() const;
+            ULong64_t GetSliceNumber() const;
+
             const KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0) const;
             KTTimeSeries* GetTimeSeries(UInt_t channelNum = 0);
 
             void SetNTimeSeries(UInt_t channels);
 
-            void SetRecordSize(UInt_t size);
+            void SetSliceSize(UInt_t size);
             void SetSampleRate(Double_t sampleRate);
-            void SetRecordLength(Double_t recordLength);
+            void SetSliceLength(Double_t recordLength);
             void SetBinWidth(Double_t binWidth);
-            void CalculateBinWidthAndRecordLength();
+            void CalculateBinWidthAndSliceLength();
+            void SetTimeInRun(Double_t tir);
+            void SetSliceNumber(ULong64_t slice);
 
             void SetTimeStamp(ClockType timeStamp, UInt_t channelNum = 0);
             void SetAcquisitionID(AcqIdType acqId, UInt_t channelNum = 0);
@@ -159,10 +194,13 @@ namespace Katydid
             void SetTimeSeries(KTTimeSeries* record, UInt_t channelNum = 0);
 
         private:
-            UInt_t fRecordSize; // number of bins
+            UInt_t fSliceSize; // number of bins
             Double_t fSampleRate; // in Hz
-            Double_t fRecordLength; // in sec
+            Double_t fSliceLength; // in sec
             Double_t fBinWidth; // in sec
+
+            Double_t fTimeInRun; // in sec
+            ULong64_t fSliceNumber;
 
             std::vector< PerChannelData > fChannelData;
 
@@ -173,14 +211,14 @@ namespace Katydid
         return UInt_t(fChannelData.size());
     }
 
-    inline UInt_t KTProgenitorTimeSeriesData::GetRecordSize() const
+    inline UInt_t KTProgenitorTimeSeriesData::GetSliceSize() const
     {
-        return fRecordSize;
+        return fSliceSize;
     }
 
-    inline Double_t KTProgenitorTimeSeriesData::GetRecordLength() const
+    inline Double_t KTProgenitorTimeSeriesData::GetSliceLength() const
     {
-        return fRecordLength;
+        return fSliceLength;
     }
 
     inline Double_t KTProgenitorTimeSeriesData::GetSampleRate() const
@@ -191,6 +229,16 @@ namespace Katydid
     inline Double_t KTProgenitorTimeSeriesData::GetBinWidth() const
     {
         return fBinWidth;
+    }
+
+    inline Double_t KTProgenitorTimeSeriesData::GetTimeInRun() const
+    {
+        return fTimeInRun;
+    }
+
+    inline ULong64_t KTProgenitorTimeSeriesData::GetSliceNumber() const
+    {
+        return fSliceNumber;
     }
 
     inline ClockType KTProgenitorTimeSeriesData::GetTimeStamp(UInt_t channelNum) const
@@ -218,14 +266,14 @@ namespace Katydid
         return fChannelData[channelNum].fRecord;
     }
 
-    inline void KTProgenitorTimeSeriesData::SetRecordSize(UInt_t recordSize)
+    inline void KTProgenitorTimeSeriesData::SetSliceSize(UInt_t recordSize)
     {
-        this->fRecordSize = recordSize;
+        this->fSliceSize = recordSize;
     }
 
-    inline void KTProgenitorTimeSeriesData::SetRecordLength(Double_t recordLength)
+    inline void KTProgenitorTimeSeriesData::SetSliceLength(Double_t recordLength)
     {
-        this->fRecordLength = recordLength;
+        this->fSliceLength = recordLength;
     }
 
     inline void KTProgenitorTimeSeriesData::SetSampleRate(Double_t sampleRate)
@@ -238,10 +286,21 @@ namespace Katydid
         this->fBinWidth = binWidth;
     }
 
-    inline void KTProgenitorTimeSeriesData::CalculateBinWidthAndRecordLength()
+    inline void KTProgenitorTimeSeriesData::CalculateBinWidthAndSliceLength()
     {
         SetBinWidth(1. / fSampleRate);
-        SetRecordLength(Double_t(fRecordSize) * fBinWidth);
+        SetSliceLength(Double_t(fSliceSize) * fBinWidth);
+        return;
+    }
+
+    inline void KTProgenitorTimeSeriesData::SetTimeInRun(Double_t tir)
+    {
+        fTimeInRun = tir;
+    }
+
+    inline void KTProgenitorTimeSeriesData::SetSliceNumber(ULong64_t slice)
+    {
+        fSliceNumber = slice;
         return;
     }
 

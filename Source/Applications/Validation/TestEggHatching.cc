@@ -14,7 +14,7 @@
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
 #include "KTEggReaderMonarch.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTLogger.hh"
 #include "KTTimeSeriesChannelData.hh"
 
@@ -47,15 +47,17 @@ int main(int argc, char** argv)
         readerOption = argv[2];
     }
 
+    UInt_t nBundles = 5;
+
     KTINFO(testegg, "Test of hatching egg file <" << filename << ">");
 
-    KTEgg* egg = new KTEgg();
+    KTEgg egg;
     if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
     {
         KTINFO(testegg, "Using 2011 egg reader");
         KTEggReader2011* reader = new KTEggReader2011();
         reader->SetOutputDataName("time-series");
-        egg->SetReader(reader);
+        egg.SetReader(reader);
     }
     else
     {
@@ -65,12 +67,12 @@ int main(int argc, char** argv)
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
         reader->SetTimeSeriesSizeRequest(recordSize);
         reader->SetOutputDataName("time-series");
-        egg->SetReader(reader);
+        egg.SetReader(reader);
     }
 
 
     KTINFO(testegg, "Opening file");
-    if (egg->BreakEgg(filename))
+    if (egg.BreakEgg(filename))
     {
         KTINFO(testegg, "Egg opened successfully");
     }
@@ -80,7 +82,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    const KTEggHeader* header = egg->GetHeader();
+    const KTEggHeader* header = egg.GetHeader();
     if (header == NULL)
     {
         KTERROR(testegg, "No header received");
@@ -89,35 +91,38 @@ int main(int argc, char** argv)
     KTINFO(testegg, "Some header information:\n"
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
-           << "\tRecord Size: " << header->GetRecordSize() << '\n'
-           << "\tMonarch Record Size: " << header->GetMonarchRecordSize());
+           << "\tRecord Size: " << header->GetSliceSize() << '\n'
+           << "\tRecord Size: " << header->GetRecordSize());
 
-    KTINFO(testegg, "Hatching event");
-    boost::shared_ptr<KTEvent> event = egg->HatchNextEvent();
-    if (event.get() == NULL)
+    KTINFO(testegg, "Hatching bundles");
+    for (UInt_t iBundle=0; iBundle < nBundles; iBundle++)
     {
-        KTERROR(testegg, "Event did not hatch");
-        return -1;
-    }
+        KTINFO(testegg, "Bundle " << iBundle);
+        boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
+        if (bundle.get() == NULL)
+        {
+            KTERROR(testegg, "Bundle did not hatch");
+            return -1;
+        }
 
-    KTTimeSeriesData* tsData = event->GetData<KTTimeSeriesData>("time-series");
-    if (tsData == NULL)
-    {
-        KTWARN(testegg, "No time-series data present in event");
-        return -1;
-    }
+        KTTimeSeriesData* tsData = bundle->GetData<KTTimeSeriesData>("time-series");
+        if (tsData == NULL)
+        {
+            KTWARN(testegg, "No time-series data present in bundle");
+            return -1;
+        }
 
-    unsigned nRecords = tsData->GetNTimeSeries();
-    KTINFO(testegg, "This event contains " << nRecords << " records");
-    if (nRecords >= 1)
-    {
-        KTINFO(testegg, "Record 0 has " << tsData->GetTimeSeries(0)->GetNTimeBins() << " bins");
-        KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetTimeSeries(0)->GetValue(0));
+        UInt_t nRecords = tsData->GetNTimeSeries();
+        KTINFO(testegg, "This bundle contains " << nRecords << " records");
+        if (nRecords >= 1)
+        {
+            KTINFO(testegg, "Record 0 has " << tsData->GetTimeSeries(0)->GetNTimeBins() << " bins");
+            KTINFO(testegg, "Bin 0 of record 0 is " << tsData->GetTimeSeries(0)->GetValue(0));
+        }
     }
 
     KTINFO(testegg, "Test complete; cleaning up");
-    egg->CloseEgg();
-    delete egg;
+    egg.CloseEgg();
 
     return 0;
 }

@@ -7,14 +7,18 @@
 
 #include "KTPowerSpectrumAverager.hh"
 
+
+// #include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 #include "TCanvas.h"
-#include "TH1.h"
 #include "TStyle.h"
 
 #include <sstream>
@@ -43,8 +47,10 @@ namespace Katydid
         fConfigName = "power-spectrum-averager";
 
         RegisterSlot("header", this, &KTPowerSpectrumAverager::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("event", this, &KTPowerSpectrumAverager::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTPowerSpectrumAverager::ProcessBundle, "void (shared_ptr<KTBundle>)");
         RegisterSlot("finish", this, &KTPowerSpectrumAverager::Finish, "void ()");
+
+        KTWARN(psavglog, "Please note: KTPowerSpectrumAverager is now deprecated. Please use KTMultiBundleROOTWriter instead.");
     };
 
     KTPowerSpectrumAverager::~KTPowerSpectrumAverager()
@@ -65,56 +71,61 @@ namespace Katydid
         return true;
     }
 
-    void KTPowerSpectrumAverager::ProcessHeader(const KTEggHeader* header)
+    void KTPowerSpectrumAverager::SetToStartNewHistogram()
     {
         fStartNewHistFlag = true;
+        return;
     }
 
-    void KTPowerSpectrumAverager::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTPowerSpectrumAverager::AddFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
-        if (fsData == NULL)
-        {
-            KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the event");
-            return;
-        }
+        AddFSData(data);
+        return;
+    }
 
+    void KTPowerSpectrumAverager::AddFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* data)
+    {
+        AddFSData(data);
+        return;
+    }
+/*
+    void KTPowerSpectrumAverager::AddCorrelationData(const KTCorrelationData* data)
+    {
         if (fStartNewHistFlag)
         {
             fStartNewHistFlag = false;
 
-            for (vector<TH1D*>::iterator it=fAveragePSHists.begin(); it != fAveragePSHists.end(); it++)
+            for (std::vector<TH1D*>::iterator it=fAveragePSHists.begin(); it != fAveragePSHists.end(); it++)
             {
                 delete *it;
             }
             fAveragePSHists.clear();
-            if (fAveragePSHists.size() != fsData->GetNChannels())
-                fAveragePSHists.resize(fsData->GetNChannels());
+            if (fAveragePSHists.size() != data->GetNPairs())
+                fAveragePSHists.resize(data->GetNPairs());
 
-            string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < fsData->GetNChannels(); iChannel++)
+            std::string histNameBase("PowerSpectrum");
+            for (UInt_t iChannel=0; iChannel < data->GetNPairs(); iChannel++)
             {
-                stringstream conv;
+                std::stringstream conv;
                 conv << iChannel;
-                string histName = histNameBase + conv.str();
-                TH1D* newPS = fsData->GetSpectrum(iChannel)->CreatePowerHistogram(histName);
+                std::string histName = histNameBase + conv.str();
+                TH1D* newPS = data->GetSpectrum(iChannel)->CreateMagnitudeHistogram(histName);
                 fAveragePSHists[iChannel] = newPS;
             }
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel < fsData->GetNChannels(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < data->GetNChannels(); iChannel++)
             {
-                TH1D* newPS = fsData->GetSpectrum(iChannel)->CreatePowerHistogram();
+                TH1D* newPS = data->GetSpectrum(iChannel)->CreateMagnitudeHistogram();
                 fAveragePSHists[iChannel]->Add(newPS);
                 delete newPS;
             }
         }
-
         return;
     }
-
-    void KTPowerSpectrumAverager::Finish()
+*/
+    void KTPowerSpectrumAverager::CreateHistograms()
     {
         gStyle->SetOptStat(0);
         for (UInt_t iChannel=0; iChannel < fAveragePSHists.size(); iChannel++)
@@ -135,6 +146,65 @@ namespace Katydid
 
         fStartNewHistFlag = true;
         return;
+    }
+
+
+
+    void KTPowerSpectrumAverager::ProcessHeader(const KTEggHeader* header)
+    {
+        SetToStartNewHistogram();
+        return;
+    }
+
+    void KTPowerSpectrumAverager::ProcessBundle(shared_ptr<KTBundle> bundle)
+    {
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
+        if (fsData != NULL)
+        {
+            AddFrequencySpectrumData(fsData);
+            return;
+        }
+
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        if (fsDataFFTW != NULL)
+        {
+            AddFrequencySpectrumData(fsDataFFTW);
+            return;
+        }
+/*
+        const KTCorrelationData* corrData = bundle->GetData< KTCorrelationData >(fInputDataName);
+        if (corrData != NULL)
+        {
+            AddCorrelationData(corrData);
+            return;
+        }
+*/
+        KTWARN(psavglog, "No frequency-spectrum data named <" << fInputDataName << "> was available in the bundle");
+
+        return;
+    }
+    void KTPowerSpectrumAverager::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
+    {
+        AddFrequencySpectrumData(data);
+        return;
+    }
+    void KTPowerSpectrumAverager::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
+    {
+        AddFrequencySpectrumData(data);
+        return;
+    }
+/*
+    void KTPowerSpectrumAverager::ProcessCorrelationData(const KTCorrelationData* data)
+    {
+        AddCorrelationData(data);
+        return;
+    }
+*/
+
+    void KTPowerSpectrumAverager::Finish()
+    {
+        CreateHistograms();
+        return; 
     }
 
 } /* namespace Katydid */

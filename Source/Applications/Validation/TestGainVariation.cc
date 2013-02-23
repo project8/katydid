@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     gainVarProc.SetNFitPoints(nFitPoints);
 
     KTFrequencySpectrumData fsData(1);
-    KTFrequencySpectrum* spectrum = new KTFrequencySpectrum(nBins, 0., 100.);
+    KTFrequencySpectrumPolar* spectrum = new KTFrequencySpectrumPolar(nBins, 0., 100.);
 
 #ifdef ROOT_FOUND
     TRandom3 rand(0);

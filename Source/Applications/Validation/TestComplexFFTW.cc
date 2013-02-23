@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     // Perform the FFT and get the results
     KTINFO(vallog, "Performing FFT");
     KTFrequencySpectrumFFTW* frequencySpectrum = fullFFT.Transform(timeSeries);
-    KTFrequencySpectrum* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
+    KTFrequencySpectrumPolar* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
     size_t nFreqBins2 = frequencySpectrum2->size();
 
     // Find the peak frequency

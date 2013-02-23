@@ -24,8 +24,8 @@ namespace Katydid
 
   void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(const KTTimeSeriesData* data)
   {
-    KTEvent* event = data->GetEvent();
-    UInt_t eventNumber = (event == NULL) ? 0 : event->GetEventNumber();
+    KTBundle* bundle = data->GetBundle();
+    UInt_t bundleNumber = (bundle == NULL) ? 0 : bundle->GetBundleNumber();
     UInt_t nCh = data->GetNTimeSeries();
 
     if( fWriter->CanWrite() == true ) {
@@ -35,7 +35,7 @@ namespace Katydid
         	const KTTimeSeries* sCh = data->GetTimeSeries(iCh);
         	if(sCh != NULL) {
             for(unsigned iB = 0; iB < sCh->GetNTimeBins(); iB++) {
-              (*file_ptr) << eventNumber 
+              (*file_ptr) << bundleNumber 
                           << ","  
                           << iCh
                           << ","
@@ -46,7 +46,7 @@ namespace Katydid
             }
 	       }
         else {
-      	  KTWARN(ats_log, "Channel #" << iCh << " was missing from event!  Logic error?");
+      	  KTWARN(ats_log, "Channel #" << iCh << " was missing from bundle!  Logic error?");
       	}
       }
     } // if CanWrite

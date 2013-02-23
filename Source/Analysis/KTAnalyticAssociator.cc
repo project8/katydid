@@ -10,7 +10,7 @@
 #include "KTCacheDirectory.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -29,13 +29,13 @@ namespace Katydid
 {
     KTLOGGER(aalog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTAnalyticAssociator > sWVRegistrar("analytic-associator");
+    static KTDerivedRegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
 
     KTAnalyticAssociator::KTAnalyticAssociator() :
             KTProcessor(),
             fFullFFT(),
             fInputDataName("time-series"),
-            fOutputDataName("wigner-ville"),
+            fOutputDataName("analytic-associate"),
             fSaveFrequencySpectrum(false),
             fFSOutputDataName("frequency-spectrum-from-aa")
 
@@ -46,7 +46,8 @@ namespace Katydid
 
         RegisterSlot("header", this, &KTAnalyticAssociator::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTAnalyticAssociator::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTAnalyticAssociator::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("fs-data", this, &KTAnalyticAssociator::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
+        RegisterSlot("bundle", this, &KTAnalyticAssociator::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTAnalyticAssociator::~KTAnalyticAssociator()
@@ -136,13 +137,54 @@ namespace Katydid
             aaTSData->SetTimeSeries(newTS, iChannel);
         }
 
-        aaTSData->SetEvent(data->GetEvent());
+        aaTSData->SetBundle(data->GetBundle());
         aaTSData->SetName(fOutputDataName);
 
         fAASignal(aaTSData);
 
         return aaTSData;
     }
+
+    KTTimeSeriesData* KTAnalyticAssociator::CreateAssociateData(const KTFrequencySpectrumDataFFTW* data)
+    {
+        if (! fFullFFT.GetIsInitialized())
+        {
+            fFullFFT.InitializeFFT();
+            if (! fFullFFT.GetIsInitialized())
+            {
+                KTERROR(aalog, "Unable to initialize full FFT.");
+                return NULL;
+            }
+        }
+
+        // New data to hold the time series of the analytic associate
+        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(data->GetNChannels());
+
+        // Calculate the analytic associates
+        for (UInt_t iChannel = 0; iChannel < data->GetNChannels(); iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* nextInput = data->GetSpectrum(iChannel);
+
+            KTTimeSeriesFFTW* newTS = CalculateAnalyticAssociate(nextInput);
+
+            if (newTS == NULL)
+            {
+                KTERROR(aalog, "Channel <" << iChannel << "> did not transform correctly.");
+                delete aaTSData;
+                return NULL;
+            }
+
+            aaTSData->SetTimeSeries(newTS, iChannel);
+        }
+
+        aaTSData->SetBundle(data->GetBundle());
+        aaTSData->SetName(fOutputDataName);
+
+        fAASignal(aaTSData);
+
+        return aaTSData;
+    }
+
 
     KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
@@ -165,7 +207,23 @@ namespace Katydid
         {
             KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
             if (outputFS == NULL) delete freqSpec;
-            return NULL;
+        }
+
+        return outputTS;
+    }
+
+    KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTFrequencySpectrumFFTW* inputFS)
+    {
+        KTFrequencySpectrumFFTW aaFS(*inputFS);
+
+        // Calculate the analytic associate in frequency space
+        aaFS.AnalyticAssociate();
+
+        // reverse FFT
+        KTTimeSeriesFFTW* outputTS = fFullFFT.Transform(&aaFS);
+        if (outputTS == NULL)
+        {
+            KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
         }
 
         return outputTS;
@@ -190,28 +248,54 @@ namespace Katydid
             return;
         }
 
-        KTEvent* event = tsData->GetEvent();
-        if (event != NULL)
+        KTBundle* bundle = tsData->GetBundle();
+        if (bundle != NULL)
         {
-            event->AddData(newData);
+            bundle->AddData(newData);
 
-            if (fSaveFrequencySpectrum) event->AddData(saveFreqSpec);
+            if (fSaveFrequencySpectrum) bundle->AddData(saveFreqSpec);
             else delete saveFreqSpec;
         }
 
         return;
     }
 
-    void KTAnalyticAssociator::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTAnalyticAssociator::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
     {
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
-        if (tsData == NULL)
+        KTTimeSeriesData* newData = CreateAssociateData(fsData);
+
+        if (newData == NULL)
         {
-            KTWARN(aalog, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTERROR(aalog, "Unable to transform data");
             return;
         }
 
-        ProcessTimeSeriesData(tsData);
+        KTBundle* bundle = fsData->GetBundle();
+        if (bundle != NULL)
+        {
+            bundle->AddData(newData);
+        }
+
+        return;
+    }
+
+    void KTAnalyticAssociator::ProcessBundle(shared_ptr<KTBundle> bundle)
+    {
+        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
+        if (tsData != NULL)
+        {
+            ProcessTimeSeriesData(tsData);
+            return;
+        }
+
+        const KTFrequencySpectrumDataFFTW* fsData = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        if (fsData != NULL)
+        {
+            ProcessFrequencySpectrumData(fsData);
+            return;
+        }
+
+        KTWARN(aalog, "No data (time series of frequency spectrum FFTW) named <" << fInputDataName << "> was available in the bundle");
         return;
     }
 

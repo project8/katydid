@@ -1,7 +1,7 @@
 /**
  @file KTEggProcessor.hh
  @brief Contains KTEggProcessor
- @details Iterates over events in an Egg file.
+ @details Iterates over bundles in an Egg file.
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
@@ -18,19 +18,19 @@
 namespace Katydid
 {
     class KTPStoreNode;
-    class KTWriteableData;
+    class KTTimeSeriesData;
 
     /*!
      @class KTEggProcessor
      @author N. S. Oblath
 
-     @brief Iterates over the events in an Egg file.
+     @brief Iterates over the bundles in an Egg file.
 
      @details
-     Iterates over events in an egg file; events are extracted until fNEvents is reached.
+     Iterates over bundles in an egg file; bundles are extracted until fNBundles is reached.
 
      Available configuration options:
-     \li \c "number-of-events": UInt_t -- Number of events to process
+     \li \c "number-of-bundles": UInt_t -- Number of bundles to process
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
      \li \c "time-series-size": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
@@ -38,21 +38,22 @@ namespace Katydid
      \li \c "output-data-name": string -- Name to give to the data produced
 
      Command-line options defined
-     \li \c -n (n-events): Number of events to process
+     \li \c -n (n-bundles): Number of bundles to process
      \li \c -e (egg-file): Egg filename to use
      \li \c -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
      \li \c "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     \li \c "event": void (boost::shared_ptr<KTEvent>) -- emitted when an event is read from the file.
+     \li \c "data": void (const KTTimeSeriesData*) -- emitted when the new time series is produced.
+     \li \c "bundle": void (boost::shared_ptr<KTBundle>) -- emitted when an bundle is read from the file.
      \li \c "egg-done": void () --  emitted when a file is finished.
     */
     class KTEggProcessor : public KTPrimaryProcessor
     {
         public:
             typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
-            typedef KTSignal< void (const KTWriteableData*) >::signal DataSignal;
-            typedef KTSignal< void (boost::shared_ptr<KTEvent>) >::signal EventSignal;
+            typedef KTSignal< void (const KTTimeSeriesData*) >::signal DataSignal;
+            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
             typedef KTSignal< void () >::signal EggDoneSignal;
 
         public:
@@ -78,29 +79,29 @@ namespace Katydid
 
             Bool_t ProcessEgg();
 
-            UInt_t GetNEvents() const;
+            UInt_t GetNBundles() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
-            UInt_t GetRecordSizeRequest() const;
+            UInt_t GetSliceSizeRequest() const;
             TimeSeriesType GetTimeSeriesType() const;
 
-            void SetNEvents(UInt_t nEvents);
+            void SetNBundles(UInt_t nBundles);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
-            void SetRecordSizeRequest(UInt_t size);
+            void SetSliceSizeRequest(UInt_t size);
             void SetTimeSeriesType(TimeSeriesType type);
 
             const std::string& GetOutputDataName() const;
             void SetOutputDataName(const std::string& name);
 
         private:
-            UInt_t fNEvents;
+            UInt_t fNBundles;
 
             std::string fFilename;
 
             EggReaderType fEggReaderType;
 
-            UInt_t fRecordSizeRequest;
+            UInt_t fSliceSizeRequest;
 
             TimeSeriesType fTimeSeriesType;
 
@@ -113,7 +114,7 @@ namespace Katydid
         private:
             HeaderSignal fHeaderSignal;
             DataSignal fDataSignal;
-            EventSignal fEventSignal;
+            BundleSignal fBundleSignal;
             EggDoneSignal fEggDoneSignal;
 
     };
@@ -123,14 +124,14 @@ namespace Katydid
         return ProcessEgg();
     }
 
-    inline UInt_t KTEggProcessor::GetNEvents() const
+    inline UInt_t KTEggProcessor::GetNBundles() const
     {
-        return fNEvents;
+        return fNBundles;
     }
 
-    inline void KTEggProcessor::SetNEvents(UInt_t nEvents)
+    inline void KTEggProcessor::SetNBundles(UInt_t nBundles)
     {
-        fNEvents = nEvents;
+        fNBundles = nBundles;
         return;
     }
 
@@ -156,14 +157,14 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTEggProcessor::GetRecordSizeRequest() const
+    inline UInt_t KTEggProcessor::GetSliceSizeRequest() const
     {
-        return fRecordSizeRequest;
+        return fSliceSizeRequest;
     }
 
-    inline void KTEggProcessor::SetRecordSizeRequest(UInt_t size)
+    inline void KTEggProcessor::SetSliceSizeRequest(UInt_t size)
     {
-        fRecordSizeRequest = size;
+        fSliceSizeRequest = size;
         return;
     }
 
@@ -274,7 +275,7 @@ namespace Katydid
  \section ExternalCode External Packages and Imported Code
  <hr>
  Two external packages are distributed with Katydid:
- \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the event header in the Egg files.  The code is distributed under the Boost Software License v1.0.
+ \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the bundle header in the Egg files.  The code is distributed under the Boost Software License v1.0.
  \li <a href="hhtp://cimg.sourceforge.net">CImg</a> version 1.4.9 is available for any image processing tasks.  It is distributed under the CeCILL License.
 
  Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Framework classes and is restricted to infrastructure-related activities.

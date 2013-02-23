@@ -11,7 +11,7 @@
 //#include "KTCluster2DData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 //#include "KTDiscriminatedPoints2DData.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
@@ -45,7 +45,7 @@ namespace Katydid
         RegisterSignal("cluster-1d", &fCluster1DSignal, "void (const KTCluster1DData*)");
         //RegisterSignal("cluster-2d", &fCluster2DSignal, "void (const KTCluster2DData*)");
 
-        RegisterSlot("event", this, &KTDistanceClustering::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTDistanceClustering::ProcessBundle, "void (shared_ptr<KTBundle>)");
         RegisterSlot("disc-1d-data", this, &KTDistanceClustering::Process1DData, "void (const KTDiscriminatedPoints1DData*)");
         //RegisterSlot("disc-2d-data", this, &KTDistanceClustering::Process2DData, "void (const KTDiscriminatedPoints2DData*)");
     }
@@ -106,7 +106,7 @@ namespace Katydid
                     thisPoint = pIt->first;
                     if (thisPoint - lastPointInActiveCluster > fMaxBinDistance)
                     {
-                        KTDEBUG(sdlog, "Adding cluster (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                        //KTDEBUG(sdlog, "Adding cluster (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                         newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
                         activeCluster.clear();
                     }
@@ -116,51 +116,53 @@ namespace Katydid
                 KTDEBUG(sdlog, "Adding cluster: (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                 newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
             }
+
+            KTDEBUG(sdlog, newData->GetSetOfClusters(iChannel).size() << " clusters added on channel " << iChannel);
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fCluster1DSignal(newData);
 
         return newData;
     }
 
-    void KTDistanceClustering::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTDistanceClustering::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTDiscriminatedPoints1DData* dp1Data = event->GetData< KTDiscriminatedPoints1DData >(fInputDataName);
+        const KTDiscriminatedPoints1DData* dp1Data = bundle->GetData< KTDiscriminatedPoints1DData >(fInputDataName);
         if (dp1Data != NULL)
         {
             KTCluster1DData* newData = FindClusters(dp1Data);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
         /*
-        const KTDiscriminatedPoints2DData* dp2Data = dynamic_cast< KTDiscriminatedPoints2DData* >(event->GetData(fInputDataName));
+        const KTDiscriminatedPoints2DData* dp2Data = dynamic_cast< KTDiscriminatedPoints2DData* >(bundle->GetData(fInputDataName));
         if (dp2Data != NULL)
         {
             KTCluster2DData* newData = FindClusters(dp2Data);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
         */
-        KTWARN(sdlog, "No discriminated-points data named <" << fInputDataName << "> was available in the event");
+        KTWARN(sdlog, "No discriminated-points data named <" << fInputDataName << "> was available in the bundle");
         return;
     }
 
     void KTDistanceClustering::Process1DData(const KTDiscriminatedPoints1DData* data)
     {
         KTCluster1DData* newData = FindClusters(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
     /*
     void KTDistanceClustering::Process2DData(const KTDiscriminatedPoints2DData* data)
     {
         KTCluster2DData* newData = FindClusters(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
     */

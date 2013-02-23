@@ -83,7 +83,7 @@ namespace Katydid
     template< class XWriter >
     class KTWriterWithTypists : public KTWriter
     {
-        private:
+        protected:
             typedef std::map< const std::type_info*, KTDerivedTypeWriter< XWriter >* > TypeWriterMap;
         public:
             KTWriterWithTypists();
@@ -92,7 +92,7 @@ namespace Katydid
             template< class XTypeWriter >
             XTypeWriter* GetTypeWriter();
 
-        private:
+        protected:
             TypeWriterMap fTypeWriters;
 
     };

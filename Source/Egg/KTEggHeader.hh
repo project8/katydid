@@ -33,11 +33,11 @@ namespace Katydid
             void SetNChannels(UInt_t channels);
             UInt_t GetNChannels() const;
 
-            void SetRecordSize(std::size_t recsize);
-            std::size_t GetRecordSize() const;
+            void SetSliceSize(std::size_t recsize);
+            std::size_t GetSliceSize() const;
 
-            void SetMonarchRecordSize(std::size_t mrecsize);
-            std::size_t GetMonarchRecordSize() const;
+            void SetRecordSize(std::size_t mrecsize);
+            std::size_t GetRecordSize() const;
 
             void SetAcquisitionTime(UInt_t acqt);
             UInt_t GetAcquisitionTime() const;
@@ -49,7 +49,7 @@ namespace Katydid
             std::string fFilename;
             UInt_t fAcquisitionMode;
             UInt_t fNChannels;
-            std::size_t fMonarchRecordSize; /// Number of bins per record-written-to-disk
+            std::size_t fSliceSize; /// Number of bins per record-written-to-disk
             std::size_t fRecordSize; /// Number of bins per Katydid record
             UInt_t fAcquisitionTime;
             Double_t fAcquisitionRate; /// in Hz
@@ -89,6 +89,17 @@ namespace Katydid
         return fNChannels;
     }
 
+    inline void KTEggHeader::SetSliceSize(std::size_t slicesize)
+    {
+        fSliceSize = slicesize;
+        return;
+    }
+
+    inline std::size_t KTEggHeader::GetSliceSize() const
+    {
+        return fSliceSize;
+    }
+
     inline void KTEggHeader::SetRecordSize(std::size_t recsize)
     {
         fRecordSize = recsize;
@@ -98,17 +109,6 @@ namespace Katydid
     inline std::size_t KTEggHeader::GetRecordSize() const
     {
         return fRecordSize;
-    }
-
-    inline void KTEggHeader::SetMonarchRecordSize(std::size_t mrecsize)
-    {
-        fMonarchRecordSize = mrecsize;
-        return;
-    }
-
-    inline std::size_t KTEggHeader::GetMonarchRecordSize() const
-    {
-        return fMonarchRecordSize;
     }
 
     inline void KTEggHeader::SetAcquisitionTime(UInt_t acqt)

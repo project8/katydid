@@ -21,7 +21,7 @@ namespace Katydid
             void SetDoomed( XDoomed* );
 
         private:
-            // Prevent users from making copies of a KTDestroyer to avoid double deletion:
+            // Prbundle users from making copies of a KTDestroyer to avoid double deletion:
             KTDestroyer( const KTDestroyer< XDoomed >& );
             void operator=( const KTDestroyer< XDoomed >& );
 

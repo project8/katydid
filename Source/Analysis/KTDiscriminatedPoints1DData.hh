@@ -38,10 +38,14 @@ namespace Katydid
             const SetOfPoints& GetSetOfPoints(UInt_t channelNum = 0) const;
             Double_t GetThreshold(UInt_t channelNum = 0) const;
             UInt_t GetNChannels() const;
+            Double_t GetTimeInRun() const;
+            ULong64_t GetSliceNumber() const;
 
             void AddPoint(UInt_t point, Double_t value, UInt_t channelNum = 0);
             void SetThreshold(Double_t threshold, UInt_t channelNum = 0);
             void SetNChannels(UInt_t channels);
+            void SetTimeInRun(Double_t tir);
+            void SetSliceNumber(ULong64_t slice);
 
             UInt_t GetNBins() const;
             Double_t GetBinWidth() const;
@@ -57,6 +61,8 @@ namespace Katydid
             UInt_t fNBins;
             Double_t fBinWidth;
 
+            Double_t fTimeInRun;
+            ULong64_t fSliceNumber;
 
     };
 
@@ -73,6 +79,16 @@ namespace Katydid
     inline UInt_t KTDiscriminatedPoints1DData::GetNChannels() const
     {
         return UInt_t(fChannelData.size());
+    }
+
+    inline Double_t KTDiscriminatedPoints1DData::GetTimeInRun() const
+    {
+        return fTimeInRun;
+    }
+
+    inline ULong64_t KTDiscriminatedPoints1DData::GetSliceNumber() const
+    {
+        return fSliceNumber;
     }
 
     inline void KTDiscriminatedPoints1DData::AddPoint(UInt_t point, Double_t value, UInt_t channelNum)
@@ -115,6 +131,17 @@ namespace Katydid
         return;
     }
 
+    inline void KTDiscriminatedPoints1DData::SetTimeInRun(Double_t tir)
+    {
+        fTimeInRun = tir;
+        return;
+    }
+
+    inline void KTDiscriminatedPoints1DData::SetSliceNumber(ULong64_t slice)
+    {
+        fSliceNumber = slice;
+        return;
+    }
 
 } /* namespace Katydid */
 

@@ -1,7 +1,7 @@
 /**
  @file ExtractPowerSpectra.cc
  @brief Executable to produce 1-D power spectra
- @details Produces 1-D power spectra from Egg events; optionally can average multiple events together
+ @details Produces 1-D power spectra from Egg bundles; optionally can average multiple bundles together
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
@@ -39,8 +39,8 @@ int main(int argc, char** argv)
 
     try
     {
-        // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
-        procEgg.ConnectASlot("event", &procFFT, "event");
+        // this will ensure that every time procEgg hatches an bundle, procFFT.ProcessBundle will be called
+        procEgg.ConnectASlot("bundle", &procFFT, "bundle");
 
         // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
         procEgg.ConnectASlot("header", &procFFT, "header");

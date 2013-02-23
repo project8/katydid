@@ -23,8 +23,8 @@ int main()
     KTEggHeader header;
     header.SetFilename("awesome_data.egg");
     header.SetAcquisitionMode(1);
-    header.SetRecordSize(512);
-    header.SetMonarchRecordSize(4194304);
+    header.SetSliceSize(512);
+    header.SetRecordSize(4194304);
     header.SetNChannels(2);
     header.SetAcquisitionTime(203985);
     header.SetAcquisitionRate(500.);

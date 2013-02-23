@@ -8,9 +8,6 @@
 #ifndef KTFREQUENCYSPECTRUM_HH_
 #define KTFREQUENCYSPECTRUM_HH_
 
-#include "complexpolar.hh"
-#include "KTPhysicalArray.hh"
-
 #include "Rtypes.h"
 
 #include <string>
@@ -23,30 +20,37 @@ namespace Katydid
 {
     class KTPowerSpectrum;
 
-    class KTFrequencySpectrum : public KTPhysicalArray< 1, complexpolar< Double_t > >
+    class KTFrequencySpectrum
     {
         public:
             KTFrequencySpectrum();
-            KTFrequencySpectrum(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
-            KTFrequencySpectrum(const KTFrequencySpectrum& orig);
             virtual ~KTFrequencySpectrum();
 
-            virtual KTFrequencySpectrum& operator=(const KTFrequencySpectrum& rhs);
+            /// Get the size of the array using the KTFrequencySpectrum interface
+            virtual UInt_t GetNFrequencyBins() const = 0;
 
-            virtual KTFrequencySpectrum& CConjugate();
+            virtual Double_t GetReal(UInt_t bin) const = 0;
+            virtual Double_t GetImag(UInt_t bin) const = 0;
 
-            virtual KTPowerSpectrum* CreatePowerSpectrum() const;
+            virtual void SetRect(UInt_t bin, Double_t real, Double_t imag) = 0;
 
-            void Print(unsigned startPrint, unsigned nToPrint) const;
+            virtual Double_t GetAbs(UInt_t bin) const = 0;
+            virtual Double_t GetArg(UInt_t bin) const = 0;
+
+            virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg) = 0;
+
+            virtual KTFrequencySpectrum& CConjugate() = 0;
+
+            virtual KTPowerSpectrum* CreatePowerSpectrum() const= 0;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const;
-            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const;
+            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const = 0;
+            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const = 0;
 
-            virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const;
+            virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const = 0;
 
-            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
+            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const = 0;
 #endif
     };
 

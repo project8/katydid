@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTThroughputProfiler.hh"
@@ -28,11 +28,11 @@ int main(const int argc, const char** argv)
     if (argc < 2)
     {
         KTWARN(proflog, "Usage:\n" <<
-                "\tProfileFFTWandMonarch <input egg file> <# of events to read>");
+                "\tProfileFFTWandMonarch <input egg file> <# of bundles to read>");
         return -1;
     }
 
-    unsigned nEvents = atoi(argv[2]);
+    unsigned nBundles = atoi(argv[2]);
 
     const Monarch* tReadTest = Monarch::OpenForReading(argv[1]);
     if (tReadTest->ReadHeader() == false)
@@ -46,8 +46,8 @@ int main(const int argc, const char** argv)
     tEggHeader.SetFilename(tReadHeader->GetFilename());
     tEggHeader.SetAcquisitionMode(tReadHeader->GetAcqMode());
     tEggHeader.SetNChannels(2);
-    tEggHeader.SetMonarchRecordSize(tReadHeader->GetRecordSize());
     tEggHeader.SetRecordSize(tReadHeader->GetRecordSize());
+    tEggHeader.SetSliceSize(tReadHeader->GetRecordSize());
     tEggHeader.SetAcquisitionTime(tReadHeader->GetAcqTime());
     tEggHeader.SetAcquisitionRate(tReadHeader->GetAcqRate() * 1.e6);
 
@@ -55,23 +55,23 @@ int main(const int argc, const char** argv)
          << "\tFilename: " << tEggHeader.GetFilename() << '\n'
          << "\tAcuisition Mode: " << tEggHeader.GetAcquisitionMode() << '\n'
          << "\tNumber of Channels: " << tEggHeader.GetNChannels() << '\n'
+         << "\tRecord Size: " << tEggHeader.GetSliceSize() << '\n'
          << "\tRecord Size: " << tEggHeader.GetRecordSize() << '\n'
-         << "\tMonarch Record Size: " << tEggHeader.GetMonarchRecordSize() << '\n'
          << "\tAcquisition Time: " << tEggHeader.GetAcquisitionTime() << " s" << '\n'
          << "\tAcquisition Rate: " << tEggHeader.GetAcquisitionRate() << " Hz ");
 
-    unsigned tSize = tEggHeader.GetMonarchRecordSize();
+    unsigned tSize = tEggHeader.GetRecordSize();
 
     KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
-    // Dummy event pointer
-    boost::shared_ptr<KTEvent> eventPtr(new KTEvent());
+    // Dummy bundle pointer
+    boost::shared_ptr<KTBundle> bundlePtr(new KTBundle());
 
     // Create FFT
     KTINFO(proflog, "Setting up the FFT");
     fftw_complex* tInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * tSize);
     fftw_complex* tOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * tSize);
-    fftw_plan tPlan = fftw_plan_dft_1d(tSize, tInputArray, tOutputArray, FFTW_FORWARD, FFTW_MEASURE | FFTW_PRESERVE_INPUT);
+    fftw_plan tPlan = fftw_plan_dft_1d(tSize, tInputArray, tOutputArray, FFTW_FORWARD, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT);
 
     KTINFO(proflog, "FFT setup complete");
 
@@ -84,12 +84,12 @@ int main(const int argc, const char** argv)
 
     const MonarchRecord* tRecord1 = tReadTest->GetRecordOne();
     const MonarchRecord* tRecord2 = tReadTest->GetRecordTwo();
-    for (unsigned iEvent=0; iEvent < nEvents; iEvent++)
+    for (unsigned iBundle=0; iBundle < nBundles; iBundle++)
     {
-        KTINFO(proflog, "Event " << iEvent);
+        KTINFO(proflog, "Bundle " << iBundle);
         if (tReadTest->ReadRecord() == false)
         {
-            KTERROR(proflog, "Problem reading records at event " << iEvent);
+            KTERROR(proflog, "Problem reading records at bundle " << iBundle);
             break;
         }
 
@@ -111,7 +111,7 @@ int main(const int argc, const char** argv)
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
 
-        profiler.ProcessEvent(eventPtr);
+        profiler.ProcessBundle(bundlePtr);
     }
 
     // Stop the timer and print info

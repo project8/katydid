@@ -35,17 +35,17 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "bundle",
                 "slot-processor": "wv",
-                "slot-name": "event",
+                "slot-name": "bundle",
                 "group-order": 0
             },
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "bundle",
                 "slot-processor": "hough",
-                "slot-name": "event",
+                "slot-name": "bundle",
                 "group-order": 1
             },
             "connection":
@@ -73,7 +73,7 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-events": 1,
+            "number-of-bundles": 1,
             "time-series-size": 0,
             "time-series-type": "fftw",
             "output-data-name": "time-series"

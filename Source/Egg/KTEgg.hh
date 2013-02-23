@@ -1,7 +1,7 @@
 /**
  @file KTEgg.hh
  @brief Contains KTEgg
- @details Reads Egg data files: parses the header and produces events.
+ @details Reads Egg data files: parses the header and produces bundles.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */
@@ -17,7 +17,7 @@ namespace Katydid
 {
     class KTEggReader;
     class KTEggHeader;
-    class KTEvent;
+    class KTBundle;
 
     class KTEgg
     {
@@ -26,23 +26,24 @@ namespace Katydid
             virtual ~KTEgg();
 
             bool BreakEgg(const std::string& filename);
-            boost::shared_ptr<KTEvent> HatchNextEvent();
+            boost::shared_ptr<KTBundle> HatchNextBundle();
             bool CloseEgg();
 
+            /// Assumes ownership of the egg reader
             void SetReader(KTEggReader* reader);
             const KTEggReader* GetReader() const;
 
             void SetHeader(KTEggHeader* header);
             const KTEggHeader* GetHeader() const;
 
-            void SetEventCounter(int count);
-            int GetEventCounter() const;
+            void SetBundleCounter(int count);
+            int GetBundleCounter() const;
 
         private:
             KTEggReader* fReader;
             KTEggHeader* fHeader;
 
-            int fEventCounter;
+            int fBundleCounter;
 
     };
 
@@ -56,15 +57,15 @@ namespace Katydid
         return fHeader;
     }
 
-    inline void KTEgg::SetEventCounter(int count)
+    inline void KTEgg::SetBundleCounter(int count)
     {
-        fEventCounter = count;
+        fBundleCounter = count;
         return;
     }
 
-    inline int KTEgg::GetEventCounter() const
+    inline int KTEgg::GetBundleCounter() const
     {
-        return fEventCounter;
+        return fBundleCounter;
     }
 
 } /* namespace Katydid */

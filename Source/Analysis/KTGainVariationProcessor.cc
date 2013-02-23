@@ -7,7 +7,7 @@
 
 #include "KTGainVariationProcessor.hh"
 
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -18,6 +18,10 @@
 
 #include <cmath>
 #include <vector>
+
+#ifdef USE_OPENMP
+#include <omp.h>
+#endif
 
 using std::string;
 using std::vector;
@@ -45,7 +49,7 @@ namespace Katydid
 
         RegisterSignal("gain-var", &fGainVarSignal, "void (const KTGainVariationData*)");
 
-        RegisterSlot("event", this, &KTGainVariationProcessor::ProcessEvent, "void (shared_ptr<KTEvent>)");
+        RegisterSlot("bundle", this, &KTGainVariationProcessor::ProcessBundle, "void (shared_ptr<KTBundle>)");
         RegisterSlot("fsdata", this, &KTGainVariationProcessor::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumData*)");
         RegisterSlot("fsdata-fftw", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
     }
@@ -101,15 +105,16 @@ namespace Katydid
         Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
         for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
         {
-            const KTFrequencySpectrum* spectrum = data->GetSpectrum(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrum(iChannel);
 
             Double_t* xVals = new Double_t[fNFitPoints];
             Double_t* yVals = new Double_t[fNFitPoints];
 
             // Calculate fit points
+#pragma omp parallel for default(shared)
             for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
             {
-                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint;
+                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
                 Double_t leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
@@ -146,7 +151,7 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fGainVarSignal(newData);
 
@@ -155,13 +160,15 @@ namespace Katydid
 
     KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data)
     {
+        // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
         if (fCalculateMinBin) SetMinBin(data->GetSpectrum(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data->GetSpectrum(0)->FindBin(fMaxFrequency));
+        KTDEBUG(gvlog, fMinFrequency << "  " << fMaxFrequency << "  " << fMinBin << "  " << fMaxBin << "  " << data->GetSpectrum(0)->GetRangeMin() << "  " << data->GetSpectrum(0)->GetRangeMax());
 
-        UInt_t nTotalBins = fMinBin - fMaxBin;
+        UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
-        KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << ", and " << nBinsPerFitPoint << " bins averaged per fit point.");
+        KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         UInt_t nChannels = data->GetNChannels();
 
@@ -176,9 +183,10 @@ namespace Katydid
             Double_t* yVals = new Double_t[fNFitPoints];
 
             // Calculate fit points
+#pragma omp parallel for default(shared)
             for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
             {
-                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint;
+                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
                 Double_t leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
@@ -216,7 +224,7 @@ namespace Katydid
         }
 
         newData->SetName(fOutputDataName);
-        newData->SetEvent(data->GetEvent());
+        newData->SetBundle(data->GetBundle());
 
         fGainVarSignal(newData);
 
@@ -260,40 +268,40 @@ namespace Katydid
     }
     */
 
-    void KTGainVariationProcessor::ProcessEvent(shared_ptr<KTEvent> event)
+    void KTGainVariationProcessor::ProcessBundle(shared_ptr<KTBundle> bundle)
     {
-        const KTFrequencySpectrumData* fsData = event->GetData< KTFrequencySpectrumData >(fInputDataName);
+        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fInputDataName);
         if (fsData != NULL)
         {
             KTGainVariationData* newData = CalculateGainVariation(fsData);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
 
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = event->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
+        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
         if (fsDataFFTW != NULL)
         {
             KTGainVariationData* newData = CalculateGainVariation(fsDataFFTW);
-            event->AddData(newData);
+            bundle->AddData(newData);
             return;
         }
 
-        KTWARN(gvlog, "No time series data named <" << fInputDataName << "> was available in the event");
+        KTWARN(gvlog, "No time series data named <" << fInputDataName << "> was available in the bundle");
         return;
     }
 
     void KTGainVariationProcessor::ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data)
     {
         KTGainVariationData* newData = CalculateGainVariation(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
     void KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
     {
         KTGainVariationData* newData = CalculateGainVariation(data);
-        if (data->GetEvent() != NULL)
-            data->GetEvent()->AddData(newData);
+        if (data->GetBundle() != NULL)
+            data->GetBundle()->AddData(newData);
         return;
     }
 

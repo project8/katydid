@@ -17,7 +17,8 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >::KTPhysicalArray() :
             KTAxisProperties< 1 >(),
-            fData(NULL)
+            fData(NULL),
+            fTempCache()
     {
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(0));
     }
@@ -25,7 +26,8 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >::KTPhysicalArray(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
             KTAxisProperties< 1 >(rangeMin, rangeMax),
-            fData(NULL)
+            fData(NULL),
+            fTempCache()
     {
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
         fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * nBins);
@@ -34,7 +36,8 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >::KTPhysicalArray(const KTPhysicalArray< 1, fftw_complex >& orig) :
             KTAxisProperties< 1 >(orig),
-            fData(NULL)
+            fData(NULL),
+            fTempCache()
     {
         SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(orig.size()));
         fData = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size());
@@ -101,8 +104,8 @@ namespace Katydid
         if (! this->IsCompatibleWith(rhs)) return *this;
         for (size_t iBin=0; iBin<rhs.size(); iBin++)
         {
-            fData[iBin][0] = fData[iBin][0] + rhs(iBin)[0];
-            fData[iBin][1] = fData[iBin][1] + rhs(iBin)[1];
+            fTempCache[0] = fData[iBin][0] + rhs.fData[iBin][0];
+            fTempCache[1] = fData[iBin][1] + rhs.fData[iBin][1];
         }
         return *this;
     }
@@ -113,8 +116,8 @@ namespace Katydid
         if (! this->IsCompatibleWith(rhs)) return *this;
         for (size_t iBin=0; iBin<size(); iBin++)
         {
-            fData[iBin][0] = fData[iBin][0] - rhs(iBin)[0];
-            fData[iBin][1] = fData[iBin][1] - rhs(iBin)[1];
+            fData[iBin][0] = fData[iBin][0] - rhs.fData[iBin][0];
+            fData[iBin][1] = fData[iBin][1] - rhs.fData[iBin][1];
         }
         return *this;
     }
@@ -125,8 +128,10 @@ namespace Katydid
         if (! this->IsCompatibleWith(rhs)) return *this;
         for (size_t iBin=0; iBin<size(); iBin++)
         {
-            fData[iBin][0] = fData[iBin][0] * rhs(iBin)[0] - fData[iBin][1] * rhs(iBin)[1];
-            fData[iBin][1] = fData[iBin][0] * rhs(iBin)[1] + fData[iBin][1] * rhs(iBin)[0];
+            fTempCache[0] = fData[iBin][0] * rhs.fData[iBin][0] - fData[iBin][1] * rhs.fData[iBin][1];
+            fTempCache[1] = fData[iBin][0] * rhs.fData[iBin][1] + fData[iBin][1] * rhs.fData[iBin][0];
+            fData[iBin][0] = fTempCache[0];
+            fData[iBin][1] = fTempCache[1];
         }
         return *this;
     }
@@ -138,10 +143,12 @@ namespace Katydid
         double abs, arg;
         for (size_t iBin=0; iBin<size(); iBin++)
         {
-            double abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) / (rhs(iBin)[0]*rhs(iBin)[0] + rhs(iBin)[1]*rhs(iBin)[1]));
-            double arg = std::atan2(fData[iBin][1], fData[iBin][0]) - std::atan2(rhs(iBin)[1], rhs(iBin)[0]);
-            fData[iBin][0] = abs * std::cos(arg);
-            fData[iBin][1] = abs * std::sin(arg);
+            abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) / (rhs.fData[iBin][0]*rhs.fData[iBin][0] + rhs.fData[iBin][1]*rhs.fData[iBin][1]));
+            arg = std::atan2(fData[iBin][1], fData[iBin][0]) - std::atan2(rhs.fData[iBin][1], rhs.fData[iBin][0]);
+            fTempCache[0] = abs * std::cos(arg);
+            fTempCache[1] = abs * std::sin(arg);
+            fData[iBin][0] = fTempCache[0];
+            fData[iBin][1] = fTempCache[1];
         }
         return *this;
     }
@@ -173,8 +180,10 @@ namespace Katydid
     {
         for (size_t iBin=0; iBin<size(); iBin++)
         {
-            fData[iBin][0] = fData[iBin][0] * rhs[0] - fData[iBin][1] * rhs[1];
-            fData[iBin][1] = fData[iBin][0] * rhs[1] + fData[iBin][1] * rhs[0];
+            fTempCache[0] = fData[iBin][0] * rhs[0] - fData[iBin][1] * rhs[1];
+            fTempCache[1] = fData[iBin][0] * rhs[1] + fData[iBin][1] * rhs[0];
+            fData[iBin][0] = fTempCache[0];
+            fData[iBin][1] = fTempCache[1];
         }
         return *this;
     }
@@ -187,10 +196,12 @@ namespace Katydid
         double rhsarg = std::atan2(rhs[1], rhs[0]);
         for (size_t iBin=0; iBin<size(); iBin++)
         {
-            double abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) / rhsabs);
-            double arg = std::atan2(fData[iBin][1], fData[iBin][0]) - rhsarg;
-            fData[iBin][0] = abs * std::cos(arg);
-            fData[iBin][1] = abs * std::sin(arg);
+            abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) / rhsabs);
+            arg = std::atan2(fData[iBin][1], fData[iBin][0]) - rhsarg;
+            fTempCache[0] = abs * std::cos(arg);
+            fTempCache[1] = abs * std::sin(arg);
+            fData[iBin][0] = fTempCache[0];
+            fData[iBin][1] = fTempCache[1];
         }
         return *this;
     }
@@ -201,7 +212,7 @@ namespace Katydid
         for (size_t iBin=0; iBin<size(); iBin++)
         {
             fData[iBin][0] = fData[iBin][0] * rhs;
-            fData[iBin][1] = fData[iBin][0] * rhs;
+            fData[iBin][1] = fData[iBin][1] * rhs;
         }
         return *this;
     }

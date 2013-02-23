@@ -10,7 +10,7 @@
 
 #include "KTWriteableData.hh"
 
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 
 #ifdef ROOT_FOUND
 #include "TH2.h"
@@ -27,17 +27,17 @@ namespace Katydid
             KTSlidingWindowFSData(unsigned nChannels=1);
             virtual ~KTSlidingWindowFSData();
 
-            const KTPhysicalArray< 1, KTFrequencySpectrum* >* GetSpectra(unsigned channelNum = 0) const;
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* GetSpectra(unsigned channelNum = 0);
+            const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(unsigned channelNum = 0) const;
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(unsigned channelNum = 0);
             unsigned GetNChannels() const;
 
-            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra, unsigned channelNum = 0);
+            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, unsigned channelNum = 0);
             void SetNChannels(unsigned channels);
 
             void Accept(KTWriter* writer) const;
 
         protected:
-            std::vector< KTPhysicalArray< 1, KTFrequencySpectrum* >* > fSpectra;
+            std::vector< KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* > fSpectra;
 
 #ifdef ROOT_FOUND
         public:
@@ -50,12 +50,12 @@ namespace Katydid
 
     };
 
-    inline const KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFSData::GetSpectra(unsigned channelNum) const
+    inline const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTSlidingWindowFSData::GetSpectra(unsigned channelNum) const
     {
         return fSpectra[channelNum];
     }
 
-    inline KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFSData::GetSpectra(unsigned channelNum)
+    inline KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTSlidingWindowFSData::GetSpectra(unsigned channelNum)
     {
         return fSpectra[channelNum];
     }
@@ -65,7 +65,7 @@ namespace Katydid
         return unsigned(fSpectra.size());
     }
 
-    inline void KTSlidingWindowFSData::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrum* >* spectra, unsigned channelNum)
+    inline void KTSlidingWindowFSData::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, unsigned channelNum)
     {
         if (channelNum >= fSpectra.size()) fSpectra.resize(channelNum+1);
         fSpectra[channelNum] = spectra;

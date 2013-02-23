@@ -20,7 +20,7 @@
 
 namespace Katydid
 {
-    class KTEvent;
+    class KTBundle;
     class KTPStoreNode;
 
     class KTPublisher : public KTPrimaryProcessor
@@ -41,7 +41,7 @@ namespace Katydid
             typedef PublicationMap::const_iterator PubMapCIter;
             typedef PublicationMap::value_type PubMapValue;
 
-            typedef KTConcurrentQueue< boost::shared_ptr<KTEvent> > PublicationQueue;
+            typedef KTConcurrentQueue< boost::shared_ptr<KTBundle> > PublicationQueue;
 
             enum Status
             {
@@ -99,11 +99,11 @@ namespace Katydid
             // Slots
             //*********
         public:
-            void Publish(boost::shared_ptr<KTEvent> event);
-            /// Queue and event for publication
-            /// Assumes ownership of the event
+            void Publish(boost::shared_ptr<KTBundle> bundle);
+            /// Queue and bundle for publication
+            /// Assumes ownership of the bundle
             /// If processor is not running, initiates the runnning of the processor (i.e. calls Run())
-            void Queue(boost::shared_ptr<KTEvent> event);
+            void Queue(boost::shared_ptr<KTBundle> bundle);
 
     };
 

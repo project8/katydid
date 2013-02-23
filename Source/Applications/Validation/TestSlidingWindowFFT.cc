@@ -13,7 +13,7 @@
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTLogger.hh"
 #include "KTRectangularWindow.hh"
 #include "KTSlidingWindowFFT.hh"
@@ -85,22 +85,22 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    KTINFO(testsw, "Hatching event");
-    // Hatch the event
-    boost::shared_ptr<KTEvent> event = egg.HatchNextEvent();
-    if (event.get() == NULL)
+    KTINFO(testsw, "Hatching bundle");
+    // Hatch the bundle
+    boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
+    if (bundle.get() == NULL)
     {
-        KTERROR(testsw, "Event did not hatch");
+        KTERROR(testsw, "Bundle did not hatch");
         egg.CloseEgg();
         return -1;
     }
 
-    // Get the time-series data from the event.
-    // The data is still owned by the event.
-    KTTimeSeriesData* tsData = event->GetData<KTProgenitorTimeSeriesData>("time-series");
+    // Get the time-series data from the bundle.
+    // The data is still owned by the bundle.
+    KTTimeSeriesData* tsData = bundle->GetData<KTProgenitorTimeSeriesData>("time-series");
     if (tsData == NULL)
     {
-        KTWARN(testsw, "No time-series data present in event");
+        KTWARN(testsw, "No time-series data present in bundle");
         egg.CloseEgg();
         return -1;
     }
@@ -111,7 +111,7 @@ int main(int argc, char** argv)
         // Create the transform, and manually configure it.
         KTINFO(testsw, "Creating and configuring sliding window FFT");
         KTSlidingWindowFFT fft;
-        KTEventWindowFunction* windowFunc = new KTRectangularWindow(tsData);
+        KTBundleWindowFunction* windowFunc = new KTRectangularWindow(tsData);
         windowFunc->SetSize(windowSize);
         fft.SetTransformFlag("ESTIMATE");
         fft.SetWindowFunction(windowFunc);
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
         fft.InitializeFFT();
 
         // Transform the data.
-        // The data is not owned by the event because TransformData was used, not ProcessEvent.
+        // The data is not owned by the bundle because TransformData was used, not ProcessBundle.
         KTINFO(testsw, "Transforming data");
         KTSlidingWindowFSData* swData = fft.TransformData(tsData);
 
@@ -145,7 +145,7 @@ int main(int argc, char** argv)
         // Create the transform, and manually configure it.
         KTINFO(testsw, "Creating and configuring sliding window FFTW");
         KTSlidingWindowFFTW fft;
-        KTEventWindowFunction* windowFunc = new KTRectangularWindow(tsData);
+        KTBundleWindowFunction* windowFunc = new KTRectangularWindow(tsData);
         windowFunc->SetSize(windowSize);
         fft.SetTransformFlag("ESTIMATE");
         fft.SetWindowFunction(windowFunc);
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
         fft.InitializeFFT();
 
         // Transform the data.
-        // The data is not owned by the event because TransformData was used, not ProcessEvent.
+        // The data is not owned by the bundle because TransformData was used, not ProcessBundle.
         KTINFO(testsw, "Transforming data");
         KTSlidingWindowFSDataFFTW* swData = fft.TransformData(tsData);
 

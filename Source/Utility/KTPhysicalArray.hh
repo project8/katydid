@@ -15,6 +15,10 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/bind.hpp>
 
+#ifdef USE_OPENMP
+#include <omp.h>
+#endif
+
 namespace Katydid
 {
     KTLOGGER(utillog_physarr, "katydid.utility");
@@ -317,6 +321,7 @@ namespace Katydid
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator+=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
+#pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) += rhs(iBin);
@@ -328,6 +333,7 @@ namespace Katydid
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator-=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
+#pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) -= rhs(iBin);
@@ -339,6 +345,7 @@ namespace Katydid
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator*=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
+#pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) *= rhs(iBin);
@@ -350,6 +357,7 @@ namespace Katydid
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
+#pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) /= rhs(iBin);
@@ -360,6 +368,7 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator+=(const value_type& rhs)
     {
+#pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) += rhs;
@@ -370,6 +379,7 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator-=(const value_type& rhs)
     {
+#pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) -= rhs;
@@ -380,6 +390,7 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator*=(const value_type& rhs)
     {
+#pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) *= rhs;
@@ -390,6 +401,7 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const XDataType& rhs)
     {
+#pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
         {
             fData(iBin) /= rhs;

@@ -17,8 +17,16 @@ include (KatydidBuild)
 # Set the version and associated variables
 katydid_prepare_project (0 9 1)
 
+set (Katydid_SINGLETHREADED FALSE CACHE BOOL "Flag for running in single-threaded mode")
+if (Katydid_SINGLETHREADED)
+    add_definitions(-DSINGLETHREADED)
+else (Katydid_SINGLETHREADED)
+    remove_definitions(-DSINGLETHREADED)
+endif(Katydid_SINGLETHREADED)
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  list (APPEND LIBS rt)
+    list (APPEND LIBS rt)
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 # Boost (1.46 required for filesystem version 3)
@@ -30,6 +38,14 @@ list (APPEND LIBS ${Boost_LIBRARIES})
 find_package(FFTW REQUIRED)
 include_directories (${FFTW_INCLUDE_DIR})
 list (APPEND LIBS ${FFTW_LIBRARIES})
+if (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+    set (FFTW_NTHREADS 1 CACHE STRING "Number of threads to use for FFTW processes")
+    add_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
+    message (STATUS "FFTW configured to use up to ${FFTW_NTHREADS} threads.")
+else (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+    remove_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
+endif (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+
 
 # ROOT
 find_package (ROOT 5.28)
@@ -57,6 +73,16 @@ if (EIGEN3_FOUND)
    message (STATUS "Eigen found.")
    include_directories (${EIGEN3_INCLUDE_DIR})
 endif (EIGEN3_FOUND)
+
+# OpenMP
+find_package (OpenMP)
+if (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    add_definitions(-DUSE_OPENMP)
+else (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
+    remove_definitions(-DUSE_OPENMP)
+endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 
 # External packages distributed with Katydid
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidJSON")
@@ -121,4 +147,8 @@ katydid_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Scr
 # this is apparently not the right way to run the link_dylibs script
 #execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)
 
-install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)")
+if (ROOT_FOUND)
+    install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${LIB_INSTALL_DIR})")
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Scripts/LoadLibraries.C.in ${PROJECT_BINARY_DIR}/LoadLibraries.C)
+    install (FILES ${PROJECT_BINARY_DIR}/LoadLibraries.C DESTINATION ${LIB_INSTALL_DIR})
+endif (ROOT_FOUND)

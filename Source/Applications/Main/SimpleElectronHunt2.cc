@@ -6,11 +6,11 @@
  *
  *      Search for electrons with very basic peak finding and grouping
  *
- *      Usage: SimpleElectronHunt [-e egg filename] [-p ps filename] [-n # events; -1 for all] [-c control case option]
+ *      Usage: SimpleElectronHunt [-e egg filename] [-p ps filename] [-n # bundles; -1 for all] [-c control case option]
  *      Command line options
  *       -e: The input data file name
  *       -p: The output file name base (there will be .root and .ps files)
- *       -n: The number of events to analyze; use -1 for all
+ *       -n: The number of bundles to analyze; use -1 for all
  *       -t: Threshold in multiples of the mean (default is 10)
  *       -c: Use this to run one of the control setups. -1 reverses the high and low margins; -2 uses large negative margins.
  *       -d: Include this flag to draw waterfall plots
@@ -64,8 +64,8 @@ int main(int argc, char** argv)
 
     try
     {
-        // every time procEgg hatches an event, procEHunt.ProcessEvent will be called
-        procEgg.ConnectASlot("event", &procEHunt, "event");
+        // every time procEgg hatches an bundle, procEHunt.ProcessBundle will be called
+        procEgg.ConnectASlot("bundle", &procEHunt, "bundle");
 
         // when procEgg parses the header, the info is passed to procEHunt::ProcessHeader
         procEgg.ConnectASlot("header", &procEHunt, "header");

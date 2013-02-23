@@ -10,6 +10,6 @@
 #pragma link C++ namespace Katydid;
 
 #pragma link C++ class Katydid::KTEgg+;
-#pragma link C++ class Katydid::KTEvent+;
+#pragma link C++ class Katydid::KTBundle+;
 
 #endif

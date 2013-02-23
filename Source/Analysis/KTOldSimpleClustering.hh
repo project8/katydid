@@ -1,17 +1,17 @@
 /**
- @file KTSimpleClustering.hh
- @brief Contains KTSimpleClustering
+ @file KTOldSimpleClustering.hh
+ @brief Contains KTOldSimpleClustering
  @details Simple cluster-finding algorithm that works by looking for lines of high-peaked bins increasing in frequency
  @author: N. S. Oblath
  @date: Jan 24, 2012
  */
 
-#ifndef KTSIMPLECLUSTERING_HH_
-#define KTSIMPLECLUSTERING_HH_
+#ifndef KTOLDSIMPLECLUSTERING_HH_
+#define KTOLDSIMPLECLUSTERING_HH_
 
 #include "KTProcessor.hh"
 
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTMaskedArray.hh"
 
 #include <list>
@@ -26,29 +26,29 @@ namespace Katydid
     template< size_t NDims, typename XDataType >
     class KTPhysicalArray;
 
-    class KTSimpleClustering : public KTProcessor
+    class KTOldSimpleClustering : public KTProcessor
     {
         private:
             typedef std::list< std::multimap< Int_t, Int_t >* > epbList;
 
         public:
-            KTSimpleClustering();
-            virtual ~KTSimpleClustering();
+            KTOldSimpleClustering();
+            virtual ~KTOldSimpleClustering();
 
             Bool_t Configure(const KTPStoreNode* node);
 
             void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
-            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
+            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrumPolar* powerSpectrum);
 
-            void SetEventPeakBinsList(epbList* eventPeakBinsList); /// does NOT take ownership of eventPeakBinsList
-            void SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
+            void SetBundlePeakBinsList(epbList* bundlePeakBinsList); /// does NOT take ownership of bundlePeakBinsList
+            void SetBinCuts(KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* binCuts); /// takes ownership of binCuts
             void SetMinimumGroupSize(UInt_t size);
 
         private:
-            epbList* fEventPeakBins;
+            epbList* fBundlePeakBins;
             Double_t fThresholdMult;
 
-            KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* fBinCuts;
+            KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* fBinCuts;
 
             UInt_t fMinimumGroupSize;
 
@@ -62,24 +62,24 @@ namespace Katydid
 
     };
 
-    inline void KTSimpleClustering::SetEventPeakBinsList(epbList* list)
+    inline void KTOldSimpleClustering::SetBundlePeakBinsList(epbList* list)
     {
-        fEventPeakBins = list;
+        fBundlePeakBins = list;
         return;
     }
 
-    inline void KTSimpleClustering::SetBinCuts(KTMaskedArray< KTFrequencySpectrum::array_type, complexpolar<Double_t> >* binCuts)
+    inline void KTOldSimpleClustering::SetBinCuts(KTMaskedArray< KTFrequencySpectrumPolar::array_type, complexpolar<Double_t> >* binCuts)
     {
         delete fBinCuts;
         fBinCuts = binCuts;
         return;
     }
 
-    inline void KTSimpleClustering::SetMinimumGroupSize(UInt_t size)
+    inline void KTOldSimpleClustering::SetMinimumGroupSize(UInt_t size)
     {
         fMinimumGroupSize = size;
         return;
     }
 
 } /* namespace Katydid */
-#endif /* KTSIMPLECLUSTERING_HH_ */
+#endif /* KTOLDSIMPLECLUSTERING_HH_ */

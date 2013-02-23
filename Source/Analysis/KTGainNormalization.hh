@@ -15,8 +15,8 @@
 
 namespace Katydid
 {
-    class KTEvent;
-    class KTFrequencySpectrum;
+    class KTBundle;
+    class KTFrequencySpectrumPolar;
     class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
@@ -80,7 +80,7 @@ namespace Katydid
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
             //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
 
-            KTFrequencySpectrum* Normalize(const KTFrequencySpectrum* frequencySpectrum, const KTSpline* spline);
+            KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline);
             KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline);
 
         private:
@@ -100,7 +100,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessEvent(boost::shared_ptr<KTEvent> event);
+            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
 
     };
 

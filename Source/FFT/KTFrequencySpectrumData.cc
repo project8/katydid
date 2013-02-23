@@ -8,7 +8,7 @@
 #include "KTFrequencySpectrumData.hh"
 
 #include "KTDataMap.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTTIFactory.hh"
 #include "KTWriter.hh"
 
@@ -16,9 +16,11 @@ namespace Katydid
 {
     static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencySpectrumData > > sFSDMMRegistrar;
 
-    KTFrequencySpectrumData::KTFrequencySpectrumData(unsigned nChannels) :
+    KTFrequencySpectrumData::KTFrequencySpectrumData(UInt_t nChannels) :
             KTWriteableData(),
-            fSpectra(nChannels)
+            fSpectra(nChannels),
+            fTimeInRun(0.),
+            fSliceNumber(0)
     {
     }
 

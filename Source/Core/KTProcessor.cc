@@ -7,7 +7,7 @@
 
 #include "KTProcessor.hh"
 
-#include "KTLogger.hh"
+//#include "KTLogger.hh"
 
 #include <boost/foreach.hpp>
 
@@ -17,7 +17,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(proclog, "katydid.core");
+    //KTLOGGER(proclog, "katydid.core");
 
     ProcessorException::ProcessorException (std::string const& why)
       : std::logic_error(why)
@@ -57,10 +57,12 @@ namespace Katydid
         {
             string errorMsg = string("Exception caught in KTProcessor::ConnectASignal; signal: ") +
                     signalName + string(", slot: ") + slotName + string("\n") + e.what() + string("\n") +
-                    string("Check that the signatures of the signal and slot match exactly.");
+                    string("\tIf the signal wrapper cannot be cast correctly, check that the signatures of the signal and slot match exactly.\n") +
+                    string("\tIf the signal pointer is NULL, you may have the signal name wrong.\n") +
+                    string("\tIf the slot pointer is NULL, you may have the slot name wrong.");
             throw std::logic_error(errorMsg);
         }
-        KTINFO(proclog, "Connected signal <" << signalName << "> to slot <" << slotName << ">");
+        KTINFO(processorlog, "Connected signal <" << signalName << "> to slot <" << slotName << ">");
 
         return;
     }
@@ -81,7 +83,7 @@ namespace Katydid
                     string("Check that the signatures of the signal and slot match exactly.");
             throw std::logic_error(errorMsg);
         }
-        KTINFO(proclog, "Connected slot <" << signalName << "> to signal <" << slotName << ">");
+        KTINFO(processorlog, "Connected slot <" << signalName << "> to signal <" << slotName << ">");
 
         return;
     }

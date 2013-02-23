@@ -9,7 +9,7 @@
 
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 #include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesPairedData.hh"
 #include "KTTimeSeriesReal.hh"
@@ -47,12 +47,12 @@ namespace Katydid
     {
         fConfigName = "sliding-window-fft";
 
-        RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrum*)");
+        RegisterSignal("single_fft", &fSingleFFTSignal, "void (UInt_t, KTFrequencySpectrumPolar*)");
         RegisterSignal("full_fft", &fFullFFTSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("header", this, &KTSlidingWindowFFT::ProcessHeader, "void (const KTEggHeader*)");
         RegisterSlot("ts-data", this, &KTSlidingWindowFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("event", this, &KTSlidingWindowFFT::ProcessEvent, "void (KTEvent*)");
+        RegisterSlot("bundle", this, &KTSlidingWindowFFT::ProcessBundle, "void (KTBundle*)");
 
         SetupTransformFlagMap();
     }
@@ -78,7 +78,7 @@ namespace Katydid
         if (node->HasData("overlap-frac")) SetOverlapFrac(node->GetData< Double_t >("overlap-frac", 0.));
 
         string windowType = node->GetData< string >("window-function-type", "rectangular");
-        KTEventWindowFunction* tempWF = KTFactory< KTEventWindowFunction >::GetInstance()->Create(windowType);
+        KTBundleWindowFunction* tempWF = KTFactory< KTBundleWindowFunction >::GetInstance()->Create(windowType);
         if (tempWF == NULL)
         {
             KTERROR(fftlog_sw, "Invalid window function type given: <" << windowType << ">.");
@@ -120,23 +120,23 @@ namespace Katydid
     void KTSlidingWindowFFT::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
     {
         KTSlidingWindowFSData* newData = TransformData(tsData);
-        if (tsData->GetEvent() != NULL)
-            tsData->GetEvent()->AddData(newData);
+        if (tsData->GetBundle() != NULL)
+            tsData->GetBundle()->AddData(newData);
         return;
     }
 
 
-    void KTSlidingWindowFFT::ProcessEvent(KTEvent* event)
+    void KTSlidingWindowFFT::ProcessBundle(KTBundle* bundle)
     {
-        const KTTimeSeriesData* tsData = event->GetData< KTTimeSeriesData >(fInputDataName);
+        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
         if (tsData == NULL)
         {
-            KTWARN(fftlog_sw, "No time series data named <" << fInputDataName << "> was available in the event");
+            KTWARN(fftlog_sw, "No time series data named <" << fInputDataName << "> was available in the bundle");
             return;
         }
 
         KTSlidingWindowFSData* newData = TransformData(tsData);
-        event->AddData(newData);
+        bundle->AddData(newData);
         return;
     }
 
@@ -205,7 +205,7 @@ namespace Katydid
                 KTERROR(fftlog_sw, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
                 return NULL;
             }
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* newResults = NULL;
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* newResults = NULL;
             try
             {
                 newResults = Transform(nextInput);
@@ -218,7 +218,7 @@ namespace Katydid
             newData->SetSpectra(newResults, iChannel);
         }
 
-        newData->SetEvent(tsData->GetEvent());
+        newData->SetBundle(tsData->GetBundle());
         newData->SetName(fOutputDataName);
 
         fFullFFTSignal(newData);
@@ -226,7 +226,7 @@ namespace Katydid
         return newData;
     }
 
-    KTPhysicalArray< 1, KTFrequencySpectrum* >* KTSlidingWindowFFT::Transform(const KTTimeSeriesReal* data) const
+    KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTSlidingWindowFFT::Transform(const KTTimeSeriesReal* data) const
     {
         // # of time bins in each FFT, and the number of bins in the data
         UInt_t windowSize = fWindowFunction->GetSize();
@@ -247,7 +247,7 @@ namespace Katydid
             // Characteristics of the time axis
             Double_t timeMin = 0.;
             Double_t timeMax = nTimeBinsUsed * timeBinWidth;
-            KTPhysicalArray< 1, KTFrequencySpectrum* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrum* >(nWindows, timeMin, timeMax);
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumPolar* >(nWindows, timeMin, timeMax);
 
             KTDEBUG(fftlog_sw, "Performing windowed FFT\n"
                     << "\tWindow size: " << windowSize << '\n'
@@ -276,13 +276,13 @@ namespace Katydid
        return NULL;
     }
 
-    KTFrequencySpectrum* KTSlidingWindowFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
+    KTFrequencySpectrumPolar* KTSlidingWindowFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
     {
         UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(freqSize, freqMin, freqMax);
+        KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
         for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
             (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
@@ -316,7 +316,7 @@ namespace Katydid
         return;
     }
 
-    void KTSlidingWindowFFT::SetWindowFunction(KTEventWindowFunction* wf)
+    void KTSlidingWindowFFT::SetWindowFunction(KTBundleWindowFunction* wf)
     {
         delete fWindowFunction;
         fWindowFunction = wf;
