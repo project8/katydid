@@ -27,17 +27,17 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "bundle",
+                "signal-name": "slice",
                 "slot-processor": "fft",
-                "slot-name": "bundle",
+                "slot-name": "ts",
                 "group-order": 1
             },
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "bundle",
+                "signal-name": "slice",
                 "slot-processor": "profiler",
-                "slot-name": "bundle",
+                "slot-name": "data",
                 "group-order": 0
             },
             "connection":
@@ -61,7 +61,7 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "fs-data"
+                "slot-name": "fs"
             },
             "connection":
             {
@@ -82,13 +82,11 @@
         {
             "filename": "/path/to/file.egg",
             "number-of-bundles": 1,
-            "output-data-name": "time-series"
         },
         
         "fft":
         {
             "transform-flag": "ESTIMATE",
-            "input-data-name": "time-series"
         },
         
         "writer":

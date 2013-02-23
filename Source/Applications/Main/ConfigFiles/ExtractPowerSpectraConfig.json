@@ -5,14 +5,11 @@
         {
             "filename": "/path/to/file.egg",
             "number-of-bundles": 1,
-            "output-data-name": "time-series"
         },
         
         "simple-fft":
         {
             "transform-flag": "ESTIMATE"
-            "input-data-name": "time-series"
-            "output-data-name": "frequency-spectrum"
         },
         
         "basic-root-writer":

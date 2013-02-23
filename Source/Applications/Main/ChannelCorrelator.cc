@@ -47,11 +47,11 @@ int main(int argc, char** argv)
         procEgg.ConnectASlot("header", &procFFT, "header");
 
         // When procEgg hatches an slice, procFFT.ProcessTimeSeriesData and procCorr.ProcessPolarData will be called
-        procEgg.ConnectASlot("slice", &procFFT, "ts-data", 0);
+        procEgg.ConnectASlot("slice", &procFFT, "ts", 0);
         procEgg.ConnectASlot("slice", &procCorr, "fs-polar", 1);
 
         // This will get the output histogram when an FFT and correlation are complete
-        procCorr.ConnectASlot("correlation", &procPub, "corr-data");
+        procCorr.ConnectASlot("correlation", &procPub, "corr");
     }
     catch (std::exception& e)
     {

@@ -42,8 +42,8 @@ namespace Katydid
     {
         fConfigName = "gain-normalization";
 
-        RegisterSignal("gain-norm-fs", &fFSPolarSignal, "void (shared_ptr< KTData >)");
-        RegisterSignal("gain-norm-fs-fftw", &fFSFFTWSignal, "void (shared_ptr< KTData >)");
+        RegisterSignal("norm-fs-polar", &fFSPolarSignal, "void (shared_ptr< KTData >)");
+        RegisterSignal("norm-fs-fftw", &fFSFFTWSignal, "void (shared_ptr< KTData >)");
         //RegisterSignal("gain-norm-sw-fs", &fSWFSSignal, "void (const KTSlidingWindowFSData*)");
         //RegisterSignal("gain-norm-sw-fs-fftw", &fSWFSFFTWSignal, "void (const KTSlidingWindowFSDataFFTW*)");
 

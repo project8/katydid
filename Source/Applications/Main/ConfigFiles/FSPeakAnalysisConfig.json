@@ -82,17 +82,17 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "bundle",
+                "signal-name": "slice",
                 "slot-processor": "profiler",
-                "slot-name": "bundle",
+                "slot-name": "data",
                 "group-order": 0
             },
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "bundle",
+                "signal-name": "slice",
                 "slot-processor": "fft",
-                "slot-name": "bundle",
+                "slot-name": "ts",
                 "group-order": 1
             },
             "connection":
@@ -100,22 +100,22 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "gainvar",
-                "slot-name": "fsdata"
+                "slot-name": "fs-fftw"
             },
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "bundle",
+                "signal-name": "slice",
                 "slot-processor": "gainnorm",
-                "slot-name": "bundle",
+                "slot-name": "fs-fftw",
                 "group-order": 2
             },
             "connection":
             {
                 "signal-processor": "gainnorm",
-                "signal-name": "gain-norm-fs",
+                "signal-name": "norm-fs-fftw",
                 "slot-processor": "discrim",
-                "slot-name": "fsdata",
+                "slot-name": "norm-fs-fftw",
                 "group-order": 1
             },
             "connection":
@@ -123,14 +123,14 @@
                 "signal-processor": "discrim",
                 "signal-name": "disc-1d",
                 "slot-processor": "clustering",
-                "slot-name": "disc-1d-data"
+                "slot-name": "disc-1d"
             },
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "bundle",
+                "signal-name": "slice",
                 "slot-processor": "fcident",
-                "slot-name": "bundle",
+                "slot-name": "norm-fs-fftw",
                 "group-order": 3
             },
             
@@ -139,14 +139,14 @@
                 "signal-processor": "gainvar",
                 "signal-name": "gain-var",
                 "slot-processor": "rootwriter",
-                "slot-name": "gain-var-data"
+                "slot-name": "gain-var"
             },
             "connection":
             {
                 "signal-processor": "gainnorm",
                 "signal-name": "gain-norm-fs",
                 "slot-processor": "rootwriter",
-                "slot-name": "fs-data",
+                "slot-name": "fs",
                 "group-order": 0
             },
             "connection":
@@ -154,7 +154,7 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "rootwriter-prenorm",
-                "slot-name": "fs-data"
+                "slot-name": "fs"
             },
             
             "connection":
@@ -192,14 +192,11 @@
         {
             "filename": "../../../data/run2012_11_5_tone.egg",
             "number-of-bundles": 1,
-            "output-data-name": "time-series"
         },
         
         "fft":
         {
             "transform-flag": "ESTIMATE",
-            "input-data-name": "time-series",
-            "output-data-name": "freq-spectrum"
         },
         
         "gainvar":
@@ -207,17 +204,12 @@
             "min-frequency": 6e6,
             "max-frequency": 95e6,
             "fit-points": 20,
-            "input-data-name": "freq-spectrum",
-            "output-data-name": "gain-variations"
         },
         
         "gainnorm":
         {
             "min-frequency": 6e6,
             "max-frequency": 95e6,
-            "gv-input-data-name": "gain-variations",
-            "fs-input-data-name": "freq-spectrum",
-            "output-data-name": "norm-freq-spectrum"
         },
         
         "discrim":
@@ -225,22 +217,15 @@
             "min-frequency": 6e6,
             "max-frequency": 95e6,
             "snr-threshold": 20.0,
-            "input-data-name": "norm-freq-spectrum",
-            "output-data-name": "peak-points"
         },
         
         "clustering":
         {
             "max-frequency-distance": 2000.0,
-            "input-data-name": "peak-points",
-            "output-data-name": "peaks"
         },
         
         "fcident":
         {
-            "fs-input-data-name": "norm-freq-spectrum",
-            "cluster-input-data-name": "peaks",
-            "output-data-name": "candidates"
         },
         
         "rootwriter":
