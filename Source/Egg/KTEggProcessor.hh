@@ -35,7 +35,6 @@ namespace Katydid
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
      \li \c "time-series-size": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
      \li \c "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
-     \li \c "output-data-name": string -- Name to give to the data produced
 
      Command-line options defined
      \li \c -n (n-slices): Number of slices to process
@@ -44,7 +43,7 @@ namespace Katydid
 
      Signals:
      \li \c "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     \li \c "data": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced.
+     \li \c "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced.
      \li \c "egg-done": void () --  emitted when a file is finished.
     */
     class KTEggProcessor : public KTPrimaryProcessor

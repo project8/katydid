@@ -38,8 +38,8 @@ namespace Katydid
         RegisterSignal("analytic-associate", &fAASignal, "void (const KTTimeSeriesDataFFTW*)");
 
         RegisterSlot("header", this, &KTAnalyticAssociator::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTAnalyticAssociator::ProcessTimeSeriesData, "void (shared_ptr<KTData>)");
-        RegisterSlot("fs-data", this, &KTAnalyticAssociator::ProcessFrequencySpectrumData, "void (shared_ptr<KTData>)");
+        RegisterSlot("ts", this, &KTAnalyticAssociator::ProcessTimeSeriesData, "void (shared_ptr<KTData>)");
+        RegisterSlot("fs-fftw", this, &KTAnalyticAssociator::ProcessFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
     }
 
     KTAnalyticAssociator::~KTAnalyticAssociator()
@@ -220,7 +220,7 @@ namespace Katydid
         return;
     }
 
-    void KTAnalyticAssociator::ProcessFrequencySpectrumData(shared_ptr<KTData> data)
+    void KTAnalyticAssociator::ProcessFrequencySpectrumDataFFTW(shared_ptr<KTData> data)
     {
         if (! data->Has< KTFrequencySpectrumDataFFTW >())
         {

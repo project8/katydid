@@ -22,7 +22,7 @@ namespace Katydid
 
     void KTBasicASCIITypeWriterTS::RegisterSlots()
     {
-        fWriter->RegisterSlot("ts-data",
+        fWriter->RegisterSlot("ts",
                 this,
                 &KTBasicASCIITypeWriterTS::WriteTimeSeriesData,
                 "void (shared_ptr< KTData >)");

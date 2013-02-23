@@ -57,8 +57,8 @@ namespace Katydid
         RegisterSignal("wigner-ville", &fWVSignal, "void (const KTWriteableData*)");
 
         RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (shared_ptr< KTData >)");
-        RegisterSlot("aa-data", this, &KTWignerVille::ProcessAnalyticAssociateData, "void (shared_ptr< KTData >)");
+        RegisterSlot("ts", this, &KTWignerVille::ProcessTimeSeriesData, "void (shared_ptr< KTData >)");
+        RegisterSlot("aa", this, &KTWignerVille::ProcessAnalyticAssociateData, "void (shared_ptr< KTData >)");
     }
 
     KTWignerVille::~KTWignerVille()

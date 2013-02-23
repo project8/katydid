@@ -46,11 +46,11 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterAnalysis::RegisterSlots()
     {
-        fWriter->RegisterSlot("aa-data", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData, "void (shared_ptr< KTData >)");
-        fWriter->RegisterSlot("corr-data", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationData, "void (shared_ptr< KTData >)");
-        fWriter->RegisterSlot("hough-data", this, &KTBasicROOTTypeWriterAnalysis::WriteHoughData, "void (shared_ptr< KTData >)");
-        fWriter->RegisterSlot("gain-var-data", this, &KTBasicROOTTypeWriterAnalysis::WriteGainVariationData, "void (shared_ptr< KTData >)");
-        fWriter->RegisterSlot("wv-data", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData, "void (shared_ptr< KTData >)");
+        fWriter->RegisterSlot("aa", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData, "void (shared_ptr< KTData >)");
+        fWriter->RegisterSlot("corr", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationData, "void (shared_ptr< KTData >)");
+        fWriter->RegisterSlot("hough", this, &KTBasicROOTTypeWriterAnalysis::WriteHoughData, "void (shared_ptr< KTData >)");
+        fWriter->RegisterSlot("gain-var", this, &KTBasicROOTTypeWriterAnalysis::WriteGainVariationData, "void (shared_ptr< KTData >)");
+        fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData, "void (shared_ptr< KTData >)");
         return;
     }
 

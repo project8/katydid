@@ -49,8 +49,8 @@ namespace Katydid
         RegisterSignal("fft-reverse", &fFFTReverseSignal, "void (shared_ptr<KTData>)");
 
         RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (shared_ptr<KTData>)");
-        RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (shared_ptr<KTData>)");
+        RegisterSlot("ts", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (shared_ptr<KTData>)");
+        RegisterSlot("fs-fftw", this, &KTComplexFFTW::ProcessFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
 
         SetupInternalMaps();
     }
@@ -328,7 +328,7 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessFrequencySpectrumData(shared_ptr<KTData> data)
+    void KTComplexFFTW::ProcessFrequencySpectrumDataFFTW(shared_ptr<KTData> data)
     {
         if (! data->Has< KTFrequencySpectrumDataFFTW >())
         {

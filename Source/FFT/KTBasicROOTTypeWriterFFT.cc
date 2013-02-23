@@ -45,8 +45,8 @@ namespace Katydid
     {
         fWriter->RegisterSlot("fs-polar", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar, "void (shared_ptr<KTData>)");
         fWriter->RegisterSlot("fs-fftw", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
-        //fWriter->RegisterSlot("swfs-data", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData, "void (const WriteSlidingWindowFSData*)");
-        //fWriter->RegisterSlot("swfs-data-fftw", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW, "void (const WriteSlidingWindowFSDataFFTW*)");
+        //fWriter->RegisterSlot("swfs", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData, "void (const WriteSlidingWindowFSData*)");
+        //fWriter->RegisterSlot("swfs-fftw", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW, "void (const WriteSlidingWindowFSDataFFTW*)");
         return;
     }
 

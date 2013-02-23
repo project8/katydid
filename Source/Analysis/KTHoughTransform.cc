@@ -44,8 +44,8 @@ namespace Katydid
         RegisterSignal("hough-transform", &fHTSignal, "void (const KTWriteableData*)");
 
         //RegisterSlot("header", this, &KTHoughTransform::ProcessHeader, "void (const KTEggHeader*)");
-        //RegisterSlot("swfs-data", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
-        RegisterSlot("disc-data", this, &KTHoughTransform::ProcessDiscriminatedData, "void (shared_ptr< KTData >)");
+        //RegisterSlot("swfs", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
+        RegisterSlot("disc", this, &KTHoughTransform::ProcessDiscriminatedData, "void (shared_ptr< KTData >)");
     }
 
     KTHoughTransform::~KTHoughTransform()

@@ -100,7 +100,7 @@ namespace Katydid
     {
         fWriter->RegisterSlot("start-by-header", this, &KTMultiBundleROOTTypeWriterEgg::StartByHeader, "void (const KTEggHeader*)");
 
-        fWriter->RegisterSlot("ts-data", this, &KTMultiBundleROOTTypeWriterEgg::AddTimeSeriesData, "void (shared_ptr<KTData>)");
+        fWriter->RegisterSlot("ts", this, &KTMultiBundleROOTTypeWriterEgg::AddTimeSeriesData, "void (shared_ptr<KTData>)");
         return;
     }
 

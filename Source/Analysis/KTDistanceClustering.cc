@@ -42,8 +42,8 @@ namespace Katydid
         RegisterSignal("cluster-1d", &fCluster1DSignal, "void (const KTCluster1DData*)");
         //RegisterSignal("cluster-2d", &fCluster2DSignal, "void (const KTCluster2DData*)");
 
-        RegisterSlot("disc-1d-data", this, &KTDistanceClustering::Process1DData, "void (shared_ptr<KTData>)");
-        //RegisterSlot("disc-2d-data", this, &KTDistanceClustering::Process2DData, "void (const KTDiscriminatedPoints2DData*)");
+        RegisterSlot("disc-1d", this, &KTDistanceClustering::Process1DData, "void (shared_ptr<KTData>)");
+        //RegisterSlot("disc-2d", this, &KTDistanceClustering::Process2DData, "void (const KTDiscriminatedPoints2DData*)");
     }
 
     KTDistanceClustering::~KTDistanceClustering()

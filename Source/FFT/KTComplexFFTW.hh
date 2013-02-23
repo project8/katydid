@@ -61,8 +61,8 @@ namespace Katydid
 
      Slots:
      \li \c "header": void ProcessHeader(const KTEggHeader* header)
-     \li \c "ts-data": void ProcessTimeSeriesData(shared_ptr<KTData>)
-     \li \c "fs-data": void ProcessFrequencySpectrumData(shared_ptr<KTData>)
+     \li \c "ts": void ProcessTimeSeriesData(shared_ptr<KTData>)
+     \li \c "fs-fftw": void ProcessFrequencySpectrumDataFFTW(shared_ptr<KTData>)
 
      Signals:
      \li \c "fft-forward": void (shared_ptr<KTData>) emitted upon performance of a forward transform.
@@ -150,7 +150,7 @@ namespace Katydid
         public:
             void ProcessHeader(const KTEggHeader* header);
             void ProcessTimeSeriesData(boost::shared_ptr<KTData>);
-            void ProcessFrequencySpectrumData(boost::shared_ptr<KTData>);
+            void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr<KTData>);
 
     };
 

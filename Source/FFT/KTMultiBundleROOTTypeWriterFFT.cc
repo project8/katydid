@@ -125,8 +125,8 @@ namespace Katydid
 
     void KTMultiBundleROOTTypeWriterFFT::RegisterSlots()
     {
-        fWriter->RegisterSlot("fs-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataPolar, "void (shared_ptr<KTData>)");
-        fWriter->RegisterSlot("fs-fftw-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
+        fWriter->RegisterSlot("fs-polar", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataPolar, "void (shared_ptr<KTData>)");
+        fWriter->RegisterSlot("fs-fftw", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
         return;
     }
 
