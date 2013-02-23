@@ -224,7 +224,7 @@ namespace Katydid
     {
         typedef std::list< boost::shared_ptr<KTData> > DataList;
 
-        KTDEBUG(eqplog, "Queueing bundles");
+        KTDEBUG(eqplog, "Queueing data objects");
         DataAndFunc daf;
         while (! dataList->empty())
         {

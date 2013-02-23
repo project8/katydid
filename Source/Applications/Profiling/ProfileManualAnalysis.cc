@@ -121,7 +121,7 @@ int main()
 
         KTINFO(proflog, "Slice " << iSlice);
 
-        // Hatch the bundle
+        // Hatch the slice
         boost::shared_ptr<KTData> data = egg.HatchNextSlice();
         if (data.get() == NULL) break;
 

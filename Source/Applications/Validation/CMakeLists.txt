@@ -22,9 +22,6 @@ if (Katydid_ENABLE_TESTING)
     
     # Executables that do NOT require ROOT
     
-    #add_executable (ExtractBundles ${CMAKE_CURRENT_SOURCE_DIR}/ExtractBundles.cc)
-    #target_link_libraries (ExtractBundles KatydidUtility KatydidEgg ${LIBS})
-    
     add_executable (TestApplication ${CMAKE_CURRENT_SOURCE_DIR}/TestApplication.cc
                                     ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
     target_link_libraries (TestApplication KatydidUtility KatydidCore ${LIBS})
@@ -126,11 +123,10 @@ if (Katydid_ENABLE_TESTING)
                      TestThroughputProfiler
                      TestVector
                      TestWignerVille
-#		     TestASCIIFileWriter
+#                    TestASCIIFileWriter
     )
              
     # this command won't run; ExtractBundles needs arguments; I still need to add a data file to the repository to use here.
-    #add_test (Test_ExtractBundles ExtractBundles)
     add_test (Test_Application TestApplication)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_CacheDirectory TestCacheDirectory)

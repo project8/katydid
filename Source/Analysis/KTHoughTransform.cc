@@ -235,21 +235,6 @@ namespace Katydid
 /*
     void KTHoughTransform::ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data)
     {
-        KTHoughData* newData = TransformData(data);
-
-        if (newData == NULL)
-        {
-            KTERROR(htlog, "Unable to transform data");
-            return;
-        }
-
-        KTBundle* bundle = data->GetBundle();
-        if (bundle != NULL)
-        {
-            bundle->AddData(newData);
-        }
-
-        return;
     }
 */
     void KTHoughTransform::ProcessDiscriminatedData(shared_ptr< KTData > data)

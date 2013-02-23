@@ -398,7 +398,6 @@ namespace Katydid
         }
 
         // Deal with no-longer-active clusters and clusters that were merged with other clusters
-        //BundleList* newBundles = new BundleList();
         ClusterList* completeClusters = new ClusterList();
         iCluster = 0;
         KTDEBUG(sclog, "dealing with no-longer-active clusters and clusters that were merged");
@@ -413,8 +412,7 @@ namespace Katydid
             }
             else if (! acHasBeenAddedTo[iCluster])
             {
-                KTDEBUG(sclog, "    no longer active; creating an bundle");
-                //newBundles->push_back(CreateBundleFromCluster(*acIt));
+                KTDEBUG(sclog, "    no longer active; creating a slice");
                 completeClusters->push_back(*acIt);
                 acIt = fActiveClusters[component].erase(acIt); // the iterator returned is the next position in the cluster
                 acIt--; // back up the iterator so that when processing hits the beginning of the loop, the iterator is returned to the "next" position
@@ -454,37 +452,9 @@ namespace Katydid
     KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::CompleteAllClusters(UInt_t component)
     {
         ClusterList* newClusters = new ClusterList(fActiveClusters[component].begin(), fActiveClusters[component].end());
-        /*// old version
-        for (ClusterList::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end();)
-        {
-            newBundles->push_back(CreateBundleFromCluster(*acIt));
-            acIt = fActiveClusters[component].erase(acIt);
-        }
-        */
         return newClusters;
     }
-/*// no longer needed
-    KTMultiSliceClustering::BundleList* KTMultiSliceClustering::CompleteInactiveClusters(UInt_t component)
-    {
-        BundleList* newBundles = new BundleList();
 
-        for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end();)
-        {
-            UInt_t lastTimeBinInCluster = (*acIt).fPoints.back().fTimeBin;
-            if (fTimeBin - lastTimeBinInCluster > fMaxTimeSepBins)
-            {
-                newBundles->push_back(CreateBundleFromCluster(*acIt));
-                acIt = fActiveClusters[component].erase(acIt);
-            }
-            else
-            {
-                acIt++;
-            }
-        }
-
-        return newBundles;
-    }
-*/
     void KTMultiSliceClustering::Reset()
     {
         fActiveClusters.clear();
@@ -636,17 +606,6 @@ namespace Katydid
     {
         while (! dataList->empty())
         {
-            /*
-            KTWaterfallCandidateData* wfCandData = bundles->front()->GetData< KTWaterfallCandidateData >(fOutputDataName);
-            if (wfCandData == NULL)
-            {
-                KTWARN(sclog, "Bundle does not contain waterfall-candidate data with name <" << fOutputDataName << ">!");
-            }
-            else
-            {
-                fWaterfallCandidateSignal(wfCandData);
-            }
-            */
             fClusteredDataSignal(dataList->front());
             dataList->pop_front();
         }

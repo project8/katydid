@@ -43,8 +43,8 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::RegisterSlots()
     {
-        fWriter->RegisterSlot("fs-data", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData, "void (shared_ptr<KTData>)");
-        fWriter->RegisterSlot("fs-data-fftw", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
+        fWriter->RegisterSlot("fs-polar", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar, "void (shared_ptr<KTData>)");
+        fWriter->RegisterSlot("fs-fftw", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
         //fWriter->RegisterSlot("swfs-data", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData, "void (const WriteSlidingWindowFSData*)");
         //fWriter->RegisterSlot("swfs-data-fftw", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW, "void (const WriteSlidingWindowFSDataFFTW*)");
         return;
@@ -55,7 +55,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData(boost::shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar(boost::shared_ptr<KTData> data)
     {
         if (! data) return;
 

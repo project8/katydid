@@ -1,6 +1,5 @@
 #include "KTBasicAsciiWriter.hh"
 #include "KTFactory.hh"
-#include "KTBundle.hh"
 #include "KTPStoreNode.hh"
 
 namespace Katydid {

@@ -24,7 +24,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    static KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of bundles to process", "n-bundles", 'n');
+    static KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
     static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
@@ -47,8 +47,7 @@ namespace Katydid
         fConfigName = "egg-processor";
 
         RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
-        RegisterSignal("data", &fDataSignal, "void (boost::shared_ptr<KTData>)");
-        //RegisterSignal("bundle", &fBundleSignal, "boost::shared_ptr<KTBundle>");
+        RegisterSignal("slice", &fDataSignal, "void (boost::shared_ptr<KTData>)");
         RegisterSignal("egg-done", &fEggDoneSignal, "void ()");
     }
 
@@ -89,7 +88,7 @@ namespace Katydid
         }
 
         // Command-line settings
-        SetNSlices(fCLHandler->GetCommandLineValue< Int_t >("n-bundles", fNSlices));
+        SetNSlices(fCLHandler->GetCommandLineValue< Int_t >("n-slices", fNSlices));
         SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
         if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
         {
@@ -130,7 +129,7 @@ namespace Katydid
 
         KTINFO(egglog, "The egg file has been opened successfully"
                 "\n\tand the header parsed and processed;"
-                "\n\tProceeding with bundle processing");
+                "\n\tProceeding with slice processing");
 
         UInt_t iSlice = 0;
         while (kTRUE)
@@ -139,7 +138,7 @@ namespace Katydid
 
             KTINFO(egglog, "Slice " << iSlice);
 
-            // Hatch the bundle
+            // Hatch the slice
             shared_ptr<KTData> data = egg.HatchNextSlice();
             if (data.get() == NULL) break;
 
@@ -152,11 +151,11 @@ namespace Katydid
             }
             else
             {
-                KTWARN(egglog, "No time-series data present in bundle");
+                KTWARN(egglog, "No time-series data present in slice");
             }
 
-            // Pass the bundle to any subscribers
-            //fBundleSignal(bundle);
+            // Pass the slice to any subscribers
+            //fSliceSignal(slice);
 
             iSlice++;
         }

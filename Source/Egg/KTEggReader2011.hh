@@ -22,7 +22,7 @@ namespace Katydid
         public:
             struct HeaderInfo
             {
-                int fBundleSize;
+                int fSliceSize;
                 int fFrameIDSize;
                 int fRecordSize;
                 int fTimeStampSize;
@@ -35,7 +35,7 @@ namespace Katydid
                     fTimeStampSize(0),
                     fFrameIDSize(0),
                     fRecordSize(0),
-                    fBundleSize(0),
+                    fSliceSize(0),
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),

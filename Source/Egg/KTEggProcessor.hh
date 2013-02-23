@@ -1,7 +1,7 @@
 /**
  @file KTEggProcessor.hh
  @brief Contains KTEggProcessor
- @details Iterates over bundles in an Egg file.
+ @details Iterates over slices in an Egg file.
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
@@ -45,7 +45,6 @@ namespace Katydid
      Signals:
      \li \c "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
      \li \c "data": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced.
-     <!--\li \c "bundle": void (boost::shared_ptr<KTBundle>) -- emitted when an bundle is read from the file.-->
      \li \c "egg-done": void () --  emitted when a file is finished.
     */
     class KTEggProcessor : public KTPrimaryProcessor
@@ -109,7 +108,6 @@ namespace Katydid
         private:
             HeaderSignal fHeaderSignal;
             DataSignal fDataSignal;
-            //BundleSignal fBundleSignal;
             EggDoneSignal fEggDoneSignal;
 
     };

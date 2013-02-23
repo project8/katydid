@@ -21,9 +21,9 @@ namespace Katydid
     KTDataQueueProcessor::KTDataQueueProcessor() :
         KTDataQueueProcessorTemplate< KTDataQueueProcessor >()
     {
-        fConfigName = "bundle-queue";
+        fConfigName = "data-queue";
 
-        RegisterSignal("bundle", &fDataSignal, "void (shared_ptr<KTData>)");
+        RegisterSignal("data", &fDataSignal, "void (shared_ptr<KTData>)");
 
         RegisterSlot("data", this, &KTDataQueueProcessor::QueueData, "void (shared_ptr<KTData>&)");
         //RegisterSlot("data-list", this, &KTDataQueueProcessor::QueueDataList, "void (list< shared_ptr<KTData> >)");

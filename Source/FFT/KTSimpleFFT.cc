@@ -46,7 +46,7 @@ namespace Katydid
         RegisterSignal("fft", &fFFTSignal, "void (const KTFrequencySpectrumDataPolar*)");
 
         RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (shared_ptr<KTData>)");
+        RegisterSlot("ts", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (shared_ptr<KTData>)");
 
         SetupTransformFlagMap();
     }

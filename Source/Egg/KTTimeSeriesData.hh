@@ -1,9 +1,9 @@
 /**
  @file KTTimeSeriesData.hh
  @brief Contains KTTimeSeriesData
- @details Contains the information from a single Egg bundle in the form of a 1-D std::vector of UInt_tegers.
- The data are the time series of the bundle.
- @note Prior to August 24, 2012, this class was called KTBundle.
+ @details Contains the information from a single Egg slice in the form of a 1-D std::vector of UInt_tegers.
+ The data are the time series of the slice.
+ @note Prior to August 24, 2012, this class was called KTEvent.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */

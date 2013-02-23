@@ -53,7 +53,7 @@ namespace Katydid
     {
         if (fReader == NULL || fHeader == NULL)
         {
-            KTWARN(egglog, "Not prepared to hatch an bundle");
+            KTWARN(egglog, "Not prepared to hatch an slice");
             return shared_ptr<KTData>();
         }
 

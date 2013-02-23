@@ -561,28 +561,10 @@ namespace Katydid
 /*
     void KTSpectrumDiscriminator::ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data)
     {
-        KTDiscriminatedPoints2DData* newData = Discriminate(data);
-        KTBundle* bundle = data->GetBundle();
-        if (bundle != NULL)
-        {
-            bundle->AddData(newData);
-            newData->SetBundle(bundle);
-            fDiscrim2DSignal(newData);
-        }
-        return;
     }
 
     void KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data)
     {
-        KTDiscriminatedPoints2DData* newData = Discriminate(data);
-        KTBundle* bundle = data->GetBundle();
-        if (bundle != NULL)
-        {
-            bundle->AddData(newData);
-            newData->SetBundle(bundle);
-            fDiscrim2DSignal(newData);
-        }
-        return;
     }
 */
 } /* namespace Katydid */

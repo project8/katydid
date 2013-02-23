@@ -43,7 +43,7 @@ int main(int argc, char** argv)
         readerOption = argv[2];
     }
 
-    UInt_t nBundles = 5;
+    UInt_t nSlices = 5;
 
     KTINFO(testegg, "Test of hatching egg file <" << filename << ">");
 
@@ -88,27 +88,27 @@ int main(int argc, char** argv)
            << "\tRecord Size: " << header->GetSliceSize() << '\n'
            << "\tRecord Size: " << header->GetRecordSize());
 
-    KTINFO(testegg, "Hatching bundles");
-    for (UInt_t iBundle=0; iBundle < nBundles; iBundle++)
+    KTINFO(testegg, "Hatching slices");
+    for (UInt_t iSlice=0; iSlice < nSlices; iSlice++)
     {
-        KTINFO(testegg, "Bundle " << iBundle);
+        KTINFO(testegg, "Slice " << iSlice);
         boost::shared_ptr<KTData> data = egg.HatchNextSlice();
         if (! data)
         {
-            KTERROR(testegg, "Bundle did not hatch");
+            KTERROR(testegg, "Slice did not hatch");
             return -1;
         }
 
         if (! data->Has< KTTimeSeriesData >())
         {
-            KTWARN(testegg, "No time-series data present in bundle");
+            KTWARN(testegg, "No time-series data present in slice");
             return -1;
         }
 
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
 
         UInt_t nRecords = tsData.GetNComponents();
-        KTINFO(testegg, "This bundle contains " << nRecords << " records");
+        KTINFO(testegg, "This slice contains " << nRecords << " records");
         if (nRecords >= 1)
         {
             KTINFO(testegg, "Record 0 has " << tsData.GetTimeSeries(0)->GetNTimeBins() << " bins");

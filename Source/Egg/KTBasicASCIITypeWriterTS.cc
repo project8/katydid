@@ -55,7 +55,7 @@ namespace Katydid
                     }
                 }
                 else {
-                    KTWARN(ats_log, "Channel #" << iCh << " was missing from bundle!  Logic error?");
+                    KTWARN(ats_log, "Channel #" << iCh << " was missing from slice!  Logic error?");
                 }
             }
         } // if CanWrite

@@ -1,7 +1,7 @@
 /**
  @file KTEgg.hh
  @brief Contains KTEgg
- @details Reads Egg data files: parses the header and produces bundles.
+ @details Reads Egg data files: parses the header and produces slices.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */

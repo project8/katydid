@@ -134,10 +134,7 @@ namespace Katydid
     /*
     void KTDistanceClustering::Process2DData(const KTDiscriminatedPoints2DData* data)
     {
-        KTCluster2DData* newData = FindClusters(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
-        return;
+
     }
     */
 } /* namespace Katydid */

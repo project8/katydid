@@ -186,7 +186,7 @@ namespace Katydid
             /*
             stringstream conv2;
             string splineName;
-            conv2 << "splineGV_" << bundleNumber << "_" << iPlot;
+            conv2 << "splineGV_" << sliceNumber << "_" << iPlot;
             conv2 >> splineName;
             const TSpline* spline = data->GetSpline(iPlot);
             if (spline == NULL)

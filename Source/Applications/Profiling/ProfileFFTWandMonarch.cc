@@ -5,7 +5,6 @@
  *      Author: nsoblath
  */
 
-#include "KTBundle.hh"
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTThroughputProfiler.hh"
@@ -28,7 +27,7 @@ int main(const int argc, const char** argv)
     if (argc < 2)
     {
         KTWARN(proflog, "Usage:\n" <<
-                "\tProfileFFTWandMonarch <input egg file> <# of bundles to read>");
+                "\tProfileFFTWandMonarch <input egg file> <# of slices to read>");
         return -1;
     }
 

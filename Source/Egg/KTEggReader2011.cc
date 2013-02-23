@@ -162,7 +162,7 @@ namespace Katydid
         }
         fHeaderInfo.fRecordSize = ConvertFromArray< int >(attr->value());
 
-        fHeaderInfo.fBundleSize = fHeaderInfo.fFrameIDSize + fHeaderInfo.fTimeStampSize + fHeaderInfo.fRecordSize;
+        fHeaderInfo.fSliceSize = fHeaderInfo.fFrameIDSize + fHeaderInfo.fTimeStampSize + fHeaderInfo.fRecordSize;
 
         rapidxml::xml_node<char>* nodeDigitizer = nodeHeader->first_node("digitizer");
         if (nodeDigitizer == NULL)
@@ -313,7 +313,7 @@ namespace Katydid
         }
         if (! fEggStream.good())
         {
-            KTERROR(eggreadlog, "Warning from KTEgg::HatchNextBundle: Egg stream state is not good after reading in this bundle.");
+            KTERROR(eggreadlog, "Egg stream state is not good after reading in this slice.");
         }
 
         return newData;

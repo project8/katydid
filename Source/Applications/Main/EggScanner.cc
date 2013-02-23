@@ -42,8 +42,6 @@ int main(int argc, char** argv)
         readerOption = argv[2];
     }
 
-    UInt_t nBundles = 5;
-
     KTEgg egg;
     if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
     {

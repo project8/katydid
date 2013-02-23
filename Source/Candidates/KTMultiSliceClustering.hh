@@ -124,7 +124,6 @@ namespace Katydid
 
             /// Complete all remaining active clusters
             ClusterList* CompleteAllClusters(UInt_t component);
-            //BundleList* CompleteInactiveClusters(UInt_t component);
 
             void Reset();
             UInt_t GetTimeBin() const;

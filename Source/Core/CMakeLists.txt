@@ -11,10 +11,8 @@ set (CORE_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurable.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTConnection.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTData.hh
-    #${CMAKE_CURRENT_SOURCE_DIR}/KTDataMap.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataQueueProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.hh
-    #${CMAKE_CURRENT_SOURCE_DIR}/KTBundle.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTParameterStore.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.hh
@@ -33,10 +31,8 @@ set (CORE_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCommandLineHandler.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurable.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTData.cc
-    #${CMAKE_CURRENT_SOURCE_DIR}/KTDataMap.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataQueueProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.cc
-    #${CMAKE_CURRENT_SOURCE_DIR}/KTBundle.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTParameterStore.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc

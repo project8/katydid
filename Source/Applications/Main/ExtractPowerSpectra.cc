@@ -1,7 +1,7 @@
 /**
  @file ExtractPowerSpectra.cc
  @brief Executable to produce 1-D power spectra
- @details Produces 1-D power spectra from Egg bundles; optionally can average multiple bundles together
+ @details Produces 1-D power spectra from time series; optionally can average multiple slices together
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
@@ -39,15 +39,15 @@ int main(int argc, char** argv)
 
     try
     {
-        // this will ensure that every time procEgg hatches an bundle, procFFT.ProcessBundle will be called
-        procEgg.ConnectASlot("bundle", &procFFT, "bundle");
+        // this will ensure that every time procEgg hatches a slice, procFFT.ProcessTimeSeriesData will be called
+        procEgg.ConnectASlot("slice", &procFFT, "ts");
 
         // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
         procEgg.ConnectASlot("header", &procFFT, "header");
 
         // this will get the output histogram when an FFT is complete
         //procFFT.ConnectASlot("fft", &powerSpectra, "get_ps");
-        procFFT.ConnectASlot("fft", &procPub, "fs-data");
+        procFFT.ConnectASlot("fft", &procPub, "fs-polar");
     }
     catch (std::exception& e)
     {

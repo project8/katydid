@@ -137,7 +137,7 @@ namespace Katydid
         {
             if (! fMonarch->ReadRecord())
             {
-                KTERROR(eggreadlog, "File appears to contain no bundles.");
+                KTERROR(eggreadlog, "File appears to contain no slices.");
                 return shared_ptr< KTData >();
             }
             fRecordsRead = 0;
@@ -147,7 +147,7 @@ namespace Katydid
 
         boost::shared_ptr< KTData > newData(new KTData());
 
-        // Fill out bundle information
+        // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(fHeader.GetNChannels());
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
         sliceHeader.SetSliceSize(fHeader.GetSliceSize());
@@ -204,9 +204,9 @@ namespace Katydid
             {
                 // this means that a new monarch record has come up, and it has a different acquisition id.
                 // in this situation we need to start the time series over with the new monarch record
-                KTDEBUG(eggreadlog, "Acquisition ID change; resetting bundle to start with this monarch record.\n"
+                KTDEBUG(eggreadlog, "Acquisition ID change; resetting slice to start with this monarch record.\n"
                         << "\tNumber of unused bins: " << iBin - 1);
-                // reset bundle data
+                // reset slice data
                 for (UInt_t iChannel = 0; iChannel < fHeader.GetNChannels(); iChannel++)
                 {
                     sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
