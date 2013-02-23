@@ -35,17 +35,19 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-        protected:
-
-
         public:
             Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolar& fsData);
             Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTW& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTNormalizedFSDataPolar& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTNormalizedFSDataFFTW& fsData);
             Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTCorrelationData& fsData);
 
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec);
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumFFTW* freqSpec);
 
+        private:
+            Bool_t CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolarCore& fsData, KTFrequencyCandidateData& fcData);
+            Bool_t CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTWCore& fsData, KTFrequencyCandidateData& fcData);
 
             //***************
             // Signals
@@ -61,6 +63,8 @@ namespace Katydid
         public:
             void ProcessClusterAndFSPolarData(boost::shared_ptr< KTData >);
             void ProcessClusterAndFSFFTWData(boost::shared_ptr< KTData >);
+            void ProcessClusterAndNormFSPolarData(boost::shared_ptr< KTData >);
+            void ProcessClusterAndNormFSFFTWData(boost::shared_ptr< KTData >);
             void ProcessClusterAndCorrelationData(boost::shared_ptr< KTData >);
 
     };
