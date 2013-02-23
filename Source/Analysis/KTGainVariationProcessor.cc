@@ -46,7 +46,7 @@ namespace Katydid
 
         RegisterSignal("gain-var", &fGainVarSignal, "void (const KTGainVariationData*)");
 
-        RegisterSlot("fs-polar", this, &KTGainVariationProcessor::ProcessFrequencySpectrumData, "void (shared_ptr< KTData >)");
+        RegisterSlot("fs-polar", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataPolar, "void (shared_ptr< KTData >)");
         RegisterSlot("fs-fftw", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW, "void (shared_ptr< KTData >)");
     }
 
@@ -251,7 +251,7 @@ namespace Katydid
     }
     */
 
-    void KTGainVariationProcessor::ProcessFrequencySpectrumData(shared_ptr< KTData > data)
+    void KTGainVariationProcessor::ProcessFrequencySpectrumDataPolar(shared_ptr< KTData > data)
     {
         if (! data->Has< KTFrequencySpectrumDataPolar >())
         {

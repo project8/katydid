@@ -19,6 +19,8 @@ namespace Katydid
     class KTData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
+    class KTNormalizedFSDataPolar;
+    class KTNormalizedFSDataFFTW;
     //class KTSlidingWindowFSData;
     //class KTSlidingWindowFSDataFFTW;
 
@@ -75,9 +77,16 @@ namespace Katydid
         public:
             Bool_t Discriminate(KTFrequencySpectrumDataPolar& data);
             Bool_t Discriminate(KTFrequencySpectrumDataFFTW& data);
+            Bool_t Discriminate(KTNormalizedFSDataPolar& data);
+            Bool_t Discriminate(KTNormalizedFSDataFFTW& data);
             Bool_t Discriminate(KTCorrelationData& data);
             //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
             //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
+
+        private:
+            Bool_t CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData);
+            Bool_t CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData);
+
 
             //***************
             // Signals
@@ -92,8 +101,10 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessFrequencySpectrumData(boost::shared_ptr< KTData > data);
+            void ProcessFrequencySpectrumDataPolar(boost::shared_ptr< KTData > data);
             void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr< KTData > data);
+            void ProcessNormalizedFSDataPolar(boost::shared_ptr< KTData > data);
+            void ProcessNormalizedFSDataFFTW(boost::shared_ptr< KTData > data);
             void ProcessCorrelationData(boost::shared_ptr< KTData > data);
             //void ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data);
             //void ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);

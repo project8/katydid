@@ -15,6 +15,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
+#include "KTGainNormalization.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 //#include "KTSlidingWindowFSData.hh"
@@ -54,8 +55,10 @@ namespace Katydid
         RegisterSignal("disc-1d", &fDiscrim1DSignal, "void (const KTDiscriminatedPoints1DData*)");
         //RegisterSignal("disc-2d", &fDiscrim2DSignal, "void (const KTDiscriminatedPoints2DData*)");
 
-        RegisterSlot("fs-polar", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumData, "void (shared_ptr< KTData >)");
+        RegisterSlot("fs-polar", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataPolar, "void (shared_ptr< KTData >)");
         RegisterSlot("fs-fftw", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW, "void (shared_ptr< KTData >)");
+        RegisterSlot("norm-fs-polar", this, &KTSpectrumDiscriminator::ProcessNormalizedFSDataPolar, "void (shared_ptr< KTData >)");
+        RegisterSlot("norm-fs-fftw", this, &KTSpectrumDiscriminator::ProcessNormalizedFSDataFFTW, "void (shared_ptr< KTData >)");
         RegisterSlot("corr", this, &KTSpectrumDiscriminator::ProcessCorrelationData, "void (shared_ptr< KTData >)");
         //RegisterSlot("swfsdata", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSData, "void (const KTSlidingWindowFSData*)");
         //RegisterSlot("swfsdata-fftw", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW, "void (const KTSlidingWindowFSDataFFTW*)");
@@ -101,81 +104,35 @@ namespace Katydid
 
     Bool_t KTSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataPolar& data)
     {
-        if (fCalculateMinBin)
-        {
-            SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
-        }
-        if (fCalculateMaxBin)
-        {
-            SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
-        }
-
-        UInt_t nComponents = data.GetNComponents();
-
-        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(nComponents);
-
-        newData.SetNBins(data.GetSpectrumPolar(0)->size());
-        newData.SetBinWidth(data.GetSpectrumPolar(0)->GetBinWidth());
-
-        // Interval: [fMinBin, fMaxBin)
-        UInt_t nBins = fMaxBin - fMinBin + 1;
-        Double_t sigmaNorm = 1. / Double_t(nBins - 1);
-
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
-        {
-
-            const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
-
-            Double_t mean = 0.;
-#pragma omp parallel for reduction(+:mean)
-            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
-            {
-                mean += (*spectrum)(iBin).abs();
-            }
-            mean /= (Double_t)nBins;
-
-            Double_t threshold = 0.;
-            if (fThresholdMode == eSNR)
-            {
-                // SNR = P_signal / P_noise = (A_signal / A_noise)^2
-                // In this case (i.e. KTFrequencySpectrumPolar), A_noise = mean
-                threshold = sqrt(fSNRThreshold) * mean;
-                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (SNR mode)");
-            }
-            else if (fThresholdMode == eSigma)
-            {
-                Double_t sigma = 0., diff;
-#pragma omp parallel for private(diff) reduction(+:sigma)
-                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
-                {
-                    diff = (*spectrum)(iBin).abs() - mean;
-                    sigma += diff * diff;
-                }
-                sigma = sqrt(sigma * sigmaNorm);
-
-                threshold = mean + fSigmaThreshold * sigma;
-                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
-            }
-
-            newData.SetThreshold(threshold, iComponent);
-
-            // loop over bins, checking against the threshold
-            Double_t value;
-#pragma omp parallel for private(value)
-            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
-            {
-                value = (*spectrum)(iBin).abs();
-                if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
-            }
-
-        }
-
-        return true;
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
+        return CoreDiscriminate(data, newData);
     }
 
     Bool_t KTSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataFFTW& data)
+    {
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
+        return CoreDiscriminate(data, newData);
+    }
+
+    Bool_t KTSpectrumDiscriminator::Discriminate(KTNormalizedFSDataPolar& data)
+    {
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
+        return CoreDiscriminate(data, newData);
+    }
+
+    Bool_t KTSpectrumDiscriminator::Discriminate(KTNormalizedFSDataFFTW& data)
+    {
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
+        return CoreDiscriminate(data, newData);
+    }
+
+    Bool_t KTSpectrumDiscriminator::Discriminate(KTCorrelationData& data)
+    {
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
+        return CoreDiscriminate(data, newData);
+    }
+
+    Bool_t KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData)
     {
         if (fCalculateMinBin)
         {
@@ -189,8 +146,6 @@ namespace Katydid
         }
 
         UInt_t nComponents = data.GetNComponents();
-
-        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(nComponents);
 
         newData.SetNBins(data.GetSpectrumFFTW(0)->size());
         newData.SetBinWidth(data.GetSpectrumFFTW(0)->GetBinWidth());
@@ -258,7 +213,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSpectrumDiscriminator::Discriminate(KTCorrelationData& data)
+    Bool_t KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData)
     {
         if (fCalculateMinBin)
         {
@@ -272,8 +227,6 @@ namespace Katydid
         }
 
         UInt_t nComponents = data.GetNComponents();
-
-        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(nComponents);
 
         newData.SetNBins(data.GetSpectrumPolar(0)->size());
         newData.SetBinWidth(data.GetSpectrumPolar(0)->GetBinWidth());
@@ -511,7 +464,7 @@ namespace Katydid
         return newData;
     }
 */
-    void KTSpectrumDiscriminator::ProcessFrequencySpectrumData(shared_ptr< KTData > data)
+    void KTSpectrumDiscriminator::ProcessFrequencySpectrumDataPolar(shared_ptr< KTData > data)
     {
         if (! data->Has< KTFrequencySpectrumDataPolar >())
         {
@@ -535,6 +488,38 @@ namespace Katydid
             return;
         }
         if (! Discriminate(data->Of< KTFrequencySpectrumDataFFTW >()))
+        {
+            KTERROR(sdlog, "Something went wrong while performing discrimination");
+            return;
+        }
+        fDiscrim1DSignal(data);
+        return;
+    }
+
+    void KTSpectrumDiscriminator::ProcessNormalizedFSDataPolar(shared_ptr< KTData > data)
+    {
+        if (! data->Has< KTNormalizedFSDataPolar >())
+        {
+            KTERROR(sdlog, "No frequency spectrum (Polar) data was present");
+            return;
+        }
+        if (! Discriminate(data->Of< KTNormalizedFSDataPolar >()))
+        {
+            KTERROR(sdlog, "Something went wrong while performing discrimination");
+            return;
+        }
+        fDiscrim1DSignal(data);
+        return;
+    }
+
+    void KTSpectrumDiscriminator::ProcessNormalizedFSDataFFTW(shared_ptr< KTData > data)
+    {
+        if (! data->Has< KTNormalizedFSDataFFTW >())
+        {
+            KTERROR(sdlog, "No frequency spectrum (FFTW) data was present");
+            return;
+        }
+        if (! Discriminate(data->Of< KTNormalizedFSDataFFTW >()))
         {
             KTERROR(sdlog, "Something went wrong while performing discrimination");
             return;

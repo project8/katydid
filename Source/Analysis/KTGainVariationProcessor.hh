@@ -104,7 +104,7 @@ namespace Katydid
             //***************
 
         public:
-            void ProcessFrequencySpectrumData(boost::shared_ptr< KTData > data);
+            void ProcessFrequencySpectrumDataPolar(boost::shared_ptr< KTData > data);
             void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr< KTData > data);
 
     };
