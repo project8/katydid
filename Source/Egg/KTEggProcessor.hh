@@ -190,19 +190,23 @@ namespace Katydid
  <hr>
  \li Send your question by email to Noah Oblath: nsoblath-at-mit.edu
  \li For installation problems see below.
- \li For ROOT problems: see the <a href="http://root.cern.ch/drupal">ROOT website</a>
 
  <br>
  \section Requirements System Requirements
  <hr>
  Linux/MacOS with a reasonably new C++ compiler:
  \li The minimum supported gcc version is 4.2.
- \li LLVM will hopefully be supported in the future.
+ \li LLVM (minimum version unknown)
 
  Dependencies:
- \li <a href="http://root.cern.ch/drupal">ROOT</a> version 5.24 or higher
+ \li <a href="https://github.com/project8/monarch">Monarch</a> included as a submodule of Katyid
  \li <a href="http://www.cmake.org">CMake</a> version 2.6 or higher
-
+ \li <a href="https://code.google.com/p/protobuf/">Protobuf</a>
+ \li <a href="http://www.boost.org">Boost</a>
+ \li <a href="http://www.fftw.org">FFTW</a> version 3.3 or higher
+ \li <a href="http://eigen.tuxfamily.org">Eigen</a> (optional, though some functionality wil be disabled without it)
+ \li <a href="http://root.cern.ch/drupal">ROOT</a> version 5.24 or higher (optional, though some functionality will be disabled without it)
+ \li <a href="http://logging.apache.org/log4cxx">log4cxx</a> (optional)
 
  <br>
  \section GettingKT Getting Katydid
@@ -259,12 +263,12 @@ namespace Katydid
  \section ExternalCode External Packages and Imported Code
  <hr>
  Two external packages are distributed with Katydid:
- \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the bundle header in the Egg files.  The code is distributed under the Boost Software License v1.0.
- \li <a href="hhtp://cimg.sourceforge.net">CImg</a> version 1.4.9 is available for any image processing tasks.  It is distributed under the CeCILL License.
+ \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the header in the 2011-type Egg files.
+ \li <a href="https://code.google.com/p/rapidjson/">RapidJSON</a> is used for reading and writing JSON files.
 
- Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Framework classes and is restricted to infrastructure-related activities.
+ Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Core libraries and is restricted to infrastructure-related activities.
 
- <!--The source of this documentation can be found in: Katydid/Egg/KTEgg.hh-->
+ <!--The source of this documentation can be found in: Katydid/Egg/KTEggProcessor.hh-->
 
  */
 
