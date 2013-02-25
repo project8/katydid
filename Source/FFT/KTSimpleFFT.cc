@@ -30,7 +30,7 @@ namespace Katydid
 
     KTSimpleFFT::KTSimpleFFT() :
             KTFFT(),
-            KTProcessor(),
+            KTProcessor("simple-fft"),
             fFTPlan(),
             fTimeSize(0),
             fInputArray(NULL),
@@ -43,8 +43,6 @@ namespace Katydid
             fHeaderSlot("header", this, &KTSimpleFFT::InitializeWithHeader),
             fTimeSeriesSlot("ts", this, &KTSimpleFFT::TransformData, &fFFTSignal)
     {
-        fConfigName = "simple-fft";
-
         SetupTransformFlagMap();
     }
 
@@ -121,6 +119,7 @@ namespace Katydid
 
     void KTSimpleFFT::InitializeWithHeader(const KTEggHeader* header)
     {
+        KTDEBUG(fftlog_simp, "Initializing via KTEggHeader");
         SetTimeSize(header->GetRecordSize());
         InitializeFFT();
         return;

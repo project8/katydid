@@ -47,7 +47,7 @@ namespace Katydid
             typedef SlotMap::value_type SlotMapVal;
 
         public:
-            KTProcessor();
+            KTProcessor(const std::string& name="default-proc-name");
             virtual ~KTProcessor();
 
         public:

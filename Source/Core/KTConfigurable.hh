@@ -20,7 +20,7 @@ namespace Katydid
     class KTConfigurable
     {
         public:
-            KTConfigurable();
+            KTConfigurable(const std::string& name="default-name");
             virtual ~KTConfigurable();
 
             /// Should perform parameter store and command-line configurations

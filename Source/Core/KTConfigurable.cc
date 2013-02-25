@@ -12,9 +12,9 @@
 namespace Katydid
 {
 
-    KTConfigurable::KTConfigurable() :
+    KTConfigurable::KTConfigurable(const std::string& name) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
-            fConfigName("default_name")
+            fConfigName(name)
     {
     }
 
