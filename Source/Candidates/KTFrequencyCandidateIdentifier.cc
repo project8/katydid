@@ -14,6 +14,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
+#include "KTGainNormalization.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 

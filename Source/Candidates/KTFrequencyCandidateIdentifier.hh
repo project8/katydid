@@ -19,10 +19,14 @@
 namespace Katydid
 {
     class KTCorrelationData;
-    class KTFrequencySpectrumPolar;
-    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumFFTW;
+    class KTFrequencySpectrumDataPolar;
+    class KTFrequencySpectrumDataPolarCore;
+    class KTFrequencySpectrumPolar;
+    class KTNormalizedFSDataFFTW;
+    class KTNormalizedFSDataPolar;
 
     class KTFrequencyCandidateIdentifier : public KTProcessor
     {

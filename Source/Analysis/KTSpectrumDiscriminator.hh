@@ -17,10 +17,13 @@ namespace Katydid
 {
     class KTCorrelationData;
     class KTData;
-    class KTFrequencySpectrumDataPolar;
+    class KTDiscriminatedPoints1DData;
     class KTFrequencySpectrumDataFFTW;
-    class KTNormalizedFSDataPolar;
+    class KTFrequencySpectrumDataFFTWCore;
+    class KTFrequencySpectrumDataPolar;
+    class KTFrequencySpectrumDataPolarCore;
     class KTNormalizedFSDataFFTW;
+    class KTNormalizedFSDataPolar;
     //class KTSlidingWindowFSData;
     //class KTSlidingWindowFSDataFFTW;
 
