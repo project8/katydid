@@ -65,7 +65,7 @@ namespace Katydid
     class KTCorrelator : public KTProcessor
     {
         protected:
-            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal CorrelationSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal CorrelationSignal;
             typedef std::vector< KTCorrelationPair > PairVector;
 
         public:

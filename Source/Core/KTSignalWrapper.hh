@@ -18,7 +18,7 @@
 namespace Katydid
 {
     template< typename Signature >
-    struct KTSignal
+    struct KTSignalConcept
     {
         typedef Signature signature;
         typedef boost::signals2::signal< Signature > signal;

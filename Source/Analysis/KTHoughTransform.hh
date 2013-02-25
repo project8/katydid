@@ -29,7 +29,7 @@ namespace Katydid
             typedef KTDiscriminatedPoints2DData::SetOfPoints SetOfPoints;
 
         protected:
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal HTSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal HTSignal;
 
         public:
             KTHoughTransform();

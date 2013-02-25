@@ -95,7 +95,7 @@ namespace Katydid
     {
         KTDEBUG(processorlog, "Registering slot <" << name << "> in processor <" << fConfigName << ">; signature is <" << signature << ">");
 
-        KTSignal< XReturn () > signalConcept;
+        KTSignalConcept< XReturn () > signalConcept;
 
         boost::function< XReturn () > *func = new boost::function< XReturn () >(boost::bind(funcPtr, target));
 
@@ -109,7 +109,7 @@ namespace Katydid
     {
         KTDEBUG(processorlog, "Registering slot <" << name << "> in processor <" << fConfigName << ">; signature is <" << signature << ">");
 
-        KTSignal< XReturn (XArg1) > signalConcept;
+        KTSignalConcept< XReturn (XArg1) > signalConcept;
 
         boost::function< XReturn (XArg1) > *func = new boost::function< XReturn (XArg1) >(boost::bind(funcPtr, target, _1));
 
@@ -123,7 +123,7 @@ namespace Katydid
     {
         KTDEBUG(processorlog, "Registering slot <" << name << "> in processor <" << fConfigName << ">; signature is <" << signature << ">");
 
-        KTSignal< XReturn (XArg1, XArg2) > signalConcept;
+        KTSignalConcept< XReturn (XArg1, XArg2) > signalConcept;
 
         boost::function< XReturn (XArg1, XArg2) > *func = new boost::function< XReturn (XArg1, XArg2) >(boost::bind(funcPtr, target, _1, _2));
 

@@ -31,7 +31,7 @@ namespace Katydid
     class KTFrequencyCandidateIdentifier : public KTProcessor
     {
         protected:
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal FCSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal FCSignal;
 
         public:
             KTFrequencyCandidateIdentifier();

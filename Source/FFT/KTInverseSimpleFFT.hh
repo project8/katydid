@@ -67,7 +67,7 @@ namespace Katydid
     class KTInverseSimpleFFT : /*public KTFFT,*/ public KTProcessor, public KTConfigurable
     {
         public:
-            typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
+            typedef KTSignalConcept< void (const KTWriteableData*) >::signal FFTSignal;
 
         protected:
             typedef std::map< std::string, Int_t > TransformFlagMap;

@@ -62,10 +62,10 @@ namespace Katydid
     class KTGainNormalization : public KTProcessor
     {
         public:
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal FSPolarSignal;
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal FSFFTWSignal;
-            //typedef KTSignal< void (const KTSlidingWindowFSData*) >::signal SWFSSignal;
-            //typedef KTSignal< void (const KTSlidingWindowFSDataFFTW*) >::signal SWFSFFTWSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal FSPolarSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal FSFFTWSignal;
+            //typedef KTSignalConcept< void (const KTSlidingWindowFSData*) >::signal SWFSSignal;
+            //typedef KTSignalConcept< void (const KTSlidingWindowFSDataFFTW*) >::signal SWFSFFTWSignal;
 
         public:
             KTGainNormalization();

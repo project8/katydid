@@ -78,7 +78,7 @@ namespace Katydid
             typedef std::list< boost::shared_ptr<KTData> > DataList;
 
 
-            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal DataSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal DataSignal;
 
         public:
             KTMultiSliceClustering();

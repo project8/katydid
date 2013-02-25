@@ -49,10 +49,10 @@ namespace Katydid
     class KTEggProcessor : public KTPrimaryProcessor
     {
         public:
-            typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
-            //typedef KTSignal< void (const KTTimeSeriesData*) >::signal DataSignal;
-            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal DataSignal;
-            typedef KTSignal< void () >::signal EggDoneSignal;
+            typedef KTSignalConcept< void (const KTEggHeader*) >::signal HeaderSignal;
+            //typedef KTSignalConcept< void (const KTTimeSeriesData*) >::signal DataSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal DataSignal;
+            typedef KTSignalConcept< void () >::signal EggDoneSignal;
 
         public:
             enum EggReaderType

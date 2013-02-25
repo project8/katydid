@@ -79,7 +79,7 @@ namespace Katydid
     class KTWignerVille : public KTProcessor
     {
         private:
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal WVSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal WVSignal;
             typedef std::vector< KTWVPair > PairVector;
 
         private:

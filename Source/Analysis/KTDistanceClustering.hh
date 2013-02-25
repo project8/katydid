@@ -22,8 +22,8 @@ namespace Katydid
     class KTDistanceClustering : public KTProcessor
     {
         public:
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal Cluster1DSignal;
-            //typedef KTSignal< void (const KTCluster2DData*) >::signal Cluster2DSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal Cluster1DSignal;
+            //typedef KTSignalConcept< void (const KTCluster2DData*) >::signal Cluster2DSignal;
 
 
         public:

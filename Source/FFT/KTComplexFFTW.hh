@@ -72,8 +72,8 @@ namespace Katydid
     class KTComplexFFTW : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal FFTForwardSignal;
-            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal FFTReverseSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal FFTForwardSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal FFTReverseSignal;
 
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;

@@ -60,7 +60,7 @@ namespace Katydid {
      */
   public:
     typedef Eigen::Map<const Eigen::RowVectorXd> DataMapType;
-    typedef KTSignal< void (const KTTimeSeriesData*) >::signal RQSignal;
+    typedef KTSignalConcept< void (const KTTimeSeriesData*) >::signal RQSignal;
 
     void ProcessNoiseData(const KTTimeSeriesData* noise);
     void ProcessCandidateBundle(boost::shared_ptr<KTBundle> bundle);

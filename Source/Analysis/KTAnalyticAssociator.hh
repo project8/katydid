@@ -47,7 +47,7 @@ namespace Katydid
     class KTAnalyticAssociator : public KTProcessor
     {
         protected:
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal AASignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal AASignal;
 
         public:
             KTAnalyticAssociator();

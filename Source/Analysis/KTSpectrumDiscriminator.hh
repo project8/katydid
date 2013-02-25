@@ -30,8 +30,8 @@ namespace Katydid
     class KTSpectrumDiscriminator : public KTProcessor
     {
         public:
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal Discrim1DSignal;
-            //typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal Discrim2DSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal Discrim1DSignal;
+            //typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal Discrim2DSignal;
 
         private:
             enum ThresholdMode

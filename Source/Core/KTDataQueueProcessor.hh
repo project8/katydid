@@ -101,7 +101,7 @@ namespace Katydid
     class KTDataQueueProcessor : public KTDataQueueProcessorTemplate< KTDataQueueProcessor >
     {
         protected:
-            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal DataSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal DataSignal;
 
         public:
             KTDataQueueProcessor();

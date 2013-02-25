@@ -51,7 +51,7 @@ namespace Katydid
     class KTGainVariationProcessor : public KTProcessor
     {
         public:
-            typedef KTSignal< void (boost::shared_ptr< KTData >) >::signal GainVarSignal;
+            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal GainVarSignal;
 
             //typedef KTPhysicalArray< 1, Double_t > GainVariation;
 
