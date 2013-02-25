@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTSignal.hh"
+#include "KTSignalWrapper.hh"
 
 namespace Katydid
 {

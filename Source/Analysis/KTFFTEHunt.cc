@@ -135,7 +135,7 @@ namespace Katydid
     void KTFFTEHunt::ProcessHeader(const KTEggHeader* header)
     {
         // Process the header information
-        fSimpleFFT.ProcessHeader(header);
+        fSimpleFFT.InitializeWithHeader(header);
         fWindowFFT.ProcessHeader(header);
 
         // Set up the bin cuts

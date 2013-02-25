@@ -14,7 +14,9 @@
 #include "KTConnection.hh"
 #include "KTLogger.hh"
 #include "KTSignal.hh"
+#include "KTSignalWrapper.hh"
 #include "KTSlot.hh"
+#include "KTSlotWrapper.hh"
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>

@@ -69,9 +69,6 @@ namespace Katydid
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
     {
-        public:
-            typedef KTSignal< void (boost::shared_ptr<KTData>) >::signal FFTSignal;
-
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
 
@@ -82,6 +79,7 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
             void InitializeFFT();
+            void InitializeWithHeader(const KTEggHeader* header);
 
             Bool_t TransformData(KTTimeSeriesData& tsData);
 
@@ -127,17 +125,19 @@ namespace Katydid
             // Signals
             //***************
 
-        private:
-            FFTSignal fFFTSignal;
+        public:
+            KTDataSignal< KTSimpleFFT, KTFrequencySpectrumDataPolar > fFFTSignal;
 
             //***************
             // Slots
             //***************
 
         public:
-            void ProcessHeader(const KTEggHeader* header);
-            void ProcessTimeSeriesData(boost::shared_ptr<KTData> data);
+            //void ProcessHeader(const KTEggHeader* header);
+            //void ProcessTimeSeriesData(boost::shared_ptr<KTData> data);
 
+            KTSlotOneArg< KTSimpleFFT, const KTEggHeader* > fHeaderSlot;
+            KTDataSlotOneArg< KTSimpleFFT, KTFrequencySpectrumDataPolar, KTTimeSeriesData > fTimeSeriesSlot;
     };
 
 
