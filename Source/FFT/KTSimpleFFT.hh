@@ -12,8 +12,9 @@
 #include "KTFFT.hh"
 #include "KTProcessor.hh"
 
-#include "KTLogger.hh"
 #include "KTFrequencySpectrumPolar.hh"
+#include "KTLogger.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -60,11 +61,11 @@ namespace Katydid
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      Slots:
-     \li \c void ProcessHeader(const KTEggHeader*)
-     \li \c void ProcessTimeSeriesData(shared_ptr<KTData>)
+     \li \c "header" -- Initialize the FFT from an Egg file header
+     \li \c "ts" -- Perform an FFT; Argument is shared_ptr<KTData>; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft"
 
      Signals:
-     \li \c void (shared_ptr<KTData>) emitted upon performance of a transform.
+     \li \c "fft" -- Emitted upon successful performance of an FFT; Argument is shared_ptr<KTData>; Includes KTFrequencySpectrumDataPolar
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
@@ -125,19 +126,16 @@ namespace Katydid
             // Signals
             //***************
 
-        public:
-            KTDataSignal< KTSimpleFFT, KTFrequencySpectrumDataPolar > fFFTSignal;
+        private:
+            KTSignalData fFFTSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            //void ProcessHeader(const KTEggHeader* header);
-            //void ProcessTimeSeriesData(boost::shared_ptr<KTData> data);
-
-            KTSlotOneArg< KTSimpleFFT, const KTEggHeader* > fHeaderSlot;
-            KTDataSlotOneArg< KTSimpleFFT, KTFrequencySpectrumDataPolar, KTTimeSeriesData > fTimeSeriesSlot;
+        private:
+            KTSlotOneArg< KTSimpleFFT, const KTEggHeader*, void > fHeaderSlot;
+            KTSlotDataOneType< KTSimpleFFT, KTTimeSeriesData > fTimeSeriesSlot;
     };
 
 

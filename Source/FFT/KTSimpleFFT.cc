@@ -39,21 +39,11 @@ namespace Katydid
             fIsInitialized(false),
             fUseWisdom(true),
             fWisdomFilename("wisdom_simplefft.fftw3"),
-            fFFTSignal(this),
-            fHeaderSlot(this),
-            fTimeSeriesSlot(this)
+            fFFTSignal("fft", this),
+            fHeaderSlot("header", this, &KTSimpleFFT::InitializeWithHeader),
+            fTimeSeriesSlot("ts", this, &KTSimpleFFT::TransformData, &fFFTSignal)
     {
         fConfigName = "simple-fft";
-
-        //RegisterSignal("fft", &fFFTSignal, "void (const KTFrequencySpectrumData*)");
-        fFFTSignal.RegisterSignal("fft", "void (shared_ptr< KTData >)");
-
-        //RegisterSlot("header", this, &KTSimpleFFT::ProcessHeader, "void (const KTEggHeader*)");
-        fHeaderSlot.RegisterSlot("header", &KTSimpleFFT::InitializeWithHeader, "void (const KTEggHeader*)");
-
-        //RegisterSlot("ts-data", this, &KTSimpleFFT::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        fTimeSeriesSlot.RegisterSlot("ts-data", &KTSimpleFFT::TransformData, "void (shared_ptr< KTData >)");
-        fTimeSeriesSlot.SetSignal(&fFFTSignal);
 
         SetupTransformFlagMap();
     }

@@ -40,9 +40,10 @@ set (CORE_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessorToolbox.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPStoreNode.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignal.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalSlotSignature.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalWrapper.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlot.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTSlot.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlotWrapper.cc
 )
 

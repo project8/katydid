@@ -9,7 +9,7 @@
 
 namespace Katydid
 {
-
+/*
     KTSlot::KTSlot()
     {
 
@@ -18,5 +18,5 @@ namespace Katydid
     KTSlot::~KTSlot()
     {
     }
-
+*/
 } /* namespace Katydid */

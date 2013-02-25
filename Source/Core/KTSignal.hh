@@ -8,79 +8,119 @@
 #ifndef KTSIGNAL_HH_
 #define KTSIGNAL_HH_
 
+#include "KTProcessor.hh"
+
+#include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
 
 #include <string>
 
 namespace Katydid
 {
+    class KTData;
 
     /*!
-     @class KTDataSignal
+     @class KTSignalOneArg
      @author N. S. Oblath
 
-     @brief Creates a signal that is emitted when the processor creates the Data object.
+     @brief Creates a signal that takes a single argument.
 
      @details
-     The signal is emitted by calling EmitSignal.
+     The signal is emitted by calling operator().
      If a KTDataSlot is being used, and the Slot has been given a pointer to this signal, the Slot will emit the Signal.
 
      Usage:
-     In your Processor's header add a member variable of type KTDataSignal< ProcessorType, OutputDataType >.
+     In your Processor's header add a member variable of type KTDataSignal< ArgumentType >.
 
-     Initialize the signal with the address of the Processor.
+     Initialize the signal with the processor's 'this' pointer and the name of the signal.
 
-     In your Processor's constructor, call the KTDataSignal::RegisterSlot function, passing the following as arguments:
-     - slot name
-     - the function signature as a string
+     To use the signal, call it as: fSignalObject(arg);
     */
-    template< class XProcessorType, class XDataType >
-    class KTDataSignal
+    template< class XSignalArgument >
+    class KTSignalOneArg
     {
         public:
-            typedef void (signature)(const XDataType*);
+            typedef void (signature)(XSignalArgument);
             typedef boost::signals2::signal< signature > boost_signal;
             typedef typename boost::signals2::signal< signature >::slot_type slot_type;
 
         public:
-            KTDataSignal(XProcessorType* proc);
-            virtual ~KTDataSignal();
+            KTSignalOneArg(const std::string& name, KTProcessor* proc);
+            virtual ~KTSignalOneArg();
+
+        protected:
+            KTSignalOneArg();
+            KTSignalOneArg(const KTSignalOneArg&);
 
         public:
-            void RegisterSignal(const std::string& name, const std::string& signature);
+            void operator()(XSignalArgument arg);
 
-            void EmitSignal(const XDataType* data);
-
-        private:
-            XProcessorType* fProcessor;
-
+        protected:
             boost_signal fSignal;
 
     };
 
-    template< class XProcessorType, class XDataType >
-    KTDataSignal< XProcessorType, XDataType >::KTDataSignal(XProcessorType* proc) :
-            fSignal(),
-            fProcessor(proc)
+
+    /*!
+     @class KTSignalData
+     @author N. S. Oblath
+
+     @brief Creates a signal that takes a boost::shared_ptr< KTData > object as its argument.
+
+     @details
+     The purpose of the signal is for passing KTData pointers between Processors.
+     The signal is emitted by calling operator().
+     If a KTDataSlot is being used, and the Slot has been given a pointer to this signal, the Slot will emit the Signal.
+
+     Usage:
+     In your Processor's header add a member variable of type KTSignalData.
+
+     Initialize the signal with the processor's 'this' pointer and the name of the signal.
+
+     That's it!
+    */
+
+    class KTSignalData : public KTSignalOneArg< boost::shared_ptr< KTData > >
+    {
+        public:
+            KTSignalData(const std::string& name, KTProcessor* proc);
+            virtual ~KTSignalData();
+
+        protected:
+            KTSignalData();
+            KTSignalData(const KTSignalData&);
+    };
+
+
+
+    template< class XSignalArgument >
+    KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const std::string& name, KTProcessor* proc) :
+            fSignal()
+    {
+        proc->RegisterSignal(name, &fSignal, "");
+    }
+
+    template< class XSignalArgument >
+    KTSignalOneArg< XSignalArgument >::KTSignalOneArg() :
+            fSignal()
+    {}
+
+    template< class XSignalArgument >
+    KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const KTSignalOneArg& rhs) :
+            fSignal()
+    {}
+
+    template< class XSignalArgument >
+    KTSignalOneArg< XSignalArgument >::~KTSignalOneArg()
     {
     }
 
-    template< class XProcessorType, class XDataType >
-    KTDataSignal< XProcessorType, XDataType >::~KTDataSignal()
+    template< class XSignalArgument >
+    void KTSignalOneArg< XSignalArgument >::operator()(XSignalArgument arg)
     {
+        fSignal(arg);
     }
 
-    template< class XProcessorType, class XDataType >
-    void KTDataSignal< XProcessorType, XDataType >::RegisterSignal(const std::string& name, const std::string& signature)
-    {
-        fProcessor->RegisterSignal(name, &fSignal, signature);
-    }
-
-    template< class XProcessorType, class XDataType >
-    void KTDataSignal< XProcessorType, XDataType >::EmitSignal(const XDataType* data)
-    {
-        fSignal(data);
-    }
 
 } /* namespace Katydid */
 #endif /* KTSIGNAL_HH_ */
