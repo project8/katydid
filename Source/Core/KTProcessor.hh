@@ -12,11 +12,11 @@
 #include "KTConfigurable.hh"
 
 #include "KTConnection.hh"
-#include "KTSignalWrapper.hh"
-#include "KTSlotWrapper.hh"
 #include "KTLogger.hh"
 #include "KTSignal.hh"
+#include "KTSignalWrapper.hh"
 #include "KTSlot.hh"
+#include "KTSlotWrapper.hh"
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
