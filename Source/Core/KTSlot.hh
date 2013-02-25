@@ -12,6 +12,9 @@
 #include "KTLogger.hh"
 #include "KTSignal.hh"
 
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
+
 #include <string>
 
 namespace Katydid
@@ -33,7 +36,8 @@ namespace Katydid
 
      @details
      Usage:
-     To use this slot type your processor must have a member function with the signature ReturnType (ArgumentType).
+     To use this slot type the function to be called by the slot must exist in an object of type FuncOwnerType.
+     The function should have the signature ReturnType (ArgumentType).
 
      In your Processor's header add a member variable of type KTSlotOneArg< ProcessorType, ArgumentType, ReturnType >.
      The variable may be private.
@@ -70,7 +74,7 @@ namespace Katydid
             fOwner(owner),
             fFuncPtr(func)
     {
-        owner->template RegisterSlot< func_owner_type, return_type, argument_type >(name, owner, fFuncPtr, "");
+        owner->RegisterSlot(name, owner, fFuncPtr, "");
     }
 
     template< class XFuncOwnerType, class XArgumentType, class XReturnType >
@@ -79,7 +83,7 @@ namespace Katydid
             fOwner(owner),
             fFuncPtr(func)
     {
-        proc->template RegisterSlot< func_owner_type, return_type, argument_type >(name, owner, fFuncPtr, "");
+        proc->RegisterSlot(name, owner, fFuncPtr, "");
     }
 
     template< class XProcessorType, class XArgumentType, class XReturnType >
@@ -102,7 +106,9 @@ namespace Katydid
 
      @details
      Usage:
-     To use this slot type your processor must have a member function with the signature Bool_t (DataType&) (note that this does NOT match the signature of the slot!).
+     This slot type adds the slot function (signature void (boost::shared_ptr<KTData>).
+     Your processor (or, optionally, a different object) must have a member function with the signature Bool_t (DataType&).
+     The slot function checks that the provided KTData object contains data of type DataType, and then calls the member function.
 
      In your Processor's header add a member variable of type KTSlotOneArg< ProcessorType, DataType >.
      The variable may be private.
@@ -110,59 +116,69 @@ namespace Katydid
      Initialize the slot with the name of the slot, the address of the owner of the slot function, and the function pointer.
      Optionally, if the Processor is separate from the owner of the slot function, the Processor address is specified as the second argument to the constructor.
     */
-    template< class XFuncOwnerType, class XDataType >
+    //template< class XFuncOwnerType, class XDataType >
+    template< class XDataType >
     class KTSlotDataOneType// : public KTSlot
     {
         public:
-            typedef XFuncOwnerType func_owner_type;
+            //typedef XFuncOwnerType func_owner_type;
+            typedef XDataType data_type;
+            typedef KTSlotDataOneType< data_type > func_owner_type;
             typedef boost::shared_ptr< KTData > argument_type;
             typedef Bool_t return_type;
-            typedef XDataType data_type;
 
         public:
             /// Constructor for the case where the processor has the function that will be called by the slot
-            KTSlotDataOneType(const std::string& name, func_owner_type* owner, Bool_t (func_owner_type::*func)(XDataType&), KTSignalData* signalPtr=NULL);
+            template< class XFuncOwnerType >
+            KTSlotDataOneType(const std::string& name, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(XDataType&), KTSignalData* signalPtr=NULL);
             /// Constructor for the case where the processor and the object with the function that will be called are different
-            KTSlotDataOneType(const std::string& name, KTProcessor* proc, func_owner_type* owner, Bool_t (func_owner_type::*func)(XDataType&), KTSignalData* signalPtr=NULL);
+            template< class XFuncOwnerType >
+            KTSlotDataOneType(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(XDataType&), KTSignalData* signalPtr=NULL);
             virtual ~KTSlotDataOneType();
 
             void operator()(boost::shared_ptr< KTData > data);
 
         protected:
-            func_owner_type* fOwner;
+            boost::function< Bool_t (XDataType&) > fFunc;
 
-            Bool_t (func_owner_type::*fFuncPtr)(XDataType&);
+            //func_owner_type* fOwner;
+
+            //Bool_t (func_owner_type::*fFuncPtr)(XDataType&);
 
             KTSignalData* fSignalPtr;
     };
 
-    template< class XFuncOwnerType, class XDataType >
-    KTSlotDataOneType< XFuncOwnerType, XDataType >::KTSlotDataOneType(const std::string& name, func_owner_type* owner, Bool_t (func_owner_type::*func)(XDataType&), KTSignalData* signalPtr) :
+    template< class XDataType >
+    template< class XFuncOwnerType >
+    KTSlotDataOneType< XDataType >::KTSlotDataOneType(const std::string& name, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(XDataType&), KTSignalData* signalPtr) :
             //KTSlotOneArg< func_owner_type, boost::shared_ptr< KTData >, Bool_t >(name, owner, func),
-            fOwner(owner),
-            fFuncPtr(func),
+            fFunc(boost::bind(func, owner, _1)),
+            //fOwner(owner),
+            //fFuncPtr(func),
             fSignalPtr(signalPtr)
     {
         owner->RegisterSlot(name, this, &KTSlotDataOneType::operator(), "");
     }
 
-    template< class XFuncOwnerType, class XDataType >
-    KTSlotDataOneType< XFuncOwnerType, XDataType >::KTSlotDataOneType(const std::string& name, KTProcessor* proc, func_owner_type* owner, Bool_t (func_owner_type::*func)(XDataType&), KTSignalData* signalPtr) :
+    template< class XDataType >
+    template< class XFuncOwnerType >
+    KTSlotDataOneType< XDataType >::KTSlotDataOneType(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(XDataType&), KTSignalData* signalPtr) :
             //KTSlotOneArg< func_owner_type, boost::shared_ptr< KTData >, Bool_t >(name, proc, owner, func),
-            fOwner(owner),
-            fFuncPtr(func),
+            fFunc(boost::bind(func, owner, _1)),
+            //fOwner(owner),
+            //fFuncPtr(func),
             fSignalPtr(signalPtr)
     {
         proc->RegisterSlot(name, this, &KTSlotDataOneType::operator(), "");
     }
 
-    template< class XFuncOwnerType, class XDataType >
-    KTSlotDataOneType< XFuncOwnerType, XDataType >::~KTSlotDataOneType()
+    template< class XDataType >
+    KTSlotDataOneType< XDataType >::~KTSlotDataOneType()
     {
     }
 
-    template< class XFuncOwnerType, class XDataType >
-    void KTSlotDataOneType< XFuncOwnerType, XDataType >::operator()(boost::shared_ptr< KTData > data)
+    template< class XDataType >
+    void KTSlotDataOneType< XDataType >::operator()(boost::shared_ptr< KTData > data)
     {
         // Standard data slot pattern:
         // Check to ensure that the required data type is present
@@ -171,7 +187,8 @@ namespace Katydid
             return;
         }
         // Call the function
-        if (! (fOwner->*fFuncPtr)(data->Of< data_type >()))
+        //if (! (fOwner->*fFuncPtr)(data->Of< data_type >()))
+        if (! fFunc(data->Of< data_type >()))
         {
             return;
         }

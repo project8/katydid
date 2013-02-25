@@ -135,7 +135,7 @@ namespace Katydid
 
         private:
             KTSlotOneArg< KTSimpleFFT, const KTEggHeader*, void > fHeaderSlot;
-            KTSlotDataOneType< KTSimpleFFT, KTTimeSeriesData > fTimeSeriesSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
     };
 
 
