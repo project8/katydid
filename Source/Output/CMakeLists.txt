@@ -15,7 +15,7 @@ if (ROOT_FOUND)
     set (OUTPUT_NODICT_HEADERFILES
         ${OUTPUT_NODICT_HEADERFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTSliceBundleROOTWriter.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTWriter.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeWriter.hh
     )
 endif (ROOT_FOUND)
