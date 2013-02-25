@@ -116,12 +116,10 @@ namespace Katydid
      Initialize the slot with the name of the slot, the address of the owner of the slot function, and the function pointer.
      Optionally, if the Processor is separate from the owner of the slot function, the Processor address is specified as the second argument to the constructor.
     */
-    //template< class XFuncOwnerType, class XDataType >
     template< class XDataType >
-    class KTSlotDataOneType// : public KTSlot
+    class KTSlotDataOneType
     {
         public:
-            //typedef XFuncOwnerType func_owner_type;
             typedef XDataType data_type;
             typedef KTSlotDataOneType< data_type > func_owner_type;
             typedef boost::shared_ptr< KTData > argument_type;
@@ -141,20 +139,13 @@ namespace Katydid
         protected:
             boost::function< Bool_t (XDataType&) > fFunc;
 
-            //func_owner_type* fOwner;
-
-            //Bool_t (func_owner_type::*fFuncPtr)(XDataType&);
-
             KTSignalData* fSignalPtr;
     };
 
     template< class XDataType >
     template< class XFuncOwnerType >
     KTSlotDataOneType< XDataType >::KTSlotDataOneType(const std::string& name, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(XDataType&), KTSignalData* signalPtr) :
-            //KTSlotOneArg< func_owner_type, boost::shared_ptr< KTData >, Bool_t >(name, owner, func),
             fFunc(boost::bind(func, owner, _1)),
-            //fOwner(owner),
-            //fFuncPtr(func),
             fSignalPtr(signalPtr)
     {
         owner->RegisterSlot(name, this, &KTSlotDataOneType::operator(), "");
@@ -163,10 +154,7 @@ namespace Katydid
     template< class XDataType >
     template< class XFuncOwnerType >
     KTSlotDataOneType< XDataType >::KTSlotDataOneType(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(XDataType&), KTSignalData* signalPtr) :
-            //KTSlotOneArg< func_owner_type, boost::shared_ptr< KTData >, Bool_t >(name, proc, owner, func),
             fFunc(boost::bind(func, owner, _1)),
-            //fOwner(owner),
-            //fFuncPtr(func),
             fSignalPtr(signalPtr)
     {
         proc->RegisterSlot(name, this, &KTSlotDataOneType::operator(), "");
