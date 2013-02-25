@@ -15,7 +15,7 @@ if (ROOT_FOUND)
     set (OUTPUT_NODICT_HEADERFILES
         ${OUTPUT_NODICT_HEADERFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiBundleROOTWriter.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTSliceBundleROOTWriter.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeWriter.hh
     )
 endif (ROOT_FOUND)
@@ -34,7 +34,7 @@ if (ROOT_FOUND)
     set (OUTPUT_SOURCEFILES
         ${OUTPUT_SOURCEFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiBundleROOTWriter.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTWriter.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeWriter.cc
     )
 endif (ROOT_FOUND)

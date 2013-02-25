@@ -45,12 +45,12 @@ if (ROOT_FOUND)
    set (ANALYSIS_HEADERFILES 
    ${ANALYSIS_HEADERFILES}   
    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh
-   ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiBundleROOTTypeWriterAnalysis.hh
+   ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterAnalysis.hh
    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterAnalysis.hh)
    set (ANALYSIS_SOURCEFILES
    ${ANALYSIS_SOURCEFILES}
    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc
-   ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiBundleROOTTypeWriterAnalysis.cc
+   ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterAnalysis.cc
    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterAnalysis.cc)
 endif (ROOT_FOUND)
 
