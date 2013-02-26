@@ -61,11 +61,11 @@ namespace Katydid
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      Slots:
-     \li \c "header" -- Initialize the FFT from an Egg file header
-     \li \c "ts" -- Perform an FFT; Argument is shared_ptr<KTData>; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft"
+     \li \c "header": void (const KTEggHeader*) -- Initialize the FFT from an Egg file header
+     \li \c "ts": void (shared_ptr<KTData>) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft"
 
      Signals:
-     \li \c "fft" -- Emitted upon successful performance of an FFT; Argument is shared_ptr<KTData>; Includes KTFrequencySpectrumDataPolar
+     \li \c "fft": void (shared_ptr<KTData>) -- Emitted upon successful performance of an FFT; Guarantees KTFrequencySpectrumDataPolar
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
