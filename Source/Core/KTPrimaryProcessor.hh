@@ -18,7 +18,7 @@ namespace Katydid
     class KTPrimaryProcessor : public KTProcessor
     {
         public:
-            KTPrimaryProcessor();
+            KTPrimaryProcessor(const std::string& name = "default-primary-processor-name");
             virtual ~KTPrimaryProcessor();
 
         public:
