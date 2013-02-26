@@ -29,18 +29,15 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTFrequencyCandidateIdentifier > sFCIRegistrar("frequency-candidate-identifier");
 
-    KTFrequencyCandidateIdentifier::KTFrequencyCandidateIdentifier() :
-            KTProcessor()
+    KTFrequencyCandidateIdentifier::KTFrequencyCandidateIdentifier(const std::string& name) :
+            KTProcessor(name),
+            fFCSignal("frequency-candidates", this),
+            fFSDataPolarSlot("fs-polar", this, &KTFrequencyCandidateIdentifier::IdentifyCandidates, &fFCSignal),
+            fFSDataFFTWSlot("fs-fftw", this, &KTFrequencyCandidateIdentifier::IdentifyCandidates, &fFCSignal),
+            fFSNormDataPolarSlot("norm-fs-polar", this, &KTFrequencyCandidateIdentifier::IdentifyCandidates, &fFCSignal),
+            fFSNormDataFFTWSlot("norm-fs-fftw", this, &KTFrequencyCandidateIdentifier::IdentifyCandidates, &fFCSignal),
+            fFSCorrelationDataSlot("corr", this, &KTFrequencyCandidateIdentifier::IdentifyCandidates, &fFCSignal)
     {
-        fConfigName = "frequency-candidate-identifier";
-
-        RegisterSignal("frequency-candidates", &fFCSignal, "void (const KTFrequencyCandidateData*)");
-
-        RegisterSlot("fs-polar", this, &KTFrequencyCandidateIdentifier::ProcessClusterAndFSPolarData, "void (shared_ptr< KTData >)");
-        RegisterSlot("fs-fftw", this, &KTFrequencyCandidateIdentifier::ProcessClusterAndFSFFTWData, "void (shared_ptr< KTData >)");
-        RegisterSlot("norm-fs-polar", this, &KTFrequencyCandidateIdentifier::ProcessClusterAndNormFSPolarData, "void (shared_ptr< KTData >)");
-        RegisterSlot("norm-fs-fftw", this, &KTFrequencyCandidateIdentifier::ProcessClusterAndNormFSFFTWData, "void (shared_ptr< KTData >)");
-        RegisterSlot("corr", this, &KTFrequencyCandidateIdentifier::ProcessClusterAndCorrelationData, "void (shared_ptr< KTData >)");
     }
 
     KTFrequencyCandidateIdentifier::~KTFrequencyCandidateIdentifier()
@@ -52,31 +49,31 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolar& fsData)
+    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataPolar& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTW& fsData)
+    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataFFTW& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, const KTNormalizedFSDataPolar& fsData)
+    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataPolar& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, const KTNormalizedFSDataFFTW& fsData)
+    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataFFTW& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, const KTCorrelationData& fsData)
+    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTCorrelationData& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
@@ -224,102 +221,6 @@ namespace Katydid
         }
 
         return true;
-    }
-
-    void KTFrequencyCandidateIdentifier::ProcessClusterAndFSPolarData(boost::shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataPolar >())
-        {
-            KTERROR(fcilog, "No frequency spectrum data was present");
-            return;
-        }
-        if (! data->Has< KTCluster1DData >())
-        {
-            KTERROR(fcilog, "No cluster data was present");
-        }
-        if (! IdentifyCandidates(data->Of< KTCluster1DData >(), data->Of< KTFrequencySpectrumDataPolar >()))
-        {
-            KTERROR(fcilog, "Something went wrong while identifying candidates");
-            return;
-        }
-        fFCSignal(data);
-        return;
-    }
-    void KTFrequencyCandidateIdentifier::ProcessClusterAndFSFFTWData(boost::shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTERROR(fcilog, "No frequency spectrum data was present");
-            return;
-        }
-        if (! data->Has< KTCluster1DData >())
-        {
-            KTERROR(fcilog, "No cluster data was present");
-        }
-        if (! IdentifyCandidates(data->Of< KTCluster1DData >(), data->Of< KTFrequencySpectrumDataFFTW >()))
-        {
-            KTERROR(fcilog, "Something went wrong while identifying candidates");
-            return;
-        }
-        fFCSignal(data);
-        return;
-    }
-    void KTFrequencyCandidateIdentifier::ProcessClusterAndNormFSPolarData(boost::shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTNormalizedFSDataPolar >())
-        {
-            KTERROR(fcilog, "No frequency spectrum data was present");
-            return;
-        }
-        if (! data->Has< KTCluster1DData >())
-        {
-            KTERROR(fcilog, "No cluster data was present");
-        }
-        if (! IdentifyCandidates(data->Of< KTCluster1DData >(), data->Of< KTNormalizedFSDataPolar >()))
-        {
-            KTERROR(fcilog, "Something went wrong while identifying candidates");
-            return;
-        }
-        fFCSignal(data);
-        return;
-    }
-    void KTFrequencyCandidateIdentifier::ProcessClusterAndNormFSFFTWData(boost::shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTNormalizedFSDataFFTW >())
-        {
-            KTERROR(fcilog, "No frequency spectrum data was present");
-            return;
-        }
-        if (! data->Has< KTCluster1DData >())
-        {
-            KTERROR(fcilog, "No cluster data was present");
-        }
-        if (! IdentifyCandidates(data->Of< KTCluster1DData >(), data->Of< KTNormalizedFSDataFFTW >()))
-        {
-            KTERROR(fcilog, "Something went wrong while identifying candidates");
-            return;
-        }
-        fFCSignal(data);
-        return;
-    }
-    void KTFrequencyCandidateIdentifier::ProcessClusterAndCorrelationData(boost::shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTCorrelationData >())
-        {
-            KTERROR(fcilog, "No correlation data was present");
-            return;
-        }
-        if (! data->Has< KTCluster1DData >())
-        {
-            KTERROR(fcilog, "No cluster data was present");
-        }
-        if (! IdentifyCandidates(data->Of< KTCluster1DData >(), data->Of< KTCorrelationData >()))
-        {
-            KTERROR(fcilog, "Something went wrong while identifying candidates");
-            return;
-        }
-        fFCSignal(data);
-        return;
     }
 
 } /* namespace Katydid */

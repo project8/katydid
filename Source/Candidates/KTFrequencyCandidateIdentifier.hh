@@ -14,6 +14,7 @@
 
 #include "KTCluster1DData.hh"
 #include "KTFrequencyCandidateData.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -40,16 +41,15 @@ namespace Katydid
     
 
      Available configuration values:
-      \li \c "fs-input-data-name": string -- filename for loading/saving FFTW wisdom
+     \li \c "fs-input-data-name": string -- filename for loading/saving FFTW wisdom
      \li \c "cluster-input-data-name": string -- name of the data to find when processing an event
      \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
      Slots:
-     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c "clusters": void ProcessClusterData(const KTCluster1DData*)
+     \li \c "clusters": void (shared_ptr< KTData >) --
 
      Signals:
-     \li \c "frequency-candidates": void (const KTFrequencyCandidateData*) emitted upon performance of a          .
+     \li \c "frequency-candidates": void (shared_ptr< KTData >) -- Emitted after identifying candidates; Guarantees KTFrequencyCandidateData
     */
 
 
@@ -60,17 +60,17 @@ namespace Katydid
             typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal FCSignal;
 
         public:
-            KTFrequencyCandidateIdentifier();
+            KTFrequencyCandidateIdentifier(const std::string& name = "frequency-candidate-identifier");
             virtual ~KTFrequencyCandidateIdentifier();
 
             Bool_t Configure(const KTPStoreNode* node);
 
         public:
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolar& fsData);
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTW& fsData);
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTNormalizedFSDataPolar& fsData);
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTNormalizedFSDataFFTW& fsData);
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, const KTCorrelationData& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataPolar& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataFFTW& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataPolar& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataFFTW& fsData);
+            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTCorrelationData& fsData);
 
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec);
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumFFTW* freqSpec);
@@ -84,18 +84,18 @@ namespace Katydid
             //***************
 
         private:
-            FCSignal fFCSignal;
+            KTSignalData fFCSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessClusterAndFSPolarData(boost::shared_ptr< KTData >);
-            void ProcessClusterAndFSFFTWData(boost::shared_ptr< KTData >);
-            void ProcessClusterAndNormFSPolarData(boost::shared_ptr< KTData >);
-            void ProcessClusterAndNormFSFFTWData(boost::shared_ptr< KTData >);
-            void ProcessClusterAndCorrelationData(boost::shared_ptr< KTData >);
+        private:
+            KTSlotDataTwoTypes< KTCluster1DData, KTFrequencySpectrumDataPolar > fFSDataPolarSlot;
+            KTSlotDataTwoTypes< KTCluster1DData, KTFrequencySpectrumDataFFTW > fFSDataFFTWSlot;
+            KTSlotDataTwoTypes< KTCluster1DData, KTNormalizedFSDataPolar > fFSNormDataPolarSlot;
+            KTSlotDataTwoTypes< KTCluster1DData, KTNormalizedFSDataFFTW > fFSNormDataFFTWSlot;
+            KTSlotDataTwoTypes< KTCluster1DData, KTCorrelationData > fFSCorrelationDataSlot;
 
     };
 

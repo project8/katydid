@@ -14,6 +14,7 @@
 #include "KTData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTMath.hh"
+#include "KTSignal.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -77,11 +78,8 @@ namespace Katydid
 
             typedef std::list< boost::shared_ptr<KTData> > DataList;
 
-
-            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal DataSignal;
-
         public:
-            KTMultiSliceClustering();
+            KTMultiSliceClustering(const std::string& name = "multi-slice-processing");
             virtual ~KTMultiSliceClustering();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -149,8 +147,8 @@ namespace Katydid
             //***************
 
          private:
-            DataSignal fOneSliceDataSignal;
-            DataSignal fClusteredDataSignal;
+            KTSignalData fOneSliceDataSignal;
+            KTSignalData fClusteredDataSignal;
 
 
              //***************
@@ -164,6 +162,7 @@ namespace Katydid
             void QueueWVData(boost::shared_ptr< KTData >& data);
 
          private:
+            // These slot functions differ slightly from the KTSlotData implementation, so these custom functions are used
             void ProcessOneSliceFSPolarData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceFSFFTWData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceCorrelationData(boost::shared_ptr<KTData> data);

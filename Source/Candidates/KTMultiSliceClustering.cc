@@ -40,8 +40,8 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTMultiSliceClustering > sMSClustRegistrar("multi-slice-clustering");
 
-    KTMultiSliceClustering::KTMultiSliceClustering() :
-            KTDataQueueProcessorTemplate< KTMultiSliceClustering >(),
+    KTMultiSliceClustering::KTMultiSliceClustering(const std::string& name) :
+            KTDataQueueProcessorTemplate< KTMultiSliceClustering >(name),
             fMaxFreqSep(1.),
             fMaxTimeSep(1.),
             fMaxFreqSepBins(1),
@@ -50,13 +50,10 @@ namespace Katydid
             fCalculateMaxTimeSepBins(false),
             fTimeBin(0),
             fTimeBinWidth(1.),
-            fFreqBinWidth(1.)
+            fFreqBinWidth(1.),
+            fOneSliceDataSignal("one-slice", this),
+            fClusteredDataSignal("cluster", this)
     {
-        fConfigName = "multi-slice-clustering";
-
-        RegisterSignal("one-slice", &fOneSliceDataSignal, "void (shared_ptr< KTData >)");
-        RegisterSignal("cluster", &fClusteredDataSignal, "void (shared_ptr< KTData >)");
-
         RegisterSlot("fs-polar", this, &KTMultiSliceClustering::QueueFSPolarData, "void (shared_ptr< KTData >)");
         RegisterSlot("fs-fftw", this, &KTMultiSliceClustering::QueueFSFFTWData, "void (shared_ptr< KTData >)");
         RegisterSlot("correlation", this, &KTMultiSliceClustering::QueueCorrelationData, "void (shared_ptr< KTData >)");
