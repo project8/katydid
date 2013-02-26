@@ -12,12 +12,11 @@ namespace Katydid {
   static KTDerivedRegistrar< KTProcessor, KTBasicASCIIWriter > 
   sAPR("basic-ascii-writer");
 
-  KTBasicASCIIWriter::KTBasicASCIIWriter() :
-    KTWriterWithTypists<KTBasicASCIIWriter>(),
+  KTBasicASCIIWriter::KTBasicASCIIWriter(const std::string& name) :
+    KTWriterWithTypists<KTBasicASCIIWriter>(name),
     fOutputFilename("basic_ascii_output.txt"),
     fOutputStream(NULL)
   {
-    fConfigName = "basic-ascii-writer";
   } // default constructor
 
   KTBasicASCIIWriter::~KTBasicASCIIWriter() {

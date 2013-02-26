@@ -26,7 +26,7 @@ namespace Katydid
     class KTROOTTreeWriter : public KTWriterWithTypists< KTROOTTreeWriter >//public KTWriter
     {
         public:
-            KTROOTTreeWriter();
+            KTROOTTreeWriter(const std::string& name = "root-tree-writer");
             virtual ~KTROOTTreeWriter();
 
             Bool_t Configure(const KTPStoreNode* node);

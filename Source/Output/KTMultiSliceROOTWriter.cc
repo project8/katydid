@@ -19,22 +19,20 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTMultiSliceROOTWriter > sMERWriterRegistrar("multi-bundle-root-writer");
-    static KTDerivedRegistrar< KTProcessor, KTMultiSliceROOTWriter > sMERWProcRegistrar("multi-bundle-root-writer");
+    static KTDerivedRegistrar< KTWriter, KTMultiSliceROOTWriter > sMERWriterRegistrar("multi-slice-root-writer");
+    static KTDerivedRegistrar< KTProcessor, KTMultiSliceROOTWriter > sMERWProcRegistrar("multi-slice-root-writer");
 
-    KTMultiSliceROOTWriter::KTMultiSliceROOTWriter() :
-            KTWriterWithTypists< KTMultiSliceROOTWriter >(),
+    KTMultiSliceROOTWriter::KTMultiSliceROOTWriter(const std::string& name) :
+            KTWriterWithTypists< KTMultiSliceROOTWriter >(name),
             fUseTFile(true),
-            fTFilename("multi_bundle.root"),
+            fTFilename("multi_slice.root"),
             fTFileFlag("recreate"),
             fUseGraphics(false),
             fGraphicsFilePath(),
-            fGraphicsFilenameBase("multi_bundle"),
+            fGraphicsFilenameBase("slice"),
             fGraphicsFileType("png"),
             fFile(NULL)
     {
-        fConfigName = "multi-bundle-root-writer";
-
         RegisterSlot("start", this, &KTMultiSliceROOTWriter::Start, "void ()");
         RegisterSlot("finish", this, &KTMultiSliceROOTWriter::Finish, "void ()");
     }

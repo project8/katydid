@@ -25,14 +25,13 @@ namespace Katydid
     static KTDerivedRegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
     static KTDerivedRegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
 
-    KTROOTTreeWriter::KTROOTTreeWriter() :
-            KTWriterWithTypists< KTROOTTreeWriter >(),
+    KTROOTTreeWriter::KTROOTTreeWriter(const std::string& name) :
+            KTWriterWithTypists< KTROOTTreeWriter >(name),
             fFilename("tree_output.root"),
             fFileFlag("recreate"),
             fFile(NULL),
             fTrees()
     {
-        fConfigName = "root-tree-writer";
     }
 
     KTROOTTreeWriter::~KTROOTTreeWriter()

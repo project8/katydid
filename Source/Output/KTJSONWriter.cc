@@ -20,8 +20,8 @@ namespace Katydid
     static KTDerivedRegistrar< KTWriter, KTJSONWriter > sBRFWriterRegistrar("json-writer");
     static KTDerivedRegistrar< KTProcessor, KTJSONWriter > sBRFWProcRegistrar("json-writer");
 
-    KTJSONWriter::KTJSONWriter() :
-            KTWriterWithTypists< KTJSONWriter >(),
+    KTJSONWriter::KTJSONWriter(const std::string& name) :
+            KTWriterWithTypists< KTJSONWriter >(name),
             fFilename("basic_output.root"),
             fFileMode("w+"),
             fPrettyJSONFlag(true),
@@ -29,7 +29,6 @@ namespace Katydid
             fFileStream(NULL),
             fJSONMaker(NULL)
     {
-        fConfigName = "json-writer";
     }
 
     KTJSONWriter::~KTJSONWriter()

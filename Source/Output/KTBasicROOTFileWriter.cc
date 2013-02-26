@@ -21,13 +21,12 @@ namespace Katydid
     static KTDerivedRegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root-writer");
     static KTDerivedRegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root-writer");
 
-    KTBasicROOTFileWriter::KTBasicROOTFileWriter() :
-            KTWriterWithTypists< KTBasicROOTFileWriter >(),
+    KTBasicROOTFileWriter::KTBasicROOTFileWriter(const std::string& name) :
+            KTWriterWithTypists< KTBasicROOTFileWriter >(name),
             fFilename("basic_output.root"),
             fFileFlag("recreate"),
             fFile(NULL)
     {
-        fConfigName = "basic-root-writer";
     }
 
     KTBasicROOTFileWriter::~KTBasicROOTFileWriter()

@@ -46,7 +46,7 @@ namespace Katydid
             typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;
 
         public:
-            KTJSONWriter();
+            KTJSONWriter(const std::string& name = "json-writer");
             virtual ~KTJSONWriter();
 
             Bool_t Configure(const KTPStoreNode* node);

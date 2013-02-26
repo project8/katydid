@@ -46,7 +46,7 @@ namespace Katydid
     class KTBasicROOTFileWriter : public KTWriterWithTypists< KTBasicROOTFileWriter >//public KTWriter
     {
         public:
-            KTBasicROOTFileWriter();
+            KTBasicROOTFileWriter(const std::string& name = "basic-root-writer");
             virtual ~KTBasicROOTFileWriter();
 
             Bool_t Configure(const KTPStoreNode* node);

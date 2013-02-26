@@ -17,7 +17,7 @@ namespace Katydid {
   class KTBasicASCIIWriter : public KTWriterWithTypists< KTBasicASCIIWriter > {
     // Constructors/destructors
   public:
-    KTBasicASCIIWriter();
+    KTBasicASCIIWriter(const std::string& name = "basic-ascii-writer");
     virtual ~KTBasicASCIIWriter();
 
     // Configuration
