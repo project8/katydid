@@ -46,7 +46,7 @@ namespace Katydid
      The FFT is implemented using FFTW.
 
      Available configuration values:
-     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms
+     \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -57,11 +57,12 @@ namespace Katydid
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      Slots:
-     \li \c void ProcessHeader(const KTEggHeader* header)
-     \li \c void ProcessBundle(UInt_t iBundle, const KTBundle* bundle)
+     \li \c "header": void ProcessHeader(const KTEggHeader*)
+     \li \c "event": void ProcessEvent(UInt_t iEvent, const KTEvent*)
+     \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesData*)
 
      Signals:
-     \li \c void (UInt_t, const KTInverseSimpleFFT*) emitted upon performance of a transform.
+     \li \c "fft": void (UInt_t, const KTInverseSimpleFFT*) emitted upon performance of a transform.
     */
 
     class KTInverseSimpleFFT : /*public KTFFT,*/ public KTProcessor, public KTConfigurable

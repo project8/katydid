@@ -1,8 +1,9 @@
-/*
- * KTHoughTransform.hh
- *
- *  Created on: Nov 14, 2012
- *      Author: nsoblath
+/**
+ @file KTHoughTransform.hh
+ @brief Contains KTHoughTransform
+ @details 
+ @author: N. S. Oblath
+ @date: Nov 14, 2012
  */
 
 #ifndef KTHOUGHTRANSFORM_HH_
@@ -22,6 +23,31 @@ namespace Katydid
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     //class KTSlidingWindowFSDataFFTW;
+
+    /*!
+     @class KTHoughTransform
+     @author N. S. Oblath
+
+     @brief 
+
+     @details
+
+     Available configuration values:
+     \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
+     \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
+     \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
+     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by an FFT
+
+     Slots:
+     \li \c "header": void ProcessHeader(const KTEggHeader*)
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "swfs-data": void ProcessSWFSData(const KTSlidingwindowFSDataFFTW*)
+     \li \c "disc-data": void ProcessDiscriminatedData(const KTDiscriminatedPoints2DData*)
+
+     Signals:
+     \li \c "hough-transform": void (const KTWriteableData*) emitted upon performance of a transform.
+    */
 
     class KTHoughTransform : public KTProcessor
     {

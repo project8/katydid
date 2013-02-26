@@ -1,8 +1,9 @@
-/*
- * KTBasicROOTFileWriter.hh
- *
- *  Created on: Aug 24, 2012
- *      Author: nsoblath
+/**
+ @file KTBasicROOTFileWriter.hh
+ @brief Contains KTBasicROOTFileWriter
+ @details Basic Rootfile writer.
+ @author: N. S. Oblath
+ @date: Aug 24, 2012
  */
 
 #ifndef KTBASICROOTFILEWRITER_HH_
@@ -18,7 +19,29 @@ namespace Katydid
 
     typedef KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
 
+  /*!
+     @class KTBasicROOTFileWriter
+     @author N. S. Oblath
 
+     @brief Outputs the histograms directly to a root file.
+
+     @details 
+
+     Available configuration values:
+     \li \c "output-file": string -- output filename
+     \li \c "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
+
+     Slots:
+     \li \c "corr-data": void WriteCorrelationData(const WriteCorrelationData*)
+     \li \c "hough-data": void WriteHoughData(const KTHoughData*)
+     \li \c "gain-var-data": void WriteGainVariationData(const KTGainVariationData*)
+     \li \c "ts-data": void WriteTimeSeriesData(const KTTimeSeriesData*)
+     \li \c "fs-data": void WriteFrequencySpectrumData(const KTFrequencySpectrumData*)
+     \li \c "fs-data-fftw": void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
+     \li \c "swfs-data": void WriteSlidingWindowFSData(const WriteSlidingWindowFSData*)
+     \li \c "swfs-data-fftw": void WriteSlidingWindowFSDataFFTW(const WriteSlidingWindowFSDataFFTW*)
+     
+    */
 
     class KTBasicROOTFileWriter : public KTWriterWithTypists< KTBasicROOTFileWriter >//public KTWriter
     {

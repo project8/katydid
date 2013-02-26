@@ -1,8 +1,9 @@
-/*
- * KTSpectrumDiscriminator.hh
- *
- *  Created on: Dec 12, 2012
- *      Author: nsoblath
+/**
+ @file KTSpectrumDiscriminator.hh
+ @brief Contains KTSpectrumDiscriminator
+ @details Discriminates Spectrum
+ @author: N. S. Oblath
+ @date: Dec 12, 2012
  */
 
 #ifndef KTSPECTRUMDISCRIMINATOR_HH_
@@ -26,6 +27,44 @@ namespace Katydid
     class KTNormalizedFSDataPolar;
     //class KTSlidingWindowFSData;
     //class KTSlidingWindowFSDataFFTW;
+
+
+    /*!
+     @class KTSpectrumDiscriminator
+     @author N. S. Oblath
+
+     @brief .
+
+     @details
+  
+
+     Available configuration values:
+     \li \c "snr-threshold": double -- snr threshold 
+     \li \c "sigma-threshold": double -- sigma threshold 
+     \li \c "min-frequency": double -- minimum frequency
+     \li \c "max-frequency": double -- maximum frequency
+     \li \c "min-bin": unsigned -- minimum frequency
+     \li \c "max-bin": unsigned -- maximum frequency
+     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by a discrimination
+
+     Slots:
+     \li \c "fsdata": void ProcessFrequencySpectrumData(const KTFrequencySpectrumData*)
+     \li \c "fsdata-fftw": void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
+     \li \c "swfsdata": void ProcessSlidingWindowFSData(const KTSlidingwindowFSData*)
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "swfsdata-fftw":void ProcessSlidingwindowFsDataFFTW(const KTSlidingWindowFSDataFFTW*)
+
+     Signals:
+     \li \c "disc-1d": void (const KTDiscriminatedPoints1DData*) emitted upon performance of a discrimination.
+     \li \c "disc-2d": void (const KTDiscriminatedPoints2DData*) emitted upon performance of a discriminationx.
+    */
+
+
+
+
+
+
 
     class KTSpectrumDiscriminator : public KTProcessor
     {

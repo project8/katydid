@@ -1,8 +1,9 @@
-/*
- * KTCorrelator.hh
- *
- *  Created on: Aug 20, 2012
- *      Author: nsoblath
+/**
+ @file KTCorrelator.hh
+ @brief Contains KTCorrelator
+ @details Correlates frequency spectra from different channels
+ @author: N. S. Oblath
+ @date: Aug  20, 2012
  */
 
 #ifndef KTCORRELATOR_HH_
@@ -61,6 +62,30 @@ namespace Katydid
     class KTNormalizedFSDataFFTW;
 
     typedef std::pair< UInt_t, UInt_t > KTCorrelationPair;
+
+
+    /*!
+     @class KTCorrelator
+     @author N. S. Oblath
+
+     @brief Correlates frequencey spectra from different channels.
+
+     @details
+     
+     Available configuration values:
+     \li \c "corr-pair": string -- channel pair to be correlated: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
+     \li \c "input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by a correlation
+
+      Slots:
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "fft-data": void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
+
+     Signals:
+     \li \c "correlation": void (const KTWriteableData*) emitted upon performance of a correlation.
+    */
+
+
 
     class KTCorrelator : public KTProcessor
     {

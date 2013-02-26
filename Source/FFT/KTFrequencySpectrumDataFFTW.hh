@@ -1,8 +1,9 @@
-/*
- * KTFrequencySpectrumDataFFTW.hh
- *
- *  Created on: Aug 24, 2012
- *      Author: nsoblath
+/**
+ @file KTFrequencySpectrumDataFFTW.hh
+ @brief Contains KTFrequencySpectrumDataFFTW
+ @details .
+ @author: N. S. Oblath
+ @date: Aug 24, 2012
  */
 
 #ifndef KTFREQUENCYSPECTRUMDATAFFTW_HH_

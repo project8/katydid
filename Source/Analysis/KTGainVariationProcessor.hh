@@ -1,8 +1,9 @@
-/*
- * KTGainVariationProcessor.hh
- *
- *  Created on: Dec 10, 2012
- *      Author: nsoblath
+/**
+ @file KTGainVariationProcessor.hh
+ @brief Contains KTGainVariationProcessor
+ @details Processes the gain variation.
+ @author: N. S. Oblath
+ @date: Dec 10, 2012
  */
 
 #ifndef KTGAINVARIATIONPROCESSOR_HH_

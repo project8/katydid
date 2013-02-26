@@ -1,9 +1,11 @@
-/*
- * KTFrequencyCandidateIdentifier.hh
- *
- *  Created on: Dec 17, 2012
- *      Author: nsoblath
+/**
+ @file KTFrequencyCandidateIdentifier.hh 
+ @brief Contains KTFrequencyCandidateIdentifier
+ @details 
+ @author: N. S. Oblath
+ @date: Dec 17, 2012
  */
+
 
 #ifndef KTFREQUENCYCANDIDATEIDENTIFIER_HH_
 #define KTFREQUENCYCANDIDATEIDENTIFIER_HH_
@@ -27,6 +29,30 @@ namespace Katydid
     class KTFrequencySpectrumPolar;
     class KTNormalizedFSDataFFTW;
     class KTNormalizedFSDataPolar;
+
+ /*!
+     @class KTFrequencyCandidateIdentifier
+     @author N. S. Oblath
+
+     @brief 
+
+     @details
+    
+
+     Available configuration values:
+      \li \c "fs-input-data-name": string -- filename for loading/saving FFTW wisdom
+     \li \c "cluster-input-data-name": string -- name of the data to find when processing an event
+     \li \c "output-data-name": string -- name to give to the data produced by an FFT
+
+     Slots:
+     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "clusters": void ProcessClusterData(const KTCluster1DData*)
+
+     Signals:
+     \li \c "frequency-candidates": void (const KTFrequencyCandidateData*) emitted upon performance of a          .
+    */
+
+
 
     class KTFrequencyCandidateIdentifier : public KTProcessor
     {
