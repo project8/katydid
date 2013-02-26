@@ -71,17 +71,13 @@ namespace Katydid
 
         public:
             template< typename XSignature, typename XTypeContainer >
-            KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont, const std::string& signature);
+            KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont);
             ~KTSlotWrapper();
-
-            const KTSignalSlotSignature& GetSignature() const;
 
         private:
             KTSlotWrapper();
 
             KTInternalSlotWrapper* fSlotWrapper;
-
-            KTSignalSlotSignature fSignature;
 
         public:
             void SetConnection(KTConnection conn);
@@ -94,9 +90,8 @@ namespace Katydid
     };
 
     template< typename XSignature, typename XTypeContainer >
-    KTSlotWrapper::KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont, const std::string& signature) :
+    KTSlotWrapper::KTSlotWrapper(XSignature* signalPtr, XTypeContainer* typeCont) :
             fSlotWrapper(new KTSpecifiedInternalSlotWrapper< XSignature, XTypeContainer >(signalPtr, typeCont)),
-            fSignature(signature),
             fConnection()
     {}
 
@@ -117,12 +112,6 @@ namespace Katydid
         fConnection.disconnect();
         return;
     }
-
-    inline const KTSignalSlotSignature& KTSlotWrapper::GetSignature() const
-    {
-        return fSignature;
-    }
-
 
 } /* namespace Katydid */
 #endif /* KTSLOTWRAPPER_HH_ */

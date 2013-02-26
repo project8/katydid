@@ -19,7 +19,7 @@ set (CORE_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessorToolbox.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPStoreNode.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignal.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalSlotSignature.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTSignalSlotSignature.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalWrapper.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlot.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlotWrapper.hh
@@ -41,7 +41,7 @@ set (CORE_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessorToolbox.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPStoreNode.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignal.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalSlotSignature.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTSignalSlotSignature.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalWrapper.cc
     #${CMAKE_CURRENT_SOURCE_DIR}/KTSlot.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSlotWrapper.cc
