@@ -10,8 +10,8 @@
 namespace Katydid
 {
 
-    KTWriter::KTWriter() :
-            KTProcessor()
+    KTWriter::KTWriter(const std::string& name) :
+            KTProcessor(name)
     {
     }
 
