@@ -28,9 +28,9 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTSimpleFFT > sSimpleFFTRegistrar("simple-fft");
 
-    KTSimpleFFT::KTSimpleFFT() :
+    KTSimpleFFT::KTSimpleFFT(const std::string& name) :
             KTFFT(),
-            KTProcessor("simple-fft"),
+            KTProcessor(name),
             fFTPlan(),
             fTimeSize(0),
             fInputArray(NULL),

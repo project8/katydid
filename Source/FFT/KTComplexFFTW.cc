@@ -27,9 +27,9 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("complex-fftw");
 
-    KTComplexFFTW::KTComplexFFTW() :
+    KTComplexFFTW::KTComplexFFTW(const std::string& name) :
             KTFFT(),
-            KTProcessor(),
+            KTProcessor(name),
             fForwardPlan(),
             fReversePlan(),
             fSize(0),
@@ -40,18 +40,12 @@ namespace Katydid
             fIsInitialized(false),
             fUseWisdom(true),
             fWisdomFilename("wisdom_complexfft.fftw3"),
-            fFFTForwardSignal(),
-            fFFTReverseSignal()
+            fFFTForwardSignal("fft-forward", this),
+            fFFTReverseSignal("fft-reverse", this),
+            fHeaderSlot("header", this, &KTComplexFFTW::InitializeWithHeader),
+            fTimeSeriesSlot("ts", this, &KTSimpleFFT::TransformData, &fFFTForwardSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTComplexFFTW::TransformData, &fFFTReverseSignal)
     {
-        fConfigName = "complex-fftw";
-
-        RegisterSignal("fft-forward", &fFFTForwardSignal, "void (shared_ptr<KTData>)");
-        RegisterSignal("fft-reverse", &fFFTReverseSignal, "void (shared_ptr<KTData>)");
-
-        RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (shared_ptr<KTData>)");
-        RegisterSlot("fs-fftw", this, &KTComplexFFTW::ProcessFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
-
         SetupInternalMaps();
     }
 
@@ -145,6 +139,13 @@ namespace Katydid
                 KTERROR(fftlog_comp, "Unable to create the reverse FFT plan! FFT is not initialized.");
             }
         }
+        return;
+    }
+
+    void KTComplexFFTW::InitializeWithHeader(const KTEggHeader* header)
+    {
+        SetSize(header->GetSliceSize());
+        InitializeFFT();
         return;
     }
 
@@ -302,45 +303,6 @@ namespace Katydid
         }
         fTransformFlag = flag;
         fIsInitialized = false;
-        return;
-    }
-
-    void KTComplexFFTW::ProcessHeader(const KTEggHeader* header)
-    {
-        SetSize(header->GetSliceSize());
-        InitializeFFT();
-        return;
-    }
-
-    void KTComplexFFTW::ProcessTimeSeriesData(shared_ptr<KTData> data)
-    {
-        if (! data->Has< KTTimeSeriesData >())
-        {
-            KTERROR(fftlog_comp, "No time series data was present");
-            return;
-        }
-        if (! TransformData(data->Of< KTTimeSeriesData >()))
-        {
-            KTERROR(fftlog_comp, "Something went wrong while performing a forward FFT");
-            return;
-        }
-        fFFTForwardSignal(data);
-        return;
-    }
-
-    void KTComplexFFTW::ProcessFrequencySpectrumDataFFTW(shared_ptr<KTData> data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTERROR(fftlog_comp, "No frequency spectrum data was present");
-            return;
-        }
-        if (! TransformData(data->Of< KTFrequencySpectrumDataFFTW >()))
-        {
-            KTERROR(fftlog_comp, "Something went wrong while performing a forward FFT");
-            return;
-        }
-        fFFTReverseSignal(data);
         return;
     }
 

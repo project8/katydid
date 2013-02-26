@@ -74,7 +74,7 @@ namespace Katydid
             typedef std::map< std::string, UInt_t > TransformFlagMap;
 
         public:
-            KTSimpleFFT();
+            KTSimpleFFT(const std::string& name = "simple-fft");
             virtual ~KTSimpleFFT();
 
             Bool_t Configure(const KTPStoreNode* node);

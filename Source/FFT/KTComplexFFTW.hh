@@ -13,6 +13,7 @@
 #include "KTProcessor.hh"
 
 #include "KTLogger.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -60,31 +61,28 @@ namespace Katydid
      FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
 
      Slots:
-     \li \c "header": void ProcessHeader(const KTEggHeader* header)
-     \li \c "ts": void ProcessTimeSeriesData(shared_ptr<KTData>)
-     \li \c "fs-fftw": void ProcessFrequencySpectrumDataFFTW(shared_ptr<KTData>)
+     \li \c "header": void (const KTEggHeader* header) -- Initialize the FFT from an Egg header
+     \li \c "ts": void (shared_ptr<KTData>) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
+     \li \c "fs-fftw": void (shared_ptr<KTData>) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
 
      Signals:
-     \li \c "fft-forward": void (shared_ptr<KTData>) emitted upon performance of a forward transform.
-     \li \c "fft-reverse": void (shared_ptr<KTData>) emitted upon performance of a reverse transform.
+     \li \c "fft-forward": void (shared_ptr<KTData>) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     \li \c "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
     class KTComplexFFTW : public KTFFT, public KTProcessor
     {
-        public:
-            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal FFTForwardSignal;
-            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal FFTReverseSignal;
-
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
 
         public:
-            KTComplexFFTW();
+            KTComplexFFTW(const std::string& name = "complex-fftw");
             virtual ~KTComplexFFTW();
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            virtual void InitializeFFT();
+            void InitializeFFT();
+            void InitializeWithHeader(const KTEggHeader* header);
 
             /// Forward FFT
             Bool_t TransformData(KTTimeSeriesData& tsData);
@@ -140,17 +138,17 @@ namespace Katydid
             //***************
 
         private:
-            FFTForwardSignal fFFTForwardSignal;
-            FFTReverseSignal fFFTReverseSignal;
+            KTSignalData fFFTForwardSignal;
+            KTSignalData fFFTReverseSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessHeader(const KTEggHeader* header);
-            void ProcessTimeSeriesData(boost::shared_ptr<KTData>);
-            void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr<KTData>);
+        private:
+            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };
 
