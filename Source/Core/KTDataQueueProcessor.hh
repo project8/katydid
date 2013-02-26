@@ -43,7 +43,7 @@ namespace Katydid
             };
 
         public:
-            KTDataQueueProcessorTemplate();
+            KTDataQueueProcessorTemplate(const std::string& name = "default-data-queue-proc-template-name");
             virtual ~KTDataQueueProcessorTemplate();
 
             Status GetStatus() const;
@@ -104,7 +104,7 @@ namespace Katydid
             typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal DataSignal;
 
         public:
-            KTDataQueueProcessor();
+            KTDataQueueProcessor(const std::string& name = "default-data-queue-proc-name");
             virtual ~KTDataQueueProcessor();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -140,8 +140,8 @@ namespace Katydid
 
 
     template< class XProcessorType >
-    KTDataQueueProcessorTemplate< XProcessorType >::KTDataQueueProcessorTemplate() :
-            KTPrimaryProcessor(),
+    KTDataQueueProcessorTemplate< XProcessorType >::KTDataQueueProcessorTemplate(const std::string& name) :
+            KTPrimaryProcessor(name),
             fStatus(kStopped),
             fFuncPtr(NULL),
             fQueue()

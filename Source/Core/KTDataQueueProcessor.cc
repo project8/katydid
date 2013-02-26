@@ -18,8 +18,8 @@ namespace Katydid
 {
     static KTDerivedRegistrar< KTProcessor, KTDataQueueProcessor > sSimpClustRegistrar("data-queue");
 
-    KTDataQueueProcessor::KTDataQueueProcessor() :
-        KTDataQueueProcessorTemplate< KTDataQueueProcessor >()
+    KTDataQueueProcessor::KTDataQueueProcessor(const std::string& name) :
+        KTDataQueueProcessorTemplate< KTDataQueueProcessor >(name)
     {
         fConfigName = "data-queue";
 
