@@ -32,23 +32,17 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
 
-    KTEggProcessor::KTEggProcessor() :
-            KTPrimaryProcessor(),
+    KTEggProcessor::KTEggProcessor(const std::string& name) :
+            KTPrimaryProcessor(name),
             fNSlices(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
             fSliceSizeRequest(0),
             fTimeSeriesType(kRealTimeSeries),
-            fHeaderSignal(),
-            fDataSignal(),
-            //fSignal(),
-            fEggDoneSignal()
+            fHeaderSignal("header", this),
+            fDataSignal("slice", this),
+            fEggDoneSignal("egg-done", this)
     {
-        fConfigName = "egg-processor";
-
-        RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
-        RegisterSignal("slice", &fDataSignal, "void (boost::shared_ptr<KTData>)");
-        RegisterSignal("egg-done", &fEggDoneSignal, "void ()");
     }
 
     KTEggProcessor::~KTEggProcessor()

@@ -12,6 +12,7 @@
 #include "KTPrimaryProcessor.hh"
 
 #include "KTEgg.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -49,12 +50,6 @@ namespace Katydid
     class KTEggProcessor : public KTPrimaryProcessor
     {
         public:
-            typedef KTSignalConcept< void (const KTEggHeader*) >::signal HeaderSignal;
-            //typedef KTSignalConcept< void (const KTTimeSeriesData*) >::signal DataSignal;
-            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal DataSignal;
-            typedef KTSignalConcept< void () >::signal EggDoneSignal;
-
-        public:
             enum EggReaderType
             {
                 k2011EggReader,
@@ -68,7 +63,7 @@ namespace Katydid
             };
 
         public:
-            KTEggProcessor();
+            KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -105,9 +100,9 @@ namespace Katydid
             //***************
 
         private:
-            HeaderSignal fHeaderSignal;
-            DataSignal fDataSignal;
-            EggDoneSignal fEggDoneSignal;
+            KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
+            KTSignalData fDataSignal;
+            KTSignalOneArg< void > fEggDoneSignal;
 
     };
 
