@@ -61,6 +61,32 @@ namespace Katydid
     };
 
 
+    template<>
+    class KTSignalOneArg< void >
+    {
+        public:
+            typedef void (signature)(void);
+            typedef boost::signals2::signal< signature > boost_signal;
+            typedef typename boost::signals2::signal< signature >::slot_type slot_type;
+
+        public:
+            KTSignalOneArg(const std::string& name, KTProcessor* proc);
+            virtual ~KTSignalOneArg();
+
+        protected:
+            KTSignalOneArg();
+            KTSignalOneArg(const KTSignalOneArg&);
+
+        public:
+            void operator()();
+
+        protected:
+            boost_signal fSignal;
+
+    };
+
+
+
     /*!
      @class KTSignalData
      @author N. S. Oblath
@@ -116,10 +142,18 @@ namespace Katydid
     }
 
     template< class XSignalArgument >
-    void KTSignalOneArg< XSignalArgument >::operator()(XSignalArgument arg)
+    inline void KTSignalOneArg< XSignalArgument >::operator()(XSignalArgument arg)
     {
         fSignal(arg);
     }
+
+
+
+    inline void KTSignalOneArg< void >::operator()()
+    {
+        fSignal();
+    }
+
 
 
 } /* namespace Katydid */
