@@ -100,7 +100,7 @@ namespace Katydid
              << "\tFilename: " << fHeader.GetFilename() << '\n'
              << "\tAcuisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
              << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'
-             << "\tRecord Size: " << fHeader.GetSliceSize() << '\n'
+             << "\tSlice Size: " << fHeader.GetSliceSize() << '\n'
              << "\tRecord Size: " << fHeader.GetRecordSize() << '\n'
              << "\tAcquisition Time: " << fHeader.GetAcquisitionTime() << " s" << '\n'
              << "\tAcquisition Rate: " << fHeader.GetAcquisitionRate() << " Hz ");
