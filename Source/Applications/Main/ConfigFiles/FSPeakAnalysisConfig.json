@@ -190,38 +190,38 @@
 
         "egg":
         {
-            "filename": "../../../data/run2012_11_5_tone.egg",
-            "number-of-bundles": 1,
+            "filename": "path/to/egg/file.egg",
+            "number-of-bundles": 1
         },
         
         "fft":
         {
-            "transform-flag": "ESTIMATE",
+            "transform-flag": "ESTIMATE"
         },
         
         "gainvar":
         {
             "min-frequency": 6e6,
             "max-frequency": 95e6,
-            "fit-points": 20,
+            "fit-points": 20
         },
         
         "gainnorm":
         {
             "min-frequency": 6e6,
-            "max-frequency": 95e6,
+            "max-frequency": 95e6
         },
         
         "discrim":
         {
             "min-frequency": 6e6,
             "max-frequency": 95e6,
-            "snr-threshold": 20.0,
+            "snr-threshold": 20.0
         },
         
         "clustering":
         {
-            "max-frequency-distance": 2000.0,
+            "max-frequency-distance": 2000.0
         },
         
         "fcident":

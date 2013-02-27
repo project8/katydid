@@ -51,12 +51,12 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-bundles": 1,
+            "number-of-bundles": 1
         },
         
         "fft":
         {
-            "transform-flag": "ESTIMATE",
+            "transform-flag": "ESTIMATE"
         },
         
         "writer":

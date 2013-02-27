@@ -4,7 +4,7 @@
         "egg-processor":
         {
             "filename": "/path/to/file.egg",
-            "number-of-bundles": 1,
+            "number-of-bundles": 1
         },
         
         "simple-fft":
@@ -15,7 +15,7 @@
         "correlator":
         {
             "corr-pair": "0, 0",
-            "corr-pair": "0, 1",
+            "corr-pair": "0, 1"
         },
         
         "basic-root-writer":
