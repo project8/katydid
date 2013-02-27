@@ -35,8 +35,8 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTThroughputProfiler > sSimpleFFTRegistrar("throughput-profiler");
 
-    KTThroughputProfiler::KTThroughputProfiler() :
-            KTProcessor(),
+    KTThroughputProfiler::KTThroughputProfiler(const std::string& name) :
+            KTProcessor(name),
             fOutputFileFlag(false),
             fOutputFilename("throughput.json"),
             fEggHeader(),
@@ -46,11 +46,9 @@ namespace Katydid
             fMacTimebase(0.0),
             fMacTimestart(0)
     {
-        fConfigName = "throughput-profiler";
-
-        RegisterSlot("start", this, &KTThroughputProfiler::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("data", this, &KTThroughputProfiler::ProcessData, "void (shared_ptr<KTData>)");
-        RegisterSlot("stop", this, &KTThroughputProfiler::Finish, "void ()");
+        RegisterSlot("start", this, &KTThroughputProfiler::ProcessHeader);
+        RegisterSlot("data", this, &KTThroughputProfiler::ProcessData);
+        RegisterSlot("stop", this, &KTThroughputProfiler::Finish);
     };
 
     KTThroughputProfiler::~KTThroughputProfiler()

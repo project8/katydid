@@ -156,6 +156,7 @@ namespace Katydid
              //***************
 
          public:
+            // These are the actual slot functions
             void QueueFSPolarData(boost::shared_ptr< KTData >& data);
             void QueueFSFFTWData(boost::shared_ptr< KTData >& data);
             void QueueCorrelationData(boost::shared_ptr< KTData >& data);

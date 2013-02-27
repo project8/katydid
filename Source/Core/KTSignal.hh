@@ -123,7 +123,7 @@ namespace Katydid
     KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const std::string& name, KTProcessor* proc) :
             fSignal()
     {
-        proc->RegisterSignal(name, &fSignal, "");
+        proc->RegisterSignal(name, &fSignal);
     }
 
     template< class XSignalArgument >

@@ -54,10 +54,10 @@ namespace Katydid
             fOneSliceDataSignal("one-slice", this),
             fClusteredDataSignal("cluster", this)
     {
-        RegisterSlot("fs-polar", this, &KTMultiSliceClustering::QueueFSPolarData, "void (shared_ptr< KTData >)");
-        RegisterSlot("fs-fftw", this, &KTMultiSliceClustering::QueueFSFFTWData, "void (shared_ptr< KTData >)");
-        RegisterSlot("correlation", this, &KTMultiSliceClustering::QueueCorrelationData, "void (shared_ptr< KTData >)");
-        RegisterSlot("wigner-ville", this, &KTMultiSliceClustering::QueueWVData, "void (shared_ptr< KTData >)");
+        RegisterSlot("fs-polar", this, &KTMultiSliceClustering::QueueFSPolarData);
+        RegisterSlot("fs-fftw", this, &KTMultiSliceClustering::QueueFSFFTWData);
+        RegisterSlot("correlation", this, &KTMultiSliceClustering::QueueCorrelationData);
+        RegisterSlot("wigner-ville", this, &KTMultiSliceClustering::QueueWVData);
     }
 
     KTMultiSliceClustering::~KTMultiSliceClustering()

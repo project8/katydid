@@ -32,7 +32,7 @@ namespace Katydid
     {
 
         public:
-            KTThroughputProfiler();
+            KTThroughputProfiler(const std::string& name = "throughput-profiler");
             virtual ~KTThroughputProfiler();
 
             Bool_t Configure(const KTPStoreNode* node);

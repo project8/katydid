@@ -98,9 +98,9 @@ namespace Katydid
 
     void KTMultiSliceROOTTypeWriterEgg::RegisterSlots()
     {
-        fWriter->RegisterSlot("start-by-header", this, &KTMultiSliceROOTTypeWriterEgg::StartByHeader, "void (const KTEggHeader*)");
+        fWriter->RegisterSlot("start-by-header", this, &KTMultiSliceROOTTypeWriterEgg::StartByHeader);
 
-        fWriter->RegisterSlot("ts", this, &KTMultiSliceROOTTypeWriterEgg::AddTimeSeriesData, "void (shared_ptr<KTData>)");
+        fWriter->RegisterSlot("ts", this, &KTMultiSliceROOTTypeWriterEgg::AddTimeSeriesData);
         return;
     }
 

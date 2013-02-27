@@ -23,10 +23,10 @@ namespace Katydid
     {
         fConfigName = "data-queue";
 
-        RegisterSignal("data", &fDataSignal, "void (shared_ptr<KTData>)");
+        RegisterSignal("data", &fDataSignal);
 
-        RegisterSlot("data", this, &KTDataQueueProcessor::QueueData, "void (shared_ptr<KTData>&)");
-        //RegisterSlot("data-list", this, &KTDataQueueProcessor::QueueDataList, "void (list< shared_ptr<KTData> >)");
+        RegisterSlot("data", this, &KTDataQueueProcessor::QueueData);
+        //RegisterSlot("data-list", this, &KTDataQueueProcessor::QueueDataList);
     }
 
     KTDataQueueProcessor::~KTDataQueueProcessor()

@@ -16,7 +16,7 @@ namespace Katydid
     KTTestProcessorA::KTTestProcessorA() :
             fTheSignal()
     {
-        RegisterSignal("the_signal", &fTheSignal, "void (int)");
+        RegisterSignal("the_signal", &fTheSignal);
     }
 
     KTTestProcessorA::~KTTestProcessorA()
@@ -39,8 +39,8 @@ namespace Katydid
 
     KTTestProcessorB::KTTestProcessorB()
     {
-        RegisterSlot("first_slot", this, &KTTestProcessorB::Slot1, "void (int)");
-        RegisterSlot("second_slot", this, &KTTestProcessorB::Slot2, "void (int)");
+        RegisterSlot("first_slot", this, &KTTestProcessorB::Slot1);
+        RegisterSlot("second_slot", this, &KTTestProcessorB::Slot2);
     }
 
     KTTestProcessorB::~KTTestProcessorB()

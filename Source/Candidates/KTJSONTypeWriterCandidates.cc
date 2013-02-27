@@ -38,7 +38,7 @@ namespace Katydid
 
     void KTJSONTypeWriterCandidates::RegisterSlots()
     {
-        fWriter->RegisterSlot("frequency-candidates", this, &KTJSONTypeWriterCandidates::WriteFrequencyCandidates, "void (shared_ptr< KTData >)");
+        fWriter->RegisterSlot("frequency-candidates", this, &KTJSONTypeWriterCandidates::WriteFrequencyCandidates);
         return;
     }
 

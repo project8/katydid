@@ -33,8 +33,8 @@ namespace Katydid
             fGraphicsFileType("png"),
             fFile(NULL)
     {
-        RegisterSlot("start", this, &KTMultiSliceROOTWriter::Start, "void ()");
-        RegisterSlot("finish", this, &KTMultiSliceROOTWriter::Finish, "void ()");
+        RegisterSlot("start", this, &KTMultiSliceROOTWriter::Start);
+        RegisterSlot("finish", this, &KTMultiSliceROOTWriter::Finish);
     }
 
     KTMultiSliceROOTWriter::~KTMultiSliceROOTWriter()

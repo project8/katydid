@@ -41,7 +41,7 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEgg::RegisterSlots()
     {
-        fWriter->RegisterSlot("ts", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData, "void (shared_ptr<KTData>)");
+        fWriter->RegisterSlot("ts", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData);
         return;
     }
 

@@ -52,8 +52,8 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterCandidates::RegisterSlots()
     {
-        fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates, "void (shared_ptr< KTData > data)");
-        fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate, "void (shared_ptr< KTData > data)");
+        fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates);
+        fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate);
         return;
     }
 

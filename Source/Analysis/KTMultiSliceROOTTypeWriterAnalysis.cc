@@ -98,7 +98,7 @@ namespace Katydid
 
     void KTMultiSliceROOTTypeWriterAnalysis::RegisterSlots()
     {
-        fWriter->RegisterSlot("corr", this, &KTMultiSliceROOTTypeWriterAnalysis::AddCorrelationData, "void (shared_ptr< KTData >)");
+        fWriter->RegisterSlot("corr", this, &KTMultiSliceROOTTypeWriterAnalysis::AddCorrelationData);
         return;
     }
 

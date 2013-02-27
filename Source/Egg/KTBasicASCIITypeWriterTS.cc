@@ -24,8 +24,7 @@ namespace Katydid
     {
         fWriter->RegisterSlot("ts",
                 this,
-                &KTBasicASCIITypeWriterTS::WriteTimeSeriesData,
-                "void (shared_ptr< KTData >)");
+                &KTBasicASCIITypeWriterTS::WriteTimeSeriesData);
     }
 
     void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(shared_ptr< KTData > data)

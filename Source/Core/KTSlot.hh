@@ -117,7 +117,7 @@ namespace Katydid
     KTSlotNoArg< Signature >::KTSlotNoArg(const std::string& name, XFuncOwnerType* owner, return_type (XFuncOwnerType::*func)()) :
             fFunc(boost::bind(func, owner, _1))
     {
-        owner->RegisterSlot(name, this, &KTSlotNoArg::operator(), "");
+        owner->RegisterSlot(name, this, &KTSlotNoArg::operator());
     }
 
     template< typename Signature>
@@ -125,7 +125,7 @@ namespace Katydid
     KTSlotNoArg< Signature >::KTSlotNoArg(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, return_type (XFuncOwnerType::*func)()) :
             fFunc(boost::bind(func, owner))
     {
-        proc->RegisterSlot(name, this, &KTSlotNoArg::operator(), "");
+        proc->RegisterSlot(name, this, &KTSlotNoArg::operator());
     }
 
     template< typename Signature>
@@ -147,7 +147,7 @@ namespace Katydid
     KTSlotOneArg< Signature >::KTSlotOneArg(const std::string& name, XFuncOwnerType* owner, return_type (XFuncOwnerType::*func)(argument_type)) :
             fFunc(boost::bind(func, owner, _1))
     {
-        owner->RegisterSlot(name, this, &KTSlotOneArg::operator(), "");
+        owner->RegisterSlot(name, this, &KTSlotOneArg::operator());
     }
 
     template< typename Signature>
@@ -155,7 +155,7 @@ namespace Katydid
     KTSlotOneArg< Signature >::KTSlotOneArg(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, return_type (XFuncOwnerType::*func)(argument_type)) :
             fFunc(boost::bind(func, owner, _1))
     {
-        proc->RegisterSlot(name, this, &KTSlotOneArg::operator(), "");
+        proc->RegisterSlot(name, this, &KTSlotOneArg::operator());
     }
 
     template< typename Signature>
@@ -178,7 +178,7 @@ namespace Katydid
     KTSlotTwoArg< Signature >::KTSlotTwoArg(const std::string& name, XFuncOwnerType* owner, return_type (XFuncOwnerType::*func)(first_argument_type, second_argument_type)) :
             fFunc(boost::bind(func, owner, _1, _2))
     {
-        owner->RegisterSlot(name, this, &KTSlotTwoArg::operator(), "");
+        owner->RegisterSlot(name, this, &KTSlotTwoArg::operator());
     }
 
     template< typename Signature>
@@ -186,7 +186,7 @@ namespace Katydid
     KTSlotTwoArg< Signature >::KTSlotTwoArg(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, return_type (XFuncOwnerType::*func)(first_argument_type, second_argument_type)) :
             fFunc(boost::bind(func, owner, _1, _2))
     {
-        proc->RegisterSlot(name, this, &KTSlotTwoArg::operator(), "");
+        proc->RegisterSlot(name, this, &KTSlotTwoArg::operator());
     }
 
     template< typename Signature>
@@ -287,7 +287,7 @@ namespace Katydid
             fFunc(boost::bind(func, owner, _1)),
             fSignalPtr(signalPtr)
     {
-        owner->RegisterSlot(name, this, &KTSlotDataOneType::operator(), "");
+        owner->RegisterSlot(name, this, &KTSlotDataOneType::operator());
     }
 
     template< class XDataType >
@@ -296,7 +296,7 @@ namespace Katydid
             fFunc(boost::bind(func, owner, _1)),
             fSignalPtr(signalPtr)
     {
-        proc->RegisterSlot(name, this, &KTSlotDataOneType::operator(), "");
+        proc->RegisterSlot(name, this, &KTSlotDataOneType::operator());
     }
 
     template< class XDataType >
@@ -336,7 +336,7 @@ namespace Katydid
             fFunc(boost::bind(func, owner, _1, _2)),
             fSignalPtr(signalPtr)
     {
-        owner->RegisterSlot(name, this, &KTSlotDataTwoTypes::operator(), "");
+        owner->RegisterSlot(name, this, &KTSlotDataTwoTypes::operator());
     }
 
     template< class XDataType1, class XDataType2 >
@@ -345,7 +345,7 @@ namespace Katydid
             fFunc(boost::bind(func, owner, _1, _2)),
             fSignalPtr(signalPtr)
     {
-        proc->RegisterSlot(name, this, &KTSlotDataTwoTypes::operator(), "");
+        proc->RegisterSlot(name, this, &KTSlotDataTwoTypes::operator());
     }
 
     template< class XDataType1, class XDataType2 >
