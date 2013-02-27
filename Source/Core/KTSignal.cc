@@ -1,7 +1,7 @@
 /*
- * KTSignalWrapper.cc
+ * KTSignal.cc
  *
- *  Created on: Aug 8, 2012
+ *  Created on: Feb 25, 2013
  *      Author: nsoblath
  */
 
@@ -9,18 +9,42 @@
 
 namespace Katydid
 {
-    SignalException::SignalException (std::string const& why)
-      : std::logic_error(why)
+
+    KTSignalOneArg< void >::KTSignalOneArg(const std::string& name, KTProcessor* proc) :
+            fSignal()
+    {
+        proc->RegisterSignal(name, &fSignal);
+    }
+
+    KTSignalOneArg< void >::KTSignalOneArg() :
+            fSignal()
     {}
 
-    KTSignalWrapper::KTSignalWrapper() :
-            fSignalWrapper(NULL)
+    KTSignalOneArg< void >::KTSignalOneArg(const KTSignalOneArg& rhs) :
+            fSignal()
+    {}
+
+    KTSignalOneArg< void >::~KTSignalOneArg()
     {
     }
 
-    KTSignalWrapper::~KTSignalWrapper()
+
+
+    KTSignalData::KTSignalData(const std::string& name, KTProcessor* proc) :
+            KTSignalOneArg(name, proc)
     {
-        delete fSignalWrapper;
     }
 
-} /* namespace Katydid */
+    KTSignalData::~KTSignalData()
+    {
+    }
+
+    KTSignalData::KTSignalData()
+    {
+    }
+
+    KTSignalData::KTSignalData(const KTSignalData&)
+    {
+    }
+
+}

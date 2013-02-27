@@ -7,7 +7,6 @@
 
 #include "KTHoughTransform.hh"
 
-#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTHoughData.hh"
@@ -15,8 +14,7 @@
 #include "KTMath.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTPStoreNode.hh"
-#include "KTSlidingWindowFSDataFFTW.hh"
-#include "KTWriteableData.hh"
+//#include "KTSlidingWindowFSDataFFTW.hh"
 
 #include <cmath>
 #include <vector>
@@ -35,22 +33,13 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTHoughTransform > sHTRegistrar("hough-transform");
 
-    KTHoughTransform::KTHoughTransform() :
-            KTProcessor(),
+    KTHoughTransform::KTHoughTransform(const std::string& name) :
+            KTProcessor(name),
             fNThetaPoints(1),
             fNRPoints(1),
-            fInputDataName("sliding-window-fs"),
-            fOutputDataName("hough-transform"),
-            fHTSignal()
+            fHTSignal("hough-transform", this),
+            fDiscPts2DSlot("disc", this, &KTHoughTransform::TransformData, &fHTSignal)
     {
-        fConfigName = "hough-transform";
-
-        RegisterSignal("hough-transform", &fHTSignal, "void (const KTWriteableData*)");
-
-        //RegisterSlot("header", this, &KTHoughTransform::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("swfs-data", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
-        RegisterSlot("disc-data", this, &KTHoughTransform::ProcessDiscriminatedData, "void (const KTDiscriminatedPoints2DData*)");
-        RegisterSlot("bundle", this, &KTHoughTransform::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTHoughTransform::~KTHoughTransform()
@@ -62,30 +51,27 @@ namespace Katydid
         SetNThetaPoints(node->GetData< UInt_t >("n-theta-points", fNThetaPoints));
         SetNRPoints(node->GetData< UInt_t >("n-r-points", fNRPoints));
 
-        SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
-        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
-
         return true;
     }
-
-    KTHoughData* KTHoughTransform::TransformData(const KTSlidingWindowFSDataFFTW* data)
+/*
+    Bool_t KTHoughTransform::TransformData(KTSlidingWindowFSDataFFTW& data)
     {
         KTHoughData* newData = new KTHoughData(data->GetNComponents());
 
-        for (UInt_t iChannel=0; iChannel<data->GetNComponents(); iChannel++)
+        for (UInt_t iComponent=0; iComponent<data->GetNComponents(); iComponent++)
         {
-            const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum = data->GetSpectra(iChannel);
+            const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum = data->GetSpectra(iComponent);
 
             KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* freqSpectra = RemoveNegativeFrequencies(inputSpectrum);
 
             KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = TransformSpectrum(freqSpectra);
             if (newTransform == NULL)
             {
-                KTERROR(htlog, "Something went wrong in transform " << iChannel);
+                KTERROR(htlog, "Something went wrong in transform " << iComponent);
             }
             else
             {
-                newData->SetTransform(newTransform, iChannel);
+                newData->SetTransform(newTransform, iComponent);
             }
 
             for (UInt_t iPS = 0; iPS < freqSpectra->size(); iPS++)
@@ -94,11 +80,6 @@ namespace Katydid
             }
             delete freqSpectra;
         }
-
-        newData->SetBundle(data->GetBundle());
-        newData->SetName(fOutputDataName);
-
-        fHTSignal(newData);
 
         return newData;
     }
@@ -155,34 +136,30 @@ namespace Katydid
 
         return newTransform;
     }
+*/
 
-
-    KTHoughData* KTHoughTransform::TransformData(const KTDiscriminatedPoints2DData* data)
+    Bool_t KTHoughTransform::TransformData(KTDiscriminatedPoints2DData& data)
     {
-        KTHoughData* newData = new KTHoughData(data->GetNComponents());
+        UInt_t nComponents = data.GetNComponents();
+        KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(nComponents);
 
-        for (UInt_t iChannel=0; iChannel<data->GetNComponents(); iChannel++)
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            const KTDiscriminatedPoints2DData::SetOfPoints inputPoints = data->GetSetOfPoints(iChannel);
+            const KTDiscriminatedPoints2DData::SetOfPoints inputPoints = data.GetSetOfPoints(iComponent);
 
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = TransformSetOfPoints(inputPoints, data->GetNBinsX(), data->GetNBinsY());
+            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* newTransform = TransformSetOfPoints(inputPoints, data.GetNBinsX(), data.GetNBinsY());
             if (newTransform == NULL)
             {
-                KTERROR(htlog, "Something went wrong in transform " << iChannel);
+                KTERROR(htlog, "Something went wrong in transform " << iComponent);
+                return false;
             }
             else
             {
-                newData->SetTransform(newTransform, iChannel);
+                newData.SetTransform(newTransform, iComponent);
             }
         }
 
-        newData->SetBundle(data->GetBundle());
-        newData->SetName(fOutputDataName);
-
-        fHTSignal(newData);
-
-        return newData;
-
+        return true;
     }
 
     KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughTransform::TransformSetOfPoints(const SetOfPoints& points, UInt_t nTimeBins, UInt_t nFreqBins)
@@ -228,7 +205,7 @@ namespace Katydid
         return newTransform;
     }
 
-
+/*
     KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTHoughTransform::RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum)
     {
         UInt_t nTimeBins = inputSpectrum->size();
@@ -239,97 +216,8 @@ namespace Katydid
             KTFrequencySpectrumPolar* newSpectrum = (*inputSpectrum)(iTimeBin)->CreateFrequencySpectrum();
             (*newFrequencySpectra)(iTimeBin) = newSpectrum;
         }
-/*
-        TFile* f = new TFile("htpowerspect.root", "recreate");
-        TH2D* hist = new TH2D("powerspect", "PowerSpectrum",
-                newPowerSpectrum->size(), newPowerSpectrum->GetRangeMin(), newPowerSpectrum->GetRangeMax(),
-                (*newPowerSpectrum)(0)->size(), (*newPowerSpectrum)(0)->GetRangeMin(), (*newPowerSpectrum)(0)->GetRangeMax());
-
-        KTINFO("Frequency axis: " << (*newPowerSpectrum)(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
-        KTINFO("Time axis: " << newPowerSpectrum->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
-
-        for (Int_t iBinX=1; iBinX<=(Int_t)newPowerSpectrum->size(); iBinX++)
-        {
-            KTPowerSpectrum* fs = (*newPowerSpectrum)(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
-            {
-                hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1));
-            }
-        }
-
-        hist->SetXTitle("Time (s)");
-        hist->SetYTitle("Frequency (Hz)");
-        hist->Write();
-        f->Close();
-*/
         return newFrequencySpectra;
     }
-
-
-/*
-    void ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data)::ProcessHeader(const KTEggHeader* header)
-    {
-        return;
-    }
 */
-
-    void KTHoughTransform::ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data)
-    {
-        KTHoughData* newData = TransformData(data);
-
-        if (newData == NULL)
-        {
-            KTERROR(htlog, "Unable to transform data");
-            return;
-        }
-
-        KTBundle* bundle = data->GetBundle();
-        if (bundle != NULL)
-        {
-            bundle->AddData(newData);
-        }
-
-        return;
-    }
-
-    void KTHoughTransform::ProcessDiscriminatedData(const KTDiscriminatedPoints2DData* data)
-    {
-        KTHoughData* newData = TransformData(data);
-
-        if (newData == NULL)
-        {
-            KTERROR(htlog, "Unable to transform data");
-            return;
-        }
-
-        KTBundle* bundle = data->GetBundle();
-        if (bundle != NULL)
-        {
-            bundle->AddData(newData);
-        }
-
-        return;
-    }
-
-
-    void KTHoughTransform::ProcessBundle(shared_ptr<KTBundle> bundle)
-    {
-        const KTDiscriminatedPoints2DData* dpData = bundle->GetData< KTDiscriminatedPoints2DData >(fInputDataName);
-        if (dpData != NULL)
-        {
-            ProcessDiscriminatedData(dpData);
-            return;
-        }
-
-        const KTSlidingWindowFSDataFFTW* swsfData = bundle->GetData< KTSlidingWindowFSDataFFTW >(fInputDataName);
-        if (swsfData != NULL)
-        {
-            ProcessSWFSData(swsfData);
-            return;
-        }
-
-        KTWARN(htlog, "No sliding-window frequency-spectrum data named <" << fInputDataName << "> was available in the bundle");
-        return;
-    }
 
 } /* namespace Katydid */

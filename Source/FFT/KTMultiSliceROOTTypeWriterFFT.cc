@@ -1,14 +1,13 @@
 /*
- * KTMultiBundleROOTTypeWriterFFT.cc
+ * KTMultiSliceROOTTypeWriterFFT.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTMultiBundleROOTTypeWriterFFT.hh"
+#include "KTMultiSliceROOTTypeWriterFFT.hh"
 
 #include "KTEggHeader.hh"
-#include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTFrequencySpectrumPolar.hh"
@@ -22,6 +21,7 @@
 
 #include <sstream>
 
+using boost::shared_ptr;
 using std::stringstream;
 using std::string;
 using std::vector;
@@ -30,9 +30,9 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTMultiBundleROOTTypeWriter, KTMultiBundleROOTTypeWriterFFT > sMERTWFRegistrar;
+    static KTDerivedTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterFFT > sMERTWFRegistrar;
 
-    KTMultiBundleROOTTypeWriterFFT::KTMultiBundleROOTTypeWriterFFT() :
+    KTMultiSliceROOTTypeWriterFFT::KTMultiSliceROOTTypeWriterFFT() :
             KTMEROOTTypeWriterBase(),
             //KTTypeWriterFFT()
             fFSHists(),
@@ -40,26 +40,26 @@ namespace Katydid
     {
     }
 
-    KTMultiBundleROOTTypeWriterFFT::~KTMultiBundleROOTTypeWriterFFT()
+    KTMultiSliceROOTTypeWriterFFT::~KTMultiSliceROOTTypeWriterFFT()
     {
         ClearHistograms();
     }
 
-    void KTMultiBundleROOTTypeWriterFFT::StartNewHistograms()
+    void KTMultiSliceROOTTypeWriterFFT::StartNewHistograms()
     {
         ClearHistograms();
         // At this point the vector is size 0
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterFFT::FinishHistograms()
+    void KTMultiSliceROOTTypeWriterFFT::FinishHistograms()
     {
         OutputHistograms();
         ClearHistograms();
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterFFT::OutputHistograms()
+    void KTMultiSliceROOTTypeWriterFFT::OutputHistograms()
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -108,7 +108,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterFFT::ClearHistograms()
+    void KTMultiSliceROOTTypeWriterFFT::ClearHistograms()
     {
         for (vector<TH1D*>::iterator it=fFSHists.begin(); it != fFSHists.end(); it++)
         {
@@ -123,10 +123,10 @@ namespace Katydid
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterFFT::RegisterSlots()
+    void KTMultiSliceROOTTypeWriterFFT::RegisterSlots()
     {
-        fWriter->RegisterSlot("fs-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumData, "void (const KTFrequencySpectrumDataPolar*)");
-        fWriter->RegisterSlot("fs-fftw-data", this, &KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
+        fWriter->RegisterSlot("fs-polar", this, &KTMultiSliceROOTTypeWriterFFT::AddFrequencySpectrumDataPolar);
+        fWriter->RegisterSlot("fs-fftw", this, &KTMultiSliceROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW);
         return;
     }
 
@@ -135,27 +135,28 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
+    void KTMultiSliceROOTTypeWriterFFT::AddFrequencySpectrumDataPolar(shared_ptr<KTData> data)
     {
+        KTFrequencySpectrumDataPolar& fsData = data->Of< KTFrequencySpectrumDataPolar >();
         if (fFSHists.size() == 0)
         {
-            fFSHists.resize(data->GetNComponents());
+            fFSHists.resize(fsData.GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;
                 std::string histName = histNameBase + conv.str();
-                TH1D* newPS = data->GetSpectrumPolar(iChannel)->CreatePowerHistogram(histName);
+                TH1D* newPS = fsData.GetSpectrumPolar(iChannel)->CreatePowerHistogram(histName);
                 fFSHists[iChannel] = newPS;
             }
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
-                TH1D* newPS = data->GetSpectrumPolar(iChannel)->CreatePowerHistogram();
+                TH1D* newPS = fsData.GetSpectrumPolar(iChannel)->CreatePowerHistogram();
                 fFSHists[iChannel]->Add(newPS);
                 delete newPS;
             }
@@ -163,27 +164,28 @@ namespace Katydid
         return;
     }
 
-    void KTMultiBundleROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
+    void KTMultiSliceROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW(shared_ptr<KTData> data)
     {
+        KTFrequencySpectrumDataFFTW& fsData = data->Of< KTFrequencySpectrumDataFFTW >();
         if (fFSFFTWHists.size() == 0)
         {
-            fFSFFTWHists.resize(data->GetNComponents());
+            fFSFFTWHists.resize(fsData.GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < data->GetNComponents(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;
                 std::string histName = histNameBase + conv.str();
-                TH1D* newPS = data->GetSpectrumFFTW(iChannel)->CreatePowerHistogram(histName);
+                TH1D* newPS = fsData.GetSpectrumFFTW(iChannel)->CreatePowerHistogram(histName);
                 fFSFFTWHists[iChannel] = newPS;
             }
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel <data->GetNComponents(); iChannel++)
+            for (UInt_t iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
-                TH1D* newPS = data->GetSpectrumFFTW(iChannel)->CreatePowerHistogram();
+                TH1D* newPS = fsData.GetSpectrumFFTW(iChannel)->CreatePowerHistogram();
                 fFSFFTWHists[iChannel]->Add(newPS);
                 delete newPS;
             }

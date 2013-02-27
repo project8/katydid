@@ -1,13 +1,11 @@
 /*
- * KTSlot.cc
+ * KTSlotWrapper.cc
  *
  *  Created on: Feb 10, 2012
  *      Author: nsoblath
  */
 
-#include "KTSlot.hh"
-
-#include "KTSignal.hh"
+#include "KTSlotWrapper.hh"
 
 namespace Katydid
 {

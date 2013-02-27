@@ -7,25 +7,14 @@
 
 #include "KTFrequencySpectrumDataPolar.hh"
 
-#include "KTDataMap.hh"
-#include "KTFrequencySpectrumPolar.hh"
-#include "KTTIFactory.hh"
-#include "KTWriter.hh"
-
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencySpectrumDataPolar > > sFSDMMRegistrar;
-
-    KTFrequencySpectrumDataPolar::KTFrequencySpectrumDataPolar(UInt_t nChannels) :
-            KTFrequencySpectrumData(),
-            fSpectra(nChannels),
-            fTimeInRun(0.),
-            fTimeLength(0.),
-            fSliceNumber(0)
+    KTFrequencySpectrumDataPolarCore::KTFrequencySpectrumDataPolarCore() :
+            fSpectra()
     {
     }
 
-    KTFrequencySpectrumDataPolar::~KTFrequencySpectrumDataPolar()
+    KTFrequencySpectrumDataPolarCore::~KTFrequencySpectrumDataPolarCore()
     {
         while (! fSpectra.empty())
         {
@@ -34,10 +23,15 @@ namespace Katydid
         }
     }
 
-    void KTFrequencySpectrumDataPolar::Accept(KTWriter* writer) const
+
+    KTFrequencySpectrumDataPolar::KTFrequencySpectrumDataPolar() :
+            KTFrequencySpectrumDataPolarCore(),
+            KTExtensibleData< KTFrequencySpectrumDataPolar >()
     {
-        writer->Write(this);
-        return;
+    }
+
+    KTFrequencySpectrumDataPolar::~KTFrequencySpectrumDataPolar()
+    {
     }
 
 } /* namespace Katydid */

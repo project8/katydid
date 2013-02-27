@@ -7,7 +7,6 @@
 
 #include "KTGainVariationProcessor.hh"
 
-#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -33,8 +32,8 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTGainVariationProcessor > sGainVarRegistrar("gain-variation");
 
-    KTGainVariationProcessor::KTGainVariationProcessor() :
-            KTProcessor(),
+    KTGainVariationProcessor::KTGainVariationProcessor(const std::string& name) :
+            KTProcessor(name),
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
@@ -42,16 +41,10 @@ namespace Katydid
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
             fNFitPoints(5),
-            fInputDataName("frequency-spectrum"),
-            fOutputDataName("gain-variation")
+            fGainVarSignal("gain-var", this),
+            fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal)
     {
-        fConfigName = "gain-variation";
-
-        RegisterSignal("gain-var", &fGainVarSignal, "void (const KTGainVariationData*)");
-
-        RegisterSlot("bundle", this, &KTGainVariationProcessor::ProcessBundle, "void (shared_ptr<KTBundle>)");
-        RegisterSlot("fsdata", this, &KTGainVariationProcessor::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataPolar*)");
-        RegisterSlot("fsdata-fftw", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
     }
 
     KTGainVariationProcessor::~KTGainVariationProcessor()
@@ -82,30 +75,27 @@ namespace Katydid
 
         SetNFitPoints(node->GetData< UInt_t >("fit-points", fNFitPoints));
 
-        SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
-        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
-
         return true;
     }
 
-    KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumDataPolar* data)
+    Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data)
     {
-        if (fCalculateMinBin) SetMinBin(data->GetSpectrumPolar(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(data->GetSpectrumPolar(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin) SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
 
         UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
         KTINFO(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
-        UInt_t nChannels = data->GetNComponents();
+        UInt_t nComponents = data.GetNComponents();
 
-        KTGainVariationData* newData = new KTGainVariationData(nChannels);
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(nComponents);
 
         Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
-        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrumPolar(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
 
             Double_t* xVals = new Double_t[fNFitPoints];
             Double_t* yVals = new Double_t[fNFitPoints];
@@ -146,38 +136,33 @@ namespace Katydid
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
-            newData->SetSpline(spline, iChannel);
-            //newData->SetGainVariation(gainVarResult, iChannel);
+            newData.SetSpline(spline, iComponent);
+            //newData->SetGainVariation(gainVarResult, iComponent);
         }
 
-        newData->SetName(fOutputDataName);
-        newData->SetBundle(data->GetBundle());
-
-        fGainVarSignal(newData);
-
-        return newData;
+        return true;
     }
 
-    KTGainVariationData* KTGainVariationProcessor::CalculateGainVariation(const KTFrequencySpectrumDataFFTW* data)
+    Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
     {
         // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
-        if (fCalculateMinBin) SetMinBin(data->GetSpectrumFFTW(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(data->GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
-        KTDEBUG(gvlog, fMinFrequency << "  " << fMaxFrequency << "  " << fMinBin << "  " << fMaxBin << "  " << data->GetSpectrumFFTW(0)->GetRangeMin() << "  " << data->GetSpectrumFFTW(0)->GetRangeMax());
+        if (fCalculateMinBin) SetMinBin(data.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(data.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
+        KTDEBUG(gvlog, fMinFrequency << "  " << fMaxFrequency << "  " << fMinBin << "  " << fMaxBin << "  " << data.GetSpectrumFFTW(0)->GetRangeMin() << "  " << data.GetSpectrumFFTW(0)->GetRangeMax());
 
         UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
         KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
-        UInt_t nChannels = data->GetNComponents();
+        UInt_t nComponents = data.GetNComponents();
 
-        KTGainVariationData* newData = new KTGainVariationData(nChannels);
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(nComponents);
 
         Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
-        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            const KTFrequencySpectrumFFTW* spectrum = data->GetSpectrumFFTW(iChannel);
+            const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
 
             Double_t* xVals = new Double_t[fNFitPoints];
             Double_t* yVals = new Double_t[fNFitPoints];
@@ -219,16 +204,11 @@ namespace Katydid
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
-            newData->SetSpline(spline, iChannel);
-            //newData->SetGainVariation(gainVarResult, iChannel);
+            newData.SetSpline(spline, iComponent);
+            //newData->SetGainVariation(gainVarResult, iComponent);
         }
 
-        newData->SetName(fOutputDataName);
-        newData->SetBundle(data->GetBundle());
-
-        fGainVarSignal(newData);
-
-        return newData;
+        return true;
     }
 
     /*
@@ -267,42 +247,5 @@ namespace Katydid
         return newGainVar;
     }
     */
-
-    void KTGainVariationProcessor::ProcessBundle(shared_ptr<KTBundle> bundle)
-    {
-        const KTFrequencySpectrumDataPolar* fsData = bundle->GetData< KTFrequencySpectrumDataPolar >(fInputDataName);
-        if (fsData != NULL)
-        {
-            KTGainVariationData* newData = CalculateGainVariation(fsData);
-            bundle->AddData(newData);
-            return;
-        }
-
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fInputDataName);
-        if (fsDataFFTW != NULL)
-        {
-            KTGainVariationData* newData = CalculateGainVariation(fsDataFFTW);
-            bundle->AddData(newData);
-            return;
-        }
-
-        KTWARN(gvlog, "No time series data named <" << fInputDataName << "> was available in the bundle");
-        return;
-    }
-
-    void KTGainVariationProcessor::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
-    {
-        KTGainVariationData* newData = CalculateGainVariation(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
-        return;
-    }
-    void KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
-    {
-        KTGainVariationData* newData = CalculateGainVariation(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
-        return;
-    }
 
 } /* namespace Katydid */

@@ -9,14 +9,11 @@
  */
 
 #include "KTAnalyticAssociator.hh"
-#include "KTComplexFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTRectangularWindow.hh"
-#include "KTTimeSeriesChannelData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTWignerVille.hh"
 
@@ -74,7 +71,7 @@ int main()
 
     UInt_t nWindows = nTimeBins / wvSize;
 
-    vector< KTFrequencySpectrumDataFFTW* > allOutput(nWindows);
+    vector< KTWignerVilleData* > allOutput(nWindows);
     KTPhysicalArray< 1, KTFrequencySpectrumFFTW* > spectra(nWindows, 0., 1.);
 
     KTINFO(testlog, nWindows << " will be used");
@@ -100,20 +97,24 @@ int main()
         KTTimeSeriesFFTW* aaTS1 = aAssociator.CalculateAnalyticAssociate(windowTS1);
         KTTimeSeriesFFTW* aaTS2 = aAssociator.CalculateAnalyticAssociate(windowTS2);
 
-        KTBasicTimeSeriesData* aaTSData = new KTBasicTimeSeriesData(2);
-        aaTSData->SetTimeSeries(aaTS1, 0);
-        aaTSData->SetTimeSeries(aaTS2, 1);
+        KTAnalyticAssociateData aaData;
+        aaData.SetNComponents(2);
+        aaData.SetTimeSeries(aaTS1, 0);
+        aaData.SetTimeSeries(aaTS2, 1);
         //aaTSData->SetTimeSeries(windowTS1, 0);
         //aaTSData->SetTimeSeries(windowTS2, 1);
 
-        KTFrequencySpectrumDataFFTW* output = wvTransform.TransformData(aaTSData);
+        if (! wvTransform.TransformData(aaData))
+        {
+            KTERROR(testlog, "Something went wrong while computing the Wigner-Ville transform");
+        }
+        KTWignerVilleData& output = aaData.Of< KTWignerVilleData >();
 
-        allOutput[iWindow] = output;
-        spectra(iWindow) = output->GetSpectrumFFTW(0);
+        allOutput[iWindow] = &output;
+        spectra(iWindow) = output.GetSpectrumFFTW(0);
 
         delete windowTS1;
         delete windowTS2;
-        delete aaTSData;
 
         iWindow++;
     }
@@ -152,141 +153,3 @@ int main()
     return 0;
 
 }
-
-
-
-
-
-
-
-
-
-
-/*
-
-#include "KTComplexFFTW.hh"
-#include "KTEgg.hh"
-#include "KTEggHeader.hh"
-#include "KTEggReaderMonarch.hh"
-#include "KTBundle.hh"
-#include "KTLogger.hh"
-#include "KTRectangularWindow.hh"
-#include "KTSlidingWindowFFTW.hh"
-#include "KTSlidingWindowFSDataFFTW.hh"
-#include "KTTimeSeriesChannelData.hh"
-#include "KTWignerVille.hh"
-
-#ifdef ROOT_FOUND
-#include "KTBasicROOTFileWriter.hh"
-#endif
-
-#include <boost/shared_ptr.hpp>
-
-
-using namespace std;
-using namespace Katydid;
-
-
-KTLOGGER(testwv, "katydid.validation");
-
-
-int main(int argc, char** argv)
-{
-
-    if (argc < 2)
-    {
-        KTERROR(testwv, "No filename supplied");
-        return 0;
-    }
-    string filename(argv[1]);
-
-    KTINFO(testwv, "Test of hatching egg file <" << filename << ">");
-
-    KTEgg egg;
-    UInt_t recordSize = 0;
-    KTINFO(testwv, "Record size will be " << recordSize << " (if 0, it should be the same as the Monarch record size)");
-    KTEggReaderMonarch* reader = new KTEggReaderMonarch();
-    reader->SetTimeSeriesSizeRequest(recordSize);
-    reader->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
-    egg.SetReader(reader);
-
-    KTINFO(testwv, "Opening file");
-    if (egg.BreakEgg(filename))
-    {
-        KTINFO(testwv, "Egg opened successfully");
-    }
-    else
-    {
-        KTERROR(testwv, "Egg file was not opened");
-        return -1;
-    }
-
-    const KTEggHeader* header = egg.GetHeader();
-    if (header == NULL)
-    {
-        KTERROR(testwv, "No header received");
-        egg.CloseEgg();
-        return -1;
-    }
-
-    KTINFO(testwv, "Hatching bundle");
-    boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
-    if (bundle == NULL)
-    {
-        KTERROR(testwv, "Bundle did not hatch");
-        egg.CloseEgg();
-        return -1;
-    }
-
-    // Get the time-series data from the bundle.
-    // The data is still owned by the bundle.
-    KTTimeSeriesData* tsData = bundle->GetData<KTProgenitorTimeSeriesData>("time-series");
-    if (tsData == NULL)
-    {
-        KTWARN(testwv, "No time-series data present in bundle");
-        egg.CloseEgg();
-        return -1;
-    }
-
-    // Create the transform, and manually configure it.
-    KTINFO(testwv, "Creating and configuring WV transform");
-    KTWignerVille wvTransform;
-    wvTransform.GetFullFFT()->SetTransformFlag("ESTIMATE");
-    wvTransform.GetFullFFT()->SetSize(tsData->GetTimeSeries(0)->GetNTimeBins());
-    KTBundleWindowFunction* windowFunc = new KTRectangularWindow(tsData);
-    windowFunc->SetSize(5000);
-    wvTransform.GetWindowedFFT()->SetTransformFlag("ESTIMATE");
-    wvTransform.GetWindowedFFT()->SetWindowFunction(windowFunc);
-    wvTransform.GetWindowedFFT()->SetOverlap((UInt_t)0);
-    wvTransform.AddPair(KTWVPair(0, 1));
-
-    // Transform the data.
-    // The data is not owned by the bundle because TransformData was used, not ProcessBundle.
-    KTINFO(testwv, "Transforming data");
-    KTSlidingWindowFSDataFFTW* wvData = wvTransform.TransformData(tsData);
-
-    if (wvData == NULL)
-    {
-        KTWARN(testwv, "No data was returned by the WV transform; test failed");
-    }
-    else
-    {
-#ifdef ROOT_FOUND
-        KTBasicROOTFileWriter writer;
-        writer.SetFilename("WVTransformTest.root");
-        writer.SetFileFlag("recreate");
-
-        KTINFO(testwv, "Writing data to file");
-        writer.Publish(wvData);
-#endif
-    }
-
-    KTINFO(testwv, "Test complete; cleaning up");
-    egg.CloseEgg();
-    delete wvData;
-
-    return 0;
-
-
-}
-*/

@@ -10,7 +10,6 @@
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTWriteableData.hh"
 
 using std::string;
 
@@ -21,8 +20,8 @@ namespace Katydid
     static KTDerivedRegistrar< KTWriter, KTJSONWriter > sBRFWriterRegistrar("json-writer");
     static KTDerivedRegistrar< KTProcessor, KTJSONWriter > sBRFWProcRegistrar("json-writer");
 
-    KTJSONWriter::KTJSONWriter() :
-            KTWriterWithTypists< KTJSONWriter >(),
+    KTJSONWriter::KTJSONWriter(const std::string& name) :
+            KTWriterWithTypists< KTJSONWriter >(name),
             fFilename("basic_output.root"),
             fFileMode("w+"),
             fPrettyJSONFlag(true),
@@ -30,9 +29,6 @@ namespace Katydid
             fFileStream(NULL),
             fJSONMaker(NULL)
     {
-        fConfigName = "json-writer";
-
-        RegisterSlot("write-data", this, &KTJSONWriter::Publish);
     }
 
     KTJSONWriter::~KTJSONWriter()
@@ -119,18 +115,6 @@ namespace Katydid
             }
         }
         return true;
-    }
-
-    void KTJSONWriter::Publish(const KTWriteableData* data)
-    {
-        data->Accept(this);
-        return;
-    }
-
-    void KTJSONWriter::Write(const KTWriteableData* data)
-    {
-        KTWARN(publog, "Generic Write function called; no data written");
-        return;
     }
 
 } /* namespace Katydid */

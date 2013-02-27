@@ -10,7 +10,6 @@
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTWriteableData.hh"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -26,16 +25,13 @@ namespace Katydid
     static KTDerivedRegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
     static KTDerivedRegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
 
-    KTROOTTreeWriter::KTROOTTreeWriter() :
-            KTWriterWithTypists< KTROOTTreeWriter >(),
+    KTROOTTreeWriter::KTROOTTreeWriter(const std::string& name) :
+            KTWriterWithTypists< KTROOTTreeWriter >(name),
             fFilename("tree_output.root"),
             fFileFlag("recreate"),
             fFile(NULL),
             fTrees()
     {
-        fConfigName = "root-tree-writer";
-
-        RegisterSlot("write-data", this, &KTROOTTreeWriter::Publish);
     }
 
     KTROOTTreeWriter::~KTROOTTreeWriter()
@@ -115,20 +111,6 @@ namespace Katydid
             delete fFile;
             fFile = NULL;
         }
-        return;
-    }
-
-
-
-    void KTROOTTreeWriter::Publish(const KTWriteableData* data)
-    {
-        data->Accept(this);
-        return;
-    }
-
-    void KTROOTTreeWriter::Write(const KTWriteableData* data)
-    {
-        KTWARN(publog, "Generic Write function called; no data written");
         return;
     }
 

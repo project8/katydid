@@ -7,17 +7,17 @@
 
 #include "KTBasicROOTTypeWriterFFT.hh"
 
-#include "KTBundle.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTSlidingWindowFSData.hh"
-#include "KTSlidingWindowFSDataFFTW.hh"
+#include "KTSliceHeader.hh"
+//#include "KTSlidingWindowFSData.hh"
+//#include "KTSlidingWindowFSDataFFTW.hh"
 
 #include "TH1.h"
-#include "TH2.h"
+//#include "TH2.h"
 
 #include <sstream>
 
@@ -43,10 +43,10 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterFFT::RegisterSlots()
     {
-        fWriter->RegisterSlot("fs-data", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData, "void (const KTFrequencySpectrumDataPolar*)");
-        fWriter->RegisterSlot("fs-data-fftw", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW, "void (const KTFrequencySpectrumDataFFTW*)");
-        fWriter->RegisterSlot("swfs-data", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData, "void (const WriteSlidingWindowFSData*)");
-        fWriter->RegisterSlot("swfs-data-fftw", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW, "void (const WriteSlidingWindowFSDataFFTW*)");
+        fWriter->RegisterSlot("fs-polar", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar);
+        fWriter->RegisterSlot("fs-fftw", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW);
+        //fWriter->RegisterSlot("swfs", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData);
+        //fWriter->RegisterSlot("swfs-fftw", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW);
         return;
     }
 
@@ -55,22 +55,24 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumData(const KTFrequencySpectrumDataPolar* data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar(boost::shared_ptr<KTData> data)
     {
-        KTBundle* bundle = data->GetBundle();
-        UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nChannels = data->GetNComponents();
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
+        UInt_t nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
-            const KTFrequencySpectrumPolar* spectrum = data->GetSpectrumPolar(iChannel);
+            const KTFrequencySpectrumPolar* spectrum = fsData.GetSpectrumPolar(iChannel);
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histPS_" << bundleNumber << "_" << iChannel;
+                conv << "histPS_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
@@ -82,22 +84,24 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data)
     {
-        KTBundle* bundle = data->GetBundle();
-        UInt_t bundleNumber = 0;
-        if (bundle != NULL) bundleNumber = bundle->GetBundleNumber();
-        UInt_t nChannels = data->GetNComponents();
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
+        UInt_t nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (unsigned iChannel=0; iChannel<nChannels; iChannel++)
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
         {
-            const KTFrequencySpectrumFFTW* spectrum = data->GetSpectrumFFTW(iChannel);
+            const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histPS_" << bundleNumber << "_" << iChannel;
+                conv << "histPS_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
@@ -112,7 +116,7 @@ namespace Katydid
     //************************
     // Sliding Window Data
     //************************
-
+/*
     void KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData(const KTSlidingWindowFSData* data)
     {
         KTBundle* bundle = data->GetBundle();
@@ -158,6 +162,6 @@ namespace Katydid
         }
         return;
     }
-
+*/
 
 } /* namespace Katydid */

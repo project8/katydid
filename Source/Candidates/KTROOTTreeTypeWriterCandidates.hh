@@ -10,13 +10,16 @@
 
 #include "KTROOTTreeWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 class TH2D;
 class TTree;
 
 namespace Katydid
 {
-    class KTFrequencyCandidateData;
-    class KTWaterfallCandidateData;
+    class KTData;
+    //class KTFrequencyCandidateData;
+    //class KTWaterfallCandidateData;
 
     struct TFrequencyCandidateData
     {
@@ -51,8 +54,9 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteFrequencyCandidates(const KTFrequencyCandidateData* freqCandidate);
-            void WriteWaterfallCandidate(const KTWaterfallCandidateData* wfCandidate);
+            void WriteFrequencyCandidates(boost::shared_ptr< KTData > data);
+
+            void WriteWaterfallCandidate(boost::shared_ptr< KTData > data);
 
         public:
             TTree* GetFrequencyCandidateTree() const;

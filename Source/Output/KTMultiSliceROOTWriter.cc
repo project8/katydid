@@ -1,16 +1,15 @@
 /*
- * KTMultiBundleROOTWriter.cc
+ * KTMultiSliceROOTWriter.cc
  *
  *  Created on: Jan 28, 2013
  *      Author: nsoblath
  */
 
-#include "KTMultiBundleROOTWriter.hh"
+#include "KTMultiSliceROOTWriter.hh"
 
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTWriteableData.hh"
 
 using std::string;
 
@@ -19,30 +18,25 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTMultiBundleROOTWriter > sMERWriterRegistrar("multi-bundle-root-writer");
-    static KTDerivedRegistrar< KTProcessor, KTMultiBundleROOTWriter > sMERWProcRegistrar("multi-bundle-root-writer");
+    static KTDerivedRegistrar< KTWriter, KTMultiSliceROOTWriter > sMERWriterRegistrar("multi-slice-root-writer");
+    static KTDerivedRegistrar< KTProcessor, KTMultiSliceROOTWriter > sMERWProcRegistrar("multi-slice-root-writer");
 
-    KTMultiBundleROOTWriter::KTMultiBundleROOTWriter() :
-            KTWriterWithTypists< KTMultiBundleROOTWriter >(),
+    KTMultiSliceROOTWriter::KTMultiSliceROOTWriter(const std::string& name) :
+            KTWriterWithTypists< KTMultiSliceROOTWriter >(name),
             fUseTFile(true),
-            fTFilename("multi_bundle.root"),
+            fTFilename("multi_slice.root"),
             fTFileFlag("recreate"),
             fUseGraphics(false),
             fGraphicsFilePath(),
-            fGraphicsFilenameBase("multi_bundle"),
+            fGraphicsFilenameBase("slice"),
             fGraphicsFileType("png"),
             fFile(NULL)
     {
-        fConfigName = "multi-bundle-root-writer";
-
-        RegisterSlot("start", this, &KTMultiBundleROOTWriter::Start, "void ()");
-        RegisterSlot("finish", this, &KTMultiBundleROOTWriter::Finish, "void ()");
-
-
-        RegisterSlot("write-data", this, &KTMultiBundleROOTWriter::Publish);
+        RegisterSlot("start", this, &KTMultiSliceROOTWriter::Start);
+        RegisterSlot("finish", this, &KTMultiSliceROOTWriter::Finish);
     }
 
-    KTMultiBundleROOTWriter::~KTMultiBundleROOTWriter()
+    KTMultiSliceROOTWriter::~KTMultiSliceROOTWriter()
     {
         if (fFile != NULL)
         {
@@ -51,7 +45,7 @@ namespace Katydid
         delete fFile;
     }
 
-    Bool_t KTMultiBundleROOTWriter::Configure(const KTPStoreNode* node)
+    Bool_t KTMultiSliceROOTWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
@@ -69,7 +63,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiBundleROOTWriter::OpenAndVerifyFile()
+    Bool_t KTMultiSliceROOTWriter::OpenAndVerifyFile()
     {
         if (fUseTFile)
         {
@@ -89,7 +83,7 @@ namespace Katydid
         return true;
     }
 
-    void KTMultiBundleROOTWriter::Start()
+    void KTMultiSliceROOTWriter::Start()
     {
         for (TypeWriterMap::iterator it = fTypeWriters.begin(); it != fTypeWriters.end(); it++)
         {
@@ -98,7 +92,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiBundleROOTWriter::Finish()
+    void KTMultiSliceROOTWriter::Finish()
     {
         for (TypeWriterMap::iterator it = fTypeWriters.begin(); it != fTypeWriters.end(); it++)
         {
@@ -107,17 +101,5 @@ namespace Katydid
         return;
     }
 
-
-    void KTMultiBundleROOTWriter::Publish(const KTWriteableData* data)
-    {
-        data->Accept(this);
-        return;
-    }
-
-    void KTMultiBundleROOTWriter::Write(const KTWriteableData* data)
-    {
-        KTWARN(publog, "Generic Write function called; no data written");
-        return;
-    }
 
 } /* namespace Katydid */

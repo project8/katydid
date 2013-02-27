@@ -18,13 +18,12 @@ namespace Katydid
 
     KTLOGGER(testparamlog, "katydid.applications.validation");
 
-    KTTestConfigurable::KTTestConfigurable() :
-            KTConfigurable(),
+    KTTestConfigurable::KTTestConfigurable(const std::string& name) :
+            KTConfigurable(name),
             fIntData(-9),
             fDoubleData(-99.),
             fStringData("not configured")
     {
-        fConfigName = "test-configurable";
     }
 
     KTTestConfigurable::~KTTestConfigurable()

@@ -35,22 +35,20 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTThroughputProfiler > sSimpleFFTRegistrar("throughput-profiler");
 
-    KTThroughputProfiler::KTThroughputProfiler() :
-            KTProcessor(),
+    KTThroughputProfiler::KTThroughputProfiler(const std::string& name) :
+            KTProcessor(name),
             fOutputFileFlag(false),
             fOutputFilename("throughput.json"),
             fEggHeader(),
             fTimeStart(),
             fTimeEnd(),
-            fNBundlesProcessed(0),
+            fNDataProcessed(0),
             fMacTimebase(0.0),
             fMacTimestart(0)
     {
-        fConfigName = "throughput-profiler";
-
-        RegisterSlot("start", this, &KTThroughputProfiler::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("bundle", this, &KTThroughputProfiler::ProcessBundle, "void (shared_ptr<KTBundle>)");
-        RegisterSlot("stop", this, &KTThroughputProfiler::Finish, "void ()");
+        RegisterSlot("start", this, &KTThroughputProfiler::ProcessHeader);
+        RegisterSlot("data", this, &KTThroughputProfiler::ProcessData);
+        RegisterSlot("stop", this, &KTThroughputProfiler::Finish);
     };
 
     KTThroughputProfiler::~KTThroughputProfiler()
@@ -88,14 +86,14 @@ namespace Katydid
     {
         fEggHeader = *header;
         KTINFO(proflog, "Profiling started");
-        fNBundlesProcessed = 0;
+        fNDataProcessed = 0;
         Start();
         return;
     }
 
-    void KTThroughputProfiler::ProcessBundle(shared_ptr<KTBundle> bundle)
+    void KTThroughputProfiler::ProcessData(shared_ptr<KTData> data)
     {
-        fNBundlesProcessed++;
+        fNDataProcessed++;
         return;
     }
 
@@ -104,7 +102,7 @@ namespace Katydid
         Stop();
         KTINFO(proflog, "Profiling stopped");
         timespec diffTime = Elapsed();
-        KTINFO(proflog, fNBundlesProcessed << " bundles processed");
+        KTINFO(proflog, fNDataProcessed << " slices processed");
         Double_t totalSeconds = Double_t(diffTime.tv_sec) + Double_t(diffTime.tv_nsec) * 1.e-9;
         KTINFO(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
 
@@ -114,7 +112,7 @@ namespace Katydid
         // Data throughput rate in bytes per second
         Double_t dataThroughputRate = 0.;
         if (totalSeconds != 0)
-            dataThroughputRate = Double_t(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNBundlesProcessed * sizeof(DataType)) / totalSeconds;
+            dataThroughputRate = Double_t(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNDataProcessed * sizeof(DataType)) / totalSeconds;
 
         KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
         KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");

@@ -62,10 +62,10 @@ KTColoredPatternLayout::~KTColoredPatternLayout()
 {
 }
 
-void KTColoredPatternLayout::format(LogString& output, const spi::LoggingEventPtr& bundle, helpers::Pool& pool) const
+void KTColoredPatternLayout::format(LogString& output, const spi::LoggingEventPtr& event, helpers::Pool& pool) const
 {
-    PatternLayout::format(output, bundle, pool);
-    output = getColor(bundle->getLevel()) + output + fEndColor;
+    PatternLayout::format(output, event, pool);
+    output = getColor(event->getLevel()) + output + fEndColor;
     return;
 }
 

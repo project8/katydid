@@ -7,17 +7,10 @@
 
 #include "KTWaterfallCandidateData.hh"
 
-#include "KTDataMap.hh"
-//#include "KTTimeFrequency.hh"
-#include "KTTIFactory.hh"
-#include "KTWriter.hh"
-
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTWaterfallCandidateData > > sWCDMRegistrar;
-
     KTWaterfallCandidateData::KTWaterfallCandidateData() :
-            KTWriteableData(),
+            KTExtensibleData< KTWaterfallCandidateData >(),
             fCandidate(NULL),
             fComponent(0),
             fTimeInRun(0.),
@@ -33,20 +26,11 @@ namespace Katydid
         delete fCandidate;
     }
 
-    void KTWaterfallCandidateData::Accept(KTWriter* writer) const
-    {
-        writer->Write(this);
-        return;
-    }
-
     void KTWaterfallCandidateData::SetCandidate(KTTimeFrequency* candidate)
     {
         delete fCandidate;
         fCandidate = candidate;
         return;
     }
-
-
-
 
 } /* namespace Katydid */

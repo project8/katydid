@@ -24,8 +24,8 @@ namespace Katydid
     {}
 
 
-    KTProcessor::KTProcessor() :
-            KTConfigurable(),
+    KTProcessor::KTProcessor(const string& name) :
+            KTConfigurable(name),
             fSignalMap(),
             fSlotMap()
     {

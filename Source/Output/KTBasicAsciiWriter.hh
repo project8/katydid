@@ -8,10 +8,7 @@
 #ifndef __KT_ASCII_WRITER_HH
 #define __KT_ASCII_WRITER_HH
 
-#include "KTBundle.hh"
 #include "KTWriter.hh"
-#include "KTFrequencySpectrumDataPolar.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
 
 #include <fstream>
 
@@ -20,7 +17,7 @@ namespace Katydid {
   class KTBasicASCIIWriter : public KTWriterWithTypists< KTBasicASCIIWriter > {
     // Constructors/destructors
   public:
-    KTBasicASCIIWriter();
+    KTBasicASCIIWriter(const std::string& name = "basic-ascii-writer");
     virtual ~KTBasicASCIIWriter();
 
     // Configuration
@@ -37,9 +34,6 @@ namespace Katydid {
   public:
     bool CanWrite();
     std::ofstream* GetStream();   
-
-    void Publish(const KTWriteableData* dt);
-    void Write(const KTWriteableData* dt);
 
   }; // class KTBasicASCIIWriter 
 

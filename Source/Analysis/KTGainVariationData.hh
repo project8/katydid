@@ -8,7 +8,7 @@
 #ifndef KTGAINVARIATIONDATA_HH_
 #define KTGAINVARIATIONDATA_HH_
 
-#include "KTWriteableData.hh"
+#include "KTData.hh"
 
 #include "KTGainVariationProcessor.hh"
 #include "KTSpline.hh"
@@ -22,38 +22,36 @@
 namespace Katydid
 {
 
-    class KTGainVariationData : public KTWriteableData
+    class KTGainVariationData : public KTExtensibleData< KTGainVariationData >
     {
         public:
             //typedef KTGainVariationProcessor::GainVariation GainVariation;
 
         protected:
-            struct PerChannelData
+            struct PerComponentData
             {
                 KTSpline* fSpline;
                 //GainVariation* fGainVar;
             };
 
         public:
-            KTGainVariationData(UInt_t nChannels=1);
+            KTGainVariationData();
             virtual ~KTGainVariationData();
 
             //const GainVariation* GetGainVariation(UInt_t component = 0) const;
             //GainVariation* GetGainVariation(UInt_t component = 0);
             const KTSpline* GetSpline(UInt_t component = 0) const;
             KTSpline* GetSpline(UInt_t component = 0);
+
             UInt_t GetNComponents() const;
 
             //void SetGainVariation(GainVariation* record, UInt_t component = 0);
             void SetSpline(KTSpline* spline, UInt_t component = 0);
-            void SetNComponents(UInt_t channels);
 
-            void Accept(KTWriter* writer) const;
+            KTGainVariationData& SetNComponents(UInt_t components);
 
         protected:
-            static std::string fDefaultName;
-
-            std::vector< PerChannelData > fChannelData;
+            std::vector< PerComponentData > fComponentData;
 
 #ifdef ROOT_FOUND
         public:
@@ -73,17 +71,17 @@ namespace Katydid
 */
     inline const KTSpline* KTGainVariationData::GetSpline(UInt_t component) const
     {
-        return fChannelData[component].fSpline;
+        return fComponentData[component].fSpline;
     }
 
     inline KTSpline* KTGainVariationData::GetSpline(UInt_t component)
     {
-        return fChannelData[component].fSpline;
+        return fComponentData[component].fSpline;
     }
 
     inline UInt_t KTGainVariationData::GetNComponents() const
     {
-        return UInt_t(fChannelData.size());
+        return UInt_t(fComponentData.size());
     }
 /*
     inline void KTGainVariationData::SetGainVariation(GainVariation* record, UInt_t component)
@@ -94,14 +92,14 @@ namespace Katydid
 */
     inline void KTGainVariationData::SetSpline(KTSpline* spline, UInt_t component)
     {
-        if (component >= fChannelData.size()) fChannelData.resize(component+1);
-        fChannelData[component].fSpline = spline;
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fSpline = spline;
     }
 
-    inline void KTGainVariationData::SetNComponents(UInt_t channels)
+    inline KTGainVariationData& KTGainVariationData::SetNComponents(UInt_t channels)
     {
-        fChannelData.resize(channels);
-        return;
+        fComponentData.resize(channels);
+        return *this;
     }
 
 

@@ -10,15 +10,14 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 namespace Katydid
 {
-    class KTTimeSeriesData;
+    class KTData;
 
     class KTBasicROOTTypeWriterEgg : public KTBasicROOTTypeWriter//, public KTTypeWriterEgg
     {
-        public:
-            friend class KTTimeSeriesData;
-
         public:
             KTBasicROOTTypeWriterEgg();
             virtual ~KTBasicROOTTypeWriterEgg();
@@ -26,7 +25,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteTimeSeriesData(const KTTimeSeriesData* data);
+            void WriteTimeSeriesData(boost::shared_ptr<KTData> data);
 
     };
 

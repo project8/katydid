@@ -15,7 +15,7 @@
 #include "KTProcessor.hh"
 
 #include "KTEggHeader.hh"
-#include "KTBundle.hh"
+#include "KTData.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -32,7 +32,7 @@ namespace Katydid
     {
 
         public:
-            KTThroughputProfiler();
+            KTThroughputProfiler(const std::string& name = "throughput-profiler");
             virtual ~KTThroughputProfiler();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -42,7 +42,7 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
+            void ProcessData(boost::shared_ptr<KTData> data);
 
             void Finish();
 
@@ -66,7 +66,7 @@ namespace Katydid
             timespec fTimeStart;
             timespec fTimeEnd;
 
-            UInt_t fNBundlesProcessed;
+            UInt_t fNDataProcessed;
 
 //#ifdef __MACH__
             double fMacTimebase;
