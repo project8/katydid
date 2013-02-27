@@ -33,6 +33,7 @@ namespace Katydid
 
         protected:
             virtual XBaseType* Create() const = 0;
+            virtual XBaseType* CreateNamed(const std::string& name) const = 0;
 
     };
 
@@ -47,6 +48,7 @@ namespace Katydid
             void Register(const std::string& className) const;
 
             XBaseType* Create() const;
+            XBaseType* CreateNamed(const std::string& objectName) const;
 
     };
 
@@ -63,6 +65,10 @@ namespace Katydid
         public:
             XBaseType* Create(const std::string& className);
             XBaseType* Create(const FactoryCIt& iter);
+
+            XBaseType* CreateNamed(const std::string& className);
+            XBaseType* CreateNamed(const FactoryCIt& iter);
+
             void Register(const std::string& className, const KTRegistrar< XBaseType >* registrar);
 
             FactoryCIt GetFactoryMapBegin() const;
@@ -80,6 +86,12 @@ namespace Katydid
     };
 
     template< class XBaseType >
+    XBaseType* KTFactory< XBaseType >::Create(const FactoryCIt& iter)
+    {
+        return iter->second->Create();
+    }
+
+    template< class XBaseType >
     XBaseType* KTFactory< XBaseType >::Create(const std::string& className)
     {
         FactoryCIt it = fMap->find(className);
@@ -93,9 +105,22 @@ namespace Katydid
     }
 
     template< class XBaseType >
-    XBaseType* KTFactory< XBaseType >::Create(const FactoryCIt& iter)
+    XBaseType* KTFactory< XBaseType >::CreateNamed(const FactoryCIt& iter)
     {
-        return iter->second->Create();
+        return iter->second->CreateNamed(iter->first);
+    }
+
+    template< class XBaseType >
+    XBaseType* KTFactory< XBaseType >::CreateNamed(const std::string& className)
+    {
+        FactoryCIt it = fMap->find(className);
+        if (it == fMap->end())
+        {
+            KTERROR(utillog_factory, "Did not find factory for <" << className << ">.");
+            return NULL;
+        }
+
+        return it->second->CreateNamed(className);
     }
 
     template< class XBaseType >
@@ -161,6 +186,11 @@ namespace Katydid
         return dynamic_cast< XBaseType* >(new XDerivedType());
     }
 
+    template< class XBaseType, class XDerivedType >
+    XBaseType* KTDerivedRegistrar< XBaseType, XDerivedType >::CreateNamed(const std::string& objectName) const
+    {
+        return dynamic_cast< XBaseType* >(new XDerivedType(objectName));
+    }
 
 } /* namespace Katydid */
 #endif /* KTFACTORY_HH_ */
