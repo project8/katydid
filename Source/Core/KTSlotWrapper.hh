@@ -10,7 +10,6 @@
 
 #include "KTConnection.hh"
 #include "KTSignalWrapper.hh"
-#include "KTSignalSlotSignature.hh"
 
 #include <boost/function.hpp>
 #include <boost/signals2.hpp>

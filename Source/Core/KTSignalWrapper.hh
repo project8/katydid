@@ -8,8 +8,6 @@
 #ifndef KTSIGNALWRAPPER_HH_
 #define KTSIGNALWRAPPER_HH_
 
-#include "KTSignalSlotSignature.hh"
-
 #include <boost/signals2.hpp>
 #include <boost/utility.hpp>
 
