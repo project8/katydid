@@ -38,7 +38,7 @@ namespace Katydid {
      * Constructors and destructors.
      */
   public:
-    KTRQProcessor();
+    KTRQProcessor(const std::string& name = "rayleigh-quotient");
     virtual ~KTRQProcessor();
 
     /* 

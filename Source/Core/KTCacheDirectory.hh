@@ -21,7 +21,7 @@ namespace Katydid
         protected:
             friend class KTSingleton< KTCacheDirectory >;
             friend class KTDestroyer< KTCacheDirectory >;
-            KTCacheDirectory();
+            KTCacheDirectory(const std::string& name = "cache-directory");
             virtual ~KTCacheDirectory();
 
         public:

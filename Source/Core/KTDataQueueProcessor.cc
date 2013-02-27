@@ -21,8 +21,6 @@ namespace Katydid
     KTDataQueueProcessor::KTDataQueueProcessor(const std::string& name) :
         KTDataQueueProcessorTemplate< KTDataQueueProcessor >(name)
     {
-        fConfigName = "data-queue";
-
         RegisterSignal("data", &fDataSignal);
 
         RegisterSlot("data", this, &KTDataQueueProcessor::QueueData);

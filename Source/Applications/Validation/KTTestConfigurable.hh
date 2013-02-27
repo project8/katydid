@@ -15,7 +15,7 @@ namespace Katydid
     class KTTestConfigurable : public KTConfigurable
     {
         public:
-            KTTestConfigurable();
+            KTTestConfigurable(const std::string& name = "test-configurable");
             virtual ~KTTestConfigurable();
 
         public:

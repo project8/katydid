@@ -17,11 +17,11 @@ namespace Katydid
 {
     KTLOGGER(dirlog, "katydid.core");
 
-    KTCacheDirectory::KTCacheDirectory() :
+    KTCacheDirectory::KTCacheDirectory(const std::string& name) :
             KTDirectory(),
+            KTConfigurable(name),
             fPreparedForUse(false)
     {
-        fConfigName = "cache-directory";
     }
 
     KTCacheDirectory::~KTCacheDirectory()

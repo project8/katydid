@@ -104,7 +104,7 @@ namespace Katydid
             typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal DataSignal;
 
         public:
-            KTDataQueueProcessor(const std::string& name = "default-data-queue-proc-name");
+            KTDataQueueProcessor(const std::string& name = "data-queue");
             virtual ~KTDataQueueProcessor();
 
             Bool_t Configure(const KTPStoreNode* node);

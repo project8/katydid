@@ -3,15 +3,14 @@
 namespace Katydid {
   static KTDerivedRegistrar<KTProcessor, KTRQProcessor> sRQProcessor("rayleigh-quotient");
 
-  KTRQProcessor::KTRQProcessor() :
-    KTProcessor(),
+  KTRQProcessor::KTRQProcessor(const std::string& name) :
+    KTProcessor(name),
     fRQSignal(),
     fChunkSize(512),
     fNACMDidConverge(false),
     fNoiseACM(NULL),
     fDataMap(NULL)
   {
-    fConfigName = "rayleigh-quotient";
     RegisterSignal("rq-calc", 
 		   &fRQSignal);
     RegisterSlot("ts-noise", 
