@@ -15,7 +15,6 @@ set (CANDIDATES_HEADERFILES
 
 if (ROOT_FOUND)
     set (CANDIDATES_DICT_HEADERFILES
-        #${CMAKE_CURRENT_SOURCE_DIR}/TFrequencyCandidateData.hh
     )
 
     set (CANDIDATES_HEADERFILES
@@ -38,7 +37,6 @@ if (ROOT_FOUND)
     set (CANDIDATES_SOURCEFILES
         ${CANDIDATES_SOURCEFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.cc
-        #${CMAKE_CURRENT_SOURCE_DIR}/TFrequencyCandidateData.cc
         #${CANDIDATES_DICT_OUTFILE}
     )
 endif (ROOT_FOUND)
