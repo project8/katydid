@@ -13,6 +13,7 @@
 #include "KTConcurrentQueue.hh"
 #include "KTData.hh"
 #include "KTLogger.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -100,9 +101,6 @@ namespace Katydid
 
     class KTDataQueueProcessor : public KTDataQueueProcessorTemplate< KTDataQueueProcessor >
     {
-        protected:
-            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal DataSignal;
-
         public:
             KTDataQueueProcessor(const std::string& name = "data-queue");
             virtual ~KTDataQueueProcessor();
@@ -117,7 +115,7 @@ namespace Katydid
             //***************
 
         private:
-            DataSignal fDataSignal;
+            KTSignalData fDataSignal;
 
             //*********
             // Slots
