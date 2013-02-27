@@ -43,7 +43,7 @@ namespace Katydid
             fFFTForwardSignal("fft-forward", this),
             fFFTReverseSignal("fft-reverse", this),
             fHeaderSlot("header", this, &KTComplexFFTW::InitializeWithHeader),
-            fTimeSeriesSlot("ts", this, &KTSimpleFFT::TransformData, &fFFTForwardSignal),
+            fTimeSeriesSlot("ts", this, &KTComplexFFTW::TransformData, &fFFTForwardSignal),
             fFSFFTWSlot("fs-fftw", this, &KTComplexFFTW::TransformData, &fFFTReverseSignal)
     {
         SetupInternalMaps();

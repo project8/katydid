@@ -104,7 +104,7 @@ int main()
     }
 
     // Configure the FFT with the egg header
-    compFFT.ProcessHeader(egg.GetHeader());
+    compFFT.InitializeWithHeader(egg.GetHeader());
 
     // Start the profiler
     prof.Start();

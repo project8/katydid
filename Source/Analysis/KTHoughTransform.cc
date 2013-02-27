@@ -220,31 +220,4 @@ namespace Katydid
     }
 */
 
-/*
-    void ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data)::ProcessHeader(const KTEggHeader* header)
-    {
-        return;
-    }
-*/
-/*
-    void KTHoughTransform::ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data)
-    {
-    }
-*/
-    void KTHoughTransform::ProcessDiscriminatedData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTDiscriminatedPoints2DData >())
-        {
-            KTERROR(htlog, "No discriminated-points data was present");
-            return;
-        }
-        if (! TransformData(data->Of< KTDiscriminatedPoints2DData >()))
-        {
-            KTERROR(htlog, "Something went wrong while performing a Hough transform");
-            return;
-        }
-        fHTSignal(data);
-        return;
-    }
-
 } /* namespace Katydid */
