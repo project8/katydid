@@ -12,6 +12,8 @@
 
 #include "KTProcessor.hh"
 
+#include "KTSlot.hh"
+
 #include <boost/shared_ptr.hpp>
 
 
@@ -32,25 +34,17 @@ namespace Katydid
      Available configuration values:
      \li \c "max-frequency-distance": double -- Set maximum separation within a cluster by frequency
      \li \c "max-bin-distance": unsigned int -- Set maximum separation within a cluster by bin
-     \li \c "input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
       Slots:
-     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c "disc-1d-data": void ProcessTimeSeriesData(const KTDiscriminatedPoints1DData*)
+     \li \c "disc-1d": void (shared_ptr< KTData >) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
 
      Signals:
-     \li \c "cluster-1d": void (const KTCluster1DData*) 
+     \li \c "cluster-1d": void (shared_ptr< KTData >) -- Emitted after forming clusters; Guarantees KTCluster1DData
     */
     class KTDistanceClustering : public KTProcessor
     {
         public:
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal Cluster1DSignal;
-            //typedef KTSignalConcept< void (const KTCluster2DData*) >::signal Cluster2DSignal;
-
-
-        public:
-            KTDistanceClustering();
+            KTDistanceClustering(const std::string& name = "distance-clustering");
             virtual ~KTDistanceClustering();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -76,8 +70,8 @@ namespace Katydid
             //***************
 
         private:
-            Cluster1DSignal fCluster1DSignal;
-            //Cluster2DSignal fCluster2DSignal;
+            KTSignalData fCluster1DSignal;
+            //KTSignalData fCluster2DSignal;
 
             //***************
             // Slots
@@ -86,6 +80,10 @@ namespace Katydid
         public:
             void Process1DData(boost::shared_ptr< KTData > data);
             //void Process2DData(const KTDiscriminatedPoints2DData* data);
+
+        private:
+            KTSlotDataOneType< KTDiscriminatedPoints1DData > fDiscPoints1DSlot;
+            //KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPoints2DSlot;
 
     };
 

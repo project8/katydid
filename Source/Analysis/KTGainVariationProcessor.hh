@@ -12,6 +12,7 @@
 #include "KTProcessor.hh"
 
 #include "KTPhysicalArray.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -42,22 +43,17 @@ namespace Katydid
      \li \c "max-bin": unsigned -- maximum bin for the fit
 
      Slots:
-     \li \c "fs-polar": void ProcessFrequencySpectrumData(shared_ptr< KTData >)
-     \li \c "fs-fftw": void ProcessFrequencySpectrumDataFFTW(shared_ptr< KTData >)
+     \li \c "fs-polar": void (shared_ptr< KTData >) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
+     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
 
      Signals:
-     \li \c "gain-var": void (shared_ptr< KTData >) emitted upon performance of a fit.
+     \li \c "gain-var": void (shared_ptr< KTData >) emitted upon performance of a fit; Guarantees KTGainVariationData
     */
 
     class KTGainVariationProcessor : public KTProcessor
     {
         public:
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal GainVarSignal;
-
-            //typedef KTPhysicalArray< 1, Double_t > GainVariation;
-
-        public:
-            KTGainVariationProcessor();
+            KTGainVariationProcessor(const std::string& name = "gain-variation");
             virtual ~KTGainVariationProcessor();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -98,15 +94,15 @@ namespace Katydid
             //***************
 
         private:
-            GainVarSignal fGainVarSignal;
+            KTSignalData fGainVarSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessFrequencySpectrumDataPolar(boost::shared_ptr< KTData > data);
-            void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr< KTData > data);
+        private:
+            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };
 

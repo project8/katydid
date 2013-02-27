@@ -27,19 +27,16 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
 
-    KTAnalyticAssociator::KTAnalyticAssociator() :
-            KTProcessor(),
+    KTAnalyticAssociator::KTAnalyticAssociator(const std::string& name) :
+            KTProcessor(name),
             fFullFFT(),
-            fSaveFrequencySpectrum(false)
+            fSaveFrequencySpectrum(false),
+            fAASignal("aa", this),
+            fHeaderSlot("header", this, &KTAnalyticAssociator::InitializeWithHeader),
+            fTimeSeriesSlot("ts", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal),
+            fFSFFTWSlot("fs-fftw", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal)
 
     {
-        fConfigName = "analytic-associator";
-
-        RegisterSignal("analytic-associate", &fAASignal, "void (const KTTimeSeriesDataFFTW*)");
-
-        RegisterSlot("header", this, &KTAnalyticAssociator::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts", this, &KTAnalyticAssociator::ProcessTimeSeriesData, "void (shared_ptr<KTData>)");
-        RegisterSlot("fs-fftw", this, &KTAnalyticAssociator::ProcessFrequencySpectrumDataFFTW, "void (shared_ptr<KTData>)");
     }
 
     KTAnalyticAssociator::~KTAnalyticAssociator()
@@ -59,6 +56,12 @@ namespace Katydid
         }
 
         return true;
+    }
+
+    void KTAnalyticAssociator::InitializeWithHeader(const KTEggHeader* header)
+    {
+        fFullFFT.InitializeWithHeader(header);
+        return;
     }
 
     Bool_t KTAnalyticAssociator::CreateAssociateData(KTTimeSeriesData& tsData)
@@ -196,44 +199,6 @@ namespace Katydid
         }
 
         return outputTS;
-    }
-
-    void KTAnalyticAssociator::ProcessHeader(const KTEggHeader* header)
-    {
-        fFullFFT.ProcessHeader(header);
-        return;
-    }
-
-    void KTAnalyticAssociator::ProcessTimeSeriesData(shared_ptr<KTData> data)
-    {
-        if (! data->Has< KTTimeSeriesData >())
-        {
-            KTERROR(aalog, "No time series data was present");
-            return;
-        }
-        if (! CreateAssociateData(data->Of< KTTimeSeriesData >()))
-        {
-            KTERROR(aalog, "Something went wrong while calculating the analytic associate from a time series");
-            return;
-        }
-        fAASignal(data);
-        return;
-    }
-
-    void KTAnalyticAssociator::ProcessFrequencySpectrumDataFFTW(shared_ptr<KTData> data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTERROR(aalog, "No time series data was present");
-            return;
-        }
-        if (! CreateAssociateData(data->Of< KTFrequencySpectrumDataFFTW >()))
-        {
-            KTERROR(aalog, "Something went wrong while calculating the analytic associate from a frequency spectrum");
-            return;
-        }
-        fAASignal(data);
-        return;
     }
 
 } /* namespace Katydid */

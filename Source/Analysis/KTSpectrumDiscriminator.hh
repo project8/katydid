@@ -11,6 +11,8 @@
 
 #include "KTProcessor.hh"
 
+#include "KTSlot.hh"
+
 #include <boost/shared_ptr.hpp>
 
 
@@ -45,33 +47,20 @@ namespace Katydid
      \li \c "max-frequency": double -- maximum frequency
      \li \c "min-bin": unsigned -- minimum frequency
      \li \c "max-bin": unsigned -- maximum frequency
-     \li \c "input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name to give to the data produced by a discrimination
 
      Slots:
-     \li \c "fsdata": void ProcessFrequencySpectrumData(const KTFrequencySpectrumData*)
-     \li \c "fsdata-fftw": void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
-     \li \c "swfsdata": void ProcessSlidingWindowFSData(const KTSlidingwindowFSData*)
-     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c "swfsdata-fftw":void ProcessSlidingwindowFsDataFFTW(const KTSlidingWindowFSDataFFTW*)
+     \li \c "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KGDiscrimiantedPoints1DData
+     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KGDiscrimiantedPoints1DData
+     \li \c "norm-fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KGDiscrimiantedPoints1DData
+     \li \c "norm-fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KGDiscrimiantedPoints1DData
+     \li \c "corr":void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KGDiscrimiantedPoints1DData
 
      Signals:
-     \li \c "disc-1d": void (const KTDiscriminatedPoints1DData*) emitted upon performance of a discrimination.
-     \li \c "disc-2d": void (const KTDiscriminatedPoints2DData*) emitted upon performance of a discriminationx.
+     \li \c "disc-1d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
+     <!--\li \c "disc-2d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints2DData-->
     */
-
-
-
-
-
-
-
     class KTSpectrumDiscriminator : public KTProcessor
     {
-        public:
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal Discrim1DSignal;
-            //typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal Discrim2DSignal;
-
         private:
             enum ThresholdMode
             {
@@ -80,7 +69,7 @@ namespace Katydid
             };
 
         public:
-            KTSpectrumDiscriminator();
+            KTSpectrumDiscriminator(const std::string& name = "spectrum-discriminator");
             virtual ~KTSpectrumDiscriminator();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -135,21 +124,19 @@ namespace Katydid
             //***************
 
         private:
-            Discrim1DSignal fDiscrim1DSignal;
-            //Discrim2DSignal fDiscrim2DSignal;
+            KTSignalData fDiscrim1DSignal;
+            //KTSignalData fDiscrim2DSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessFrequencySpectrumDataPolar(boost::shared_ptr< KTData > data);
-            void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr< KTData > data);
-            void ProcessNormalizedFSDataPolar(boost::shared_ptr< KTData > data);
-            void ProcessNormalizedFSDataFFTW(boost::shared_ptr< KTData > data);
-            void ProcessCorrelationData(boost::shared_ptr< KTData > data);
-            //void ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data);
-            //void ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
+        private:
+            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
+            KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
+            KTSlotDataOneType< KTCorrelationData > fCorrSlot;
 
     };
 

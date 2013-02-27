@@ -22,6 +22,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -94,8 +95,6 @@ namespace Katydid
      Available configuration values:
      \li \c "complex-fftw": string -- 
      \li \c "wv-pair": bool -- 
-          \li \c "input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name to give to the data produced by an (?)
 
      Slots:
      \li \c "header": void ProcessHeader(const KTEggHeader*)
@@ -103,20 +102,16 @@ namespace Katydid
      \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
 
      Signals:
-     \li \c "wigner-ville": void (const KTWriteableData*) emitted upon performance of a (?)
+     \li \c "wigner-ville": void (shared_ptr< KTData >) emitted upon performance of a WV transform; Guarantees KTWignerVilleData
     */
 
     class KTWignerVille : public KTProcessor
     {
         private:
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal WVSignal;
             typedef std::vector< KTWVPair > PairVector;
 
-        private:
-            typedef std::map< std::string, Int_t > TransformFlagMap;
-
         public:
-            KTWignerVille();
+            KTWignerVille(const std::string& name = "wigner-ville");
             virtual ~KTWignerVille();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -128,6 +123,8 @@ namespace Katydid
 
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
+
+            void InitializeWithHeader(const KTEggHeader* header);
 
         private:
             PairVector fPairs;
@@ -148,23 +145,20 @@ namespace Katydid
 
             void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
 
-
-
             //***************
              // Signals
              //***************
 
          private:
-             WVSignal fWVSignal;
+             KTSignalData fWVSignal;
 
              //***************
              // Slots
              //***************
 
-         public:
-             void ProcessHeader(const KTEggHeader* header);
-             void ProcessTimeSeriesData(boost::shared_ptr< KTData > data);
-             void ProcessAnalyticAssociateData(boost::shared_ptr< KTData > data);
+         private:
+             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+             KTSlotDataOneType< KTAnalyticAssociateData > fAnalyticAssociateSlot;
 
     };
 

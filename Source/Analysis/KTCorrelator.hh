@@ -12,6 +12,8 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessor.hh"
 
+#include "KTSlot.hh"
+
 #include <boost/shared_ptr.hpp>
 
 #include <utility>
@@ -74,27 +76,23 @@ namespace Katydid
      
      Available configuration values:
      \li \c "corr-pair": string -- channel pair to be correlated: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
-     \li \c "input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name to give to the data produced by a correlation
 
       Slots:
-     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c "fft-data": void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
+     \li \c "fs-polar": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataPolar; Adds KTCorrelationData
+     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataFFTW; Adds KTCorrelationData
+     \li \c "fs-norm-polar": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataPolar; Adds KTCorrelationData
+     \li \c "fs-norm-fftw": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataFFTW; Adds KTCorrelationData
 
      Signals:
-     \li \c "correlation": void (const KTWriteableData*) emitted upon performance of a correlation.
+     \li \c "correlation": void (shared_ptr< KTData >) -- Emitted upon performance of a correlation; Guarantees KTCorrelationData
     */
-
-
-
     class KTCorrelator : public KTProcessor
     {
         protected:
-            typedef KTSignalConcept< void (boost::shared_ptr<KTData>) >::signal CorrelationSignal;
             typedef std::vector< KTCorrelationPair > PairVector;
 
         public:
-            KTCorrelator();
+            KTCorrelator(const std::string& name = "correlator");
             virtual ~KTCorrelator();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -126,17 +124,17 @@ namespace Katydid
             //***************
 
         private:
-            CorrelationSignal fCorrSignal;
+            KTSignalData fCorrSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessPolarData(boost::shared_ptr< KTData > data);
-            void ProcessFFTWData(boost::shared_ptr< KTData > data);
-            void ProcessNormalizedPolarData(boost::shared_ptr< KTData > data);
-            void ProcessNormalizedFFTWData(boost::shared_ptr< KTData > data);
+        private:
+            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
+            KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
     };
 
     inline void KTCorrelator::AddPair(const KTCorrelationPair& pair)

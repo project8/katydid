@@ -31,24 +31,19 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTGainNormalization > sGainNormRegistrar("gain-normalization");
 
-    KTGainNormalization::KTGainNormalization() :
-            KTProcessor(),
+    KTGainNormalization::KTGainNormalization(const std::string& name) :
+            KTProcessor(name),
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
             fMaxBin(1),
             fCalculateMinBin(true),
-            fCalculateMaxBin(true)
+            fCalculateMaxBin(true),
+            fFSPolarSignal("norm-fs-polar", this),
+            fFSFFTWSignal("norm-fs-fftw", this),
+            fFSPolarSlot("fs-polar", this, &KTGainNormalization::Normalize, &fFSPolarSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTGainNormalization::Normalize, &fFSFFTWSignal)
     {
-        fConfigName = "gain-normalization";
-
-        RegisterSignal("norm-fs-polar", &fFSPolarSignal, "void (shared_ptr< KTData >)");
-        RegisterSignal("norm-fs-fftw", &fFSFFTWSignal, "void (shared_ptr< KTData >)");
-        //RegisterSignal("gain-norm-sw-fs", &fSWFSSignal, "void (const KTSlidingWindowFSData*)");
-        //RegisterSignal("gain-norm-sw-fs-fftw", &fSWFSFFTWSignal, "void (const KTSlidingWindowFSDataFFTW*)");
-
-        RegisterSlot("fs-polar", this, &KTGainNormalization::ProcessFSPolarData, "void (shared_ptr< KTData >)");
-        RegisterSlot("fs-fftw", this, &KTGainNormalization::ProcessFSFFTWData, "void (shared_ptr< KTData >)");
     }
 
     KTGainNormalization::~KTGainNormalization()
@@ -81,7 +76,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData, const KTGainVariationData& gvData)
+    Bool_t KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData)
     {
         if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumPolar(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
@@ -109,7 +104,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTGainNormalization::Normalize(KTFrequencySpectrumDataFFTW& fsData, const KTGainVariationData& gvData)
+    Bool_t KTGainNormalization::Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData)
     {
         if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
@@ -283,51 +278,5 @@ namespace Katydid
 
         return newSpectrum;
     }
-
-    void KTGainNormalization::ProcessFSPolarData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTGainVariationData >())
-        {
-            KTERROR(gnlog, "No gain variation data was present");
-            return;
-        }
-        if (!  data->Has< KTFrequencySpectrumDataPolar >())
-        {
-            KTERROR(gnlog, "No frequency spectrum data was present");
-            return;
-        }
-        if (! Normalize(data->Of< KTFrequencySpectrumDataPolar >(), data->Of< KTGainVariationData >()))
-        {
-            KTERROR(gnlog, "Something went wrong while performing a normalization");
-            return;
-        }
-        fFSPolarSignal(data);
-        return;
-
-    }
-
-    void KTGainNormalization::ProcessFSFFTWData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTGainVariationData >())
-        {
-            KTERROR(gnlog, "No gain variation data was present");
-            return;
-        }
-        if (!  data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTERROR(gnlog, "No frequency spectrum data was present");
-            return;
-        }
-        if (! Normalize(data->Of< KTFrequencySpectrumDataFFTW >(), data->Of< KTGainVariationData >()))
-        {
-            KTERROR(gnlog, "Something went wrong while performing a normalization");
-            return;
-        }
-        fFSFFTWSignal(data);
-        return;
-
-    }
-
-
 
 } /* namespace Katydid */

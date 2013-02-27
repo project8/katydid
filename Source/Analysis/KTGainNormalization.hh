@@ -13,6 +13,8 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessor.hh"
 
+#include "KTSlot.hh"
+
 #include <boost/shared_ptr.hpp>
 
 namespace Katydid
@@ -73,30 +75,20 @@ namespace Katydid
      \li \c "max-bin": unsigned -- Set the upper bound of the range that gets nornalized by bin number.
      \li \c "min-frequency": double -- Set the lower bound of the range that gets normalized by frequency.
      \li \c "max-frequency": double -- Set the upper bound of the range that gets normalized by frequency.
-     \li \c "gv-input-data-name": string -- name of the gain variation data to use when processing an event
-     \li \c "fs-input-data-name": string -- name of the frequency spectrum data to use when processing an event
-     \li \c "output-data-name": string -- name to give to the normalized frequency spectrum.
 
      Slots:
-     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
+     \li \c "fs-polar": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar
+     \li \c "fs-fftw": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW
 
      Signals:
-     \li \c "gain-norm-fs": void (const KTFrequencySpectrumData*) emitted upon performance of a normalization of a KTFrequencySpectrumData object
-     \li \c "gain-norm-fs-fftw": void (const KTFrequencySpectrumDataFFTW*) emitted upon performance normalization of a KTFrequencySpectrumDataFFTW object
-     \li \c "gain-norm-sw-fs": void (const KTSlidingWindowFSData*) emitted upon performance of a normalization of a KTSlidingWindowFSData object
-     \li \c "gain-norm-sw-fs-fftw": void (const KTSlidingWindowFSDataFFTW*) emitted upon performance of a normalization of a KTSlidingWindowFSDataFFTW object
+     \li \c "norm-fs-polar": void (shared_data< KTData >) emitted upon performance of a normalization of a polar frequency spectrum data object; Guarantees KTNormalizedFSDataPolar
+     \li \c "norm-fs-fftw": void (shared_data< KTData >) emitted upon performance normalization of an FFTW frequency spectrum data object; Guarantees KTNormalizedFSDataFFTW
     */
 
     class KTGainNormalization : public KTProcessor
     {
         public:
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal FSPolarSignal;
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal FSFFTWSignal;
-            //typedef KTSignalConcept< void (const KTSlidingWindowFSData*) >::signal SWFSSignal;
-            //typedef KTSignalConcept< void (const KTSlidingWindowFSDataFFTW*) >::signal SWFSFFTWSignal;
-
-        public:
-            KTGainNormalization();
+            KTGainNormalization(const std::string& name = "gain-normalization");
             virtual ~KTGainNormalization();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -122,8 +114,8 @@ namespace Katydid
             Bool_t fCalculateMaxBin;
 
         public:
-            Bool_t Normalize(KTFrequencySpectrumDataPolar& fsData, const KTGainVariationData& gvData);
-            Bool_t Normalize(KTFrequencySpectrumDataFFTW& fsData, const KTGainVariationData& gvData);
+            Bool_t Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData);
+            Bool_t Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
 
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
             //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
@@ -131,25 +123,23 @@ namespace Katydid
             KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline);
             KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline);
 
-        private:
-
             //***************
             // Signals
             //***************
 
         private:
-            FSPolarSignal fFSPolarSignal;
-            FSFFTWSignal fFSFFTWSignal;
-            //SWFSSignal fSWFSSignal;
-            //SWFSFFTWSignal fSWFSFFTWSignal;
+            KTSignalData fFSPolarSignal;
+            KTSignalData fFSFFTWSignal;
+            //KTSignalData fSWFSSignal;
+            //KTSignalData fSWFSFFTWSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessFSPolarData(boost::shared_ptr< KTData > data);
-            void ProcessFSFFTWData(boost::shared_ptr< KTData > data);
+        private:
+            KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarData;
+            KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWData;
 
     };
 

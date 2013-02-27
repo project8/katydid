@@ -33,19 +33,13 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTHoughTransform > sHTRegistrar("hough-transform");
 
-    KTHoughTransform::KTHoughTransform() :
-            KTProcessor(),
+    KTHoughTransform::KTHoughTransform(const std::string& name) :
+            KTProcessor(name),
             fNThetaPoints(1),
             fNRPoints(1),
-            fHTSignal()
+            fHTSignal("hough-transform", this),
+            fDiscPts2DSlot("disc", this, &KTHoughTransform::TransformData, &fHTSignal)
     {
-        fConfigName = "hough-transform";
-
-        RegisterSignal("hough-transform", &fHTSignal, "void (const KTWriteableData*)");
-
-        //RegisterSlot("header", this, &KTHoughTransform::ProcessHeader, "void (const KTEggHeader*)");
-        //RegisterSlot("swfs", this, &KTHoughTransform::ProcessSWFSData, "void (const KTSlidingWindowFSDataFFTW*)");
-        RegisterSlot("disc", this, &KTHoughTransform::ProcessDiscriminatedData, "void (shared_ptr< KTData >)");
     }
 
     KTHoughTransform::~KTHoughTransform()

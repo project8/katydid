@@ -13,6 +13,7 @@
 #include "KTTimeSeriesData.hh"
 
 #include "KTComplexFFTW.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -53,35 +54,31 @@ namespace Katydid
  
      Available configuration values:
      \li \c "save-frequency-spectrum": bool -- Option to save the intermediate frequency spectrum that is calculated while creating the analytic associate
-     \li \c "aa-fs-output-data-name": string -- If saving the intermediate frequency spectrum, the will be the name given to the FS data.
-     \li \c "input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name given to the analytic associate data
 
      Slots:
-     \li \c "header": void ProcessHeader(const KTEggHeader*)
-     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesData*)
+     \li \c "header": void (const KTEggHeader*) -- Initializes the FFT
+     \li \c "ts": void (shared_ptr< KTData >) -- Calculates an analytic associate of the time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
+     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Calculates an analytic associate of the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTAnalyticAssociateData
 
      Signals:
-     \li \c "analytic-associate": void (const KTFrequencySpectrumData*) emitted upon creation of an analytic associate
+     \li \c "aa": void (shared_ptr< KTData >) -- Emitted upon creation of an analytic associate; Guarantees KTAnalyticAssociateData
     */
     class KTAnalyticAssociator : public KTProcessor
     {
-        protected:
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal AASignal;
-
         public:
-            KTAnalyticAssociator();
+            KTAnalyticAssociator(const std::string& name = "analytic-associator");
             virtual ~KTAnalyticAssociator();
 
             Bool_t Configure(const KTPStoreNode* node);
+
+            void InitializeWithHeader(const KTEggHeader* header);
 
             KTComplexFFTW* GetFullFFT();
 
             Bool_t GetSaveFrequencySpectrum() const;
             void SetSaveFrequencySpectrum(Bool_t flag);
 
-        protected:
+        private:
             KTComplexFFTW fFullFFT;
 
             Bool_t fSaveFrequencySpectrum;
@@ -99,16 +96,16 @@ namespace Katydid
             //***************
 
          private:
-             AASignal fAASignal;
+             KTSignalData fAASignal;
 
              //***************
              // Slots
              //***************
 
-         public:
-             void ProcessHeader(const KTEggHeader* header);
-             void ProcessTimeSeriesData(boost::shared_ptr<KTData> data);
-             void ProcessFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data);
+         private:
+             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };
 

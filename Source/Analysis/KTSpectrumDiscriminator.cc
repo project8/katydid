@@ -38,8 +38,8 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTSpectrumDiscriminator > sSimpleFFTRegistrar("spectrum-discriminator");
 
-    KTSpectrumDiscriminator::KTSpectrumDiscriminator() :
-            KTProcessor(),
+    KTSpectrumDiscriminator::KTSpectrumDiscriminator(const std::string& name) :
+            KTProcessor(name),
             fSNRThreshold(10.),
             fSigmaThreshold(5.),
             fThresholdMode(eSigma),
@@ -48,20 +48,15 @@ namespace Katydid
             fMinBin(0),
             fMaxBin(1),
             fCalculateMinBin(true),
-            fCalculateMaxBin(true)
+            fCalculateMaxBin(true),
+            fDiscrim1DSignal("disc-1d", this),
+            //fDiscrim2DSignal("disc-2d", this),
+            fFSPolarSlot("fs-polar", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
+            fNormFSPolarSlot("norm-fs-polar", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
+            fNormFSFFTWSlot("norm-fs-fftw", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
+            fCorrSlot("corr", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal)
     {
-        fConfigName = "spectrum-discriminator";
-
-        RegisterSignal("disc-1d", &fDiscrim1DSignal, "void (const KTDiscriminatedPoints1DData*)");
-        //RegisterSignal("disc-2d", &fDiscrim2DSignal, "void (const KTDiscriminatedPoints2DData*)");
-
-        RegisterSlot("fs-polar", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataPolar, "void (shared_ptr< KTData >)");
-        RegisterSlot("fs-fftw", this, &KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW, "void (shared_ptr< KTData >)");
-        RegisterSlot("norm-fs-polar", this, &KTSpectrumDiscriminator::ProcessNormalizedFSDataPolar, "void (shared_ptr< KTData >)");
-        RegisterSlot("norm-fs-fftw", this, &KTSpectrumDiscriminator::ProcessNormalizedFSDataFFTW, "void (shared_ptr< KTData >)");
-        RegisterSlot("corr", this, &KTSpectrumDiscriminator::ProcessCorrelationData, "void (shared_ptr< KTData >)");
-        //RegisterSlot("swfsdata", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSData, "void (const KTSlidingWindowFSData*)");
-        //RegisterSlot("swfsdata-fftw", this, &KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW, "void (const KTSlidingWindowFSDataFFTW*)");
     }
 
     KTSpectrumDiscriminator::~KTSpectrumDiscriminator()
@@ -464,92 +459,5 @@ namespace Katydid
         return newData;
     }
 */
-    void KTSpectrumDiscriminator::ProcessFrequencySpectrumDataPolar(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataPolar >())
-        {
-            KTERROR(sdlog, "No frequency spectrum (Polar) data was present");
-            return;
-        }
-        if (! Discriminate(data->Of< KTFrequencySpectrumDataPolar >()))
-        {
-            KTERROR(sdlog, "Something went wrong while performing discrimination");
-            return;
-        }
-        fDiscrim1DSignal(data);
-        return;
-    }
 
-    void KTSpectrumDiscriminator::ProcessFrequencySpectrumDataFFTW(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTERROR(sdlog, "No frequency spectrum (FFTW) data was present");
-            return;
-        }
-        if (! Discriminate(data->Of< KTFrequencySpectrumDataFFTW >()))
-        {
-            KTERROR(sdlog, "Something went wrong while performing discrimination");
-            return;
-        }
-        fDiscrim1DSignal(data);
-        return;
-    }
-
-    void KTSpectrumDiscriminator::ProcessNormalizedFSDataPolar(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTNormalizedFSDataPolar >())
-        {
-            KTERROR(sdlog, "No frequency spectrum (Polar) data was present");
-            return;
-        }
-        if (! Discriminate(data->Of< KTNormalizedFSDataPolar >()))
-        {
-            KTERROR(sdlog, "Something went wrong while performing discrimination");
-            return;
-        }
-        fDiscrim1DSignal(data);
-        return;
-    }
-
-    void KTSpectrumDiscriminator::ProcessNormalizedFSDataFFTW(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTNormalizedFSDataFFTW >())
-        {
-            KTERROR(sdlog, "No frequency spectrum (FFTW) data was present");
-            return;
-        }
-        if (! Discriminate(data->Of< KTNormalizedFSDataFFTW >()))
-        {
-            KTERROR(sdlog, "Something went wrong while performing discrimination");
-            return;
-        }
-        fDiscrim1DSignal(data);
-        return;
-    }
-
-    void KTSpectrumDiscriminator::ProcessCorrelationData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTCorrelationData >())
-        {
-            KTERROR(sdlog, "No frequency spectrum (FFTW) data was present");
-            return;
-        }
-        if (! Discriminate(data->Of< KTCorrelationData >()))
-        {
-            KTERROR(sdlog, "Something went wrong while performing discrimination");
-            return;
-        }
-        fDiscrim1DSignal(data);
-        return;
-    }
-/*
-    void KTSpectrumDiscriminator::ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data)
-    {
-    }
-
-    void KTSpectrumDiscriminator::ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data)
-    {
-    }
-*/
 } /* namespace Katydid */

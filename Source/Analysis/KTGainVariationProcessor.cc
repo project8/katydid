@@ -32,22 +32,19 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTGainVariationProcessor > sGainVarRegistrar("gain-variation");
 
-    KTGainVariationProcessor::KTGainVariationProcessor() :
-            KTProcessor(),
+    KTGainVariationProcessor::KTGainVariationProcessor(const std::string& name) :
+            KTProcessor(name),
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
             fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
-            fNFitPoints(5)
+            fNFitPoints(5),
+            fGainVarSignal("gain-var", this),
+            fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal)
     {
-        fConfigName = "gain-variation";
-
-        RegisterSignal("gain-var", &fGainVarSignal, "void (const KTGainVariationData*)");
-
-        RegisterSlot("fs-polar", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataPolar, "void (shared_ptr< KTData >)");
-        RegisterSlot("fs-fftw", this, &KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW, "void (shared_ptr< KTData >)");
     }
 
     KTGainVariationProcessor::~KTGainVariationProcessor()
@@ -250,36 +247,5 @@ namespace Katydid
         return newGainVar;
     }
     */
-
-    void KTGainVariationProcessor::ProcessFrequencySpectrumDataPolar(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataPolar >())
-        {
-            KTERROR(gvlog, "No frequency spectrum (polar) data was present");
-            return;
-        }
-        if (! CalculateGainVariation(data->Of< KTFrequencySpectrumDataPolar >()))
-        {
-            KTERROR(gvlog, "Something went wrong while performing a forward FFT");
-            return;
-        }
-        fGainVarSignal(data);
-        return;
-    }
-    void KTGainVariationProcessor::ProcessFrequencySpectrumDataFFTW(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTERROR(gvlog, "No frequency spectrum (FFTW) data was present");
-            return;
-        }
-        if (! CalculateGainVariation(data->Of< KTFrequencySpectrumDataFFTW >()))
-        {
-            KTERROR(gvlog, "Something went wrong while performing a forward FFT");
-            return;
-        }
-        fGainVarSignal(data);
-        return;
-    }
 
 } /* namespace Katydid */

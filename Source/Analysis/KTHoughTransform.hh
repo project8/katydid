@@ -13,6 +13,7 @@
 
 #include "KTDiscriminatedPoints2DData.hh"
 #include "KTPhysicalArray.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -40,13 +41,11 @@ namespace Katydid
      \li \c "output-data-name": string -- name to give to the data produced by an FFT
 
      Slots:
-     \li \c "header": void ProcessHeader(const KTEggHeader*)
-     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c "swfs-data": void ProcessSWFSData(const KTSlidingwindowFSDataFFTW*)
-     \li \c "disc-data": void ProcessDiscriminatedData(const KTDiscriminatedPoints2DData*)
+     <!--\li \c "swfs-data": void (shared_ptr< KTData >)-->
+     \li \c "disc-data": void (shared_ptr< KTData >) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
 
      Signals:
-     \li \c "hough-transform": void (const KTWriteableData*) emitted upon performance of a transform.
+     \li \c "hough-transform": void (shared_ptr< KTData >) Emitted upon performance of a transform; Guarantees KTHoughData
     */
 
     class KTHoughTransform : public KTProcessor
@@ -58,7 +57,7 @@ namespace Katydid
             typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal HTSignal;
 
         public:
-            KTHoughTransform();
+            KTHoughTransform(const std::string& name = "hough-transform");
             virtual ~KTHoughTransform();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -69,7 +68,7 @@ namespace Katydid
             UInt_t GetNRPoints() const;
             void SetNRPoints(UInt_t nPoints);
 
-        protected:
+        private:
 
             UInt_t fNThetaPoints;
             UInt_t fNRPoints;
@@ -82,7 +81,7 @@ namespace Katydid
             KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSetOfPoints(const SetOfPoints& points, UInt_t nTimeBins, UInt_t nFreqBins);
 
 
-        protected:
+        private:
             //KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum);
 
             //***************
@@ -90,16 +89,15 @@ namespace Katydid
              //***************
 
          private:
-             HTSignal fHTSignal;
+             KTSignalData fHTSignal;
 
              //***************
              // Slots
              //***************
 
-         public:
-             //void ProcessSWFSData(const KTSlidingWindowFSDataFFTW* data);
-             void ProcessDiscriminatedData(boost::shared_ptr< KTData > data);
-
+         private:
+             KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPts2DSlot;
+             //KTSlotDataOneType< KTSlidingWindowFSDataFFTW > fSWFSFFTWSlot;
 
     };
 

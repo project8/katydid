@@ -40,19 +40,15 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
 
-    KTCorrelator::KTCorrelator() :
-            KTProcessor(),
+    KTCorrelator::KTCorrelator(const std::string& name) :
+            KTProcessor(name),
             fPairs(),
-            fCorrSignal()
+            fCorrSignal("correlation", this),
+            fFSPolarSlot("fs-polar", this, &KTCorrelator::Correlate, &fCorrSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTCorrelator::Correlate, &fCorrSignal),
+            fNormFSPolarSlot("fs-norm-polar", this, &KTCorrelator::Correlate, &fCorrSignal),
+            fNormFSFFTWSlot("fs-norm-polar", this, &KTCorrelator::Correlate, &fCorrSignal)
     {
-        fConfigName = "correlator";
-
-        RegisterSignal("correlation", &fCorrSignal, "void (shared_ptr<KTData>)");
-
-        RegisterSlot("fs-polar", this, &KTCorrelator::ProcessPolarData, "void (shared_ptr<KTData>)");
-        RegisterSlot("fs-fftw", this, &KTCorrelator::ProcessFFTWData, "void (shared_ptr<KTData>)");
-        RegisterSlot("fs-norm-polar", this, &KTCorrelator::ProcessNormalizedPolarData, "void (shared_ptr<KTData>)");
-        RegisterSlot("fs-norm-fftw", this, &KTCorrelator::ProcessNormalizedFFTWData, "void (shared_ptr<KTData>)");
     }
 
     KTCorrelator::~KTCorrelator()
@@ -171,70 +167,6 @@ namespace Katydid
         newSpectFFTW *= (*secondSpectrum);
 
         return newSpectFFTW.CreateFrequencySpectrum();
-    }
-
-    void KTCorrelator::ProcessPolarData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataPolar >())
-        {
-            KTERROR(corrlog, "No polar frequency spectrum data was present");
-            return;
-        }
-        if (! Correlate(data->Of< KTFrequencySpectrumDataPolar >()))
-        {
-            KTERROR(corrlog, "Something went wrong while performing the correlation(s)");
-            return;
-        }
-        fCorrSignal(data);
-        return;
-    }
-
-    void KTCorrelator::ProcessFFTWData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTERROR(corrlog, "No polar frequency spectrum data was present");
-            return;
-        }
-        if (! Correlate(data->Of< KTFrequencySpectrumDataFFTW >()))
-        {
-            KTERROR(corrlog, "Something went wrong while performing the correlation(s)");
-            return;
-        }
-        fCorrSignal(data);
-        return;
-    }
-
-    void KTCorrelator::ProcessNormalizedPolarData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTNormalizedFSDataPolar >())
-        {
-            KTERROR(corrlog, "No polar frequency spectrum data was present");
-            return;
-        }
-        if (! Correlate(data->Of< KTNormalizedFSDataPolar >()))
-        {
-            KTERROR(corrlog, "Something went wrong while performing the correlation(s)");
-            return;
-        }
-        fCorrSignal(data);
-        return;
-    }
-
-    void KTCorrelator::ProcessNormalizedFFTWData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTNormalizedFSDataFFTW >())
-        {
-            KTERROR(corrlog, "No polar frequency spectrum data was present");
-            return;
-        }
-        if (! Correlate(data->Of< KTNormalizedFSDataFFTW >()))
-        {
-            KTERROR(corrlog, "Something went wrong while performing the correlation(s)");
-            return;
-        }
-        fCorrSignal(data);
-        return;
     }
 
 } /* namespace Katydid */

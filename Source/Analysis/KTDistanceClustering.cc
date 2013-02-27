@@ -31,19 +31,14 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTDistanceClustering > sSimpleFFTRegistrar("distance-clustering");
 
-    KTDistanceClustering::KTDistanceClustering() :
-            KTProcessor(),
+    KTDistanceClustering::KTDistanceClustering(const std::string& name) :
+            KTProcessor(name),
             fMaxFrequencyDistance(1.),
             fMaxBinDistance(1),
-            fCalculateMaxBinDistance(true)
+            fCalculateMaxBinDistance(true),
+            fCluster1DSignal("cluster-1d", this),
+            fDiscPoints1DSlot("disc-1d", this, &KTDistanceClustering::FindClusters, &fCluster1DSignal)
     {
-        fConfigName = "distance-clustering";
-
-        RegisterSignal("cluster-1d", &fCluster1DSignal, "void (const KTCluster1DData*)");
-        //RegisterSignal("cluster-2d", &fCluster2DSignal, "void (const KTCluster2DData*)");
-
-        RegisterSlot("disc-1d", this, &KTDistanceClustering::Process1DData, "void (shared_ptr<KTData>)");
-        //RegisterSlot("disc-2d", this, &KTDistanceClustering::Process2DData, "void (const KTDiscriminatedPoints2DData*)");
     }
 
     KTDistanceClustering::~KTDistanceClustering()

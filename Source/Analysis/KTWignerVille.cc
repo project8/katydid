@@ -46,19 +46,14 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
 
-    KTWignerVille::KTWignerVille() :
-            KTProcessor(),
+    KTWignerVille::KTWignerVille(const std::string& name) :
+            KTProcessor(name),
             fFFT(new KTComplexFFTW()),
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
-            fWVSignal()
+            fWVSignal("wigner-ville", this),
+            fTimeSeriesSlot("ts", this, &KTWignerVille::TransformData, &fWVSignal),
+            fAnalyticAssociateSlot("aa", this, &KTWignerVille::TransformData, &fWVSignal)
     {
-        fConfigName = "wigner-ville";
-
-        RegisterSignal("wigner-ville", &fWVSignal, "void (const KTWriteableData*)");
-
-        RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts", this, &KTWignerVille::ProcessTimeSeriesData, "void (shared_ptr< KTData >)");
-        RegisterSlot("aa", this, &KTWignerVille::ProcessAnalyticAssociateData, "void (shared_ptr< KTData >)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -92,6 +87,17 @@ namespace Katydid
         }
 
         return true;
+    }
+
+    void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
+    {
+        UInt_t nBins = /*2 */ header->GetSliceSize();
+        fFFT->SetSize(nBins);
+        fFFT->InitializeFFT();
+        delete fInputArray;
+        // the min/max range for the input array don't matter, so just use 0 and 1
+        fInputArray = new KTTimeSeriesFFTW(nBins, 0., 1.);
+        return;
     }
 
     Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data)
@@ -173,50 +179,6 @@ namespace Katydid
         (*fInputArray)(2*size - 1)[0] = real1 * real2 + imag1 * imag2;
         (*fInputArray)(2*size - 1)[1] = imag1 * real2 - real1 * imag2;
         */
-        return;
-    }
-
-
-    void KTWignerVille::ProcessHeader(const KTEggHeader* header)
-    {
-        UInt_t nBins = /*2 */ header->GetSliceSize();
-        fFFT->SetSize(nBins);
-        fFFT->InitializeFFT();
-        delete fInputArray;
-        // the min/max range for the input array don't matter, so just use 0 and 1
-        fInputArray = new KTTimeSeriesFFTW(nBins, 0., 1.);
-        return;
-    }
-
-    void KTWignerVille::ProcessTimeSeriesData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTTimeSeriesData >())
-        {
-            KTERROR(wvlog, "No time series data was present");
-            return;
-        }
-        if (! TransformData(data->Of< KTTimeSeriesData >()))
-        {
-            KTERROR(wvlog, "Something went wrong while performing a Wigner-Ville transform");
-            return;
-        }
-        fWVSignal(data);
-        return;
-    }
-
-    void KTWignerVille::ProcessAnalyticAssociateData(shared_ptr< KTData > data)
-    {
-        if (! data->Has< KTAnalyticAssociateData >())
-        {
-            KTERROR(wvlog, "No analytic-associate data was present");
-            return;
-        }
-        if (! TransformData(data->Of< KTAnalyticAssociateData >()))
-        {
-            KTERROR(wvlog, "Something went wrong while performing a Wigner-Ville transform");
-            return;
-        }
-        fWVSignal(data);
         return;
     }
 
