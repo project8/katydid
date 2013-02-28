@@ -12,6 +12,7 @@
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
+#include "KTGainNormalization.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -34,8 +35,8 @@ namespace Katydid
             fAASignal("aa", this),
             fHeaderSlot("header", this, &KTAnalyticAssociator::InitializeWithHeader),
             fTimeSeriesSlot("ts", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal),
-            fFSFFTWSlot("fs-fftw", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal)
-
+            fFSFFTWSlot("fs-fftw", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal),
+            fNormFSFFTWSlot("norm-fs-fftw", this, &KTAnalyticAssociator::CreateAssociateData, &fAASignal)
     {
     }
 
@@ -122,6 +123,42 @@ namespace Katydid
     }
 
     Bool_t KTAnalyticAssociator::CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData)
+    {
+        if (! fFullFFT.GetIsInitialized())
+        {
+            fFullFFT.InitializeFFT();
+            if (! fFullFFT.GetIsInitialized())
+            {
+                KTERROR(aalog, "Unable to initialize full FFT.");
+                return false;
+            }
+        }
+
+        UInt_t nComponents = fsData.GetNComponents();
+
+        // New data to hold the time series of the analytic associate
+        KTAnalyticAssociateData& aaTSData = fsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
+
+        // Calculate the analytic associates
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
+
+            KTTimeSeriesFFTW* newTS = CalculateAnalyticAssociate(nextInput);
+
+            if (newTS == NULL)
+            {
+                KTERROR(aalog, "Component <" << iComponent << "> did not transform correctly.");
+                return false;
+            }
+
+            aaTSData.SetTimeSeries(newTS, iComponent);
+        }
+
+        return true;
+    }
+
+    Bool_t KTAnalyticAssociator::CreateAssociateData(KTNormalizedFSDataFFTW& fsData)
     {
         if (! fFullFFT.GetIsInitialized())
         {

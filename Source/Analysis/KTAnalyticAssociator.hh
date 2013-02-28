@@ -24,6 +24,7 @@ namespace Katydid
     class KTData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
+    class KTNormalizedFSDataFFTW;
     class KTTimeSeriesFFTW;
 
     class KTAnalyticAssociateData : public KTTimeSeriesDataCore, public KTExtensibleData< KTAnalyticAssociateData >
@@ -59,6 +60,7 @@ namespace Katydid
      \li \c "header": void (const KTEggHeader*) -- Initializes the FFT
      \li \c "ts": void (shared_ptr< KTData >) -- Calculates an analytic associate of the time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
      \li \c "fs-fftw": void (shared_ptr< KTData >) -- Calculates an analytic associate of the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTAnalyticAssociateData
+     \li \c "norm-fs-fftw": void (shared_ptr< KTData >) -- Calculates an analytic associate of the frequency spectrum; Requires KTNormalizedFSDataFFTW; Adds KTAnalyticAssociateData
 
      Signals:
      \li \c "aa": void (shared_ptr< KTData >) -- Emitted upon creation of an analytic associate; Guarantees KTAnalyticAssociateData
@@ -86,6 +88,7 @@ namespace Katydid
         public:
             Bool_t CreateAssociateData(KTTimeSeriesData& tsData);
             Bool_t CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData);
+            Bool_t CreateAssociateData(KTNormalizedFSDataFFTW& fsData);
 
            /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
             KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
@@ -106,6 +109,7 @@ namespace Katydid
              KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
              KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
              KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+             KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
 
     };
 
