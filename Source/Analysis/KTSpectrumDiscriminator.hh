@@ -29,6 +29,7 @@ namespace Katydid
     class KTNormalizedFSDataPolar;
     //class KTSlidingWindowFSData;
     //class KTSlidingWindowFSDataFFTW;
+    class KTWignerVilleData;
 
 
     /*!
@@ -49,11 +50,12 @@ namespace Katydid
      \li \c "max-bin": unsigned -- maximum frequency
 
      Slots:
-     \li \c "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KGDiscrimiantedPoints1DData
-     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KGDiscrimiantedPoints1DData
-     \li \c "norm-fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KGDiscrimiantedPoints1DData
-     \li \c "norm-fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KGDiscrimiantedPoints1DData
-     \li \c "corr":void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KGDiscrimiantedPoints1DData
+     \li \c "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
+     \li \c "norm-fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     \li \c "norm-fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
+     \li \c "corr": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
+     \li \c "wv": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
 
      Signals:
      \li \c "disc-1d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
@@ -111,6 +113,7 @@ namespace Katydid
             Bool_t Discriminate(KTNormalizedFSDataPolar& data);
             Bool_t Discriminate(KTNormalizedFSDataFFTW& data);
             Bool_t Discriminate(KTCorrelationData& data);
+            Bool_t Discriminate(KTWignerVilleData& data);
             //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
             //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
 
@@ -137,6 +140,7 @@ namespace Katydid
             KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
             KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
             KTSlotDataOneType< KTCorrelationData > fCorrSlot;
+            KTSlotDataOneType< KTWignerVilleData > fWVSlot;
 
     };
 

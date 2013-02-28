@@ -94,15 +94,15 @@ namespace Katydid
 
      Available configuration values:
      \li \c "complex-fftw": string -- 
-     \li \c "wv-pair": bool -- 
+     \li \c "wv-pair": bool -- channel pair to be used in the Wigner-Ville transform: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
 
      Slots:
-     \li \c "header": void ProcessHeader(const KTEggHeader*)
-     \li \c "event": void ProcessEvent(boost::shared_ptr<KTEvent>)
-     \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesDataReal*)
+     \li \c "header": void (const KTEggHeader*) -- Initializes the transform using an Egg header
+     \li \c "ts": void (shared_ptr< KTData >) -- Perform a WV transform on a time series; Requires KTTimeSeriesData; Adds KTWignerVilleData
+     \li \c "aa": void (shared_ptr< KTData >) -- Perform a WV transform on an analytic associate: Requires KTAnalyticAssociateData; Adds KTWignerVilleData
 
      Signals:
-     \li \c "wigner-ville": void (shared_ptr< KTData >) emitted upon performance of a WV transform; Guarantees KTWignerVilleData
+     \li \c "wigner-ville": void (shared_ptr< KTData >) -- Emitted upon performance of a WV transform; Guarantees KTWignerVilleData
     */
 
     class KTWignerVille : public KTProcessor
@@ -157,6 +157,7 @@ namespace Katydid
              //***************
 
          private:
+             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
              KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
              KTSlotDataOneType< KTAnalyticAssociateData > fAnalyticAssociateSlot;
 
@@ -236,6 +237,7 @@ namespace Katydid
             newData.SetInputPair(firstChannel, secondChannel, iPair);
             iPair++;
         }
+        KTDEBUG(wvlog, "Completed WV transform of " << nComponents << " components");
 
         return true;
     }

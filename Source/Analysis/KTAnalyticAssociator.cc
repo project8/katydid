@@ -118,6 +118,7 @@ namespace Katydid
 
             aaTSData.SetTimeSeries(newTS, iComponent);
         }
+        KTDEBUG(aalog, "Analytic associate calculation (from TS) complete for " << aaTSData.GetNComponents() << " components");
 
         return true;
     }
@@ -154,6 +155,7 @@ namespace Katydid
 
             aaTSData.SetTimeSeries(newTS, iComponent);
         }
+        KTDEBUG(aalog, "Analytic associate calculation (from FS) complete for " << aaTSData.GetNComponents() << " components");
 
         return true;
     }
@@ -190,6 +192,7 @@ namespace Katydid
 
             aaTSData.SetTimeSeries(newTS, iComponent);
         }
+        KTDEBUG(aalog, "Analytic associate calculation (from normalized FS) complete for " << aaTSData.GetNComponents() << " components");
 
         return true;
     }

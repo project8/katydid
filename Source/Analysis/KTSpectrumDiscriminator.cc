@@ -20,6 +20,7 @@
 #include "KTPStoreNode.hh"
 //#include "KTSlidingWindowFSData.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"
+#include "KTWignerVille.hh"
 
 #include <cmath>
 #include <vector>
@@ -55,7 +56,8 @@ namespace Katydid
             fFSFFTWSlot("fs-fftw", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fNormFSPolarSlot("norm-fs-polar", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
             fNormFSFFTWSlot("norm-fs-fftw", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
-            fCorrSlot("corr", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal)
+            fCorrSlot("corr", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal),
+            fWVSlot("wv", this, &KTSpectrumDiscriminator::Discriminate, &fDiscrim1DSignal)
     {
     }
 
@@ -122,6 +124,12 @@ namespace Katydid
     }
 
     Bool_t KTSpectrumDiscriminator::Discriminate(KTCorrelationData& data)
+    {
+        KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
+        return CoreDiscriminate(data, newData);
+    }
+
+    Bool_t KTSpectrumDiscriminator::Discriminate(KTWignerVilleData& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
         return CoreDiscriminate(data, newData);
@@ -204,6 +212,7 @@ namespace Katydid
             }
 
         }
+        KTDEBUG(sdlog, "Completed discrimination on " << nComponents << " compnents");
 
         return true;
     }
@@ -276,6 +285,7 @@ namespace Katydid
                 if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
             }
         }
+        KTDEBUG(sdlog, "Completed discrimination on " << nComponents << " compnents");
 
         return true;
     }

@@ -128,9 +128,13 @@ namespace Katydid
         UInt_t iSlice = 0;
         while (kTRUE)
         {
-            if (iSlice >= fNSlices) break;
+            if (iSlice >= fNSlices)
+            {
+                KTINFO(egglog, iSlice << "/" << fNSlices << " slices hatched; slice processing is complete");
+                break;
+            }
 
-            KTINFO(egglog, "Slice " << iSlice);
+            KTINFO(egglog, "Hatching slice " << iSlice << "/" << fNSlices);
 
             // Hatch the slice
             shared_ptr<KTData> data = egg.HatchNextSlice();

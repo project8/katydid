@@ -55,6 +55,7 @@ namespace Katydid
  
      Available configuration values:
      \li \c "save-frequency-spectrum": bool -- Option to save the intermediate frequency spectrum that is calculated while creating the analytic associate
+     \li \c "complex-fftw": nested config: -- See KTComplexFFTW
 
      Slots:
      \li \c "header": void (const KTEggHeader*) -- Initializes the FFT

@@ -51,6 +51,7 @@ namespace Katydid
             fFFT(new KTComplexFFTW()),
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
             fWVSignal("wigner-ville", this),
+            fHeaderSlot("header", this, &KTWignerVille::InitializeWithHeader),
             fTimeSeriesSlot("ts", this, &KTWignerVille::TransformData, &fWVSignal),
             fAnalyticAssociateSlot("aa", this, &KTWignerVille::TransformData, &fWVSignal)
     {
