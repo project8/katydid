@@ -109,12 +109,27 @@ namespace Katydid
     class KTSignalData : public KTSignalOneArg< boost::shared_ptr< KTData > >
     {
         public:
+            typedef void (signature)(boost::shared_ptr< KTData >);
+            typedef boost::signals2::signal< signature > boost_signal;
+            typedef boost::signals2::signal< signature >::slot_type slot_type;
+
+            typedef void (ref_signature)(boost::shared_ptr< KTData >&);
+            typedef boost::signals2::signal< ref_signature > ref_boost_signal;
+            typedef boost::signals2::signal< ref_signature >::slot_type ref_slot_type;
+
+        public:
             KTSignalData(const std::string& name, KTProcessor* proc);
             virtual ~KTSignalData();
 
         protected:
             KTSignalData();
             KTSignalData(const KTSignalData&);
+
+        public:
+            void operator()(boost::shared_ptr< KTData > arg);
+
+        protected:
+            ref_boost_signal fRefSignal;
     };
 
 
@@ -148,10 +163,16 @@ namespace Katydid
     }
 
 
-
     inline void KTSignalOneArg< void >::operator()()
     {
         fSignal();
+    }
+
+
+    inline void KTSignalData::operator()(boost::shared_ptr< KTData > arg)
+    {
+        fSignal(arg);
+        fRefSignal(arg);
     }
 
 

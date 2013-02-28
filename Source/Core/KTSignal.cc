@@ -31,8 +31,10 @@ namespace Katydid
 
 
     KTSignalData::KTSignalData(const std::string& name, KTProcessor* proc) :
-            KTSignalOneArg(name, proc)
+            KTSignalOneArg(name, proc),
+            fRefSignal()
     {
+        proc->RegisterSignal("ref-"+name, &fRefSignal);
     }
 
     KTSignalData::~KTSignalData()
