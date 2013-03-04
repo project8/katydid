@@ -13,7 +13,7 @@ namespace Katydid
 {
     KTHoughData::KTHoughData() :
             KTExtensibleData< KTHoughData >(),
-            fTransforms(1)
+            fTransforms()
     {
     }
 

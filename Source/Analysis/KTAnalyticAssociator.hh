@@ -39,7 +39,15 @@ namespace Katydid
 
             virtual KTAnalyticAssociateData& SetNComponents(UInt_t num)
             {
+                UInt_t oldSize = fTimeSeries.size();
                 fTimeSeries.resize(num);
+                if (num > oldSize)
+                {
+                    for (UInt_t iComponent = oldSize; iComponent < num; iComponent++)
+                    {
+                        fTimeSeries[iComponent] = NULL;
+                    }
+                }
                 return *this;
             }
     };

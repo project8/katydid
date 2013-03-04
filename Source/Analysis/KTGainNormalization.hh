@@ -30,7 +30,15 @@ namespace Katydid
 
             inline KTNormalizedFSDataPolar& SetNComponents(UInt_t components)
             {
+                UInt_t oldSize = fSpectra.size();
                 fSpectra.resize(components);
+                if (components > oldSize)
+                {
+                    for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+                    {
+                        fSpectra[iComponent] = NULL;
+                    }
+                }
                 return *this;
             }
     };
@@ -45,7 +53,15 @@ namespace Katydid
 
             inline KTNormalizedFSDataFFTW& SetNComponents(UInt_t components)
             {
+                UInt_t oldSize = fSpectra.size();
                 fSpectra.resize(components);
+                if (components > oldSize)
+                {
+                    for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+                    {
+                        fSpectra[iComponent] = NULL;
+                    }
+                }
                 return *this;
             }
     };

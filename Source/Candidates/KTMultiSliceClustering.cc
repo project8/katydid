@@ -48,6 +48,7 @@ namespace Katydid
             fMaxTimeSepBins(1),
             fCalculateMaxFreqSepBins(false),
             fCalculateMaxTimeSepBins(false),
+            fMinTimeBins(2),
             fTimeBin(0),
             fTimeBinWidth(1.),
             fFreqBinWidth(1.),
@@ -85,6 +86,8 @@ namespace Katydid
         {
             SetMaxTimeSeparationBins(node->GetData< UInt_t >("max-time-sep-bins"));
         }
+
+        SetMinTimeBins(node->GetData< UInt_t >("min-time-bins", fMinTimeBins));
 
         return true;
     }
@@ -409,8 +412,15 @@ namespace Katydid
             }
             else if (! acHasBeenAddedTo[iCluster])
             {
-                KTDEBUG(sclog, "    no longer active; creating a slice");
-                completeClusters->push_back(*acIt);
+                if (acIt->LastTimeBin() - acIt->FirstTimeBin() + 1 >= fMinTimeBins)
+                {
+                    KTDEBUG(sclog, "    no longer active and long enough; creating a slice");
+                    completeClusters->push_back(*acIt);
+                }
+                else
+                {
+                    KTDEBUG(sclog, "    no longer active but not long enough; removing cluster");
+                }
                 acIt = fActiveClusters[component].erase(acIt); // the iterator returned is the next position in the cluster
                 acIt--; // back up the iterator so that when processing hits the beginning of the loop, the iterator is returned to the "next" position
             }

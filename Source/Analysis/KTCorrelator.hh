@@ -26,7 +26,8 @@ namespace Katydid
         public:
             KTCorrelationData() :
                     KTFrequencySpectrumDataPolarCore(),
-                    KTExtensibleData< KTCorrelationData >()
+                    KTExtensibleData< KTCorrelationData >(),
+                    fComponentData(1)
             {}
             virtual ~KTCorrelationData()
             {}
@@ -46,8 +47,16 @@ namespace Katydid
 
             inline virtual KTCorrelationData& SetNComponents(UInt_t components)
             {
+                UInt_t oldSize = fSpectra.size();
                 fSpectra.resize(components);
                 fComponentData.resize(components);
+                if (components > oldSize)
+                {
+                    for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+                    {
+                        fSpectra[iComponent] = NULL;
+                    }
+                }
                 return *this;
             }
 

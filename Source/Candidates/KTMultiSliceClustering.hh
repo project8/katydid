@@ -96,6 +96,9 @@ namespace Katydid
             UInt_t GetMaxTimeSeparationBins() const;
             void SetMaxTimeSeparationBins(UInt_t bins);
 
+            UInt_t GetMinTimeBins() const;
+            void SetMinTimeBins(UInt_t bins);
+
         private:
             Double_t fMaxFreqSep;
             Double_t fMaxTimeSep;
@@ -103,6 +106,7 @@ namespace Katydid
             UInt_t fMaxTimeSepBins;
             Bool_t fCalculateMaxFreqSepBins;
             Bool_t fCalculateMaxTimeSepBins;
+            UInt_t fMinTimeBins;
 
         public:
             /// Add points from dpData to the active clusters and create candidates
@@ -220,6 +224,17 @@ namespace Katydid
     {
         fMaxTimeSepBins = bins;
         fCalculateMaxTimeSepBins = false;
+        return;
+    }
+
+    inline UInt_t KTMultiSliceClustering::GetMinTimeBins() const
+    {
+        return fMinTimeBins;
+    }
+
+    inline void KTMultiSliceClustering::SetMinTimeBins(UInt_t bins)
+    {
+        fMinTimeBins = bins;
         return;
     }
 

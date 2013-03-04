@@ -94,9 +94,9 @@ namespace Katydid
         return;
     }
 
-    inline KTFrequencyCandidateData& KTFrequencyCandidateData::SetNComponents(UInt_t channels)
+    inline KTFrequencyCandidateData& KTFrequencyCandidateData::SetNComponents(UInt_t components)
     {
-        fComponentData.resize(channels);
+        fComponentData.resize(components);
         return *this;
     }
 

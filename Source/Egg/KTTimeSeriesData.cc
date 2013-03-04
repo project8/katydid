@@ -12,6 +12,7 @@ namespace Katydid
     KTTimeSeriesDataCore::KTTimeSeriesDataCore() :
             fTimeSeries(1)
     {
+        fTimeSeries[0] = NULL;
     }
 
     KTTimeSeriesDataCore::~KTTimeSeriesDataCore()

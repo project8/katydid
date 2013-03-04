@@ -14,6 +14,7 @@ namespace Katydid
             KTExtensibleData< KTGainVariationData >(),
             fComponentData(1)
     {
+        fComponentData[0].fSpline = NULL;
     }
 
     KTGainVariationData::~KTGainVariationData()

@@ -64,13 +64,21 @@ namespace Katydid
 
     inline void KTHoughData::SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t component)
     {
-        if (component >= fTransforms.size()) fTransforms.resize(component+1);
+        if (component >= fTransforms.size()) SetNComponents(component+1);
         fTransforms[component] = transform;
     }
 
-    inline KTHoughData& KTHoughData::SetNComponents(UInt_t chomponents)
+    inline KTHoughData& KTHoughData::SetNComponents(UInt_t components)
     {
-        fTransforms.resize(chomponents);
+        UInt_t oldSize = fTransforms.size();
+        fTransforms.resize(components);
+        if (components > oldSize)
+        {
+            for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+            {
+                fTransforms[iComponent] = NULL;
+            }
+        }
         return *this;
     }
 

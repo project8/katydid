@@ -163,6 +163,11 @@ namespace Katydid
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
+            if (spectrum == NULL)
+            {
+                KTERROR(sdlog, "Frequency spectrum pointer (component " << iComponent << ") is NULL!");
+                return false;
+            }
             if (spectrum->size() != magnitude.size())
             {
                 magnitude.resize(spectrum->size());
@@ -245,6 +250,15 @@ namespace Katydid
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
+            if (spectrum == NULL)
+            {
+                KTERROR(sdlog, "Frequency spectrum pointer (component " << iComponent << ") is NULL!");
+                return false;
+            }
+            if (spectrum->size() != magnitude.size())
+            {
+                magnitude.resize(spectrum->size());
+            }
 
             Double_t mean = 0.;
             for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)

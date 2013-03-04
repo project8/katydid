@@ -39,7 +39,8 @@ namespace Katydid
         public:
             KTWignerVilleData() :
                     KTFrequencySpectrumDataFFTWCore(),
-                    KTExtensibleData< KTWignerVilleData >()
+                    KTExtensibleData< KTWignerVilleData >(),
+                    fWVComponentData(1)
             {}
             virtual ~KTWignerVilleData()
             {}
@@ -59,8 +60,16 @@ namespace Katydid
 
             inline virtual KTWignerVilleData& SetNComponents(UInt_t components)
             {
+                UInt_t oldSize = fSpectra.size();
                 fSpectra.resize(components);
                 fWVComponentData.resize(components);
+                if (components > oldSize)
+                {
+                    for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+                    {
+                        fSpectra[iComponent] = NULL;
+                    }
+                }
                 return *this;
             }
 
@@ -206,6 +215,7 @@ namespace Katydid
         }
 
         UInt_t nComponents = data.GetNComponents();
+        UInt_t nPairs = fPairs.size();
 
         // cast all time series into KTTimeSeriesFFTW
         std::vector< const KTTimeSeriesFFTW* > timeSeries(nComponents);
@@ -219,7 +229,7 @@ namespace Katydid
             }
         }
 
-        KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nComponents);
+        KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nPairs);
 
         // Do WV transform for each pair
         UInt_t iPair = 0;
