@@ -48,7 +48,7 @@ if (Katydid_ENABLE_TESTING)
     target_link_libraries (TestCutableArray KatydidUtility ${LIBS})
     
     add_executable (TestDistanceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestDistanceClustering.cc)
-    target_link_libraries (TestDistanceClustering KatydidUtility KatydidOutput KatydidEgg KatydidFFT KatydidCore KatydidAnalysis ${LIBS})
+    target_link_libraries (TestDistanceClustering KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
         
     add_executable (TestEggHatching ${CMAKE_CURRENT_SOURCE_DIR}/TestEggHatching.cc)
     target_link_libraries (TestEggHatching KatydidUtility KatydidCore KatydidOutput KatydidEgg ${LIBS})
@@ -66,6 +66,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${LIBS})
     
+    add_executable (TestMultiSliceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestMultiSliceClustering.cc)
+    target_link_libraries (TestMultiSliceClustering KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${LIBS})
+    
     add_executable (TestParameterStore ${CMAKE_CURRENT_SOURCE_DIR}/TestParameterStore.cc
                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
     target_link_libraries (TestParameterStore KatydidUtility KatydidCore ${LIBS})
@@ -75,6 +78,7 @@ if (Katydid_ENABLE_TESTING)
     )
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${LIBS})
 
+    # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
     #add_executable (TestSimpleClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleClustering.cc)
     #target_link_libraries (TestSimpleClustering KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${LIBS})
 
@@ -114,6 +118,7 @@ if (Katydid_ENABLE_TESTING)
                      #TestHoughTransform
                      TestJSONWriter
                      TestLogger
+                     TestMultiSliceClustering
                      TestParameterStore
                      TestSignalsAndSlots
                      #TestSimpleClustering
@@ -141,6 +146,7 @@ if (Katydid_ENABLE_TESTING)
     #add_test (Test_HoughTransform TestHoughTransform)
     add_test (Test_JSONWriter TestJSONWriter)
     add_test (Test_Logger TestLogger)
+    add_test (Test_MultiSliceClustering TestMultiSliceClustering)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     #add_test (Test_SimpleClustering TestSimpleClustering)
