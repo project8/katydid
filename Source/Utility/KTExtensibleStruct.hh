@@ -47,6 +47,7 @@ namespace Katydid
             KTExtensibleStruct& operator=(const KTExtensibleStruct& object);
             virtual KTExtensibleStructCore<XGroupType>* Clone(void) const;
             virtual void Pull(const KTExtensibleStructCore<XGroupType>& object);
+            void SetIsCopyDisabled(bool flag);
         private:
             bool fIsCopyDisabled;
     };
@@ -245,6 +246,13 @@ namespace Katydid
         {
             this->fNext->Pull(object);
         }
+    }
+
+    template<class XInstanceType, class XGroupType>
+    inline void KTExtensibleStruct<XInstanceType, XGroupType>::SetIsCopyDisabled(bool flag)
+    {
+        fIsCopyDisabled = flag;
+        return;
     }
 
 } /* namespace Katydid */
