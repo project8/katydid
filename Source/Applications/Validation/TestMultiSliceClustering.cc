@@ -7,7 +7,8 @@
 
 
 #include "KTDiscriminatedPoints1DData.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTLogger.hh"
 #include "KTMultiSliceClustering.hh"
 #include "KTSliceHeader.hh"
@@ -21,7 +22,17 @@ KTLOGGER(vallog, "katydid.applications.validation")
 
 int main()
 {
+    UInt_t freqBins = 51;
     Double_t freqBW = 100.; // Hz
+
+    KTSliceHeader masterHeader;
+    masterHeader.SetNComponents(1);
+    masterHeader.SetSliceSize(100);
+    masterHeader.SetSampleRate(1.);
+    masterHeader.CalculateBinWidthAndSliceLength();
+    masterHeader.SetAcquisitionID(42, 0);
+    // time in run and slice number set for each slice
+
 
     // Simulated points
     vector< KTDiscriminatedPoints1DData::SetOfPoints > allPoints;
@@ -73,43 +84,57 @@ int main()
     KTINFO(vallog, "Discriminated points have been simulated.");
     KTINFO(vallog, "There should be 6 clusters");
 
-    KTSimpleClustering clustering;
+    KTMultiSliceClustering clustering;
     clustering.SetFrequencyBinWidth(freqBW);
     clustering.SetMaxFrequencySeparationBins(1);
+    clustering.SetMinTimeBins(1);
 
-    KTSimpleClustering::NewBundleList allNewBundles;
+    KTMultiSliceClustering::DataList allNewData;
 
     KTINFO(vallog, "Commencing with the clustering process");
+    ULong64_t iSlice = 0;
     for (vector< KTDiscriminatedPoints1DData::SetOfPoints >::const_iterator setIt = allPoints.begin(); setIt != allPoints.end(); setIt++)
     {
         KTINFO(vallog, "Creating time bin");
-        // Setup this frequency bin's input data
-        KTDiscriminatedPoints1DData dataIn(1);
-        dataIn.SetBinWidth(freqBW);
-        dataIn.SetThreshold(1., 0);
+        // Setup this time bin's input data
+        KTSliceHeader header(masterHeader);
+        header.SetSliceNumber(iSlice);
+        header.SetTimeInRun(Double_t(iSlice));
+        KTDiscriminatedPoints1DData dpDataIn;
+        dpDataIn.SetNComponents(1);
+        dpDataIn.SetBinWidth(freqBW);
+        dpDataIn.SetThreshold(1., 0);
+        KTFrequencySpectrumPolar* freqSpec = new KTFrequencySpectrumPolar(freqBins, -0.5*freqBW, (Double_t(freqBins) - 0.5) * freqBW);
+        KTFrequencySpectrumDataPolar fsDataIn;
+        fsDataIn.SetNComponents(1);
+        fsDataIn.SetSpectrum(freqSpec, 0);
+
         for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pointIt = setIt->begin(); pointIt != setIt->end(); pointIt++)
         {
             KTDEBUG(vallog, "    adding point");
-            dataIn.AddPoint(pointIt->first, pointIt->second, 0);
+            dpDataIn.AddPoint(pointIt->first, pointIt->second, 0);
+            (*freqSpec)(pointIt->first).set_polar(pointIt->second, 0.);
         }
         KTINFO(vallog, "Time bin created");
 
         KTINFO(vallog, "Adding points to clusters");
-        KTSimpleClustering::NewBundleList* newBundles = clustering.AddPointsToClusters(&dataIn);
-        KTINFO(vallog, "New bundles produced: " << newBundles->size());
+        KTMultiSliceClustering::DataList* newData = clustering.FindClusters(dpDataIn, fsDataIn, header);
+        KTINFO(vallog, "New data produced: " << newData->size());
 
-        allNewBundles.splice(allNewBundles.end(), *newBundles);
-        delete newBundles;
+        allNewData.splice(allNewData.end(), *newData);
+        delete newData;
+
+        iSlice++;
     }
 
     KTINFO(vallog, "Cleaning up remaining active clusters");
-    KTSimpleClustering::NewBundleList* newBundles = clustering.CompleteAllClusters(0);
-    KTINFO(vallog, "New bundles produced: " << newBundles->size());
+    KTMultiSliceClustering::DataList* newData = clustering.CompleteAllClusters(0);
+    KTINFO(vallog, "New data produced: " << newData->size());
 
-    allNewBundles.splice(allNewBundles.end(), *newBundles);
-    delete newBundles;
+    allNewData.splice(allNewData.end(), *newData);
+    delete newData;
 
-    KTINFO(vallog, "Test complete; " << allNewBundles.size() << " new bundles were created.");
+    KTINFO(vallog, "Test complete; " << allNewData.size() << " new bundles were created.");
 
     return 0;
 }

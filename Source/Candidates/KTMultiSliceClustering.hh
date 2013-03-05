@@ -28,8 +28,11 @@ namespace Katydid
 {
     class KTCorrelationData;
     class KTFrequencySpectrum;
-    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumDataFFTWCore;
+    class KTFrequencySpectrumDataPolar;
+    class KTFrequencySpectrumDataPolarCore;
+    class KTFrequencySpectrumPolar;
     class KTSliceHeader;
     class KTWignerVilleData;
 
@@ -44,7 +47,7 @@ namespace Katydid
                  UInt_t fFreqBin;
                  Double_t fAmplitude;
                  boost::shared_ptr< KTSliceHeader > fHeaderPtr;
-                 boost::shared_ptr< KTFrequencySpectrumDataPolar > fSpectrumPtr;
+                 boost::shared_ptr< KTFrequencySpectrumPolar > fSpectrumPtr;
             };
             //typedef std::deque< ClusterPoint > Cluster;
             struct Cluster
@@ -118,14 +121,16 @@ namespace Katydid
             /// Add points from dpData to the active clusters and create candidates
             DataList* FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTWignerVilleData& wvData, const KTSliceHeader& header);
 
+            /// Complete all remaining active clusters
+            DataList* CompleteAllClusters(UInt_t component);
+
             /// Add points from dpData to the active clusters
-            ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, boost::shared_ptr<KTFrequencySpectrumDataPolar>& spectrumDataPtr, boost::shared_ptr< KTSliceHeader >& header);
+            ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataPolarCore& spectrumData, boost::shared_ptr< KTSliceHeader >& header);
+            /// Add points from dpData to the active clusters
+            ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataFFTWCore& spectrumData, boost::shared_ptr< KTSliceHeader >& header);
 
             /// Add points from a set of points to the active clusters
-            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, UInt_t component, boost::shared_ptr<KTFrequencySpectrumDataPolar>& spectrumDataPtr, boost::shared_ptr< KTSliceHeader >& header);
-
-            /// Complete all remaining active clusters
-            ClusterList* CompleteAllClusters(UInt_t component);
+            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, boost::shared_ptr<KTFrequencySpectrumPolar>& spectrumPtr, UInt_t component, boost::shared_ptr< KTSliceHeader >& header);
 
             void Reset();
             UInt_t GetTimeBin() const;

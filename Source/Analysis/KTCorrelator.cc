@@ -166,7 +166,7 @@ namespace Katydid
         newSpectFFTW.CConjugate();
         newSpectFFTW *= (*secondSpectrum);
 
-        return newSpectFFTW.CreateFrequencySpectrum();
+        return newSpectFFTW.CreateFrequencySpectrumPolar();
     }
 
 } /* namespace Katydid */

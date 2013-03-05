@@ -20,7 +20,10 @@ namespace Katydid
     {
         public:
             KTSliceHeader();
+            KTSliceHeader(const KTSliceHeader& orig);
             virtual ~KTSliceHeader();
+
+            KTSliceHeader& operator=(const KTSliceHeader& rhs);
 
             UInt_t GetNComponents() const;
 
