@@ -49,17 +49,26 @@ namespace Katydid
                  boost::shared_ptr< KTSliceHeader > fHeaderPtr;
                  boost::shared_ptr< KTFrequencySpectrumPolar > fSpectrumPtr;
             };
-            //typedef std::deque< ClusterPoint > Cluster;
+
+            struct PointCompare
+            {
+                bool operator() (const ClusterPoint& lhs, const ClusterPoint& rhs)
+                {
+                    return lhs.fTimeBin < rhs.fTimeBin || (lhs.fTimeBin == rhs.fTimeBin && lhs.fFreqBin < rhs.fFreqBin);
+                }
+            };
+
+            typedef std::set< ClusterPoint, PointCompare > SetOfPoints;
+
             struct Cluster
             {
-                std::deque< ClusterPoint > fPoints; // every point in the cluster
-                std::deque< std::pair< UInt_t, UInt_t > > fFreqRanges; // first and last frequency bins for each time bin
+                SetOfPoints fPoints; // every point in the cluster
 
-                UInt_t FirstTimeBin() const {return fPoints.front().fTimeBin;}
-                UInt_t LastTimeBin() const {return fPoints.back().fTimeBin;}
+                UInt_t FirstTimeBin() const {return fPoints.begin()->fTimeBin;}
+                UInt_t LastTimeBin() const {return fPoints.rbegin()->fTimeBin;}
 
-                UInt_t EndMinFreqPoint() const {return fFreqRanges.back().first;}
-                UInt_t EndMaxFreqPoint() const {return fFreqRanges.back().second;}
+                UInt_t fEndMinFreqPoint;
+                UInt_t fEndMaxFreqPoint;
 
                 UInt_t fDataComponent;
 
