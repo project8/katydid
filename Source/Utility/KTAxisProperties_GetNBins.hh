@@ -99,7 +99,11 @@ namespace Katydid
                 //KTWARN(utillog_getnbins, (fPtrToArray->*fArrayOfGetNBinsPtrs[0])() << "  " << (fPtrToArray->*fArrayOfGetNBinsPtrs[1])());
             }
 
-            virtual ~KTNBinsInArray() {}
+            virtual ~KTNBinsInArray()
+            {
+                if (fMode == kMultipleFunc)
+                    delete [] fArrayOfGetNBinsPtrs;
+            }
 
             virtual size_t operator()(size_t dim=1) const
             {

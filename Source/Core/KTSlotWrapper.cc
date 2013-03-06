@@ -22,6 +22,7 @@ namespace Katydid
     KTSlotWrapper::~KTSlotWrapper()
     {
         this->Disconnect();
+        delete fSlotWrapper;
     }
 
 } /* namespace Katydid */

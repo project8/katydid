@@ -43,7 +43,7 @@ namespace Katydid
                     {}
                     virtual ~KTSpecifiedInternalSlotWrapper()
                     {
-                        //delete fSlot;
+                        delete fSlot;
                     }
 
                     virtual KTConnection Connect(KTSignalWrapper* signalWrap, int groupNum=-1)
