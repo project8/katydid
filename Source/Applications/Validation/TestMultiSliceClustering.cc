@@ -12,6 +12,12 @@
 #include "KTLogger.hh"
 #include "KTMultiSliceClustering.hh"
 #include "KTSliceHeader.hh"
+#include "KTWaterfallCandidateData.hh"
+
+#ifdef ROOT_FOUND
+#include "TH2.h"
+#include "TFile.h"
+#endif
 
 #include <vector>
 
@@ -145,18 +151,44 @@ int main()
     }
 
     KTINFO(vallog, "Cleaning up remaining active clusters");
-    KTMultiSliceClustering::DataList* newData = clustering.CompleteAllClusters(0);
+    KTMultiSliceClustering::DataList* newData = clustering.CompleteAllClusters();
     KTINFO(vallog, "New data produced: " << newData->size());
 
     allNewData.splice(allNewData.end(), *newData);
     delete newData;
 
-    KTINFO(vallog, "Test complete; " << allNewData.size() << " new data objects were created.");
 
 #ifdef ROOT_FOUND
+    string rootFilename("waterfall_test.root");
 
+    KTINFO(vallog, "Printing waterfall plots to " << rootFilename);
 
+    TFile file(rootFilename.c_str(), "recreate");
+
+    UInt_t iCandidate = 0;
+    for (KTMultiSliceClustering::DataList::const_iterator it = allNewData.begin(); it != allNewData.end(); it++)
+    {
+        stringstream conv;
+        conv << "hCandidate" << iCandidate;
+        string histName(conv.str());
+        KTWARN(vallog, "KTData Test: " << (*it)->fCounter);
+        (*it)->Has<KTData>();
+        if (! (*it)->Has< KTWaterfallCandidateData >())
+        {
+            KTERROR(vallog, "Waterfall candidate data is not present!");
+            continue;
+        }
+        KTWaterfallCandidateData& wfData = (*it)->Of< KTWaterfallCandidateData >();
+        TH2D* wfHist = wfData.GetCandidate()->CreatePowerHistogram(histName.c_str());
+        wfHist->SetDirectory(&file);
+        wfHist->Write();
+        iCandidate++;
+    }
+
+    file.Close();
 #endif
+
+    KTINFO(vallog, "Test complete; " << allNewData.size() << " new data objects were created.");
 
     return 0;
 }

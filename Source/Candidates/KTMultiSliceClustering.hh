@@ -18,10 +18,9 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <deque>
 #include <list>
 //#include <map>
-//#include <set>
+#include <set>
 #include <utility>
 
 namespace Katydid
@@ -131,7 +130,7 @@ namespace Katydid
             DataList* FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTWignerVilleData& wvData, const KTSliceHeader& header);
 
             /// Complete all remaining active clusters
-            DataList* CompleteAllClusters(UInt_t component);
+            DataList* CompleteAllClusters();
 
             /// Add points from dpData to the active clusters
             ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataPolarCore& spectrumData, boost::shared_ptr< KTSliceHeader >& header);

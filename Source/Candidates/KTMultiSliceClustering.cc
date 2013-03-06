@@ -27,7 +27,6 @@
 using boost::shared_ptr;
 using boost::weak_ptr;
 
-using std::deque;
 using std::list;
 using std::pair;
 using std::set;
@@ -52,6 +51,7 @@ namespace Katydid
             fTimeBin(0),
             fTimeBinWidth(1.),
             fFreqBinWidth(1.),
+            fActiveClusters(),
             fOneSliceDataSignal("one-slice", this),
             fClusteredDataSignal("cluster", this)
     {
@@ -178,18 +178,19 @@ namespace Katydid
 
 
 
-    KTMultiSliceClustering::DataList* KTMultiSliceClustering::CompleteAllClusters(UInt_t component)
+    KTMultiSliceClustering::DataList* KTMultiSliceClustering::CompleteAllClusters()
     {
-        ClusterList* completedClusters = new ClusterList(fActiveClusters[component].begin(), fActiveClusters[component].end());
-
         DataList* newDataList = new DataList();
 
-        for (ClusterList::iterator acIt = completedClusters->begin(); acIt != completedClusters->end();)
+        for (UInt_t iComponent = 0; iComponent < fActiveClusters.size(); iComponent++)
         {
-            newDataList->push_back(CreateDataFromCluster(*acIt));
-            acIt = completedClusters->erase(acIt);
+            for (ClusterList::iterator acIt = fActiveClusters[iComponent].begin(); acIt != fActiveClusters[iComponent].end();)
+            {
+                newDataList->push_back(CreateDataFromCluster(*acIt));
+                acIt = fActiveClusters[iComponent].erase(acIt);
+            }
+            fActiveClusters[iComponent].clear();
         }
-        delete completedClusters;
 
         return newDataList;
     }

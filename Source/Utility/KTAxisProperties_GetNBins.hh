@@ -10,8 +10,6 @@
 
 #include "KTLogger.hh"
 
-#include "Rtypes.h"
-
 #include <cmath>
 
 namespace Katydid
@@ -59,12 +57,12 @@ namespace Katydid
 
             size_t GetNBinsByDimDirectly(size_t dim) const
             {
-                return ((*fPtrToArray).*fDirectNBinsPtr)(dim-1);
+                return (fPtrToArray->*fDirectNBinsPtr)(dim-1);
             }
             size_t GetNBinsByDimWithArray(size_t dim) const
             {
                 if (dim > NDims) return 0;
-                return ((*fPtrToArray).*fArrayOfGetNBinsPtrs[dim-1])();
+                return (fPtrToArray->*fArrayOfGetNBinsPtrs[dim-1])();
             }
 
 
@@ -89,6 +87,7 @@ namespace Katydid
                     fArrayOfGetNBinsPtrs(NULL),
                     fMode(kMultipleFunc)
             {
+                //KTWARN(utillog_getnbins, "in constructor for funcgetnbinsonedim, " << NDims);
                 fPtrToArray = ptrToArray;
                 fNBinsFuncPtr = &KTNBinsInArray::GetNBinsByDimWithArray;
                 fArrayOfGetNBinsPtrs = new FuncGetNBinsOneDim [NDims];
@@ -96,13 +95,15 @@ namespace Katydid
                 {
                     fArrayOfGetNBinsPtrs[arrPos] = funcGetNBinsArray[arrPos];
                 }
+                //KTWARN(utillog_getnbins, fArrayOfGetNBinsPtrs[0] << "  " << fArrayOfGetNBinsPtrs[1]);
+                //KTWARN(utillog_getnbins, (fPtrToArray->*fArrayOfGetNBinsPtrs[0])() << "  " << (fPtrToArray->*fArrayOfGetNBinsPtrs[1])());
             }
 
             virtual ~KTNBinsInArray() {}
 
             virtual size_t operator()(size_t dim=1) const
             {
-                return ((*this).*fNBinsFuncPtr)(dim);
+                return (this->*fNBinsFuncPtr)(dim);
             }
 
             virtual KTNBinsFunctor< NDims >* Clone() const
@@ -206,7 +207,7 @@ namespace Katydid
 
             virtual size_t operator()() const
             {
-                return (*fPtrToArray.*fFuncPtr)();
+                return (fPtrToArray->*fFuncPtr)();
             }
 
             virtual KTNBinsFunctor< 1 >* Clone() const
