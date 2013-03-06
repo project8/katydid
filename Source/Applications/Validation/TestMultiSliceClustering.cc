@@ -12,6 +12,7 @@
 #include "KTLogger.hh"
 #include "KTMultiSliceClustering.hh"
 #include "KTSliceHeader.hh"
+#include "KTTimeFrequencyPolar.hh"
 #include "KTWaterfallCandidateData.hh"
 
 #ifdef ROOT_FOUND
@@ -171,11 +172,10 @@ int main()
         stringstream conv;
         conv << "hCandidate" << iCandidate;
         string histName(conv.str());
-        KTWARN(vallog, "KTData Test: " << (*it)->fCounter);
-        (*it)->Has<KTData>();
         if (! (*it)->Has< KTWaterfallCandidateData >())
         {
             KTERROR(vallog, "Waterfall candidate data is not present!");
+            iCandidate++;
             continue;
         }
         KTWaterfallCandidateData& wfData = (*it)->Of< KTWaterfallCandidateData >();

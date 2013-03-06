@@ -413,7 +413,6 @@ namespace Katydid
             } // end loop over active clusters
         } // end loop over frequency-bin clusters
 
-
         // Update frequency ranges of clusters that were added to this time around
         iCluster = 0;
         KTDEBUG(sclog, "updating frequency ranges of active clusters");
@@ -423,7 +422,7 @@ namespace Katydid
             {
                 acIt->fEndMinFreqPoint = acNewFreqRange[iCluster].first;
                 acIt->fEndMaxFreqPoint = acNewFreqRange[iCluster].second;
-                KTDEBUG(sclog, "range for cluster " << iCluster << " is " << acNewFreqRange[iCluster].first << " - " << acNewFreqRange[iCluster].second);
+                //KTDEBUG(sclog, "range for cluster " << iCluster << " is " << acNewFreqRange[iCluster].first << " - " << acNewFreqRange[iCluster].second);
             }
             iCluster++;
         }
@@ -479,7 +478,7 @@ namespace Katydid
                 }
                 newCluster.fEndMinFreqPoint = fbIt->fFirstPoint;
                 newCluster.fEndMaxFreqPoint = fbIt->fLastPoint;
-                KTDEBUG(sclog, "    range is " << newCluster.fEndMinFreqPoint << " - " << newCluster.fEndMaxFreqPoint);
+                //KTDEBUG(sclog, "    range is " << newCluster.fEndMinFreqPoint << " - " << newCluster.fEndMaxFreqPoint);
                 KTDEBUG(sclog, "    contains " << newCluster.fPoints.size() << " points");
                 fActiveClusters[component].push_back(newCluster);
             }
@@ -522,7 +521,7 @@ namespace Katydid
         UInt_t nFreqBins = lastFreqBin - firstFreqBin + 1;
 
         // Create a vector of pointers to spectra, where each component is for a single time bin
-        vector< shared_ptr< KTFrequencySpectrumPolar > > spectra(nFreqBins);
+        vector< shared_ptr< KTFrequencySpectrumPolar > > spectra(nTimeBins);
         for (SetOfPoints::const_iterator it = cluster.fPoints.begin(); it != cluster.fPoints.end(); it++)
         {
             if (! it->fSpectrumPtr)
@@ -538,14 +537,14 @@ namespace Katydid
         wfcData.SetTimeLength(timeBinWidth * Double_t(nTimeBins));
         wfcData.SetFrequencyWidth(freqBinWidth * Double_t(nFreqBins));
 
-        KTDEBUG(sclog, "creating KTTimeFrequency with " << nTimeBins << " time bins and " << nFreqBins << " freq bins");
+        KTDEBUG(sclog, "Creating KTTimeFrequency with " << nTimeBins << " time bins and " << nFreqBins << " freq bins");
         KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBins, timeBinWidth * Double_t(firstTimeBin), timeBinWidth * Double_t(firstTimeBin + nTimeBins), nFreqBins, freqBinWidth * Double_t(firstFreqBin), freqBinWidth * Double_t(firstFreqBin + nFreqBins));
         for (UInt_t iTBin=firstTimeBin; iTBin <= lastTimeBin; iTBin++)
         {
             UInt_t spectrumNum = iTBin - firstTimeBin;
             for (UInt_t iFBin=firstFreqBin; iFBin <= lastFreqBin; iFBin++)
             {
-                KTDEBUG(sclog, "    setting point at (" << spectrumNum << ", " << iFBin-firstFreqBin << "), aka (" << iTBin << ", " << iFBin << ")");
+                //KTDEBUG(sclog, "    setting point at (" << spectrumNum << ", " << iFBin-firstFreqBin << "), aka (" << iTBin << ", " << iFBin << ")");
                 tf->SetPolar(spectrumNum, iFBin - firstFreqBin, spectra[spectrumNum]->GetAbs(iFBin), spectra[spectrumNum]->GetArg(iFBin));
             }
         }
