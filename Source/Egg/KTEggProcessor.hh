@@ -1,7 +1,7 @@
 /**
  @file KTEggProcessor.hh
  @brief Contains KTEggProcessor
- @details Iterates over bundles in an Egg file.
+ @details Iterates over slices in an Egg file.
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
@@ -12,6 +12,7 @@
 #include "KTPrimaryProcessor.hh"
 
 #include "KTEgg.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -24,38 +25,30 @@ namespace Katydid
      @class KTEggProcessor
      @author N. S. Oblath
 
-     @brief Iterates over the bundles in an Egg file.
+     @brief Iterates over the slices in an Egg file.
 
      @details
-     Iterates over bundles in an egg file; bundles are extracted until fNBundles is reached.
+     Iterates over slices in an egg file; slices are extracted until fNSlices is reached.
 
      Available configuration options:
-     \li \c "number-of-bundles": UInt_t -- Number of bundles to process
+     \li \c "number-of-slices": UInt_t -- Number of slices to process
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
      \li \c "time-series-size": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
      \li \c "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
-     \li \c "output-data-name": string -- Name to give to the data produced
 
      Command-line options defined
-     \li \c -n (n-bundles): Number of bundles to process
+     \li \c -n (n-slices): Number of slices to process
      \li \c -e (egg-file): Egg filename to use
      \li \c -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
      \li \c "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     \li \c "data": void (const KTTimeSeriesData*) -- emitted when the new time series is produced.
-     \li \c "bundle": void (boost::shared_ptr<KTBundle>) -- emitted when an bundle is read from the file.
+     \li \c "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced.
      \li \c "egg-done": void () --  emitted when a file is finished.
     */
     class KTEggProcessor : public KTPrimaryProcessor
     {
-        public:
-            typedef KTSignal< void (const KTEggHeader*) >::signal HeaderSignal;
-            typedef KTSignal< void (const KTTimeSeriesData*) >::signal DataSignal;
-            typedef KTSignal< void (boost::shared_ptr<KTBundle>) >::signal BundleSignal;
-            typedef KTSignal< void () >::signal EggDoneSignal;
-
         public:
             enum EggReaderType
             {
@@ -70,7 +63,7 @@ namespace Katydid
             };
 
         public:
-            KTEggProcessor();
+            KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -79,23 +72,20 @@ namespace Katydid
 
             Bool_t ProcessEgg();
 
-            UInt_t GetNBundles() const;
+            UInt_t GetNSlices() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
             UInt_t GetSliceSizeRequest() const;
             TimeSeriesType GetTimeSeriesType() const;
 
-            void SetNBundles(UInt_t nBundles);
+            void SetNSlices(UInt_t nSlices);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
             void SetSliceSizeRequest(UInt_t size);
             void SetTimeSeriesType(TimeSeriesType type);
 
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         private:
-            UInt_t fNBundles;
+            UInt_t fNSlices;
 
             std::string fFilename;
 
@@ -105,17 +95,14 @@ namespace Katydid
 
             TimeSeriesType fTimeSeriesType;
 
-            std::string fOutputDataName;
-
             //***************
             // Signals
             //***************
 
         private:
-            HeaderSignal fHeaderSignal;
-            DataSignal fDataSignal;
-            BundleSignal fBundleSignal;
-            EggDoneSignal fEggDoneSignal;
+            KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
+            KTSignalData fDataSignal;
+            KTSignalOneArg< void > fEggDoneSignal;
 
     };
 
@@ -124,14 +111,14 @@ namespace Katydid
         return ProcessEgg();
     }
 
-    inline UInt_t KTEggProcessor::GetNBundles() const
+    inline UInt_t KTEggProcessor::GetNSlices() const
     {
-        return fNBundles;
+        return fNSlices;
     }
 
-    inline void KTEggProcessor::SetNBundles(UInt_t nBundles)
+    inline void KTEggProcessor::SetNSlices(UInt_t nSlices)
     {
-        fNBundles = nBundles;
+        fNSlices = nSlices;
         return;
     }
 
@@ -179,17 +166,6 @@ namespace Katydid
         return;
     }
 
-    inline const std::string& KTEggProcessor::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTEggProcessor::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
-
 } /* namespace Katydid */
 
 /*!
@@ -206,19 +182,23 @@ namespace Katydid
  <hr>
  \li Send your question by email to Noah Oblath: nsoblath-at-mit.edu
  \li For installation problems see below.
- \li For ROOT problems: see the <a href="http://root.cern.ch/drupal">ROOT website</a>
 
  <br>
  \section Requirements System Requirements
  <hr>
  Linux/MacOS with a reasonably new C++ compiler:
  \li The minimum supported gcc version is 4.2.
- \li LLVM will hopefully be supported in the future.
+ \li LLVM (minimum version unknown)
 
  Dependencies:
- \li <a href="http://root.cern.ch/drupal">ROOT</a> version 5.24 or higher
+ \li <a href="https://github.com/project8/monarch">Monarch</a> included as a submodule of Katyid
  \li <a href="http://www.cmake.org">CMake</a> version 2.6 or higher
-
+ \li <a href="https://code.google.com/p/protobuf/">Protobuf</a>
+ \li <a href="http://www.boost.org">Boost</a>
+ \li <a href="http://www.fftw.org">FFTW</a> version 3.3 or higher
+ \li <a href="http://eigen.tuxfamily.org">Eigen</a> (optional, though some functionality wil be disabled without it)
+ \li <a href="http://root.cern.ch/drupal">ROOT</a> version 5.24 or higher (optional, though some functionality will be disabled without it)
+ \li <a href="http://logging.apache.org/log4cxx">log4cxx</a> (optional)
 
  <br>
  \section GettingKT Getting Katydid
@@ -275,12 +255,12 @@ namespace Katydid
  \section ExternalCode External Packages and Imported Code
  <hr>
  Two external packages are distributed with Katydid:
- \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the bundle header in the Egg files.  The code is distributed under the Boost Software License v1.0.
- \li <a href="hhtp://cimg.sourceforge.net">CImg</a> version 1.4.9 is available for any image processing tasks.  It is distributed under the CeCILL License.
+ \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the header in the 2011-type Egg files.
+ \li <a href="https://code.google.com/p/rapidjson/">RapidJSON</a> is used for reading and writing JSON files.
 
- Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Framework classes and is restricted to infrastructure-related activities.
+ Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Core libraries and is restricted to infrastructure-related activities.
 
- <!--The source of this documentation can be found in: Katydid/Egg/KTEgg.hh-->
+ <!--The source of this documentation can be found in: Katydid/Egg/KTEggProcessor.hh-->
 
  */
 

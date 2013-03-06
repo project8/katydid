@@ -9,11 +9,9 @@
 
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTTimeSeriesChannelData.hh"
-#include "KTTimeSeriesPairedData.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTPStoreNode.hh"
 
@@ -29,9 +27,9 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("complex-fftw");
 
-    KTComplexFFTW::KTComplexFFTW() :
+    KTComplexFFTW::KTComplexFFTW(const std::string& name) :
             KTFFT(),
-            KTProcessor(),
+            KTProcessor(name),
             fForwardPlan(),
             fReversePlan(),
             fSize(0),
@@ -42,24 +40,12 @@ namespace Katydid
             fIsInitialized(false),
             fUseWisdom(true),
             fWisdomFilename("wisdom_complexfft.fftw3"),
-            fForwardInputDataName("time-series"),
-            fForwardOutputDataName("frequency-spectrum"),
-            fReverseInputDataName("frequency-spectrum"),
-            fReverseOutputDataName("time-series"),
-            fFFTForwardSignal(),
-            fFFTReverseSignal()
+            fFFTForwardSignal("fft-forward", this),
+            fFFTReverseSignal("fft-reverse", this),
+            fHeaderSlot("header", this, &KTComplexFFTW::InitializeWithHeader),
+            fTimeSeriesSlot("ts", this, &KTComplexFFTW::TransformData, &fFFTForwardSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTComplexFFTW::TransformData, &fFFTReverseSignal)
     {
-        fConfigName = "complex-fftw";
-
-        RegisterSignal("fft-forward", &fFFTForwardSignal, "void (const KTFrequencySpectrumDataFFTW*)");
-        RegisterSignal("fft-reverse", &fFFTReverseSignal, "void (const KTTimeSeriesData*)");
-
-        RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("fs-data", this, &KTComplexFFTW::ProcessFrequencySpectrumData, "void (const KTFrequencySpectrumDataFFTW*)");
-        RegisterSlot("bundle-forward", this, &KTComplexFFTW::ProcessBundleForward, "void (KTBundle*)");
-        RegisterSlot("bundle-reverse", this, &KTComplexFFTW::ProcessBundleReverse, "void (KTBundle*)");
-
         SetupInternalMaps();
     }
 
@@ -80,11 +66,6 @@ namespace Katydid
 
             SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
             SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
-
-            SetForwardInputDataName(node->GetData<string>("forward-input-data-name", fForwardInputDataName));
-            SetForwardOutputDataName(node->GetData<string>("forward-output-data-name", fForwardOutputDataName));
-            SetReverseInputDataName(node->GetData<string>("reverse-input-data-name", fReverseInputDataName));
-            SetReverseOutputDataName(node->GetData<string>("reverse-output-data-name", fReverseOutputDataName));
         }
 
         if (fUseWisdom)
@@ -161,16 +142,18 @@ namespace Katydid
         return;
     }
 
-    KTFrequencySpectrumDataFFTW* KTComplexFFTW::TransformData(const KTTimeSeriesData* tsData)
+    void KTComplexFFTW::InitializeWithHeader(const KTEggHeader* header)
     {
-        if (tsData->GetNTimeSeries() < 1)
+        SetSize(header->GetSliceSize());
+        InitializeFFT();
+        return;
+    }
+
+    Bool_t KTComplexFFTW::TransformData(KTTimeSeriesData& tsData)
+    {
+        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetSize())
         {
-            KTWARN(fftlog_comp, "Data has no channels!");
-            return NULL;
-        }
-        if (tsData->GetTimeSeries(0)->GetNTimeBins() != GetSize())
-        {
-            SetSize(tsData->GetTimeSeries(0)->GetNTimeBins());
+            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
             InitializeFFT();
         }
 
@@ -181,49 +164,39 @@ namespace Katydid
             return NULL;
         }
 
-        KTFrequencySpectrumDataFFTW* newData = new KTFrequencySpectrumDataFFTW(tsData->GetNTimeSeries());
+        UInt_t nComponents = tsData.GetNComponents();
 
-        for (UInt_t iChannel = 0; iChannel < tsData->GetNTimeSeries(); iChannel++)
+        KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
+
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
-            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData->GetTimeSeries(iChannel));
+            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
                 KTERROR(fftlog_comp, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
-                delete newData;
-                return NULL;
+                return false;
             }
 
             KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
 
             if (nextResult == NULL)
             {
-                KTERROR(fftlog_comp, "Channel <" << iChannel << "> did not transform correctly.");
-                delete newData;
-                return NULL;
+                KTERROR(fftlog_comp, "Channel <" << iComponent << "> did not transform correctly.");
+                return false;
             }
-            newData->SetSpectrum(nextResult, iChannel);
+            newData.SetSpectrum(nextResult, iComponent);
         }
 
-        newData->SetTimeInRun(tsData->GetTimeInRun());
-        newData->SetSliceNumber(tsData->GetSliceNumber());
+        KTDEBUG(fftlog_comp, "FFT complete; " << nComponents << " channel(s) transformed");
 
-        KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
-
-        newData->SetName(fForwardOutputDataName);
-
-        return newData;
+        return true;
     }
 
-    KTTimeSeriesData* KTComplexFFTW::TransformData(const KTFrequencySpectrumDataFFTW* fsData)
+    Bool_t KTComplexFFTW::TransformData(KTFrequencySpectrumDataFFTW& fsData)
     {
-        if (fsData->GetNChannels() < 1)
+        if (fsData.GetSpectrumFFTW(0)->size() != GetSize())
         {
-            KTWARN(fftlog_comp, "Data has no channels!");
-            return NULL;
-        }
-        if (fsData->GetSpectrum(0)->size() != GetSize())
-        {
-            SetSize(fsData->GetSpectrum(0)->size());
+            SetSize(fsData.GetSpectrumFFTW(0)->size());
             InitializeFFT();
         }
 
@@ -231,19 +204,20 @@ namespace Katydid
         {
             KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
                     << "   Please first call InitializeFFT(), then perform the transform.");
-            return NULL;
+            return false;
         }
 
-        KTBasicTimeSeriesData* newData = new KTBasicTimeSeriesData(fsData->GetNChannels());
+        UInt_t nComponents = fsData.GetNComponents();
 
-        for (UInt_t iChannel = 0; iChannel < fsData->GetNChannels(); iChannel++)
+        KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
+
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
-            const KTFrequencySpectrumFFTW* nextInput = fsData->GetSpectrum(iChannel);
+            const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
             if (nextInput == NULL)
             {
-                KTERROR(fftlog_comp, "Frequency spectrum <" << iChannel << "> does not appear to be present.");
-                delete newData;
-                return NULL;
+                KTERROR(fftlog_comp, "Frequency spectrum <" << iComponent << "> does not appear to be present.");
+                return false;
             }
 
             KTTimeSeriesFFTW* nextResult = Transform(nextInput);
@@ -251,20 +225,14 @@ namespace Katydid
             if (nextResult == NULL)
             {
                 KTERROR(fftlog_comp, "One of the channels did not transform correctly.");
-                delete newData;
-                return NULL;
+                return false;
             }
-            newData->SetTimeSeries(nextResult, iChannel);
+            newData.SetTimeSeries(nextResult, iComponent);
         }
 
-        newData->SetTimeInRun(fsData->GetTimeInRun());
-        newData->SetSliceNumber(fsData->GetSliceNumber());
+        KTDEBUG(fftlog_comp, "FFT complete; " << nComponents << " component(s) transformed");
 
-        KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNTimeSeries() << " channel(s) transformed");
-
-        newData->SetName(fReverseOutputDataName);
-
-        return newData;
+        return true;
     }
 
     KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
@@ -335,69 +303,6 @@ namespace Katydid
         }
         fTransformFlag = flag;
         fIsInitialized = false;
-        return;
-    }
-
-    void KTComplexFFTW::ProcessHeader(const KTEggHeader* header)
-    {
-        SetSize(header->GetSliceSize());
-        InitializeFFT();
-        return;
-    }
-
-    void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
-    {
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        if (newData != NULL)
-        {
-            KTBundle* bundle = tsData->GetBundle();
-            newData->SetBundle(bundle);
-            if (bundle != NULL)
-                bundle->AddData(newData);
-            fFFTForwardSignal(newData);
-        }
-        return;
-    }
-
-    void KTComplexFFTW::ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData)
-    {
-        KTTimeSeriesData* newData = TransformData(fsData);
-        if (newData != NULL)
-        {
-            KTBundle* bundle = fsData->GetBundle();
-            newData->SetBundle(bundle);
-            if (bundle != NULL)
-                bundle->AddData(newData);
-            fFFTReverseSignal(newData);
-        }
-        return;
-    }
-
-    void KTComplexFFTW::ProcessBundleForward(shared_ptr<KTBundle> bundle)
-    {
-        KTDEBUG(fftlog_comp, "Performing forward FFT of bundle " << bundle->GetBundleNumber());
-        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fForwardInputDataName);
-        if (tsData == NULL)
-        {
-            KTWARN(fftlog_comp, "No time series data named <" << fForwardInputDataName << "> was available in the bundle");
-            return;
-        }
-
-        ProcessTimeSeriesData(tsData);
-        return;
-    }
-
-    void KTComplexFFTW::ProcessBundleReverse(shared_ptr<KTBundle> bundle)
-    {
-        KTDEBUG(fftlog_comp, "Performing reverse FFT of bundle " << bundle->GetBundleNumber());
-        const KTFrequencySpectrumDataFFTW* fsData = bundle->GetData< KTFrequencySpectrumDataFFTW >(fReverseInputDataName);
-        if (fsData == NULL)
-        {
-            KTWARN(fftlog_comp, "No frequency spectrum data named <" << fReverseInputDataName << "> was available in the bundle");
-            return;
-        }
-
-        ProcessFrequencySpectrumData(fsData);
         return;
     }
 

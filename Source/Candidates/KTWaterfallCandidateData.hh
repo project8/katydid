@@ -8,31 +8,22 @@
 #ifndef KTWATERFALLCANDIDATEDATA_HH_
 #define KTWATERFALLCANDIDATEDATA_HH_
 
-#include "KTWriteableData.hh"
+#include "KTData.hh"
+
+#include "KTTimeFrequency.hh"
 
 namespace Katydid
 {
-    class KTWaterfallCandidate;
+    class KTTimeFrequency;
 
-    class KTWaterfallCandidateData : public KTWriteableData
+    class KTWaterfallCandidateData : public KTExtensibleData< KTWaterfallCandidateData >
     {
-        protected:
-            struct PerComponentData
-            {
-                KTWaterfallCandidate fCandidate;
-            };
-
         public:
             KTWaterfallCandidateData();
             virtual ~KTWaterfallCandidateData();
 
-            void Accept(KTWriter* writer) const;
-
-            const KTWaterfallCandidate& GetCandidate(UInt_t groupNum = 0) const;
-            UInt_t GetNComponents() const;
-
-            void SetCandidate(const KTWaterfallCandidate& candidate, UInt_t component = 0);
-            void SetNComponents(UInt_t channels);
+            KTTimeFrequency* GetCandidate() const;
+            UInt_t GetComponent() const;
 
             UInt_t GetNTimeBins() const;
             Double_t GetTimeBinWidth() const;
@@ -41,17 +32,121 @@ namespace Katydid
             Double_t GetFreqBinWidth() const;
 
             Double_t GetTimeInRun() const;
-            ULong64_t GetSliceNumber() const;
+            Double_t GetTimeLength() const;
+            ULong64_t GetFirstSliceNumber() const;
+            ULong64_t GetLastSliceNumber() const;
+            Double_t GetFrequencyWidth() const;
+
+            void SetCandidate(KTTimeFrequency* candidate);
+            void SetComponent(UInt_t component);
 
             void SetTimeInRun(Double_t tir);
-            void SetSliceNumber(ULong64_t slice);
+            void SetTimeLength(Double_t length);
+            void SetFirstSliceNumber(ULong64_t slice);
+            void SetLastSliceNumber(ULong64_t slice);
+            void SetFrequencyWidth(Double_t width);
 
         protected:
-            std::vector< PerComponentData > fComponentData;
+            KTTimeFrequency* fCandidate;
+            UInt_t fComponent;
 
             Double_t fTimeInRun;
-            ULong64_t fSliceNumber;
+            Double_t fTimeLength;
+            ULong64_t fFirstSliceNumber;
+            ULong64_t fLastSliceNumber;
+            Double_t fFrequencyWidth;
     };
+
+    inline KTTimeFrequency* KTWaterfallCandidateData::GetCandidate() const
+    {
+        return fCandidate;
+    }
+
+    inline UInt_t KTWaterfallCandidateData::GetComponent() const
+    {
+        return fComponent;
+    }
+
+    inline UInt_t KTWaterfallCandidateData::GetNTimeBins() const
+    {
+        return fCandidate->GetNTimeBins();
+    }
+
+    inline UInt_t KTWaterfallCandidateData::GetNFreqBins() const
+    {
+        return fCandidate->GetNFrequencyBins();
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetTimeBinWidth() const
+    {
+        return fCandidate->GetTimeBinWidth();
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetFreqBinWidth() const
+    {
+        return fCandidate->GetFrequencyBinWidth();
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetTimeInRun() const
+    {
+        return fTimeInRun;
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetTimeLength() const
+    {
+        return fTimeLength;
+    }
+
+    inline ULong64_t KTWaterfallCandidateData::GetFirstSliceNumber() const
+    {
+        return fFirstSliceNumber;
+    }
+
+    inline ULong64_t KTWaterfallCandidateData::GetLastSliceNumber() const
+    {
+        return fLastSliceNumber;
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetFrequencyWidth() const
+    {
+        return fFrequencyWidth;
+    }
+
+    inline void KTWaterfallCandidateData::SetComponent(UInt_t component)
+    {
+        fComponent = component;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetTimeInRun(Double_t tir)
+    {
+        fTimeInRun = tir;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetTimeLength(Double_t length)
+    {
+        fTimeLength = length;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetFirstSliceNumber(ULong64_t slice)
+    {
+        fFirstSliceNumber = slice;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetLastSliceNumber(ULong64_t slice)
+    {
+        fLastSliceNumber = slice;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetFrequencyWidth(Double_t width)
+    {
+        fFrequencyWidth = width;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTWATERFALLCANDIDATEDATA_HH_ */

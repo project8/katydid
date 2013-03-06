@@ -46,6 +46,7 @@ namespace Katydid
             virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg);
 
             virtual UInt_t GetNFrequencyBins() const;
+            virtual Double_t GetFrequencyBinWidth() const;
 
             virtual KTFrequencySpectrumPolar& CConjugate();
 
@@ -99,6 +100,11 @@ namespace Katydid
     inline UInt_t KTFrequencySpectrumPolar::GetNFrequencyBins() const
     {
         return size();
+    }
+
+    inline Double_t KTFrequencySpectrumPolar::GetFrequencyBinWidth() const
+    {
+        return GetBinWidth();
     }
 
 

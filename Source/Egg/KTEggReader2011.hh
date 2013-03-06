@@ -22,7 +22,7 @@ namespace Katydid
         public:
             struct HeaderInfo
             {
-                int fBundleSize;
+                int fSliceSize;
                 int fFrameIDSize;
                 int fRecordSize;
                 int fTimeStampSize;
@@ -35,7 +35,7 @@ namespace Katydid
                     fTimeStampSize(0),
                     fFrameIDSize(0),
                     fRecordSize(0),
-                    fBundleSize(0),
+                    fSliceSize(0),
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),
@@ -48,15 +48,8 @@ namespace Katydid
             virtual ~KTEggReader2011();
 
         public:
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
-        private:
-            std::string fOutputDataName;
-
-        public:
             virtual KTEggHeader* BreakEgg(const std::string& filename);
-            virtual KTTimeSeriesData* HatchNextBundle();
+            virtual boost::shared_ptr< KTData > HatchNextSlice();
             virtual bool CloseEgg();
 
             UInt_t GetRecordsRead() const;
@@ -90,17 +83,6 @@ namespace Katydid
         converter << value;
         converter >> converted;
         return converted;
-    }
-
-    inline const std::string& KTEggReader2011::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTEggReader2011::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
     }
 
     inline UInt_t KTEggReader2011::GetRecordsRead() const

@@ -68,7 +68,7 @@ namespace Katydid
     class KTProcessorToolbox : public KTConfigurable
     {
         public:
-            KTProcessorToolbox();
+            KTProcessorToolbox(const std::string& name = "processor-toolbox");
             virtual ~KTProcessorToolbox();
 
         protected:

@@ -7,24 +7,15 @@
 
 #include "KTFrequencySpectrumDataFFTW.hh"
 
-#include "KTDataMap.hh"
-#include "KTFrequencySpectrumFFTW.hh"
-#include "KTTIFactory.hh"
-#include "KTWriter.hh"
-
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTFrequencySpectrumDataFFTW > > sFSFFTWDMMRegistrar;
-
-    KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW(UInt_t nChannels) :
-            KTWriteableData(),
-            fSpectra(nChannels),
-            fTimeInRun(0.),
-            fSliceNumber(0)
+    KTFrequencySpectrumDataFFTWCore::KTFrequencySpectrumDataFFTWCore() :
+            fSpectra(1)
     {
+        fSpectra[0] = NULL;
     }
 
-    KTFrequencySpectrumDataFFTW::~KTFrequencySpectrumDataFFTW()
+    KTFrequencySpectrumDataFFTWCore::~KTFrequencySpectrumDataFFTWCore()
     {
         while (! fSpectra.empty())
         {
@@ -33,10 +24,15 @@ namespace Katydid
         }
     }
 
-    void KTFrequencySpectrumDataFFTW::Accept(KTWriter* writer) const
+
+    KTFrequencySpectrumDataFFTW::KTFrequencySpectrumDataFFTW() :
+            KTFrequencySpectrumDataFFTWCore(),
+            KTExtensibleData< KTFrequencySpectrumDataFFTW >()
     {
-        writer->Write(this);
-        return;
+    }
+
+    KTFrequencySpectrumDataFFTW::~KTFrequencySpectrumDataFFTW()
+    {
     }
 
 } /* namespace Katydid */

@@ -32,7 +32,7 @@ namespace Katydid
 
     void KTJSONTypeWriterEgg::RegisterSlots()
     {
-        fWriter->RegisterSlot("header", this, &KTJSONTypeWriterEgg::WriteEggHeader, "void (const KTEggHeader*)");
+        fWriter->RegisterSlot("header", this, &KTJSONTypeWriterEgg::WriteEggHeader);
         return;
     }
 

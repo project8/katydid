@@ -7,21 +7,14 @@
 
 #include "KTWignerVille.hh"
 
-#include "KTCacheDirectory.hh"
-#include "KTComplexFFTW.hh"
+#include "KTAnalyticAssociator.hh"
 #include "KTEggHeader.hh"
-#include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTSlidingWindowFFTW.hh"
-#include "KTSlidingWindowFSData.hh"
-#include "KTSlidingWindowFSDataFFTW.hh"
-#include "KTTimeSeriesChannelData.hh"
-#include "KTTimeSeriesPairedData.hh"
+//#include "KTSlidingWindowFFTW.hh"
+//#include "KTSlidingWindowFSData.hh"
+//#include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
@@ -33,9 +26,9 @@
 
 #include <iostream>
 
-using std::map;
-using std::set;
+using std::pair;
 using std::string;
+using std::vector;
 
 using boost::shared_ptr;
 
@@ -50,25 +43,18 @@ using boost::phoenix::ref;
 
 namespace Katydid
 {
-    KTLOGGER(wvlog, "katydid.analysis");
 
     static KTDerivedRegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
 
-    KTWignerVille::KTWignerVille() :
-            KTProcessor(),
-            fInputDataName("time-series"),
-            fOutputDataName("wigner-ville"),
+    KTWignerVille::KTWignerVille(const std::string& name) :
+            KTProcessor(name),
             fFFT(new KTComplexFFTW()),
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
-            fWVSignal()
+            fWVSignal("wigner-ville", this),
+            fHeaderSlot("header", this, &KTWignerVille::InitializeWithHeader),
+            fTimeSeriesSlot("ts", this, &KTWignerVille::TransformData, &fWVSignal),
+            fAnalyticAssociateSlot("aa", this, &KTWignerVille::TransformData, &fWVSignal)
     {
-        fConfigName = "wigner-ville";
-
-        RegisterSignal("wigner-ville", &fWVSignal, "void (const KTWriteableData*)");
-
-        RegisterSlot("header", this, &KTWignerVille::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTWignerVille::ProcessTimeSeriesData, "void (const KTTimeSeriesData*)");
-        RegisterSlot("bundle", this, &KTWignerVille::ProcessBundle, "void (KTBundle*)");
     }
 
     KTWignerVille::~KTWignerVille()
@@ -83,9 +69,6 @@ namespace Katydid
         {
             fFFT->Configure(childNode);
         }
-
-        SetInputDataName(node->GetData< string >("input-data-name", fInputDataName));
-        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
 
         KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
@@ -107,51 +90,25 @@ namespace Katydid
         return true;
     }
 
-    KTFrequencySpectrumDataFFTW* KTWignerVille::TransformData(const KTTimeSeriesData* data)
+    void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
     {
-        if (fPairs.empty())
-        {
-            KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
-            return NULL;
-        }
+        UInt_t nBins = /*2 */ header->GetSliceSize();
+        fFFT->SetSize(nBins);
+        fFFT->InitializeFFT();
+        delete fInputArray;
+        // the min/max range for the input array don't matter, so just use 0 and 1
+        fInputArray = new KTTimeSeriesFFTW(nBins, 0., 1.);
+        return;
+    }
 
-        // cast all time series into KTTimeSeriesFFTW
-        vector< const KTTimeSeriesFFTW* > timeSeries(data->GetNTimeSeries());
-        for (UInt_t iTS=0; iTS < timeSeries.size(); iTS++)
-        {
-            timeSeries[iTS] = dynamic_cast< const KTTimeSeriesFFTW* >(data->GetTimeSeries(iTS));
-            if (timeSeries[iTS] == NULL)
-            {
-                KTERROR(wvlog, "Time series " << iTS << " did not cast to a const KTTimeSeriesFFTW*. No transforms performed.");
-                return NULL;
-            }
-        }
+    Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data)
+    {
+        return TransformFFTWBasedData(data);
+    }
 
-        KTFrequencySpectrumDataFFTW* newData = new KTFrequencySpectrumDataFFTW(fPairs.size());
-
-        // Do WV transform for each pair
-        UInt_t iPair = 0;
-        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
-        {
-            UInt_t firstChannel = (*pairIt).first;
-            UInt_t secondChannel = (*pairIt).second;
-
-            CrossMultiplyToInputArray(timeSeries[firstChannel], timeSeries[secondChannel], 0);
-
-            KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
-            newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
-
-            newData->SetSpectrum(newSpectrum, iPair);
-            iPair++;
-        }
-
-        newData->SetBundle(data->GetBundle());
-        newData->SetName(fOutputDataName);
-
-        fWVSignal(newData);
-
-        return newData;
-
+    Bool_t KTWignerVille::TransformData(KTAnalyticAssociateData& data)
+    {
+        return TransformFFTWBasedData(data);
     }
 
     void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
@@ -223,50 +180,6 @@ namespace Katydid
         (*fInputArray)(2*size - 1)[0] = real1 * real2 + imag1 * imag2;
         (*fInputArray)(2*size - 1)[1] = imag1 * real2 - real1 * imag2;
         */
-        return;
-    }
-
-
-    void KTWignerVille::ProcessHeader(const KTEggHeader* header)
-    {
-        UInt_t nBins = /*2 */ header->GetSliceSize();
-        fFFT->SetSize(nBins);
-        fFFT->InitializeFFT();
-        delete fInputArray;
-        // the min/max range for the input array don't matter, so just use 0 and 1
-        fInputArray = new KTTimeSeriesFFTW(nBins, 0., 1.);
-        return;
-    }
-
-    void KTWignerVille::ProcessTimeSeriesData(const KTTimeSeriesData* tsData)
-    {
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-
-        if (newData == NULL)
-        {
-            KTERROR(wvlog, "Unable to transform data");
-            return;
-        }
-
-        KTBundle* bundle = tsData->GetBundle();
-        if (bundle != NULL)
-        {
-            bundle->AddData(newData);
-        }
-
-        return;
-    }
-
-    void KTWignerVille::ProcessBundle(shared_ptr<KTBundle> bundle)
-    {
-        const KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >(fInputDataName);
-        if (tsData == NULL)
-        {
-            KTWARN(wvlog, "No time series data named <" << fInputDataName << "> was available in the bundle");
-            return;
-        }
-
-        ProcessTimeSeriesData(tsData);
         return;
     }
 

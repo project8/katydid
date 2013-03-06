@@ -26,7 +26,7 @@ namespace Katydid
     class KTROOTTreeWriter : public KTWriterWithTypists< KTROOTTreeWriter >//public KTWriter
     {
         public:
-            KTROOTTreeWriter();
+            KTROOTTreeWriter(const std::string& name = "root-tree-writer");
             virtual ~KTROOTTreeWriter();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -55,15 +55,6 @@ namespace Katydid
             TFile* fFile;
 
             std::set< TTree* > fTrees; // Trees are not owned by this writer; they're owned by their respective TypeWriters.
-
-            //************************
-            // Basic Publish and Write
-            //************************
-        public:
-
-            void Publish(const KTWriteableData* data);
-
-            void Write(const KTWriteableData* data);
 
     };
 

@@ -8,7 +8,7 @@
 #ifndef KTFREQUENCYCANDIDATE_HH_
 #define KTFREQUENCYCANDIDATE_HH_
 
-#include "KTWriteableData.hh"
+#include "Rtypes.h"
 
 namespace Katydid
 {

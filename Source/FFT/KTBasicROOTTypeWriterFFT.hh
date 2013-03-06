@@ -12,16 +12,14 @@
 
 namespace Katydid
 {
-    class KTFrequencySpectrumData;
+    class KTData;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
-    class KTSlidingWindowFSData;
-    class KTSlidingWindowFSDataFFTW;
+    //class KTSlidingWindowFSData;
+    //class KTSlidingWindowFSDataFFTW;
 
     class KTBasicROOTTypeWriterFFT : public KTBasicROOTTypeWriter
     {
-        public:
-            friend class KTTimeSeriesData;
-
         public:
             KTBasicROOTTypeWriterFFT();
             virtual ~KTBasicROOTTypeWriterFFT();
@@ -33,16 +31,17 @@ namespace Katydid
             // Frequency Spectrum Data
             //************************
         public:
-            void WriteFrequencySpectrumData(const KTFrequencySpectrumData* data);
-            void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
+            void WriteFrequencySpectrumDataPolar(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data);
 
             //************************
             // Sliding Window Data
             //************************
+/*
         public:
             void WriteSlidingWindowFSData(const KTSlidingWindowFSData* data);
             void WriteSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
-
+*/
     };
 
 } /* namespace Katydid */

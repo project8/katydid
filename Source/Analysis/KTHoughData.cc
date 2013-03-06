@@ -7,19 +7,13 @@
 
 #include "KTHoughData.hh"
 
-#include "KTDataMap.hh"
-#include "KTTIFactory.hh"
-#include "KTWriter.hh"
-
 using std::vector;
 
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTHoughData > > sHDMRegistrar;
-
-    KTHoughData::KTHoughData(unsigned nTransforms) :
-            KTWriteableData(),
-            fTransforms(nTransforms)
+    KTHoughData::KTHoughData() :
+            KTExtensibleData< KTHoughData >(),
+            fTransforms()
     {
     }
 
@@ -37,29 +31,23 @@ namespace Katydid
         }
     }
 
-    void KTHoughData::Accept(KTWriter* writer) const
-    {
-        writer->Write(this);
-        return;
-    }
-
 #ifdef ROOT_FOUND
 
-    TH2D* KTHoughData::CreateHistogram(unsigned transformNum, const std::string& name) const
+    TH2D* KTHoughData::CreateHistogram(UInt_t component, const std::string& name) const
     {
-        if (transformNum >= fTransforms.size()) return NULL;
-        if (fTransforms[transformNum]->empty()) return NULL;
+        if (component >= fTransforms.size()) return NULL;
+        if (fTransforms[component]->empty()) return NULL;
 
         TH2D* hist = new TH2D(name.c_str(), "Hough Space",
-                fTransforms[transformNum]->size(), fTransforms[transformNum]->GetRangeMin(), fTransforms[transformNum]->GetRangeMax(),
-                (*fTransforms[transformNum])(0)->size(), (*fTransforms[transformNum])(0)->GetRangeMin(), (*fTransforms[transformNum])(0)->GetRangeMax());
+                fTransforms[component]->size(), fTransforms[component]->GetRangeMin(), fTransforms[component]->GetRangeMax(),
+                (*fTransforms[component])(0)->size(), (*fTransforms[component])(0)->GetRangeMin(), (*fTransforms[component])(0)->GetRangeMax());
 
-        KTINFO("Radius axis: " << (*fTransforms[transformNum])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
-        KTINFO("Angle axis: " << fTransforms[transformNum]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
+        KTINFO("Radius axis: " << (*fTransforms[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
+        KTINFO("Angle axis: " << fTransforms[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fTransforms[transformNum]->size(); iBinX++)
+        for (Int_t iBinX=1; iBinX<=(Int_t)fTransforms[component]->size(); iBinX++)
         {
-            KTPhysicalArray< 1, Double_t >* fs = (*fTransforms[transformNum])(iBinX-1);
+            KTPhysicalArray< 1, Double_t >* fs = (*fTransforms[component])(iBinX-1);
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1));

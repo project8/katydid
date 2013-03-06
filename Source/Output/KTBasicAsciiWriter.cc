@@ -1,6 +1,5 @@
 #include "KTBasicAsciiWriter.hh"
 #include "KTFactory.hh"
-#include "KTBundle.hh"
 #include "KTPStoreNode.hh"
 
 namespace Katydid {
@@ -13,12 +12,11 @@ namespace Katydid {
   static KTDerivedRegistrar< KTProcessor, KTBasicASCIIWriter > 
   sAPR("basic-ascii-writer");
 
-  KTBasicASCIIWriter::KTBasicASCIIWriter() :
-    KTWriterWithTypists<KTBasicASCIIWriter>(),
+  KTBasicASCIIWriter::KTBasicASCIIWriter(const std::string& name) :
+    KTWriterWithTypists<KTBasicASCIIWriter>(name),
     fOutputFilename("basic_ascii_output.txt"),
     fOutputStream(NULL)
   {
-    fConfigName = "basic-ascii-writer";
   } // default constructor
 
   KTBasicASCIIWriter::~KTBasicASCIIWriter() {
@@ -57,10 +55,10 @@ namespace Katydid {
     return this->fOutputStream;
   }
 
-  // void KTBasicASCIIWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumData* dt) {
+  // void KTBasicASCIIWriter::WriteFrequencySpectrumData(const KTFrequencySpectrumDataPolar* dt) {
   //   KTBundle* ev = dt->GetBundle();
   //   uint64_t evN = (ev == NULL) ? 0 : ev->GetBundleNumber();
-  //   uint64_t nCh = dt->GetNChannels();
+  //   uint64_t nCh = dt->GetNComponents();
 
   //   if( fOutputStream && fOutputStream->is_open() ) {
   //     for( unsigned iCh = 0; iCh < nCh; iCh++ ) {
@@ -86,11 +84,4 @@ namespace Katydid {
   /*
    *  The following methods are unimplemented and just warn!
    */
-  void KTBasicASCIIWriter::Publish(const KTWriteableData* dt) {
-    KTWARN(asciilog, "stub Publish(const KTWriteableData*) called! no data written!");
-  };
-  void KTBasicASCIIWriter::Write(const KTWriteableData* dt) {
-    KTWARN(asciilog, "stub Write(const KTWriteableData*) called! no data written!");
-  };
-
 }; // namespace Katydid

@@ -1,100 +1,181 @@
 /*
- * KTSignalWrapper.hh
+ * KTSignal.hh
  *
- *  Created on: Aug 8, 2012
+ *  Created on: Jan 15, 2013
  *      Author: nsoblath
  */
 
 #ifndef KTSIGNAL_HH_
 #define KTSIGNAL_HH_
 
-#include "KTSignalSlotSignature.hh"
+#include "KTProcessor.hh"
 
+#include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
-#include <boost/utility.hpp>
 
-#include <iostream>
+#include <string>
 
 namespace Katydid
 {
-    template< typename Signature >
-    struct KTSignal
-    {
-        typedef Signature signature;
-        typedef boost::signals2::signal< Signature > signal;
-        typedef typename boost::signals2::signal< Signature >::slot_type slot_type;
-    };
+    class KTData;
 
-    class SignalException : public std::logic_error
+    /*!
+     @class KTSignalOneArg
+     @author N. S. Oblath
+
+     @brief Creates a signal that takes a single argument.
+
+     @details
+     The signal is emitted by calling operator().
+     If a KTDataSlot is being used, and the Slot has been given a pointer to this signal, the Slot will emit the Signal.
+
+     Usage:
+     In your Processor's header add a member variable of type KTDataSignal< ArgumentType >.
+
+     Initialize the signal with the processor's 'this' pointer and the name of the signal.
+
+     To use the signal, call it as: fSignalObject(arg);
+    */
+    template< class XSignalArgument >
+    class KTSignalOneArg
     {
         public:
-            SignalException(std::string const& why);
-    };
-
-    class KTSignalWrapper : public boost::noncopyable
-    {
-        public:
-            friend class KTSlotWrapper;
-
-        private:
-            class KTInternalSignalWrapper
-            {
-                public:
-                    KTInternalSignalWrapper() {}
-                    virtual ~KTInternalSignalWrapper() {}
-            };
-
-            template< typename XSignature >
-            class KTSpecifiedInternalSignalWrapper : public KTInternalSignalWrapper, public boost::noncopyable
-            {
-                public:
-                    KTSpecifiedInternalSignalWrapper(XSignature* signalPtr) : fSignal(signalPtr)
-                    {}
-                    virtual ~KTSpecifiedInternalSignalWrapper() {}
-
-                    XSignature* GetSignal() const
-                    {
-                        return fSignal;
-                    }
-                private:
-                    XSignature* fSignal; //not owned by this KTSignalWrapper
-            };
+            typedef void (signature)(XSignalArgument);
+            typedef boost::signals2::signal< signature > boost_signal;
+            typedef typename boost::signals2::signal< signature >::slot_type slot_type;
 
         public:
-            template< typename XSignature >
-            KTSignalWrapper(XSignature* signalPtr, const std::string& signature);
-            ~KTSignalWrapper();
+            KTSignalOneArg(const std::string& name, KTProcessor* proc);
+            virtual ~KTSignalOneArg();
 
-            const KTSignalSlotSignature& GetSignature() const;
+        protected:
+            KTSignalOneArg();
+            KTSignalOneArg(const KTSignalOneArg&);
 
-        private:
-            KTSignalWrapper();
+        public:
+            void operator()(XSignalArgument arg);
 
-            KTInternalSignalWrapper* GetInternal() const;
-
-            KTInternalSignalWrapper* fSignalWrapper;
-
-            KTSignalSlotSignature fSignature;
+        protected:
+            boost_signal fSignal;
 
     };
 
-    template< typename XSignature >
-    KTSignalWrapper::KTSignalWrapper(XSignature* signalPtr, const std::string& signature) :
-            fSignalWrapper(NULL),
-            fSignature(signature)
+
+    template<>
+    class KTSignalOneArg< void >
     {
-        fSignalWrapper = new KTSpecifiedInternalSignalWrapper< XSignature >(signalPtr);
+        public:
+            typedef void (signature)(void);
+            typedef boost::signals2::signal< signature > boost_signal;
+            typedef typename boost::signals2::signal< signature >::slot_type slot_type;
+
+        public:
+            KTSignalOneArg(const std::string& name, KTProcessor* proc);
+            virtual ~KTSignalOneArg();
+
+        protected:
+            KTSignalOneArg();
+            KTSignalOneArg(const KTSignalOneArg&);
+
+        public:
+            void operator()();
+
+        protected:
+            boost_signal fSignal;
+
+    };
+
+
+
+    /*!
+     @class KTSignalData
+     @author N. S. Oblath
+
+     @brief Creates a signal that takes a boost::shared_ptr< KTData > object as its argument.
+
+     @details
+     The purpose of the signal is for passing KTData pointers between Processors.
+     The signal is emitted by calling operator().
+     If a KTDataSlot is being used, and the Slot has been given a pointer to this signal, the Slot will emit the Signal.
+
+     Usage:
+     In your Processor's header add a member variable of type KTSignalData.
+
+     Initialize the signal with the processor's 'this' pointer and the name of the signal.
+
+     That's it!
+    */
+
+    class KTSignalData : public KTSignalOneArg< boost::shared_ptr< KTData > >
+    {
+        public:
+            typedef void (signature)(boost::shared_ptr< KTData >);
+            typedef boost::signals2::signal< signature > boost_signal;
+            typedef boost::signals2::signal< signature >::slot_type slot_type;
+
+            typedef void (ref_signature)(boost::shared_ptr< KTData >&);
+            typedef boost::signals2::signal< ref_signature > ref_boost_signal;
+            typedef boost::signals2::signal< ref_signature >::slot_type ref_slot_type;
+
+        public:
+            KTSignalData(const std::string& name, KTProcessor* proc);
+            virtual ~KTSignalData();
+
+        protected:
+            KTSignalData();
+            KTSignalData(const KTSignalData&);
+
+        public:
+            void operator()(boost::shared_ptr< KTData > arg);
+
+        protected:
+            ref_boost_signal fRefSignal;
+    };
+
+
+
+    template< class XSignalArgument >
+    KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const std::string& name, KTProcessor* proc) :
+            fSignal()
+    {
+        proc->RegisterSignal(name, &fSignal);
     }
 
-    inline KTSignalWrapper::KTInternalSignalWrapper* KTSignalWrapper::GetInternal() const
+    template< class XSignalArgument >
+    KTSignalOneArg< XSignalArgument >::KTSignalOneArg() :
+            fSignal()
+    {}
+
+    template< class XSignalArgument >
+    KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const KTSignalOneArg& rhs) :
+            fSignal()
+    {}
+
+    template< class XSignalArgument >
+    KTSignalOneArg< XSignalArgument >::~KTSignalOneArg()
     {
-        return fSignalWrapper;
     }
 
-    inline const KTSignalSlotSignature& KTSignalWrapper::GetSignature() const
+    template< class XSignalArgument >
+    inline void KTSignalOneArg< XSignalArgument >::operator()(XSignalArgument arg)
     {
-        return fSignature;
+        fSignal(arg);
     }
+
+
+    inline void KTSignalOneArg< void >::operator()()
+    {
+        fSignal();
+    }
+
+
+    inline void KTSignalData::operator()(boost::shared_ptr< KTData > arg)
+    {
+        fSignal(arg);
+        fRefSignal(arg);
+    }
+
+
 
 } /* namespace Katydid */
 #endif /* KTSIGNAL_HH_ */

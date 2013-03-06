@@ -11,7 +11,6 @@
 //#include "KTCluster2DData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 //#include "KTDiscriminatedPoints2DData.hh"
-#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
@@ -32,22 +31,14 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTDistanceClustering > sSimpleFFTRegistrar("distance-clustering");
 
-    KTDistanceClustering::KTDistanceClustering() :
-            KTProcessor(),
+    KTDistanceClustering::KTDistanceClustering(const std::string& name) :
+            KTProcessor(name),
             fMaxFrequencyDistance(1.),
             fMaxBinDistance(1),
             fCalculateMaxBinDistance(true),
-            fInputDataName("frequency-spectrum"),
-            fOutputDataName("peak-list")
+            fCluster1DSignal("cluster-1d", this),
+            fDiscPoints1DSlot("disc-1d", this, &KTDistanceClustering::FindClusters, &fCluster1DSignal)
     {
-        fConfigName = "distance-clustering";
-
-        RegisterSignal("cluster-1d", &fCluster1DSignal, "void (const KTCluster1DData*)");
-        //RegisterSignal("cluster-2d", &fCluster2DSignal, "void (const KTCluster2DData*)");
-
-        RegisterSlot("bundle", this, &KTDistanceClustering::ProcessBundle, "void (shared_ptr<KTBundle>)");
-        RegisterSlot("disc-1d-data", this, &KTDistanceClustering::Process1DData, "void (const KTDiscriminatedPoints1DData*)");
-        //RegisterSlot("disc-2d-data", this, &KTDistanceClustering::Process2DData, "void (const KTDiscriminatedPoints2DData*)");
     }
 
     KTDistanceClustering::~KTDistanceClustering()
@@ -68,30 +59,27 @@ namespace Katydid
             SetMaxBinDistance(node->GetData< UInt_t >("max-bin-distance"));
         }
 
-        SetInputDataName(node->GetData<string>("input-data-name", fInputDataName));
-        SetOutputDataName(node->GetData<string>("output-data-name", fOutputDataName));
-
         return true;
     }
 
-    KTCluster1DData* KTDistanceClustering::FindClusters(const KTDiscriminatedPoints1DData* data)
+    Bool_t KTDistanceClustering::FindClusters(KTDiscriminatedPoints1DData& data)
     {
         typedef KTDiscriminatedPoints1DData::SetOfPoints OriginalPoints;
         typedef set< UInt_t > Cluster;
 
-        if (fCalculateMaxBinDistance) SetMaxBinDistance(KTMath::Nint(fMaxFrequencyDistance / data->GetBinWidth()));
+        if (fCalculateMaxBinDistance) SetMaxBinDistance(KTMath::Nint(fMaxFrequencyDistance / data.GetBinWidth()));
 
-        UInt_t nChannels = data->GetNChannels();
+        UInt_t nComponents = data.GetNComponents();
 
-        KTCluster1DData* newData = new KTCluster1DData(nChannels);
-        newData->SetNBins(data->GetNBins());
-        newData->SetBinWidth(data->GetBinWidth());
+        KTCluster1DData& newData = data.Of< KTCluster1DData >().SetNComponents(nComponents);
+        newData.SetNBins(data.GetNBins());
+        newData.SetBinWidth(data.GetBinWidth());
 
-        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            newData->SetThreshold(data->GetThreshold(iChannel), iChannel);
+            newData.SetThreshold(data.GetThreshold(iComponent), iComponent);
 
-            const OriginalPoints points = data->GetSetOfPoints(iChannel);
+            const OriginalPoints points = data.GetSetOfPoints(iComponent);
 
             if (! points.empty())
             {
@@ -107,63 +95,41 @@ namespace Katydid
                     if (thisPoint - lastPointInActiveCluster > fMaxBinDistance)
                     {
                         //KTDEBUG(sdlog, "Adding cluster (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
-                        newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
+                        newData.AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iComponent);
                         activeCluster.clear();
                     }
                     activeCluster.insert(thisPoint);
                     lastPointInActiveCluster = thisPoint;
                 }
-                KTDEBUG(sdlog, "Adding cluster: (ch. " << iChannel << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
-                newData->AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iChannel);
+                KTDEBUG(sdlog, "Adding cluster: (ch. " << iComponent << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
+                newData.AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iComponent);
             }
 
-            KTDEBUG(sdlog, newData->GetSetOfClusters(iChannel).size() << " clusters added on channel " << iChannel);
+            KTDEBUG(sdlog, newData.GetSetOfClusters(iComponent).size() << " clusters added on channel " << iComponent);
         }
 
-        newData->SetName(fOutputDataName);
-        newData->SetBundle(data->GetBundle());
-
-        fCluster1DSignal(newData);
-
-        return newData;
+        return true;
     }
 
-    void KTDistanceClustering::ProcessBundle(shared_ptr<KTBundle> bundle)
+    void KTDistanceClustering::Process1DData(shared_ptr< KTData > data)
     {
-        const KTDiscriminatedPoints1DData* dp1Data = bundle->GetData< KTDiscriminatedPoints1DData >(fInputDataName);
-        if (dp1Data != NULL)
+        if (! data->Has< KTDiscriminatedPoints1DData >())
         {
-            KTCluster1DData* newData = FindClusters(dp1Data);
-            bundle->AddData(newData);
+            KTERROR(sdlog, "No discriminated-points data was present");
             return;
         }
-        /*
-        const KTDiscriminatedPoints2DData* dp2Data = dynamic_cast< KTDiscriminatedPoints2DData* >(bundle->GetData(fInputDataName));
-        if (dp2Data != NULL)
+        if (! FindClusters(data->Of< KTDiscriminatedPoints1DData >()))
         {
-            KTCluster2DData* newData = FindClusters(dp2Data);
-            bundle->AddData(newData);
+            KTERROR(sdlog, "Something went wrong while performing the cluster-finding");
             return;
         }
-        */
-        KTWARN(sdlog, "No discriminated-points data named <" << fInputDataName << "> was available in the bundle");
-        return;
-    }
-
-    void KTDistanceClustering::Process1DData(const KTDiscriminatedPoints1DData* data)
-    {
-        KTCluster1DData* newData = FindClusters(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
+        fCluster1DSignal(data);
         return;
     }
     /*
     void KTDistanceClustering::Process2DData(const KTDiscriminatedPoints2DData* data)
     {
-        KTCluster2DData* newData = FindClusters(data);
-        if (data->GetBundle() != NULL)
-            data->GetBundle()->AddData(newData);
-        return;
+
     }
     */
 } /* namespace Katydid */

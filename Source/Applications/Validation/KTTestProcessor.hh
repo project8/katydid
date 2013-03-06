@@ -16,7 +16,7 @@ namespace Katydid
     class KTTestProcessorA : public KTProcessor
     {
         public:
-            typedef KTSignal< void (int) >::signal TheSignal;
+            typedef KTSignalConcept< void (int) >::signal TheSignal;
 
         public:
             KTTestProcessorA();

@@ -13,7 +13,7 @@
 #include "KTProcessor.hh"
 
 #include "KTLogger.hh"
-#include "KTFrequencySpectrumPolar.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -27,16 +27,12 @@ namespace Katydid
 {
     KTLOGGER(fftlog_comp, "katydid.fft");
 
+    class KTData;
     class KTEggHeader;
-    class KTBundle;
     class KTPStoreNode;
-    class KTBasicTimeSeriesData;
     class KTTimeSeriesFFTW;
-    class KTTimeSeriesDataFFTW;
-    class KTBasicTimeSeriesDataFFTW;
-    class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumDataFFTW;
-    class KTWriteableData;
+    class KTFrequencySpectrumFFTW;
 
     /*!
      @class KTComplexFFTW
@@ -53,10 +49,6 @@ namespace Katydid
      \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
      \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
      \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     \li \c "forward-input-data-name": string -- name of the data to find if processing an bundle in the forward direction
-     \li \c "forward-output-data-name": string -- name to give to the data produced by a forward FFT
-     \li \c "reverse-input-data-name": string -- name of the data to find if processing an bundle in the reverse direction
-     \li \c "reverse-output-data-name": string -- name of give to the data produced by a reverse FFT
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -69,38 +61,33 @@ namespace Katydid
      FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
 
      Slots:
-     \li \c "header": void ProcessHeader(const KTEggHeader* header)
-     \li \c "bundle-forward": void ProcessBundleForward(const KTBundle* bundle)
-     \li \c "bundle-reverse": void ProcessBundleReverse(const KTBundle* bundle)
-     \li \c "ts-data": void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* data)
-     \li \c "fs-data": void ProcessFrequencySpectrumData(const KTTimeSeriesDataFFTW* data)
+     \li \c "header": void (const KTEggHeader* header) -- Initialize the FFT from an Egg header
+     \li \c "ts": void (shared_ptr<KTData>) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
+     \li \c "fs-fftw": void (shared_ptr<KTData>) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
 
      Signals:
-     \li \c "fft-forward": void (const KTFrequencySpectrumDataFFTW*) emitted upon performance of a forward transform.
-     \li \c "fft-reverse": void (const KTWriteableData*) emitted upon performance of a reverse transform.
+     \li \c "fft-forward": void (shared_ptr<KTData>) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     \li \c "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
     class KTComplexFFTW : public KTFFT, public KTProcessor
     {
-        public:
-            typedef KTSignal< void (const KTFrequencySpectrumDataFFTW*) >::signal FFTForwardSignal;
-            typedef KTSignal< void (const KTTimeSeriesData*) >::signal FFTReverseSignal;
-
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
 
         public:
-            KTComplexFFTW();
+            KTComplexFFTW(const std::string& name = "complex-fftw");
             virtual ~KTComplexFFTW();
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            virtual void InitializeFFT();
+            void InitializeFFT();
+            void InitializeWithHeader(const KTEggHeader* header);
 
             /// Forward FFT
-            virtual KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesData* tsData);
+            Bool_t TransformData(KTTimeSeriesData& tsData);
             /// Reverse FFT
-            virtual KTTimeSeriesData* TransformData(const KTFrequencySpectrumDataFFTW* fsData);
+            Bool_t TransformData(KTFrequencySpectrumDataFFTW& fsData);
 
             /// Forward FFT
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
@@ -127,18 +114,6 @@ namespace Katydid
             void SetUseWisdom(Bool_t flag);
             void SetWisdomFilename(const std::string& fname);
 
-            const std::string& GetForwardInputDataName() const;
-            void SetForwardInputDataName(const std::string& name);
-
-            const std::string& GetForwardOutputDataName() const;
-            void SetForwardOutputDataName(const std::string& name);
-
-            const std::string& GetReverseInputDataName() const;
-            void SetReverseInputDataName(const std::string& name);
-
-            const std::string& GetReverseOutputDataName() const;
-            void SetReverseOutputDataName(const std::string& name);
-
         protected:
             void AllocateArrays();
             void FreeArrays();
@@ -158,30 +133,22 @@ namespace Katydid
             Bool_t fUseWisdom;
             std::string fWisdomFilename;
 
-            std::string fForwardInputDataName;
-            std::string fForwardOutputDataName;
-
-            std::string fReverseInputDataName;
-            std::string fReverseOutputDataName;
-
             //***************
             // Signals
             //***************
 
         private:
-            FFTForwardSignal fFFTForwardSignal;
-            FFTReverseSignal fFFTReverseSignal;
+            KTSignalData fFFTForwardSignal;
+            KTSignalData fFFTReverseSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessHeader(const KTEggHeader* header);
-            void ProcessBundleForward(boost::shared_ptr<KTBundle> bundle);
-            void ProcessBundleReverse(boost::shared_ptr<KTBundle> bundle);
-            void ProcessTimeSeriesData(const KTTimeSeriesData* tsData);
-            void ProcessFrequencySpectrumData(const KTFrequencySpectrumDataFFTW* fsData);
+        private:
+            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };
 
@@ -247,50 +214,6 @@ namespace Katydid
     inline void KTComplexFFTW::SetWisdomFilename(const std::string& fname)
     {
         fWisdomFilename = fname;
-        return;
-    }
-
-    inline const std::string& KTComplexFFTW::GetForwardInputDataName() const
-    {
-        return fForwardInputDataName;
-    }
-
-    inline void KTComplexFFTW::SetForwardInputDataName(const std::string& name)
-    {
-        fForwardInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTComplexFFTW::GetForwardOutputDataName() const
-    {
-        return fForwardOutputDataName;
-    }
-
-    inline void KTComplexFFTW::SetForwardOutputDataName(const std::string& name)
-    {
-        fForwardOutputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTComplexFFTW::GetReverseInputDataName() const
-    {
-        return fReverseInputDataName;
-    }
-
-    inline void KTComplexFFTW::SetReverseInputDataName(const std::string& name)
-    {
-        fReverseInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTComplexFFTW::GetReverseOutputDataName() const
-    {
-        return fReverseOutputDataName;
-    }
-
-    inline void KTComplexFFTW::SetReverseOutputDataName(const std::string& name)
-    {
-        fReverseOutputDataName = name;
         return;
     }
 

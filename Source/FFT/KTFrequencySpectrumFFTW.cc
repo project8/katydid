@@ -108,7 +108,7 @@ namespace Katydid
     }
 
 
-    KTFrequencySpectrumPolar* KTFrequencySpectrumFFTW::CreateFrequencySpectrum() const
+    KTFrequencySpectrumPolar* KTFrequencySpectrumFFTW::CreateFrequencySpectrumPolar() const
     {
         // The negative frequency values will be combined with the positive ones,
         // so the power spectrum will go from the DC bin to the max frequency

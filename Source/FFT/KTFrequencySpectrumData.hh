@@ -20,112 +20,42 @@
 
 namespace Katydid
 {
-
-    class KTFrequencySpectrumData : public KTWriteableData
+    template< class XDataType >
+    class KTFrequencySpectrumData : public KTExtensibleData< XDataType >
     {
         public:
-            KTFrequencySpectrumData(unsigned nChannels=1);
+            KTFrequencySpectrumData();
             virtual ~KTFrequencySpectrumData();
 
-            const KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0) const;
-            KTFrequencySpectrumPolar* GetSpectrum(UInt_t channelNum = 0);
-            UInt_t GetNChannels() const;
-            Double_t GetTimeInRun() const;
-            ULong64_t GetSliceNumber() const;
+            virtual UInt_t GetNComponents() const = 0;
 
-            void SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t channelNum = 0);
-            void SetNChannels(UInt_t channels);
-            void SetTimeInRun(Double_t tir);
-            void SetSliceNumber(ULong64_t slice);
+            virtual const KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) const = 0;
+            virtual KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) = 0;
 
-            void Accept(KTWriter* writer) const;
-
-        protected:
-            std::vector< KTFrequencySpectrumPolar* > fSpectra;
-
-            Double_t fTimeInRun;
-            ULong64_t fSliceNumber;
-
+            virtual void SetNComponents(UInt_t channels) = 0;
+/*
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateMagnitudeHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumMag") const;
-            virtual TH1D* CreatePhaseHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumPhase") const;
+            virtual TH1D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumMag") const = 0;
+            virtual TH1D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPhase") const = 0;
 
-            virtual TH1D* CreatePowerHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumPower") const;
+            virtual TH1D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPower") const = 0;
 
-            virtual TH1D* CreatePowerDistributionHistogram(UInt_t channelNum = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
+            virtual TH1D* CreatePowerDistributionHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const = 0;
 #endif
+*/
     };
 
-    inline const KTFrequencySpectrumPolar* KTFrequencySpectrumData::GetSpectrum(UInt_t channelNum) const
+    template< class XDataType >
+    KTFrequencySpectrumData< XDataType >::KTFrequencySpectrumData() :
+            KTExtensibleData< XDataType >()
     {
-        return fSpectra[channelNum];
     }
 
-    inline KTFrequencySpectrumPolar* KTFrequencySpectrumData::GetSpectrum(UInt_t channelNum)
+    template< class XDataType >
+    KTFrequencySpectrumData< XDataType >::~KTFrequencySpectrumData()
     {
-        return fSpectra[channelNum];
     }
-
-    inline UInt_t KTFrequencySpectrumData::GetNChannels() const
-    {
-        return UInt_t(fSpectra.size());
-    }
-
-    inline Double_t KTFrequencySpectrumData::GetTimeInRun() const
-    {
-        return fTimeInRun;
-    }
-
-    inline ULong64_t KTFrequencySpectrumData::GetSliceNumber() const
-    {
-        return fSliceNumber;
-    }
-
-    inline void KTFrequencySpectrumData::SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t channelNum)
-    {
-        if (channelNum >= fSpectra.size()) fSpectra.resize(channelNum+1);
-        fSpectra[channelNum] = record;
-    }
-
-    inline void KTFrequencySpectrumData::SetNChannels(UInt_t channels)
-    {
-        fSpectra.resize(channels);
-        return;
-    }
-
-    inline void KTFrequencySpectrumData::SetTimeInRun(Double_t tir)
-    {
-        fTimeInRun = tir;
-        return;
-    }
-
-    inline void KTFrequencySpectrumData::SetSliceNumber(ULong64_t slice)
-    {
-        fSliceNumber = slice;
-        return;
-    }
-
-#ifdef ROOT_FOUND
-    inline TH1D* KTFrequencySpectrumData::CreateMagnitudeHistogram(UInt_t channelNum, const std::string& name) const
-    {
-        return fSpectra[channelNum]->CreateMagnitudeHistogram(name);
-    }
-    inline TH1D* KTFrequencySpectrumData::CreatePhaseHistogram(UInt_t channelNum, const std::string& name) const
-    {
-        return fSpectra[channelNum]->CreatePhaseHistogram(name);
-    }
-
-    inline TH1D* KTFrequencySpectrumData::CreatePowerHistogram(UInt_t channelNum, const std::string& name) const
-    {
-        return fSpectra[channelNum]->CreatePowerHistogram(name);
-    }
-
-    inline TH1D* KTFrequencySpectrumData::CreatePowerDistributionHistogram(UInt_t channelNum, const std::string& name) const
-    {
-        return fSpectra[channelNum]->CreatePowerDistributionHistogram(name);
-    }
-#endif
 
 
 } /* namespace Katydid */

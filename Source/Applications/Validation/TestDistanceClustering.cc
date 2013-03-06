@@ -20,7 +20,8 @@ int main()
 {
     KTINFO(testlog, "Setting up points");
 
-    KTDiscriminatedPoints1DData discPoints(1);
+    KTDiscriminatedPoints1DData discPoints;
+    discPoints.SetNComponents(1);
     discPoints.SetBinWidth(1.);
     discPoints.SetNBins(100);
     discPoints.SetThreshold(0.1, 0);
@@ -45,16 +46,19 @@ int main()
     clustering.SetMaxBinDistance(2);
 
     KTINFO(testlog, "Analyzing points");
-    KTCluster1DData* clusters = clustering.FindClusters(&discPoints);
+    if (! clustering.FindClusters(discPoints))
+    {
+        KTERROR(testlog, "Something went wrong while finding clusters");
+        return -1;
+    }
+    KTCluster1DData& clusters = discPoints.Of< KTCluster1DData >();
 
     UInt_t iCluster = 0;
-    for (KTCluster1DData::SetOfClusters::const_iterator cIt = clusters->GetSetOfClusters(0).begin(); cIt != clusters->GetSetOfClusters(0).end(); cIt++)
+    for (KTCluster1DData::SetOfClusters::const_iterator cIt = clusters.GetSetOfClusters(0).begin(); cIt != clusters.GetSetOfClusters(0).end(); cIt++)
     {
         KTINFO(testlog, "Cluster #" << iCluster << ":  " << cIt->first << " --> " << cIt->second);
         iCluster++;
     }
-
-    delete clusters;
 
     return 0;
 }

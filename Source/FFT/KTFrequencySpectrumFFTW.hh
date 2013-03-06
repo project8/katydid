@@ -1,8 +1,9 @@
-/*
- * KTFrequencySpectrumFFTW.hh
- *
- *  Created on: Aug 28, 2012
- *      Author: nsoblath
+/**
+ @file KTFrequencySpectrumFFTW.hh
+ @brief Contains KTFrequencySpectrum
+ @details 
+ @author: N. S. Oblath
+ @date: Aug 28, 2012
  */
 
 #ifndef KTFREQUENCYSPECTRUMFFTW_HH_
@@ -61,6 +62,7 @@ namespace Katydid
             virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg);
 
             virtual UInt_t GetNFrequencyBins() const;
+            virtual Double_t GetFrequencyBinWidth() const;
 
             /// Returns the size of the positive-frequency part of the array
             //size_t size() const;
@@ -82,7 +84,7 @@ namespace Katydid
             /// In-place calculation of the analytic associate
             virtual KTFrequencySpectrumFFTW& AnalyticAssociate();
 
-            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrum() const;
+            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar() const;
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
@@ -170,6 +172,12 @@ namespace Katydid
     {
         return size();
     }
+
+    inline Double_t KTFrequencySpectrumFFTW::GetFrequencyBinWidth() const
+    {
+        return GetBinWidth();
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYSPECTRUMFFTW_HH_ */

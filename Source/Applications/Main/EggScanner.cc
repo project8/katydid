@@ -13,11 +13,7 @@
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
 #include "KTEggReaderMonarch.hh"
-#include "KTBundle.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesChannelData.hh"
-
-#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 #include <string>
@@ -46,14 +42,11 @@ int main(int argc, char** argv)
         readerOption = argv[2];
     }
 
-    UInt_t nBundles = 5;
-
     KTEgg egg;
     if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
     {
         KTINFO(testegg, "Using 2011 egg reader");
         KTEggReader2011* reader = new KTEggReader2011();
-        reader->SetOutputDataName("time-series");
         egg.SetReader(reader);
     }
     else
@@ -61,7 +54,6 @@ int main(int argc, char** argv)
         UInt_t recordSize = 0;
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
         reader->SetTimeSeriesSizeRequest(recordSize);
-        reader->SetOutputDataName("time-series");
         egg.SetReader(reader);
     }
 

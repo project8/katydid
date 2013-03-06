@@ -65,8 +65,8 @@ namespace Katydid
    class KTSlidingWindowFFT : public KTFFT, public KTProcessor
     {
         public:
-            typedef KTSignal< void (UInt_t, KTFrequencySpectrumPolar*) >::signal SingleFFTSignal;
-            typedef KTSignal< void (const KTWriteableData*) >::signal FullFFTSignal;
+            typedef KTSignalConcept< void (UInt_t, KTFrequencySpectrumPolar*) >::signal SingleFFTSignal;
+            typedef KTSignalConcept< void (const KTWriteableData*) >::signal FullFFTSignal;
 
         protected:
             typedef std::map< std::string, Int_t > TransformFlagMap;

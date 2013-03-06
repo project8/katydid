@@ -7,7 +7,7 @@
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTLogger.hh"
 #include "KTSpectrumDiscriminator.hh"
 
@@ -40,7 +40,8 @@ int main()
     TRandom3 rand(0);
 #endif
 
-    KTFrequencySpectrumData data(1);
+    KTFrequencySpectrumDataPolar data;
+    data.SetNComponents(1);
     KTFrequencySpectrumPolar* spectrum = new KTFrequencySpectrumPolar(nBins, minFreq, maxFreq);
 
     // Fill in the noise
@@ -57,8 +58,13 @@ int main()
     // Add some peaks
     for (UInt_t iPeak=0; iPeak<nPeaks; iPeak++)
     {
+#ifdef ROOT_FOUND
         UInt_t iBin = UInt_t(rand.Rndm() * (Double_t)nBins);
         Double_t multiplier = rand.Gaus(meanPeakMult, sigmaPeakMult);
+#else
+        UInt_t iBin = iPeak * nBins/nPeaks;
+        Double_t multiplier = meanPeakMult;
+#endif
         (*spectrum)(iBin).set_polar((*spectrum)(iBin).abs() * multiplier, 0.);
         KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*spectrum)(iBin).abs());
     }
@@ -80,9 +86,14 @@ int main()
     disc.SetSigmaThreshold(sigmaThresh);
 
     KTINFO(testlog, "Discriminating data");
-    KTDiscriminatedPoints1DData* pointData = disc.Discriminate(&data);
+    if (! disc.Discriminate(data))
+    {
+        KTERROR(testlog, "Something went wrong while discriminating peaks");
+        return -1;
+    }
+    KTDiscriminatedPoints1DData& pointData = data.Of< KTDiscriminatedPoints1DData >();
 
-    KTDiscriminatedPoints1DData::SetOfPoints setOfPoints = pointData->GetSetOfPoints(0);
+    KTDiscriminatedPoints1DData::SetOfPoints setOfPoints = pointData.GetSetOfPoints(0);
     KTINFO(testlog, "Found " << setOfPoints.size() << " points above threshold");
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it=setOfPoints.begin(); it != setOfPoints.end(); it++)
     {
@@ -100,8 +111,6 @@ int main()
     }
     histPoints->Write();
 #endif
-
-    delete pointData;
 
 #ifdef ROOT_FOUND
     file->Close();

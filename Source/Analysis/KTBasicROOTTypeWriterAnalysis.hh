@@ -10,17 +10,14 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 namespace Katydid
 {
-    class KTCorrelationData;
-    class KTHoughData;
-    class KTGainVariationData;
+    class KTData;
 
     class KTBasicROOTTypeWriterAnalysis : public KTBasicROOTTypeWriter
     {
-        public:
-            friend class KTTimeSeriesData;
-
         public:
             KTBasicROOTTypeWriterAnalysis();
             virtual ~KTBasicROOTTypeWriterAnalysis();
@@ -29,22 +26,34 @@ namespace Katydid
 
 
             //************************
+            // Analytic Associate Data
+            //************************
+        public:
+            void WriteAnalyticAssociateData(boost::shared_ptr<KTData> data);
+
+            //************************
             // Correlation Data
             //************************
         public:
-            void WriteCorrelationData(const KTCorrelationData* data);
+            void WriteCorrelationData(boost::shared_ptr<KTData> data);
 
             //************************
             // Hough Transform Data
             //************************
         public:
-            void WriteHoughData(const KTHoughData* data);
+            void WriteHoughData(boost::shared_ptr<KTData> data);
 
             //************************
             // Gain Variation Data
             //************************
         public:
-            void WriteGainVariationData(const KTGainVariationData* data);
+            void WriteGainVariationData(boost::shared_ptr<KTData> data);
+
+            //************************
+            // WignerVille Data
+            //************************
+        public:
+            void WriteWignerVilleData(boost::shared_ptr<KTData> data);
 
     };
 

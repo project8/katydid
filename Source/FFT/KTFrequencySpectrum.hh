@@ -29,6 +29,9 @@ namespace Katydid
             /// Get the size of the array using the KTFrequencySpectrum interface
             virtual UInt_t GetNFrequencyBins() const = 0;
 
+            /// Get the bin width of the array using the KTFrequencySpectrum interface
+            virtual Double_t GetFrequencyBinWidth() const = 0;
+
             virtual Double_t GetReal(UInt_t bin) const = 0;
             virtual Double_t GetImag(UInt_t bin) const = 0;
 

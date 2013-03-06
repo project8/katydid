@@ -7,18 +7,16 @@
 
 #include "KTGainNormalization.hh"
 
-#include "KTBundle.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTGainVariationData.hh"
 #include "KTLogger.hh"
-#include "KTPhysicalArray.hh"
 #include "KTPStoreNode.hh"
-#include "KTSlidingWindowFSData.hh"
-#include "KTSlidingWindowFSDataFFTW.hh"
+//#include "KTSlidingWindowFSData.hh"
+//#include "KTSlidingWindowFSDataFFTW.hh"
 
 #ifdef USE_OPENMP
 #include <omp.h>
@@ -33,26 +31,19 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTGainNormalization > sGainNormRegistrar("gain-normalization");
 
-    KTGainNormalization::KTGainNormalization() :
-            KTProcessor(),
+    KTGainNormalization::KTGainNormalization(const std::string& name) :
+            KTProcessor(name),
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
             fMaxBin(1),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
-            fGVInputDataName("gain-variation"),
-            fFSInputDataName("frequency-spectrum"),
-            fOutputDataName("gain-variation")
+            fFSPolarSignal("norm-fs-polar", this),
+            fFSFFTWSignal("norm-fs-fftw", this),
+            fFSPolarSlot("fs-polar", this, &KTGainNormalization::Normalize, &fFSPolarSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTGainNormalization::Normalize, &fFSFFTWSignal)
     {
-        fConfigName = "gain-normalization";
-
-        RegisterSignal("gain-norm-fs", &fFSSignal, "void (const KTFrequencySpectrumData*)");
-        RegisterSignal("gain-norm-fs-fftw", &fFSFFTWSignal, "void (const KTFrequencySpectrumDataFFTW*)");
-        RegisterSignal("gain-norm-sw-fs", &fSWFSSignal, "void (const KTSlidingWindowFSData*)");
-        RegisterSignal("gain-norm-sw-fs-fftw", &fSWFSFFTWSignal, "void (const KTSlidingWindowFSDataFFTW*)");
-
-        RegisterSlot("bundle", this, &KTGainNormalization::ProcessBundle, "void (shared_ptr<KTBundle>)");
     }
 
     KTGainNormalization::~KTGainNormalization()
@@ -81,80 +72,66 @@ namespace Katydid
             SetMaxBin(node->GetData< UInt_t >("max-bin"));
         }
 
-        SetGVInputDataName(node->GetData< string >("gv-input-data-name", fGVInputDataName));
-        SetFSInputDataName(node->GetData< string >("fs-input-data-name", fFSInputDataName));
-        SetOutputDataName(node->GetData< string >("output-data-name", fOutputDataName));
-
         return true;
     }
 
 
-    KTFrequencySpectrumData* KTGainNormalization::Normalize(const KTFrequencySpectrumData* fsData, const KTGainVariationData* gvData)
+    Bool_t KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData)
     {
-        if (fCalculateMinBin) SetMinBin(fsData->GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrum(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumPolar(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
 
-        UInt_t nChannels = fsData->GetNChannels();
-        if (nChannels != gvData->GetNChannels())
+        UInt_t nComponents = fsData.GetNComponents();
+        if (nComponents != gvData.GetNComponents())
         {
             KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
-            return NULL;
+            return false;
         }
 
-        KTFrequencySpectrumData* newData = new KTFrequencySpectrumData(nChannels);
+        KTNormalizedFSDataPolar& newData = fsData.Of< KTNormalizedFSDataPolar >().SetNComponents(nComponents);
 
-        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
+            KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent));
             if (newSpectrum == NULL)
             {
-                KTERROR(gnlog, "Normalization of spectrum " << iChannel << " failed for some reason. Continuing processing.");
+                KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            newData->SetSpectrum(newSpectrum, iChannel);
+            newData.SetSpectrum(newSpectrum, iComponent);
         }
+        KTDEBUG(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (polar)");
 
-        newData->SetTimeInRun(fsData->GetTimeInRun());
-        newData->SetSliceNumber(fsData->GetSliceNumber());
-
-        newData->SetName(fOutputDataName);
-
-        fFSSignal(newData);
-
-        return newData;
+        return true;
     }
 
-    KTFrequencySpectrumDataFFTW* KTGainNormalization::Normalize(const KTFrequencySpectrumDataFFTW* fsData, const KTGainVariationData* gvData)
+    Bool_t KTGainNormalization::Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData)
     {
-        if (fCalculateMinBin) SetMinBin(fsData->GetSpectrum(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(fsData->GetSpectrum(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
 
-        UInt_t nChannels = fsData->GetNChannels();
-        if (nChannels != gvData->GetNChannels())
+        UInt_t nComponents = fsData.GetNComponents();
+        if (nComponents != gvData.GetNComponents())
         {
             KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
             return NULL;
         }
 
-        KTFrequencySpectrumDataFFTW* newData = new KTFrequencySpectrumDataFFTW(nChannels);
+        KTNormalizedFSDataFFTW& newData = fsData.Of< KTNormalizedFSDataFFTW >().SetNComponents(nComponents);
 
-        for (UInt_t iChannel=0; iChannel<nChannels; iChannel++)
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData->GetSpectrum(iChannel), gvData->GetSpline(iChannel));
+            KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent));
             if (newSpectrum == NULL)
             {
-                KTERROR(gnlog, "Normalization of spectrum " << iChannel << " failed for some reason. Continuing processing.");
+                KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            newData->SetSpectrum(newSpectrum, iChannel);
+            newData.SetSpectrum(newSpectrum, iComponent);
         }
+        KTDEBUG(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (fftw)");
 
-        newData->SetTimeInRun(fsData->GetTimeInRun());
-        newData->SetSliceNumber(fsData->GetSliceNumber());
-
-        newData->SetName(fOutputDataName);
-
-        return newData;
+        return true;
     }
 
     KTFrequencySpectrumPolar* KTGainNormalization::Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline)
@@ -303,68 +280,5 @@ namespace Katydid
 
         return newSpectrum;
     }
-
-    void KTGainNormalization::ProcessBundle(shared_ptr<KTBundle> bundle)
-    {
-        const KTGainVariationData* gvData = bundle->GetData< KTGainVariationData >(fGVInputDataName);
-        if (gvData == NULL)
-        {
-            KTWARN(gnlog, "No gain variation data named <" << fGVInputDataName << "> was available in the bundle");
-            return;
-        }
-
-        const KTFrequencySpectrumData* fsData = bundle->GetData< KTFrequencySpectrumData >(fFSInputDataName);
-        if (fsData != NULL)
-        {
-            KTFrequencySpectrumData* newData = Normalize(fsData, gvData);
-            if (newData != NULL)
-            {
-                KTBundle* bundle = fsData->GetBundle();
-                newData->SetBundle(bundle);
-                if (bundle != NULL)
-                    bundle->AddData(newData);
-                fFSSignal(newData);
-            }
-            return;
-        }
-
-        const KTFrequencySpectrumDataFFTW* fsDataFFTW = bundle->GetData< KTFrequencySpectrumDataFFTW >(fFSInputDataName);
-        if (fsDataFFTW != NULL)
-        {
-            KTFrequencySpectrumDataFFTW* newData = Normalize(fsDataFFTW, gvData);
-            if (newData != NULL)
-            {
-                KTBundle* bundle = fsDataFFTW->GetBundle();
-                newData->SetBundle(bundle);
-                if (bundle != NULL)
-                    bundle->AddData(newData);
-                fFSFFTWSignal(newData);
-            }
-            return;
-        }
-
-        /*
-        const KTSlidingWindowFSData* swfsData = dynamic_cast< KTSlidingWindowFSData* >(bundle->GetData(fFSInputDataName));
-        if (swfsData != NULL)
-        {
-            KTSlidingWindowFSData* newData = Normalize(swfsData, gvData);
-            bundle->AddData(newData);
-            return;
-        }
-        */
-        /*
-        const KTSlidingWindowFSDataFFTW* swfsDataFFTW = dynamic_cast< KTSlidingWindowFSDataFFTW* >(bundle->GetData(fFSInputDataName));
-        if (swfsDataFFTW != NULL)
-        {
-            KTSlidingWindowFSDataFFTW* newData = Normalize(swfsDataFFTW, gvData);
-            bundle->AddData(newData);
-            return;
-        }
-        */
-
-        KTWARN(gnlog, "No time series data named <" << fFSInputDataName << "> was available in the bundle");
-        return;
-    }
-
 
 } /* namespace Katydid */

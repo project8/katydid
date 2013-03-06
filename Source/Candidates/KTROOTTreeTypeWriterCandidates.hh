@@ -10,11 +10,16 @@
 
 #include "KTROOTTreeWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
+class TH2D;
 class TTree;
 
 namespace Katydid
 {
-    class KTFrequencyCandidateData;
+    class KTData;
+    //class KTFrequencyCandidateData;
+    //class KTWaterfallCandidateData;
 
     struct TFrequencyCandidateData
     {
@@ -29,6 +34,17 @@ namespace Katydid
         Double_t fAmplitudeSum;
     };
 
+    struct TWaterfallCandidateData
+    {
+        UShort_t fComponent;
+        Double_t fTimeInRun;
+        Double_t fTimeLength;
+        ULong64_t fFirstSliceNumber;
+        ULong64_t fLastSliceNumber;
+        Double_t fFrequencyWidth;
+        TH2D* fCandidate;
+    };
+
     class KTROOTTreeTypeWriterCandidates : public KTROOTTreeTypeWriter//, public KTTypeWriterCandidates
     {
         public:
@@ -38,26 +54,35 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteFrequencyCandidates(const KTFrequencyCandidateData* header);
+            void WriteFrequencyCandidates(boost::shared_ptr< KTData > data);
+
+            void WriteWaterfallCandidate(boost::shared_ptr< KTData > data);
 
         public:
             TTree* GetFrequencyCandidateTree() const;
+            TTree* GetWaterfallCandidateTree() const;
 
         private:
             void SetupFrequencyCandidateTree();
+            void SetupWaterfallCandidateTree();
 
             TTree* fFreqCandidateTree;
+            TTree* fWaterfallCandidateTree;
 
             TFrequencyCandidateData fFreqCandidateData;
+            TWaterfallCandidateData fWaterfallCandidateData;
 
     };
 
-    TTree* KTROOTTreeTypeWriterCandidates::GetFrequencyCandidateTree() const
+    inline TTree* KTROOTTreeTypeWriterCandidates::GetFrequencyCandidateTree() const
     {
         return fFreqCandidateTree;
     }
 
-
+    inline TTree* KTROOTTreeTypeWriterCandidates::GetWaterfallCandidateTree() const
+    {
+        return fWaterfallCandidateTree;
+    }
 
 
 } /* namespace Katydid */

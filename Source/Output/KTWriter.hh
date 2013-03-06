@@ -17,11 +17,6 @@
 
 namespace Katydid
 {
-    class KTWriteableData;
-
-
-
-
     class KTTypeWriter
     {
         public:
@@ -71,12 +66,8 @@ namespace Katydid
     class KTWriter : public KTProcessor
     {
         public:
-            KTWriter();
+            KTWriter(const std::string& name = "default-writer-name");
             virtual ~KTWriter();
-
-            virtual void Publish(const KTWriteableData* data) = 0;
-
-            virtual void Write(const KTWriteableData* data) = 0;
 
     };
 
@@ -86,7 +77,7 @@ namespace Katydid
         protected:
             typedef std::map< const std::type_info*, KTDerivedTypeWriter< XWriter >* > TypeWriterMap;
         public:
-            KTWriterWithTypists();
+            KTWriterWithTypists(const std::string& name = "default-writer-with-typists-name");
             virtual ~KTWriterWithTypists();
 
             template< class XTypeWriter >
@@ -99,8 +90,8 @@ namespace Katydid
 
 
     template< class XWriter >
-    KTWriterWithTypists< XWriter >::KTWriterWithTypists() :
-            KTWriter(),
+    KTWriterWithTypists< XWriter >::KTWriterWithTypists(const std::string& name) :
+            KTWriter(name),
             fTypeWriters()
     {
         KTTIFactory< KTDerivedTypeWriter< XWriter > >* twFactory = KTTIFactory< KTDerivedTypeWriter< XWriter > >::GetInstance();

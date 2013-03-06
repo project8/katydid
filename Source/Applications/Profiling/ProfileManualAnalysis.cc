@@ -8,21 +8,28 @@
 #include "KTEgg.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTComplexFFTW.hh"
+#ifdef ROOT_FOUND
 #include "KTGainVariationProcessor.hh"
 #include "KTGainNormalization.hh"
+#endif
 #include "KTCorrelator.hh"
 #include "KTSpectrumDiscriminator.hh"
 #include "KTDistanceClustering.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
+#ifdef ROOT_FOUND
 #include "KTROOTTreeWriter.hh"
 #include "KTROOTTreeTypeWriterCandidates.hh"
+#else
+#include "KTJSONWriter.hh"
+#include "KTJSONTypeWriterCandidates.hh"
+#endif
 #include "KTThroughputProfiler.hh"
 
-#include "KTBundle.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
+#ifdef ROOT_FOUND
 #include "KTGainVariationData.hh"
-#include "KTCorrelationData.hh"
+#endif
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTCluster1DData.hh"
 #include "KTFrequencyCandidateData.hh"
@@ -50,13 +57,14 @@ int main()
     //***********************************
 
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
-    UInt_t nBundles = 50;
+    UInt_t nSlices = 50;
     UInt_t recordSize = 32768;
     KTEggReaderMonarch::TimeSeriesType tsType = KTEggReaderMonarch::kFFTWTimeSeries;
 
     KTComplexFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
 
+#ifdef ROOT_FOUND
     KTGainVariationProcessor gainVar;
     gainVar.SetMinFrequency(minAnalysisFreq);
     gainVar.SetMaxFrequency(maxAnalysisFreq);
@@ -65,6 +73,7 @@ int main()
     KTGainNormalization gainNorm;
     gainNorm.SetMinFrequency(minAnalysisFreq);
     gainNorm.SetMaxFrequency(maxAnalysisFreq);
+#endif
 
     KTCorrelator corr;
     corr.AddPair(KTCorrelationPair(0, 1));
@@ -79,10 +88,17 @@ int main()
 
     KTFrequencyCandidateIdentifier candIdent;
 
+#ifdef ROOT_FOUND
     KTROOTTreeWriter treeWriter;
     treeWriter.SetFilename("candidates_manual.root");
     treeWriter.SetFileFlag("recreate");
     KTROOTTreeTypeWriterCandidates* typeWriter = treeWriter.GetTypeWriter< KTROOTTreeTypeWriterCandidates >();
+#else
+    KTJSONWriter jsonWriter;
+    jsonWriter.SetFilename("candidates_manual.json");
+    jsonWriter.SetPrettyJSONFlag(true);
+    KTJSONTypeWriterCandidates* typeWriter = jsonWriter.GetTypeWriter< KTJSONTypeWriterCandidates >();
+#endif
 
     KTThroughputProfiler prof;
 
@@ -106,7 +122,7 @@ int main()
     }
 
     // Configure the FFT with the egg header
-    compFFT.ProcessHeader(egg.GetHeader());
+    compFFT.InitializeWithHeader(egg.GetHeader());
 
     // Start the profiler
     prof.Start();
@@ -116,60 +132,95 @@ int main()
     // Do the processing work
     //**************************
 
-    UInt_t iBundle = 0;
+    UInt_t iSlice = 0;
     while (kTRUE)
     {
-        if (iBundle >= nBundles) break;
+        if (iSlice >= nSlices) break;
 
-        KTINFO(proflog, "Bundle " << iBundle);
+        KTINFO(proflog, "Slice " << iSlice);
 
-        // Hatch the bundle
-        boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
-        if (bundle.get() == NULL) break;
+        // Hatch the slice
+        boost::shared_ptr<KTData> data = egg.HatchNextSlice();
+        if (data.get() == NULL) break;
 
-        if (iBundle == nBundles - 1) bundle->SetIsLastBundle(true);
+        if (iSlice == nSlices - 1) data->fLastData = true;
 
-        KTTimeSeriesData* tsData = bundle->GetData< KTTimeSeriesData >("time-series");
-        if (tsData != NULL)
+        if (! data->Has< KTTimeSeriesData >())
         {
-            KTDEBUG(proflog, "Time series data is present.");
-            //fDataSignal(newData);
+            KTERROR(proflog, "No time-series data is present");
+            continue;
         }
-        else
+        KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
+
+        // Mark the time of this slice
+        prof.ProcessData(data);
+
+        // Calcualte the FFT
+        if (! compFFT.TransformData(tsData))
         {
-            KTWARN(proflog, "No time-series data present in bundle");
+            KTERROR(proflog, "A problem occurred while performing the FFT");
+            continue;
         }
+        KTFrequencySpectrumDataFFTW& fsData = data->Of< KTFrequencySpectrumDataFFTW >();
 
-        // Pass the bundle to any subscribers
-        //fBundleSignal(bundle);
+#ifdef ROOT_FOUND
+        // Calculate the gain variation
+        if (! gainVar.CalculateGainVariation(fsData))
+        {
+            KTERROR(proflog, "A problem occurred while calculating the gain variation");
+            continue;
+        }
+        KTGainVariationData& gainVarData = data->Of< KTGainVariationData >();
 
-        prof.ProcessBundle(bundle);
+        // Normalize the spectra
+        if (! gainNorm.Normalize(fsData, gainVarData))
+        {
+            KTERROR(proflog, "A problem occurred while normalizing the spectra");
+            continue;
+        }
+        KTNormalizedFSDataFFTW& normFSData = data->Of< KTNormalizedFSDataFFTW >();
+#endif
 
-        KTFrequencySpectrumDataFFTW* fsData = compFFT.TransformData(tsData);
+        // Correlate the two channels
+#ifdef ROOT_FOUND
+        if (! corr.Correlate(normFSData))
+#else
+        if (! corr.Correlate(fsData))
+#endif
+        {
+            KTERROR(proflog, "A problem occurred while correlating");
+            continue;
+        }
+        KTCorrelationData& corrData = data->Of< KTCorrelationData >();
 
-        KTGainVariationData* gainVarData = gainVar.CalculateGainVariation(fsData);
+        // Pick out peaks
+        if (! spectDisc.Discriminate(corrData))
+        {
+            KTERROR(proflog, "A problem occurred while discriminating peaks");
+            continue;
+        }
+        KTDiscriminatedPoints1DData& discPointsData = data->Of< KTDiscriminatedPoints1DData >();
 
-        KTFrequencySpectrumDataFFTW* normFSData = gainNorm.Normalize(fsData, gainVarData);
+        // Find clusters in the peak bins
+        if (! distClust.FindClusters(discPointsData))
+        {
+            KTERROR(proflog, "A problem occurred while finding clusters");
+            continue;
+        }
+        KTCluster1DData& clusterData = data->Of< KTCluster1DData >();
 
-        KTCorrelationData* corrData = corr.Correlate(normFSData);
+        // Identify the clusters as candidates
+        if (! candIdent.IdentifyCandidates(clusterData, corrData))
+        {
+            KTERROR(proflog, "A problem occurred while identifying candidates");
+            continue;
+        }
+        KTFrequencyCandidateData& freqCandData = data->Of< KTFrequencyCandidateData >();
 
-        KTDiscriminatedPoints1DData* discPointsData = spectDisc.Discriminate(corrData);
+        // Write out the candidates
+        typeWriter->WriteFrequencyCandidates(data);
 
-        KTCluster1DData* clusterData = distClust.FindClusters(discPointsData);
-
-        KTFrequencyCandidateData* freqCandData = candIdent.IdentifyCandidates(clusterData, corrData);
-
-        typeWriter->WriteFrequencyCandidates(freqCandData);
-
-        delete fsData;
-        delete gainVarData;
-        delete normFSData;
-        delete corrData;
-        delete discPointsData;
-        delete clusterData;
-        delete freqCandData;
-
-        iBundle++;
+        iSlice++;
     }
 
     //*******************************

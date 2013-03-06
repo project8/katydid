@@ -563,7 +563,7 @@ namespace Katydid
         SetRangeMin(2, yRangeMin);
         SetRangeMax(1, xRangeMax);
         SetRangeMax(2, yRangeMax);
-        //std::cout << "You have created a 2-D physical array with " << nBins << " bins, going from " << rangeMin << " to " << rangeMax << "  binwidth: " << fBinWidth << std::endl;
+        //KTDEBUG(utillog_physarr, "created matrix with (" << fData.size1() << ", " << fData.size2() << ")");
     }
 
     template< typename XDataType >

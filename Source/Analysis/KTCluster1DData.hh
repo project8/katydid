@@ -10,15 +10,13 @@
 
 #include "KTData.hh"
 
-#include "Rtypes.h"
-
 #include <set>
 #include <utility>
 #include <vector>
 
 namespace Katydid
 {
-    class KTCluster1DData : public KTData
+    class KTCluster1DData : public KTExtensibleData< KTCluster1DData >
     {
         public:
             typedef std::pair< UInt_t, UInt_t > Cluster; // first unsigned: first bin in cluster; second unsigned: last bin in cluster
@@ -36,24 +34,26 @@ namespace Katydid
             typedef std::set< Cluster, ClusterCompare > SetOfClusters;
 
         protected:
-            struct PerGroupData
+            struct PerComponentData
             {
                 SetOfClusters fClusters;
                 Double_t fThreshold;
             };
 
         public:
-            KTCluster1DData(UInt_t nGroups=1);
+            KTCluster1DData();
             virtual ~KTCluster1DData();
 
-            const SetOfClusters& GetSetOfClusters(UInt_t groupNum = 0) const;
-            Double_t GetThreshold(UInt_t groupNum = 0) const;
-            UInt_t GetNGroups() const;
+            const SetOfClusters& GetSetOfClusters(UInt_t component = 0) const;
+            Double_t GetThreshold(UInt_t component = 0) const;
 
-            void AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t groupNum = 0);
-            void AddClusters(const SetOfClusters& clusters, UInt_t groupNum = 0);
-            void SetThreshold(Double_t threshold, UInt_t groupNum = 0);
-            void SetNGroups(UInt_t channels);
+            UInt_t GetNComponents() const;
+
+            void AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t component = 0);
+            void AddClusters(const SetOfClusters& clusters, UInt_t component = 0);
+            void SetThreshold(Double_t threshold, UInt_t component = 0);
+
+            KTCluster1DData& SetNComponents(UInt_t components);
 
             UInt_t GetNBins() const;
             Double_t GetBinWidth() const;
@@ -64,7 +64,7 @@ namespace Katydid
         protected:
             static std::string fDefaultName;
 
-            std::vector< PerGroupData > fGroupData;
+            std::vector< PerComponentData > fComponentData;
 
             UInt_t fNBins;
             Double_t fBinWidth;
@@ -72,44 +72,44 @@ namespace Katydid
 
     };
 
-    inline const KTCluster1DData::SetOfClusters& KTCluster1DData::GetSetOfClusters(UInt_t groupNum) const
+    inline const KTCluster1DData::SetOfClusters& KTCluster1DData::GetSetOfClusters(UInt_t component) const
     {
-        return fGroupData[groupNum].fClusters;
+        return fComponentData[component].fClusters;
     }
 
-    inline Double_t KTCluster1DData::GetThreshold(UInt_t groupNum) const
+    inline Double_t KTCluster1DData::GetThreshold(UInt_t component) const
     {
-        return fGroupData[groupNum].fThreshold;
+        return fComponentData[component].fThreshold;
     }
 
-    inline UInt_t KTCluster1DData::GetNGroups() const
+    inline UInt_t KTCluster1DData::GetNComponents() const
     {
-        return UInt_t(fGroupData.size());
+        return UInt_t(fComponentData.size());
     }
 
-    inline void KTCluster1DData::AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t groupNum)
+    inline void KTCluster1DData::AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t component)
     {
-        if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
-        fGroupData[groupNum].fClusters.insert(std::make_pair(firstPoint, lastPoint));
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fClusters.insert(std::make_pair(firstPoint, lastPoint));
     }
 
-    inline void KTCluster1DData::SetThreshold(Double_t threshold, UInt_t groupNum)
+    inline void KTCluster1DData::SetThreshold(Double_t threshold, UInt_t component)
     {
-        if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
-        fGroupData[groupNum].fThreshold = threshold;
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fThreshold = threshold;
     }
 
-    inline void KTCluster1DData::AddClusters(const SetOfClusters& clusters, UInt_t groupNum)
+    inline void KTCluster1DData::AddClusters(const SetOfClusters& clusters, UInt_t component)
     {
-        if (groupNum >= fGroupData.size()) fGroupData.resize(groupNum+1);
-        fGroupData[groupNum].fClusters.insert(clusters.begin(), clusters.end());
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fClusters.insert(clusters.begin(), clusters.end());
         return;
     }
 
-    inline void KTCluster1DData::SetNGroups(UInt_t channels)
+    inline KTCluster1DData& KTCluster1DData::SetNComponents(UInt_t components)
     {
-        fGroupData.resize(channels);
-        return;
+        fComponentData.resize(components);
+        return *this;
     }
 
     inline UInt_t KTCluster1DData::GetNBins() const

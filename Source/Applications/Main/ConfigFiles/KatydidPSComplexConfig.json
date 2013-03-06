@@ -22,9 +22,9 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "bundle",
+                "signal-name": "slice",
                 "slot-processor": "fft",
-                "slot-name": "bundle"
+                "slot-name": "ts"
             },
             "connection":
             {
@@ -38,7 +38,7 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "fs-data-fftw"
+                "slot-name": "fs-fftw"
             },
             
             "run-queue":
@@ -51,14 +51,12 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-bundles": 1,
-            "output-data-name": "time-series"
+            "number-of-bundles": 1
         },
         
         "fft":
         {
-            "transform-flag": "ESTIMATE",
-            "input-data-name": "time-series"
+            "transform-flag": "ESTIMATE"
         },
         
         "writer":

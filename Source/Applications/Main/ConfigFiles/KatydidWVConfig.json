@@ -75,36 +75,22 @@
             "filename": "/path/to/file.egg",
             "number-of-bundles": 1,
             "time-series-size": 0,
-            "time-series-type": "fftw",
-            "output-data-name": "time-series"
+            "time-series-type": "fftw"
         },
         
         "wv":
         {
             "wv-pair": "0, 1",
-            "input-data-name": "time-series",
-            "output-data-name": "wigner-ville",
             "complex-fftw":
             {
                 "transform-flag": "ESTIMATE"
-            },
-            "sliding-window-fftw":
-            {
-                "transform-flag": "ESTIMATE",
-                "overlap-size": 0,
-                "window-function-type": "rectangular",
-                "window-function":
-                {
-                    "size": 512
-                }
             }
         },
         
         "hough":
         {
             "n-theta-points": 100,
-            "n-r-points": 100,
-            "input-data-name": "wigner-ville"
+            "n-r-points": 100
         },
         
         "writer":

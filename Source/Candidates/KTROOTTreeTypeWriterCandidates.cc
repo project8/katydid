@@ -11,13 +11,18 @@
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
+#include "KTSliceHeader.hh"
+#include "KTWaterfallCandidateData.hh"
 
 //#include "TFrequencyCandidateData.hh"
 
 #include "TFile.h"
+#include "TH2.h"
 #include "TTree.h"
 
 #include <sstream>
+
+using boost::shared_ptr;
 
 using std::stringstream;
 using std::string;
@@ -32,7 +37,9 @@ namespace Katydid
             KTROOTTreeTypeWriter(),
             //KTTypeWriterCandidates()
             fFreqCandidateTree(NULL),
-            fFreqCandidateData()
+            fWaterfallCandidateTree(NULL),
+            fFreqCandidateData(),
+            fWaterfallCandidateData()
     {
     }
 
@@ -45,7 +52,8 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterCandidates::RegisterSlots()
     {
-        fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates, "void (const KTFrequencyCandidateData*)");
+        fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates);
+        fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate);
         return;
     }
 
@@ -54,20 +62,23 @@ namespace Katydid
     // Frequency Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates(const KTFrequencyCandidateData* data)
+    void KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates(shared_ptr< KTData > data)
     {
+        KTFrequencyCandidateData& fcData = data->Of< KTFrequencyCandidateData >();
+        KTSliceHeader& header = data->Of< KTSliceHeader >();
+
         if (! fWriter->OpenAndVerifyFile()) return;
 
         if (fFreqCandidateTree == NULL) SetupFrequencyCandidateTree();
 
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
-        fFreqCandidateData.fSlice = data->GetSliceNumber();
-        fFreqCandidateData.fTimeInRun = data->GetTimeInRun();
-        for (fFreqCandidateData.fComponent = 0; fFreqCandidateData.fComponent < data->GetNComponents(); fFreqCandidateData.fComponent++)
+        fFreqCandidateData.fSlice = header.GetSliceNumber();
+        fFreqCandidateData.fTimeInRun = header.GetTimeInRun();
+        for (fFreqCandidateData.fComponent = 0; fFreqCandidateData.fComponent < fcData.GetNComponents(); fFreqCandidateData.fComponent++)
         {
-            fFreqCandidateData.fThreshold = data->GetThreshold(fFreqCandidateData.fComponent);
-            const KTFrequencyCandidateData::Candidates& candidates = data->GetCandidates(fFreqCandidateData.fComponent);
+            fFreqCandidateData.fThreshold = fcData.GetThreshold(fFreqCandidateData.fComponent);
+            const KTFrequencyCandidateData::Candidates& candidates = fcData.GetCandidates(fFreqCandidateData.fComponent);
             for (KTFrequencyCandidateData::Candidates::const_iterator it = candidates.begin(); it != candidates.end(); it++)
             {
                 fFreqCandidateData.fFirstBin = it->GetFirstBin();
@@ -104,6 +115,48 @@ namespace Katydid
 
         return;
     }
+
+    //*********************
+    // Waterfall Candidates
+    //*********************
+
+    void KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate(shared_ptr< KTData > data)
+    {
+        KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fWaterfallCandidateTree == NULL) SetupWaterfallCandidateTree();
+
+        // Load() also clears any existing data
+        //fFreqCandidateData->Load(*data);
+        fWaterfallCandidateData.fComponent = wcData.GetComponent();
+        fWaterfallCandidateData.fTimeInRun = wcData.GetTimeInRun();
+        fWaterfallCandidateData.fTimeLength = wcData.GetTimeLength();
+        fWaterfallCandidateData.fFirstSliceNumber = wcData.GetFirstSliceNumber();
+        fWaterfallCandidateData.fLastSliceNumber = wcData.GetLastSliceNumber();
+        fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
+        fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
+
+        return;
+    }
+
+    void KTROOTTreeTypeWriterCandidates::SetupWaterfallCandidateTree()
+    {
+        fWaterfallCandidateTree = new TTree("freqCand", "Frequency Candidates");
+        fWriter->AddTree(fFreqCandidateTree);
+
+        fWaterfallCandidateTree->Branch("Component", &fWaterfallCandidateData.fComponent, "fComponent/s");
+        fWaterfallCandidateTree->Branch("TimeInRun", &fWaterfallCandidateData.fTimeInRun, "fTimeInRun/d");
+        fWaterfallCandidateTree->Branch("TimeLength", &fWaterfallCandidateData.fTimeLength, "fTimeLength/d");
+        fWaterfallCandidateTree->Branch("FirstSlice", &fWaterfallCandidateData.fFirstSliceNumber, "fFirstSliceNumber/l");
+        fWaterfallCandidateTree->Branch("LastSlice", &fWaterfallCandidateData.fLastSliceNumber, "fLastSliceNumber/l");
+        fWaterfallCandidateTree->Branch("FrequencyWidth", &fWaterfallCandidateData.fFrequencyWidth, "fFrequencyWidth/d");
+        fWaterfallCandidateTree->Branch("Candidate", &fWaterfallCandidateData.fCandidate, 32000, 0);
+
+        return;
+    }
+
 
 } /* namespace Katydid */
 

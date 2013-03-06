@@ -6,15 +6,13 @@
 	    "processor":
 	    {
 		"type": "egg-processor",
-		"name": "noise-egg",
-		"group-order": 0
+		"name": "noise-egg"
 	    },
 
 	    "processor":
 	    {
 		"type": "egg-processor",
-		"name": "candidate-egg",
-		"group-order": 1
+		"name": "candidate-egg"
 	    },
 
 	    "processor":
@@ -34,7 +32,8 @@
 		"signal-processor": "noise-egg",
 		"signal-name": "bundle",
 		"slot-processor": "nrq-est",
-		"slot-name": "process-noise-bundle"
+		"slot-name": "process-noise-bundle",
+		"group-order": 0
 	    },
 
 	    "connection":
@@ -42,7 +41,8 @@
 		"signal-processor": "candidate-egg",
 		"signal-name": "bundle",
 		"slot-processor": "nrq-est",
-		"slot-name": "process-candidate-bundle"
+		"slot-name": "process-candidate-bundle",
+		"group-order"; 1
 	    },
 
 	    "connection":
@@ -63,22 +63,18 @@
 	"noise-egg":
 	{
 	    "filename": "run2012_11_5_tone.egg",
-	    "number-of-bundles": 1,
-	    "output-data-name": "noise-time-series"
+	    "number-of-bundles": 1
 	},
 
 	"candidate-egg":
 	{
 	    "filename": "run2012_11_5_tone.egg",
-	    "number-of-bundles": 10,
-	    "output-data-name": "candidate-time-series"
+	    "number-of-bundles": 10
 	},
 	
 	"nrq-est":
 	{
-	    "chunk-size": 512,
-	    "noise-data-name": "noise-time-series",
-	    "candidate-data-name": "candidate-time-series"
+	    "chunk-size": 512
 	},
 
 	"ascii-out":

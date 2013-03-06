@@ -1,8 +1,9 @@
-/*
- * KTSpectrumDiscriminator.hh
- *
- *  Created on: Dec 12, 2012
- *      Author: nsoblath
+/**
+ @file KTSpectrumDiscriminator.hh
+ @brief Contains KTSpectrumDiscriminator
+ @details Discriminates Spectrum
+ @author: N. S. Oblath
+ @date: Dec 12, 2012
  */
 
 #ifndef KTSPECTRUMDISCRIMINATOR_HH_
@@ -10,26 +11,58 @@
 
 #include "KTProcessor.hh"
 
+#include "KTSlot.hh"
+
 #include <boost/shared_ptr.hpp>
 
 
 namespace Katydid
 {
     class KTCorrelationData;
+    class KTData;
     class KTDiscriminatedPoints1DData;
-    class KTDiscriminatedPoints2DData;
-    class KTBundle;
-    class KTFrequencySpectrumData;
     class KTFrequencySpectrumDataFFTW;
-    class KTSlidingWindowFSData;
-    class KTSlidingWindowFSDataFFTW;
+    class KTFrequencySpectrumDataFFTWCore;
+    class KTFrequencySpectrumDataPolar;
+    class KTFrequencySpectrumDataPolarCore;
+    class KTNormalizedFSDataFFTW;
+    class KTNormalizedFSDataPolar;
+    //class KTSlidingWindowFSData;
+    //class KTSlidingWindowFSDataFFTW;
+    class KTWignerVilleData;
 
+
+    /*!
+     @class KTSpectrumDiscriminator
+     @author N. S. Oblath
+
+     @brief .
+
+     @details
+  
+
+     Available configuration values:
+     \li \c "snr-threshold": double -- snr threshold 
+     \li \c "sigma-threshold": double -- sigma threshold 
+     \li \c "min-frequency": double -- minimum frequency
+     \li \c "max-frequency": double -- maximum frequency
+     \li \c "min-bin": unsigned -- minimum frequency
+     \li \c "max-bin": unsigned -- maximum frequency
+
+     Slots:
+     \li \c "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
+     \li \c "norm-fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     \li \c "norm-fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
+     \li \c "corr": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
+     \li \c "wv": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
+
+     Signals:
+     \li \c "disc-1d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
+     <!--\li \c "disc-2d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints2DData-->
+    */
     class KTSpectrumDiscriminator : public KTProcessor
     {
-        public:
-            typedef KTSignal< void (const KTDiscriminatedPoints1DData*) >::signal Discrim1DSignal;
-            typedef KTSignal< void (const KTDiscriminatedPoints2DData*) >::signal Discrim2DSignal;
-
         private:
             enum ThresholdMode
             {
@@ -38,7 +71,7 @@ namespace Katydid
             };
 
         public:
-            KTSpectrumDiscriminator();
+            KTSpectrumDiscriminator(const std::string& name = "spectrum-discriminator");
             virtual ~KTSpectrumDiscriminator();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -61,12 +94,6 @@ namespace Katydid
             UInt_t GetMaxBin() const;
             void SetMaxBin(UInt_t bin);
 
-            const std::string& GetInputDataName() const;
-            void SetInputDataName(const std::string& name);
-
-            const std::string& GetOutputDataName() const;
-            void SetOutputDataName(const std::string& name);
-
         private:
 
             Double_t fSNRThreshold;
@@ -80,35 +107,40 @@ namespace Katydid
             Bool_t fCalculateMinBin;
             Bool_t fCalculateMaxBin;
 
-            std::string fInputDataName;
-            std::string fOutputDataName;
-
         public:
-            KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumData* data);
-            KTDiscriminatedPoints1DData* Discriminate(const KTFrequencySpectrumDataFFTW* data);
-            KTDiscriminatedPoints1DData* Discriminate(const KTCorrelationData* data);
-            KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
-            KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
+            Bool_t Discriminate(KTFrequencySpectrumDataPolar& data);
+            Bool_t Discriminate(KTFrequencySpectrumDataFFTW& data);
+            Bool_t Discriminate(KTNormalizedFSDataPolar& data);
+            Bool_t Discriminate(KTNormalizedFSDataFFTW& data);
+            Bool_t Discriminate(KTCorrelationData& data);
+            Bool_t Discriminate(KTWignerVilleData& data);
+            //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
+            //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
+
+        private:
+            Bool_t CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData);
+            Bool_t CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData);
+
 
             //***************
             // Signals
             //***************
 
         private:
-            Discrim1DSignal fDiscrim1DSignal;
-            Discrim2DSignal fDiscrim2DSignal;
+            KTSignalData fDiscrim1DSignal;
+            //KTSignalData fDiscrim2DSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessBundle(boost::shared_ptr<KTBundle> bundle);
-            void ProcessFrequencySpectrumData(const KTFrequencySpectrumData* data);
-            void ProcessFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW* data);
-            void ProcessCorrelationData(const KTCorrelationData* data);
-            void ProcessSlidingWindowFSData(const KTSlidingWindowFSData* data);
-            void ProcessSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
+        private:
+            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            KTSlotDataOneType< KTNormalizedFSDataPolar > fNormFSPolarSlot;
+            KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
+            KTSlotDataOneType< KTCorrelationData > fCorrSlot;
+            KTSlotDataOneType< KTWignerVilleData > fWVSlot;
 
     };
 
@@ -183,27 +215,5 @@ namespace Katydid
         fCalculateMaxBin = false;
         return;
     }
-    inline const std::string& KTSpectrumDiscriminator::GetInputDataName() const
-    {
-        return fInputDataName;
-    }
-
-    inline void KTSpectrumDiscriminator::SetInputDataName(const std::string& name)
-    {
-        fInputDataName = name;
-        return;
-    }
-
-    inline const std::string& KTSpectrumDiscriminator::GetOutputDataName() const
-    {
-        return fOutputDataName;
-    }
-
-    inline void KTSpectrumDiscriminator::SetOutputDataName(const std::string& name)
-    {
-        fOutputDataName = name;
-        return;
-    }
-
 } /* namespace Katydid */
 #endif /* KTSPECTRUMDISCRIMINATOR_HH_ */

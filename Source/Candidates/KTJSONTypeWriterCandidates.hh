@@ -10,9 +10,11 @@
 
 #include "KTJSONWriter.hh"
 
+#include <boost/shared_ptr.hpp>
+
 namespace Katydid
 {
-    class KTFrequencyCandidateData;
+    class KTData;
 
     class KTJSONTypeWriterCandidates : public KTJSONTypeWriter//, public KTTypeWriterCandidates
     {
@@ -23,7 +25,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteFrequencyCandidates(const KTFrequencyCandidateData* header);
+            void WriteFrequencyCandidates(boost::shared_ptr< KTData > data);
 
     };
 

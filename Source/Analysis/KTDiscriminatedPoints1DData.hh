@@ -10,8 +10,6 @@
 
 #include "KTData.hh"
 
-#include "Rtypes.h"
-
 #include <map>
 #include <utility>
 #include <vector>
@@ -19,33 +17,31 @@
 namespace Katydid
 {
 
-    class KTDiscriminatedPoints1DData : public KTData
+    class KTDiscriminatedPoints1DData : public KTExtensibleData< KTDiscriminatedPoints1DData >
     {
         public:
             typedef std::map< UInt_t, Double_t > SetOfPoints;
 
         protected:
-            struct PerChannelData
+            struct PerComponentData
             {
                 SetOfPoints fPoints;
                 Double_t fThreshold;
             };
 
         public:
-            KTDiscriminatedPoints1DData(UInt_t nChannels=1);
+            KTDiscriminatedPoints1DData();
             virtual ~KTDiscriminatedPoints1DData();
 
-            const SetOfPoints& GetSetOfPoints(UInt_t channelNum = 0) const;
-            Double_t GetThreshold(UInt_t channelNum = 0) const;
-            UInt_t GetNChannels() const;
-            Double_t GetTimeInRun() const;
-            ULong64_t GetSliceNumber() const;
+            const SetOfPoints& GetSetOfPoints(UInt_t component = 0) const;
+            Double_t GetThreshold(UInt_t component = 0) const;
 
-            void AddPoint(UInt_t point, Double_t value, UInt_t channelNum = 0);
-            void SetThreshold(Double_t threshold, UInt_t channelNum = 0);
-            void SetNChannels(UInt_t channels);
-            void SetTimeInRun(Double_t tir);
-            void SetSliceNumber(ULong64_t slice);
+            UInt_t GetNComponents() const;
+
+            void AddPoint(UInt_t point, Double_t value, UInt_t component = 0);
+            void SetThreshold(Double_t threshold, UInt_t component = 0);
+
+            KTDiscriminatedPoints1DData& SetNComponents(UInt_t channels);
 
             UInt_t GetNBins() const;
             Double_t GetBinWidth() const;
@@ -56,57 +52,44 @@ namespace Katydid
         protected:
             static std::string fDefaultName;
 
-            std::vector< PerChannelData > fChannelData;
+            std::vector< PerComponentData > fComponentData;
 
             UInt_t fNBins;
             Double_t fBinWidth;
 
-            Double_t fTimeInRun;
-            ULong64_t fSliceNumber;
-
     };
 
-    inline const KTDiscriminatedPoints1DData::SetOfPoints& KTDiscriminatedPoints1DData::GetSetOfPoints(UInt_t channelNum) const
+    inline const KTDiscriminatedPoints1DData::SetOfPoints& KTDiscriminatedPoints1DData::GetSetOfPoints(UInt_t component) const
     {
-        return fChannelData[channelNum].fPoints;
+        return fComponentData[component].fPoints;
     }
 
-    inline Double_t KTDiscriminatedPoints1DData::GetThreshold(UInt_t channelNum) const
+    inline Double_t KTDiscriminatedPoints1DData::GetThreshold(UInt_t component) const
     {
-        return fChannelData[channelNum].fThreshold;
+        return fComponentData[component].fThreshold;
     }
 
-    inline UInt_t KTDiscriminatedPoints1DData::GetNChannels() const
+    inline UInt_t KTDiscriminatedPoints1DData::GetNComponents() const
     {
-        return UInt_t(fChannelData.size());
+        return UInt_t(fComponentData.size());
     }
 
-    inline Double_t KTDiscriminatedPoints1DData::GetTimeInRun() const
+    inline void KTDiscriminatedPoints1DData::AddPoint(UInt_t point, Double_t value, UInt_t component)
     {
-        return fTimeInRun;
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fPoints.insert(std::make_pair(point, value));
     }
 
-    inline ULong64_t KTDiscriminatedPoints1DData::GetSliceNumber() const
+    inline void KTDiscriminatedPoints1DData::SetThreshold(Double_t threshold, UInt_t component)
     {
-        return fSliceNumber;
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fThreshold = threshold;
     }
 
-    inline void KTDiscriminatedPoints1DData::AddPoint(UInt_t point, Double_t value, UInt_t channelNum)
+    inline KTDiscriminatedPoints1DData& KTDiscriminatedPoints1DData::SetNComponents(UInt_t channels)
     {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fPoints.insert(std::make_pair(point, value));
-    }
-
-    inline void KTDiscriminatedPoints1DData::SetThreshold(Double_t threshold, UInt_t channelNum)
-    {
-        if (channelNum >= fChannelData.size()) fChannelData.resize(channelNum+1);
-        fChannelData[channelNum].fThreshold = threshold;
-    }
-
-    inline void KTDiscriminatedPoints1DData::SetNChannels(UInt_t channels)
-    {
-        fChannelData.resize(channels);
-        return;
+        fComponentData.resize(channels);
+        return *this;
     }
 
     inline UInt_t KTDiscriminatedPoints1DData::GetNBins() const
@@ -128,18 +111,6 @@ namespace Katydid
     inline void KTDiscriminatedPoints1DData::SetBinWidth(Double_t binWidth)
     {
         fBinWidth = binWidth;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints1DData::SetTimeInRun(Double_t tir)
-    {
-        fTimeInRun = tir;
-        return;
-    }
-
-    inline void KTDiscriminatedPoints1DData::SetSliceNumber(ULong64_t slice)
-    {
-        fSliceNumber = slice;
         return;
     }
 

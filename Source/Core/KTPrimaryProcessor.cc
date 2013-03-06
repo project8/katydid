@@ -13,8 +13,8 @@ namespace Katydid
 {
     KTLOGGER(proclog, "katydid.core");
 
-    KTPrimaryProcessor::KTPrimaryProcessor() :
-            KTProcessor()
+    KTPrimaryProcessor::KTPrimaryProcessor(const std::string& name) :
+            KTProcessor(name)
     {
     }
 
