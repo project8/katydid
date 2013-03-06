@@ -15,7 +15,7 @@ project (Katydid)
 include (KatydidBuild)
 
 # Set the version and associated variables
-katydid_prepare_project (0 9 1)
+katydid_prepare_project (1 0 0)
 
 set (Katydid_SINGLETHREADED FALSE CACHE BOOL "Flag for running in single-threaded mode")
 if (Katydid_SINGLETHREADED)
