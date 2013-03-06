@@ -8,19 +8,28 @@
 #include "KTEgg.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTComplexFFTW.hh"
+#ifdef ROOT_FOUND
 #include "KTGainVariationProcessor.hh"
 #include "KTGainNormalization.hh"
+#endif
 #include "KTCorrelator.hh"
 #include "KTSpectrumDiscriminator.hh"
 #include "KTDistanceClustering.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
+#ifdef ROOT_FOUND
 #include "KTROOTTreeWriter.hh"
 #include "KTROOTTreeTypeWriterCandidates.hh"
+#else
+#include "KTJSONWriter.hh"
+#include "KTJSONTypeWriterCandidates.hh"
+#endif
 #include "KTThroughputProfiler.hh"
 
 #include "KTTimeSeriesData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
+#ifdef ROOT_FOUND
 #include "KTGainVariationData.hh"
+#endif
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTCluster1DData.hh"
 #include "KTFrequencyCandidateData.hh"
@@ -55,6 +64,7 @@ int main()
     KTComplexFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
 
+#ifdef ROOT_FOUND
     KTGainVariationProcessor gainVar;
     gainVar.SetMinFrequency(minAnalysisFreq);
     gainVar.SetMaxFrequency(maxAnalysisFreq);
@@ -63,6 +73,7 @@ int main()
     KTGainNormalization gainNorm;
     gainNorm.SetMinFrequency(minAnalysisFreq);
     gainNorm.SetMaxFrequency(maxAnalysisFreq);
+#endif
 
     KTCorrelator corr;
     corr.AddPair(KTCorrelationPair(0, 1));
@@ -77,10 +88,17 @@ int main()
 
     KTFrequencyCandidateIdentifier candIdent;
 
+#ifdef ROOT_FOUND
     KTROOTTreeWriter treeWriter;
     treeWriter.SetFilename("candidates_manual.root");
     treeWriter.SetFileFlag("recreate");
     KTROOTTreeTypeWriterCandidates* typeWriter = treeWriter.GetTypeWriter< KTROOTTreeTypeWriterCandidates >();
+#else
+    KTJSONWriter jsonWriter;
+    jsonWriter.SetFilename("candidates_manual.json");
+    jsonWriter.SetPrettyJSONFlag(true);
+    KTJSONTypeWriterCandidates* typeWriter = jsonWriter.GetTypeWriter< KTJSONTypeWriterCandidates >();
+#endif
 
     KTThroughputProfiler prof;
 
@@ -145,6 +163,7 @@ int main()
         }
         KTFrequencySpectrumDataFFTW& fsData = data->Of< KTFrequencySpectrumDataFFTW >();
 
+#ifdef ROOT_FOUND
         // Calculate the gain variation
         if (! gainVar.CalculateGainVariation(fsData))
         {
@@ -160,9 +179,14 @@ int main()
             continue;
         }
         KTNormalizedFSDataFFTW& normFSData = data->Of< KTNormalizedFSDataFFTW >();
+#endif
 
         // Correlate the two channels
+#ifdef ROOT_FOUND
         if (! corr.Correlate(normFSData))
+#else
+        if (! corr.Correlate(fsData))
+#endif
         {
             KTERROR(proflog, "A problem occurred while correlating");
             continue;

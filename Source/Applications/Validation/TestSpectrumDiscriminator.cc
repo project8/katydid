@@ -58,8 +58,13 @@ int main()
     // Add some peaks
     for (UInt_t iPeak=0; iPeak<nPeaks; iPeak++)
     {
+#ifdef ROOT_FOUND
         UInt_t iBin = UInt_t(rand.Rndm() * (Double_t)nBins);
         Double_t multiplier = rand.Gaus(meanPeakMult, sigmaPeakMult);
+#else
+        UInt_t iBin = iPeak * nBins/nPeaks;
+        Double_t multiplier = meanPeakMult;
+#endif
         (*spectrum)(iBin).set_polar((*spectrum)(iBin).abs() * multiplier, 0.);
         KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*spectrum)(iBin).abs());
     }
