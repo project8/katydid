@@ -9,6 +9,7 @@
  *      Based almost exactly on the class concurrent_queue from:
  *      http://www.justsoftwaresolutions.co.uk/threading/implementing-a-thread-safe-queue-using-condition-variables.html
  *      Post author: Anthony Williams
+ *      Copyright © 2005-2013 Just Software Solutions Ltd. All rights reserved.
  */
 
 #ifndef KTCONCURRENTQUEUE_HH_

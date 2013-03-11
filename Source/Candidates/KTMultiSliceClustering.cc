@@ -7,18 +7,12 @@
 
 #include "KTMultiSliceClustering.hh"
 
-#include "KTCorrelator.hh"
-#include "KTDiscriminatedPoints1DData.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrumDataPolar.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeFrequencyPolar.hh"
 #include "KTWaterfallCandidateData.hh"
-#include "KTWignerVille.hh"
 
 #include <boost/weak_ptr.hpp>
 
@@ -35,8 +29,6 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(sclog, "katydid.analysis");
-
     static KTDerivedRegistrar< KTProcessor, KTMultiSliceClustering > sMSClustRegistrar("multi-slice-clustering");
 
     KTMultiSliceClustering::KTMultiSliceClustering(const std::string& name) :
@@ -551,96 +543,6 @@ namespace Katydid
         wfcData.SetCandidate(tf);
 
         return data;
-    }
-
-
-
-    void KTMultiSliceClustering::ProcessOneSliceFSPolarData(shared_ptr<KTData> data)
-    {
-        if (! data->Has< KTDiscriminatedPoints1DData >())
-        {
-            KTWARN(sclog, "No discriminated-points data was present");
-            return;
-        }
-        if (! data->Has< KTFrequencySpectrumDataPolar >())
-        {
-            KTWARN(sclog, "No frequency spectrum (polar) data was present");
-            return;
-        }
-        // signal for any continued use of the input data
-        fOneSliceDataSignal(data);
-        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< KTFrequencySpectrumDataPolar >(), data->Of< KTSliceHeader >());
-        if (clusteredData != NULL)
-        {
-            RunDataLoop(clusteredData);
-        }
-        return;
-    }
-
-    void KTMultiSliceClustering::ProcessOneSliceFSFFTWData(shared_ptr<KTData> data)
-    {
-        if (! data->Has< KTDiscriminatedPoints1DData >())
-        {
-            KTWARN(sclog, "No discriminated-points data was present");
-            return;
-        }
-        if (! data->Has< KTFrequencySpectrumDataFFTW >())
-        {
-            KTWARN(sclog, "No frequency spectrum (FFTW) data was present");
-            return;
-        }
-        // signal for any continued use of the input data
-        fOneSliceDataSignal(data);
-        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< KTFrequencySpectrumDataFFTW >(), data->Of< KTSliceHeader >());
-        if (clusteredData != NULL)
-        {
-            RunDataLoop(clusteredData);
-        }
-        return;
-    }
-
-    void KTMultiSliceClustering::ProcessOneSliceCorrelationData(shared_ptr<KTData> data)
-    {
-        if (! data->Has< KTDiscriminatedPoints1DData >())
-        {
-            KTWARN(sclog, "No discriminated-points data was present");
-            return;
-        }
-        if (! data->Has< KTCorrelationData >())
-        {
-            KTWARN(sclog, "No Correlation data was present");
-            return;
-        }
-        // signal for any continued use of the input data
-        fOneSliceDataSignal(data);
-        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< KTCorrelationData >(), data->Of< KTSliceHeader >());
-        if (clusteredData != NULL)
-        {
-            RunDataLoop(clusteredData);
-        }
-        return;
-    }
-
-    void KTMultiSliceClustering::ProcessOneSliceWVData(shared_ptr<KTData> data)
-    {
-        if (! data->Has< KTDiscriminatedPoints1DData >())
-        {
-            KTWARN(sclog, "No discriminated-points data was present");
-            return;
-        }
-        if (! data->Has< KTWignerVilleData >())
-        {
-            KTWARN(sclog, "No Wigner-Ville data was present");
-            return;
-        }
-        // signal for any continued use of the input data
-        fOneSliceDataSignal(data);
-        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< KTWignerVilleData >(), data->Of< KTSliceHeader >());
-        if (clusteredData != NULL)
-        {
-            RunDataLoop(clusteredData);
-        }
-        return;
     }
 
     void KTMultiSliceClustering::RunDataLoop(DataList* dataList)

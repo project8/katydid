@@ -11,10 +11,15 @@
 
 #include "KTDataQueueProcessor.hh"
 
+#include "KTCorrelator.hh"
 #include "KTData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTSignal.hh"
+#include "KTWignerVille.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -25,6 +30,8 @@
 
 namespace Katydid
 {
+    KTLOGGER(sclog, "katydid.analysis");
+
     class KTCorrelationData;
     class KTFrequencySpectrum;
     class KTFrequencySpectrumDataFFTW;
@@ -178,15 +185,18 @@ namespace Katydid
             void QueueFSFFTWData(boost::shared_ptr< KTData >& data);
             void QueueCorrelationData(boost::shared_ptr< KTData >& data);
             void QueueWVData(boost::shared_ptr< KTData >& data);
-
+/*
          private:
             // These slot functions differ slightly from the KTSlotData implementation, so these custom functions are used
             void ProcessOneSliceFSPolarData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceFSFFTWData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceCorrelationData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceWVData(boost::shared_ptr<KTData> data);
-
+*/
          private:
+            template< class XDataType >
+            void ProcessOneSliceData(boost::shared_ptr< KTData > data);
+
             void RunDataLoop(DataList* dataList);
 
     };
@@ -284,22 +294,78 @@ namespace Katydid
 
     inline void KTMultiSliceClustering::QueueFSPolarData(boost::shared_ptr< KTData >& data)
     {
-        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceFSPolarData);
+        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTFrequencySpectrumDataPolar >);
     }
 
     inline void KTMultiSliceClustering::QueueFSFFTWData(boost::shared_ptr< KTData >& data)
     {
-        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceFSFFTWData);
+        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTFrequencySpectrumDataFFTW >);
     }
 
     inline void KTMultiSliceClustering::QueueCorrelationData(boost::shared_ptr< KTData >& data)
     {
-        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceCorrelationData);
+        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTCorrelationData >);
     }
 
     inline void KTMultiSliceClustering::QueueWVData(boost::shared_ptr< KTData >& data)
     {
-        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceWVData);
+        return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTWignerVilleData >);
+    }
+/*
+    inline void KTMultiSliceClustering::ProcessOneSliceFSPolarData(shared_ptr<KTData> data)
+    {
+        ProcessOneSliceData< KTFrequencySpectrumDataPolar >(data);
+        return;
+    }
+
+    inline void KTMultiSliceClustering::ProcessOneSliceFSFFTWData(shared_ptr<KTData> data)
+    {
+        ProcessOneSliceData< KTFrequencySpectrumDataFFTW >(data);
+        return;
+    }
+
+    inline void KTMultiSliceClustering::ProcessOneSliceCorrelationData(shared_ptr<KTData> data)
+    {
+        ProcessOneSliceData< KTCorrelationData >(data);
+        return;
+    }
+
+    inline void KTMultiSliceClustering::ProcessOneSliceWVData(shared_ptr<KTData> data)
+    {
+        ProcessOneSliceData< KTWignerVilleData >(data);
+        return;
+    }
+*/
+    template< class XDataType >
+    void KTMultiSliceClustering::ProcessOneSliceData(boost::shared_ptr<KTData> data)
+    {
+        if (! data->Has< KTDiscriminatedPoints1DData >())
+        {
+            KTWARN(sclog, "No discriminated-points data was present");
+            return;
+        }
+        if (! data->Has< XDataType >())
+        {
+            KTWARN(sclog, "No frequency spectrum (polar) data was present");
+            return;
+        }
+        // signal for any continued use of the input data
+        fOneSliceDataSignal(data);
+        DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< XDataType >(), data->Of< KTSliceHeader >());
+
+        if (data->fLastData)
+        {
+            KTINFO(sclog, "Last input data processed; Cleaning up remaining active clusters");
+            KTMultiSliceClustering::DataList* lastData = CompleteAllClusters();
+            clusteredData->splice(clusteredData->end(), *lastData);
+            delete lastData;
+        }
+
+        if (clusteredData != NULL)
+        {
+            RunDataLoop(clusteredData);
+        }
+        return;
     }
 
 

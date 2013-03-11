@@ -156,6 +156,7 @@ namespace Katydid
     Bool_t KTDataQueueProcessorTemplate< XProcessorType >::Run()
     {
         fStatus = kRunning;
+        KTINFO(eqplog, "Queue started");
         return ProcessQueue();
     }
 
@@ -164,6 +165,7 @@ namespace Katydid
     {
         fStatus = kStopped;
         fQueue.interrupt();
+        KTINFO(eqplog, "Queue stopped");
         return;
     }
 
@@ -178,18 +180,19 @@ namespace Katydid
     template< class XProcessorType >
     Bool_t KTDataQueueProcessorTemplate< XProcessorType >::ProcessQueue()
     {
-        KTDEBUG(eqplog, "Beginning to process publication queue");
+        KTINFO(eqplog, "Beginning to process queue");
         while (fStatus != kStopped)
         {
             KTDEBUG(eqplog, "processing . . .");
             DataAndFunc daf;
             if (fQueue.wait_and_pop(daf))
             {
-                KTDEBUG(eqplog, "Data acquired for publishing");
+                KTDEBUG(eqplog, "Data acquired for processing");
                 (static_cast<XProcessorType*>(this)->*(daf.fFuncPtr))(daf.fData);
                 if (daf.fData->fLastData) fStatus = kStopped;
             }
         }
+        KTINFO(eqplog, "Queue processing has ended");
         return true;
     }
 
@@ -201,6 +204,7 @@ namespace Katydid
             DataAndFunc daf;
             fQueue.wait_and_pop(daf);
         }
+        KTINFO(eqplog, "Queue cleared");
         return;
     }
 

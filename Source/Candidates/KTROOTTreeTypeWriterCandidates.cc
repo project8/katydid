@@ -122,6 +122,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate(shared_ptr< KTData > data)
     {
+        KTDEBUG(publog, "attempting to write to root tree");
         KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
