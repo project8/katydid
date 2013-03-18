@@ -27,32 +27,6 @@ namespace Katydid
     class KTNormalizedFSDataFFTW;
     class KTTimeSeriesFFTW;
 
-    class KTAnalyticAssociateData : public KTTimeSeriesDataCore, public KTExtensibleData< KTAnalyticAssociateData >
-    {
-        public:
-            KTAnalyticAssociateData() :
-                KTTimeSeriesDataCore(),
-                KTExtensibleData< KTAnalyticAssociateData >()
-            {}
-            virtual ~KTAnalyticAssociateData()
-            {}
-
-            virtual KTAnalyticAssociateData& SetNComponents(UInt_t num)
-            {
-                UInt_t oldSize = fTimeSeries.size();
-                fTimeSeries.resize(num);
-                if (num > oldSize)
-                {
-                    for (UInt_t iComponent = oldSize; iComponent < num; iComponent++)
-                    {
-                        fTimeSeries[iComponent] = NULL;
-                    }
-                }
-                return *this;
-            }
-    };
-
-
     /*!
      @class KTAnalyticAssociator
      @author N. S. Oblath

@@ -7,6 +7,7 @@
 
 #include "KTCorrelator.hh"
 
+#include "KTCorrelationData.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"

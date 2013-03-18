@@ -34,50 +34,6 @@ namespace Katydid
 {
     KTLOGGER(wvlog, "katydid.analysis");
 
-    class KTWignerVilleData : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTWignerVilleData >
-    {
-        public:
-            KTWignerVilleData() :
-                    KTFrequencySpectrumDataFFTWCore(),
-                    KTExtensibleData< KTWignerVilleData >(),
-                    fWVComponentData(1)
-            {}
-            virtual ~KTWignerVilleData()
-            {}
-
-            inline const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const
-            {
-                return fWVComponentData[component];
-            }
-
-            inline void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0)
-            {
-                if (component >= fSpectra.size()) SetNComponents(component+1);
-                fWVComponentData[component].first = first;
-                fWVComponentData[component].second = second;
-                return;
-            }
-
-            inline virtual KTWignerVilleData& SetNComponents(UInt_t components)
-            {
-                UInt_t oldSize = fSpectra.size();
-                fSpectra.resize(components);
-                fWVComponentData.resize(components);
-                if (components > oldSize)
-                {
-                    for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
-                    {
-                        fSpectra[iComponent] = NULL;
-                    }
-                }
-                return *this;
-            }
-
-        protected:
-            std::vector< std::pair< UInt_t, UInt_t > > fWVComponentData;
-    };
-
-
     class KTAnalyticAssociateData;
     class KTComplexFFTW;
     class KTData;

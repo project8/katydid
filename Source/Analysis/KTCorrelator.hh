@@ -21,51 +21,6 @@
 
 namespace Katydid
 {
-    class KTCorrelationData : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTCorrelationData >
-    {
-        public:
-            KTCorrelationData() :
-                    KTFrequencySpectrumDataPolarCore(),
-                    KTExtensibleData< KTCorrelationData >(),
-                    fComponentData(1)
-            {}
-            virtual ~KTCorrelationData()
-            {}
-
-            inline const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const
-            {
-                return fComponentData[component];
-            }
-
-            inline void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0)
-            {
-                if (component >= fSpectra.size()) SetNComponents(component+1);
-                fComponentData[component].first = first;
-                fComponentData[component].second = second;
-                return;
-            }
-
-            inline virtual KTCorrelationData& SetNComponents(UInt_t components)
-            {
-                UInt_t oldSize = fSpectra.size();
-                fSpectra.resize(components);
-                fComponentData.resize(components);
-                if (components > oldSize)
-                {
-                    for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
-                    {
-                        fSpectra[iComponent] = NULL;
-                    }
-                }
-                return *this;
-            }
-
-        protected:
-            std::vector< std::pair< UInt_t, UInt_t > > fComponentData;
-    };
-
-
-
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumFFTW;

@@ -9,8 +9,6 @@
 #ifndef KTGAINNORMALIZATION_HH_
 #define KTGAINNORMALIZATION_HH_
 
-#include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
@@ -19,58 +17,11 @@
 
 namespace Katydid
 {
-
-    class KTNormalizedFSDataPolar : public KTFrequencySpectrumDataPolarCore, public KTExtensibleData< KTNormalizedFSDataPolar >
-    {
-        public:
-            KTNormalizedFSDataPolar()
-            {}
-            virtual ~KTNormalizedFSDataPolar()
-            {}
-
-            inline KTNormalizedFSDataPolar& SetNComponents(UInt_t components)
-            {
-                UInt_t oldSize = fSpectra.size();
-                fSpectra.resize(components);
-                if (components > oldSize)
-                {
-                    for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
-                    {
-                        fSpectra[iComponent] = NULL;
-                    }
-                }
-                return *this;
-            }
-    };
-
-    class KTNormalizedFSDataFFTW : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTNormalizedFSDataFFTW >
-    {
-        public:
-            KTNormalizedFSDataFFTW()
-            {}
-            virtual ~KTNormalizedFSDataFFTW()
-            {}
-
-            inline KTNormalizedFSDataFFTW& SetNComponents(UInt_t components)
-            {
-                UInt_t oldSize = fSpectra.size();
-                fSpectra.resize(components);
-                if (components > oldSize)
-                {
-                    for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
-                    {
-                        fSpectra[iComponent] = NULL;
-                    }
-                }
-                return *this;
-            }
-    };
-
-
-
     class KTData;
-    class KTFrequencySpectrumPolar;
+    class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumFFTW;
+    class KTFrequencySpectrumPolar;
     class KTGainVariationData;
     class KTPStoreNode;
     class KTSlidingWindowFSData;

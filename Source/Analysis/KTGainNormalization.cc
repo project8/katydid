@@ -8,10 +8,11 @@
 #include "KTGainNormalization.hh"
 
 #include "KTFactory.hh"
-#include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
+#include "KTFrequencySpectrumPolar.hh"
+#include "KTNormalizedFSData.hh"
 #include "KTGainVariationData.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"

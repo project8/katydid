@@ -5,12 +5,9 @@
 #set (CANDIDATES_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CandidatesDict.cxx)
 
 set (CANDIDATES_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidate.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceClustering.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWaterfallCandidateData.hh
 )
 
 if (ROOT_FOUND)
@@ -25,12 +22,9 @@ if (ROOT_FOUND)
 endif (ROOT_FOUND)
 
 set (CANDIDATES_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidate.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceClustering.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWaterfallCandidateData.cc
 )
 
 if (ROOT_FOUND)

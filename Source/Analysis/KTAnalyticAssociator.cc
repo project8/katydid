@@ -7,6 +7,7 @@
 
 #include "KTAnalyticAssociator.hh"
 
+#include "KTAnalyticAssociateData.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
