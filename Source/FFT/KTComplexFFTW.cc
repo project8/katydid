@@ -184,6 +184,7 @@ namespace Katydid
                 KTERROR(fftlog_comp, "Channel <" << iComponent << "> did not transform correctly.");
                 return false;
             }
+            KTDEBUG(fftlog_comp, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
             newData.SetSpectrum(nextResult, iComponent);
         }
 

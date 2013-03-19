@@ -100,6 +100,10 @@ namespace Katydid
                 KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
+            else
+            {
+                KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+            }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
         KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (polar)");
@@ -128,6 +132,10 @@ namespace Katydid
             {
                 KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
+            }
+            else
+            {
+                KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }

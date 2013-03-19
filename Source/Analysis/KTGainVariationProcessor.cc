@@ -82,6 +82,7 @@ namespace Katydid
     {
         if (fCalculateMinBin) SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
+        KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumPolar(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumPolar(0)->GetRangeMax());
 
         UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
@@ -149,7 +150,7 @@ namespace Katydid
         // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
         if (fCalculateMinBin) SetMinBin(data.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(data.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
-        KTDEBUG(gvlog, fMinFrequency << "  " << fMaxFrequency << "  " << fMinBin << "  " << fMaxBin << "  " << data.GetSpectrumFFTW(0)->GetRangeMin() << "  " << data.GetSpectrumFFTW(0)->GetRangeMax());
+        KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumFFTW(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumFFTW(0)->GetRangeMax());
 
         UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused

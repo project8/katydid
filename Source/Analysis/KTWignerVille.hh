@@ -199,13 +199,14 @@ namespace Katydid
             CrossMultiplyToInputArray(timeSeries[firstChannel], timeSeries[secondChannel], 0);
 
             KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
-            newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
+            // why was this put here, cutting the frequency range in half?
+            //newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
 
             newData.SetSpectrum(newSpectrum, iPair);
             newData.SetInputPair(firstChannel, secondChannel, iPair);
             iPair++;
         }
-        KTINFO(wvlog, "Completed WV transform of " << nComponents << " components");
+        KTINFO(wvlog, "Completed WV transform of " << iPair << " pairs");
 
         return true;
     }

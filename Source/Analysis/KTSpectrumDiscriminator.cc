@@ -227,12 +227,12 @@ namespace Katydid
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
-            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin);
+            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin << " (frequency: " << fMinFrequency << ")");
         }
         if (fCalculateMaxBin)
         {
             SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
-            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
+            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
         }
 
         UInt_t nComponents = data.GetNComponents();
