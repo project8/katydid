@@ -7,12 +7,16 @@
 
 #include "KTMultiSliceClustering.hh"
 
+#include "KTCorrelationData.hh"
 #include "KTFactory.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTPStoreNode.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeFrequencyPolar.hh"
 #include "KTWaterfallCandidateData.hh"
+#include "KTWignerVilleData.hh"
 
 #include <boost/weak_ptr.hpp>
 
@@ -536,7 +540,7 @@ namespace Katydid
             UInt_t spectrumNum = iTBin - firstTimeBin;
             for (UInt_t iFBin=firstFreqBin; iFBin <= lastFreqBin; iFBin++)
             {
-                //KTDEBUG(sclog, "    setting point at (" << spectrumNum << ", " << iFBin-firstFreqBin << "), aka (" << iTBin << ", " << iFBin << ")");
+                KTDEBUG(sclog, "    setting point at (" << spectrumNum << ", " << iFBin-firstFreqBin << "), aka (" << iTBin << ", " << iFBin << "); length of spectrum: " << spectra[spectrumNum]->size());
                 tf->SetPolar(spectrumNum, iFBin - firstFreqBin, spectra[spectrumNum]->GetAbs(iFBin), spectra[spectrumNum]->GetArg(iFBin));
             }
         }

@@ -7,15 +7,15 @@
 
 #include "KTBasicROOTTypeWriterAnalysis.hh"
 
-#include "KTAnalyticAssociator.hh"
-#include "KTCorrelator.hh"
+#include "KTAnalyticAssociateData.hh"
+#include "KTCorrelationData.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTGainVariationData.hh"
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
-#include "KTWignerVille.hh"
+#include "KTWignerVilleData.hh"
 
 #include "TH1.h"
 #include "TH2.h"

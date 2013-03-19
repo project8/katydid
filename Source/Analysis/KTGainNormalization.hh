@@ -24,8 +24,8 @@ namespace Katydid
     class KTFrequencySpectrumPolar;
     class KTGainVariationData;
     class KTPStoreNode;
-    class KTSlidingWindowFSData;
-    class KTSlidingWindowFSDataFFTW;
+    //class KTSlidingWindowFSData;
+    //class KTSlidingWindowFSDataFFTW;
     class KTSpline;
  
 

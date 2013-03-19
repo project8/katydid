@@ -19,18 +19,9 @@ namespace Katydid
             KTCorrelationData();
             virtual ~KTCorrelationData();
 
-            inline const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const
-            {
-                return fComponentData[component];
-            }
+            const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const;
 
-            inline void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0)
-            {
-                if (component >= fSpectra.size()) SetNComponents(component+1);
-                fComponentData[component].first = first;
-                fComponentData[component].second = second;
-                return;
-            }
+            void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0);
 
             virtual KTCorrelationData& SetNComponents(UInt_t components);
 
@@ -38,12 +29,12 @@ namespace Katydid
             std::vector< std::pair< UInt_t, UInt_t > > fComponentData;
     };
 
-    inline const std::pair< UInt_t, UInt_t >& KTCorrelationData::GetInputPair(UInt_t component = 0) const
+    inline const std::pair< UInt_t, UInt_t >& KTCorrelationData::GetInputPair(UInt_t component) const
     {
         return fComponentData[component];
     }
 
-    inline void KTCorrelationData::SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0)
+    inline void KTCorrelationData::SetInputPair(UInt_t first, UInt_t second, UInt_t component)
     {
         if (component >= fSpectra.size()) SetNComponents(component+1);
         fComponentData[component].first = first;

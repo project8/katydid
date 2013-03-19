@@ -21,7 +21,6 @@ set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.cc
     #${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.cc
     #${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.cc
     #${CMAKE_CURRENT_SOURCE_DIR}/KTOldSimpleClustering.cc
@@ -61,8 +60,6 @@ set (KATYDID_LIBS
     KatydidCore
     KatydidData
     KatydidOutput
-    KatydidEgg
-    KatydidFFT
 )
 
 ##################################################

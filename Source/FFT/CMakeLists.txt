@@ -54,7 +54,6 @@ set (KATYDID_LIBS
     KatydidCore
     KatydidData
     KatydidOutput
-    KatydidEgg
 )
 
 ##################################################

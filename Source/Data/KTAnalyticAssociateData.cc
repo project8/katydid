@@ -14,7 +14,7 @@ namespace Katydid
         KTExtensibleData< KTAnalyticAssociateData >()
     {}
 
-    virtual KTAnalyticAssociateData::~KTAnalyticAssociateData()
+    KTAnalyticAssociateData::~KTAnalyticAssociateData()
     {}
 
     KTAnalyticAssociateData& KTAnalyticAssociateData::SetNComponents(UInt_t num)

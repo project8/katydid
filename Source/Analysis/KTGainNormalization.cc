@@ -15,6 +15,7 @@
 #include "KTNormalizedFSData.hh"
 #include "KTGainVariationData.hh"
 #include "KTLogger.hh"
+#include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 //#include "KTSlidingWindowFSData.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"

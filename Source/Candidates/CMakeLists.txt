@@ -38,10 +38,8 @@ endif (ROOT_FOUND)
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
+    KatydidData
     KatydidOutput
-    KatydidEgg
-    KatydidFFT
-    KatydidAnalysis
 )
 
 ##################################################

@@ -7,7 +7,7 @@
 
 #include "KTWignerVille.hh"
 
-#include "KTAnalyticAssociator.hh"
+#include "KTAnalyticAssociateData.hh"
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"

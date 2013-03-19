@@ -6,6 +6,7 @@
  */
 
 #include "complexpolar.hh"
+#include "KTCorrelationData.hh"
 #include "KTCorrelator.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"

@@ -7,7 +7,7 @@
 
 #include "KTSpectrumDiscriminator.hh"
 
-#include "KTCorrelator.hh"
+#include "KTCorrelationData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 //#include "KTDiscriminatedPoints2DData.hh"
 #include "KTFactory.hh"
@@ -15,12 +15,12 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTGainNormalization.hh"
 #include "KTLogger.hh"
+#include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 //#include "KTSlidingWindowFSData.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"
-#include "KTWignerVille.hh"
+#include "KTWignerVilleData.hh"
 
 #include <cmath>
 #include <vector>

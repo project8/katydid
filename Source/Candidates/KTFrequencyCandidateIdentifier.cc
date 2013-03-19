@@ -8,13 +8,13 @@
 #include "KTFrequencyCandidateIdentifier.hh"
 
 #include "KTCacheDirectory.hh"
-#include "KTCorrelator.hh"
+#include "KTCorrelationData.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTGainNormalization.hh"
+#include "KTNormalizedFSData.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 

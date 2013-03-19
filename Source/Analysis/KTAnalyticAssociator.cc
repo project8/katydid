@@ -13,8 +13,8 @@
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTGainNormalization.hh"
 #include "KTLogger.hh"
+#include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesFFTW.hh"
 

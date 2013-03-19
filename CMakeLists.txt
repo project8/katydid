@@ -100,6 +100,8 @@ option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 # Monarch
 include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
 add_subdirectory (Source/Egg/Monarch)
+list (APPEND LIBS ${Monarch_LIBRARIES})
+
 # add to the RPATH to be used when installing, but only if it's not a system directory
 list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
 if ("${isSystemDir}" STREQUAL "-1")

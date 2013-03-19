@@ -21,6 +21,7 @@
 
 namespace Katydid
 {
+    class KTCorrelationData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumFFTW;

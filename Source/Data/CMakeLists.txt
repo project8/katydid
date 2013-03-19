@@ -7,10 +7,10 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints1DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidate.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrum.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumDataFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumDataPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumFFTW.hh
@@ -37,10 +37,10 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints1DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDiscriminatedPoints2DData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidate.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrum.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumDataFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumFFTW.cc

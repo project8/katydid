@@ -13,8 +13,8 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTGainNormalization.hh"
 #include "KTLogger.hh"
+#include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 
 #include <boost/spirit/include/qi.hpp>

@@ -23,6 +23,7 @@
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTSlot.hh"
+#include "KTWignerVilleData.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -171,7 +172,6 @@ namespace Katydid
         }
 
         UInt_t nComponents = data.GetNComponents();
-        UInt_t nPairs = fPairs.size();
 
         // cast all time series into KTTimeSeriesFFTW
         std::vector< const KTTimeSeriesFFTW* > timeSeries(nComponents);
@@ -184,6 +184,8 @@ namespace Katydid
                 return false;
             }
         }
+
+        UInt_t nPairs = fPairs.size();
 
         KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nPairs);
 
@@ -207,7 +209,6 @@ namespace Katydid
 
         return true;
     }
-
 
 } /* namespace Katydid */
 #endif /* KTWIGNERVILLE_HH_ */

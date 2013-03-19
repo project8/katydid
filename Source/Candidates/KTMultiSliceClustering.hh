@@ -11,15 +11,15 @@
 
 #include "KTDataQueueProcessor.hh"
 
-#include "KTCorrelator.hh"
+#include "KTCorrelationData.hh"
 #include "KTData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
-#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTSignal.hh"
-#include "KTWignerVille.hh"
+#include "KTWignerVilleData.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -32,15 +32,15 @@ namespace Katydid
 {
     KTLOGGER(sclog, "katydid.analysis");
 
-    class KTCorrelationData;
+    //class KTCorrelationData;
     class KTFrequencySpectrum;
-    class KTFrequencySpectrumDataFFTW;
-    class KTFrequencySpectrumDataFFTWCore;
-    class KTFrequencySpectrumDataPolar;
-    class KTFrequencySpectrumDataPolarCore;
+    //class KTFrequencySpectrumDataFFTW;
+    //class KTFrequencySpectrumDataFFTWCore;
+    //class KTFrequencySpectrumDataPolar;
+    //class KTFrequencySpectrumDataPolarCore;
     class KTFrequencySpectrumPolar;
     class KTSliceHeader;
-    class KTWignerVilleData;
+    //class KTWignerVilleData;
 
     class KTMultiSliceClustering : public KTDataQueueProcessorTemplate< KTMultiSliceClustering >
     {

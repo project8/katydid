@@ -7,12 +7,12 @@
 
 #include "KTMultiSliceROOTTypeWriterAnalysis.hh"
 
+#include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTSliceHeader.hh"
-#include "KTCorrelator.hh"
 
 #include "TCanvas.h"
 #include "TH1.h"

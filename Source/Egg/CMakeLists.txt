@@ -7,7 +7,6 @@ set (EGG_DICT_HEADERFILES
 set (EGG_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEgg.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.hh
@@ -20,7 +19,6 @@ set (EGG_NODICT_HEADERFILES
 set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEgg.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.cc
@@ -52,8 +50,8 @@ set (EGG_HEADERFILES ${EGG_DICT_HEADERFILES} ${EGG_NODICT_HEADERFILES})
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
+    KatydidData
     KatydidOutput
-    ${Monarch_LIBRARIES}
 )
 
 ##################################################

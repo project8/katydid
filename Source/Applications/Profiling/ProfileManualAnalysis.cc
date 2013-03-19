@@ -5,17 +5,27 @@
  *      Author: nsoblath
  */
 
+#include "KTCorrelator.hh"
+#include "KTCorrelationData.hh"
+#include "KTDiscriminatedPoints1DData.hh"
+#include "KTDistanceClustering.hh"
+#include "KTCluster1DData.hh"
+#include "KTComplexFFTW.hh"
 #include "KTEgg.hh"
 #include "KTEggReaderMonarch.hh"
-#include "KTComplexFFTW.hh"
+#include "KTFrequencyCandidateData.hh"
+#include "KTFrequencyCandidateIdentifier.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+
 #ifdef ROOT_FOUND
+#include "KTGainVariationData.hh"
 #include "KTGainVariationProcessor.hh"
 #include "KTGainNormalization.hh"
 #endif
-#include "KTCorrelator.hh"
-#include "KTSpectrumDiscriminator.hh"
-#include "KTDistanceClustering.hh"
-#include "KTFrequencyCandidateIdentifier.hh"
+
+#include "KTLogger.hh"
+#include "KTNormalizedFSData.hh"
+
 #ifdef ROOT_FOUND
 #include "KTROOTTreeWriter.hh"
 #include "KTROOTTreeTypeWriterCandidates.hh"
@@ -23,18 +33,11 @@
 #include "KTJSONWriter.hh"
 #include "KTJSONTypeWriterCandidates.hh"
 #endif
+
+#include "KTSpectrumDiscriminator.hh"
 #include "KTThroughputProfiler.hh"
-
 #include "KTTimeSeriesData.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
-#ifdef ROOT_FOUND
-#include "KTGainVariationData.hh"
-#endif
-#include "KTDiscriminatedPoints1DData.hh"
-#include "KTCluster1DData.hh"
-#include "KTFrequencyCandidateData.hh"
 
-#include "KTLogger.hh"
 
 #include <boost/shared_ptr.hpp>
 

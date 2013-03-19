@@ -8,6 +8,7 @@
  *      > TestWignerVille
  */
 
+#include "KTAnalyticAssociateData.hh"
 #include "KTAnalyticAssociator.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -16,6 +17,7 @@
 #include "KTMath.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTWignerVille.hh"
+#include "KTWignerVilleData.hh"
 
 #ifdef ROOT_FOUND
 #include "TFile.h"
