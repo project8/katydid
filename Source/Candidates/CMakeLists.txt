@@ -6,34 +6,13 @@
 
 set (CANDIDATES_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceClustering.hh
 )
 
-if (ROOT_FOUND)
-    set (CANDIDATES_DICT_HEADERFILES
-    )
-
-    set (CANDIDATES_HEADERFILES
-        ${CANDIDATES_HEADERFILES}
-        ${CANDIDATES_DICT_HEADERFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.hh
-    )
-endif (ROOT_FOUND)
-
 set (CANDIDATES_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceClustering.cc
 )
-
-if (ROOT_FOUND)
-    set (CANDIDATES_SOURCEFILES
-        ${CANDIDATES_SOURCEFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.cc
-        #${CANDIDATES_DICT_OUTFILE}
-    )
-endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
