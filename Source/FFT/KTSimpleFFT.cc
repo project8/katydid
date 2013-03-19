@@ -160,7 +160,7 @@ namespace Katydid
             newData.SetSpectrum(nextResult, iComponent);
         }
 
-        KTDEBUG(fftlog_simp, "FFT complete; " << nComponents << " component(s) transformed");
+        KTINFO(fftlog_simp, "FFT complete; " << nComponents << " component(s) transformed");
 
         return true;
     }

@@ -102,7 +102,7 @@ namespace Katydid
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
-        KTDEBUG(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (polar)");
+        KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (polar)");
 
         return true;
     }
@@ -131,7 +131,7 @@ namespace Katydid
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
-        KTDEBUG(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (fftw)");
+        KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (fftw)");
 
         return true;
     }

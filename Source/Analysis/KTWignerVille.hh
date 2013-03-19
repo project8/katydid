@@ -205,7 +205,7 @@ namespace Katydid
             newData.SetInputPair(firstChannel, secondChannel, iPair);
             iPair++;
         }
-        KTDEBUG(wvlog, "Completed WV transform of " << nComponents << " components");
+        KTINFO(wvlog, "Completed WV transform of " << nComponents << " components");
 
         return true;
     }

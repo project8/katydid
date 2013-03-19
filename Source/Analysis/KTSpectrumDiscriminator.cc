@@ -217,7 +217,7 @@ namespace Katydid
             }
 
         }
-        KTDEBUG(sdlog, "Completed discrimination on " << nComponents << " compnents");
+        KTINFO(sdlog, "Completed discrimination on " << nComponents << " compnents");
 
         return true;
     }
@@ -299,7 +299,7 @@ namespace Katydid
                 if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
             }
         }
-        KTDEBUG(sdlog, "Completed discrimination on " << nComponents << " compnents");
+        KTINFO(sdlog, "Completed discrimination on " << nComponents << " compnents");
 
         return true;
     }

@@ -105,7 +105,7 @@ namespace Katydid
                 newData.AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iComponent);
             }
 
-            KTDEBUG(sdlog, newData.GetSetOfClusters(iComponent).size() << " clusters added on channel " << iComponent);
+            KTINFO(sdlog, newData.GetSetOfClusters(iComponent).size() << " clusters added on channel " << iComponent);
         }
 
         return true;

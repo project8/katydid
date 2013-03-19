@@ -122,7 +122,7 @@ namespace Katydid
             iPair++;
         }
 
-        KTDEBUG(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
+        KTINFO(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
         return true;
     }
 
@@ -146,7 +146,7 @@ namespace Katydid
             iPair++;
         }
 
-        KTDEBUG(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
+        KTINFO(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
         return true;
 
     }

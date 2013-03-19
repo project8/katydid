@@ -158,6 +158,7 @@ namespace Katydid
                 newData.SetTransform(newTransform, iComponent);
             }
         }
+        KTINFO(htlog, "Completed hough transform for " << nComponents << " components");
 
         return true;
     }

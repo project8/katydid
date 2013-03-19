@@ -63,7 +63,7 @@ namespace Katydid
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
-        KTDEBUG(gnlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
+        KTINFO(gnlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
 
         return true;
     }
@@ -84,7 +84,7 @@ namespace Katydid
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
-        KTDEBUG(gnlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
+        KTINFO(gnlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
 
         return true;
     }
@@ -105,7 +105,7 @@ namespace Katydid
             }
             newData.SetSpectrum(newSpectrum, iComponent);
         }
-        KTDEBUG(gnlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
+        KTINFO(gnlog, "Completed switch (fftw->polar) of " << nComponents << " frequency spectra (polar)");
 
         return true;
     }

@@ -86,7 +86,7 @@ namespace Katydid
         UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
-        KTINFO(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
+        KTDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         UInt_t nComponents = data.GetNComponents();
 
@@ -139,6 +139,7 @@ namespace Katydid
             newData.SetSpline(spline, iComponent);
             //newData->SetGainVariation(gainVarResult, iComponent);
         }
+        KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
@@ -153,7 +154,7 @@ namespace Katydid
         UInt_t nTotalBins = fMaxBin - fMinBin;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
-        KTINFO(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
+        KTDEBUG(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         UInt_t nComponents = data.GetNComponents();
 
@@ -207,6 +208,7 @@ namespace Katydid
             newData.SetSpline(spline, iComponent);
             //newData->SetGainVariation(gainVarResult, iComponent);
         }
+        KTINFO(gvlog, "Completed gain variation calculation for " << nComponents);
 
         return true;
     }
