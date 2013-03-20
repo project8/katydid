@@ -182,7 +182,10 @@ namespace Katydid
         {
             for (ClusterList::iterator acIt = fActiveClusters[iComponent].begin(); acIt != fActiveClusters[iComponent].end();)
             {
-                newDataList->push_back(CreateDataFromCluster(*acIt));
+                if (acIt->LastTimeBin() - acIt->FirstTimeBin() + 1 >= fMinTimeBins)
+                {
+                    newDataList->push_back(CreateDataFromCluster(*acIt));
+                }
                 acIt = fActiveClusters[iComponent].erase(acIt);
             }
             fActiveClusters[iComponent].clear();
@@ -350,7 +353,12 @@ namespace Katydid
             iCluster = 0;
             for (ClusterList::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); acIt++)
             {
-                if (acHasBeenMergedElsewhere[iCluster]) continue;
+                if (acHasBeenMergedElsewhere[iCluster])
+                {
+                    KTDEBUG(sclog, "    continuing ac loop due to merged-elsewhere");
+                    iCluster++;
+                    continue;
+                }
 
                 KTDEBUG(sclog, "    comparing to active cluster " << iCluster);
                 // check for overlap
