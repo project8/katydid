@@ -45,6 +45,10 @@ namespace Katydid
     {
         fWriter->RegisterSlot("fs-polar", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar);
         fWriter->RegisterSlot("fs-fftw", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW);
+        fWriter->RegisterSlot("fs-polar-phase", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPhase);
+        fWriter->RegisterSlot("fs-fftw-phase", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPhase);
+        fWriter->RegisterSlot("fs-polar-power", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPower);
+        fWriter->RegisterSlot("fs-fftw-power", this, &KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPower);
         //fWriter->RegisterSlot("swfs", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSData);
         //fWriter->RegisterSlot("swfs-fftw", this, &KTBasicROOTTypeWriterFFT::WriteSlidingWindowFSDataFFTW);
         return;
@@ -56,6 +60,122 @@ namespace Katydid
     //************************
 
     void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar(boost::shared_ptr<KTData> data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
+        UInt_t nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            const KTFrequencySpectrumPolar* spectrum = fsData.GetSpectrumPolar(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histFS_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreateMagnitudeHistogram(histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
+        UInt_t nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histFS_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreateMagnitudeHistogram(histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPhase(boost::shared_ptr<KTData> data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
+        UInt_t nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            const KTFrequencySpectrumPolar* spectrum = fsData.GetSpectrumPolar(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histFS_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreatePhaseHistogram(histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPhase(boost::shared_ptr<KTData> data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
+        UInt_t nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histFS_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreatePhaseHistogram(histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPower(boost::shared_ptr<KTData> data)
     {
         if (! data) return;
 
@@ -84,7 +204,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPower(boost::shared_ptr<KTData> data)
     {
         if (! data) return;
 

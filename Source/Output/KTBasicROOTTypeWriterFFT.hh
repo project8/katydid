@@ -33,6 +33,10 @@ namespace Katydid
         public:
             void WriteFrequencySpectrumDataPolar(boost::shared_ptr<KTData> data);
             void WriteFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataPolarPhase(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataFFTWPhase(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataPolarPower(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataFFTWPower(boost::shared_ptr<KTData> data);
 
             //************************
             // Sliding Window Data
