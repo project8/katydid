@@ -25,6 +25,21 @@ namespace Katydid
     // Data Queue Processor Template
     //***********************************
 
+    /*!
+     @class KTDataQueueProcessorTemplate
+     @author N. S. Oblath
+
+     @brief Template class for creating data queueing processors
+
+     @details
+
+     Available configuration values:
+
+     Slots:
+
+     Signals:
+     \li \c "queue-done": void () -- Emitted when queue is emptied
+    */
     template< class XProcessorType >
     class KTDataQueueProcessorTemplate : public KTPrimaryProcessor
     {
@@ -92,6 +107,13 @@ namespace Katydid
             /// Queue a list of data objects
             /// Assumes ownership of all data objects and the list; original shared pointers will be nullified
             //void DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>));
+
+            //*********
+            // Signals
+            //*********
+        protected:
+            KTSignalOneArg< void > fQueueDoneSignal;
+
     };
 
 
@@ -99,6 +121,23 @@ namespace Katydid
     // Data Queue Processor
     //**************************
 
+    /*!
+     @class KTDataQueueProcessor
+     @author N. S. Oblath
+
+     @brief Generic data queue for asynchronous processing
+
+     @details
+
+     Available configuration values:
+
+     Slots:
+     \li \c "data": void (shared_ptr< KTData >) -- Queue a data object for asynchronous processing; use signal "data"
+
+     Signals:
+     \li \c "data": void (shared_ptr< KTData >) -- Emitted for each data object in the queue
+     \li \c "queue-done": void () -- Emitted when queue is emptied (inherited from KTDataQueueProcessorTemplate)
+    */
     class KTDataQueueProcessor : public KTDataQueueProcessorTemplate< KTDataQueueProcessor >
     {
         public:
@@ -142,7 +181,8 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fStatus(kStopped),
             fFuncPtr(NULL),
-            fQueue()
+            fQueue(),
+            fQueueDoneSignal("queue-done", this)
     {
     }
 
@@ -192,6 +232,7 @@ namespace Katydid
                 if (daf.fData->fLastData) fStatus = kStopped;
             }
         }
+        fQueueDoneSignal();
         KTINFO(eqplog, "Queue processing has ended");
         return true;
     }
