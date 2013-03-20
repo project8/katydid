@@ -32,6 +32,7 @@ namespace Katydid
             fFile(NULL),
             fTrees()
     {
+        RegisterSlot("close-file", this, &KTROOTTreeWriter::CloseFile);
     }
 
     KTROOTTreeWriter::~KTROOTTreeWriter()
@@ -89,13 +90,22 @@ namespace Katydid
 
     void KTROOTTreeWriter::WriteTrees()
     {
+        if (fFile == NULL || ! fFile->IsOpen())
+        {
+            KTWARN(publog, "Attempt made to write trees, but the file is not open");
+            return;
+        }
         KTWARN(publog, "writing trees");
         fFile->cd();
         for (set< TTree* >::iterator it = fTrees.begin(); it != fTrees.end(); it++)
         {
-            KTWARN(publog, "Tree being written has " << (*it)->GetEntries() << " entries");
-            (*it)->Write();
+            if (*it != NULL)
+            {
+                KTWARN(publog, "Tree being written has " << (*it)->GetEntries() << " entries");
+                (*it)->Write();
+            }
         }
+        fTrees.clear();
         fFile->Write();
         return;
     }
@@ -105,7 +115,6 @@ namespace Katydid
         if (fFile != NULL)
         {
             WriteTrees();
-            fTrees.clear();
 
             fFile->Close();
             delete fFile;

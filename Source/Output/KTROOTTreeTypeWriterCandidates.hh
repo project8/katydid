@@ -63,8 +63,8 @@ namespace Katydid
             TTree* GetWaterfallCandidateTree() const;
 
         private:
-            void SetupFrequencyCandidateTree();
-            void SetupWaterfallCandidateTree();
+            Bool_t SetupFrequencyCandidateTree();
+            Bool_t SetupWaterfallCandidateTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;

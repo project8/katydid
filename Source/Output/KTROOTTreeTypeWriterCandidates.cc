@@ -69,7 +69,14 @@ namespace Katydid
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        if (fFreqCandidateTree == NULL) SetupFrequencyCandidateTree();
+        if (fFreqCandidateTree == NULL)
+        {
+            if (! SetupFrequencyCandidateTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the frequency candidate tree! Nothing was written.");
+                return;
+            }
+        }
 
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
@@ -94,9 +101,14 @@ namespace Katydid
         return;
     }
 
-    void KTROOTTreeTypeWriterCandidates::SetupFrequencyCandidateTree()
+    Bool_t KTROOTTreeTypeWriterCandidates::SetupFrequencyCandidateTree()
     {
         fFreqCandidateTree = new TTree("freqCand", "Frequency Candidates");
+        if (fFreqCandidateTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
         fWriter->AddTree(fFreqCandidateTree);
 
         //fFreqCandidateData = new TFrequencyCandidateData();
@@ -113,7 +125,7 @@ namespace Katydid
         fFreqCandidateTree->Branch("AmplitudeSum", &fFreqCandidateData.fAmplitudeSum, "fAmplitudeSum/d");
         //fFreqCandidateTree->Branch("freqCandidates", &fFreqCandidateData.fComponent, "fComponent/s:fSlice/l:fTimeInRun/d:fThreshold/d:fFirstBin/i:fLastBin/i:fMeanFrequency/d:fPeakAmplitude/d");
 
-        return;
+        return true;
     }
 
     //*********************
@@ -127,7 +139,14 @@ namespace Katydid
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        if (fWaterfallCandidateTree == NULL) SetupWaterfallCandidateTree();
+        if (fWaterfallCandidateTree == NULL)
+        {
+            if (! SetupWaterfallCandidateTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the waterfall candidate tree! Nothing was written.");
+                return;
+            }
+        }
 
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
@@ -139,13 +158,20 @@ namespace Katydid
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
         fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
 
+        fWaterfallCandidateTree->Fill();
+
         return;
     }
 
-    void KTROOTTreeTypeWriterCandidates::SetupWaterfallCandidateTree()
+    Bool_t KTROOTTreeTypeWriterCandidates::SetupWaterfallCandidateTree()
     {
         fWaterfallCandidateTree = new TTree("freqCand", "Frequency Candidates");
-        fWriter->AddTree(fFreqCandidateTree);
+        if (fWaterfallCandidateTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fWaterfallCandidateTree);
 
         fWaterfallCandidateTree->Branch("Component", &fWaterfallCandidateData.fComponent, "fComponent/s");
         fWaterfallCandidateTree->Branch("TimeInRun", &fWaterfallCandidateData.fTimeInRun, "fTimeInRun/d");
@@ -155,7 +181,7 @@ namespace Katydid
         fWaterfallCandidateTree->Branch("FrequencyWidth", &fWaterfallCandidateData.fFrequencyWidth, "fFrequencyWidth/d");
         fWaterfallCandidateTree->Branch("Candidate", &fWaterfallCandidateData.fCandidate, 32000, 0);
 
-        return;
+        return true;
     }
 
 
