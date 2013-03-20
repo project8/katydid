@@ -42,6 +42,32 @@ namespace Katydid
     class KTSliceHeader;
     //class KTWignerVilleData;
 
+    /*!
+     @class KTMultiSliceClustering
+     @author N. S. Oblath
+
+     @brief Clustering algorithm for sequential time slices
+
+     @details
+
+     Available configuration values:
+     \li \c "max-frequency-sep": double -- Maximum frequency separation for clustering in a single time slice (Hz)
+     \li \c "max-time-sep": double -- Maximum time separation for clustering between time slices (s) -- NOT CURRENTLY USED
+     \li \c "max-frequency-sep-bins": -- Maximum frequency separation for clustering in a single time slice, specified in # of bins
+     \li \c "max-time-sep-bins": Maximum time separation for clustering between time slices, specified in # of bins -- NOT CURRENTLY USED
+     \li \c "min-time-bins": Minimum number of time slices needed to be counted as a cluster
+
+     Slots:
+     \li \c "fs-polar": void (const KTEggHeader*) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
+     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
+     \li \c "correlation": void (shared_ptr< KTData >) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     \li \c "wigner-ville": void (shared_ptr< KTData >) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+
+     Signals:
+     \li \c "one-slice": void (shared_ptr< KTData >) -- Emitted upon receipt of a one-slice data object, without modification
+     \li \c "cluster": void (shared_ptr< KTData >) -- Emitted upon creation of a cluster; guarantees KTWaterfallCandidateData
+     \li \c "queue-done": void () -- Emitted when queue is emptied (inherited from KTDataQueueProcessorTemplate)
+    */
     class KTMultiSliceClustering : public KTDataQueueProcessorTemplate< KTMultiSliceClustering >
     {
         public:
