@@ -157,6 +157,9 @@ namespace Katydid
         fWaterfallCandidateData.fLastSliceNumber = wcData.GetLastSliceNumber();
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
         fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
+        KTDEBUG(publog, "Candidate info:\n"
+                << "\tTime axis: " << fWaterfallCandidateData.fCandidate->GetNbinsX() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetBinWidth(1) << " s;  range: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmax() << " s\n"
+                << "\tFreq axis: " << fWaterfallCandidateData.fCandidate->GetNbinsY() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetBinWidth(1) << " Hz;  range: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmax() << " Hz");
 
         fWaterfallCandidateTree->Fill();
 

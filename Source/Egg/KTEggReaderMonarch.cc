@@ -154,6 +154,13 @@ namespace Katydid
         sliceHeader.CalculateBinWidthAndSliceLength();
         sliceHeader.SetTimeInRun(GetTimeInRun());
         sliceHeader.SetSliceNumber(fSliceNumber);
+        KTDEBUG(eggreadlog, "Filled out slice header:\n"
+                << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
+                << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
+                << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
+                << "\tSlice length: " << sliceHeader.GetSliceLength() << " s\n"
+                << "\tTime in run: " << sliceHeader.GetTimeInRun() << " s\n"
+                << "\tSlice number: " << sliceHeader.GetSliceNumber());
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
