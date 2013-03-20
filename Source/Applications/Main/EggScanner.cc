@@ -9,6 +9,8 @@
  *     for reading 2011  data: bin/TestEggHatching filename.egg -z
  */
 
+#include "KTApplication.hh"
+#include "KTCommandLineOption.hh"
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
@@ -23,54 +25,64 @@ using namespace std;
 using namespace Katydid;
 
 
-KTLOGGER(testegg, "katydid.validation.egghatch");
+KTLOGGER(eggscan, "katydid.applications.main");
 
+static KTCommandLineOption< string > sCLFilename("Filename", "Supply the filename to scan", "filename", 'f');
+static KTCommandLineOption< Bool_t > sCLReaderType("2011Reader", "Use the 2011 Egg reader", "use-old-egg-reader", 'z');
+static KTCommandLineOption< UInt_t > sCLNBins("SliceSize", "Size of the slice", "slice-size", 'n');
 
 int main(int argc, char** argv)
 {
+    //**************************
+    // Configuration phase
+    //**************************
 
-    if (argc < 2)
+    KTApplication* app = new KTApplication(argc, argv);
+    KTCommandLineHandler* clOpts = app->GetCommandLineHandler();
+
+    if (! clOpts->IsCommandLineOptSet("filename"))
     {
-        KTERROR(testegg, "No filename supplied");
+        KTERROR(eggscan, "No filename supplied");
         return 0;
     }
-    string filename(argv[1]);
+    string filename(clOpts->GetCommandLineValue< string >("filename"));
 
-    string readerOption;
-    if (argc >= 3)
-    {
-        readerOption = argv[2];
-    }
+    Bool_t readerOption(clOpts->GetCommandLineValue< bool >("use-old-egg-reader"));
+
+    // default value, 0, will use slice size = record size
+    UInt_t sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 0);
 
     KTEgg egg;
-    if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
+    if (readerOption)
     {
-        KTINFO(testegg, "Using 2011 egg reader");
+        KTINFO(eggscan, "Using 2011 egg reader");
         KTEggReader2011* reader = new KTEggReader2011();
         egg.SetReader(reader);
     }
     else
     {
-        UInt_t recordSize = 0;
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
-        reader->SetTimeSeriesSizeRequest(recordSize);
+        reader->SetTimeSeriesSizeRequest(sliceSize);
         egg.SetReader(reader);
     }
 
+    //**************************
+    // Doing-something phase
+    //**************************
 
     if (! egg.BreakEgg(filename))
     {
-        KTERROR(testegg, "Egg file was not opened");
+        KTERROR(eggscan, "Egg file was not opened");
         return -1;
     }
 
     const KTEggHeader* header = egg.GetHeader();
     if (header == NULL)
     {
-        KTERROR(testegg, "No header received");
+        KTERROR(eggscan, "No header received");
         return -1;
     }
-    KTINFO(testegg, "Header information:\n"
+    KTINFO(eggscan, "Header information:\n"
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
            << "\tNumber of Channels: " << header->GetNChannels() << '\n'
@@ -78,6 +90,19 @@ int main(int argc, char** argv)
            << "\tRecord Size: " << header->GetRecordSize() << '\n'
            << "\tAcquisition Time: " << header->GetAcquisitionTime() << " s\n"
            << "\tAcquisition Rate: " << header->GetAcquisitionRate() << " Hz");
+
+    UInt_t fsSizeFFTW = header->GetSliceSize();
+    UInt_t fsSizePolar = fsSizeFFTW / 2 + 1;
+    Double_t timeBinWidth = 1. / header->GetAcquisitionRate();
+    Double_t freqBinWidth = 1. / (timeBinWidth * Double_t(fsSizeFFTW));
+    Double_t fsMaxFreq = freqBinWidth * (Double_t(fsSizePolar) - 0.5);
+
+    KTINFO(eggscan, "Additional information:\n"
+           << "\tTime bin width: " << timeBinWidth << " s\n"
+           << "\tFrequency bin width: " << freqBinWidth << " Hz\n"
+           << "\tFS size (FFTW): " << fsSizeFFTW << '\n'
+           << "\tFS size (polar): " << fsSizePolar << '\n'
+           << "\tMax frequency: " << fsMaxFreq << " Hz");
 
     egg.CloseEgg();
 
