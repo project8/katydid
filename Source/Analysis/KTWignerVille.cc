@@ -139,7 +139,7 @@ namespace Katydid
         (*fInputArray)(0)[0] = real1 * real2 + imag1 * imag2;
         (*fInputArray)(0)[1] = imag1 * real2 - real1 * imag2;
         */
-        UInt_t iPoint1 = offset + 1;
+        UInt_t iPoint1 = offset;
         UInt_t iPoint2 = size - 1 + offset;
         /**/
         //for (UInt_t inPoint = 2; inPoint < 2*size; inPoint+=2)
