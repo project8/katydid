@@ -45,8 +45,8 @@ namespace Katydid
       Slots:
      \li \c "fs-polar": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataPolar; Adds KTCorrelationData
      \li \c "fs-fftw": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataFFTW; Adds KTCorrelationData
-     \li \c "fs-norm-polar": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataPolar; Adds KTCorrelationData
-     \li \c "fs-norm-fftw": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataFFTW; Adds KTCorrelationData
+     \li \c "norm-fs-polar": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataPolar; Adds KTCorrelationData
+     \li \c "norm-fs-fftw": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataFFTW; Adds KTCorrelationData
 
      Signals:
      \li \c "correlation": void (shared_ptr< KTData >) -- Emitted upon performance of a correlation; Guarantees KTCorrelationData

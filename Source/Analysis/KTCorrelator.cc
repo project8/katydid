@@ -47,8 +47,8 @@ namespace Katydid
             fCorrSignal("correlation", this),
             fFSPolarSlot("fs-polar", this, &KTCorrelator::Correlate, &fCorrSignal),
             fFSFFTWSlot("fs-fftw", this, &KTCorrelator::Correlate, &fCorrSignal),
-            fNormFSPolarSlot("fs-norm-polar", this, &KTCorrelator::Correlate, &fCorrSignal),
-            fNormFSFFTWSlot("fs-norm-polar", this, &KTCorrelator::Correlate, &fCorrSignal)
+            fNormFSPolarSlot("norm-fs-polar", this, &KTCorrelator::Correlate, &fCorrSignal),
+            fNormFSFFTWSlot("norm-fs-fftw", this, &KTCorrelator::Correlate, &fCorrSignal)
     {
     }
 
