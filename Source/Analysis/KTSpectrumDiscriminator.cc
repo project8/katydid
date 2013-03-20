@@ -69,9 +69,13 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        if (node->HasData("snr-threshold"))
+        if (node->HasData("snr-threshold-amplitude"))
         {
-            SetSNRThreshold(node->GetData< Double_t >("snr-threshold"));
+            SetSNRAmplitudeThreshold(node->GetData< Double_t >("snr-threshold-amplitude"));
+        }
+        if (node->HasData("snr-threshold-power"))
+        {
+            SetSNRPowerThreshold(node->GetData< Double_t >("snr-threshold-power"));
         }
         if (node->HasData("sigma-threshold"))
         {
@@ -183,11 +187,16 @@ namespace Katydid
             mean /= (Double_t)nBins;
 
             Double_t threshold = 0.;
-            if (fThresholdMode == eSNR)
+            if (fThresholdMode == eSNR_Amplitude)
             {
-                // SNR = P_signal / P_noise = (A_signal / A_noise)^2
-                // In this case (i.e. KTFrequencySpectrumPolar), A_noise = mean
+                // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (SNR mode)");
+            }
+            else if (fThresholdMode == eSNR_Power)
+            {
+                // SNR = P_signal / P_noise, P_noise = mean
+                threshold = fSNRThreshold * mean;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (SNR mode)");
             }
             else if (fThresholdMode == eSigma)
@@ -215,9 +224,10 @@ namespace Katydid
                 value = magnitude[iBin];
                 if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
             }
+            KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
 
         }
-        KTINFO(sdlog, "Completed discrimination on " << nComponents << " compnents");
+        KTINFO(sdlog, "Completed discrimination on " << nComponents << " components");
 
         return true;
     }
@@ -268,11 +278,16 @@ namespace Katydid
             mean /= (Double_t)nBins;
 
             Double_t threshold = 0.;
-            if (fThresholdMode == eSNR)
+            if (fThresholdMode == eSNR_Amplitude)
             {
-                // SNR = P_signal / P_noise = (A_signal / A_noise)^2
-                // In this case (i.e. KTFrequencySpectrumPolar), A_noise = mean
+                // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
                 threshold = sqrt(fSNRThreshold) * mean;
+                KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (SNR mode)");
+            }
+            else if (fThresholdMode == eSNR_Power)
+            {
+                // SNR = P_signal / P_noise, P_noise = mean
+                threshold = fSNRThreshold * mean;
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (SNR mode)");
             }
             else if (fThresholdMode == eSigma)
@@ -298,8 +313,10 @@ namespace Katydid
                 value = (*spectrum)(iBin).abs();
                 if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
             }
+
+            KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
         }
-        KTINFO(sdlog, "Completed discrimination on " << nComponents << " compnents");
+        KTINFO(sdlog, "Completed discrimination on " << nComponents << " components");
 
         return true;
     }

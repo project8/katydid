@@ -84,7 +84,7 @@ int main()
     KTSpectrumDiscriminator spectDisc;
     spectDisc.SetMinFrequency(minAnalysisFreq);
     spectDisc.SetMaxFrequency(maxAnalysisFreq);
-    spectDisc.SetSNRThreshold(20.);
+    spectDisc.SetSNRPowerThreshold(20.);
 
     KTDistanceClustering distClust;
     distClust.SetMaxFrequencyDistance(2000.);

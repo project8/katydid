@@ -66,7 +66,8 @@ namespace Katydid
         private:
             enum ThresholdMode
             {
-                eSNR,
+                eSNR_Amplitude,
+                eSNR_Power,
                 eSigma
             };
 
@@ -77,7 +78,8 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
             Double_t GetSNRThreshold() const;
-            void SetSNRThreshold(Double_t thresh);
+            void SetSNRAmplitudeThreshold(Double_t thresh);
+            void SetSNRPowerThreshold(Double_t thresh);
 
             Double_t GetSigmaThreshold() const;
             void SetSigmaThreshold(Double_t thresh);
@@ -149,10 +151,17 @@ namespace Katydid
         return fSNRThreshold;
     }
 
-    inline void KTSpectrumDiscriminator::SetSNRThreshold(Double_t thresh)
+    inline void KTSpectrumDiscriminator::SetSNRAmplitudeThreshold(Double_t thresh)
     {
         fSNRThreshold = thresh;
-        fThresholdMode = eSNR;
+        fThresholdMode = eSNR_Amplitude;
+        return;
+    }
+
+    inline void KTSpectrumDiscriminator::SetSNRPowerThreshold(Double_t thresh)
+    {
+        fSNRThreshold = thresh;
+        fThresholdMode = eSNR_Power;
         return;
     }
 
