@@ -56,6 +56,8 @@ namespace Katydid
      \li \c "max-frequency-sep-bins": -- Maximum frequency separation for clustering in a single time slice, specified in # of bins
      \li \c "max-time-sep-bins": Maximum time separation for clustering between time slices, specified in # of bins -- NOT CURRENTLY USED
      \li \c "min-time-bins": Minimum number of time slices needed to be counted as a cluster
+     \li \c "n-framing-time-bins": Number of time bins to include on either side of a cluster
+     \li \c "n-framing-freq-bins": Number of frequency bins to include on the top and bottom of a cluster
 
      Slots:
      \li \c "fs-polar": void (const KTEggHeader*) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
@@ -91,6 +93,7 @@ namespace Katydid
             };
 
             typedef std::set< ClusterPoint, PointCompare > SetOfPoints;
+            typedef std::list< boost::shared_ptr< KTFrequencySpectrumPolar > > ListOfSpectra;
 
             struct Cluster
             {
@@ -104,6 +107,8 @@ namespace Katydid
 
                 UInt_t fDataComponent;
 
+                ListOfSpectra fPreClusterSpectra;
+                ListOfSpectra fPostClusterSpectra;
             };
 
             typedef std::list< Cluster > ClusterList;
@@ -143,6 +148,12 @@ namespace Katydid
             UInt_t GetMinTimeBins() const;
             void SetMinTimeBins(UInt_t bins);
 
+            UInt_t GetNFramingTimeBins() const;
+            void SetNFramingTimeBins(UInt_t bins);
+
+            UInt_t GetNFramingFreqBins() const;
+            void SetNFramingFreqBins(UInt_t bins);
+
         private:
             Double_t fMaxFreqSep;
             Double_t fMaxTimeSep;
@@ -151,6 +162,8 @@ namespace Katydid
             Bool_t fCalculateMaxFreqSepBins;
             Bool_t fCalculateMaxTimeSepBins;
             UInt_t fMinTimeBins;
+            UInt_t fNFramingTimeBins;
+            UInt_t fNFramingFreqBins;
 
         public:
             /// Add points from dpData to the active clusters and create candidates
@@ -182,6 +195,8 @@ namespace Katydid
             Double_t GetFrequencyBinWidth() const;
             void SetFrequencyBinWidth(Double_t bw);
 
+            UInt_t GetDataCount() const;
+
         private:
             boost::shared_ptr<KTData> CreateDataFromCluster(const Cluster& cluster);
 
@@ -189,8 +204,13 @@ namespace Katydid
             Double_t fTimeBinWidth;
             Double_t fFreqBinWidth;
 
-            std::vector< ClusterList > fActiveClusters;
+            UInt_t fDataCount;
 
+            // the vectors are over the components, so there is one list per component
+            std::vector< ClusterList > fActiveClusters;
+            std::vector< ClusterList > fAlmostCompleteClusters; // these still need their post-cluster spectra
+
+            std::vector< ListOfSpectra > fPreClusterSpectra;
 
             //***************
             // Signals
@@ -287,6 +307,28 @@ namespace Katydid
         return;
     }
 
+    inline UInt_t KTMultiSliceClustering::GetNFramingTimeBins() const
+    {
+        return fNFramingTimeBins;
+    }
+
+    inline void KTMultiSliceClustering::SetNFramingTimeBins(UInt_t bins)
+    {
+        fNFramingTimeBins = bins;
+        return;
+    }
+
+    inline UInt_t KTMultiSliceClustering::GetNFramingFreqBins() const
+    {
+        return fNFramingFreqBins;
+    }
+
+    inline void KTMultiSliceClustering::SetNFramingFreqBins(UInt_t bins)
+    {
+        fNFramingFreqBins = bins;
+        return;
+    }
+
     inline UInt_t KTMultiSliceClustering::GetTimeBin() const
     {
         return fTimeBin;
@@ -316,6 +358,11 @@ namespace Katydid
         if (fCalculateMaxFreqSepBins)
             fMaxFreqSepBins = KTMath::Nint(fMaxFreqSep / fFreqBinWidth);
         return;
+    }
+
+    inline UInt_t KTMultiSliceClustering::GetDataCount() const
+    {
+        return fDataCount;
     }
 
     inline void KTMultiSliceClustering::QueueFSPolarData(boost::shared_ptr< KTData >& data)
