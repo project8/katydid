@@ -56,10 +56,15 @@ namespace Katydid
             fOneSliceDataSignal("one-slice", this),
             fClusteredDataSignal("cluster", this)
     {
-        RegisterSlot("fs-polar", this, &KTMultiSliceClustering::QueueFSPolarData);
-        RegisterSlot("fs-fftw", this, &KTMultiSliceClustering::QueueFSFFTWData);
-        RegisterSlot("correlation", this, &KTMultiSliceClustering::QueueCorrelationData);
-        RegisterSlot("wigner-ville", this, &KTMultiSliceClustering::QueueWVData);
+        RegisterSlot("fs-polar", this, &KTMultiSliceClustering::ProcessOneSliceFSPolarData);
+        RegisterSlot("fs-fftw", this, &KTMultiSliceClustering::ProcessOneSliceFSFFTWData);
+        RegisterSlot("correlation", this, &KTMultiSliceClustering::ProcessOneSliceCorrelationData);
+        RegisterSlot("wigner-ville", this, &KTMultiSliceClustering::ProcessOneSliceWVData);
+
+        RegisterSlot("queue-fs-polar", this, &KTMultiSliceClustering::QueueFSPolarData);
+        RegisterSlot("queue-fs-fftw", this, &KTMultiSliceClustering::QueueFSFFTWData);
+        RegisterSlot("queue-correlation", this, &KTMultiSliceClustering::QueueCorrelationData);
+        RegisterSlot("queue-wigner-ville", this, &KTMultiSliceClustering::QueueWVData);
     }
 
     KTMultiSliceClustering::~KTMultiSliceClustering()
@@ -258,6 +263,8 @@ namespace Katydid
 
         UInt_t nComponents = dpData.GetNComponents();
         if (fActiveClusters.size() < nComponents) fActiveClusters.resize(nComponents);
+        if (fAlmostCompleteClusters.size() < nComponents) fAlmostCompleteClusters.resize(nComponents);
+        if (fPreClusterSpectra.size() < nComponents) fPreClusterSpectra.resize(nComponents);
 
         ClusterList* newClustersAC = new ClusterList();
 

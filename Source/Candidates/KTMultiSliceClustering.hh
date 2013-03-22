@@ -60,10 +60,14 @@ namespace Katydid
      \li \c "n-framing-freq-bins": Number of frequency bins to include on the top and bottom of a cluster
 
      Slots:
-     \li \c "fs-polar": void (const KTEggHeader*) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
-     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
-     \li \c "correlation": void (shared_ptr< KTData >) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
-     \li \c "wigner-ville": void (shared_ptr< KTData >) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     \li \c "fs-polar": void (shared_ptr< KTData >) -- Processes a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
+     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Processes a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
+     \li \c "correlation": void (shared_ptr< KTData >) -- Processes a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     \li \c "wigner-ville": void (shared_ptr< KTData >) -- Processes a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     \li \c "queue-fs-polar": void (shared_ptr< KTData >) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
+     \li \c "queue-fs-fftw": void (shared_ptr< KTData >) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
+     \li \c "queue-correlation": void (shared_ptr< KTData >) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     \li \c "queue-wigner-ville": void (shared_ptr< KTData >) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
 
      Signals:
      \li \c "one-slice": void (shared_ptr< KTData >) -- Emitted upon receipt of a one-slice data object, without modification
@@ -226,19 +230,20 @@ namespace Katydid
              //***************
 
          public:
-            // These are the actual slot functions
+            // Queueing slot functions
             void QueueFSPolarData(boost::shared_ptr< KTData >& data);
             void QueueFSFFTWData(boost::shared_ptr< KTData >& data);
             void QueueCorrelationData(boost::shared_ptr< KTData >& data);
             void QueueWVData(boost::shared_ptr< KTData >& data);
-/*
+
          private:
+            // Non-queueing slot functions
             // These slot functions differ slightly from the KTSlotData implementation, so these custom functions are used
             void ProcessOneSliceFSPolarData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceFSFFTWData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceCorrelationData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceWVData(boost::shared_ptr<KTData> data);
-*/
+
          private:
             template< class XDataType >
             void ProcessOneSliceData(boost::shared_ptr< KTData > data);
@@ -384,31 +389,31 @@ namespace Katydid
     {
         return DoQueueData(data, &KTMultiSliceClustering::ProcessOneSliceData< KTWignerVilleData >);
     }
-/*
-    inline void KTMultiSliceClustering::ProcessOneSliceFSPolarData(shared_ptr<KTData> data)
+
+    inline void KTMultiSliceClustering::ProcessOneSliceFSPolarData(boost::shared_ptr<KTData> data)
     {
         ProcessOneSliceData< KTFrequencySpectrumDataPolar >(data);
         return;
     }
 
-    inline void KTMultiSliceClustering::ProcessOneSliceFSFFTWData(shared_ptr<KTData> data)
+    inline void KTMultiSliceClustering::ProcessOneSliceFSFFTWData(boost::shared_ptr<KTData> data)
     {
         ProcessOneSliceData< KTFrequencySpectrumDataFFTW >(data);
         return;
     }
 
-    inline void KTMultiSliceClustering::ProcessOneSliceCorrelationData(shared_ptr<KTData> data)
+    inline void KTMultiSliceClustering::ProcessOneSliceCorrelationData(boost::shared_ptr<KTData> data)
     {
         ProcessOneSliceData< KTCorrelationData >(data);
         return;
     }
 
-    inline void KTMultiSliceClustering::ProcessOneSliceWVData(shared_ptr<KTData> data)
+    inline void KTMultiSliceClustering::ProcessOneSliceWVData(boost::shared_ptr<KTData> data)
     {
         ProcessOneSliceData< KTWignerVilleData >(data);
         return;
     }
-*/
+
     template< class XDataType >
     void KTMultiSliceClustering::ProcessOneSliceData(boost::shared_ptr<KTData> data)
     {
