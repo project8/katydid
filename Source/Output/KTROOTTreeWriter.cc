@@ -95,13 +95,13 @@ namespace Katydid
             KTWARN(publog, "Attempt made to write trees, but the file is not open");
             return;
         }
-        KTWARN(publog, "writing trees");
+        KTINFO(publog, "Writing trees");
         fFile->cd();
         for (set< TTree* >::iterator it = fTrees.begin(); it != fTrees.end(); it++)
         {
             if (*it != NULL)
             {
-                KTWARN(publog, "Tree being written has " << (*it)->GetEntries() << " entries");
+                KTINFO(publog, "Tree <" << (*it)->GetName() << "> has " << (*it)->GetEntries() << " entries");
                 (*it)->Write();
             }
         }
