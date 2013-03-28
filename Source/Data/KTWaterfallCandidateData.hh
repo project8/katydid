@@ -35,6 +35,10 @@ namespace Katydid
             Double_t GetTimeLength() const;
             ULong64_t GetFirstSliceNumber() const;
             ULong64_t GetLastSliceNumber() const;
+            Double_t GetMinimumFrequency() const;
+            Double_t GetMaximumFrequency() const;
+            Double_t GetMeanStartFrequency() const;
+            Double_t GetMeanEndFrequency() const;
             Double_t GetFrequencyWidth() const;
 
             void SetCandidate(KTTimeFrequency* candidate);
@@ -44,6 +48,10 @@ namespace Katydid
             void SetTimeLength(Double_t length);
             void SetFirstSliceNumber(ULong64_t slice);
             void SetLastSliceNumber(ULong64_t slice);
+            void SetMinimumFrequency(Double_t freq);
+            void SetMaximumFrequency(Double_t freq);
+            void SetMeanStartFrequency(Double_t freq);
+            void SetMeanEndFrequency(Double_t freq);
             void SetFrequencyWidth(Double_t width);
 
         protected:
@@ -54,6 +62,10 @@ namespace Katydid
             Double_t fTimeLength;
             ULong64_t fFirstSliceNumber;
             ULong64_t fLastSliceNumber;
+            Double_t fMinFrequency;
+            Double_t fMaxFrequency;
+            Double_t fMeanStartFrequency;
+            Double_t fMeanEndFrequency;
             Double_t fFrequencyWidth;
     };
 
@@ -107,6 +119,26 @@ namespace Katydid
         return fLastSliceNumber;
     }
 
+    inline Double_t KTWaterfallCandidateData::GetMinimumFrequency() const
+    {
+        return fMinFrequency;
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetMaximumFrequency() const
+    {
+        return fMaxFrequency;
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetMeanStartFrequency() const
+    {
+        return fMeanStartFrequency;
+    }
+
+    inline Double_t KTWaterfallCandidateData::GetMeanEndFrequency() const
+    {
+        return fMeanEndFrequency;
+    }
+
     inline Double_t KTWaterfallCandidateData::GetFrequencyWidth() const
     {
         return fFrequencyWidth;
@@ -139,6 +171,30 @@ namespace Katydid
     inline void KTWaterfallCandidateData::SetLastSliceNumber(ULong64_t slice)
     {
         fLastSliceNumber = slice;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetMinimumFrequency(Double_t freq)
+    {
+        fMinFrequency = freq;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetMaximumFrequency(Double_t freq)
+    {
+        fMaxFrequency = freq;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetMeanStartFrequency(Double_t freq)
+    {
+        fMeanStartFrequency = freq;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetMeanEndFrequency(Double_t freq)
+    {
+        fMeanEndFrequency = freq;
         return;
     }
 

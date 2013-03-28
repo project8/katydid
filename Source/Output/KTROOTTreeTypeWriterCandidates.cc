@@ -155,6 +155,10 @@ namespace Katydid
         fWaterfallCandidateData.fTimeLength = wcData.GetTimeLength();
         fWaterfallCandidateData.fFirstSliceNumber = wcData.GetFirstSliceNumber();
         fWaterfallCandidateData.fLastSliceNumber = wcData.GetLastSliceNumber();
+        fWaterfallCandidateData.fMinFrequency = wcData.GetMinimumFrequency();
+        fWaterfallCandidateData.fMaxFrequency = wcData.GetMaximumFrequency();
+        fWaterfallCandidateData.fMeanStartFrequency = wcData.GetMeanStartFrequency();
+        fWaterfallCandidateData.fMeanEndFrequency = wcData.GetMeanEndFrequency();
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
         fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
         fWaterfallCandidateData.fCandidate->SetDirectory(NULL);
@@ -182,6 +186,10 @@ namespace Katydid
         fWaterfallCandidateTree->Branch("TimeLength", &fWaterfallCandidateData.fTimeLength, "fTimeLength/d");
         fWaterfallCandidateTree->Branch("FirstSlice", &fWaterfallCandidateData.fFirstSliceNumber, "fFirstSliceNumber/l");
         fWaterfallCandidateTree->Branch("LastSlice", &fWaterfallCandidateData.fLastSliceNumber, "fLastSliceNumber/l");
+        fWaterfallCandidateTree->Branch("MinFrequency", &fWaterfallCandidateData.fMinFrequency, "fMinFrequency/d");
+        fWaterfallCandidateTree->Branch("MaxFrequency", &fWaterfallCandidateData.fMaxFrequency, "fMaxFrequency/d");
+        fWaterfallCandidateTree->Branch("MeanStartFrequency", &fWaterfallCandidateData.fMeanStartFrequency, "fMeanStartFrequency/d");
+        fWaterfallCandidateTree->Branch("MeanEndFrequency", &fWaterfallCandidateData.fMeanEndFrequency, "fMeanEndFrequency/d");
         fWaterfallCandidateTree->Branch("FrequencyWidth", &fWaterfallCandidateData.fFrequencyWidth, "fFrequencyWidth/d");
         fWaterfallCandidateTree->Branch("Candidate", &fWaterfallCandidateData.fCandidate, 32000, 0);
 

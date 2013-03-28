@@ -41,6 +41,10 @@ namespace Katydid
         Double_t fTimeLength;
         ULong64_t fFirstSliceNumber;
         ULong64_t fLastSliceNumber;
+        Double_t fMinFrequency;
+        Double_t fMaxFrequency;
+        Double_t fMeanStartFrequency;
+        Double_t fMeanEndFrequency;
         Double_t fFrequencyWidth;
         TH2D* fCandidate;
     };

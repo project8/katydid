@@ -578,14 +578,39 @@ namespace Katydid
 
         KTDEBUG(sclog, "final time range: " << firstTimeBin << " - " << lastTimeBin << "; with frame: " << firstTimeBinWithFrame << " - " << lastTimeBinWithFrame);
 
+        Double_t ftbSumOfWeights = 0., ftbWeightedSum = 0.;
+        Double_t ltbSumOfWeights = 0., ltbWeightedSum = 0.;
+
         SetOfPoints::const_iterator it = cluster.fPoints.begin();
         UInt_t firstFreqBin = it->fFreqBin;
         UInt_t lastFreqBin = firstFreqBin;
+
+        if (it->fTimeBin == firstTimeBin)
+        {
+            ftbSumOfWeights += it->fAmplitude;
+            ftbWeightedSum += it->fSpectrumPtr->GetBinCenter(it->fFreqBin) * it->fAmplitude;
+        }
+        if (it->fTimeBin == lastTimeBin)
+        {
+            ltbSumOfWeights += it->fAmplitude;
+            ltbWeightedSum += it->fSpectrumPtr->GetBinCenter(it->fFreqBin) * it->fAmplitude;
+        }
 
         for (it++; it != cluster.fPoints.end(); it++)
         {
             if (it->fFreqBin < firstFreqBin) firstFreqBin = it->fFreqBin;
             if (it->fFreqBin > lastFreqBin) lastFreqBin = it->fFreqBin;
+
+            if (it->fTimeBin == firstTimeBin)
+            {
+                ftbSumOfWeights += it->fAmplitude;
+                ftbWeightedSum += it->fSpectrumPtr->GetBinCenter(it->fFreqBin) * it->fAmplitude;
+            }
+            if (it->fTimeBin == lastTimeBin)
+            {
+                ltbSumOfWeights += it->fAmplitude;
+                ltbWeightedSum += it->fSpectrumPtr->GetBinCenter(it->fFreqBin) * it->fAmplitude;
+            }
         }
         KTDEBUG(sclog, "final freq range: " << firstFreqBin << " - " << lastFreqBin);
 
@@ -637,6 +662,10 @@ namespace Katydid
         wfcData.SetFirstSliceNumber(cluster.fPoints.begin()->fHeaderPtr->GetSliceNumber());
         wfcData.SetLastSliceNumber(cluster.fPoints.begin()->fHeaderPtr->GetSliceNumber());
         wfcData.SetTimeLength(timeBinWidth * Double_t(nTimeBins));
+        wfcData.SetMinimumFrequency(spectra[0]->GetBinLowEdge(firstFreqBin));
+        wfcData.SetMaximumFrequency(spectra[0]->GetBinLowEdge(lastFreqBin) + freqBinWidth);
+        wfcData.SetMeanStartFrequency(ftbWeightedSum / ftbSumOfWeights);
+        wfcData.SetMeanEndFrequency(ltbWeightedSum / ltbSumOfWeights);
         wfcData.SetFrequencyWidth(freqBinWidth * Double_t(nFreqBins));
 
         KTDEBUG(sclog, "Creating KTTimeFrequency with " << nTimeBinsWithFrame << " time bins and " << nFreqBinsWithFrame << " freq bins;  cluster dimensions are " << nTimeBins << " by " << nFreqBins);
