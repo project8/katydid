@@ -128,7 +128,7 @@ namespace Katydid
         UInt_t iSlice = 0;
         while (kTRUE)
         {
-            if (iSlice >= fNSlices)
+            if (fNSlices != 0 && iSlice >= fNSlices)
             {
                 KTINFO(egglog, iSlice << "/" << fNSlices << " slices hatched; slice processing is complete");
                 break;
