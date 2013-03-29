@@ -31,7 +31,7 @@ namespace Katydid
 
     }
 
-    Bool_t KTDataQueueProcessor::Configure(const KTPStoreNode* node)
+    Bool_t KTDataQueueProcessor::ConfigureSubClass(const KTPStoreNode* node)
     {
         return true;
     }

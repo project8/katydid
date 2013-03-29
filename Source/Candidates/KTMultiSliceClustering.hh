@@ -135,7 +135,7 @@ namespace Katydid
             KTMultiSliceClustering(const std::string& name = "multi-slice-processing");
             virtual ~KTMultiSliceClustering();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            Bool_t ConfigureSubClass(const KTPStoreNode* node);
 
             Double_t GetMaxFrequencySeparation() const;
             void SetMaxFrequencySeparation(Double_t freqSep);

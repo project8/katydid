@@ -13,6 +13,7 @@
 #include "KTConcurrentQueue.hh"
 #include "KTData.hh"
 #include "KTLogger.hh"
+#include "KTPStoreNode.hh"
 #include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -34,6 +35,7 @@ namespace Katydid
      @details
 
      Available configuration values:
+     \li \c "timeout": UInt_t -- maximum time to wait for new data (integer number of milliseconds)
 
      Slots:
 
@@ -61,6 +63,9 @@ namespace Katydid
         public:
             KTDataQueueProcessorTemplate(const std::string& name = "default-data-queue-proc-template-name");
             virtual ~KTDataQueueProcessorTemplate();
+
+            Bool_t Configure(const KTPStoreNode* node);
+            virtual Bool_t ConfigureSubClass(const KTPStoreNode* node) = 0;
 
             Status GetStatus() const;
             void SetStatus(KTDataQueueProcessorTemplate< XProcessorType >::Status);
@@ -144,7 +149,7 @@ namespace Katydid
             KTDataQueueProcessor(const std::string& name = "data-queue");
             virtual ~KTDataQueueProcessor();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            Bool_t ConfigureSubClass(const KTPStoreNode* node);
 
         public:
             void EmitDataSignal(boost::shared_ptr<KTData> data);
@@ -193,6 +198,15 @@ namespace Katydid
     }
 
     template< class XProcessorType >
+    Bool_t KTDataQueueProcessorTemplate< XProcessorType >::Configure(const KTPStoreNode* node)
+    {
+        fQueue.set_timeout(node->GetData< UInt_t >("timeout", fQueue.get_timeout()));
+
+        if (! ConfigureSubClass(node)) return false;
+        return true;
+    }
+
+    template< class XProcessorType >
     Bool_t KTDataQueueProcessorTemplate< XProcessorType >::Run()
     {
         fStatus = kRunning;
@@ -225,7 +239,7 @@ namespace Katydid
         {
             KTDEBUG(eqplog, "processing . . .");
             DataAndFunc daf;
-            if (fQueue.wait_and_pop(daf))
+            if (fQueue.timed_wait_and_pop(daf))
             {
                 KTDEBUG(eqplog, "Data acquired for processing");
                 (static_cast<XProcessorType*>(this)->*(daf.fFuncPtr))(daf.fData);
@@ -243,7 +257,7 @@ namespace Katydid
         while (! fQueue.empty())
         {
             DataAndFunc daf;
-            fQueue.wait_and_pop(daf);
+            fQueue.try_pop(daf);
         }
         KTINFO(eqplog, "Queue cleared");
         return;

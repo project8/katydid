@@ -71,7 +71,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTMultiSliceClustering::Configure(const KTPStoreNode* node)
+    Bool_t KTMultiSliceClustering::ConfigureSubClass(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
