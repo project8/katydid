@@ -30,7 +30,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 # Boost (1.46 required for filesystem version 3)
-find_package (Boost 1.46.0 REQUIRED COMPONENTS filesystem program_options system thread)
+find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
 include_directories (${Boost_INCLUDE_DIRS})
 list (APPEND LIBS ${Boost_LIBRARIES})
 

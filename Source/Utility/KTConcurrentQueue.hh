@@ -17,6 +17,7 @@
 
 #include "KTLogger.hh"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/thread.hpp>
 
 #include <deque>
@@ -28,11 +29,28 @@ namespace Katydid
     template< class XDataType >
     class KTConcurrentQueue
     {
+        public:
+            typedef std::deque< XDataType > Queue;
+
+            struct QueueNotEmpty
+            {
+                Queue& fQueue;
+                QueueNotEmpty(Queue& aQueue) :
+                    fQueue(aQueue)
+                {}
+                bool operator()() const
+                {
+                    return ! fQueue.empty();
+                }
+            };
+
+            typedef boost::mutex::scoped_lock ScopedLock;
 
         public:
             KTConcurrentQueue() :
                 fQueue(),
                 fInterrupt(false),
+                fTimeout(1000),
                 fMutex(),
                 fConditionVar()
             {
@@ -44,8 +62,10 @@ namespace Katydid
             }
 
         private:
-            std::deque< XDataType > fQueue;
+            Queue fQueue;
             bool fInterrupt;
+
+            boost::posix_time::milliseconds fTimeout; /// Timeout duration in milliseconds
 
             mutable boost::mutex fMutex;
             boost::condition_variable fConditionVar;
@@ -54,7 +74,7 @@ namespace Katydid
             void push(XDataType const& data)
             {
                 KTDEBUG(queuelog, "Attempting to push to queue");
-                boost::mutex::scoped_lock lock(fMutex);
+                ScopedLock lock(fMutex);
                 KTDEBUG(queuelog, "Pushing to concurrent queue; size: " << fQueue.size());
                 fQueue.push_back(data);
                 lock.unlock();
@@ -64,19 +84,19 @@ namespace Katydid
 
             bool empty() const
             {
-                boost::mutex::scoped_lock lock(fMutex);
+                ScopedLock lock(fMutex);
                 return fQueue.empty();
             }
 
             bool size() const
             {
-                boost::mutex::scoped_lock lock(fMutex);
+                ScopedLock lock(fMutex);
                 return fQueue.size();
             }
 
             bool try_pop(XDataType& popped_value)
             {
-                boost::mutex::scoped_lock lock(fMutex);
+                ScopedLock lock(fMutex);
                 fInterrupt = false;
                 if(fQueue.empty())
                 {
@@ -90,16 +110,35 @@ namespace Katydid
 
             bool wait_and_pop(XDataType& popped_value)
             {
-                boost::mutex::scoped_lock lock(fMutex);
+                ScopedLock lock(fMutex);
                 fInterrupt = false;
-                while(fQueue.empty())
+                fConditionVar.wait(lock, QueueNotEmpty(fQueue));
+                if (fInterrupt)
                 {
-                    fConditionVar.wait(lock);
-                    if (fInterrupt)
-                    {
-                        fInterrupt = false;
-                        return false;
-                    }
+                    fInterrupt = false;
+                    return false;
+                }
+
+                popped_value=fQueue.front();
+                fQueue.pop_front();
+                KTDEBUG(queuelog, "Popping from concurrent queue; size: " << fQueue.size());
+                return true;
+            }
+
+            bool timed_wait_and_pop(XDataType& popped_value)
+            {
+                ScopedLock lock(fMutex);
+                fInterrupt = false;
+                boost::system_time const waitUntil = boost::get_system_time() + fTimeout;
+                if (! fConditionVar.timed_wait(lock, fTimeout, QueueNotEmpty(fQueue)))
+                {
+                    KTDEBUG(queuelog, "Queue wait has timed out");
+                    return false;
+                }
+                if (fInterrupt)
+                {
+                    fInterrupt = false;
+                    return false;
                 }
 
                 popped_value=fQueue.front();
@@ -115,6 +154,16 @@ namespace Katydid
                 return;
             }
 
+            inline boost::posix_time::milliseconds get_timeout() const
+            {
+                return fTimeout;
+            }
+
+            inline void set_timeout(boost::posix_time::milliseconds duration)
+            {
+                fTimeout = duration;
+                return;
+            }
     };
 
 } /* namespace Katydid */
