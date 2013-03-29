@@ -245,6 +245,10 @@ namespace Katydid
                 (static_cast<XProcessorType*>(this)->*(daf.fFuncPtr))(daf.fData);
                 if (daf.fData->fLastData) fStatus = kStopped;
             }
+            else
+            {
+                fStatus = kStopped;
+            }
         }
         fQueueDoneSignal();
         KTINFO(eqplog, "Queue processing has ended");

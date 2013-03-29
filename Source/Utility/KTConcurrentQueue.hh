@@ -50,7 +50,7 @@ namespace Katydid
             KTConcurrentQueue() :
                 fQueue(),
                 fInterrupt(false),
-                fTimeout(1000),
+                fTimeout(boost::posix_time::milliseconds(1000)),
                 fMutex(),
                 fConditionVar()
             {
@@ -65,7 +65,7 @@ namespace Katydid
             Queue fQueue;
             bool fInterrupt;
 
-            boost::posix_time::milliseconds fTimeout; /// Timeout duration in milliseconds
+            boost::posix_time::time_duration fTimeout; /// Timeout duration in milliseconds
 
             mutable boost::mutex fMutex;
             boost::condition_variable fConditionVar;
@@ -130,7 +130,7 @@ namespace Katydid
                 ScopedLock lock(fMutex);
                 fInterrupt = false;
                 boost::system_time const waitUntil = boost::get_system_time() + fTimeout;
-                if (! fConditionVar.timed_wait(lock, fTimeout, QueueNotEmpty(fQueue)))
+                if (! fConditionVar.timed_wait(lock, waitUntil, QueueNotEmpty(fQueue)))
                 {
                     KTDEBUG(queuelog, "Queue wait has timed out");
                     return false;
