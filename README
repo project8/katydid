@@ -3,7 +3,7 @@ Katydid is a data analysis package for Project 8.
 Requirements:
   Monarch (included as a submodule of Katydid)
   Protobuf
-  Boost
+  Boost -- headers, plus the following libraries: date_time, filesystem, program_options, system, thread
   FFTW3 -- version 3.3 or newer
   Eigen -- optional, though some functionality will not be available without it
   ROOT -- optional, though some functionality will not be available without it
