@@ -154,14 +154,14 @@ namespace Katydid
                 return;
             }
 
-            inline boost::posix_time::milliseconds get_timeout() const
+            inline unsigned get_timeout() const
             {
-                return fTimeout;
+                return fTimeout.total_milliseconds();
             }
 
-            inline void set_timeout(boost::posix_time::milliseconds duration)
+            inline void set_timeout(unsigned duration)
             {
-                fTimeout = duration;
+                fTimeout = boost::posix_time::milliseconds(duration);
                 return;
             }
     };
