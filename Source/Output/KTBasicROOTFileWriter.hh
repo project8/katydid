@@ -32,14 +32,20 @@ namespace Katydid
      \li \c "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
 
      Slots:
-     \li \c "corr-data": void WriteCorrelationData(const WriteCorrelationData*)
-     \li \c "hough-data": void WriteHoughData(const KTHoughData*)
-     \li \c "gain-var-data": void WriteGainVariationData(const KTGainVariationData*)
-     \li \c "ts-data": void WriteTimeSeriesData(const KTTimeSeriesData*)
-     \li \c "fs-data": void WriteFrequencySpectrumData(const KTFrequencySpectrumData*)
-     \li \c "fs-data-fftw": void WriteFrequencySpectrumDataFFTW(const KTFrequencySpectrumDataFFTW*)
-     \li \c "swfs-data": void WriteSlidingWindowFSData(const WriteSlidingWindowFSData*)
-     \li \c "swfs-data-fftw": void WriteSlidingWindowFSDataFFTW(const WriteSlidingWindowFSDataFFTW*)
+     \li \c "aa":
+     \li \c "corr":
+     \li \c "hough":
+     \li \c "gain-var":
+     \li \c "fs-fftw":
+     \li \c "fs-polar":
+     \li \c "fs-fftw-phase":
+     \li \c "fs-polar-phase":
+     \li \c "fs-fftw-power":
+     \li \c "fs-polar-power":
+     \li \c "norm-fs-fftw":
+     \li \c "norm-fs-polar":
+     \li \c "ts":
+     \li \c "wv":
      
     */
 

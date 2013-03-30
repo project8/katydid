@@ -76,7 +76,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histFS_" << sliceNumber << "_" << iChannel;
+                conv << "histFSpolar_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreateMagnitudeHistogram(histName);
@@ -105,7 +105,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histFS_" << sliceNumber << "_" << iChannel;
+                conv << "histFSfftw_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreateMagnitudeHistogram(histName);
@@ -134,7 +134,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histFS_" << sliceNumber << "_" << iChannel;
+                conv << "histFSpolarPhase_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePhaseHistogram(histName);
@@ -163,7 +163,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histFS_" << sliceNumber << "_" << iChannel;
+                conv << "histFSfftwPhase_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePhaseHistogram(histName);
@@ -192,7 +192,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histPS_" << sliceNumber << "_" << iChannel;
+                conv << "histPSpolar_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
@@ -221,7 +221,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 stringstream conv;
-                conv << "histPS_" << sliceNumber << "_" << iChannel;
+                conv << "histPSfftw_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);

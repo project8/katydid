@@ -26,6 +26,13 @@ namespace Katydid
 
 
             //************************
+            // Normalized Frequency Spectrum Data
+            //************************
+        public:
+            void WriteNormalizedFSDataPolar(boost::shared_ptr<KTData> data);
+            void WriteNormalizedFSDataFFTW(boost::shared_ptr<KTData> data);
+
+            //************************
             // Analytic Associate Data
             //************************
         public:
