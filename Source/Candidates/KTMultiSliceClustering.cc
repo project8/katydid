@@ -662,11 +662,17 @@ namespace Katydid
         wfcData.SetFirstSliceNumber(cluster.fPoints.begin()->fHeaderPtr->GetSliceNumber());
         wfcData.SetLastSliceNumber(cluster.fPoints.begin()->fHeaderPtr->GetSliceNumber());
         wfcData.SetTimeLength(timeBinWidth * Double_t(nTimeBins));
-        wfcData.SetMinimumFrequency(spectra[0]->GetBinLowEdge(firstFreqBin));
-        wfcData.SetMaximumFrequency(spectra[0]->GetBinLowEdge(lastFreqBin) + freqBinWidth);
         wfcData.SetMeanStartFrequency(ftbWeightedSum / ftbSumOfWeights);
         wfcData.SetMeanEndFrequency(ltbWeightedSum / ltbSumOfWeights);
         wfcData.SetFrequencyWidth(freqBinWidth * Double_t(nFreqBins));
+
+        UInt_t i = 0;
+        for (; ! spectra[i]; i++);
+        if (i != spectra.size())
+        {
+            wfcData.SetMinimumFrequency(spectra[i]->GetBinLowEdge(firstFreqBin));
+            wfcData.SetMaximumFrequency(spectra[i]->GetBinLowEdge(lastFreqBin) + freqBinWidth);
+        }
 
         KTDEBUG(sclog, "Creating KTTimeFrequency with " << nTimeBinsWithFrame << " time bins and " << nFreqBinsWithFrame << " freq bins;  cluster dimensions are " << nTimeBins << " by " << nFreqBins);
         KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, timeBinWidth * Double_t(firstTimeBinWithFrame), timeBinWidth * Double_t(firstTimeBinWithFrame + (Int_t)nTimeBins), nFreqBinsWithFrame, freqBinWidth * Double_t(firstFreqBinWithFrame), freqBinWidth * Double_t(firstFreqBinWithFrame + (Int_t)nFreqBins));
