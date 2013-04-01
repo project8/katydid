@@ -62,7 +62,8 @@ namespace Katydid
             enum Status
             {
                 kStopped,
-                kRunning
+                kRunning,
+                kContinue
             };
 
         public:
@@ -261,11 +262,18 @@ namespace Katydid
             {
                 KTDEBUG(eqplog, "Data acquired for processing");
                 (static_cast<XProcessorType*>(this)->*(daf.fFuncPtr))(daf.fData);
-                //if (daf.fData->fLastData) fStatus = kStopped;
+                if (daf.fData->fLastData) fStatus = kStopped;
             }
             else
             {
-                fStatus = kStopped;
+                if (fStatus == kContinue)
+                {
+                    fStatus = kRunning;
+                }
+                else
+                {
+                    fStatus = kStopped;
+                }
             }
         }
         fQueueDoneSignal();
@@ -327,9 +335,9 @@ namespace Katydid
         fPopFromQueue = &KTConcurrentQueue< DataAndFunc >::timed_wait_and_pop;
         if (fStatus == kRunning)
         {
-            Stop();
-            KTINFO(eqplog, "Pop function changed; restarting queue");
-            Run();
+            fStatus = kContinue;
+            KTINFO(eqplog, "Pop function changed; interrupting queue");
+            fQueue.interrupt();
         }
         return;
     }
@@ -344,9 +352,9 @@ namespace Katydid
         this->fPopFromQueue = &KTConcurrentQueue< DataAndFunc >::wait_and_pop;
         if (fStatus == kRunning)
         {
-            Stop();
-            KTINFO(eqplog, "Pop function changed; restarting queue");
-            Run();
+            fStatus = kContinue;
+            KTINFO(eqplog, "Pop function changed; interrupting queue");
+            fQueue.interrupt();
         }
         return;
     }
@@ -361,9 +369,9 @@ namespace Katydid
         this->fPopFromQueue = &KTConcurrentQueue< DataAndFunc >::try_pop;
         if (fStatus == kRunning)
         {
-            Stop();
-            KTINFO(eqplog, "Pop function changed; restarting queue");
-            Run();
+            fStatus = kContinue;
+            KTINFO(eqplog, "Pop function changed; interrupting queue");
+            fQueue.interrupt();
         }
         return;
     }
