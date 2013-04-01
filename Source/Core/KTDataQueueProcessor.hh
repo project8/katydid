@@ -38,6 +38,9 @@ namespace Katydid
      \li \c "timeout": UInt_t -- maximum time to wait for new data (integer number of milliseconds)
 
      Slots:
+     \li \c "use-timed-pop": void () -- Switch the queue-popping function to the TIMED version
+     \li \c "use-untimed-pop": void () -- Switch the queue-popping function to the UNTIMED version
+     \li \c "use-single-pop": void () -- Switch to the single-pop queue-popping function
 
      Signals:
      \li \c "queue-done": void () -- Emitted when queue is emptied
@@ -53,6 +56,8 @@ namespace Katydid
             };
 
             typedef KTConcurrentQueue< DataAndFunc > Queue;
+
+            typedef bool (KTConcurrentQueue< DataAndFunc >::*QueuePoppingFunc)(DataAndFunc&);
 
             enum Status
             {
@@ -100,6 +105,7 @@ namespace Katydid
 
         protected:
             Queue fQueue;
+            QueuePoppingFunc fPopFromQueue;
 
             //*********
             // Queueing functions for slots
@@ -112,6 +118,14 @@ namespace Katydid
             /// Queue a list of data objects
             /// Assumes ownership of all data objects and the list; original shared pointers will be nullified
             //void DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>));
+
+            //*********
+            // Slots
+            //*********
+        public:
+            void SwitchToTimedPop();
+            void SwitchToUntimedPop();
+            void SwitchToSinglePop();
 
             //*********
             // Signals
@@ -187,8 +201,12 @@ namespace Katydid
             fStatus(kStopped),
             fFuncPtr(NULL),
             fQueue(),
+            fPopFromQueue(&KTConcurrentQueue< DataAndFunc >::wait_and_pop),
             fQueueDoneSignal("queue-done", this)
     {
+        RegisterSlot("use-timed-pop", this, &KTDataQueueProcessorTemplate< XProcessorType >::SwitchToTimedPop);
+        RegisterSlot("use-untimed-pop", this, &KTDataQueueProcessorTemplate< XProcessorType >::SwitchToUntimedPop);
+        RegisterSlot("use-single-pop", this, &KTDataQueueProcessorTemplate< XProcessorType >::SwitchToSinglePop);
     }
 
     template< class XProcessorType >
@@ -239,11 +257,11 @@ namespace Katydid
         {
             KTDEBUG(eqplog, "processing . . .");
             DataAndFunc daf;
-            if (fQueue.timed_wait_and_pop(daf))
+            if ((fQueue.*fPopFromQueue)(daf))
             {
                 KTDEBUG(eqplog, "Data acquired for processing");
                 (static_cast<XProcessorType*>(this)->*(daf.fFuncPtr))(daf.fData);
-                if (daf.fData->fLastData) fStatus = kStopped;
+                //if (daf.fData->fLastData) fStatus = kStopped;
             }
             else
             {
@@ -298,6 +316,57 @@ namespace Katydid
         return;
     }
 */
+
+    template< class XProcessorType >
+    void KTDataQueueProcessorTemplate< XProcessorType >::SwitchToTimedPop()
+    {
+        if (fPopFromQueue == &KTConcurrentQueue< DataAndFunc >::timed_wait_and_pop)
+            return;
+
+        KTDEBUG(eqplog, "Switching to timed pop function");
+        fPopFromQueue = &KTConcurrentQueue< DataAndFunc >::timed_wait_and_pop;
+        if (fStatus == kRunning)
+        {
+            Stop();
+            KTINFO(eqplog, "Pop function changed; restarting queue");
+            Run();
+        }
+        return;
+    }
+
+    template< class XProcessorType >
+    void KTDataQueueProcessorTemplate< XProcessorType >::SwitchToUntimedPop()
+    {
+        if (fPopFromQueue == &KTConcurrentQueue< DataAndFunc >::wait_and_pop)
+            return;
+
+        KTDEBUG(eqplog, "Switching to untimed pop function");
+        this->fPopFromQueue = &KTConcurrentQueue< DataAndFunc >::wait_and_pop;
+        if (fStatus == kRunning)
+        {
+            Stop();
+            KTINFO(eqplog, "Pop function changed; restarting queue");
+            Run();
+        }
+        return;
+    }
+
+    template< class XProcessorType >
+    void KTDataQueueProcessorTemplate< XProcessorType >::SwitchToSinglePop()
+    {
+        if (fPopFromQueue == &KTConcurrentQueue< DataAndFunc >::try_pop)
+            return;
+
+        KTDEBUG(eqplog, "Switching to single-pop function");
+        this->fPopFromQueue = &KTConcurrentQueue< DataAndFunc >::try_pop;
+        if (fStatus == kRunning)
+        {
+            Stop();
+            KTINFO(eqplog, "Pop function changed; restarting queue");
+            Run();
+        }
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTDATAQUEUEPROCESSOR_HH_ */
