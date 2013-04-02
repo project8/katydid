@@ -8,7 +8,7 @@ if (Katydid_ENABLE_TESTING)
         ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/TestParameterStoreConfig.json
     )
     
-    katydid_install_config (${VALIDATION_CONFIGFILES})
+    pbuilder_install_config (${VALIDATION_CONFIGFILES})
     
 
     # Headers for any test classes
@@ -17,7 +17,7 @@ if (Katydid_ENABLE_TESTING)
         ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.hh
     )
     
-    katydid_install_headers (${VALIDATION_HEADERFILES})
+    pbuilder_install_headers (${VALIDATION_HEADERFILES})
     
     
     # Executables that do NOT require ROOT
@@ -103,7 +103,7 @@ if (Katydid_ENABLE_TESTING)
     #add_executable (TestASCIIFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestASCIIFileWriter.cc)
     #target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidData KatydidOutput ${LIBS})
 
-    katydid_install_executables (
+    pbuilder_install_executables (
                      TestApplication
                      TestAxisProperties
                      TestCacheDirectory
@@ -166,7 +166,7 @@ if (Katydid_ENABLE_TESTING)
         add_executable (TestGainVariation ${CMAKE_CURRENT_SOURCE_DIR}/TestGainVariation.cc)
         target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidAnalysis KatydidOutput ${LIBS})
     
-        katydid_install_executables ( 
+        pbuilder_install_executables ( 
                     TestBasicROOTFileWriter
                     TestGainVariation
         )

@@ -28,5 +28,5 @@ set (KATYDID_LIBS
 add_library (KatydidCandidates ${CANDIDATES_SOURCEFILES})
 target_link_libraries (KatydidCandidates ${KATYDID_LIBS} ${LIBS})
 
-katydid_install_libraries(KatydidCandidates)
-katydid_install_headers(${CANDIDATES_HEADERFILES})
+pbuilder_install_libraries(KatydidCandidates)
+pbuilder_install_headers(${CANDIDATES_HEADERFILES})

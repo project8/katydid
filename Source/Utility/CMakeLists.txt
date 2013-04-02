@@ -45,8 +45,8 @@ set (UTILITY_SOURCEFILES
 add_library (KatydidUtility ${UTILITY_SOURCEFILES})
 target_link_libraries (KatydidUtility ${LIBS})
 
-katydid_install_headers (${UTILITY_HEADERFILES})
-katydid_install_libraries (KatydidUtility)
+pbuilder_install_headers (${UTILITY_HEADERFILES})
+pbuilder_install_libraries (KatydidUtility)
 
 # install the log4cxx config file
 set (LEVEL "info")

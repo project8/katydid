@@ -68,5 +68,5 @@ set (KATYDID_LIBS
 add_library (KatydidAnalysis ${ANALYSIS_SOURCEFILES})
 target_link_libraries (KatydidAnalysis ${KATYDID_LIBS} ${LIBS})
 
-katydid_install_libraries(KatydidAnalysis)
-katydid_install_headers(${ANALYSIS_HEADERFILES})
+pbuilder_install_libraries(KatydidAnalysis)
+pbuilder_install_headers(${ANALYSIS_HEADERFILES})

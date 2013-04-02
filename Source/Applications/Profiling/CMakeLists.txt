@@ -8,14 +8,14 @@ if (Katydid_ENABLE_PROFILING)
         ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ProfileSimpleFFTConfig.json
     )
     
-    katydid_install_config (${PROFILING_CONFIGFILES})
+    pbuilder_install_config (${PROFILING_CONFIGFILES})
     
 
     # Headers for any test classes
     #set (PROFILING_HEADERFILES
     #)
     
-    #katydid_install_headers (${PROFILING_HEADERFILES})
+    #pbuilder_install_headers (${PROFILING_HEADERFILES})
     
     
     # Executables that do NOT require ROOT
@@ -28,7 +28,7 @@ if (Katydid_ENABLE_PROFILING)
     add_executable (ProfileManualAnalysis ${CMAKE_CURRENT_SOURCE_DIR}/ProfileManualAnalysis.cc)
     target_link_libraries (ProfileManualAnalysis KatydidUtility KatydidCore KatydidData KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${LIBS})
 
-    katydid_install_executables (
+    pbuilder_install_executables (
         ProfileDataAccessMethods
         ProfileFFTWandMonarch
         ProfileManualAnalysis
@@ -39,7 +39,7 @@ if (Katydid_ENABLE_PROFILING)
         #add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
         #target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidData KatydidEgg KatydidFFT KatydidOutput ${LIBS})
         
-        #katydid_install_executables ( 
+        #pbuilder_install_executables ( 
         #)
     
     endif (ROOT_FOUND)

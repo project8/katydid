@@ -12,10 +12,10 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 project (Katydid)
 
 # Include the build script
-include (KatydidBuild)
+include (PackageBuilder)
 
 # Set the version and associated variables
-katydid_prepare_project (1 0 0)
+pbuilder_prepare_project (1 0 0)
 
 set (Katydid_SINGLETHREADED FALSE CACHE BOOL "Flag for running in single-threaded mode")
 if (Katydid_SINGLETHREADED)
@@ -142,11 +142,11 @@ add_subdirectory (Documentation/ReferenceGuide)
 
 
 # Install config files
-katydid_install_config_files()
+pbuilder_install_config_files()
 
 # Install the example CMakeLists file for building with this installation of Katydid
 configure_file (${PROJECT_SOURCE_DIR}/Scripts/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)
-katydid_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Scripts/MyApplication.cc)
+pbuilder_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Scripts/MyApplication.cc)
 
 # this is apparently not the right way to run the link_dylibs script
 #execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)

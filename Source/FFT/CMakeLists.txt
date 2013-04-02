@@ -49,6 +49,6 @@ set (KATYDID_LIBS
 add_library (KatydidFFT ${FFT_SOURCEFILES} ${FFT_DICT_OUTFILE})
 target_link_libraries (KatydidFFT ${KATYDID_LIBS} ${LIBS})
 
-katydid_install_headers (${FFT_HEADERFILES})
-katydid_install_libraries (KatydidFFT)
+pbuilder_install_headers (${FFT_HEADERFILES})
+pbuilder_install_libraries (KatydidFFT)
          

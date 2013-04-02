@@ -13,7 +13,7 @@ set (VALIDATION_CONFIGFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidWVConfig.json
 )
 
-katydid_install_config (${VALIDATION_CONFIGFILES})
+pbuilder_install_config (${VALIDATION_CONFIGFILES})
     
 
 # Executables
@@ -30,7 +30,7 @@ target_link_libraries (Katydid KatydidUtility KatydidCore KatydidData KatydidOut
 add_executable (Truncate ${CMAKE_CURRENT_SOURCE_DIR}/Truncate.cc)
 target_link_libraries (Truncate KatydidUtility ${LIBS})
 
-katydid_install_executables ( 
+pbuilder_install_executables ( 
     ConfigCheck
     EggScanner
     Katydid
@@ -45,7 +45,7 @@ if (ROOT_FOUND)
     add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
     target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT ${LIBS})
     
-    katydid_install_executables ( 
+    pbuilder_install_executables ( 
                 ChannelCorrelator
                 ExtractPowerSpectra
      )

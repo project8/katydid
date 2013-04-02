@@ -62,6 +62,6 @@ set (KATYDID_LIBS
 add_library (KatydidCore ${CORE_SOURCEFILES})
 target_link_libraries (KatydidCore ${KATYDID_LIBS} ${LIBS})
 
-katydid_install_headers (${CORE_HEADERFILES})
-katydid_install_libraries (KatydidCore)
+pbuilder_install_headers (${CORE_HEADERFILES})
+pbuilder_install_libraries (KatydidCore)
 

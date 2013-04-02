@@ -18,4 +18,4 @@ link_directories(${@PROJECT_NAME@_LIBRARY_DIRS})
 add_executable (MyApplication ${CMAKE_CURRENT_SOURCE_DIR}/MyApplication.cc)
 # Change the target name (first argument) to match the above target
 # Add any further libraries you need to link against after the library variables (second and third arguments)
-target_link_libraries (MyApplication ${DEPENDS_LIBRARIES} ${@PROJECT_NAME@_LIBRARIES})
+target_link_libraries (MyApplication ${@PROJECT_NAME@_DEPENDS_LIBRARIES} ${@PROJECT_NAME@_LIBRARIES})

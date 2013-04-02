@@ -43,6 +43,6 @@ set (KATYDID_LIBS
 add_library (KatydidEgg ${EGG_SOURCEFILES} ${EGG_DICT_OUTFILE})
 target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${LIBS})
 
-katydid_install_headers (${EGG_HEADERFILES})
-katydid_install_libraries (KatydidEgg)
+pbuilder_install_headers (${EGG_HEADERFILES})
+pbuilder_install_libraries (KatydidEgg)
          

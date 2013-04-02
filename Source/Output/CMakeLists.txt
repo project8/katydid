@@ -76,6 +76,6 @@ set (KATYDID_LIBS
 add_library (KatydidOutput ${OUTPUT_SOURCEFILES})
 target_link_libraries (KatydidOutput ${KATYDID_LIBS} ${LIBS})
 
-katydid_install_headers (${OUTPUT_HEADERFILES})
-katydid_install_libraries (KatydidOutput)
+pbuilder_install_headers (${OUTPUT_HEADERFILES})
+pbuilder_install_libraries (KatydidOutput)
 
