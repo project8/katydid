@@ -1,7 +1,7 @@
 /**
  @file KTEggProcessor.hh
  @brief Contains KTEggProcessor
- @details KTEggProcessor iterates over the events in an Egg file
+ @details KTEggProcessor iterates over the bundles in an Egg file
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
@@ -9,25 +9,22 @@
 #include "KTEggProcessor.hh"
 
 #include "KTCommandLineOption.hh"
+#include "KTData.hh"
 #include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTEggReader2011.hh"
-#include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
-#include "KTTimeSeriesDataReal.hh"
-#include "KTTimeSeriesDataFFTW.hh"
-
-//#include "TCanvas.h"
-//#include "TH1.h"
+#include "KTTimeSeriesData.hh"
 
 using std::string;
+using boost::shared_ptr;
 
 namespace Katydid
 {
-    static KTCommandLineOption< int > sNEventsCLO("Egg Processor", "Number of events to process", "n-events", 'n');
+    static KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
     static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
@@ -35,21 +32,17 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
 
-    KTEggProcessor::KTEggProcessor() :
-            KTProcessor(),
-            fNEvents(0),
+    KTEggProcessor::KTEggProcessor(const std::string& name) :
+            KTPrimaryProcessor(name),
+            fNSlices(0),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
+            fSliceSizeRequest(0),
             fTimeSeriesType(kRealTimeSeries),
-            fHeaderSignal(),
-            fEventSignal(),
-            fEggDoneSignal()
+            fHeaderSignal("header", this),
+            fDataSignal("slice", this),
+            fEggDoneSignal("egg-done", this)
     {
-        fConfigName = "egg-processor";
-
-        RegisterSignal("header", &fHeaderSignal, "void (const KTEggHeader*)");
-        RegisterSignal("event", &fEventSignal, "void (KTEvent*)");
-        RegisterSignal("egg_done", &fEggDoneSignal, "void ()");
     }
 
     KTEggProcessor::~KTEggProcessor()
@@ -61,10 +54,10 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNEvents(node->GetData< UInt_t >("number-of-events", fNEvents));
+            SetNSlices(node->GetData< UInt_t >("number-of-slices", fNSlices));
             SetFilename(node->GetData< string >("filename", fFilename));
 
-            // egg reader
+            // choose the egg reader
             string eggReaderTypeString = node->GetData< string >("egg-reader", "monarch");
             if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
             else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
@@ -74,8 +67,11 @@ namespace Katydid
                 return false;
             }
 
-            // type series
-            string timeSeriesTypeString = node->GetData< string >("time-series", "real");
+            // specify the length of the time series (0 for use Monarch's record size)
+            fSliceSizeRequest = node->GetData< UInt_t >("time-series-size", fSliceSizeRequest);
+
+            // type of time series
+            string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
             if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
             else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
             else
@@ -86,7 +82,7 @@ namespace Katydid
         }
 
         // Command-line settings
-        SetNEvents(fCLHandler->GetCommandLineValue< Int_t >("n-events", fNEvents));
+        SetNSlices(fCLHandler->GetCommandLineValue< Int_t >("n-slices", fNSlices));
         SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
         if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
         {
@@ -104,6 +100,7 @@ namespace Katydid
         if (fEggReaderType == kMonarchEggReader)
         {
             KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+            eggReader->SetTimeSeriesSizeRequest(fSliceSizeRequest);
             if (fTimeSeriesType == kRealTimeSeries)
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)
@@ -112,7 +109,8 @@ namespace Katydid
         }
         else
         {
-            egg.SetReader(new KTEggReader2011());
+            KTEggReader2011* eggReader = new KTEggReader2011();
+            egg.SetReader(eggReader);
         }
 
         if (! egg.BreakEgg(fFilename))
@@ -125,51 +123,39 @@ namespace Katydid
 
         KTINFO(egglog, "The egg file has been opened successfully"
                 "\n\tand the header parsed and processed;"
-                "\n\tProceeding with event processing");
+                "\n\tProceeding with slice processing");
 
-        UInt_t iEvent = 0;
+        UInt_t iSlice = 0;
         while (kTRUE)
         {
-            if (iEvent >= fNEvents) break;
-
-            KTINFO(egglog, "Event " << iEvent);
-
-            // Hatch the event
-            KTEvent* event = egg.HatchNextEvent();
-            if (event == NULL) break;
-
-            Bool_t tsDataPresent = false;
-            if (event->GetData<KTTimeSeriesDataReal>(KTTimeSeriesDataReal::StaticGetName()) != NULL)
+            if (fNSlices != 0 && iSlice >= fNSlices)
             {
-                tsDataPresent = true;
-                KTDEBUG(egglog, "Time series data (type: real) is present.");
-            }
-            if (event->GetData<KTTimeSeriesDataFFTW>(KTTimeSeriesDataFFTW::StaticGetName()) != NULL)
-            {
-                tsDataPresent = true;
-                KTDEBUG(egglog, "Time series data (type: fftw-complex) is present.");
-            }
-            if (! tsDataPresent)
-            {
-                KTWARN(egglog, "No time-series data present in event");
-                continue;
+                KTINFO(egglog, iSlice << "/" << fNSlices << " slices hatched; slice processing is complete");
+                break;
             }
 
-            /*
-            TCanvas* cAmpl = new TCanvas("cAmpl", "cAmpl");
-            TH1I* hist = event->CreateEventHistogram();
-            hist->Draw();
-            cAmpl->WaitPrimitive();
-            delete hist;
-            delete cAmpl;
-            */
+            KTINFO(egglog, "Hatching slice " << iSlice << "/" << fNSlices);
 
-            // Pass the event to any subscribers
-            fEventSignal(event);
+            // Hatch the slice
+            shared_ptr<KTData> data = egg.HatchNextSlice();
+            if (data.get() == NULL) break;
 
-            iEvent++;
+            if (iSlice == fNSlices - 1) data->Of< KTData >().fLastData = true;
 
-            delete event;
+            if (data->Has< KTTimeSeriesData >())
+            {
+                KTDEBUG(egglog, "Time series data is present.");
+                fDataSignal(data);
+            }
+            else
+            {
+                KTWARN(egglog, "No time-series data present in slice");
+            }
+
+            // Pass the slice to any subscribers
+            //fSliceSignal(slice);
+
+            iSlice++;
         }
 
         fEggDoneSignal();

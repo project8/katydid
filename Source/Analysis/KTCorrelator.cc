@@ -8,11 +8,13 @@
 #include "KTCorrelator.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTEvent.hh"
 #include "KTFactory.hh"
-#include "KTFrequencySpectrum.hh"
-#include "KTFrequencySpectrumData.hh"
+#include "KTFrequencySpectrumPolar.hh"
+#include "KTFrequencySpectrumDataPolar.hh"
+#include "KTFrequencySpectrumDataFFTW.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
+#include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 
 #include <boost/spirit/include/qi.hpp>
@@ -22,6 +24,8 @@
 using std::pair;
 using std::string;
 using std::vector;
+
+using boost::shared_ptr;
 
 // I can't just use boost::spirit::qi because of naming conflicts with std
 using boost::spirit::qi::int_;
@@ -37,17 +41,15 @@ namespace Katydid
 
     static KTDerivedRegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
 
-    KTCorrelator::KTCorrelator() :
-            KTProcessor(),
+    KTCorrelator::KTCorrelator(const std::string& name) :
+            KTProcessor(name),
             fPairs(),
-            fCorrSignal()
+            fCorrSignal("correlation", this),
+            fFSPolarSlot("fs-polar", this, &KTCorrelator::Correlate, &fCorrSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTCorrelator::Correlate, &fCorrSignal),
+            fNormFSPolarSlot("norm-fs-polar", this, &KTCorrelator::Correlate, &fCorrSignal),
+            fNormFSFFTWSlot("norm-fs-fftw", this, &KTCorrelator::Correlate, &fCorrSignal)
     {
-        fConfigName = "correlator";
-
-        RegisterSignal("correlation", &fCorrSignal, "void (const KTWriteableData*)");
-
-        RegisterSlot("fft-data", this, &KTCorrelator::ProcessFFTData, "void (const KTFrequencySpectrumData*)");
-        RegisterSlot("event", this, &KTCorrelator::ProcessEvent, "void (KTEvent*)");
     }
 
     KTCorrelator::~KTCorrelator()
@@ -76,121 +78,96 @@ namespace Katydid
         return true;
     }
 
-    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumData* data)
+    Bool_t KTCorrelator::Correlate(KTFrequencySpectrumDataPolar& data)
     {
-        KTCorrelationData* newData = new KTCorrelationData();
-        newData->SetNPairs(fPairs.size());
+        KTCorrelationData& newData = data.Of< KTCorrelationData >().SetNComponents(fPairs.size());
+        return CoreCorrelate(data, newData);
+    }
 
+    Bool_t KTCorrelator::Correlate(KTFrequencySpectrumDataFFTW& data)
+    {
+        KTCorrelationData& newData = data.Of< KTCorrelationData >().SetNComponents(fPairs.size());
+        return CoreCorrelate(data, newData);
+    }
+
+    Bool_t KTCorrelator::Correlate(KTNormalizedFSDataPolar& data)
+    {
+        KTCorrelationData& newData = data.Of< KTCorrelationData >().SetNComponents(fPairs.size());
+        return CoreCorrelate(data, newData);
+    }
+
+    Bool_t KTCorrelator::Correlate(KTNormalizedFSDataFFTW& data)
+    {
+        KTCorrelationData& newData = data.Of< KTCorrelationData >().SetNComponents(fPairs.size());
+        return CoreCorrelate(data, newData);
+    }
+
+    Bool_t KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData)
+    {
         UInt_t iPair = 0;
         for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
-            KTFrequencySpectrum* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+            KTFrequencySpectrumPolar* result = DoCorrelation(data.GetSpectrumPolar(firstChannel), data.GetSpectrumPolar(secondChannel));
             if (result == NULL)
             {
                 KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
             }
             else
             {
-                newData->SetCorrelation(result, firstChannel, secondChannel, iPair);
+                newData.SetSpectrum(result, iPair);
+                newData.SetInputPair(firstChannel, secondChannel, iPair);
             }
             iPair++;
         }
 
-        newData->SetEvent(data->GetEvent());
-
-        //data->GetEvent()->AddData(newData);
-        fCorrSignal(newData);
-
-        KTDEBUG(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
-        return newData;
+        KTINFO(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
+        return true;
     }
-    /*
-    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const PairVector& pairs)
-    {
-        KTCorrelationData* newData = new KTCorrelationData();
 
-        for (PairVector::const_iterator iter = pairs.begin(); iter != pairs.end(); iter++)
+    Bool_t KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData)
+    {
+        UInt_t iPair = 0;
+        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
         {
             UInt_t firstChannel = (*iter).first;
             UInt_t secondChannel = (*iter).second;
-            KTFrequencySpectrum* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
+            KTFrequencySpectrumPolar* result = DoCorrelation(data.GetSpectrumFFTW(firstChannel), data.GetSpectrumFFTW(secondChannel));
             if (result == NULL)
             {
                 KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
             }
             else
             {
-                newData->SetCorrelation(result, firstChannel, secondChannel, 0);
+                newData.SetSpectrum(result, iPair);
+                newData.SetInputPair(firstChannel, secondChannel, iPair);
             }
+            iPair++;
         }
 
-        newData->SetEvent(data->GetEvent());
-
-        //data->GetEvent()->AddData(newData);
-        fCorrSignal(newData);
-
-        KTDEBUG(corrlog, "Correlations complete");
-        return newData;
-    }
-
-    KTCorrelationData* KTCorrelator::Correlate(const KTFrequencySpectrumData* data, const KTCorrelationPair& pair)
-    {
-        UInt_t firstChannel = pair.first;
-        UInt_t secondChannel = pair.second;
-        KTFrequencySpectrum* result = DoCorrelation(data->GetSpectrum(firstChannel), data->GetSpectrum(secondChannel));
-
-        if (result != NULL)
-        {
-            KTDEBUG(corrlog, "Correlation between channels " << firstChannel << " and " << secondChannel << " complete");
-
-            KTCorrelationData* newData = new KTCorrelationData();
-            newData->SetCorrelation(result, firstChannel, secondChannel, 0);
-            data->GetEvent()->AddData(newData);
-
-            newData->SetEvent(data->GetEvent());
-
-            fCorrSignal(newData);
-
-            return newData;
-        }
-
-        KTWARN(corrlog, "Something went wrong with the correlation of channels " << firstChannel << " and " << secondChannel);
-        return NULL;
+        KTINFO(corrlog, "Correlations complete; " << iPair << " channel-pairs correlated.");
+        return true;
 
     }
 
-    */
-    KTFrequencySpectrum* KTCorrelator::DoCorrelation(const KTFrequencySpectrum* firstSpectrum, const KTFrequencySpectrum* secondSpectrum)
+    KTFrequencySpectrumPolar* KTCorrelator::DoCorrelation(const KTFrequencySpectrumPolar* firstSpectrum, const KTFrequencySpectrumPolar* secondSpectrum)
     {
         // Performs cc(firstSpectrum) * secondSpectrum
-        KTFrequencySpectrum* newSpect = new KTFrequencySpectrum(*firstSpectrum);
+        KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(*firstSpectrum);
         newSpect->CConjugate();
         (*newSpect) *= (*secondSpectrum);
         return newSpect;
     }
 
-    void KTCorrelator::ProcessFFTData(const KTFrequencySpectrumData* tsData)
+    KTFrequencySpectrumPolar* KTCorrelator::DoCorrelation(const KTFrequencySpectrumFFTW* firstSpectrum, const KTFrequencySpectrumFFTW* secondSpectrum)
     {
-        KTCorrelationData* newData = Correlate(tsData);
-        tsData->GetEvent()->AddData(newData);
-        return;
+        // Performs cc(firstSpectrum) * secondSpectrum
+        KTFrequencySpectrumFFTW newSpectFFTW(*firstSpectrum);
+        newSpectFFTW.CConjugate();
+        newSpectFFTW *= (*secondSpectrum);
+
+        return newSpectFFTW.CreateFrequencySpectrumPolar();
     }
-
-    void KTCorrelator::ProcessEvent(KTEvent* event)
-    {
-        const KTFrequencySpectrumData* fsData = dynamic_cast< KTFrequencySpectrumData* >(event->GetData(KTFrequencySpectrumData::StaticGetName()));
-        if (fsData == NULL)
-        {
-            KTWARN(corrlog, "No frequency-spectrum data was available in the event");
-            return;
-        }
-        KTCorrelationData* newData = Correlate(fsData);
-        event->AddData(newData);
-        return;
-    }
-
-
 
 } /* namespace Katydid */

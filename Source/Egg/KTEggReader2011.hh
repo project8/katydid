@@ -22,7 +22,7 @@ namespace Katydid
         public:
             struct HeaderInfo
             {
-                int fEventSize;
+                int fSliceSize;
                 int fFrameIDSize;
                 int fRecordSize;
                 int fTimeStampSize;
@@ -35,7 +35,7 @@ namespace Katydid
                     fTimeStampSize(0),
                     fFrameIDSize(0),
                     fRecordSize(0),
-                    fEventSize(0),
+                    fSliceSize(0),
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),
@@ -49,8 +49,13 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string& filename);
-            virtual KTTimeSeriesData* HatchNextEvent(KTEggHeader* header);
+            virtual boost::shared_ptr< KTData > HatchNextSlice();
             virtual bool CloseEgg();
+
+            UInt_t GetRecordsRead() const;
+
+            /// Returns the time since the run started in seconds
+            Double_t GetTimeInRun() const;
 
         private:
             template< typename XReturnType, typename XArrayType >
@@ -64,6 +69,8 @@ namespace Katydid
 
             HeaderInfo fHeaderInfo;
 
+            UInt_t fRecordsRead;
+
             static const std::ifstream::pos_type sPreludeSize;  // the prelude size is currently restricted to eight bytes
 
     };
@@ -76,6 +83,16 @@ namespace Katydid
         converter << value;
         converter >> converted;
         return converted;
+    }
+
+    inline UInt_t KTEggReader2011::GetRecordsRead() const
+    {
+        return fRecordsRead;
+    }
+
+    inline Double_t KTEggReader2011::GetTimeInRun() const
+    {
+        return Double_t(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
     }
 
 

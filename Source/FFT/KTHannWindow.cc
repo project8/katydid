@@ -15,15 +15,15 @@
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTEventWindowFunction, KTHannWindow > sEWFHannRegistrar("hann");
+    static KTDerivedRegistrar< KTBundleWindowFunction, KTHannWindow > sEWFHannRegistrar("hann");
 
     KTHannWindow::KTHannWindow() :
-            KTEventWindowFunction()
+            KTBundleWindowFunction()
     {
     }
 
-    KTHannWindow::KTHannWindow(const KTTimeSeriesDataReal* tsData) :
-            KTEventWindowFunction(tsData)
+    KTHannWindow::KTHannWindow(const KTTimeSeriesData* tsData) :
+            KTBundleWindowFunction(tsData)
     {
     }
 
@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHannWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTHannWindow::ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node)
     {
         return true;
     }

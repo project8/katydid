@@ -1,0 +1,85 @@
+{
+    "katydid":
+    {
+	"processor-toolbox":
+	{
+	    "processor":
+	    {
+		"type": "egg-processor",
+		"name": "noise-egg"
+	    },
+
+	    "processor":
+	    {
+		"type": "egg-processor",
+		"name": "candidate-egg"
+	    },
+
+	    "processor":
+	    {
+		"type": "rayleigh-quotient",
+		"name": "nrq-est"
+	    },
+
+	    "processor":
+	    {
+		"type": "basic-ascii-writer",
+		"name": "ascii-out"
+	    },
+
+	    "connection":
+	    {
+		"signal-processor": "noise-egg",
+		"signal-name": "bundle",
+		"slot-processor": "nrq-est",
+		"slot-name": "process-noise-bundle",
+		"group-order": 0
+	    },
+
+	    "connection":
+	    {
+		"signal-processor": "candidate-egg",
+		"signal-name": "bundle",
+		"slot-processor": "nrq-est",
+		"slot-name": "process-candidate-bundle",
+		"group-order"; 1
+	    },
+
+	    "connection":
+	    {
+	    	"signal-processor": "nrq-est",
+	    	"signal-name": "rq-calc",
+	    	"slot-processor": "ascii-out",
+	    	"slot-name": "ts-data"
+	    },
+	    
+	    "run-queue":
+	    {
+		"processor": "noise-egg",
+		"processor": "candidate-egg"
+	    }
+	},
+
+	"noise-egg":
+	{
+	    "filename": "run2012_11_5_tone.egg",
+	    "number-of-bundles": 1
+	},
+
+	"candidate-egg":
+	{
+	    "filename": "run2012_11_5_tone.egg",
+	    "number-of-bundles": 10
+	},
+	
+	"nrq-est":
+	{
+	    "chunk-size": 512
+	},
+
+	"ascii-out":
+	{
+		"output-file": "ascii.txt"
+	}
+    }
+}

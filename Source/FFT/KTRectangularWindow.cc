@@ -14,15 +14,15 @@
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTEventWindowFunction, KTRectangularWindow > sEWFRectRegistrar("rectangular");
+    static KTDerivedRegistrar< KTBundleWindowFunction, KTRectangularWindow > sEWFRectRegistrar("rectangular");
 
     KTRectangularWindow::KTRectangularWindow() :
-            KTEventWindowFunction()
+            KTBundleWindowFunction()
     {
     }
 
-    KTRectangularWindow::KTRectangularWindow(const KTTimeSeriesDataReal* tsData) :
-            KTEventWindowFunction(tsData)
+    KTRectangularWindow::KTRectangularWindow(const KTTimeSeriesData* tsData) :
+            KTBundleWindowFunction(tsData)
     {
     }
 
@@ -30,7 +30,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTRectangularWindow::ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTRectangularWindow::ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node)
     {
         return true;
     }

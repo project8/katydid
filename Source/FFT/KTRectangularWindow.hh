@@ -9,7 +9,7 @@
 #ifndef KTRECTANGULARWINDOW_HH_
 #define KTRECTANGULARWINDOW_HH_
 
-#include "KTEventWindowFunction.hh"
+#include "KTBundleWindowFunction.hh"
 
 namespace Katydid
 {
@@ -27,14 +27,14 @@ namespace Katydid
       none
     */
 
-    class KTRectangularWindow : public KTEventWindowFunction
+    class KTRectangularWindow : public KTBundleWindowFunction
     {
         public:
             KTRectangularWindow();
-            KTRectangularWindow(const KTTimeSeriesDataReal* tsData);
+            KTRectangularWindow(const KTTimeSeriesData* tsData);
             virtual ~KTRectangularWindow();
 
-            virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node);
+            virtual Bool_t ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node);
 
             virtual Double_t GetWeight(Double_t time) const;
             virtual Double_t GetWeight(UInt_t bin) const;

@@ -15,7 +15,7 @@
 #ifndef KTHANNWINDOW_HH_
 #define KTHANNWINDOW_HH_
 
-#include "KTEventWindowFunction.hh"
+#include "KTBundleWindowFunction.hh"
 
 namespace Katydid
 {
@@ -36,14 +36,14 @@ namespace Katydid
       none
     */
 
-    class KTHannWindow : public KTEventWindowFunction
+    class KTHannWindow : public KTBundleWindowFunction
     {
         public:
             KTHannWindow();
-            KTHannWindow(const KTTimeSeriesDataReal* tsData);
+            KTHannWindow(const KTTimeSeriesData* tsData);
             virtual ~KTHannWindow();
 
-            virtual Bool_t ConfigureEventWindowFunctionSubclass(const KTPStoreNode* node);
+            virtual Bool_t ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node);
 
             virtual Double_t GetWeight(Double_t time) const;
             virtual Double_t GetWeight(UInt_t bin) const;

@@ -115,22 +115,21 @@ namespace Katydid
 
     void KTParameterStore::PrintSubTree(const PStoreTree* tree, const string& addressOfTree, stringstream* printStream) const
     {
-        BOOST_FOREACH( const KTParameterStore::PStoreTree::value_type& treeNode, tree->get_child("") )
+        for (PStoreTree::const_iterator it = tree->begin(); it != tree->end(); it++)
         {
-            KTParameterStore::PStoreTree subtree = treeNode.second;
             string addressOfNode;
-            if (addressOfTree.size() > 0) addressOfNode = addressOfTree + "." + treeNode.first;
-            else addressOfNode = treeNode.first;
+            if (addressOfTree.size() > 0) addressOfNode = addressOfTree + "." + it->first;
+            else addressOfNode = it->first;
 
-            *printStream << addressOfNode;
-            if (tree->get< string >(treeNode.first).length() > 0)
+            if (it->second.get_value< string >().length() > 0)
             {
-                *printStream << " = " << tree->get< string >(treeNode.first);
+                *printStream << addressOfNode << " = " << it->second.get_value< string >() << '\n';
             }
-            *printStream << '\n';
-
-            // Recursively go down the hierarchy
-            PrintSubTree(&subtree, addressOfNode, printStream);
+            else
+            {
+                *printStream << addressOfNode << '\n';
+                PrintSubTree(&(it->second), addressOfNode, printStream);
+            }
         }
         return;
     }

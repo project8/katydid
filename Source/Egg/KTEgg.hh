@@ -1,7 +1,7 @@
 /**
  @file KTEgg.hh
  @brief Contains KTEgg
- @details Reads Egg data files: parses the header and produces events.
+ @details Reads Egg data files: parses the header and produces slices.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */
@@ -9,13 +9,15 @@
 #ifndef KTEGG_HH_
 #define KTEGG_HH_
 
+#include <boost/shared_ptr.hpp>
+
 #include <string>
 
 namespace Katydid
 {
     class KTEggReader;
     class KTEggHeader;
-    class KTEvent;
+    class KTData;
 
     class KTEgg
     {
@@ -24,23 +26,24 @@ namespace Katydid
             virtual ~KTEgg();
 
             bool BreakEgg(const std::string& filename);
-            KTEvent* HatchNextEvent();
+            boost::shared_ptr<KTData> HatchNextSlice();
             bool CloseEgg();
 
+            /// Assumes ownership of the egg reader
             void SetReader(KTEggReader* reader);
             const KTEggReader* GetReader() const;
 
             void SetHeader(KTEggHeader* header);
             const KTEggHeader* GetHeader() const;
 
-            void SetEventCounter(int count);
-            int GetEventCounter() const;
+            void SetSliceCounter(int count);
+            int GetSliceCounter() const;
 
         private:
             KTEggReader* fReader;
             KTEggHeader* fHeader;
 
-            int fEventCounter;
+            int fSliceCounter;
 
     };
 
@@ -54,15 +57,15 @@ namespace Katydid
         return fHeader;
     }
 
-    inline void KTEgg::SetEventCounter(int count)
+    inline void KTEgg::SetSliceCounter(int count)
     {
-        fEventCounter = count;
+        fSliceCounter = count;
         return;
     }
 
-    inline int KTEgg::GetEventCounter() const
+    inline int KTEgg::GetSliceCounter() const
     {
-        return fEventCounter;
+        return fSliceCounter;
     }
 
 } /* namespace Katydid */

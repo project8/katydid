@@ -1,43 +1,72 @@
 # CMakeLists for Katydid/Source/Analysis
 # Author: N. Oblath
 
-set (ANALYSIS_DICT_HEADERFILES
-)
-
-set (ANALYSIS_NODICT_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.hh
+set (ANALYSIS_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTOldSimpleClustering.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSwitchFFTWPolar.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.hh
 )
-
-set (ANALYSIS_HEADERFILES ${ANALYSIS_DICT_HEADERFILES} ${ANALYSIS_NODICT_HEADERFILES})
 
 set (ANALYSIS_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelationData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleClustering.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTFFTEHunt.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTOldGainNormalization.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTOldSimpleClustering.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSwitchFFTWPolar.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.cc
 )
 
-#set (ANALYSIS_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/AnalysisLinkDef.hh)
-#set (ANALYSIS_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/AnalysisDict.cxx)
+if (ROOT_FOUND)
+    set (ANALYSIS_HEADERFILES 
+        ${ANALYSIS_HEADERFILES}   
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.hh
+    )
+    set (ANALYSIS_SOURCEFILES
+        ${ANALYSIS_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTGainNormalization.cc
+    )
+endif (ROOT_FOUND)
+
+if (EIGEN3_FOUND)
+   set (ANALYSIS_HEADERFILES 
+   ${ANALYSIS_HEADERFILES}   
+   #${CMAKE_CURRENT_SOURCE_DIR}/KTBiasedACM.hh
+   #${CMAKE_CURRENT_SOURCE_DIR}/KTRQProcessor.hh
+   )
+   set (ANALYSIS_SOURCEFILES
+   ${ANALYSIS_SOURCEFILES}
+   #${CMAKE_CURRENT_SOURCE_DIR}/KTRQProcessor.cc
+   #${CMAKE_CURRENT_SOURCE_DIR}/KTBiasedACM.cc
+   )
+endif (EIGEN3_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
-    KatydidEgg
+    KatydidData
+    KatydidOutput
     KatydidFFT
 )
 
 ##################################################
 
-#ROOT_GENERATE_DICTIONARY ("${ANALYSIS_DICT_HEADERFILES}" "${ANALYSIS_LINKDEF_HEADERFILE}" "${ANALYSIS_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
-
-add_library (KatydidAnalysis ${ANALYSIS_SOURCEFILES} ${ANALYSIS_DICT_OUTFILE})
+add_library (KatydidAnalysis ${ANALYSIS_SOURCEFILES})
 target_link_libraries (KatydidAnalysis ${KATYDID_LIBS} ${LIBS})
 
-katydid_install_libraries(KatydidAnalysis)
-katydid_install_headers(${ANALYSIS_HEADERFILES})
+pbuilder_install_libraries(KatydidAnalysis)
+pbuilder_install_headers(${ANALYSIS_HEADERFILES})

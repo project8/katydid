@@ -12,8 +12,9 @@
 #include "KTConfigurable.hh"
 
 #include "KTConnection.hh"
-#include "KTSignal.hh"
-#include "KTSlot.hh"
+#include "KTLogger.hh"
+#include "KTSignalWrapper.hh"
+#include "KTSlotWrapper.hh"
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
@@ -26,6 +27,8 @@
 
 namespace Katydid
 {
+    KTLOGGER(processorlog, "katydid.core");
+
     class ProcessorException : public std::logic_error
     {
         public:
@@ -44,13 +47,8 @@ namespace Katydid
             typedef SlotMap::value_type SlotMapVal;
 
         public:
-            KTProcessor();
+            KTProcessor(const std::string& name="default-proc-name");
             virtual ~KTProcessor();
-
-        public:
-            /// Processors can optionally have a default Run action.
-            /// If a derived processor does not re-implement this function, an error message will be printed and it will return false.
-            virtual Bool_t Run();
 
         public:
 
@@ -59,16 +57,16 @@ namespace Katydid
             void ConnectSignalToSlot(KTSignalWrapper* signal, KTSlotWrapper* slot, int groupNum=-1);
 
             template< class XProcessor >
-            void RegisterSignal(std::string name, XProcessor* signalPtr, const std::string& signature="(unknown)");
+            void RegisterSignal(std::string name, XProcessor* signalPtr);
 
             template< class XTarget, typename XReturn >
-            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(), const std::string& signature="(unknown)");
+            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)());
 
             template< class XTarget, typename XReturn, typename XArg1 >
-            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1), const std::string& signature="(unknown)");
+            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1));
 
             template< class XTarget, typename XReturn, typename XArg1, typename XArg2 >
-            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2), const std::string& signature="(unknown)");
+            void RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2));
 
             KTSignalWrapper* GetSignal(const std::string& name);
 
@@ -84,45 +82,52 @@ namespace Katydid
 
 
     template< typename XSignalSig >
-    void KTProcessor::RegisterSignal(std::string name, XSignalSig* signalPtr, const std::string& signature)
+    void KTProcessor::RegisterSignal(std::string name, XSignalSig* signalPtr)
     {
-        KTSignalWrapper* sig = new KTSignalWrapper(signalPtr, signature);
+        KTDEBUG(processorlog, "Registering signal <" << name << "> in processor <" << fConfigName << ">");
+        KTSignalWrapper* sig = new KTSignalWrapper(signalPtr);
         fSignalMap.insert(SigMapVal(name, sig));
         return;
     }
 
     template< class XTarget, typename XReturn >
-    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(), const std::string& signature)
+    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)())
     {
-        KTSignal< XReturn () > signalConcept;
+        KTDEBUG(processorlog, "Registering slot <" << name << "> in processor <" << fConfigName << ">");
+
+        KTSignalConcept< XReturn () > signalConcept;
 
         boost::function< XReturn () > *func = new boost::function< XReturn () >(boost::bind(funcPtr, target));
 
-        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept, signature);
+        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept);
         fSlotMap.insert(SlotMapVal(name, slot));
         return;
     }
 
     template< class XTarget, typename XReturn, typename XArg1 >
-    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1), const std::string& signature)
+    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1))
     {
-        KTSignal< XReturn (XArg1) > signalConcept;
+        KTDEBUG(processorlog, "Registering slot <" << name << "> in processor <" << fConfigName << ">");
+
+        KTSignalConcept< XReturn (XArg1) > signalConcept;
 
         boost::function< XReturn (XArg1) > *func = new boost::function< XReturn (XArg1) >(boost::bind(funcPtr, target, _1));
 
-        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept, signature);
+        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept);
         fSlotMap.insert(SlotMapVal(name, slot));
         return;
     }
 
     template< class XTarget, typename XReturn, typename XArg1, typename XArg2 >
-    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2), const std::string& signature)
+    void KTProcessor::RegisterSlot(std::string name, XTarget* target, XReturn (XTarget::* funcPtr)(XArg1, XArg2))
     {
-        KTSignal< XReturn (XArg1, XArg2) > signalConcept;
+        KTDEBUG(processorlog, "Registering slot <" << name << "> in processor <" << fConfigName << ">");
+
+        KTSignalConcept< XReturn (XArg1, XArg2) > signalConcept;
 
         boost::function< XReturn (XArg1, XArg2) > *func = new boost::function< XReturn (XArg1, XArg2) >(boost::bind(funcPtr, target, _1, _2));
 
-        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept, signature);
+        KTSlotWrapper* slot = new KTSlotWrapper(func, &signalConcept);
         fSlotMap.insert(SlotMapVal(name, slot));
         return;
     }

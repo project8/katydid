@@ -7,82 +7,54 @@
 
 #include "KTComplexFFTW.hh"
 
+#include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTEvent.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTTimeSeriesDataFFTW.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTPStoreNode.hh"
 
 #include <algorithm>
 #include <cmath>
 
-using std::copy;
 using std::string;
 using std::vector;
+using boost::shared_ptr;
 
 namespace Katydid
 {
 
-    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("complex-fft");
+    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("complex-fftw");
 
-    KTComplexFFTW::KTComplexFFTW() :
+    KTComplexFFTW::KTComplexFFTW(const std::string& name) :
             KTFFT(),
-            KTProcessor(),
-            fFTPlan(),
-            fActivePlanIndex(0),
-            fTimeSize(0),
+            KTProcessor(name),
+            fForwardPlan(),
+            fReversePlan(),
+            fSize(0),
             fInputArray(NULL),
             fOutputArray(NULL),
-            fDirection("FORWARD"),
-            fDirectionMap(),
             fTransformFlag("MEASURE"),
             fTransformFlagMap(),
             fIsInitialized(false),
-            fFFTSignal()
+            fUseWisdom(true),
+            fWisdomFilename("wisdom_complexfft.fftw3"),
+            fFFTForwardSignal("fft-forward", this),
+            fFFTReverseSignal("fft-reverse", this),
+            fHeaderSlot("header", this, &KTComplexFFTW::InitializeWithHeader),
+            fTimeSeriesSlot("ts", this, &KTComplexFFTW::TransformData, &fFFTForwardSignal),
+            fFSFFTWSlot("fs-fftw", this, &KTComplexFFTW::TransformData, &fFFTReverseSignal)
     {
-        fConfigName = "complex-fftw";
-
-        RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
-
-        RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesDataFFTW*)");
-        RegisterSlot("event", this, &KTComplexFFTW::ProcessEvent, "void (KTEvent*)");
-
-        SetupInternalMaps();
-    }
-
-    KTComplexFFTW::KTComplexFFTW(UInt_t timeSize) :
-            KTFFT(),
-            KTProcessor(),
-            fFTPlan(),
-            fActivePlanIndex(0),
-            fTimeSize(timeSize),
-            fInputArray((fftw_complex*) fftw_malloc(sizeof(double) * timeSize)),
-            fOutputArray((fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize)),
-            fDirection("FORWARD"),
-            fDirectionMap(),
-            fTransformFlag("MEASURE"),
-            fTransformFlagMap(),
-            fIsInitialized(false),
-            fFFTSignal()
-    {
-        fConfigName = "complex-fftw";
-
-        RegisterSignal("fft", &fFFTSignal, "void (const KTWriteableData*)");
-
-        RegisterSlot("header", this, &KTComplexFFTW::ProcessHeader, "void (const KTEggHeader*)");
-        RegisterSlot("ts-data", this, &KTComplexFFTW::ProcessTimeSeriesData, "void (const KTTimeSeriesDataFFTW*)");
-        RegisterSlot("event", this, &KTComplexFFTW::ProcessEvent, "void (KTEvent*)");
-
         SetupInternalMaps();
     }
 
     KTComplexFFTW::~KTComplexFFTW()
     {
-        if (fInputArray != NULL) fftw_free(fInputArray);
-        if (fOutputArray != NULL) fftw_free(fOutputArray);
+        FreeArrays();
+        fftw_destroy_plan(fForwardPlan);
+        fftw_destroy_plan(fReversePlan);
+        fftw_cleanup_threads();
     }
 
     Bool_t KTComplexFFTW::Configure(const KTPStoreNode* node)
@@ -92,7 +64,17 @@ namespace Katydid
         {
             SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
 
-            SetDirection(node->GetData<string>("direction", fDirection));
+            SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
+            SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
+        }
+
+        if (fUseWisdom)
+        {
+            if (! KTCacheDirectory::GetInstance()->PrepareForUse())
+            {
+                KTWARN(fftlog_comp, "Unable to use wisdom because cache directory is not ready.");
+                fUseWisdom = false;
+            }
         }
 
         // Command-line settings
@@ -104,116 +86,201 @@ namespace Katydid
     void KTComplexFFTW::InitializeFFT()
     {
         // fTransformFlag is guaranteed to be valid in the Set method.
+        KTDEBUG(fftlog_comp, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         UInt_t transformFlag = iter->second;
 
         // allocate the input and output arrays if they're not there already
         AllocateArrays();
 
-        fFTPlan[0] = fftw_plan_dft_1d(fTimeSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
-        fFTPlan[1] = fftw_plan_dft_1d(fTimeSize, fInputArray, fOutputArray, FFTW_BACKWARD, transformFlag | FFTW_PRESERVE_INPUT);
+        if (fUseWisdom)
+        {
+            KTDEBUG(fftlog_comp, "Reading wisdom from file <" << fWisdomFilename << ">");
+            if (fftw_import_wisdom_from_filename(fWisdomFilename.c_str()) == 0)
+            {
+                KTWARN(fftlog_comp, "Unable to read FFTW wisdom from file <" << fWisdomFilename << ">");
+            }
+        }
 
-        if (fFTPlan != NULL)
+#ifdef FFTW_NTHREADS
+        fftw_init_threads();
+        fftw_plan_with_nthreads(FFTW_NTHREADS);
+        KTDEBUG(fftlog_comp, "Configuring FFTW to use up to " << FFTW_NTHREADS << " threads.");
+#endif
+
+        KTDEBUG(fftlog_comp, "Creating plan: " << fSize << " bins; forward FFT");
+        fForwardPlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
+        KTDEBUG(fftlog_comp, "Creating plan: " << fSize << " bins; backward FFT");
+        fReversePlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_BACKWARD, transformFlag | FFTW_PRESERVE_INPUT);
+
+        if (fForwardPlan != NULL && fReversePlan != NULL)
         {
             fIsInitialized = true;
             // delete the input and output arrays to save memory, since they're not needed for the transform
-            if (fInputArray != NULL)
+            FreeArrays();
+            if (fUseWisdom)
             {
-                fftw_free(fInputArray);
-                fInputArray = NULL;
+                if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
+                {
+                    KTWARN(fftlog_comp, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
+                }
             }
-            if (fOutputArray != NULL)
-            {
-                fftw_free(fOutputArray);
-                fOutputArray = NULL;
-            }
+            KTDEBUG(fftlog_comp, "FFTW plans created; Initialization complete.");
         }
         else
         {
             fIsInitialized = false;
-            KTERROR(fftlog_comp, "Unable to create FFT plan! FFT is not initialized.");
+            if (fForwardPlan == NULL)
+            {
+                KTERROR(fftlog_comp, "Unable to create the forward FFT plan! FFT is not initialized.");
+            }
+            if (fReversePlan == NULL)
+            {
+                KTERROR(fftlog_comp, "Unable to create the reverse FFT plan! FFT is not initialized.");
+            }
         }
         return;
     }
 
-    KTFrequencySpectrumDataFFTW* KTComplexFFTW::TransformData(const KTTimeSeriesDataFFTW* tsData)
+    void KTComplexFFTW::InitializeWithHeader(const KTEggHeader* header)
     {
-        if (tsData->GetRecordSize() != GetTimeSize())
+        SetSize(header->GetSliceSize());
+        InitializeFFT();
+        return;
+    }
+
+    Bool_t KTComplexFFTW::TransformData(KTTimeSeriesData& tsData)
+    {
+        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetSize())
         {
-            SetTimeSize(tsData->GetRecordSize());
+            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
             InitializeFFT();
         }
 
         if (! fIsInitialized)
         {
             KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
-                    << "   Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
+                    << "   Please first call InitializeFFT(), then perform the transform.");
             return NULL;
         }
 
-        KTFrequencySpectrumDataFFTW* newData = new KTFrequencySpectrumDataFFTW(tsData->GetNChannels());
+        UInt_t nComponents = tsData.GetNComponents();
 
-        for (UInt_t iChannel = 0; iChannel < tsData->GetNChannels(); iChannel++)
+        KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
+
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
-            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData->GetRecord(iChannel));
+            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
                 KTERROR(fftlog_comp, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
-                delete newData;
-                return NULL;
+                return false;
             }
 
             KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
 
             if (nextResult == NULL)
             {
-                KTERROR(fftlog_comp, "One of the channels did not transform correctly.");
-                delete newData;
-                return NULL;
+                KTERROR(fftlog_comp, "Channel <" << iComponent << "> did not transform correctly.");
+                return false;
             }
-            newData->SetSpectrum(nextResult, iChannel);
+            KTDEBUG(fftlog_comp, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
+            newData.SetSpectrum(nextResult, iComponent);
         }
 
-        KTDEBUG(fftlog_comp, "FFT complete; " << newData->GetNChannels() << " channel(s) transformed");
+        KTINFO(fftlog_comp, "FFT complete; " << nComponents << " channel(s) transformed");
 
-        newData->SetEvent(tsData->GetEvent());
+        return true;
+    }
 
-        fFFTSignal(newData);
+    Bool_t KTComplexFFTW::TransformData(KTFrequencySpectrumDataFFTW& fsData)
+    {
+        if (fsData.GetSpectrumFFTW(0)->size() != GetSize())
+        {
+            SetSize(fsData.GetSpectrumFFTW(0)->size());
+            InitializeFFT();
+        }
 
-        return newData;
+        if (! fIsInitialized)
+        {
+            KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
+                    << "   Please first call InitializeFFT(), then perform the transform.");
+            return false;
+        }
+
+        UInt_t nComponents = fsData.GetNComponents();
+
+        KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
+
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
+            if (nextInput == NULL)
+            {
+                KTERROR(fftlog_comp, "Frequency spectrum <" << iComponent << "> does not appear to be present.");
+                return false;
+            }
+
+            KTTimeSeriesFFTW* nextResult = Transform(nextInput);
+
+            if (nextResult == NULL)
+            {
+                KTERROR(fftlog_comp, "One of the channels did not transform correctly.");
+                return false;
+            }
+            newData.SetTimeSeries(nextResult, iComponent);
+        }
+
+        KTDEBUG(fftlog_comp, "FFT complete; " << nComponents << " component(s) transformed");
+
+        return true;
     }
 
     KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
     {
-        UInt_t nTimeBins = data->GetNBins();
-        if (nTimeBins != fTimeSize)
+        UInt_t nBins = data->size();
+        if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << nTimeBins);
+                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
             return NULL;
         }
 
-        Bool_t isEven = (GetFrequencySize() % 2) == 0;
-        UInt_t nBins = GetFrequencySize();
-        UInt_t nBinsToSide = nBins / 2;
-        UInt_t nBinsToNegSide = nBinsToSide;
-        UInt_t nBinsToPosSide = isEven ? nBinsToSide - 1 : nBinsToSide;
-        Double_t freqBinWidth = 1. / (data->GetBinWidth() * (Double_t)nTimeBins);
-        Double_t freqMin = -freqBinWidth * Double_t(nBinsToNegSide);
-        Double_t freqMax = freqBinWidth * Double_t(nBinsToPosSide);
+        Double_t timeBinWidth = data->GetTimeBinWidth();
+        Double_t freqMin = GetMinFrequency(timeBinWidth);
+        Double_t freqMax = GetMaxFrequency(timeBinWidth);
 
         KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
 
-        fftw_execute_dft(fFTPlan[fActivePlanIndex], data->GetData(), newSpectrum->GetData());
+        fftw_execute_dft(fForwardPlan, data->GetData(), newSpectrum->GetData());
 
-        (*newSpectrum) *= sqrt(1. / fTimeSize);
+        (*newSpectrum) *= sqrt(1. / fSize);
 
         return newSpectrum;
     }
 
-    void KTComplexFFTW::SetTimeSize(UInt_t nBins)
+    KTTimeSeriesFFTW* KTComplexFFTW::Transform(const KTFrequencySpectrumFFTW* data) const
     {
-        fTimeSize = nBins;
+        UInt_t nBins = data->size();
+        if (nBins != fSize)
+        {
+            KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
+            return NULL;
+        }
+
+        KTTimeSeriesFFTW* newRecord = new KTTimeSeriesFFTW(nBins, GetMinTime(), GetMaxTime(data->GetBinWidth()));
+
+        fftw_execute_dft(fReversePlan, data->GetData(), newRecord->GetData());
+
+        (*newRecord) *= sqrt(1. / Double_t(fSize));
+
+        return newRecord;
+    }
+
+    void KTComplexFFTW::SetSize(UInt_t nBins)
+    {
+        fSize = nBins;
         if (fInputArray != NULL)
         {
             fftw_free(fInputArray);
@@ -222,22 +289,9 @@ namespace Katydid
         {
             fftw_free(fOutputArray);
         }
-        fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fTimeSize);
-        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
+        fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fSize);
+        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
         fIsInitialized = false;
-        return;
-    }
-
-    void KTComplexFFTW::SetDirection(const std::string& dir)
-    {
-        DirectionMap::const_iterator cit = fDirectionMap.find(dir);
-        if (cit == fDirectionMap.end())
-        {
-            KTWARN(fftlog_comp, "Invalid direction requested: " << dir << "\n\tNo change was made.");
-            return;
-        }
-        fDirection = dir;
-        fActivePlanIndex = cit->second;
         return;
     }
 
@@ -253,41 +307,8 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::ProcessHeader(const KTEggHeader* header)
-    {
-        SetTimeSize(header->GetRecordSize());
-        InitializeFFT();
-        return;
-    }
-
-    void KTComplexFFTW::ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* tsData)
-    {
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        tsData->GetEvent()->AddData(newData);
-        return;
-    }
-
-    void KTComplexFFTW::ProcessEvent(KTEvent* event)
-    {
-        KTDEBUG(fftlog_comp, "Performing FFT of event " << event->GetEventNumber());
-        const KTTimeSeriesDataFFTW* tsData = dynamic_cast< KTTimeSeriesDataFFTW* >(event->GetData(KTTimeSeriesDataFFTW::StaticGetName()));
-        if (tsData == NULL)
-        {
-            KTWARN(fftlog_comp, "No time series data was available in the event");
-            return;
-        }
-        KTFrequencySpectrumDataFFTW* newData = TransformData(tsData);
-        event->AddData(newData);
-        return;
-    }
-
     void KTComplexFFTW::SetupInternalMaps()
     {
-        // direction map
-        fDirectionMap.clear();
-        fDirectionMap["FORWARD"] = 0;
-        fDirectionMap["BACKWARD"] = 1;
-
         // transform flag map
         fTransformFlagMap.clear();
         fTransformFlagMap["ESTIMATE"] = FFTW_ESTIMATE;
@@ -299,13 +320,29 @@ namespace Katydid
 
     void KTComplexFFTW::AllocateArrays()
     {
+        FreeArrays();
         if (fInputArray == NULL)
         {
-            fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fTimeSize);
+            fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
         }
         if (fOutputArray == NULL)
         {
-            fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
+            fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
+        }
+        return;
+    }
+
+    void KTComplexFFTW::FreeArrays()
+    {
+        if (fInputArray != NULL)
+        {
+            fftw_free(fInputArray);
+            fInputArray = NULL;
+        }
+        if (fOutputArray != NULL)
+        {
+            fftw_free(fOutputArray);
+            fOutputArray = NULL;
         }
         return;
     }

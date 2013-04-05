@@ -53,6 +53,7 @@ namespace Katydid
         public:
             bool empty() const;
             size_t size(size_t dim) const;
+            size_t GetNBins(size_t dim) const;
             void SetNBinsFunc(const KTNBinsFunctor< NDims >* getNBinsFunc);
 
             Double_t GetBinWidth(size_t dim) const;
@@ -83,7 +84,7 @@ namespace Katydid
 
             // from physical value to bin number
         public:
-            size_t FindBin(size_t dim, Double_t pos);
+            size_t FindBin(size_t dim, Double_t pos) const;
 
             // axis labels
         public:
@@ -183,6 +184,12 @@ namespace Katydid
 
     template< size_t NDims >
     size_t KTAxisProperties< NDims >::size(size_t dim) const
+    {
+        return (*fGetNBinsFunc)(dim);
+    }
+
+    template< size_t NDims >
+    size_t KTAxisProperties< NDims >::GetNBins(size_t dim) const
     {
         return (*fGetNBinsFunc)(dim);
     }
@@ -293,7 +300,7 @@ namespace Katydid
     }
 
     template< size_t NDims >
-    size_t KTAxisProperties< NDims >::FindBin(size_t dim, Double_t pos)
+    size_t KTAxisProperties< NDims >::FindBin(size_t dim, Double_t pos) const
     {
         return (size_t)(floor((pos - fRangeMin[dim-1]) / fBinWidths[dim-1]));
     }
@@ -352,6 +359,7 @@ namespace Katydid
         public:
             bool empty() const;
             size_t size() const;
+            size_t GetNBins() const;
             void SetNBinsFunc(KTNBinsFunctor< 1 >* getNBinsFunc);
 
             Double_t GetBinWidth() const;
@@ -376,7 +384,7 @@ namespace Katydid
 
             // from physical value to bin number
         public:
-            size_t FindBin(Double_t pos);
+            size_t FindBin(Double_t pos) const;
 
             // axis label
         public:

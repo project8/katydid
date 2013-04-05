@@ -1,7 +1,7 @@
 /**
  @file KTGainNormalization.hh
  @brief Contains KTGainNormalization
- @details Removes slow variations in the baseline of a histogram
+ @details Normalizes a frequency spectrum using a KTGainVariationData object.
  @author: N. S. Oblath
  @date: Jan 24, 2012
  */
@@ -11,33 +11,152 @@
 
 #include "KTProcessor.hh"
 
+#include "KTSlot.hh"
+
+#include <boost/shared_ptr.hpp>
+
 namespace Katydid
 {
-    class KTFrequencySpectrum;
+    class KTData;
+    class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumDataPolar;
+    class KTFrequencySpectrumFFTW;
+    class KTFrequencySpectrumPolar;
+    class KTGainVariationData;
     class KTPStoreNode;
-    class KTSlidingWindowFSData;
-    class KTPowerSpectrum;
+    //class KTSlidingWindowFSData;
+    //class KTSlidingWindowFSDataFFTW;
+    class KTSpline;
+ 
 
-    template< size_t NDims, typename XDataType >
-    class KTPhysicalArray;
+   /*!
+     @class KTGainNormalization
+     @author N. S. Oblath
+
+     @brief Normalizes a frequency spectrum using a KTGainVariationData object.
+
+     @details
+ 
+     Available configuration values:
+     \li \c "min-bin": unsigned -- Set the lower bound of the range that gets normalized by bin number.
+     \li \c "max-bin": unsigned -- Set the upper bound of the range that gets nornalized by bin number.
+     \li \c "min-frequency": double -- Set the lower bound of the range that gets normalized by frequency.
+     \li \c "max-frequency": double -- Set the upper bound of the range that gets normalized by frequency.
+
+     Slots:
+     \li \c "fs-polar": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar
+     \li \c "fs-fftw": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW
+
+     Signals:
+     \li \c "norm-fs-polar": void (shared_data< KTData >) emitted upon performance of a normalization of a polar frequency spectrum data object; Guarantees KTNormalizedFSDataPolar
+     \li \c "norm-fs-fftw": void (shared_data< KTData >) emitted upon performance normalization of an FFTW frequency spectrum data object; Guarantees KTNormalizedFSDataFFTW
+    */
 
     class KTGainNormalization : public KTProcessor
     {
         public:
-            KTGainNormalization();
+            KTGainNormalization(const std::string& name = "gain-normalization");
             virtual ~KTGainNormalization();
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            void PrepareNormalization(KTFrequencySpectrum* fullArray, UInt_t reducedNBins, Double_t reducedBinWidth);
+            Double_t GetMinFrequency() const;
+            void SetMinFrequency(Double_t freq);
 
-            void ProcessSlidingWindowFFT(KTSlidingWindowFSData* swFSData);
-            void ProcessFrequencySpectrum(UInt_t psNum, KTFrequencySpectrum* powerSpectrum);
+            Double_t GetMaxFrequency() const;
+            void SetMaxFrequency(Double_t freq);
+
+            UInt_t GetMinBin() const;
+            void SetMinBin(UInt_t bin);
+
+            UInt_t GetMaxBin() const;
+            void SetMaxBin(UInt_t bin);
 
         private:
-            KTFrequencySpectrum* fNormalization;
+            Double_t fMinFrequency;
+            Double_t fMaxFrequency;
+            UInt_t fMinBin;
+            UInt_t fMaxBin;
+            Bool_t fCalculateMinBin;
+            Bool_t fCalculateMaxBin;
+
+        public:
+            Bool_t Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData);
+            Bool_t Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
+
+            //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
+            //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
+
+            KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline);
+            KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline);
+
+            //***************
+            // Signals
+            //***************
+
+        private:
+            KTSignalData fFSPolarSignal;
+            KTSignalData fFSFFTWSignal;
+            //KTSignalData fSWFSSignal;
+            //KTSignalData fSWFSFFTWSignal;
+
+            //***************
+            // Slots
+            //***************
+
+        private:
+            KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarSlot;
+            KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWSlot;
 
     };
+
+    inline Double_t KTGainNormalization::GetMinFrequency() const
+    {
+        return fMinFrequency;
+    }
+
+    inline void KTGainNormalization::SetMinFrequency(Double_t freq)
+    {
+        fMinFrequency = freq;
+        fCalculateMinBin = true;
+        return;
+    }
+
+    inline Double_t KTGainNormalization::GetMaxFrequency() const
+    {
+        return fMaxFrequency;
+    }
+
+    inline void KTGainNormalization::SetMaxFrequency(Double_t freq)
+    {
+        fMaxFrequency = freq;
+        fCalculateMaxBin = true;
+        return;
+    }
+
+    inline UInt_t KTGainNormalization::GetMinBin() const
+    {
+        return fMinBin;
+    }
+
+    inline void KTGainNormalization::SetMinBin(UInt_t bin)
+    {
+        fMinBin = bin;
+        fCalculateMinBin = false;
+        return;
+    }
+
+    inline UInt_t KTGainNormalization::GetMaxBin() const
+    {
+        return fMaxBin;
+    }
+
+    inline void KTGainNormalization::SetMaxBin(UInt_t bin)
+    {
+        fMaxBin = bin;
+        fCalculateMaxBin = false;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTGAINNORMALIZATION_HH_ */

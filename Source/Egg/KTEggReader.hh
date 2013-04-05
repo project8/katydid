@@ -8,12 +8,16 @@
 #ifndef KTEGGREADER_HH_
 #define KTEGGREADER_HH_
 
-#include<string>
+#include "Rtypes.h"
+
+#include <boost/shared_ptr.hpp>
+
+#include <string>
 
 namespace Katydid
 {
     class KTEggHeader;
-    class KTTimeSeriesData;
+    class KTData;
 
     class KTEggReader
     {
@@ -23,8 +27,8 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string&) = 0;
-            virtual KTTimeSeriesData* HatchNextEvent(KTEggHeader*) = 0;
-            virtual bool CloseEgg() = 0;
+            virtual boost::shared_ptr< KTData > HatchNextSlice() = 0;
+            virtual Bool_t CloseEgg() = 0;
 
     };
 

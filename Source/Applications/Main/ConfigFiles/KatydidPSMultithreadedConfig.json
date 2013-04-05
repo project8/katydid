@@ -1,0 +1,86 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg"
+            },
+            "processor":
+            {
+                "type": "simple-fft",
+                "name": "fft"
+            },
+            "processor":
+            {
+                "type": "publisher",
+                "name": "publisher"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "bundle",
+                "slot-processor": "fft",
+                "slot-name": "bundle",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "bundle",
+                "slot-processor": "publisher",
+                "slot-name": "queue-bundle",
+                "group-order": 1
+            }
+            
+            "run-queue":
+            {
+                "processor": "egg",
+                "processor": "publisher"
+            }
+        },
+        
+
+        "egg":
+        {
+            "filename": "/path/to/file.egg",
+            "number-of-bundles": 1,
+            "output-data-name": "time-series"
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE",
+            "input-data-name": "time-series"
+        },
+        
+        "publisher":
+        {
+            "writer":
+            {
+                "type": "basic-root-writer",
+                "name": "brwriter",
+                "configuration":
+                {
+	                "output-file": "/path/to/file.root",
+	                "file-flag": "recreate"
+                }
+            },
+            "publish-data":
+            {
+                "writer-name": "brwriter",
+                "data-name": "frequency-spectrum"
+            }
+        }
+    }
+}

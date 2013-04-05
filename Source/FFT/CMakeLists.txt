@@ -6,40 +6,26 @@ set (FFT_DICT_HEADERFILES
 
 set (FFT_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTComplexFFTW.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTEventWindowFunction.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTBundleWindowFunction.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFT.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrum.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumDataFFTW.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumFFTW.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHammingWindow.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrum.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTHammingWindow.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
 )
 
 set (FFT_HEADERFILES ${FFT_DICT_HEADERFILES} ${FFT_NODICT_HEADERFILES})
 
 set (FFT_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTComplexFFTW.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTEventWindowFunction.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTBundleWindowFunction.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFFT.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrum.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumDataFFTW.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencySpectrumFFTW.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHammingWindow.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPowerSpectrum.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTHammingWindow.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFFT.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlidingWindowFSData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
+    #${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
 )
 
 #if (ROOT_FOUND)
@@ -50,7 +36,8 @@ set (FFT_SOURCEFILES
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
-    KatydidEgg
+    KatydidData
+    KatydidOutput
 )
 
 ##################################################
@@ -62,6 +49,6 @@ set (KATYDID_LIBS
 add_library (KatydidFFT ${FFT_SOURCEFILES} ${FFT_DICT_OUTFILE})
 target_link_libraries (KatydidFFT ${KATYDID_LIBS} ${LIBS})
 
-katydid_install_headers (${FFT_HEADERFILES})
-katydid_install_libraries (KatydidFFT)
+pbuilder_install_headers (${FFT_HEADERFILES})
+pbuilder_install_libraries (KatydidFFT)
          

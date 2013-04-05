@@ -13,7 +13,9 @@
 #include "KTProcessor.hh"
 
 #include "KTLogger.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTSlot.hh"
+
+#include <boost/shared_ptr.hpp>
 
 #include <fftw3.h>
 
@@ -25,14 +27,12 @@ namespace Katydid
 {
     KTLOGGER(fftlog_comp, "katydid.fft");
 
+    class KTData;
     class KTEggHeader;
-    class KTEvent;
     class KTPStoreNode;
     class KTTimeSeriesFFTW;
-    class KTTimeSeriesDataFFTW;
-    class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumDataFFTW;
-    class KTWriteableData;
+    class KTFrequencySpectrumFFTW;
 
     /*!
      @class KTComplexFFTW
@@ -46,8 +46,9 @@ namespace Katydid
      The FFT is implemented using FFTW.
 
      Available configuration values:
-     \li \c transform_flag -- flag that determines how much planning is done prior to any transforms (see below)
-     \li \c direction -- select if the forward ("FORWARD") or reverse ("BACKWARD") transform is performed.
+     \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
+     \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
+     \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -60,105 +61,128 @@ namespace Katydid
      FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
 
      Slots:
-     \li \c void ProcessHeader(const KTEggHeader* header)
-     \li \c void ProcessEvent(UInt_t iEvent, const KTEvent* event)
-     \li \c void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* data)
+     \li \c "header": void (const KTEggHeader* header) -- Initialize the FFT from an Egg header
+     \li \c "ts": void (shared_ptr<KTData>) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
+     \li \c "fs-fftw": void (shared_ptr<KTData>) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
 
      Signals:
-     \li \c void (UInt_t, const KTComplexFFTW*) emitted upon performance of a transform.
+     \li \c "fft-forward": void (shared_ptr<KTData>) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     \li \c "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
     class KTComplexFFTW : public KTFFT, public KTProcessor
     {
-        public:
-            typedef KTSignal< void (const KTWriteableData*) >::signal FFTSignal;
-
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
-            typedef std::map< std::string, UInt_t > DirectionMap;
 
         public:
-            KTComplexFFTW();
-            KTComplexFFTW(UInt_t timeSize);
+            KTComplexFFTW(const std::string& name = "complex-fftw");
             virtual ~KTComplexFFTW();
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            virtual void InitializeFFT();
+            void InitializeFFT();
+            void InitializeWithHeader(const KTEggHeader* header);
 
-            virtual KTFrequencySpectrumDataFFTW* TransformData(const KTTimeSeriesDataFFTW* tsData);
+            /// Forward FFT
+            Bool_t TransformData(KTTimeSeriesData& tsData);
+            /// Reverse FFT
+            Bool_t TransformData(KTFrequencySpectrumDataFFTW& fsData);
 
+            /// Forward FFT
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
+            /// Reverse FFT
+            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* data) const;
 
+            virtual UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
+            virtual Double_t GetMinFrequency(Double_t timeBinWidth) const;
+            virtual Double_t GetMaxFrequency(Double_t timeBinWidth) const;
 
-            /// note: SetTimeSize creates a new fTransform.
-            ///       It also sets fIsInitialized to kFALSE.
-            void SetTimeSize(UInt_t nBins);
-
-            const std::string& GetDirection() const;
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
+            Bool_t GetUseWisdom() const;
+            const std::string& GetWisdomFilename() const;
 
-            /// note: SetDirection does NOT affect fIsInitialized.
-            void SetDirection(const std::string& dir);
+            /// note: SetSize creates a new fTransform.
+            ///       It also sets fIsInitialized to kFALSE.
+            void SetSize(UInt_t nBins);
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
+            void SetUseWisdom(Bool_t flag);
+            void SetWisdomFilename(const std::string& fname);
 
         protected:
             void AllocateArrays();
-            UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
+            void FreeArrays();
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)
 
-            fftw_plan fFTPlan[2];
-            UInt_t fActivePlanIndex;
+            fftw_plan fForwardPlan;
+            fftw_plan fReversePlan;
 
-            UInt_t fTimeSize;
+            UInt_t fSize;
             fftw_complex* fInputArray;
             fftw_complex* fOutputArray;
-
-            std::string fDirection;
-            DirectionMap fDirectionMap;
 
             std::string fTransformFlag;
             TransformFlagMap fTransformFlagMap;
 
             Bool_t fIsInitialized;
+            Bool_t fUseWisdom;
+            std::string fWisdomFilename;
 
             //***************
             // Signals
             //***************
 
         private:
-            FFTSignal fFFTSignal;
+            KTSignalData fFFTForwardSignal;
+            KTSignalData fFFTReverseSignal;
 
             //***************
             // Slots
             //***************
 
-        public:
-            void ProcessHeader(const KTEggHeader* header);
-            void ProcessEvent(KTEvent* event);
-            void ProcessTimeSeriesData(const KTTimeSeriesDataFFTW* tsData);
+        private:
+            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };
 
 
+    inline UInt_t KTComplexFFTW::GetSize() const
+    {
+        return fSize;
+    }
+
     inline UInt_t KTComplexFFTW::GetTimeSize() const
     {
-        return fTimeSize;
+        return fSize;
     }
 
     inline UInt_t KTComplexFFTW::GetFrequencySize() const
     {
-        return fTimeSize;
+        return fSize;
     }
 
-    inline const std::string& KTComplexFFTW::GetDirection() const
+    inline Double_t KTComplexFFTW::GetMinFrequency(Double_t timeBinWidth) const
     {
-        return fDirection;
+        // There's one bin at the center, always: the DC bin.
+        // # of bins on the negative side is nFreqBins/2 (rounded down because of integer division).
+        // 0.5 is added to the # of bins because of the half of the DC bin on the negative frequency side.
+        return -GetFrequencyBinWidth(timeBinWidth) * (Double_t(fSize/2) + 0.5);
+    }
+
+    inline Double_t KTComplexFFTW::GetMaxFrequency(Double_t timeBinWidth) const
+    {
+        // There's one bin at the center, always: the DC bin.
+        // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
+        // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
+        UInt_t nBinsToSide = fSize / 2;
+        return GetFrequencyBinWidth(timeBinWidth) * (Double_t(nBinsToSide*2 == fSize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
     }
 
     inline const std::string& KTComplexFFTW::GetTransformFlag() const
@@ -171,10 +195,26 @@ namespace Katydid
         return fIsInitialized;
     }
 
-    inline UInt_t KTComplexFFTW::CalculateNFrequencyBins(UInt_t nTimeBins) const
+    inline Bool_t KTComplexFFTW::GetUseWisdom() const
     {
-        // Integer division is rounded down, per FFTW's instructions
-        return nTimeBins / 2 + 1;
+        return fUseWisdom;
+    }
+
+    inline const std::string& KTComplexFFTW::GetWisdomFilename() const
+    {
+        return fWisdomFilename;
+    }
+
+    inline void KTComplexFFTW::SetUseWisdom(Bool_t flag)
+    {
+        fUseWisdom = flag;
+        return;
+    }
+
+    inline void KTComplexFFTW::SetWisdomFilename(const std::string& fname)
+    {
+        fWisdomFilename = fname;
+        return;
     }
 
 } /* namespace Katydid */

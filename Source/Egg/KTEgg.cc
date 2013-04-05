@@ -7,13 +7,13 @@
 
 #include "KTEgg.hh"
 
+#include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader.hh"
-#include "KTEvent.hh"
 #include "KTLogger.hh"
-#include "KTTimeSeriesData.hh"
 
 using std::string;
+using boost::shared_ptr;
 
 namespace Katydid
 {
@@ -22,7 +22,7 @@ namespace Katydid
     KTEgg::KTEgg() :
             fReader(NULL),
             fHeader(NULL),
-            fEventCounter(-1)
+            fSliceCounter(-1)
     {
     }
 
@@ -45,30 +45,27 @@ namespace Katydid
             KTWARN(egglog, "No header was received");
             return false;
         }
-        fEventCounter = -1;
+        fSliceCounter = -1;
         return true;
     }
 
-    KTEvent* KTEgg::HatchNextEvent()
+    shared_ptr<KTData> KTEgg::HatchNextSlice()
     {
         if (fReader == NULL || fHeader == NULL)
         {
-            KTWARN(egglog, "Not prepared to hatch an event");
-            return NULL;
+            KTWARN(egglog, "Not prepared to hatch an slice");
+            return shared_ptr<KTData>();
         }
 
-        KTTimeSeriesData* data = fReader->HatchNextEvent(fHeader);
-        if (data == NULL)
+        shared_ptr<KTData> data = fReader->HatchNextSlice();
+        fSliceCounter++;
+
+        if (data)
         {
-            return NULL;
+            data->fCounter = (unsigned)fSliceCounter;
         }
-        fEventCounter++;
 
-        KTEvent* newEvent = new KTEvent();
-        newEvent->SetEventNumber(unsigned(fEventCounter));
-        newEvent->AddData(data);
-
-        return newEvent;
+        return data;
     }
 
     bool KTEgg::CloseEgg()

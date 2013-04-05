@@ -13,7 +13,7 @@
 
 
 #include "complexpolar.hh"
-#include "KTFrequencySpectrum.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTLogger.hh"
 #include "KTSimpleFFT.hh"
 #include "KTTimeSeriesReal.hh"
@@ -58,13 +58,14 @@ int main(int argc, char** argv)
     }
 
     // Create and prepare the FFT
-    KTSimpleFFT fullFFT(timeSeries->size());
+    KTSimpleFFT fullFFT;
+    fullFFT.SetTimeSize(timeSeries->size());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 
     // Perform the FFT and get the results
     KTINFO(vallog, "Performing FFT");
-    KTFrequencySpectrum* frequencySpectrum = fullFFT.Transform(timeSeries);
+    KTFrequencySpectrumPolar* frequencySpectrum = fullFFT.Transform(timeSeries);
 
     // Find the peak frequency
     Double_t peakFrequency = -1.;

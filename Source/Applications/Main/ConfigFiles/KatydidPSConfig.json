@@ -6,42 +6,69 @@
             "processor":
             {
                 "type": "egg-processor",
-                "name": "egg",
-                "is-top-level": true
+                "name": "egg"
             },
             "processor":
             {
                 "type": "simple-fft",
-                "name": "fft",
-                "is-top-level": true
+                "name": "fft"
             },
             "processor":
             {
                 "type": "basic-root-writer",
-                "name": "writer",
-                "is-top-level": true
+                "name": "writer"
+            },
+            "processor":
+            {
+                "type": "throughput-profiler",
+                "name": "profiler"
             },
             
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "event",
+                "signal-name": "slice",
                 "slot-processor": "fft",
-                "slot-name": "event"
+                "slot-name": "ts",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "slice",
+                "slot-processor": "profiler",
+                "slot-name": "data",
+                "group-order": 0
             },
             "connection":
             {
                 "signal-processor": "egg",
                 "signal-name": "header",
                 "slot-processor": "fft",
-                "slot-name": "header"
+                "slot-name": "header",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "profiler",
+                "slot-name": "start",
+                "group-order": 0
             },
             "connection":
             {
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "write-data"
+                "slot-name": "fs"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "egg-done",
+                "slot-processor": "profiler",
+                "slot-name": "stop"
             },
             
             "run-queue":
@@ -54,7 +81,7 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-events": 1  
+            "number-of-bundles": 1
         },
         
         "fft":

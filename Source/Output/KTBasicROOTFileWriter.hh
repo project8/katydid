@@ -1,34 +1,62 @@
-/*
- * KTBasicROOTFileWriter.hh
- *
- *  Created on: Aug 24, 2012
- *      Author: nsoblath
+/**
+ @file KTBasicROOTFileWriter.hh
+ @brief Contains KTBasicROOTFileWriter
+ @details Basic Rootfile writer.
+ @author: N. S. Oblath
+ @date: Aug 24, 2012
  */
 
 #ifndef KTBASICROOTFILEWRITER_HH_
 #define KTBASICROOTFILEWRITER_HH_
 
 #include "KTWriter.hh"
-#include "KTFrequencySpectrumData.hh"
-#include "KTFrequencySpectrumDataFFTW.hh"
-#include "KTCorrelationData.hh"
 
 #include "TFile.h"
 
 namespace Katydid
 {
+    class KTBasicROOTFileWriter;
 
-    class KTBasicROOTFileWriter : public KTWriter
+    typedef KTDerivedTypeWriter< KTBasicROOTFileWriter > KTBasicROOTTypeWriter;
+
+  /*!
+     @class KTBasicROOTFileWriter
+     @author N. S. Oblath
+
+     @brief Outputs the histograms directly to a root file.
+
+     @details 
+
+     Available configuration values:
+     \li \c "output-file": string -- output filename
+     \li \c "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
+
+     Slots:
+     \li \c "aa":
+     \li \c "corr":
+     \li \c "hough":
+     \li \c "gain-var":
+     \li \c "fs-fftw":
+     \li \c "fs-polar":
+     \li \c "fs-fftw-phase":
+     \li \c "fs-polar-phase":
+     \li \c "fs-fftw-power":
+     \li \c "fs-polar-power":
+     \li \c "norm-fs-fftw":
+     \li \c "norm-fs-polar":
+     \li \c "ts":
+     \li \c "wv":
+     
+    */
+
+    class KTBasicROOTFileWriter : public KTWriterWithTypists< KTBasicROOTFileWriter >//public KTWriter
     {
         public:
-            KTBasicROOTFileWriter();
+            KTBasicROOTFileWriter(const std::string& name = "basic-root-writer");
             virtual ~KTBasicROOTFileWriter();
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            //***************************
-           // ROOT-file-specific members
-            //***************************
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);
             void CloseFile();
@@ -41,7 +69,6 @@ namespace Katydid
 
             TFile* GetFile();
 
-        protected:
             Bool_t OpenAndVerifyFile();
 
         protected:
@@ -49,28 +76,6 @@ namespace Katydid
             std::string fFileFlag;
 
             TFile* fFile;
-
-            //************************
-            // Basic Publish and Write
-            //************************
-        public:
-
-            void Publish(const KTWriteableData* data);
-
-            void Write(const KTWriteableData* data);
-
-            //************************
-            // Frequency Spectrum Data
-            //************************
-        public:
-            void Write(const KTFrequencySpectrumData* data);
-            void Write(const KTFrequencySpectrumDataFFTW* data);
-
-            //************************
-            // Correlation Data
-            //************************
-        public:
-            void Write(const KTCorrelationData* data);
 
     };
 

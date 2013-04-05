@@ -62,18 +62,20 @@ int main(int argc, char** argv)
     }
 
     // Create and prepare the FFT
-    KTComplexFFTW fullFFT(timeSeries->size());
+    KTComplexFFTW fullFFT;
+    fullFFT.SetSize(timeSeries->size());
     fullFFT.SetTransformFlag("ESTIMATE");
     fullFFT.InitializeFFT();
 
-    KTSimpleFFT simpFFT(timeSeries2->size());
+    KTSimpleFFT simpFFT;
+    simpFFT.SetTimeSize(timeSeries2->size());
     simpFFT.SetTransformFlag("ESTIMATE");
     simpFFT.InitializeFFT();
 
     // Perform the FFT and get the results
     KTINFO(vallog, "Performing FFT");
     KTFrequencySpectrumFFTW* frequencySpectrum = fullFFT.Transform(timeSeries);
-    KTFrequencySpectrum* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
+    KTFrequencySpectrumPolar* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
     size_t nFreqBins2 = frequencySpectrum2->size();
 
     // Find the peak frequency

@@ -1,10 +1,13 @@
 Katydid is a data analysis package for Project 8.
 
 Requirements:
-  Boost
-  FFTW3
-  ROOT (optional, though some functionality will not be available without it)
-  log4cxx (optional)
+  Monarch (included as a submodule of Katydid)
+  Protobuf
+  Boost -- headers, plus the following libraries: date_time, filesystem, program_options, system, thread
+  FFTW3 -- version 3.3 or newer
+  Eigen -- optional, though some functionality will not be available without it
+  ROOT -- optional, though some functionality will not be available without it
+  log4cxx -- optional
   
   If building from source:
   CMake (tested with 2.8)
@@ -17,6 +20,7 @@ Directory contents:
   Source
     Analysis - Classes that don't yet fit into any of the other libraries.
     Applications - Source code for executables.
+    Candidates - Classes that identify and represent candidate signals
     Core - Classes that form the basis of the various systems that make up Katydid (e.g. processors, configuration, etc.)
     Egg - Classes involved in getting an event out of a data file.
     FFT - Classes involved in making FFTs from events

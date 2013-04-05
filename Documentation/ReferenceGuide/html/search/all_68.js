@@ -10,8 +10,9 @@ var searchData=
   ['has_5frunsource',['has_runsource',['../class_monarch_p_b_1_1_monarch_header.html#a6612985405694fdc436569963701bb5f',1,'MonarchPB::MonarchHeader']]],
   ['has_5fruntype',['has_runtype',['../class_monarch_p_b_1_1_monarch_header.html#a338a34c5f60bf2f707b76d6cd4334953',1,'MonarchPB::MonarchHeader']]],
   ['hasdata',['HasData',['../class_katydid_1_1_k_t_p_store_node.html#a93a607cd22bc2e8403882cee083b1726',1,'Katydid::KTPStoreNode']]],
-  ['hatchnextevent',['HatchNextEvent',['../class_katydid_1_1_k_t_egg.html#a981551afd2fe9dab83f552c966334647',1,'Katydid::KTEgg::HatchNextEvent()'],['../class_katydid_1_1_k_t_egg_reader.html#a9b455070d6d8fcbb120e646cc9e5efc9',1,'Katydid::KTEggReader::HatchNextEvent()'],['../class_katydid_1_1_k_t_egg_reader2011.html#aa34343ae3dd4be7ae24d4772b5956bac',1,'Katydid::KTEggReader2011::HatchNextEvent()'],['../class_katydid_1_1_k_t_egg_reader_monarch.html#aa34343ae3dd4be7ae24d4772b5956bac',1,'Katydid::KTEggReaderMonarch::HatchNextEvent()']]],
-  ['headerinfo',['HeaderInfo',['../struct_katydid_1_1_k_t_egg_reader2011_1_1_header_info.html',1,'Katydid::KTEggReader2011']]],
+  ['hatchnextbundle',['HatchNextBundle',['../class_katydid_1_1_k_t_egg.html#a883daba8ce64f023b0b21cbf587a053c',1,'Katydid::KTEgg::HatchNextBundle()'],['../class_katydid_1_1_k_t_egg_reader.html#a7cad3334e5cdfcad929d091b9a6b47eb',1,'Katydid::KTEggReader::HatchNextBundle()'],['../class_katydid_1_1_k_t_egg_reader2011.html#a6583f1c0d44396b7f11e4f50370b9a21',1,'Katydid::KTEggReader2011::HatchNextBundle()'],['../class_katydid_1_1_k_t_egg_reader_monarch.html#a6583f1c0d44396b7f11e4f50370b9a21',1,'Katydid::KTEggReaderMonarch::HatchNextBundle()']]],
   ['headerinfo',['HeaderInfo',['../struct_katydid_1_1_k_t_egg_reader2011_1_1_header_info.html#a1126dbde19b9f8f98455f018c064f7fa',1,'Katydid::KTEggReader2011::HeaderInfo']]],
-  ['headersignal',['HeaderSignal',['../class_katydid_1_1_k_t_egg_processor.html#a829bcfb9ea9e63530f24dd5b183eaeaf',1,'Katydid::KTEggProcessor']]]
+  ['headerinfo',['HeaderInfo',['../struct_katydid_1_1_k_t_egg_reader2011_1_1_header_info.html',1,'Katydid::KTEggReader2011']]],
+  ['headersignal',['HeaderSignal',['../class_katydid_1_1_k_t_egg_processor.html#a829bcfb9ea9e63530f24dd5b183eaeaf',1,'Katydid::KTEggProcessor']]],
+  ['htsignal',['HTSignal',['../class_katydid_1_1_k_t_hough_transform.html#a4d92643cbcdc815ad70aa4dcafea0d1c',1,'Katydid::KTHoughTransform']]]
 ];

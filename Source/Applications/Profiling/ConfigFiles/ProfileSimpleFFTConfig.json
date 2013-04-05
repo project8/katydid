@@ -1,0 +1,83 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg"
+            },
+            "processor":
+            {
+                "type": "simple-fft",
+                "name": "fft"
+            },
+            "processor":
+            {
+                "type": "throughput-profiler",
+                "name": "profiler"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "bundle",
+                "slot-processor": "fft",
+                "slot-name": "bundle",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "bundle",
+                "slot-processor": "profiler",
+                "slot-name": "bundle",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "profiler",
+                "slot-name": "start",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "egg-done",
+                "slot-processor": "profiler",
+                "slot-name": "stop"
+            },
+            
+            "run-queue":
+            {
+                "processor": "egg"
+            }
+        },
+        
+
+        "egg":
+        {
+            "filename": "/path/to/file.egg",
+            "number-of-bundles": 1,
+            "output-data-name": "time-series"
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE",
+            "input-data-name": "time-series"
+        }
+        
+    }
+}

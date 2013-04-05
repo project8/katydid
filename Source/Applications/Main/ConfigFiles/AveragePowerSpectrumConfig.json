@@ -1,0 +1,85 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg"
+            },
+            "processor":
+            {
+                "type": "simple-fft",
+                "name": "fft"
+            },
+            "processor":
+            {
+                "type": "power-spectrum-averager",
+                "name": "psavg"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "slice",
+                "slot-processor": "fft",
+                "slot-name": "ts",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "slice",
+                "slot-processor": "psavg",
+                "slot-name": "bundle",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "psavg",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "egg-done",
+                "slot-processor": "psavg",
+                "slot-name": "finish"
+            },
+            
+            "run-queue":
+            {
+                "processor": "egg"
+            }
+        },
+        
+
+        "egg":
+        {
+            "filename": "/path/to/file.egg",
+            "number-of-bundles": 10,
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE",
+        },
+        
+        "psavg":
+        {
+            "output-file-path": "",
+            "output-file-base": "average_power_spectrum",
+            "output-file-type": "png",
+        }
+    }
+}
