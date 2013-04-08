@@ -125,6 +125,42 @@ namespace Katydid
                 "\n\tand the header parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
 
+        if (fNSlices == 0) UnlimitedLoop(egg);
+        else LimitedLoop(egg);
+
+        fEggDoneSignal();
+
+        return true;
+    }
+
+    void KTEggProcessor::UnlimitedLoop(KTEgg& egg)
+    {
+        UInt_t iSlice = 0;
+        while (kTRUE)
+        {
+            KTINFO(egglog, "Hatching slice " << iSlice);
+
+            // Hatch the slice
+            shared_ptr<KTData> data = egg.HatchNextSlice();
+            if (data.get() == NULL) break;
+
+            if (data->Has< KTTimeSeriesData >())
+            {
+                KTDEBUG(egglog, "Time series data is present.");
+                fDataSignal(data);
+            }
+            else
+            {
+                KTWARN(egglog, "No time-series data present in slice");
+            }
+
+            iSlice++;
+        }
+        return;
+    }
+
+    void KTEggProcessor::LimitedLoop(KTEgg& egg)
+    {
         UInt_t iSlice = 0;
         while (kTRUE)
         {
@@ -152,15 +188,9 @@ namespace Katydid
                 KTWARN(egglog, "No time-series data present in slice");
             }
 
-            // Pass the slice to any subscribers
-            //fSliceSignal(slice);
-
             iSlice++;
         }
-
-        fEggDoneSignal();
-
-        return true;
+        return;
     }
 
 } /* namespace Katydid */

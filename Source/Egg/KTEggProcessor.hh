@@ -85,6 +85,9 @@ namespace Katydid
             void SetTimeSeriesType(TimeSeriesType type);
 
         private:
+            void UnlimitedLoop(KTEgg& egg);
+            void LimitedLoop(KTEgg& egg);
+
             UInt_t fNSlices;
 
             std::string fFilename;
