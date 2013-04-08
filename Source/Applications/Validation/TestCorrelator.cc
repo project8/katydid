@@ -108,8 +108,8 @@ int main(int argc, char** argv)
 
     // Do the correlations
     KTCorrelator* correlator = new KTCorrelator();
-    correlator->AddPair(KTCorrelationPair(0, 0));
-    correlator->AddPair(KTCorrelationPair(0, 1));
+    correlator->AddPair(UIntPair(0, 0));
+    correlator->AddPair(UIntPair(0, 1));
     KTINFO(corrtestlog, "The correlator has " << correlator->GetPairVector().size() << " correlation pairs");
 
     if (! correlator->Correlate(*dataInput))
