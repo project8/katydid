@@ -35,6 +35,7 @@ namespace Katydid
     KTEggProcessor::KTEggProcessor(const std::string& name) :
             KTPrimaryProcessor(name),
             fNSlices(0),
+            fProgressReportInterval(1),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
             fSliceSizeRequest(0),
@@ -55,6 +56,7 @@ namespace Katydid
         if (node != NULL)
         {
             SetNSlices(node->GetData< UInt_t >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->GetData< UInt_t >("progress-report-interval", fProgressReportInterval));
             SetFilename(node->GetData< string >("filename", fFilename));
 
             // choose the egg reader
@@ -135,7 +137,7 @@ namespace Katydid
 
     void KTEggProcessor::UnlimitedLoop(KTEgg& egg)
     {
-        UInt_t iSlice = 0;
+        UInt_t iSlice = 0, iProgress = 0;
         while (kTRUE)
         {
             KTINFO(egglog, "Hatching slice " << iSlice);
@@ -155,13 +157,20 @@ namespace Katydid
             }
 
             iSlice++;
+            iProgress++;
+
+            if (iProgress == fProgressReportInterval)
+            {
+                iProgress = 0;
+                KTPROG(egglog, iSlice << " slices processed");
+            }
         }
         return;
     }
 
     void KTEggProcessor::LimitedLoop(KTEgg& egg)
     {
-        UInt_t iSlice = 0;
+        UInt_t iSlice = 0, iProgress = 0;
         while (kTRUE)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
@@ -189,6 +198,13 @@ namespace Katydid
             }
 
             iSlice++;
+            iProgress++;
+
+            if (iProgress == fProgressReportInterval)
+            {
+                iProgress = 0;
+                KTPROG(egglog, iSlice << " slices processed (" << Double_t(iSlice) / Double_t(fNSlices) * 100. << " %)");
+            }
         }
         return;
     }

@@ -32,6 +32,7 @@ namespace Katydid
 
      Available configuration options:
      \li \c "number-of-slices": UInt_t -- Number of slices to process
+     \li \c "progress-report-interval": UInt_t -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
      \li \c "time-series-size": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
@@ -73,12 +74,14 @@ namespace Katydid
             Bool_t ProcessEgg();
 
             UInt_t GetNSlices() const;
+            UInt_t GetProgressReportInterval() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
             UInt_t GetSliceSizeRequest() const;
             TimeSeriesType GetTimeSeriesType() const;
 
             void SetNSlices(UInt_t nSlices);
+            void SetProgressReportInterval(UInt_t nSlices);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
             void SetSliceSizeRequest(UInt_t size);
@@ -89,6 +92,7 @@ namespace Katydid
             void LimitedLoop(KTEgg& egg);
 
             UInt_t fNSlices;
+            UInt_t fProgressReportInterval;
 
             std::string fFilename;
 
@@ -119,9 +123,20 @@ namespace Katydid
         return fNSlices;
     }
 
+    inline UInt_t KTEggProcessor::GetProgressReportInterval() const
+    {
+        return fProgressReportInterval;
+    }
+
     inline void KTEggProcessor::SetNSlices(UInt_t nSlices)
     {
         fNSlices = nSlices;
+        return;
+    }
+
+    inline void KTEggProcessor::SetProgressReportInterval(UInt_t nSlices)
+    {
+        fProgressReportInterval = nSlices;
         return;
     }
 
