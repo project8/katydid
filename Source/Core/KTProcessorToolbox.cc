@@ -41,6 +41,7 @@ namespace Katydid
 
     Bool_t KTProcessorToolbox::Configure(const KTPStoreNode* node)
     {
+        KTPROG(proclog, "Configuring . . .");
         // Deal with "processor" blocks first
         KTPStoreNode::csi_pair itPair = node->EqualRange("processor");
         for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
@@ -252,6 +253,7 @@ namespace Katydid
 
     Bool_t KTProcessorToolbox::Run()
     {
+        KTPROG(proclog, "Beginning processing . . .");
         UInt_t iGroup = 0;
         for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); rqIter++)
         {
@@ -280,6 +282,7 @@ namespace Katydid
             iGroup++;
 #endif
         }
+        KTPROG(proclog, ". . . processing complete.");
         return true;
     }
 
