@@ -104,6 +104,10 @@ macro (pbuilder_install_headers)
     install(FILES ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR})
 endmacro ()
 
+macro (pbuilder_install_header_dirs FILE_PATTERN)
+    install(DIRECTORY ${ARGN} DESTINATION ${INCLUDE_INSTALL_DIR} FILES_MATCHING PATTERN "${FILE_PATTERN}")
+endmacro ()
+
 macro (pbuilder_install_config)
     install(FILES ${ARGN} DESTINATION ${CONFIG_INSTALL_DIR})
 endmacro ()
