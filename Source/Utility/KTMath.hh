@@ -23,12 +23,12 @@ namespace Katydid
         /* ************************* */
 
         inline Double_t Pi()       { return 3.14159265358979323846; }
-        inline Double_t TwoPi()    { return 2.0 * Pi(); }
-        inline Double_t PiOver2()  { return Pi() / 2.0; }
-        inline Double_t PiOver4()  { return Pi() / 4.0; }
-        inline Double_t InvPi()    { return 1.0 / Pi(); }
-        inline Double_t RadToDeg() { return 180.0 / Pi(); }
-        inline Double_t DegToRad() { return Pi() / 180.0; }
+        inline Double_t TwoPi()    { return 6.28318530717958623; }
+        inline Double_t PiOver2()  { return 1.57079632679489656; }
+        inline Double_t PiOver4()  { return 0.785398163397448279; }
+        inline Double_t InvPi()    { return 0.318309886183790691; }
+        inline Double_t RadToDeg() { return 57.2957795130823229; }
+        inline Double_t DegToRad() { return 1.74532925199432955e-02; }
         inline Double_t Sqrt2()    { return 1.4142135623730950488016887242097; }
 
 
