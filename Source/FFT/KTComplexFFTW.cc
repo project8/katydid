@@ -54,7 +54,9 @@ namespace Katydid
         FreeArrays();
         fftw_destroy_plan(fForwardPlan);
         fftw_destroy_plan(fReversePlan);
+#ifdef FFTW_NTHREADS
         fftw_cleanup_threads();
+#endif
     }
 
     Bool_t KTComplexFFTW::Configure(const KTPStoreNode* node)
