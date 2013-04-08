@@ -102,9 +102,9 @@ namespace Katydid
         Stop();
         KTINFO(proflog, "Profiling stopped");
         timespec diffTime = Elapsed();
-        KTINFO(proflog, fNDataProcessed << " slices processed");
+        KTPROG(proflog, fNDataProcessed << " slices processed");
         Double_t totalSeconds = Double_t(diffTime.tv_sec) + Double_t(diffTime.tv_nsec) * 1.e-9;
-        KTINFO(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
+        KTPROG(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
 
         // Data production rate in bytes per second
         Double_t dataProductionRate = Double_t(fEggHeader.GetNChannels()) * fEggHeader.GetAcquisitionRate() * Double_t(sizeof(DataType));
@@ -116,7 +116,7 @@ namespace Katydid
 
         KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
         KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");
-        KTINFO(proflog, "Analysis time factor: " << dataProductionRate / dataThroughputRate);
+        KTPROG(proflog, "Analysis time factor: " << dataProductionRate / dataThroughputRate);
 
         return;
     }

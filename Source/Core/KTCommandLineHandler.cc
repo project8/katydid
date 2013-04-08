@@ -368,7 +368,7 @@ namespace Katydid
     void KTCommandLineHandler::PrintHelpMessageAndExit()
     {
         KTINFO(utillog, "\nUsage: " << fExecutableName << " [options]\n\n" <<
-               "  For basic/typical usage you should specify the configuration file:  -c config_file.json\n" <<
+               "  If using a config file, it should be specified as:  -c config_file.json\n" <<
                "  Config file options can be modified using:  --address.of.option=\"value\"\n" <<
                fPrintHelpOptions);
 

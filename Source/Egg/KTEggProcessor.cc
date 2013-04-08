@@ -122,15 +122,15 @@ namespace Katydid
         fHeaderSignal(egg.GetHeader());
 
         KTINFO(egglog, "The egg file has been opened successfully"
-                "\n\tand the header parsed and processed;"
-                "\n\tProceeding with slice processing");
+                "\n\tand the header parsed and processed;");
+        KTPROG(egglog, "Proceeding with slice processing");
 
         UInt_t iSlice = 0;
         while (kTRUE)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
             {
-                KTINFO(egglog, iSlice << "/" << fNSlices << " slices hatched; slice processing is complete");
+                KTPROG(egglog, iSlice << "/" << fNSlices << " slices hatched; slice processing is complete");
                 break;
             }
 
