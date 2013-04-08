@@ -10,6 +10,7 @@
 #define KTCORRELATOR_HH_
 
 #include "KTFrequencySpectrumDataPolar.hh"
+#include "KTPStoreNode.hh"
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
@@ -27,9 +28,6 @@ namespace Katydid
     class KTFrequencySpectrumFFTW;
     class KTNormalizedFSDataPolar;
     class KTNormalizedFSDataFFTW;
-
-    typedef std::pair< UInt_t, UInt_t > KTCorrelationPair;
-
 
     /*!
      @class KTCorrelator
@@ -54,7 +52,7 @@ namespace Katydid
     class KTCorrelator : public KTProcessor
     {
         protected:
-            typedef std::vector< KTCorrelationPair > PairVector;
+            typedef std::vector< UIntPair > PairVector;
 
         public:
             KTCorrelator(const std::string& name = "correlator");
@@ -62,7 +60,7 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            void AddPair(const KTCorrelationPair& pair);
+            void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);
             const PairVector& GetPairVector() const;
             void ClearPairs();
@@ -102,7 +100,7 @@ namespace Katydid
             KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
     };
 
-    inline void KTCorrelator::AddPair(const KTCorrelationPair& pair)
+    inline void KTCorrelator::AddPair(const UIntPair& pair)
     {
         fPairs.push_back(pair);
         return;

@@ -69,7 +69,7 @@ int main()
     wvTransform.GetFFT()->SetTransformFlag("ESTIMATE");
     wvTransform.GetFFT()->SetSize(/*2 */ wvSize);
     wvTransform.GetFFT()->InitializeFFT();
-    wvTransform.AddPair(KTWVPair(0, 1));
+    wvTransform.AddPair(UIntPair(0, 1));
 
     UInt_t nWindows = nTimeBins / wvSize;
 
