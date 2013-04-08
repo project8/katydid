@@ -12,15 +12,34 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+
 #include "Rtypes.h"
 
 #include <exception>
 #include <string>
 #include <utility>
 
+
+// I can't just use boost::spirit::qi because of naming conflicts with std
+using boost::spirit::qi::int_;
+// I had to take this out because of a naming conflict with boost::bind
+//using boost::spirit::qi::_1;
+using boost::spirit::qi::phrase_parse;
+using boost::spirit::ascii::space;
+using boost::phoenix::ref;
+
+
 namespace Katydid
 {
     KTLOGGER(utillog_psnode, "katydid.utility");
+
+    typedef std::pair< UInt_t, UInt_t > UIntPair;
+
+    UIntPair ParsePair(const std::string& pair);
+
 
     class KTPStoreNodeDataNotFound : public std::exception
     {
@@ -76,6 +95,8 @@ namespace Katydid
             /// Returns the data of this node, cast to type XType (non-recursive)
             template< typename XType >
             XType GetValue() const;
+            //template<>
+            //UIntPair GetValue() const;
 
             /// Returns true if an immediate-child exists with name dataName, and that child contains data (non-recursive).
             Bool_t HasData(const std::string& dataName) const;
@@ -93,10 +114,14 @@ namespace Katydid
             /// If a child with name dataName doesn't exist, or the child does not contain data, throws a KTPStoreNodeDataNotFound exception.
             template< typename XType >
             XType GetData(const std::string& dataName) const;
+            //template<>
+            //UIntPair GetData(const std::string& dataName) const;
             /// Returns data with name dataName, cast to XType (non-recursive).
             /// If a child with name dataName doesn't exist, or the child does not contain data, returns the default value provided.
             template< typename XType >
             XType GetData(const std::string& dataName, XType defaultValue) const;
+            //template<>
+            //UIntPair GetData(const std::string& dataName, UIntPair defaultValue) const;
 
             void PrintTree() const;
 
@@ -124,6 +149,8 @@ namespace Katydid
         }
     }
 
+    template<>
+    UIntPair KTPStoreNode::GetValue< UIntPair >() const;
 
     template< typename XType >
     XType KTPStoreNode::GetData(const std::string& dataName) const
@@ -155,6 +182,9 @@ namespace Katydid
         throw dnfException;
     }
 
+    template<>
+    UIntPair KTPStoreNode::GetData< UIntPair >(const std::string& dataName) const;
+
     template< typename XType >
     XType KTPStoreNode::GetData(const std::string& dataName, XType defaultValue) const
     {
@@ -168,6 +198,9 @@ namespace Katydid
         // get_value will only return data from this node (whereas get can return data from subnodes)
         return it->second.get_value< XType >(defaultValue);
     }
+
+    template<>
+    UIntPair KTPStoreNode::GetData< UIntPair >(const std::string& dataName, UIntPair defaultValue) const;
 
     inline KTPStoreNode::const_iterator KTPStoreNode::Begin() const
     {
