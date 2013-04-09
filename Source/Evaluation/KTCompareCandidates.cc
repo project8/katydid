@@ -7,6 +7,7 @@
 
 #include "KTCompareCandidates.hh"
 
+#include "KTFactory.hh"
 #include "KTPStoreNode.hh"
 
 using std::string;

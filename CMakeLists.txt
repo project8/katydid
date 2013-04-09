@@ -115,6 +115,7 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Data
     ${PROJECT_SOURCE_DIR}/Source/Output
     ${PROJECT_SOURCE_DIR}/Source/Egg
+    ${PROJECT_SOURCE_DIR}/Source/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Candidates
@@ -125,6 +126,7 @@ add_subdirectory (Source/Core)
 add_subdirectory (Source/Data)
 add_subdirectory (Source/Output)
 add_subdirectory (Source/Egg)
+add_subdirectory (Source/Evaluation)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
 add_subdirectory (Source/Candidates)
