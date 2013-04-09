@@ -104,10 +104,14 @@ namespace Katydid
     };
 
 
+    //***********************************
+    // Definition of KTImpulseAnalysis
+    //***********************************
+
     class KTImpulseAnalysis : public KTProcessor
     {
         public:
-            KTImpulseAnalysis();
+            KTImpulseAnalysis(const std::string& name = "impulse-analysis");
             virtual ~KTImpulseAnalysis();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -163,7 +167,7 @@ int main(int argc, char** argv)
 // Implementation of KTSineGenerator
 //*************************************
 
-static KTDerivedRegistrar< KTProcessor, KTSineGenerator > sEggProcRegistrar("sine-generator");
+static KTDerivedRegistrar< KTProcessor, KTSineGenerator > sSinGenRegistrar("sine-generator");
 
 KTSineGenerator::KTSineGenerator(const std::string& name) :
         KTPrimaryProcessor(name),
@@ -306,7 +310,13 @@ void KTSineGenerator::SetSignalFrequency(Double_t freq)
 }
 
 
-KTImpulseAnalysis::KTImpulseAnalysis() :
+//***************************************
+// Implementation of KTImpulseAnalysis
+//***************************************
+
+static KTDerivedRegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
+
+KTImpulseAnalysis::KTImpulseAnalysis(const std::string& name) :
         KTProcessor(),
         fFSDataPolarSlot("fs-polar", this, &KTImpulseAnalysis::Analyze)
 {
@@ -325,12 +335,13 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
 {
     KTFrequencySpectrumPolar* fs = fsData.GetSpectrumPolar(0);
     UInt_t size = fs->size();
+    Double_t binWidth = fs->GetBinWidth();
 
     // Loop over all the bins in the FS
     // Calculate the sum and keep the peak bin information
-    UInt_t peakBin;
-    Double_t peakBinValue = 0.;
-    Double_t previousPeakValue;
+    UInt_t peakBin = 0, previousPeakBin = 0;
+    Double_t peakBinValue = -1.;
+    Double_t previousPeakValue = -1.;
     Double_t sum = 0.; // sum of squares, since we want to calculate the power
     Double_t value;
     for (UInt_t iBin=0; iBin < size; iBin++)
@@ -340,20 +351,40 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
         if (value > peakBinValue)
         {
             previousPeakValue = peakBinValue;
+            previousPeakBin = peakBin;
             peakBinValue = value;
             peakBin = iBin;
         }
     }
 
-    // Subtract the peak bin from the sum
-    //sum -= peakBinValue;
-
     Double_t peakFraction = peakBinValue * peakBinValue / sum;
     Double_t leakage = 1. - peakFraction;
     Double_t secondHighestBinRatio = previousPeakValue / peakBinValue;
 
+    // Examine FWHM (half-max of power at peak)
+    UInt_t leftSideBin = peakBin, rightSideBin = peakBin;
+    if (peakBinValue > 0.)
+    {
+        Double_t halfMaxPowerValue = sqrt(0.5) * peakBinValue;
+        while (leftSideBin > 0 && (*fs)(leftSideBin).abs() >= halfMaxPowerValue)
+        {
+            leftSideBin--;
+        }
+        while (rightSideBin < size-1 && (*fs)(rightSideBin).abs() >= halfMaxPowerValue)
+        {
+            rightSideBin++;
+        }
+        if (leftSideBin != 0 && (*fs)(leftSideBin).abs() < halfMaxPowerValue) leftSideBin++; // if we didn't hit the left edge, we went one beyond the FWHM peak
+        if (rightSideBin != size-1 && (*fs)(rightSideBin).abs() < halfMaxPowerValue) rightSideBin--; // if we didn't heit the right edge, we went one beyond the FWHM peak
+    }
+
+    UInt_t fwhmBins = rightSideBin - leftSideBin + 1;
+    Double_t fwhm = Double_t(fwhmBins) * binWidth;
+
+    KTPROG(irlog, "Frequency of peak: " << fs->GetBinCenter(peakBin) << " Hz (bin # " << peakBin << ")");
     KTPROG(irlog, "Leakage fraction: " << leakage);
-    KTPROG(irlog, "Second-highest-bin ratio: " << secondHighestBinRatio);
+    KTPROG(irlog, "Second-highest-bin ratio: " << secondHighestBinRatio << "  (bin # " << previousPeakBin << ")");
+    KTPROG(irlog, "FWHM: " << fwhm << " Hz (" << fwhmBins << " bins)");
 
     return true;
 }

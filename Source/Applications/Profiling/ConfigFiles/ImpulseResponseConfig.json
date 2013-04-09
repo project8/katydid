@@ -15,6 +15,11 @@
             },
             "processor":
             {
+                "type": "impulse-analysis",
+                "name": "imp"
+            },
+            "processor":
+            {
                 "type": "basic-root-writer",
                 "name": "writer"
             },
@@ -32,6 +37,13 @@
                 "signal-name": "slice",
                 "slot-processor": "fft",
                 "slot-name": "ts"
+            },
+            "connection":
+            {
+                "signal-processor": "fft",
+                "signal-name": "fft",
+                "slot-processor": "imp",
+                "slot-name": "fs-polar"
             },
             "connection":
             {
@@ -59,6 +71,10 @@
         "fft":
         {
             "transform-flag": "ESTIMATE"
+        },
+        
+        "imp":
+        {  
         },
         
         "writer":
