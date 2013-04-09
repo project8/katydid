@@ -8,8 +8,8 @@
 #ifndef COMPLEXPOLAR_OPERATORS_HH_
 #define COMPLEXPOLAR_OPERATORS_HH_
 
-#include "complexpolar_class.hh"
-#include "complexpolar_functions.hh"
+#include "complexpolar/class.hh"
+#include "complexpolar/functions.hh"
 
 //#include <iostream>
 //using std::cout;

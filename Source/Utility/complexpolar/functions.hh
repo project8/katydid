@@ -8,7 +8,7 @@
 #ifndef COMPLEXPOLAR_FUNCTIONS_HH_
 #define COMPLEXPOLAR_FUNCTIONS_HH_
 
-#include "complexpolar_class.hh"
+#include "complexpolar/class.hh"
 
 namespace Katydid
 {

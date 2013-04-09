@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "complexpolar_specialization.hh"
+#include "complexpolar/specialization.hh"
 
 namespace Katydid
 {
