@@ -352,8 +352,8 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
     Double_t leakage = 1. - peakFraction;
     Double_t secondHighestBinRatio = previousPeakValue / peakBinValue;
 
-    //KTPROG(irlog, "Leakage fraction: " << leakage);
-    //KTPROG(irlog, "Second-highest-bin ratio: " << secondHighestBinRatio);
+    KTPROG(irlog, "Leakage fraction: " << leakage);
+    KTPROG(irlog, "Second-highest-bin ratio: " << secondHighestBinRatio);
 
     return true;
 }
