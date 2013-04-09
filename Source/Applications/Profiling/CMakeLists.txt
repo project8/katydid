@@ -5,6 +5,7 @@ if (Katydid_ENABLE_PROFILING)
 
     # Config files
     set (PROFILING_CONFIGFILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ImpulseResponseConfig.json
         ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ProfileSimpleFFTConfig.json
     )
     

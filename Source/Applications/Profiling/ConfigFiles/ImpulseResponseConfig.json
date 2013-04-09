@@ -1,0 +1,70 @@
+{
+    "impulse-response":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "sine-generator",
+                "name": "sg"
+            },
+            "processor":
+            {
+                "type": "simple-fft",
+                "name": "fft"
+            },
+            "processor":
+            {
+                "type": "basic-root-writer",
+                "name": "writer"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "sg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "sg",
+                "signal-name": "slice",
+                "slot-processor": "fft",
+                "slot-name": "ts"
+            },
+            "connection":
+            {
+                "signal-processor": "fft",
+                "signal-name": "fft",
+                "slot-processor": "writer",
+                "slot-name": "fs-polar"
+            },
+            
+            "run-queue":
+            {
+                "processor": "sg"
+            }
+        },
+        
+
+        "sg":
+        {
+            "time-series-size": 16384,
+            "bin-width": 5.0e-9,
+            "time-series-type": "real",
+            "signal-frequency": 50.0e6
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE"
+        },
+        
+        "writer":
+        {
+            "output-file": "impulse-response.root",
+            "file-flag": "recreate"
+        }
+    }
+}
