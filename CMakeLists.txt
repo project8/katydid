@@ -112,7 +112,10 @@ endif ("${isSystemDir}" STREQUAL "-1")
 include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Utility
     ${PROJECT_SOURCE_DIR}/Source/Core
-    ${PROJECT_SOURCE_DIR}/Source/Data
+    ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
+    ${PROJECT_SOURCE_DIR}/Source/Data/Candidates
+    ${PROJECT_SOURCE_DIR}/Source/Data/Egg
+    ${PROJECT_SOURCE_DIR}/Source/Data/FFT
     ${PROJECT_SOURCE_DIR}/Source/Output
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/FFT
