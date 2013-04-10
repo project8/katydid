@@ -119,7 +119,12 @@ int main(int argc, char** argv)
         if (nRecords >= 1)
         {
             KTINFO(testegg, "Record 0 has " << tsData.GetTimeSeries(0)->GetNTimeBins() << " bins");
-            KTINFO(testegg, "Bin 0 of record 0 is " << tsData.GetTimeSeries(0)->GetValue(0));
+            KTINFO(testegg, "Bins 0-5 of record 0 are " <<
+                   tsData.GetTimeSeries(0)->GetValue(0) << "  " <<
+                   tsData.GetTimeSeries(0)->GetValue(1) << "  " <<
+                   tsData.GetTimeSeries(0)->GetValue(2) << "  " <<
+                   tsData.GetTimeSeries(0)->GetValue(3) << "  " <<
+                   tsData.GetTimeSeries(0)->GetValue(4));
         }
     }
 

@@ -132,6 +132,7 @@ namespace Katydid
 
         if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
         {
+            KTDEBUG(eggreadlog, "Reading first record");
             // if we're at the beginning of the run, load the first records
             if (! fMonarch->ReadRecord())
             {
@@ -182,6 +183,7 @@ namespace Katydid
                 // change the absolute record offset first because it should be done before the adjustment to Monarch::ReadRecord offset counting is made
                 fReadState.fAbsoluteRecordOffset += readPtrRecordOffsetShift;
                 if (readPtrRecordOffsetShift > 0) readPtrRecordOffsetShift--;
+                KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
                 // move the read pointer to the slice start pointer (first move monarch to the correct record)
                 if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
                 {
@@ -251,6 +253,7 @@ namespace Katydid
         {
             if (fReadState.fStatus == MonarchReadState::kReachedNextRecord)
             {
+                KTDEBUG(eggreadlog, "Reading new record mid-slice");
                 // try reading the next record
                 if (! fMonarch->ReadRecord())
                 {
