@@ -74,7 +74,7 @@
         {
             "filename": "/path/to/file.egg",
             "number-of-bundles": 1,
-            "time-series-size": 0,
+            "slice-size": 16384,
             "time-series-type": "fftw"
         },
         

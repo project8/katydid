@@ -81,7 +81,8 @@
         "egg":
         {
             "filename": "/path/to/file.egg",
-            "number-of-bundles": 1
+            "slice-size": 16384,
+            "number-of-slices": 1
         },
         
         "fft":
