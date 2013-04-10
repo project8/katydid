@@ -111,7 +111,7 @@ int main()
 
     // Prepare the egg reader
     KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
-    eggReader->SetTimeSeriesSizeRequest(recordSize);
+    eggReader->SetSliceSize(recordSize);
     eggReader->SetTimeSeriesType(tsType);
 
     // Prepare and break the egg

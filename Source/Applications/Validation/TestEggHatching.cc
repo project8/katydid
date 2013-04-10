@@ -15,6 +15,7 @@
 #include "KTEggReader2011.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTLogger.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
 #include <iostream>
@@ -57,10 +58,13 @@ int main(int argc, char** argv)
     else
     {
         KTINFO(testegg, "Using Monarch egg reader");
-        UInt_t recordSize = 0;
-        KTINFO(testegg, "Record size should be " << recordSize << " (if 0, it should be the same as the Monarch record size)");
+        UInt_t sliceSize = 500000;
+        KTINFO(testegg, "Slice size should be " << sliceSize);
+        UInt_t stride = 700000;
+        KTINFO(testegg, "Stride should be " << stride << " (if 0, it should be the same as the slice size");
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
-        reader->SetTimeSeriesSizeRequest(recordSize);
+        reader->SetSliceSize(sliceSize);
+        reader->SetStride(stride);
         egg.SetReader(reader);
     }
 
@@ -85,7 +89,7 @@ int main(int argc, char** argv)
     KTINFO(testegg, "Some header information:\n"
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
-           << "\tRecord Size: " << header->GetSliceSize() << '\n'
+           << "\tSlice Size: " << header->GetSliceSize() << '\n'
            << "\tRecord Size: " << header->GetRecordSize());
 
     KTINFO(testegg, "Hatching slices");
@@ -105,7 +109,10 @@ int main(int argc, char** argv)
             return -1;
         }
 
+        KTSliceHeader& sliceHeader = data->Of< KTSliceHeader >();
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
+
+        KTINFO(testegg, "Time in run: " << sliceHeader.GetTimeInRun() << " s");
 
         UInt_t nRecords = tsData.GetNComponents();
         KTINFO(testegg, "This slice contains " << nRecords << " records");

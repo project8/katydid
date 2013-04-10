@@ -38,7 +38,8 @@ namespace Katydid
             fProgressReportInterval(1),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
-            fSliceSizeRequest(0),
+            fSliceSize(1024),
+            fStride(1024),
             fTimeSeriesType(kRealTimeSeries),
             fHeaderSignal("header", this),
             fDataSignal("slice", this),
@@ -69,8 +70,16 @@ namespace Katydid
                 return false;
             }
 
-            // specify the length of the time series (0 for use Monarch's record size)
-            fSliceSizeRequest = node->GetData< UInt_t >("time-series-size", fSliceSizeRequest);
+            // specify the length of the time series
+            fSliceSize = node->GetData< UInt_t >("slice-size", fSliceSize);
+            // specify the stride (leave unset to make stride == slice size)
+            fStride = node->GetData< UInt_t >("stride", fSliceSize);
+
+            if (fSliceSize == 0)
+            {
+                KTERROR(egglog, "Slice size MUST be specified");
+                return false;
+            }
 
             // type of time series
             string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
@@ -102,7 +111,8 @@ namespace Katydid
         if (fEggReaderType == kMonarchEggReader)
         {
             KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
-            eggReader->SetTimeSeriesSizeRequest(fSliceSizeRequest);
+            eggReader->SetSliceSize(fSliceSize);
+            eggReader->SetStride(fStride);
             if (fTimeSeriesType == kRealTimeSeries)
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)
