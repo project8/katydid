@@ -1,12 +1,12 @@
 /*
- * KTMCTruthElectrons.hh
+ * KTMCTruthEvents.hh
  *
  *  Created on: Apr 11, 2013
  *      Author: nsoblath
  */
 
-#ifndef KTMCTRUTHELECTRONS_HH_
-#define KTMCTRUTHELECTRONS_HH_
+#ifndef KTMCTRUTHEVENTS_HH_
+#define KTMCTRUTHEVENTS_HH_
 
 #include "KTData.hh"
 
@@ -15,49 +15,59 @@
 namespace Katydid
 {
 
-    class KTMCTruthElectrons : public KTExtensibleData< KTMCTruthElectrons >
+    class KTMCTruthEvents : public KTExtensibleData< KTMCTruthEvents >
     {
         public:
-            struct Electron
+            struct Event
             {
                 Double_t fStartTime;
                 Double_t fEndTime;
 
-                Electron(Double_t startTime, double_t endTime)
+                Event(Double_t startTime, Double_t endTime)
                 {
                     fStartTime = startTime;
                     fEndTime = endTime;
                 }
             };
 
-        public:
-            KTMCTruthElectrons();
-            virtual ~KTMCTruthElectrons();
+            struct EventCompare
+            {
+                bool operator() (const Event& lhs, const Event& rhs)
+                {
+                    return lhs.fStartTime < rhs.fStartTime || (lhs.fStartTime == rhs.fStartTime && lhs.fEndTime < rhs.fEndTime);
+                }
+            };
 
-            const std::set< Electron >& GetElectrons() const;
-            void AddElectron(const Electron& electron);
-            void ClearElectrons();
+            typedef std::set< Event, EventCompare > EventSet;
+
+        public:
+            KTMCTruthEvents();
+            virtual ~KTMCTruthEvents();
+
+            const EventSet& GetEvents() const;
+            void AddEvent(const Event& electron);
+            void ClearEvents();
 
         protected:
-            std::set< Electron > fElectrons;
+            EventSet fEvents;
     };
 
-    inline const std::set< KTMCTruthElectrons::Electron >& KTMCTruthElectrons::GetElectrons() const
+    inline const KTMCTruthEvents::EventSet& KTMCTruthEvents::GetEvents() const
     {
-        return fElectrons;
+        return fEvents;
     }
 
-    inline void KTMCTruthElectrons::AddElectron(const Electron& electron)
+    inline void KTMCTruthEvents::AddEvent(const Event& electron)
     {
-        fElectrons.insert(electron);
+        fEvents.insert(electron);
         return;
     }
 
-    inline void KTMCTruthElectrons::ClearElectrons()
+    inline void KTMCTruthEvents::ClearEvents()
     {
-        fElectrons.clear();
+        fEvents.clear();
         return;
     }
 
 } /* namespace Katydid */
-#endif /* KTMCTRUTHELECTRONS_HH_ */
+#endif /* KTMCTRUTHEVENTS_HH_ */

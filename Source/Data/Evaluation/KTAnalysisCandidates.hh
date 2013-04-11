@@ -8,6 +8,10 @@
 #ifndef KTANALYSISCANDIDATES_HH_
 #define KTANALYSISCANDIDATES_HH_
 
+#include "KTData.hh"
+
+#include <set>
+
 namespace Katydid
 {
 
@@ -30,19 +34,29 @@ namespace Katydid
                 }
             };
 
+            struct CandidateCompare
+            {
+                bool operator() (const Candidate& lhs, const Candidate& rhs)
+                {
+                    return lhs.fStartTime < rhs.fStartTime || (lhs.fStartTime == rhs.fStartTime && lhs.fEndTime < rhs.fEndTime);
+                }
+            };
+
+            typedef std::set< Candidate, CandidateCompare > CandidateSet;
+
         public:
             KTAnalysisCandidates();
             virtual ~KTAnalysisCandidates();
 
-            const std::set< Candidate >& GetCandidates() const;
+            const CandidateSet& GetCandidates() const;
             void AddCandidate(const Candidate& electron);
             void ClearCandidates();
 
         protected:
-            std::set< Candidate > fCandidates;
+            CandidateSet fCandidates;
 };
 
-inline const std::set< KTAnalysisCandidates::Candidate >& KTAnalysisCandidates::GetCandidates() const
+inline const KTAnalysisCandidates::CandidateSet& KTAnalysisCandidates::GetCandidates() const
 {
     return fCandidates;
 }

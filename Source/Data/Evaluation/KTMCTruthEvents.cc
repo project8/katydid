@@ -1,22 +1,22 @@
 /*
- * KTMCTruthElectrons.cc
+ * KTMCTruthEvents.cc
  *
  *  Created on: Apr 11, 2013
  *      Author: nsoblath
  */
 
-#include "KTMCTruthElectrons.hh"
+#include "KTMCTruthEvents.hh"
 
 namespace Katydid
 {
 
-    KTMCTruthElectrons::KTMCTruthElectrons() :
-        KTExtensibleData< KTMCTruthElectrons >(),
-        fElectrons()
+    KTMCTruthEvents::KTMCTruthEvents() :
+        KTExtensibleData< KTMCTruthEvents >(),
+        fEvents()
     {
     }
 
-    KTMCTruthElectrons::~KTMCTruthElectrons()
+    KTMCTruthEvents::~KTMCTruthEvents()
     {
     }
 
