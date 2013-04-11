@@ -60,6 +60,9 @@ if (Katydid_ENABLE_TESTING)
     #add_executable (TestHoughTransform ${CMAKE_CURRENT_SOURCE_DIR}/TestHoughTransform.cc)
     #target_link_libraries (TestHoughTransform KatydidUtility KatydidOutput KatydidData KatydidCore KatydidAnalysis ${LIBS})
         
+    add_executable (TestJSONReader ${CMAKE_CURRENT_SOURCE_DIR}/TestJSONReader.cc)
+    target_link_libraries (TestJSONReader KatydidUtility KatydidCore KatydidData KatydidInput ${LIBS})
+
     add_executable (TestJSONWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestJSONWriter.cc)
     target_link_libraries (TestJSONWriter KatydidUtility KatydidCore KatydidData KatydidOutput ${LIBS})
     
@@ -116,6 +119,7 @@ if (Katydid_ENABLE_TESTING)
                      TestEggHatching
                      TestFrequencySpectrumFFTW
                      #TestHoughTransform
+                     TestJSONReader
                      TestJSONWriter
                      TestLogger
                      TestMultiSliceClustering
@@ -145,6 +149,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)
     #add_test (Test_HoughTransform TestHoughTransform)
     add_test (Test_JSONWriter TestJSONWriter)
+    add_test (Test_JSONReader TestJSONReader)
     add_test (Test_Logger TestLogger)
     add_test (Test_MultiSliceClustering TestMultiSliceClustering)
     add_test (Test_ParameterStore TestParameterStore)

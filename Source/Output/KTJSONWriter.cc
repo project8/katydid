@@ -22,7 +22,7 @@ namespace Katydid
 
     KTJSONWriter::KTJSONWriter(const std::string& name) :
             KTWriterWithTypists< KTJSONWriter >(name),
-            fFilename("basic_output.root"),
+            fFilename("basic_output.json"),
             fFileMode("w+"),
             fPrettyJSONFlag(true),
             fFile(NULL),
