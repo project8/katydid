@@ -3,7 +3,7 @@
 
 set (INPUT_HEADERFILES
 #    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONReader.hh
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.hh
 )
 
 #if (ROOT_FOUND)
@@ -15,7 +15,7 @@ set (INPUT_HEADERFILES
 
 set (INPUT_SOURCEFILES
 #    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONReader.cc
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.cc
 )
 
 #if (ROOT_FOUND)
@@ -34,9 +34,9 @@ set (KATYDID_LIBS
 
 ##################################################
 
-add_library (KatydidOutput ${INPUT_SOURCEFILES})
-target_link_libraries (KatydidOutput ${KATYDID_LIBS} ${LIBS})
+add_library (KatydidInput ${INPUT_SOURCEFILES})
+target_link_libraries (KatydidInput ${KATYDID_LIBS} ${LIBS})
 
 pbuilder_install_headers (${INPUT_HEADERFILES})
-pbuilder_install_libraries (KatydidOutput)
+pbuilder_install_libraries (KatydidInput)
 
