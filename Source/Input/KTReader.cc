@@ -11,7 +11,7 @@ namespace Katydid
 {
 
     KTReader::KTReader(const std::string& name) :
-            KTProcessor(name)
+            KTPrimaryProcessor(name)
     {
     }
 

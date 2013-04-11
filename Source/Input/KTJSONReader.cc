@@ -13,7 +13,6 @@
 #include "KTMCTruthEvents.hh"
 #include "KTPStoreNode.hh"
 
-#include "document.h"
 #include "filestream.h"
 
 using boost::shared_ptr;
@@ -32,9 +31,6 @@ namespace Katydid
             fFileMode("r"),
             fFileType("mc-truth-events"),
             fRunFcn(&KTJSONReader::RunMCTruthEventsFile),
-            //fFile(NULL),
-            //fFileStream(NULL),
-            //fJSONMaker(NULL),
             fMCTruthEventsSignal("mc-truth-events", this),
             fAnalysisCandidatesSignal("analysis-candidates", this)
     {
@@ -42,7 +38,6 @@ namespace Katydid
 
     KTJSONReader::~KTJSONReader()
     {
-        //CloseFile();
     }
 
     Bool_t KTJSONReader::Configure(const KTPStoreNode* node)
@@ -63,17 +58,18 @@ namespace Katydid
     Bool_t KTJSONReader::SetFileType(const std::string& type)
     {
         // set the read function pointer based on the file type
-        switch (type)
+        if (type == "mc-truth-electrons")
         {
-            case "mc-truth-electrons":
-                fRunFcn = &KTJSONReader::ReadMCTruthEventsFile;
-                break;
-            case "analysis-candidates":
-                fRunFcn = &KTJSONReader::ReadAnalysisCandidatesFile;
-                break;
-            default:
-                KTERROR(inlog, "Invalid file type: " << fFileType);
-                return false;
+            fRunFcn = &KTJSONReader::RunMCTruthEventsFile;
+        }
+        else if (type == "analysis-candidates")
+        {
+            fRunFcn = &KTJSONReader::RunAnalysisCandidatesFile;
+        }
+        else
+        {
+            KTERROR(inlog, "Invalid file type: " << fFileType);
+            return false;
         }
 
         fFileType = type;
@@ -81,76 +77,7 @@ namespace Katydid
         return true;
     }
 
-/*
-    Bool_t KTJSONReader::OpenFile()
-    {
-        CloseFile();
-
-        if (fFilename == "stdout")
-        {
-            fFileStream = new rapidjson::FileStream(stdout);
-        }
-        else
-        {
-            fFile = fopen(fFilename.c_str(), fFileMode.c_str());
-            if (fFile == NULL)
-            {
-                KTERROR(publog, "File did not open\n" <<
-                        "\tFilename: " << fFilename <<
-                        "\tMode: " << fFileMode);
-                return false;
-            }
-            fFileStream = new rapidjson::FileStream(fFile);
-        }
-
-        if (fPrettyJSONFlag)
-        {
-            fJSONMaker = new KTJSONMakerPretty< rapidjson::FileStream >(*fFileStream);
-        }
-        else
-        {
-            fJSONMaker = new KTJSONMakerCompact< rapidjson::FileStream >(*fFileStream);
-        }
-
-        fJSONMaker->StartObject();
-
-        return true;
-    }
-
-    void KTJSONReader::CloseFile()
-    {
-        if (fJSONMaker != NULL)
-        {
-            fJSONMaker->EndObject();
-            delete fJSONMaker;
-            fJSONMaker = NULL;
-        }
-        if (fFileStream != NULL)
-        {
-            delete fFileStream;
-            fFileStream = NULL;
-        }
-        if (fFile != NULL)
-        {
-            fclose(fFile);
-            fFile = NULL;
-        }
-        return;
-    }
-
-    Bool_t KTJSONReader::OpenAndVerifyFile()
-    {
-        if (fFileStream == NULL || fJSONMaker == NULL)
-        {
-            if (! OpenFile())
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-*/
-    shared_ptr< KTData > KTJSONReader::ReadMCTruthEventsFile()
+    Bool_t KTJSONReader::OpenAndParseFile(rapidjson::Document& document)
     {
         FILE* file = fopen(fFilename.c_str(), fFileMode.c_str());
         if (file == NULL)
@@ -158,37 +85,55 @@ namespace Katydid
             KTERROR(inlog, "File did not open\n" <<
                     "\tFilename: " << fFilename <<
                     "\tMode: " << fFileMode);
-            return shared_ptr<KTData>();
+            return false;
         }
-        rapidjson::FileStream fileStream = new rapidjson::FileStream(file);
 
-        rapidjson::Document document;
+        rapidjson::FileStream fileStream(file);
+
         if (document.ParseStream<0>(fileStream).HasParseError())
         {
-            KTERROR(inlog, "Unable to parse file <" << fFilename << ">");
-            return shared_ptr<KTData>();
+            KTERROR(inlog, "Unable to parse file <" << fFilename << ">\n" <<
+                    "\tReason: " << document.GetParseError() << '\n' <<
+                    "\tLocation: character (sorry!) " << document.GetErrorOffset());
+            fclose(file);
+            return false;
         }
+
+        fclose(file);
 
         KTDEBUG(inlog, "Input file open and parsed: <" << fFilename << ">");
 
-        rapidjson::GenericValue& events = document["events"];
+        return true;
+    }
+
+    shared_ptr< KTData > KTJSONReader::ReadMCTruthEventsFile()
+    {
+        rapidjson::Document document;
+        if (! OpenAndParseFile(document))
+        {
+            KTERROR(inlog, "A problem occured while parsing the mc-truth-events file");
+            return shared_ptr<KTData>();
+        }
+
+        const rapidjson::Value& events = document["events"];
         if (! events.IsArray())
         {
             KTERROR(inlog, "\"events\" value in the mc truth file is either missing or not an array");
             return shared_ptr<KTData>();
         }
 
-        for (rapidjson::GenericValue::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
+        for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
         {
-            if (evIt->IsObject() && ! (*evIt)["support"].IsArray())
+            const rapidjson::Value& support = (*evIt)["support"];
+            if (support.IsArray())
             {
-                Double_t start = (*evIt)["support"][0].GetDouble();
-                Double_t end = (*evIt)["support"][1].GetDoulbe();
+                Double_t start = (*evIt)["support"][rapidjson::SizeType(0)].GetDouble(); // explicit cast to SizeType used because of abiguous overload
+                Double_t end = (*evIt)["support"][rapidjson::SizeType(1)].GetDouble(); // explicit cast to SizeType used because of abiguous overload
                 KTDEBUG(inlog, "extracted (" << start << ", " << end << ")");
             }
             else
             {
-                KTWARN(inlog, "Invalid element in events array");
+                KTWARN(inlog, "\"support\" value is either missing or not an array");
             }
         }
 

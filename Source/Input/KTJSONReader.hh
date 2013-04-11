@@ -11,10 +11,11 @@
 
 #include "KTReader.hh"
 
-#include "KTJSONMaker.hh"
 #include "KTSignal.hh"
 
 #include <boost/shared_ptr.hpp>
+
+#include "document.h"
 
 #include <cstdio>
 #include <string>
@@ -50,9 +51,6 @@ namespace Katydid
     class KTJSONReader : public KTReader
     {
         public:
-            typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;
-
-        public:
             KTJSONReader(const std::string& name = "json-writer");
             virtual ~KTJSONReader();
 
@@ -76,22 +74,10 @@ namespace Katydid
         public:
             virtual Bool_t Run();
 
-            //Bool_t ReadFile();
-
-
-            //Bool_t OpenFile();
-            //void CloseFile();
-
-            //Bool_t OpenAndVerifyFile();
-
-            //KTJSONMaker< rapidjson::FileStream >* GetJSONMaker() const;
-
         private:
             Bool_t (KTJSONReader::*fRunFcn)();
 
-            //FILE* fFile;
-            //rapidjson::FileStream* fFileStream;
-            //KTJSONMaker< rapidjson::FileStream >* fJSONMaker;
+            Bool_t OpenAndParseFile(rapidjson::Document& document);
 
         public:
             boost::shared_ptr<KTData> ReadMCTruthEventsFile();
@@ -142,12 +128,6 @@ namespace Katydid
     {
         return (this->*fRunFcn)();
     }
-
-
-    //inline KTJSONMaker< rapidjson::FileStream >* KTJSONReader::GetJSONMaker() const
-    //{
-    //    return fJSONMaker;
-    //}
 
 } /* namespace Katydid */
 #endif /* KTJSONREADER_HH_ */
