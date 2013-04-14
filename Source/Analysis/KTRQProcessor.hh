@@ -15,15 +15,13 @@
 #include "KTBiasedACM.hh"
 #include "KTProcessor.hh"
 #include "KTLogger.hh"
-
-#include "KTBundle.hh"
 #include "KTFactory.hh"
-#include "KTPStoreNode.hh"
-#include "KTData.hh"
-#include "KTTimeSeriesChannelData.hh"
-#include "KTTimeSeriesReal.hh"
 
-#include "boost/shared_ptr.hpp"
+#include "KTPStoreNode.hh"
+#include "KTSlot.hh"
+#include "KTTimeSeriesReal.hh"
+#include "KTTimeSeriesData.hh"
+
 #include <Eigen/Sparse>
 
 #include <ctime>
@@ -60,14 +58,14 @@ namespace Katydid {
      */
   public:
     typedef Eigen::Map<const Eigen::RowVectorXd> DataMapType;
-    typedef KTSignalConcept< void (const KTTimeSeriesData*) >::signal RQSignal;
 
-    void ProcessNoiseData(const KTTimeSeriesData* noise);
-    void ProcessCandidateBundle(boost::shared_ptr<KTBundle> bundle);
-    void ProcessNoiseBundle(boost::shared_ptr<KTBundle> bundle);
 
   private:
-    RQSignal fRQSignal;
+    KTSlotDataOneType< KTTimeSeriesData > fNoiseSlot;
+    Bool_t ProcessNoiseData(KTTimeSeriesData& noise);
+    KTSlotDataOneType< KTTimeSeriesData > fCandidateSlot;
+    Bool_t ProcessCandidateData(KTTimeSeriesData& candidate);
+    KTSignalData fRQSignal;
 
     /*
      * Internal state related to processing
