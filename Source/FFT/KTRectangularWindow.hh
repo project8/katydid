@@ -30,7 +30,7 @@ namespace Katydid
     class KTRectangularWindow : public KTWindowFunction
     {
         public:
-            KTRectangularWindow(const std::string& name = "rectangular-window");
+            KTRectangularWindow(const std::string& name = "rectangular");
             virtual ~KTRectangularWindow();
 
             virtual Bool_t ConfigureWFSubclass(const KTPStoreNode* node);

@@ -39,7 +39,7 @@ namespace Katydid
     class KTHannWindow : public KTWindowFunction
     {
         public:
-            KTHannWindow(const std::string& name = "hann-window");
+            KTHannWindow(const std::string& name = "hann");
             virtual ~KTHannWindow();
 
             virtual Bool_t ConfigureWFSubclass(const KTPStoreNode* node);

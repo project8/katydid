@@ -33,7 +33,7 @@ namespace Katydid
     class KTHammingWindow : public KTWindowFunction
     {
         public:
-            KTHammingWindow(const std::string& name = "hamming-window");
+            KTHammingWindow(const std::string& name = "hamming");
             virtual ~KTHammingWindow();
 
             virtual Bool_t ConfigureWFSubclass(const KTPStoreNode* node);
