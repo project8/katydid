@@ -8,12 +8,15 @@
 #include "KTLogger.hh"
 #include "KTWindowFunction.hh"
 
+#include "KTBlackmanHarrisWindow.hh"
 #include "KTHammingWindow.hh"
 #include "KTHannWindow.hh"
 #include "KTRectangularWindow.hh"
 
+#ifdef ROOT_FOUND
 #include "TFile.h"
 #include "TH1.h"
+#endif
 
 using namespace Katydid;
 using namespace std;
@@ -25,7 +28,9 @@ int main(int argc, char** argv)
     //KTRectangularWindow wf;
     //wf.SetBoxcarSize(10000);
 
-    KTHammingWindow wf;
+    //KTHammingWindow wf;
+
+    KTBlackmanHarrisWindow wf;
 
     UInt_t size = 16384;
     Double_t bw = 5.e-9;
