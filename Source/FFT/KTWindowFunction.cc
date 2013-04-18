@@ -7,14 +7,13 @@
 
 #include "KTWindowFunction.hh"
 
-#include "KTFrequencySpectrumPolar.hh"
+#include "KTComplexFFTW.hh"
+#include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPowerSpectrum.hh"
 #include "KTPStoreNode.hh"
-#include "KTSimpleFFT.hh"
 #include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesReal.hh"
+#include "KTTimeSeriesFFTW.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -61,22 +60,10 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH1D* KTWindowFunction::CreateHistogram(const string& name) const
     {
-        //Int_t sideBands = KTMath::Nint(0.2 * fSize);
-        //Int_t totalSize = fSize + 2 * sideBands;
-        Int_t sideBands = 0;
-        Int_t totalSize = fSize;
-        Double_t histEdges = fLength / 2. + sideBands * fBinWidth;
-        Double_t histMin = 0.;
-        Double_t histMax = fLength;
-        TH1D* hist = new TH1D(name.c_str(), "Window Function", totalSize, histMin, histMax);
-        //for (UInt_t iHistBin=1; iHistBin<=sideBands; iHistBin++)
-        //{
-        //    hist->SetBinContent(iHistBin, 0.);
-        //    hist->SetBinContent(totalSize-iHistBin+1, 0.);
-        //}
-        for (UInt_t iHistBin=sideBands+1; iHistBin<=fSize+sideBands; iHistBin++)
+        TH1D* hist = new TH1D(name.c_str(), "Window Function", fSize, 0, fLength);
+        for (UInt_t iHistBin=1; iHistBin<=fSize; iHistBin++)
         {
-            hist->SetBinContent(iHistBin, this->GetWeight(iHistBin-sideBands-1));
+            hist->SetBinContent(iHistBin, this->GetWeight(iHistBin-1));
         }
         hist->SetYTitle("Weight");
         return hist;
@@ -84,26 +71,17 @@ namespace Katydid
 
     TH1D* KTWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
     {
-        //Int_t sideBands = KTMath::Nint(0.2 * fSize);
-        //Int_t totalSize = fSize + 2 * sideBands;
-        Int_t sideBands = 0;
-        Int_t totalSize = fSize;
-        KTTimeSeriesReal timeData(totalSize, 0., Double_t(totalSize) * fBinWidth);
-        //for (UInt_t iBin=0; iBin<sideBands; iBin++)
-        //{
-        //    timeData(iBin) = 0.;
-        //    timeData(totalSize-iBin-1) = 0.;
-        //}
-        for (UInt_t iBin=sideBands; iBin<fSize+sideBands; iBin++)
+        KTTimeSeriesFFTW timeData(fSize, 0., Double_t(fSize) * fBinWidth);
+        for (UInt_t iBin=0; iBin<fSize+0; iBin++)
         {
-            timeData(iBin) = this->GetWeight(iBin-sideBands);
+            timeData.SetValue(iBin, GetWeight(iBin));
         }
-        KTSimpleFFT fft;
-        fft.SetTimeSize(totalSize);
+        KTComplexFFTW fft;
+        fft.SetSize(fSize);
         fft.SetTransformFlag("ESTIMATE");
         fft.InitializeFFT();
-        KTFrequencySpectrumPolar* freqSpect = fft.Transform(&timeData);
-        TH1D* hist = freqSpect->CreatePowerHistogram(name);
+        KTFrequencySpectrumFFTW* freqSpect = fft.Transform(&timeData);
+        TH1D* hist = freqSpect->CreateMagnitudeHistogram(name);
         hist->SetYTitle("Weight");
         delete freqSpect;
         return hist;
