@@ -9,7 +9,7 @@
 #ifndef KTHAMMINGWINDOW_HH_
 #define KTHAMMINGWINDOW_HH_
 
-#include "KTBundleWindowFunction.hh"
+#include "KTWindowFunction.hh"
 
 namespace Katydid
 {
@@ -30,17 +30,15 @@ namespace Katydid
       none
     */
 
-    class KTHammingWindow : public KTBundleWindowFunction
+    class KTHammingWindow : public KTWindowFunction
     {
         public:
-            KTHammingWindow();
-            KTHammingWindow(const KTTimeSeriesData* tsData);
+            KTHammingWindow(const std::string& name = "hamming-window");
             virtual ~KTHammingWindow();
 
-            virtual Bool_t ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node);
+            virtual Bool_t ConfigureWFSubclass(const KTPStoreNode* node);
 
             virtual Double_t GetWeight(Double_t time) const;
-            virtual Double_t GetWeight(UInt_t bin) const;
 
         protected:
             virtual void RebuildWindowFunction();

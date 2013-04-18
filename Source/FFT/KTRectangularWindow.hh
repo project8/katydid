@@ -9,7 +9,7 @@
 #ifndef KTRECTANGULARWINDOW_HH_
 #define KTRECTANGULARWINDOW_HH_
 
-#include "KTBundleWindowFunction.hh"
+#include "KTWindowFunction.hh"
 
 namespace Katydid
 {
@@ -24,25 +24,42 @@ namespace Katydid
      Outside of the window area, the weights are 0.
 
      Available configuration values:
-      none
+      - boxcar-size: UInt_t -- size (# of bins) of the interval where the weight is 1; this interval is centered in the window
     */
 
-    class KTRectangularWindow : public KTBundleWindowFunction
+    class KTRectangularWindow : public KTWindowFunction
     {
         public:
-            KTRectangularWindow();
-            KTRectangularWindow(const KTTimeSeriesData* tsData);
+            KTRectangularWindow(const std::string& name = "rectangular-window");
             virtual ~KTRectangularWindow();
 
-            virtual Bool_t ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node);
+            virtual Bool_t ConfigureWFSubclass(const KTPStoreNode* node);
 
             virtual Double_t GetWeight(Double_t time) const;
-            virtual Double_t GetWeight(UInt_t bin) const;
 
         protected:
             virtual void RebuildWindowFunction();
 
+        public:
+            UInt_t GetBoxcarSize() const;
+            void SetBoxcarSize(UInt_t size);
+
+        private:
+            UInt_t fBoxcarSize;
+
     };
+
+    inline UInt_t KTRectangularWindow::GetBoxcarSize() const
+    {
+        return fBoxcarSize;
+    }
+
+    inline void KTRectangularWindow::SetBoxcarSize(UInt_t size)
+    {
+        fBoxcarSize = size;
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTRECTANGULARWINDOW_HH_ */
