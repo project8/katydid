@@ -16,7 +16,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTWindowFunction, KTRectangularWindow > sEWFRectRegistrar("rectangular");
+    static KTDerivedRegistrar< KTWindowFunction, KTRectangularWindow > sWFRectRegistrar("rectangular");
 
     KTRectangularWindow::KTRectangularWindow(const string& name) :
             KTWindowFunction(name),

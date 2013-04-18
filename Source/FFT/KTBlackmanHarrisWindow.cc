@@ -17,7 +17,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTWindowFunction, KTBlackmanHarrisWindow > sEWFHammRegistrar("blackman-harris-window");
+    static KTDerivedRegistrar< KTWindowFunction, KTBlackmanHarrisWindow > sWFBHRegistrar("blackman-harris-window");
 
     KTBlackmanHarrisWindow::KTBlackmanHarrisWindow(const string& name) :
             KTWindowFunction(name)

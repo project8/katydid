@@ -17,7 +17,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTWindowFunction, KTHammingWindow > sEWFHammRegistrar("hamming");
+    static KTDerivedRegistrar< KTWindowFunction, KTHammingWindow > sWFHammRegistrar("hamming");
 
     KTHammingWindow::KTHammingWindow(const string& name) :
             KTWindowFunction(name)
