@@ -100,6 +100,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestWignerVille ${CMAKE_CURRENT_SOURCE_DIR}/TestWignerVille.cc)
     target_link_libraries (TestWignerVille KatydidUtility KatydidCore KatydidData KatydidOutput KatydidAnalysis ${LIBS})
     
+    add_executable (TestWindowFunction ${CMAKE_CURRENT_SOURCE_DIR}/TestWindowFunction.cc)
+    target_link_libraries (TestWindowFunction KatydidUtility KatydidCore KatydidData KatydidFFT)
+    
     #add_executable (TestASCIIFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestASCIIFileWriter.cc)
     #target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidData KatydidOutput ${LIBS})
 
@@ -128,6 +131,7 @@ if (Katydid_ENABLE_TESTING)
                      TestThroughputProfiler
                      TestVector
                      TestWignerVille
+                     TestWindowFunction
 #                    TestASCIIFileWriter
     )
              
