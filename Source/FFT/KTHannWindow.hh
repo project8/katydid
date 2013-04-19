@@ -46,7 +46,6 @@ namespace Katydid
 
             virtual Double_t GetWeight(Double_t time) const;
 
-        protected:
             virtual void RebuildWindowFunction();
 
     };

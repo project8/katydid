@@ -92,9 +92,9 @@ namespace Katydid
             /// NOTE: this changes the size of the window! (duh)
             Double_t SetSize(UInt_t size);
 
-        protected:
             virtual void RebuildWindowFunction() = 0;
 
+        protected:
             std::vector< Double_t > fWindowFunction;
 
             Double_t fLength;
