@@ -55,9 +55,6 @@ namespace Katydid
             /// Returns the adapted length.
             /// If you also need to set the length, it is recommended that you use AdaptTo(const TBundle*, Double_t) instead of separately setting the length.
             Double_t AdaptTo(const KTTimeSeriesData* tsData);
-            /// Sets fBinWidth to bundle->GetBinWidth(), and adapts the length to be the integer multiple of the bin width closest to the given length.
-            /// Returns the adapted length.
-            Double_t AdaptTo(const KTTimeSeriesData* tsData, Double_t length);
 
             virtual Double_t GetWeight(Double_t time) const = 0;
             Double_t GetWeight(UInt_t bin) const;

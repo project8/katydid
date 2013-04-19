@@ -49,12 +49,8 @@ namespace Katydid
 
     Double_t KTWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
     {
-        return SetBinWidth(tsData->GetTimeSeries(0)->GetTimeBinWidth());
-    }
-
-    Double_t KTWindowFunction::AdaptTo(const KTTimeSeriesData* tsData, Double_t length)
-    {
-        return SetBinWidthAndLength(tsData->GetTimeSeries(0)->GetTimeBinWidth(), length);
+        SetBinWidth(tsData->GetTimeSeries(0)->GetTimeBinWidth());
+        return SetSize(tsData->GetTimeSeries(0)->GetNTimeBins());
     }
 
 #ifdef ROOT_FOUND
