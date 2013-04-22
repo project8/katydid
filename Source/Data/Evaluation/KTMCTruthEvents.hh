@@ -20,13 +20,17 @@ namespace Katydid
         public:
             struct Event
             {
-                Double_t fStartTime;
-                Double_t fEndTime;
+                UInt_t fStartRecord;
+                UInt_t fStartSample;
+                UInt_t fEndRecord;
+                UInt_t fEndSample;
 
-                Event(Double_t startTime, Double_t endTime)
+                Event(UInt_t startRec, UInt_t startSample, UInt_t endRec, UInt_t endSample)
                 {
-                    fStartTime = startTime;
-                    fEndTime = endTime;
+                    fStartRecord = startRec;
+                    fStartSample = startSample;
+                    fEndRecord = endRec;
+                    fEndSample = endSample;
                 }
             };
 
@@ -34,7 +38,10 @@ namespace Katydid
             {
                 bool operator() (const Event& lhs, const Event& rhs)
                 {
-                    return lhs.fStartTime < rhs.fStartTime || (lhs.fStartTime == rhs.fStartTime && lhs.fEndTime < rhs.fEndTime);
+                    return lhs.fStartRecord < rhs.fStartRecord ||
+                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample < rhs.fEndSample) ||
+                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample == rhs.fEndSample && lhs.fEndRecord < rhs.fEndRecord) ||
+                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample == rhs.fEndSample && lhs.fEndRecord == rhs.fEndRecord && lhs.fEndSample < rhs.fEndSample);
                 }
             };
 

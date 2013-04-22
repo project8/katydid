@@ -17,21 +17,6 @@ namespace Katydid
     class KTCompareCandidates : public KTProcessor
     {
         public:
-            struct TruthElectron
-            {
-                Double_t fStartTime;
-                Double_t fEndTime;
-            };
-
-            struct AnalysisCandidate
-            {
-                Double_t fStartTime;
-                Double_t fEndTime;
-                Double_t fStartTimeUncert;
-                Double_t fEndTimeUncert;
-            };
-
-        public:
             KTCompareCandidates(const std::string& name = "compare-candidates");
             virtual ~KTCompareCandidates();
 

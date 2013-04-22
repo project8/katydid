@@ -122,14 +122,20 @@ namespace Katydid
             return shared_ptr<KTData>();
         }
 
+        boost::shared_ptr< KTData > newData(new KTData());
+        KTMCTruthEvents& mcTruth = newData->Of< KTMCTruthEvents >();
+
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
         {
             const rapidjson::Value& support = (*evIt)["support"];
             if (support.IsArray())
             {
-                Double_t start = (*evIt)["support"][rapidjson::SizeType(0)].GetDouble(); // explicit cast to SizeType used because of abiguous overload
-                Double_t end = (*evIt)["support"][rapidjson::SizeType(1)].GetDouble(); // explicit cast to SizeType used because of abiguous overload
-                KTDEBUG(inlog, "extracted (" << start << ", " << end << ")");
+                UInt_t startRec = support[rapidjson::SizeType(0)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
+                mcTruth.AddEvent(KTMCTruthEvents::Event(startRec, startSample, endRec, endSample));
             }
             else
             {
@@ -137,7 +143,9 @@ namespace Katydid
             }
         }
 
-        return shared_ptr<KTData>();
+        KTDEBUG(inlog, "new data object has " << mcTruth.GetEvents().size() << " events");
+
+        return newData;
     }
 
     shared_ptr< KTData > KTJSONReader::ReadAnalysisCandidatesFile()
