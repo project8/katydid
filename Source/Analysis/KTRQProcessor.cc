@@ -5,23 +5,14 @@ namespace Katydid {
 
   KTRQProcessor::KTRQProcessor(const std::string& name) :
     KTProcessor(name),
-    fRQSignal(),
+    fRQSignal("rq", this),
     fChunkSize(512),
     fNACMDidConverge(false),
     fNoiseACM(NULL),
-    fDataMap(NULL)
+    fDataMap(NULL),
+    fNoiseSlot("noise-ts", this, &KTRQProcessor::ProcessNoiseData, &fRQSignal),
+    fCandidateSlot("candidate-ts", this, &KTRQProcessor::ProcessCandidateData, &fRQSignal)
   {
-    RegisterSignal("rq-calc", 
-		   &fRQSignal);
-    RegisterSlot("ts-noise", 
-		 this, 
-		 &KTRQProcessor::ProcessNoiseData);
-    RegisterSlot("process-noise-bundle",
-		 this,
-		 &KTRQProcessor::ProcessNoiseBundle);
-    RegisterSlot("process-candidate-bundle",
-		 this,
-		 &KTRQProcessor::ProcessCandidateBundle);
   }
 
   KTRQProcessor::~KTRQProcessor() 
@@ -100,69 +91,64 @@ namespace Katydid {
     return this->fNACMDidConverge;
   }
   
-  void KTRQProcessor::ProcessNoiseBundle(boost::shared_ptr<KTBundle> bundle)
+  Bool_t KTRQProcessor::ProcessNoiseData(KTTimeSeriesData& noise)
   {
-    // Grab time series data from bundle
-    const KTTimeSeriesData* noise = bundle->GetData<KTTimeSeriesData>(fNoiseName);
-    if( noise != NULL ) {
-      if( !(this->fNACMDidConverge) ) {
-	// Grab the first channel of data out to use. 
-	const KTTimeSeriesReal* noiseDt = dynamic_cast<const KTTimeSeriesReal*>(noise->GetTimeSeries(0));
+    if( !(this->fNACMDidConverge) ) {
+      // Grab the first channel of data out to use. 
+      const KTTimeSeriesReal* noiseDt = dynamic_cast<const KTTimeSeriesReal*>(noise.GetTimeSeries(0));
 
-	// We need to iterate over the chunks in the time series and produce our 
-	// own time series.  First things first, get the pointer to the raw data
-	// held in the time series.
-	unsigned nElem = (noiseDt->GetData()).data().size();
-	const double* rawPtr = (noiseDt->GetData()).data().begin();
+      // We need to iterate over the chunks in the time series and produce our 
+      // own time series.  First things first, get the pointer to the raw data
+      // held in the time series.
+      unsigned nElem = (noiseDt->GetData()).data().size();
+      const double* rawPtr = (noiseDt->GetData()).data().begin();
 
-	// Now we point the data map at the first fChunkSize piece of data and process it. 
-	// For now we only use the first chunk to form the ACM.  Despite the fact that this
-	// looks like allocating memory, it isn't.
-	new (this->fDataMap) DataMapType(rawPtr, this->fChunkSize);
+      // Now we point the data map at the first fChunkSize piece of data and process it. 
+      // For now we only use the first chunk to form the ACM.  Despite the fact that this
+      // looks like allocating memory, it isn't.
+      new (this->fDataMap) DataMapType(rawPtr, this->fChunkSize);
         
-	// Update noise estimate with current noise sample.
-	KTINFO(nrq_log,"using noise to update NACM estimate...");
+      // Update noise estimate with current noise sample.
+      KTINFO(nrq_log,"using noise to update NACM estimate...");
 
-  // Grab a tick to calculate elapsed time.
-  std::clock_t t0 = clock();
+      // Grab a tick to calculate elapsed time.
+      std::clock_t t0 = clock();
 
-	// Calculate first row.  The NACM is a Toeplitz matrix which means we only need to
-	// calculate the first row.
-	for(unsigned colIdx = 0; colIdx < this->fChunkSize; colIdx++) {
-	  (*this->fNoiseACM)(0, colIdx) = KTRQProcessor::LaggedACF(this->fDataMap, colIdx);
-	}
+      // Calculate first row.  The NACM is a Toeplitz matrix which means we only need to
+      // calculate the first row.
+      for(unsigned colIdx = 0; colIdx < this->fChunkSize; colIdx++) {
+	(*this->fNoiseACM)(0, colIdx) = KTRQProcessor::LaggedACF(this->fDataMap, colIdx);
+      }
 
-	for(unsigned row = 1; row < this->fChunkSize; row++) {
-	  for(unsigned col = 0; col < this->fChunkSize; col++) {
-	    // If row = col, we are on the diagonal, which means this element is equal to
-	    // row = 0, col = 0.
-	    if( row == col ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(0,0);
-	    // If row < col, we are below the diagonal, so use the transposed element for
-	    // assignment.
-	    if( col < row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(col,row);
-	    // If row > col, we are above the diagonal.  Look above and to the left to get this
-	    // element.
-	    if( col > row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(row-1, col-1);
-	  }
-	}
-
-  // all done, check elapsed time.
-  std::clock_t tf = clock();
-  double elapsed = (tf-t0)/CLOCKS_PER_SEC;
-  KTINFO("Noise bundle processed in " << elapsed << " seconds.");
-
-	// Check convergence criterion (TEMPORARILY JUST TRUE) and set convergence flag if
-	// appropriate.
-	if(true) {
-	  this->SetNACMConverged(true);
-	  KTINFO(nrq_log,"NACM has converged.");
-	  KTWARN(nrq_log,"DON'T BELIEVE CONVERGE MSG, TEMPORARY CONVERGENCE CRITERION USED.");
+      for(unsigned row = 1; row < this->fChunkSize; row++) {
+	for(unsigned col = 0; col < this->fChunkSize; col++) {
+	  // If row = col, we are on the diagonal, which means this element is equal to
+	  // row = 0, col = 0.
+	  if( row == col ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(0,0);
+	  // If row < col, we are below the diagonal, so use the transposed element for
+	  // assignment.
+	  if( col < row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(col,row);
+	  // If row > col, we are above the diagonal.  Look above and to the left to get this
+	  // element.
+	  if( col > row ) (*this->fNoiseACM)(row,col) = (*this->fNoiseACM)(row-1, col-1);
 	}
       }
+
+      // all done, check elapsed time.
+      std::clock_t tf = clock();
+      double elapsed = (tf-t0)/CLOCKS_PER_SEC;
+      KTINFO("Noise data processed in " << elapsed << " seconds.");
+
+      // Check convergence criterion (TEMPORARILY JUST TRUE) and set convergence flag if
+      // appropriate.
+      if(true) {
+	this->SetNACMConverged(true);
+	KTINFO(nrq_log,"NACM has converged.");
+	KTWARN(nrq_log,"DON'T BELIEVE CONVERGE MSG, TEMPORARY CONVERGENCE CRITERION USED.");
+      }
     }
-    else {
-      KTWARN(nrq_log,"time series " << fNoiseName << " not found in bundle!  skipping...");
-    }
+    
+    return true;
   }
 
   double KTRQProcessor::LaggedACF(const DataMapType* data, unsigned lag) 
@@ -180,71 +166,58 @@ namespace Katydid {
     return (tsptr->normalized())*(*(this->fNoiseACM))*(tsptr->adjoint());
   }
 
-  void KTRQProcessor::ProcessNoiseData(const KTTimeSeriesData* noise)
-  {
-    KTWARN(nrq_log,"unimplemented processing of noise called!");
-  }
-
-  void KTRQProcessor::ProcessCandidateBundle(boost::shared_ptr<KTBundle> bundle) 
+  Bool_t KTRQProcessor::ProcessCandidateData(KTTimeSeriesData& c)
   {
     if( this->fNACMDidConverge ) {
       // grab data from the bundle.
-      const KTTimeSeriesData* c = bundle->GetData<KTTimeSeriesData>(fCandidateName);
-      if( c != NULL ) {
-	// cast data to time series real data.  
-	const KTTimeSeriesReal* cDt = dynamic_cast<const KTTimeSeriesReal*>(c->GetTimeSeries(0));
+      // cast data to time series real data.  
+      const KTTimeSeriesReal* cDt = dynamic_cast<const KTTimeSeriesReal*>(c.GetTimeSeries(0));
 
-	// We need to iterate over the chunks in the time series and produce our 
-	// own time series.  First things first, get the pointer to the raw data
-	// held in the time series.
-	unsigned nElem = (cDt->GetData()).data().size();
-	const double* rawPtr = (cDt->GetData()).data().begin();
+      // We need to iterate over the chunks in the time series and produce our 
+      // own time series.  First things first, get the pointer to the raw data
+      // held in the time series.
+      unsigned nElem = (cDt->GetData()).data().size();
+      const double* rawPtr = (cDt->GetData()).data().begin();
 
-	// Now here is our time series.  The number of elements is equal to the floor of the 
-	// number of elements in the incoming time series divided by the chunk size.
-	unsigned nOut = nElem/fChunkSize;
-	KTBasicTimeSeriesData* nDt = new KTBasicTimeSeriesData(1);
-	KTTimeSeriesReal* rqOut = new KTTimeSeriesReal(nOut);
+      // Now here is our time series.  The number of elements is equal to the floor of the 
+      // number of elements in the incoming time series divided by the chunk size.
+      unsigned nOut = nElem/fChunkSize;
+      KTTimeSeriesData& nDt = c.Of<KTTimeSeriesData>().SetNComponents(1);
+      KTTimeSeriesReal* rqOut = new KTTimeSeriesReal(nOut);
 
-  // Grab clock tick for elapsed time calculation
-  std::clock_t t0 = clock();
+      // Grab clock tick for elapsed time calculation
+      std::clock_t t0 = clock();
 
-	/*
-	 * Iterate over the data in the bundle, pointing the data map at each chunk consecutively.
-	 * first we need to know 
-	 */
-	for(unsigned offset = 0; offset < nOut; offset++) {
-	  new (this->fDataMap) DataMapType(rawPtr + (offset*fChunkSize), this->fChunkSize);
+      /*
+       * Iterate over the data in the bundle, pointing the data map at each chunk consecutively.
+       * first we need to know 
+       */
+      for(unsigned offset = 0; offset < nOut; offset++) {
+	new (this->fDataMap) DataMapType(rawPtr + (offset*fChunkSize), this->fChunkSize);
 	  
-	  // Now we should be able to compute the rayleigh quotient for this chunk.
-	  double rq = this->RayleighQuotient(this->fDataMap);
+	// Now we should be able to compute the rayleigh quotient for this chunk.
+	double rq = this->RayleighQuotient(this->fDataMap);
 
-	  // Now set the data in the output time series.
-	  rqOut->SetValue(offset, rq);
-	}
-
-	/*
-	 * Attach the new data to the KTBundle and fire the signal that indicates we have 
-	 * compressed this time series.
-	 */
-	nDt->SetName(fOutputDataName);
-	nDt->SetTimeSeries(rqOut);
-	bundle->AddData(nDt);
-
-  // all done, check elapsed time.
-  std::clock_t tf = clock();
-  double elapsed = (tf-t0)/CLOCKS_PER_SEC;
-  KTINFO("Candidate record processed by NRQ processor in " << elapsed << " seconds.");
-
-	fRQSignal(nDt);	
+	// Now set the data in the output time series.
+	rqOut->SetValue(offset, rq);
       }
-      else {
-	KTWARN(nrq_log,"no data named " << fCandidateName << " found in bundle!  skipping...");
-      }
+
+      /*
+       * Attach the new data to the KTBundle and fire the signal that indicates we have 
+       * compressed this time series.
+       */
+      nDt.SetTimeSeries(rqOut);
+	
+      // all done, check elapsed time.
+      std::clock_t tf = clock();
+      double elapsed = (tf-t0)/CLOCKS_PER_SEC;
+      KTINFO("Candidate record processed by NRQ processor in " << elapsed << " seconds.");
     }
     else {
-      KTWARN(nrq_log,"NACM has not converged - no NRQ calculation performed.");
+    KTWARN(nrq_log,"NACM has not converged - no NRQ calculation performed.");
     }
+
+    return true;
   }
 
 }; // namespace katydid
