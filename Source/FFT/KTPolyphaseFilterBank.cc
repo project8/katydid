@@ -11,6 +11,7 @@
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
@@ -94,18 +95,46 @@ namespace Katydid
         return false;
     }
 
-    KTTimeSeriesData* KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
+    boost::shared_ptr< KTData > KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
     {
+        KTSliceHeader& oldSliceHeader = tsData.Of< KTSliceHeader >();
+
+        boost::shared_ptr< KTData > newData(new KTData());
+
+        // Fill out slice header information
+        KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
+        if (! TransferHeaderInformation(oldSliceHeader, sliceHeader))
+        {
+            KTERROR(pfblog, "Header information was not transferred");
+            return boost::shared_ptr< KTData >();
+        }
+        KTDEBUG(pfblog, "Filled out slice header:\n"
+                << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
+                << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
+                << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
+                << "\tSlice length: " << sliceHeader.GetSliceLength() << " s\n"
+                << "\tTime in run: " << sliceHeader.GetTimeInRun() << " s\n"
+                << "\tSlice number: " << sliceHeader.GetSliceNumber());
+
+
         UInt_t nComponents = tsData.GetNComponents();
+        KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
         for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
-            KTTimeSeriesReal* newTS = ApplyPFB(static_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent)));
+            KTTimeSeries* newTS = ApplyPFB(static_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent)));
+            if (newTS == NULL)
+            {
+                KTERROR(pfblog, "Time series for component " << iComponent << " was not created!");
+                return boost::shared_ptr< KTData >();
+            }
+            tsData.SetTimeSeries(newTS, iComponent);
         }
 
+        return newData;
     }
 
-    KTTimeSeriesData* KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
+    boost::shared_ptr< KTData > KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
     {
         UInt_t nComponents = tsData.GetNComponents();
 
@@ -124,5 +153,26 @@ namespace Katydid
     {
 
     }
+
+    Bool_t KTPolyphaseFilterBank::TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader)
+    {
+        newHeader.SetNComponents(oldHeader.GetNComponents());
+        newHeader.SetSampleRate(oldHeader.GetSampleRate());
+        newHeader.SetSliceSize(fSubsetSize);
+        newHeader.CalculateBinWidthAndSliceLength();
+        newHeader.SetTimeInRun(GetNewTimeInRun(oldHeader));
+        newHeader.SetSliceNumber(GetNewSliceNumber(oldHeader));
+
+        UInt_t nComponents = newHeader.GetNComponents();
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            newHeader.SetAcquisitionID(oldHeader.GetAcquisitionID(iComponent), iComponent);
+            newHeader.SetRecordID(oldHeader.GetRecordID(iComponent), iComponent);
+            newHeader.SetTimeStamp(oldHeader.GetTimeStamp(iComponent), iComponent);
+        }
+
+        return true;
+    }
+
 
 } /* namespace Katydid */

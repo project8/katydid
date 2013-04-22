@@ -25,6 +25,7 @@ namespace Katydid
     class KTData;
     class KTEggHeader;
     class KTPStoreNode;
+    class KTSliceHeader;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
@@ -82,14 +83,17 @@ namespace Katydid
             Bool_t ProcessDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Create a new data object for the filtered time series (real-type)
-            KTTimeSeriesData* CreateFilteredDataReal(const KTTimeSeriesData& tsData);
+            boost::shared_ptr< KTData > CreateFilteredDataReal(const KTTimeSeriesData& tsData);
             /// Create a new data object for the filtered time series (fftw-type)
-            KTTimeSeriesData* CreateFilteredDataFFTW(const KTTimeSeriesData& tsData);
+            boost::shared_ptr< KTData > CreateFilteredDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Apply PFB to a single time series (real-type); a new time series is produced
             KTTimeSeriesReal* ApplyPFB(const KTTimeSeriesReal* data) const;
             /// Apply PFB to a single time series (fftw-type); a new time series is produced
             KTTimeSeriesFFTW* ApplyPFB(const KTTimeSeriesFFTW* data) const;
+
+        private:
+            Bool_t TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader);
 
             //***************
             // Signals
