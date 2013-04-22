@@ -12,6 +12,7 @@
 #include "KTHammingWindow.hh"
 #include "KTHannWindow.hh"
 #include "KTRectangularWindow.hh"
+#include "KTSincWindow.hh"
 
 #ifdef ROOT_FOUND
 #include "TFile.h"
@@ -30,7 +31,9 @@ int main(int argc, char** argv)
 
     //KTHammingWindow wf;
 
-    KTBlackmanHarrisWindow wf;
+    //KTBlackmanHarrisWindow wf;
+
+    KTSincWindow wf;
 
     UInt_t size = 16384;
     Double_t bw = 5.e-9;

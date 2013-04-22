@@ -12,6 +12,8 @@ set (FFT_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSincWindow.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindower.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
 )
 
@@ -25,6 +27,8 @@ set (FFT_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSincWindow.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindower.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
 )
 
