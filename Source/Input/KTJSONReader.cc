@@ -111,7 +111,7 @@ namespace Katydid
         rapidjson::Document document;
         if (! OpenAndParseFile(document))
         {
-            KTERROR(inlog, "A problem occured while parsing the mc-truth-events file");
+            KTERROR(inlog, "A problem occurred while parsing the mc-truth-events file");
             return shared_ptr<KTData>();
         }
 
@@ -150,7 +150,44 @@ namespace Katydid
 
     shared_ptr< KTData > KTJSONReader::ReadAnalysisCandidatesFile()
     {
-        return shared_ptr<KTData>();
+        rapidjson::Document document;
+        if (! OpenAndParseFile(document))
+        {
+            KTERROR(inlog, "A problem occurred while parsing the mc-truth-events file");
+            return shared_ptr<KTData>();
+        }
+
+        const rapidjson::Value& events = document["events"];
+        if (! events.IsArray())
+        {
+            KTERROR(inlog, "\"events\" value in the mc truth file is either missing or not an array");
+            return shared_ptr<KTData>();
+        }
+
+        boost::shared_ptr< KTData > newData(new KTData());
+        KTAnalysisCandidates& candidates = newData->Of< KTAnalysisCandidates >();
+
+        for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
+        {
+            const rapidjson::Value& support = (*evIt)["support"];
+            if (support.IsArray())
+            {
+                UInt_t startRec = support[rapidjson::SizeType(0)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
+                candidates.AddCandidate(KTAnalysisCandidates::Candidate(startRec, startSample, endRec, endSample));
+            }
+            else
+            {
+                KTWARN(inlog, "\"support\" value is either missing or not an array");
+            }
+        }
+
+        KTDEBUG(inlog, "new data object has " << candidates.GetCandidates().size() << " events");
+
+        return newData;
     }
 
     Bool_t KTJSONReader::RunMCTruthEventsFile()
