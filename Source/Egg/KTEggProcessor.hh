@@ -35,7 +35,8 @@ namespace Katydid
      \li \c "progress-report-interval": UInt_t -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
      \li \c "filename": string -- Egg filename to use
      \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
-     \li \c "time-series-size": UInt_t -- Specify the size of the time series (select 0 to use the Monarch record length)
+     \li \c "slice-size": UInt_t -- Specify the size of the time series (required)
+     \li \c "stride": UInt_t -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
      \li \c "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
@@ -77,14 +78,16 @@ namespace Katydid
             UInt_t GetProgressReportInterval() const;
             const std::string& GetFilename() const;
             EggReaderType GetEggReaderType() const;
-            UInt_t GetSliceSizeRequest() const;
+            UInt_t GetSliceSize() const;
+            UInt_t GetStride() const;
             TimeSeriesType GetTimeSeriesType() const;
 
             void SetNSlices(UInt_t nSlices);
             void SetProgressReportInterval(UInt_t nSlices);
             void SetFilename(const std::string& filename);
             void SetEggReaderType(EggReaderType type);
-            void SetSliceSizeRequest(UInt_t size);
+            void SetSliceSize(UInt_t size);
+            void SetStride(UInt_t stride);
             void SetTimeSeriesType(TimeSeriesType type);
 
         private:
@@ -98,7 +101,8 @@ namespace Katydid
 
             EggReaderType fEggReaderType;
 
-            UInt_t fSliceSizeRequest;
+            UInt_t fSliceSize;
+            UInt_t fStride;
 
             TimeSeriesType fTimeSeriesType;
 
@@ -162,14 +166,25 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTEggProcessor::GetSliceSizeRequest() const
+    inline UInt_t KTEggProcessor::GetSliceSize() const
     {
-        return fSliceSizeRequest;
+        return fSliceSize;
     }
 
-    inline void KTEggProcessor::SetSliceSizeRequest(UInt_t size)
+    inline void KTEggProcessor::SetSliceSize(UInt_t size)
     {
-        fSliceSizeRequest = size;
+        fSliceSize = size;
+        return;
+    }
+
+    inline UInt_t KTEggProcessor::GetStride() const
+    {
+        return fStride;
+    }
+
+    inline void KTEggProcessor::SetStride(UInt_t stride)
+    {
+        fStride = stride;
         return;
     }
 

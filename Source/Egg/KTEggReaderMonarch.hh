@@ -40,11 +40,13 @@ namespace Katydid
                     kInvalid,
                     kAtStartOfRun,
                     kContinueReading,
-                    kAcquisitionIDHasChanged,
-                    kAtEndOfFile
+                    kReachedNextRecord
                 };
                 AcqIdType fAcquisitionID;
-                UInt_t fDataPtrOffset;
+                UInt_t fReadPtrOffset;
+                UInt_t fReadPtrRecordOffset;
+                UInt_t fSliceStartPtrOffset;
+                UInt_t fAbsoluteRecordOffset;
                 Status fStatus;
             };
 
@@ -63,12 +65,16 @@ namespace Katydid
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
 
-            UInt_t GetTimeSeriesSizeRequest() const;
-            void SetTimeSeriesSizeRequest(UInt_t size);
+            UInt_t GetSliceSize() const;
+            void SetSliceSize(UInt_t size);
+
+            UInt_t GetStride() const;
+            void SetStride(UInt_t stride);
 
         protected:
             TimeSeriesType fTimeSeriesType;
-            UInt_t fTimeSeriesSizeRequest;
+            UInt_t fSliceSize;
+            UInt_t fStride;
 
         public:
             /// Opens the egg file and returns a new copy of the header information.
@@ -94,7 +100,6 @@ namespace Katydid
             Double_t GetFullVoltageScale() const;
             UInt_t GetNADCLevels() const;
 
-            UInt_t GetRecordsRead() const;
             UInt_t GetRecordSize() const;
             Double_t GetBinWidth() const;
 
@@ -107,7 +112,6 @@ namespace Katydid
             Double_t fFullVoltageScale;
             UInt_t fNADCLevels;
 
-            UInt_t fRecordsRead;
             UInt_t fRecordSize;
             Double_t fBinWidth;
 
@@ -126,14 +130,25 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTEggReaderMonarch::GetTimeSeriesSizeRequest() const
+    inline UInt_t KTEggReaderMonarch::GetSliceSize() const
     {
-        return fTimeSeriesSizeRequest;
+        return fSliceSize;
     }
 
-    inline void KTEggReaderMonarch::SetTimeSeriesSizeRequest(UInt_t size)
+    inline void KTEggReaderMonarch::SetSliceSize(UInt_t size)
     {
-        fTimeSeriesSizeRequest = size;
+        fSliceSize = size;
+        return;
+    }
+
+    inline UInt_t KTEggReaderMonarch::GetStride() const
+    {
+        return fStride;
+    }
+
+    inline void KTEggReaderMonarch::SetStride(UInt_t stride)
+    {
+        fStride = stride;
         return;
     }
 
@@ -151,11 +166,6 @@ namespace Katydid
         return fNADCLevels;
     }
 
-
-    inline UInt_t KTEggReaderMonarch::GetRecordsRead() const
-    {
-        return fRecordsRead;
-    }
     inline UInt_t KTEggReaderMonarch::GetRecordSize() const
     {
         return fRecordSize;
@@ -167,7 +177,7 @@ namespace Katydid
 
     inline Double_t KTEggReaderMonarch::GetTimeInRun() const
     {
-        return fBinWidth * Double_t(fRecordsRead * fRecordSize + fReadState.fDataPtrOffset);
+        return fBinWidth * Double_t(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
     }
 
 

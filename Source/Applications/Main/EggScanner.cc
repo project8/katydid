@@ -50,8 +50,7 @@ int main(int argc, char** argv)
     }
     string filename(clOpts->GetCommandLineValue< string >("egg-file"));
 
-    // default value, 0, will use slice size = record size
-    UInt_t sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 0);
+    UInt_t sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
 
     KTEgg egg;
     if (clOpts->IsCommandLineOptSet("use-2011-egg-reader"))
@@ -63,7 +62,7 @@ int main(int argc, char** argv)
     else
     {
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
-        reader->SetTimeSeriesSizeRequest(sliceSize);
+        reader->SetSliceSize(sliceSize);
         egg.SetReader(reader);
     }
 
