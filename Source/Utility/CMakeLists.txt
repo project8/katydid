@@ -30,17 +30,28 @@ set (UTILITY_HEADERFILES
 
 set (UTILITY_HEADER_SUBDIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar
-    ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx
 )
 
 set (UTILITY_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar/specialization.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx/KTLevel.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTECDF.cc
 )
+
+if (LOG4CXX_FOUND)
+    set (UTILITY_HEADER_SUBDIRS
+        ${UTILITY_HEADER_SUBDIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx
+    )
+    
+    set (UTILITY_SOURCEFILES
+        ${UTILITY_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx/KTLevel.cc
+    )
+endif (LOG4CXX_FOUND)
+
 
 ##################################################
 
