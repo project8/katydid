@@ -18,6 +18,9 @@
 
 namespace Katydid
 {
+    class KTData;
+    class KTEggHeader;
+
     /*!
      @class KTOfficialCandidatesWriter
      @author N. S. Oblath
@@ -27,23 +30,31 @@ namespace Katydid
      @details
 
      Available configuration values:
-     \li \c "output-file": string -- output filename
-     \li \c "pretty-json": bool -- if true, prints a human-readable file
-     \li \c "file-mode": string -- cstdio FILE mode: w, a, r+, w+ or a+
+     - "output-file": string -- output filename
+     - "pretty-json": bool -- if true, prints a human-readable file
+     - "file-mode": string -- cstdio FILE mode: w, a, r+, w+ or a+
 
      Slots:
-     \li \c "frequency-candidates": void WriteFrequencyCandidates(const KTFrequencyCandidateData*)
-     \li \c "header": void WriteEggHeader(const KTEggHeader*)
+     - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; not valid if candidate writing has started
+     - "waterfall-candidate": void (boost::shared_ptr<KTData>) -- writes candidate information; starts candidate writing mode if it hasn't started yet
+     - "stop": void () -- stops writing candidates and closes the file
     */
-
 
     class KTOfficialCandidatesWriter : public KTWriter
     {
         public:
             typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;
 
+            enum Status
+            {
+                kNotOpenedYet,
+                kPriorToCandidates,
+                kWritingCandidates,
+                kStopped
+            };
+
         public:
-            KTOfficialCandidatesWriter(const std::string& name = "json-writer");
+            KTOfficialCandidatesWriter(const std::string& name = "official-candidate-writer");
             virtual ~KTOfficialCandidatesWriter();
 
             Bool_t Configure(const KTPStoreNode* node);
@@ -65,6 +76,8 @@ namespace Katydid
 
             KTJSONMaker< rapidjson::FileStream >* GetJSONMaker() const;
 
+            Status GetStatus() const;
+
         protected:
             std::string fFilename;
             std::string fFileMode;
@@ -74,6 +87,14 @@ namespace Katydid
             FILE* fFile;
             rapidjson::FileStream* fFileStream;
             KTJSONMaker< rapidjson::FileStream >* fJSONMaker;
+
+            Status fStatus;
+
+        public:
+            void WriteHeaderInformation(const KTEggHeader* header);
+
+            void WriteWaterfallCandidate(boost::shared_ptr< KTData > data);
+
 
     };
 
@@ -113,6 +134,11 @@ namespace Katydid
     inline KTJSONMaker< rapidjson::FileStream >* KTOfficialCandidatesWriter::GetJSONMaker() const
     {
         return fJSONMaker;
+    }
+
+    inline KTOfficialCandidatesWriter::Status KTOfficialCandidatesWriter::GetStatus() const
+    {
+        return fStatus;
     }
 
 } /* namespace Katydid */

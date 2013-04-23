@@ -7,9 +7,11 @@
 
 #include "KTOfficialCandidatesWriter.hh"
 
+#include "KTEggHeader.hh"
 #include "KTFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTWaterfallCandidateData.hh"
 
 using std::string;
 
@@ -27,7 +29,8 @@ namespace Katydid
             fPrettyJSONFlag(true),
             fFile(NULL),
             fFileStream(NULL),
-            fJSONMaker(NULL)
+            fJSONMaker(NULL),
+            fStatus(kNotOpenedYet)
     {
     }
 
@@ -51,7 +54,11 @@ namespace Katydid
 
     Bool_t KTOfficialCandidatesWriter::OpenFile()
     {
-        CloseFile();
+        if (fStatus != kNotOpenedYet)
+        {
+            KTERROR(publog, "Status must be <" << kNotOpenedYet << "> to open a file; current status is <" << fStatus << ">");
+            return false;
+        }
 
         if (fFilename == "stdout")
         {
@@ -81,11 +88,21 @@ namespace Katydid
 
         fJSONMaker->StartObject();
 
+        fStatus = kPriorToCandidates;
+
         return true;
     }
 
     void KTOfficialCandidatesWriter::CloseFile()
     {
+        if (fStatus == kWritingCandidates)
+        {
+            // end the array of candidates
+            fJSONMaker->EndArray();
+        }
+
+        fStatus = kStopped;
+
         if (fJSONMaker != NULL)
         {
             fJSONMaker->EndObject();
@@ -114,7 +131,63 @@ namespace Katydid
                 return false;
             }
         }
+
+        if (fStatus == kStopped || fStatus == kNotOpenedYet)
+        {
+            return false;
+        }
+
         return true;
     }
+
+    void KTOfficialCandidatesWriter::WriteHeaderInformation(const KTEggHeader* header)
+    {
+        using rapidjson::SizeType;
+
+        if (! OpenAndVerifyFile()) return;
+
+        if (fStatus != kPriorToCandidates) return;
+
+        fJSONMaker->String("eggfile");
+        fJSONMaker->String(header->GetFilename().c_str(), (SizeType)header->GetFilename().length());
+
+        fJSONMaker->String("record_size");
+        fJSONMaker->Uint((UInt_t)header->GetRecordSize());
+
+        return;
+    }
+
+    void KTOfficialCandidatesWriter::WriteWaterfallCandidate(boost::shared_ptr< KTData > data)
+    {
+        using rapidjson::SizeType;
+
+        if (! OpenAndVerifyFile()) return;
+
+        if (fStatus == kPriorToCandidates)
+        {
+            fStatus = kWritingCandidates;
+            fJSONMaker->String("candidates");
+            fJSONMaker->StartArray();
+        }
+
+        KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
+
+        // start the candidate
+        fJSONMaker->StartObject();
+
+        fJSONMaker->String("support");
+        fJSONMaker->StartArray();
+        fJSONMaker->Uint(wcData.GetStartRecordNumber());
+        fJSONMaker->Uint(wcData.GetStartSampleNumber());
+        fJSONMaker->Uint(wcData.GetEndRecordNumber());
+        fJSONMaker->Uint(wcData.GetEndSampleNumber());
+        fJSONMaker->EndArray();
+
+        fJSONMaker->EndObject();
+        // end the candidate
+
+        return;
+    }
+
 
 } /* namespace Katydid */
