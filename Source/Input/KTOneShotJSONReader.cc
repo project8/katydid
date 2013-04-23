@@ -1,11 +1,11 @@
 /*
- * KTJSONReader.cc
+ * KTOneShotJSONReader.cc
  *
  *  Created on: Apr 11, 2013
  *      Author: nsoblath
  */
 
-#include "KTJSONReader.hh"
+#include "KTOneShotJSONReader.hh"
 
 #include "KTAnalysisCandidates.hh"
 #include "KTFactory.hh"
@@ -22,30 +22,32 @@ namespace Katydid
 {
     KTLOGGER(inlog, "katydid.input");
 
-    static KTDerivedRegistrar< KTReader, KTJSONReader > sJSONReaderRegistrar("json-reader");
-    static KTDerivedRegistrar< KTProcessor, KTJSONReader > sJSONRProcRegistrar("json-reader");
+    static KTDerivedRegistrar< KTReader, KTOneShotJSONReader > sJSONReaderRegistrar("oneshot-json-reader");
+    static KTDerivedRegistrar< KTProcessor, KTOneShotJSONReader > sJSONRProcRegistrar("oneshot-json-reader");
 
-    KTJSONReader::KTJSONReader(const std::string& name) :
+    KTOneShotJSONReader::KTOneShotJSONReader(const std::string& name) :
             KTReader(name),
             fFilename("input.json"),
             fFileMode("r"),
             fFileType("mc-truth-events"),
-            fRunFcn(&KTJSONReader::RunMCTruthEventsFile),
+            fRunFcn(&KTOneShotJSONReader::RunMCTruthEventsFile),
             fMCTruthEventsSignal("mc-truth-events", this),
-            fAnalysisCandidatesSignal("analysis-candidates", this)
+            fAnalysisCandidatesSignal("analysis-candidates", this),
+            fAppendMCTruthEventsSlot("append-mc-truth-events", this, &KTOneShotJSONReader::AppendMCTruthEventsFile, &fMCTruthEventsSignal),
+            fAppendAnalysisCandidatesSlot("append-analysis-candidates", this, &KTOneShotJSONReader::AppendAnalysisCandidatesFile, &fAnalysisCandidatesSignal)
     {
     }
 
-    KTJSONReader::~KTJSONReader()
+    KTOneShotJSONReader::~KTOneShotJSONReader()
     {
     }
 
-    Bool_t KTJSONReader::Configure(const KTPStoreNode* node)
+    Bool_t KTOneShotJSONReader::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node == NULL) return false;
 
-        SetFilename(node->GetData<string>("output-file", fFilename));
+        SetFilename(node->GetData<string>("input-file", fFilename));
         SetFileMode(node->GetData<string>("file-mode", fFileMode));
         if (! SetFileType(node->GetData<string>("file-type", fFileType)))
         {
@@ -55,16 +57,16 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTJSONReader::SetFileType(const std::string& type)
+    Bool_t KTOneShotJSONReader::SetFileType(const std::string& type)
     {
         // set the read function pointer based on the file type
-        if (type == "mc-truth-electrons")
+        if (type == "mc-truth-events")
         {
-            fRunFcn = &KTJSONReader::RunMCTruthEventsFile;
+            fRunFcn = &KTOneShotJSONReader::RunMCTruthEventsFile;
         }
         else if (type == "analysis-candidates")
         {
-            fRunFcn = &KTJSONReader::RunAnalysisCandidatesFile;
+            fRunFcn = &KTOneShotJSONReader::RunAnalysisCandidatesFile;
         }
         else
         {
@@ -77,7 +79,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTJSONReader::OpenAndParseFile(rapidjson::Document& document)
+    Bool_t KTOneShotJSONReader::OpenAndParseFile(rapidjson::Document& document)
     {
         FILE* file = fopen(fFilename.c_str(), fFileMode.c_str());
         if (file == NULL)
@@ -106,7 +108,7 @@ namespace Katydid
         return true;
     }
 
-    shared_ptr< KTData > KTJSONReader::ReadMCTruthEventsFile()
+    shared_ptr< KTData > KTOneShotJSONReader::ReadMCTruthEventsFile(shared_ptr<KTData> appendToData)
     {
         rapidjson::Document document;
         if (! OpenAndParseFile(document))
@@ -129,8 +131,12 @@ namespace Katydid
             return shared_ptr<KTData>();
         }
 
-        boost::shared_ptr< KTData > newData(new KTData());
-        KTMCTruthEvents& mcTruth = newData->Of< KTMCTruthEvents >();
+        if (! appendToData)
+        {
+            appendToData.reset(new KTData());
+        }
+
+        KTMCTruthEvents& mcTruth = appendToData->Of< KTMCTruthEvents >();
         mcTruth.SetRecordSize(recordSize);
 
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
@@ -160,10 +166,10 @@ namespace Katydid
 
         KTDEBUG(inlog, "new data object has " << mcTruth.GetEvents().size() << " events");
 
-        return newData;
+        return appendToData;
     }
 
-    shared_ptr< KTData > KTJSONReader::ReadAnalysisCandidatesFile()
+    shared_ptr< KTData > KTOneShotJSONReader::ReadAnalysisCandidatesFile(shared_ptr<KTData> appendToData)
     {
         rapidjson::Document document;
         if (! OpenAndParseFile(document))
@@ -186,8 +192,12 @@ namespace Katydid
             return shared_ptr<KTData>();
         }
 
-        boost::shared_ptr< KTData > newData(new KTData());
-        KTAnalysisCandidates& candidates = newData->Of< KTAnalysisCandidates >();
+        if (! appendToData)
+        {
+            appendToData.reset(new KTData());
+        }
+
+        KTAnalysisCandidates& candidates = appendToData->Of< KTAnalysisCandidates >();
         candidates.SetRecordSize(recordSize);
 
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
@@ -217,10 +227,22 @@ namespace Katydid
 
         KTDEBUG(inlog, "new data object has " << candidates.GetCandidates().size() << " events");
 
-        return newData;
+        return appendToData;
     }
 
-    Bool_t KTJSONReader::RunMCTruthEventsFile()
+    Bool_t KTOneShotJSONReader::AppendMCTruthEventsFile(KTData& appendToData)
+    {
+        if (ReadMCTruthEventsFile(shared_ptr<KTData>(&appendToData))) return true;
+        return false;
+    }
+
+    Bool_t KTOneShotJSONReader::AppendAnalysisCandidatesFile(KTData& appendToData)
+    {
+        if (ReadAnalysisCandidatesFile(shared_ptr<KTData>(&appendToData))) return true;
+        return false;
+    }
+
+    Bool_t KTOneShotJSONReader::RunMCTruthEventsFile()
     {
         shared_ptr< KTData > newData = ReadMCTruthEventsFile();
         if (! newData)
@@ -232,7 +254,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTJSONReader::RunAnalysisCandidatesFile()
+    Bool_t KTOneShotJSONReader::RunAnalysisCandidatesFile()
     {
         shared_ptr< KTData > newData = ReadAnalysisCandidatesFile();
         if (! newData)

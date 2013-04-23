@@ -1,11 +1,11 @@
 /*
- * TestJSONReader.cc
+ * TestOneShotJSONReader.cc
  *
  *  Created on: Apr 11, 2013
  *      Author: nsoblath
  */
 
-#include "KTJSONreader.hh"
+#include "KTOneshotJSONreader.hh"
 
 #include "KTLogger.hh"
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     string filename = argv[1];
     string fileType = argv[2];
 
-    KTJSONReader reader;
+    KTOneShotJSONReader reader;
     reader.SetFilename(filename);
 
     boost::shared_ptr<KTData> parsedData;

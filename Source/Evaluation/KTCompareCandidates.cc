@@ -25,7 +25,7 @@ namespace Katydid
 
     KTCompareCandidates::KTCompareCandidates(const string& name) :
             KTProcessor(name),
-            fTruthAndAnalysisSlot("truth-and-analysis", this, &KTCompareCandidates::CompareTruthAndAnalysis)
+            fTruthAndAnalysisSlot("truth-vs-analysis", this, &KTCompareCandidates::CompareTruthAndAnalysis)
     {
     }
 

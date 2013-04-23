@@ -1,17 +1,17 @@
 /**
- @file KTJSONReader.hh
- @brief Contains KTJSONReader
+ @file KTOneShotJSONReader.hh
+ @brief Contains KTOneShotJSONReader
  @details 
  @author: N. S. Oblath
  @date: Apr 11, 2013
 */
 
-#ifndef KTJSONREADER_HH_
-#define KTJSONREADER_HH_
+#ifndef KTONESHOTJSONREADER_HH_
+#define KTONESHOTJSONREADER_HH_
 
 #include "KTReader.hh"
 
-#include "KTSignal.hh"
+#include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -25,10 +25,10 @@ namespace Katydid
     class KTData;
 
     /*!
-     @class KTJSONReader
+     @class KTOneShotJSONReader
      @author N. S. Oblath
 
-     @brief JSON file reader
+     @brief JSON file reader for reading an entire file at once
 
      @details
 
@@ -48,11 +48,11 @@ namespace Katydid
     */
 
 
-    class KTJSONReader : public KTReader
+    class KTOneShotJSONReader : public KTReader
     {
         public:
-            KTJSONReader(const std::string& name = "json-writer");
-            virtual ~KTJSONReader();
+            KTOneShotJSONReader(const std::string& name = "oneshot-json-reader");
+            virtual ~KTOneShotJSONReader();
 
             Bool_t Configure(const KTPStoreNode* node);
 
@@ -75,13 +75,16 @@ namespace Katydid
             virtual Bool_t Run();
 
         private:
-            Bool_t (KTJSONReader::*fRunFcn)();
+            Bool_t (KTOneShotJSONReader::*fRunFcn)();
 
             Bool_t OpenAndParseFile(rapidjson::Document& document);
 
         public:
-            boost::shared_ptr<KTData> ReadMCTruthEventsFile();
-            boost::shared_ptr<KTData> ReadAnalysisCandidatesFile();
+            boost::shared_ptr<KTData> ReadMCTruthEventsFile(boost::shared_ptr<KTData> appendToData = boost::shared_ptr<KTData>());
+            boost::shared_ptr<KTData> ReadAnalysisCandidatesFile(boost::shared_ptr<KTData> appendToData = boost::shared_ptr<KTData>());
+
+            Bool_t AppendMCTruthEventsFile(KTData& data);
+            Bool_t AppendAnalysisCandidatesFile(KTData& data);
 
             Bool_t RunMCTruthEventsFile();
             Bool_t RunAnalysisCandidatesFile();
@@ -94,23 +97,29 @@ namespace Katydid
             KTSignalData fMCTruthEventsSignal;
             KTSignalData fAnalysisCandidatesSignal;
 
+            //**************
+            // Slots
+            //**************
+        private:
+            KTSlotDataOneType< KTData > fAppendMCTruthEventsSlot;
+            KTSlotDataOneType< KTData > fAppendAnalysisCandidatesSlot;
     };
 
-    inline const std::string& KTJSONReader::GetFilename() const
+    inline const std::string& KTOneShotJSONReader::GetFilename() const
     {
         return fFilename;
     }
-    inline void KTJSONReader::SetFilename(const std::string& filename)
+    inline void KTOneShotJSONReader::SetFilename(const std::string& filename)
     {
         fFilename = filename;
         return;
     }
 
-    inline const std::string& KTJSONReader::GetFileMode() const
+    inline const std::string& KTOneShotJSONReader::GetFileMode() const
     {
         return fFileMode;
     }
-    inline void KTJSONReader::SetFileMode(const std::string& mode)
+    inline void KTOneShotJSONReader::SetFileMode(const std::string& mode)
     {
         if (mode == "w" || mode == "a" || mode == "r+" || mode == "w+" || mode == "a+")
         {
@@ -119,15 +128,15 @@ namespace Katydid
         return;
     }
 
-    inline const std::string& KTJSONReader::GetFileType() const
+    inline const std::string& KTOneShotJSONReader::GetFileType() const
     {
         return fFileType;
     }
 
-    inline Bool_t KTJSONReader::Run()
+    inline Bool_t KTOneShotJSONReader::Run()
     {
         return (this->*fRunFcn)();
     }
 
 } /* namespace Katydid */
-#endif /* KTJSONREADER_HH_ */
+#endif /* KTONESHOTJSONREADER_HH_ */
