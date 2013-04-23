@@ -24,6 +24,11 @@ else (Katydid_SINGLETHREADED)
     remove_definitions(-DSINGLETHREADED)
 endif(Katydid_SINGLETHREADED)
 
+#optional build switches
+set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
+set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
+set (Katydid_USE_LOG4CXX TRUE CACHE BOOL "Flag to optionally use log4cxx")
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     list (APPEND LIBS rt)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
@@ -48,7 +53,11 @@ endif (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
 
 
 # ROOT
-find_package (ROOT 5.28)
+if (Katydid_USE_ROOT)
+    find_package (ROOT 5.28)
+else (Katydid_USE_ROOT)
+    set (ROOT_FOUND FALSE)
+endif (Katydid_USE_ROOT)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
     list (APPEND LIBS ${ROOT_LIBRARIES})
@@ -60,7 +69,11 @@ endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
 
 # log4cxx
-find_package (Log4CXX)
+if (Katydid_USE_LOG4CXX)
+    find_package (Log4CXX)
+else (Katydid_USE_LOG4CXX)
+    set (LOG4CXX_FOUND FALSE)
+endif (Katydid_USE_LOG4CXX)
 if (LOG4CXX_FOUND)
     message (STATUS "Log4cxx found")
     list (APPEND LIBS ${LOG4CXX_LIBRARY})
@@ -68,7 +81,11 @@ if (LOG4CXX_FOUND)
 endif (LOG4CXX_FOUND)
 
 # eigen
-find_package (Eigen3)
+if (Katydid_USE_EIGEN)
+    find_package (Eigen3)
+else (Katydid_USE_EIGEN)
+    set (EIGEN3_FOUND FALSE)
+endif (Katydid_USE_EIGEN)
 if (EIGEN3_FOUND)
    message (STATUS "Eigen found.")
    include_directories (${EIGEN3_INCLUDE_DIR})
