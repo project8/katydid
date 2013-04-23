@@ -55,8 +55,13 @@ namespace Katydid
             void AddEvent(const Event& electron);
             void ClearEvents();
 
+            UInt_t GetRecordSize() const;
+            void SetRecordSize(UInt_t size);
+
         protected:
             EventSet fEvents;
+
+            UInt_t fRecordSize;
     };
 
     inline const KTMCTruthEvents::EventSet& KTMCTruthEvents::GetEvents() const
@@ -73,6 +78,17 @@ namespace Katydid
     inline void KTMCTruthEvents::ClearEvents()
     {
         fEvents.clear();
+        return;
+    }
+
+    inline UInt_t KTMCTruthEvents::GetRecordSize() const
+    {
+        return fRecordSize;
+    }
+
+    inline void KTMCTruthEvents::SetRecordSize(UInt_t size)
+    {
+        fRecordSize = size;
         return;
     }
 

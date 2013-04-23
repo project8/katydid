@@ -12,7 +12,8 @@ namespace Katydid
 
     KTMCTruthEvents::KTMCTruthEvents() :
         KTExtensibleData< KTMCTruthEvents >(),
-        fEvents()
+        fEvents(),
+        fRecordSize(1)
     {
     }
 

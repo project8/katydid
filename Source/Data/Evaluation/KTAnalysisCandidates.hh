@@ -55,8 +55,13 @@ namespace Katydid
             void AddCandidate(const Candidate& electron);
             void ClearCandidates();
 
+            UInt_t GetRecordSize() const;
+            void SetRecordSize(UInt_t size);
+
         protected:
             CandidateSet fCandidates;
+
+            UInt_t fRecordSize;
 };
 
 inline const KTAnalysisCandidates::CandidateSet& KTAnalysisCandidates::GetCandidates() const
@@ -73,6 +78,17 @@ inline void KTAnalysisCandidates::AddCandidate(const Candidate& candidate)
 inline void KTAnalysisCandidates::ClearCandidates()
 {
     fCandidates.clear();
+    return;
+}
+
+inline UInt_t KTAnalysisCandidates::GetRecordSize() const
+{
+    return fRecordSize;
+}
+
+inline void KTAnalysisCandidates::SetRecordSize(UInt_t size)
+{
+    fRecordSize = size;
     return;
 }
 

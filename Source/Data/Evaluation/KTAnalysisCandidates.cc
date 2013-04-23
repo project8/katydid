@@ -12,7 +12,8 @@ namespace Katydid
 
     KTAnalysisCandidates::KTAnalysisCandidates() :
                 KTExtensibleData< KTAnalysisCandidates >(),
-                fCandidates()
+                fCandidates(),
+                fRecordSize(1)
     {
     }
 
