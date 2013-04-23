@@ -12,6 +12,7 @@ set (EVALUATION_SOURCEFILES
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
+    KatydidData
 )
 
 ##################################################

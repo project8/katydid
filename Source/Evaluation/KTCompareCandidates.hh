@@ -10,16 +10,29 @@
 
 #include "KTProcessor.hh"
 
+#include "KTAnalysisCandidates.hh"
+#include "KTMCTruthEvents.hh"
 #include "KTSlot.hh"
 
 namespace Katydid
 {
-    class KTAnalysisCandidates;
-    class KTMCTruthEvents;
     class KTPStoreNode;
 
     class KTCompareCandidates : public KTProcessor
     {
+        private:
+            // for use in setting up a map keyed by these iterators
+            struct CandItCompare
+            {
+                bool operator() (const KTAnalysisCandidates::CandidateSet::const_iterator& lhs, const KTAnalysisCandidates::CandidateSet::const_iterator& rhs)
+                {
+                    return lhs->fStartRecord < rhs->fStartRecord ||
+                            (lhs->fStartRecord == rhs->fStartRecord && lhs->fStartSample < rhs->fEndSample) ||
+                            (lhs->fStartRecord == rhs->fStartRecord && lhs->fStartSample == rhs->fEndSample && lhs->fEndRecord < rhs->fEndRecord) ||
+                            (lhs->fStartRecord == rhs->fStartRecord && lhs->fStartSample == rhs->fEndSample && lhs->fEndRecord == rhs->fEndRecord && lhs->fEndSample < rhs->fEndSample);
+                }
+            };
+
         public:
             KTCompareCandidates(const std::string& name = "compare-candidates");
             virtual ~KTCompareCandidates();
@@ -27,14 +40,14 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
         public:
-            Bool_t CompareTruthAndAnalysis(const KTMCTruthEvents& mcEventData, const KTAnalysisCandidates& candidateData);
+            Bool_t CompareTruthAndAnalysis(KTMCTruthEvents& mcEventData, KTAnalysisCandidates& candidateData);
 
         private:
             // Return values:
             //   -1 if candidate occurs completely before event
             //    0 if candidate and event overlap
             //    1 if candidate occurs completely after event
-            Int_t CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate);
+            Int_t CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate, UInt_t eventRecordSize, UInt_t candidateRecordSize) const;
 
             //***************
             // Slots

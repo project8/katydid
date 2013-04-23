@@ -115,6 +115,13 @@ namespace Katydid
             return shared_ptr<KTData>();
         }
 
+        if (! document["record_size"].IsUint())
+        {
+            KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
+            return shared_ptr<KTData>();
+        }
+        UInt_t recordSize = document["record_size"].GetUint();
+
         const rapidjson::Value& events = document["events"];
         if (! events.IsArray())
         {
@@ -124,6 +131,7 @@ namespace Katydid
 
         boost::shared_ptr< KTData > newData(new KTData());
         KTMCTruthEvents& mcTruth = newData->Of< KTMCTruthEvents >();
+        mcTruth.SetRecordSize(recordSize);
 
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
         {
@@ -135,7 +143,14 @@ namespace Katydid
                 UInt_t endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 UInt_t endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
-                mcTruth.AddEvent(KTMCTruthEvents::Event(startRec, startSample, endRec, endSample));
+                if (endRec < startRec || (endRec == startRec && endSample < startSample))
+                {
+                    KTWARN(inlog, "Invalid event: (" << startRec << ", " << startSample << " --> " << endRec << ", " << endSample << ")");
+                }
+                else
+                {
+                    mcTruth.AddEvent(KTMCTruthEvents::Event(startRec, startSample, endRec, endSample));
+                }
             }
             else
             {
@@ -157,15 +172,23 @@ namespace Katydid
             return shared_ptr<KTData>();
         }
 
-        const rapidjson::Value& events = document["events"];
+        if (! document["record_size"].IsUint())
+        {
+            KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
+            return shared_ptr<KTData>();
+        }
+        UInt_t recordSize = document["record_size"].GetUint();
+
+         const rapidjson::Value& events = document["candidates"];
         if (! events.IsArray())
         {
-            KTERROR(inlog, "\"events\" value in the mc truth file is either missing or not an array");
+            KTERROR(inlog, "\"candidates\" value in the analysis candidates file is either missing or not an array");
             return shared_ptr<KTData>();
         }
 
         boost::shared_ptr< KTData > newData(new KTData());
         KTAnalysisCandidates& candidates = newData->Of< KTAnalysisCandidates >();
+        candidates.SetRecordSize(recordSize);
 
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
         {
@@ -177,7 +200,14 @@ namespace Katydid
                 UInt_t endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 UInt_t endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
-                candidates.AddCandidate(KTAnalysisCandidates::Candidate(startRec, startSample, endRec, endSample));
+                if (endRec < startRec || (endRec == startRec && endSample < startSample))
+                {
+                    KTWARN(inlog, "Invalid candidate: (" << startRec << ", " << startSample << " --> " << endRec << ", " << endSample << ")");
+                }
+                else
+                {
+                    candidates.AddCandidate(KTAnalysisCandidates::Candidate(startRec, startSample, endRec, endSample));
+                }
             }
             else
             {
