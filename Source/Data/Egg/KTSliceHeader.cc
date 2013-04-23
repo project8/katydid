@@ -17,6 +17,10 @@ namespace Katydid
             fSliceLength(0.),
             fSampleRate(0.),
             fBinWidth(1.),
+            fStartRecordNumber(0),
+            fStartSampleNumber(0),
+            fEndRecordNumber(0),
+            fEndSampleNumber(0),
             fComponentData(1)
     {
     }
@@ -29,6 +33,10 @@ namespace Katydid
             fSliceLength(orig.fSliceLength),
             fSampleRate(orig.fSampleRate),
             fBinWidth(orig.fBinWidth),
+            fStartRecordNumber(orig.fStartRecordNumber),
+            fStartSampleNumber(orig.fStartSampleNumber),
+            fEndRecordNumber(orig.fEndRecordNumber),
+            fEndSampleNumber(orig.fEndSampleNumber),
             fComponentData(orig.fComponentData)
     {
     }
@@ -46,6 +54,10 @@ namespace Katydid
         fSliceLength = rhs.fSliceLength;
         fSampleRate = rhs.fSampleRate;
         fBinWidth = rhs.fBinWidth;
+        fStartRecordNumber = rhs.fStartRecordNumber;
+        fStartSampleNumber = rhs.fStartSampleNumber;
+        fEndRecordNumber = rhs.fEndRecordNumber;
+        fEndSampleNumber = rhs.fEndSampleNumber;
         fComponentData = rhs.fComponentData;
         return *this;
     }
