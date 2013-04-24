@@ -69,6 +69,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestMultiSliceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestMultiSliceClustering.cc)
     target_link_libraries (TestMultiSliceClustering KatydidUtility KatydidCore KatydidData KatydidOutput KatydidAnalysis KatydidCandidates ${LIBS})
     
+    add_executable (TestOneShotJSONReader ${CMAKE_CURRENT_SOURCE_DIR}/TestOneShotJSONReader.cc)
+    target_link_libraries (TestOneShotJSONReader KatydidUtility KatydidCore KatydidData KatydidInput ${LIBS})
+
     add_executable (TestParameterStore ${CMAKE_CURRENT_SOURCE_DIR}/TestParameterStore.cc
                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
     target_link_libraries (TestParameterStore KatydidUtility KatydidCore ${LIBS})
@@ -119,6 +122,7 @@ if (Katydid_ENABLE_TESTING)
                      TestJSONWriter
                      TestLogger
                      TestMultiSliceClustering
+                     TestOneShotJSONReader
                      TestParameterStore
                      TestSignalsAndSlots
                      #TestSimpleClustering
@@ -147,6 +151,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_JSONWriter TestJSONWriter)
     add_test (Test_Logger TestLogger)
     add_test (Test_MultiSliceClustering TestMultiSliceClustering)
+    add_test (Test_OneShotJSONReader TestOneShotJSONReader)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     #add_test (Test_SimpleClustering TestSimpleClustering)
