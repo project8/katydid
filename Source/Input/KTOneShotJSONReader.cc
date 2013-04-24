@@ -108,19 +108,19 @@ namespace Katydid
         return true;
     }
 
-    shared_ptr< KTData > KTOneShotJSONReader::ReadMCTruthEventsFile(shared_ptr<KTData> appendToData)
+    Bool_t KTOneShotJSONReader::ReadMCTruthEventsFile(KTData& appendToData)
     {
         rapidjson::Document document;
         if (! OpenAndParseFile(document))
         {
             KTERROR(inlog, "A problem occurred while parsing the mc-truth-events file");
-            return shared_ptr<KTData>();
+            return false;
         }
 
         if (! document["record_size"].IsUint())
         {
             KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
-            return shared_ptr<KTData>();
+            return false;
         }
         UInt_t recordSize = document["record_size"].GetUint();
 
@@ -128,15 +128,10 @@ namespace Katydid
         if (! events.IsArray())
         {
             KTERROR(inlog, "\"events\" value in the mc truth file is either missing or not an array");
-            return shared_ptr<KTData>();
+            return false;
         }
 
-        if (! appendToData)
-        {
-            appendToData.reset(new KTData());
-        }
-
-        KTMCTruthEvents& mcTruth = appendToData->Of< KTMCTruthEvents >();
+        KTMCTruthEvents& mcTruth = appendToData.Of< KTMCTruthEvents >();
         mcTruth.SetRecordSize(recordSize);
 
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
@@ -166,22 +161,22 @@ namespace Katydid
 
         KTDEBUG(inlog, "new data object has " << mcTruth.GetEvents().size() << " events");
 
-        return appendToData;
+        return true;
     }
 
-    shared_ptr< KTData > KTOneShotJSONReader::ReadAnalysisCandidatesFile(shared_ptr<KTData> appendToData)
+    Bool_t KTOneShotJSONReader::ReadAnalysisCandidatesFile(KTData& appendToData)
     {
         rapidjson::Document document;
         if (! OpenAndParseFile(document))
         {
             KTERROR(inlog, "A problem occurred while parsing the mc-truth-events file");
-            return shared_ptr<KTData>();
+            return false;
         }
 
         if (! document["record_size"].IsUint())
         {
             KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
-            return shared_ptr<KTData>();
+            return false;
         }
         UInt_t recordSize = document["record_size"].GetUint();
 
@@ -189,15 +184,10 @@ namespace Katydid
         if (! events.IsArray())
         {
             KTERROR(inlog, "\"candidates\" value in the analysis candidates file is either missing or not an array");
-            return shared_ptr<KTData>();
+            return false;
         }
 
-        if (! appendToData)
-        {
-            appendToData.reset(new KTData());
-        }
-
-        KTAnalysisCandidates& candidates = appendToData->Of< KTAnalysisCandidates >();
+        KTAnalysisCandidates& candidates = appendToData.Of< KTAnalysisCandidates >();
         candidates.SetRecordSize(recordSize);
 
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
@@ -225,27 +215,33 @@ namespace Katydid
             }
         }
 
-        KTDEBUG(inlog, "new data object has " << candidates.GetCandidates().size() << " events");
+        KTDEBUG(inlog, "new data object has " << candidates.GetCandidates().size() << " candidates");
 
-        return appendToData;
+        return true;
     }
 
     Bool_t KTOneShotJSONReader::AppendMCTruthEventsFile(KTData& appendToData)
     {
-        if (ReadMCTruthEventsFile(shared_ptr<KTData>(&appendToData))) return true;
+        if (ReadMCTruthEventsFile(appendToData))
+        {
+            return true;
+        }
         return false;
     }
 
     Bool_t KTOneShotJSONReader::AppendAnalysisCandidatesFile(KTData& appendToData)
     {
-        if (ReadAnalysisCandidatesFile(shared_ptr<KTData>(&appendToData))) return true;
+        if (ReadAnalysisCandidatesFile(appendToData))
+        {
+            return true;
+        }
         return false;
     }
 
     Bool_t KTOneShotJSONReader::RunMCTruthEventsFile()
     {
-        shared_ptr< KTData > newData = ReadMCTruthEventsFile();
-        if (! newData)
+        shared_ptr< KTData > newData(new KTData());
+        if (! ReadMCTruthEventsFile(*(newData.get())))
         {
             KTERROR(inlog, "Something went wrong while reading the mc-truth-electrons file <" << fFilename << ">");
             return false;
@@ -256,8 +252,8 @@ namespace Katydid
 
     Bool_t KTOneShotJSONReader::RunAnalysisCandidatesFile()
     {
-        shared_ptr< KTData > newData = ReadAnalysisCandidatesFile();
-        if (! newData)
+        shared_ptr< KTData > newData(new KTData());
+        if (! ReadAnalysisCandidatesFile(*(newData.get())))
         {
             KTERROR(inlog, "Something went wrong while reading the analysis-candidates file <" << fFilename << ">");
             return false;

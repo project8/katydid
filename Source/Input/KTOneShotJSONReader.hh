@@ -80,8 +80,8 @@ namespace Katydid
             Bool_t OpenAndParseFile(rapidjson::Document& document);
 
         public:
-            boost::shared_ptr<KTData> ReadMCTruthEventsFile(boost::shared_ptr<KTData> appendToData = boost::shared_ptr<KTData>());
-            boost::shared_ptr<KTData> ReadAnalysisCandidatesFile(boost::shared_ptr<KTData> appendToData = boost::shared_ptr<KTData>());
+            Bool_t ReadMCTruthEventsFile(KTData& appendToData);
+            Bool_t ReadAnalysisCandidatesFile(KTData& appendToData);
 
             Bool_t AppendMCTruthEventsFile(KTData& data);
             Bool_t AppendAnalysisCandidatesFile(KTData& data);
