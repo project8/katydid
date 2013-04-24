@@ -205,13 +205,17 @@ namespace Katydid
         sliceHeader.CalculateBinWidthAndSliceLength();
         sliceHeader.SetTimeInRun(GetTimeInRun());
         sliceHeader.SetSliceNumber(fSliceNumber);
+        sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
+        sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
         KTDEBUG(eggreadlog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
                 << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
                 << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
                 << "\tSlice length: " << sliceHeader.GetSliceLength() << " s\n"
                 << "\tTime in run: " << sliceHeader.GetTimeInRun() << " s\n"
-                << "\tSlice number: " << sliceHeader.GetSliceNumber());
+                << "\tSlice number: " << sliceHeader.GetSliceNumber() << '\n'
+                << "\tStart record number: " << sliceHeader.GetStartRecordNumber() << '\n'
+                << "\tStart sample number: " << sliceHeader.GetStartSampleNumber());
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
@@ -282,6 +286,8 @@ namespace Katydid
                     fReadState.fReadPtrRecordOffset = 0;
                     fReadState.fSliceStartPtrOffset = 0;
                     // reset slice data
+                    sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
+                    sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
                     for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
                     {
                         sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
@@ -322,6 +328,10 @@ namespace Katydid
                 fReadState.fStatus = MonarchReadState::kReachedNextRecord;
             }
         } // end loop over bins
+
+        sliceHeader.SetEndRecordNumber(fReadState.fAbsoluteRecordOffset);
+        sliceHeader.SetEndSampleNumber(fReadState.fReadPtrOffset - 1);
+
 
         // finally, set the records in the new data object
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nChannels);

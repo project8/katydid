@@ -1,0 +1,60 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "oneshot-json-reader",
+                "name": "mctruth"
+            },
+            "processor":
+            {
+                "type": "oneshot-json-reader",
+                "name": "candidates"
+            },
+            "processor":
+            {
+                "type": "compare-candidates",
+                "name": "cc"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "mctruth",
+                "signal-name": "mc-truth-events",
+                "slot-processor": "candidates",
+                "slot-name": "append-analysis-candidates"
+            },
+            "connection":
+            {
+                "signal-processor": "candidates",
+                "signal-name": "analysis-candidates",
+                "slot-processor": "cc",
+                "slot-name": "compare"
+            },
+
+            "run-queue":
+            {
+                "processor": "mctruth"
+            }
+        },
+        
+
+        "mctruth":
+        {
+            "input-file": "/path/to/mte_file.json",
+            "run-type": "mc-truth-events"
+        },
+        
+        "candidates":
+        {
+            "input-file": "/path/to/ac_file.json",
+         },
+        
+        "cc":
+        {
+            "assume-sparse-candidates": false
+        }
+    }
+}

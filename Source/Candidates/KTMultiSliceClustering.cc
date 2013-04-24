@@ -570,6 +570,11 @@ namespace Katydid
         KTWaterfallCandidateData& wfcData = data->Of< KTWaterfallCandidateData >();
         wfcData.SetComponent(cluster.fDataComponent);
 
+        wfcData.SetStartRecordNumber(cluster.fPoints.begin()->fHeaderPtr->GetStartRecordNumber());
+        wfcData.SetStartSampleNumber(cluster.fPoints.begin()->fHeaderPtr->GetStartSampleNumber());
+        wfcData.SetEndRecordNumber(cluster.fPoints.rbegin()->fHeaderPtr->GetEndRecordNumber());
+        wfcData.SetEndSampleNumber(cluster.fPoints.rbegin()->fHeaderPtr->GetEndSampleNumber());
+
         UInt_t firstTimeBin = cluster.FirstTimeBin();
         UInt_t lastTimeBin = cluster.LastTimeBin();
 

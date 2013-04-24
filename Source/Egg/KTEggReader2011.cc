@@ -285,6 +285,10 @@ namespace Katydid
         sliceHeader.SetSliceLength(double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
         sliceHeader.SetTimeInRun(GetTimeInRun());
         sliceHeader.SetSliceNumber((ULong64_t)fRecordsRead);
+        sliceHeader.SetStartRecordNumber(fRecordsRead);
+        sliceHeader.SetStartSampleNumber(0);
+        sliceHeader.SetEndRecordNumber(fRecordsRead);
+        sliceHeader.SetEndSampleNumber(fHeaderInfo.fRecordSize - 1);
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];

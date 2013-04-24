@@ -133,7 +133,7 @@ namespace Katydid
             return;
         }
         fMap->insert(std::pair< std::string, const KTRegistrar< XBaseType >* >(className, registrar));
-        //KTDEBUG(utillog_factory, "Registered a factory for class " << className << ", factory #" << fMap->size()-1);
+        KTDEBUG(utillog_factory, "Registered a factory for class " << className << ", factory #" << fMap->size()-1);
     }
 
     template< class XBaseType >

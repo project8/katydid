@@ -41,6 +41,11 @@ namespace Katydid
             Double_t GetMeanEndFrequency() const;
             Double_t GetFrequencyWidth() const;
 
+            UInt_t GetStartRecordNumber() const;
+            UInt_t GetStartSampleNumber() const;
+            UInt_t GetEndRecordNumber() const;
+            UInt_t GetEndSampleNumber() const;
+
             void SetCandidate(KTTimeFrequency* candidate);
             void SetComponent(UInt_t component);
 
@@ -53,6 +58,11 @@ namespace Katydid
             void SetMeanStartFrequency(Double_t freq);
             void SetMeanEndFrequency(Double_t freq);
             void SetFrequencyWidth(Double_t width);
+
+            void SetStartRecordNumber(UInt_t rec);
+            void SetStartSampleNumber(UInt_t sample);
+            void SetEndRecordNumber(UInt_t rec);
+            void SetEndSampleNumber(UInt_t sample);
 
         protected:
             KTTimeFrequency* fCandidate;
@@ -67,6 +77,11 @@ namespace Katydid
             Double_t fMeanStartFrequency;
             Double_t fMeanEndFrequency;
             Double_t fFrequencyWidth;
+
+            UInt_t fStartRecordNumber;
+            UInt_t fStartSampleNumber;
+            UInt_t fEndRecordNumber;
+            UInt_t fEndSampleNumber;
     };
 
     inline KTTimeFrequency* KTWaterfallCandidateData::GetCandidate() const
@@ -144,6 +159,26 @@ namespace Katydid
         return fFrequencyWidth;
     }
 
+    inline UInt_t KTWaterfallCandidateData::GetStartRecordNumber() const
+    {
+        return fStartRecordNumber;
+    }
+
+    inline UInt_t KTWaterfallCandidateData::GetStartSampleNumber() const
+    {
+        return fStartSampleNumber;
+    }
+
+    inline UInt_t KTWaterfallCandidateData::GetEndRecordNumber() const
+    {
+        return fEndRecordNumber;
+    }
+
+    inline UInt_t KTWaterfallCandidateData::GetEndSampleNumber() const
+    {
+        return fEndSampleNumber;
+    }
+
     inline void KTWaterfallCandidateData::SetComponent(UInt_t component)
     {
         fComponent = component;
@@ -204,5 +239,28 @@ namespace Katydid
         return;
     }
 
+    inline void KTWaterfallCandidateData::SetStartRecordNumber(UInt_t rec)
+    {
+        fStartRecordNumber = rec;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetStartSampleNumber(UInt_t sample)
+    {
+        fStartSampleNumber = sample;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetEndRecordNumber(UInt_t rec)
+    {
+        fEndRecordNumber = rec;
+        return;
+    }
+
+    inline void KTWaterfallCandidateData::SetEndSampleNumber(UInt_t sample)
+    {
+        fEndSampleNumber = sample;
+        return;
+    }
 } /* namespace Katydid */
 #endif /* KTWATERFALLCANDIDATEDATA_HH_ */

@@ -18,6 +18,9 @@ pbuilder_install_config (${VALIDATION_CONFIGFILES})
 
 # Executables
 
+add_executable (EvaluateCandidates ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
+target_link_libraries (EvaluateCandidates KatydidUtility KatydidCore KatydidData KatydidInput KatydidEvaluation ${LIBS})
+
 add_executable (ConfigCheck ${CMAKE_CURRENT_SOURCE_DIR}/ConfigCheck.cc)
 target_link_libraries (ConfigCheck KatydidUtility KatydidCore ${LIBS})
 
@@ -33,6 +36,7 @@ target_link_libraries (Truncate KatydidUtility ${LIBS})
 pbuilder_install_executables ( 
     ConfigCheck
     EggScanner
+    EvaluateCandidates
     Katydid
     Truncate
 )
