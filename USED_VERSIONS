@@ -1,0 +1,19 @@
+{
+    "Gentoo Linux": "3.7.19 x86_64",
+    "from portage": {
+        "gcc": "4.6.3",
+        "protobuf": "2.4.0a",
+        "boost": "1.49.0",
+        "fftw": "3.3.3-r2",
+        "log4cxx": "0.10.0"
+    },
+    "local build": {
+        "ROOT": "5.34.06"
+    },
+    "problematic": {
+        "Eigen": {
+            "version":"3.0.6",
+            "source":"portage",
+            "problem":"sparse module API not stable yet"
+    }
+}
