@@ -38,10 +38,10 @@ namespace Katydid
             {
                 bool operator() (const Candidate& lhs, const Candidate& rhs)
                 {
-                    return lhs.fStartRecord < rhs.fStartRecord ||
-                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample < rhs.fEndSample) ||
-                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample == rhs.fEndSample && lhs.fEndRecord < rhs.fEndRecord) ||
-                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample == rhs.fEndSample && lhs.fEndRecord == rhs.fEndRecord && lhs.fEndSample < rhs.fEndSample);
+                    return   lhs.fStartRecord <  rhs.fStartRecord  ||
+                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample <  rhs.fStartSample) ||
+                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample == rhs.fStartSample && lhs.fEndRecord <  rhs.fEndRecord) ||
+                            (lhs.fStartRecord == rhs.fStartRecord && lhs.fStartSample == rhs.fStartSample && lhs.fEndRecord == rhs.fEndRecord && lhs.fEndSample < rhs.fEndSample);
                 }
             };
 

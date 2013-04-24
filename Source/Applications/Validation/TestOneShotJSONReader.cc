@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTOneshotJSONreader.hh"
+#include "KTOneShotJSONreader.hh"
 
 #include "KTLogger.hh"
 
@@ -32,7 +32,10 @@ int main(int argc, char** argv)
     boost::shared_ptr<KTData> parsedData;
     if (fileType == "mc-truth-events")
     {
-        parsedData = reader.ReadMCTruthEventsFile();
+        if (! reader.ReadMCTruthEventsFile(*(parsedData.get())))
+        {
+            KTERROR(vallog, "Something went wrong while reading the mc truth file");
+        }
     }
     else
     {
