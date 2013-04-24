@@ -39,6 +39,12 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
+            Bool_t GetAssumeSparseCandidates() const;
+            void SetAssumeSparseCandidates(Bool_t flag);
+
+        private:
+            Bool_t fAssumeSparseCandidates;
+
         public:
             Bool_t CompareTruthAndAnalysis(KTMCTruthEvents& mcEventData, KTAnalysisCandidates& candidateData);
 
@@ -56,6 +62,18 @@ namespace Katydid
             KTSlotDataTwoTypes< KTMCTruthEvents, KTAnalysisCandidates > fTruthAndAnalysisSlot;
 
     };
+
+    inline Bool_t KTCompareCandidates::GetAssumeSparseCandidates() const
+    {
+        return fAssumeSparseCandidates;
+    }
+
+    inline void KTCompareCandidates::SetAssumeSparseCandidates(Bool_t flag)
+    {
+        fAssumeSparseCandidates = flag;
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTCOMPARECANDIDATES_HH_ */

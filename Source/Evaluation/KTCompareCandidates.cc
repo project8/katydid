@@ -25,6 +25,7 @@ namespace Katydid
 
     KTCompareCandidates::KTCompareCandidates(const string& name) :
             KTProcessor(name),
+            fAssumeSparseCandidates(false),
             fTruthAndAnalysisSlot("truth-vs-analysis", this, &KTCompareCandidates::CompareTruthAndAnalysis)
     {
     }
@@ -35,6 +36,10 @@ namespace Katydid
 
     Bool_t KTCompareCandidates::Configure(const KTPStoreNode* node)
     {
+        if (node == NULL) return false;
+
+        SetAssumeSparseCandidates(node->GetData<Bool_t>("assume-sparse-candidates", fAssumeSparseCandidates));
+
         return true;
     }
 
@@ -63,28 +68,31 @@ namespace Katydid
                 comparison = CompareAnEventToACandidate(*truthIt, *candIt, eventRecordSize, candidateRecordSize);
                 if (comparison == 0)
                 {
-                    KTDEBUG(cclog, "Match found:\n" <<
-                            "\tEvent: " << truthIt->fStartRecord << ", " << truthIt->fStartSample << ", " << truthIt->fEndRecord << ", " << truthIt->fEndSample << '\n' <<
-                            "\tCandidate: " << candIt->fStartRecord << ", " << candIt->fStartSample << ", " << candIt->fEndRecord << ", " << candIt->fEndSample << '\n');
                     eventMatches[eventCounter] = eventMatches[eventCounter] + 1;
                     candidateMatches[candidateCounter] = candidateMatches[candidateCounter] + 1;
+                    KTDEBUG(cclog, "Match found:\n" <<
+                            "\tEvent " << eventCounter << "): " << truthIt->fStartRecord << ", " << truthIt->fStartSample << ", " << truthIt->fEndRecord << ", " << truthIt->fEndSample << '\n' <<
+                            "\tCandidate " << candidateCounter << "): " << candIt->fStartRecord << ", " << candIt->fStartSample << ", " << candIt->fEndRecord << ", " << candIt->fEndSample << '\n');
                 }
                 else if (comparison < 0)
                 {
                     KTDEBUG(cclog, "Candidate before event:\n" <<
                             "\tEvent: " << truthIt->fStartRecord << ", " << truthIt->fStartSample << ", " << truthIt->fEndRecord << ", " << truthIt->fEndSample << '\n' <<
                             "\tCandidate: " << candIt->fStartRecord << ", " << candIt->fStartSample << ", " << candIt->fEndRecord << ", " << candIt->fEndSample << '\n');
-                    // this candidate is earlier than any remaining events, so it can be skipped for following events
-                    candStartHere = candIt;
-                    candidateCounterStart = candidateCounter;
-                    // move up to the next event as the place to start
-                    candStartHere++;
-                    candidateCounterStart++;
-                    // if this is the last candidate, than there's no use in doing any more comparisons to events
-                    if (candStartHere == candidates.end())
+                    if (fAssumeSparseCandidates)
                     {
-                        continueEventLoop = false;
-                        // if we're here, the candidate loop will complete after this cycle
+                        // this candidate is earlier than any remaining events, so it can be skipped for following events
+                        candStartHere = candIt;
+                        candidateCounterStart = candidateCounter;
+                        // move up to the next event as the place to start
+                        candStartHere++;
+                        candidateCounterStart++;
+                        // if this is the last candidate, than there's no use in doing any more comparisons to events
+                        if (candStartHere == candidates.end())
+                        {
+                            continueEventLoop = false;
+                            // if we're here, the candidate loop will complete after this cycle
+                        }
                     }
                 }
                 else // comparison > 0
@@ -95,13 +103,14 @@ namespace Katydid
                     // all remaining candidates are after the current truth event, so they can be skipped
                     break;
                 }
+                candidateCounter++;
             }
             eventCounter++;
         }
 
         // iterate through eventMatches and candidateMatches to collect interesting statistics
         UInt_t largestNumberOfMatches = 0;
-        vector< UInt_t > nEventsWithCandidateMatches(candidates.size());
+        vector< UInt_t > nEventsWithCandidateMatches(candidates.size()); // the largest size this should be is the number of candidates
         for (UInt_t iEvent = 0; iEvent < eventMatches.size(); iEvent++)
         {
             if (eventMatches[iEvent] > largestNumberOfMatches)
@@ -113,6 +122,7 @@ namespace Katydid
         nEventsWithCandidateMatches.resize(largestNumberOfMatches + 1);
 
         KTPROG(cclog, "Number of events: " << events.size());
+        KTPROG(cclog, "Largest number of matches: " << largestNumberOfMatches);
         std::stringstream textHist1;
         for (UInt_t iNEvents = 0; iNEvents < nEventsWithCandidateMatches.size(); iNEvents++)
         {
@@ -122,22 +132,23 @@ namespace Katydid
 
 
         largestNumberOfMatches = 0;
-        vector< UInt_t > nCandidatesWithEventmatches(events.size());
-        for (UInt_t iEvent = 0; iEvent < candidateMatches.size(); iEvent++)
+        vector< UInt_t > nCandidatesWithEventmatches(events.size()); // the largest size this should be is the number of events
+        for (UInt_t iCandidate = 0; iCandidate < candidateMatches.size(); iCandidate++)
         {
-            if (candidateMatches[iEvent] > largestNumberOfMatches)
+            if (candidateMatches[iCandidate] > largestNumberOfMatches)
             {
-                largestNumberOfMatches = candidateMatches[iEvent];
+                largestNumberOfMatches = candidateMatches[iCandidate];
             }
-            nCandidatesWithEventmatches[candidateMatches[iEvent]] = nCandidatesWithEventmatches[candidateMatches[iEvent]] + 1;
+            nCandidatesWithEventmatches[candidateMatches[iCandidate]] = nCandidatesWithEventmatches[candidateMatches[iCandidate]] + 1;
         }
         nCandidatesWithEventmatches.resize(largestNumberOfMatches + 1);
 
         KTPROG(cclog, "Number of candidates: " << candidates.size());
+        KTPROG(cclog, "Largest number of matches: " << largestNumberOfMatches);
         std::stringstream textHist2;
         for (UInt_t iNCandidates = 0; iNCandidates < nCandidatesWithEventmatches.size(); iNCandidates++)
         {
-            textHist2 << iNCandidates << ": " << nEventsWithCandidateMatches[iNCandidates] << '\n';
+            textHist2 << iNCandidates << ": " << nCandidatesWithEventmatches[iNCandidates] << '\n';
         }
         KTPROG(cclog, "Number of candidates with a given number of event matches:\n" << textHist2.str());
 
