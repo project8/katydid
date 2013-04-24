@@ -30,27 +30,25 @@
 	    "connection":
 	    {
 		"signal-processor": "noise-egg",
-		"signal-name": "bundle",
+		"signal-name": "slice",
 		"slot-processor": "nrq-est",
-		"slot-name": "process-noise-bundle",
-		"group-order": 0
+		"slot-name": "noise-ts"
 	    },
 
 	    "connection":
 	    {
 		"signal-processor": "candidate-egg",
-		"signal-name": "bundle",
+		"signal-name": "slice",
 		"slot-processor": "nrq-est",
-		"slot-name": "process-candidate-bundle",
-		"group-order"; 1
+		"slot-name": "candidate-ts"
 	    },
 
 	    "connection":
 	    {
 	    	"signal-processor": "nrq-est",
-	    	"signal-name": "rq-calc",
+	    	"signal-name": "rq",
 	    	"slot-processor": "ascii-out",
-	    	"slot-name": "ts-data"
+	    	"slot-name": "ts"
 	    },
 	    
 	    "run-queue":
@@ -62,14 +60,14 @@
 
 	"noise-egg":
 	{
-	    "filename": "run2012_11_5_tone.egg",
+	    "filename": "sweep_2013_01_14_16:31:08_.egg",
 	    "number-of-bundles": 1
 	},
 
 	"candidate-egg":
 	{
-	    "filename": "run2012_11_5_tone.egg",
-	    "number-of-bundles": 10
+	    "filename": "sweep_2013_01_14_16:31:08_.egg",
+	    "number-of-bundles": 1
 	},
 	
 	"nrq-est":

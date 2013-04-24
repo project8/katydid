@@ -5,6 +5,7 @@ if (Katydid_ENABLE_PROFILING)
 
     # Config files
     set (PROFILING_CONFIGFILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ImpulseResponseConfig.json
         ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ProfileSimpleFFTConfig.json
     )
     
@@ -19,6 +20,9 @@ if (Katydid_ENABLE_PROFILING)
     
     
     # Executables that do NOT require ROOT
+    add_executable (ImpulseResponse ${CMAKE_CURRENT_SOURCE_DIR}/ImpulseResponse.cc)
+    target_link_libraries (ImpulseResponse KatydidUtility KatydidCore KatydidData KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis ${LIBS})
+        
     add_executable (ProfileDataAccessMethods ${CMAKE_CURRENT_SOURCE_DIR}/ProfileDataAccessMethods.cc)
     target_link_libraries (ProfileDataAccessMethods KatydidUtility KatydidCore KatydidData KatydidEgg ${LIBS})
         
@@ -29,6 +33,7 @@ if (Katydid_ENABLE_PROFILING)
     target_link_libraries (ProfileManualAnalysis KatydidUtility KatydidCore KatydidData KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${LIBS})
 
     pbuilder_install_executables (
+        ImpulseResponse
         ProfileDataAccessMethods
         ProfileFFTWandMonarch
         ProfileManualAnalysis

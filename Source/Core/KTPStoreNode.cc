@@ -17,6 +17,20 @@ using std::stringstream;
 namespace Katydid
 {
 
+    UIntPair ParsePair(const std::string& pairString)
+    {
+        UInt_t first = 0, second = 0;
+        Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
+                (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> int_[ref(second) = boost::spirit::qi::_1]),
+                space);
+        if (! parsed)
+        {
+            KTWARN(utillog_psnode, "Unable to parse pair: " << pairString);
+        }
+        return std::make_pair< UInt_t, UInt_t >(first, second);
+    }
+
+
     KTPStoreNode::KTPStoreNode() :
                     fTree(NULL),
                     fDefaultValue("DEFAULT VALUE FOR KTPSTORENODE USE")
@@ -153,5 +167,55 @@ namespace Katydid
         return;
     }
 
+    template<>
+    UIntPair KTPStoreNode::GetValue< UIntPair >() const
+    {
+        return ParsePair(fTree->get_value< std::string >());
+    }
+
+    template<>
+    UIntPair KTPStoreNode::GetData< UIntPair >(const std::string& dataName) const
+    {
+        KTPStoreNodeDataNotFound dnfException;
+        TreeNode::const_assoc_iterator it = fTree->find(dataName);
+        if (it == fTree->not_found())
+        {
+            KTERROR(utillog_psnode, "No subnode was found called <" << dataName << ">.");
+            throw dnfException;
+        }
+
+        try
+        {
+            // get_value will only return data from this node (whereas get can return data from subnodes)
+            return ParsePair(fTree->get_value< std::string >());
+        }
+        catch (boost::property_tree::ptree_bad_path& e)
+        {
+            KTERROR(utillog_psnode, "Subnode <" << dataName << "> did not contain data.");
+            throw dnfException;
+        }
+        catch (boost::property_tree::ptree_bad_data& e)
+        {
+            KTERROR(utillog_psnode, "Unable to convert to the specified type for parameter named <" << dataName << ">.");
+            throw dnfException;
+        }
+        KTERROR(utillog_psnode, "Unknown error while attempting to retrieve <" << dataName << ">.");
+        throw dnfException;
+    }
+
+
+    template<>
+    UIntPair KTPStoreNode::GetData< UIntPair >(const std::string& dataName, UIntPair defaultValue) const
+    {
+        KTPStoreNodeDataNotFound dnfException;
+        TreeNode::const_assoc_iterator it = fTree->find(dataName);
+        if (it == fTree->not_found())
+        {
+            return defaultValue;
+        }
+
+        // get_value will only return data from this node (whereas get can return data from subnodes)
+        return ParsePair(fTree->get_value< std::string >());
+    }
 
 } /* namespace Katydid */

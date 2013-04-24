@@ -22,6 +22,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
+#include "KTPStoreNode.hh"
 #include "KTSlot.hh"
 #include "KTWignerVilleData.hh"
 
@@ -48,8 +49,6 @@ namespace Katydid
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
 
-    typedef std::pair< UInt_t, UInt_t > KTWVPair;
-
     /*!
      @class KTWignerVille
      @author N. S. Oblath
@@ -73,8 +72,8 @@ namespace Katydid
 
     class KTWignerVille : public KTProcessor
     {
-        private:
-            typedef std::vector< KTWVPair > PairVector;
+        public:
+            typedef std::vector< UIntPair > PairVector;
 
         public:
             KTWignerVille(const std::string& name = "wigner-ville");
@@ -82,7 +81,7 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            void AddPair(const KTWVPair& pair);
+            void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);
             const PairVector& GetPairVector() const;
             void ClearPairs();
@@ -129,7 +128,7 @@ namespace Katydid
 
     };
 
-    inline void KTWignerVille::AddPair(const KTWVPair& pair)
+    inline void KTWignerVille::AddPair(const UIntPair& pair)
     {
         fPairs.push_back(pair);
         return;

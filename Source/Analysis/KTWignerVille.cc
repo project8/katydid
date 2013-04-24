@@ -11,35 +11,20 @@
 #include "KTEggHeader.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTPStoreNode.hh"
 //#include "KTSlidingWindowFFTW.hh"
 //#include "KTSlidingWindowFSData.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-
 #include <set>
 
 #include <iostream>
 
-using std::pair;
 using std::string;
 using std::vector;
 
 using boost::shared_ptr;
-
-// I can't just use boost::spirit::qi because of naming conflicts with std
-using boost::spirit::qi::int_;
-// I had to take this out because of a naming conflict with boost::bind
-//using boost::spirit::qi::_1;
-using boost::spirit::qi::phrase_parse;
-using boost::spirit::ascii::space;
-using boost::phoenix::ref;
-
 
 namespace Katydid
 {
@@ -73,18 +58,9 @@ namespace Katydid
         KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
         {
-            string pairString(citer->second.get_value< string >());
-            UInt_t first = 0, second = 0;
-            Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
-                    (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> int_[ref(second) = boost::spirit::qi::_1]),
-                    space);
-            if (! parsed)
-            {
-                KTWARN(wvlog, "Unable to parse WV pair: " << pairString);
-                continue;
-            }
-            KTINFO(wvlog, "Adding WV pair " << first << ", " << second);
-            this->AddPair(KTWVPair(first, second));
+            UIntPair pair = ParsePair(citer->second.get_value< string >());
+            KTINFO(wvlog, "Adding WV pair " << pair.first << ", " << pair.second);
+            this->AddPair(pair);
         }
 
         return true;

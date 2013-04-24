@@ -8,9 +8,9 @@
 #ifndef COMPLEXPOLAR_HH_
 #define COMPLEXPOLAR_HH_
 
-#include "complexpolar_class.hh"
-#include "complexpolar_specialization.hh"
-#include "complexpolar_functions.hh"
-#include "complexpolar_operators.hh"
+#include "complexpolar/class.hh"
+#include "complexpolar/specialization.hh"
+#include "complexpolar/functions.hh"
+#include "complexpolar/operators.hh"
 
 #endif /* COMPLEXPOLAR_HH_ */

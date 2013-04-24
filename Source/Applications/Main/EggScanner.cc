@@ -17,6 +17,8 @@
 #include "KTEggReaderMonarch.hh"
 #include "KTLogger.hh"
 
+#include <boost/filesystem.hpp>
+
 #include <iostream>
 #include <string>
 
@@ -48,8 +50,7 @@ int main(int argc, char** argv)
     }
     string filename(clOpts->GetCommandLineValue< string >("egg-file"));
 
-    // default value, 0, will use slice size = record size
-    UInt_t sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 0);
+    UInt_t sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
 
     KTEgg egg;
     if (clOpts->IsCommandLineOptSet("use-2011-egg-reader"))
@@ -61,13 +62,15 @@ int main(int argc, char** argv)
     else
     {
         KTEggReaderMonarch* reader = new KTEggReaderMonarch();
-        reader->SetTimeSeriesSizeRequest(sliceSize);
+        reader->SetSliceSize(sliceSize);
         egg.SetReader(reader);
     }
 
     //**************************
     // Doing-something phase
     //**************************
+
+    ULong64_t fileSize = boost::filesystem::file_size(filename); // in bytes
 
     if (! egg.BreakEgg(filename))
     {
@@ -81,7 +84,7 @@ int main(int argc, char** argv)
         KTERROR(eggscan, "No header received");
         return -1;
     }
-    KTINFO(eggscan, "Header information:\n"
+    KTPROG(eggscan, "Header information:\n"
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
            << "\tNumber of Channels: " << header->GetNChannels() << '\n'
@@ -90,6 +93,10 @@ int main(int argc, char** argv)
            << "\tAcquisition Time: " << header->GetAcquisitionTime() << " s\n"
            << "\tAcquisition Rate: " << header->GetAcquisitionRate() << " Hz");
 
+    ULong64_t recordMemorySize = header->GetSliceSize(); // each time bin is represented by 1 byte
+    ULong64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
+    ULong64_t slicesInFile = recordsInFile * ULong64_t(header->GetRecordSize() / header->GetSliceSize()); // upper limit, assuming continuous acquisition
+
     UInt_t fsSizeFFTW = header->GetSliceSize();
     UInt_t fsSizePolar = fsSizeFFTW / 2 + 1;
     Double_t timeBinWidth = 1. / header->GetAcquisitionRate();
@@ -97,7 +104,10 @@ int main(int argc, char** argv)
     Double_t sliceLength = timeBinWidth * Double_t(header->GetSliceSize());
     Double_t fsMaxFreq = freqBinWidth * (Double_t(fsSizePolar) - 0.5);
 
-    KTINFO(eggscan, "Additional information:\n"
+    KTPROG(eggscan, "Additional information:\n"
+           << "\tFile size: " << fileSize/1000000 << " MB\n"
+           << "\tRecords in the file: " << recordsInFile << '\n'
+           << "\tSlices in the file: " << slicesInFile << "  (upper limit assuming continuous acquisition)\n"
            << "\tTime bin width: " << timeBinWidth << " s\n"
            << "\tSlice length: " << sliceLength << " s\n"
            << "\tFrequency bin width: " << freqBinWidth << " Hz\n"

@@ -35,9 +35,11 @@ namespace Katydid
     KTEggProcessor::KTEggProcessor(const std::string& name) :
             KTPrimaryProcessor(name),
             fNSlices(0),
+            fProgressReportInterval(1),
             fFilename(""),
             fEggReaderType(kMonarchEggReader),
-            fSliceSizeRequest(0),
+            fSliceSize(1024),
+            fStride(1024),
             fTimeSeriesType(kRealTimeSeries),
             fHeaderSignal("header", this),
             fDataSignal("slice", this),
@@ -55,6 +57,7 @@ namespace Katydid
         if (node != NULL)
         {
             SetNSlices(node->GetData< UInt_t >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->GetData< UInt_t >("progress-report-interval", fProgressReportInterval));
             SetFilename(node->GetData< string >("filename", fFilename));
 
             // choose the egg reader
@@ -67,8 +70,16 @@ namespace Katydid
                 return false;
             }
 
-            // specify the length of the time series (0 for use Monarch's record size)
-            fSliceSizeRequest = node->GetData< UInt_t >("time-series-size", fSliceSizeRequest);
+            // specify the length of the time series
+            fSliceSize = node->GetData< UInt_t >("slice-size", fSliceSize);
+            // specify the stride (leave unset to make stride == slice size)
+            fStride = node->GetData< UInt_t >("stride", fSliceSize);
+
+            if (fSliceSize == 0)
+            {
+                KTERROR(egglog, "Slice size MUST be specified");
+                return false;
+            }
 
             // type of time series
             string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
@@ -100,7 +111,8 @@ namespace Katydid
         if (fEggReaderType == kMonarchEggReader)
         {
             KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
-            eggReader->SetTimeSeriesSizeRequest(fSliceSizeRequest);
+            eggReader->SetSliceSize(fSliceSize);
+            eggReader->SetStride(fStride);
             if (fTimeSeriesType == kRealTimeSeries)
                 eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)
@@ -122,15 +134,58 @@ namespace Katydid
         fHeaderSignal(egg.GetHeader());
 
         KTINFO(egglog, "The egg file has been opened successfully"
-                "\n\tand the header parsed and processed;"
-                "\n\tProceeding with slice processing");
+                "\n\tand the header parsed and processed;");
+        KTPROG(egglog, "Proceeding with slice processing");
 
-        UInt_t iSlice = 0;
+        if (fNSlices == 0) UnlimitedLoop(egg);
+        else LimitedLoop(egg);
+
+        fEggDoneSignal();
+
+        return true;
+    }
+
+    void KTEggProcessor::UnlimitedLoop(KTEgg& egg)
+    {
+        UInt_t iSlice = 0, iProgress = 0;
+        while (kTRUE)
+        {
+            KTINFO(egglog, "Hatching slice " << iSlice);
+
+            // Hatch the slice
+            shared_ptr<KTData> data = egg.HatchNextSlice();
+            if (data.get() == NULL) break;
+
+            if (data->Has< KTTimeSeriesData >())
+            {
+                KTDEBUG(egglog, "Time series data is present.");
+                fDataSignal(data);
+            }
+            else
+            {
+                KTWARN(egglog, "No time-series data present in slice");
+            }
+
+            iSlice++;
+            iProgress++;
+
+            if (iProgress == fProgressReportInterval)
+            {
+                iProgress = 0;
+                KTPROG(egglog, iSlice << " slices processed");
+            }
+        }
+        return;
+    }
+
+    void KTEggProcessor::LimitedLoop(KTEgg& egg)
+    {
+        UInt_t iSlice = 0, iProgress = 0;
         while (kTRUE)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
             {
-                KTINFO(egglog, iSlice << "/" << fNSlices << " slices hatched; slice processing is complete");
+                KTPROG(egglog, iSlice << "/" << fNSlices << " slices hatched; slice processing is complete");
                 break;
             }
 
@@ -152,15 +207,16 @@ namespace Katydid
                 KTWARN(egglog, "No time-series data present in slice");
             }
 
-            // Pass the slice to any subscribers
-            //fSliceSignal(slice);
-
             iSlice++;
+            iProgress++;
+
+            if (iProgress == fProgressReportInterval)
+            {
+                iProgress = 0;
+                KTPROG(egglog, iSlice << " slices processed (" << Double_t(iSlice) / Double_t(fNSlices) * 100. << " %)");
+            }
         }
-
-        fEggDoneSignal();
-
-        return true;
+        return;
     }
 
 } /* namespace Katydid */

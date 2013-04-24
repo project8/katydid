@@ -79,7 +79,7 @@ int main()
 #endif
 
     KTCorrelator corr;
-    corr.AddPair(KTCorrelationPair(0, 1));
+    corr.AddPair(UIntPair(0, 1));
 
     KTSpectrumDiscriminator spectDisc;
     spectDisc.SetMinFrequency(minAnalysisFreq);
@@ -111,7 +111,7 @@ int main()
 
     // Prepare the egg reader
     KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
-    eggReader->SetTimeSeriesSizeRequest(recordSize);
+    eggReader->SetSliceSize(recordSize);
     eggReader->SetTimeSeriesType(tsType);
 
     // Prepare and break the egg
