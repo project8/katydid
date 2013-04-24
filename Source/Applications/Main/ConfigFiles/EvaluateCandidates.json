@@ -44,17 +44,17 @@
         "mctruth":
         {
             "input-file": "/path/to/mte_file.json",
-            "file-type": "mc-truth-events"
+            "run-type": "mc-truth-events"
         },
         
         "candidates":
         {
             "input-file": "/path/to/ac_file.json",
-            "file-type": "analysis-candidates"
          },
         
         "cc":
         {
+            "assume-sparse-candidates": false
         }
     }
 }

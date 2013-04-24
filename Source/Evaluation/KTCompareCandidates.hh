@@ -1,10 +1,10 @@
-/*
- * KTCompareCandidates.hh
- *
- *  Created on: Apr 9, 2013
- *      Author: nsoblath
+/**
+ @file KTCompareCandidates.hh
+ @brief Contains KTCompareCandidates
+ @details Compares MC truth events to analysis candidates
+ @author: N. S. Oblath
+ @date: Apr 9, 2013
  */
-
 #ifndef KTCOMPARECANDIDATES_HH_
 #define KTCOMPARECANDIDATES_HH_
 
@@ -17,6 +17,24 @@
 namespace Katydid
 {
     class KTPStoreNode;
+
+    /*!
+     @class KTCompareCandidates
+     @author N. S. Oblath
+
+     @brief Compare MC truth events to analysis candidates.
+
+     @details
+     The current implementation makes a comparison between the MC truth events and the analysis candidates
+     based on the time of the candidates and events in the run.
+     Those times are specified as start and end
+
+     Available configuration values:
+     \li \c "assume-sparse-candidates": bool -- if the candidates can be reasonably assumed to not overlap, set this to true to save reduce running time
+
+     Slots:
+     \li \c "truth-vs-analysis": void (shared_ptr<KTData>) -- Perform a comparison of MC truth events and analysis candidates; Requires KTMCTruthEvents and KTAnalysisCandidates
+    */
 
     class KTCompareCandidates : public KTProcessor
     {

@@ -35,12 +35,16 @@ namespace Katydid
      Available configuration values:
      - "input-file": string -- input filename
      - "file-mode": string -- cstdio FILE mode: r (default), a, r+, a+
-     - "file-type": string -- the type of file being read. See options below.
+     - "run-type": string -- the type of file being read. This option is only necessary if the processor is being used as a primary processor.  See options below.
 
      The file-type option determines the function used to read the file.
      The available options are:
      - "mc-truth-events" -- Emits signal "mc-truth-events" after file read
      - "analysis-candidates" -- Emits signal "analysis-candidates" after file read
+
+     Slots:
+     - "append-mc-truth-events": void (shared_ptr<KTData>) -- Add MC truth events data; Requires KTData; Adds KTMCTruthEvents; Emits signal "mc-truth-events" upon successful file read.
+     - "append-analysis-candidates": void (shared_ptr<KTData>) -- Add analysis candidates data; Requires KTData; Adds KTAnalysisCandidates; Emits signal "analysis-candidates" upon successful file read.
 
      Signals:
      - "mc-truth-events": void (shared_ptr<KTData>) -- Emitted after reading an mc-truth-events file; Guarantees KTMCTruthEvents.
