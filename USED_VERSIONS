@@ -15,5 +15,6 @@
             "version":"3.0.6",
             "source":"portage",
             "problem":"sparse module API not stable yet"
-    }
+    },
+    "user": "BH LaRoque"
 }
