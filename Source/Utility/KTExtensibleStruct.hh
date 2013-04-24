@@ -70,6 +70,7 @@ namespace Katydid
     KTExtensibleStructCore<XGroupType>::~KTExtensibleStructCore()
     {
         delete fNext;
+        fNext = 0;
     }
 
     template<class XGroupType>
