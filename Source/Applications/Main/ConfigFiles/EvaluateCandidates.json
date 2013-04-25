@@ -31,7 +31,7 @@
                 "signal-processor": "candidates",
                 "signal-name": "analysis-candidates",
                 "slot-processor": "cc",
-                "slot-name": "compare"
+                "slot-name": "truth-vs-analysis"
             },
 
             "run-queue":
@@ -49,8 +49,8 @@
         
         "candidates":
         {
-            "input-file": "/path/to/ac_file.json",
-         },
+            "input-file": "/path/to/ac_file.json"
+        },
         
         "cc":
         {
