@@ -12,14 +12,15 @@
 #include "KTWriter.hh"
 
 #include "KTJSONMaker.hh"
+#include "KTSlot.hh"
 
 #include <cstdio>
 
 
 namespace Katydid
 {
-    class KTData;
     class KTEggHeader;
+    class KTWaterfallCandidateData;
 
     /*!
      @class KTOfficialCandidatesWriter
@@ -32,7 +33,7 @@ namespace Katydid
      Available configuration values:
      - "output-file": string -- output filename
      - "pretty-json": bool -- if true, prints a human-readable file
-     - "file-mode": string -- cstdio FILE mode: w, a, r+, w+ or a+
+     - "file-mode": string -- cstdio FILE mode: w, a, r+, w+ (default) or a+
 
      Slots:
      - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; not valid if candidate writing has started
@@ -93,9 +94,15 @@ namespace Katydid
         public:
             void WriteHeaderInformation(const KTEggHeader* header);
 
-            void WriteWaterfallCandidate(boost::shared_ptr< KTData > data);
+            Bool_t WriteWaterfallCandidate(KTWaterfallCandidateData& wcData);
 
-
+            //**************
+            // Slots
+            //**************
+        private:
+            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotDataOneType< KTWaterfallCandidateData > fWaterfallCandidateSlot;
+            KTSlotNoArg< void () > fStopWritingSlot;
     };
 
     inline const std::string& KTOfficialCandidatesWriter::GetFilename() const
