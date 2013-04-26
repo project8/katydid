@@ -132,23 +132,25 @@ namespace Katydid
 
 
         largestNumberOfMatches = 0;
-        vector< UInt_t > nCandidatesWithEventmatches(events.size()); // the largest size this should be is the number of events
-        for (UInt_t iCandidate = 0; iCandidate < candidateMatches.size(); iCandidate++)
+        vector< UInt_t > nCandidatesWithEventMatches(events.size()); // the largest size this should be is the number of events
+        if (nCandidatesWithEventMatches.size() > 0)
         {
-            if (candidateMatches[iCandidate] > largestNumberOfMatches)
+            for (UInt_t iCandidate = 0; iCandidate < candidateMatches.size(); iCandidate++)
             {
-                largestNumberOfMatches = candidateMatches[iCandidate];
+                if (candidateMatches[iCandidate] > largestNumberOfMatches)
+                {
+                    largestNumberOfMatches = candidateMatches[iCandidate];
+                }
+                nCandidatesWithEventMatches[candidateMatches[iCandidate]] = nCandidatesWithEventMatches[candidateMatches[iCandidate]] + 1;
             }
-            nCandidatesWithEventmatches[candidateMatches[iCandidate]] = nCandidatesWithEventmatches[candidateMatches[iCandidate]] + 1;
+            nCandidatesWithEventMatches.resize(largestNumberOfMatches + 1);
         }
-        nCandidatesWithEventmatches.resize(largestNumberOfMatches + 1);
-
         KTPROG(cclog, "Number of candidates: " << candidates.size());
         KTPROG(cclog, "Largest number of matches: " << largestNumberOfMatches);
         std::stringstream textHist2;
-        for (UInt_t iNCandidates = 0; iNCandidates < nCandidatesWithEventmatches.size(); iNCandidates++)
+        for (UInt_t iNCandidates = 0; iNCandidates < nCandidatesWithEventMatches.size(); iNCandidates++)
         {
-            textHist2 << iNCandidates << ": " << nCandidatesWithEventmatches[iNCandidates] << '\n';
+            textHist2 << iNCandidates << ": " << nCandidatesWithEventMatches[iNCandidates] << '\n';
         }
         KTPROG(cclog, "Number of candidates with a given number of event matches:\n" << textHist2.str());
 
