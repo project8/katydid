@@ -1,12 +1,12 @@
 /*
- * KTAmplitudeDistribution.hh
+ * KTAmplitudeDistributor.hh
  *
  *  Created on: Apr 26, 2013
  *      Author: nsoblath
  */
 
-#ifndef KTAMPLITUDEDISTRIBUTION_HH_
-#define KTAMPLITUDEDISTRIBUTION_HH_
+#ifndef KTAMPLITUDEDISTRIBUTOR_HH_
+#define KTAMPLITUDEDISTRIBUTOR_HH_
 
 #include "KTProcessor.hh"
 
@@ -28,7 +28,7 @@ namespace Katydid
 
 
     /*!
-     @class KTAmplitudeDistribution
+     @class KTAmplitudeDistributor
      @author N. S. Oblath
 
      @brief .
@@ -59,10 +59,10 @@ namespace Katydid
        - "finish": void () -- Completes the calculation of the amplitude distribution; Emits "amp-dist"
 
      Signals:
-     \li \c "amp-dist": void (shared_ptr< KTData >) Emitted upon completion of an amplitude distribution; Guarantees KTAmplitudeDistribution
+     \li \c "amp-dist": void (shared_ptr< KTData >) Emitted upon completion of an amplitude distribution; Guarantees KTAmplitudeDistributor
     */
 
-    class KTAmplitudeDistribution : public KTProcessor
+    class KTAmplitudeDistributor : public KTProcessor
     {
         public:
             typedef std::vector< Double_t > Spectrum; // indexed over frequency-axis bins
@@ -74,8 +74,8 @@ namespace Katydid
             typedef std::vector< ComponentDistributions > Distributions; // indexed over component
 
         public:
-            KTAmplitudeDistribution(const std::string& name = "amplitude-distribution");
-            virtual ~KTAmplitudeDistribution();
+            KTAmplitudeDistributor(const std::string& name = "amplitude-distributor");
+            virtual ~KTAmplitudeDistributor();
 
             Bool_t Configure(const KTPStoreNode* node);
 
@@ -136,11 +136,11 @@ namespace Katydid
             Bool_t CoreAddValues(KTFrequencySpectrumDataPolarCore& data);
             Bool_t CoreAddValues(KTFrequencySpectrumDataFFTWCore& data);
 
-            void (KTAmplitudeDistribution::*fTakeValuesPolar)(const KTFrequencySpectrumPolar*, UInt_t);
+            void (KTAmplitudeDistributor::*fTakeValuesPolar)(const KTFrequencySpectrumPolar*, UInt_t);
             void TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, UInt_t component);
             void TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, UInt_t component);
 
-            void (KTAmplitudeDistribution::*fTakeValuesFFTW)(const KTFrequencySpectrumFFTW*, UInt_t);
+            void (KTAmplitudeDistributor::*fTakeValuesFFTW)(const KTFrequencySpectrumFFTW*, UInt_t);
             void TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, UInt_t component);
             void TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, UInt_t component);
 
@@ -182,116 +182,116 @@ namespace Katydid
 
     };
 
-    inline Double_t KTAmplitudeDistribution::GetMinFrequency() const
+    inline Double_t KTAmplitudeDistributor::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline void KTAmplitudeDistribution::SetMinFrequency(Double_t freq)
+    inline void KTAmplitudeDistributor::SetMinFrequency(Double_t freq)
     {
         fMinFrequency = freq;
         fCalculateMinBin = true;
         return;
     }
 
-    inline Double_t KTAmplitudeDistribution::GetMaxFrequency() const
+    inline Double_t KTAmplitudeDistributor::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline void KTAmplitudeDistribution::SetMaxFrequency(Double_t freq)
+    inline void KTAmplitudeDistributor::SetMaxFrequency(Double_t freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;
         return;
     }
 
-    inline UInt_t KTAmplitudeDistribution::GetMinBin() const
+    inline UInt_t KTAmplitudeDistributor::GetMinBin() const
     {
         return fMinBin;
     }
 
-    inline void KTAmplitudeDistribution::SetMinBin(UInt_t bin)
+    inline void KTAmplitudeDistributor::SetMinBin(UInt_t bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
     }
 
-    inline UInt_t KTAmplitudeDistribution::GetMaxBin() const
+    inline UInt_t KTAmplitudeDistributor::GetMaxBin() const
     {
         return fMaxBin;
     }
 
-    inline void KTAmplitudeDistribution::SetMaxBin(UInt_t bin)
+    inline void KTAmplitudeDistributor::SetMaxBin(UInt_t bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;
         return;
     }
 
-    inline UInt_t KTAmplitudeDistribution::GetDistNBins() const
+    inline UInt_t KTAmplitudeDistributor::GetDistNBins() const
     {
         return fDistNBins;
     }
 
-    inline void KTAmplitudeDistribution::SetDistNBins(UInt_t nBins)
+    inline void KTAmplitudeDistributor::SetDistNBins(UInt_t nBins)
     {
         fDistNBins = nBins;
         return;
     }
 
-    inline Bool_t KTAmplitudeDistribution::GetUseBuffer() const
+    inline Bool_t KTAmplitudeDistributor::GetUseBuffer() const
     {
         return fUseBuffer;
     }
 
-    inline void KTAmplitudeDistribution::SetUseBuffer(Bool_t useBuffer)
+    inline void KTAmplitudeDistributor::SetUseBuffer(Bool_t useBuffer)
     {
         fUseBuffer = useBuffer;
         return;
     }
 
-    inline UInt_t KTAmplitudeDistribution::GetBufferSize() const
+    inline UInt_t KTAmplitudeDistributor::GetBufferSize() const
     {
         return fBufferSize;
     }
 
-    inline void KTAmplitudeDistribution::SetBufferSize(UInt_t buffer)
+    inline void KTAmplitudeDistributor::SetBufferSize(UInt_t buffer)
     {
         fBufferSize = buffer;
         return;
     }
 
-    inline Double_t KTAmplitudeDistribution::GetDistMin() const
+    inline Double_t KTAmplitudeDistributor::GetDistMin() const
     {
         return fDistMin;
     }
 
-    inline void KTAmplitudeDistribution::SetDistMin(Double_t min)
+    inline void KTAmplitudeDistributor::SetDistMin(Double_t min)
     {
         fDistMin = min;
         fInvDistBinWidth = Double_t (fDistNBins) / (fDistMax - fDistMin);
         return;
     }
 
-    inline Double_t KTAmplitudeDistribution::GetDistMax() const
+    inline Double_t KTAmplitudeDistributor::GetDistMax() const
     {
         return fDistMax;
     }
 
-    inline void KTAmplitudeDistribution::SetDistMax(Double_t max)
+    inline void KTAmplitudeDistributor::SetDistMax(Double_t max)
     {
         fDistMax = max;
         fInvDistBinWidth = Double_t (fDistNBins) / (fDistMax - fDistMin);
         return;
     }
 
-    inline UInt_t KTAmplitudeDistribution::CalculateBin(Double_t amplitude)
+    inline UInt_t KTAmplitudeDistributor::CalculateBin(Double_t amplitude)
     {
         return UInt_t((amplitude - fDistMin) * fInvDistBinWidth);
     }
 
 
 } /* namespace Katydid */
-#endif /* KTAMPLITUDEDISTRIBUTION_HH_ */
+#endif /* KTAMPLITUDEDISTRIBUTOR_HH_ */
