@@ -8,6 +8,7 @@
 #include "KTAmplitudeDistribution.hh"
 
 #include "KTCorrelationData.hh"
+#include "KTEggHeader.hh"
 #include "KTFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
@@ -37,17 +38,26 @@ namespace Katydid
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
             fDistNBins(100),
+            fUseBuffer(true),
             fBufferSize(0),
             fDistMin(0.),
             fDistMax(1.),
-            fAmpDistSignal("disc-1d", this),
+            fTakeValuesPolar(&KTAmplitudeDistribution::TakeValuesToBuffer),
+            fTakeValuesFFTW(&KTAmplitudeDistribution::TakeValuesToBuffer),
+            fInvDistBinWidth(1.),
+            fNFreqBins(1),
+            fNComponents(1),
+            fBuffer(),
+            fNBuffered(0),
+            fDistributions(),
+            fAmpDistSignal("amp-dist", this),
             fFSPolarSlot("fs-polar", this, &KTAmplitudeDistribution::AddValues),
             fFSFFTWSlot("fs-fftw", this, &KTAmplitudeDistribution::AddValues),
             fNormFSPolarSlot("norm-fs-polar", this, &KTAmplitudeDistribution::AddValues),
             fNormFSFFTWSlot("norm-fs-fftw", this, &KTAmplitudeDistribution::AddValues),
             fCorrSlot("corr", this, &KTAmplitudeDistribution::AddValues),
             fWVSlot("wv", this, &KTAmplitudeDistribution::AddValues),
-            fAmpDistSignal("amp-dist", this, &KTAmplitudeDistribution::FinishAmpDist)
+            fCompleteDistributions("finish", this, &KTAmplitudeDistribution::FinishAmpDist)
     {
     }
 
@@ -77,7 +87,9 @@ namespace Katydid
             SetMaxBin(node->GetData< UInt_t >("max-bin"));
         }
 
-        SetDistNBins(node->GetData< UInt_t >("dist-n-bins"));
+        SetDistNBins(node->GetData< UInt_t >("dist-n-bins", fDistNBins));
+
+        SetUseBuffer(node->GetData< Bool_t >("use-buffers", fUseBuffer));
 
         if (node->HasData("buffer-size"))
         {
@@ -95,6 +107,28 @@ namespace Katydid
 
         return true;
     }
+
+    Bool_t KTAmplitudeDistribution::Initialize(UInt_t nComponents, UInt_t nFreqBins)
+    {
+        fNComponents = nComponents;
+        fNFreqBins = nFreqBins;
+
+        fBuffer.clear();
+        if (fUseBuffer)
+        {
+            // This command initializes the nested vectors with the correct number of elements
+            // It's assumed that fBufferSize is set before this function is called.
+            fBuffer.resize(fBufferSize, Spectra(nComponents, Spectrum(fNFreqBins)));
+        }
+        else
+        {
+            if (CreateDistributionsEmpty())
+                return false;
+        }
+
+        return true;
+    }
+
 
     Bool_t KTAmplitudeDistribution::AddValues(KTFrequencySpectrumDataPolar& data)
     {
@@ -139,10 +173,16 @@ namespace Katydid
             KTDEBUG(adlog, "Maximum bin set to " << fMaxBin);
         }
 
+        if (fDistributions.empty())
+        {
+            if (! Initialize(data.GetNComponents(), data.GetSpectrumFFTW(0)->GetNBins()))
+            {
+                KTERROR(adlog, "Something went wrong while initializing the processor");
+                return false;
+            }
+        }
+
         UInt_t nComponents = data.GetNComponents();
-
-
-
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
@@ -151,15 +191,14 @@ namespace Katydid
                 KTERROR(adlog, "Frequency spectrum pointer (component " << iComponent << ") is NULL!");
                 return false;
             }
-            if (spectrum->size() != fDistributions.size())
+
+            if (spectrum->size() != fDistributions[iComponent].size())
             {
                 KTERROR(adlog, "Received spectrum with a different size, " << spectrum->size() << ", than expected, " << fDistributions.size());
                 return false;
             }
 
-
-
-
+            fTakeValuesFFTW(spectrum, iComponent);
         }
 
         KTINFO(adlog, "Completed addition of values for " << nComponents << " components");
@@ -180,9 +219,16 @@ namespace Katydid
             KTDEBUG(adlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
         }
 
+        if (fDistributions.empty())
+        {
+            if (! Initialize(data.GetNComponents(), data.GetSpectrumPolar(0)->GetNBins()))
+            {
+                KTERROR(adlog, "Something went wrong while initializing the processor");
+                return false;
+            }
+        }
+
         UInt_t nComponents = data.GetNComponents();
-
-
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
@@ -191,15 +237,14 @@ namespace Katydid
                 KTERROR(adlog, "Frequency spectrum pointer (component " << iComponent << ") is NULL!");
                 return false;
             }
-            if (spectrum->size() != fDistributions.size())
+
+            if (spectrum->size() != fDistributions[iComponent].size())
             {
-                KTERROR(adlog, "Received spectrum with a different size, " << spectrum->size() << ", than expected, " << fDistributions.size());
+                KTERROR(adlog, "Received spectrum with a different size, " << spectrum->size() << ", than expected, " << fDistributions[iComponent].size());
                 return false;
             }
 
-
-
-
+            fTakeValuesPolar(spectrum, iComponent);
         }
 
         KTINFO(adlog, "Completed addition of values for " << nComponents << " components");
@@ -207,10 +252,114 @@ namespace Katydid
         return true;
     }
 
+    void KTAmplitudeDistribution::TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, UInt_t component)
+    {
+        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        {
+            fBuffer[fNBuffered][component][iBin] = (*spectrum)(iBin).abs();
+        }
+        fNBuffered++;
+        if (fNBuffered == fBufferSize)
+        {
+            CreateDistributionsFromBuffer();
+            fTakeValuesPolar = &KTAmplitudeDistribution::TakeValuesToDistributions;
+        }
+        return;
+    }
+
+    void KTAmplitudeDistribution::TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, UInt_t component)
+    {
+        UInt_t distBin = 0;
+        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        {
+            distBin = CalculateBin((*spectrum)(iBin).abs());
+            fDistributions[component][distBin] = fDistributions[component][distBin] + 1;
+        }
+        return;
+    }
+
+    void KTAmplitudeDistribution::TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, UInt_t component)
+    {
+        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        {
+            fBuffer[fNBuffered][component][iBin] = sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]);
+        }
+        fNBuffered++;
+        if (fNBuffered == fBufferSize)
+        {
+            CreateDistributionsFromBuffer();
+            fTakeValuesFFTW = &KTAmplitudeDistribution::TakeValuesToDistributions;
+        }
+        return;
+    }
+
+    void KTAmplitudeDistribution::TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, UInt_t component)
+    {
+        UInt_t distBin = 0;
+        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        {
+            distBin = CalculateBin(sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]));
+            fDistributions[component][distBin] = fDistributions[component][distBin] + 1;
+        }
+        return;
+    }
+
+
+    Bool_t KTAmplitudeDistribution::CreateDistributionsEmpty()
+    {
+        fDistributions.clear();
+
+        fDistributions.resize(fNComponents, ComponentDistributions(fNFreqBins, new Distribution(fDistNBins, fDistMin, fDistMax)));
+
+        return true;
+    }
+
+    Bool_t KTAmplitudeDistribution::CreateDistributionsFromBuffer()
+    {
+        fDistributions.clear();
+
+        if (fBuffer.size() == 0)
+        {
+            KTERROR(adlog, "Buffer is empty, but buffer use was requested");
+            return false;
+        }
+
+        fDistributions.resize(fNComponents, ComponentDistributions(fNFreqBins, NULL));
+
+        Double_t distMin, distMax, value;
+        for (UInt_t iComponent = 0; iComponent < fNComponents; iComponent++)
+        {
+            for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+            {
+                distMin = fBuffer[0][iComponent][iBin];
+                distMax = distMin;
+                for (UInt_t iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
+                {
+                    value = fBuffer[iSpectrum][iComponent][iBin];
+                    if (value < distMin) distMin = value;
+                    else if (value > distMax) distMax = value;
+                }
+                fDistributions[iComponent][iBin] = new Distribution(fDistNBins, distMin, distMax);
+            }
+        }
+
+        // The condition (fUserBuffer && fBuffer.empty()) implies that if data has been taken, it's been transferred to distributions
+        fBuffer.clear();
+
+        return true;
+    }
+
 
     void KTAmplitudeDistribution::FinishAmpDist()
     {
+        if (fUseBuffer && ! fBuffer.empty())
+        {
+            CreateDistributionsFromBuffer();
+        }
 
+        // now emit the signal for the data
+
+        return;
     }
 
 

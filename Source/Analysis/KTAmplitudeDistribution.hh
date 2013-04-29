@@ -17,6 +17,7 @@ namespace Katydid
     class KTCorrelationData;
     class KTData;
     class KTDiscriminatedPoints1DData;
+    class KTEggHeader;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
@@ -41,18 +42,21 @@ namespace Katydid
      - "min-bin": unsigned -- minimum frequency
      - "max-bin": unsigned -- maximum frequency
      - "dist-n-bins": unsigned -- number of bins for the distribution histogram
+     - "use-buffer": bool -- whether to use the buffer (true; default) or pre-specified distribution min and max (false)
      - "buffer-size": unsigned -- number of spectra to store initially to determine the range of the distribution (if not using "dist-min/max")
      - "dist-min": double -- minimum of the distribution (if not using "buffer-size")
      - "dist-max": double -- maximum of the distribution (if not using "buffer-size")
 
      Slots:
-     - "fs-polar": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
-     - "fs-fftw": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataFFTW
-     - "norm-fs-polar": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
-     - "norm-fs-fftw": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTNormalizedFSDataFFTW
-     - "corr": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTCorrelationData
-     - "wv": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTWignerVilleData
-     - "finish": void () -- Completes the calculation of the amplitude distribution; Emits "amp-dist"
+     - Running
+       - "fs-polar": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
+       - "fs-fftw": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataFFTW
+       - "norm-fs-polar": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
+       - "norm-fs-fftw": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTNormalizedFSDataFFTW
+       - "corr": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTCorrelationData
+       - "wv": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTWignerVilleData
+     - Completion
+       - "finish": void () -- Completes the calculation of the amplitude distribution; Emits "amp-dist"
 
      Signals:
      \li \c "amp-dist": void (shared_ptr< KTData >) Emitted upon completion of an amplitude distribution; Guarantees KTAmplitudeDistribution
@@ -61,12 +65,13 @@ namespace Katydid
     class KTAmplitudeDistribution : public KTProcessor
     {
         public:
-            typedef std::vector< Double_t > Spectrum;
-            typedef std::vector< Spectrum > Spectra;
-            typedef std::vector< Spectra > Buffer;
+            typedef std::vector< Double_t > Spectrum; // indexed over frequency-axis bins
+            typedef std::vector< Spectrum > Spectra; // indexed over component
+            typedef std::vector< Spectra > Buffer; // indexed over slice number
 
-            typedef std::vector< Double_t > Distribution;
-            typedef std::vector< Distribution > Distributions;
+            typedef KTPhysicalArray< 1, Double_t > Distribution; // histogram over amplitude distribution index
+            typedef std::vector< Distribution* > ComponentDistributions; // indexed over frequency-axis bins
+            typedef std::vector< ComponentDistributions > Distributions; // indexed over component
 
         public:
             KTAmplitudeDistribution(const std::string& name = "amplitude-distribution");
@@ -89,6 +94,9 @@ namespace Katydid
             UInt_t GetDistNBins() const;
             void SetDistNBins(UInt_t nBins);
 
+            Bool_t GetUseBuffer() const;
+            void SetUseBuffer(Bool_t useBuffer);
+
             UInt_t GetBufferSize() const;
             void SetBufferSize(UInt_t buffer);
 
@@ -110,8 +118,11 @@ namespace Katydid
             UInt_t fBufferSize;
             Double_t fDistMin;
             Double_t fDistMax;
+            Bool_t fUseBuffer;
 
         public:
+            Bool_t Initialize(UInt_t nComponents, UInt_t nFreqBins);
+
             Bool_t AddValues(KTFrequencySpectrumDataPolar& data);
             Bool_t AddValues(KTFrequencySpectrumDataFFTW& data);
             Bool_t AddValues(KTNormalizedFSDataPolar& data);
@@ -125,7 +136,25 @@ namespace Katydid
             Bool_t CoreAddValues(KTFrequencySpectrumDataPolarCore& data);
             Bool_t CoreAddValues(KTFrequencySpectrumDataFFTWCore& data);
 
+            void (KTAmplitudeDistribution::*fTakeValuesPolar)(const KTFrequencySpectrumPolar*, UInt_t);
+            void TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, UInt_t component);
+            void TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, UInt_t component);
+
+            void (KTAmplitudeDistribution::*fTakeValuesFFTW)(const KTFrequencySpectrumFFTW*, UInt_t);
+            void TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, UInt_t component);
+            void TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, UInt_t component);
+
+            Bool_t CreateDistributionsEmpty();
+            Bool_t CreateDistributionsFromBuffer();
+
+            UInt_t CalculateBin(Double_t amplitude);
+            Double_t fInvDistBinWidth;
+
+            UInt_t fNFreqBins;
+            UInt_t fNComponents;
+
             Buffer fBuffer;
+            UInt_t fNBuffered;
 
             Distributions fDistributions;
 
@@ -148,6 +177,8 @@ namespace Katydid
             KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;
             KTSlotDataOneType< KTCorrelationData > fCorrSlot;
             KTSlotDataOneType< KTWignerVilleData > fWVSlot;
+
+            KTSlotNoArg< void () > fCompleteDistributions;
 
     };
 
@@ -210,6 +241,17 @@ namespace Katydid
         return;
     }
 
+    inline Bool_t KTAmplitudeDistribution::GetUseBuffer() const
+    {
+        return fUseBuffer;
+    }
+
+    inline void KTAmplitudeDistribution::SetUseBuffer(Bool_t useBuffer)
+    {
+        fUseBuffer = useBuffer;
+        return;
+    }
+
     inline UInt_t KTAmplitudeDistribution::GetBufferSize() const
     {
         return fBufferSize;
@@ -229,6 +271,7 @@ namespace Katydid
     inline void KTAmplitudeDistribution::SetDistMin(Double_t min)
     {
         fDistMin = min;
+        fInvDistBinWidth = Double_t (fDistNBins) / (fDistMax - fDistMin);
         return;
     }
 
@@ -240,8 +283,15 @@ namespace Katydid
     inline void KTAmplitudeDistribution::SetDistMax(Double_t max)
     {
         fDistMax = max;
+        fInvDistBinWidth = Double_t (fDistNBins) / (fDistMax - fDistMin);
         return;
     }
+
+    inline UInt_t KTAmplitudeDistribution::CalculateBin(Double_t amplitude)
+    {
+        return UInt_t((amplitude - fDistMin) * fInvDistBinWidth);
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTAMPLITUDEDISTRIBUTION_HH_ */
