@@ -10,6 +10,9 @@
 
 #include "KTProcessor.hh"
 
+#include "KTPhysicalArray.hh"
+#include "KTSlot.hh"
+
 #include <vector>
 
 namespace Katydid
@@ -22,6 +25,8 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
+    class KTFrequencySpectrumFFTW;
+    class KTFrequencySpectrumPolar;
     class KTNormalizedFSDataFFTW;
     class KTNormalizedFSDataPolar;
     class KTWignerVilleData;

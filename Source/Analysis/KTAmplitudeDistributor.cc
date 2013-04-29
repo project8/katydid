@@ -198,7 +198,7 @@ namespace Katydid
                 return false;
             }
 
-            fTakeValuesFFTW(spectrum, iComponent);
+            (this->*fTakeValuesFFTW)(spectrum, iComponent);
         }
 
         KTINFO(adlog, "Completed addition of values for " << nComponents << " components");
@@ -244,7 +244,7 @@ namespace Katydid
                 return false;
             }
 
-            fTakeValuesPolar(spectrum, iComponent);
+            (this->*fTakeValuesPolar)(spectrum, iComponent);
         }
 
         KTINFO(adlog, "Completed addition of values for " << nComponents << " components");
@@ -273,7 +273,7 @@ namespace Katydid
         for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
             distBin = CalculateBin((*spectrum)(iBin).abs());
-            fDistributions[component][distBin] = fDistributions[component][distBin] + 1;
+            (*fDistributions[component][iBin])(distBin) = (*fDistributions[component][iBin])(distBin) + 1;
         }
         return;
     }
@@ -299,7 +299,7 @@ namespace Katydid
         for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
             distBin = CalculateBin(sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]));
-            fDistributions[component][distBin] = fDistributions[component][distBin] + 1;
+            (*fDistributions[component][iBin])(distBin) = (*fDistributions[component][iBin])(distBin) + 1;
         }
         return;
     }
@@ -327,6 +327,8 @@ namespace Katydid
         fDistributions.resize(fNComponents, ComponentDistributions(fNFreqBins, NULL));
 
         Double_t distMin, distMax, value;
+        UInt_t distBin;
+        KTPhysicalArray< 1, Double_t >* dist;
         for (UInt_t iComponent = 0; iComponent < fNComponents; iComponent++)
         {
             for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
@@ -340,6 +342,13 @@ namespace Katydid
                     else if (value > distMax) distMax = value;
                 }
                 fDistributions[iComponent][iBin] = new Distribution(fDistNBins, distMin, distMax);
+                dist = fDistributions[iComponent][iBin];
+                for (UInt_t iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
+                {
+                    value = fBuffer[iSpectrum][iComponent][iBin];
+                    distBin = CalculateBin(value);
+                    (*dist)(distBin) = (*dist)(distBin) + 1;
+                }
             }
         }
 
