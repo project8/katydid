@@ -21,9 +21,10 @@ namespace Katydid
 
     KTAmplitudeDistribution::~KTAmplitudeDistribution()
     {
+        ClearDistributions();
     }
 
-    void KTAmplitudeDistribution::AddValue(UInt_t freqBin, UInt_t iDistBin, Double_t value, UInt_t component)
+    void KTAmplitudeDistribution::SetDistValue(Double_t value, UInt_t freqBin, UInt_t iDistBin, UInt_t component)
     {
 #ifdef Katydid_DEBUG
         if (component > fDistributions.size())
@@ -41,7 +42,7 @@ namespace Katydid
         return;
     }
 
-    void KTAmplitudeDistribution::IncrementValue(UInt_t freqBin, UInt_t iDistBin, UInt_t component, Double_t increment)
+    void KTAmplitudeDistribution::AddToDist(UInt_t freqBin, UInt_t iDistBin, UInt_t component, Double_t weight)
     {
 #ifdef Katydid_DEBUG
         if (component > fDistributions.size())
@@ -55,7 +56,25 @@ namespace Katydid
             return;
         }
 #endif
-        (*fDistributions[component][freqBin])(iDistBin) = (*fDistributions[component][freqBin])(iDistBin) + increment;
+        (*fDistributions[component][freqBin])(iDistBin) = (*fDistributions[component][freqBin])(iDistBin) + weight;
+        return;
+    }
+
+    void KTAmplitudeDistribution::AddToDist(UInt_t freqBin, Double_t distValue, UInt_t component, Double_t weight)
+    {
+#ifdef Katydid_DEBUG
+        if (component > fDistributions.size())
+        {
+            KTERROR(datalog, "Data does not contain component " << component);
+            return;
+        }
+        if (freqBin > fDistributions[component].size() || fDistributions[component][freqBin] == NULL)
+        {
+            KTERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component << ", or it hasn't been initialized");
+            return;
+        }
+#endif
+        AddToDist(freqBin, UInt_t(fDistributions[component][freqBin]->FindBin(distValue)), component, weight);
         return;
     }
 

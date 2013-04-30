@@ -10,8 +10,10 @@
 
 #include "KTProcessor.hh"
 
-#include "KTPhysicalArray.hh"
+#include "KTAmplitudeDistribution.hh"
 #include "KTSlot.hh"
+
+#include <boost/shared_ptr.hpp>
 
 #include <vector>
 
@@ -73,10 +75,6 @@ namespace Katydid
             typedef std::vector< Double_t > Spectrum; // indexed over frequency-axis bins
             typedef std::vector< Spectrum > Spectra; // indexed over component
             typedef std::vector< Spectra > Buffer; // indexed over slice number
-
-            typedef KTPhysicalArray< 1, Double_t > Distribution; // histogram over amplitude distribution index
-            typedef std::vector< Distribution* > ComponentDistributions; // indexed over frequency-axis bins
-            typedef std::vector< ComponentDistributions > Distributions; // indexed over component
 
         public:
             KTAmplitudeDistributor(const std::string& name = "amplitude-distributor");
@@ -152,7 +150,6 @@ namespace Katydid
             Bool_t CreateDistributionsEmpty();
             Bool_t CreateDistributionsFromBuffer();
 
-            UInt_t CalculateBin(Double_t amplitude);
             Double_t fInvDistBinWidth;
 
             UInt_t fNFreqBins;
@@ -161,7 +158,8 @@ namespace Katydid
             Buffer fBuffer;
             UInt_t fNBuffered;
 
-            Distributions fDistributions;
+            boost::shared_ptr< KTData > fDistributionData;
+            KTAmplitudeDistribution* fDistributions;
 
 
             //***************
@@ -291,12 +289,6 @@ namespace Katydid
         fInvDistBinWidth = Double_t (fDistNBins) / (fDistMax - fDistMin);
         return;
     }
-
-    inline UInt_t KTAmplitudeDistributor::CalculateBin(Double_t amplitude)
-    {
-        return UInt_t((amplitude - fDistMin) * fInvDistBinWidth);
-    }
-
 
 } /* namespace Katydid */
 #endif /* KTAMPLITUDEDISTRIBUTOR_HH_ */

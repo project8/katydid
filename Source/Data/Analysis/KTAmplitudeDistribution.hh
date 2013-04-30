@@ -34,8 +34,10 @@ namespace Katydid
             UInt_t GetNComponents() const;
             UInt_t GetNFreqBins() const;
 
-            void AddValue(UInt_t freqBin, UInt_t iDistBin, Double_t value, UInt_t component = 0);
-            void IncrementValue(UInt_t freqBin, UInt_t iDistBin, UInt_t component = 0, Double_t increment = 1);
+            void SetDistValue(Double_t value, UInt_t freqBin, UInt_t iDistBin, UInt_t component = 0);
+
+            void AddToDist(UInt_t freqBin, UInt_t iDistBin, UInt_t component = 0, Double_t weight = 1.);
+            void AddToDist(UInt_t freqBin, Double_t distValue, UInt_t component = 0, Double_t weight = 1.);
 
             UInt_t FindDistBin(Double_t value, UInt_t freqBin, UInt_t component = 0);
 
