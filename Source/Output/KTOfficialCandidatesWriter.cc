@@ -30,7 +30,10 @@ namespace Katydid
             fFile(NULL),
             fFileStream(NULL),
             fJSONMaker(NULL),
-            fStatus(kNotOpenedYet)
+            fStatus(kNotOpenedYet),
+            fHeaderSlot("header", this, &KTOfficialCandidatesWriter::WriteHeaderInformation),
+            fWaterfallCandidateSlot("waterfall-candidate", this, &KTOfficialCandidatesWriter::WriteWaterfallCandidate),
+            fStopWritingSlot("stop", this, &KTOfficialCandidatesWriter::CloseFile)
     {
     }
 
@@ -157,11 +160,11 @@ namespace Katydid
         return;
     }
 
-    void KTOfficialCandidatesWriter::WriteWaterfallCandidate(boost::shared_ptr< KTData > data)
+    Bool_t KTOfficialCandidatesWriter::WriteWaterfallCandidate(KTWaterfallCandidateData& wcData)
     {
         using rapidjson::SizeType;
 
-        if (! OpenAndVerifyFile()) return;
+        if (! OpenAndVerifyFile()) return false;
 
         if (fStatus == kPriorToCandidates)
         {
@@ -169,8 +172,6 @@ namespace Katydid
             fJSONMaker->String("candidates");
             fJSONMaker->StartArray();
         }
-
-        KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
 
         // start the candidate
         fJSONMaker->StartObject();
@@ -186,7 +187,7 @@ namespace Katydid
         fJSONMaker->EndObject();
         // end the candidate
 
-        return;
+        return true;
     }
 
 

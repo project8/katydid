@@ -115,7 +115,7 @@ namespace Katydid
     template< typename Signature>
     template< class XFuncOwnerType >
     KTSlotNoArg< Signature >::KTSlotNoArg(const std::string& name, XFuncOwnerType* owner, return_type (XFuncOwnerType::*func)()) :
-            fFunc(boost::bind(func, owner, _1))
+            fFunc(boost::bind(func, owner))
     {
         owner->RegisterSlot(name, this, &KTSlotNoArg::operator());
     }

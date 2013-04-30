@@ -179,7 +179,7 @@ namespace Katydid
 
             Double_t mean = 0.;
 #pragma omp parallel for reduction(+:mean)
-            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 mean += magnitude[iBin];
@@ -203,7 +203,7 @@ namespace Katydid
             {
                 Double_t sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
-                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     diff = magnitude[iBin] - mean;
                     sigma += diff * diff;
@@ -219,7 +219,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             Double_t value;
 #pragma omp parallel for private(value)
-            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = magnitude[iBin];
                 if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
@@ -271,7 +271,7 @@ namespace Katydid
             }
 
             Double_t mean = 0.;
-            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 mean += (*spectrum)(iBin).abs();
             }
@@ -293,7 +293,7 @@ namespace Katydid
             else if (fThresholdMode == eSigma)
             {
                 Double_t sigma = 0., diff;
-                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     diff = (*spectrum)(iBin).abs() - mean;
                     sigma += diff * diff;
@@ -308,7 +308,7 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             Double_t value;
-            for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = (*spectrum)(iBin).abs();
                 if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
@@ -350,7 +350,7 @@ namespace Katydid
             {
                 KTFrequencySpectrumPolar* spectrum = (*spectra)(iSpectrum);
 
-                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     mean += (*spectrum)(iBin).abs();
                 }
@@ -371,7 +371,7 @@ namespace Katydid
                 for (UInt_t iSpectrum=0; iSpectrum<spectra->size(); iSpectrum++)
                 {
                     KTFrequencySpectrumPolar* spectrum = (*spectra)(iSpectrum);
-                    for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                    for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                     {
                         diff = (*spectrum)(iBin).abs() - mean;
                         sigma += diff * diff;
@@ -390,7 +390,7 @@ namespace Katydid
             for (UInt_t iSpectrum=0; iSpectrum<spectra->size(); iSpectrum++)
             {
                 KTFrequencySpectrumPolar* spectrum = (*spectra)(iSpectrum);
-                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     value = (*spectrum)(iBin).abs();
                     if (value >= threshold) newData->AddPoint(iSpectrum, iBin, value, iComponent);
@@ -443,7 +443,7 @@ namespace Katydid
             {
                 KTFrequencySpectrumFFTW* spectrum = (*spectra)(iSpectrum);
                 if (magnitude[iSpectrum].size() != spectrum->size()) magnitude[iSpectrum].resize(spectrum->size());
-                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     magnitude[iSpectrum][iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                     mean += magnitude[iSpectrum][iBin];
@@ -465,7 +465,7 @@ namespace Katydid
                 for (UInt_t iSpectrum=0; iSpectrum<spectra->size(); iSpectrum++)
                 {
                     KTFrequencySpectrumFFTW* spectrum = (*spectra)(iSpectrum);
-                    for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                    for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                     {
                         diff = magnitude[iSpectrum][iBin] - mean;
                         sigma += diff * diff;
@@ -484,7 +484,7 @@ namespace Katydid
             for (UInt_t iSpectrum=0; iSpectrum<spectra->size(); iSpectrum++)
             {
                 KTFrequencySpectrumFFTW* spectrum = (*spectra)(iSpectrum);
-                for (UInt_t iBin=fMinBin; iBin<fMaxBin; iBin++)
+                for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     value = magnitude[iSpectrum][iBin];
                     if (value >= threshold) newData->AddPoint(iSpectrum, iBin, value, iComponent);
