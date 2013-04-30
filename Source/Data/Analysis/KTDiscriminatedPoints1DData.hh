@@ -50,8 +50,6 @@ namespace Katydid
             void SetBinWidth(Double_t binWidth);
 
         protected:
-            static std::string fDefaultName;
-
             std::vector< PerComponentData > fComponentData;
 
             UInt_t fNBins;
