@@ -259,8 +259,10 @@ namespace Katydid
             fBuffer[fNBuffered][component][iBin] = (*spectrum)(iBin).abs();
         }
         fNBuffered++;
+        KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " spectra");
         if (fNBuffered == fBufferSize)
         {
+            KTDEBUG(adlog, "Switching to direct-to-distribution setup");
             CreateDistributionsFromBuffer();
             fTakeValuesPolar = &KTAmplitudeDistributor::TakeValuesToDistributions;
         }
@@ -285,8 +287,10 @@ namespace Katydid
             fBuffer[fNBuffered][component][iBin] = sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]);
         }
         fNBuffered++;
+        KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " spectra");
         if (fNBuffered == fBufferSize)
         {
+            KTDEBUG(adlog, "Switching to direct-to-distribution setup");
             CreateDistributionsFromBuffer();
             fTakeValuesFFTW = &KTAmplitudeDistributor::TakeValuesToDistributions;
         }
