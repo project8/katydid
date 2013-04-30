@@ -8,6 +8,7 @@
 #include "KTHannWindow.hh"
 
 #include "KTFactory.hh"
+#include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
 
@@ -18,6 +19,8 @@ using std::string;
 namespace Katydid
 {
     static KTDerivedRegistrar< KTWindowFunction, KTHannWindow > sWFHannRegistrar("hann");
+
+    KTLOGGER(windowlog, "katydid.fft");
 
     KTHannWindow::KTHannWindow(const string& name) :
             KTWindowFunction(name)
@@ -30,6 +33,7 @@ namespace Katydid
 
     Bool_t KTHannWindow::ConfigureWFSubclass(const KTPStoreNode* node)
     {
+        KTDEBUG(windowlog, "Hann WF configured");
         return true;
     }
 

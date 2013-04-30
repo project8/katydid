@@ -8,6 +8,7 @@
 #include "KTBlackmanHarrisWindow.hh"
 
 #include "KTFactory.hh"
+#include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
 
@@ -17,7 +18,9 @@ using std::string;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTWindowFunction, KTBlackmanHarrisWindow > sWFBHRegistrar("blackman-harris-window");
+    KTLOGGER(windowlog, "katydid.fft");
+
+    static KTDerivedRegistrar< KTWindowFunction, KTBlackmanHarrisWindow > sWFBHRegistrar("blackman-harris");
 
     KTBlackmanHarrisWindow::KTBlackmanHarrisWindow(const string& name) :
             KTWindowFunction(name)
@@ -30,6 +33,7 @@ namespace Katydid
 
     Bool_t KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTPStoreNode* node)
     {
+        KTDEBUG(windowlog, "Blackman-Harris WF configured");
         return true;
     }
 

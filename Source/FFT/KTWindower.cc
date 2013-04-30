@@ -30,8 +30,8 @@ namespace Katydid
             fWindowFunction(NULL),
             fWindowed("windowed", this),
             fHeaderSlot("header", this, &KTWindower::InitializeWithHeader),
-            fTimeSeriesRealSlot("ts", this, &KTWindower::WindowDataReal, &fWindowed),
-            fTimeSeriesFFTWSlot("ts", this, &KTWindower::WindowDataFFTW, &fWindowed)
+            fTimeSeriesRealSlot("ts-real", this, &KTWindower::WindowDataReal, &fWindowed),
+            fTimeSeriesFFTWSlot("ts-fftw", this, &KTWindower::WindowDataFFTW, &fWindowed)
     {
     }
 
@@ -53,6 +53,12 @@ namespace Katydid
                 return false;
             }
             SetWindowFunction(tempWF);
+
+            if (! tempWF->Configure(node->GetChild("window-function")))
+            {
+                KTERROR(windowlog, "Problems occurred while configuring the window function");
+                return false;
+            }
         }
 
         return true;
@@ -73,6 +79,7 @@ namespace Katydid
             KTERROR(windowlog, "Something went wrong while initializing the window function!");
             return;
         }
+        KTDEBUG(windowlog, "Window function initialized with header");
         return;
     }
 

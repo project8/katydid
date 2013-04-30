@@ -11,8 +11,6 @@
 
 #include "KTConfigurable.hh"
 
-#include "Rtypes.h"
-
 #include <string>
 #include <vector>
 

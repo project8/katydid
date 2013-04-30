@@ -6,8 +6,8 @@
  @date: Created on: Apr 18, 2013
  */
 
-#ifndef KTHAMMINGWINDOW_HH_
-#define KTHAMMINGWINDOW_HH_
+#ifndef KTBLACKMANHARRISWINDOW_HH_
+#define KTBLACKMANHARRISWINDOW_HH_
 
 #include "KTWindowFunction.hh"
 
@@ -44,4 +44,4 @@ namespace Katydid
     };
 
 } /* namespace Katydid */
-#endif /* KTHAMMINGWINDOW_HH_ */
+#endif /* KTBLACKMANHARRISWINDOW_HH_ */

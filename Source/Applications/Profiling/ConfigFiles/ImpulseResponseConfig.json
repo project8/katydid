@@ -10,6 +10,11 @@
             },
             "processor":
             {
+                "type": "windower",
+                "name": "windower"
+            },
+            "processor":
+            {
                 "type": "simple-fft",
                 "name": "fft"
             },
@@ -34,7 +39,21 @@
             "connection":
             {
                 "signal-processor": "sg",
+                "signal-name": "header",
+                "slot-processor": "windower",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "sg",
                 "signal-name": "slice",
+                "slot-processor": "windower",
+                "slot-name": "ts-real"
+            },
+            "connection":
+            {
+                "signal-processor": "windower",
+                "signal-name": "windowed",
                 "slot-processor": "fft",
                 "slot-name": "ts"
             },
@@ -53,6 +72,14 @@
                 "slot-name": "fs-polar"
             },
             
+            "connection":
+            {
+                "signal-processor": "windower",
+                "signal-name": "windowed",
+                "slot-processor": "writer",
+                "slot-name": "ts"
+            },
+            
             "run-queue":
             {
                 "processor": "sg"
@@ -66,6 +93,15 @@
             "bin-width": 5.0e-9,
             "time-series-type": "real",
             "signal-frequency": 50.0e6
+        },
+        
+        "windower":
+        {
+            "window-function-type": "rectangular",
+            "window-function":
+            {
+                "boxcar-size": 12000
+            }
         },
         
         "fft":

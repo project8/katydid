@@ -358,33 +358,38 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
     }
 
     Double_t peakFraction = peakBinValue * peakBinValue / sum;
-    Double_t leakage = 1. - peakFraction;
+    Double_t leakagePeakBin = 1. - peakFraction;
+    Double_t peakThreeBinFraction = (peakBinValue*peakBinValue + (*fs)(peakBin-1).abs()*(*fs)(peakBin-1).abs() + (*fs)(peakBin+1).abs()*(*fs)(peakBin+1).abs()) / sum;
+    Double_t leakagePeakThreeBin = 1. - peakThreeBinFraction;
     Double_t secondHighestBinRatio = previousPeakValue / peakBinValue;
+    //KTDEBUG(irlog, peakFraction << "  " << leakagePeakBin << "  " << peakThreeBinFraction << "  " << leakagePeakThreeBin << "  " << peakBinValue << "  " << peakThreeBinValue << "  " << sum);
 
-    // Examine FWHM (half-max of power at peak)
+    // Examine fractional peak width
+    Double_t fraction = 0.1;
     UInt_t leftSideBin = peakBin, rightSideBin = peakBin;
     if (peakBinValue > 0.)
     {
-        Double_t halfMaxPowerValue = sqrt(0.5) * peakBinValue;
-        while (leftSideBin > 0 && (*fs)(leftSideBin).abs() >= halfMaxPowerValue)
+        Double_t fractionalPowerValue = sqrt(fraction) * peakBinValue;
+        while (leftSideBin > 0 && (*fs)(leftSideBin).abs() >= fractionalPowerValue)
         {
             leftSideBin--;
         }
-        while (rightSideBin < size-1 && (*fs)(rightSideBin).abs() >= halfMaxPowerValue)
+        while (rightSideBin < size-1 && (*fs)(rightSideBin).abs() >= fractionalPowerValue)
         {
             rightSideBin++;
         }
-        if (leftSideBin != 0 && (*fs)(leftSideBin).abs() < halfMaxPowerValue) leftSideBin++; // if we didn't hit the left edge, we went one beyond the FWHM peak
-        if (rightSideBin != size-1 && (*fs)(rightSideBin).abs() < halfMaxPowerValue) rightSideBin--; // if we didn't heit the right edge, we went one beyond the FWHM peak
+        if (leftSideBin != 0 && (*fs)(leftSideBin).abs() < fractionalPowerValue) leftSideBin++; // if we didn't hit the left edge, we went one beyond the FWHM peak
+        if (rightSideBin != size-1 && (*fs)(rightSideBin).abs() < fractionalPowerValue) rightSideBin--; // if we didn't heit the right edge, we went one beyond the FWHM peak
     }
 
-    UInt_t fwhmBins = rightSideBin - leftSideBin + 1;
-    Double_t fwhm = Double_t(fwhmBins) * binWidth;
+    UInt_t fracWidthBins = rightSideBin - leftSideBin + 1;
+    Double_t fracWidth = Double_t(fracWidthBins) * binWidth;
 
     KTPROG(irlog, "Frequency of peak: " << fs->GetBinCenter(peakBin) << " Hz (bin # " << peakBin << ")");
-    KTPROG(irlog, "Leakage fraction: " << leakage);
+    KTPROG(irlog, "Leakage fraction (1 bin): " << leakagePeakBin);
+    KTPROG(irlog, "Leakage fraction (3 bin): " << leakagePeakThreeBin);
     KTPROG(irlog, "Second-highest-bin ratio: " << secondHighestBinRatio << "  (bin # " << previousPeakBin << ")");
-    KTPROG(irlog, "FWHM: " << fwhm << " Hz (" << fwhmBins << " bins)");
+    KTPROG(irlog, fraction * 100. << "% width: " << fracWidth << " Hz (" << fracWidthBins << " bins)");
 
     return true;
 }
