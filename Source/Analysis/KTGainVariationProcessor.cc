@@ -84,7 +84,7 @@ namespace Katydid
         if (fCalculateMaxBin) SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
         KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumPolar(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumPolar(0)->GetRangeMax());
 
-        UInt_t nTotalBins = fMaxBin - fMinBin;
+        UInt_t nTotalBins = fMaxBin - fMinBin + 1;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
         KTDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
@@ -152,7 +152,7 @@ namespace Katydid
         if (fCalculateMaxBin) SetMaxBin(data.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
         KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumFFTW(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumFFTW(0)->GetRangeMax());
 
-        UInt_t nTotalBins = fMaxBin - fMinBin;
+        UInt_t nTotalBins = fMaxBin - fMinBin + 1;
         UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
         KTDEBUG(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
