@@ -29,7 +29,7 @@ namespace Katydid
 {
     KTLOGGER(sdlog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTDistanceClustering > sSimpleFFTRegistrar("distance-clustering");
+    static KTDerivedRegistrar< KTProcessor, KTDistanceClustering > sDistClustRegistrar("distance-clustering");
 
     KTDistanceClustering::KTDistanceClustering(const std::string& name) :
             KTProcessor(name),

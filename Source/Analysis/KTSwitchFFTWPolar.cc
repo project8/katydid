@@ -25,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(swlog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTSwitchFFTWPolar > sSwitchFFTWPolar("switch-fftw-polar");
+    static KTDerivedRegistrar< KTProcessor, KTSwitchFFTWPolar > sSwitchFFTWPolarRegistrar("switch-fftw-polar");
 
     KTSwitchFFTWPolar::KTSwitchFFTWPolar(const std::string& name) :
             KTProcessor(name),

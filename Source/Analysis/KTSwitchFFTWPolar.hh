@@ -35,18 +35,18 @@ namespace Katydid
      Available configuration values:
 
      Slots:
-     \li \c "fs-fftw": void (shared_data< KTData >) -- Switch an fftw FS to polar; Requires KTFrequencySpectrumDataFFTW; Adds KTFrequencySpectrumDataPolar
-     \li \c "norm-fs-fftw": void (shared_data< KTData >) -- Switch a normalized fftw FS to polar; Requires KTNormalizedFSDataPolar; Adds KTFrequencySpectrumDataPolar
-     \li \c "wv": void (shared_data< KTData >) -- Switch an WV FS to polar; Requires KTWignerVilleData; Adds KTFrequencySpectrumDataPolar
+     - "fs-fftw": void (shared_data< KTData >) -- Switch an fftw FS to polar; Requires KTFrequencySpectrumDataFFTW; Adds KTFrequencySpectrumDataPolar
+     - "norm-fs-fftw": void (shared_data< KTData >) -- Switch a normalized fftw FS to polar; Requires KTNormalizedFSDataPolar; Adds KTFrequencySpectrumDataPolar
+     - "wv": void (shared_data< KTData >) -- Switch an WV FS to polar; Requires KTWignerVilleData; Adds KTFrequencySpectrumDataPolar
 
      Signals:
-     \li \c "fs-polar": void (shared_data< KTData >) emitted upon performance of a switch from fftw to polar; Guarantees KTFrequencySpectrumDataPolar
+     - "fs-polar": void (shared_data< KTData >) emitted upon performance of a switch from fftw to polar; Guarantees KTFrequencySpectrumDataPolar
     */
 
     class KTSwitchFFTWPolar : public KTProcessor
     {
         public:
-            KTSwitchFFTWPolar(const std::string& name = "gain-normalization");
+            KTSwitchFFTWPolar(const std::string& name = "switch-fftw-polar");
             virtual ~KTSwitchFFTWPolar();
 
             Bool_t Configure(const KTPStoreNode* node);

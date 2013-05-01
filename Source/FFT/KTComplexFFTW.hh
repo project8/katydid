@@ -45,29 +45,31 @@ namespace Katydid
 
      The FFT is implemented using FFTW.
 
+     Configuration name: "complex-fftw"
+
      Available configuration values:
-     \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
-     \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
-     \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
+     - "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
+     - "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
+     - "wisdom-filename": string -- filename for loading/saving FFTW wisdom
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
-     \li \c ESTIMATE -- "A simple heuristic is used to pick a (probably sub-optimal) plan quickly."
-     \li \c MEASURE --  "Find[s] an optimized plan by actually computing several FFTs and measuring their execution time. Depending on your machine, this can take some time (often a few seconds)." This is the default option.
-     \li \c PATIENT -- "Considers a wider range of algorithms and often produces a “more optimal” plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
-     \li \c EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
+     - ESTIMATE -- "A simple heuristic is used to pick a (probably sub-optimal) plan quickly."
+     - MEASURE --  "Find[s] an optimized plan by actually computing several FFTs and measuring their execution time. Depending on your machine, this can take some time (often a few seconds)." This is the default option.
+     - PATIENT -- "Considers a wider range of algorithms and often produces a “more optimal” plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
+     - EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
 
      Slots:
-     \li \c "header": void (const KTEggHeader* header) -- Initialize the FFT from an Egg header
-     \li \c "ts": void (shared_ptr<KTData>) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
-     \li \c "fs-fftw": void (shared_ptr<KTData>) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
+     - "header": void (const KTEggHeader* header) -- Initialize the FFT from an Egg header
+     - "ts": void (shared_ptr<KTData>) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
+     - "fs-fftw": void (shared_ptr<KTData>) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
 
      Signals:
-     \li \c "fft-forward": void (shared_ptr<KTData>) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
-     \li \c "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
+     - "fft-forward": void (shared_ptr<KTData>) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     - "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
     class KTComplexFFTW : public KTFFT, public KTProcessor

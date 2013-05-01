@@ -37,19 +37,21 @@ namespace Katydid
 
      @details
  
+     Configuration name: "gain-normalization"
+
      Available configuration values:
-     \li \c "min-bin": unsigned -- Set the lower bound of the range that gets normalized by bin number.
-     \li \c "max-bin": unsigned -- Set the upper bound of the range that gets nornalized by bin number.
-     \li \c "min-frequency": double -- Set the lower bound of the range that gets normalized by frequency.
-     \li \c "max-frequency": double -- Set the upper bound of the range that gets normalized by frequency.
+     - "min-bin": unsigned -- Set the lower bound of the range that gets normalized by bin number.
+     - "max-bin": unsigned -- Set the upper bound of the range that gets nornalized by bin number.
+     - "min-frequency": double -- Set the lower bound of the range that gets normalized by frequency.
+     - "max-frequency": double -- Set the upper bound of the range that gets normalized by frequency.
 
      Slots:
-     \li \c "fs-polar": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar
-     \li \c "fs-fftw": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW
+     - "fs-polar": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar
+     - "fs-fftw": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW
 
      Signals:
-     \li \c "norm-fs-polar": void (shared_data< KTData >) emitted upon performance of a normalization of a polar frequency spectrum data object; Guarantees KTNormalizedFSDataPolar
-     \li \c "norm-fs-fftw": void (shared_data< KTData >) emitted upon performance normalization of an FFTW frequency spectrum data object; Guarantees KTNormalizedFSDataFFTW
+     - "norm-fs-polar": void (shared_data< KTData >) emitted upon performance of a normalization of a polar frequency spectrum data object; Guarantees KTNormalizedFSDataPolar
+     - "norm-fs-fftw": void (shared_data< KTData >) emitted upon performance normalization of an FFTW frequency spectrum data object; Guarantees KTNormalizedFSDataFFTW
     */
 
     class KTGainNormalization : public KTProcessor

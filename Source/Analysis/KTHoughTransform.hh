@@ -33,19 +33,21 @@ namespace Katydid
 
      @details
 
+     Configuration name: "hough-transform"
+
      Available configuration values:
-     \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
-     \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
-     \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     \li \c "input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name to give to the data produced by an FFT
+     - "transform_flag": string -- flag that determines how much planning is done prior to any transforms
+     - "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
+     - "wisdom-filename": string -- filename for loading/saving FFTW wisdom
+     - "input-data-name": string -- name of the data to find when processing an event
+     - "output-data-name": string -- name to give to the data produced by an FFT
 
      Slots:
-     <!--\li \c "swfs-data": void (shared_ptr< KTData >)-->
-     \li \c "disc-data": void (shared_ptr< KTData >) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
+     <!--- "swfs-data": void (shared_ptr< KTData >)-->
+     - "disc-data": void (shared_ptr< KTData >) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
 
      Signals:
-     \li \c "hough-transform": void (shared_ptr< KTData >) Emitted upon performance of a transform; Guarantees KTHoughData
+     - "hough-transform": void (shared_ptr< KTData >) Emitted upon performance of a transform; Guarantees KTHoughData
     */
 
     class KTHoughTransform : public KTProcessor

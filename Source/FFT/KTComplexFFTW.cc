@@ -25,7 +25,7 @@ using boost::shared_ptr;
 namespace Katydid
 {
 
-    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sSimpleFFTRegistrar("complex-fftw");
+    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sComplexFFTWRegistrar("complex-fftw");
 
     KTComplexFFTW::KTComplexFFTW(const std::string& name) :
             KTFFT(),

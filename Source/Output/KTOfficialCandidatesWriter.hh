@@ -30,6 +30,8 @@ namespace Katydid
 
      @details
 
+     Configuration name: "official-candidate-writer"
+
      Available configuration values:
      - "output-file": string -- output filename
      - "pretty-json": bool -- if true, prints a human-readable file

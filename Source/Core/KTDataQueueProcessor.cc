@@ -16,7 +16,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTDataQueueProcessor > sSimpClustRegistrar("data-queue");
+    static KTDerivedRegistrar< KTProcessor, KTDataQueueProcessor > sDQProcRegistrar("data-queue");
 
     KTDataQueueProcessor::KTDataQueueProcessor(const std::string& name) :
         KTDataQueueProcessorTemplate< KTDataQueueProcessor >(name),

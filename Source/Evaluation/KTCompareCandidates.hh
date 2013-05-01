@@ -29,11 +29,13 @@ namespace Katydid
      based on the time of the candidates and events in the run.
      Those times are specified as start and end
 
+     Configuration name: "compare-candidates"
+
      Available configuration values:
-     \li \c "assume-sparse-candidates": bool -- if the candidates can be reasonably assumed to not overlap, set this to true to save reduce running time
+     - "assume-sparse-candidates": bool -- if the candidates can be reasonably assumed to not overlap, set this to true to save reduce running time
 
      Slots:
-     \li \c "truth-vs-analysis": void (shared_ptr<KTData>) -- Perform a comparison of MC truth events and analysis candidates; Requires KTMCTruthEvents and KTAnalysisCandidates
+     - "truth-vs-analysis": void (shared_ptr<KTData>) -- Perform a comparison of MC truth events and analysis candidates; Requires KTMCTruthEvents and KTAnalysisCandidates
     */
 
     class KTCompareCandidates : public KTProcessor

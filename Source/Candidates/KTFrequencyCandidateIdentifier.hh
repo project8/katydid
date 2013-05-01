@@ -39,17 +39,18 @@ namespace Katydid
 
      @details
     
+     Configuration name: "frequency-candidate-identifier"
 
      Available configuration values:
-     \li \c "fs-input-data-name": string -- filename for loading/saving FFTW wisdom
-     \li \c "cluster-input-data-name": string -- name of the data to find when processing an event
-     \li \c "output-data-name": string -- name to give to the data produced by an FFT
+     - "fs-input-data-name": string -- filename for loading/saving FFTW wisdom
+     - "cluster-input-data-name": string -- name of the data to find when processing an event
+     - "output-data-name": string -- name to give to the data produced by an FFT
 
      Slots:
-     \li \c "clusters": void (shared_ptr< KTData >) --
+     - "clusters": void (shared_ptr< KTData >) --
 
      Signals:
-     \li \c "frequency-candidates": void (shared_ptr< KTData >) -- Emitted after identifying candidates; Guarantees KTFrequencyCandidateData
+     - "frequency-candidates": void (shared_ptr< KTData >) -- Emitted after identifying candidates; Guarantees KTFrequencyCandidateData
     */
 
 

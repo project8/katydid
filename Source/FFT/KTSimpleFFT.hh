@@ -47,25 +47,27 @@ namespace Katydid
 
      The FFT is implemented using FFTW.
 
+     Configuration name: "simple-fft"
+
      Available configuration values:
-     \li \c "transform_flag": string -- flag that determines how much planning is done prior to any transforms
-     \li \c "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
-     \li \c "wisdom-filename": string -- filename for loading/saving FFTW wisdom
+     - "transform_flag": string -- flag that determines how much planning is done prior to any transforms
+     - "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
+     - "wisdom-filename": string -- filename for loading/saving FFTW wisdom
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
-     \li \c ESTIMATE -- "A simple heuristic is used to pick a (probably sub-optimal) plan quickly."
-     \li \c MEASURE --  "Find[s] an optimized plan by actually computing several FFTs and measuring their execution time. Depending on your machine, this can take some time (often a few seconds)." This is the default option.
-     \li \c PATIENT -- "Considers a wider range of algorithms and often produces a “more optimal” plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
-     \li \c EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
+     - ESTIMATE -- "A simple heuristic is used to pick a (probably sub-optimal) plan quickly."
+     - MEASURE --  "Find[s] an optimized plan by actually computing several FFTs and measuring their execution time. Depending on your machine, this can take some time (often a few seconds)." This is the default option.
+     - PATIENT -- "Considers a wider range of algorithms and often produces a “more optimal” plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
+     - EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      Slots:
-     \li \c "header": void (const KTEggHeader*) -- Initialize the FFT from an Egg file header
-     \li \c "ts": void (shared_ptr<KTData>) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft"
+     - "header": void (const KTEggHeader*) -- Initialize the FFT from an Egg file header
+     - "ts": void (shared_ptr<KTData>) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft"
 
      Signals:
-     \li \c "fft": void (shared_ptr<KTData>) -- Emitted upon successful performance of an FFT; Guarantees KTFrequencySpectrumDataPolar
+     - "fft": void (shared_ptr<KTData>) -- Emitted upon successful performance of an FFT; Guarantees KTFrequencySpectrumDataPolar
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
