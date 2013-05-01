@@ -42,17 +42,19 @@ namespace Katydid
 
      NOTE: This creates a completely new data object, with a new slice header.
 
+     Configuration name: "polyphase-filter-bank"
+
      Available configuration values:
      - "n-subsets": unsigned int -- sets the number of subsets to be used in the filter bank (use is mutually exclusive with subset-size)
      - "subset-size": unsigned int -- sets the size of the subsets to be used in the filter bank (use is mutually exclusive with n-subsets)
 
      Slots:
-     \li \c "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
-     \li \c "ts-real": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
-     \li \c "ts-fftw": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
+     - "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
+     - "ts-real": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
+     - "ts-fftw": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
      Signals:
-     \li \c "windowed": void (shared_ptr<KTData>) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
+     - "windowed": void (shared_ptr<KTData>) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
     */
 
     class KTPolyphaseFilterBank : public KTProcessor

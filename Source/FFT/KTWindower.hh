@@ -41,17 +41,19 @@ namespace Katydid
 
      NOTE: The windowing is done IN-PLACE! The data object will not be extended.
 
+     Configuration name: "windower"
+
      Available configuration values:
      - "window-function-type": string -- sets the type of window function to be used
      - "window-function": subtree -- parent node for the window function configuration
 
      Slots:
-     \li \c "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
-     \li \c "ts-real": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
-     \li \c "ts-fftw": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
+     - "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
+     - "ts-real": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
+     - "ts-fftw": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
      Signals:
-     \li \c "windowed": void (shared_ptr<KTData>) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
+     - "windowed": void (shared_ptr<KTData>) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
     */
 
     class KTWindower : public KTProcessor
