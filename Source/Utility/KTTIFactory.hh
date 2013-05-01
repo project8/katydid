@@ -118,14 +118,17 @@ namespace Katydid
     template< class XDerivedType >
     void KTTIFactory< XBaseType >::Register(const KTTIRegistrar< XBaseType >* registrar)
     {
+        // A local (static) logger is created inside this function to avoid static initialization order problems
+        KTLOGGER(utillog_ti_factory_reg, "katydid.utility");
+
         FactoryCIt it = fMap->find(&typeid(XDerivedType));
         if (it != fMap->end())
         {
-            KTERROR(utillog_ti_factory, "Already have factory registered for type <" << typeid(XDerivedType).name() << ">.");
+            KTERROR(utillog_ti_factory_reg, "Already have factory registered for type <" << typeid(XDerivedType).name() << ">.");
             return;
         }
         fMap->insert(std::pair< const std::type_info*, const KTTIRegistrar< XBaseType >* >(&typeid(XDerivedType), registrar));
-        KTDEBUG(utillog_ti_factory, "Registered a factory for class type " << typeid(XDerivedType).name() << ", factory #" << fMap->size()-1);
+        KTDEBUG(utillog_ti_factory_reg, "Registered a factory for class type " << typeid(XDerivedType).name() << ", factory #" << fMap->size()-1);
     }
 
     template< class XBaseType >
