@@ -35,15 +35,15 @@ namespace Katydid
      @details
 
      Available configuration values:
-     \li \c "timeout": UInt_t -- maximum time to wait for new data (integer number of milliseconds)
+     - "timeout": UInt_t -- maximum time to wait for new data (integer number of milliseconds)
 
      Slots:
-     \li \c "use-timed-pop": void () -- Switch the queue-popping function to the TIMED version
-     \li \c "use-untimed-pop": void () -- Switch the queue-popping function to the UNTIMED version
-     \li \c "use-single-pop": void () -- Switch to the single-pop queue-popping function
+     - "use-timed-pop": void () -- Switch the queue-popping function to the TIMED version
+     - "use-untimed-pop": void () -- Switch the queue-popping function to the UNTIMED version
+     - "use-single-pop": void () -- Switch to the single-pop queue-popping function
 
      Signals:
-     \li \c "queue-done": void () -- Emitted when queue is emptied
+     - "queue-done": void () -- Emitted when queue is emptied
     */
     template< class XProcessorType >
     class KTDataQueueProcessorTemplate : public KTPrimaryProcessor
@@ -149,14 +149,16 @@ namespace Katydid
 
      @details
 
+     Configuration name: "data-queue"
+
      Available configuration values:
 
      Slots:
-     \li \c "data": void (shared_ptr< KTData >) -- Queue a data object for asynchronous processing; use signal "data"
+     - "data": void (shared_ptr< KTData >) -- Queue a data object for asynchronous processing; use signal "data"
 
      Signals:
-     \li \c "data": void (shared_ptr< KTData >) -- Emitted for each data object in the queue
-     \li \c "queue-done": void () -- Emitted when queue is emptied (inherited from KTDataQueueProcessorTemplate)
+     - "data": void (shared_ptr< KTData >) -- Emitted for each data object in the queue
+     - "queue-done": void () -- Emitted when queue is emptied (inherited from KTDataQueueProcessorTemplate)
     */
     class KTDataQueueProcessor : public KTDataQueueProcessorTemplate< KTDataQueueProcessor >
     {

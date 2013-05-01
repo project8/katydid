@@ -1,9 +1,3 @@
-/*
- * KTWignerVille.hh
- *
- *  Created on: Oct 19, 2012
- *      Author: nsoblath
- */
 /**
  @file KTWignerVille.hh
  @brief Contains KTWignerVille
@@ -57,17 +51,19 @@ namespace Katydid
 
      @details
 
+     Configuration name: "wigner-ville"
+
      Available configuration values:
-     \li \c "complex-fftw": string -- 
-     \li \c "wv-pair": bool -- channel pair to be used in the Wigner-Ville transform: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
+     - "complex-fftw": string --
+     - "wv-pair": bool -- channel pair to be used in the Wigner-Ville transform: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
 
      Slots:
-     \li \c "header": void (const KTEggHeader*) -- Initializes the transform using an Egg header
-     \li \c "ts": void (shared_ptr< KTData >) -- Perform a WV transform on a time series; Requires KTTimeSeriesData; Adds KTWignerVilleData
-     \li \c "aa": void (shared_ptr< KTData >) -- Perform a WV transform on an analytic associate: Requires KTAnalyticAssociateData; Adds KTWignerVilleData
+     - "header": void (const KTEggHeader*) -- Initializes the transform using an Egg header
+     - "ts": void (shared_ptr< KTData >) -- Perform a WV transform on a time series; Requires KTTimeSeriesData; Adds KTWignerVilleData
+     - "aa": void (shared_ptr< KTData >) -- Perform a WV transform on an analytic associate: Requires KTAnalyticAssociateData; Adds KTWignerVilleData
 
      Signals:
-     \li \c "wigner-ville": void (shared_ptr< KTData >) -- Emitted upon performance of a WV transform; Guarantees KTWignerVilleData
+     - "wigner-ville": void (shared_ptr< KTData >) -- Emitted upon performance of a WV transform; Guarantees KTWignerVilleData
     */
 
     class KTWignerVille : public KTProcessor

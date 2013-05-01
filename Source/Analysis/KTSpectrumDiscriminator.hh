@@ -40,26 +40,27 @@ namespace Katydid
 
      @details
   
+     Configuration name: "spectrum-discriminator"
 
      Available configuration values:
-     \li \c "snr-threshold": double -- snr threshold 
-     \li \c "sigma-threshold": double -- sigma threshold 
-     \li \c "min-frequency": double -- minimum frequency
-     \li \c "max-frequency": double -- maximum frequency
-     \li \c "min-bin": unsigned -- minimum frequency
-     \li \c "max-bin": unsigned -- maximum frequency
+     - "snr-threshold": double -- snr threshold
+     - "sigma-threshold": double -- sigma threshold
+     - "min-frequency": double -- minimum frequency
+     - "max-frequency": double -- maximum frequency
+     - "min-bin": unsigned -- minimum frequency
+     - "max-bin": unsigned -- maximum frequency
 
      Slots:
-     \li \c "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
-     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
-     \li \c "norm-fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
-     \li \c "norm-fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
-     \li \c "corr": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
-     \li \c "wv": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
+     - "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     - "fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
+     - "corr": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
+     - "wv": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
 
      Signals:
-     \li \c "disc-1d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
-     <!--\li \c "disc-2d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints2DData-->
+     - "disc-1d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
+     <!--- "disc-2d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints2DData-->
     */
     class KTSpectrumDiscriminator : public KTProcessor
     {
