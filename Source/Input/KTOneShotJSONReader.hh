@@ -32,6 +32,8 @@ namespace Katydid
 
      @details
 
+     Configuration name: "oneshot-json-reader"
+
      Available configuration values:
      - "input-file": string -- input filename
      - "file-mode": string -- cstdio FILE mode: r (default), a, r+, a+

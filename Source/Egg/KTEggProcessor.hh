@@ -30,24 +30,26 @@ namespace Katydid
      @details
      Iterates over slices in an egg file; slices are extracted until fNSlices is reached.
 
+     Configuration name: "egg-processor"
+
      Available configuration options:
-     \li \c "number-of-slices": UInt_t -- Number of slices to process
-     \li \c "progress-report-interval": UInt_t -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
-     \li \c "filename": string -- Egg filename to use
-     \li \c "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
-     \li \c "slice-size": UInt_t -- Specify the size of the time series (required)
-     \li \c "stride": UInt_t -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
-     \li \c "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
+     - "number-of-slices": UInt_t -- Number of slices to process
+     - "progress-report-interval": UInt_t -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
+     - "filename": string -- Egg filename to use
+     - "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
+     - "slice-size": UInt_t -- Specify the size of the time series (required)
+     - "stride": UInt_t -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
+     - "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
-     \li \c -n (n-slices): Number of slices to process
-     \li \c -e (egg-file): Egg filename to use
-     \li \c -z (--use-2011-egg-reader): Use the 2011 egg reader
+     - -n (n-slices): Number of slices to process
+     - -e (egg-file): Egg filename to use
+     - -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
-     \li \c "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     \li \c "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced.
-     \li \c "egg-done": void () --  emitted when a file is finished.
+     - "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
+     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced.
+     - "egg-done": void () --  emitted when a file is finished.
     */
     class KTEggProcessor : public KTPrimaryProcessor
     {

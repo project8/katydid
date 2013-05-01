@@ -17,8 +17,8 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedRegistrar< KTWriter, KTJSONWriter > sBRFWriterRegistrar("json-writer");
-    static KTDerivedRegistrar< KTProcessor, KTJSONWriter > sBRFWProcRegistrar("json-writer");
+    static KTDerivedRegistrar< KTWriter, KTJSONWriter > sJSONWriterRegistrar("json-writer");
+    static KTDerivedRegistrar< KTProcessor, KTJSONWriter > sJSONWProcRegistrar("json-writer");
 
     KTJSONWriter::KTJSONWriter(const std::string& name) :
             KTWriterWithTypists< KTJSONWriter >(name),

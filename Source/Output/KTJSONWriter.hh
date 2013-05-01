@@ -29,14 +29,16 @@ namespace Katydid
 
      @details
 
+     Configuration name: "json-writer"
+
      Available configuration values:
-     \li \c "output-file": string -- output filename
-     \li \c "pretty-json": bool -- if true, prints a human-readable file
-     \li \c "file-mode": string -- cstdio FILE mode: w, a, r+, w+ or a+
+     - "output-file": string -- output filename
+     - "pretty-json": bool -- if true, prints a human-readable file
+     - "file-mode": string -- cstdio FILE mode: w, a, r+, w+ or a+
 
      Slots:
-     \li \c "frequency-candidates": void WriteFrequencyCandidates(const KTFrequencyCandidateData*)
-     \li \c "header": void WriteEggHeader(const KTEggHeader*)
+     - "frequency-candidates": void WriteFrequencyCandidates(const KTFrequencyCandidateData*)
+     - "header": void WriteEggHeader(const KTEggHeader*)
     */
 
 

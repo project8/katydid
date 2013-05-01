@@ -27,25 +27,27 @@ namespace Katydid
 
      @details 
 
+     Configuration name: "basic-root-writer"
+
      Available configuration values:
-     \li \c "output-file": string -- output filename
-     \li \c "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
+     - "output-file": string -- output filename
+     - "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
 
      Slots:
-     \li \c "aa":
-     \li \c "corr":
-     \li \c "hough":
-     \li \c "gain-var":
-     \li \c "fs-fftw":
-     \li \c "fs-polar":
-     \li \c "fs-fftw-phase":
-     \li \c "fs-polar-phase":
-     \li \c "fs-fftw-power":
-     \li \c "fs-polar-power":
-     \li \c "norm-fs-fftw":
-     \li \c "norm-fs-polar":
-     \li \c "ts":
-     \li \c "wv":
+     - "aa":
+     - "corr":
+     - "hough":
+     - "gain-var":
+     - "fs-fftw":
+     - "fs-polar":
+     - "fs-fftw-phase":
+     - "fs-polar-phase":
+     - "fs-fftw-power":
+     - "fs-polar-power":
+     - "norm-fs-fftw":
+     - "norm-fs-polar":
+     - "ts":
+     - "wv":
      
     */
 

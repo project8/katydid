@@ -31,15 +31,17 @@ namespace Katydid
 
      @details
 
+     Configuration name: "distance-clustering"
+
      Available configuration values:
-     \li \c "max-frequency-distance": double -- Set maximum separation within a cluster by frequency
-     \li \c "max-bin-distance": unsigned int -- Set maximum separation within a cluster by bin
+     - "max-frequency-distance": double -- Set maximum separation within a cluster by frequency
+     - "max-bin-distance": unsigned int -- Set maximum separation within a cluster by bin
 
       Slots:
-     \li \c "disc-1d": void (shared_ptr< KTData >) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
+     - "disc-1d": void (shared_ptr< KTData >) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
 
      Signals:
-     \li \c "cluster-1d": void (shared_ptr< KTData >) -- Emitted after forming clusters; Guarantees KTCluster1DData
+     - "cluster-1d": void (shared_ptr< KTData >) -- Emitted after forming clusters; Guarantees KTCluster1DData
     */
     class KTDistanceClustering : public KTProcessor
     {

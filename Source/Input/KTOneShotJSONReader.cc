@@ -22,8 +22,8 @@ namespace Katydid
 {
     KTLOGGER(inlog, "katydid.input");
 
-    static KTDerivedRegistrar< KTReader, KTOneShotJSONReader > sJSONReaderRegistrar("oneshot-json-reader");
-    static KTDerivedRegistrar< KTProcessor, KTOneShotJSONReader > sJSONRProcRegistrar("oneshot-json-reader");
+    static KTDerivedRegistrar< KTReader, KTOneShotJSONReader > sOSJSONReaderRegistrar("oneshot-json-reader");
+    static KTDerivedRegistrar< KTProcessor, KTOneShotJSONReader > sOSJSONRProcRegistrar("oneshot-json-reader");
 
     KTOneShotJSONReader::KTOneShotJSONReader(const std::string& name) :
             KTReader(name),

@@ -50,29 +50,31 @@ namespace Katydid
 
      @details
 
+     Configuration name: "multi-slice-clustering"
+
      Available configuration values:
-     \li \c "max-frequency-sep": double -- Maximum frequency separation for clustering in a single time slice (Hz)
-     \li \c "max-time-sep": double -- Maximum time separation for clustering between time slices (s) -- NOT CURRENTLY USED
-     \li \c "max-frequency-sep-bins": -- Maximum frequency separation for clustering in a single time slice, specified in # of bins
-     \li \c "max-time-sep-bins": Maximum time separation for clustering between time slices, specified in # of bins -- NOT CURRENTLY USED
-     \li \c "min-time-bins": Minimum number of time slices needed to be counted as a cluster
-     \li \c "n-framing-time-bins": Number of time bins to include on either side of a cluster
-     \li \c "n-framing-freq-bins": Number of frequency bins to include on the top and bottom of a cluster
+     - "max-frequency-sep": double -- Maximum frequency separation for clustering in a single time slice (Hz)
+     - "max-time-sep": double -- Maximum time separation for clustering between time slices (s) -- NOT CURRENTLY USED
+     - "max-frequency-sep-bins": -- Maximum frequency separation for clustering in a single time slice, specified in # of bins
+     - "max-time-sep-bins": Maximum time separation for clustering between time slices, specified in # of bins -- NOT CURRENTLY USED
+     - "min-time-bins": Minimum number of time slices needed to be counted as a cluster
+     - "n-framing-time-bins": Number of time bins to include on either side of a cluster
+     - "n-framing-freq-bins": Number of frequency bins to include on the top and bottom of a cluster
 
      Slots:
-     \li \c "fs-polar": void (shared_ptr< KTData >) -- Processes a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
-     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Processes a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
-     \li \c "correlation": void (shared_ptr< KTData >) -- Processes a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
-     \li \c "wigner-ville": void (shared_ptr< KTData >) -- Processes a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
-     \li \c "queue-fs-polar": void (shared_ptr< KTData >) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
-     \li \c "queue-fs-fftw": void (shared_ptr< KTData >) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
-     \li \c "queue-correlation": void (shared_ptr< KTData >) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
-     \li \c "queue-wigner-ville": void (shared_ptr< KTData >) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     - "fs-polar": void (shared_ptr< KTData >) -- Processes a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
+     - "fs-fftw": void (shared_ptr< KTData >) -- Processes a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
+     - "correlation": void (shared_ptr< KTData >) -- Processes a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     - "wigner-ville": void (shared_ptr< KTData >) -- Processes a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     - "queue-fs-polar": void (shared_ptr< KTData >) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
+     - "queue-fs-fftw": void (shared_ptr< KTData >) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
+     - "queue-correlation": void (shared_ptr< KTData >) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     - "queue-wigner-ville": void (shared_ptr< KTData >) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
 
      Signals:
-     \li \c "one-slice": void (shared_ptr< KTData >) -- Emitted upon receipt of a one-slice data object, without modification
-     \li \c "cluster": void (shared_ptr< KTData >) -- Emitted upon creation of a cluster; guarantees KTWaterfallCandidateData
-     \li \c "queue-done": void () -- Emitted when queue is emptied (inherited from KTDataQueueProcessorTemplate)
+     - "one-slice": void (shared_ptr< KTData >) -- Emitted upon receipt of a one-slice data object, without modification
+     - "cluster": void (shared_ptr< KTData >) -- Emitted upon creation of a cluster; guarantees KTWaterfallCandidateData
+     - "queue-done": void () -- Emitted when queue is emptied (inherited from KTDataQueueProcessorTemplate)
     */
     class KTMultiSliceClustering : public KTDataQueueProcessorTemplate< KTMultiSliceClustering >
     {
@@ -132,7 +134,7 @@ namespace Katydid
             typedef std::list< boost::shared_ptr<KTData> > DataList;
 
         public:
-            KTMultiSliceClustering(const std::string& name = "multi-slice-processing");
+            KTMultiSliceClustering(const std::string& name = "multi-slice-clustering");
             virtual ~KTMultiSliceClustering();
 
             Bool_t ConfigureSubClass(const KTPStoreNode* node);

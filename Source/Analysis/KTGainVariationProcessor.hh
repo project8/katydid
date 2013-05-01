@@ -36,18 +36,20 @@ namespace Katydid
      Fit the gain variation to a parabola using linear regression.
      The fit is performed between fMinBin and fMaxBin, inclusive.  If the [min,max] range has been set by frequency, those frequencies are turned into bins the first time they're used.
 
+     Configuration name: "gain-variation"
+
      Available configuration values:
-     \li \c "min-frequency": double -- minimum frequency for the fit
-     \li \c "max-frequency": double -- maximum frequency for the fit
-     \li \c "min-bin": unsigned -- minimum bin for the fit
-     \li \c "max-bin": unsigned -- maximum bin for the fit
+     - "min-frequency": double -- minimum frequency for the fit
+     - "max-frequency": double -- maximum frequency for the fit
+     - "min-bin": unsigned -- minimum bin for the fit
+     - "max-bin": unsigned -- maximum bin for the fit
 
      Slots:
-     \li \c "fs-polar": void (shared_ptr< KTData >) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
-     \li \c "fs-fftw": void (shared_ptr< KTData >) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
+     - "fs-polar": void (shared_ptr< KTData >) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
+     - "fs-fftw": void (shared_ptr< KTData >) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
 
      Signals:
-     \li \c "gain-var": void (shared_ptr< KTData >) emitted upon performance of a fit; Guarantees KTGainVariationData
+     - "gain-var": void (shared_ptr< KTData >) emitted upon performance of a fit; Guarantees KTGainVariationData
     */
 
     class KTGainVariationProcessor : public KTProcessor
