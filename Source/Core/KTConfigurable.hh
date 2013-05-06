@@ -17,6 +17,11 @@ namespace Katydid
     class KTCommandLineHandler;
     class KTPStoreNode;
 
+
+    //******************
+    // KTConfigurable
+    //******************
+
     class KTConfigurable
     {
         public:
@@ -26,7 +31,7 @@ namespace Katydid
             /// Should perform parameter store and command-line configurations
             virtual Bool_t Configure(const KTPStoreNode* node) = 0;
             /// Implement the option for calling Configure without passing a parameter store node.
-            Bool_t Configure();
+            virtual Bool_t Configure();
 
         protected:
             KTCommandLineHandler* fCLHandler;
@@ -53,6 +58,37 @@ namespace Katydid
     inline void KTConfigurable::SetConfigName(const std::string& name)
     {
         fConfigName = name;
+    }
+
+
+    //**********************
+    // KTSelfConfigurable
+    //**********************
+
+    class KTSelfConfigurable : public KTConfigurable
+    {
+        public:
+            KTSelfConfigurable(const std::string& name="default-self-name");
+            virtual ~KTSelfConfigurable();
+
+            /// Should perform parameter store and command-line configurations
+            virtual Bool_t Configure(const KTPStoreNode* node) = 0;
+            /// Configure by getting the top-level node from the parameter store
+            virtual Bool_t Configure();
+
+            /// Check if everything has been correctly configured
+            virtual Bool_t IsReady() const = 0;
+
+            Bool_t GetIsConfigured();
+
+        private:
+            Bool_t fIsConfigured;
+
+    };
+
+    inline Bool_t KTSelfConfigurable::GetIsConfigured()
+    {
+        return fIsConfigured;
     }
 
 } /* namespace Katydid */

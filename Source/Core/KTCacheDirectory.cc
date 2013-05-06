@@ -19,8 +19,7 @@ namespace Katydid
 
     KTCacheDirectory::KTCacheDirectory(const std::string& name) :
             KTDirectory(),
-            KTConfigurable(name),
-            fPreparedForUse(false)
+            KTSelfConfigurable(name)
     {
     }
 
@@ -34,23 +33,5 @@ namespace Katydid
 
         return SetPath(node->GetData<string>("path", fPath.string()));
     }
-
-    Bool_t KTCacheDirectory::PrepareForUse()
-    {
-        if (fPreparedForUse) return true;
-
-        KTPStoreNode* node = KTParameterStore::GetInstance()->GetNode(fConfigName);
-        if (node != NULL)
-        {
-            if (! Configure(node))
-            {
-                KTERROR(dirlog, "An error occurred while configuring the cache directory");
-                return false;
-            }
-            fPreparedForUse = IsOkay();
-        }
-        return fPreparedForUse;
-    }
-
 
 } /* namespace Katydid */
