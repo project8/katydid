@@ -28,7 +28,7 @@ namespace Katydid
 
     KTProcessorToolbox::KTProcessorToolbox(const std::string& name) :
             KTConfigurable(name),
-            fProcFactory(KTFactory< KTProcessor >::GetInstance()),
+            fProcFactory(KTNOFactory< KTProcessor >::GetInstance()),
             fRunQueue(),
             fProcMap()
     {
