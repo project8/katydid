@@ -88,6 +88,19 @@ namespace Katydid
         for (Int_t iSlice = 0; iSlice < fNSlices; iSlice++)
         {
             shared_ptr< KTData > newData = CreateNewData();
+
+            if (! AddSliceHeader(*newData.get()))
+            {
+                KTERROR(genlog, "Something went wrong while adding the slice header");
+                return false;
+            }
+
+            if (! AddEmptySlice(*newData.get()))
+            {
+                KTERROR(genlog, "Something went wrong while adding the empty slices");
+                return false;
+            }
+
             if (! newData->Has< KTTimeSeriesData >())
             {
                 KTERROR(genlog, "New data does not contain time-series data!");

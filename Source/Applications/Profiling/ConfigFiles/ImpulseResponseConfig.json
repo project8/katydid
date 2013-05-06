@@ -5,7 +5,7 @@
         {
             "processor":
             {
-                "type": "sine-generator",
+                "type": "sinusoid-generator",
                 "name": "sg"
             },
             "processor":
@@ -89,10 +89,13 @@
 
         "sg":
         {
+            "n-slices": 1,
+            "n-channels": 1,
             "time-series-size": 16384,
             "bin-width": 5.0e-9,
             "time-series-type": "real",
-            "signal-frequency": 50.0e6
+            "frequency": 50.0e6,
+            "amplitude": 1.0
         },
         
         "windower":
