@@ -8,7 +8,7 @@
 #include "KTThroughputProfiler.hh"
 
 #include "KTEggHeader.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
@@ -33,7 +33,7 @@ namespace Katydid
 {
     KTLOGGER(proflog, "katydid.egg");
 
-    static KTDerivedRegistrar< KTProcessor, KTThroughputProfiler > sTProfRegistrar("throughput-profiler");
+    static KTDerivedNORegistrar< KTProcessor, KTThroughputProfiler > sTProfRegistrar("throughput-profiler");
 
     KTThroughputProfiler::KTThroughputProfiler(const std::string& name) :
             KTProcessor(name),

@@ -8,7 +8,7 @@
 #include "KTOneShotJSONReader.hh"
 
 #include "KTAnalysisCandidates.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMCTruthEvents.hh"
 #include "KTPStoreNode.hh"
@@ -22,8 +22,8 @@ namespace Katydid
 {
     KTLOGGER(inlog, "katydid.input");
 
-    static KTDerivedRegistrar< KTReader, KTOneShotJSONReader > sOSJSONReaderRegistrar("oneshot-json-reader");
-    static KTDerivedRegistrar< KTProcessor, KTOneShotJSONReader > sOSJSONRProcRegistrar("oneshot-json-reader");
+    static KTDerivedNORegistrar< KTReader, KTOneShotJSONReader > sOSJSONReaderRegistrar("oneshot-json-reader");
+    static KTDerivedNORegistrar< KTProcessor, KTOneShotJSONReader > sOSJSONRProcRegistrar("oneshot-json-reader");
 
     KTOneShotJSONReader::KTOneShotJSONReader(const std::string& name) :
             KTReader(name),

@@ -8,7 +8,7 @@
 #include "KTWindower.hh"
 
 #include "KTEggHeader.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
@@ -23,7 +23,7 @@ namespace Katydid
 {
     KTLOGGER(windowlog, "katydid.fft");
 
-    static KTDerivedRegistrar< KTProcessor, KTWindower > sWindowerRegistrar("windower");
+    static KTDerivedNORegistrar< KTProcessor, KTWindower > sWindowerRegistrar("windower");
 
     KTWindower::KTWindower(const std::string& name) :
             KTProcessor(name),
@@ -46,7 +46,7 @@ namespace Katydid
         if (node != NULL)
         {
             string windowType = node->GetData< string >("window-function-type", "rectangular");
-            KTWindowFunction* tempWF = KTFactory< KTWindowFunction >::GetInstance()->Create(windowType);
+            KTWindowFunction* tempWF = KTNOFactory< KTWindowFunction >::GetInstance()->Create(windowType);
             if (tempWF == NULL)
             {
                 KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");

@@ -8,7 +8,7 @@
 #include "KTPolyphaseFilterBank.hh"
 
 #include "KTEggHeader.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTSliceHeader.hh"
@@ -24,7 +24,7 @@ namespace Katydid
 {
     KTLOGGER(pfblog, "katydid.fft");
 
-    static KTDerivedRegistrar< KTProcessor, KTPolyphaseFilterBank > sPFBRegistrar("polyphase-filter-bank");
+    static KTDerivedNORegistrar< KTProcessor, KTPolyphaseFilterBank > sPFBRegistrar("polyphase-filter-bank");
 
     KTPolyphaseFilterBank::KTPolyphaseFilterBank(const std::string& name) :
             KTProcessor(name),

@@ -10,7 +10,7 @@
 #include "KTAnalyticAssociateData.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
@@ -27,7 +27,7 @@ namespace Katydid
 {
     KTLOGGER(aalog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
+    static KTDerivedNORegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
 
     KTAnalyticAssociator::KTAnalyticAssociator(const std::string& name) :
             KTProcessor(name),

@@ -14,7 +14,7 @@
 #include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTEggReader2011.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
@@ -30,7 +30,7 @@ namespace Katydid
 
     KTLOGGER(egglog, "katydid.egg");
 
-    static KTDerivedRegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
+    static KTDerivedNORegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
 
     KTEggProcessor::KTEggProcessor(const std::string& name) :
             KTPrimaryProcessor(name),

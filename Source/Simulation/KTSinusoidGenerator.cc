@@ -7,7 +7,7 @@
 
 #include "KTSinusoidGenerator.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTMath.hh"
@@ -22,7 +22,7 @@ namespace Katydid
 {
     KTLOGGER(genlog, "katydid.simulation");
 
-    static KTDerivedRegistrar< KTProcessor, KTSinusoidGenerator > sSinusoidGenRegistrar("sinusoid-generator");
+    static KTDerivedNORegistrar< KTProcessor, KTSinusoidGenerator > sSinusoidGenRegistrar("sinusoid-generator");
 
     KTSinusoidGenerator::KTSinusoidGenerator(const string& name) :
             KTTSGenerator(name),

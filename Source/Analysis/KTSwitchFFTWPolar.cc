@@ -7,7 +7,7 @@
 
 #include "KTSwitchFFTWPolar.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
@@ -25,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(swlog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTSwitchFFTWPolar > sSwitchFFTWPolarRegistrar("switch-fftw-polar");
+    static KTDerivedNORegistrar< KTProcessor, KTSwitchFFTWPolar > sSwitchFFTWPolarRegistrar("switch-fftw-polar");
 
     KTSwitchFFTWPolar::KTSwitchFFTWPolar(const std::string& name) :
             KTProcessor(name),
