@@ -25,6 +25,8 @@ namespace Katydid
             virtual ~KTCacheDirectory();
 
         public:
+            using KTSelfConfigurable::Configure;
+
             Bool_t Configure(const KTPStoreNode* node);
 
             Bool_t IsReady() const;

@@ -31,7 +31,7 @@ namespace Katydid
             /// Should perform parameter store and command-line configurations
             virtual Bool_t Configure(const KTPStoreNode* node) = 0;
             /// Implement the option for calling Configure without passing a parameter store node.
-            virtual Bool_t Configure();
+            //virtual Bool_t Configure();
 
         protected:
             KTCommandLineHandler* fCLHandler;
@@ -44,12 +44,12 @@ namespace Katydid
             std::string fConfigName;
 
     };
-
+/*
     inline Bool_t KTConfigurable::Configure()
     {
         return Configure(NULL);
     }
-
+*/
     inline const std::string& KTConfigurable::GetConfigName() const
     {
         return fConfigName;
