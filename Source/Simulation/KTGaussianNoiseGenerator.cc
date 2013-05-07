@@ -22,7 +22,7 @@ namespace Katydid
 {
     KTLOGGER(genlog, "katydid.simulation");
 
-    static KTDerivedNORegistrar< KTProcessor, KTGaussianNoiseGenerator > sSinusoidGenRegistrar("sinusoid-generator");
+    static KTDerivedNORegistrar< KTProcessor, KTGaussianNoiseGenerator > sGaussNoiseGenRegistrar("gaussian-noise-generator");
 
     KTGaussianNoiseGenerator::KTGaussianNoiseGenerator(const string& name) :
             KTTSGenerator(name),
@@ -66,7 +66,7 @@ namespace Katydid
             Double_t binCenter = 0.5 * binWidth;
             for (UInt_t iBin = 0; iBin < sliceSize; iBin++)
             {
-                timeSeries->SetValue(iBin, fRNG());
+                timeSeries->SetValue(iBin, fRNG() + timeSeries->GetValue(iBin));
                 binCenter += binWidth;
                 //KTDEBUG(genlog, iBin << "  " << (*timeSeries)(iBin));
             }

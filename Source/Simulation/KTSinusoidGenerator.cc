@@ -68,7 +68,7 @@ namespace Katydid
             Double_t binCenter = 0.5 * binWidth;
             for (UInt_t iBin = 0; iBin < sliceSize; iBin++)
             {
-                timeSeries->SetValue(iBin, fAmplitude * sin(binCenter * mult + fPhase));
+                timeSeries->SetValue(iBin, fAmplitude * sin(binCenter * mult + fPhase) + timeSeries->GetValue(iBin));
                 binCenter += binWidth;
                 //KTDEBUG(genlog, iBin << "  " << (*timeSeries)(iBin));
             }
