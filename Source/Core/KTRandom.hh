@@ -16,6 +16,7 @@
 #include <boost/random/mersenne_twister.hpp>
 
 // for definitions of distributions
+#include <boost/random/normal_distribution.hpp>
 #include <boost/random/uniform_01.hpp>
 
 namespace Katydid
@@ -138,7 +139,9 @@ namespace Katydid
 
 
 
-
+    //*********************
+    // RNG distributions
+    //*********************
 
     template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
     struct KTRNGUniform01 : KTRNGDistribution< Engine >, boost::random::uniform_01<RealType>
@@ -159,166 +162,35 @@ namespace Katydid
         }
     };
 
-
-
-
-    /*
-    Below is the attempt to build the RNG system with a configurable engine type
-
-    class KTRNGEngine : public KTSelfConfigurable
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    struct KTRNGGaussian : KTRNGDistribution< Engine >, boost::random::normal_distribution<RealType>
     {
-        public:
-            struct KTEngineCore
-            {
-                virtual ~KTEngineCore() {}
-                virtual void SetSeed(UInt_t seed) = 0;
-                virtual void SetSeed64(ULong64_t seed) = 0;
-            };
+        typedef boost::random::uniform_01<RealType> dist_type;
+        typedef typename dist_type::result_type result_type;
 
-            template< class EngineType >
-            struct KTEngineCoreWrapper : KTEngineCore
-            {
-                KTEngineCoreWrapper() :
-                    KTEngineCore(),
-                    fEngine()
-                {}
-                template< typename SeedType >
-                KTEngineCoreWrapper(SeedType seed) :
-                    KTEngineCore(),
-                    fEngine(seed)
-                {}
-                virtual ~KTEngineCoreWrapper() {}
+        KTRNGGaussian(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "gaussian") :
+            KTRNGDistribution< Engine >(rng, name)
+        {}
+        virtual ~KTRNGGaussian() {}
 
-                virtual void SetSeed(UInt_t seed) {fEngine.seed(seed);}
-                virtual void SetSeed64(ULong64_t seed) {fEngine.seed(seed);}
+        inline result_type operator()()
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());
+        }
+        inline result_type operator()(RealType mean, RealType sigma)
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean, sigma));
+        }
 
-                EngineType fEngine;
-            };
-
-
-        public:
-            KTRNGEngine(const std::string& name = "rng-engine");
-            virtual ~KTRNGEngine();
-
-        public:
-            using KTSelfConfigurable::Configure;
-
-            virtual Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t IsReady() const;
-
-            virtual void SetSeed(UInt_t seed);
-            virtual void SetSeed64(ULong64_t seed);
-
-            KTEngineCore* GetEngineCore() const;
-            void SetEngineCore(KTEngineCore* core);
-
-        private:
-            KTEngineCore* fCore;
-
-        public:
-            template< typename Distribution >
-            typename Distribution::result_type operator()(const Distribution& dist);
+        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        {
+            RealType mean = node->GetData< RealType >("mean", this->mean());
+            RealType sigma = node->GetData< RealType >("sigma", this->sigma());
+            this->param(param_type(mean, sigma));
+            return true;
+        }
     };
 
-    inline Bool_t KTRNGEngine::IsReady() const
-    {
-        if (fCore == NULL) return false;
-        return true;
-    }
-
-    inline KTRNGEngine::KTEngineCore* KTRNGEngine::GetEngineCore() const
-    {
-        return fCore;
-    }
-
-    inline void KTRNGEngine::SetEngineCore(KTEngineCore* core)
-    {
-        fCore = core;
-        return;
-    }
-
-    inline void KTRNGEngine::SetSeed(UInt_t seed)
-    {
-        fCore->SetSeed(seed);
-        return;
-    }
-
-    inline void KTRNGEngine::SetSeed64(ULong64_t seed)
-    {
-        fCore->SetSeed64(seed);
-        return;
-    }
-
-
-    //**********************************
-    // Definitions of engine wrappers
-    //**********************************
-
-    struct KTMT19937Wrapper : KTRNGEngine::KTEngineCoreWrapper< boost::random::mt19937 >
-    {
-        KTMT19937Wrapper() {}
-        KTMT19937Wrapper(boost::random::mt19937::result_type seed) :
-            KTRNGEngine::KTEngineCoreWrapper< boost::random::mt19937 >(seed) {}
-        virtual ~KTMT19937Wrapper() {}
-    };
-
-
-    //****************************************
-    // Definitions of the global RNG engine
-    //****************************************
-
-    class KTGlobalRNGEngine : public KTRNGEngine, public KTSingleton< KTGlobalRNGEngine >
-    {
-        protected:
-            friend class KTSingleton< KTGlobalRNGEngine >;
-            friend class KTDestroyer< KTGlobalRNGEngine >;
-            KTGlobalRNGEngine(const std::string& name = "global-rng-engine");
-            virtual ~KTGlobalRNGEngine();
-    };
-
-
-
-
-    template< class RNG >
-    class KTRNGConfigurator : public KTConfigurable
-    {
-        public:
-            KTRNGConfigurator(const std::string& name = "rng", RNG* rng = KTGlobalRNGEngine::GetInstance()) :
-                KTConfigurable(name),
-                fRNG(rng)
-            {}
-            virtual ~KTRNGConfigurator() {}
-
-            RNG* GetRNG() const;
-
-        private:
-            RNG* fRNG;
-
-        public:
-            Bool_t Configure(const KTPStoreNode* node) {return true;}
-
-    };
-
-
-    template< typename RealType = Double_t >
-    struct KTRndmUniform01 : boost::random::uniform_01<RealType>, KTRNGConfigurator< >
-    {
-        typedef typename boost::random::uniform_01<RealType>::result_type result_type;
-
-        KTRndmUniform01(const std::string& name = "uniform-01", RNG* rng = KTGlobalRNGEngine::GetInstance()) :
-            KTRNGConfigurator(name)
-
-        result_type operator()() {return *this(*KTGlobalRNGEngine::GetInstance());}
-    };
-
-
-    template< class RNG >
-    RNG* KTRNGConfigurator< RNG >::GetRNG() const
-    {
-        return fRNG;
-    }
-
-     */
 
 } /* namespace Katydid */
 #endif /* KTRANDOM_HH_ */
