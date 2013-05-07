@@ -26,5 +26,12 @@ int main(int argc, char** argv)
         KTINFO(vallog, "loop " << i << ":  " << dist());
     }
 
+    // test that the other distribution types compile
+    KTRNGUniform<> distUniform;
+    KTRNGGaussian<> distGaussian;
+    KTRNGPoisson<> distPoisson;
+    KTRNGExponential<> distExponential;
+    KTRNGChiSquared<> distChiSquared;
+
     return 0;
 }

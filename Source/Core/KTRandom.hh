@@ -194,12 +194,17 @@ namespace Katydid
     template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
     struct KTRNGUniform : KTRNGDistribution< Engine >, boost::random::uniform_real_distribution<RealType>
     {
-        typedef boost::random::normal_distribution<RealType> dist_type;
+        typedef boost::random::uniform_real_distribution<RealType> dist_type;
         typedef typename dist_type::input_type input_type;
         typedef typename dist_type::result_type result_type;
+        typedef typename dist_type::param_type param_type;
 
         KTRNGUniform(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "uniform") :
             KTRNGDistribution< Engine >(rng, name)
+        {}
+        KTRNGUniform(input_type min, input_type max, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "uniform") :
+            KTRNGDistribution< Engine >(rng, name),
+            dist_type(min, max)
         {}
         virtual ~KTRNGUniform() {}
 
@@ -242,9 +247,14 @@ namespace Katydid
         typedef boost::random::normal_distribution<RealType> dist_type;
         typedef typename dist_type::input_type input_type;
         typedef typename dist_type::result_type result_type;
+        typedef typename dist_type::param_type param_type;
 
         KTRNGGaussian(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "gaussian") :
             KTRNGDistribution< Engine >(rng, name)
+        {}
+        KTRNGGaussian(input_type mean, input_type sigma, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "gaussian") :
+            KTRNGDistribution< Engine >(rng, name),
+            dist_type(mean, sigma)
         {}
         virtual ~KTRNGGaussian() {}
 
@@ -283,12 +293,17 @@ namespace Katydid
     template< typename Engine = KTGlobalRNGEngine, typename IntType = Int_t, typename RealType = Double_t >
     struct KTRNGPoisson : KTRNGDistribution< Engine >, boost::random::poisson_distribution<IntType, RealType>
     {
-        typedef boost::random::poisson_distribution<RealType> dist_type;
+        typedef boost::random::poisson_distribution<IntType, RealType> dist_type;
         typedef typename dist_type::input_type input_type;
         typedef typename dist_type::result_type result_type;
+        typedef typename dist_type::param_type param_type;
 
         KTRNGPoisson(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "poisson") :
             KTRNGDistribution< Engine >(rng, name)
+        {}
+        KTRNGPoisson(input_type mean, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "poisson") :
+            KTRNGDistribution< Engine >(rng, name),
+            dist_type(mean)
         {}
         virtual ~KTRNGPoisson() {}
 
@@ -326,12 +341,17 @@ namespace Katydid
     template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
     struct KTRNGExponential : KTRNGDistribution< Engine >, boost::random::exponential_distribution<RealType>
     {
-        typedef boost::random::poisson_distribution<RealType> dist_type;
+        typedef boost::random::exponential_distribution<RealType> dist_type;
         typedef typename dist_type::input_type input_type;
         typedef typename dist_type::result_type result_type;
+        typedef typename dist_type::param_type param_type;
 
         KTRNGExponential(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "exponential") :
             KTRNGDistribution< Engine >(rng, name)
+        {}
+        KTRNGExponential(input_type lambda, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "exponential") :
+            KTRNGDistribution< Engine >(rng, name),
+            dist_type(lambda)
         {}
         virtual ~KTRNGExponential() {}
 
@@ -369,12 +389,17 @@ namespace Katydid
     template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
     struct KTRNGChiSquared : KTRNGDistribution< Engine >, boost::random::chi_squared_distribution<RealType>
     {
-        typedef boost::random::poisson_distribution<RealType> dist_type;
+        typedef boost::random::chi_squared_distribution<RealType> dist_type;
         typedef typename dist_type::input_type input_type;
         typedef typename dist_type::result_type result_type;
+        typedef typename dist_type::param_type param_type;
 
         KTRNGChiSquared(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "chi-squared") :
             KTRNGDistribution< Engine >(rng, name)
+        {}
+        KTRNGChiSquared(input_type n, Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "chi-squared") :
+            KTRNGDistribution< Engine >(rng, name),
+            dist_type(n)
         {}
         virtual ~KTRNGChiSquared() {}
 
@@ -389,7 +414,7 @@ namespace Katydid
 
         inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
         {
-            input_type n = node->GetData< input_type >("n", this->mean());
+            input_type n = node->GetData< input_type >("n", this->n());
             this->param(param_type(n));
             return true;
         }
