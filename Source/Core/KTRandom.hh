@@ -9,8 +9,10 @@
 #define KTRANDOM_HH_
 
 #include "KTConfigurable.hh"
-#include "KTPStoreNode.hh"
 #include "KTSingleton.hh"
+
+#include "KTLogger.hh"
+#include "KTPStoreNode.hh"
 
 // the generator that will be used
 #include <boost/random/mersenne_twister.hpp>
@@ -25,6 +27,8 @@
 
 namespace Katydid
 {
+    KTLOGGER(rnglog, "katydid.core");
+
     //**************************************
     // Definition of the RNG engine class
     //**************************************
@@ -51,15 +55,6 @@ namespace Katydid
         private:
             generator_type fGenerator;
     };
-
-    inline Bool_t KTRNGEngine::Configure(const KTPStoreNode* node)
-    {
-        if (node->HasData("seed"))
-        {
-            SetSeed(node->GetData< UInt_t >("seed"));
-        }
-        return true;
-    }
 
     inline Bool_t KTRNGEngine::IsReady() const
     {

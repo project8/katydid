@@ -26,4 +26,17 @@ namespace Katydid
     {
     }
 
+    Bool_t KTRNGEngine::Configure(const KTPStoreNode* node)
+    {
+        if (node->HasData("seed"))
+        {
+            SetSeed(node->GetData< UInt_t >("seed"));
+        }
+        else
+        {
+            KTWARN(rnglog, "The RNG engine <" << fConfigName << "> is being seeded with the default value");
+        }
+        return true;
+    }
+
 } /* namespace Katydid */
