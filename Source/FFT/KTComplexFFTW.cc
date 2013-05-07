@@ -72,7 +72,7 @@ namespace Katydid
 
         if (fUseWisdom)
         {
-            if (! KTCacheDirectory::GetInstance()->PrepareForUse())
+            if (! KTCacheDirectory::GetInstance()->Configure())
             {
                 KTWARN(fftlog_comp, "Unable to use wisdom because cache directory is not ready.");
                 fUseWisdom = false;
