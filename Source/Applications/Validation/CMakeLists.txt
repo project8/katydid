@@ -76,6 +76,9 @@ if (Katydid_ENABLE_TESTING)
                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
     target_link_libraries (TestParameterStore KatydidUtility KatydidCore ${LIBS})
     
+    add_executable (TestRandom ${CMAKE_CURRENT_SOURCE_DIR}/TestRandom.cc)
+    target_link_libraries (TestRandom KatydidUtility KatydidCore ${LIBS})
+    
     add_executable (TestSignalsAndSlots ${CMAKE_CURRENT_SOURCE_DIR}/TestSignalsAndSlots.cc
                                         ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.cc
     )
@@ -127,6 +130,7 @@ if (Katydid_ENABLE_TESTING)
                      TestMultiSliceClustering
                      TestOneShotJSONReader
                      TestParameterStore
+                     TestRandom
                      TestSignalsAndSlots
                      #TestSimpleClustering
                      TestSimpleFFT
@@ -157,6 +161,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_MultiSliceClustering TestMultiSliceClustering)
     add_test (Test_OneShotJSONReader TestOneShotJSONReader)
     add_test (Test_ParameterStore TestParameterStore)
+    add_test (Test_Random TestRandom)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     #add_test (Test_SimpleClustering TestSimpleClustering)
     add_test (Test_SimpleFFT TestSimpleFFT)
