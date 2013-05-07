@@ -16,8 +16,12 @@
 #include <boost/random/mersenne_twister.hpp>
 
 // for definitions of distributions
+#include <boost/random/chi_squared_distribution.hpp>
+#include <boost/random/exponential_distribution.hpp>
 #include <boost/random/normal_distribution.hpp>
+#include <boost/random/poisson_distribution.hpp>
 #include <boost/random/uniform_01.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
 
 namespace Katydid
 {
@@ -143,6 +147,18 @@ namespace Katydid
     // RNG distributions
     //*********************
 
+    /*!
+     @class KTRNGUniform01
+     @author N. S. Oblath
+
+     @brief Continuous uniform distribution on the range [0, 1)
+
+     @details
+     Returns a floating point number on the range [0, 1)
+
+     Available configuration options:
+       N/A
+    */
     template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
     struct KTRNGUniform01 : KTRNGDistribution< Engine >, boost::random::uniform_01<RealType>
     {
@@ -162,10 +178,69 @@ namespace Katydid
         }
     };
 
+    /*!
+     @class KTRNGUniform
+     @author N. S. Oblath
+
+     @brief Continuous uniform distribution on the range [min, max)
+
+     @details
+     Returns a floating point value distributed in the range [min, max)
+
+     Available configuration options:
+       - "min": Double_t -- Minimum for the uniform distribution range (inclusive)
+       - "max": Double_t -- Maximum for the uniform distribution range (exclusive)
+    */
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    struct KTRNGUniform : KTRNGDistribution< Engine >, boost::random::uniform_real_distribution<RealType>
+    {
+        typedef boost::random::normal_distribution<RealType> dist_type;
+        typedef typename dist_type::input_type input_type;
+        typedef typename dist_type::result_type result_type;
+
+        KTRNGUniform(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "uniform") :
+            KTRNGDistribution< Engine >(rng, name)
+        {}
+        virtual ~KTRNGUniform() {}
+
+        inline result_type operator()()
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());
+        }
+        inline result_type operator()(input_type min, input_type max)
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(min, max));
+        }
+
+        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        {
+            input_type min = node->GetData< input_type >("min", this->a());
+            input_type max = node->GetData< input_type >("max", this->b());
+            this->param(param_type(min, max));
+            return true;
+        }
+    };
+
+    /*!
+     @class KTRNGGaussian
+     @author N. S. Oblath
+
+     @brief Gaussian distribution with parameters "mean" and "sigma"
+
+     @details
+     Returns a floating point value distributed according to a Gaussian distribution with parameters \f$\mu \equiv\f$ "mean" and \f$\sigma \equiv\f$ "sigma."
+
+     The PDF for the distribution is: \f$ p(x) = \frac{1}{\sqrt{2\pi\sigma}} \exp{-\frac{(x-\mu)^2}{2\sigma^2}} \f$
+
+     Available configuration options:
+       - "mean": Double_t -- Mean of the Gaussian distribution
+       - "sigma": Double_t -- Standard deviation of the Gaussian distribution
+    */
     template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
     struct KTRNGGaussian : KTRNGDistribution< Engine >, boost::random::normal_distribution<RealType>
     {
-        typedef boost::random::uniform_01<RealType> dist_type;
+        typedef boost::random::normal_distribution<RealType> dist_type;
+        typedef typename dist_type::input_type input_type;
         typedef typename dist_type::result_type result_type;
 
         KTRNGGaussian(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "gaussian") :
@@ -177,20 +252,148 @@ namespace Katydid
         {
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());
         }
-        inline result_type operator()(RealType mean, RealType sigma)
+        inline result_type operator()(input_type mean, input_type sigma)
         {
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean, sigma));
         }
 
         inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
         {
-            RealType mean = node->GetData< RealType >("mean", this->mean());
-            RealType sigma = node->GetData< RealType >("sigma", this->sigma());
+            input_type mean = node->GetData< input_type >("mean", this->mean());
+            input_type sigma = node->GetData< input_type >("sigma", this->sigma());
             this->param(param_type(mean, sigma));
             return true;
         }
     };
 
+    /*!
+     @class KTRNGPoisson
+     @author N. S. Oblath
+
+     @brief Poisson distribution with parameter "mean"
+
+     @details
+     Returns an integer value distributed according to a Poisson distribution with parameter \f$\lambda \equiv\f$ "mean."
+
+     The PDF for the distribution is: \f$ p(i) = \frac{exp{-\lambda}\lambda^i}{i!} \f$
+
+     Available configuration options:
+       - "mean": Double_t -- Mean of the Poisson distribution
+    */
+    template< typename Engine = KTGlobalRNGEngine, typename IntType = Int_t, typename RealType = Double_t >
+    struct KTRNGPoisson : KTRNGDistribution< Engine >, boost::random::poisson_distribution<IntType, RealType>
+    {
+        typedef boost::random::poisson_distribution<RealType> dist_type;
+        typedef typename dist_type::input_type input_type;
+        typedef typename dist_type::result_type result_type;
+
+        KTRNGPoisson(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "poisson") :
+            KTRNGDistribution< Engine >(rng, name)
+        {}
+        virtual ~KTRNGPoisson() {}
+
+        inline result_type operator()()
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());
+        }
+        inline result_type operator()(input_type mean)
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean));
+        }
+
+        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        {
+            input_type mean = node->GetData< input_type >("mean", this->mean());
+            this->param(param_type(mean));
+            return true;
+        }
+    };
+
+    /*!
+     @class KTRNGExponential
+     @author N. S. Oblath
+
+     @brief Exponential distribution with parameter "lambda"
+
+     @details
+     Returns a floating point value distributed according to an exponential distribution with parameter \f$\lambda \equiv\f$ "lambda."
+
+     The PDF for the distribution is: \f$ p(x) = \lambda\exp{-\lambda{}x} \f$
+
+     Available configuration options:
+       - "lambda": Double_t -- rate parameter of the exponential distribution
+    */
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    struct KTRNGExponential : KTRNGDistribution< Engine >, boost::random::exponential_distribution<RealType>
+    {
+        typedef boost::random::poisson_distribution<RealType> dist_type;
+        typedef typename dist_type::input_type input_type;
+        typedef typename dist_type::result_type result_type;
+
+        KTRNGExponential(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "exponential") :
+            KTRNGDistribution< Engine >(rng, name)
+        {}
+        virtual ~KTRNGExponential() {}
+
+        inline result_type operator()()
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());
+        }
+        inline result_type operator()(input_type lambda)
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(lambda));
+        }
+
+        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        {
+            input_type lambda = node->GetData< input_type >("lambda", this->lambda());
+            this->param(param_type(lambda));
+            return true;
+        }
+    };
+
+    /*!
+     @class KTRNGChiSquared
+     @author N. S. Oblath
+
+     @brief Chi-squared distribution with parameter "n"
+
+     @details
+     Returns a floating point value distributed according to an chi-squared distribution with parameter \f$n\f$.
+
+     The PDF for the distribution is: \f$ p(x) = \frac{x^{n/2-1}\exp{-x/2}}{\Gamma(n/2)2^{n/2}} \f$
+
+     Available configuration options:
+       - "lambda": Double_t -- rate parameter of the exponential distribution
+    */
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    struct KTRNGChiSquared : KTRNGDistribution< Engine >, boost::random::chi_squared_distribution<RealType>
+    {
+        typedef boost::random::poisson_distribution<RealType> dist_type;
+        typedef typename dist_type::input_type input_type;
+        typedef typename dist_type::result_type result_type;
+
+        KTRNGChiSquared(Engine* rng = KTGlobalRNGEngine::GetInstance(), const std::string& name = "chi-squared") :
+            KTRNGDistribution< Engine >(rng, name)
+        {}
+        virtual ~KTRNGChiSquared() {}
+
+        inline result_type operator()()
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());
+        }
+        inline result_type operator()(input_type n)
+        {
+            return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(n));
+        }
+
+        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        {
+            input_type n = node->GetData< input_type >("n", this->mean());
+            this->param(param_type(n));
+            return true;
+        }
+    };
 
 } /* namespace Katydid */
 #endif /* KTRANDOM_HH_ */
