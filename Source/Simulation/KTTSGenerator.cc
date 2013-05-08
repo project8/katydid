@@ -80,6 +80,16 @@ namespace Katydid
     {
         // Create, signal, and destroy the egg header
         KTEggHeader* newHeader = CreateEggHeader();
+
+        KTDEBUG(genlog, "Created header:\n"
+             << "\tFilename: " << newHeader->GetFilename() << '\n'
+             << "\tAcuisition Mode: " << newHeader->GetAcquisitionMode() << '\n'
+             << "\tNumber of Channels: " << newHeader->GetNChannels() << '\n'
+             << "\tSlice Size: " << newHeader->GetSliceSize() << '\n'
+             << "\tRecord Size: " << newHeader->GetRecordSize() << '\n'
+             << "\tAcquisition Time: " << newHeader->GetAcquisitionTime() << " s" << '\n'
+             << "\tAcquisition Rate: " << newHeader->GetAcquisitionRate() << " Hz ");
+
         fHeaderSignal(newHeader);
         delete newHeader;
 
@@ -124,6 +134,7 @@ namespace Katydid
         newHeader->SetFilename(fConfigName);
         //newHeader->SetAcquisitionMode();
         newHeader->SetNChannels(fNChannels);
+        newHeader->SetSliceSize(fSliceSize);
         newHeader->SetRecordSize(fRecordSize);
         //newHeader->SetAcquisitionTime();
         newHeader->SetAcquisitionRate(1. / fBinWidth);
