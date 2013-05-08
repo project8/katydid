@@ -117,12 +117,17 @@ namespace Katydid
 
         // iterate through eventMatches and candidateMatches to collect interesting statistics
         UInt_t largestNumberOfMatches = 0;
+        UInt_t nEventsWithAtLeastOneCandidateMatch = 0;
         vector< UInt_t > nEventsWithCandidateMatches(candidates.size()); // the largest size this should be is the number of candidates
         for (UInt_t iEvent = 0; iEvent < eventMatches.size(); iEvent++)
         {
             if (eventMatches[iEvent] > largestNumberOfMatches)
             {
                 largestNumberOfMatches = eventMatches[iEvent];
+            }
+            if (eventMatches[iEvent] > 0)
+            {
+                nEventsWithAtLeastOneCandidateMatch++;
             }
             nEventsWithCandidateMatches[eventMatches[iEvent]] = nEventsWithCandidateMatches[eventMatches[iEvent]] + 1;
         }
@@ -136,6 +141,8 @@ namespace Katydid
             textHist1 << iNEvents << ": " << nEventsWithCandidateMatches[iNEvents] << '\n';
         }
         KTPROG(cclog, "Number of events with a given number of candidate matches:\n" << textHist1.str());
+        KTPROG(cclog, "Detection efficiency (# events with at least 1 match / # events): " << Double_t(nEventsWithAtLeastOneCandidateMatch) / Double_t(candidates.size()));
+        KTPROG(cclog, "False rate (# candidates not matching events / # of records): " << Double_t(nEventsWithCandidateMatches[0]) / Double_t(1 /* put # of records analyzed here, once it's available*/));
 
 
         largestNumberOfMatches = 0;
