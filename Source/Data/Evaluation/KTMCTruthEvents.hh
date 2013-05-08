@@ -58,10 +58,14 @@ namespace Katydid
             UInt_t GetRecordSize() const;
             void SetRecordSize(UInt_t size);
 
+            UInt_t GetNRecords() const;
+            void SetNRecords(UInt_t rec);
+
         protected:
             EventSet fEvents;
 
             UInt_t fRecordSize;
+            UInt_t fNRecords;
     };
 
     inline const KTMCTruthEvents::EventSet& KTMCTruthEvents::GetEvents() const
@@ -91,6 +95,18 @@ namespace Katydid
         fRecordSize = size;
         return;
     }
+
+    inline UInt_t KTMCTruthEvents::GetNRecords() const
+    {
+        return fNRecords;
+    }
+
+    inline void KTMCTruthEvents::SetNRecords(UInt_t rec)
+    {
+        fNRecords = rec;
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTMCTRUTHEVENTS_HH_ */

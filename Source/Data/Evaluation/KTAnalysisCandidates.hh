@@ -58,39 +58,54 @@ namespace Katydid
             UInt_t GetRecordSize() const;
             void SetRecordSize(UInt_t size);
 
+            UInt_t GetNRecords() const;
+            void SetNRecords(UInt_t rec);
+
         protected:
             CandidateSet fCandidates;
 
             UInt_t fRecordSize;
-};
+            UInt_t fNRecords;
+    };
 
-inline const KTAnalysisCandidates::CandidateSet& KTAnalysisCandidates::GetCandidates() const
-{
-    return fCandidates;
-}
+    inline const KTAnalysisCandidates::CandidateSet& KTAnalysisCandidates::GetCandidates() const
+    {
+        return fCandidates;
+    }
 
-inline void KTAnalysisCandidates::AddCandidate(const Candidate& candidate)
-{
-    fCandidates.insert(candidate);
-    return;
-}
+    inline void KTAnalysisCandidates::AddCandidate(const Candidate& candidate)
+    {
+        fCandidates.insert(candidate);
+        return;
+    }
 
-inline void KTAnalysisCandidates::ClearCandidates()
-{
-    fCandidates.clear();
-    return;
-}
+    inline void KTAnalysisCandidates::ClearCandidates()
+    {
+        fCandidates.clear();
+        return;
+    }
 
-inline UInt_t KTAnalysisCandidates::GetRecordSize() const
-{
-    return fRecordSize;
-}
+    inline UInt_t KTAnalysisCandidates::GetRecordSize() const
+    {
+        return fRecordSize;
+    }
 
-inline void KTAnalysisCandidates::SetRecordSize(UInt_t size)
-{
-    fRecordSize = size;
-    return;
-}
+    inline void KTAnalysisCandidates::SetRecordSize(UInt_t size)
+    {
+        fRecordSize = size;
+        return;
+    }
+
+    inline UInt_t KTAnalysisCandidates::GetNRecords() const
+    {
+        return fNRecords;
+    }
+
+    inline void KTAnalysisCandidates::SetNRecords(UInt_t rec)
+    {
+        fNRecords = rec;
+        return;
+    }
 
 
 } /* namespace Katydid */

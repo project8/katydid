@@ -51,6 +51,13 @@ namespace Katydid
         const UInt_t eventRecordSize = mcEventData.GetRecordSize();
         const UInt_t candidateRecordSize = candidateData.GetRecordSize();
 
+        const UInt_t nRecords = mcEventData.GetNRecords();
+        if (nRecords != candidateData.GetNRecords())
+        {
+            KTERROR(cclog, "The number of records simulated (" << nRecords << ") does not match the number of records analyzed (" << candidateData.GetNRecords() << ")");
+            return false;
+        }
+
         vector< UInt_t > eventMatches(events.size());
         vector< UInt_t > candidateMatches(candidates.size());
 
