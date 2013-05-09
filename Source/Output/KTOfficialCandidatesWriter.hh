@@ -21,6 +21,7 @@ namespace Katydid
 {
     class KTEggHeader;
     class KTWaterfallCandidateData;
+    class KTProcSummary;
 
     /*!
      @class KTOfficialCandidatesWriter
@@ -40,6 +41,7 @@ namespace Katydid
      Slots:
      - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; not valid if candidate writing has started
      - "waterfall-candidate": void (boost::shared_ptr<KTData>) -- writes candidate information; starts candidate writing mode if it hasn't started yet
+     - "summary": void (const KTProcSummary*) -- stops writing candidates, writes the summary information and closes the file
      - "stop": void () -- stops writing candidates and closes the file
     */
 
@@ -98,6 +100,8 @@ namespace Katydid
 
             Bool_t WriteWaterfallCandidate(KTWaterfallCandidateData& wcData);
 
+            void WriteSummaryInformationAndCloseFile(const KTProcSummary* summary);
+
             //**************
             // Slots
             //**************
@@ -105,6 +109,7 @@ namespace Katydid
             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTWaterfallCandidateData > fWaterfallCandidateSlot;
             KTSlotNoArg< void () > fStopWritingSlot;
+            KTSlotOneArg< void (const KTProcSummary*) > fSummarySlot;
     };
 
     inline const std::string& KTOfficialCandidatesWriter::GetFilename() const

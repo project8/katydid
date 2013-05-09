@@ -16,6 +16,7 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTWaterfallCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTProcSummary.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.hh
@@ -48,6 +49,7 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTWaterfallCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTProcSummary.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.cc

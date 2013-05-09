@@ -9,11 +9,14 @@
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
+#include "KTProcSummary.hh"
 #include "KTPStoreNode.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+
+#include <cmath>
 
 using boost::shared_ptr;
 
@@ -35,8 +38,8 @@ namespace Katydid
             fDataSlot("slice", this, &KTTSGenerator::GenerateTS, &fDataSignal),
             fHeaderSignal("header", this),
             fDataSignal("slice", this),
-            fDoneSignal("done", this)
-
+            fDoneSignal("done", this),
+            fSummarySignal("summary", this)
     {
     }
 
@@ -123,6 +126,13 @@ namespace Katydid
         }
 
         fDoneSignal();
+
+        KTProcSummary* summary = new KTProcSummary();
+        summary->SetNSlicesProcessed(fSliceCounter);
+        summary->SetNRecordsProcessed((UInt_t)ceil(Double_t(fSliceCounter * fSliceSize) / fRecordSize));
+        summary->SetIntegratedTime(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+        fSummarySignal(summary);
+        delete summary;
 
         return true;
     }

@@ -10,6 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
+#include "KTProcSummary.hh"
 #include "KTPStoreNode.hh"
 #include "KTWaterfallCandidateData.hh"
 
@@ -33,7 +34,8 @@ namespace Katydid
             fStatus(kNotOpenedYet),
             fHeaderSlot("header", this, &KTOfficialCandidatesWriter::WriteHeaderInformation),
             fWaterfallCandidateSlot("waterfall-candidate", this, &KTOfficialCandidatesWriter::WriteWaterfallCandidate),
-            fStopWritingSlot("stop", this, &KTOfficialCandidatesWriter::CloseFile)
+            fStopWritingSlot("stop", this, &KTOfficialCandidatesWriter::CloseFile),
+            fSummarySlot("summary", this, &KTOfficialCandidatesWriter::WriteSummaryInformationAndCloseFile)
     {
     }
 
@@ -188,6 +190,22 @@ namespace Katydid
         // end the candidate
 
         return true;
+    }
+
+    void KTOfficialCandidatesWriter::WriteSummaryInformationAndCloseFile(const KTProcSummary* summary)
+    {
+        if (fStatus == kWritingCandidates)
+        {
+            // end the array of candidates
+            fJSONMaker->EndArray();
+        }
+
+        fStatus = kStopped;
+
+        fJSONMaker->String("records_analyzed");
+        fJSONMaker->Uint(summary->GetNRecordsProcessed());
+
+        return;
     }
 
 
