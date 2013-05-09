@@ -95,7 +95,7 @@ namespace Katydid
 
         // Loop over slices
         // The local copy of the data shared pointer is created and destroyed in each iteration of the loop
-        for (Int_t iSlice = 0; iSlice < fNSlices; iSlice++)
+        for (fSliceCounter = 0; fSliceCounter < fNSlices; fSliceCounter++)
         {
             shared_ptr< KTData > newData = CreateNewData();
 
@@ -160,8 +160,19 @@ namespace Katydid
         sliceHeader.SetSampleRate(1. / fBinWidth);
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
-        sliceHeader.SetTimeInRun(0);
-        sliceHeader.SetSliceNumber(0);
+        sliceHeader.SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+        sliceHeader.SetSliceNumber(fSliceCounter);
+
+        KTDEBUG(genlog, "Filled out slice header:\n"
+                << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
+                << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
+                << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
+                << "\tSlice length: " << sliceHeader.GetSliceLength() << " s\n"
+                << "\tTime in run: " << sliceHeader.GetTimeInRun() << " s\n"
+                << "\tSlice number: " << sliceHeader.GetSliceNumber() << '\n'
+                << "\tStart record number: " << sliceHeader.GetStartRecordNumber() << '\n'
+                << "\tStart sample number: " << sliceHeader.GetStartSampleNumber());
+
         return true;
     }
 
