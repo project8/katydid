@@ -7,7 +7,6 @@
 
 #include "KTEggReaderMonarch.hh"
 
-#include "KTEgg.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
