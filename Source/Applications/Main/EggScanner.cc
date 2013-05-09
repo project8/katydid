@@ -11,7 +11,6 @@
 
 #include "KTApplication.hh"
 #include "KTCommandLineOption.hh"
-#include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
 #include "KTEggReaderMonarch.hh"
@@ -52,18 +51,18 @@ int main(int argc, char** argv)
 
     UInt_t sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
 
-    KTEgg egg;
+    KTEggReader* reader;
     if (clOpts->IsCommandLineOptSet("use-2011-egg-reader"))
     {
         KTINFO(eggscan, "Using 2011 egg reader");
-        KTEggReader2011* reader = new KTEggReader2011();
-        egg.SetReader(reader);
+        KTEggReader2011* reader2011 = new KTEggReader2011();
+        reader = reader2011;
     }
     else
     {
-        KTEggReaderMonarch* reader = new KTEggReaderMonarch();
-        reader->SetSliceSize(sliceSize);
-        egg.SetReader(reader);
+        KTEggReaderMonarch* readerMonarch = new KTEggReaderMonarch();
+        readerMonarch->SetSliceSize(sliceSize);
+        reader = readerMonarch;
     }
 
     //**************************
@@ -72,18 +71,13 @@ int main(int argc, char** argv)
 
     ULong64_t fileSize = boost::filesystem::file_size(filename); // in bytes
 
-    if (! egg.BreakEgg(filename))
+    const KTEggHeader* header = reader->BreakEgg(filename);
+    if (header == NULL)
     {
-        KTERROR(eggscan, "Egg file was not opened");
+        KTERROR(eggscan, "Egg file was not opened and no header was received");
         return -1;
     }
 
-    const KTEggHeader* header = egg.GetHeader();
-    if (header == NULL)
-    {
-        KTERROR(eggscan, "No header received");
-        return -1;
-    }
     KTPROG(eggscan, "Header information:\n"
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
@@ -115,7 +109,7 @@ int main(int argc, char** argv)
            << "\tFS size (polar): " << fsSizePolar << '\n'
            << "\tMax frequency: " << fsMaxFreq << " Hz");
 
-    egg.CloseEgg();
+    reader->CloseEgg();
 
     return 0;
 }
