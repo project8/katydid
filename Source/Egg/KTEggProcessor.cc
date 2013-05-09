@@ -10,12 +10,12 @@
 
 #include "KTCommandLineOption.hh"
 #include "KTData.hh"
-#include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTEggReader2011.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
+#include "KTProcSummary.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
 
@@ -43,7 +43,8 @@ namespace Katydid
             fTimeSeriesType(kRealTimeSeries),
             fHeaderSignal("header", this),
             fDataSignal("slice", this),
-            fEggDoneSignal("egg-done", this)
+            fEggDoneSignal("egg-done", this),
+            fSummarySignal("summary", this)
     {
     }
 
@@ -53,14 +54,10 @@ namespace Katydid
 
     Bool_t KTEggProcessor::Configure(const KTPStoreNode* node)
     {
-        // Config-file settings
+        // First determine the egg reader type
+        // config file setting
         if (node != NULL)
         {
-            SetNSlices(node->GetData< UInt_t >("number-of-slices", fNSlices));
-            SetProgressReportInterval(node->GetData< UInt_t >("progress-report-interval", fProgressReportInterval));
-            SetFilename(node->GetData< string >("filename", fFilename));
-
-            // choose the egg reader
             string eggReaderTypeString = node->GetData< string >("egg-reader", "monarch");
             if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
             else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
@@ -69,6 +66,21 @@ namespace Katydid
                 KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
                 return false;
             }
+        }
+        // command line setting (overrides config file, if used)
+        if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
+        {
+            SetEggReaderType(k2011EggReader);
+        }
+
+        // Other settings
+
+        // Config-file settings
+        if (node != NULL)
+        {
+            SetNSlices(node->GetData< UInt_t >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->GetData< UInt_t >("progress-report-interval", fProgressReportInterval));
+            SetFilename(node->GetData< string >("filename", fFilename));
 
             // specify the length of the time series
             fSliceSize = node->GetData< UInt_t >("slice-size", fSliceSize);
@@ -95,10 +107,6 @@ namespace Katydid
         // Command-line settings
         SetNSlices(fCLHandler->GetCommandLineValue< Int_t >("n-slices", fNSlices));
         SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
-        if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
-        {
-            SetEggReaderType(k2011EggReader);
-        }
 
         return true;
     }
@@ -106,46 +114,54 @@ namespace Katydid
 
     Bool_t KTEggProcessor::ProcessEgg()
     {
-        KTEgg egg;
+        KTEggReader* reader = NULL;
 
+        // Create egg reader and transfer information
         if (fEggReaderType == kMonarchEggReader)
         {
-            KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
-            eggReader->SetSliceSize(fSliceSize);
-            eggReader->SetStride(fStride);
+            KTEggReaderMonarch* eggReaderMonarch = new KTEggReaderMonarch();
+            eggReaderMonarch->SetSliceSize(fSliceSize);
+            eggReaderMonarch->SetStride(fStride);
             if (fTimeSeriesType == kRealTimeSeries)
-                eggReader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
+                eggReaderMonarch->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
             else if (fTimeSeriesType == kFFTWTimeSeries)
-                eggReader->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
-            egg.SetReader(eggReader);
+                eggReaderMonarch->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
+            reader = eggReaderMonarch;
         }
         else
         {
-            KTEggReader2011* eggReader = new KTEggReader2011();
-            egg.SetReader(eggReader);
+            KTEggReader2011* eggReader2011 = new KTEggReader2011();
+            reader = eggReader2011;
         }
 
-        if (! egg.BreakEgg(fFilename))
+        KTEggHeader* header = reader->BreakEgg(fFilename);
+        if (header == NULL)
         {
             KTERROR(egglog, "Egg did not break");
             return false;
         }
 
-        fHeaderSignal(egg.GetHeader());
+        fHeaderSignal(header);
 
-        KTINFO(egglog, "The egg file has been opened successfully"
-                "\n\tand the header parsed and processed;");
+        KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
 
-        if (fNSlices == 0) UnlimitedLoop(egg);
-        else LimitedLoop(egg);
+        if (fNSlices == 0) UnlimitedLoop(reader);
+        else LimitedLoop(reader);
 
         fEggDoneSignal();
+
+        KTProcSummary* summary = new KTProcSummary();
+        summary->SetNSlicesProcessed(reader->GetNSlicesProcessed());
+        summary->SetNRecordsProcessed(reader->GetNRecordsProcessed());
+        summary->SetIntegratedTime(reader->GetIntegratedTime());
+        fSummarySignal(summary);
+        delete summary;
 
         return true;
     }
 
-    void KTEggProcessor::UnlimitedLoop(KTEgg& egg)
+    void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
     {
         UInt_t iSlice = 0, iProgress = 0;
         while (kTRUE)
@@ -153,7 +169,7 @@ namespace Katydid
             KTINFO(egglog, "Hatching slice " << iSlice);
 
             // Hatch the slice
-            shared_ptr<KTData> data = egg.HatchNextSlice();
+            shared_ptr<KTData> data = reader->HatchNextSlice();
             if (data.get() == NULL) break;
 
             if (data->Has< KTTimeSeriesData >())
@@ -178,7 +194,7 @@ namespace Katydid
         return;
     }
 
-    void KTEggProcessor::LimitedLoop(KTEgg& egg)
+    void KTEggProcessor::LimitedLoop(KTEggReader* reader)
     {
         UInt_t iSlice = 0, iProgress = 0;
         while (kTRUE)
@@ -192,7 +208,7 @@ namespace Katydid
             KTINFO(egglog, "Hatching slice " << iSlice << "/" << fNSlices);
 
             // Hatch the slice
-            shared_ptr<KTData> data = egg.HatchNextSlice();
+            shared_ptr<KTData> data = reader->HatchNextSlice();
             if (data.get() == NULL) break;
 
             if (iSlice == fNSlices - 1) data->Of< KTData >().fLastData = true;

@@ -10,7 +10,6 @@
  */
 
 
-#include "KTEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
 #include "KTEggReaderMonarch.hh"
@@ -48,12 +47,13 @@ int main(int argc, char** argv)
 
     KTINFO(testegg, "Test of hatching egg file <" << filename << ">");
 
-    KTEgg egg;
+    KTEggReader* reader;
+
     if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
     {
         KTINFO(testegg, "Using 2011 egg reader");
-        KTEggReader2011* reader = new KTEggReader2011();
-        egg.SetReader(reader);
+        KTEggReader2011* reader2011 = new KTEggReader2011();
+        reader = reader2011;
     }
     else
     {
@@ -62,30 +62,26 @@ int main(int argc, char** argv)
         KTINFO(testegg, "Slice size should be " << sliceSize);
         UInt_t stride = 700000;
         KTINFO(testegg, "Stride should be " << stride << " (if 0, it should be the same as the slice size");
-        KTEggReaderMonarch* reader = new KTEggReaderMonarch();
-        reader->SetSliceSize(sliceSize);
-        reader->SetStride(stride);
-        egg.SetReader(reader);
+        KTEggReaderMonarch* readerMonarch = new KTEggReaderMonarch();
+        readerMonarch->SetSliceSize(sliceSize);
+        readerMonarch->SetStride(stride);
+        reader = readerMonarch;
     }
 
 
     KTINFO(testegg, "Opening file");
-    if (egg.BreakEgg(filename))
+    const KTEggHeader* header = reader->BreakEgg(filename);
+    if (header != NULL)
     {
         KTINFO(testegg, "Egg opened successfully");
     }
     else
     {
         KTERROR(testegg, "Egg file was not opened");
+        delete reader;
         return -1;
     }
 
-    const KTEggHeader* header = egg.GetHeader();
-    if (header == NULL)
-    {
-        KTERROR(testegg, "No header received");
-        return -1;
-    }
     KTINFO(testegg, "Some header information:\n"
            << "\tFilename: " << header->GetFilename() << '\n'
            << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
@@ -96,7 +92,7 @@ int main(int argc, char** argv)
     for (UInt_t iSlice=0; iSlice < nSlices; iSlice++)
     {
         KTINFO(testegg, "Slice " << iSlice);
-        boost::shared_ptr<KTData> data = egg.HatchNextSlice();
+        boost::shared_ptr<KTData> data = reader->HatchNextSlice();
         if (! data)
         {
             KTERROR(testegg, "Slice did not hatch");
@@ -129,7 +125,9 @@ int main(int argc, char** argv)
     }
 
     KTINFO(testegg, "Test complete; cleaning up");
-    egg.CloseEgg();
+    reader->CloseEgg();
+    delete reader;
+    delete header;
 
     return 0;
 }
