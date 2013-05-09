@@ -167,7 +167,7 @@ namespace Katydid
 
             // shift the slice start pointer by the stride
             fReadState.fSliceStartPtrOffset += fStride;
-            UInt_t sliceStartRecordOffset = 0;
+            UInt_t sliceStartRecordOffset = 0; // how many records to shift to the start of the slice
             while (fReadState.fSliceStartPtrOffset >= recordSize)
             {
                 fReadState.fSliceStartPtrOffset -= recordSize;

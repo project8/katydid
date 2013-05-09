@@ -52,10 +52,12 @@ namespace Katydid
             virtual boost::shared_ptr< KTData > HatchNextSlice();
             virtual bool CloseEgg();
 
-            UInt_t GetRecordsRead() const;
-
             /// Returns the time since the run started in seconds
             Double_t GetTimeInRun() const;
+            virtual Double_t GetIntegratedTime() const;
+
+            virtual UInt_t GetNSlicesProcessed() const ;
+            virtual UInt_t GetNRecordsProcessed() const;
 
         private:
             template< typename XReturnType, typename XArrayType >
@@ -85,14 +87,24 @@ namespace Katydid
         return converted;
     }
 
-    inline UInt_t KTEggReader2011::GetRecordsRead() const
+    inline Double_t KTEggReader2011::GetTimeInRun() const
+    {
+        return Double_t(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
+    }
+
+    inline Double_t KTEggReader2011::GetIntegratedTime() const
+    {
+        return GetTimeInRun();
+    }
+
+    inline UInt_t KTEggReader2011::GetNSlicesProcessed() const
     {
         return fRecordsRead;
     }
 
-    inline Double_t KTEggReader2011::GetTimeInRun() const
+    inline UInt_t KTEggReader2011::GetNRecordsProcessed() const
     {
-        return Double_t(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
+        return fRecordsRead;
     }
 
 
