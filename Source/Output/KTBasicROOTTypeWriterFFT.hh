@@ -38,6 +38,8 @@ namespace Katydid
             void WriteFrequencySpectrumDataPolarPower(boost::shared_ptr<KTData> data);
             void WriteFrequencySpectrumDataFFTWPower(boost::shared_ptr<KTData> data);
 
+            void WriteFrequencySpectrumDataPolarMagnitudeDistribution(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(boost::shared_ptr<KTData> data);
             void WriteFrequencySpectrumDataPolarPowerDistribution(boost::shared_ptr<KTData> data);
             void WriteFrequencySpectrumDataFFTWPowerDistribution(boost::shared_ptr<KTData> data);
 

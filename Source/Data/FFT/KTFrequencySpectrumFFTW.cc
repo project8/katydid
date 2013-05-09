@@ -305,6 +305,32 @@ namespace Katydid
         return hist;
     }
 
+    TH1D* KTFrequencySpectrumFFTW::CreateMagnitudeDistributionHistogram(const std::string& name) const
+    {
+        UInt_t nBins = size();
+        Double_t tMaxMag = -1.;
+        Double_t tMinMag = 1.e9;
+        Double_t value;
+        // skip the DC bin; start at iBin = 1
+        for (UInt_t iBin=1; iBin<nBins; iBin++)
+        {
+            // order doesn't matter, so use fData[iBin] to access values
+            value = std::sqrt(fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]);
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        {
+            // order matters, so use (*this)() to access values
+            value = sqrt((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]);
+            hist->Fill(value);
+        }
+        hist->SetXTitle("Voltage (V)");
+        return hist;
+    }
+
     TH1D* KTFrequencySpectrumFFTW::CreatePowerDistributionHistogram(const std::string& name) const
     {
         UInt_t nBins = size();
@@ -312,7 +338,8 @@ namespace Katydid
         Double_t tMinMag = 1.e9;
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        // skip the DC bin; start at iBin = 1
+        for (UInt_t iBin=1; iBin<nBins; iBin++)
         {
             // order doesn't matter, so use fData[iBin] to access values
             value = (fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]) * scaling;

@@ -35,6 +35,7 @@ namespace Katydid
 
      Slots:
      - "aa":
+     - "aa-dist":
      - "corr":
      - "hough":
      - "gain-var":

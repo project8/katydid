@@ -55,6 +55,7 @@ namespace Katydid
         fWriter->RegisterSlot("hough", this, &KTBasicROOTTypeWriterAnalysis::WriteHoughData);
         fWriter->RegisterSlot("gain-var", this, &KTBasicROOTTypeWriterAnalysis::WriteGainVariationData);
         fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData);
+        fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution);
         return;
     }
 
@@ -327,6 +328,39 @@ namespace Katydid
                 string histName;
                 conv >> histName;
                 TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
+                stringstream titleStream;
+                titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
+                        "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
+                corrHist->SetTitle(titleStream.str().c_str());
+                corrHist->SetDirectory(fWriter->GetFile());
+                corrHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution(shared_ptr< KTData > data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTWignerVilleData& wvData = data->Of<KTWignerVilleData>();
+        UInt_t nComponents = wvData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histWVDist_" << sliceNumber << "_" << iPair;
+                string histName;
+                conv >> histName;
+                TH1D* corrHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
                         "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
