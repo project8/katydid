@@ -44,9 +44,12 @@ namespace Katydid
      - "fs-polar-phase":
      - "fs-fftw-power":
      - "fs-polar-power":
+     - "fs-fftw-power-dist":
+     - "fs-polar-power-dist":
      - "norm-fs-fftw":
      - "norm-fs-polar":
      - "ts":
+     - "ts-dist":
      - "wv":
      
     */

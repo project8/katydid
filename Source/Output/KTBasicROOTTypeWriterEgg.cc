@@ -42,6 +42,7 @@ namespace Katydid
     void KTBasicROOTTypeWriterEgg::RegisterSlots()
     {
         fWriter->RegisterSlot("ts", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData);
+        fWriter->RegisterSlot("ts-dist", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution);
         return;
     }
 
@@ -71,6 +72,35 @@ namespace Katydid
                 string histName;
                 conv >> histName;
                 TH1D* powerSpectrum = spectrum->CreateHistogram(histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution(boost::shared_ptr<KTData> data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
+        UInt_t nComponents = tsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        {
+            const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histTSDist_" << sliceNumber << "_" << iComponent;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreateAmplitudeDistributionHistogram(histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");

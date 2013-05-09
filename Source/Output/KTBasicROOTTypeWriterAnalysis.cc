@@ -50,6 +50,7 @@ namespace Katydid
         fWriter->RegisterSlot("norm-fs-polar", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolar);
         fWriter->RegisterSlot("norm-fs-fftw", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTW);
         fWriter->RegisterSlot("aa", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData);
+        fWriter->RegisterSlot("aa-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution);
         fWriter->RegisterSlot("corr", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationData);
         fWriter->RegisterSlot("hough", this, &KTBasicROOTTypeWriterAnalysis::WriteHoughData);
         fWriter->RegisterSlot("gain-var", this, &KTBasicROOTTypeWriterAnalysis::WriteGainVariationData);
@@ -146,6 +147,38 @@ namespace Katydid
                 string histName;
                 conv >> histName;
                 TH1D* tsHist = timeSeries->CreateHistogram(histName);
+                stringstream titleStream;
+                titleStream << "Analytic Associate " << iPair << " of Slice " << sliceNumber;
+                tsHist->SetTitle(titleStream.str().c_str());
+                tsHist->SetDirectory(fWriter->GetFile());
+                tsHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution(shared_ptr< KTData > data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTAnalyticAssociateData& aaData = data->Of<KTAnalyticAssociateData>();
+        UInt_t nComponents = aaData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        {
+            const KTTimeSeries* timeSeries = aaData.GetTimeSeries(iPair);
+            if (timeSeries != NULL)
+            {
+                stringstream conv;
+                conv << "histAADist_" << sliceNumber << "_" << iPair;
+                string histName;
+                conv >> histName;
+                TH1D* tsHist = timeSeries->CreateAmplitudeDistributionHistogram(histName);
                 stringstream titleStream;
                 titleStream << "Analytic Associate " << iPair << " of Slice " << sliceNumber;
                 tsHist->SetTitle(titleStream.str().c_str());

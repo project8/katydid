@@ -37,6 +37,7 @@ namespace Katydid
             //************************
         public:
             void WriteAnalyticAssociateData(boost::shared_ptr<KTData> data);
+            void WriteAnalyticAssociateDataDistribution(boost::shared_ptr<KTData> data);
 
             //************************
             // Correlation Data

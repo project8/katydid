@@ -26,6 +26,7 @@ namespace Katydid
 
         public:
             void WriteTimeSeriesData(boost::shared_ptr<KTData> data);
+            void WriteTimeSeriesDataDistribution(boost::shared_ptr<KTData> data);
 
     };
 
