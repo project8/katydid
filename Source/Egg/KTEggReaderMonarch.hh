@@ -200,7 +200,7 @@ namespace Katydid
 
     inline UInt_t KTEggReaderMonarch::GetNRecordsProcessed() const
     {
-        return fReadState.fAbsoluteRecordOffset;
+        return fReadState.fAbsoluteRecordOffset + 1;
     }
 
     inline const KTEggReaderMonarch::MonarchReadState& KTEggReaderMonarch::GetReadState() const

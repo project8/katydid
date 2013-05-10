@@ -155,6 +155,10 @@ namespace Katydid
         summary->SetNSlicesProcessed(reader->GetNSlicesProcessed());
         summary->SetNRecordsProcessed(reader->GetNRecordsProcessed());
         summary->SetIntegratedTime(reader->GetIntegratedTime());
+        KTDEBUG(egglog, "Summary of processing:\n" <<
+                "\tSlices processed: " << summary->GetNSlicesProcessed() << '\n' <<
+                "\tRecords processed: " << summary->GetNRecordsProcessed() << '\n' <<
+                "\tIntegrated time: " << summary->GetIntegratedTime() << " s");
         fSummarySignal(summary);
         delete summary;
 
