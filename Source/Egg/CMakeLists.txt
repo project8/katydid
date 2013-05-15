@@ -41,7 +41,7 @@ set (KATYDID_LIBS
 #ROOT_GENERATE_DICTIONARY ("${EGG_DICT_HEADERFILES}" "${EGG_LINKDEF_HEADERFILE}" "${EGG_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
 add_library (KatydidEgg ${EGG_SOURCEFILES} ${EGG_DICT_OUTFILE})
-target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${EGG_HEADERFILES})
 pbuilder_install_libraries (KatydidEgg)

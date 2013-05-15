@@ -26,7 +26,7 @@ set (KATYDID_LIBS
 #ROOT_GENERATE_DICTIONARY ("${CANDIDATES_DICT_HEADERFILES}" "${CANDIDATES_LINKDEF_HEADERFILE}" "${CANDIDATES_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
 add_library (KatydidCandidates ${CANDIDATES_SOURCEFILES})
-target_link_libraries (KatydidCandidates ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidCandidates ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_libraries(KatydidCandidates)
 pbuilder_install_headers(${CANDIDATES_HEADERFILES})

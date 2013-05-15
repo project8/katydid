@@ -57,7 +57,7 @@ endif (LOG4CXX_FOUND)
 ##################################################
 
 add_library (KatydidUtility ${UTILITY_SOURCEFILES})
-target_link_libraries (KatydidUtility ${LIBS})
+target_link_libraries (KatydidUtility ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${UTILITY_HEADERFILES})
 pbuilder_install_header_dirs ("*.hh" ${UTILITY_HEADER_SUBDIRS})

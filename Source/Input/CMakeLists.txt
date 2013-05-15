@@ -35,7 +35,7 @@ set (KATYDID_LIBS
 ##################################################
 
 add_library (KatydidInput ${INPUT_SOURCEFILES})
-target_link_libraries (KatydidInput ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidInput ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${INPUT_HEADERFILES})
 pbuilder_install_libraries (KatydidInput)
