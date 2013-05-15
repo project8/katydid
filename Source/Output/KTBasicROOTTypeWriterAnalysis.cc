@@ -52,6 +52,7 @@ namespace Katydid
         fWriter->RegisterSlot("aa", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData);
         fWriter->RegisterSlot("aa-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution);
         fWriter->RegisterSlot("corr", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationData);
+        fWriter->RegisterSlot("corr-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationDataDistribution);
         fWriter->RegisterSlot("hough", this, &KTBasicROOTTypeWriterAnalysis::WriteHoughData);
         fWriter->RegisterSlot("gain-var", this, &KTBasicROOTTypeWriterAnalysis::WriteGainVariationData);
         fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData);
@@ -216,6 +217,39 @@ namespace Katydid
                 string histName;
                 conv >> histName;
                 TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
+                stringstream titleStream;
+                titleStream << "Slice " << sliceNumber << ", Correlation " << iPair << ", "
+                        "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
+                corrHist->SetTitle(titleStream.str().c_str());
+                corrHist->SetDirectory(fWriter->GetFile());
+                corrHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationDataDistribution(shared_ptr< KTData > data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTCorrelationData& corrData = data->Of<KTCorrelationData>();
+        UInt_t nComponents = corrData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        {
+            const KTFrequencySpectrumPolar* spectrum = corrData.GetSpectrumPolar(iPair);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histCorrDist_" << sliceNumber << "_" << iPair;
+                string histName;
+                conv >> histName;
+                TH1D* corrHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", Correlation " << iPair << ", "
                         "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";

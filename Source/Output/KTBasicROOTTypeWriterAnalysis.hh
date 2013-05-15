@@ -44,6 +44,7 @@ namespace Katydid
             //************************
         public:
             void WriteCorrelationData(boost::shared_ptr<KTData> data);
+            void WriteCorrelationDataDistribution(boost::shared_ptr<KTData> data);
 
             //************************
             // Hough Transform Data
