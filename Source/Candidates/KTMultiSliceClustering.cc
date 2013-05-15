@@ -8,7 +8,7 @@
 #include "KTMultiSliceClustering.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
@@ -33,7 +33,7 @@ using std::vector;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTMultiSliceClustering > sMSClustRegistrar("multi-slice-clustering");
+    static KTDerivedNORegistrar< KTProcessor, KTMultiSliceClustering > sMSClustRegistrar("multi-slice-clustering");
 
     KTMultiSliceClustering::KTMultiSliceClustering(const std::string& name) :
             KTDataQueueProcessorTemplate< KTMultiSliceClustering >(name),

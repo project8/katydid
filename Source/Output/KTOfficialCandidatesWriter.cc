@@ -8,7 +8,7 @@
 #include "KTOfficialCandidatesWriter.hh"
 
 #include "KTEggHeader.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTWaterfallCandidateData.hh"
@@ -19,8 +19,8 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedRegistrar< KTWriter, KTOfficialCandidatesWriter > sOCWriterRegistrar("official-candidates-writer");
-    static KTDerivedRegistrar< KTProcessor, KTOfficialCandidatesWriter > sOCWProcRegistrar("official-candidates-writer");
+    static KTDerivedNORegistrar< KTWriter, KTOfficialCandidatesWriter > sOCWriterRegistrar("official-candidates-writer");
+    static KTDerivedNORegistrar< KTProcessor, KTOfficialCandidatesWriter > sOCWProcRegistrar("official-candidates-writer");
 
     KTOfficialCandidatesWriter::KTOfficialCandidatesWriter(const std::string& name) :
             KTWriter(name),

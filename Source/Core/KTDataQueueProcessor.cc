@@ -7,7 +7,7 @@
 
 #include "KTDataQueueProcessor.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 
 using boost::shared_ptr;
@@ -16,7 +16,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTDataQueueProcessor > sDQProcRegistrar("data-queue");
+    static KTDerivedNORegistrar< KTProcessor, KTDataQueueProcessor > sDQProcRegistrar("data-queue");
 
     KTDataQueueProcessor::KTDataQueueProcessor(const std::string& name) :
         KTDataQueueProcessorTemplate< KTDataQueueProcessor >(name),

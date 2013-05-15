@@ -5,8 +5,13 @@
         {
             "processor":
             {
-                "type": "sine-generator",
+                "type": "sinusoid-generator",
                 "name": "sg"
+            },
+            "processor":
+            {
+                "type": "windower",
+                "name": "windower"
             },
             "processor":
             {
@@ -34,7 +39,21 @@
             "connection":
             {
                 "signal-processor": "sg",
+                "signal-name": "header",
+                "slot-processor": "windower",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "sg",
                 "signal-name": "slice",
+                "slot-processor": "windower",
+                "slot-name": "ts-real"
+            },
+            "connection":
+            {
+                "signal-processor": "windower",
+                "signal-name": "windowed",
                 "slot-processor": "fft",
                 "slot-name": "ts"
             },
@@ -53,6 +72,14 @@
                 "slot-name": "fs-polar"
             },
             
+            "connection":
+            {
+                "signal-processor": "windower",
+                "signal-name": "windowed",
+                "slot-processor": "writer",
+                "slot-name": "ts"
+            },
+            
             "run-queue":
             {
                 "processor": "sg"
@@ -62,10 +89,22 @@
 
         "sg":
         {
+            "n-slices": 1,
+            "n-channels": 1,
             "time-series-size": 16384,
             "bin-width": 5.0e-9,
             "time-series-type": "real",
-            "signal-frequency": 50.0e6
+            "frequency": 50.0e6,
+            "amplitude": 1.0
+        },
+        
+        "windower":
+        {
+            "window-function-type": "rectangular",
+            "window-function":
+            {
+                "boxcar-size": 12000
+            }
         },
         
         "fft":

@@ -7,23 +7,23 @@
 
 #include "KTHammingWindow.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
+#include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
 
 #include <cmath>
 
+using std::string;
+
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTBundleWindowFunction, KTHammingWindow > sEWFHammRegistrar("hamming");
+    KTLOGGER(windowlog, "katydid.fft");
 
-    KTHammingWindow::KTHammingWindow() :
-            KTBundleWindowFunction()
-    {
-    }
+    static KTDerivedNORegistrar< KTWindowFunction, KTHammingWindow > sWFHammRegistrar("hamming");
 
-    KTHammingWindow::KTHammingWindow(const KTTimeSeriesData* tsData) :
-            KTBundleWindowFunction(tsData)
+    KTHammingWindow::KTHammingWindow(const string& name) :
+            KTWindowFunction(name)
     {
     }
 
@@ -31,21 +31,15 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHammingWindow::ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTHammingWindow::ConfigureWFSubclass(const KTPStoreNode* node)
     {
+        KTDEBUG(windowlog, "Hamming WF configured");
         return true;
     }
 
     Double_t KTHammingWindow::GetWeight(Double_t time) const
     {
-        if (fabs(time) <= fLength/2.) return fWindowFunction[KTMath::Nint((time+fLength/2.) / fBinWidth)];
-        return 0.;
-    }
-
-    Double_t KTHammingWindow::GetWeight(UInt_t bin) const
-    {
-        if (bin < fSize) return fWindowFunction[bin];
-        return 0.;
+        return GetWeight(KTMath::Nint(time / fBinWidth));
     }
 
     void KTHammingWindow::RebuildWindowFunction()

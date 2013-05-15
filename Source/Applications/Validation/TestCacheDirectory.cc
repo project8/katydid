@@ -26,7 +26,7 @@ int main()
 
     KTINFO(testlog, "Testing ./ (should pass if the current directory is read/writeable)");
     KTINFO(testlog, "Current cache directory is: " << cacheDir->GetPath());
-    KTWARN(testlog, "Is the cache directory OK? " << cacheDir->IsOkay());
+    KTWARN(testlog, "Is the cache directory OK? " << cacheDir->IsReady());
 
     KTINFO(testlog, "Testing ./TestCacheDirectory (should pass if ./TestCacheDirectory exists and is read/writeable)");
     if (! cacheDir->SetPath("./TestCacheDirectory"))
@@ -34,7 +34,7 @@ int main()
         KTERROR(testlog, "Error setting the path");
     }
     KTINFO(testlog, "Current cache directory is: " << cacheDir->GetPath());
-    KTWARN(testlog, "Is the cache directory OK? " << cacheDir->IsOkay());
+    KTWARN(testlog, "Is the cache directory OK? " << cacheDir->IsReady());
 
     KTINFO(testlog, "Testing /usr/local (should fail, assuming you're not running as root)");
     if (! cacheDir->SetPath("/usr/local"))
@@ -42,7 +42,7 @@ int main()
         KTERROR(testlog, "Error setting the path");
     }
     KTINFO(testlog, "Current cache directory is: " << cacheDir->GetPath());
-    KTWARN(testlog, "Is the cache directory OK? " << cacheDir->IsOkay());
+    KTWARN(testlog, "Is the cache directory OK? " << cacheDir->IsReady());
 
     return 0;
 }

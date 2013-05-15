@@ -8,7 +8,7 @@
 #include "KTCorrelator.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -25,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(corrlog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
+    static KTDerivedNORegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
 
     KTCorrelator::KTCorrelator(const std::string& name) :
             KTProcessor(name),

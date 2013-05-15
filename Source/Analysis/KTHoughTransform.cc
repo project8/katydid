@@ -7,7 +7,7 @@
 
 #include "KTHoughTransform.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
@@ -31,7 +31,7 @@ namespace Katydid
 {
     KTLOGGER(htlog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTHoughTransform > sHTRegistrar("hough-transform");
+    static KTDerivedNORegistrar< KTProcessor, KTHoughTransform > sHTRegistrar("hough-transform");
 
     KTHoughTransform::KTHoughTransform(const std::string& name) :
             KTProcessor(name),

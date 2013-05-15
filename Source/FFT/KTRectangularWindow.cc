@@ -7,22 +7,23 @@
 
 #include "KTRectangularWindow.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
+#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 #include <cmath>
 
+using std::string;
+
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTBundleWindowFunction, KTRectangularWindow > sEWFRectRegistrar("rectangular");
+    KTLOGGER(windowlog, "katydid.fft");
 
-    KTRectangularWindow::KTRectangularWindow() :
-            KTBundleWindowFunction()
-    {
-    }
+    static KTDerivedNORegistrar< KTWindowFunction, KTRectangularWindow > sWFRectRegistrar("rectangular");
 
-    KTRectangularWindow::KTRectangularWindow(const KTTimeSeriesData* tsData) :
-            KTBundleWindowFunction(tsData)
+    KTRectangularWindow::KTRectangularWindow(const string& name) :
+            KTWindowFunction(name),
+            fBoxcarSize(1)
     {
     }
 
@@ -30,29 +31,27 @@ namespace Katydid
     {
     }
 
-    Bool_t KTRectangularWindow::ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTRectangularWindow::ConfigureWFSubclass(const KTPStoreNode* node)
     {
+        SetBoxcarSize(node->GetData< UInt_t >("boxcar-size", fBoxcarSize));
+
+        KTDEBUG(windowlog, "Rectangular WF configured: boxcar size = " << fBoxcarSize);
         return true;
     }
 
     Double_t KTRectangularWindow::GetWeight(Double_t time) const
     {
-        if (fabs(time) <= fLength/2.) return 1.;
-        return 0.;
-    }
-
-    Double_t KTRectangularWindow::GetWeight(UInt_t bin) const
-    {
-        if (bin < fSize) return 1.;
+        if (fabs(time - 0.5 * fLength) <= 0.5 * Double_t(fBoxcarSize) * fBinWidth) return 1.;
         return 0.;
     }
 
     void KTRectangularWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        for (Int_t iBin=0; iBin < fSize; iBin++)
+        Double_t halfBW = 0.5 * fBinWidth;
+        for (UInt_t iBin=0; iBin < fSize; iBin++)
         {
-            fWindowFunction[iBin] = 1.;
+            fWindowFunction[iBin] = GetWeight(Double_t(iBin) * fBinWidth + halfBW);
         }
         return;
     }

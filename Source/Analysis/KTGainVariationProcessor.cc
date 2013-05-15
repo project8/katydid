@@ -7,7 +7,7 @@
 
 #include "KTGainVariationProcessor.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
@@ -30,7 +30,7 @@ namespace Katydid
 {
     KTLOGGER(gvlog, "katydid.analysis");
 
-    static KTDerivedRegistrar< KTProcessor, KTGainVariationProcessor > sGainVarRegistrar("gain-variation");
+    static KTDerivedNORegistrar< KTProcessor, KTGainVariationProcessor > sGainVarRegistrar("gain-variation");
 
     KTGainVariationProcessor::KTGainVariationProcessor(const std::string& name) :
             KTProcessor(name),

@@ -16,7 +16,7 @@ namespace Katydid
 {
     class KTPStoreNode;
 
-    class KTCacheDirectory : public KTDirectory, public KTSingleton< KTCacheDirectory >, public KTConfigurable
+    class KTCacheDirectory : public KTDirectory, public KTSingleton< KTCacheDirectory >, public KTSelfConfigurable
     {
         protected:
             friend class KTSingleton< KTCacheDirectory >;
@@ -25,27 +25,17 @@ namespace Katydid
             virtual ~KTCacheDirectory();
 
         public:
+            using KTSelfConfigurable::Configure;
+
             Bool_t Configure(const KTPStoreNode* node);
-            Bool_t PrepareForUse();
 
-            Bool_t IsOkay() const;
-
-            Bool_t GetPreparedForUse() const;
-
-        protected:
-            Bool_t fPreparedForUse;
-
+            Bool_t IsReady() const;
 
     };
 
-    inline Bool_t KTCacheDirectory::IsOkay() const
+    inline Bool_t KTCacheDirectory::IsReady() const
     {
         return fPathExists && fAccess == eReadWrite;
-    }
-
-    inline Bool_t KTCacheDirectory::GetPreparedForUse() const
-    {
-        return fPreparedForUse;
     }
 
 } /* namespace Katydid */

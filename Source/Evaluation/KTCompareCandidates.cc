@@ -7,7 +7,7 @@
 
 #include "KTCompareCandidates.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
@@ -19,7 +19,7 @@ using std::vector;
 
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTProcessor, KTCompareCandidates > sCompCandRegistrar("compare-candidates");
+    static KTDerivedNORegistrar< KTProcessor, KTCompareCandidates > sCompCandRegistrar("compare-candidates");
 
     KTLOGGER(cclog, "katydid.evaluate");
 

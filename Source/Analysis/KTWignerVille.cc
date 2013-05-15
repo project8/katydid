@@ -9,7 +9,7 @@
 
 #include "KTAnalyticAssociateData.hh"
 #include "KTEggHeader.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 //#include "KTSlidingWindowFFTW.hh"
 //#include "KTSlidingWindowFSData.hh"
@@ -29,7 +29,7 @@ using boost::shared_ptr;
 namespace Katydid
 {
 
-    static KTDerivedRegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
+    static KTDerivedNORegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
 
     KTWignerVille::KTWignerVille(const std::string& name) :
             KTProcessor(name),

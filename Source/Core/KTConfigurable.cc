@@ -8,11 +8,21 @@
 #include "KTConfigurable.hh"
 
 #include "KTCommandLineHandler.hh"
+#include "KTLogger.hh"
+#include "KTParameterStore.hh"
+
+using std::string;
 
 namespace Katydid
 {
 
-    KTConfigurable::KTConfigurable(const std::string& name) :
+    KTLOGGER(conflog, "katydid.core");
+
+    //******************
+    // KTConfigurable
+    //******************
+
+    KTConfigurable::KTConfigurable(const string& name) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
             fConfigName(name)
     {
@@ -20,6 +30,39 @@ namespace Katydid
 
     KTConfigurable::~KTConfigurable()
     {
+    }
+
+
+
+    //**********************
+    // KTSelfConfigurable
+    //**********************
+
+    KTSelfConfigurable::KTSelfConfigurable(const string& name) :
+            KTConfigurable(name),
+            fIsConfigured(false)
+    {
+    }
+
+    KTSelfConfigurable::~KTSelfConfigurable()
+    {
+    }
+
+    Bool_t KTSelfConfigurable::Configure()
+    {
+        if (fIsConfigured) return true;
+
+        KTPStoreNode* node = KTParameterStore::GetInstance()->GetNode(fConfigName);
+        if (node != NULL)
+        {
+            if (! this->Configure(node))
+            {
+                KTERROR(conflog, "An error occurred while configuring <" << fConfigName << ">");
+                return false;
+            }
+            fIsConfigured = IsReady();
+        }
+        return fIsConfigured;
     }
 
 } /* namespace Katydid */

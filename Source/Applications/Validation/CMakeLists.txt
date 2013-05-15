@@ -76,6 +76,9 @@ if (Katydid_ENABLE_TESTING)
                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
     target_link_libraries (TestParameterStore KatydidUtility KatydidCore ${LIBS})
     
+    add_executable (TestRandom ${CMAKE_CURRENT_SOURCE_DIR}/TestRandom.cc)
+    target_link_libraries (TestRandom KatydidUtility KatydidCore ${LIBS})
+    
     add_executable (TestSignalsAndSlots ${CMAKE_CURRENT_SOURCE_DIR}/TestSignalsAndSlots.cc
                                         ${CMAKE_CURRENT_SOURCE_DIR}/KTTestProcessor.cc
     )
@@ -103,6 +106,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestWignerVille ${CMAKE_CURRENT_SOURCE_DIR}/TestWignerVille.cc)
     target_link_libraries (TestWignerVille KatydidUtility KatydidCore KatydidData KatydidOutput KatydidAnalysis ${LIBS})
     
+    add_executable (TestWindowFunction ${CMAKE_CURRENT_SOURCE_DIR}/TestWindowFunction.cc)
+    target_link_libraries (TestWindowFunction KatydidUtility KatydidCore KatydidData KatydidFFT)
+    
     #add_executable (TestASCIIFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestASCIIFileWriter.cc)
     #target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidData KatydidOutput ${LIBS})
 
@@ -124,6 +130,7 @@ if (Katydid_ENABLE_TESTING)
                      TestMultiSliceClustering
                      TestOneShotJSONReader
                      TestParameterStore
+                     TestRandom
                      TestSignalsAndSlots
                      #TestSimpleClustering
                      TestSimpleFFT
@@ -132,6 +139,7 @@ if (Katydid_ENABLE_TESTING)
                      TestThroughputProfiler
                      TestVector
                      TestWignerVille
+                     TestWindowFunction
 #                    TestASCIIFileWriter
     )
              
@@ -153,6 +161,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_MultiSliceClustering TestMultiSliceClustering)
     add_test (Test_OneShotJSONReader TestOneShotJSONReader)
     add_test (Test_ParameterStore TestParameterStore)
+    add_test (Test_Random TestRandom)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     #add_test (Test_SimpleClustering TestSimpleClustering)
     add_test (Test_SimpleFFT TestSimpleFFT)

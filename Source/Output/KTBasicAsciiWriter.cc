@@ -1,15 +1,15 @@
 #include "KTBasicAsciiWriter.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 
 namespace Katydid {
 
   KTLOGGER(asciilog, "katydid.output.ascii");
   
-  static KTDerivedRegistrar< KTWriter, KTBasicASCIIWriter > 
+  static KTDerivedNORegistrar< KTWriter, KTBasicASCIIWriter > 
   sAWR("basic-ascii-writer");
 
-  static KTDerivedRegistrar< KTProcessor, KTBasicASCIIWriter > 
+  static KTDerivedNORegistrar< KTProcessor, KTBasicASCIIWriter > 
   sAPR("basic-ascii-writer");
 
   KTBasicASCIIWriter::KTBasicASCIIWriter(const std::string& name) :

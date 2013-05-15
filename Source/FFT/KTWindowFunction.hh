@@ -9,17 +9,17 @@
 #ifndef KTWINDOWFUNCTION_HH_
 #define KTWINDOWFUNCTION_HH_
 
-#include "Rtypes.h"
+#include "KTConfigurable.hh"
 
 #include <string>
+#include <vector>
 
-#ifdef ROOT_FOUND
 class TH1D;
-#endif
 
 namespace Katydid
 {
     class KTPStoreNode;
+    class KTTimeSeriesData;
 
     /*!
      @class KTWindowFunction
@@ -28,49 +28,98 @@ namespace Katydid
      @brief Abstract base class for window functions
 
      @details
-     Name for specifying this window function: rectangular
-
      Available configuration values:
-     \li \c length -- length of the window in time units
-     \li \c bin_width -- length of the each bin in time units
-     \li \c size -- number of bins in the window
-
-     @note
-     The width of the function will always be adjusted to make an integral number of bins, given the bin width.
-     The bin width is always fixed to what the user specifies.
-     The window is centered around 0; there will always be an equal number of bins above and below 0.
-     However, the bin numbering starts with 0 at the _left edge_ of the window! (i.e. negative bins are to the left of the window)
-
+      none
     */
 
-    class KTWindowFunction
+   class KTWindowFunction : public KTConfigurable
     {
+        protected:
+            enum ParameterName
+            {
+                kBinWidth,
+                kSize,
+                kLength
+            };
+
         public:
-            KTWindowFunction();
+            KTWindowFunction(const std::string& name = "generic-window-function");
             virtual ~KTWindowFunction();
 
-            Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t ConfigureWindowFunctionSubclass(const KTPStoreNode* node) = 0;
+            virtual Bool_t Configure(const KTPStoreNode* node);
+            virtual Bool_t ConfigureWFSubclass(const KTPStoreNode* node) = 0;
 
-            virtual Double_t GetWeight(Double_t) const = 0;
-            virtual Double_t GetWeight(UInt_t) const = 0;
+            /// Sets fBinWidth to bundle->GetBinWidth(), and adapts the length to be the integral number of bins closest to the current fLength.
+            /// Returns the adapted length.
+            /// If you also need to set the length, it is recommended that you use AdaptTo(const TBundle*, Double_t) instead of separately setting the length.
+            Double_t AdaptTo(const KTTimeSeriesData* tsData);
+
+            virtual Double_t GetWeight(Double_t time) const = 0;
+            Double_t GetWeight(UInt_t bin) const;
 
 #ifdef ROOT_FOUND
-            virtual TH1D* CreateHistogram(const std::string& name) const = 0;
-            virtual TH1D* CreateHistogram() const = 0;
-            virtual TH1D* CreateFrequencyResponseHistogram(const std::string& name) const = 0;
-            virtual TH1D* CreateFrequencyResponseHistogram() const = 0;
+            TH1D* CreateHistogram(const std::string& name = "hWindowFunction") const;
+            TH1D* CreateFrequencyResponseHistogram(const std::string& name = "hWFFrequencyResponse") const;
 #endif
 
-            virtual Double_t GetLength() const = 0;
-            virtual UInt_t GetSize() const = 0;
-            virtual Double_t GetBinWidth() const = 0;
+            Double_t GetLength() const;
+            Double_t GetBinWidth() const;
+            UInt_t GetSize() const;
 
-            virtual Double_t SetLength(Double_t) = 0;
-            virtual Double_t SetBinWidth(Double_t) = 0;
-            virtual Double_t SetSize(UInt_t) = 0;
+            /// Sets fLength to length, and adapts the bin width to be an integral number of bins closest to the current bw.
+            /// Returns the adapted bin width.
+            /// NOTE: this changes the size of the window!
+            Double_t SetLength(Double_t length);
+            /// Sets fBinWidth to bw, and adapts the length to be the integral number of bins closest to the current fLength.
+            /// Returns the adapted length.
+            /// NOTE: this changes the size of the window!
+            Double_t SetBinWidth(Double_t bw);
+            /// Adapts the given length (length) to the be an integer multiple of the given bin width (bw).
+            /// Returns the adapted length.
+            /// NOTE: this changes the size of the window!
+            Double_t SetBinWidthAndLength(Double_t bw, Double_t length);
+            /// Adapts the given bin width to be an integer divisor of the given length (length)
+            /// Returns the adapted bin width.
+            /// NOTE: this changes the size of the window!
+            Double_t SetLengthAndBinWidth(Double_t length, Double_t bw);
+            /// Sets the number of bins; leaves fBinWidth as is, and sets fLength accordingly.
+            /// Returns the adapted length.
+            /// NOTE: this changes the size of the window! (duh)
+            Double_t SetSize(UInt_t size);
+
+            virtual void RebuildWindowFunction() = 0;
+
+        protected:
+            std::vector< Double_t > fWindowFunction;
+
+            Double_t fLength;
+            Double_t fBinWidth;
+            UInt_t fSize;
+
+            ParameterName fLastSetParameter;
 
     };
+
+   inline Double_t KTWindowFunction::GetWeight(UInt_t bin) const
+   {
+       return bin < fSize ? fWindowFunction[bin] : 0.;
+   }
+
+   inline Double_t KTWindowFunction::GetLength() const
+   {
+       return fLength;
+   }
+
+   inline UInt_t KTWindowFunction::GetSize() const
+   {
+       return fSize;
+   }
+
+   inline Double_t KTWindowFunction::GetBinWidth() const
+   {
+       return fBinWidth;
+   }
+
 
 } /* namespace Katydid */
 #endif /* KTWINDOWFUNCTION_HH_ */

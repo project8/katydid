@@ -9,7 +9,7 @@
 
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -25,7 +25,7 @@ using boost::shared_ptr;
 namespace Katydid
 {
 
-    static KTDerivedRegistrar< KTProcessor, KTComplexFFTW > sComplexFFTWRegistrar("complex-fftw");
+    static KTDerivedNORegistrar< KTProcessor, KTComplexFFTW > sComplexFFTWRegistrar("complex-fftw");
 
     KTComplexFFTW::KTComplexFFTW(const std::string& name) :
             KTFFT(),
@@ -72,7 +72,7 @@ namespace Katydid
 
         if (fUseWisdom)
         {
-            if (! KTCacheDirectory::GetInstance()->PrepareForUse())
+            if (! KTCacheDirectory::GetInstance()->Configure())
             {
                 KTWARN(fftlog_comp, "Unable to use wisdom because cache directory is not ready.");
                 fUseWisdom = false;

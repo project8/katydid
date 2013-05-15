@@ -7,23 +7,23 @@
 
 #include "KTHannWindow.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
+#include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
 
 #include <cmath>
 
+using std::string;
+
 namespace Katydid
 {
-    static KTDerivedRegistrar< KTBundleWindowFunction, KTHannWindow > sEWFHannRegistrar("hann");
+    static KTDerivedNORegistrar< KTWindowFunction, KTHannWindow > sWFHannRegistrar("hann");
 
-    KTHannWindow::KTHannWindow() :
-            KTBundleWindowFunction()
-    {
-    }
+    KTLOGGER(windowlog, "katydid.fft");
 
-    KTHannWindow::KTHannWindow(const KTTimeSeriesData* tsData) :
-            KTBundleWindowFunction(tsData)
+    KTHannWindow::KTHannWindow(const string& name) :
+            KTWindowFunction(name)
     {
     }
 
@@ -31,21 +31,15 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHannWindow::ConfigureBundleWindowFunctionSubclass(const KTPStoreNode* node)
+    Bool_t KTHannWindow::ConfigureWFSubclass(const KTPStoreNode* node)
     {
+        KTDEBUG(windowlog, "Hann WF configured");
         return true;
     }
 
     Double_t KTHannWindow::GetWeight(Double_t time) const
     {
-        if (fabs(time) <= fLength/2.) return fWindowFunction[KTMath::Nint((time+fLength/2.) / fBinWidth)];
-        return 0.;
-    }
-
-    Double_t KTHannWindow::GetWeight(UInt_t bin) const
-    {
-        if (bin < fSize) return fWindowFunction[bin];
-        return 0.;
+        return GetWeight(KTMath::Nint(time / fBinWidth));
     }
 
     void KTHannWindow::RebuildWindowFunction()

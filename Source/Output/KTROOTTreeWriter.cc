@@ -7,7 +7,7 @@
 
 #include "KTROOTTreeWriter.hh"
 
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
@@ -22,8 +22,8 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedRegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
-    static KTDerivedRegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
+    static KTDerivedNORegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
+    static KTDerivedNORegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
 
     KTROOTTreeWriter::KTROOTTreeWriter(const std::string& name) :
             KTWriterWithTypists< KTROOTTreeWriter >(name),

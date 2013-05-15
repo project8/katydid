@@ -15,7 +15,7 @@
 #include "KTBiasedACM.hh"
 #include "KTProcessor.hh"
 #include "KTLogger.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 
 #include "KTPStoreNode.hh"
 #include "KTSlot.hh"
