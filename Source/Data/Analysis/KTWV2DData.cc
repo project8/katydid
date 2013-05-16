@@ -5,20 +5,21 @@
  *      Author: nsoblath
  */
 
-#include "KTWignerVilleData.hh"
+#include "KTWV2DData.hh"
 
 
 namespace Katydid
 {
-    KTWignerVilleData::KTWignerVilleData() :
-            KTFrequencySpectrumDataFFTWCore(),
-            KTExtensibleData< KTWignerVilleData >(),
+    KTWV2DData::KTWV2DData() :
+            //KTTimeFrequencyDataFFTWCore(),
+            KTTimeFrequencyDataPolarCore(),
+            KTExtensibleData< KTWV2DData >(),
             fWVComponentData(1)
     {}
-    KTWignerVilleData::~KTWignerVilleData()
+    KTWV2DData::~KTWV2DData()
     {}
 
-    KTWignerVilleData& KTWignerVilleData::SetNComponents(UInt_t components)
+    KTWV2DData& KTWV2DData::SetNComponents(UInt_t components)
     {
         UInt_t oldSize = fSpectra.size();
         fSpectra.resize(components);

@@ -13,7 +13,7 @@
 #include "KTTimeFrequencyPolar.hh"
 
 #ifdef ROOT_FOUND
-#include "TH1.h"
+#include "TH2.h"
 #endif
 
 #include <vector>
@@ -44,10 +44,10 @@ namespace Katydid
 
 #ifdef ROOT_FOUND
         public:
-            //TH1D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hTimeFrequencyMag") const;
-            //TH1D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hTimeFrequencyPhase") const;
+            TH2D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hTimeFrequencyMag") const;
+            TH2D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hTimeFrequencyPhase") const;
 
-            TH1D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hTimeFrequencyPower") const;
+            TH2D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hTimeFrequencyPower") const;
 
             //TH1D* CreatePowerDistributionHistogram(UInt_t component = 0, const std::string& name = "hTimeFrequencyPowerDist") const;
 #endif
@@ -86,17 +86,15 @@ namespace Katydid
     }
 
 #ifdef ROOT_FOUND
-    /*
-    inline TH1D* KTTimeFrequencyDataPolarCore::CreateMagnitudeHistogram(UInt_t component, const std::string& name) const
+    inline TH2D* KTTimeFrequencyDataPolarCore::CreateMagnitudeHistogram(UInt_t component, const std::string& name) const
     {
         return fSpectra[component]->CreateMagnitudeHistogram(name);
     }
-    inline TH1D* KTTimeFrequencyDataPolarCore::CreatePhaseHistogram(UInt_t component, const std::string& name) const
+    inline TH2D* KTTimeFrequencyDataPolarCore::CreatePhaseHistogram(UInt_t component, const std::string& name) const
     {
         return fSpectra[component]->CreatePhaseHistogram(name);
     }
-    */
-    inline TH1D* KTTimeFrequencyDataPolarCore::CreatePowerHistogram(UInt_t component, const std::string& name) const
+    inline TH2D* KTTimeFrequencyDataPolarCore::CreatePowerHistogram(UInt_t component, const std::string& name) const
     {
         return fSpectra[component]->CreatePowerHistogram(name);
     }
