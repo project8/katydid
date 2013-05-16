@@ -64,6 +64,7 @@ namespace Katydid
         public:
             void WriteWignerVilleData(boost::shared_ptr<KTData> data);
             void WriteWignerVilleDataDistribution(boost::shared_ptr<KTData> data);
+            void WriteWV2DData(boost::shared_ptr<KTData> data);
 
     };
 

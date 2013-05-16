@@ -16,7 +16,9 @@
 #include "KTNormalizedFSData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
+#include "KTTimeFrequencyPolar.hh"
 #include "KTWignerVilleData.hh"
+#include "KTWV2DData.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -395,6 +397,40 @@ namespace Katydid
                 string histName;
                 conv >> histName;
                 TH1D* corrHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
+                stringstream titleStream;
+                titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
+                        "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
+                corrHist->SetTitle(titleStream.str().c_str());
+                corrHist->SetDirectory(fWriter->GetFile());
+                corrHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteWV2DData(boost::shared_ptr<KTData> data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTWV2DData& wvData = data->Of<KTWV2DData>();
+        UInt_t nComponents = wvData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        {
+            //const KTTimeFrequencyFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
+            const KTTimeFrequencyPolar* spectrum = wvData.GetSpectrumPolar(iPair);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histWV_" << sliceNumber << "_" << iPair;
+                string histName;
+                conv >> histName;
+                TH2D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
                         "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
