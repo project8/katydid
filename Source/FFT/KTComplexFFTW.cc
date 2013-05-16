@@ -7,6 +7,7 @@
 
 #include "KTComplexFFTW.hh"
 
+#include "KTAnalyticAssociateData.hh"
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
@@ -44,6 +45,7 @@ namespace Katydid
             fFFTReverseSignal("fft-reverse", this),
             fHeaderSlot("header", this, &KTComplexFFTW::InitializeWithHeader),
             fTimeSeriesSlot("ts", this, &KTComplexFFTW::TransformData, &fFFTForwardSignal),
+            fAASlot("aa", this, &KTComplexFFTW::TransformData, &fFFTForwardSignal),
             fFSFFTWSlot("fs-fftw", this, &KTComplexFFTW::TransformData, &fFFTReverseSignal)
     {
         SetupInternalMaps();
@@ -152,6 +154,50 @@ namespace Katydid
     }
 
     Bool_t KTComplexFFTW::TransformData(KTTimeSeriesData& tsData)
+    {
+        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetSize())
+        {
+            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
+            InitializeFFT();
+        }
+
+        if (! fIsInitialized)
+        {
+            KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
+                    << "   Please first call InitializeFFT(), then perform the transform.");
+            return NULL;
+        }
+
+        UInt_t nComponents = tsData.GetNComponents();
+
+        KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
+
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
+            if (nextInput == NULL)
+            {
+                KTERROR(fftlog_comp, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
+                return false;
+            }
+
+            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
+
+            if (nextResult == NULL)
+            {
+                KTERROR(fftlog_comp, "Channel <" << iComponent << "> did not transform correctly.");
+                return false;
+            }
+            KTDEBUG(fftlog_comp, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
+            newData.SetSpectrum(nextResult, iComponent);
+        }
+
+        KTINFO(fftlog_comp, "FFT complete; " << nComponents << " channel(s) transformed");
+
+        return true;
+    }
+
+    Bool_t KTComplexFFTW::TransformData(KTAnalyticAssociateData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetSize())
         {
