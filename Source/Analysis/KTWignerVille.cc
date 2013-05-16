@@ -69,7 +69,7 @@ namespace Katydid
 
     void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
     {
-        UInt_t nBins = /*2 */ header->GetSliceSize();
+        UInt_t nBins = header->GetSliceSize();
         fFFT->SetSize(nBins);
         fFFT->InitializeFFT();
         delete fInputArray;

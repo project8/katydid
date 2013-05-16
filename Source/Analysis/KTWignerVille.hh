@@ -195,15 +195,15 @@ namespace Katydid
             UInt_t firstChannel = (*pairIt).first;
             UInt_t secondChannel = (*pairIt).second;
 
-	    //	    for(UInt_t offset = 0; offset < timeSeries[firstChannel]->size(); offset++) {
-	      CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], 256);
-	      KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
-	      //	    }
+	    for(UInt_t offset = 0; offset < timeSeries[firstChannel]->size(); offset++) {
+	      CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], offset);
+	      (this->fColumns).at(offset) = fFFT->Transform(fInputArray);
+	    }
 
             // why was this put here, cutting the frequency range in half?
             //newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
 
-	    newData.SetSpectrum(newSpectrum, iPair);
+	    newData.SetSpectrum((this->fColumns).at(0), iPair);
 	    newData.SetInputPair(firstChannel, secondChannel, iPair);
             iPair++;
         }
