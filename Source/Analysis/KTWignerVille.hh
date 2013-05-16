@@ -19,6 +19,7 @@
 #include "KTPStoreNode.hh"
 #include "KTSlot.hh"
 #include "KTWignerVilleData.hh"
+#include "KTTimeSeriesFFTW.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -105,6 +106,7 @@ namespace Katydid
             Bool_t TransformFFTWBasedData(XDataType& data);
 
             void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+      void CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
 
             //***************
              // Signals
@@ -191,14 +193,16 @@ namespace Katydid
             UInt_t firstChannel = (*pairIt).first;
             UInt_t secondChannel = (*pairIt).second;
 
-            CrossMultiplyToInputArray(timeSeries[firstChannel], timeSeries[secondChannel], 0);
+	    for(UInt_t offset = 0; offset < timeSeries[firstChannel]->size(); offset++) {
+	      CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], offset);
+	      //	      KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
+	    }
 
-            KTFrequencySpectrumFFTW* newSpectrum = fFFT->Transform(fInputArray);
             // why was this put here, cutting the frequency range in half?
             //newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
 
-            newData.SetSpectrum(newSpectrum, iPair);
-            newData.SetInputPair(firstChannel, secondChannel, iPair);
+	    //            newData.SetSpectrum(newSpectrum, iPair);
+	    //            newData.SetInputPair(firstChannel, secondChannel, iPair);
             iPair++;
         }
         KTINFO(wvlog, "Completed WV transform of " << iPair << " pairs");

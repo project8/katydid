@@ -87,6 +87,41 @@ namespace Katydid
         return TransformFFTWBasedData(data);
     }
 
+  void KTWignerVille::CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
+  {
+    UInt_t size = data1->size();
+    if (fInputArray->size() != size) {
+      delete fInputArray;
+      fInputArray = new KTTimeSeriesFFTW(size, 
+					 data1->GetRangeMin(), 
+					 data1->GetRangeMax() + 0.5 * data1->GetBinWidth());
+      KTWARN(wvlog, "Setting the input array size to " << size);
+    }
+    else {
+      fInputArray->SetRange(data1->GetRangeMin(), data1->GetRangeMax());
+    }
+
+    // Now calculate the lagged ACF at all possible lags.
+    register double t1_real;
+    register double t1_imag;
+    register double t2_real;
+    register double t2_imag;
+    register UInt_t tau_plus = size - 1;
+    register UInt_t tau_minus = 0;
+    for(UInt_t freq_bin = 0; freq_bin < size; freq_bin++) {
+      t1_real = (*data1)(offset + tau_minus)[0];
+      t1_imag = (*data1)(offset + tau_minus)[1];
+      t2_real = (*data2)(offset + tau_plus)[0];
+      t2_imag = (*data2)(offset + tau_plus)[1];
+      
+      (*fInputArray)(freq_bin)[0] = t1_real * t2_real + t1_imag * t2_imag;
+      (*fInputArray)(freq_bin)[1] = t1_imag * t2_real - t1_real * t2_imag;
+	
+      tau_minus++;
+      tau_plus--;
+    }    
+  }
+
     void KTWignerVille::CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
     {
         UInt_t size = data1->size();
