@@ -92,7 +92,9 @@ namespace Katydid
             PairVector fPairs;
 
             KTComplexFFTW* fFFT;
+      std::vector<KTFrequencySpectrumFFTW*> fColumns;
             KTTimeSeriesFFTW* fInputArray;
+      
 
 
         public:

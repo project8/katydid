@@ -34,6 +34,7 @@ namespace Katydid
     KTWignerVille::KTWignerVille(const std::string& name) :
             KTProcessor(name),
             fFFT(new KTComplexFFTW()),
+	    fColumns(0),
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
             fWVSignal("wigner-ville", this),
             fHeaderSlot("header", this, &KTWignerVille::InitializeWithHeader),
@@ -74,6 +75,8 @@ namespace Katydid
         delete fInputArray;
         // the min/max range for the input array don't matter, so just use 0 and 1
         fInputArray = new KTTimeSeriesFFTW(nBins, 0., 1.);
+	// reserve enough space for all of the delay columns
+	fColumns.resize(nBins);
         return;
     }
 
