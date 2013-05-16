@@ -10,6 +10,7 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTHoughData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTNormalizedFSData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWV2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWignerVilleData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidateData.hh
@@ -31,6 +32,7 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTPowerSpectrum.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequency.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.hh
 )
 
@@ -43,6 +45,7 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTHoughData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTNormalizedFSData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWV2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWignerVilleData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidateData.cc
@@ -64,6 +67,7 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTPowerSpectrum.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequency.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.cc
 )
 
