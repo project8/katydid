@@ -31,6 +31,7 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTPowerSpectrum.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTMultiFSDataPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequency.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.hh
@@ -65,6 +66,7 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumPolar.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTMultiFSDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTPowerSpectrum.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequency.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.cc
