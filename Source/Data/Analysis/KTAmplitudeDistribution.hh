@@ -45,7 +45,7 @@ namespace Katydid
 
             /// Clear distributions and initialize new vectors with NULL distribution pointers
             Bool_t InitializeNull(UInt_t nComponents, UInt_t nFreqBins);
-            /// Clear distributions and initalize new vectors with new, uniform, distributions pointers
+            /// Clear distributions and initialize new vectors with new, uniform, distributions pointers
             Bool_t InitializeNew(UInt_t nComponents, UInt_t nFreqBins, UInt_t distNBins, UInt_t distMin, UInt_t distMax);
             /// Initialize a single new distribution (only removes the specified distribution, if it already exists)
             Bool_t InitializeADistribution(UInt_t component, UInt_t freqBin, UInt_t distNBins, UInt_t distMin, UInt_t distMax);
