@@ -59,6 +59,7 @@ namespace Katydid
         fWriter->RegisterSlot("gain-var", this, &KTBasicROOTTypeWriterAnalysis::WriteGainVariationData);
         fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData);
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution);
+        fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterAnalysis::WriteWV2DData);
         return;
     }
 
@@ -409,36 +410,27 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteWV2DData(boost::shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteWV2DData(shared_ptr<KTData> data)
     {
         if (! data) return;
 
         ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
-        KTWV2DData& wvData = data->Of<KTWV2DData>();
-        UInt_t nComponents = wvData.GetNComponents();
+        KTWV2DData& fsData = data->Of<KTWV2DData>();
+        UInt_t nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        for (unsigned iPlot = 0; iPlot < nComponents; iPlot++)
         {
-            //const KTTimeFrequencyFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
-            const KTTimeFrequencyPolar* spectrum = wvData.GetSpectrumPolar(iPair);
-            if (spectrum != NULL)
-            {
-                stringstream conv;
-                conv << "histWV_" << sliceNumber << "_" << iPair;
-                string histName;
-                conv >> histName;
-                TH2D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
-                stringstream titleStream;
-                titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
-                        "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
-                corrHist->SetTitle(titleStream.str().c_str());
-                corrHist->SetDirectory(fWriter->GetFile());
-                corrHist->Write();
-                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
-            }
+            stringstream conv;
+            conv << "histWV2D_" << sliceNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH2D* mfsHist = fsData.CreateMagnitudeHistogram(iPlot, histName);
+            mfsHist->SetDirectory(fWriter->GetFile());
+            mfsHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
         return;
     }

@@ -15,8 +15,8 @@ namespace Katydid
     class KTData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
-    //class KTSlidingWindowFSData;
-    //class KTSlidingWindowFSDataFFTW;
+    class KTMultiFSDataPolar;
+    class KTMultiFSDataFFTW;
 
     class KTBasicROOTTypeWriterFFT : public KTBasicROOTTypeWriter
     {
@@ -55,13 +55,11 @@ namespace Katydid
 
 
             //************************
-            // Sliding Window Data
+            // Multi-FS Data
             //************************
-/*
         public:
-            void WriteSlidingWindowFSData(const KTSlidingWindowFSData* data);
-            void WriteSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
-*/
+            void WriteMultiFSDataPolar(boost::shared_ptr<KTData> data);
+            void WriteMultiFSDataFFTW(boost::shared_ptr<KTData> data);
     };
 
 } /* namespace Katydid */

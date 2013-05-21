@@ -50,7 +50,6 @@ namespace Katydid
             virtual TH2D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hMultiFSPower") const;
 #endif
 
-
     };
 
     inline const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTMultiFSDataFFTWCore::GetSpectra(UInt_t component) const
@@ -106,7 +105,7 @@ namespace Katydid
     class KTMultiFSDataFFTW : public KTMultiFSDataFFTWCore, public KTExtensibleData< KTMultiFSDataFFTW >
     {
         public:
-        KTMultiFSDataFFTW();
+            KTMultiFSDataFFTW();
             virtual ~KTMultiFSDataFFTW();
 
             KTMultiFSDataFFTW& SetNComponents(UInt_t component);

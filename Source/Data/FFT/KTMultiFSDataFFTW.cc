@@ -15,8 +15,9 @@ namespace Katydid
 {
 
     KTMultiFSDataFFTWCore::KTMultiFSDataFFTWCore() :
-            fSpectra(0)
+            fSpectra(1)
     {
+        fSpectra[0] = NULL;
     }
 
     KTMultiFSDataFFTWCore::~KTMultiFSDataFFTWCore()
@@ -117,7 +118,7 @@ namespace Katydid
  #endif
 
     KTMultiFSDataFFTW::KTMultiFSDataFFTW() :
-        KTMultiFSDataFFTWCore(),
+            KTMultiFSDataFFTWCore(),
             KTExtensibleData< KTMultiFSDataFFTW >()
     {
     }
@@ -143,8 +144,6 @@ namespace Katydid
         }
         return *this;
     }
-
-
 
 } /* namespace Katydid */
 
