@@ -76,7 +76,7 @@ set (KATYDID_LIBS
 #endif (ROOT_FOUND)
 
 add_library (KatydidOutput ${OUTPUT_SOURCEFILES})
-target_link_libraries (KatydidOutput ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidOutput ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${OUTPUT_HEADERFILES})
 pbuilder_install_libraries (KatydidOutput)
