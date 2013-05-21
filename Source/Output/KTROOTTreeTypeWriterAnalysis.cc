@@ -75,7 +75,7 @@ namespace Katydid
             {
                 stringstream name;
                 name << "histAmpDist_" << fAmpDistData.fComponent << "_" << fAmpDistData.fFreqBin;
-                KTAmplitudeDistribution::Distribution& dist = adData.GetDistribution(fAmpDistData.fFreqBin, fAmpDistData.fComponent);
+                const KTAmplitudeDistribution::Distribution& dist = adData.GetDistribution(fAmpDistData.fFreqBin, fAmpDistData.fComponent);
                 UInt_t nBins = dist.size();
                 fAmpDistData.fDistribution = new TH1D(name.str().c_str(), "Amplitude Distribution", (Int_t)nBins, dist.GetRangeMin(), dist.GetRangeMax());
                 for (UInt_t iBin=0; iBin<nBins; iBin++)
@@ -105,7 +105,7 @@ namespace Katydid
 
         fAmpDistTree->Branch("Component", &fAmpDistData.fComponent, "fComponent/s");
         fAmpDistTree->Branch("FreqBin", &fAmpDistData.fFreqBin, "fFreqBin/l");
-        fAmpDistTree->Branch("Distribution", &fAmpDistTree.fDistribution, 32000, 0);
+        fAmpDistTree->Branch("Distribution", &fAmpDistData.fDistribution, 32000, 0);
 
         return true;
     }

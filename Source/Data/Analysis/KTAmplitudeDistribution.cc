@@ -55,6 +55,11 @@ namespace Katydid
             KTERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component << ", or it hasn't been initialized");
             return;
         }
+        if (iDistBin > fDistributions[component][freqBin]->size())
+        {
+            KTERROR(datalog, "Data does not contain dist bin " << iDistBin);
+            return;
+        }
 #endif
         (*fDistributions[component][freqBin])(iDistBin) = (*fDistributions[component][freqBin])(iDistBin) + weight;
         return;
@@ -90,6 +95,8 @@ namespace Katydid
             KTERROR(datalog, "Data does not contain frequency bin " << freqBin << " for component " << component);
             return false;
         }
+        KTDEBUG(datalog, "Initializing distribution for component " << component << ", frequency bin " << freqBin << ", (" << distNBins << ", " << distMin << ", " << distMax << ")");
+        delete fDistributions[component][freqBin];
         fDistributions[component][freqBin] = new Distribution(distNBins, distMin, distMax);
         return true;
     }

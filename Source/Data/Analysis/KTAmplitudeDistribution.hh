@@ -84,7 +84,12 @@ namespace Katydid
 
     inline Bool_t KTAmplitudeDistribution::InitializeNull(UInt_t nComponents, UInt_t nFreqBins)
     {
-        fDistributions.resize(nComponents, ComponentDistributions(nFreqBins, NULL));
+        //fDistributions.resize(nComponents, ComponentDistributions(nFreqBins, NULL));
+        fDistributions.resize(nComponents);
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            fDistributions[iComponent].resize(nFreqBins, NULL);
+        }
         return true;
     }
 

@@ -38,10 +38,10 @@ namespace Katydid
      @class KTAmplitudeDistributor
      @author N. S. Oblath
 
-     @brief .
+     @brief Collects distributions of amplitudes for each frequency bin over many slices.
 
      @details
-
+     Config name: "amplitude-distributor"
 
      Available configuration values:
      - "min-frequency": double -- minimum frequency
@@ -139,13 +139,13 @@ namespace Katydid
             Bool_t CoreAddValues(KTFrequencySpectrumDataPolarCore& data);
             Bool_t CoreAddValues(KTFrequencySpectrumDataFFTWCore& data);
 
-            void (KTAmplitudeDistributor::*fTakeValuesPolar)(const KTFrequencySpectrumPolar*, UInt_t);
-            void TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, UInt_t component);
-            void TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, UInt_t component);
+            Bool_t (KTAmplitudeDistributor::*fTakeValuesPolar)(const KTFrequencySpectrumPolar*, UInt_t);
+            Bool_t TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, UInt_t component);
+            Bool_t TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, UInt_t component);
 
-            void (KTAmplitudeDistributor::*fTakeValuesFFTW)(const KTFrequencySpectrumFFTW*, UInt_t);
-            void TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, UInt_t component);
-            void TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, UInt_t component);
+            Bool_t (KTAmplitudeDistributor::*fTakeValuesFFTW)(const KTFrequencySpectrumFFTW*, UInt_t);
+            Bool_t TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, UInt_t component);
+            Bool_t TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, UInt_t component);
 
             Bool_t CreateDistributionsEmpty();
             Bool_t CreateDistributionsFromBuffer();

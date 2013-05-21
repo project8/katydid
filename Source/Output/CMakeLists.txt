@@ -25,6 +25,7 @@ if (ROOT_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterEgg.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterFFT.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterAnalysis.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.hh
     )
 endif (ROOT_FOUND)
@@ -53,6 +54,7 @@ if (ROOT_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterEgg.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterFFT.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterAnalysis.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.cc
     )
 endif (ROOT_FOUND)
