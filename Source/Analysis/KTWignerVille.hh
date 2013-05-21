@@ -9,7 +9,6 @@
 #ifndef KTWIGNERVILLE_HH_
 #define KTWIGNERVILLE_HH_
 
-#include "KTFFT.hh"
 #include "KTProcessor.hh"
 
 #include "KTComplexFFTW.hh"
@@ -18,7 +17,7 @@
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlot.hh"
-#include "KTWignerVilleData.hh"
+#include "KTWV2DData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -35,14 +34,7 @@ namespace Katydid
     class KTComplexFFTW;
     class KTData;
     class KTEggHeader;
-    //class KTFrequencySpectrumPolar;
-    //class KTFrequencySpectrumDataFFTW;
-    //class KTFrequencySpectrumFFTW;
-    //class KTSlidingWindowFFTW;
-    //class KTSlidingWindowFSData;
-    //class KTSlidingWindowFSDataFFTW;
     class KTTimeSeriesData;
-    class KTTimeSeriesFFTW;
 
     /*!
      @class KTWignerVille
@@ -107,7 +99,7 @@ namespace Katydid
             template< class XDataType >
             Bool_t TransformFFTWBasedData(XDataType& data);
 
-            void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+            //void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
             void CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
 
             //***************
@@ -186,7 +178,7 @@ namespace Katydid
 
             UInt_t nPairs = fPairs.size();
 
-            KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nPairs);
+            KTWV2DData& newData = data.template Of< KTWV2DData >().SetNComponents(nPairs);
 
             // Do WV transform for each pair
             UInt_t iPair = 0;
@@ -195,10 +187,16 @@ namespace Katydid
                 UInt_t firstChannel = (*pairIt).first;
                 UInt_t secondChannel = (*pairIt).second;
 
-                for(UInt_t offset = 0; offset < timeSeries[firstChannel]->size(); offset++)
+                UInt_t nOffsets = timeSeries[firstChannel]->size();
+                Double_t timeBW = timeSeries[firstChannel]->GetBinWidth();
+
+                newData.SetInputPair(firstChannel, secondChannel, iPair);
+                newData.SetSpectra(new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nOffsets, -0.5 * timeBW, timeBW * (Double_t(nOffsets) - 0.5)), iPair);
+
+                for(UInt_t offset = 0; offset < nOffsets; offset++)
                 {
                     CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], offset);
-                    (this->fColumns).at(offset) = fFFT->Transform(fInputArray);
+                    newData.SetSpectrum(fFFT->Transform(fInputArray), offset, iPair);
                 }
 
                 // why was this put here, cutting the frequency range in half?
