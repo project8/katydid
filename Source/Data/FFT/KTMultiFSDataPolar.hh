@@ -106,7 +106,7 @@ namespace Katydid
     class KTMultiFSDataPolar : public KTMultiFSDataPolarCore, public KTExtensibleData< KTMultiFSDataPolar >
     {
         public:
-        KTMultiFSDataPolar();
+            KTMultiFSDataPolar();
             virtual ~KTMultiFSDataPolar();
 
             KTMultiFSDataPolar& SetNComponents(UInt_t component);

@@ -9,13 +9,11 @@
 #ifndef KTWV2DDATA_HH_
 #define KTWV2DDATA_HH_
 
-//#include "KTTimeFrequencyDataFFTW.hh"
-#include "KTTimeFrequencyDataPolar.hh"
+#include "KTMultiFSDataFFTW.hh"
 
 namespace Katydid
 {
-    //class KTWV2DData : public KTTimeFrequencyDataFFTWCore, public KTExtensibleData< KTWV2DData >
-    class KTWV2DData : public KTTimeFrequencyDataPolarCore, public KTExtensibleData< KTWV2DData >
+    class KTWV2DData : public KTMultiFSDataFFTWCore, public KTExtensibleData< KTWV2DData >
     {
         public:
             KTWV2DData();
@@ -25,7 +23,7 @@ namespace Katydid
 
             void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0);
 
-            virtual KTWV2DData& SetNComponents(UInt_t components);
+            KTWV2DData& SetNComponents(UInt_t component);
 
         protected:
             std::vector< std::pair< UInt_t, UInt_t > > fWVComponentData;
