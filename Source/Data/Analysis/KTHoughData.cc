@@ -31,6 +31,27 @@ namespace Katydid
         }
     }
 
+    KTHoughData& KTHoughData::SetNComponents(UInt_t components)
+    {
+        UInt_t oldSize = fTransforms.size();
+        // if components < oldSize
+        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        {
+            for (UInt_t iTransform = 0; iTransform < fTransforms.size(); iTransform++)
+            {
+                delete (*fTransforms[iComponent])(iTransform);
+            }
+        }
+        fTransforms.resize(components);
+        // if components > oldSize
+        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+        {
+            fTransforms[iComponent] = NULL;
+        }
+        return *this;
+    }
+
+
 #ifdef ROOT_FOUND
 
     TH2D* KTHoughData::CreateHistogram(UInt_t component, const std::string& name) const

@@ -119,21 +119,6 @@ namespace Katydid
             KTFrequencySpectrumDataPolar& SetNComponents(UInt_t component);
     };
 
-    inline KTFrequencySpectrumDataPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t components)
-    {
-        UInt_t oldSize = fSpectra.size();
-        fSpectra.resize(components);
-        if (components > oldSize)
-        {
-            for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
-            {
-                fSpectra[iComponent] = NULL;
-            }
-        }
-        return *this;
-    }
-
-
 } /* namespace Katydid */
 
 #endif /* KTFREQUENCYSPECTRUMDATAPOLAR_HH_ */

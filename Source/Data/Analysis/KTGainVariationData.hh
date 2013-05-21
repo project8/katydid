@@ -96,21 +96,6 @@ namespace Katydid
         fComponentData[component].fSpline = spline;
     }
 
-    inline KTGainVariationData& KTGainVariationData::SetNComponents(UInt_t components)
-    {
-        UInt_t oldSize = fComponentData.size();
-        fComponentData.resize(components);
-        if (components > oldSize)
-        {
-            for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
-            {
-                fComponentData[iComponent].fSpline = NULL;
-            }
-        }
-        return *this;
-    }
-
-
 } /* namespace Katydid */
 
 #endif /* KTGAINVARIATIONDATA_HH_ */

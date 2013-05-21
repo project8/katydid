@@ -20,16 +20,19 @@ namespace Katydid
     KTCorrelationData& KTCorrelationData::SetNComponents(UInt_t components)
     {
         UInt_t oldSize = fSpectra.size();
+        // if components < oldSize
+        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        {
+            delete fSpectra[iComponent];
+        }
         fSpectra.resize(components);
         fComponentData.resize(components);
-        if (components > oldSize)
+        // if components > oldSize
+        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
         {
-            for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
-            {
-                fSpectra[iComponent] = NULL;
-            }
+            fSpectra[iComponent] = NULL;
         }
-        return *this;
+    return *this;
     }
 
 } /* namespace Katydid */

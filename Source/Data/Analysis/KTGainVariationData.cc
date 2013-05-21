@@ -27,6 +27,23 @@ namespace Katydid
         }
     }
 
+    KTGainVariationData& KTGainVariationData::SetNComponents(UInt_t components)
+    {
+        UInt_t oldSize = fComponentData.size();
+        // if components < oldSize
+        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        {
+            delete fComponentData[iComponent].fSpline;
+        }
+        fComponentData.resize(components);
+        // if components > oldSize
+        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+        {
+            fComponentData[iComponent].fSpline = NULL;
+        }
+        return *this;
+    }
+
 #ifdef ROOT_FOUND
     TH1D* KTGainVariationData::CreateGainVariationHistogram(UInt_t nBins, UInt_t component, const std::string& name) const
     {

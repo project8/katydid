@@ -68,21 +68,6 @@ namespace Katydid
         fTransforms[component] = transform;
     }
 
-    inline KTHoughData& KTHoughData::SetNComponents(UInt_t components)
-    {
-        UInt_t oldSize = fTransforms.size();
-        fTransforms.resize(components);
-        if (components > oldSize)
-        {
-            for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
-            {
-                fTransforms[iComponent] = NULL;
-            }
-        }
-        return *this;
-    }
-
-
 } /* namespace Katydid */
 
 #endif /* KTHOUGHDATA_HH_ */
