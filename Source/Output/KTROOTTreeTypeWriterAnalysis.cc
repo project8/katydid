@@ -55,7 +55,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterAnalysis::WriteAmplitudeDistributions(shared_ptr< KTData > data)
     {
-        KTAmplitudeDistribution& fcData = data->Of< KTAmplitudeDistribution >();
+        KTAmplitudeDistribution& adData = data->Of< KTAmplitudeDistribution >();
         KTSliceHeader& header = data->Of< KTSliceHeader >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -69,21 +69,22 @@ namespace Katydid
             }
         }
 
-        // Load() also clears any existing data
-        //fAmpDistData->Load(*data);
-        fAmpDistData.fSlice = header.GetSliceNumber();
-        fAmpDistData.fTimeInRun = header.GetTimeInRun();
-        for (fAmpDistData.fComponent = 0; fAmpDistData.fComponent < fcData.GetNComponents(); fAmpDistData.fComponent++)
+        for (fAmpDistData.fComponent = 0; fAmpDistData.fComponent < adData.GetNComponents(); fAmpDistData.fComponent++)
         {
-            fAmpDistData.fThreshold = fcData.GetThreshold(fAmpDistData.fComponent);
-            const KTAmplitudeDistributionData::Analysis& candidates = fcData.GetAnalysis(fAmpDistData.fComponent);
-            for (KTAmplitudeDistributionData::Analysis::const_iterator it = candidates.begin(); it != candidates.end(); it++)
+            for (fAmpDistData.fFreqBin = 0; fAmpDistData.fFreqBin < adData.GetNFreqBins(); fAmpDistData.fFreqBin++)
             {
-                fAmpDistData.fFirstBin = it->GetFirstBin();
-                fAmpDistData.fLastBin = it->GetLastBin();
-                fAmpDistData.fMeanFrequency = it->GetMeanFrequency();
-                fAmpDistData.fPeakAmplitude = it->GetPeakAmplitude();
-                fAmpDistData.fAmplitudeSum = it->GetAmplitudeSum();
+                stringstream name;
+                name << "histAmpDist_" << fAmpDistData.fComponent << "_" << fAmpDistData.fFreqBin;
+                KTAmplitudeDistribution::Distribution& dist = adData.GetDistribution(fAmpDistData.fFreqBin, fAmpDistData.fComponent);
+                UInt_t nBins = dist.size();
+                fAmpDistData.fDistribution = new TH1D(name.str().c_str(), "Amplitude Distribution", (Int_t)nBins, dist.GetRangeMin(), dist.GetRangeMax());
+                for (UInt_t iBin=0; iBin<nBins; iBin++)
+                {
+                    fAmpDistData.fDistribution->SetBinContent((Int_t)iBin+1, dist(iBin));
+                }
+                fAmpDistData.fDistribution->SetXTitle("Amplitude");
+                fAmpDistData.fDistribution->SetYTitle("Slices");
+                fAmpDistData.fDistribution->SetDirectory(NULL);
 
                 fAmpDistTree->Fill();
            }
