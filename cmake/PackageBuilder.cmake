@@ -89,6 +89,10 @@ macro (pbuilder_prepare_project VERSION_MAJOR VERSION_MINOR REVISION)
     endif (EXISTS ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.hh.in)
 endmacro ()
 
+macro (pbuilder_add_ext_libraries)
+    list (APPEND EXTERNAL_LIBRARIES ${ARGN})
+endmacro ()
+
 macro (pbuilder_install_libraries)
     install (TARGETS ${ARGN} EXPORT ${PROJECT_NAME}Targets DESTINATION ${LIB_INSTALL_DIR})
     #list (APPEND ${PROJECT_NAME}_LIBRARIES ${ARGN})

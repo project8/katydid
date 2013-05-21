@@ -18,7 +18,7 @@ set (KATYDID_LIBS
 ##################################################
 
 add_library (KatydidEvaluation ${EVALUATION_SOURCEFILES})
-target_link_libraries (KatydidEvaluation ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidEvaluation ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_libraries(KatydidEvaluation)
 pbuilder_install_headers(${EVALUATION_HEADERFILES})

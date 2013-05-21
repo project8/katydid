@@ -51,7 +51,7 @@ set (KATYDID_LIBS
 #endif (ROOT_FOUND)
 
 add_library (KatydidFFT ${FFT_SOURCEFILES} ${FFT_DICT_OUTFILE})
-target_link_libraries (KatydidFFT ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidFFT ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${FFT_HEADERFILES})
 pbuilder_install_libraries (KatydidFFT)
