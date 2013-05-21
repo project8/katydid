@@ -33,7 +33,7 @@ set (KATYDID_LIBS
 ##################################################
 
 add_library (KatydidSimulation ${SIMULATION_SOURCEFILES})
-target_link_libraries (KatydidSimulation ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidSimulation ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_libraries(KatydidSimulation)
 pbuilder_install_headers(${SIMULATION_HEADERFILES})

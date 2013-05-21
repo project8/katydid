@@ -5,7 +5,7 @@
  *      Author: nsoblath
  */
 
-#include "KTOneShotJSONreader.hh"
+#include "KTOneShotJSONReader.hh"
 
 #include "KTLogger.hh"
 

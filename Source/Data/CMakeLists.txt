@@ -83,7 +83,7 @@ set (KATYDID_LIBS
 ##################################################
 
 add_library (KatydidData ${DATA_SOURCEFILES})
-target_link_libraries (KatydidData ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidData ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_libraries(KatydidData)
 pbuilder_install_headers(${DATA_HEADERFILES})

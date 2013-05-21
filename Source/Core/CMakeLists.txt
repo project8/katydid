@@ -62,7 +62,7 @@ set (KATYDID_LIBS
 #endif (ROOT_FOUND)
 
 add_library (KatydidCore ${CORE_SOURCEFILES})
-target_link_libraries (KatydidCore ${KATYDID_LIBS} ${LIBS})
+target_link_libraries (KatydidCore ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${CORE_HEADERFILES})
 pbuilder_install_libraries (KatydidCore)
