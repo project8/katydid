@@ -98,6 +98,8 @@ namespace Katydid
             fInputArray->SetRange(data1->GetRangeMin(), data1->GetRangeMax());
         }
 
+        //KTERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
+
         // Now calculate the lagged ACF at all possible lags.
         register Double_t t1_real;
         register Double_t t1_imag;
@@ -105,15 +107,16 @@ namespace Katydid
         register Double_t t2_imag;
         register UInt_t tau_plus = size - 1;
         register UInt_t tau_minus = 0;
-        for(UInt_t freq_bin = 0; freq_bin < size; freq_bin++)
+        for(UInt_t inArrBin = 0; inArrBin < size; inArrBin++)
         {
             t1_real = (*data1)(offset + tau_minus)[0];
             t1_imag = (*data1)(offset + tau_minus)[1];
             t2_real = (*data2)(offset + tau_plus)[0];
             t2_imag = (*data2)(offset + tau_plus)[1];
 
-            (*fInputArray)(freq_bin)[0] = t1_real * t2_real + t1_imag * t2_imag;
-            (*fInputArray)(freq_bin)[1] = t1_imag * t2_real - t1_real * t2_imag;
+            (*fInputArray)(inArrBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
+            (*fInputArray)(inArrBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
+            //KTWARN(wvlog, "  " << inArrBin << " -- " << tau_minus << "  " << offset + tau_minus << " -- " << tau_plus << "  " << offset + tau_plus);
 
             tau_minus++;
             tau_plus--;
