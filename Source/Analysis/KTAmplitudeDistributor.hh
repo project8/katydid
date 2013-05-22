@@ -158,6 +158,8 @@ namespace Katydid
             Buffer fBuffer;
             UInt_t fNBuffered;
 
+            UInt_t fNSlicesProcessed;
+
             boost::shared_ptr< KTData > fDistributionData;
             KTAmplitudeDistribution* fDistributions;
 

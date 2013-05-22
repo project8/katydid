@@ -49,6 +49,7 @@ namespace Katydid
             fNComponents(1),
             fBuffer(),
             fNBuffered(0),
+            fNSlicesProcessed(0),
             fDistributionData(shared_ptr< KTData >()),
             fDistributions(NULL),
             fAmpDistSignal("amp-dist", this),
@@ -114,13 +115,15 @@ namespace Katydid
         fNComponents = nComponents;
         fNFreqBins = nFreqBins;
 
+        fNSlicesProcessed = 0;
+
         fBuffer.clear();
         if (fUseBuffer)
         {
             // This command initializes the nested vectors with the correct number of elements
             // It's assumed that fBufferSize is set before this function is called.
             fBuffer.resize(fBufferSize);
-            for (UInt_t iBuffer = 0; iBuffer < nComponents; iBuffer++)
+            for (UInt_t iBuffer = 0; iBuffer < fBufferSize; iBuffer++)
             {
                 fBuffer[iBuffer].resize(nComponents);
                 for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
@@ -225,6 +228,8 @@ namespace Katydid
             }
         }
 
+        fNSlicesProcessed++;
+
         KTINFO(adlog, "Completed addition of values for " << nComponents << " components");
 
         return true;
@@ -270,6 +275,8 @@ namespace Katydid
 
         }
 
+        fNSlicesProcessed++;
+
         KTINFO(adlog, "Completed addition of values for " << nComponents << " components");
 
         return true;
@@ -277,22 +284,26 @@ namespace Katydid
 
     Bool_t KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, UInt_t component)
     {
-        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        if (fNSlicesProcessed == fBufferSize)
         {
-            fBuffer[fNBuffered][component][iBin] = (*spectrum)(iBin).abs();
-        }
-        if (component == fBuffer[fNBuffered].size()) fNBuffered++;
-        KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " spectra");
-        if (fNBuffered == fBufferSize)
-        {
-            KTDEBUG(adlog, "Switching to direct-to-distribution setup");
+            KTINFO(adlog, "Switching to direct-to-distribution setup");
+            KTDEBUG(adlog, "Creating distributions from buffer");
             if (! CreateDistributionsFromBuffer())
             {
                 KTERROR(adlog, "A problem occurred while creating distributions from the buffer");
                 return false;
             }
+            KTDEBUG(adlog, "Continuing with direct-to-distribution processing");
             fTakeValuesPolar = &KTAmplitudeDistributor::TakeValuesToDistributions;
+            return TakeValuesToDistributions(spectrum, component);
         }
+
+        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        {
+            fBuffer[fNSlicesProcessed][component][iBin] = (*spectrum)(iBin).abs();
+        }
+        fNBuffered++;
+        KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " distributions; " << fNSlicesProcessed + 1 << " slices processed");
         return true;
     }
 
@@ -307,22 +318,26 @@ namespace Katydid
 
     Bool_t KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, UInt_t component)
     {
-        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        if (fNSlicesProcessed == fBufferSize)
         {
-            fBuffer[fNBuffered][component][iBin] = sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]);
-        }
-        if (component == fBuffer[fNBuffered].size()) fNBuffered++;
-        KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " spectra");
-        if (fNBuffered == fBufferSize)
-        {
-            KTDEBUG(adlog, "Switching to direct-to-distribution setup");
+            KTINFO(adlog, "Switching to direct-to-distribution setup");
+            KTDEBUG(adlog, "Creating distributions from buffer");
             if (! CreateDistributionsFromBuffer())
             {
                 KTERROR(adlog, "A problem occurred while creating distributions from the buffer");
                 return false;
             }
-            fTakeValuesFFTW = &KTAmplitudeDistributor::TakeValuesToDistributions;
+            KTDEBUG(adlog, "Continuing with direct-to-distribution processing");
+            fTakeValuesPolar = &KTAmplitudeDistributor::TakeValuesToDistributions;
+            return TakeValuesToDistributions(spectrum, component);
         }
+
+        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        {
+            fBuffer[fNSlicesProcessed][component][iBin] = sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]);
+        }
+        fNBuffered++;
+        KTDEBUG(adlog, "Buffer now contains " << fNBuffered << " distributions; " << fNSlicesProcessed + 1 << " slices processed");
         return true;
     }
 
@@ -357,6 +372,11 @@ namespace Katydid
             return false;
         }
 
+        if (fBuffer.size() > fNSlicesProcessed)
+        {
+            KTDEBUG(adlog, "Buffer is larger than the number of slices processed; resizing to " << fNSlicesProcessed);
+            fBuffer.resize(fNSlicesProcessed);
+        }
 
         Double_t distMin, distMax, value;
         UInt_t distBin;
@@ -364,13 +384,16 @@ namespace Katydid
         {
             for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
             {
+                KTWARN(adlog, "0  " << iComponent << "  " << iBin << "  " << fBuffer[0][iComponent][iBin]);
                 distMin = fBuffer[0][iComponent][iBin];
                 distMax = distMin;
+                KTERROR(adlog, distMin << "  " << distMax << "  buffer size: " << fBuffer.size());
                 for (UInt_t iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
                 {
                     value = fBuffer[iSpectrum][iComponent][iBin];
                     if (value < distMin) distMin = value;
                     else if (value > distMax) distMax = value;
+                    KTERROR(adlog, "   " << distMin << "  " << distMax);
                 }
                 if (! fDistributions->InitializeADistribution(iComponent, iBin, fDistNBins, distMin, distMax))
                 {

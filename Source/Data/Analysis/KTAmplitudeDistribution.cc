@@ -83,7 +83,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTAmplitudeDistribution::InitializeADistribution(UInt_t component, UInt_t freqBin, UInt_t distNBins, UInt_t distMin, UInt_t distMax)
+    Bool_t KTAmplitudeDistribution::InitializeADistribution(UInt_t component, UInt_t freqBin, UInt_t distNBins, Double_t distMin, Double_t distMax)
     {
         if (component > fDistributions.size())
         {
