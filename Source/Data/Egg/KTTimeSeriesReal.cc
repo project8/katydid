@@ -25,12 +25,17 @@ namespace Katydid
             KTTimeSeries(),
             KTPhysicalArray< 1, Double_t >()
     {
+        fData[0] = 0.;
     }
 
     KTTimeSeriesReal::KTTimeSeriesReal(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
             KTTimeSeries(),
             KTPhysicalArray< 1, Double_t >(nBins, rangeMin, rangeMax)
     {
+        for (UInt_t iBin = 0; iBin < nBins; iBin++)
+        {
+            fData[0] = 0.;
+        }
     }
     KTTimeSeriesReal::KTTimeSeriesReal(const KTTimeSeriesReal& orig) :
             KTTimeSeries(),
