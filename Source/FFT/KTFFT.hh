@@ -57,5 +57,21 @@ namespace Katydid
         return 1. / (timeBinWidth * GetTimeSize());
     }
 
+
+
+    class KTFFTW : public KTFFT
+    {
+        public:
+            KTFFTW();
+            virtual ~KTFFTW();
+
+            void InitializeMultithreaded();
+
+            static UInt_t sInstanceCount;
+            static Bool_t sMultithreadedIsInitialized;
+    };
+
+
+
 } /* namespace Katydid */
 #endif /* KTFFT_HH_ */

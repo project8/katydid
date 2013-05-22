@@ -29,7 +29,7 @@ namespace Katydid
     static KTDerivedNORegistrar< KTProcessor, KTComplexFFTW > sComplexFFTWRegistrar("complex-fftw");
 
     KTComplexFFTW::KTComplexFFTW(const std::string& name) :
-            KTFFT(),
+            KTFFTW(),
             KTProcessor(name),
             fForwardPlan(),
             fReversePlan(),
@@ -56,9 +56,6 @@ namespace Katydid
         FreeArrays();
         fftw_destroy_plan(fForwardPlan);
         fftw_destroy_plan(fReversePlan);
-#ifdef FFTW_NTHREADS
-        fftw_cleanup_threads();
-#endif
     }
 
     Bool_t KTComplexFFTW::Configure(const KTPStoreNode* node)
@@ -106,11 +103,7 @@ namespace Katydid
             }
         }
 
-#ifdef FFTW_NTHREADS
-        fftw_init_threads();
-        fftw_plan_with_nthreads(FFTW_NTHREADS);
-        KTDEBUG(fftlog_comp, "Configuring FFTW to use up to " << FFTW_NTHREADS << " threads.");
-#endif
+        InitializeMultithreaded();
 
         KTDEBUG(fftlog_comp, "Creating plan: " << fSize << " bins; forward FFT");
         fForwardPlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);

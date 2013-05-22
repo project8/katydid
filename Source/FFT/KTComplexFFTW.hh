@@ -74,7 +74,7 @@ namespace Katydid
      - "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
-    class KTComplexFFTW : public KTFFT, public KTProcessor
+    class KTComplexFFTW : public KTFFTW, public KTProcessor
     {
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
