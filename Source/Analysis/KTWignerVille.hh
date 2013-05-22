@@ -202,8 +202,6 @@ namespace Katydid
                 // why was this put here, cutting the frequency range in half?
                 //newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
 
-                newData.SetSpectrum((this->fColumns).at(0), iPair);
-                newData.SetInputPair(firstChannel, secondChannel, iPair);
                 iPair++;
             }
             KTINFO(wvlog, "Completed WV transform of " << iPair << " pairs");

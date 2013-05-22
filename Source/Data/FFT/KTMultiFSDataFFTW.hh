@@ -76,16 +76,6 @@ namespace Katydid
         return;
     }
 
-    inline void KTMultiFSDataFFTWCore::SetSpectrum(KTFrequencySpectrumFFTW* spectrum, UInt_t iSpect, UInt_t component)
-    {
-        if (component >= fSpectra.size())
-            SetNComponents(component+1);
-        if (fSpectra[component] == NULL)
-            fSpectra[component] = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >();
-        (*fSpectra[component])(iSpect) = spectrum;
-        return;
-    }
-
     inline void KTMultiFSDataFFTWCore::DeleteSpectra(UInt_t component)
     {
         if (component >= fSpectra.size())
@@ -98,7 +88,6 @@ namespace Katydid
         fSpectra[component] = NULL;
         return;
     }
-
 
 
 
