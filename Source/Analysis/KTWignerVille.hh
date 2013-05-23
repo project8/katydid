@@ -76,6 +76,9 @@ namespace Katydid
             const PairVector& GetPairVector() const;
             void ClearPairs();
 
+            UInt_t GetWindowSize() const;
+            void SetWindowSize(UInt_t size);
+
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
 
@@ -141,6 +144,17 @@ namespace Katydid
     {
         fPairs.clear();
         return;
+    }
+
+    inline UInt_t KTWignerVille::GetWindowSize() const
+    {
+        return fInputArray->size();
+    }
+
+    inline void KTWignerVille::SetWindowSize(UInt_t size)
+    {
+        delete fInputArray;
+        fInputArray = new KTTimeSeriesFFTW(size, 0., 1.);
     }
 
     inline KTComplexFFTW* KTWignerVille::GetFFT()

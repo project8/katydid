@@ -57,18 +57,15 @@ namespace Katydid
             this->AddPair(pair);
         }
 
+        SetWindowSize(node->GetData< UInt_t >("window-size", fInputArray->size()));
+
         return true;
     }
 
     void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
     {
-        //UInt_t nBins = header->GetSliceSize();
-        UInt_t nBins = 128;
-        fFFT->SetSize(nBins);
+        fFFT->SetSize(fInputArray->size());
         fFFT->InitializeFFT();
-        delete fInputArray;
-        // the min/max range for the input array don't matter, so just use 0 and 1
-        fInputArray = new KTTimeSeriesFFTW(nBins, 0., 1.);
         return;
     }
 
@@ -85,7 +82,8 @@ namespace Katydid
     void KTWignerVille::CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
     {
         UInt_t sliceSize = data1->size();
-        UInt_t fftSize = fInputArray->size();
+        UInt_t fftSize = GetWindowSize();
+
         /*
         if (fInputArray->size() != size)
         {
