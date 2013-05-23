@@ -95,85 +95,85 @@ namespace Katydid
     }
 
     template< size_t NDims, typename XDataType >
-    const typename KTPhysicalArray< NDims, XDataType >::array_type& KTPhysicalArray< NDims, XDataType >::GetData() const
+    inline const typename KTPhysicalArray< NDims, XDataType >::array_type& KTPhysicalArray< NDims, XDataType >::GetData() const
     {
         return fData;
     }
 
     template< size_t NDims, typename XDataType >
-    typename KTPhysicalArray< NDims, XDataType >::array_type& KTPhysicalArray< NDims, XDataType >::GetData()
+    inline typename KTPhysicalArray< NDims, XDataType >::array_type& KTPhysicalArray< NDims, XDataType >::GetData()
     {
         return fData;
     }
 
     template< size_t NDims, typename XDataType >
-    const typename KTPhysicalArray< NDims, XDataType >::value_type& KTPhysicalArray< NDims, XDataType >::operator()(unsigned /*i*/) const
+    inline const typename KTPhysicalArray< NDims, XDataType >::value_type& KTPhysicalArray< NDims, XDataType >::operator()(unsigned /*i*/) const
     {
         return fData(0);
     }
 
     template< size_t NDims, typename XDataType >
-    typename KTPhysicalArray< NDims, XDataType >::value_type& KTPhysicalArray< NDims, XDataType >::operator()(unsigned /*i*/)
+    inline typename KTPhysicalArray< NDims, XDataType >::value_type& KTPhysicalArray< NDims, XDataType >::operator()(unsigned /*i*/)
     {
         return fData(0);
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
     {
         return *this;
     }
 
     template< size_t NDims, typename XDataType >
-    bool KTPhysicalArray< NDims, XDataType >::IsCompatibleWith(const KTPhysicalArray< NDims, value_type >& /*rhs*/) const
+    inline bool KTPhysicalArray< NDims, XDataType >::IsCompatibleWith(const KTPhysicalArray< NDims, value_type >& /*rhs*/) const
     {
         return false;
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator+=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator+=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
     {
         return *this;
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator-=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator-=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
     {
         return *this;
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator*=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator*=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
     {
         return *this;
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator/=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator/=(const KTPhysicalArray< NDims, value_type>& /*rhs*/)
     {
         return *this;
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator+=(const value_type& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator+=(const value_type& /*rhs*/)
     {
         return *this;
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator-=(const value_type& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator-=(const value_type& /*rhs*/)
     {
         return *this;
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator*=(const value_type& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator*=(const value_type& /*rhs*/)
     {
         return *this;
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator/=(const value_type& /*rhs*/)
+    inline KTPhysicalArray< NDims, XDataType >& KTPhysicalArray< NDims, XDataType >::operator/=(const value_type& /*rhs*/)
     {
         return *this;
     }
@@ -278,38 +278,52 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    const typename KTPhysicalArray< 1, XDataType >::array_type& KTPhysicalArray< 1, XDataType >::GetData() const
+    inline const typename KTPhysicalArray< 1, XDataType >::array_type& KTPhysicalArray< 1, XDataType >::GetData() const
     {
         return fData;
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::array_type& KTPhysicalArray< 1, XDataType >::GetData()
+    inline typename KTPhysicalArray< 1, XDataType >::array_type& KTPhysicalArray< 1, XDataType >::GetData()
     {
         return fData;
     }
 
     template< typename XDataType >
-    const typename KTPhysicalArray< 1, XDataType >::value_type& KTPhysicalArray< 1, XDataType >::operator()(unsigned i) const
+    inline const typename KTPhysicalArray< 1, XDataType >::value_type& KTPhysicalArray< 1, XDataType >::operator()(unsigned i) const
     {
+#ifdef Katydid_DEBUG
+        if (i >= size())
+        {
+            KTERROR(utillog_physarr, "Out of bounds: " << i << " >= " << fData.size());
+            return fData(0);
+        }
+#endif
         return fData(i);
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::value_type& KTPhysicalArray< 1, XDataType >::operator()(unsigned i)
+    inline typename KTPhysicalArray< 1, XDataType >::value_type& KTPhysicalArray< 1, XDataType >::operator()(unsigned i)
     {
+#ifdef Katydid_DEBUG
+        if (i >= size())
+        {
+            KTERROR(utillog_physarr, "Out of bounds: " << i << " >= " << fData.size());
+            return fData(0);
+        }
+#endif
         return fData(i);
     }
 
     template< typename XDataType >
-    bool KTPhysicalArray< 1, XDataType >::IsCompatibleWith(const KTPhysicalArray< 1, value_type >& rhs) const
+    inline bool KTPhysicalArray< 1, XDataType >::IsCompatibleWith(const KTPhysicalArray< 1, value_type >& rhs) const
     {
         //return (this->size() == rhs.size() && this->GetRangeMin() == rhs.GetRangeMin() && this->GetRangeMax() == GetRangeMax());
         return (this->size() == rhs.size());
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator=(const KTPhysicalArray< 1, value_type>& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         fData = rhs.fData;
         KTAxisProperties< 1 >::operator=(rhs);
@@ -318,7 +332,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator+=(const KTPhysicalArray< 1, value_type>& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator+=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
 #pragma omp parallel for
@@ -330,7 +344,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator-=(const KTPhysicalArray< 1, value_type>& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator-=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
 #pragma omp parallel for
@@ -342,7 +356,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator*=(const KTPhysicalArray< 1, value_type>& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator*=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
 #pragma omp parallel for
@@ -354,7 +368,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const KTPhysicalArray< 1, value_type>& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
 #pragma omp parallel for
@@ -366,7 +380,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator+=(const value_type& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator+=(const value_type& rhs)
     {
 #pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
@@ -377,7 +391,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator-=(const value_type& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator-=(const value_type& rhs)
     {
 #pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
@@ -388,7 +402,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator*=(const value_type& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator*=(const value_type& rhs)
     {
 #pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
@@ -399,7 +413,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const XDataType& rhs)
+    inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const XDataType& rhs)
     {
 #pragma omp parallel for
         for (size_t iBin=0; iBin<fData.size(); iBin++)
@@ -410,56 +424,56 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::const_iterator KTPhysicalArray< 1, XDataType >::begin() const
+    inline typename KTPhysicalArray< 1, XDataType >::const_iterator KTPhysicalArray< 1, XDataType >::begin() const
     {
         return fData.begin();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::const_iterator KTPhysicalArray< 1, XDataType >::end() const
+    inline typename KTPhysicalArray< 1, XDataType >::const_iterator KTPhysicalArray< 1, XDataType >::end() const
     {
         return fData.end();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::iterator KTPhysicalArray< 1, XDataType >::begin()
+    inline typename KTPhysicalArray< 1, XDataType >::iterator KTPhysicalArray< 1, XDataType >::begin()
     {
         return fData.begin();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::iterator KTPhysicalArray< 1, XDataType >::end()
+    inline typename KTPhysicalArray< 1, XDataType >::iterator KTPhysicalArray< 1, XDataType >::end()
     {
         return fData.end();
     }
 
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::const_reverse_iterator KTPhysicalArray< 1, XDataType >::rbegin() const
+    inline typename KTPhysicalArray< 1, XDataType >::const_reverse_iterator KTPhysicalArray< 1, XDataType >::rbegin() const
     {
         return fData.rbegin();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::const_reverse_iterator KTPhysicalArray< 1, XDataType >::rend() const
+    inline typename KTPhysicalArray< 1, XDataType >::const_reverse_iterator KTPhysicalArray< 1, XDataType >::rend() const
     {
         return fData.rend();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rbegin()
+    inline typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rbegin()
     {
         return fData.rbegin();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rend()
+    inline typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rend()
     {
         return fData.rend();
     }
 
     template< typename XDataType >
-    void KTPhysicalArray< 1, XDataType >::SetNewNBinsFunc()
+    inline void KTPhysicalArray< 1, XDataType >::SetNewNBinsFunc()
     {
         SetNBinsFunc(new KTNBinsInArray< 1, array_type >(&fData, &array_type::size));
         return;
@@ -585,31 +599,55 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    const typename KTPhysicalArray< 2, XDataType >::matrix_type& KTPhysicalArray< 2, XDataType >::GetData() const
+    inline const typename KTPhysicalArray< 2, XDataType >::matrix_type& KTPhysicalArray< 2, XDataType >::GetData() const
     {
         return fData;
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::matrix_type& KTPhysicalArray< 2, XDataType >::GetData()
+    inline typename KTPhysicalArray< 2, XDataType >::matrix_type& KTPhysicalArray< 2, XDataType >::GetData()
     {
         return fData;
     }
 
     template< typename XDataType >
-    const typename KTPhysicalArray< 2, XDataType >::value_type& KTPhysicalArray< 2, XDataType >::operator()(unsigned i, unsigned j) const
+    inline const typename KTPhysicalArray< 2, XDataType >::value_type& KTPhysicalArray< 2, XDataType >::operator()(unsigned i, unsigned j) const
     {
+#ifdef Katydid_DEBUG
+        if (i >= size(1))
+        {
+            KTERROR(utillog_physarr, "Out of bounds on axis 1: " << i << " >= " << size(1));
+            return fData(0, 0);
+        }
+        if (j >= size(2))
+        {
+            KTERROR(utillog_physarr, "Out of bounds on axis 2: " << j << " >= " << size(2));
+            return fData(0, 0);
+        }
+#endif
         return fData(i,j);
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::value_type& KTPhysicalArray< 2, XDataType >::operator()(unsigned i, unsigned j)
+    inline typename KTPhysicalArray< 2, XDataType >::value_type& KTPhysicalArray< 2, XDataType >::operator()(unsigned i, unsigned j)
     {
+#ifdef Katydid_DEBUG
+        if (i >= size(1))
+        {
+            KTERROR(utillog_physarr, "Out of bounds on axis 1: " << i << " >= " << size(1));
+            return fData(0, 0);
+        }
+        if (j >= size(2))
+        {
+            KTERROR(utillog_physarr, "Out of bounds on axis 2: " << j << " >= " << size(2));
+            return fData(0, 0);
+        }
+#endif
         return fData(i,j);
     }
 
     template< typename XDataType >
-    bool KTPhysicalArray< 2, XDataType >::IsCompatibleWith(const KTPhysicalArray< 2, value_type >& rhs) const
+    inline bool KTPhysicalArray< 2, XDataType >::IsCompatibleWith(const KTPhysicalArray< 2, value_type >& rhs) const
     {
         //return (this->size(1) == rhs.size(1) && this->GetRangeMin(1) == rhs.GetRangeMin(1) && this->GetRangeMax(1) == GetRangeMax(1) &&
         //        this->size(2) == rhs.size(2) && this->GetRangeMin(2) == rhs.GetRangeMin(2) && this->GetRangeMax(2) == GetRangeMax(2));
@@ -740,98 +778,98 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::const_iterator1 KTPhysicalArray< 2, XDataType >::begin1() const
+    inline typename KTPhysicalArray< 2, XDataType >::const_iterator1 KTPhysicalArray< 2, XDataType >::begin1() const
     {
         return fData.begin1();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::const_iterator2 KTPhysicalArray< 2, XDataType >::begin2() const
+    inline typename KTPhysicalArray< 2, XDataType >::const_iterator2 KTPhysicalArray< 2, XDataType >::begin2() const
     {
         return fData.begin2();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::const_iterator1 KTPhysicalArray< 2, XDataType >::end1() const
+    inline typename KTPhysicalArray< 2, XDataType >::const_iterator1 KTPhysicalArray< 2, XDataType >::end1() const
     {
         return fData.end1();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::const_iterator2 KTPhysicalArray< 2, XDataType >::end2() const
+    inline typename KTPhysicalArray< 2, XDataType >::const_iterator2 KTPhysicalArray< 2, XDataType >::end2() const
     {
         return fData.end2();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::iterator1 KTPhysicalArray< 2, XDataType >::begin1()
+    inline typename KTPhysicalArray< 2, XDataType >::iterator1 KTPhysicalArray< 2, XDataType >::begin1()
     {
         return fData.begin1();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::iterator2 KTPhysicalArray< 2, XDataType >::begin2()
+    inline typename KTPhysicalArray< 2, XDataType >::iterator2 KTPhysicalArray< 2, XDataType >::begin2()
     {
         return fData.begin2();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::iterator1 KTPhysicalArray< 2, XDataType >::end1()
+    inline typename KTPhysicalArray< 2, XDataType >::iterator1 KTPhysicalArray< 2, XDataType >::end1()
     {
         return fData.end1();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::iterator2 KTPhysicalArray< 2, XDataType >::end2()
+    inline typename KTPhysicalArray< 2, XDataType >::iterator2 KTPhysicalArray< 2, XDataType >::end2()
     {
         return fData.end2();
     }
 
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::const_reverse_iterator1 KTPhysicalArray< 2, XDataType >::rbegin1() const
+    inline typename KTPhysicalArray< 2, XDataType >::const_reverse_iterator1 KTPhysicalArray< 2, XDataType >::rbegin1() const
     {
         return fData.rbegin1();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::const_reverse_iterator2 KTPhysicalArray< 2, XDataType >::rbegin2() const
+    inline typename KTPhysicalArray< 2, XDataType >::const_reverse_iterator2 KTPhysicalArray< 2, XDataType >::rbegin2() const
     {
         return fData.rbegin2();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::const_reverse_iterator1 KTPhysicalArray< 2, XDataType >::rend1() const
+    inline typename KTPhysicalArray< 2, XDataType >::const_reverse_iterator1 KTPhysicalArray< 2, XDataType >::rend1() const
     {
         return fData.rend1();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::const_reverse_iterator2 KTPhysicalArray< 2, XDataType >::rend2() const
+    inline typename KTPhysicalArray< 2, XDataType >::const_reverse_iterator2 KTPhysicalArray< 2, XDataType >::rend2() const
     {
         return fData.rend2();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::reverse_iterator1 KTPhysicalArray< 2, XDataType >::rbegin1()
+    inline typename KTPhysicalArray< 2, XDataType >::reverse_iterator1 KTPhysicalArray< 2, XDataType >::rbegin1()
     {
         return fData.rbegin1();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::reverse_iterator2 KTPhysicalArray< 2, XDataType >::rbegin2()
+    inline typename KTPhysicalArray< 2, XDataType >::reverse_iterator2 KTPhysicalArray< 2, XDataType >::rbegin2()
     {
         return fData.rbegin2();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::reverse_iterator1 KTPhysicalArray< 2, XDataType >::rend1()
+    inline typename KTPhysicalArray< 2, XDataType >::reverse_iterator1 KTPhysicalArray< 2, XDataType >::rend1()
     {
         return fData.rend1();
     }
 
     template< typename XDataType >
-    typename KTPhysicalArray< 2, XDataType >::reverse_iterator2 KTPhysicalArray< 2, XDataType >::rend2()
+    inline typename KTPhysicalArray< 2, XDataType >::reverse_iterator2 KTPhysicalArray< 2, XDataType >::rend2()
     {
         return fData.rend2();
     }
