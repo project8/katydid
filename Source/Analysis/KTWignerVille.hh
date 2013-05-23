@@ -19,7 +19,7 @@
 #include "KTSlot.hh"
 #include "KTWV2DData.hh"
 #include "KTTimeSeriesFFTW.hh"
-//#include "KTWignerVilleData.hh"
+////#include "KTWignerVilleData.hh"
 
 #include <boost/shared_ptr.hpp>
 
@@ -85,7 +85,6 @@ namespace Katydid
             PairVector fPairs;
 
             KTComplexFFTW* fFFT;
-            std::vector<KTFrequencySpectrumFFTW*> fColumns;
             KTTimeSeriesFFTW* fInputArray;
 
 
@@ -180,7 +179,7 @@ namespace Katydid
             UInt_t nPairs = fPairs.size();
 
             KTWV2DData& newData = data.template Of< KTWV2DData >().SetNComponents(nPairs);
-            //KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nPairs);
+            ////KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nPairs);
 
             // Do WV transform for each pair
             UInt_t iPair = 0;
@@ -190,7 +189,7 @@ namespace Katydid
                 UInt_t secondChannel = (*pairIt).second;
 
                 UInt_t nOffsets = timeSeries[firstChannel]->size();
-                //UInt_t nOffsets = 1;
+                ////UInt_t nOffsets = 1;
                 Double_t timeBW = timeSeries[firstChannel]->GetBinWidth();
 
                 newData.SetInputPair(firstChannel, secondChannel, iPair);
@@ -200,7 +199,7 @@ namespace Katydid
                 {
                     CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], offset);
                     newData.SetSpectrum(fFFT->Transform(fInputArray), offset, iPair);
-                    //newData.SetSpectrum(fFFT->Transform(fInputArray), iPair);
+                    ////newData.SetSpectrum(fFFT->Transform(fInputArray), iPair);
                 }
 
                 // why was this put here, cutting the frequency range in half?

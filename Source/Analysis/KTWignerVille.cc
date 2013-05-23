@@ -13,6 +13,8 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTTimeSeriesData.hh"
 
+#include <algorithm>
+
 using std::string;
 using std::vector;
 
@@ -26,7 +28,6 @@ namespace Katydid
     KTWignerVille::KTWignerVille(const std::string& name) :
                 KTProcessor(name),
                 fFFT(new KTComplexFFTW()),
-                fColumns(0),
                 fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
                 fWVSignal("wigner-ville", this),
                 fHeaderSlot("header", this, &KTWignerVille::InitializeWithHeader),
@@ -61,14 +62,13 @@ namespace Katydid
 
     void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
     {
-        UInt_t nBins = header->GetSliceSize();
+        //UInt_t nBins = header->GetSliceSize();
+        UInt_t nBins = 128;
         fFFT->SetSize(nBins);
         fFFT->InitializeFFT();
         delete fInputArray;
         // the min/max range for the input array don't matter, so just use 0 and 1
         fInputArray = new KTTimeSeriesFFTW(nBins, 0., 1.);
-        // reserve enough space for all of the delay columns
-        fColumns.resize(nBins);
         return;
     }
 
@@ -84,7 +84,9 @@ namespace Katydid
 
     void KTWignerVille::CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
     {
-        UInt_t size = data1->size();
+        UInt_t sliceSize = data1->size();
+        UInt_t fftSize = fInputArray->size();
+        /*
         if (fInputArray->size() != size)
         {
             delete fInputArray;
@@ -97,6 +99,8 @@ namespace Katydid
         {
             fInputArray->SetRange(data1->GetRangeMin(), data1->GetRangeMax());
         }
+        */
+        fInputArray->SetRange(0., (Double_t)fftSize * data1->GetBinWidth());
 
         //KTERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
 
@@ -105,22 +109,62 @@ namespace Katydid
         register Double_t t1_imag;
         register Double_t t2_real;
         register Double_t t2_imag;
-        register UInt_t tau_plus = size - 1;
-        register UInt_t tau_minus = 0;
-        for(UInt_t inArrBin = 0; inArrBin < size; inArrBin++)
+        //register UInt_t tau_plus = size - 1;
+        //register UInt_t tau_minus = 0;
+        ///register UInt_t start = (UInt_t)std::max(0, (Int_t)offset - ((Int_t)size - 1));
+        ///register UInt_t end = (UInt_t)std::min((Int_t)offset, (Int_t)size - 1);
+        register UInt_t time = offset;
+        register Int_t taumax = std::min(std::min((Int_t)time, (Int_t)sliceSize - (Int_t)time -1), (Int_t)fftSize/2-1);
+
+        UInt_t fftBin = 0;
+        for (Int_t tau = -taumax; tau <= taumax; tau++)
         {
-            t1_real = (*data1)(offset + tau_minus)[0];
-            t1_imag = (*data1)(offset + tau_minus)[1];
-            t2_real = (*data2)(offset + tau_plus)[0];
-            t2_imag = (*data2)(offset + tau_plus)[1];
-
-            (*fInputArray)(inArrBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
-            (*fInputArray)(inArrBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
-            //KTWARN(wvlog, "  " << inArrBin << " -- " << tau_minus << "  " << offset + tau_minus << " -- " << tau_plus << "  " << offset + tau_plus);
-
-            tau_minus++;
-            tau_plus--;
+            t1_real = (*data1)(time + tau)[0];
+            t1_imag = (*data1)(time + tau)[1];
+            t2_real = (*data1)(time - tau)[0];
+            t2_real = (*data2)(time - tau)[0];
+            (*fInputArray)(fftBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
+            (*fInputArray)(fftBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
+            //KTWARN(wvlog, "  " << time << "  " << taumax << "  " << tau << "  " << fftBin << " -- " << time + tau << "  " << (*data1)(time+tau)[0] << "  " << (*data1)(time+tau)[1] << " -- " << time - tau << "  " << (*data2)(time-tau)[0] << "  " << (*data2)(time-tau)[0]);
+            fftBin++;
         }
+        for (; fftBin < fftSize; fftBin++)
+        {
+            (*fInputArray)(fftBin)[0] = 0.;
+            (*fInputArray)(fftBin)[1] = 0.;
+        }
+
+        ///for (UInt_t inArrBin = 0; inArrBin < start; inArrBin++)
+        ///{
+        ///    (*fInputArray)(inArrBin)[0] = 0.;
+        ///    (*fInputArray)(inArrBin)[1] = 0.;
+        ///    KTINFO(wvlog, "  " << inArrBin << " -- 0 -- 0");
+        ///}
+        ///for (UInt_t inArrBin = start; inArrBin <= end; inArrBin++)
+        ///{
+            //t1_real = (*data1)(offset + tau_minus)[0];
+            //t1_imag = (*data1)(offset + tau_minus)[1];
+            //t2_real = (*data2)(offset + tau_plus)[0];
+            //t2_imag = (*data2)(offset + tau_plus)[1];
+            ///t1_real = (*data1)(inArrBin)[0];
+            ///t1_imag = (*data1)(inArrBin)[1];
+            ///t2_real = (*data2)(offset - inArrBin)[0];
+            ///t2_imag = (*data2)(offset - inArrBin)[1];
+
+            ///(*fInputArray)(inArrBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
+            ///(*fInputArray)(inArrBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
+            ///KTWARN(wvlog, "  " << inArrBin << " -- " << inArrBin << "  " << (*data1)(inArrBin)[0] << "  " << (*data1)(inArrBin)[1] << " -- " << offset - inArrBin << "  " << (*data2)(inArrBin)[0] << "  " << (*data2)(inArrBin)[1]);
+            //KTWARN(wvlog, "  " << inArrBin << " -- " << tau_minus << "  " << offset + tau_minus << " = " << t1_real << "  " << t1_imag << " -- " << tau_plus << "  " << offset + tau_plus << " = " << t2_real << "  " << t2_imag << " -- " << (*fInputArray)(inArrBin)[0] << "  " << (*fInputArray)(inArrBin)[1]);
+
+            //tau_minus++;
+            //tau_plus--;
+        ///}
+        ///for (UInt_t inArrBin = end + 1; inArrBin < size; inArrBin++)
+        ///{
+        ///    (*fInputArray)(inArrBin)[0] = 0.;
+        ///    (*fInputArray)(inArrBin)[1] = 0.;
+        ///    KTINFO(wvlog, "  " << inArrBin << " -- 0 -- 0");
+        ///}
     }
 
 } /* namespace Katydid */
