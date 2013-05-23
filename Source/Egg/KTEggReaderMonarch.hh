@@ -15,8 +15,6 @@
 
 #include "MonarchTypes.hpp"
 
-#include "Rtypes.h"
-
 #include <map>
 #include <string>
 #include <vector>
@@ -43,10 +41,10 @@ namespace Katydid
                     kReachedNextRecord
                 };
                 AcqIdType fAcquisitionID;
-                UInt_t fReadPtrOffset;
-                UInt_t fReadPtrRecordOffset;
-                UInt_t fSliceStartPtrOffset;
-                UInt_t fAbsoluteRecordOffset;
+                UInt_t fReadPtrOffset; // sample offset of the read pointer in the current record
+                UInt_t fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
+                UInt_t fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
+                UInt_t fAbsoluteRecordOffset; // number of records read in the run
                 Status fStatus;
             };
 
@@ -105,6 +103,16 @@ namespace Katydid
 
             /// Returns the time since the run started in seconds
             Double_t GetTimeInRun() const;
+            /// Same as GetTimeInRun
+            virtual Double_t GetIntegratedTime() const;
+
+            /// Returns the number of slices processed
+            virtual UInt_t GetNSlicesProcessed() const;
+
+            /// Returns the number of records processed (including partial usage)
+            virtual UInt_t GetNRecordsProcessed() const;
+
+            const MonarchReadState& GetReadState() const;
 
         protected:
             Double_t fSampleRateUnitsInHz;
@@ -179,6 +187,27 @@ namespace Katydid
     {
         return fBinWidth * Double_t(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
     }
+
+    inline Double_t KTEggReaderMonarch::GetIntegratedTime() const
+    {
+        return GetTimeInRun();
+    }
+
+    inline UInt_t KTEggReaderMonarch::GetNSlicesProcessed() const
+    {
+        return (UInt_t)fSliceNumber;
+    }
+
+    inline UInt_t KTEggReaderMonarch::GetNRecordsProcessed() const
+    {
+        return fReadState.fAbsoluteRecordOffset + 1;
+    }
+
+    inline const KTEggReaderMonarch::MonarchReadState& KTEggReaderMonarch::GetReadState() const
+    {
+        return fReadState;
+    }
+
 
 
 

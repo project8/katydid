@@ -9,11 +9,14 @@
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
+#include "KTProcSummary.hh"
 #include "KTPStoreNode.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
+
+#include <cmath>
 
 using boost::shared_ptr;
 
@@ -35,8 +38,8 @@ namespace Katydid
             fDataSlot("slice", this, &KTTSGenerator::GenerateTS, &fDataSignal),
             fHeaderSignal("header", this),
             fDataSignal("slice", this),
-            fDoneSignal("done", this)
-
+            fDoneSignal("done", this),
+            fSummarySignal("summary", this)
     {
     }
 
@@ -80,12 +83,22 @@ namespace Katydid
     {
         // Create, signal, and destroy the egg header
         KTEggHeader* newHeader = CreateEggHeader();
+
+        KTDEBUG(genlog, "Created header:\n"
+             << "\tFilename: " << newHeader->GetFilename() << '\n'
+             << "\tAcuisition Mode: " << newHeader->GetAcquisitionMode() << '\n'
+             << "\tNumber of Channels: " << newHeader->GetNChannels() << '\n'
+             << "\tSlice Size: " << newHeader->GetSliceSize() << '\n'
+             << "\tRecord Size: " << newHeader->GetRecordSize() << '\n'
+             << "\tAcquisition Time: " << newHeader->GetAcquisitionTime() << " s" << '\n'
+             << "\tAcquisition Rate: " << newHeader->GetAcquisitionRate() << " Hz ");
+
         fHeaderSignal(newHeader);
         delete newHeader;
 
         // Loop over slices
         // The local copy of the data shared pointer is created and destroyed in each iteration of the loop
-        for (Int_t iSlice = 0; iSlice < fNSlices; iSlice++)
+        for (fSliceCounter = 0; fSliceCounter < fNSlices; fSliceCounter++)
         {
             shared_ptr< KTData > newData = CreateNewData();
 
@@ -114,6 +127,13 @@ namespace Katydid
 
         fDoneSignal();
 
+        KTProcSummary* summary = new KTProcSummary();
+        summary->SetNSlicesProcessed(fSliceCounter);
+        summary->SetNRecordsProcessed((UInt_t)ceil(Double_t(fSliceCounter * fSliceSize) / fRecordSize));
+        summary->SetIntegratedTime(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+        fSummarySignal(summary);
+        delete summary;
+
         return true;
     }
 
@@ -124,6 +144,7 @@ namespace Katydid
         newHeader->SetFilename(fConfigName);
         //newHeader->SetAcquisitionMode();
         newHeader->SetNChannels(fNChannels);
+        newHeader->SetSliceSize(fSliceSize);
         newHeader->SetRecordSize(fRecordSize);
         //newHeader->SetAcquisitionTime();
         newHeader->SetAcquisitionRate(1. / fBinWidth);
@@ -149,8 +170,19 @@ namespace Katydid
         sliceHeader.SetSampleRate(1. / fBinWidth);
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
-        sliceHeader.SetTimeInRun(0);
-        sliceHeader.SetSliceNumber(0);
+        sliceHeader.SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+        sliceHeader.SetSliceNumber(fSliceCounter);
+
+        KTDEBUG(genlog, "Filled out slice header:\n"
+                << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
+                << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
+                << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
+                << "\tSlice length: " << sliceHeader.GetSliceLength() << " s\n"
+                << "\tTime in run: " << sliceHeader.GetTimeInRun() << " s\n"
+                << "\tSlice number: " << sliceHeader.GetSliceNumber() << '\n'
+                << "\tStart record number: " << sliceHeader.GetStartRecordNumber() << '\n'
+                << "\tStart sample number: " << sliceHeader.GetStartSampleNumber());
+
         return true;
     }
 

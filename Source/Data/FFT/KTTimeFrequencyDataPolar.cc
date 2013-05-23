@@ -1,21 +1,21 @@
 /*
- * KTFrequencySpectrumDataPolar.cc
+ * KTTimeFrequencyDataPolar.cc
  *
- *  Created on: Aug 24, 2012
+ *  Created on: May 16, 2013
  *      Author: nsoblath
  */
 
-#include "KTFrequencySpectrumDataPolar.hh"
+#include "KTTimeFrequencyDataPolar.hh"
 
 namespace Katydid
 {
-    KTFrequencySpectrumDataPolarCore::KTFrequencySpectrumDataPolarCore() :
+    KTTimeFrequencyDataPolarCore::KTTimeFrequencyDataPolarCore() :
             fSpectra(1)
     {
         fSpectra[0] = NULL;
     }
 
-    KTFrequencySpectrumDataPolarCore::~KTFrequencySpectrumDataPolarCore()
+    KTTimeFrequencyDataPolarCore::~KTTimeFrequencyDataPolarCore()
     {
         while (! fSpectra.empty())
         {
@@ -25,17 +25,17 @@ namespace Katydid
     }
 
 
-    KTFrequencySpectrumDataPolar::KTFrequencySpectrumDataPolar() :
-            KTFrequencySpectrumDataPolarCore(),
-            KTExtensibleData< KTFrequencySpectrumDataPolar >()
+    KTTimeFrequencyDataPolar::KTTimeFrequencyDataPolar() :
+            KTTimeFrequencyDataPolarCore(),
+            KTExtensibleData< KTTimeFrequencyDataPolar >()
     {
     }
 
-    KTFrequencySpectrumDataPolar::~KTFrequencySpectrumDataPolar()
+    KTTimeFrequencyDataPolar::~KTTimeFrequencyDataPolar()
     {
     }
 
-    KTFrequencySpectrumDataPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t components)
+    KTTimeFrequencyDataPolar& KTTimeFrequencyDataPolar::SetNComponents(UInt_t components)
     {
         UInt_t oldSize = fSpectra.size();
         // if components < oldSize
@@ -51,9 +51,6 @@ namespace Katydid
         }
         return *this;
     }
-
-
-
 
 } /* namespace Katydid */
 

@@ -25,12 +25,19 @@ namespace Katydid
             KTTimeSeries(),
             KTPhysicalArray< 1, fftw_complex >()
     {
+        fData[0][0] = 0.;
+        fData[0][1] = 0.;
     }
 
     KTTimeSeriesFFTW::KTTimeSeriesFFTW(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
             KTTimeSeries(),
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax)
     {
+        for (UInt_t iBin = 0; iBin < nBins; iBin++)
+        {
+            fData[iBin][0] = 0.;
+            fData[iBin][1] = 0.;
+        }
     }
     KTTimeSeriesFFTW::KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig) :
             KTTimeSeries(),

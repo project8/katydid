@@ -136,6 +136,29 @@ namespace Katydid
         return hist;
     }
 
+    TH1D* KTFrequencySpectrumPolar::CreateMagnitudeDistributionHistogram(const std::string& name) const
+    {
+        Double_t tMaxMag = -1.;
+        Double_t tMinMag = 1.e9;
+        UInt_t nBins = size();
+        Double_t value;
+        // Skip the DC bin: start at bin 1
+        for (UInt_t iBin=1; iBin<nBins; iBin++)
+        {
+            value = (*this)(iBin).abs();
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        {
+            hist->Fill((*this)(iBin).abs());
+        }
+        hist->SetXTitle("Voltage (V)");
+        return hist;
+    }
+
     TH1D* KTFrequencySpectrumPolar::CreatePowerDistributionHistogram(const std::string& name) const
     {
         Double_t tMaxMag = -1.;
@@ -143,7 +166,8 @@ namespace Katydid
         UInt_t nBins = size();
         Double_t value;
         Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        // Skip the DC bin: start at bin 1
+        for (UInt_t iBin=1; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
             value *= value * scaling;

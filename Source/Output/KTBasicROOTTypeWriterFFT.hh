@@ -15,8 +15,8 @@ namespace Katydid
     class KTData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
-    //class KTSlidingWindowFSData;
-    //class KTSlidingWindowFSDataFFTW;
+    class KTMultiFSDataPolar;
+    class KTMultiFSDataFFTW;
 
     class KTBasicROOTTypeWriterFFT : public KTBasicROOTTypeWriter
     {
@@ -38,14 +38,28 @@ namespace Katydid
             void WriteFrequencySpectrumDataPolarPower(boost::shared_ptr<KTData> data);
             void WriteFrequencySpectrumDataFFTWPower(boost::shared_ptr<KTData> data);
 
+            void WriteFrequencySpectrumDataPolarMagnitudeDistribution(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataPolarPowerDistribution(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataFFTWPowerDistribution(boost::shared_ptr<KTData> data);
+
             //************************
-            // Sliding Window Data
+            // Time/Frequency Data
             //************************
-/*
+            void WriteTimeFrequencyDataPolar(boost::shared_ptr<KTData> data);
+            //void WriteFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data);
+            void WriteTimeFrequencyDataPolarPhase(boost::shared_ptr<KTData> data);
+            //void WriteFrequencySpectrumDataFFTWPhase(boost::shared_ptr<KTData> data);
+            void WriteTimeFrequencyDataPolarPower(boost::shared_ptr<KTData> data);
+            //void WriteFrequencySpectrumDataFFTWPower(boost::shared_ptr<KTData> data);
+
+
+            //************************
+            // Multi-FS Data
+            //************************
         public:
-            void WriteSlidingWindowFSData(const KTSlidingWindowFSData* data);
-            void WriteSlidingWindowFSDataFFTW(const KTSlidingWindowFSDataFFTW* data);
-*/
+            void WriteMultiFSDataPolar(boost::shared_ptr<KTData> data);
+            void WriteMultiFSDataFFTW(boost::shared_ptr<KTData> data);
     };
 
 } /* namespace Katydid */

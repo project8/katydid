@@ -11,7 +11,6 @@
 #include "KTDistanceClustering.hh"
 #include "KTCluster1DData.hh"
 #include "KTComplexFFTW.hh"
-#include "KTEgg.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
@@ -114,18 +113,16 @@ int main()
     eggReader->SetSliceSize(recordSize);
     eggReader->SetTimeSeriesType(tsType);
 
-    // Prepare and break the egg
-    KTEgg egg;
-    egg.SetReader(eggReader);
-
-    if (! egg.BreakEgg(filename))
+    const KTEggHeader* header = eggReader->BreakEgg(filename);
+    if (header == NULL)
     {
         KTERROR(proflog, "Egg did not break");
+        delete eggReader;
         return -1;
     }
 
     // Configure the FFT with the egg header
-    compFFT.InitializeWithHeader(egg.GetHeader());
+    compFFT.InitializeWithHeader(header);
 
     // Start the profiler
     prof.Start();
@@ -143,7 +140,7 @@ int main()
         KTINFO(proflog, "Slice " << iSlice);
 
         // Hatch the slice
-        boost::shared_ptr<KTData> data = egg.HatchNextSlice();
+        boost::shared_ptr<KTData> data = eggReader->HatchNextSlice();
         if (data.get() == NULL) break;
 
         if (iSlice == nSlices - 1) data->fLastData = true;
@@ -232,6 +229,10 @@ int main()
 
     // Stop the profiler
     prof.Stop();
+
+    eggReader->CloseEgg();
+    delete eggReader;
+    delete header;
 
     return 0;
 }

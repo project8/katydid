@@ -11,13 +11,14 @@
 
 #include "KTPrimaryProcessor.hh"
 
-#include "KTEgg.hh"
+#include "KTEggReader.hh"
 #include "KTSlot.hh"
 
 #include <boost/shared_ptr.hpp>
 
 namespace Katydid
 {
+    class KTProcSummary;
     class KTPStoreNode;
     class KTTimeSeriesData;
 
@@ -48,8 +49,9 @@ namespace Katydid
 
      Signals:
      - "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced.
+     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced; Guarantees KTTimeSeriesData
      - "egg-done": void () --  emitted when a file is finished.
+     - "summary": void (const KTProcSummary*) -- emitted when a file is finished (after "egg-done")
     */
     class KTEggProcessor : public KTPrimaryProcessor
     {
@@ -93,8 +95,8 @@ namespace Katydid
             void SetTimeSeriesType(TimeSeriesType type);
 
         private:
-            void UnlimitedLoop(KTEgg& egg);
-            void LimitedLoop(KTEgg& egg);
+            void UnlimitedLoop(KTEggReader* reader);
+            void LimitedLoop(KTEggReader* reader);
 
             UInt_t fNSlices;
             UInt_t fProgressReportInterval;
@@ -116,6 +118,7 @@ namespace Katydid
             KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
             KTSignalData fDataSignal;
             KTSignalOneArg< void > fEggDoneSignal;
+            KTSignalOneArg< const KTProcSummary* > fSummarySignal;
 
     };
 

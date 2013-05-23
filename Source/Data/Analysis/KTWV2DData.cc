@@ -1,30 +1,34 @@
 /*
  * KTWignerVille.cc
  *
- *  Created on: Oct 19, 2012
+ *  Created on: May 16, 2013
  *      Author: nsoblath
  */
 
-#include "KTWignerVilleData.hh"
+#include "KTWV2DData.hh"
 
 
 namespace Katydid
 {
-    KTWignerVilleData::KTWignerVilleData() :
-            KTFrequencySpectrumDataFFTWCore(),
-            KTExtensibleData< KTWignerVilleData >(),
+    KTWV2DData::KTWV2DData() :
+            KTMultiFSDataFFTWCore(),
+            KTExtensibleData< KTWV2DData >(),
             fWVComponentData(1)
-    {}
-    KTWignerVilleData::~KTWignerVilleData()
-    {}
+    {
+    }
 
-    KTWignerVilleData& KTWignerVilleData::SetNComponents(UInt_t components)
+    KTWV2DData::~KTWV2DData()
+    {
+    }
+
+
+    KTWV2DData& KTWV2DData::SetNComponents(UInt_t components)
     {
         UInt_t oldSize = fSpectra.size();
         // if components < oldSize
         for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
         {
-            delete fSpectra[iComponent];
+            DeleteSpectra(iComponent);
         }
         fSpectra.resize(components);
         fWVComponentData.resize(components);
@@ -35,4 +39,6 @@ namespace Katydid
         }
         return *this;
     }
+
+
 } /* namespace Katydid */

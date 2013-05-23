@@ -20,13 +20,16 @@ namespace Katydid
     KTAnalyticAssociateData& KTAnalyticAssociateData::SetNComponents(UInt_t num)
     {
         UInt_t oldSize = fTimeSeries.size();
-        fTimeSeries.resize(num);
-        if (num > oldSize)
+        // if num < oldSize
+        for (UInt_t iComponent = num; iComponent < oldSize; iComponent++)
         {
-            for (UInt_t iComponent = oldSize; iComponent < num; iComponent++)
-            {
-                fTimeSeries[iComponent] = NULL;
-            }
+            delete fTimeSeries[iComponent];
+        }
+        fTimeSeries.resize(num);
+        // if num > oldSize
+        for (UInt_t iComponent = oldSize; iComponent < num; iComponent++)
+        {
+            fTimeSeries[iComponent] = NULL;
         }
         return *this;
     }

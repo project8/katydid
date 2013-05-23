@@ -10,6 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
+#include "KTProcSummary.hh"
 #include "KTPStoreNode.hh"
 #include "KTWaterfallCandidateData.hh"
 
@@ -31,15 +32,22 @@ namespace Katydid
             fFileStream(NULL),
             fJSONMaker(NULL),
             fStatus(kNotOpenedYet),
+            fSummaryCopy(NULL),
+            fWaitingForSummary(false),
+            fMutex(),
             fHeaderSlot("header", this, &KTOfficialCandidatesWriter::WriteHeaderInformation),
             fWaterfallCandidateSlot("waterfall-candidate", this, &KTOfficialCandidatesWriter::WriteWaterfallCandidate),
-            fStopWritingSlot("stop", this, &KTOfficialCandidatesWriter::CloseFile)
+            fStopWritingSlot("stop", this, &KTOfficialCandidatesWriter::CloseFile),
+            fSummarySlot("summary", this, &KTOfficialCandidatesWriter::WriteSummaryInformationAndCloseFile),
+            fStopCloseAfterSummarySlot("stop-close-after-summary", this, &KTOfficialCandidatesWriter::StopCandidatesAndWaitForSummary),
+            fSummaryAfterStopSlot("summary-after-stop", this, &KTOfficialCandidatesWriter::CopySummaryInformationAndWaitForStop)
     {
     }
 
     KTOfficialCandidatesWriter::~KTOfficialCandidatesWriter()
     {
         CloseFile();
+        delete fSummaryCopy;
     }
 
     Bool_t KTOfficialCandidatesWriter::Configure(const KTPStoreNode* node)
@@ -57,6 +65,8 @@ namespace Katydid
 
     Bool_t KTOfficialCandidatesWriter::OpenFile()
     {
+        ScopedLock lock(fMutex);
+
         if (fStatus != kNotOpenedYet)
         {
             KTERROR(publog, "Status must be <" << kNotOpenedYet << "> to open a file; current status is <" << fStatus << ">");
@@ -98,13 +108,9 @@ namespace Katydid
 
     void KTOfficialCandidatesWriter::CloseFile()
     {
-        if (fStatus == kWritingCandidates)
-        {
-            // end the array of candidates
-            fJSONMaker->EndArray();
-        }
+        ScopedLock lock(fMutex);
 
-        fStatus = kStopped;
+        EndCandidates();
 
         if (fJSONMaker != NULL)
         {
@@ -127,6 +133,8 @@ namespace Katydid
 
     Bool_t KTOfficialCandidatesWriter::OpenAndVerifyFile()
     {
+        ScopedLock lock(fMutex);
+
         if (fFileStream == NULL || fJSONMaker == NULL)
         {
             if (! OpenFile())
@@ -147,6 +155,8 @@ namespace Katydid
     {
         using rapidjson::SizeType;
 
+        ScopedLock lock(fMutex);
+
         if (! OpenAndVerifyFile()) return;
 
         if (fStatus != kPriorToCandidates) return;
@@ -163,6 +173,8 @@ namespace Katydid
     Bool_t KTOfficialCandidatesWriter::WriteWaterfallCandidate(KTWaterfallCandidateData& wcData)
     {
         using rapidjson::SizeType;
+
+        ScopedLock lock(fMutex);
 
         if (! OpenAndVerifyFile()) return false;
 
@@ -189,6 +201,96 @@ namespace Katydid
 
         return true;
     }
+
+    void KTOfficialCandidatesWriter::WriteSummaryInformation(const KTProcSummary* summary)
+    {
+        ScopedLock lock(fMutex);
+
+        EndCandidates();
+
+        fJSONMaker->String("records_analyzed");
+        fJSONMaker->Uint(summary->GetNRecordsProcessed());
+
+        return;
+    }
+
+    void KTOfficialCandidatesWriter::WriteSummaryInformationAndCloseFile(const KTProcSummary* summary)
+    {
+        ScopedLock lock(fMutex);
+
+        WriteSummaryInformation(summary);
+
+        CloseFile();
+
+        return;
+    }
+
+    void KTOfficialCandidatesWriter::CopySummaryInformationAndWaitForStop(const KTProcSummary* summary)
+    {
+        ScopedLock lock(fMutex);
+
+        KTDEBUG(publog, "Copying summary information before checking if already waiting to stop candidate writing");
+
+        delete fSummaryCopy;
+        fSummaryCopy = new KTProcSummary(*summary);
+        // having non-null summary indicates that the writer is waiting for the stop-and-wait signal
+
+        if (fWaitingForSummary)
+        {
+            KTDEBUG(publog, "Writer was waiting for summary; writing summary and closing file");
+            WriteSummaryInformationAndCloseFile(fSummaryCopy);
+            delete fSummaryCopy;
+            fSummaryCopy = NULL;
+            fWaitingForSummary = false;
+        }
+        else
+        {
+            KTDEBUG(publog, "Commencing wait for end of candidate writing");
+        }
+
+        return;
+    }
+
+    void KTOfficialCandidatesWriter::StopCandidatesAndWaitForSummary()
+    {
+        ScopedLock lock(fMutex);
+
+        KTDEBUG(publog, "Stopping candidate writing before checking if already waiting with summary");
+
+        EndCandidates();
+        fWaitingForSummary = true;
+
+        if (fSummaryCopy != NULL)
+        {
+            KTDEBUG(publog, "Writer was waiting to stop candidate writing; stopping, writing summary, and closing file");
+            WriteSummaryInformationAndCloseFile(fSummaryCopy);
+            delete fSummaryCopy;
+            fSummaryCopy = NULL;
+            fWaitingForSummary = false;
+        }
+        else
+        {
+            KTDEBUG(publog, "Commencing wait for summary");
+        }
+
+        return;
+    }
+
+    void KTOfficialCandidatesWriter::EndCandidates()
+    {
+        ScopedLock lock(fMutex);
+
+        if (fStatus == kWritingCandidates)
+        {
+            // end the array of candidates
+            fJSONMaker->EndArray();
+        }
+
+        fStatus = kStopped;
+
+        return;
+    }
+
 
 
 } /* namespace Katydid */

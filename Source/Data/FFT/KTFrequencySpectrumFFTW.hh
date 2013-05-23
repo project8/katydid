@@ -96,6 +96,7 @@ namespace Katydid
 
             virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const;
 
+            virtual TH1D* CreateMagnitudeDistributionHistogram(const std::string& name = "hFrequencySpectrumMagDist") const;
             virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
 

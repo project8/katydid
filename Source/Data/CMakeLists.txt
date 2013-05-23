@@ -11,12 +11,14 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTHoughData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTNormalizedFSData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWV2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWignerVilleData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTWaterfallCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTProcSummary.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.hh
@@ -30,7 +32,10 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTPowerSpectrum.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTMultiFSDataFFTW.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTMultiFSDataPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequency.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.hh
 )
 
@@ -44,12 +49,14 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTHoughData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTNormalizedFSData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWV2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWignerVilleData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTWaterfallCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTProcSummary.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.cc
@@ -62,8 +69,11 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumPolar.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTMultiFSDataFFTW.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTMultiFSDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTPowerSpectrum.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequency.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.cc
 )
 

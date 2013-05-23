@@ -37,12 +37,14 @@ namespace Katydid
             //************************
         public:
             void WriteAnalyticAssociateData(boost::shared_ptr<KTData> data);
+            void WriteAnalyticAssociateDataDistribution(boost::shared_ptr<KTData> data);
 
             //************************
             // Correlation Data
             //************************
         public:
             void WriteCorrelationData(boost::shared_ptr<KTData> data);
+            void WriteCorrelationDataDistribution(boost::shared_ptr<KTData> data);
 
             //************************
             // Hough Transform Data
@@ -61,6 +63,8 @@ namespace Katydid
             //************************
         public:
             void WriteWignerVilleData(boost::shared_ptr<KTData> data);
+            void WriteWignerVilleDataDistribution(boost::shared_ptr<KTData> data);
+            void WriteWV2DData(boost::shared_ptr<KTData> data);
 
     };
 

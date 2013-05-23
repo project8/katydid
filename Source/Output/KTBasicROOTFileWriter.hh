@@ -35,6 +35,7 @@ namespace Katydid
 
      Slots:
      - "aa":
+     - "aa-dist":
      - "corr":
      - "hough":
      - "gain-var":
@@ -44,10 +45,16 @@ namespace Katydid
      - "fs-polar-phase":
      - "fs-fftw-power":
      - "fs-polar-power":
+     - "fs-fftw-power-dist":
+     - "fs-polar-power-dist":
+     - "multi-fs-fftw":
+     - "multi-fs-polar":
      - "norm-fs-fftw":
      - "norm-fs-polar":
      - "ts":
+     - "ts-dist":
      - "wv":
+     - "wv-2d":
      
     */
 

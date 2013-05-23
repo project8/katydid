@@ -63,12 +63,12 @@ namespace Katydid
                 continue;
             }
 
-            Double_t binCenter = 0.5 * binWidth;
+            //Double_t binCenter = 0.5 * binWidth;
             for (UInt_t iBin = 0; iBin < sliceSize; iBin++)
             {
                 timeSeries->SetValue(iBin, fRNG() + timeSeries->GetValue(iBin));
-                binCenter += binWidth;
-                //KTDEBUG(genlog, iBin << "  " << (*timeSeries)(iBin));
+                //binCenter += binWidth;
+                //KTDEBUG(genlog, iBin << "  " << timeSeries->GetValue(iBin));
             }
         }
 

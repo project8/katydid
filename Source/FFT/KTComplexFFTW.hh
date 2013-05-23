@@ -27,6 +27,7 @@ namespace Katydid
 {
     KTLOGGER(fftlog_comp, "katydid.fft");
 
+    class KTAnalyticAssociateData;
     class KTData;
     class KTEggHeader;
     class KTPStoreNode;
@@ -65,6 +66,7 @@ namespace Katydid
      Slots:
      - "header": void (const KTEggHeader* header) -- Initialize the FFT from an Egg header
      - "ts": void (shared_ptr<KTData>) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
+     - "aa": void (shared_ptr<KTData>) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
      - "fs-fftw": void (shared_ptr<KTData>) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
 
      Signals:
@@ -72,7 +74,7 @@ namespace Katydid
      - "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
-    class KTComplexFFTW : public KTFFT, public KTProcessor
+    class KTComplexFFTW : public KTFFTW, public KTProcessor
     {
         protected:
             typedef std::map< std::string, UInt_t > TransformFlagMap;
@@ -88,6 +90,7 @@ namespace Katydid
 
             /// Forward FFT
             Bool_t TransformData(KTTimeSeriesData& tsData);
+            Bool_t TransformData(KTAnalyticAssociateData& aaData);
             /// Reverse FFT
             Bool_t TransformData(KTFrequencySpectrumDataFFTW& fsData);
 
@@ -150,6 +153,7 @@ namespace Katydid
         private:
             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };

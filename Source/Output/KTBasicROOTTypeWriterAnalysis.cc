@@ -16,7 +16,9 @@
 #include "KTNormalizedFSData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
+#include "KTTimeFrequencyPolar.hh"
 #include "KTWignerVilleData.hh"
+#include "KTWV2DData.hh"
 
 #include "TH1.h"
 #include "TH2.h"
@@ -50,10 +52,14 @@ namespace Katydid
         fWriter->RegisterSlot("norm-fs-polar", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolar);
         fWriter->RegisterSlot("norm-fs-fftw", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTW);
         fWriter->RegisterSlot("aa", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData);
+        fWriter->RegisterSlot("aa-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution);
         fWriter->RegisterSlot("corr", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationData);
+        fWriter->RegisterSlot("corr-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationDataDistribution);
         fWriter->RegisterSlot("hough", this, &KTBasicROOTTypeWriterAnalysis::WriteHoughData);
         fWriter->RegisterSlot("gain-var", this, &KTBasicROOTTypeWriterAnalysis::WriteGainVariationData);
         fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData);
+        fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution);
+        fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterAnalysis::WriteWV2DData);
         return;
     }
 
@@ -157,6 +163,38 @@ namespace Katydid
         return;
     }
 
+    void KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution(shared_ptr< KTData > data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTAnalyticAssociateData& aaData = data->Of<KTAnalyticAssociateData>();
+        UInt_t nComponents = aaData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        {
+            const KTTimeSeries* timeSeries = aaData.GetTimeSeries(iPair);
+            if (timeSeries != NULL)
+            {
+                stringstream conv;
+                conv << "histAADist_" << sliceNumber << "_" << iPair;
+                string histName;
+                conv >> histName;
+                TH1D* tsHist = timeSeries->CreateAmplitudeDistributionHistogram(histName);
+                stringstream titleStream;
+                titleStream << "Analytic Associate " << iPair << " of Slice " << sliceNumber;
+                tsHist->SetTitle(titleStream.str().c_str());
+                tsHist->SetDirectory(fWriter->GetFile());
+                tsHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
     //************************
     // Correlation Data
     //************************
@@ -182,6 +220,39 @@ namespace Katydid
                 string histName;
                 conv >> histName;
                 TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
+                stringstream titleStream;
+                titleStream << "Slice " << sliceNumber << ", Correlation " << iPair << ", "
+                        "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
+                corrHist->SetTitle(titleStream.str().c_str());
+                corrHist->SetDirectory(fWriter->GetFile());
+                corrHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationDataDistribution(shared_ptr< KTData > data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTCorrelationData& corrData = data->Of<KTCorrelationData>();
+        UInt_t nComponents = corrData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        {
+            const KTFrequencySpectrumPolar* spectrum = corrData.GetSpectrumPolar(iPair);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histCorrDist_" << sliceNumber << "_" << iPair;
+                string histName;
+                conv >> histName;
+                TH1D* corrHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", Correlation " << iPair << ", "
                         "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
@@ -302,6 +373,64 @@ namespace Katydid
                 corrHist->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution(shared_ptr< KTData > data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTWignerVilleData& wvData = data->Of<KTWignerVilleData>();
+        UInt_t nComponents = wvData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histWVDist_" << sliceNumber << "_" << iPair;
+                string histName;
+                conv >> histName;
+                TH1D* corrHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
+                stringstream titleStream;
+                titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
+                        "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
+                corrHist->SetTitle(titleStream.str().c_str());
+                corrHist->SetDirectory(fWriter->GetFile());
+                corrHist->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteWV2DData(shared_ptr<KTData> data)
+    {
+        if (! data) return;
+
+        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTWV2DData& fsData = data->Of<KTWV2DData>();
+        UInt_t nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iPlot = 0; iPlot < nComponents; iPlot++)
+        {
+            stringstream conv;
+            conv << "histWV2D_" << sliceNumber << "_" << iPlot;
+            string histName;
+            conv >> histName;
+            TH2D* mfsHist = fsData.CreateMagnitudeHistogram(iPlot, histName);
+            mfsHist->SetDirectory(fWriter->GetFile());
+            mfsHist->Write();
+            KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }
         return;
     }

@@ -98,33 +98,42 @@ namespace Katydid
 */
 
 #ifdef ROOT_FOUND
-    /*
-    TH1D* KTTimeFrequencyPolar::CreateMagnitudeHistogram(const std::string& name) const
+    TH2D* KTTimeFrequencyPolar::CreateMagnitudeHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        UInt_t nTimeBins = size(1);
+        UInt_t nFreqBins = size(2);
+        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Magnitude", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        Double_t value;
+        for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin).abs());
+            for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
+            {
+                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).abs());
+            }
         }
-        hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Voltage (V)");
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Frequency (Hz)");
+        hist->SetZTitle("Voltage (V)");
         return hist;
     }
-    *//*
-    TH1D* KTTimeFrequencyPolar::CreatePhaseHistogram(const std::string& name) const
+    TH2D* KTTimeFrequencyPolar::CreatePhaseHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        UInt_t nTimeBins = size(1);
+        UInt_t nFreqBins = size(2);
+        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Phase", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        Double_t value;
+        for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin).arg());
+            for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
+            {
+                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).arg());
+            }
         }
-        hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Phase");
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Frequency (Hz)");
+        hist->SetZTitle("Phase");
         return hist;
     }
-    */
     TH2D* KTTimeFrequencyPolar::CreatePowerHistogram(const std::string& name) const
     {
         UInt_t nTimeBins = size(1);

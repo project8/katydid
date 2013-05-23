@@ -18,6 +18,7 @@ namespace Katydid
 {
     class KTData;
     class KTEggHeader;
+    class KTProcSummary;
     class KTTimeSeriesData;
 
     /*!
@@ -47,6 +48,7 @@ namespace Katydid
      - "header": void (const KTEggHeader*) -- emitted when the egg header is created.
      - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
+     - "summary": void (const KTProcSummary*) -- emitted when the job is complete, after "done"
     */
     class KTTSGenerator : public KTPrimaryProcessor
     {
@@ -125,6 +127,7 @@ namespace Katydid
             KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
             KTSignalData fDataSignal;
             KTSignalOneArg< void > fDoneSignal;
+            KTSignalOneArg< const KTProcSummary* > fSummarySignal;
     };
 
     inline UInt_t KTTSGenerator::GetNSlices() const
