@@ -110,6 +110,8 @@ namespace Katydid
 
     Bool_t KTOneShotJSONReader::ReadMCTruthEventsFile(KTData& appendToData)
     {
+        KTINFO(inlog, "Reading mc-truth-events input file: " << fFilename);
+
         rapidjson::Document document;
         if (! OpenAndParseFile(document))
         {
@@ -124,6 +126,13 @@ namespace Katydid
         }
         UInt_t recordSize = document["record_size"].GetUint();
 
+        if (! document["records_simulated"].IsUint())
+        {
+            KTERROR(inlog, "\"records_simulated\" value is missing or is not an unsigned integer");
+            return false;
+        }
+        UInt_t recordsSimulated = document["records_simulated"].GetUint();
+
         const rapidjson::Value& events = document["events"];
         if (! events.IsArray())
         {
@@ -133,6 +142,7 @@ namespace Katydid
 
         KTMCTruthEvents& mcTruth = appendToData.Of< KTMCTruthEvents >();
         mcTruth.SetRecordSize(recordSize);
+        mcTruth.SetNRecords(recordsSimulated);
 
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
         {
@@ -166,10 +176,12 @@ namespace Katydid
 
     Bool_t KTOneShotJSONReader::ReadAnalysisCandidatesFile(KTData& appendToData)
     {
+        KTINFO(inlog, "Reading analysis-candidates input file: " << fFilename);
+
         rapidjson::Document document;
         if (! OpenAndParseFile(document))
         {
-            KTERROR(inlog, "A problem occurred while parsing the mc-truth-events file");
+            KTERROR(inlog, "A problem occurred while parsing the analysis-candidates file");
             return false;
         }
 
@@ -180,7 +192,14 @@ namespace Katydid
         }
         UInt_t recordSize = document["record_size"].GetUint();
 
-         const rapidjson::Value& events = document["candidates"];
+        if (! document["records_analyzed"].IsUint())
+        {
+            KTERROR(inlog, "\"records_analyzed\" value is missing or is not an unsigned integer");
+            return false;
+        }
+        UInt_t recordsAnalyzed = document["records_analyzed"].GetUint();
+
+        const rapidjson::Value& events = document["candidates"];
         if (! events.IsArray())
         {
             KTERROR(inlog, "\"candidates\" value in the analysis candidates file is either missing or not an array");
@@ -189,6 +208,7 @@ namespace Katydid
 
         KTAnalysisCandidates& candidates = appendToData.Of< KTAnalysisCandidates >();
         candidates.SetRecordSize(recordSize);
+        candidates.SetNRecords(recordsAnalyzed);
 
         for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
         {
