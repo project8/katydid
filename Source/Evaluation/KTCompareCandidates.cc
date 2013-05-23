@@ -58,8 +58,14 @@ namespace Katydid
             return false;
         }
 
+        // eventMatches: each position in the vector represents one of the events; this vector records how many candidates matched each event.
         vector< UInt_t > eventMatches(events.size());
+        // candidateMatches: each position in the vector represents one of the candidates; this vector records how many events matched each candidate.
         vector< UInt_t > candidateMatches(candidates.size());
+
+        //ULong64_t candidateSampleSum = 0;
+        //ULong64_t eventSampleSum = 0;
+        //ULong64_t candidateCorrectSampleSum = 0;
 
         UInt_t eventCounter = 0;
         Bool_t continueEventLoop = true;
@@ -134,15 +140,14 @@ namespace Katydid
         nEventsWithCandidateMatches.resize(largestNumberOfMatches + 1);
 
         KTPROG(cclog, "Number of events: " << events.size());
-        KTPROG(cclog, "Largest number of matches: " << largestNumberOfMatches);
+        KTPROG(cclog, "Largest number of candidates matching an event: " << largestNumberOfMatches);
         std::stringstream textHist1;
         for (UInt_t iNEvents = 0; iNEvents < nEventsWithCandidateMatches.size(); iNEvents++)
         {
             textHist1 << iNEvents << ": " << nEventsWithCandidateMatches[iNEvents] << '\n';
         }
-        KTPROG(cclog, "Number of events with a given number of candidate matches:\n" << textHist1.str());
-        KTPROG(cclog, "Detection efficiency (# events with at least 1 match / # events): " << Double_t(nEventsWithAtLeastOneCandidateMatch) / Double_t(candidates.size()));
-        KTPROG(cclog, "False rate (# candidates not matching events / # of records): " << Double_t(nEventsWithCandidateMatches[0]) / Double_t(1 /* put # of records analyzed here, once it's available*/));
+        KTPROG(cclog, "Number of events (y axis) with a given number of candidate matches (x axis):\n" << textHist1.str());
+        KTPROG(cclog, "Detection efficiency (# events with at least 1 match / # events): " << Double_t(nEventsWithAtLeastOneCandidateMatch) / Double_t(events.size()));
 
 
         largestNumberOfMatches = 0;
@@ -160,13 +165,14 @@ namespace Katydid
             nCandidatesWithEventMatches.resize(largestNumberOfMatches + 1);
         }
         KTPROG(cclog, "Number of candidates: " << candidates.size());
-        KTPROG(cclog, "Largest number of matches: " << largestNumberOfMatches);
+        KTPROG(cclog, "Largest number of events matching a candidate: " << largestNumberOfMatches);
         std::stringstream textHist2;
         for (UInt_t iNCandidates = 0; iNCandidates < nCandidatesWithEventMatches.size(); iNCandidates++)
         {
             textHist2 << iNCandidates << ": " << nCandidatesWithEventMatches[iNCandidates] << '\n';
         }
-        KTPROG(cclog, "Number of candidates with a given number of event matches:\n" << textHist2.str());
+        KTPROG(cclog, "Number of candidates (y axis) with a given number of event matches (x axis):\n" << textHist2.str());
+        KTPROG(cclog, "False rate (10^6 * # candidates not matching events / # of samples simulated): " << 1.e6 * Double_t(nCandidatesWithEventMatches[0]) / (Double_t(nRecords) * Double_t(eventRecordSize)));
 
         return true;
     }
