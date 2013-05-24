@@ -95,9 +95,11 @@ namespace Katydid
             Bool_t TransformData(KTFrequencySpectrumDataFFTW& fsData);
 
             /// Forward FFT
-            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* data) const;
+            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* ts) const;
+            void DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
             /// Reverse FFT
-            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* data) const;
+            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* fs) const;
+            void DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const;
 
             virtual UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;

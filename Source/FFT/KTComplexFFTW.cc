@@ -277,9 +277,9 @@ namespace Katydid
         return true;
     }
 
-    KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* data) const
+    KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* ts) const
     {
-        UInt_t nBins = data->size();
+        UInt_t nBins = ts->size();
         if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -287,22 +287,28 @@ namespace Katydid
             return NULL;
         }
 
-        Double_t timeBinWidth = data->GetTimeBinWidth();
+        Double_t timeBinWidth = ts->GetTimeBinWidth();
         Double_t freqMin = GetMinFrequency(timeBinWidth);
         Double_t freqMax = GetMaxFrequency(timeBinWidth);
 
-        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
 
-        fftw_execute_dft(fForwardPlan, data->GetData(), newSpectrum->GetData());
+        DoTransform(ts, newFS);
+        //fftw_execute_dft(fForwardPlan, ts->GetData(), newSpectrum->GetData());
 
-        (*newSpectrum) *= sqrt(1. / fSize);
-
-        return newSpectrum;
+        return newFS;
     }
 
-    KTTimeSeriesFFTW* KTComplexFFTW::Transform(const KTFrequencySpectrumFFTW* data) const
+    void KTComplexFFTW::DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const
     {
-        UInt_t nBins = data->size();
+        fftw_execute_dft(fForwardPlan, tsIn->GetData(), fsOut->GetData());
+        (*fsOut) *= sqrt(1. / fSize);
+        return;
+    }
+
+    KTTimeSeriesFFTW* KTComplexFFTW::Transform(const KTFrequencySpectrumFFTW* fs) const
+    {
+        UInt_t nBins = fs->size();
         if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -310,13 +316,21 @@ namespace Katydid
             return NULL;
         }
 
-        KTTimeSeriesFFTW* newRecord = new KTTimeSeriesFFTW(nBins, GetMinTime(), GetMaxTime(data->GetBinWidth()));
+        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, GetMinTime(), GetMaxTime(fs->GetBinWidth()));
 
-        fftw_execute_dft(fReversePlan, data->GetData(), newRecord->GetData());
+        DoTransform(fs, newTS);
+        //fftw_execute_dft(fReversePlan, fs->GetData(), newRecord->GetData());
 
-        (*newRecord) *= sqrt(1. / Double_t(fSize));
 
-        return newRecord;
+        return newTS;
+    }
+
+    void KTComplexFFTW::DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const
+    {
+        fftw_execute_dft(fReversePlan, fsIn->GetData(), tsOut->GetData());
+        (*tsOut) *= sqrt(1. / Double_t(fSize));
+
+        return;
     }
 
     void KTComplexFFTW::SetSize(UInt_t nBins)
