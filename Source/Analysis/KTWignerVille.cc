@@ -11,6 +11,7 @@
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
 #include <algorithm>
@@ -26,19 +27,38 @@ namespace Katydid
     static KTDerivedNORegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
 
     KTWignerVille::KTWignerVille(const std::string& name) :
-                KTProcessor(name),
-                fFFT(new KTComplexFFTW()),
-                fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
-                fWVSignal("wigner-ville", this),
-                fHeaderSlot("header", this, &KTWignerVille::InitializeWithHeader),
-                fTimeSeriesSlot("ts", this, &KTWignerVille::TransformData, &fWVSignal),
-                fAnalyticAssociateSlot("aa", this, &KTWignerVille::TransformData, &fWVSignal)
+            KTProcessor(name),
+            fPairs(),
+            fBuffer(),
+            fWindowSize(1),
+            fWindowStride(1),
+            fNWindowsToAverage(1),
+            fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
+            fFFT(new KTComplexFFTW()),
+            fOutputArrays(),
+            fOutputData(new KTData()),
+            fOutputSHData(NULL),
+            fOutputWVData(NULL),
+            fWindowAverageCounter(0),
+            fWindowCounter(0),
+            fDataOutCounter(0),
+            //fLeftStartPointer(0),
+            fWVSignal("wigner-ville", this),
+            fHeaderSlot("header", this, &KTWignerVille::InitializeWithHeader)
     {
+        RegisterSlot("ts", this, &KTWignerVille::ProcessTimeSeries);
+        RegisterSlot("aa", this, &KTWignerVille::ProcessAnalyticAssociate);
     }
 
     KTWignerVille::~KTWignerVille()
     {
+        delete fInputArray;
         delete fFFT;
+        while (! fOutputArrays.empty())
+        {
+            delete fOutputArrays.back();
+            fOutputArrays.pop_back();
+        }
     }
 
     Bool_t KTWignerVille::Configure(const KTPStoreNode* node)
@@ -57,15 +77,88 @@ namespace Katydid
             this->AddPair(pair);
         }
 
-        SetWindowSize(node->GetData< UInt_t >("window-size", fInputArray->size()));
+        SetWindowSize(node->GetData< UInt_t >("window-size", fWindowSize));
+        SetWindowStride(node->GetData< UInt_t >("window-stride", fWindowStride));
+        SetNWindowsToAverage(node->GetData< UInt_t >("n-windows-to-average", fNWindowsToAverage));
 
         return true;
     }
 
     void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
     {
-        fFFT->SetSize(fInputArray->size());
+        if (fPairs.empty())
+        {
+            KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
+            return;
+        }
+        UInt_t nPairs = fPairs.size();
+
+        Double_t timeBW = 1. / header->GetAcquisitionRate();
+        if (fNWindowsToAverage == 0) fNWindowsToAverage = 1;
+
+        // initialize the FFT
+        fFFT->SetSize(fWindowSize);
         fFFT->InitializeFFT();
+
+        // initialize the input array
+        delete fInputArray;
+        fInputArray = new KTTimeSeriesFFTW(fWindowSize, 0., Double_t(fWindowSize) * timeBW);
+
+        // initialize the output arrays
+        if (fNWindowsToAverage > 1)
+        {
+            while (! fOutputArrays.empty())
+            {
+                delete fOutputArrays.back();
+                fOutputArrays.pop_back();
+            }
+            fOutputArrays.resize(nPairs);
+            for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+            {
+                fOutputArrays[iPair] = new KTFrequencySpectrumFFTW(fWindowSize, fFFT->GetMinFrequency(timeBW), fFFT->GetMaxFrequency(timeBW));
+            }
+        }
+
+        // initialize the circular buffer
+        fBuffer.resize(header->GetNChannels());
+        for (UInt_t iChannel = 0; iChannel < fBuffer.size(); iChannel++)
+        {
+            fBuffer[iChannel].set_capacity(header->GetSliceSize() + fWindowSize);
+        }
+
+        // initialize the output data
+        fOutputData.reset(new KTData());
+
+        // slice header
+        fOutputSHData = &(fOutputData->Of< KTSliceHeader >().SetNComponents(nPairs));
+        fOutputSHData->SetSampleRate(header->GetAcquisitionRate());
+        fOutputSHData->SetSliceSize(fWindowSize);
+        fOutputSHData->CalculateBinWidthAndSliceLength();
+
+        //fOutputWVData = &(fOutputData->Of< KTWV2DData >().SetNComponents(fPairs.size()));
+        fOutputWVData = &(fOutputData->Of< KTWignerVilleData >().SetNComponents(nPairs));
+        //UInt_t nWindows = 897;
+        UInt_t iPair = 0;
+        for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
+        {
+            UInt_t firstChannel = (*pairIt).first;
+            UInt_t secondChannel = (*pairIt).second;
+            fOutputWVData->SetInputPair(firstChannel, secondChannel, iPair);
+            /*
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nWindows, -0.5 * timeBW, timeBW * (Double_t(nWindows) - 0.5));
+            for (UInt_t iSpectrum = 0; iSpectrum < nWindows; iSpectrum++)
+            {
+                (*newSpectra)(iSpectrum) = NULL;
+            }
+            fOutputWVData->SetSpectra(newSpectra, iPair);
+            */
+            iPair++;
+        }
+
+        fDataOutCounter = 0;
+        fWindowCounter = 0;
+        fWindowAverageCounter = 0;
+
         return;
     }
 
@@ -78,6 +171,36 @@ namespace Katydid
     {
         return TransformFFTWBasedData(data);
     }
+
+    void KTWignerVille::CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, UInt_t iWindow)
+    {
+        // data2It will be decremented before it's used
+        Buffer::iterator data2It = data2End + fWindowSize;
+
+        register Double_t t1_real;
+        register Double_t t1_imag;
+        register Double_t t2_real;
+        register Double_t t2_imag;
+
+        KTERROR(wvlog, "iWindow = " << iWindow);
+
+        for (UInt_t fftBin = 0; fftBin < fWindowSize; fftBin++)
+        {
+            // decrement data2It first so that it doesn't run past begin() on the first window
+            data2It--;
+            t1_real = data1It->real();
+            t1_imag = data1It->imag();
+            t2_real = data2It->real();
+            t2_imag = data2It->imag();
+            (*fInputArray)(fftBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
+            (*fInputArray)(fftBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
+            KTWARN(wvlog, "  " << fftBin << " -- " << t1_real << "  " << t1_imag << " -- " << t2_real << "  " << t2_imag << " -- " << (*fInputArray)(fftBin)[0] << "  " << (*fInputArray)(fftBin)[1]);
+            data1It++;
+        }
+
+        return;
+    }
+
 
     void KTWignerVille::CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
     {
@@ -100,30 +223,48 @@ namespace Katydid
         */
         fInputArray->SetRange(0., (Double_t)fftSize * data1->GetBinWidth());
 
-        //KTERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
+        KTERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
 
         // Now calculate the lagged ACF at all possible lags.
         register Double_t t1_real;
         register Double_t t1_imag;
         register Double_t t2_real;
         register Double_t t2_imag;
-        //register UInt_t tau_plus = size - 1;
-        //register UInt_t tau_minus = 0;
-        ///register UInt_t start = (UInt_t)std::max(0, (Int_t)offset - ((Int_t)size - 1));
-        ///register UInt_t end = (UInt_t)std::min((Int_t)offset, (Int_t)size - 1);
+/*
+        UInt_t binsToFill = std::min(fftSize, sliceSize - fLeftStartPointer);
+        register UInt_t rightStartPointer = fLeftStartPointer + binsToFill - 1;
+
+        for (UInt_t fftBin = 0; fftBin < binsToFill; fftBin++)
+        {
+            t1_real = (*data1)(fLeftStartPointer + fftBin)[0];
+            t1_imag = (*data1)(fLeftStartPointer + fftBin)[1];
+            t2_real = (*data1)(rightStartPointer - fftBin)[0];
+            t2_imag = (*data1)(rightStartPointer - fftBin)[1];
+            (*fInputArray)(fftBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
+            (*fInputArray)(fftBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
+            KTWARN(wvlog, "  " << binsToFill << "  " << fLeftStartPointer << "  " << rightStartPointer << "  " << fftBin << " -- " << fLeftStartPointer + fftBin << "  " << (*data1)(fLeftStartPointer + fftBin)[0] << "  " << (*data1)(fLeftStartPointer + fftBin)[1] << " -- " << rightStartPointer - fftBin << "  " << (*data2)(rightStartPointer - fftBin)[0] << "  " << (*data2)(rightStartPointer - fftBin)[1] << " -- " << (*fInputArray)(fftBin)[0] << "  " << (*fInputArray)(fftBin)[1]);
+        }
+        for (UInt_t fftBin = binsToFill; fftBin < fftSize; fftBin++)
+        {
+            (*fInputArray)(fftBin)[0] = 0.;
+            (*fInputArray)(fftBin)[1] = 0.;
+        }
+*/
+/*
         register UInt_t time = offset;
         register Int_t taumax = std::min(std::min((Int_t)time, (Int_t)sliceSize - (Int_t)time -1), (Int_t)fftSize/2-1);
+        KTERROR(wvlog, "time = " << time << "  taumax = " << taumax);
 
         UInt_t fftBin = 0;
         for (Int_t tau = -taumax; tau <= taumax; tau++)
         {
             t1_real = (*data1)(time + tau)[0];
             t1_imag = (*data1)(time + tau)[1];
-            t2_real = (*data1)(time - tau)[0];
             t2_real = (*data2)(time - tau)[0];
+            t2_imag = (*data2)(time - tau)[1];
             (*fInputArray)(fftBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
             (*fInputArray)(fftBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
-            //KTWARN(wvlog, "  " << time << "  " << taumax << "  " << tau << "  " << fftBin << " -- " << time + tau << "  " << (*data1)(time+tau)[0] << "  " << (*data1)(time+tau)[1] << " -- " << time - tau << "  " << (*data2)(time-tau)[0] << "  " << (*data2)(time-tau)[0]);
+            KTWARN(wvlog, "  " << time << "  " << taumax << "  " << tau << "  " << fftBin << " -- " << time + tau << "  " << (*data1)(time+tau)[0] << "  " << (*data1)(time+tau)[1] << " -- " << time - tau << "  " << (*data2)(time-tau)[0] << "  " << (*data2)(time-tau)[1]);
             fftBin++;
         }
         for (; fftBin < fftSize; fftBin++)
@@ -131,7 +272,11 @@ namespace Katydid
             (*fInputArray)(fftBin)[0] = 0.;
             (*fInputArray)(fftBin)[1] = 0.;
         }
-
+*/
+        //register UInt_t tau_plus = size - 1;
+        //register UInt_t tau_minus = 0;
+        ///register UInt_t start = (UInt_t)std::max(0, (Int_t)offset - ((Int_t)size - 1));
+        ///register UInt_t end = (UInt_t)std::min((Int_t)offset, (Int_t)size - 1);
         ///for (UInt_t inArrBin = 0; inArrBin < start; inArrBin++)
         ///{
         ///    (*fInputArray)(inArrBin)[0] = 0.;
@@ -163,6 +308,50 @@ namespace Katydid
         ///    (*fInputArray)(inArrBin)[1] = 0.;
         ///    KTINFO(wvlog, "  " << inArrBin << " -- 0 -- 0");
         ///}
+    }
+
+    void KTWignerVille::ProcessTimeSeries(shared_ptr< KTData > data)
+    {
+        // Standard data slot pattern, except the signal is called asynchronously
+
+        // Check to ensure that the required data type is present
+        if (! data->Has< KTTimeSeriesData >())
+        {
+            KTERROR(slotlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
+            return;
+        }
+        // Call the function
+        if (! TransformData(data->Of< KTTimeSeriesData >()))
+        {
+            KTERROR(slotlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
+            return;
+        }
+
+        // the signal is not called here because the WV data is asynchronous with the input slices
+
+        return;
+    }
+
+    void KTWignerVille::ProcessAnalyticAssociate(shared_ptr< KTData > data)
+    {
+        // Standard data slot pattern, except the signal is called asynchronously
+
+        // Check to ensure that the required data type is present
+        if (! data->Has< KTAnalyticAssociateData >())
+        {
+            KTERROR(slotlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
+            return;
+        }
+        // Call the function
+        if (! TransformData(data->Of< KTAnalyticAssociateData >()))
+        {
+            KTERROR(slotlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
+            return;
+        }
+
+        // the signal is not called here because the WV data is asynchronous with the input slices
+
+        return;
     }
 
 } /* namespace Katydid */

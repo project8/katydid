@@ -12,15 +12,18 @@
 #include "KTProcessor.hh"
 
 #include "KTComplexFFTW.hh"
+#include "KTData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
 #include "KTSlot.hh"
-#include "KTWV2DData.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeSeriesFFTW.hh"
-////#include "KTWignerVilleData.hh"
+#include "KTWignerVilleData.hh"
+//#include "KTWV2DData.hh"
 
+#include <boost/circular_buffer.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <complex>
@@ -33,8 +36,9 @@ namespace Katydid
 
     class KTAnalyticAssociateData;
     class KTComplexFFTW;
-    class KTData;
+    //class KTData;
     class KTEggHeader;
+    //class KTSliceHeader;
     class KTTimeSeriesData;
 
     /*!
@@ -50,6 +54,8 @@ namespace Katydid
      Available configuration values:
      - "complex-fftw": string --
      - "wv-pair": bool -- channel pair to be used in the Wigner-Ville transform: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
+     - "window-size": unsigned -- number of bins to use for the WV window
+     - "window-stride": unsigned -- number of bins to skip between WV windows
 
      Slots:
      - "header": void (const KTEggHeader*) -- Initializes the transform using an Egg header
@@ -65,6 +71,9 @@ namespace Katydid
         public:
             typedef std::vector< UIntPair > PairVector;
 
+            typedef std::complex< Double_t > Complex;
+            typedef boost::circular_buffer< Complex > Buffer;
+
         public:
             KTWignerVille(const std::string& name = "wigner-ville");
             virtual ~KTWignerVille();
@@ -79,6 +88,12 @@ namespace Katydid
             UInt_t GetWindowSize() const;
             void SetWindowSize(UInt_t size);
 
+            UInt_t GetWindowStride() const;
+            void SetWindowStride(UInt_t stride);
+
+            UInt_t GetNWindowsToAverage() const;
+            void SetNWindowsToAverage(UInt_t nAvg);
+
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
 
@@ -87,10 +102,11 @@ namespace Katydid
         private:
             PairVector fPairs;
 
-            KTComplexFFTW* fFFT;
-            KTTimeSeriesFFTW* fInputArray;
+            std::vector< Buffer > fBuffer;
 
-
+            UInt_t fWindowSize;
+            UInt_t fWindowStride;
+            UInt_t fNWindowsToAverage;
 
         public:
             /// Performs the W-V transform on the given time series data.
@@ -103,7 +119,25 @@ namespace Katydid
             Bool_t TransformFFTWBasedData(XDataType& data);
 
             //void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+            // TODO: remove iWindow argument
+            void CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, UInt_t iWindow);
             void CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+
+            KTTimeSeriesFFTW* fInputArray;
+
+            KTComplexFFTW* fFFT;
+
+            std::vector< KTFrequencySpectrumFFTW* > fOutputArrays;
+
+            boost::shared_ptr< KTData > fOutputData;
+            KTSliceHeader* fOutputSHData;
+            //KTWV2DData* fOutputWVData;
+            KTWignerVilleData* fOutputWVData;
+
+            UInt_t fWindowAverageCounter;
+            UInt_t fWindowCounter;
+            UInt_t fDataOutCounter;
+            //UInt_t fLeftStartPointer;
 
             //***************
             // Signals
@@ -118,8 +152,11 @@ namespace Katydid
 
         private:
             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
-            KTSlotDataOneType< KTAnalyticAssociateData > fAnalyticAssociateSlot;
+            //KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            //KTSlotDataOneType< KTAnalyticAssociateData > fAnalyticAssociateSlot;
+
+            void ProcessTimeSeries(boost::shared_ptr< KTData > data);
+            void ProcessAnalyticAssociate(boost::shared_ptr< KTData > data);
 
     };
 
@@ -148,14 +185,37 @@ namespace Katydid
 
     inline UInt_t KTWignerVille::GetWindowSize() const
     {
-        return fInputArray->size();
+        return fWindowSize;
     }
 
     inline void KTWignerVille::SetWindowSize(UInt_t size)
     {
-        delete fInputArray;
-        fInputArray = new KTTimeSeriesFFTW(size, 0., 1.);
+        fWindowSize = size;
+        return;
     }
+
+    inline UInt_t KTWignerVille::GetWindowStride() const
+    {
+        return fWindowStride;
+    }
+
+    inline void KTWignerVille::SetWindowStride(UInt_t stride)
+    {
+        fWindowStride = stride;
+        return;
+    }
+
+    inline UInt_t KTWignerVille::GetNWindowsToAverage() const
+    {
+        return fNWindowsToAverage;
+    }
+
+    inline void KTWignerVille::SetNWindowsToAverage(UInt_t nAvg)
+    {
+        fNWindowsToAverage = nAvg;
+        return;
+    }
+
 
     inline KTComplexFFTW* KTWignerVille::GetFFT()
     {
@@ -170,14 +230,26 @@ namespace Katydid
     template< class XDataType >
     Bool_t KTWignerVille::TransformFFTWBasedData(XDataType& data)
     {
-            if (fPairs.empty())
+            //if (fPairs.empty())
+            //{
+            //    KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
+            //    return false;
+            //}
+
+            if (fOutputSHData == NULL || fOutputWVData == NULL)
             {
-                KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
+                KTERROR(wvlog, "Output data has not been initialized properly");
                 return false;
             }
 
             UInt_t nComponents = data.GetNComponents();
+            if (nComponents != fBuffer.size())
+            {
+                KTERROR(wvlog, "Number of components mismatched between the buffer (" << fBuffer.size() << ") and the data (" << nComponents << ")");
+                return false;
+            }
 
+            /*
             // cast all time series into KTTimeSeriesFFTW
             std::vector< const KTTimeSeriesFFTW* > timeSeries(nComponents);
             for (UInt_t iTS=0; iTS < nComponents; iTS++)
@@ -189,10 +261,110 @@ namespace Katydid
                     return false;
                 }
             }
+            */
 
+            std::vector< Buffer::iterator > futureStartWindow(nComponents);
+
+            // copy the data into the circular buffer
+            for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+            {
+                const KTTimeSeriesFFTW* ts = static_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
+                UInt_t tsSize = ts->size();
+                for (UInt_t iBin = 0; iBin < tsSize; iBin++)
+                {
+                    fBuffer[iComponent].push_back(std::complex< Double_t >((*ts)(iBin)[0], (*ts)(iBin)[1]));
+                }
+                futureStartWindow[iComponent] = fBuffer[iComponent].begin();
+            }
+
+            UInt_t nPairs = fOutputWVData->GetNComponents();
+
+            Bool_t exitBufferLoop = false;
+            while (! exitBufferLoop)
+            {
+
+                // analyze the data in the buffer
+                for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+                {
+                    UInt_t firstChannel = fPairs[iPair].first;
+                    UInt_t secondChannel =  fPairs[iPair].second;
+
+                    Buffer::iterator startWindowFC = futureStartWindow[firstChannel];
+                    Buffer::iterator startWindowSC = futureStartWindow[secondChannel];
+
+                    KTDEBUG(wvlog, "before transform -- ch 1: " << fBuffer[firstChannel].end() - startWindowFC << "    ch 2: " << fBuffer[secondChannel].end() - startWindowSC);
+                    CalculateACF(startWindowFC, startWindowSC, fWindowCounter);
+                    //fOutputWVData->SetSpectrum(fFFT->Transform(fInputArray), iWindowInLoop, iPair);
+                    if (fWindowAverageCounter == 0)
+                    {
+                        fOutputWVData->SetSpectrum(fFFT->Transform(fInputArray), iPair);
+                    }
+                    else
+                    {
+                        // this is done here with DoTransform to avoid the repeated allocation of new memory
+                        fFFT->DoTransform(fInputArray, fOutputArrays[iPair]);
+                        *(fOutputWVData->GetSpectrumFFTW(iPair)) += *fInputArray;
+                    }
+                }
+                // move the start pointers up by fWindowStride
+                for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                {
+
+                    if (fBuffer[iComponent].end() - futureStartWindow[iComponent] > fWindowStride) // (note: this is a comparison to fWindowSTRIDE)
+                        futureStartWindow[iComponent] += fWindowStride;
+                    else
+                        futureStartWindow[iComponent] = fBuffer[iComponent].end();
+
+                    if (fBuffer[iComponent].end() - futureStartWindow[iComponent] < fWindowSize) // (note: this is a comparison to fWindowSIZE)
+                        exitBufferLoop = true;
+                }
+
+                fWindowCounter++;
+                fWindowAverageCounter++;
+
+                if (fWindowAverageCounter == fNWindowsToAverage)
+                {
+                    // if we want an average and not just a sum, this is where the division by the fNWindowsToAverage should go
+
+                    // Finish filling in the output data
+                    if (exitBufferLoop) fOutputData->fLastData = true;
+                    fOutputData->fCounter = fDataOutCounter;
+                    //fOutputSHData->SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+                    fOutputSHData->SetSliceNumber(fDataOutCounter);
+
+                    // Call the signal on the output data
+                    fWVSignal(fOutputData);
+
+                    fDataOutCounter++;
+                    fWindowAverageCounter = 0;
+                }
+            }
+
+
+
+            // remove data that has now been analyzed completely
+            for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+            {
+                // just in case the futureStartWindow iterator is beyond the end of the buffer
+                if (! (futureStartWindow[iComponent] < fBuffer[iComponent].end()))
+                    futureStartWindow[iComponent] = fBuffer[iComponent].end();
+
+                // pop from the front until the front reaches futureStartWindow
+                while (fBuffer[iComponent].begin() != futureStartWindow[iComponent])
+                {
+                    fBuffer[iComponent].pop_front();
+                }
+
+                KTDEBUG(wvlog, "Data removed from circular buffer (ch. " << iComponent << "); samples remaining: " << fBuffer[iComponent].end() - fBuffer[iComponent].begin());
+            }
+
+
+
+
+/*
             UInt_t nPairs = fPairs.size();
 
-            KTWV2DData& newData = data.template Of< KTWV2DData >().SetNComponents(nPairs);
+            //KTWV2DData& newData = data.template Of< KTWV2DData >().SetNComponents(nPairs);
             ////KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nPairs);
 
             // Do WV transform for each pair
@@ -202,19 +374,31 @@ namespace Katydid
                 UInt_t firstChannel = (*pairIt).first;
                 UInt_t secondChannel = (*pairIt).second;
 
-                UInt_t nOffsets = timeSeries[firstChannel]->size();
-                ////UInt_t nOffsets = 1;
+                //UInt_t nOffsets = timeSeries[firstChannel]->size();
+                UInt_t nOffsets = 896;
                 Double_t timeBW = timeSeries[firstChannel]->GetBinWidth();
 
                 newData.SetInputPair(firstChannel, secondChannel, iPair);
-                newData.SetSpectra(new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nOffsets, -0.5 * timeBW, timeBW * (Double_t(nOffsets) - 0.5)), iPair);
-
-                for(UInt_t offset = 0; offset < nOffsets; offset++)
+                KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nOffsets, -0.5 * timeBW, timeBW * (Double_t(nOffsets) - 0.5));
+                for (UInt_t iSpectrum = 0; iSpectrum < nOffsets; iSpectrum++)
                 {
-                    CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], offset);
-                    newData.SetSpectrum(fFFT->Transform(fInputArray), offset, iPair);
-                    ////newData.SetSpectrum(fFFT->Transform(fInputArray), iPair);
+                    (*newSpectra)(iSpectrum) = NULL;
                 }
+                newData.SetSpectra(newSpectra, iPair);
+
+                for (; fLeftStartPointer + fInputArray->size() < timeSeries[firstChannel]->size(); fLeftStartPointer++)
+                {
+                    CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], 0);
+                    newData.SetSpectrum(fFFT->Transform(fInputArray), fLeftStartPointer, iPair);
+                }
+                KTDEBUG(wvlog, "Left start pointer now at " << fLeftStartPointer);
+
+                //for(UInt_t offset = 0; offset < nOffsets; offset++)
+                //{
+                //    CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], offset);
+                //    newData.SetSpectrum(fFFT->Transform(fInputArray), offset, iPair);
+                //    ////newData.SetSpectrum(fFFT->Transform(fInputArray), iPair);
+                //}
 
                 // why was this put here, cutting the frequency range in half?
                 //newSpectrum->SetRange(0.5 * newSpectrum->GetRangeMin(), 0.5 * newSpectrum->GetRangeMax());
@@ -222,6 +406,7 @@ namespace Katydid
                 iPair++;
             }
             KTINFO(wvlog, "Completed WV transform of " << iPair << " pairs");
+*/
 
             return true;
     }
