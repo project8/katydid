@@ -81,6 +81,7 @@ namespace Katydid
     inline void KTFrequencySpectrumDataPolarCore::SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component)
     {
         if (component >= fSpectra.size()) SetNComponents(component+1);
+        else delete fSpectra[component];
         fSpectra[component] = record;
         return;
     }
