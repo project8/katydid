@@ -38,7 +38,7 @@
             "connection":
             {
                 "signal-processor": "fft",
-                "signal-name": "fft",
+                "signal-name": "fft-forward",
                 "slot-processor": "writer",
                 "slot-name": "fs-fftw"
             },
@@ -54,7 +54,8 @@
         {
             "filename": "/path/to/file.egg",
             "slice-size": 16384,
-            "number-of-slices": 1
+            "number-of-slices": 1,
+            "time-series-type": "fftw"
         },
         
         "fft":

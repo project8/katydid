@@ -42,7 +42,7 @@
                 "group-order": 1
             },
             
-            "comment": "do the analysis!"
+            "comment": "do the analysis!",
             "connection":
             {
                 "signal-processor": "egg",
@@ -64,10 +64,10 @@
                 "signal-processor": "fft",
                 "signal-name": "fft",
                 "slot-processor": "writer",
-                "slot-name": "fs"
+                "slot-name": "fs-polar"
             },
             
-            "comment": "stop the profiler"
+            "comment": "stop the profiler",
             "connection":
             {
                 "signal-processor": "egg",
