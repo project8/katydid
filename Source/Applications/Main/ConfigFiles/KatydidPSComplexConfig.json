@@ -22,17 +22,19 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "slice",
-                "slot-processor": "fft",
-                "slot-name": "ts"
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
                 "signal-name": "header",
                 "slot-processor": "fft",
                 "slot-name": "header"
             },
+
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "slice",
+                "slot-processor": "fft",
+                "slot-name": "ts"
+            },
+            
             "connection":
             {
                 "signal-processor": "fft",

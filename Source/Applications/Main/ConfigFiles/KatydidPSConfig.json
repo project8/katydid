@@ -24,14 +24,25 @@
                 "name": "profiler"
             },
             
+            "comment": "configure the fft with the egg header, and start the profiler",
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "slice",
+                "signal-name": "header",
                 "slot-processor": "fft",
-                "slot-name": "ts",
+                "slot-name": "header",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "profiler",
+                "slot-name": "start",
                 "group-order": 1
             },
+            
+            "comment": "do the analysis!"
             "connection":
             {
                 "signal-processor": "egg",
@@ -43,18 +54,10 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "header",
+                "signal-name": "slice",
                 "slot-processor": "fft",
-                "slot-name": "header",
+                "slot-name": "ts",
                 "group-order": 1
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "header",
-                "slot-processor": "profiler",
-                "slot-name": "start",
-                "group-order": 0
             },
             "connection":
             {
@@ -63,6 +66,8 @@
                 "slot-processor": "writer",
                 "slot-name": "fs"
             },
+            
+            "comment": "stop the profiler"
             "connection":
             {
                 "signal-processor": "egg",
