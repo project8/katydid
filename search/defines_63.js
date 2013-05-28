@@ -1,6 +1,7 @@
 var searchData=
 [
   ['color_5fbright',['COLOR_BRIGHT',['../_k_t_logger_8hh.html#a916dc2ddc27e228e2e292ff707b18903',1,'KTLogger.hh']]],
+  ['color_5fforeground_5fblue',['COLOR_FOREGROUND_BLUE',['../_k_t_logger_8hh.html#af35241374f060a1ba3768ae3cc77a9e4',1,'KTLogger.hh']]],
   ['color_5fforeground_5fcyan',['COLOR_FOREGROUND_CYAN',['../_k_t_logger_8hh.html#ab38aa0ef4f934e8aa6a86d1e8f16ef46',1,'KTLogger.hh']]],
   ['color_5fforeground_5fgreen',['COLOR_FOREGROUND_GREEN',['../_k_t_logger_8hh.html#a35e905aa6179220ed2ce7f0bc1f59157',1,'KTLogger.hh']]],
   ['color_5fforeground_5fred',['COLOR_FOREGROUND_RED',['../_k_t_logger_8hh.html#a31cb1c78b8a3a33306a279cbd92f9ccd',1,'KTLogger.hh']]],

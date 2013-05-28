@@ -7,5 +7,6 @@ var searchData=
   ['ktinfo',['KTINFO',['../_k_t_logger_8hh.html#ac28d5284828a418942f19fea90aa1a49',1,'KTLogger.hh']]],
   ['ktlog',['KTLOG',['../_k_t_logger_8hh.html#a75292a69da23753c7539d89869be55f0',1,'KTLogger.hh']]],
   ['ktlogger',['KTLOGGER',['../_k_t_logger_8hh.html#a8a128d7bbf1f31196db65b0f4292d768',1,'KTLogger.hh']]],
+  ['ktprog',['KTPROG',['../_k_t_logger_8hh.html#af722e8a752d42c7d316586dc3f7d65c3',1,'KTLogger.hh']]],
   ['ktwarn',['KTWARN',['../_k_t_logger_8hh.html#a003ae250b67af6bcb1eab60a760d96b6',1,'KTLogger.hh']]]
 ];

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['has',['Has',['../struct_k_d_extensible_struct_core.html#aa6d03272863d07cec116e8d25c082f44',1,'KDExtensibleStructCore::Has()'],['../struct_katydid_1_1_k_t_extensible_struct_core.html#aa6d03272863d07cec116e8d25c082f44',1,'Katydid::KTExtensibleStructCore::Has()']]],
   ['has_5facqmode',['has_acqmode',['../class_monarch_p_b_1_1_monarch_header.html#ad31085638c3b52a72649eccccebe737b',1,'MonarchPB::MonarchHeader']]],
   ['has_5facqrate',['has_acqrate',['../class_monarch_p_b_1_1_monarch_header.html#ae86251ada3e295f6c8aa2170001a8898',1,'MonarchPB::MonarchHeader']]],
   ['has_5facqtime',['has_acqtime',['../class_monarch_p_b_1_1_monarch_header.html#ada8c36a68264ace1e60cc58d68270b7d',1,'MonarchPB::MonarchHeader']]],
@@ -10,9 +11,8 @@ var searchData=
   ['has_5frunsource',['has_runsource',['../class_monarch_p_b_1_1_monarch_header.html#a6612985405694fdc436569963701bb5f',1,'MonarchPB::MonarchHeader']]],
   ['has_5fruntype',['has_runtype',['../class_monarch_p_b_1_1_monarch_header.html#a338a34c5f60bf2f707b76d6cd4334953',1,'MonarchPB::MonarchHeader']]],
   ['hasdata',['HasData',['../class_katydid_1_1_k_t_p_store_node.html#a93a607cd22bc2e8403882cee083b1726',1,'Katydid::KTPStoreNode']]],
-  ['hatchnextbundle',['HatchNextBundle',['../class_katydid_1_1_k_t_egg.html#a883daba8ce64f023b0b21cbf587a053c',1,'Katydid::KTEgg::HatchNextBundle()'],['../class_katydid_1_1_k_t_egg_reader.html#a7cad3334e5cdfcad929d091b9a6b47eb',1,'Katydid::KTEggReader::HatchNextBundle()'],['../class_katydid_1_1_k_t_egg_reader2011.html#a6583f1c0d44396b7f11e4f50370b9a21',1,'Katydid::KTEggReader2011::HatchNextBundle()'],['../class_katydid_1_1_k_t_egg_reader_monarch.html#a6583f1c0d44396b7f11e4f50370b9a21',1,'Katydid::KTEggReaderMonarch::HatchNextBundle()']]],
-  ['headerinfo',['HeaderInfo',['../struct_katydid_1_1_k_t_egg_reader2011_1_1_header_info.html#a1126dbde19b9f8f98455f018c064f7fa',1,'Katydid::KTEggReader2011::HeaderInfo']]],
+  ['hatchnextslice',['HatchNextSlice',['../class_katydid_1_1_k_t_egg_reader.html#a023c1782440c76de839f8edf43a56b17',1,'Katydid::KTEggReader::HatchNextSlice()'],['../class_katydid_1_1_k_t_egg_reader2011.html#a23d40074730b03f14e1703b65d24127b',1,'Katydid::KTEggReader2011::HatchNextSlice()'],['../class_katydid_1_1_k_t_egg_reader_monarch.html#a23d40074730b03f14e1703b65d24127b',1,'Katydid::KTEggReaderMonarch::HatchNextSlice()']]],
   ['headerinfo',['HeaderInfo',['../struct_katydid_1_1_k_t_egg_reader2011_1_1_header_info.html',1,'Katydid::KTEggReader2011']]],
-  ['headersignal',['HeaderSignal',['../class_katydid_1_1_k_t_egg_processor.html#a829bcfb9ea9e63530f24dd5b183eaeaf',1,'Katydid::KTEggProcessor']]],
-  ['htsignal',['HTSignal',['../class_katydid_1_1_k_t_hough_transform.html#a4d92643cbcdc815ad70aa4dcafea0d1c',1,'Katydid::KTHoughTransform']]]
+  ['headerinfo',['HeaderInfo',['../struct_katydid_1_1_k_t_egg_reader2011_1_1_header_info.html#a1126dbde19b9f8f98455f018c064f7fa',1,'Katydid::KTEggReader2011::HeaderInfo']]],
+  ['htsignal',['HTSignal',['../class_katydid_1_1_k_t_hough_transform.html#a349a6837d60e34e302192b5ef222cc98',1,'Katydid::KTHoughTransform']]]
 ];

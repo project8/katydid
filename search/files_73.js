@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['simpleelectronhunt_2ecc',['SimpleElectronHunt.cc',['../_simple_electron_hunt_8cc.html',1,'']]],
-  ['simpleelectronhunt2_2ecc',['SimpleElectronHunt2.cc',['../_simple_electron_hunt2_8cc.html',1,'']]]
+  ['specialization_2ecc',['specialization.cc',['../specialization_8cc.html',1,'']]],
+  ['specialization_2ehh',['specialization.hh',['../specialization_8hh.html',1,'']]]
 ];

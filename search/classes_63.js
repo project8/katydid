@@ -1,8 +1,11 @@
 var searchData=
 [
-  ['cluster',['Cluster',['../struct_katydid_1_1_k_t_simple_clustering_1_1_cluster.html',1,'Katydid::KTSimpleClustering']]],
+  ['candidate',['Candidate',['../struct_katydid_1_1_k_t_analysis_candidates_1_1_candidate.html',1,'Katydid::KTAnalysisCandidates']]],
+  ['candidatecompare',['CandidateCompare',['../struct_katydid_1_1_k_t_analysis_candidates_1_1_candidate_compare.html',1,'Katydid::KTAnalysisCandidates']]],
+  ['canditcompare',['CandItCompare',['../struct_katydid_1_1_k_t_compare_candidates_1_1_cand_it_compare.html',1,'Katydid::KTCompareCandidates']]],
+  ['cluster',['Cluster',['../struct_katydid_1_1_k_t_multi_slice_clustering_1_1_cluster.html',1,'Katydid::KTMultiSliceClustering']]],
   ['clustercompare',['ClusterCompare',['../struct_katydid_1_1_k_t_cluster1_d_data_1_1_cluster_compare.html',1,'Katydid::KTCluster1DData']]],
-  ['clusterpoint',['ClusterPoint',['../struct_katydid_1_1_k_t_simple_clustering_1_1_cluster_point.html',1,'Katydid::KTSimpleClustering']]],
+  ['clusterpoint',['ClusterPoint',['../struct_katydid_1_1_k_t_multi_slice_clustering_1_1_cluster_point.html',1,'Katydid::KTMultiSliceClustering']]],
   ['commandlinehandlerexception',['CommandLineHandlerException',['../class_katydid_1_1_command_line_handler_exception.html',1,'Katydid']]],
   ['comparetypeinfo',['CompareTypeInfo',['../struct_katydid_1_1_k_t_t_i_factory_1_1_compare_type_info.html',1,'Katydid::KTTIFactory']]],
   ['complexpolar',['complexpolar',['../class_katydid_1_1complexpolar.html',1,'Katydid']]],

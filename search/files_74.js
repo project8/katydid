@@ -16,7 +16,10 @@ var searchData=
   ['testhoughtransform_2ecc',['TestHoughTransform.cc',['../_test_hough_transform_8cc.html',1,'']]],
   ['testjsonwriter_2ecc',['TestJSONWriter.cc',['../_test_j_s_o_n_writer_8cc.html',1,'']]],
   ['testlogger_2ecc',['TestLogger.cc',['../_test_logger_8cc.html',1,'']]],
+  ['testmultisliceclustering_2ecc',['TestMultiSliceClustering.cc',['../_test_multi_slice_clustering_8cc.html',1,'']]],
+  ['testoneshotjsonreader_2ecc',['TestOneShotJSONReader.cc',['../_test_one_shot_j_s_o_n_reader_8cc.html',1,'']]],
   ['testparameterstore_2ecc',['TestParameterStore.cc',['../_test_parameter_store_8cc.html',1,'']]],
+  ['testrandom_2ecc',['TestRandom.cc',['../_test_random_8cc.html',1,'']]],
   ['testsignalsandslots_2ecc',['TestSignalsAndSlots.cc',['../_test_signals_and_slots_8cc.html',1,'']]],
   ['testsimpleclustering_2ecc',['TestSimpleClustering.cc',['../_test_simple_clustering_8cc.html',1,'']]],
   ['testsimplefft_2ecc',['TestSimpleFFT.cc',['../_test_simple_f_f_t_8cc.html',1,'']]],
@@ -25,7 +28,6 @@ var searchData=
   ['testthroughputprofiler_2ecc',['TestThroughputProfiler.cc',['../_test_throughput_profiler_8cc.html',1,'']]],
   ['testvector_2ecc',['TestVector.cc',['../_test_vector_8cc.html',1,'']]],
   ['testwignerville_2ecc',['TestWignerVille.cc',['../_test_wigner_ville_8cc.html',1,'']]],
-  ['tfrequencycandidatedata_2ecc',['TFrequencyCandidateData.cc',['../_t_frequency_candidate_data_8cc.html',1,'']]],
-  ['tfrequencycandidatedata_2ehh',['TFrequencyCandidateData.hh',['../_t_frequency_candidate_data_8hh.html',1,'']]],
+  ['testwindowfunction_2ecc',['TestWindowFunction.cc',['../_test_window_function_8cc.html',1,'']]],
   ['truncate_2ecc',['Truncate.cc',['../_truncate_8cc.html',1,'']]]
 ];
