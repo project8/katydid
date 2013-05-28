@@ -8,6 +8,8 @@
 #ifndef KTEGGHEADER_HH_
 #define KTEGGHEADER_HH_
 
+#include "MonarchTypes.hpp"
+
 #include "Rtypes.h"
 
 #include <string>
@@ -39,11 +41,26 @@ namespace Katydid
             void SetRecordSize(std::size_t mrecsize);
             std::size_t GetRecordSize() const;
 
-            void SetAcquisitionTime(UInt_t acqt);
-            UInt_t GetAcquisitionTime() const;
+            void SetRunDuration(UInt_t acqt);
+            UInt_t GetRunDuration() const;
 
             void SetAcquisitionRate(Double_t acqr);
             Double_t GetAcquisitionRate() const;
+
+            void SetTimestamp( const std::string& aTimestamp );
+            const std::string& GetTimestamp() const;
+
+            void SetDescription( const std::string& aDescription );
+            const std::string& GetDescription() const;
+
+            void SetRunType( RunType aRunType );
+            RunType GetRunType() const;
+
+            void SetRunSource( RunSourceType aRunSource );
+            RunSourceType GetRunSource() const;
+
+            void SetFormatMode( FormatModeType aFormatMode );
+            FormatModeType GetFormatMode() const;
 
         protected:
             std::string fFilename;
@@ -51,8 +68,13 @@ namespace Katydid
             UInt_t fNChannels;
             std::size_t fSliceSize; /// Number of bins per record-written-to-disk
             std::size_t fRecordSize; /// Number of bins per Katydid record
-            UInt_t fAcquisitionTime;
+            UInt_t fRunDuration;
             Double_t fAcquisitionRate; /// in Hz
+            std::string fTimestamp;
+            std::string fDescription;
+            RunType fRunType;
+            RunSourceType fRunSource;
+            FormatModeType fFormatMode;
 
     };
 
@@ -111,15 +133,15 @@ namespace Katydid
         return fRecordSize;
     }
 
-    inline void KTEggHeader::SetAcquisitionTime(UInt_t acqt)
+    inline void KTEggHeader::SetRunDuration(UInt_t acqt)
     {
-        fAcquisitionTime = acqt;
+        fRunDuration = acqt;
         return;
     }
 
-    inline UInt_t KTEggHeader::GetAcquisitionTime() const
+    inline UInt_t KTEggHeader::GetRunDuration() const
     {
-        return fAcquisitionTime;
+        return fRunDuration;
     }
 
     inline void KTEggHeader::SetAcquisitionRate(Double_t acqr)
@@ -132,6 +154,62 @@ namespace Katydid
     {
         return fAcquisitionRate;
     }
+
+    inline void KTEggHeader::SetTimestamp( const std::string& aTimestamp )
+    {
+        fTimestamp = aTimestamp;
+        return;
+    }
+
+    inline const std::string& KTEggHeader::GetTimestamp() const
+    {
+        return fTimestamp;
+    }
+
+    inline void KTEggHeader::SetDescription( const std::string& aDescription )
+    {
+        fDescription = aDescription;
+        return;
+    }
+
+    inline const std::string& KTEggHeader::GetDescription() const
+    {
+        return fDescription;
+    }
+
+    inline void KTEggHeader::SetRunType( RunType aRunType )
+    {
+        fRunType = aRunType;
+        return;
+    }
+
+    inline RunType KTEggHeader::GetRunType() const
+    {
+        return fRunType;
+    }
+
+    inline void KTEggHeader::SetRunSource( RunSourceType aRunSource )
+    {
+        fRunSource = aRunSource;
+        return;
+    }
+
+    inline RunSourceType KTEggHeader::GetRunSource() const
+    {
+        return fRunSource;
+    }
+
+    inline void KTEggHeader::SetFormatMode( FormatModeType aFormatMode )
+    {
+        fFormatMode = aFormatMode;
+        return;
+    }
+
+    inline FormatModeType KTEggHeader::GetFormatMode() const
+    {
+        return fFormatMode;
+    }
+
 
 
 } /* namespace Katydid */

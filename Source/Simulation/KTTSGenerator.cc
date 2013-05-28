@@ -90,8 +90,13 @@ namespace Katydid
              << "\tNumber of Channels: " << newHeader->GetNChannels() << '\n'
              << "\tSlice Size: " << newHeader->GetSliceSize() << '\n'
              << "\tRecord Size: " << newHeader->GetRecordSize() << '\n'
-             << "\tAcquisition Time: " << newHeader->GetAcquisitionTime() << " s" << '\n'
-             << "\tAcquisition Rate: " << newHeader->GetAcquisitionRate() << " Hz ");
+             << "\tRun Duration: " << newHeader->GetRunDuration() << " ms" << '\n'
+             << "\tAcquisition Rate: " << newHeader->GetAcquisitionRate() << " Hz \n"
+             << "\tTimestamp: " << newHeader->GetTimestamp() << '\n'
+             << "\tDescription: " << newHeader->GetDescription() << '\n'
+             << "\tRun Type: " << newHeader->GetRunType() << '\n'
+             << "\tRun Source: " << newHeader->GetRunSource() << '\n'
+             << "\tFormat Mode: " << newHeader->GetFormatMode());
 
         fHeaderSignal(newHeader);
         delete newHeader;

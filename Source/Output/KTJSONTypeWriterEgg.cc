@@ -67,11 +67,26 @@ namespace Katydid
         jsonMaker->String("monarch-record-size");
         jsonMaker->Uint((UInt_t)header->GetRecordSize());
 
-        jsonMaker->String("acquisition-time");
-        jsonMaker->Uint(header->GetAcquisitionTime());
+        jsonMaker->String("run-duration");
+        jsonMaker->Uint(header->GetRunDuration());
 
         jsonMaker->String("acquisition-rate");
         jsonMaker->Double(header->GetAcquisitionRate());
+
+        jsonMaker->String("timestamp");
+        jsonMaker->String(header->GetTimestamp().c_str(), (SizeType)header->GetTimestamp().length());
+
+        jsonMaker->String("description");
+        jsonMaker->String(header->GetDescription().c_str(), (SizeType)header->GetDescription().length());
+
+        jsonMaker->String("run-type");
+        jsonMaker->Uint(header->GetRunType());
+
+        jsonMaker->String("run-source");
+        jsonMaker->Uint(header->GetRunSource());
+
+        jsonMaker->String("format-mode");
+        jsonMaker->Uint(header->GetFormatMode());
 
         jsonMaker->EndObject();
 

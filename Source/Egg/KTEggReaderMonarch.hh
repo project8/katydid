@@ -19,8 +19,9 @@
 #include <string>
 #include <vector>
 
-class MonarchPP;
+class Monarch;
 class MonarchHeader;
+class MonarchRecord;
 
 namespace Katydid
 {
@@ -28,6 +29,8 @@ namespace Katydid
     class KTEggReaderMonarch : public KTEggReader
     {
         protected:
+            typedef const MonarchRecord* (Monarch::*GetRecordFunction)() const;
+
             typedef std::map< UInt_t, Int_t > AcquisitionModeMap;
             typedef AcquisitionModeMap::value_type AcqModeMapValue;
 
@@ -40,7 +43,7 @@ namespace Katydid
                     kContinueReading,
                     kReachedNextRecord
                 };
-                AcqIdType fAcquisitionID;
+                AcquisitionIdType fAcquisitionID;
                 UInt_t fReadPtrOffset; // sample offset of the read pointer in the current record
                 UInt_t fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
                 UInt_t fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
@@ -82,13 +85,18 @@ namespace Katydid
             /// Closes the file.
             Bool_t CloseEgg();
 
-        protected:
+            static UInt_t GetMaxChannels();
+
+        private:
             /// Copy header information from the MonarchHeader object
             void CopyHeaderInformation(const MonarchHeader* monarchHeader);
 
-            const MonarchPP* fMonarch;
+            const Monarch* fMonarch;
             KTEggHeader fHeader;
             MonarchReadState fReadState;
+
+            static const UInt_t fMaxChannels = 2;
+            GetRecordFunction fMonarchGetRecord[fMaxChannels];
 
             AcquisitionModeMap fNumberOfChannels;
 
@@ -114,7 +122,7 @@ namespace Katydid
 
             const MonarchReadState& GetReadState() const;
 
-        protected:
+        private:
             Double_t fSampleRateUnitsInHz;
 
             Double_t fFullVoltageScale;

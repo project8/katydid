@@ -10,6 +10,7 @@
 #include "KTThroughputProfiler.hh"
 
 #include "Monarch.hpp"
+#include "MonarchException.hpp"
 
 #include <fftw3.h>
 
@@ -34,21 +35,25 @@ int main(const int argc, const char** argv)
     unsigned nSlices = atoi(argv[2]);
 
     const Monarch* tReadTest = Monarch::OpenForReading(argv[1]);
-    if (tReadTest->ReadHeader() == false)
+    try
     {
-        KTERROR(proflog, "could not read header!");
+        tReadTest->ReadHeader();
+    }
+    catch (MonarchException& e)
+    {
+        KTERROR(proflog, "could not read header: " << e.what());
         return -1;
     }
 
     const MonarchHeader* tReadHeader = tReadTest->GetHeader();
     KTEggHeader tEggHeader;
     tEggHeader.SetFilename(tReadHeader->GetFilename());
-    tEggHeader.SetAcquisitionMode(tReadHeader->GetAcqMode());
+    tEggHeader.SetAcquisitionMode(tReadHeader->GetAcquisitionMode());
     tEggHeader.SetNChannels(2);
     tEggHeader.SetRecordSize(tReadHeader->GetRecordSize());
     tEggHeader.SetSliceSize(tReadHeader->GetRecordSize());
-    tEggHeader.SetAcquisitionTime(tReadHeader->GetAcqTime());
-    tEggHeader.SetAcquisitionRate(tReadHeader->GetAcqRate() * 1.e6);
+    tEggHeader.SetRunDuration(tReadHeader->GetRunDuration());
+    tEggHeader.SetAcquisitionRate(tReadHeader->GetAcquisitionRate() * 1.e6);
 
     KTDEBUG(proflog, "Parsed header:\n"
          << "\tFilename: " << tEggHeader.GetFilename() << '\n'
@@ -56,7 +61,7 @@ int main(const int argc, const char** argv)
          << "\tNumber of Channels: " << tEggHeader.GetNChannels() << '\n'
          << "\tRecord Size: " << tEggHeader.GetSliceSize() << '\n'
          << "\tRecord Size: " << tEggHeader.GetRecordSize() << '\n'
-         << "\tAcquisition Time: " << tEggHeader.GetAcquisitionTime() << " s" << '\n'
+         << "\tRun Duration: " << tEggHeader.GetRunDuration() << " s" << '\n'
          << "\tAcquisition Rate: " << tEggHeader.GetAcquisitionRate() << " Hz ");
 
     unsigned tSize = tEggHeader.GetRecordSize();
@@ -81,8 +86,8 @@ int main(const int argc, const char** argv)
     KTINFO(proflog, "Starting profiling");
     profiler.ProcessHeader(&tEggHeader);
 
-    const MonarchRecord* tRecord1 = tReadTest->GetRecordOne();
-    const MonarchRecord* tRecord2 = tReadTest->GetRecordTwo();
+    const MonarchRecord* tRecord1 = tReadTest->GetRecordSeparateOne();
+    const MonarchRecord* tRecord2 = tReadTest->GetRecordSeparateTwo();
     for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
     {
         KTINFO(proflog, "Slice " << iSlice);
@@ -96,7 +101,7 @@ int main(const int argc, const char** argv)
         // copy the data
         for (unsigned index=0; index < tReadHeader->GetRecordSize(); index++)
         {
-            tInputArray[index][0] = double((unsigned char)(tRecord1->fDataPtr[index]));
+            tInputArray[index][0] = double((unsigned char)(tRecord1->fData[index]));
         }
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
@@ -105,7 +110,7 @@ int main(const int argc, const char** argv)
         // copy the data
         for (unsigned index=0; index < tReadHeader->GetRecordSize(); index++)
         {
-            tInputArray[index][0] = double((unsigned char)(tRecord2->fDataPtr[index]));
+            tInputArray[index][0] = double((unsigned char)(tRecord2->fData[index]));
         }
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
