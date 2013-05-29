@@ -9,6 +9,7 @@ set (EGG_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggWriter.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTThroughputProfiler.hh
 )
 
@@ -17,6 +18,7 @@ set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggWriter.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTThroughputProfiler.cc
 )
 
