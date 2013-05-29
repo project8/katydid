@@ -10,6 +10,8 @@
 
 #include "KTWriter.hh"
 
+#include "KTSlot.hh"
+
 #include "MonarchTypes.hpp"
 
 class Monarch;
@@ -39,11 +41,12 @@ namespace Katydid
      Available configuration values:
      - "output-file": string -- output filename
      - "format-mode": string -- how multiple channels are written: "separate" or "interleaved" (ignored for single-channel)
+     - "digitizer-fullscale": double -- full-scale range of the digitizer
 
      Slots:
      - "header": void (const KTEggHeader*) -- writes the header information to the candidates file
      - "ts": void (boost::shared_ptr<KTData>) -- writes a record from a time series;
-     - "stop": void () -- stops writing candidates and closes the file
+     - "done": void () -- closes the file
     */
     class KTEggWriter : public KTWriter
     {
@@ -80,7 +83,7 @@ namespace Katydid
 
         public:
             Bool_t OpenFile();
-            Bool_t CloseFile();
+            void CloseFile();
 
             void WriteHeader(const KTEggHeader* header);
 
@@ -104,7 +107,7 @@ namespace Katydid
         private:
             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
-
+            KTSlotNoArg< void () > fDoneSlot;
     };
 
     inline const std::string& KTEggWriter::GetFilename() const

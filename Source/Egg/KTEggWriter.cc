@@ -26,8 +26,8 @@ namespace Katydid
 {
     KTLOGGER(eggwritelog, "katydid.output");
 
-    static KTDerivedNORegistrar< KTWriter, KTOfficialCandidatesWriter > sOCWriterRegistrar("egg-writer");
-    static KTDerivedNORegistrar< KTProcessor, KTOfficialCandidatesWriter > sOCWProcRegistrar("egg-writer");
+    static KTDerivedNORegistrar< KTWriter, KTEggWriter > sEWriterRegistrar("egg-writer");
+    static KTDerivedNORegistrar< KTProcessor, KTEggWriter > sEWProcRegistrar("egg-writer");
 
 
     KTEggWriter::KTEggWriter(const std::string& name) :
@@ -40,7 +40,8 @@ namespace Katydid
             fExpectedRecordSize(17),
             fEggFile(NULL),
             fHeaderSlot("header", this, &KTEggWriter::WriteHeader),
-            fTimeSeriesSlot("ts", this, &KTEggWriter::WriteTSData)
+            fTimeSeriesSlot("ts", this, &KTEggWriter::WriteTSData),
+            fDoneSlot("done", this, &KTEggWriter::CloseFile)
     {
     }
 
@@ -104,12 +105,9 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTEggWriter::CloseFile()
+    void KTEggWriter::CloseFile()
     {
-        if (fFileStatus == kClosed)
-        {
-            return true;
-        }
+        if (fFileStatus == kClosed) return;
 
         try
         {
@@ -118,7 +116,7 @@ namespace Katydid
         catch (MonarchException& e)
         {
             KTERROR(eggwritelog, "Problem occurred while closing file: " << e.what());
-            return false;
+            return;
         }
 
         delete fEggFile;
@@ -126,7 +124,7 @@ namespace Katydid
 
         fFileStatus = kClosed;
 
-        return true;
+        return;
     }
 
     void KTEggWriter::WriteHeader(const KTEggHeader* header)
@@ -228,8 +226,7 @@ namespace Katydid
             return false;
         }
 
-        MonarchRecord* monarchRecord = fEggFile->GetRecordInterleaved();
-        DataType dataPtr = monarchRecord->fData;
+        DataType* dataPtr = fEggFile->GetRecordInterleaved()->fData;
 
         Double_t value0, value1;
         for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)

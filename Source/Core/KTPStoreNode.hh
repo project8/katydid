@@ -25,6 +25,7 @@
 
 // I can't just use boost::spirit::qi because of naming conflicts with std
 using boost::spirit::qi::int_;
+using boost::spirit::qi::double_;
 // I had to take this out because of a naming conflict with boost::bind
 //using boost::spirit::qi::_1;
 using boost::spirit::qi::phrase_parse;
@@ -37,8 +38,10 @@ namespace Katydid
     KTLOGGER(utillog_psnode, "katydid.utility");
 
     typedef std::pair< UInt_t, UInt_t > UIntPair;
+    typedef std::pair< UInt_t, Double_t > UIntDoublePair;
 
-    UIntPair ParsePair(const std::string& pair);
+    UIntPair ParsePairUInt(const std::string& pair);
+    UIntDoublePair ParsePairUIntDouble(const std::string& pair);
 
 
     class KTPStoreNodeDataNotFound : public std::exception
