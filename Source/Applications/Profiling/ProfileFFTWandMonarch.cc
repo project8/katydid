@@ -57,7 +57,7 @@ int main(const int argc, const char** argv)
 
     KTDEBUG(proflog, "Parsed header:\n"
          << "\tFilename: " << tEggHeader.GetFilename() << '\n'
-         << "\tAcuisition Mode: " << tEggHeader.GetAcquisitionMode() << '\n'
+         << "\tAcquisition Mode: " << tEggHeader.GetAcquisitionMode() << '\n'
          << "\tNumber of Channels: " << tEggHeader.GetNChannels() << '\n'
          << "\tRecord Size: " << tEggHeader.GetSliceSize() << '\n'
          << "\tRecord Size: " << tEggHeader.GetRecordSize() << '\n'

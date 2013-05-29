@@ -86,7 +86,7 @@ namespace Katydid
 
         KTDEBUG(genlog, "Created header:\n"
              << "\tFilename: " << newHeader->GetFilename() << '\n'
-             << "\tAcuisition Mode: " << newHeader->GetAcquisitionMode() << '\n'
+             << "\tAqcuisition Mode: " << newHeader->GetAcquisitionMode() << '\n'
              << "\tNumber of Channels: " << newHeader->GetNChannels() << '\n'
              << "\tSlice Size: " << newHeader->GetSliceSize() << '\n'
              << "\tRecord Size: " << newHeader->GetRecordSize() << '\n'

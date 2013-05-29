@@ -108,7 +108,7 @@ namespace Katydid
 
         KTDEBUG("Parsed header:\n"
              << "\tFilename: " << fHeader.GetFilename() << '\n'
-             << "\tAcuisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
+             << "\tAcquisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
              << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'
              << "\tSlice Size: " << fHeader.GetSliceSize() << '\n'
              << "\tRecord Size: " << fHeader.GetRecordSize() << '\n'
