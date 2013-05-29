@@ -129,6 +129,9 @@ namespace Katydid
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
+        // force monarch to use Separate interface
+        fMonarch->SetInterface(sInterfaceSeparate);
+
         fSliceNumber = 0;
 
         return new KTEggHeader(fHeader);
