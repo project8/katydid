@@ -41,6 +41,7 @@ namespace Katydid
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
         {
             UIntDoublePair pair = ParsePairUIntDouble(citer->second.get_value< string >());
+            if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1);
             fOffsets[pair.first] = pair.second;
         }
 
@@ -52,6 +53,7 @@ namespace Katydid
         const UInt_t sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 
         UInt_t nComponents = data.GetNComponents();
+        if (fOffsets.size() <= nComponents) fOffsets.resize(nComponents + 1);
 
         for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {

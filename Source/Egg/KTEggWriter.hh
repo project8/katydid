@@ -44,7 +44,7 @@ namespace Katydid
      - "digitizer-fullscale": double -- full-scale range of the digitizer
 
      Slots:
-     - "header": void (const KTEggHeader*) -- writes the header information to the candidates file
+     - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; opens the file first if it hasn't been opened
      - "ts": void (boost::shared_ptr<KTData>) -- writes a record from a time series;
      - "done": void () -- closes the file
     */

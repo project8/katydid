@@ -129,6 +129,12 @@ namespace Katydid
 
     void KTEggWriter::WriteHeader(const KTEggHeader* header)
     {
+        if (fFileStatus == kClosed)
+        {
+            if (OpenFile())
+                fFileStatus = kOpened;
+        }
+
         if (fFileStatus != kOpened)
         {
             KTERROR(eggwritelog, "Cannot write header. File status must be <" << kOpened <<">; currently it is <" << fFileStatus <<">");
@@ -229,16 +235,21 @@ namespace Katydid
         DataType* dataPtr = fEggFile->GetRecordInterleaved()->fData;
 
         Double_t value0, value1;
+        Double_t scale = 255. / fDigitizerFullscale;
         for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
         {
-            value0 = ts0->GetValue(iBin) / fDigitizerFullscale;
-            value1 = ts1->GetValue(iBin) / fDigitizerFullscale;
+            /*
+            value0 = ts0->GetValue(iBin) * scale;
+            value1 = ts1->GetValue(iBin) * scale;
             if (value0 >= 256) value0 = 255.;
             if (value1 >= 256) value1 = 255.;
             if (value0 < 0.) value0 = 0.;
             if (value1 < 0.) value1 = 0.;
-            dataPtr[2 * iBin] = UInt_t(floor(value0));
-            dataPtr[2 * iBin + 1] = UInt_t(floor(value1));
+            dataPtr[2 * iBin] = DataType(floor(value0));
+            dataPtr[2 * iBin + 1] = DataType(floor(value1));
+            */
+            dataPtr[2 * iBin] = (DataType)1.;
+            dataPtr[2 * iBin + 1] = (DataType)50.;
         }
 
         try
