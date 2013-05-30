@@ -11,6 +11,7 @@
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
 #include "Monarch.hpp"
@@ -38,7 +39,7 @@ namespace Katydid
             fFileStatus(kClosed),
             fExpectedNChannels(2),
             fExpectedRecordSize(17),
-            fEggFile(NULL),
+            fMonarch(NULL),
             fHeaderSlot("header", this, &KTEggWriter::WriteHeader),
             fTimeSeriesSlot("ts", this, &KTEggWriter::WriteTSData),
             fDoneSlot("done", this, &KTEggWriter::CloseFile)
@@ -48,7 +49,7 @@ namespace Katydid
     KTEggWriter::~KTEggWriter()
     {
         CloseFile();
-        delete fEggFile;
+        delete fMonarch;
     }
 
     Bool_t KTEggWriter::Configure(const KTPStoreNode* node)
@@ -88,12 +89,12 @@ namespace Katydid
             return false;
         }
 
-        delete fEggFile;
-        fEggFile = NULL;
+        delete fMonarch;
+        fMonarch = NULL;
 
         try
         {
-            fEggFile = Monarch::OpenForWriting(fFilename.c_str());
+            fMonarch = Monarch::OpenForWriting(fFilename.c_str());
         }
         catch (MonarchException& e)
         {
@@ -111,7 +112,7 @@ namespace Katydid
 
         try
         {
-            fEggFile->Close();
+            fMonarch->Close();
         }
         catch (MonarchException& e)
         {
@@ -119,8 +120,8 @@ namespace Katydid
             return;
         }
 
-        delete fEggFile;
-        fEggFile = NULL;
+        delete fMonarch;
+        fMonarch = NULL;
 
         fFileStatus = kClosed;
 
@@ -150,7 +151,7 @@ namespace Katydid
         fExpectedNChannels = header->GetAcquisitionMode();
         fExpectedRecordSize = header->GetRecordSize();
 
-        MonarchHeader* monarchHeader = fEggFile->GetHeader();
+        MonarchHeader* monarchHeader = fMonarch->GetHeader();
 
         monarchHeader->SetFilename(fFilename);
         monarchHeader->SetAcquisitionMode(fExpectedNChannels);
@@ -172,7 +173,7 @@ namespace Katydid
 
         try
         {
-            fEggFile->WriteHeader();
+            fMonarch->WriteHeader();
         }
         catch (MonarchException& e)
         {
@@ -185,7 +186,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTEggWriter::WriteTSData(KTTimeSeriesData& tsData)
+    Bool_t KTEggWriter::WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData)
     {
         if (fFileStatus == kClosed)
         {
@@ -206,121 +207,55 @@ namespace Katydid
             return false;
         }
 
-        if (fFormatMode == sFormatMultiInterleaved) return WriteTSDataInterleaved(tsData);
-        else if (fFormatMode == sFormatMultiSeparate || fFormatMode == sFormatSingle) return WriteTSDataSeparate(tsData);
-        else
-        {
-            KTERROR(eggwritelog, "Unable to write records in mode <" << fFormatMode << ">");
-            return false;
-        }
-    }
-
-    Bool_t KTEggWriter::WriteTSDataInterleaved(KTTimeSeriesData& tsData)
-    {
-        if (fExpectedNChannels != 2)
-        {
-            KTERROR(eggwritelog, "Interleaved record writing is only supported for 2 channels, not " << fExpectedNChannels);
-            return false;
-        }
-
-        KTTimeSeries* ts0 = tsData.GetTimeSeries(0);
-        KTTimeSeries* ts1 = tsData.GetTimeSeries(1);
-
-        if (ts0->GetNTimeBins() != fExpectedRecordSize || ts1->GetNTimeBins() != fExpectedRecordSize)
-        {
-            KTERROR(eggwritelog, "Time series do not have the correct size (should be " << fExpectedRecordSize << "; provided component 0: " << ts0->GetNTimeBins() << "; provided component 1: " << ts1->GetNTimeBins());
-            return false;
-        }
-
-        DataType* dataPtr = fEggFile->GetRecordInterleaved()->fData;
-
-        Double_t value0, value1;
-        Double_t scale = 255. / fDigitizerFullscale;
-        for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
-        {
-            /*
-            value0 = ts0->GetValue(iBin) * scale;
-            value1 = ts1->GetValue(iBin) * scale;
-            if (value0 >= 256) value0 = 255.;
-            if (value1 >= 256) value1 = 255.;
-            if (value0 < 0.) value0 = 0.;
-            if (value1 < 0.) value1 = 0.;
-            dataPtr[2 * iBin] = DataType(floor(value0));
-            dataPtr[2 * iBin + 1] = DataType(floor(value1));
-            */
-            dataPtr[2 * iBin] = (DataType)1.;
-            dataPtr[2 * iBin + 1] = (DataType)50.;
-        }
-
-        try
-        {
-            fEggFile->WriteRecord();
-        }
-        catch (MonarchException& e)
-        {
-            KTERROR(eggwritelog, "A problem occurred while writing the record (interleaved): " << e.what());
-            return false;
-        }
-
-        return true;
-    }
-
-    Bool_t KTEggWriter::WriteTSDataSeparate(KTTimeSeriesData& tsData)
-    {
         if (fExpectedNChannels > 2)
         {
             KTERROR(eggwritelog, "Interleaved record writing is only supported for 2 or fewer channels, not " << fExpectedNChannels);
             return false;
         }
 
-        KTTimeSeries* ts = tsData.GetTimeSeries(0);
+        fMonarch->SetInterface(sInterfaceSeparate);
 
-        if (ts->GetNTimeBins() != fExpectedRecordSize)
-        {
-            KTERROR(eggwritelog, "Time series does not have the correct size (should be " << fExpectedRecordSize << "; provided component 0: " << ts->GetNTimeBins());
-            return false;
-        }
-
-        DataType* dataPtr = fEggFile->GetRecordSeparateOne()->fData;
-        Double_t value;
-        for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
-        {
-            value = ts->GetValue(iBin) / fDigitizerFullscale;
-            if (value >= 256) value = 255.;
-            if (value < 0.) value = 0.;
-            dataPtr[iBin] = UInt_t(floor(value));
-        }
+        CopyATimeSeries(0, slHeader, tsData, fMonarch->GetRecordSeparateOne());
 
         if (fExpectedNChannels == 2)
         {
-            ts = tsData.GetTimeSeries(1);
-
-            if (ts->GetNTimeBins() != fExpectedRecordSize)
-            {
-                KTERROR(eggwritelog, "Time series does not have the correct size (should be " << fExpectedRecordSize << "; provided component 1: " << ts->GetNTimeBins());
-                return false;
-            }
-
-            dataPtr = fEggFile->GetRecordSeparateOne()->fData;
-            for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
-            {
-                value = ts->GetValue(iBin) / fDigitizerFullscale;
-                if (value >= 256) value = 255.;
-                if (value < 0.) value = 0.;
-                dataPtr[iBin] = UInt_t(floor(value));
-            }
+            CopyATimeSeries(1, slHeader, tsData, fMonarch->GetRecordSeparateTwo());
         }
 
         try
         {
-            fEggFile->WriteRecord();
+            fMonarch->WriteRecord();
         }
         catch (MonarchException& e)
         {
             KTERROR(eggwritelog, "A problem occurred while writing the record (interleaved): " << e.what());
             return false;
         }
+        return true;
+    }
 
+    Bool_t KTEggWriter::CopyATimeSeries(UInt_t component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
+    {
+        const KTTimeSeries* ts = tsData.GetTimeSeries(component);
+        if (ts->GetNTimeBins() != fExpectedRecordSize)
+        {
+            KTERROR(eggwritelog, "Time series does not have the correct size (should be " << fExpectedRecordSize << "; provided component 0: " << ts->GetNTimeBins());
+            return false;
+        }
+
+        record->fAcquisitionId = slHeader.GetAcquisitionID(component);
+        record->fRecordId = slHeader.GetRecordID(component);
+        record->fTime = slHeader.GetTimeStamp(component);
+
+        Double_t value;
+        Double_t scale = 255. / fDigitizerFullscale;
+        for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
+        {
+            value = ts->GetValue(iBin) * scale;
+            if (value >= 256) value = 255.;
+            if (value < 0.) value = 0.;
+            record->fData[iBin] = DataType(floor(value));
+        }
         return true;
     }
 

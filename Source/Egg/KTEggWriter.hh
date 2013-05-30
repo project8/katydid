@@ -15,11 +15,13 @@
 #include "MonarchTypes.hpp"
 
 class Monarch;
+class MonarchRecord;
 
 namespace Katydid
 {
     class KTData;
     class KTEggHeader;
+    class KTSliceHeader;
     class KTTimeSeriesData;
 
     /*!
@@ -87,26 +89,25 @@ namespace Katydid
 
             void WriteHeader(const KTEggHeader* header);
 
-            Bool_t WriteTSData(KTTimeSeriesData& tsData);
+            Bool_t WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData);
 
             FileStatus GetFileStatus() const;
 
         private:
-            Bool_t WriteTSDataInterleaved(KTTimeSeriesData& tsData);
-            Bool_t WriteTSDataSeparate(KTTimeSeriesData& tsData);
+            Bool_t CopyATimeSeries(UInt_t component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record);
 
             FileStatus fFileStatus;
             UInt_t fExpectedNChannels;
             UInt_t fExpectedRecordSize;
 
-            Monarch* fEggFile;
+            Monarch* fMonarch;
 
             //**************
             // Slots
             //**************
         private:
             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            KTSlotDataTwoTypes< KTSliceHeader, KTTimeSeriesData > fTimeSeriesSlot;
             KTSlotNoArg< void () > fDoneSlot;
     };
 
