@@ -36,6 +36,9 @@ namespace Katydid
 
      Slots:
      - "truth-vs-analysis": void (shared_ptr<KTData>) -- Perform a comparison of MC truth events and analysis candidates; Requires KTMCTruthEvents and KTAnalysisCandidates
+
+     Signals:
+     - "cc-results": void (shared_ptr<KTData>) -- Emitted after a comparison between truth and analysis; Guarantees KTCCResults.
     */
 
     class KTCompareCandidates : public KTProcessor
@@ -80,6 +83,12 @@ namespace Katydid
             //***************
         private:
             KTSlotDataTwoTypes< KTMCTruthEvents, KTAnalysisCandidates > fTruthAndAnalysisSlot;
+
+            //***************
+            // Signals
+            //***************
+        private:
+            KTSignalData fCCResultsSignal;
 
     };
 

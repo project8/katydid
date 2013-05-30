@@ -18,7 +18,7 @@ pbuilder_install_config (${VALIDATION_CONFIGFILES})
 # Executables
 
 add_executable (EvaluateCandidates ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
-target_link_libraries (EvaluateCandidates KatydidUtility KatydidCore KatydidData KatydidInput KatydidEvaluation ${EXTERNAL_LIBRARIES})
+target_link_libraries (EvaluateCandidates KatydidUtility KatydidCore KatydidData KatydidOutput KatydidInput KatydidEvaluation ${EXTERNAL_LIBRARIES})
 
 add_executable (ConfigCheck ${CMAKE_CURRENT_SOURCE_DIR}/ConfigCheck.cc)
 target_link_libraries (ConfigCheck KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})

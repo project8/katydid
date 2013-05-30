@@ -29,7 +29,8 @@ namespace Katydid
     KTCompareCandidates::KTCompareCandidates(const string& name) :
             KTProcessor(name),
             fAssumeSparseCandidates(false),
-            fTruthAndAnalysisSlot("truth-vs-analysis", this, &KTCompareCandidates::CompareTruthAndAnalysis)
+            fTruthAndAnalysisSlot("truth-vs-analysis", this, &KTCompareCandidates::CompareTruthAndAnalysis),
+            fCCResultsSignal("cc-results", this)
     {
     }
 
@@ -128,6 +129,9 @@ namespace Katydid
         dataPtr->fLastData = true;
         KTCCResults& ccrData = dataPtr->Of< KTCCResults >();
 
+        ccrData.SetNEvents(events.size());
+        ccrData.SetNCandidates(candidates.size());
+
         // iterate through eventMatches and candidateMatches to collect interesting statistics
         UInt_t largestNumberOfMatches = 0;
         UInt_t nEventsWithAtLeastOneCandidateMatch = 0;
@@ -148,7 +152,7 @@ namespace Katydid
         //nEventsWithCandidateMatches.resize(largestNumberOfMatches + 1);
         ccrData.ResizeNEventsWithXCandidateMatches(largestNumberOfMatches + 1);
 
-        KTPROG(cclog, "Number of events: " << events.size());
+        KTPROG(cclog, "Number of events: " << ccrData.GetNEvents());
         KTPROG(cclog, "Largest number of candidates matching an event: " << largestNumberOfMatches);
         std::stringstream textHist1;
         const vector< UInt_t >& nEventsWithXCandidateMatches = ccrData.GetNEventsWithXCandidateMatches();
@@ -157,7 +161,9 @@ namespace Katydid
             textHist1 << iNEvents << ": " << nEventsWithXCandidateMatches[iNEvents] << '\n';
         }
         KTPROG(cclog, "Number of events (y axis) with a given number of candidate matches (x axis):\n" << textHist1.str());
-        KTPROG(cclog, "Detection efficiency (# events with at least 1 match / # events): " << Double_t(nEventsWithAtLeastOneCandidateMatch) / Double_t(events.size()));
+
+        ccrData.SetEfficiency(Double_t(nEventsWithAtLeastOneCandidateMatch) / Double_t(events.size()));
+        KTPROG(cclog, "Detection efficiency (# events with at least 1 match / # events): " << ccrData.GetEfficiency());
 
 
         largestNumberOfMatches = 0;
@@ -174,7 +180,7 @@ namespace Katydid
             }
             ccrData.ResizeNCandidatesWithXEventMatches(largestNumberOfMatches + 1);
         }
-        KTPROG(cclog, "Number of candidates: " << candidates.size());
+        KTPROG(cclog, "Number of candidates: " << ccrData.GetNCandidates());
         KTPROG(cclog, "Largest number of events matching a candidate: " << largestNumberOfMatches);
         std::stringstream textHist2;
         const vector< UInt_t >& nCandidatesWithXEventMatches = ccrData.GetNCandidatesWithXEventMatches();
@@ -183,7 +189,11 @@ namespace Katydid
             textHist2 << iNCandidates << ": " << nCandidatesWithXEventMatches[iNCandidates] << '\n';
         }
         KTPROG(cclog, "Number of candidates (y axis) with a given number of event matches (x axis):\n" << textHist2.str());
-        KTPROG(cclog, "False rate (10^6 * # candidates not matching events / # of samples simulated): " << 1.e6 * Double_t(nCandidatesWithXEventMatches[0]) / (Double_t(nRecords) * Double_t(eventRecordSize)));
+
+        ccrData.SetFalseRate(1.e6 * Double_t(nCandidatesWithXEventMatches[0]) / (Double_t(nRecords) * Double_t(eventRecordSize)));
+        KTPROG(cclog, "False rate (10^6 * # candidates not matching events / # of samples simulated): " << ccrData.GetFalseRate());
+
+        fCCResultsSignal(dataPtr);
 
         return true;
     }
