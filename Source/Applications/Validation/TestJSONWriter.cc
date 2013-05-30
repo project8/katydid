@@ -26,7 +26,7 @@ int main()
     header.SetSliceSize(512);
     header.SetRecordSize(4194304);
     header.SetNChannels(2);
-    header.SetAcquisitionTime(203985);
+    header.SetRunDuration(203985);
     header.SetAcquisitionRate(500.);
 
     // Set up the writer

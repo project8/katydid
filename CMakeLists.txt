@@ -1,8 +1,7 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-# Minimum cmake version 2.6 required by the scripts to get Git information
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")

@@ -17,7 +17,7 @@ using std::stringstream;
 namespace Katydid
 {
 
-    UIntPair ParsePair(const std::string& pairString)
+    UIntPair ParsePairUInt(const std::string& pairString)
     {
         UInt_t first = 0, second = 0;
         Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
@@ -28,6 +28,20 @@ namespace Katydid
             KTWARN(utillog_psnode, "Unable to parse pair: " << pairString);
         }
         return std::make_pair< UInt_t, UInt_t >(first, second);
+    }
+
+    UIntDoublePair ParsePairUIntDouble(const std::string& pairString)
+    {
+        UInt_t first = 0;
+        Double_t second = 0.;
+        Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
+                (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> double_[ref(second) = boost::spirit::qi::_1]),
+                space);
+        if (! parsed)
+        {
+            KTWARN(utillog_psnode, "Unable to parse pair: " << pairString);
+        }
+        return std::make_pair< UInt_t, Double_t >(first, second);
     }
 
 
@@ -170,7 +184,7 @@ namespace Katydid
     template<>
     UIntPair KTPStoreNode::GetValue< UIntPair >() const
     {
-        return ParsePair(fTree->get_value< std::string >());
+        return ParsePairUInt(fTree->get_value< std::string >());
     }
 
     template<>
@@ -187,7 +201,7 @@ namespace Katydid
         try
         {
             // get_value will only return data from this node (whereas get can return data from subnodes)
-            return ParsePair(fTree->get_value< std::string >());
+            return ParsePairUInt(fTree->get_value< std::string >());
         }
         catch (boost::property_tree::ptree_bad_path& e)
         {
@@ -215,7 +229,7 @@ namespace Katydid
         }
 
         // get_value will only return data from this node (whereas get can return data from subnodes)
-        return ParsePair(fTree->get_value< std::string >());
+        return ParsePairUInt(fTree->get_value< std::string >());
     }
 
 } /* namespace Katydid */

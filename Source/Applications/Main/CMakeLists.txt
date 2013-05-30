@@ -3,14 +3,12 @@
 
 # Config files
 set (VALIDATION_CONFIGFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/AveragePowerSpectrumConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ChannelCorrelatorConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/EvaluateCandidates.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ExtractPowerSpectraConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/FSPeakAnalysisConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSComplexConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSConfig.json
-    #${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSMultithreadedConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidWVConfig.json
 )
 

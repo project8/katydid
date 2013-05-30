@@ -16,6 +16,8 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
+#include "MonarchTypes.hpp"
+
 #include <cmath>
 
 using boost::shared_ptr;
@@ -59,6 +61,9 @@ namespace Katydid
 
         // specify the length of the time series
         fSliceSize = node->GetData< UInt_t >("time-series-size", fSliceSize);
+        // record size, after slice size
+        fRecordSize = node->GetData< UInt_t >("record-size", fSliceSize);
+
         fBinWidth = node->GetData< Double_t >("bin-width", fBinWidth);
 
         // type of time series
@@ -70,9 +75,6 @@ namespace Katydid
             KTERROR(genlog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
             return false;
         }
-
-        // record size
-        fRecordSize = node->GetData< UInt_t >("record-size", fRecordSize);
 
         ConfigureDerivedGenerator(node);
 
@@ -86,12 +88,17 @@ namespace Katydid
 
         KTDEBUG(genlog, "Created header:\n"
              << "\tFilename: " << newHeader->GetFilename() << '\n'
-             << "\tAcuisition Mode: " << newHeader->GetAcquisitionMode() << '\n'
+             << "\tAqcuisition Mode: " << newHeader->GetAcquisitionMode() << '\n'
              << "\tNumber of Channels: " << newHeader->GetNChannels() << '\n'
              << "\tSlice Size: " << newHeader->GetSliceSize() << '\n'
              << "\tRecord Size: " << newHeader->GetRecordSize() << '\n'
-             << "\tAcquisition Time: " << newHeader->GetAcquisitionTime() << " s" << '\n'
-             << "\tAcquisition Rate: " << newHeader->GetAcquisitionRate() << " Hz ");
+             << "\tRun Duration: " << newHeader->GetRunDuration() << " ms" << '\n'
+             << "\tAcquisition Rate: " << newHeader->GetAcquisitionRate() << " Hz \n"
+             << "\tTimestamp: " << newHeader->GetTimestamp() << '\n'
+             << "\tDescription: " << newHeader->GetDescription() << '\n'
+             << "\tRun Type: " << newHeader->GetRunType() << '\n'
+             << "\tRun Source: " << newHeader->GetRunSource() << '\n'
+             << "\tFormat Mode: " << newHeader->GetFormatMode());
 
         fHeaderSignal(newHeader);
         delete newHeader;
@@ -142,12 +149,25 @@ namespace Katydid
         KTEggHeader* newHeader = new KTEggHeader();
 
         newHeader->SetFilename(fConfigName);
-        //newHeader->SetAcquisitionMode();
+        newHeader->SetAcquisitionMode(fNChannels);
         newHeader->SetNChannels(fNChannels);
         newHeader->SetSliceSize(fSliceSize);
         newHeader->SetRecordSize(fRecordSize);
-        //newHeader->SetAcquisitionTime();
+        newHeader->SetRunDuration(fSliceSize * fNSlices * fBinWidth);
         newHeader->SetAcquisitionRate(1. / fBinWidth);
+        //newHeader->SetDescription();
+        //newHeader->SetRunType();
+        newHeader->SetRunSource(sSourceSimulation);
+        //newHeader->SetFormatMode();
+
+        // Get local time as is done in MantisFileWriter
+        time_t tRawTime;
+        time( &tRawTime );
+        struct tm* tTimeInfo = localtime( &tRawTime );
+        const size_t tDateSize = 512;
+        char tDateString[tDateSize];
+        strftime( tDateString, tDateSize,  sDateTimeFormat.c_str(), tTimeInfo ); // sDateTimeFormat is defined in MonarchTypes.hpp
+        newHeader->SetTimestamp(tDateString);
 
         return newHeader;
     }
@@ -172,6 +192,13 @@ namespace Katydid
         sliceHeader.CalculateBinWidthAndSliceLength();
         sliceHeader.SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
         sliceHeader.SetSliceNumber(fSliceCounter);
+
+        for (UInt_t iComponent = 0; iComponent < fNChannels; iComponent++)
+        {
+            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * 1.e9/*nsec per sec*/), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetAcquisitionID(0);
+            sliceHeader.SetRecordID(0);
+        }
 
         KTDEBUG(genlog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"

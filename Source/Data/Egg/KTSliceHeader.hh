@@ -40,9 +40,9 @@ namespace Katydid
             UInt_t GetEndRecordNumber() const;
             UInt_t GetEndSampleNumber() const;
 
-            ClockType GetTimeStamp(UInt_t component = 0) const;
-            AcqIdType GetAcquisitionID(UInt_t component = 0) const;
-            RecIdType GetRecordID(UInt_t component = 0) const;
+            TimeType GetTimeStamp(UInt_t component = 0) const;
+            AcquisitionIdType GetAcquisitionID(UInt_t component = 0) const;
+            RecordIdType GetRecordID(UInt_t component = 0) const;
 
             KTSliceHeader& SetNComponents(UInt_t num);
 
@@ -60,16 +60,16 @@ namespace Katydid
             void SetEndRecordNumber(UInt_t rec);
             void SetEndSampleNumber(UInt_t sample);
 
-            void SetTimeStamp(ClockType timeStamp, UInt_t component = 0);
-            void SetAcquisitionID(AcqIdType acqId, UInt_t component = 0);
-            void SetRecordID(RecIdType recId, UInt_t component = 0);
+            void SetTimeStamp(TimeType timeStamp, UInt_t component = 0);
+            void SetAcquisitionID(AcquisitionIdType acqId, UInt_t component = 0);
+            void SetRecordID(RecordIdType recId, UInt_t component = 0);
 
         private:
             struct PerComponentData
             {
-                ClockType fTimeStamp;
-                AcqIdType fAcquisitionID;
-                RecIdType fRecordID;
+                TimeType fTimeStamp; // in nsec
+                AcquisitionIdType fAcquisitionID;
+                RecordIdType fRecordID;
             };
 
             Double_t fTimeInRun; // in sec
@@ -145,17 +145,17 @@ namespace Katydid
         return fEndSampleNumber;
     }
 
-    inline ClockType KTSliceHeader::GetTimeStamp(UInt_t component) const
+    inline TimeType KTSliceHeader::GetTimeStamp(UInt_t component) const
     {
         return fComponentData[component].fTimeStamp;
     }
 
-    inline AcqIdType KTSliceHeader::GetAcquisitionID(UInt_t component) const
+    inline AcquisitionIdType KTSliceHeader::GetAcquisitionID(UInt_t component) const
     {
         return fComponentData[component].fAcquisitionID;
     }
 
-    inline RecIdType KTSliceHeader::GetRecordID(UInt_t component) const
+    inline RecordIdType KTSliceHeader::GetRecordID(UInt_t component) const
     {
         return fComponentData[component].fRecordID;
     }
@@ -232,21 +232,21 @@ namespace Katydid
         return *this;
     }
 
-    inline void KTSliceHeader::SetTimeStamp(ClockType timeStamp, UInt_t component)
+    inline void KTSliceHeader::SetTimeStamp(TimeType timeStamp, UInt_t component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fTimeStamp = timeStamp;
         return;
     }
 
-    inline void KTSliceHeader::SetAcquisitionID(AcqIdType acqId, UInt_t component)
+    inline void KTSliceHeader::SetAcquisitionID(AcquisitionIdType acqId, UInt_t component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fAcquisitionID = acqId;
         return;
     }
 
-    inline void KTSliceHeader::SetRecordID(RecIdType recId, UInt_t component)
+    inline void KTSliceHeader::SetRecordID(RecordIdType recId, UInt_t component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fRecordID = recId;

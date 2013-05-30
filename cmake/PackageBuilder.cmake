@@ -3,6 +3,13 @@
 # Parts of this script are based on work done by Sebastian Voecking and Marco Haag in the Kasper package
 # Convenient macros and default variable settings for the Katydid build.
 
+# check if this is a stand-alone build
+set( PBUILDER_STANDALONE FALSE CACHE INTERNAL "Flag for whether or not this is a stand-alone build" )
+if( ${CMAKE_SOURCE_DIR} STREQUAL ${PROJECT_SOURCE_DIR} )
+    set( PBUILDER_STANDALONE TRUE )
+endif( ${CMAKE_SOURCE_DIR} STREQUAL ${PROJECT_SOURCE_DIR} )
+
+# preprocessor defintion for debug build
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
     add_definitions(-D${PROJECT_NAME}_DEBUG)
 else ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
@@ -65,16 +72,12 @@ endif ("${isSystemDir}" STREQUAL "-1")
 
 # This should be called immediately after setting the project name
 macro (pbuilder_prepare_project VERSION_MAJOR VERSION_MINOR REVISION)
-    # get git revision information
-    include (GetGitRevisionDescription)
-    git_describe (GIT_REV)
-    
     # define the variables to describe the package (will go in the KatydidConfig.hh file)
     set (${PROJECT_NAME}_VERSION_MAJOR ${VERSION_MAJOR})
     set (${PROJECT_NAME}_VERSION_MINOR ${VERSION_MINOR})
     set (${PROJECT_NAME}_REVISION ${REVISION})
     set (${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_REVISION}")
-    set (${PROJECT_NAME}_FULL_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_REVISION} (${GIT_REV})")
+    set (${PROJECT_NAME}_FULL_VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_REVISION}")
     set (${PROJECT_NAME}_PACKAGE_NAME "${PROJECT_NAME}")
     set (${PROJECT_NAME}_PACKAGE_STRING "${PROJECT_NAME} ${${PROJECT_NAME}_FULL_VERSION}")
     
@@ -137,4 +140,13 @@ macro (pbuilder_install_config_files)
         file (REMOVE ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}Config.cmake.tmp)
         file (RENAME ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}Config.cmake.ppp ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}Config.cmake)
     endif (EXISTS ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in)
+endmacro ()
+
+macro (pbuilder_variables_for_parent)
+    if (NOT ${PBUILDER_STANDALONE})
+        get_property (LIBRARIES GLOBAL PROPERTY ${PROJECT_NAME}_LIBRARIES)
+        set (${PROJECT_NAME}_LIBRARIES ${LIBRARIES} PARENT_SCOPE)
+        set (${PROJECT_NAME}_LIBRARY_DIR ${LIB_INSTALL_DIR} PARENT_SCOPE)
+        set (${PROJECT_NAME}_INCLUDE_DIR ${INCLUDE_INSTALL_DIR} PARENT_SCOPE)
+    endif (NOT ${PBUILDER_STANDALONE})
 endmacro ()

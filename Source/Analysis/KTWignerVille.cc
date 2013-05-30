@@ -72,7 +72,7 @@ namespace Katydid
         KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
         {
-            UIntPair pair = ParsePair(citer->second.get_value< string >());
+            UIntPair pair = ParsePairUInt(citer->second.get_value< string >());
             KTINFO(wvlog, "Adding WV pair " << pair.first << ", " << pair.second);
             this->AddPair(pair);
         }

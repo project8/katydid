@@ -47,7 +47,7 @@ namespace Katydid
         KTPStoreNode::csi_pair itPair = node->EqualRange("corr-pair");
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
         {
-            UIntPair pair = ParsePair(citer->second.get_value< string >());
+            UIntPair pair = ParsePairUInt(citer->second.get_value< string >());
             KTINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
             this->AddPair(pair);
         }

@@ -14,12 +14,17 @@ namespace Katydid
 
     KTEggHeader::KTEggHeader() :
             fFilename(),
-            fAcquisitionMode(sOneChannel),
+            fAcquisitionMode(1),
             fNChannels(1),
             fSliceSize(0),
             fRecordSize(0),
-            fAcquisitionTime(0),
-            fAcquisitionRate(0)
+            fRunDuration(0),
+            fAcquisitionRate(0),
+            fTimestamp(),
+            fDescription(),
+            fRunType(sRunTypeOther),
+            fRunSource(sSourceMantis),
+            fFormatMode(sFormatSingle)
     {
     }
 
@@ -29,8 +34,13 @@ namespace Katydid
             fNChannels(orig.fNChannels),
             fSliceSize(orig.fSliceSize),
             fRecordSize(orig.fRecordSize),
-            fAcquisitionTime(orig.fAcquisitionTime),
-            fAcquisitionRate(orig.fAcquisitionRate)
+            fRunDuration(orig.fRunDuration),
+            fAcquisitionRate(orig.fAcquisitionRate),
+            fTimestamp(orig.fTimestamp),
+            fDescription(orig.fDescription),
+            fRunType(orig.fRunType),
+            fRunSource(orig.fRunSource),
+            fFormatMode(orig.fFormatMode)
     {
     }
 
@@ -45,8 +55,13 @@ namespace Katydid
         fNChannels = rhs.fNChannels;
         fSliceSize = rhs.fSliceSize;
         fRecordSize = rhs.fRecordSize;
-        fAcquisitionTime = rhs.fAcquisitionTime;
+        fRunDuration = rhs.fRunDuration;
         fAcquisitionRate = rhs.fAcquisitionRate;
+        fTimestamp = rhs.fTimestamp;
+        fDescription = rhs.fDescription;
+        fRunType = rhs.fRunType;
+        fRunSource = rhs.fRunSource;
+        fFormatMode = rhs.fFormatMode;
         return *this;
     }
 
