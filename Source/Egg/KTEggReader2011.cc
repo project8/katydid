@@ -209,11 +209,16 @@ namespace Katydid
 
         KTEggHeader* eggHeader = new KTEggHeader();
         eggHeader->SetFilename(filename);
-        eggHeader->SetAcquisitionMode(sOneChannel);
+        eggHeader->SetAcquisitionMode(1);
         eggHeader->SetSliceSize(fHeaderInfo.fRecordSize);
         eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
-        eggHeader->SetAcquisitionTime(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
+        eggHeader->SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
         eggHeader->SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
+        // timestamp
+        // description
+        // run type
+        eggHeader->SetRunSource(sSourceMantis);
+        eggHeader->SetFormatMode(sFormatSingle);
 
         return eggHeader;
     }

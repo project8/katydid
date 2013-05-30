@@ -13,7 +13,8 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
-#include "MonarchPP.hh"
+#include "Monarch.hpp"
+#include "MonarchException.hpp"
 #include "MonarchHeader.hpp"
 
 using boost::shared_ptr;
@@ -25,6 +26,12 @@ using std::vector;
 namespace Katydid
 {
     KTLOGGER(eggreadlog, "katydid.egg");
+
+    UInt_t KTEggReaderMonarch::GetMaxChannels()
+    {
+        return fMaxChannels;
+    }
+
 
     KTEggReaderMonarch::KTEggReaderMonarch() :
             KTEggReader(),
@@ -49,8 +56,11 @@ namespace Katydid
         fReadState.fSliceStartPtrOffset = 0;
         fReadState.fAbsoluteRecordOffset = 0;
 
-        fNumberOfChannels.insert(AcqModeMapValue(sOneChannel, 1));
-        fNumberOfChannels.insert(AcqModeMapValue(sTwoChannel, 2));
+        fNumberOfChannels.insert(AcqModeMapValue(1, 1));
+        fNumberOfChannels.insert(AcqModeMapValue(2, 2));
+
+        fMonarchGetRecord[0] = &Monarch::GetRecordSeparateOne;
+        fMonarchGetRecord[1] = &Monarch::GetRecordSeparateTwo;
     }
 
     KTEggReaderMonarch::~KTEggReaderMonarch()
@@ -72,7 +82,7 @@ namespace Katydid
 
         // open the file
         KTDEBUG(eggreadlog, "Attempting to open file <" << filename << ">");
-        fMonarch = MonarchPP::OpenForReading(filename);
+        fMonarch = Monarch::OpenForReading(filename);
         if (fMonarch == NULL)
         {
             KTERROR(eggreadlog, "Unable to break egg");
@@ -80,9 +90,14 @@ namespace Katydid
         }
 
         KTDEBUG(eggreadlog, "File open; reading header");
-        if (! fMonarch->ReadHeader())
+        try
         {
-            KTERROR(eggreadlog, "Header was not read correctly; egg breaking aborted.");
+            fMonarch->ReadHeader();
+        }
+        catch (MonarchException& e)
+        {
+            KTERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
+                    "Egg breaking aborted.");
             fMonarch->Close();
             delete fMonarch;
             fMonarch = NULL;
@@ -93,12 +108,17 @@ namespace Katydid
 
         KTDEBUG("Parsed header:\n"
              << "\tFilename: " << fHeader.GetFilename() << '\n'
-             << "\tAcuisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
+             << "\tAcquisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
              << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'
              << "\tSlice Size: " << fHeader.GetSliceSize() << '\n'
              << "\tRecord Size: " << fHeader.GetRecordSize() << '\n'
-             << "\tAcquisition Time: " << fHeader.GetAcquisitionTime() << " s" << '\n'
-             << "\tAcquisition Rate: " << fHeader.GetAcquisitionRate() << " Hz ");
+             << "\tRun Duration: " << fHeader.GetRunDuration() << " ms" << '\n'
+             << "\tAcquisition Rate: " << fHeader.GetAcquisitionRate() << " Hz \n"
+             << "\tTimestamp: " << fHeader.GetTimestamp() << '\n'
+             << "\tDescription: " << fHeader.GetDescription() << '\n'
+             << "\tRun Type: " << fHeader.GetRunType() << '\n'
+             << "\tRun Source: " << fHeader.GetRunSource() << '\n'
+             << "\tFormat Mode: " << fHeader.GetFormatMode());
 
 
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
@@ -108,6 +128,9 @@ namespace Katydid
 
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
+
+        // force monarch to use Separate interface
+        fMonarch->SetInterface(sInterfaceSeparate);
 
         fSliceNumber = 0;
 
@@ -225,10 +248,10 @@ namespace Katydid
         vector< KTTimeSeries* > newRecords(nChannels);
         for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
         {
-            monarchRecords[iChannel] = fMonarch->GetRecord(iChannel);
-            sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
-            sliceHeader.SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
-            sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
+            monarchRecords[iChannel] = (fMonarch->*fMonarchGetRecord[iChannel])();
+            sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
+            sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
+            sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTime, iChannel);
 
             //tsData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
             KTTimeSeries* newRecord;
@@ -273,14 +296,14 @@ namespace Katydid
                 fReadState.fReadPtrRecordOffset++;
 
                 // check if the acquisition ID has changed on any channel
-                if (fReadState.fAcquisitionID != monarchRecords[0]->fAId)
+                if (fReadState.fAcquisitionID != monarchRecords[0]->fAcquisitionId)
                 {
                     KTDEBUG(eggreadlog, "Acquisition ID change; resetting slice to start with this monarch record.\n"
                             << "\tNumber of unused bins: " << iBin - 1);
                     // this means that a new monarch record has come up, and it has a different acquisition id.
                     // in this situation we need to start the time series over with the new monarch record
                     // first, update the read state
-                    fReadState.fAcquisitionID = monarchRecords[0]->fAId;
+                    fReadState.fAcquisitionID = monarchRecords[0]->fAcquisitionId;
                     fReadState.fReadPtrOffset = 0;
                     fReadState.fReadPtrRecordOffset = 0;
                     fReadState.fSliceStartPtrOffset = 0;
@@ -289,9 +312,9 @@ namespace Katydid
                     sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
                     for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
                     {
-                        sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAId, iChannel);
-                        sliceHeader.SetRecordID(monarchRecords[iChannel]->fRId, iChannel);
-                        sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTick, iChannel);
+                        sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
+                        sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
+                        sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTime, iChannel);
                     }
                     // reset bin count to 0
                     iBin = 0;
@@ -314,7 +337,7 @@ namespace Katydid
             for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
             {
                 // set the data
-                newRecords[iChannel]->SetValue(iBin, Double_t(monarchRecords[iChannel]->fDataPtr[fReadState.fReadPtrOffset]) * normalization);
+                newRecords[iChannel]->SetValue(iBin, Double_t(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]) * normalization);
             }
 
             // advance the pointer for the next bin
@@ -344,21 +367,33 @@ namespace Katydid
 
     Bool_t KTEggReaderMonarch::CloseEgg()
     {
-        Bool_t fileExistedAndWasClosed = fMonarch->Close();
+        try
+        {
+            fMonarch->Close();
+        }
+        catch (MonarchException& e)
+        {
+            KTERROR(eggreadlog, "Something went wrong while closing the file: " << e.what());
+        }
         delete fMonarch;
         fMonarch = NULL;
-        return fileExistedAndWasClosed;
+        return true;
     }
 
 
     void KTEggReaderMonarch::CopyHeaderInformation(const MonarchHeader* monarchHeader)
     {
         fHeader.SetFilename(monarchHeader->GetFilename());
-        fHeader.SetAcquisitionMode(monarchHeader->GetAcqMode());
+        fHeader.SetAcquisitionMode(monarchHeader->GetAcquisitionMode());
         fHeader.SetNChannels(fNumberOfChannels[fHeader.GetAcquisitionMode()]);
         fHeader.SetRecordSize(monarchHeader->GetRecordSize());
-        fHeader.SetAcquisitionTime(monarchHeader->GetAcqTime());
-        fHeader.SetAcquisitionRate(monarchHeader->GetAcqRate() * fSampleRateUnitsInHz);
+        fHeader.SetRunDuration(monarchHeader->GetRunDuration());
+        fHeader.SetAcquisitionRate(monarchHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
+        fHeader.SetTimestamp(monarchHeader->GetTimestamp());
+        fHeader.SetDescription(monarchHeader->GetDescription());
+        fHeader.SetRunType(monarchHeader->GetRunType());
+        fHeader.SetRunSource(monarchHeader->GetRunSource());
+        fHeader.SetFormatMode(monarchHeader->GetFormatMode());
         return;
     }
 

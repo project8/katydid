@@ -22,21 +22,23 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "slice",
-                "slot-processor": "fft",
-                "slot-name": "ts"
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
                 "signal-name": "header",
                 "slot-processor": "fft",
                 "slot-name": "header"
             },
+
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "slice",
+                "slot-processor": "fft",
+                "slot-name": "ts"
+            },
+            
             "connection":
             {
                 "signal-processor": "fft",
-                "signal-name": "fft",
+                "signal-name": "fft-forward",
                 "slot-processor": "writer",
                 "slot-name": "fs-fftw"
             },
@@ -52,7 +54,8 @@
         {
             "filename": "/path/to/file.egg",
             "slice-size": 16384,
-            "number-of-slices": 1
+            "number-of-slices": 1,
+            "time-series-type": "fftw"
         },
         
         "fft":
