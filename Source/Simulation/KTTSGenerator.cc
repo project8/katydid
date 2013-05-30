@@ -193,6 +193,13 @@ namespace Katydid
         sliceHeader.SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
         sliceHeader.SetSliceNumber(fSliceCounter);
 
+        for (UInt_t iComponent = 0; iComponent < fNChannels; iComponent++)
+        {
+            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * 1.e9/*nsec per sec*/), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetAcquisitionID(0);
+            sliceHeader.SetRecordID(0);
+        }
+
         KTDEBUG(genlog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
                 << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'

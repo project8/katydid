@@ -67,7 +67,7 @@ namespace Katydid
         private:
             struct PerComponentData
             {
-                TimeType fTimeStamp;
+                TimeType fTimeStamp; // in nsec
                 AcquisitionIdType fAcquisitionID;
                 RecordIdType fRecordID;
             };
