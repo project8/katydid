@@ -10,10 +10,12 @@
 
 #include "KTData.hh"
 
+#include <vector>
+
 namespace Katydid
 {
 
-    class KTCCResults : public KTExtensibleStruct< KTCCResults >
+    class KTCCResults : public KTExtensibleData< KTCCResults >
     {
         public:
             KTCCResults();
@@ -24,6 +26,7 @@ namespace Katydid
 
             const std::vector< UInt_t >& GetNEventsWithXCandidateMatches() const;
             void SetNEventsWithXCandidateMatches(UInt_t xCandMatches, UInt_t nEvents);
+            void IncrementNEventsWithXCandidateMatches(UInt_t xCandidateMathces);
             void ResizeNEventsWithXCandidateMatches(UInt_t size);
 
             UInt_t GetNCandidates() const;
@@ -31,6 +34,7 @@ namespace Katydid
 
             const std::vector< UInt_t >& GetNCandidatesWithXEventMatches() const;
             void SetNCandidatesWithXEventMatches(UInt_t xEventMatches, UInt_t nCand);
+            void IncrementNCandidatesWithXEventMatches(UInt_t xEventMatches);
             void ResizeNCandidatesWithXEventMatches(UInt_t size);
 
             Double_t GetEfficiency() const;
@@ -72,6 +76,12 @@ namespace Katydid
         return;
     }
 
+    inline void KTCCResults::IncrementNEventsWithXCandidateMatches(UInt_t xCandMatches)
+    {
+        fNEventsWithXCandidateMatches[xCandMatches] = fNEventsWithXCandidateMatches[xCandMatches] + 1;
+        return;
+    }
+
     inline void KTCCResults::ResizeNEventsWithXCandidateMatches(UInt_t size)
     {
         fNEventsWithXCandidateMatches.resize(size);
@@ -97,6 +107,12 @@ namespace Katydid
     inline void KTCCResults::SetNCandidatesWithXEventMatches(UInt_t xEventMatches, UInt_t nCand)
     {
         fNCandidatesWithXEventMatches[xEventMatches] = nCand;
+        return;
+    }
+
+    inline void KTCCResults::IncrementNCandidatesWithXEventMatches(UInt_t xEventMatches)
+    {
+        fNCandidatesWithXEventMatches[xEventMatches] = fNCandidatesWithXEventMatches[xEventMatches] + 1;
         return;
     }
 

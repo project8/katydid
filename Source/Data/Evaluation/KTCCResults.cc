@@ -11,7 +11,7 @@ namespace Katydid
 {
 
     KTCCResults::KTCCResults() :
-            KTExtensibleStruct< KTCCResults >(),
+            KTExtensibleData< KTCCResults >(),
             fNEvents(0),
             fNEventsWithXCandidateMatches(),
             fNCandidates(0),
