@@ -7,10 +7,9 @@
 
 #include "KTMultiFileJSONReader.hh"
 
-#include "KTAnalysisCandidates.hh"
+#include "KTCCResults.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTMCTruthEvents.hh"
 #include "KTPStoreNode.hh"
 
 #include "filestream.h"
@@ -32,8 +31,8 @@ namespace Katydid
             fFilenames(),
             fFileMode("r"),
             fDataTypes(),
-            fCCResultsSignal("cc-results", this),
-            fAppendCCResultsSlot("append-cc-results", this, &KTMultiFileJSONReader::AppendCCResults, &fCCResultsSignal)
+            fCCResultsSignal("cc-results", this)
+            //fAppendCCResultsSlot("append-cc-results", this, &KTMultiFileJSONReader::AppendCCResults, &fCCResultsSignal)
     {
     }
 
@@ -55,7 +54,7 @@ namespace Katydid
 
         SetFileMode(node->GetData<string>("file-mode", fFileMode));
 
-        KTPStoreNode::csi_pair itPair = node->EqualRange("file-type");
+        itPair = node->EqualRange("file-type");
         for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
         {
             AddDataType(it->second.get_value<string>());
@@ -129,7 +128,7 @@ namespace Katydid
             shared_ptr< KTData > newData(new KTData());
             for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
             {
-                if (! (this->*(dtIt->fAppendFcn))(*(newData.get())))
+                if (! (this->*(dtIt->fAppendFcn))(document, *(newData.get())))
                 {
                     KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fileIt << ">");
                 }

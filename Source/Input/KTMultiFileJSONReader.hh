@@ -45,9 +45,6 @@ namespace Katydid
      The available options are:
      - "cc-results" -- Emits signal "cc-results" after a file is read
 
-     Slots:
-     - "append-cc-results": void (shared_ptr<KTData>) -- Add cc results data; Requires KTData; Adds KTCCResults; Emits signal "cc-results" upon successful file read.
-
      Signals:
      - "cc-results": void (shared_ptr<KTData>) -- Emitted after reading an mc-truth-events file; Guarantees KTMCTruthEvents.
     */
@@ -55,31 +52,8 @@ namespace Katydid
 
     class KTMultiFileJSONReader : public KTReader
     {
-        public:
-            KTMultiFileJSONReader(const std::string& name = "oneshot-json-reader");
-            virtual ~KTMultiFileJSONReader();
-
-            Bool_t Configure(const KTPStoreNode* node);
-
-            const std::deque< std::string >& GetFilenames() const;
-            void AddFilename(const std::string& filename);
-
-            const std::string& GetFileMode() const;
-            void SetFileMode(const std::string& mode);
-
-            const std::deque< std::string >& GetDataTypes() const;
-            Bool_t AddDataType(const std::string& type);
-
         private:
-            std::deque< std::string > fFilenames;
-            std::string fFileMode;
-
-
-        public:
-            virtual Bool_t Run();
-
-        private:
-            typedef Bool_t (KTMultiFileJSONReader::*AppendFcn)(KTData&);
+            typedef Bool_t (KTMultiFileJSONReader::*AppendFcn)(rapidjson::Document&, KTData&);
             struct DataType
             {
                     std::string fName;
@@ -92,11 +66,36 @@ namespace Katydid
                         fSignal = signal;
                     }
             };
+
+        public:
+            KTMultiFileJSONReader(const std::string& name = "multifile-json-reader");
+            virtual ~KTMultiFileJSONReader();
+
+            Bool_t Configure(const KTPStoreNode* node);
+
+            const std::deque< std::string >& GetFilenames() const;
+            void AddFilename(const std::string& filename);
+
+            const std::string& GetFileMode() const;
+            void SetFileMode(const std::string& mode);
+
+            const std::deque< DataType >& GetDataTypes() const;
+            Bool_t AddDataType(const std::string& type);
+
+        private:
+            std::deque< std::string > fFilenames;
+            std::string fFileMode;
+
+
+        public:
+            virtual Bool_t Run();
+
+        private:
             std::deque< DataType > fDataTypes;
 
             Bool_t OpenAndParseFile(const std::string& filename, rapidjson::Document& document) const;
 
-        public:
+        private:
             Bool_t AppendCCResults(rapidjson::Document& document, KTData& data);
 
 
@@ -109,8 +108,8 @@ namespace Katydid
             //**************
             // Slots
             //**************
-        private:
-            KTSlotDataOneType< KTData > fAppendCCResultsSlot;
+        //private:
+            //KTSlotDataOneType< KTData > fAppendCCResultsSlot;
     };
 
     inline const std::deque< std::string >& KTMultiFileJSONReader::GetFilenames() const
@@ -138,7 +137,7 @@ namespace Katydid
         return;
     }
 
-    inline const std::deque< std::string >& KTMultiFileJSONReader::GetDataTypes() const
+    inline const std::deque< KTMultiFileJSONReader::DataType >& KTMultiFileJSONReader::GetDataTypes() const
     {
         return fDataTypes;
     }
