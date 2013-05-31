@@ -25,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEvaluation > sRTTWCRegistrar;
+    static KTDerivedTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEvaluation > sRTTWERegistrar;
 
     KTROOTTreeTypeWriterEvaluation::KTROOTTreeTypeWriterEvaluation() :
             KTROOTTreeTypeWriter(),
@@ -41,7 +41,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterEvaluation::RegisterSlots()
     {
-        fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterEvaluation::WriteMetaCCLocustMC);
+        fWriter->RegisterSlot("meta-cc-locust-mc", this, &KTROOTTreeTypeWriterEvaluation::WriteMetaCCLocustMC);
         return;
     }
 
