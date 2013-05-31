@@ -8,6 +8,7 @@
 #include "KTOneShotJSONReader.hh"
 
 #include "KTAnalysisCandidates.hh"
+#include "KTFilenameParsers.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMCTruthEvents.hh"
@@ -138,7 +139,7 @@ namespace Katydid
             KTERROR(inlog, "\"egg_name\" value is missing or is not a string");
             return false;
         }
-        string eggName(document["egg_name"].GetString());
+        KTLocustMCFilename parsedFilename(document["egg_name"].GetString());
 
         const rapidjson::Value& events = document["events"];
         if (! events.IsArray())
@@ -148,6 +149,10 @@ namespace Katydid
         }
 
         KTMCTruthEvents& mcTruth = appendToData.Of< KTMCTruthEvents >();
+        mcTruth.SetEventLength(parsedFilename.fEventLength);
+        mcTruth.Setdfdt(parsedFilename.fdfdt);
+        mcTruth.SetSignalPower(parsedFilename.fSignalPower);
+
         mcTruth.SetRecordSize(recordSize);
         mcTruth.SetNRecords(recordsSimulated);
 
