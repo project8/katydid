@@ -13,6 +13,7 @@ set (CORE_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataQueueProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTFilenameParsers.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTParameterStore.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.hh
