@@ -12,6 +12,9 @@ namespace Katydid
 
     KTCCResults::KTCCResults() :
             KTExtensibleData< KTCCResults >(),
+            fEventLength(0.),
+            fdfdt(0.),
+            fSignalPower(0.),
             fNEvents(0),
             fNEventsWithXCandidateMatches(),
             fNCandidates(0),

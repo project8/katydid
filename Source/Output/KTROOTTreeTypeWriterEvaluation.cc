@@ -47,7 +47,7 @@ namespace Katydid
 
 
     //*********************
-    // Frequency Evaluation
+    // Meta CC Locust MC
     //*********************
 
     void KTROOTTreeTypeWriterEvaluation::WriteMetaCCLocustMC(shared_ptr< KTData > data)

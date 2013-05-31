@@ -129,6 +129,7 @@ namespace Katydid
             shared_ptr< KTData > newData(new KTData());
             for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
             {
+                KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
                 if (! (this->*(dtIt->fAppendFcn))(document, *(newData.get())))
                 {
                     KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fileIt << ">");
@@ -166,6 +167,7 @@ namespace Katydid
         }
 
         UInt_t index = 0;
+        ccResultsData.ResizeNEventsWithXCandidateMatches(newxcm.Size());
         for (rapidjson::Value::ConstValueIterator newxcmIt = newxcm.Begin(); newxcmIt != newxcm.End(); newxcmIt++)
         {
             UInt_t thisNEvents = (*newxcmIt).GetUint();
@@ -181,6 +183,7 @@ namespace Katydid
         }
 
         index = 0;
+        ccResultsData.ResizeNCandidatesWithXEventMatches(ncwxem.Size());
         for (rapidjson::Value::ConstValueIterator ncwxemIt = ncwxem.Begin(); ncwxemIt != ncwxem.End(); ncwxemIt++)
         {
             UInt_t thisNEvents = (*ncwxemIt).GetUint();
