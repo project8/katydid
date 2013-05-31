@@ -31,7 +31,8 @@ namespace Katydid
             fFilenames(),
             fFileMode("r"),
             fDataTypes(),
-            fCCResultsSignal("cc-results", this)
+            fCCResultsSignal("cc-results", this),
+            fDoneSignal("done", this)
             //fAppendCCResultsSlot("append-cc-results", this, &KTMultiFileJSONReader::AppendCCResults, &fCCResultsSignal)
     {
     }
@@ -135,6 +136,9 @@ namespace Katydid
                 (*(dtIt->fSignal))(newData);
             }
         }
+
+        fDoneSignal();
+
         return true;
     }
 
@@ -148,6 +152,9 @@ namespace Katydid
         }
 
         KTCCResults& ccResultsData = appendToData.Of< KTCCResults >();
+        ccResultsData.SetEventLength(ccResults["event-length"].GetDouble());
+        ccResultsData.Setdfdt(ccResults["dfdt"].GetDouble());
+        ccResultsData.SetSignalPower(ccResults["signal-power"].GetDouble());
         ccResultsData.SetNEvents(ccResults["n-events"].GetUint());
         ccResultsData.SetNCandidates(ccResults["n-candidates"].GetUint());
 

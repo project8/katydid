@@ -21,6 +21,15 @@ namespace Katydid
             KTCCResults();
             virtual ~KTCCResults();
 
+            Double_t GetEventLength();
+            void SetEventLength(Double_t length);
+
+            Double_t Getdfdt();
+            void Setdfdt(Double_t dfdt);
+
+            Double_t GetSignalPower();
+            void SetSignalPower(Double_t power);
+
             UInt_t GetNEvents() const;
             void SetNEvents(UInt_t nEvents);
 
@@ -44,6 +53,10 @@ namespace Katydid
             void SetFalseRate(Double_t rate);
 
         private:
+            Double_t fEventLength;
+            Double_t fdfdt;
+            Double_t fSignalPower;
+
             UInt_t fNEvents;
             std::vector< UInt_t > fNEventsWithXCandidateMatches;
 
@@ -53,6 +66,39 @@ namespace Katydid
             Double_t fEfficiency;
             Double_t fFalseRate;
     };
+
+    inline Double_t KTCCResults::GetEventLength()
+    {
+        return fEventLength;
+    }
+
+    inline void KTCCResults::SetEventLength(Double_t length)
+    {
+        fEventLength = length;
+        return;
+    }
+
+    inline Double_t KTCCResults::Getdfdt()
+    {
+        return fdfdt;
+    }
+
+    inline void KTCCResults::Setdfdt(Double_t dfdt)
+    {
+        fdfdt = dfdt;
+        return;
+    }
+
+    inline Double_t KTCCResults::GetSignalPower()
+    {
+        return fSignalPower;
+    }
+
+    inline void KTCCResults::SetSignalPower(Double_t power)
+    {
+        fSignalPower = power;
+        return;
+    }
 
     inline UInt_t KTCCResults::GetNEvents() const
     {

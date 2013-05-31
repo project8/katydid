@@ -55,6 +55,15 @@ namespace Katydid
         jsonMaker->String("cc-results");
         jsonMaker->StartObject();
 
+        jsonMaker->String("event-length");
+        jsonMaker->Double(ccrData.GetEventLength());
+
+        jsonMaker->String("dfdt");
+        jsonMaker->Double(ccrData.Getdfdt());
+
+        jsonMaker->String("signal-power");
+        jsonMaker->Double(ccrData.GetSignalPower());
+
         jsonMaker->String("n-events");
         jsonMaker->Uint(ccrData.GetNEvents());
 

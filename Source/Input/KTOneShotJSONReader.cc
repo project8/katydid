@@ -133,6 +133,13 @@ namespace Katydid
         }
         UInt_t recordsSimulated = document["records_simulated"].GetUint();
 
+        if (! document["egg_name"].IsString())
+        {
+            KTERROR(inlog, "\"egg_name\" value is missing or is not a string");
+            return false;
+        }
+        string eggName(document["egg_name"].GetString());
+
         const rapidjson::Value& events = document["events"];
         if (! events.IsArray())
         {

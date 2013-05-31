@@ -129,6 +129,10 @@ namespace Katydid
         dataPtr->fLastData = true;
         KTCCResults& ccrData = dataPtr->Of< KTCCResults >();
 
+        ccrData.SetEventLength(mcEventData.GetEventLength());
+        ccrData.Setdfdt(mcEventData.Getdfdt());
+        ccrData.SetSignalPower(mcEventData.GetSignalPower());
+
         ccrData.SetNEvents(events.size());
         ccrData.SetNCandidates(candidates.size());
 

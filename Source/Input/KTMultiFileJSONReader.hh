@@ -46,7 +46,7 @@ namespace Katydid
      - "cc-results" -- Emits signal "cc-results" after a file is read
 
      Signals:
-     - "cc-results": void (shared_ptr<KTData>) -- Emitted after reading an mc-truth-events file; Guarantees KTMCTruthEvents.
+     - "cc-results": void (shared_ptr<KTData>) -- Emitted after reading an cc-results file; Guarantees KTCCResults.
     */
 
 
@@ -104,6 +104,7 @@ namespace Katydid
             //**************
         private:
             KTSignalData fCCResultsSignal;
+            KTSignalOneArg< void > fDoneSignal;
 
             //**************
             // Slots
