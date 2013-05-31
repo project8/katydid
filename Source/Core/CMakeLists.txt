@@ -37,6 +37,7 @@ set (CORE_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataQueueProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTParameterStore.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTFilenameParsers.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessorToolbox.cc
