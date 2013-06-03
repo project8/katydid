@@ -7,7 +7,10 @@
 
 #include "KTMultiFileJSONReader.hh"
 
+#include "KTAnalysisCandidates.hh"
 #include "KTCCResults.hh"
+#include "KTFilenameParsers.hh"
+#include "KTMCTruthEvents.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -29,11 +32,16 @@ namespace Katydid
     KTMultiFileJSONReader::KTMultiFileJSONReader(const std::string& name) :
             KTReader(name),
             fFilenames(),
+            fFileIter(fFilenames.end()),
             fFileMode("r"),
             fDataTypes(),
+            fMCTruthEventsSignal("mc-truth-events", this),
+            fAnalysisCandidatesSignal("analysis-candidates", this),
             fCCResultsSignal("cc-results", this),
-            fDoneSignal("done", this)
-            //fAppendCCResultsSlot("append-cc-results", this, &KTMultiFileJSONReader::AppendCCResults, &fCCResultsSignal)
+            fDoneSignal("done", this),
+            fAppendMCTruthEventsSlot("mc-truth-events", this, &KTMultiFileJSONReader::Append, &fMCTruthEventsSignal),
+            fAppendAnalysisCandidatesSlot("analysis-candidates", this, &KTMultiFileJSONReader::Append, &fAnalysisCandidatesSignal),
+            fAppendCCResultsSlot("cc-results", this, &KTMultiFileJSONReader::Append, &fCCResultsSignal)
     {
     }
 
@@ -55,7 +63,7 @@ namespace Katydid
 
         SetFileMode(node->GetData<string>("file-mode", fFileMode));
 
-        itPair = node->EqualRange("file-type");
+        itPair = node->EqualRange("data-type");
         for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
         {
             AddDataType(it->second.get_value<string>());
@@ -71,12 +79,14 @@ namespace Katydid
         {
             fDataTypes.push_back(DataType(type, &KTMultiFileJSONReader::AppendCCResults, &fCCResultsSignal));
         }
-        /*
-        else if (type == "...")
+        else if (type == "mc-truth-events")
         {
-            fDataTypes.push_back(DataType(type, &KTMultiFileJSONReader::Append..., &f...Signal));
+            fDataTypes.push_back(DataType(type, &KTMultiFileJSONReader::AppendMCTruthEvents, &fMCTruthEventsSignal));
         }
-        */
+        else if (type == "analysis-candidates")
+        {
+            fDataTypes.push_back(DataType(type, &KTMultiFileJSONReader::AppendAnalysisCandidates, &fAnalysisCandidatesSignal));
+        }
         else
         {
             KTERROR(inlog, "Invalid run-data-type: " << type);
@@ -115,14 +125,14 @@ namespace Katydid
         return true;
     }
 
-    inline Bool_t KTMultiFileJSONReader::Run()
+    Bool_t KTMultiFileJSONReader::Run()
     {
-        for (deque< string >::const_iterator fileIt = fFilenames.begin(); fileIt != fFilenames.end(); fileIt++)
+        for (fFileIter = fFilenames.begin(); fFileIter != fFilenames.end(); fFileIter++)
         {
             rapidjson::Document document;
-            if (! OpenAndParseFile(*fileIt, document))
+            if (! OpenAndParseFile(*fFileIter, document))
             {
-                KTERROR(inlog, "A problem occurred while parsing file <" << *fileIt << ">");
+                KTERROR(inlog, "A problem occurred while parsing file <" << *fFileIter << ">");
                 return false;
             }
 
@@ -132,7 +142,7 @@ namespace Katydid
                 KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
                 if (! (this->*(dtIt->fAppendFcn))(document, *(newData.get())))
                 {
-                    KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fileIt << ">");
+                    KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
                 }
                 (*(dtIt->fSignal))(newData);
             }
@@ -142,6 +152,159 @@ namespace Katydid
 
         return true;
     }
+
+    Bool_t KTMultiFileJSONReader::Append(KTData& data)
+    {
+        if (fFileIter == fFilenames.end())
+        {
+            KTERROR(inlog, "File iterator has already reached the end of the filenames");
+            return false;
+        }
+
+        rapidjson::Document document;
+        if (! OpenAndParseFile(*fFileIter, document))
+        {
+            KTERROR(inlog, "A problem occurred while parsing file <" << *fFileIter << ">");
+            return false;
+        }
+
+        for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
+        {
+            KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
+            if (! (this->*(dtIt->fAppendFcn))(document, data))
+            {
+                KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
+            }
+        }
+
+        return true;
+    }
+
+    Bool_t KTMultiFileJSONReader::AppendMCTruthEvents(rapidjson::Document& document, KTData& appendToData)
+    {
+        if (! document["record_size"].IsUint())
+        {
+            KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
+            return false;
+        }
+        UInt_t recordSize = document["record_size"].GetUint();
+
+        if (! document["records_simulated"].IsUint())
+        {
+            KTERROR(inlog, "\"records_simulated\" value is missing or is not an unsigned integer");
+            return false;
+        }
+        UInt_t recordsSimulated = document["records_simulated"].GetUint();
+
+        if (! document["egg_name"].IsString())
+        {
+            KTERROR(inlog, "\"egg_name\" value is missing or is not a string");
+            return false;
+        }
+        KTLocustMCFilename parsedFilename(document["egg_name"].GetString());
+
+        const rapidjson::Value& events = document["events"];
+        if (! events.IsArray())
+        {
+            KTERROR(inlog, "\"events\" value in the mc truth file is either missing or not an array");
+            return false;
+        }
+
+        KTMCTruthEvents& mcTruth = appendToData.Of< KTMCTruthEvents >();
+        mcTruth.SetEventLength(parsedFilename.fEventLength);
+        mcTruth.Setdfdt(parsedFilename.fdfdt);
+        mcTruth.SetSignalPower(parsedFilename.fSignalPower);
+
+        mcTruth.SetRecordSize(recordSize);
+        mcTruth.SetNRecords(recordsSimulated);
+
+        for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
+        {
+            const rapidjson::Value& support = (*evIt)["support"];
+            if (support.IsArray())
+            {
+                UInt_t startRec = support[rapidjson::SizeType(0)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
+                if (endRec < startRec || (endRec == startRec && endSample < startSample))
+                {
+                    KTWARN(inlog, "Invalid event: (" << startRec << ", " << startSample << " --> " << endRec << ", " << endSample << ")");
+                }
+                else
+                {
+                    mcTruth.AddEvent(KTMCTruthEvents::Event(startRec, startSample, endRec, endSample));
+                }
+            }
+            else
+            {
+                KTWARN(inlog, "\"support\" value is either missing or not an array");
+            }
+        }
+
+        KTDEBUG(inlog, "new data object has " << mcTruth.GetEvents().size() << " events");
+
+        return true;
+    }
+
+    Bool_t KTMultiFileJSONReader::AppendAnalysisCandidates(rapidjson::Document& document, KTData& appendToData)
+    {
+        if (! document["record_size"].IsUint())
+        {
+            KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
+            return false;
+        }
+        UInt_t recordSize = document["record_size"].GetUint();
+
+        if (! document["records_analyzed"].IsUint())
+        {
+            KTERROR(inlog, "\"records_analyzed\" value is missing or is not an unsigned integer");
+            return false;
+        }
+        UInt_t recordsAnalyzed = document["records_analyzed"].GetUint();
+
+        const rapidjson::Value& events = document["candidates"];
+        if (! events.IsArray())
+        {
+            KTERROR(inlog, "\"candidates\" value in the analysis candidates file is either missing or not an array");
+            return false;
+        }
+
+        KTAnalysisCandidates& candidates = appendToData.Of< KTAnalysisCandidates >();
+        candidates.SetRecordSize(recordSize);
+        candidates.SetNRecords(recordsAnalyzed);
+
+        for (rapidjson::Value::ConstValueIterator evIt = events.Begin(); evIt != events.End(); evIt++)
+        {
+            const rapidjson::Value& support = (*evIt)["support"];
+            if (support.IsArray())
+            {
+                UInt_t startRec = support[rapidjson::SizeType(0)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                UInt_t endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
+                if (endRec < startRec || (endRec == startRec && endSample < startSample))
+                {
+                    KTWARN(inlog, "Invalid candidate: (" << startRec << ", " << startSample << " --> " << endRec << ", " << endSample << ")");
+                }
+                else
+                {
+                    candidates.AddCandidate(KTAnalysisCandidates::Candidate(startRec, startSample, endRec, endSample));
+                }
+            }
+            else
+            {
+                KTWARN(inlog, "\"support\" value is either missing or not an array");
+            }
+        }
+
+        KTDEBUG(inlog, "new data object has " << candidates.GetCandidates().size() << " candidates");
+
+        return true;
+    }
+
 
     Bool_t KTMultiFileJSONReader::AppendCCResults(rapidjson::Document& document, KTData& appendToData)
     {

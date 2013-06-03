@@ -32,20 +32,29 @@ namespace Katydid
      @brief JSON file reader for reading multiple files, and emitting a signal for each
 
      @details
-     Multiple data-types can be read from each file by specifying multiple run-data-types. This only works if the processor is being used as a primary processor.
+     Multiple data-types can be read from each file by specifying multiple run-data-types.
 
      Configuration name: "multifile-json-reader"
 
      Available configuration values:
      - "input-file": string -- input filename (may be repeated)
      - "file-mode": string -- cstdio FILE mode: r (default), a, r+, a+
-     - "run-data-type": string -- the type of file being read (may be repeated). This option is only necessary if the processor is being used as a primary processor.  See options below.
+     - "data-type": string -- the type of file being read (may be repeated). This option is only necessary if the processor is being used as a primary processor.  See options below.
 
      The run-data-type option determines the function used to read the file.
      The available options are:
+     - "mc-truth-events" -- Emits signal "mc-truth-events" after file read
+     - "analysis-candidates" -- Emits signal "analysis-candidates" after file read
      - "cc-results" -- Emits signal "cc-results" after a file is read
 
+     Slots:
+     - "mc-truth-events": void (shared_ptr<KTData>) -- Add MC truth events data; Requires KTData; Adds KTMCTruthEvents; Emits signal "mc-truth-events" upon successful file read.
+     - "analysis-candidates": void (shared_ptr<KTData>) -- Add analysis candidates data; Requires KTData; Adds KTAnalysisCandidates; Emits signal "analysis-candidates" upon successful file read.
+     - "cc-results": void (shared_ptr<KTData>) -- Add CC (candidate comparison) Results data; Requires KTData; Adds KTCCResults; Emits signal "cc-results" upon successful file read.
+
      Signals:
+     - "mc-truth-events": void (shared_ptr<KTData>) -- Emitted after reading an mc-truth-events file; Guarantees KTMCTruthEvents.
+     - "analysis-candidates": void (shared-ptr<KTData>) -- Emitted after reading an analysis candidates file; Guarantees KTAnalysisCandidates.
      - "cc-results": void (shared_ptr<KTData>) -- Emitted after reading an cc-results file; Guarantees KTCCResults.
     */
 
@@ -84,11 +93,14 @@ namespace Katydid
 
         private:
             std::deque< std::string > fFilenames;
-            std::string fFileMode;
+            std::deque< std::string >::const_iterator fFileIter;
 
+            std::string fFileMode;
 
         public:
             virtual Bool_t Run();
+
+            Bool_t Append(KTData& data);
 
         private:
             std::deque< DataType > fDataTypes;
@@ -96,6 +108,8 @@ namespace Katydid
             Bool_t OpenAndParseFile(const std::string& filename, rapidjson::Document& document) const;
 
         private:
+            Bool_t AppendMCTruthEvents(rapidjson::Document& document, KTData& data);
+            Bool_t AppendAnalysisCandidates(rapidjson::Document& document, KTData& data);
             Bool_t AppendCCResults(rapidjson::Document& document, KTData& data);
 
 
@@ -103,14 +117,18 @@ namespace Katydid
             // Signals
             //**************
         private:
+            KTSignalData fMCTruthEventsSignal;
+            KTSignalData fAnalysisCandidatesSignal;
             KTSignalData fCCResultsSignal;
             KTSignalOneArg< void > fDoneSignal;
 
             //**************
             // Slots
             //**************
-        //private:
-            //KTSlotDataOneType< KTData > fAppendCCResultsSlot;
+        private:
+            KTSlotDataOneType< KTData > fAppendMCTruthEventsSlot;
+            KTSlotDataOneType< KTData > fAppendAnalysisCandidatesSlot;
+            KTSlotDataOneType< KTData > fAppendCCResultsSlot;
     };
 
     inline const std::deque< std::string >& KTMultiFileJSONReader::GetFilenames() const
@@ -121,6 +139,7 @@ namespace Katydid
     inline void KTMultiFileJSONReader::AddFilename(const std::string& filename)
     {
         fFilenames.push_back(filename);
+        fFileIter = fFilenames.begin();
         return;
     }
 
