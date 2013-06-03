@@ -11,6 +11,7 @@ namespace Katydid
 {
     KTSliceHeader::KTSliceHeader() :
             KTExtensibleData< KTSliceHeader >(),
+            fIsNewAcquisition(true),
             fTimeInRun(0.),
             fSliceNumber(0),
             fSliceSize(1),
@@ -27,6 +28,7 @@ namespace Katydid
 
     KTSliceHeader::KTSliceHeader(const KTSliceHeader& orig) :
             KTExtensibleData< KTSliceHeader >(orig),
+            fIsNewAcquisition(orig.fIsNewAcquisition),
             fTimeInRun(orig.fTimeInRun),
             fSliceNumber(orig.fSliceNumber),
             fSliceSize(orig.fSliceSize),
@@ -48,6 +50,7 @@ namespace Katydid
     KTSliceHeader& KTSliceHeader::operator=(const KTSliceHeader& rhs)
     {
         KTExtensibleData< KTSliceHeader >::operator=(rhs);
+        fIsNewAcquisition = rhs.fIsNewAcquisition;
         fTimeInRun = rhs.fTimeInRun;
         fSliceNumber = rhs.fSliceNumber;
         fSliceSize = rhs.fSliceSize;

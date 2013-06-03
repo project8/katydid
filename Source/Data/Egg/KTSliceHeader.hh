@@ -27,6 +27,7 @@ namespace Katydid
 
             UInt_t GetNComponents() const;
 
+            Bool_t GetIsNewAcquisition() const;
             Double_t GetTimeInRun() const;
             ULong64_t GetSliceNumber() const;
 
@@ -46,6 +47,7 @@ namespace Katydid
 
             KTSliceHeader& SetNComponents(UInt_t num);
 
+            void SetIsNewAcquisition(Bool_t flag);
             void SetTimeInRun(Double_t time);
             void SetSliceNumber(ULong64_t slice);
 
@@ -74,6 +76,7 @@ namespace Katydid
 
             Double_t fTimeInRun; // in sec
             ULong64_t fSliceNumber;
+            Bool_t fIsNewAcquisition;
 
             UInt_t fSliceSize; // number of bins
             Double_t fSliceLength; // in sec
@@ -93,6 +96,11 @@ namespace Katydid
     inline UInt_t KTSliceHeader::GetNComponents() const
     {
         return UInt_t(fComponentData.size());
+    }
+
+    inline Bool_t KTSliceHeader::GetIsNewAcquisition() const
+    {
+        return fIsNewAcquisition;
     }
 
     inline Double_t KTSliceHeader::GetTimeInRun() const
@@ -160,6 +168,12 @@ namespace Katydid
         return fComponentData[component].fRecordID;
     }
 
+
+    inline void KTSliceHeader::SetIsNewAcquisition(Bool_t flag)
+    {
+        fIsNewAcquisition = flag;
+        return;
+    }
 
     inline void KTSliceHeader::SetTimeInRun(Double_t tir)
     {
