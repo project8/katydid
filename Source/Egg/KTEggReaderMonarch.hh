@@ -13,6 +13,7 @@
 
 #include "KTEggHeader.hh"
 
+#include "MonarchRecord.hpp"
 #include "MonarchTypes.hpp"
 
 #include <map>
@@ -21,10 +22,10 @@
 
 #ifndef SEC_PER_NSEC
 #define SEC_PER_NSEC 1.e-9
+#endif
 
 class Monarch;
 class MonarchHeader;
-class MonarchRecord;
 
 namespace Katydid
 {
