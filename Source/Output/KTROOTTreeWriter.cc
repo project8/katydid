@@ -60,6 +60,7 @@ namespace Katydid
     {
         if (fFile == NULL)
         {
+            KTINFO(publog, "Opening ROOT file <" << fFilename << "> with file flag <" << fFileFlag << ">");
             fFile = new TFile(fFilename.c_str(), fFileFlag.c_str());
         }
         if (! fFile->IsOpen())
@@ -115,6 +116,8 @@ namespace Katydid
         if (fFile != NULL)
         {
             WriteTrees();
+
+            KTINFO(publog, "Trees written to file <" << fFile->GetName() << ">; closing file");
 
             fFile->Close();
             delete fFile;

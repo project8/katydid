@@ -51,6 +51,15 @@ namespace Katydid
             KTMCTruthEvents();
             virtual ~KTMCTruthEvents();
 
+            Double_t GetEventLength();
+            void SetEventLength(Double_t length);
+
+            Double_t Getdfdt();
+            void Setdfdt(Double_t dfdt);
+
+            Double_t GetSignalPower();
+            void SetSignalPower(Double_t power);
+
             const EventSet& GetEvents() const;
             void AddEvent(const Event& electron);
             void ClearEvents();
@@ -62,11 +71,48 @@ namespace Katydid
             void SetNRecords(UInt_t rec);
 
         protected:
+            Double_t fEventLength;
+            Double_t fdfdt;
+            Double_t fSignalPower;
+
             EventSet fEvents;
 
             UInt_t fRecordSize;
             UInt_t fNRecords;
     };
+
+    inline Double_t KTMCTruthEvents::GetEventLength()
+    {
+        return fEventLength;
+    }
+
+    inline void KTMCTruthEvents::SetEventLength(Double_t length)
+    {
+        fEventLength = length;
+        return;
+    }
+
+    inline Double_t KTMCTruthEvents::Getdfdt()
+    {
+        return fdfdt;
+    }
+
+    inline void KTMCTruthEvents::Setdfdt(Double_t dfdt)
+    {
+        fdfdt = dfdt;
+        return;
+    }
+
+    inline Double_t KTMCTruthEvents::GetSignalPower()
+    {
+        return fSignalPower;
+    }
+
+    inline void KTMCTruthEvents::SetSignalPower(Double_t power)
+    {
+        fSignalPower = power;
+        return;
+    }
 
     inline const KTMCTruthEvents::EventSet& KTMCTruthEvents::GetEvents() const
     {

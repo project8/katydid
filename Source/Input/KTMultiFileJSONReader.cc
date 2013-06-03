@@ -1,92 +1,108 @@
 /*
- * KTOneShotJSONReader.cc
+ * KTMultiFileJSONReader.cc
  *
- *  Created on: Apr 11, 2013
+ *  Created on: May 31, 2013
  *      Author: nsoblath
  */
 
-#include "KTOneShotJSONReader.hh"
+#include "KTMultiFileJSONReader.hh"
 
 #include "KTAnalysisCandidates.hh"
+#include "KTCCResults.hh"
 #include "KTFilenameParsers.hh"
+#include "KTMCTruthEvents.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTMCTruthEvents.hh"
 #include "KTPStoreNode.hh"
 
 #include "filestream.h"
 
 using boost::shared_ptr;
+
+using std::deque;
 using std::string;
 
 namespace Katydid
 {
     KTLOGGER(inlog, "katydid.input");
 
-    static KTDerivedNORegistrar< KTReader, KTOneShotJSONReader > sOSJSONReaderRegistrar("oneshot-json-reader");
-    static KTDerivedNORegistrar< KTProcessor, KTOneShotJSONReader > sOSJSONRProcRegistrar("oneshot-json-reader");
+    static KTDerivedNORegistrar< KTReader, KTMultiFileJSONReader > sMFJSONReaderRegistrar("multifile-json-reader");
+    static KTDerivedNORegistrar< KTProcessor, KTMultiFileJSONReader > sMFJSONRProcRegistrar("multifile-json-reader");
 
-    KTOneShotJSONReader::KTOneShotJSONReader(const std::string& name) :
+    KTMultiFileJSONReader::KTMultiFileJSONReader(const std::string& name) :
             KTReader(name),
-            fFilename("input.json"),
+            fFilenames(),
+            fFileIter(fFilenames.end()),
             fFileMode("r"),
-            fFileType("mc-truth-events"),
-            fRunFcn(&KTOneShotJSONReader::RunMCTruthEventsFile),
+            fDataTypes(),
             fMCTruthEventsSignal("mc-truth-events", this),
             fAnalysisCandidatesSignal("analysis-candidates", this),
-            fAppendMCTruthEventsSlot("append-mc-truth-events", this, &KTOneShotJSONReader::AppendMCTruthEventsFile, &fMCTruthEventsSignal),
-            fAppendAnalysisCandidatesSlot("append-analysis-candidates", this, &KTOneShotJSONReader::AppendAnalysisCandidatesFile, &fAnalysisCandidatesSignal)
+            fCCResultsSignal("cc-results", this),
+            fDoneSignal("done", this),
+            fAppendMCTruthEventsSlot("mc-truth-events", this, &KTMultiFileJSONReader::Append, &fMCTruthEventsSignal),
+            fAppendAnalysisCandidatesSlot("analysis-candidates", this, &KTMultiFileJSONReader::Append, &fAnalysisCandidatesSignal),
+            fAppendCCResultsSlot("cc-results", this, &KTMultiFileJSONReader::Append, &fCCResultsSignal)
     {
     }
 
-    KTOneShotJSONReader::~KTOneShotJSONReader()
+    KTMultiFileJSONReader::~KTMultiFileJSONReader()
     {
     }
 
-    Bool_t KTOneShotJSONReader::Configure(const KTPStoreNode* node)
+    Bool_t KTMultiFileJSONReader::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node == NULL) return false;
 
-        SetFilename(node->GetData<string>("input-file", fFilename));
-        SetFileMode(node->GetData<string>("file-mode", fFileMode));
-        if (! SetFileType(node->GetData<string>("file-type", fFileType)))
+        KTPStoreNode::csi_pair itPair = node->EqualRange("input-file");
+        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
         {
-            return false;
+            AddFilename(it->second.get_value<string>());
+            KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
+        }
+
+        SetFileMode(node->GetData<string>("file-mode", fFileMode));
+
+        itPair = node->EqualRange("data-type");
+        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        {
+            AddDataType(it->second.get_value<string>());
+            KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
         }
 
         return true;
     }
 
-    Bool_t KTOneShotJSONReader::SetFileType(const std::string& type)
+    Bool_t KTMultiFileJSONReader::AddDataType(const std::string& type)
     {
-        // set the read function pointer based on the file type
-        if (type == "mc-truth-events")
+        if (type == "cc-results")
         {
-            fRunFcn = &KTOneShotJSONReader::RunMCTruthEventsFile;
+            fDataTypes.push_back(DataType(type, &KTMultiFileJSONReader::AppendCCResults, &fCCResultsSignal));
+        }
+        else if (type == "mc-truth-events")
+        {
+            fDataTypes.push_back(DataType(type, &KTMultiFileJSONReader::AppendMCTruthEvents, &fMCTruthEventsSignal));
         }
         else if (type == "analysis-candidates")
         {
-            fRunFcn = &KTOneShotJSONReader::RunAnalysisCandidatesFile;
+            fDataTypes.push_back(DataType(type, &KTMultiFileJSONReader::AppendAnalysisCandidates, &fAnalysisCandidatesSignal));
         }
         else
         {
-            KTERROR(inlog, "Invalid file type: " << fFileType);
+            KTERROR(inlog, "Invalid run-data-type: " << type);
             return false;
         }
-
-        fFileType = type;
 
         return true;
     }
 
-    Bool_t KTOneShotJSONReader::OpenAndParseFile(rapidjson::Document& document)
+    Bool_t KTMultiFileJSONReader::OpenAndParseFile(const string& filename, rapidjson::Document& document) const
     {
-        FILE* file = fopen(fFilename.c_str(), fFileMode.c_str());
+        FILE* file = fopen(filename.c_str(), fFileMode.c_str());
         if (file == NULL)
         {
             KTERROR(inlog, "File did not open\n" <<
-                    "\tFilename: " << fFilename <<
+                    "\tFilename: " << filename <<
                     "\tMode: " << fFileMode);
             return false;
         }
@@ -95,7 +111,7 @@ namespace Katydid
 
         if (document.ParseStream<0>(fileStream).HasParseError())
         {
-            KTERROR(inlog, "Unable to parse file <" << fFilename << ">\n" <<
+            KTERROR(inlog, "Unable to parse file <" << filename << ">\n" <<
                     "\tReason: " << document.GetParseError() << '\n' <<
                     "\tLocation: character (sorry!) " << document.GetErrorOffset());
             fclose(file);
@@ -104,22 +120,68 @@ namespace Katydid
 
         fclose(file);
 
-        KTDEBUG(inlog, "Input file open and parsed: <" << fFilename << ">");
+        KTDEBUG(inlog, "Input file open and parsed: <" << filename << ">");
 
         return true;
     }
 
-    Bool_t KTOneShotJSONReader::ReadMCTruthEventsFile(KTData& appendToData)
+    Bool_t KTMultiFileJSONReader::Run()
     {
-        KTINFO(inlog, "Reading mc-truth-events input file: " << fFilename);
-
-        rapidjson::Document document;
-        if (! OpenAndParseFile(document))
+        for (fFileIter = fFilenames.begin(); fFileIter != fFilenames.end(); fFileIter++)
         {
-            KTERROR(inlog, "A problem occurred while parsing the mc-truth-events file");
+            rapidjson::Document document;
+            if (! OpenAndParseFile(*fFileIter, document))
+            {
+                KTERROR(inlog, "A problem occurred while parsing file <" << *fFileIter << ">");
+                return false;
+            }
+
+            shared_ptr< KTData > newData(new KTData());
+            for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
+            {
+                KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
+                if (! (this->*(dtIt->fAppendFcn))(document, *(newData.get())))
+                {
+                    KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
+                }
+                (*(dtIt->fSignal))(newData);
+            }
+        }
+
+        fDoneSignal();
+
+        return true;
+    }
+
+    Bool_t KTMultiFileJSONReader::Append(KTData& data)
+    {
+        if (fFileIter == fFilenames.end())
+        {
+            KTERROR(inlog, "File iterator has already reached the end of the filenames");
             return false;
         }
 
+        rapidjson::Document document;
+        if (! OpenAndParseFile(*fFileIter, document))
+        {
+            KTERROR(inlog, "A problem occurred while parsing file <" << *fFileIter << ">");
+            return false;
+        }
+
+        for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
+        {
+            KTDEBUG(inlog, "Appending data of type " << dtIt->fName);
+            if (! (this->*(dtIt->fAppendFcn))(document, data))
+            {
+                KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
+            }
+        }
+
+        return true;
+    }
+
+    Bool_t KTMultiFileJSONReader::AppendMCTruthEvents(rapidjson::Document& document, KTData& appendToData)
+    {
         if (! document["record_size"].IsUint())
         {
             KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
@@ -186,17 +248,8 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTOneShotJSONReader::ReadAnalysisCandidatesFile(KTData& appendToData)
+    Bool_t KTMultiFileJSONReader::AppendAnalysisCandidates(rapidjson::Document& document, KTData& appendToData)
     {
-        KTINFO(inlog, "Reading analysis-candidates input file: " << fFilename);
-
-        rapidjson::Document document;
-        if (! OpenAndParseFile(document))
-        {
-            KTERROR(inlog, "A problem occurred while parsing the analysis-candidates file");
-            return false;
-        }
-
         if (! document["record_size"].IsUint())
         {
             KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
@@ -252,47 +305,59 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTOneShotJSONReader::AppendMCTruthEventsFile(KTData& appendToData)
-    {
-        if (ReadMCTruthEventsFile(appendToData))
-        {
-            return true;
-        }
-        return false;
-    }
 
-    Bool_t KTOneShotJSONReader::AppendAnalysisCandidatesFile(KTData& appendToData)
+    Bool_t KTMultiFileJSONReader::AppendCCResults(rapidjson::Document& document, KTData& appendToData)
     {
-        if (ReadAnalysisCandidatesFile(appendToData))
+        const rapidjson::Value& ccResults = document["cc-results"];
+        if (! ccResults.IsObject())
         {
-            return true;
-        }
-        return false;
-    }
-
-    Bool_t KTOneShotJSONReader::RunMCTruthEventsFile()
-    {
-        shared_ptr< KTData > newData(new KTData());
-        if (! ReadMCTruthEventsFile(*(newData.get())))
-        {
-            KTERROR(inlog, "Something went wrong while reading the mc-truth-electrons file <" << fFilename << ">");
+            KTERROR(inlog, "\"cc-results\" value is missing or is not an object");
             return false;
         }
-        fMCTruthEventsSignal(newData);
-        return true;
-    }
 
-    Bool_t KTOneShotJSONReader::RunAnalysisCandidatesFile()
-    {
-        shared_ptr< KTData > newData(new KTData());
-        if (! ReadAnalysisCandidatesFile(*(newData.get())))
+        KTCCResults& ccResultsData = appendToData.Of< KTCCResults >();
+        ccResultsData.SetEventLength(ccResults["event-length"].GetDouble());
+        ccResultsData.Setdfdt(ccResults["dfdt"].GetDouble());
+        ccResultsData.SetSignalPower(ccResults["signal-power"].GetDouble());
+        ccResultsData.SetNEvents(ccResults["n-events"].GetUint());
+        ccResultsData.SetNCandidates(ccResults["n-candidates"].GetUint());
+
+        const rapidjson::Value& newxcm = ccResults["n-events-with-x-cand-matches"];
+        if (! newxcm.IsArray())
         {
-            KTERROR(inlog, "Something went wrong while reading the analysis-candidates file <" << fFilename << ">");
+            KTERROR(inlog, "\"n-events-with-x-cand-matches\" value is either missing or is not an array");
             return false;
         }
-        fAnalysisCandidatesSignal(newData);
+
+        UInt_t index = 0;
+        ccResultsData.ResizeNEventsWithXCandidateMatches(newxcm.Size());
+        for (rapidjson::Value::ConstValueIterator newxcmIt = newxcm.Begin(); newxcmIt != newxcm.End(); newxcmIt++)
+        {
+            UInt_t thisNEvents = (*newxcmIt).GetUint();
+            ccResultsData.SetNEventsWithXCandidateMatches(index, (*newxcmIt).GetUint());
+            index++;
+        }
+
+        const rapidjson::Value& ncwxem = ccResults["n-cands-with-x-event-matches"];
+        if (! ncwxem.IsArray())
+        {
+            KTERROR(inlog, "\"n-events-with-x-cand-matches\" value is either missing or is not an array");
+            return false;
+        }
+
+        index = 0;
+        ccResultsData.ResizeNCandidatesWithXEventMatches(ncwxem.Size());
+        for (rapidjson::Value::ConstValueIterator ncwxemIt = ncwxem.Begin(); ncwxemIt != ncwxem.End(); ncwxemIt++)
+        {
+            UInt_t thisNEvents = (*ncwxemIt).GetUint();
+            ccResultsData.SetNEventsWithXCandidateMatches(index, (*ncwxemIt).GetUint());
+            index++;
+        }
+
+        ccResultsData.SetEfficiency(ccResults["efficiency"].GetDouble());
+        ccResultsData.SetFalseRate(ccResults["false-rate"].GetDouble());
+
         return true;
     }
-
 
 } /* namespace Katydid */
