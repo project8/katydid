@@ -1,5 +1,5 @@
 /*
- * TestOneShotJSONReader.cc
+ * TestMultiFileJSONReader.cc
  *
  *  Created on: Apr 11, 2013
  *      Author: nsoblath
