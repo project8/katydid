@@ -120,7 +120,7 @@ namespace Katydid
 
         fclose(file);
 
-        KTDEBUG(inlog, "Input file open and parsed: <" << filename << ">");
+        KTINFO(inlog, "Input file open and parsed: <" << filename << ">");
 
         return true;
     }
@@ -176,6 +176,8 @@ namespace Katydid
                 KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from <" << *fFileIter << ">");
             }
         }
+
+        fFileIter++;
 
         return true;
     }
