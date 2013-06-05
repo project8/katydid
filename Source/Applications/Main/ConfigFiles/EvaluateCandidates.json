@@ -74,11 +74,11 @@
         
         "candidates":
         {
-            "input-file": "/path/to/run0.candidates"
-            "input-file": "/path/to/run1.candidates"
-            "input-file": "/path/to/run2.candidates"
-            "input-file": "/path/to/run3.candidates"
-            "input-file": "/path/to/run4.candidates"
+            "input-file": "/path/to/run0.candidates",
+            "input-file": "/path/to/run1.candidates",
+            "input-file": "/path/to/run2.candidates",
+            "input-file": "/path/to/run3.candidates",
+            "input-file": "/path/to/run4.candidates",
             "data-type": "analysis-candidates"
         },
         
