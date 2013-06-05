@@ -81,7 +81,7 @@ namespace Katydid
         }
 
         // open the file
-        KTDEBUG(eggreadlog, "Attempting to open file <" << filename << ">");
+        KTINFO(eggreadlog, "Opening egg file <" << filename << ">")
         fMonarch = Monarch::OpenForReading(filename);
         if (fMonarch == NULL)
         {

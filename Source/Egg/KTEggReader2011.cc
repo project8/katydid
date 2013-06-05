@@ -54,6 +54,7 @@ namespace Katydid
         if (fEggStream.is_open()) fEggStream.close();
 
         // open the file stream
+        KTINFO(eggreadlog, "Opening egg file <" << filename << ">")
         fEggStream.open(filename.c_str(), ifstream::in|ifstream::binary);
 
         if (! fEggStream.is_open())
