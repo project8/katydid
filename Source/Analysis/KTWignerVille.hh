@@ -49,6 +49,14 @@ namespace Katydid
 
      @details
 
+
+     Recommendations:
+     - There should not be any overlap between the slices produced by the EggProcessor (or whatever source of time series is used).
+       Overlap is not checked for when copying the data from the slices to the circular buffer.
+     - The Wigner-Ville transform technically has no negative frequency components in the output; This implementation does because
+       of the type of DFT that is used. You should follow the WV transform with a switch to polar format that drops the negative
+       frequency bins (using processor "switch-fftw-polar," with "use-neg-freqs" set to false)
+
      Configuration name: "wigner-ville"
 
      Available configuration values:
