@@ -166,7 +166,6 @@ namespace Katydid
             fReadState.fSliceStartPtrOffset = 0;
             fReadState.fAbsoluteRecordOffset = 0;
             fSliceNumber = 0;
-            fReadState.fStatus = MonarchReadState::kContinueReading;
         }
         else
         {
@@ -222,6 +221,14 @@ namespace Katydid
 
         // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(fHeader.GetNChannels());
+        if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
+        {
+            sliceHeader.SetIsNewAcquisition(true);
+        }
+        else
+        {
+            sliceHeader.SetIsNewAcquisition(false);
+        }
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
@@ -274,6 +281,11 @@ namespace Katydid
                 "\tRead pointer record offset = " << fReadState.fReadPtrRecordOffset << '\n' <<
                 "\tRead pointer offset = " << fReadState.fReadPtrOffset);
 
+        if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
+        {
+            fReadState.fStatus = MonarchReadState::kContinueReading;
+        }
+
         // Loop over bins
         for (UInt_t iBin = 0; iBin < fSliceSize; iBin++)
         {
@@ -308,6 +320,7 @@ namespace Katydid
                     fReadState.fReadPtrRecordOffset = 0;
                     fReadState.fSliceStartPtrOffset = 0;
                     // reset slice data
+                    sliceHeader.SetIsNewAcquisition(true);
                     sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
                     sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
                     for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
