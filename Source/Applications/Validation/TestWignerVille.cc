@@ -106,7 +106,7 @@ int main()
         //aaTSData->SetTimeSeries(windowTS1, 0);
         //aaTSData->SetTimeSeries(windowTS2, 1);
 
-        if (! wvTransform.TransformData(aaData))
+        if (! wvTransform.TransformData(aaData, false))
         {
             KTERROR(testlog, "Something went wrong while computing the Wigner-Ville transform");
         }

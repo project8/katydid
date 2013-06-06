@@ -119,13 +119,13 @@ namespace Katydid
 
         public:
             /// Performs the W-V transform on the given time series data.
-            Bool_t TransformData(KTTimeSeriesData& data);
+            Bool_t TransformData(KTTimeSeriesData& data, Bool_t clearBuffers);
             /// Performs the WV transform on the given analytic associate data.
-            Bool_t TransformData(KTAnalyticAssociateData& data);
+            Bool_t TransformData(KTAnalyticAssociateData& data, Bool_t clearBuffers);
 
         private:
             template< class XDataType >
-            Bool_t TransformFFTWBasedData(XDataType& data);
+            Bool_t TransformFFTWBasedData(XDataType& data, Bool_t clearBuffers);
 
             //void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
             // TODO: remove iWindow argument
@@ -237,7 +237,7 @@ namespace Katydid
     }
 
     template< class XDataType >
-    Bool_t KTWignerVille::TransformFFTWBasedData(XDataType& data)
+    Bool_t KTWignerVille::TransformFFTWBasedData(XDataType& data, Bool_t clearBuffers)
     {
             //if (fPairs.empty())
             //{
@@ -271,6 +271,15 @@ namespace Katydid
                 }
             }
             */
+
+            // check if the data that just arrived is from a new acquisition
+            if (clearBuffers)
+            {
+                for (UInt_t iComponent = 0; iComponent < fBuffer.size(); iComponent++)
+                {
+                    fBuffer[iComponent].clear();
+                }
+            }
 
             std::vector< Buffer::iterator > futureStartWindow(nComponents);
 
@@ -318,12 +327,16 @@ namespace Katydid
                 // move the start pointers up by fWindowStride
                 for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
                 {
-
+                    // if this is true, then we have enough space to move the start of the next window forward
+                    // otherwise we'll need to exit (which will happen at the next if statement)
+                    // it may still be, of course, that the window itself won't fit
+                    // but that's okay; we want to answer that question separately
                     if (fBuffer[iComponent].end() - futureStartWindow[iComponent] > fWindowStride) // (note: this is a comparison to fWindowSTRIDE)
                         futureStartWindow[iComponent] += fWindowStride;
                     else
                         futureStartWindow[iComponent] = fBuffer[iComponent].end();
 
+                    // if this is true, then we can't fit the next window in what remains of the buffer
                     if (fBuffer[iComponent].end() - futureStartWindow[iComponent] < fWindowSize) // (note: this is a comparison to fWindowSIZE)
                         exitBufferLoop = true;
                 }

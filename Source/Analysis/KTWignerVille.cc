@@ -11,7 +11,7 @@
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTSliceHeader.hh"
+//#include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
 #include <algorithm>
@@ -124,6 +124,7 @@ namespace Katydid
         fBuffer.resize(nComponents);
         for (UInt_t iChannel = 0; iChannel < fBuffer.size(); iChannel++)
         {
+            fBuffer[iChannel].clear();
             fBuffer[iChannel].set_capacity(inputSliceSize + fWindowSize);
         }
 
@@ -168,14 +169,14 @@ namespace Katydid
         return Initialize(header->GetAcquisitionRate(), header->GetNChannels(), header->GetSliceSize());
     }
 
-    Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data)
+    Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data, Bool_t clearBuffers)
     {
-        return TransformFFTWBasedData(data);
+        return TransformFFTWBasedData(data, clearBuffers);
     }
 
-    Bool_t KTWignerVille::TransformData(KTAnalyticAssociateData& data)
+    Bool_t KTWignerVille::TransformData(KTAnalyticAssociateData& data, Bool_t clearBuffers)
     {
-        return TransformFFTWBasedData(data);
+        return TransformFFTWBasedData(data, clearBuffers);
     }
 
     void KTWignerVille::CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, UInt_t iWindow)
@@ -326,8 +327,15 @@ namespace Katydid
             KTERROR(slotlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
+
+        Bool_t clearBuffers = false;
+        if (data->Has< KTSliceHeader >())
+        {
+            clearBuffers = data->Of< KTSliceHeader >().GetIsNewAcquisition();
+        }
+
         // Call the function
-        if (! TransformData(data->Of< KTTimeSeriesData >()))
+        if (! TransformData(data->Of< KTTimeSeriesData >(), clearBuffers))
         {
             KTERROR(slotlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
@@ -348,8 +356,15 @@ namespace Katydid
             KTERROR(slotlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
+
+        Bool_t clearBuffers = false;
+        if (data->Has< KTSliceHeader >())
+        {
+            clearBuffers = data->Of< KTSliceHeader >().GetIsNewAcquisition();
+        }
+
         // Call the function
-        if (! TransformData(data->Of< KTAnalyticAssociateData >()))
+        if (! TransformData(data->Of< KTAnalyticAssociateData >(), clearBuffers))
         {
             KTERROR(slotlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
