@@ -40,7 +40,8 @@ namespace Katydid
             fHeaderSize(0),
             fHeader(),
             fHeaderInfo(),
-            fRecordsRead(0)
+            fRecordsRead(0),
+            fLastFrameID(0)
     {
     }
 
@@ -276,6 +277,15 @@ namespace Katydid
             unsigned newFrameID = ConvertFromArray< unsigned >(readBuffer);
             delete [] readBuffer;
             sliceHeader.SetAcquisitionID(newFrameID);
+            if (newFrameID == fLastFrameID && fRecordsRead > 0)
+            {
+                sliceHeader.SetIsNewAcquisition(false);
+            }
+            else
+            {
+                sliceHeader.SetIsNewAcquisition(true);
+                fLastFrameID = newFrameID;
+            }
         }
         if (! fEggStream.good())
         {
