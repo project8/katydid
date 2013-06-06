@@ -84,7 +84,7 @@ namespace Katydid
         return true;
     }
 
-    void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
+    void KTWignerVille::Initialize(Double_t acqRate, UInt_t nComponents, UInt_t inputSliceSize)
     {
         if (fPairs.empty())
         {
@@ -93,12 +93,13 @@ namespace Katydid
         }
         UInt_t nPairs = fPairs.size();
 
-        Double_t timeBW = 1. / header->GetAcquisitionRate();
         if (fNWindowsToAverage == 0) fNWindowsToAverage = 1;
 
         // initialize the FFT
         fFFT->SetSize(fWindowSize);
         fFFT->InitializeFFT();
+
+        Double_t timeBW = 1. / acqRate;
 
         // initialize the input array
         delete fInputArray;
@@ -120,10 +121,10 @@ namespace Katydid
         }
 
         // initialize the circular buffer
-        fBuffer.resize(header->GetNChannels());
+        fBuffer.resize(nComponents);
         for (UInt_t iChannel = 0; iChannel < fBuffer.size(); iChannel++)
         {
-            fBuffer[iChannel].set_capacity(header->GetSliceSize() + fWindowSize);
+            fBuffer[iChannel].set_capacity(inputSliceSize + fWindowSize);
         }
 
         // initialize the output data
@@ -131,7 +132,7 @@ namespace Katydid
 
         // slice header
         fOutputSHData = &(fOutputData->Of< KTSliceHeader >().SetNComponents(nPairs));
-        fOutputSHData->SetSampleRate(header->GetAcquisitionRate());
+        fOutputSHData->SetSampleRate(acqRate);
         fOutputSHData->SetSliceSize(fWindowSize);
         fOutputSHData->CalculateBinWidthAndSliceLength();
 
@@ -160,6 +161,11 @@ namespace Katydid
         fWindowAverageCounter = 0;
 
         return;
+    }
+
+    void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
+    {
+        return Initialize(header->GetAcquisitionRate(), header->GetNChannels(), header->GetSliceSize());
     }
 
     Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data)

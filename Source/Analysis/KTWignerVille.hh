@@ -105,6 +105,7 @@ namespace Katydid
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
 
+            void Initialize(Double_t acqRate, UInt_t nComponents, UInt_t inputSliceSize);
             void InitializeWithHeader(const KTEggHeader* header);
 
         private:
