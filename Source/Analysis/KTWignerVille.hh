@@ -111,26 +111,34 @@ namespace Katydid
         private:
             PairVector fPairs;
 
-            std::vector< Buffer > fBuffer;
-
             UInt_t fWindowSize;
             UInt_t fWindowStride;
             UInt_t fNWindowsToAverage;
 
         public:
             /// Performs the W-V transform on the given time series data.
-            Bool_t TransformData(KTTimeSeriesData& data, Bool_t clearBuffers);
+            Bool_t TransformData(KTTimeSeriesData& data, KTSliceHeader& header);
             /// Performs the WV transform on the given analytic associate data.
-            Bool_t TransformData(KTAnalyticAssociateData& data, Bool_t clearBuffers);
+            Bool_t TransformData(KTAnalyticAssociateData& data, KTSliceHeader& header);
 
         private:
             template< class XDataType >
-            Bool_t TransformFFTWBasedData(XDataType& data, Bool_t clearBuffers);
+            Bool_t TransformFFTWBasedData(XDataType& data, KTSliceHeader& header);
 
             //void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
             // TODO: remove iWindow argument
             void CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, UInt_t iWindow);
             void CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+
+            KTSliceHeader fFirstHeader;
+            KTSliceHeader fSecondHeader;
+
+            Double_t fBinWidth;
+
+            std::vector< Buffer > fBuffer;
+            UInt_t fSliceSampleOffset;
+
+            std::vector< Buffer::iterator > fSliceBreak;
 
             KTTimeSeriesFFTW* fInputArray;
 
@@ -237,7 +245,7 @@ namespace Katydid
     }
 
     template< class XDataType >
-    Bool_t KTWignerVille::TransformFFTWBasedData(XDataType& data, Bool_t clearBuffers)
+    Bool_t KTWignerVille::TransformFFTWBasedData(XDataType& data, KTSliceHeader& header)
     {
             //if (fPairs.empty())
             //{
@@ -272,16 +280,32 @@ namespace Katydid
             }
             */
 
-            // check if the data that just arrived is from a new acquisition
-            if (clearBuffers)
+            UInt_t nPairs = fOutputWVData->GetNComponents();
+
+            std::vector< UInt_t > preCopyBufferSize(nPairs);
+            for (UInt_t iPair = 0; iPair < nPairs; iPair++)
             {
-                for (UInt_t iComponent = 0; iComponent < fBuffer.size(); iComponent++)
+                preCopyBufferSize[iPair] = fBuffer[iPair].size();
+            }
+
+            // copy the arriving header into fSecondHeader
+            fSecondHeader = header;
+
+            // check if the data that just arrived is from a new acquisition
+            Bool_t localIsNewAcquisition = false;
+            if (header.GetIsNewAcquisition())
+            {
+                localIsNewAcquisition = true;
+                for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
                 {
                     fBuffer[iComponent].clear();
                 }
             }
 
+            // iterators to track where to start the next window
             std::vector< Buffer::iterator > futureStartWindow(nComponents);
+            // iterators to track where this window ends
+            std::vector< Buffer::iterator > endOfCurrentWindow(nComponents);
 
             // copy the data into the circular buffer
             for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
@@ -295,11 +319,56 @@ namespace Katydid
                 futureStartWindow[iComponent] = fBuffer[iComponent].begin();
             }
 
-            UInt_t nPairs = fOutputWVData->GetNComponents();
+            // set the iterators that point to the break between the slices
+            for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+            {
+                fSliceBreak[iPair] = fBuffer[iPair].begin() + preCopyBufferSize[iPair];
+            }
 
+            // loop over the buffer until we get too close to the end to fit another window
             Bool_t exitBufferLoop = false;
             while (! exitBufferLoop)
             {
+                for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                {
+                    endOfCurrentWindow[iComponent] = futureStartWindow[iComponent] + (fWindowSize - 1);
+                }
+
+                // set the slice header information if necessary
+                if (fWindowAverageCounter == 0)
+                {
+                    if (futureStartWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
+                    {
+                        fOutputSHData->SetStartRecordNumber(fFirstHeader.GetStartRecordNumber());
+                        fOutputSHData->SetStartSampleNumber(fFirstHeader.GetStartRecordNumber() + fSliceSampleOffset);
+                        fOutputSHData->SetTimeInRun(fFirstHeader.GetTimeInRun() + fBinWidth * Double_t(fSliceSampleOffset));
+                        fOutputSHData->SetIsNewAcquisition(false);
+                    }
+                    else
+                    {
+                        fOutputSHData->SetStartRecordNumber(fSecondHeader.GetStartRecordNumber());
+                        fOutputSHData->SetStartSampleNumber(fSecondHeader.GetStartRecordNumber() + fSliceSampleOffset);
+                        fOutputSHData->SetTimeInRun(fSecondHeader.GetTimeInRun() + fBinWidth * Double_t(fSliceSampleOffset));
+                        fOutputSHData->SetIsNewAcquisition(localIsNewAcquisition);
+                    }
+
+                    for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+                    {
+                        UInt_t firstChannel = fPairs[iPair].first;
+                        if (fSliceBreak[firstChannel] < futureStartWindow[firstChannel])
+                        {
+                            fOutputSHData->SetTimeStamp(fFirstHeader.GetTimeStamp(firstChannel) + TimeType(fBinWidth * Double_t(fSliceSampleOffset) * 1.e9), iPair);
+                            fOutputSHData->SetAcquisitionID(fFirstHeader.GetAcquisitionID(firstChannel), iPair);
+                            fOutputSHData->SetRecordID(fFirstHeader.GetRecordID(firstChannel), iPair);
+                        }
+                        else
+                        {
+                            fOutputSHData->SetTimeStamp(fSecondHeader.GetTimeStamp(firstChannel) + TimeType(fBinWidth * Double_t(fSliceSampleOffset) * 1.e9), iPair);
+                            fOutputSHData->SetAcquisitionID(fSecondHeader.GetAcquisitionID(firstChannel), iPair);
+                            fOutputSHData->SetRecordID(fSecondHeader.GetRecordID(firstChannel), iPair);
+                        }
+                    }
+                }
 
                 // analyze the data in the buffer
                 for (UInt_t iPair = 0; iPair < nPairs; iPair++)
@@ -324,6 +393,7 @@ namespace Katydid
                         *(fOutputWVData->GetSpectrumFFTW(iPair)) += *fInputArray;
                     }
                 }
+
                 // move the start pointers up by fWindowStride
                 for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
                 {
@@ -332,9 +402,25 @@ namespace Katydid
                     // it may still be, of course, that the window itself won't fit
                     // but that's okay; we want to answer that question separately
                     if (fBuffer[iComponent].end() - futureStartWindow[iComponent] > fWindowStride) // (note: this is a comparison to fWindowSTRIDE)
+                    {
                         futureStartWindow[iComponent] += fWindowStride;
+                        // only update fSliceSampleOffset for component 0
+                        if (iComponent == 0)
+                        {
+                            // if we're still on the first slice in the buffer, advance the offset
+                            // if we're on the second slice, set the offset based on distance from the slice break
+                            if (futureStartWindow[iComponent] < fSliceBreak[iComponent])
+                                fSliceSampleOffset += fWindowStride;
+                            else
+                                fSliceSampleOffset = futureStartWindow[iComponent] - fSliceBreak[iComponent] + 1;
+
+                        }
+                    }
                     else
+                    {
                         futureStartWindow[iComponent] = fBuffer[iComponent].end();
+                        fSliceSampleOffset = 0;
+                    }
 
                     // if this is true, then we can't fit the next window in what remains of the buffer
                     if (fBuffer[iComponent].end() - futureStartWindow[iComponent] < fWindowSize) // (note: this is a comparison to fWindowSIZE)
@@ -351,8 +437,20 @@ namespace Katydid
                     // Finish filling in the output data
                     if (exitBufferLoop) fOutputData->fLastData = true;
                     fOutputData->fCounter = fDataOutCounter;
+
                     //fOutputSHData->SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
                     fOutputSHData->SetSliceNumber(fDataOutCounter);
+                    if (endOfCurrentWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
+                    {
+                        fOutputSHData->SetEndRecordNumber(fFirstHeader.GetEndRecordNumber());
+                        //fOutputSHData->SetEndSampleNumber();
+                    }
+                    else
+                    {
+                        fOutputSHData->SetEndRecordNumber(fSecondHeader.GetEndRecordNumber());
+                        //fOutputSHData->SetEndSampleNumber();
+                    }
+
 
                     // Call the signal on the output data
                     fWVSignal(fOutputData);
@@ -380,7 +478,8 @@ namespace Katydid
                 KTDEBUG(wvlog, "Data removed from circular buffer (ch. " << iComponent << "); samples remaining: " << fBuffer[iComponent].end() - fBuffer[iComponent].begin());
             }
 
-
+            // copy second header data into first header
+            fFirstHeader = fSecondHeader;
 
 
 /*

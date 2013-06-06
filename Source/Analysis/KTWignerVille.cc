@@ -29,10 +29,15 @@ namespace Katydid
     KTWignerVille::KTWignerVille(const std::string& name) :
             KTProcessor(name),
             fPairs(),
-            fBuffer(),
             fWindowSize(1),
             fWindowStride(1),
             fNWindowsToAverage(1),
+            fFirstHeader(),
+            fSecondHeader(),
+            fBuffer(),
+            fBinWidth(1.),
+            fSliceSampleOffset(0),
+            fSliceBreak(),
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
             fFFT(new KTComplexFFTW()),
             fOutputArrays(),
@@ -42,7 +47,6 @@ namespace Katydid
             fWindowAverageCounter(0),
             fWindowCounter(0),
             fDataOutCounter(0),
-            //fLeftStartPointer(0),
             fWVSignal("wigner-ville", this),
             fHeaderSlot("header", this, &KTWignerVille::InitializeWithHeader)
     {
@@ -99,11 +103,11 @@ namespace Katydid
         fFFT->SetSize(fWindowSize);
         fFFT->InitializeFFT();
 
-        Double_t timeBW = 1. / acqRate;
+        fBinWidth = 1. / acqRate;
 
         // initialize the input array
         delete fInputArray;
-        fInputArray = new KTTimeSeriesFFTW(fWindowSize, 0., Double_t(fWindowSize) * timeBW);
+        fInputArray = new KTTimeSeriesFFTW(fWindowSize, 0., Double_t(fWindowSize) * fBinWidth);
 
         // initialize the output arrays
         if (fNWindowsToAverage > 1)
@@ -116,22 +120,29 @@ namespace Katydid
             fOutputArrays.resize(nPairs);
             for (UInt_t iPair = 0; iPair < nPairs; iPair++)
             {
-                fOutputArrays[iPair] = new KTFrequencySpectrumFFTW(fWindowSize, fFFT->GetMinFrequency(timeBW), fFFT->GetMaxFrequency(timeBW));
+                fOutputArrays[iPair] = new KTFrequencySpectrumFFTW(fWindowSize, fFFT->GetMinFrequency(fBinWidth), fFFT->GetMaxFrequency(fBinWidth));
             }
         }
 
         // initialize the circular buffer
         fBuffer.resize(nComponents);
-        for (UInt_t iChannel = 0; iChannel < fBuffer.size(); iChannel++)
+        fSliceBreak.resize(nComponents);
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
         {
-            fBuffer[iChannel].clear();
-            fBuffer[iChannel].set_capacity(inputSliceSize + fWindowSize);
+            fBuffer[iComponent].clear();
+            fBuffer[iComponent].set_capacity(inputSliceSize + fWindowSize);
+            fSliceBreak[iComponent] = fBuffer[iComponent].end();
         }
+
+        fSliceSampleOffset = 0;
 
         // initialize the output data
         fOutputData.reset(new KTData());
 
         // slice header
+        fFirstHeader.SetNComponents(nPairs);
+        fSecondHeader.SetNComponents(nPairs);
+
         fOutputSHData = &(fOutputData->Of< KTSliceHeader >().SetNComponents(nPairs));
         fOutputSHData->SetSampleRate(acqRate);
         fOutputSHData->SetSliceSize(fWindowSize);
@@ -169,14 +180,14 @@ namespace Katydid
         return Initialize(header->GetAcquisitionRate(), header->GetNChannels(), header->GetSliceSize());
     }
 
-    Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data, Bool_t clearBuffers)
+    Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data, KTSliceHeader& header)
     {
-        return TransformFFTWBasedData(data, clearBuffers);
+        return TransformFFTWBasedData(data, header);
     }
 
-    Bool_t KTWignerVille::TransformData(KTAnalyticAssociateData& data, Bool_t clearBuffers)
+    Bool_t KTWignerVille::TransformData(KTAnalyticAssociateData& data, KTSliceHeader& header)
     {
-        return TransformFFTWBasedData(data, clearBuffers);
+        return TransformFFTWBasedData(data, header);
     }
 
     void KTWignerVille::CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, UInt_t iWindow)
@@ -324,20 +335,20 @@ namespace Katydid
         // Check to ensure that the required data type is present
         if (! data->Has< KTTimeSeriesData >())
         {
-            KTERROR(slotlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
+            KTERROR(wvlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
 
-        Bool_t clearBuffers = false;
-        if (data->Has< KTSliceHeader >())
+        if (! data->Has< KTSliceHeader >())
         {
-            clearBuffers = data->Of< KTSliceHeader >().GetIsNewAcquisition();
+            KTERROR(wvlog, "Data not found with type <" << typeid(KTSliceHeader).name() << ">");
+            return;
         }
 
         // Call the function
-        if (! TransformData(data->Of< KTTimeSeriesData >(), clearBuffers))
+        if (! TransformData(data->Of< KTTimeSeriesData >(), data->Of< KTSliceHeader >()))
         {
-            KTERROR(slotlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
+            KTERROR(wvlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
 
@@ -353,20 +364,20 @@ namespace Katydid
         // Check to ensure that the required data type is present
         if (! data->Has< KTAnalyticAssociateData >())
         {
-            KTERROR(slotlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
+            KTERROR(wvlog, "Data not found with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
 
-        Bool_t clearBuffers = false;
-        if (data->Has< KTSliceHeader >())
+        if (! data->Has< KTSliceHeader >())
         {
-            clearBuffers = data->Of< KTSliceHeader >().GetIsNewAcquisition();
+            KTERROR(wvlog, "Data not found with type <" << typeid(KTSliceHeader).name() << ">");
+            return;
         }
 
         // Call the function
-        if (! TransformData(data->Of< KTAnalyticAssociateData >(), clearBuffers))
+        if (! TransformData(data->Of< KTAnalyticAssociateData >(), data->Of< KTSliceHeader >()))
         {
-            KTERROR(slotlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
+            KTERROR(wvlog, "Something went wrong while analyzing data with type <" << typeid(KTTimeSeriesData).name() << ">");
             return;
         }
 
