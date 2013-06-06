@@ -13,28 +13,33 @@
 
 namespace log4cxx
 {
-    class KTLevel
+    class KTLevel : public Level
     {
         DECLARE_LOG4CXX_LEVEL( KTLevel );
 
-        virtual ~KTLevel() {}
+        public:
+            KTLevel(int level, const LogString& name, int syslogEquivalent1);
 
-         enum
-         {
-             PROG_INT = 25000 /* And so forth for the other levels */
-         };
+            virtual ~KTLevel() {}
 
-         static LevelPtr getProg(); /* and so forth */
+            enum
+            {
+                PROG_INT = 25000 /* And so forth for the other levels */
+            };
 
-         // You must provide this, see the one in Logger.cpp
-         // If it doesn't match one of your levels you should probably
-         // call Logger::toLevel
-         static LevelPtr toLevel(int val);
+            static LevelPtr getProg(); /* and so forth */
 
-         // You must provide this, see the one in Logger.cpp
-         // If it doesn't match one of your levels you should probably
-         // call Logger::toLevelLS
-         static LevelPtr toLevelLS(const LogString& sArg);
+            // You must provide this, see the one in Logger.cpp
+            // If it doesn't match one of your levels you should probably
+            // call Logger::toLevel
+            static LevelPtr toLevel(int val);
+            static LevelPtr toLevel(int val, const LevelPtr& defaultLevel);
+
+            // You must provide this, see the one in Logger.cpp
+            // If it doesn't match one of your levels you should probably
+            // call Logger::toLevelLS
+            static LevelPtr toLevelLS(const LogString& sArg);
+            static LevelPtr toLevelLS(const LogString& sArg, const LevelPtr& defaultLevel);
     };
 } /* namespace log4cxx */
 
