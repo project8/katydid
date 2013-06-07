@@ -278,18 +278,19 @@ namespace Katydid
                     return false;
                 }
             }
-            */
+             */
 
             UInt_t nPairs = fOutputWVData->GetNComponents();
 
-            std::vector< UInt_t > preCopyBufferSize(nPairs);
-            for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+            std::vector< UInt_t > preCopyBufferSize(nComponents);
+            for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
             {
-                preCopyBufferSize[iPair] = fBuffer[iPair].size();
+                preCopyBufferSize[iComponent] = fBuffer[iComponent].size();
+                KTDEBUG(wvlog, "Pre-copy buffer " << iComponent << " size: " << preCopyBufferSize[iComponent]);
             }
 
             // copy the arriving header into fSecondHeader
-            fSecondHeader = header;
+            fSecondHeader.CopySliceHeaderOnly(header);
 
             // check if the data that just arrived is from a new acquisition
             Bool_t localIsNewAcquisition = false;
@@ -320,47 +321,60 @@ namespace Katydid
             }
 
             // set the iterators that point to the break between the slices
-            for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+            for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
             {
-                fSliceBreak[iPair] = fBuffer[iPair].begin() + preCopyBufferSize[iPair];
+                fSliceBreak[iComponent] = fBuffer[iComponent].begin() + preCopyBufferSize[iComponent];
+                KTDEBUG(wvlog, "Slice break " << iComponent << " offset: " << fSliceBreak[iComponent] - fBuffer[iComponent].begin());
             }
+
+            // This is declared outside of the buffer loop so that after the loop we know which slice the last window started in
+            Bool_t windowStartInFirstSlice = false;
 
             // loop over the buffer until we get too close to the end to fit another window
             Bool_t exitBufferLoop = false;
             while (! exitBufferLoop)
             {
+                KTDEBUG(wvlog, "Slice sample offset: " << fSliceSampleOffset);
+
                 for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
                 {
                     endOfCurrentWindow[iComponent] = futureStartWindow[iComponent] + (fWindowSize - 1);
+                    KTDEBUG(wvlog, "End of current window " << iComponent << " offset: " << endOfCurrentWindow[iComponent] - fBuffer[iComponent].begin());
                 }
 
-                // set the slice header information if necessary
-                if (fWindowAverageCounter == 0)
+                // a few things need to be done depending on if the window starts in the first slice or the second slice
+                if (futureStartWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
                 {
-                    if (futureStartWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
+                    windowStartInFirstSlice = true;
+                    // set the slice header information if necessary
+                    if (fWindowAverageCounter == 0)
                     {
                         fOutputSHData->SetStartRecordAndSample(fFirstHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
                         fOutputSHData->SetTimeInRun(fFirstHeader.GetTimeInRunAtSample(fSliceSampleOffset));
                         fOutputSHData->SetIsNewAcquisition(false);
-                    }
-                    else
-                    {
-                        fOutputSHData->SetStartRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
-                        fOutputSHData->SetTimeInRun(fSecondHeader.GetTimeInRunAtSample(fSliceSampleOffset));
-                        fOutputSHData->SetIsNewAcquisition(localIsNewAcquisition);
-                    }
-
-                    for (UInt_t iPair = 0; iPair < nPairs; iPair++)
-                    {
-                        UInt_t firstChannel = fPairs[iPair].first;
-                        if (fSliceBreak[firstChannel] < futureStartWindow[firstChannel])
+                        fOutputSHData->SetRecordSize(fFirstHeader.GetRecordSize());
+                        for (UInt_t iPair = 0; iPair < nPairs; iPair++)
                         {
+                            UInt_t firstChannel = fPairs[iPair].first;
                             fOutputSHData->SetTimeStamp(fFirstHeader.GetTimeStampAtSample(fSliceSampleOffset, firstChannel), iPair);
                             fOutputSHData->SetAcquisitionID(fFirstHeader.GetAcquisitionID(firstChannel), iPair);
                             fOutputSHData->SetRecordID(fFirstHeader.GetRecordID(firstChannel), iPair);
                         }
-                        else
+                    }
+                }
+                else
+                {
+                    windowStartInFirstSlice = false;
+                    // set the slice header information if necessary
+                    if (fWindowAverageCounter == 0)
+                    {
+                        fOutputSHData->SetStartRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
+                        fOutputSHData->SetTimeInRun(fSecondHeader.GetTimeInRunAtSample(fSliceSampleOffset));
+                        fOutputSHData->SetIsNewAcquisition(localIsNewAcquisition);
+                        fOutputSHData->SetRecordSize(fSecondHeader.GetRecordSize());
+                        for (UInt_t iPair = 0; iPair < nPairs; iPair++)
                         {
+                            UInt_t firstChannel = fPairs[iPair].first;
                             fOutputSHData->SetTimeStamp(fSecondHeader.GetTimeStampAtSample(fSliceSampleOffset, firstChannel), iPair);
                             fOutputSHData->SetAcquisitionID(fSecondHeader.GetAcquisitionID(firstChannel), iPair);
                             fOutputSHData->SetRecordID(fSecondHeader.GetRecordID(firstChannel), iPair);
@@ -377,7 +391,7 @@ namespace Katydid
                     Buffer::iterator startWindowFC = futureStartWindow[firstChannel];
                     Buffer::iterator startWindowSC = futureStartWindow[secondChannel];
 
-                    KTDEBUG(wvlog, "before transform -- ch 1: " << fBuffer[firstChannel].end() - startWindowFC << "    ch 2: " << fBuffer[secondChannel].end() - startWindowSC);
+                    KTDEBUG(wvlog, "Data remaining in buffer before transform -- ch " << firstChannel << ": " << fBuffer[firstChannel].end() - startWindowFC << "    ch " << secondChannel << ": " << fBuffer[secondChannel].end() - startWindowSC);
                     CalculateACF(startWindowFC, startWindowSC, fWindowCounter);
                     //fOutputWVData->SetSpectrum(fFFT->Transform(fInputArray), iWindowInLoop, iPair);
                     if (fWindowAverageCounter == 0)
@@ -408,9 +422,13 @@ namespace Katydid
                             // if we're still on the first slice in the buffer, advance the offset
                             // if we're on the second slice, set the offset based on distance from the slice break
                             if (futureStartWindow[iComponent] < fSliceBreak[iComponent])
+                            {
                                 fSliceSampleOffset += fWindowStride;
+                            }
                             else
-                                fSliceSampleOffset = futureStartWindow[iComponent] - fSliceBreak[iComponent] + 1;
+                            {
+                                fSliceSampleOffset = futureStartWindow[iComponent] - fSliceBreak[iComponent];
+                            }
 
                         }
                     }
@@ -428,6 +446,7 @@ namespace Katydid
                 fWindowCounter++;
                 fWindowAverageCounter++;
 
+                // time to output new data!
                 if (fWindowAverageCounter == fNWindowsToAverage)
                 {
                     // if we want an average and not just a sum, this is where the division by the fNWindowsToAverage should go
@@ -437,14 +456,16 @@ namespace Katydid
                     fOutputData->fCounter = fDataOutCounter;
 
                     fOutputSHData->SetSliceNumber(fDataOutCounter);
-                    if (endOfCurrentWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
+                    if (windowStartInFirstSlice)
                     {
-                        fOutputSHData->SetEndRecordAndSample(fFirstHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
+                        fOutputSHData->SetEndRecordAndSample(fFirstHeader.GetRecordSamplePairAtSample(fSliceSampleOffset-fWindowStride+fWindowSize));
                     }
                     else
                     {
-                        fOutputSHData->SetEndRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
+                        fOutputSHData->SetEndRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(fSliceSampleOffset-fWindowStride+fWindowSize));
                     }
+
+                    KTDEBUG(wvlog, "Signaling output data;\n" << *fOutputSHData);
 
                     // Call the signal on the output data
                     fWVSignal(fOutputData);
@@ -476,7 +497,7 @@ namespace Katydid
             fFirstHeader = fSecondHeader;
 
 
-/*
+            /*
             UInt_t nPairs = fPairs.size();
 
             //KTWV2DData& newData = data.template Of< KTWV2DData >().SetNComponents(nPairs);
@@ -521,7 +542,7 @@ namespace Katydid
                 iPair++;
             }
             KTINFO(wvlog, "Completed WV transform of " << iPair << " pairs");
-*/
+             */
 
             return true;
     }
