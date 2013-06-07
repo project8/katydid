@@ -26,6 +26,9 @@ namespace Katydid
 
             KTSliceHeader& operator=(const KTSliceHeader& rhs);
 
+            /// Copy the data in rhs only; do not copy any additional extensible data
+            void CopySliceHeaderOnly(const KTSliceHeader& rhs);
+
             UInt_t GetNComponents() const;
             KTSliceHeader& SetNComponents(UInt_t num);
 
@@ -119,6 +122,8 @@ namespace Katydid
             UInt_t fTemp1, fTemp2, fTemp3;
 
     };
+
+    std::ostream& operator<<(std::ostream& out, const KTSliceHeader& hdr);
 
 
     inline UInt_t KTSliceHeader::GetNComponents() const
@@ -291,8 +296,11 @@ namespace Katydid
 
     inline std::pair< UInt_t, UInt_t > KTSliceHeader::GetRecordSamplePairAtSample(UInt_t sampleInSlice)
     {
-        // doing these both at once, we can take advantage of compiler optimization,
+        // NOTE 1: doing these both at once, we can take advantage of compiler optimization,
         // which will most likely only perform one division operation
+        // NOTE 2: this function does not depend on the slice size; this feature is useful
+        // to be able to calculate record offsets without worrying about which slice, exactly, this header pertains to.
+        // It's in use (as of this writing) in KTWignerVille.
         fTemp1 = fStartSampleNumber + sampleInSlice; // sample in the record + some number of record lengths
         fTemp2 = fStartRecordNumber + fTemp1 / fRecordSize; // record number
         fTemp3 = fTemp1 % fRecordSize; // sample in the record

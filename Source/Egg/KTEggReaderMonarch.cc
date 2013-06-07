@@ -237,15 +237,7 @@ namespace Katydid
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
         sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
         sliceHeader.SetRecordSize(fHeader.GetRecordSize());
-        KTDEBUG(eggreadlog, "Filled out slice header:\n"
-                << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
-                << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
-                << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
-                << "\tSlice length: " << sliceHeader.GetSliceLength() << " s\n"
-                << "\tTime in run: " << sliceHeader.GetTimeInRun() << " s\n"
-                << "\tSlice number: " << sliceHeader.GetSliceNumber() << '\n'
-                << "\tStart record number: " << sliceHeader.GetStartRecordNumber() << '\n'
-                << "\tStart sample number: " << sliceHeader.GetStartSampleNumber());
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
