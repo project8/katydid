@@ -304,6 +304,7 @@ namespace Katydid
         sliceHeader.SetStartSampleNumber(0);
         sliceHeader.SetEndRecordNumber(fRecordsRead);
         sliceHeader.SetEndSampleNumber(fHeaderInfo.fRecordSize - 1);
+        sliceHeader.SetRecordSize(fHeaderInfo.fRecordSize);
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];

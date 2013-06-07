@@ -236,6 +236,7 @@ namespace Katydid
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
         sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
+        sliceHeader.SetRecordSize(fHeader.GetRecordSize());
         KTDEBUG(eggreadlog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
                 << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'

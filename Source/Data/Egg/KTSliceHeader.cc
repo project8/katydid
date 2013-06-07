@@ -22,7 +22,9 @@ namespace Katydid
             fStartSampleNumber(0),
             fEndRecordNumber(0),
             fEndSampleNumber(0),
-            fComponentData(1)
+            fRecordSize(1),
+            fComponentData(1),
+            fTemp1(0), fTemp2(0), fTemp3(0)
     {
     }
 
@@ -39,7 +41,9 @@ namespace Katydid
             fStartSampleNumber(orig.fStartSampleNumber),
             fEndRecordNumber(orig.fEndRecordNumber),
             fEndSampleNumber(orig.fEndSampleNumber),
-            fComponentData(orig.fComponentData)
+            fRecordSize(orig.fRecordSize),
+            fComponentData(orig.fComponentData),
+            fTemp1(0), fTemp2(0), fTemp3(0) // temporary variables aren't copied
     {
     }
 
@@ -61,7 +65,9 @@ namespace Katydid
         fStartSampleNumber = rhs.fStartSampleNumber;
         fEndRecordNumber = rhs.fEndRecordNumber;
         fEndSampleNumber = rhs.fEndSampleNumber;
+        fRecordSize = rhs.fRecordSize;
         fComponentData = rhs.fComponentData;
+        // temporary variables aren't copied
         return *this;
     }
 
