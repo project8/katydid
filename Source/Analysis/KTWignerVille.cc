@@ -35,7 +35,6 @@ namespace Katydid
             fFirstHeader(),
             fSecondHeader(),
             fBuffer(),
-            fBinWidth(1.),
             fSliceSampleOffset(0),
             fSliceBreak(),
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
@@ -103,11 +102,11 @@ namespace Katydid
         fFFT->SetSize(fWindowSize);
         fFFT->InitializeFFT();
 
-        fBinWidth = 1. / acqRate;
+        Double_t timeBW = 1. / acqRate;
 
         // initialize the input array
         delete fInputArray;
-        fInputArray = new KTTimeSeriesFFTW(fWindowSize, 0., Double_t(fWindowSize) * fBinWidth);
+        fInputArray = new KTTimeSeriesFFTW(fWindowSize, 0., Double_t(fWindowSize) * timeBW);
 
         // initialize the output arrays
         if (fNWindowsToAverage > 1)
@@ -120,7 +119,7 @@ namespace Katydid
             fOutputArrays.resize(nPairs);
             for (UInt_t iPair = 0; iPair < nPairs; iPair++)
             {
-                fOutputArrays[iPair] = new KTFrequencySpectrumFFTW(fWindowSize, fFFT->GetMinFrequency(fBinWidth), fFFT->GetMaxFrequency(fBinWidth));
+                fOutputArrays[iPair] = new KTFrequencySpectrumFFTW(fWindowSize, fFFT->GetMinFrequency(timeBW), fFFT->GetMaxFrequency(timeBW));
             }
         }
 

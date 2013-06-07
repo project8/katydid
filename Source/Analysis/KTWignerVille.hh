@@ -53,6 +53,7 @@ namespace Katydid
      Recommendations:
      - There should not be any overlap between the slices produced by the EggProcessor (or whatever source of time series is used).
        Overlap is not checked for when copying the data from the slices to the circular buffer.
+     - The slice size produced by the EggProcessor (or other slice source) must be larger than the window size.
      - The Wigner-Ville transform technically has no negative frequency components in the output; This implementation does because
        of the type of DFT that is used. You should follow the WV transform with a switch to polar format that drops the negative
        frequency bins (using processor "switch-fftw-polar," with "use-neg-freqs" set to false)
@@ -60,10 +61,11 @@ namespace Katydid
      Configuration name: "wigner-ville"
 
      Available configuration values:
-     - "complex-fftw": string --
+     - "complex-fftw": object -- configure the fftw
      - "wv-pair": bool -- channel pair to be used in the Wigner-Ville transform: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
      - "window-size": unsigned -- number of bins to use for the WV window
      - "window-stride": unsigned -- number of bins to skip between WV windows
+     - "n-windows-to-average": unsigned -- number of windows to average together into a single WV window
 
      Slots:
      - "header": void (const KTEggHeader*) -- Initializes the transform using an Egg header
@@ -132,8 +134,6 @@ namespace Katydid
 
             KTSliceHeader fFirstHeader;
             KTSliceHeader fSecondHeader;
-
-            Double_t fBinWidth;
 
             std::vector< Buffer > fBuffer;
             UInt_t fSliceSampleOffset;
