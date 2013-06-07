@@ -339,16 +339,14 @@ namespace Katydid
                 {
                     if (futureStartWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
                     {
-                        fOutputSHData->SetStartRecordNumber(fFirstHeader.GetStartRecordNumber());
-                        fOutputSHData->SetStartSampleNumber(fFirstHeader.GetStartRecordNumber() + fSliceSampleOffset);
-                        fOutputSHData->SetTimeInRun(fFirstHeader.GetTimeInRun() + fBinWidth * Double_t(fSliceSampleOffset));
+                        fOutputSHData->SetStartRecordAndSample(fFirstHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
+                        fOutputSHData->SetTimeInRun(fFirstHeader.GetTimeInRunAtSample(fSliceSampleOffset));
                         fOutputSHData->SetIsNewAcquisition(false);
                     }
                     else
                     {
-                        fOutputSHData->SetStartRecordNumber(fSecondHeader.GetStartRecordNumber());
-                        fOutputSHData->SetStartSampleNumber(fSecondHeader.GetStartRecordNumber() + fSliceSampleOffset);
-                        fOutputSHData->SetTimeInRun(fSecondHeader.GetTimeInRun() + fBinWidth * Double_t(fSliceSampleOffset));
+                        fOutputSHData->SetStartRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
+                        fOutputSHData->SetTimeInRun(fSecondHeader.GetTimeInRunAtSample(fSliceSampleOffset));
                         fOutputSHData->SetIsNewAcquisition(localIsNewAcquisition);
                     }
 
@@ -357,13 +355,13 @@ namespace Katydid
                         UInt_t firstChannel = fPairs[iPair].first;
                         if (fSliceBreak[firstChannel] < futureStartWindow[firstChannel])
                         {
-                            fOutputSHData->SetTimeStamp(fFirstHeader.GetTimeStamp(firstChannel) + TimeType(fBinWidth * Double_t(fSliceSampleOffset) * 1.e9), iPair);
+                            fOutputSHData->SetTimeStamp(fFirstHeader.GetTimeStampAtSample(fSliceSampleOffset, firstChannel), iPair);
                             fOutputSHData->SetAcquisitionID(fFirstHeader.GetAcquisitionID(firstChannel), iPair);
                             fOutputSHData->SetRecordID(fFirstHeader.GetRecordID(firstChannel), iPair);
                         }
                         else
                         {
-                            fOutputSHData->SetTimeStamp(fSecondHeader.GetTimeStamp(firstChannel) + TimeType(fBinWidth * Double_t(fSliceSampleOffset) * 1.e9), iPair);
+                            fOutputSHData->SetTimeStamp(fSecondHeader.GetTimeStampAtSample(fSliceSampleOffset, firstChannel), iPair);
                             fOutputSHData->SetAcquisitionID(fSecondHeader.GetAcquisitionID(firstChannel), iPair);
                             fOutputSHData->SetRecordID(fSecondHeader.GetRecordID(firstChannel), iPair);
                         }
@@ -438,19 +436,15 @@ namespace Katydid
                     if (exitBufferLoop) fOutputData->fLastData = true;
                     fOutputData->fCounter = fDataOutCounter;
 
-                    //fOutputSHData->SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
                     fOutputSHData->SetSliceNumber(fDataOutCounter);
                     if (endOfCurrentWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
                     {
-                        fOutputSHData->SetEndRecordNumber(fFirstHeader.GetEndRecordNumber());
-                        //fOutputSHData->SetEndSampleNumber();
+                        fOutputSHData->SetEndRecordAndSample(fFirstHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
                     }
                     else
                     {
-                        fOutputSHData->SetEndRecordNumber(fSecondHeader.GetEndRecordNumber());
-                        //fOutputSHData->SetEndSampleNumber();
+                        fOutputSHData->SetEndRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(fSliceSampleOffset));
                     }
-
 
                     // Call the signal on the output data
                     fWVSignal(fOutputData);
