@@ -156,6 +156,7 @@ namespace Katydid
         Double_t freqSpectrumMin = frequencySpectrum->GetRangeMin();
         Double_t freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
+        KTDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTFrequencySpectrumPolar* newSpectrum = new KTFrequencySpectrumPolar(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
 
         // First directly copy data that's outside the scaling range
@@ -177,7 +178,7 @@ namespace Katydid
 #pragma omp for private(iBin)
             for (iBin=fMinBin; iBin < fMaxBin+1; iBin++)
             {
-                (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() / (*splineImp)(iBin), (*frequencySpectrum)(iBin).arg());
+                (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() / (*splineImp)(iBin - fMinBin), (*frequencySpectrum)(iBin).arg());
             }
         }
 
@@ -201,6 +202,7 @@ namespace Katydid
         Double_t freqSpectrumMin = frequencySpectrum->GetRangeMin();
         Double_t freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
+        KTDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
 
         //KTDEBUG(gnlog, "array range: 0 - " << frequencySpectrum->size());
