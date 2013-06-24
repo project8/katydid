@@ -160,7 +160,7 @@ namespace Katydid
         }
         else
         {
-#pragma omp parallel for private(valueReal, valueImag)
+#pragma omp parallel for
             for (UInt_t iBin=1; iBin<nBins-1; iBin++)
             {
                 (*newFS)(iBin).set_rect((*this)(fDCBin + iBin)[0], (*this)(fDCBin + iBin)[1]);
