@@ -81,12 +81,16 @@ namespace Katydid
         }
 
         // open the file
-        KTDEBUG(eggreadlog, "Attempting to open file <" << filename << ">");
-        fMonarch = Monarch::OpenForReading(filename);
-        if (fMonarch == NULL)
+        KTINFO(eggreadlog, "Opening egg file <" << filename << ">");
+        try
         {
-            KTERROR(eggreadlog, "Unable to break egg");
+            fMonarch = Monarch::OpenForReading(filename);
+        }
+        catch (MonarchException& e)
+        {
+            KTERROR(eggreadlog, "Unable to break egg: " << e.what());
             return NULL;
+
         }
 
         KTDEBUG(eggreadlog, "File open; reading header");
@@ -236,15 +240,8 @@ namespace Katydid
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
         sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
-        KTDEBUG(eggreadlog, "Filled out slice header:\n"
-                << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
-                << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
-                << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
-                << "\tSlice length: " << sliceHeader.GetSliceLength() << " s\n"
-                << "\tTime in run: " << sliceHeader.GetTimeInRun() << " s\n"
-                << "\tSlice number: " << sliceHeader.GetSliceNumber() << '\n'
-                << "\tStart record number: " << sliceHeader.GetStartRecordNumber() << '\n'
-                << "\tStart sample number: " << sliceHeader.GetStartSampleNumber());
+        sliceHeader.SetRecordSize(fHeader.GetRecordSize());
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;

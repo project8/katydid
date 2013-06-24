@@ -7,6 +7,8 @@
 
 #include "KTSliceHeader.hh"
 
+#include <ostream>
+
 namespace Katydid
 {
     KTSliceHeader::KTSliceHeader() :
@@ -22,7 +24,9 @@ namespace Katydid
             fStartSampleNumber(0),
             fEndRecordNumber(0),
             fEndSampleNumber(0),
-            fComponentData(1)
+            fRecordSize(1),
+            fComponentData(1),
+            fTemp1(0), fTemp2(0), fTemp3(0)
     {
     }
 
@@ -39,7 +43,9 @@ namespace Katydid
             fStartSampleNumber(orig.fStartSampleNumber),
             fEndRecordNumber(orig.fEndRecordNumber),
             fEndSampleNumber(orig.fEndSampleNumber),
-            fComponentData(orig.fComponentData)
+            fRecordSize(orig.fRecordSize),
+            fComponentData(orig.fComponentData),
+            fTemp1(0), fTemp2(0), fTemp3(0) // temporary variables aren't copied
     {
     }
 
@@ -50,6 +56,12 @@ namespace Katydid
     KTSliceHeader& KTSliceHeader::operator=(const KTSliceHeader& rhs)
     {
         KTExtensibleData< KTSliceHeader >::operator=(rhs);
+        CopySliceHeaderOnly(rhs);
+        return *this;
+    }
+
+    void KTSliceHeader::CopySliceHeaderOnly(const KTSliceHeader& rhs)
+    {
         fIsNewAcquisition = rhs.fIsNewAcquisition;
         fTimeInRun = rhs.fTimeInRun;
         fSliceNumber = rhs.fSliceNumber;
@@ -61,8 +73,31 @@ namespace Katydid
         fStartSampleNumber = rhs.fStartSampleNumber;
         fEndRecordNumber = rhs.fEndRecordNumber;
         fEndSampleNumber = rhs.fEndSampleNumber;
+        fRecordSize = rhs.fRecordSize;
         fComponentData = rhs.fComponentData;
-        return *this;
+        // temporary variables aren't copied
+        return;
+    }
+
+    std::ostream& operator<<(std::ostream& out, const KTSliceHeader& hdr)
+    {
+        out << "Slice Header Contents:\n" <<
+                "\tSlice number: " << hdr.GetSliceNumber() << '\n' <<
+                "\tSlice size: " << hdr.GetSliceSize() << '\n' <<
+                "\tSlice Length: " << hdr.GetSliceLength() << " s\n" <<
+                "\tSample Rate: " << hdr.GetSampleRate() << " Hz\n" <<
+                "\tBin Width: " << hdr.GetBinWidth() << " s\n" <<
+                "\tTime in Run: " << hdr.GetTimeInRun() << " s\n" <<
+                "\tIs New Acquisition?: " << hdr.GetIsNewAcquisition() << '\n' <<
+                "\tStart Record: " << hdr.GetStartRecordNumber() << '\n' <<
+                "\tStart Sample: " << hdr.GetStartSampleNumber() << '\n' <<
+                "\tEnd Record: " << hdr.GetEndRecordNumber() << '\n' <<
+                "\tEnd Sample: " << hdr.GetEndSampleNumber() << '\n' <<
+                "\tRecord Size: " << hdr.GetRecordSize() << '\n' <<
+                "\t# of Components: " << hdr.GetNComponents();
+        return out;
     }
 
 } /* namespace Katydid */
+
+

@@ -55,6 +55,7 @@ namespace Katydid
         if (fEggStream.is_open()) fEggStream.close();
 
         // open the file stream
+        KTINFO(eggreadlog, "Opening egg file <" << filename << ">")
         fEggStream.open(filename.c_str(), ifstream::in|ifstream::binary);
 
         if (! fEggStream.is_open())
@@ -304,6 +305,7 @@ namespace Katydid
         sliceHeader.SetStartSampleNumber(0);
         sliceHeader.SetEndRecordNumber(fRecordsRead);
         sliceHeader.SetEndSampleNumber(fHeaderInfo.fRecordSize - 1);
+        sliceHeader.SetRecordSize(fHeaderInfo.fRecordSize);
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];
