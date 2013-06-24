@@ -14,7 +14,7 @@ project (Katydid)
 include (PackageBuilder)
 
 # Set the version and associated variables
-pbuilder_prepare_project (1 0 0)
+pbuilder_prepare_project (1 5 0)
 
 set (Katydid_SINGLETHREADED FALSE CACHE BOOL "Flag for running in single-threaded mode")
 if (Katydid_SINGLETHREADED)
