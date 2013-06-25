@@ -81,12 +81,16 @@ namespace Katydid
         }
 
         // open the file
-        KTDEBUG(eggreadlog, "Attempting to open file <" << filename << ">");
-        fMonarch = Monarch::OpenForReading(filename);
-        if (fMonarch == NULL)
+        KTINFO(eggreadlog, "Opening egg file <" << filename << ">");
+        try
         {
-            KTERROR(eggreadlog, "Unable to break egg");
+            fMonarch = Monarch::OpenForReading(filename);
+        }
+        catch (MonarchException& e)
+        {
+            KTERROR(eggreadlog, "Unable to break egg: " << e.what());
             return NULL;
+
         }
 
         KTDEBUG(eggreadlog, "File open; reading header");

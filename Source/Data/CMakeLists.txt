@@ -25,6 +25,7 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTAnalysisCandidates.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTCCResults.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTMCTruthEvents.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrum.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumDataFFTW.hh
@@ -63,6 +64,7 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTAnalysisCandidates.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTCCResults.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTMCTruthEvents.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrum.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTFrequencySpectrumDataFFTW.cc

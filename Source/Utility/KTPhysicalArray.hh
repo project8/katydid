@@ -15,6 +15,9 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/bind.hpp>
 
+#include <sstream>
+#include <stdexcept>
+
 #ifdef USE_OPENMP
 #include <omp.h>
 #endif
@@ -295,8 +298,10 @@ namespace Katydid
 #ifdef Katydid_DEBUG
         if (i >= size())
         {
-            KTERROR(utillog_physarr, "Out of bounds: " << i << " >= " << fData.size());
-            return fData(0);
+            std::stringstream msg;
+            msg << "Out of bounds: " << i << " >= " << fData.size();
+            KTERROR(utillog_physarr, msg.str());
+            throw std::out_of_range(msg.str());
         }
 #endif
         return fData(i);
@@ -308,8 +313,10 @@ namespace Katydid
 #ifdef Katydid_DEBUG
         if (i >= size())
         {
-            KTERROR(utillog_physarr, "Out of bounds: " << i << " >= " << fData.size());
-            return fData(0);
+            std::stringstream msg;
+            msg << "Out of bounds: " << i << " >= " << fData.size();
+            KTERROR(utillog_physarr, msg.str());
+            throw std::out_of_range(msg.str());
         }
 #endif
         return fData(i);
@@ -616,13 +623,17 @@ namespace Katydid
 #ifdef Katydid_DEBUG
         if (i >= size(1))
         {
-            KTERROR(utillog_physarr, "Out of bounds on axis 1: " << i << " >= " << size(1));
-            return fData(0, 0);
+            std::stringstream msg;
+            msg << "Out of bounds on axis 1: " << i << " >= " << size(1);
+            KTERROR(utillog_physarr, msg.str());
+            throw std::out_of_range(msg.str());
         }
         if (j >= size(2))
         {
-            KTERROR(utillog_physarr, "Out of bounds on axis 2: " << j << " >= " << size(2));
-            return fData(0, 0);
+            std::stringstream msg;
+            msg << "Out of bounds on axis 2: " << j << " >= " << size(2);
+            KTERROR(utillog_physarr, msg.str());
+            throw std::out_of_range(msg.str());
         }
 #endif
         return fData(i,j);
@@ -634,13 +645,17 @@ namespace Katydid
 #ifdef Katydid_DEBUG
         if (i >= size(1))
         {
-            KTERROR(utillog_physarr, "Out of bounds on axis 1: " << i << " >= " << size(1));
-            return fData(0, 0);
-        }
+            std::stringstream msg;
+            msg << "Out of bounds on axis 1: " << i << " >= " << size(1);
+            KTERROR(utillog_physarr, msg.str());
+            throw std::out_of_range(msg.str());
+         }
         if (j >= size(2))
         {
-            KTERROR(utillog_physarr, "Out of bounds on axis 2: " << j << " >= " << size(2));
-            return fData(0, 0);
+            std::stringstream msg;
+            msg << "Out of bounds on axis 2: " << j << " >= " << size(2);
+            KTERROR(utillog_physarr, msg.str());
+            throw std::out_of_range(msg.str());
         }
 #endif
         return fData(i,j);

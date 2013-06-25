@@ -10,6 +10,7 @@ set (OUTPUT_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWriter.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEgg.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEvaluation.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.hh
 )
 
@@ -27,6 +28,7 @@ if (ROOT_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterFFT.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterAnalysis.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterEvaluation.hh
     )
 endif (ROOT_FOUND)
 
@@ -39,6 +41,7 @@ set (OUTPUT_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWriter.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEgg.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEvaluation.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.hh
 )
 
@@ -56,6 +59,7 @@ if (ROOT_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterFFT.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterAnalysis.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterEvaluation.cc
     )
 endif (ROOT_FOUND)
 

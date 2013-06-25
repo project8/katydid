@@ -5,12 +5,12 @@
         {
             "processor":
             {
-                "type": "oneshot-json-reader",
+                "type": "multifile-json-reader",
                 "name": "mctruth"
             },
             "processor":
             {
-                "type": "oneshot-json-reader",
+                "type": "multifile-json-reader",
                 "name": "candidates"
             },
             "processor":
@@ -18,13 +18,18 @@
                 "type": "compare-candidates",
                 "name": "cc"
             },
+            "processor":
+            {
+                "type": "root-tree-writer",
+                "name": "rtw"
+            },
             
             "connection":
             {
                 "signal-processor": "mctruth",
                 "signal-name": "mc-truth-events",
                 "slot-processor": "candidates",
-                "slot-name": "append-analysis-candidates"
+                "slot-name": "analysis-candidates"
             },
             "connection":
             {
@@ -33,6 +38,22 @@
                 "slot-processor": "cc",
                 "slot-name": "truth-vs-analysis"
             },
+            "connection":
+            {
+                "signal-processor": "cc",
+                "signal-name": "cc-results",
+                "slot-processor": "rtw",
+                "slot-name": "meta-cc-locust-mc"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "mctruth",
+                "signal-name": "done",
+                "slot-processor": "rtw",
+                "slot-name": "close-file"
+            },
+            
 
             "run-queue":
             {
@@ -43,18 +64,33 @@
 
         "mctruth":
         {
-            "input-file": "/path/to/mte_file.json",
-            "run-type": "mc-truth-events"
+            "input-file": "/path/to/run0.mcinfo",
+            "input-file": "/path/to/run1.mcinfo",
+            "input-file": "/path/to/run2.mcinfo",
+            "input-file": "/path/to/run3.mcinfo",
+            "input-file": "/path/to/run4.mcinfo",
+            "data-type": "mc-truth-events"
         },
         
         "candidates":
         {
-            "input-file": "/path/to/ac_file.json"
+            "input-file": "/path/to/run0.candidates",
+            "input-file": "/path/to/run1.candidates",
+            "input-file": "/path/to/run2.candidates",
+            "input-file": "/path/to/run3.candidates",
+            "input-file": "/path/to/run4.candidates",
+            "data-type": "analysis-candidates"
         },
         
         "cc":
         {
             "assume-sparse-candidates": false
+        },
+        
+        "rtw":
+        {
+            "output-file": "output.root",
+            "fileflag": "recreate"
         }
     }
 }
