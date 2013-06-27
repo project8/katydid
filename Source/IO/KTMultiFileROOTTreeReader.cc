@@ -7,21 +7,24 @@
 
 #include "KTMultiFileROOTTreeReader.hh"
 
-#include "KTAnalysisCandidates.hh"
-#include "KTCCResults.hh"
-#include "KTFilenameParsers.hh"
-#include "KTMCTruthEvents.hh"
+#include "KTAmplitudeDistribution.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
+#include "KTROOTTreeTypeWriterAnalysis.hh"
 
+#include "TAxis.h"
 #include "TFile.h"
+#include "TH1D.h"
 #include "TTree.h"
+
+#include <sstream>
 
 using boost::shared_ptr;
 
 using std::deque;
 using std::string;
+using std::stringstream;
 
 namespace Katydid
 {
@@ -170,7 +173,6 @@ namespace Katydid
                 KTERROR(inlog, "Something went wrong while appending data of type <" << dtIt->fName << "> from tree <" << dtIt->fTreeName << "> from file <" << *fFileIter << ">");
                 return false;
             }
-            (*(dtIt->fSignal))(data);
         }
 
         fFileIter++;
@@ -180,9 +182,48 @@ namespace Katydid
 
     Bool_t KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, KTData& appendToData)
     {
+        // Determine the number of components and the number of frequency bins
+        UInt_t nComponents = 0;
+        UInt_t nFreqBins = 0;
+        while (true)
+        {
+            stringstream cut;
+            cut << "Component == " << nComponents;
+            UInt_t nEntriesForComponent = (UInt_t)tree->GetEntries(cut.str().c_str());
+            if (nEntriesForComponent == 0)
+            {
+                nComponents++; // advance this by 1 to be the number of components, not the last component number
+                break;
+            }
+            if (nEntriesForComponent > nFreqBins)
+            {
+                nFreqBins = nEntriesForComponent;
+            }
+        }
 
+        // Create data structures
+        TAmplitudeDistributionData ampDistData;
+        tree->SetBranchAddress("Component", &ampDistData.fComponent);
+        tree->SetBranchAddress("FreqBin", &ampDistData.fFreqBin);
+        tree->SetBranchAddress("Distribution", &ampDistData.fDistribution);
 
+        KTDEBUG(inlog, "Initializing new set of amplitude distributions, with " << nComponents << " components and " << nFreqBins << "frequency bins");
+        KTAmplitudeDistribution& ampDist = appendToData.Of< KTAmplitudeDistribution >();
+        ampDist.InitializeNull(nComponents, nFreqBins);
 
+        // Read in the data
+        UInt_t nEntries = (UInt_t)tree->GetEntries();
+        for (UInt_t iEntry=0; iEntry < nEntries; iEntry++)
+        {
+            tree->GetEntry(iEntry);
+
+            UInt_t nDistBins = (UInt_t)ampDistData.fDistribution->GetNbinsX();
+            ampDist.InitializeADistribution(ampDistData.fComponent, ampDistData.fFreqBin, nDistBins, ampDistData.fDistribution->GetXaxis()->GetXmin(), ampDistData.fDistribution->GetXaxis()->GetXmax());
+            for (UInt_t iDistBin = 0; iDistBin < nDistBins; iDistBin++)
+            {
+                ampDist.SetDistValue(ampDistData.fDistribution->GetBinContent(iDistBin+1), ampDistData.fFreqBin, iDistBin, ampDistData.fComponent);
+            }
+        }
 
 
         KTDEBUG(inlog, "some success message!");
