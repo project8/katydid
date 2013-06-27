@@ -1,9 +1,9 @@
-# CMakeLists for Katydid/Source/Output
+# CMakeLists for Katydid/Source/IO
 # Author: N. Oblath
 
-set (OUTPUT_DICT_HEADER_FILES)
+set (IO_DICT_HEADER_FILES)
 
-set (OUTPUT_NODICT_HEADERFILES
+set (IO_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicAsciiWriter.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEgg.hh
@@ -17,8 +17,8 @@ set (OUTPUT_NODICT_HEADERFILES
 )
 
 if (ROOT_FOUND)
-    set (OUTPUT_NODICT_HEADERFILES
-        ${OUTPUT_NODICT_HEADERFILES}
+    set (IO_NODICT_HEADERFILES
+        ${IO_NODICT_HEADERFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterAnalysis.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterEgg.hh
@@ -35,9 +35,9 @@ if (ROOT_FOUND)
     )
 endif (ROOT_FOUND)
 
-set (OUTPUT_HEADERFILES ${OUTPUT_DICT_HEADERFILES} ${OUTPUT_NODICT_HEADERFILES})
+set (IO_HEADERFILES ${IO_DICT_HEADERFILES} ${IO_NODICT_HEADERFILES})
 
-set (OUTPUT_SOURCEFILES
+set (IO_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicAsciiWriter.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEgg.cc
@@ -51,8 +51,8 @@ set (OUTPUT_SOURCEFILES
 )
 
 if (ROOT_FOUND)
-    set (OUTPUT_SOURCEFILES
-        ${OUTPUT_SOURCEFILES}
+    set (IO_SOURCEFILES
+        ${IO_SOURCEFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterAnalysis.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterEgg.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.cc
@@ -71,8 +71,8 @@ endif (ROOT_FOUND)
 
 
 #if (ROOT_FOUND)
-#    set (OUTPUT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/CoreLinkDef.hh)
-#    set (OUTPUT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CoreDict.cxx)
+#    set (IO_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/CoreLinkDef.hh)
+#    set (IO_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CoreDict.cxx)
 #endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
@@ -84,12 +84,12 @@ set (KATYDID_LIBS
 ##################################################
 
 #if (ROOT_FOUND)
-#    ROOT_GENERATE_DICTIONARY ("${OUTPUT_DICT_HEADERFILES}" "${OUTPUT_LINKDEF_HEADERFILE}" "${OUTPUT_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+#    ROOT_GENERATE_DICTIONARY ("${IO_DICT_HEADERFILES}" "${IO_LINKDEF_HEADERFILE}" "${IO_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 #endif (ROOT_FOUND)
 
-add_library (KatydidOutput ${OUTPUT_SOURCEFILES})
-target_link_libraries (KatydidOutput ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
+add_library (KatydidIO ${IO_SOURCEFILES})
+target_link_libraries (KatydidIO ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
-pbuilder_install_headers (${OUTPUT_HEADERFILES})
-pbuilder_install_libraries (KatydidOutput)
+pbuilder_install_headers (${IO_HEADERFILES})
+pbuilder_install_libraries (KatydidIO)
 

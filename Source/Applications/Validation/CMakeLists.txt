@@ -33,13 +33,13 @@ if (Katydid_ENABLE_TESTING)
     target_link_libraries (TestCacheDirectory KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
     add_executable (TestComplexFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexFFTW.cc)
-    target_link_libraries (TestComplexFFTW KatydidUtility KatydidCore KatydidData KatydidOutput KatydidFFT ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestComplexFFTW KatydidUtility KatydidCore KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
     
     add_executable (TestComplexPolar ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexPolar.cc)
     target_link_libraries (TestComplexPolar KatydidUtility ${EXTERNAL_LIBRARIES})
     
     add_executable (TestCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/TestCorrelator.cc)
-    target_link_libraries (TestCorrelator KatydidUtility KatydidOutput KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestCorrelator KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
     add_executable (TestCutIterator ${CMAKE_CURRENT_SOURCE_DIR}/TestCutIterator.cc)
     target_link_libraries (TestCutIterator KatydidUtility ${EXTERNAL_LIBRARIES})
@@ -48,29 +48,29 @@ if (Katydid_ENABLE_TESTING)
     target_link_libraries (TestCutableArray KatydidUtility ${EXTERNAL_LIBRARIES})
     
     add_executable (TestDistanceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestDistanceClustering.cc)
-    target_link_libraries (TestDistanceClustering KatydidUtility KatydidCore KatydidData KatydidOutput KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestDistanceClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
     add_executable (TestEggHatching ${CMAKE_CURRENT_SOURCE_DIR}/TestEggHatching.cc)
-    target_link_libraries (TestEggHatching KatydidUtility KatydidCore KatydidData KatydidOutput KatydidEgg ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestEggHatching KatydidUtility KatydidCore KatydidData KatydidIO KatydidEgg ${EXTERNAL_LIBRARIES})
     
     add_executable (TestFrequencySpectrumFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestFrequencySpectrumFFTW.cc)
-    target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidCore KatydidData KatydidOutput ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestFrequencySpectrumFFTW KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
     
     # temporarily disabled because it's not compatible with the changes made while introducing the extensible data scheme
     #add_executable (TestHoughTransform ${CMAKE_CURRENT_SOURCE_DIR}/TestHoughTransform.cc)
-    #target_link_libraries (TestHoughTransform KatydidUtility KatydidOutput KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    #target_link_libraries (TestHoughTransform KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
     add_executable (TestJSONWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestJSONWriter.cc)
-    target_link_libraries (TestJSONWriter KatydidUtility KatydidCore KatydidData KatydidOutput ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestJSONWriter KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
     
     add_executable (TestLogger ${CMAKE_CURRENT_SOURCE_DIR}/TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${EXTERNAL_LIBRARIES})
     
     add_executable (TestMultiSliceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestMultiSliceClustering.cc)
-    target_link_libraries (TestMultiSliceClustering KatydidUtility KatydidCore KatydidData KatydidOutput KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestMultiSliceClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
     
     add_executable (TestMultiFileJSONReader ${CMAKE_CURRENT_SOURCE_DIR}/TestMultiFileJSONReader.cc)
-    target_link_libraries (TestMultiFileJSONReader KatydidUtility KatydidCore KatydidData KatydidInput ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestMultiFileJSONReader KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
     add_executable (TestParameterStore ${CMAKE_CURRENT_SOURCE_DIR}/TestParameterStore.cc
                                        ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
@@ -86,31 +86,31 @@ if (Katydid_ENABLE_TESTING)
 
     # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
     #add_executable (TestSimpleClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleClustering.cc)
-    #target_link_libraries (TestSimpleClustering KatydidUtility KatydidCore KatydidData KatydidOutput KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
+    #target_link_libraries (TestSimpleClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
 
     add_executable (TestSimpleFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSimpleFFT.cc)
-    target_link_libraries (TestSimpleFFT KatydidUtility KatydidCore KatydidData KatydidOutput KatydidFFT ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestSimpleFFT KatydidUtility KatydidCore KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
 
     #add_executable (TestSlidingWindowFFT ${CMAKE_CURRENT_SOURCE_DIR}/TestSlidingWindowFFT.cc)
-    #target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidData KatydidFFT KatydidCore KatydidOutput ${EXTERNAL_LIBRARIES})
+    #target_link_libraries (TestSlidingWindowFFT KatydidUtility KatydidData KatydidFFT KatydidCore KatydidIO ${EXTERNAL_LIBRARIES})
 
     add_executable (TestSpectrumDiscriminator ${CMAKE_CURRENT_SOURCE_DIR}/TestSpectrumDiscriminator.cc)
-    target_link_libraries (TestSpectrumDiscriminator KatydidUtility KatydidCore KatydidData KatydidOutput KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestSpectrumDiscriminator KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
 
     add_executable (TestThroughputProfiler ${CMAKE_CURRENT_SOURCE_DIR}/TestThroughputProfiler.cc)
-    target_link_libraries (TestThroughputProfiler KatydidUtility KatydidCore KatydidData KatydidOutput KatydidEgg ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestThroughputProfiler KatydidUtility KatydidCore KatydidData KatydidIO KatydidEgg ${EXTERNAL_LIBRARIES})
 
     add_executable (TestVector ${CMAKE_CURRENT_SOURCE_DIR}/TestVector.cc)
     target_link_libraries (TestVector KatydidUtility ${EXTERNAL_LIBRARIES})
 
     add_executable (TestWignerVille ${CMAKE_CURRENT_SOURCE_DIR}/TestWignerVille.cc)
-    target_link_libraries (TestWignerVille KatydidUtility KatydidCore KatydidData KatydidOutput KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestWignerVille KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
     
     add_executable (TestWindowFunction ${CMAKE_CURRENT_SOURCE_DIR}/TestWindowFunction.cc)
     target_link_libraries (TestWindowFunction KatydidUtility KatydidCore KatydidData KatydidFFT)
     
     #add_executable (TestASCIIFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestASCIIFileWriter.cc)
-    #target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidData KatydidOutput ${EXTERNAL_LIBRARIES})
+    #target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
     pbuilder_install_executables (
                      TestApplication
@@ -175,10 +175,10 @@ if (Katydid_ENABLE_TESTING)
     # executables that DO require ROOT
     if (ROOT_FOUND)
         add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
-        target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidOutput KatydidFFT ${EXTERNAL_LIBRARIES})
+        target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
         
         add_executable (TestGainVariation ${CMAKE_CURRENT_SOURCE_DIR}/TestGainVariation.cc)
-        target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidAnalysis KatydidOutput ${EXTERNAL_LIBRARIES})
+        target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidAnalysis KatydidIO ${EXTERNAL_LIBRARIES})
     
         pbuilder_install_executables ( 
                     TestBasicROOTFileWriter
