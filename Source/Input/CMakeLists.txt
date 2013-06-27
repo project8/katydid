@@ -2,28 +2,22 @@
 # Author: N. Oblath
 
 set (INPUT_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileJSONReader.hh
     #${CMAKE_CURRENT_SOURCE_DIR}/KTOneShotJSONReader.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.hh
 )
 
 if (ROOT_FOUND)
     set (INPUT_HEADERFILES
         ${INPUT_HEADERFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileROOTTreeReader.hh
     )
 endif (ROOT_FOUND)
 
 set (INPUT_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileJSONReader.cc
     #${CMAKE_CURRENT_SOURCE_DIR}/KTOneShotJSONReader.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.cc
 )
 
 if (ROOT_FOUND)
     set (INPUT_SOURCEFILES
         ${INPUT_SOURCEFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileROOTTreeReader.cc
     )
 endif (ROOT_FOUND)
 
