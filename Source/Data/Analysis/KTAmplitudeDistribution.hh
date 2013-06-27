@@ -55,7 +55,7 @@ namespace Katydid
 
     };
 
-    const KTAmplitudeDistribution::Distribution& KTAmplitudeDistribution::GetDistribution(UInt_t freqBins, UInt_t component) const
+    inline const KTAmplitudeDistribution::Distribution& KTAmplitudeDistribution::GetDistribution(UInt_t freqBins, UInt_t component) const
     {
         return *fDistributions[component][freqBins];
     }
