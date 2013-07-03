@@ -39,18 +39,20 @@ namespace Katydid
 
             Implementation* Implement(UInt_t nBins, Double_t xMin, Double_t xMax) const;
 
-            Double_t GetXMin();
-            Double_t GetXMax();
+            Double_t GetXMin() const;
+            void SetXMin(Double_t min);
+
+            Double_t GetXMax() const;
+            void SetXMax(Double_t max);
 
         private:
 
 #ifdef ROOT_FOUND
             TSpline3 fSpline;
+#endif
 
-#else
             Double_t fXMin;
             Double_t fXMax;
-#endif
 
         public:
             /// Adds a new spline implementation to the cache. If a matching implementation already exists in the cache, the older implementation is deleted.  Ownership of the new implementation is taken by the cache.
@@ -64,6 +66,28 @@ namespace Katydid
             mutable ImplementationCache fCache;
 
     };
+
+    inline Double_t KTSpline::GetXMin() const
+    {
+        return fXMin;
+    }
+
+    inline void KTSpline::SetXMin(Double_t min)
+    {
+        fXMin = min;
+        return;
+    }
+
+    inline Double_t KTSpline::GetXMax() const
+    {
+        return fXMax;
+    }
+
+    inline void KTSpline::SetXMax(Double_t max)
+    {
+        fXMax = max;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTSPLINE_HH_ */
