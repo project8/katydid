@@ -80,8 +80,22 @@ namespace Katydid
 
     Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data)
     {
-        if (fCalculateMinBin) SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin)
+        {
+            SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
+        }
+        else
+        {
+            fMinFrequency = data.GetSpectrumPolar(0)->GetBinCenter(fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(data.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
+        }
+        else
+        {
+            fMaxFrequency = data.GetSpectrumPolar(0)->GetBinCenter(fMaxBin);
+        }
         KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumPolar(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumPolar(0)->GetRangeMax());
 
         UInt_t nTotalBins = fMaxBin - fMinBin + 1;
@@ -135,6 +149,8 @@ namespace Katydid
             }
 
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
+            spline->SetXMin(fMinFrequency);
+            spline->SetXMax(fMaxFrequency);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             newData.SetSpline(spline, iComponent);
@@ -148,8 +164,22 @@ namespace Katydid
     Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
     {
         // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
-        if (fCalculateMinBin) SetMinBin(data.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
-        if (fCalculateMaxBin) SetMaxBin(data.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
+        if (fCalculateMinBin)
+        {
+            SetMinBin(data.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
+        }
+        else
+        {
+            fMinFrequency = data.GetSpectrumFFTW(0)->GetBinCenter(fMinBin);
+        }
+        if (fCalculateMaxBin)
+        {
+            SetMaxBin(data.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
+        }
+        else
+        {
+            fMaxFrequency = data.GetSpectrumFFTW(0)->GetBinCenter(fMaxBin);
+        }
         KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumFFTW(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumFFTW(0)->GetRangeMax());
 
         UInt_t nTotalBins = fMaxBin - fMinBin + 1;
@@ -204,6 +234,8 @@ namespace Katydid
 
 
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
+            spline->SetXMin(fMinFrequency);
+            spline->SetXMax(fMaxFrequency);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
             newData.SetSpline(spline, iComponent);
