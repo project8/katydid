@@ -20,12 +20,16 @@ namespace Katydid
 
     KTSpline::KTSpline() :
             fSpline(),
+            fXMin(0.),
+            fXMax(0.),
             fCache()
     {
     }
 
     KTSpline::KTSpline(Double_t* xVals, Double_t* yVals, UInt_t nVals) :
             fSpline("spline", xVals, yVals, nVals),
+            fXMin(xVals[0]),
+            fXMax(xVals[nVals-1]),
             fCache()
     {
     }
@@ -59,24 +63,13 @@ namespace Katydid
     }
 
 
-    Double_t KTSpline::GetXMin()
-    {
-        return fSpline.GetXmin();
-    }
-
-    Double_t KTSpline::GetXMax()
-    {
-        return fSpline.GetXmax();
-    }
-
-
 #else
 
     KTLOGGER(splinelog, "katydid.utility");
 
     KTSpline::KTSpline() :
             fXMin(0.),
-            fXMax(1.)
+            fXMax(0.)
     {
         KTERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
     }
@@ -100,16 +93,6 @@ namespace Katydid
     Double_t KTSpline::Evaluate(Double_t xValue) const
     {
         return 1.;
-    }
-
-    Double_t KTSpline::GetXMin()
-    {
-        return fXMin;
-    }
-
-    Double_t KTSpline::GetXMax()
-    {
-        return fXMax;
     }
 
 #endif

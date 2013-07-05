@@ -178,7 +178,9 @@ namespace Katydid
             if (fReadState.fStatus == MonarchReadState::kReachedNextRecord)
             {
                 KTDEBUG(eggreadlog, "Slice and record boundaries coincided; reading new record before creating new slice");
-                // if the slice boundary and record boundary coincide, we need to load the next record
+                // if the slice boundary and record boundary coincide, we need to load the next record because the final position
+                // of the read pointer from the previous slice is at the sample after the end of the previous slice,
+                // which in this case would be the start of the next record.
                 if (! fMonarch->ReadRecord())
                 {
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
@@ -191,6 +193,7 @@ namespace Katydid
             }
 
             // shift the slice start pointer by the stride
+            // note that this pointer refers to the record in which the previous slice started
             fReadState.fSliceStartPtrOffset += fStride;
             UInt_t sliceStartRecordOffset = 0; // how many records to shift to the start of the slice
             while (fReadState.fSliceStartPtrOffset >= recordSize)
@@ -199,7 +202,8 @@ namespace Katydid
                 sliceStartRecordOffset++;
             }
 
-            // Calculate whether we need to move the read pointer to a different record
+            // Calculate whether we need to move the read pointer to a different record by subtracing the number
+            // of records read in the last slice (fReadPtrRecordOffset)
             // If this is 0, it doesn't need to be moved
             // If it's > 0, then it needs to be reduced by 1 because of how the offset number in Monarch::ReadRecord is used (offset=0 will advance to the next record)
             Int_t readPtrRecordOffsetShift = Int_t(sliceStartRecordOffset) - Int_t(fReadState.fReadPtrRecordOffset);
@@ -207,13 +211,16 @@ namespace Katydid
             {
                 // change the absolute record offset first because it should be done before the adjustment to Monarch::ReadRecord offset counting is made
                 fReadState.fAbsoluteRecordOffset += readPtrRecordOffsetShift;
-                if (readPtrRecordOffsetShift > 0) readPtrRecordOffsetShift--;
-                KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
-                // move the read pointer to the slice start pointer (first move monarch to the correct record)
-                if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
+                if (readPtrRecordOffsetShift != 0)
                 {
-                    KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                    return shared_ptr< KTData >();
+                    readPtrRecordOffsetShift--;
+                    KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
+                    // move the read pointer to the slice start pointer (first move monarch to the correct record)
+                    if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
+                    {
+                        KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
+                        return shared_ptr< KTData >();
+                    }
                 }
             }
             // Move the read pointer to the slice start pointer within the record
