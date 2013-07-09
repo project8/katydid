@@ -7,10 +7,14 @@
 
 #include "KTHoughData.hh"
 
+#include "KTLogger.hh"
+
 using std::vector;
 
 namespace Katydid
 {
+    KTLOGGER(htlog, "katydid.analysis");
+
     KTHoughData::KTHoughData() :
             KTExtensibleData< KTHoughData >(),
             fTransforms()
@@ -63,8 +67,8 @@ namespace Katydid
                 fTransforms[component]->size(), fTransforms[component]->GetRangeMin(), fTransforms[component]->GetRangeMax(),
                 (*fTransforms[component])(0)->size(), (*fTransforms[component])(0)->GetRangeMin(), (*fTransforms[component])(0)->GetRangeMax());
 
-        KTINFO("Radius axis: " << (*fTransforms[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
-        KTINFO("Angle axis: " << fTransforms[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
+        KTINFO(htlog, "Radius axis: " << (*fTransforms[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
+        KTINFO(htlog, "Angle axis: " << fTransforms[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
 
         for (Int_t iBinX=1; iBinX<=(Int_t)fTransforms[component]->size(); iBinX++)
         {

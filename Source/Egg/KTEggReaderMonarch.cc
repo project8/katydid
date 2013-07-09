@@ -110,7 +110,7 @@ namespace Katydid
         CopyHeaderInformation(fMonarch->GetHeader());
         fHeader.SetSliceSize(fSliceSize);
 
-        KTDEBUG("Parsed header:\n"
+        KTDEBUG(eggreadlog, "Parsed header:\n"
              << "\tFilename: " << fHeader.GetFilename() << '\n'
              << "\tAcquisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
              << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'

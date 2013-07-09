@@ -83,7 +83,7 @@ namespace Katydid
         stringstream conversion;
         conversion << readBuffer;
         conversion >> std::hex >> fHeaderSize;
-        //KTDEBUG("header size: " << fHeaderSize);
+        //KTDEBUG(eggreadlog, "header size: " << fHeaderSize);
 
         // read the header
         delete [] readBuffer;
@@ -197,7 +197,7 @@ namespace Katydid
 
         delete [] headerCopy;
 
-        KTDEBUG("Parsed header:\n"
+        KTDEBUG(eggreadlog, "Parsed header:\n"
              << "\tFrame ID Size: " << fHeaderInfo.fFrameIDSize << '\n'
              << "\tTime Stamp Size: " << fHeaderInfo.fTimeStampSize << '\n'
              << "\tRecord Size: " << fHeaderInfo.fRecordSize << '\n'

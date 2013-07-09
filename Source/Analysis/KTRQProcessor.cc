@@ -137,7 +137,7 @@ namespace Katydid {
       // all done, check elapsed time.
       std::clock_t tf = clock();
       double elapsed = (tf-t0)/CLOCKS_PER_SEC;
-      KTINFO("Noise data processed in " << elapsed << " seconds.");
+      KTINFO(nrq_log, "Noise data processed in " << elapsed << " seconds.");
 
       // Check convergence criterion (TEMPORARILY JUST TRUE) and set convergence flag if
       // appropriate.
@@ -211,7 +211,7 @@ namespace Katydid {
       // all done, check elapsed time.
       std::clock_t tf = clock();
       double elapsed = (tf-t0)/CLOCKS_PER_SEC;
-      KTINFO("Candidate record processed by NRQ processor in " << elapsed << " seconds.");
+      KTINFO(nrq_log, "Candidate record processed by NRQ processor in " << elapsed << " seconds.");
     }
     else {
     KTWARN(nrq_log,"NACM has not converged - no NRQ calculation performed.");
