@@ -73,6 +73,8 @@ namespace Katydid
 
             UInt_t fRecordsRead;
 
+            UInt_t fLastFrameID;
+
             static const std::ifstream::pos_type sPreludeSize;  // the prelude size is currently restricted to eight bytes
 
     };

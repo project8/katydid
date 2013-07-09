@@ -64,12 +64,12 @@ namespace Katydid
      Slots:
      - "fs-polar": void (shared_ptr< KTData >) -- Processes a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
      - "fs-fftw": void (shared_ptr< KTData >) -- Processes a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
-     - "correlation": void (shared_ptr< KTData >) -- Processes a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
-     - "wigner-ville": void (shared_ptr< KTData >) -- Processes a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     - "corr": void (shared_ptr< KTData >) -- Processes a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     - "wv": void (shared_ptr< KTData >) -- Processes a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
      - "queue-fs-polar": void (shared_ptr< KTData >) -- Queues a data object for clustering based on polar FS data; Requires KTFrequencySpectrumDataPolar; May create new data objects with KTWaterfallCandidateData
      - "queue-fs-fftw": void (shared_ptr< KTData >) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
-     - "queue-correlation": void (shared_ptr< KTData >) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
-     - "queue-wigner-ville": void (shared_ptr< KTData >) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     - "queue-corr": void (shared_ptr< KTData >) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
+     - "queue-wv": void (shared_ptr< KTData >) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
 
      Signals:
      - "one-slice": void (shared_ptr< KTData >) -- Emitted upon receipt of a one-slice data object, without modification

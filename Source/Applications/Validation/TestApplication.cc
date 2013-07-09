@@ -87,13 +87,13 @@ int main(int argc, char** argv)
 
     KTTestConfigurable* testObj = new KTTestConfigurable();
 
-    KTPStoreNode* topNode = app->GetNode(testObj->GetConfigName());
-    if (topNode == NULL)
+    KTPStoreNode topNode = app->GetNode(testObj->GetConfigName());
+    if (! topNode.IsValid())
     {
         KTWARN(testapplog, "Top-level node <" << testObj->GetConfigName() << "> was not found");
     }
 
-    if (testObj->Configure(topNode))
+    if (testObj->Configure(&topNode))
     {
         KTINFO(testapplog, "Configuration complete:\n"
                 << "\tInt data: " << testObj->GetIntData() << '\n'

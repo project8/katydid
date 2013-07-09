@@ -10,6 +10,7 @@
 #include "KTCommandLineHandler.hh"
 #include "KTLogger.hh"
 #include "KTParameterStore.hh"
+#include "KTPStoreNode.hh"
 
 using std::string;
 
@@ -52,10 +53,10 @@ namespace Katydid
     {
         if (fIsConfigured) return true;
 
-        KTPStoreNode* node = KTParameterStore::GetInstance()->GetNode(fConfigName);
-        if (node != NULL)
+        KTPStoreNode node = KTParameterStore::GetInstance()->GetNode(fConfigName);
+        if (node.IsValid())
         {
-            if (! this->Configure(node))
+            if (! this->Configure(&node))
             {
                 KTERROR(conflog, "An error occurred while configuring <" << fConfigName << ">");
                 return false;

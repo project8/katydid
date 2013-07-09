@@ -34,7 +34,7 @@ namespace Katydid
             // Parameter store interface
         public:
             Bool_t NodeExists(const std::string& address) const;
-            KTPStoreNode* GetNode(const std::string& address) const;
+            KTPStoreNode GetNode(const std::string& address) const;
 
             // Parameter storage
         public:

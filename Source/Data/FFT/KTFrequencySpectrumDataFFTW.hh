@@ -82,6 +82,7 @@ namespace Katydid
     inline void KTFrequencySpectrumDataFFTWCore::SetSpectrum(KTFrequencySpectrumFFTW* record, UInt_t component)
     {
         if (component >= fSpectra.size()) SetNComponents(component+1);
+        else delete fSpectra[component];
         fSpectra[component] = record;
         return;
     }

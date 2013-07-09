@@ -78,6 +78,8 @@ int main()
 
     KTINFO(testlog, nWindows << " will be used");
 
+    KTSliceHeader header;
+
     UInt_t iWindow = 0;
     for (UInt_t windowStart = 0; windowStart < wvSize * nWindows; windowStart += wvSize)
     {
@@ -106,7 +108,7 @@ int main()
         //aaTSData->SetTimeSeries(windowTS1, 0);
         //aaTSData->SetTimeSeries(windowTS2, 1);
 
-        if (! wvTransform.TransformData(aaData))
+        if (! wvTransform.TransformData(aaData, header))
         {
             KTERROR(testlog, "Something went wrong while computing the Wigner-Ville transform");
         }

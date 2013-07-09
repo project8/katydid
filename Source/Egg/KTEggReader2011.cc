@@ -40,7 +40,8 @@ namespace Katydid
             fHeaderSize(0),
             fHeader(),
             fHeaderInfo(),
-            fRecordsRead(0)
+            fRecordsRead(0),
+            fLastFrameID(0)
     {
     }
 
@@ -82,7 +83,7 @@ namespace Katydid
         stringstream conversion;
         conversion << readBuffer;
         conversion >> std::hex >> fHeaderSize;
-        //KTDEBUG("header size: " << fHeaderSize);
+        //KTDEBUG(eggreadlog, "header size: " << fHeaderSize);
 
         // read the header
         delete [] readBuffer;
@@ -196,7 +197,7 @@ namespace Katydid
 
         delete [] headerCopy;
 
-        KTDEBUG("Parsed header:\n"
+        KTDEBUG(eggreadlog, "Parsed header:\n"
              << "\tFrame ID Size: " << fHeaderInfo.fFrameIDSize << '\n'
              << "\tTime Stamp Size: " << fHeaderInfo.fTimeStampSize << '\n'
              << "\tRecord Size: " << fHeaderInfo.fRecordSize << '\n'
@@ -277,6 +278,15 @@ namespace Katydid
             unsigned newFrameID = ConvertFromArray< unsigned >(readBuffer);
             delete [] readBuffer;
             sliceHeader.SetAcquisitionID(newFrameID);
+            if (newFrameID == fLastFrameID && fRecordsRead > 0)
+            {
+                sliceHeader.SetIsNewAcquisition(false);
+            }
+            else
+            {
+                sliceHeader.SetIsNewAcquisition(true);
+                fLastFrameID = newFrameID;
+            }
         }
         if (! fEggStream.good())
         {
@@ -295,6 +305,7 @@ namespace Katydid
         sliceHeader.SetStartSampleNumber(0);
         sliceHeader.SetEndRecordNumber(fRecordsRead);
         sliceHeader.SetEndSampleNumber(fHeaderInfo.fRecordSize - 1);
+        sliceHeader.SetRecordSize(fHeaderInfo.fRecordSize);
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];

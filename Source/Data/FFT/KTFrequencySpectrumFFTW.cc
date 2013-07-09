@@ -108,14 +108,13 @@ namespace Katydid
     }
 
 
-    KTFrequencySpectrumPolar* KTFrequencySpectrumFFTW::CreateFrequencySpectrumPolar() const
+    KTFrequencySpectrumPolar* KTFrequencySpectrumFFTW::CreateFrequencySpectrumPolar(Bool_t addNegFreqs) const
     {
         // The negative frequency values will be combined with the positive ones,
         // so the power spectrum will go from the DC bin to the max frequency
 
         UInt_t nBins = fDCBin + 1;
         KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar(nBins, -0.5 * GetBinWidth(), GetRangeMax());
-        Double_t valueImag, valueReal;
 
         // DC bin
         (*newFS)(0).set_rect((*this)(fDCBin)[0], (*this)(fDCBin)[1]);
@@ -136,24 +135,47 @@ namespace Katydid
             iNegBin--;
         }
          */
+        if (addNegFreqs)
+        {
+            Double_t valueImag, valueReal;
 #pragma omp parallel for private(valueReal, valueImag)
-        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
-        {
-            valueReal = (*this)(fDCBin - iBin)[0] + (*this)(fDCBin + iBin)[0];
-            valueImag = (*this)(fDCBin - iBin)[1] + (*this)(fDCBin + iBin)[1];
-            (*newFS)(iBin).set_rect(valueReal, valueImag);
-        }
+            for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+            {
+                valueReal = (*this)(fDCBin - iBin)[0] + (*this)(fDCBin + iBin)[0];
+                valueImag = (*this)(fDCBin - iBin)[1] + (*this)(fDCBin + iBin)[1];
+                (*newFS)(iBin).set_rect(valueReal, valueImag);
+            }
 
-        // Nyquist bin
-        if (fIsSizeEven)
-        {
-            (*newFS)(nBins-1).set_rect((*this)(0)[0], (*this)(0)[1]);
+            // Nyquist bin
+            if (fIsSizeEven)
+            {
+                (*newFS)(nBins-1).set_rect((*this)(0)[0], (*this)(0)[1]);
+            }
+            else
+            {
+                valueReal = (*this)(0)[0] + (*this)(totalBins-1)[0];
+                valueImag = (*this)(0)[1] + (*this)(totalBins-1)[1];
+                (*newFS)(nBins-1).set_rect(valueReal, valueImag);
+            }
         }
         else
         {
-            valueReal = (*this)(0)[0] + (*this)(totalBins-1)[0];
-            valueImag = (*this)(0)[1] + (*this)(totalBins-1)[1];
-            (*newFS)(nBins-1).set_rect(valueReal, valueImag);
+#pragma omp parallel for
+            for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+            {
+                (*newFS)(iBin).set_rect((*this)(fDCBin + iBin)[0], (*this)(fDCBin + iBin)[1]);
+            }
+
+            // Nyquist bin
+            if (fIsSizeEven)
+            {
+                // in the event of even size, this is the only nyquist bin, so i have to use it, even though it's frequency is negative
+                (*newFS)(nBins-1).set_rect((*this)(0)[0], (*this)(0)[1]);
+            }
+            else
+            {
+                (*newFS)(nBins-1).set_rect((*this)(totalBins-1)[0], (*this)(totalBins-1)[1]);
+            }
         }
 
         return newFS;

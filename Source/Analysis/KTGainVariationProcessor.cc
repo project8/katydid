@@ -153,6 +153,9 @@ namespace Katydid
             spline->SetXMax(fMaxFrequency);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
 
+            delete [] xVals;
+            delete [] yVals;
+
             newData.SetSpline(spline, iComponent);
             //newData->SetGainVariation(gainVarResult, iComponent);
         }
@@ -232,11 +235,13 @@ namespace Katydid
                 yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
             }
 
-
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
             spline->SetXMin(fMinFrequency);
             spline->SetXMax(fMaxFrequency);
             //GainVariation* gainVarResult = CreateGainVariation(spline, spectrum->GetNBins(), spectrum->GetRangeMin(), spectrum->GetRangeMax());
+
+            delete [] xVals;
+            delete [] yVals;
 
             newData.SetSpline(spline, iComponent);
             //newData->SetGainVariation(gainVarResult, iComponent);

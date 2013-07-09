@@ -71,6 +71,7 @@ namespace Katydid
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
+            if (fs == NULL) continue;
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, sqrt((*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1]));
@@ -97,6 +98,7 @@ namespace Katydid
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
+            if (fs == NULL) continue;
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, atan2((*fs)(iBinY-1)[1], (*fs)(iBinY-1)[0]));
@@ -124,6 +126,7 @@ namespace Katydid
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
+            if (fs == NULL) continue;
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 value = (*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1];

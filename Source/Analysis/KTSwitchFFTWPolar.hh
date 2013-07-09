@@ -33,6 +33,7 @@ namespace Katydid
      @details
  
      Available configuration values:
+     - "use-neg-freqs": bool -- If true [default], corresponding negative and positive frequency bins are summed; if false, the negative frequency bins are dropped.
 
      Slots:
      - "fs-fftw": void (shared_data< KTData >) -- Switch an fftw FS to polar; Requires KTFrequencySpectrumDataFFTW; Adds KTFrequencySpectrumDataPolar
@@ -51,7 +52,11 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
+            Bool_t GetUseNegFreqs() const;
+            void SetUseNegFreqs(Bool_t flag);
+
         private:
+            Bool_t fUseNegFreqs;
 
         public:
             Bool_t SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData);
@@ -76,6 +81,17 @@ namespace Katydid
             KTSlotDataOneType< KTWignerVilleData > fWignerVilleSlot;
 
     };
+
+    inline Bool_t KTSwitchFFTWPolar::GetUseNegFreqs() const
+    {
+        return fUseNegFreqs;
+    }
+
+    inline void KTSwitchFFTWPolar::SetUseNegFreqs(Bool_t flag)
+    {
+        fUseNegFreqs = flag;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTSWITCHFFTWPOLAR_HH_ */

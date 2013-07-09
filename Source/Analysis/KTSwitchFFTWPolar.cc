@@ -29,6 +29,7 @@ namespace Katydid
 
     KTSwitchFFTWPolar::KTSwitchFFTWPolar(const std::string& name) :
             KTProcessor(name),
+            fUseNegFreqs(true),
             fFSPolarSignal("fs-polar", this),
             //fFSFFTWSignal("fs-fftw", this),
             fFSFFTWSlot("fs-fftw", this, &KTSwitchFFTWPolar::SwitchToPolar, &fFSPolarSignal),
@@ -43,6 +44,10 @@ namespace Katydid
 
     Bool_t KTSwitchFFTWPolar::Configure(const KTPStoreNode* node)
     {
+        if (node == NULL) return false;
+
+        SetUseNegFreqs(node->GetData< Bool_t >("use-neg-freqs", fUseNegFreqs));
+
         return true;
     }
 
@@ -55,7 +60,7 @@ namespace Katydid
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar();
+            KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar(fUseNegFreqs);
             if (newSpectrum == NULL)
             {
                 KTERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");
@@ -82,7 +87,7 @@ namespace Katydid
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar();
+            KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar(fUseNegFreqs);
             if (newSpectrum == NULL)
             {
                 KTERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");
@@ -109,7 +114,7 @@ namespace Katydid
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
-            KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar();
+            KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar(fUseNegFreqs);
             if (newSpectrum == NULL)
             {
                 KTERROR(swlog, "Switch of spectrum " << iComponent << " (fftw->polar) failed for some reason. Continuing processing.");

@@ -82,16 +82,22 @@ int main(int argc, char** argv)
     }
 
     // Configure the processors
-    if (! procTB.ConfigureProcessors(app.GetNode(appConfigName)))
+    KTPStoreNode node = app.GetNode(appConfigName);
+    if (! node.IsValid())
+    {
+        KTERROR(irlog, "Unable to find config node at <" << appConfigName << ">. Aborting.");
+        return -2;
+    }
+    if (! procTB.ConfigureProcessors(&node))
     {
         KTERROR(irlog, "Unable to configure processors. Aborting.");
-        return -2;
+        return -3;
     }
 
     // Execute the run queue!
     Bool_t success = procTB.Run();
 
-    if (! success) return -3;
+    if (! success) return -4;
     return 0;
 
 }

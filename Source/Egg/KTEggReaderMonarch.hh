@@ -13,15 +13,19 @@
 
 #include "KTEggHeader.hh"
 
+#include "MonarchRecord.hpp"
 #include "MonarchTypes.hpp"
 
 #include <map>
 #include <string>
 #include <vector>
 
+#ifndef SEC_PER_NSEC
+#define SEC_PER_NSEC 1.e-9
+#endif
+
 class Monarch;
 class MonarchHeader;
-class MonarchRecord;
 
 namespace Katydid
 {
@@ -193,7 +197,8 @@ namespace Katydid
 
     inline Double_t KTEggReaderMonarch::GetTimeInRun() const
     {
-        return fBinWidth * Double_t(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
+        return Double_t((fMonarch->*fMonarchGetRecord[0])()->fTime) * SEC_PER_NSEC + fBinWidth * Double_t(fReadState.fReadPtrOffset);
+        //return fBinWidth * Double_t(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
     }
 
     inline Double_t KTEggReaderMonarch::GetIntegratedTime() const

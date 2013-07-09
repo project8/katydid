@@ -110,7 +110,7 @@ namespace Katydid
         CopyHeaderInformation(fMonarch->GetHeader());
         fHeader.SetSliceSize(fSliceSize);
 
-        KTDEBUG("Parsed header:\n"
+        KTDEBUG(eggreadlog, "Parsed header:\n"
              << "\tFilename: " << fHeader.GetFilename() << '\n'
              << "\tAcquisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
              << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'
@@ -170,7 +170,6 @@ namespace Katydid
             fReadState.fSliceStartPtrOffset = 0;
             fReadState.fAbsoluteRecordOffset = 0;
             fSliceNumber = 0;
-            fReadState.fStatus = MonarchReadState::kContinueReading;
         }
         else
         {
@@ -233,6 +232,14 @@ namespace Katydid
 
         // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(fHeader.GetNChannels());
+        if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
+        {
+            sliceHeader.SetIsNewAcquisition(true);
+        }
+        else
+        {
+            sliceHeader.SetIsNewAcquisition(false);
+        }
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
@@ -240,15 +247,8 @@ namespace Katydid
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
         sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
-        KTDEBUG(eggreadlog, "Filled out slice header:\n"
-                << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
-                << "\tSlice size: " << sliceHeader.GetSliceSize() << '\n'
-                << "\tBin width: " << sliceHeader.GetBinWidth() << " s\n"
-                << "\tSlice length: " << sliceHeader.GetSliceLength() << " s\n"
-                << "\tTime in run: " << sliceHeader.GetTimeInRun() << " s\n"
-                << "\tSlice number: " << sliceHeader.GetSliceNumber() << '\n'
-                << "\tStart record number: " << sliceHeader.GetStartRecordNumber() << '\n'
-                << "\tStart sample number: " << sliceHeader.GetStartSampleNumber());
+        sliceHeader.SetRecordSize(fHeader.GetRecordSize());
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // Normalization of the record values
         Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
@@ -285,6 +285,11 @@ namespace Katydid
                 "\tRead pointer record offset = " << fReadState.fReadPtrRecordOffset << '\n' <<
                 "\tRead pointer offset = " << fReadState.fReadPtrOffset);
 
+        if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
+        {
+            fReadState.fStatus = MonarchReadState::kContinueReading;
+        }
+
         // Loop over bins
         for (UInt_t iBin = 0; iBin < fSliceSize; iBin++)
         {
@@ -319,6 +324,7 @@ namespace Katydid
                     fReadState.fReadPtrRecordOffset = 0;
                     fReadState.fSliceStartPtrOffset = 0;
                     // reset slice data
+                    sliceHeader.SetIsNewAcquisition(true);
                     sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
                     sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
                     for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)

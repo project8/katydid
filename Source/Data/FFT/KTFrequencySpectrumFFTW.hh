@@ -84,7 +84,7 @@ namespace Katydid
             /// In-place calculation of the analytic associate
             virtual KTFrequencySpectrumFFTW& AnalyticAssociate();
 
-            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar() const;
+            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar(Bool_t addNegFreqs = true) const;
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
