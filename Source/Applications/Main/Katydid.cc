@@ -67,10 +67,16 @@ int main(int argc, char** argv)
     }
 
     // Configure the processors
-    if (! procTB.ConfigureProcessors(app.GetNode(appConfigName)))
+    KTPStoreNode node = app.GetNode(appConfigName);
+    if (! node.IsValid())
+    {
+        KTERROR(katydidlog, "Configuration node <" << appConfigName << "> was not found. Aborting");
+        return -2;
+    }
+    if (! procTB.ConfigureProcessors(&node))
     {
         KTERROR(katydidlog, "Unable to configure processors. Aborting.");
-        return -2;
+        return -3;
     }
 
     // Execute the run queue!
@@ -78,6 +84,6 @@ int main(int argc, char** argv)
 
     KTPROG(katydidlog, "That's all, folks!");
 
-    if (! success) return -3;
+    if (! success) return -4;
     return 0;
 }

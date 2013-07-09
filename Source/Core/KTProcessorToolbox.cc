@@ -178,11 +178,11 @@ namespace Katydid
         // Finally, deal with processor-run specifications
         // In the current implementation there is only one ThreadGroup, and all processors specified will be run in separate threads in parallel.
         // In single threaded mode all threads will be run sequentially in the order they were specified.
-        const KTPStoreNode* subNodePtr = node->GetChild("run-queue");
-        if (subNodePtr != NULL)
+        const KTPStoreNode subNode = node->GetChild("run-queue");
+        if (subNode.IsValid())
         {
             ThreadGroup threadGroup;
-            for (KTPStoreNode::const_iterator iter = subNodePtr->Begin(); iter != subNodePtr->End(); iter++)
+            for (KTPStoreNode::const_iterator iter = subNode.Begin(); iter != subNode.End(); iter++)
             {
                 KTPStoreNode subSubNode = KTPStoreNode(&(iter->second));
                 string procName = subSubNode.GetValue< string >();
@@ -191,7 +191,6 @@ namespace Katydid
                 if (procForRunQueue == NULL)
                 {
                     KTERROR(proclog, "Unable to find processor <" << procName << "> requested for the run queue");
-                    delete subNodePtr;
                     return false;
                 }
 
@@ -199,7 +198,6 @@ namespace Katydid
                 if (primaryProc == NULL)
                 {
                     KTERROR(proclog, "Processor <" << procName << "> is not a primary processor.");
-                    delete subNodePtr;
                     return false;
                 }
 
@@ -211,7 +209,6 @@ namespace Katydid
         {
             KTWARN(proclog, "No run queue was specified during configuration.");
         }
-        delete subNodePtr;
 
         return true;
     }
@@ -223,14 +220,14 @@ namespace Katydid
             KTDEBUG(proclog, "Attempting to configure processor <" << iter->first << ">");
             string procName = iter->first;
             string nameUsed;
-            const KTPStoreNode* subNode = node->GetChild(procName);
-            if (subNode == NULL)
+            const KTPStoreNode subNode = node->GetChild(procName);
+            if (! subNode.IsValid())
             {
                 string configName = iter->second.fProc->GetConfigName();
                 KTWARN(proclog, "Did not find a PSToreNode <" << procName << ">\n"
                         "\tWill check using the generic name of the processor, <" << configName << ">.");
-                subNode = node->GetChild(configName);
-                if (subNode == NULL)
+                const KTPStoreNode subNode2 = node->GetChild(configName);
+                if (! subNode2.IsValid())
                 {
                     KTWARN(proclog, "Did not find a PStoreNode <" << configName << ">\n"
                             "\tProcessor <" << iter->first << "> was not configured.");
@@ -242,7 +239,7 @@ namespace Katydid
             {
                 nameUsed = procName;
             }
-            if (! iter->second.fProc->Configure(subNode))
+            if (! iter->second.fProc->Configure(&subNode))
             {
                 KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << nameUsed << ">");
                 return false;
