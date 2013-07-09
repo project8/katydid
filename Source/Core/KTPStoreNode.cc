@@ -46,14 +46,20 @@ namespace Katydid
 
 
     KTPStoreNode::KTPStoreNode() :
-                    fTree(NULL),
-                    fDefaultValue("DEFAULT VALUE FOR KTPSTORENODE USE")
+            fTree(NULL),
+            fDefaultValue("DEFAULT VALUE FOR KTPSTORENODE USE")
     {
     }
 
     KTPStoreNode::KTPStoreNode(const TreeNode* tree) :
-                    fTree(tree),
-                    fDefaultValue("DEFAULT VALUE FOR KTPSTORENODE USE")
+            fTree(tree),
+            fDefaultValue("DEFAULT VALUE FOR KTPSTORENODE USE")
+    {
+    }
+
+    KTPStoreNode::KTPStoreNode(const KTPStoreNode& orig) :
+            fTree(orig.fTree),
+            fDefaultValue(orig.fDefaultValue)
     {
     }
 
@@ -62,20 +68,27 @@ namespace Katydid
         // this class does not own the node pointed to by fTree
     }
 
-    const KTPStoreNode* KTPStoreNode::GetChild(const string& nodeName) const
+    KTPStoreNode& KTPStoreNode::operator=(const KTPStoreNode& rhs)
     {
-        TreeNode::const_assoc_iterator it = fTree->find(nodeName);
-        if (it == fTree->not_found()) return NULL;
-        // eclipse doesn't seem to like this line, but it compiles just fine
-        return new KTPStoreNode(&(it->second));
+        fTree = rhs.fTree;
+        fDefaultValue = rhs.fDefaultValue;
+        return *this;
     }
 
-    KTPStoreNode* KTPStoreNode::GetChild(const string& nodeName)
+    const KTPStoreNode KTPStoreNode::GetChild(const string& nodeName) const
     {
         TreeNode::const_assoc_iterator it = fTree->find(nodeName);
         if (it == fTree->not_found()) return NULL;
         // eclipse doesn't seem to like this line, but it compiles just fine
-        return new KTPStoreNode(&(it->second));
+        return KTPStoreNode(&(it->second));
+    }
+
+    KTPStoreNode KTPStoreNode::GetChild(const string& nodeName)
+    {
+        TreeNode::const_assoc_iterator it = fTree->find(nodeName);
+        if (it == fTree->not_found()) return NULL;
+        // eclipse doesn't seem to like this line, but it compiles just fine
+        return KTPStoreNode(&(it->second));
     }
 
     std::string KTPStoreNode::Value()

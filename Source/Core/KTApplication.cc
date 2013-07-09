@@ -130,20 +130,19 @@ namespace Katydid
 
     Bool_t KTApplication::Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress)
     {
-        KTPStoreNode* pStoreNode = NULL;
         string address = baseAddress;
         if (! address.empty())
         {
             address = address + ".";
         }
         address = address + toBeConfigured->GetConfigName();
-        pStoreNode = GetNode(address);
-        if (pStoreNode == NULL)
+        KTPStoreNode pStoreNode = GetNode(address);
+        if (! pStoreNode.IsValid())
         {
             KTWARN(applog, "Did not find a PStoreNode at address <" << address << ">");
             return false;
         }
-        return toBeConfigured->Configure(pStoreNode);
+        return toBeConfigured->Configure(&pStoreNode);
     }
 
 } /* namespace Katydid */

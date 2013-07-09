@@ -65,7 +65,7 @@ namespace Katydid
         return true;
     }
 
-    KTPStoreNode* KTParameterStore::GetNode(const string& address) const
+    KTPStoreNode KTParameterStore::GetNode(const string& address) const
     {
         /*
         PStoreTree::const_assoc_iterator it = fStore.find(address);
@@ -75,13 +75,14 @@ namespace Katydid
         */
         try
         {
-            return new KTPStoreNode(&(fStore.get_child(address)));
+            return KTPStoreNode(&(fStore.get_child(address)));
         }
         catch (std::exception& e)
         {
-            return NULL;
+            KTERROR(utillog_pstore, "The parameter store does not contain anything at address <" << address << ">");
+            return KTPStoreNode(NULL);
         }
-        return NULL; // code shouldn't get here
+        return KTPStoreNode(NULL); // the code should not reach this point
     }
 
     Bool_t KTParameterStore::ChangeValue(const string& address, const string& newValue)

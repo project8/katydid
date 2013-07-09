@@ -66,10 +66,10 @@ namespace Katydid
 
     Bool_t KTWignerVille::Configure(const KTPStoreNode* node)
     {
-        const KTPStoreNode* childNode = node->GetChild("complex-fftw");
-        if (childNode != NULL)
+        const KTPStoreNode childNode = node->GetChild("complex-fftw");
+        if (childNode.IsValid())
         {
-            fFFT->Configure(childNode);
+            fFFT->Configure(&childNode);
         }
 
         KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");

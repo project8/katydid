@@ -37,14 +37,14 @@ int main(int argc, char** argv)
 
     KTTestConfigurable* testObj = new KTTestConfigurable();
 
-    KTPStoreNode* configNode = store->GetNode(testObj->GetConfigName());
-    if (configNode == NULL)
+    KTPStoreNode configNode = store->GetNode(testObj->GetConfigName());
+    if (! configNode.IsValid())
     {
         KTERROR(testparamlog, "Top-level node <" << testObj->GetConfigName() << "> was not found");
         return -1;
     }
 
-    if (testObj->Configure(configNode))
+    if (testObj->Configure(&configNode))
     {
         KTINFO(testparamlog, "Configuration complete");
     }
@@ -59,43 +59,44 @@ int main(int argc, char** argv)
     // Testing nested data
     KTINFO(testparamlog, "Testing nested data");
 
-    KTPStoreNode* topNode = store->GetNode("nested-data");
-    if (topNode == NULL)
+    KTPStoreNode topNode = store->GetNode("nested-data");
+    if (! topNode.IsValid())
     {
         KTERROR(testparamlog, "Top-level node <nested-data> was not found");
         return -1;
     }
 
-    KTINFO(testparamlog, "There are " << topNode->CountNodes("single-data") << " instances of <single-data> in <nested-data>");
-    KTINFO(testparamlog, "There are " << topNode->CountNodes("multi-data") << " instances of <multi-data> in <nested-data>");
-    KTINFO(testparamlog, "topNode->HasData(\"single-data\") = " << topNode->HasData("single-data"));
-    KTINFO(testparamlog, "topNode->HasData(\"multi-data\") = " << topNode->HasData("multi-data"));
+    KTINFO(testparamlog, "There are " << topNode.CountNodes("single-data") << " instances of <single-data> in <nested-data>");
+    KTINFO(testparamlog, "There are " << topNode.CountNodes("multi-data") << " instances of <multi-data> in <nested-data>");
+    KTINFO(testparamlog, "topNode->HasData(\"single-data\") = " << topNode.HasData("single-data"));
+    KTINFO(testparamlog, "topNode->HasData(\"multi-data\") = " << topNode.HasData("multi-data"));
 
-    KTPStoreNode::const_sorted_iterator iter = topNode->Find("single-data");
-    if (iter != topNode->NotFound())
+    KTPStoreNode::const_sorted_iterator iter = topNode.Find("single-data");
+    if (iter != topNode.NotFound())
     {
         KTINFO(testparamlog, "Single data from <nested-data> via an iterator: " << iter->second.get_value< string >());
     }
 
-    const KTPStoreNode* subNode = topNode->GetChild("sub-data");
-    if (subNode == NULL)
+    const KTPStoreNode subNode = topNode.GetChild("sub-data");
+    if (! subNode.IsValid())
     {
         KTERROR(testparamlog, "Sub-level node <sub-data> was not found in <nested-data>");
+
         return -1;
     }
 
-    KTINFO(testparamlog, "There are " << subNode->CountNodes("single-data") << " instances of <single-data> in <sub-data>");
-    KTINFO(testparamlog, "There are " << subNode->CountNodes("multi-data") << " instances of <multi-data> in <sub-data>");
-    KTINFO(testparamlog, "subNode->HasData(\"single-data\") = " << subNode->HasData("single-data"));
-    KTINFO(testparamlog, "subNode->HasData(\"multi-data\") = " << subNode->HasData("multi-data"));
+    KTINFO(testparamlog, "There are " << subNode.CountNodes("single-data") << " instances of <single-data> in <sub-data>");
+    KTINFO(testparamlog, "There are " << subNode.CountNodes("multi-data") << " instances of <multi-data> in <sub-data>");
+    KTINFO(testparamlog, "subNode->HasData(\"single-data\") = " << subNode.HasData("single-data"));
+    KTINFO(testparamlog, "subNode->HasData(\"multi-data\") = " << subNode.HasData("multi-data"));
 
-    iter = subNode->Find("single-data");
-    if (iter != topNode->NotFound())
+    iter = subNode.Find("single-data");
+    if (iter != topNode.NotFound())
     {
         KTINFO(testparamlog, "Single data from <sub-data> via an iterator: " << iter->second.get_value< string >());
     }
 
-    KTPStoreNode::csi_pair itPair = subNode->EqualRange("multi-data");
+    KTPStoreNode::csi_pair itPair = subNode.EqualRange("multi-data");
     for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
     {
         KTINFO(testparamlog, "Multi data from <sub-data> via an iterator: " << citer->second.get_value< string >());

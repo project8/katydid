@@ -65,7 +65,12 @@ namespace Katydid
         public:
             KTPStoreNode();
             KTPStoreNode(const TreeNode* tree);
+            KTPStoreNode(const KTPStoreNode& orig);
             virtual ~KTPStoreNode();
+
+            KTPStoreNode& operator=(const KTPStoreNode& rhs);
+
+            Bool_t IsValid() const;
 
             /// Returns an iterator to the beginning of the node, preserving the order of insertion.
             const_iterator Begin() const;
@@ -87,11 +92,11 @@ namespace Katydid
             /// Returns a constant pointer to the child node named nodeName (non-recursive).
             /// Returns NULL if the child doesn't exist.
             /// If multiple nodes exist with this name, the choice of the node that gets returned is not defined.
-            const KTPStoreNode* GetChild(const std::string& nodeName) const;
+            const KTPStoreNode GetChild(const std::string& nodeName) const;
             /// Returns a pointer to the child node named nodeName (non-recursive).
             /// Returns NULL if the child doesn't exist.
             /// If multiple nodes exist with this name, the choice of the node that gets returned is not defined.
-            KTPStoreNode* GetChild(const std::string& nodeName);
+            KTPStoreNode GetChild(const std::string& nodeName);
 
             /// Returns the data of this node
             std::string Value();
@@ -137,6 +142,11 @@ namespace Katydid
             std::string fDefaultValue;
 
     };
+
+    inline Bool_t KTPStoreNode::IsValid() const
+    {
+        return fTree == NULL ? false : true;
+    }
 
     template< typename XType >
     XType KTPStoreNode::GetValue() const

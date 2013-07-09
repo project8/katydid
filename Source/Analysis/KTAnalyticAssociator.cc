@@ -51,10 +51,10 @@ namespace Katydid
 
         SetSaveFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveFrequencySpectrum));
 
-        const KTPStoreNode* fftNode = node->GetChild("complex-fftw");
-        if (fftNode != NULL)
+        const KTPStoreNode fftNode = node->GetChild("complex-fftw");
+        if (fftNode.IsValid())
         {
-            if (! fFullFFT.Configure(fftNode)) return false;
+            if (! fFullFFT.Configure(&fftNode)) return false;
         }
 
         return true;

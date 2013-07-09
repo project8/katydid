@@ -72,7 +72,7 @@ namespace Katydid
             Bool_t Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress);
 
             /// Get a node from the parameter store tree
-            KTPStoreNode* GetNode(const std::string& address) const;
+            KTPStoreNode GetNode(const std::string& address) const;
 
         protected:
             void AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const std::string& addressOfTree="");
@@ -99,7 +99,7 @@ namespace Katydid
 #endif
     };
 
-    inline KTPStoreNode* KTApplication::GetNode(const std::string& address) const
+    inline KTPStoreNode KTApplication::GetNode(const std::string& address) const
     {
         return fParamStore->GetNode(address);
     }

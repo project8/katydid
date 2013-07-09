@@ -54,10 +54,18 @@ namespace Katydid
             }
             SetWindowFunction(tempWF);
 
-            if (! tempWF->Configure(node->GetChild("window-function")))
+            KTPStoreNode wfNode = node->GetChild("window-function");
+            if (! wfNode.IsValid())
             {
-                KTERROR(windowlog, "Problems occurred while configuring the window function");
-                return false;
+                KTWARN(windowlog, "No PStoreNode found for the window function");
+            }
+            else
+            {
+                if (! tempWF->Configure(&wfNode))
+                {
+                    KTERROR(windowlog, "Problems occurred while configuring the window function");
+                    return false;
+                }
             }
         }
 
