@@ -79,7 +79,7 @@ namespace Katydid
         }
         catch (std::exception& e)
         {
-            KTERROR(utillog_pstore, "The parameter store does not contain anything at address <" << address << ">");
+            KTWARN(utillog_pstore, "The parameter store does not contain anything at address <" << address << ">");
             return KTPStoreNode(NULL);
         }
         return KTPStoreNode(NULL); // the code should not reach this point
