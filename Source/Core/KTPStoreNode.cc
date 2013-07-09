@@ -59,7 +59,7 @@ namespace Katydid
 
     KTPStoreNode::KTPStoreNode(const KTPStoreNode& orig) :
             fTree(orig.fTree),
-            fDefaultValue(orig.fDefaultValue)
+            fDefaultValue("DEFAULT VALUE FOR KTPSTORENODE USE")
     {
     }
 
@@ -71,7 +71,6 @@ namespace Katydid
     KTPStoreNode& KTPStoreNode::operator=(const KTPStoreNode& rhs)
     {
         fTree = rhs.fTree;
-        fDefaultValue = rhs.fDefaultValue;
         return *this;
     }
 
