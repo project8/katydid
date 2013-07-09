@@ -46,7 +46,7 @@ namespace Katydid
             fWindowAverageCounter(0),
             fWindowCounter(0),
             fDataOutCounter(0),
-            fWVSignal("wigner-ville", this),
+            fWVSignal("wv", this),
             fHeaderSlot("header", this, &KTWignerVille::InitializeWithHeader)
     {
         RegisterSlot("ts", this, &KTWignerVille::ProcessTimeSeries);
@@ -199,7 +199,7 @@ namespace Katydid
         register Double_t t2_real;
         register Double_t t2_imag;
 
-        KTERROR(wvlog, "iWindow = " << iWindow);
+        //KTERROR(wvlog, "iWindow = " << iWindow);
 
         for (UInt_t fftBin = 0; fftBin < fWindowSize; fftBin++)
         {
