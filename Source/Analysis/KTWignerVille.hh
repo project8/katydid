@@ -147,9 +147,9 @@ namespace Katydid
             std::vector< KTFrequencySpectrumFFTW* > fOutputArrays;
 
             boost::shared_ptr< KTData > fOutputData;
-            KTSliceHeader* fOutputSHData;
+            KTSliceHeader* fOutputSHData; // pointer to object that is part of fOutputData
             //KTWV2DData* fOutputWVData;
-            KTWignerVilleData* fOutputWVData;
+            KTWignerVilleData* fOutputWVData; // pointer to object that is part of fOutputData
 
             UInt_t fWindowAverageCounter;
             UInt_t fWindowCounter;
@@ -259,6 +259,8 @@ namespace Katydid
                 return false;
             }
 
+            fOutputWVData->Clear();
+
             UInt_t nComponents = data.GetNComponents();
             if (nComponents != fBuffer.size())
             {
@@ -335,6 +337,8 @@ namespace Katydid
             while (! exitBufferLoop)
             {
                 KTDEBUG(wvlog, "Slice sample offset: " << fSliceSampleOffset);
+
+                fOutputWVData->Clear();
 
                 for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
                 {

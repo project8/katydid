@@ -322,6 +322,7 @@ namespace Katydid
             //KTDEBUG(sclog, "Adding freq cluster: " << activeFBCluster.fFirstPoint << "  " << activeFBCluster.fLastPoint);
             freqBinClusters.push_back(activeFBCluster);
         }
+        KTDEBUG(sclog, "fb clustering complete;  " << freqBinClusters.size() << " fb clusters found");
 
 
         /*// this stuff is no longer necessary since we're not skipping bins in time
@@ -401,6 +402,7 @@ namespace Katydid
                 if (acIt->fEndMinFreqPoint <= fbIt->fLastPoint + fMaxFreqSepBins &&
                     fbIt->fFirstPoint <= acIt->fEndMaxFreqPoint + fMaxFreqSepBins)
                 {
+                    // Yes, this fb cluster (fbIt) overlaps with this active cluster (acIt and iCluster)
                     if (fbIt->fAddedToActiveCluster)
                     {
                         // second+ active cluster this fb cluster matches; merge active clusters
@@ -464,6 +466,8 @@ namespace Katydid
             iCluster++;
         }
 
+        //KTDEBUG(sclog, "almost complete: " << fAlmostCompleteClusters[0].size() << "   active: " << fActiveClusters[0].size());
+
         // For the almost-complete clusters, add this spectrum as a post-cluster spectrum, and complete any clusters that are now done
         ClusterList* completeClusters = new ClusterList();
         KTDEBUG(sclog, "dealing with almost-complete clusters");
@@ -482,6 +486,7 @@ namespace Katydid
                 accIt--;
             }
         }
+        //KTDEBUG(sclog, "almost complete: " << fAlmostCompleteClusters[0].size() << "   active: " << fActiveClusters[0].size());
 
         // Deal with no-longer-active clusters and clusters that were merged with other clusters
         iCluster = 0;
@@ -511,6 +516,7 @@ namespace Katydid
             }
             iCluster++;
         }
+        //KTDEBUG(sclog, "almost complete: " << fAlmostCompleteClusters[0].size() << "   active: " << fActiveClusters[0].size());
 
 
         // Add unassigned frequency clusters as new clusters
@@ -539,6 +545,7 @@ namespace Katydid
                 fActiveClusters[component].push_back(newCluster);
             }
         }
+        //KTDEBUG(sclog, "almost complete: " << fAlmostCompleteClusters[0].size() << "   active: " << fActiveClusters[0].size());
 
         // Last step: add this frequency spectrum into the pre-cluster spectra list; remove the oldest item in the list if necessary
         fPreClusterSpectra[component].push_back(spectrumPtr);

@@ -142,6 +142,10 @@ namespace Katydid
         fFirstHeader.SetNComponents(nPairs);
         fSecondHeader.SetNComponents(nPairs);
 
+        // The order for creating the data types is important: slice header _then_ WV data because this class
+        // uses the same data object for all of the slices it generates.
+        // This way KTExtensibleStruct::Clear can be called on the WV data to remove any downstream data
+        // that was added in a previous slice
         fOutputSHData = &(fOutputData->Of< KTSliceHeader >().SetNComponents(nPairs));
         fOutputSHData->SetSampleRate(acqRate);
         fOutputSHData->SetSliceSize(fWindowSize);

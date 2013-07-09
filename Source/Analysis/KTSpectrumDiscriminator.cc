@@ -308,13 +308,19 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             Double_t value;
+            //std::stringstream printer;
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = (*spectrum)(iBin).abs();
-                if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
+                if (value >= threshold)
+                {
+                    //printer << "   " << iBin << " -- " << value;
+                    newData.AddPoint(iBin, value, iComponent);
+                }
             }
 
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
+            //KTDEBUG(sdlog, printer.str());
         }
         KTINFO(sdlog, "Completed discrimination on " << nComponents << " components");
 
