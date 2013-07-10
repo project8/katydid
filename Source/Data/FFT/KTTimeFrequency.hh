@@ -49,8 +49,8 @@ namespace Katydid
 
 #ifdef ROOT_FOUND
         public:
-            //virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const = 0;
-            //virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const = 0;
+            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hTimeFrequencyMag") const = 0;
+            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hTimeFrequencyPhase") const = 0;
 
             virtual TH2D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const = 0;
 
