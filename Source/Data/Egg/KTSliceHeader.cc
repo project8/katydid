@@ -18,6 +18,7 @@ namespace Katydid
             fSliceNumber(0),
             fSliceSize(1),
             fSliceLength(0.),
+            fNonOverlapFrac(0.),
             fSampleRate(0.),
             fBinWidth(1.),
             fStartRecordNumber(0),
@@ -37,6 +38,7 @@ namespace Katydid
             fSliceNumber(orig.fSliceNumber),
             fSliceSize(orig.fSliceSize),
             fSliceLength(orig.fSliceLength),
+            fNonOverlapFrac(orig.fNonOverlapFrac),
             fSampleRate(orig.fSampleRate),
             fBinWidth(orig.fBinWidth),
             fStartRecordNumber(orig.fStartRecordNumber),
@@ -67,6 +69,7 @@ namespace Katydid
         fSliceNumber = rhs.fSliceNumber;
         fSliceSize = rhs.fSliceSize;
         fSliceLength = rhs.fSliceLength;
+        fNonOverlapFrac = rhs.fNonOverlapFrac;
         fSampleRate = rhs.fSampleRate;
         fBinWidth = rhs.fBinWidth;
         fStartRecordNumber = rhs.fStartRecordNumber;
@@ -85,6 +88,7 @@ namespace Katydid
                 "\tSlice number: " << hdr.GetSliceNumber() << '\n' <<
                 "\tSlice size: " << hdr.GetSliceSize() << '\n' <<
                 "\tSlice Length: " << hdr.GetSliceLength() << " s\n" <<
+                "\tNon-Overlap Fraction: " << hdr.GetNonOverlapFrac() << '\n' <<
                 "\tSample Rate: " << hdr.GetSampleRate() << " Hz\n" <<
                 "\tBin Width: " << hdr.GetBinWidth() << " s\n" <<
                 "\tTime in Run: " << hdr.GetTimeInRun() << " s\n" <<

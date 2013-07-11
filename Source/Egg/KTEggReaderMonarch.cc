@@ -42,6 +42,7 @@ namespace Katydid
             fHeader(),
             fReadState(),
             fNumberOfChannels(),
+            fGetTimeInRun(&KTEggReaderMonarch::GetTimeInRunFirstCall),
             fSampleRateUnitsInHz(1.e6),
             fFullVoltageScale(0.5),
             fNADCLevels(256),
@@ -243,6 +244,7 @@ namespace Katydid
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
+        sliceHeader.SetNonOverlapFrac((Double_t)fStride / (Double_t)fSliceSize);
         sliceHeader.SetTimeInRun(GetTimeInRun());
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
@@ -412,6 +414,21 @@ namespace Katydid
         fHeader.SetRunSource(monarchHeader->GetRunSource());
         fHeader.SetFormatMode(monarchHeader->GetFormatMode());
         return;
+    }
+
+    Double_t KTEggReaderMonarch::GetTimeInRunFirstCall() const
+    {
+        if ((fMonarch->*fMonarchGetRecord[0])()->fTime == 0)
+        {
+            KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is 0; switching GetTIR function to manual");
+            fGetTimeInRun = &KTEggReaderMonarch::GetTimeInRunManually;
+        }
+        else
+        {
+            KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is not 0; switching GetTIR function to from-monarch");
+            fGetTimeInRun = &KTEggReaderMonarch::GetTimeInRunFromMonarch;
+        }
+        return GetTimeInRun();
     }
 
 } /* namespace Katydid */

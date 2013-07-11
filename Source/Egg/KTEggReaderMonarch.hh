@@ -34,6 +34,7 @@ namespace Katydid
     {
         protected:
             typedef const MonarchRecord* (Monarch::*GetRecordFunction)() const;
+            typedef Double_t (KTEggReaderMonarch::*GetTIRFunction)() const;
 
             typedef std::map< UInt_t, Int_t > AcquisitionModeMap;
             typedef AcquisitionModeMap::value_type AcqModeMapValue;
@@ -127,6 +128,11 @@ namespace Katydid
             const MonarchReadState& GetReadState() const;
 
         private:
+            mutable GetTIRFunction fGetTimeInRun;
+            Double_t GetTimeInRunFirstCall() const;
+            Double_t GetTimeInRunFromMonarch() const;
+            Double_t GetTimeInRunManually() const;
+
             Double_t fSampleRateUnitsInHz;
 
             Double_t fFullVoltageScale;
@@ -197,8 +203,17 @@ namespace Katydid
 
     inline Double_t KTEggReaderMonarch::GetTimeInRun() const
     {
+        return (this->*fGetTimeInRun)();
+    }
+
+    inline Double_t KTEggReaderMonarch::GetTimeInRunFromMonarch() const
+    {
         return Double_t((fMonarch->*fMonarchGetRecord[0])()->fTime) * SEC_PER_NSEC + fBinWidth * Double_t(fReadState.fReadPtrOffset);
-        //return fBinWidth * Double_t(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
+    }
+
+    inline Double_t KTEggReaderMonarch::GetTimeInRunManually() const
+    {
+        return fBinWidth * Double_t(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
     }
 
     inline Double_t KTEggReaderMonarch::GetIntegratedTime() const
