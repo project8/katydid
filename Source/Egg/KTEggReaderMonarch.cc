@@ -243,6 +243,7 @@ namespace Katydid
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
+        sliceHeader.SetNonOverlapFrac((Double_t)fStride / (Double_t)fSliceSize);
         sliceHeader.SetTimeInRun(GetTimeInRun());
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);

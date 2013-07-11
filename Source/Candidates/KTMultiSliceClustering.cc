@@ -632,7 +632,9 @@ namespace Katydid
         UInt_t lastFreqBinToUse = lastFreqBinWithFrame < cluster.fPoints.begin()->fSpectrumPtr->size() ? (UInt_t)lastFreqBinWithFrame : cluster.fPoints.begin()->fSpectrumPtr->size() - 1;
         UInt_t freqBinOffset = UInt_t((Int_t)firstFreqBinToUse - firstFreqBinWithFrame);
 
-        Double_t timeBinWidth = cluster.fPoints.begin()->fHeaderPtr->GetSliceLength();
+        Double_t timeOverlapFrac = cluster.fPoints.begin()->fHeaderPtr->GetNonOverlapFrac();
+        Double_t timeBinWidthWithOverlap = cluster.fPoints.begin()->fHeaderPtr->GetSliceLength();
+        Double_t timeBinWidth = timeBinWidthWithOverlap * timeOverlapFrac;
         Double_t freqBinWidth = cluster.fPoints.begin()->fSpectrumPtr->GetBinWidth();
         UInt_t nTimeBins = lastTimeBin - firstTimeBin + 1;
         UInt_t nFreqBins = lastFreqBin - firstFreqBin + 1;
@@ -670,10 +672,13 @@ namespace Katydid
             frameBin++;
         }
 
+        // this is the amount of time missing on each end of a cluster if the length of the cluster is calculated with the timeBinWidth, which is the non-overlap fraction of the slice length
+        Double_t endTimeBinShift = 0.5 * (1. - timeOverlapFrac) * timeBinWidthWithOverlap;
+
         wfcData.SetTimeInRun(cluster.fPoints.begin()->fHeaderPtr->GetTimeInRun());
         wfcData.SetFirstSliceNumber(cluster.fPoints.begin()->fHeaderPtr->GetSliceNumber());
         wfcData.SetLastSliceNumber(cluster.fPoints.begin()->fHeaderPtr->GetSliceNumber());
-        wfcData.SetTimeLength(timeBinWidth * Double_t(nTimeBins));
+        wfcData.SetTimeLength(timeBinWidth * Double_t(nTimeBins) + 2. * endTimeBinShift);
         wfcData.SetMeanStartFrequency(ftbWeightedSum / ftbSumOfWeights);
         wfcData.SetMeanEndFrequency(ltbWeightedSum / ltbSumOfWeights);
         wfcData.SetFrequencyWidth(freqBinWidth * Double_t(nFreqBins));
@@ -687,7 +692,8 @@ namespace Katydid
         }
 
         KTDEBUG(sclog, "Creating KTTimeFrequency with " << nTimeBinsWithFrame << " time bins and " << nFreqBinsWithFrame << " freq bins;  cluster dimensions are " << nTimeBins << " by " << nFreqBins);
-        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, timeBinWidth * Double_t(firstTimeBinWithFrame), timeBinWidth * Double_t(firstTimeBinWithFrame + (Int_t)nTimeBins), nFreqBinsWithFrame, freqBinWidth * Double_t(firstFreqBinWithFrame), freqBinWidth * Double_t(firstFreqBinWithFrame + (Int_t)nFreqBins));
+        Double_t tfStartTime = wfcData.GetTimeInRun() + endTimeBinShift - Double_t(fNFramingTimeBins) * timeBinWidth;
+        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, tfStartTime, tfStartTime + Double_t(nTimeBinsWithFrame)*timeBinWidth, nFreqBinsWithFrame, freqBinWidth * Double_t(firstFreqBinWithFrame), freqBinWidth * Double_t(firstFreqBinWithFrame + (Int_t)nFreqBins));
         for (Int_t iTBin=firstTimeBinWithFrame; iTBin <= lastTimeBinWithFrame; iTBin++)
         {
             Int_t spectrumNum = iTBin - firstTimeBinWithFrame;

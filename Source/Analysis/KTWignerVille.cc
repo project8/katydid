@@ -148,8 +148,9 @@ namespace Katydid
         // that was added in a previous slice
         fOutputSHData = &(fOutputData->Of< KTSliceHeader >().SetNComponents(nPairs));
         fOutputSHData->SetSampleRate(acqRate);
-        fOutputSHData->SetSliceSize(fWindowSize);
+        fOutputSHData->SetSliceSize(fWindowSize + (fNWindowsToAverage - 1) * fWindowStride); // this includes the fact that windows might be averaged together
         fOutputSHData->CalculateBinWidthAndSliceLength();
+        fOutputSHData->SetNonOverlapFrac((Double_t)(fNWindowsToAverage * fWindowStride) / (Double_t)fOutputSHData->GetSliceSize()); // this includes the fact that windows might be averaged together
 
         //fOutputWVData = &(fOutputData->Of< KTWV2DData >().SetNComponents(fPairs.size()));
         fOutputWVData = &(fOutputData->Of< KTWignerVilleData >().SetNComponents(nPairs));
