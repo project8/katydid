@@ -31,6 +31,10 @@ namespace Katydid
         public:
             void WriteNormalizedFSDataPolar(boost::shared_ptr<KTData> data);
             void WriteNormalizedFSDataFFTW(boost::shared_ptr<KTData> data);
+            void WriteNormalizedFSDataPolarPhase(boost::shared_ptr<KTData> data);
+            void WriteNormalizedFSDataFFTWPhase(boost::shared_ptr<KTData> data);
+            void WriteNormalizedFSDataPolarPower(boost::shared_ptr<KTData> data);
+            void WriteNormalizedFSDataFFTWPower(boost::shared_ptr<KTData> data);
 
             //************************
             // Analytic Associate Data
