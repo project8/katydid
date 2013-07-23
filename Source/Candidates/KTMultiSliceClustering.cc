@@ -56,6 +56,8 @@ namespace Katydid
             fOneSliceDataSignal("one-slice", this),
             fClusteredDataSignal("cluster", this)
     {
+        RegisterSlot("complete-remaining-clusters", this, &KTMultiSliceClustering::CompleteRemainingClusters);
+
         RegisterSlot("fs-polar", this, &KTMultiSliceClustering::ProcessOneSliceFSPolarData);
         RegisterSlot("fs-fftw", this, &KTMultiSliceClustering::ProcessOneSliceFSFFTWData);
         RegisterSlot("corr", this, &KTMultiSliceClustering::ProcessOneSliceCorrelationData);
@@ -727,6 +729,17 @@ namespace Katydid
         }
 
         delete dataList;
+        return;
+    }
+
+    void KTMultiSliceClustering::CompleteRemainingClusters()
+    {
+        KTINFO(sclog, "Signal received to clean up remaining active clusters");
+        DataList* lastData = CompleteAllClusters();
+        if (lastData != NULL)
+        {
+            RunDataLoop(lastData);
+        }
         return;
     }
 

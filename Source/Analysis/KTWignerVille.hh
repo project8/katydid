@@ -135,6 +135,8 @@ namespace Katydid
             KTSliceHeader fFirstHeader;
             KTSliceHeader fSecondHeader;
 
+            Bool_t fReceivedLastData;
+
             std::vector< Buffer > fBuffer;
             UInt_t fSliceSampleOffset;
 
@@ -456,7 +458,7 @@ namespace Katydid
                     // if we want an average and not just a sum, this is where the division by the fNWindowsToAverage should go
 
                     // Finish filling in the output data
-                    if (exitBufferLoop) fOutputData->fLastData = true;
+                    fOutputData->fLastData = fReceivedLastData;
                     fOutputData->fCounter = fDataOutCounter;
 
                     fOutputSHData->SetSliceNumber(fDataOutCounter);

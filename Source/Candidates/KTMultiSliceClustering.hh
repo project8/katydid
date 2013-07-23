@@ -70,6 +70,7 @@ namespace Katydid
      - "queue-fs-fftw": void (shared_ptr< KTData >) -- Queues a data object for clustering based on fftw FS data; Requires KTFrequencySpectrumDataFFTW; May create new data objects with KTWaterfallCandidateData
      - "queue-corr": void (shared_ptr< KTData >) -- Queues a data object for clustering based on correlation data; Requires KTCorrelationData; May create new data objects with KTWaterfallCandidateData
      - "queue-wv": void (shared_ptr< KTData >) -- Queues a data object for clustering based on wigner-ville data; Requires KTWignerVilleData; May create new data objects with KTWaterfallCandidateData
+     - "complete-remaining-clusters": void () -- Completes any remaining partial clusters; May create new data objects with KTWaterfallCandidateData
 
      Signals:
      - "one-slice": void (shared_ptr< KTData >) -- Emitted upon receipt of a one-slice data object, without modification
@@ -245,6 +246,8 @@ namespace Katydid
             void ProcessOneSliceFSFFTWData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceCorrelationData(boost::shared_ptr<KTData> data);
             void ProcessOneSliceWVData(boost::shared_ptr<KTData> data);
+
+            void CompleteRemainingClusters();
 
          private:
             template< class XDataType >
@@ -447,8 +450,6 @@ namespace Katydid
         }
         return;
     }
-
-
 
 } /* namespace Katydid */
 #endif /* KTMULTISLICECLUSTERING_HH_ */

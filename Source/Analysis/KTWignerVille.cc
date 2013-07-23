@@ -34,6 +34,7 @@ namespace Katydid
             fNWindowsToAverage(1),
             fFirstHeader(),
             fSecondHeader(),
+            fReceivedLastData(false),
             fBuffer(),
             fSliceSampleOffset(0),
             fSliceBreak(),
@@ -349,6 +350,8 @@ namespace Katydid
             return;
         }
 
+        fReceivedLastData = data->fLastData;
+
         // Call the function
         if (! TransformData(data->Of< KTTimeSeriesData >(), data->Of< KTSliceHeader >()))
         {
@@ -377,6 +380,8 @@ namespace Katydid
             KTERROR(wvlog, "Data not found with type <" << typeid(KTSliceHeader).name() << ">");
             return;
         }
+
+        fReceivedLastData = data->fLastData;
 
         // Call the function
         if (! TransformData(data->Of< KTAnalyticAssociateData >(), data->Of< KTSliceHeader >()))
