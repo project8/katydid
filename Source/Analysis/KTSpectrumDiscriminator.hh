@@ -27,8 +27,6 @@ namespace Katydid
     class KTFrequencySpectrumDataPolarCore;
     class KTNormalizedFSDataFFTW;
     class KTNormalizedFSDataPolar;
-    //class KTSlidingWindowFSData;
-    //class KTSlidingWindowFSDataFFTW;
     class KTWignerVilleData;
 
 
@@ -43,12 +41,13 @@ namespace Katydid
      Configuration name: "spectrum-discriminator"
 
      Available configuration values:
-     - "snr-threshold": double -- snr threshold
-     - "sigma-threshold": double -- sigma threshold
+     - "snr-threshold-power": double -- Provide and use an SNR threshold, assuming the input data is in units of power
+     - "snr-threshold-amplitude": double -- Provide and use an SNR threshold, assuming the input data is in units of amplitude
+     - "sigma-threshold": double -- Provide and use a number-of-sigma threshold
      - "min-frequency": double -- minimum frequency
      - "max-frequency": double -- maximum frequency
-     - "min-bin": unsigned -- minimum frequency
-     - "max-bin": unsigned -- maximum frequency
+     - "min-bin": unsigned -- minimum frequency by bin
+     - "max-bin": unsigned -- maximum frequency by bin
 
      Slots:
      - "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
@@ -60,7 +59,6 @@ namespace Katydid
 
      Signals:
      - "disc-1d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
-     <!--- "disc-2d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints2DData-->
     */
     class KTSpectrumDiscriminator : public KTProcessor
     {
@@ -117,8 +115,6 @@ namespace Katydid
             Bool_t Discriminate(KTNormalizedFSDataFFTW& data);
             Bool_t Discriminate(KTCorrelationData& data);
             Bool_t Discriminate(KTWignerVilleData& data);
-            //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSData* data);
-            //KTDiscriminatedPoints2DData* Discriminate(const KTSlidingWindowFSDataFFTW* data);
 
         private:
             Bool_t CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData);
@@ -131,7 +127,6 @@ namespace Katydid
 
         private:
             KTSignalData fDiscrim1DSignal;
-            //KTSignalData fDiscrim2DSignal;
 
             //***************
             // Slots
