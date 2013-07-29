@@ -61,6 +61,9 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
+            Bool_t GetNormalize() const;
+            void SetNormalize(Bool_t flag);
+
             Double_t GetMinFrequency() const;
             void SetMinFrequency(Double_t freq);
 
