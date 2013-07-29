@@ -237,7 +237,7 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             Double_t value;
-    #pragma omp parallel for private(value)
+#pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = (*spectrum)(iBin).abs();
@@ -266,7 +266,7 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             Double_t value;
-    #pragma omp parallel for private(value)
+#pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = (*spectrum)(iBin).abs();
@@ -314,7 +314,7 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             Double_t value;
-    #pragma omp parallel for private(value)
+#pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
@@ -348,7 +348,7 @@ namespace Katydid
 
             // loop over bins, checking against the threshold
             Double_t value;
-    #pragma omp parallel for private(value)
+#pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = fMagnitudeCache[iBin];

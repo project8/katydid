@@ -45,6 +45,10 @@ namespace Katydid
             Double_t GetXMax() const;
             void SetXMax(Double_t max);
 
+#ifdef ROOT_FOUND
+            TSpline3* GetSpline();
+#endif
+
         private:
 
 #ifdef ROOT_FOUND
@@ -88,6 +92,13 @@ namespace Katydid
         fXMax = max;
         return;
     }
+
+#ifdef ROOT_FOUND
+    inline TSpline3* KTSpline::GetSpline()
+    {
+        return &fSpline;
+    }
+#endif
 
 } /* namespace Katydid */
 #endif /* KTSPLINE_HH_ */
