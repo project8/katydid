@@ -37,7 +37,7 @@ namespace Katydid
             KTEggReader(),
             fTimeSeriesType(kRealTimeSeries),
             fSliceSize(1024),
-            fStride(1024),
+            fStride(0),
             fMonarch(NULL),
             fHeader(),
             fReadState(),
@@ -75,6 +75,8 @@ namespace Katydid
 
     KTEggHeader* KTEggReaderMonarch::BreakEgg(const string& filename)
     {
+        if (fStride == 0) fStride = fSliceSize;
+
         if (fMonarch != NULL)
         {
             fMonarch->Close();

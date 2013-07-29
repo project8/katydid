@@ -78,6 +78,8 @@ namespace Katydid
 
     };
 
+    std::ostream& operator<<(std::ostream& out, const KTEggHeader& header);
+
     inline void KTEggHeader::SetFilename(const std::string& fname)
     {
         fFilename = fname;
