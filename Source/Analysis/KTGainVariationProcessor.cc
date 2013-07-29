@@ -231,14 +231,17 @@ namespace Katydid
             }
 
             // Normalize the fit points to 1
-            Double_t minYVal = yVals[0];
-            for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+            if (fNormalize)
             {
-                if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
-            }
-            for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
-            {
-                yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
+                Double_t minYVal = yVals[0];
+                for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+                {
+                    if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
+                }
+                for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+                {
+                    yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
+                }
             }
 
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
