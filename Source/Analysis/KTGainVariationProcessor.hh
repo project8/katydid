@@ -39,6 +39,7 @@ namespace Katydid
      Configuration name: "gain-variation"
 
      Available configuration values:
+     - "normalize": bool -- whether or not to normalize the output to the minimum value (default: true)
      - "min-frequency": double -- minimum frequency for the fit
      - "max-frequency": double -- maximum frequency for the fit
      - "min-bin": unsigned -- minimum bin for the fit
@@ -76,6 +77,7 @@ namespace Katydid
             void SetNFitPoints(UInt_t nPoints);
 
         private:
+            Bool_t fNormalize;
             Double_t fMinFrequency;
             Double_t fMaxFrequency;
             UInt_t fMinBin;
@@ -107,6 +109,17 @@ namespace Katydid
             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };
+
+    inline Bool_t KTGainVariationProcessor::GetNormalize() const
+    {
+        return fNormalize;
+    }
+
+    inline void KTGainVariationProcessor::SetNormalize(Bool_t flag)
+    {
+        fNormalize = flag;
+        return;
+    }
 
     inline Double_t KTGainVariationProcessor::GetMinFrequency() const
     {

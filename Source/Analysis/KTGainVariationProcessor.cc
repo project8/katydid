@@ -34,6 +34,7 @@ namespace Katydid
 
     KTGainVariationProcessor::KTGainVariationProcessor(const std::string& name) :
             KTProcessor(name),
+            fNormalize(true),
             fMinFrequency(0.),
             fMaxFrequency(1.),
             fMinBin(0),
@@ -54,6 +55,8 @@ namespace Katydid
     Bool_t KTGainVariationProcessor::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
+
+        SetNormalize(node->GetData< Bool_t >("normalize", fNormalize));
 
         if (node->HasData("min-frequency"))
         {
@@ -137,15 +140,18 @@ namespace Katydid
                 KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
             }
 
-            // Normalize the fit points to 1
-            Double_t minYVal = yVals[0];
-            for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+            if (fNormalize)
             {
-                if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
-            }
-            for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
-            {
-                yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
+                // Normalize the fit points to 1
+                Double_t minYVal = yVals[0];
+                for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+                {
+                    if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
+                }
+                for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+                {
+                    yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
+                }
             }
 
             KTSpline* spline = new KTSpline(xVals, yVals, fNFitPoints);
