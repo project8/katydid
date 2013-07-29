@@ -11,12 +11,15 @@
 
 #include "KTApplication.hh"
 #include "KTCommandLineOption.hh"
+#include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
 #include "KTEggReaderMonarch.hh"
 #include "KTLogger.hh"
+#include "KTSliceHeader.hh"
 
 #include <boost/filesystem.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 #include <string>
@@ -25,12 +28,12 @@
 using namespace std;
 using namespace Katydid;
 
+using boost::shared_ptr;
 
 KTLOGGER(eggscan, "katydid.applications.main");
 
-//static KTCommandLineOption< string > sCLFilename("Filename", "Supply the filename to scan", "filename", 'f');
-//static KTCommandLineOption< Bool_t > sCLReaderType("2011Reader", "Use the 2011 Egg reader", "use-old-egg-reader", 'z');
 static KTCommandLineOption< UInt_t > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
+static KTCommandLineOption< Bool_t > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
 
 int main(int argc, char** argv)
 {
@@ -65,6 +68,8 @@ int main(int argc, char** argv)
         reader = readerMonarch;
     }
 
+    Bool_t scanRecords = clOpts->IsCommandLineOptSet("scan-records");
+
     //**************************
     // Doing-something phase
     //**************************
@@ -78,19 +83,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    KTPROG(eggscan, "Header information:\n"
-           << "\tFilename: " << header->GetFilename() << '\n'
-           << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
-           << "\tNumber of Channels: " << header->GetNChannels() << '\n'
-           << "\tSlice Size: " << header->GetSliceSize() << '\n'
-           << "\tRecord Size: " << header->GetRecordSize() << '\n'
-           << "\tRun Duration: " << header->GetRunDuration() << " s\n"
-           << "\tAcquisition Rate: " << header->GetAcquisitionRate() << " Hz \n"
-           << "\tTimestamp: " << header->GetTimestamp() << '\n'
-           << "\tDescription: " << header->GetDescription() << '\n'
-           << "\tRun Type: " << header->GetRunType() << '\n'
-           << "\tRun Source: " << header->GetRunSource() << '\n'
-           << "\tFormat Mode: " << header->GetFormatMode());
+    KTPROG(eggscan, *header);
 
     ULong64_t recordMemorySize = header->GetSliceSize(); // each time bin is represented by 1 byte
     ULong64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
@@ -113,6 +106,24 @@ int main(int argc, char** argv)
            << "\tFS size (FFTW): " << fsSizeFFTW << '\n'
            << "\tFS size (polar): " << fsSizePolar << '\n'
            << "\tMax frequency: " << fsMaxFreq << " Hz");
+
+    if (scanRecords)
+    {
+        UInt_t iSlice = 0;
+        while (kTRUE)
+        {
+            KTINFO(eggscan, "Hatching slice " << iSlice);
+
+            // Hatch the slice
+            shared_ptr<KTData> data = reader->HatchNextSlice();
+            if (data.get() == NULL) break;
+
+            KTPROG(eggscan, data->Of< KTSliceHeader >());
+
+            iSlice++;
+        }
+
+    }
 
     reader->CloseEgg();
 

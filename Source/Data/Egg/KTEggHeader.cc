@@ -9,6 +9,8 @@
 
 #include "MonarchTypes.hpp"
 
+#include <ostream>
+
 namespace Katydid
 {
 
@@ -64,5 +66,24 @@ namespace Katydid
         fFormatMode = rhs.fFormatMode;
         return *this;
     }
+
+    std::ostream& operator<<(std::ostream& out, const KTEggHeader& header)
+    {
+        out << "Header information:\n"
+                << "\tFilename: " << header.GetFilename() << '\n'
+                << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
+                << "\tNumber of Channels: " << header.GetNChannels() << '\n'
+                << "\tSlice Size: " << header.GetSliceSize() << '\n'
+                << "\tRecord Size: " << header.GetRecordSize() << '\n'
+                << "\tRun Duration: " << header.GetRunDuration() << " s\n"
+                << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz \n"
+                << "\tTimestamp: " << header.GetTimestamp() << '\n'
+                << "\tDescription: " << header.GetDescription() << '\n'
+                << "\tRun Type: " << header.GetRunType() << '\n'
+                << "\tRun Source: " << header.GetRunSource() << '\n'
+                << "\tFormat Mode: " << header.GetFormatMode();
+        return out;
+    }
+
 
 } /* namespace Katydid */

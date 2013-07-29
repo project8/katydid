@@ -99,6 +99,13 @@ namespace Katydid
                 "\tEnd Sample: " << hdr.GetEndSampleNumber() << '\n' <<
                 "\tRecord Size: " << hdr.GetRecordSize() << '\n' <<
                 "\t# of Components: " << hdr.GetNComponents();
+        for (UInt_t iComponent = 0; iComponent < hdr.GetNComponents(); iComponent++)
+        {
+            out << "\n\tComponent " << iComponent << '\n' <<
+                    "\t\tTimestamp: " << hdr.GetTimeStamp(iComponent) << " ns\n" <<
+                    "\t\tAcquisition ID: " << hdr.GetAcquisitionID(iComponent) << '\n' <<
+                    "\t\tRecord ID: " << hdr.GetRecordID(iComponent);
+        }
         return out;
     }
 
