@@ -10,7 +10,7 @@
 
 #include "KTLogger.hh"
 
-#if defined(LOG4CXX)
+#ifdef LOG4CXX_FOUND
 
 #include <cstdlib>
 
@@ -22,6 +22,8 @@
 #include <log4cxx/consoleappender.h>
 #include <log4cxx/logmanager.h>
 #include <log4cxx/logger.h>
+
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 using namespace log4cxx;
@@ -157,17 +159,43 @@ namespace Katydid
 
     bool KTLogger::IsLevelEnabled(const string& level) const
     {
+#ifdef STANDARD
+        if (boost::icontains(level, "debug"))
+            return false;
+        else
+            return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
+#else // STANDARD
+#ifdef NDEBUG
+        if (boost::icontains(level, "debug") || boost::icontains(level, "info"))
+            return false;
+        else
+            return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
+#else // NDEBUG
         return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
+#endif // NDEBUG
+#endif // STANDARD
     }
 
     bool KTLogger::IsDebugEnabled() const
     {
+#ifdef NDEBUG
+        return false;
+#else
         return fPrivate->fLogger->isDebugEnabled();
+#endif
     }
 
     bool KTLogger::IsInfoEnabled() const
     {
+#ifdef STANDARD
         return fPrivate->fLogger->isInfoEnabled();
+#else // STANDARD
+#ifdef NDEBUG
+        return false;
+#else // NDEBUG
+        return fPrivate->fLogger->isInfoEnabled();
+#endif // NDEBUG
+#endif // STANDARD
     }
 
     bool KTLogger::IsProgEnabled() const
@@ -305,12 +333,16 @@ namespace Katydid
 
     bool KTLogger::IsLevelEnabled(const string& level) const
     {
-#ifdef NDEBUG
+#ifdef STANDARD
         return !boost::icontains(level, "debug");
-#else
+#else // STANDARD
+#ifdef NDEBUG
+        return !boost::icontains(level, "debug") && !boost::icontains(level, "info");
+#else // NDEBUG
         (void) level;
         return true;
-#endif
+#endif // NDEBUG
+#endif // STANDARD
     }
 
     bool KTLogger::IsDebugEnabled() const
@@ -324,7 +356,15 @@ namespace Katydid
 
     bool KTLogger::IsInfoEnabled() const
     {
+#ifdef STANDARD
         return true;
+#else // STANDARD
+#ifdef NDEBUG
+        return false;
+#else // NDEBUG
+        return true;
+#endif // NDEBUG
+#endif // STANDARD
     }
 
     bool KTLogger::IsProgEnabled() const
