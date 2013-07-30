@@ -7,6 +7,7 @@
 
 #include "KTROOTTreeWriter.hh"
 
+#include "KTCommandLineOption.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
@@ -24,6 +25,8 @@ namespace Katydid
 
     static KTDerivedNORegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
     static KTDerivedNORegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
+
+    static KTCommandLineOption< string > sRTWFilenameCLO("ROOT Tree Writer", "ROOT Tree writer filename", "rtw-file");
 
     KTROOTTreeWriter::KTROOTTreeWriter(const std::string& name) :
             KTWriterWithTypists< KTROOTTreeWriter >(name),
@@ -52,6 +55,9 @@ namespace Katydid
             SetFilename(node->GetData<string>("output-file", fFilename));
             SetFileFlag(node->GetData<string>("file-flag", fFileFlag));
         }
+
+        // Command-line settings
+        SetFilename(fCLHandler->GetCommandLineValue< string >("rtw-file", fFilename));
 
         return true;
     }
