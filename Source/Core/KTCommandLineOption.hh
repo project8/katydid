@@ -41,7 +41,14 @@ namespace Katydid
     KTCommandLineOption< XInputType >::KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, Char_t shortOpt) :
             fCLHandler(KTCommandLineHandler::GetInstance())
     {
-        fCLHandler->AddOption< XInputType >(group, helpMsg, longOpt, shortOpt);
+        if (shortOpt == '#')
+        {
+            fCLHandler->AddOption< XInputType >(group, helpMsg, longOpt);
+        }
+        else
+        {
+            fCLHandler->AddOption< XInputType >(group, helpMsg, longOpt, shortOpt);
+        }
     }
 
     template< typename XInputType >
@@ -61,7 +68,14 @@ namespace Katydid
             KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, Char_t shortOpt='#') :
                 fCLHandler(KTCommandLineHandler::GetInstance())
             {
-                fCLHandler->AddOption(group, helpMsg, longOpt, shortOpt);
+                if (shortOpt == '#')
+                {
+                    fCLHandler->AddOption(group, helpMsg, longOpt);
+                }
+                else
+                {
+                    fCLHandler->AddOption(group, helpMsg, longOpt, shortOpt);
+                }
             }
             virtual ~KTCommandLineOption()
             {
