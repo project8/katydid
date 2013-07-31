@@ -275,6 +275,8 @@ namespace Katydid
             }
         }
 
+        spline->AddToCache(splineImp);
+
         return true;
 
     }
@@ -356,6 +358,8 @@ namespace Katydid
                     newData.AddPoint(iBin, value, component);
             }
         }
+
+        spline->AddToCache(splineImp);
 
         return true;
     }
