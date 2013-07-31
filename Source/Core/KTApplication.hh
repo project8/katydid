@@ -63,7 +63,7 @@ namespace Katydid
 
             /// Parse any unparsed parts of command line and store the results (performed by KTCommandLineHandler)
             /// This is called from ReadConfigFile
-            void FinishProcessingCommandLine();
+            Bool_t FinishProcessingCommandLine();
 
             /// Configure a KTConfigurable object
             /// If baseAddress is given, the KTConfigurable's config name will be appended before attempting to get the parameter store node.

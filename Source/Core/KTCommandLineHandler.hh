@@ -143,7 +143,7 @@ namespace Katydid
 
         public:
             /// Parses the remaining command line options (those that weren't parsed during the InitialCommandLineProcessing
-            void DelayedCommandLineProcessing();
+            Bool_t DelayedCommandLineProcessing();
 
         private:
             /// Parses the general options and stores the remaining options available for later parsing

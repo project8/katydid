@@ -54,7 +54,11 @@ int main(int argc, char** argv)
             "                                    =                                           \n");
 
     KTApplication app(argc, argv);
-    app.ReadConfigFile();
+    if (! app.ReadConfigFile())
+    {
+        KTERROR(katydidlog, "Unable to read config file. Aborting.");
+        return -1;
+    }
 
     // Create and configure the processor toolbox.
     // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
@@ -63,7 +67,7 @@ int main(int argc, char** argv)
     if (! app.Configure(&procTB, appConfigName))
     {
         KTERROR(katydidlog, "Unable to configure processor toolbox. Aborting.");
-        return -1;
+        return -2;
     }
 
     // Configure the processors
@@ -71,12 +75,12 @@ int main(int argc, char** argv)
     if (! node.IsValid())
     {
         KTERROR(katydidlog, "Configuration node <" << appConfigName << "> was not found. Aborting");
-        return -2;
+        return -3;
     }
     if (! procTB.ConfigureProcessors(&node))
     {
         KTERROR(katydidlog, "Unable to configure processors. Aborting.");
-        return -3;
+        return -4;
     }
 
     // Execute the run queue!
@@ -84,6 +88,6 @@ int main(int argc, char** argv)
 
     KTPROG(katydidlog, "That's all, folks!");
 
-    if (! success) return -4;
+    if (! success) return -5;
     return 0;
 }

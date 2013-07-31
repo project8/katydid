@@ -16,6 +16,15 @@ include (PackageBuilder)
 # Set the version and associated variables
 pbuilder_prepare_project (1 5 0)
 
+# Add a "Standard" build type
+#set (CMAKE_BUILD_TYPE standard)
+set (CMAKE_CXX_FLAGS_STANDARD "-O1 -DNDEBUG -DSTANDARD" CACHE STRING "Flags used by the compiler during standard builds.")
+set (CMAKE_C_FLAGS_STANDARD "-O1 -DNDEBUG -DSTANDARD" CACHE STRING "Flags used by the compiler during standard builds.")
+set (CMAKE_EXE_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
+set (CMAKE_MODULE_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
+set (CMAKE_SHARED_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
+mark_as_advanced(CMAKE_CXX_FLAGS_STANDARD CMAKE_C_FLAGS_STANDARD CMAKE_EXE_LINKER_FLAGS_STANDARD CMAKE_MODULE_LINKER_FLAGS_STANDARD CMAKE_SHARED_LINKER_FLAGS_STANDARD)
+
 set (Katydid_SINGLETHREADED FALSE CACHE BOOL "Flag for running in single-threaded mode")
 if (Katydid_SINGLETHREADED)
     add_definitions(-DSINGLETHREADED)
@@ -62,6 +71,7 @@ if (ROOT_FOUND)
     pbuilder_add_ext_libraries (${ROOT_LIBRARIES})
 else (ROOT_FOUND)
     message(STATUS "Building without ROOT")
+    remove_definitions(-DROOT_FOUND)
     # option for not building with ROOT: need a few include files for file types
     set (ROOT_INCLUDES ${PROJECT_SOURCE_DIR}/External/ROOT)
 endif (ROOT_FOUND)
@@ -77,6 +87,9 @@ if (LOG4CXX_FOUND)
     message (STATUS "Log4cxx found")
     pbuilder_add_ext_libraries (${LOG4CXX_LIBRARY})
     include_directories (${LOG4CXX_INCLUDE_DIRS})
+    add_definitions(-DLOG4CXX_FOUND)
+else (LOG4CXX_FOUND)
+    remove_definitions(-DLOG4CXX_FOUND)
 endif (LOG4CXX_FOUND)
 
 # eigen

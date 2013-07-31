@@ -69,7 +69,11 @@ namespace Katydid
 int main(int argc, char** argv)
 {
     KTApplication app(argc, argv);
-    app.ReadConfigFile();
+    if (! app.ReadConfigFile())
+    {
+        KTERROR(irlog, "Unable to read config file");
+        return -1;
+    }
 
     // Create and configure the processor toolbox.
     // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
