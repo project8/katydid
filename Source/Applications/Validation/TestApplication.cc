@@ -47,7 +47,11 @@ int main(int argc, char** argv)
     // Read the config file
     //****************************
 
-    app->ReadConfigFile();
+    if (! app->ReadConfigFile())
+    {
+        KTERROR(testapplog, "Unable to read config file");
+        return -1;
+    }
 
 
     //****************************

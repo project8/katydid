@@ -24,7 +24,11 @@ KTLOGGER(corrlog, "katydid.applications.main");
 int main(int argc, char** argv)
 {
     KTApplication* app = new KTApplication(argc, argv);
-    app->ReadConfigFile();
+    if (! app->ReadConfigFile())
+    {
+        KTERROR(corrlog, "Unable to read config file");
+        return -1;
+    }
 
     string appConfigName("channel-correlation");
 

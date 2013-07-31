@@ -213,12 +213,12 @@ namespace Katydid
 
     Bool_t KTCommandLineHandler::IsCommandLineOptSet(const string& aCLOption)
     {
-        return fCommandLineVarMap.count(aCLOption);
+        return fCommandLineVarMap.count(aCLOption) != 0;
     }
 
     //**************
 
-    void KTCommandLineHandler::DelayedCommandLineProcessing()
+    Bool_t KTCommandLineHandler::DelayedCommandLineProcessing()
     {
         if (! fProposedGroups.empty())
         {
@@ -226,7 +226,7 @@ namespace Katydid
             {
                 KTERROR(utillog, "An error occurred while adding the proposed option groups\n" <<
                         "Command-line options were not parsed");
-                return;
+                return false;
             }
         }
 
@@ -238,13 +238,13 @@ namespace Katydid
         catch (std::exception& e)
         {
             KTERROR(utillog, "An error occurred while boost was parsing the command line options:\n" << e.what());
-            return;
+            return false;
         }
         // Create the variable map from the parse options
         po::store(fParsedOptions, fCommandLineVarMap);
         po::notify(fCommandLineVarMap);
 
-        return;
+        return true;
     }
 
     void KTCommandLineHandler::InitialCommandLineProcessing()

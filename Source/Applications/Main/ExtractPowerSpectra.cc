@@ -23,7 +23,11 @@ KTLOGGER(extpslog, "katydid.extractps");
 int main(int argc, char** argv)
 {
     KTApplication* app = new KTApplication(argc, argv);
-    app->ReadConfigFile();
+    if (! app->ReadConfigFile())
+    {
+        KTERROR(extpslog, "Unable to read config file");
+        return -1;
+    }
 
     string appConfigName("extract-power-spectra");
 

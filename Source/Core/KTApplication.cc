@@ -101,7 +101,11 @@ namespace Katydid
         {
             fCLHandler->PrintHelpMessageAndExit();
         }
-        FinishProcessingCommandLine();
+        if (! FinishProcessingCommandLine())
+        {
+            KTERROR(applog, "Something went wrong while finishing processing of the command line arguments");
+            return false;
+        }
         return true;
     }
 
@@ -121,11 +125,14 @@ namespace Katydid
         return;
     }
 
-    void KTApplication::FinishProcessingCommandLine()
+    Bool_t KTApplication::FinishProcessingCommandLine()
     {
-        fCLHandler->DelayedCommandLineProcessing();
+        if (! fCLHandler->DelayedCommandLineProcessing())
+        {
+            return false;
+        }
         ApplyCLOptionsToParamStore(fCLHandler->GetParsedOptions());
-        return;
+        return true;
     }
 
     Bool_t KTApplication::Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress)

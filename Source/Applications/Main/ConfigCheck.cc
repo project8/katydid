@@ -13,7 +13,10 @@ using namespace Katydid;
 int main(int argc, char** argv)
 {
     KTApplication app(argc, argv);
-    app.ReadConfigFile();
+    if (! app.ReadConfigFile())
+    {
+        return -1;
+    }
 
     return 0;
 }

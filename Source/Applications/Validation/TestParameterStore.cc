@@ -30,7 +30,11 @@ int main(int argc, char** argv)
     string configFilename(argv[1]);
 
     KTParameterStore* store = KTParameterStore::GetInstance();
-    store->ReadConfigFile(configFilename);
+    if (! store->ReadConfigFile(configFilename))
+    {
+        KTERROR(testparamlog, "Unable to read config file");
+        return -1;
+    }
 
     // Testing a configurable
     KTINFO(testparamlog, "Testing a configurable");
