@@ -7,6 +7,7 @@
 
 #include "KTGainVariationProcessor.hh"
 
+#include "KTCorrelationData.hh"
 #include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -44,7 +45,8 @@ namespace Katydid
             fNFitPoints(5),
             fGainVarSignal("gain-var", this),
             fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
-            fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal)
+            fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
+            fCorrSlot("corr", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal)
     {
     }
 
@@ -83,6 +85,24 @@ namespace Katydid
 
     Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data)
     {
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
+        return CoreGainVarCalc(data, newData);
+    }
+
+    Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
+    {
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
+        return CoreGainVarCalc(data, newData);
+    }
+
+    Bool_t KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data)
+    {
+        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
+        return CoreGainVarCalc(data, newData);
+    }
+
+    Bool_t KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData)
+    {
         if (fCalculateMinBin)
         {
             SetMinBin(data.GetSpectrumPolar(0)->FindBin(fMinFrequency));
@@ -107,8 +127,6 @@ namespace Katydid
         KTDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         UInt_t nComponents = data.GetNComponents();
-
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(nComponents);
 
         Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
@@ -170,7 +188,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
+    Bool_t KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData)
     {
         // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
         if (fCalculateMinBin)
@@ -197,8 +215,6 @@ namespace Katydid
         KTDEBUG(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
         UInt_t nComponents = data.GetNComponents();
-
-        KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(nComponents);
 
         Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)

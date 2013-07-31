@@ -20,8 +20,11 @@
 namespace Katydid
 {
     class KTData;
+    class KTCorrelationData;
     class KTFrequencySpectrumDataPolar;
+    class KTFrequencySpectrumDataPolarCore;
     class KTFrequencySpectrumDataFFTW;
+    class KTFrequencySpectrumDataFFTWCore;
     class KTGainVariationData;
     class KTPStoreNode;
     //class KTSpline;
@@ -48,6 +51,7 @@ namespace Katydid
      Slots:
      - "fs-polar": void (shared_ptr< KTData >) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
      - "fs-fftw": void (shared_ptr< KTData >) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
+     - "corr": void (shared_ptr< KTData >) -- Calculates gain variation on a corrlation data object; Requires KTCorrlationData; Adds KTGainVariationData
 
      Signals:
      - "gain-var": void (shared_ptr< KTData >) emitted upon performance of a fit; Guarantees KTGainVariationData
@@ -92,8 +96,11 @@ namespace Katydid
         public:
             Bool_t CalculateGainVariation(KTFrequencySpectrumDataPolar& data);
             Bool_t CalculateGainVariation(KTFrequencySpectrumDataFFTW& data);
+            Bool_t CalculateGainVariation(KTCorrelationData& data);
 
         private:
+            Bool_t CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
+            Bool_t CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
             //GainVariation* CreateGainVariation(KTSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
 
             //***************
@@ -110,6 +117,7 @@ namespace Katydid
         private:
             KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            KTSlotDataOneType< KTCorrelationData > fCorrSlot;
 
     };
 
