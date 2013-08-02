@@ -208,18 +208,20 @@ namespace Katydid
             KTERROR(aalog, "Something went wrong with the forward FFT on the time series.");
             return NULL;
         }
-        // copy the address of the frequency spectrum to outputFS
-        outputFS = &freqSpec;
 
         // Calculate the analytic associate in frequency space
         freqSpec->AnalyticAssociate();
 
         // reverse FFT
         KTTimeSeriesFFTW* outputTS = fFullFFT.Transform(freqSpec);
+
+        // copy the address of the frequency spectrum to outputFS if it's being kept; otherwise delete
+        if (fSaveFrequencySpectrum) outputFS = &freqSpec;
+        else delete freqSpec;
+
         if (outputTS == NULL)
         {
             KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");
-            if (outputFS == NULL) delete freqSpec;
         }
 
         return outputTS;
