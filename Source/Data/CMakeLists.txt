@@ -5,6 +5,7 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTAnalyticAssociateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCluster1DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCorrelationData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCorrelationTSData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTDiscriminatedPoints1DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTDiscriminatedPoints2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.hh
@@ -43,6 +44,7 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTAnalyticAssociateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCluster1DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCorrelationData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCorrelationTSData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTDiscriminatedPoints1DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTDiscriminatedPoints2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.cc

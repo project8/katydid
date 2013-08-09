@@ -37,6 +37,9 @@ namespace Katydid
      - "aa":
      - "aa-dist":
      - "corr":
+     - "corr-dist":
+     - "corr-ts":
+     - "corr-ts-dist":
      - "hough":
      - "gain-var":
      - "fs-fftw":
