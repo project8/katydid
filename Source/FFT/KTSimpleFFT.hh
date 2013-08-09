@@ -29,8 +29,11 @@ namespace Katydid
 {
     KTLOGGER(fftlog_simp, "katydid.fft");
 
+    class KTCorrelationData;
+    class KTCorrelationTSData;
     class KTData;
     class KTEggHeader;
+    class KTFrequencySpectrumDataPolar;
     class KTPStoreNode;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
@@ -84,9 +87,18 @@ namespace Katydid
             void InitializeFFT();
             void InitializeWithHeader(const KTEggHeader* header);
 
+            /// Forward FFT
             Bool_t TransformData(KTTimeSeriesData& tsData);
 
+            /// Reverse FFT
+            Bool_t TransformData(KTFrequencySpectrumDataPolar& fsData);
+            Bool_t TransformData(KTCorrelationData& corrData);
+
+            /// Forward FFT
             KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
+
+            /// Reverse FFT
+            KTTimeSeriesReal* Transform(const KTFrequencySpectrumPolar* data) const;
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
@@ -109,13 +121,14 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrumPolar* ExtractTransformResult(Double_t freqMin, Double_t freqMax) const;
+            KTFrequencySpectrumPolar* ExtractForwardTransformResult(Double_t freqMin, Double_t freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
-            fftw_plan fFTPlan;
+            fftw_plan fForwardPlan;
+            fftw_plan fReversePlan;
             UInt_t fTimeSize;
-            Double_t* fInputArray;
-            fftw_complex* fOutputArray;
+            Double_t* fTSArray;
+            fftw_complex* fFSArray;
 
             std::string fTransformFlag;
             TransformFlagMap fTransformFlagMap;
@@ -129,7 +142,9 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFFTSignal;
+            KTSignalData fFFTForwardSignal;
+            KTSignalData fFFTReverseSignal;
+            KTSignalData fFFTReverseCorrSignal;
 
             //***************
             // Slots
@@ -138,6 +153,8 @@ namespace Katydid
         private:
             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fFSPolarSlot;
+            KTSlotDataOneType< KTCorrelationData > fCorrSlot;
     };
 
 

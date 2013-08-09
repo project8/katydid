@@ -8,6 +8,8 @@
 #include "KTSimpleFFT.hh"
 
 #include "KTCacheDirectory.hh"
+#include "KTCorrelationData.hh"
+#include "KTCorrelationTSData.hh"
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
@@ -31,26 +33,32 @@ namespace Katydid
     KTSimpleFFT::KTSimpleFFT(const std::string& name) :
             KTFFT(),
             KTProcessor(name),
-            fFTPlan(),
+            fForwardPlan(),
+            fReversePlan(),
             fTimeSize(0),
-            fInputArray(NULL),
-            fOutputArray(NULL),
+            fTSArray(NULL),
+            fFSArray(NULL),
             fTransformFlag("MEASURE"),
             fIsInitialized(false),
             fUseWisdom(true),
             fWisdomFilename("wisdom_simplefft.fftw3"),
-            fFFTSignal("fft", this),
+            fFFTForwardSignal("fft-forward", this),
+            fFFTReverseSignal("fft-reverse", this),
+            fFFTReverseCorrSignal("fft-reverse-corr", this),
             fHeaderSlot("header", this, &KTSimpleFFT::InitializeWithHeader),
-            fTimeSeriesSlot("ts", this, &KTSimpleFFT::TransformData, &fFFTSignal)
+            fTimeSeriesSlot("ts", this, &KTSimpleFFT::TransformData, &fFFTForwardSignal),
+            fFSPolarSlot("fs-polar", this, &KTSimpleFFT::TransformData, &fFFTReverseSignal),
+            fCorrSlot("corr", this, &KTSimpleFFT::TransformData, &fFFTReverseCorrSignal)
     {
         SetupTransformFlagMap();
     }
 
     KTSimpleFFT::~KTSimpleFFT()
     {
-        if (fInputArray != NULL) fftw_free(fInputArray);
-        if (fOutputArray != NULL) fftw_free(fOutputArray);
-        fftw_destroy_plan(fFTPlan);
+        if (fTSArray != NULL) fftw_free(fTSArray);
+        if (fFSArray != NULL) fftw_free(fFSArray);
+        fftw_destroy_plan(fForwardPlan);
+        fftw_destroy_plan(fReversePlan);
     }
 
     Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
@@ -95,8 +103,14 @@ namespace Katydid
             }
         }
 
-        fFTPlan = fftw_plan_dft_r2c_1d(fTimeSize, fInputArray, fOutputArray, transformFlag);
-        if (fFTPlan != NULL)
+        // SetTimeSize should have been called already to allocate the TS and FS arrays
+
+        KTDEBUG(fftlog_simp, "Creating plan: " << fTimeSize << " bins; forward FFT");
+        fForwardPlan = fftw_plan_dft_r2c_1d(fTimeSize, fTSArray, fFSArray, transformFlag);
+        KTDEBUG(fftlog_simp, "Creating plan: " << fTimeSize << " bins; reverse FFT");
+        fReversePlan = fftw_plan_dft_c2r_1d(fTimeSize, fFSArray, fTSArray, transformFlag);
+
+        if (fForwardPlan != NULL && fReversePlan != NULL)
         {
             fIsInitialized = true;
             KTDEBUG(fftlog_simp, "FFT is initialized" << '\n' <<
@@ -109,10 +123,19 @@ namespace Katydid
                     KTWARN(fftlog_simp, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
                 }
             }
+            KTDEBUG(fftlog_simp, "FFTW plans created; Initialization complete.");
         }
         else
         {
             fIsInitialized = false;
+            if (fForwardPlan == NULL)
+            {
+                KTERROR(fftlog_simp, "Unable to create the forward FFT plan! FFT is not initialized.");
+            }
+            if (fReversePlan == NULL)
+            {
+                KTERROR(fftlog_simp, "Unable to create the reverse FFT plan! FFT is not initialized.");
+            }
         }
         return;
     }
@@ -165,6 +188,88 @@ namespace Katydid
         return true;
     }
 
+    Bool_t KTSimpleFFT::TransformData(KTFrequencySpectrumDataPolar& fsData)
+    {
+        if (fsData.GetSpectrumPolar(0)->GetNFrequencyBins() != GetFrequencySize())
+        {
+            SetTimeSize((fsData.GetSpectrumPolar(0)->GetNFrequencyBins() - 1) * 2);
+            InitializeFFT();
+            KTWARN(fftlog_simp, "FFT initialized with " << GetTimeSize() << " time bins; to avoid ambiguity in the number of time bins, please initialize the FFT correctly before using");
+        }
+
+        if (! fIsInitialized)
+        {
+            KTERROR(fftlog_simp, "FFT must be initialized before the transform is performed\n"
+                    << "   Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
+            return false;
+        }
+
+        UInt_t nComponents = fsData.GetNComponents();
+        KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
+
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            const KTFrequencySpectrumPolar* nextInput = fsData.GetSpectrumPolar(iComponent);
+            if (nextInput == NULL)
+            {
+                KTERROR(fftlog_simp, "Frequency spectrum <" << iComponent << "> does not appear to be present.");
+                return false;
+            }
+            KTTimeSeriesReal* nextResult = Transform(nextInput);
+            if (nextResult == NULL)
+            {
+                KTERROR(fftlog_simp, "One of the channels did not transform correctly.");
+                return false;
+            }
+            newData.SetTimeSeries(nextResult, iComponent);
+        }
+
+        KTINFO(fftlog_simp, "FFT complete; " << nComponents << " component(s) transformed");
+
+        return true;
+    }
+
+    Bool_t KTSimpleFFT::TransformData(KTCorrelationData& fsData)
+    {
+        if (fsData.GetSpectrumPolar(0)->GetNFrequencyBins() != GetFrequencySize())
+        {
+            SetTimeSize((fsData.GetSpectrumPolar(0)->GetNFrequencyBins() - 1) * 2);
+            InitializeFFT();
+            KTWARN(fftlog_simp, "FFT initialized with " << GetTimeSize() << " time bins; to avoid ambiguity in the number of time bins, please initialize the FFT correctly before using");
+        }
+
+        if (! fIsInitialized)
+        {
+            KTERROR(fftlog_simp, "FFT must be initialized before the transform is performed\n"
+                    << "   Please first call InitializeFFT(), then use a TakeData method to set the data, and then finally perform the transform.");
+            return false;
+        }
+
+        UInt_t nComponents = fsData.GetNComponents();
+        KTCorrelationTSData& newData = fsData.Of< KTCorrelationTSData >().SetNComponents(nComponents);
+
+        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            const KTFrequencySpectrumPolar* nextInput = fsData.GetSpectrumPolar(iComponent);
+            if (nextInput == NULL)
+            {
+                KTERROR(fftlog_simp, "Frequency spectrum <" << iComponent << "> does not appear to be present.");
+                return false;
+            }
+            KTTimeSeriesReal* nextResult = Transform(nextInput);
+            if (nextResult == NULL)
+            {
+                KTERROR(fftlog_simp, "One of the channels did not transform correctly.");
+                return false;
+            }
+            newData.SetTimeSeries(nextResult, iComponent);
+        }
+
+        KTINFO(fftlog_simp, "FFT complete; " << nComponents << " component(s) transformed");
+
+        return true;
+    }
+
     KTFrequencySpectrumPolar* KTSimpleFFT::Transform(const KTTimeSeriesReal* data) const
     {
         UInt_t nTimeBins = (UInt_t)data->size();
@@ -177,23 +282,49 @@ namespace Katydid
 
         Double_t timeBinWidth = data->GetTimeBinWidth();
 
-        copy(data->begin(), data->end(), fInputArray);
+        copy(data->begin(), data->end(), fTSArray);
 
-        fftw_execute(fFTPlan);
+        fftw_execute(fForwardPlan);
 
-        return ExtractTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
+        return ExtractForwardTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
     }
 
-    KTFrequencySpectrumPolar* KTSimpleFFT::ExtractTransformResult(Double_t freqMin, Double_t freqMax) const
+    KTTimeSeriesReal* KTSimpleFFT::Transform(const KTFrequencySpectrumPolar* data) const
+    {
+        UInt_t nBins = (UInt_t)data->size();
+        UInt_t freqSize = GetFrequencySize();
+        UInt_t timeSize = GetTimeSize();
+        if (nBins != freqSize)
+        {
+            KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+                    << "   Bin expected: " << freqSize << ";   Bins in data: " << nBins);
+            return NULL;
+        }
+
+        for (UInt_t iPoint = 0; iPoint < freqSize; iPoint++)
+        {
+            fFSArray[iPoint][0] = real((*data)(iPoint));
+            fFSArray[iPoint][1] = imag((*data)(iPoint));
+        }
+
+        fftw_execute(fReversePlan);
+
+        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(timeSize, GetMinTime(), GetMaxTime(data->GetBinWidth()));
+        copy(fTSArray, fTSArray + timeSize, newTS->begin());
+
+        return newTS;
+    }
+
+    KTFrequencySpectrumPolar* KTSimpleFFT::ExtractForwardTransformResult(Double_t freqMin, Double_t freqMax) const
     {
         UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
         Double_t tempReal, tempImag;
         KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
-        for (Int_t iPoint = 0; iPoint<freqSize; iPoint++)
+        for (UInt_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
-            (*newSpect)(iPoint).set_rect(fOutputArray[iPoint][0], fOutputArray[iPoint][1]);
+            (*newSpect)(iPoint).set_rect(fFSArray[iPoint][0], fFSArray[iPoint][1]);
             (*newSpect)(iPoint) *= normalization;
         }
 
@@ -203,10 +334,10 @@ namespace Katydid
     void KTSimpleFFT::SetTimeSize(UInt_t nBins)
     {
         fTimeSize = nBins;
-        if (fInputArray != NULL) fftw_free(fInputArray);
-        if (fOutputArray != NULL) fftw_free(fOutputArray);
-        fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
-        fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
+        if (fTSArray != NULL) fftw_free(fTSArray);
+        if (fFSArray != NULL) fftw_free(fFSArray);
+        fTSArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
+        fFSArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * CalculateNFrequencyBins(fTimeSize));
         fIsInitialized = false;
         return;
     }
