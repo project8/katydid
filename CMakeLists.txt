@@ -14,7 +14,7 @@ project (Katydid)
 include (PackageBuilder)
 
 # Set the version and associated variables
-pbuilder_prepare_project (1 5 0)
+pbuilder_prepare_project (1 6 0)
 
 # Add a "Standard" build type
 #set (CMAKE_BUILD_TYPE standard)
