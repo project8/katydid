@@ -44,6 +44,7 @@
 #define COLOR_FOREGROUND_RED "31"
 #define COLOR_FOREGROUND_GREEN "32"
 #define COLOR_FOREGROUND_YELLOW "33"
+#define COLOR_FOREGROUND_BLUE "34"
 #define COLOR_FOREGROUND_CYAN "36"
 #define COLOR_FOREGROUND_WHITE "37"
 #define COLOR_PREFIX "\033["
@@ -59,10 +60,12 @@
 
 // CLASS DEFINITIONS
 
-#if defined(LOG4CXX)
+#ifdef LOG4CXX_FOUND
 
 #ifndef _LOG4CXX_COLORED_PATTERN_LAYOUT_H
 #define _LOG4CXX_COLORED_PATTERN_LAYOUT_H
+
+#include "log4cxx/KTLevel.hh"
 
 #include <log4cxx/patternlayout.h>
 #include <log4cxx/level.h>
@@ -92,6 +95,7 @@ namespace log4cxx {
             const static std::string fForegroundRed;
             const static std::string fForegroundGreen;
             const static std::string fForegroundYellow;
+            const static std::string fForegroundBlue;
             const static std::string fForegroundCyan;
             const static std::string fForegroundWhite;
 
@@ -103,6 +107,7 @@ namespace log4cxx {
             const static std::string fFatalColor;
             const static std::string fErrorColor;
             const static std::string fWarnColor;
+            const static std::string fProgColor;
             const static std::string fInfoColor;
             const static std::string fDebugColor;
             const static std::string fOtherColor;
@@ -139,6 +144,7 @@ namespace Katydid {
             bool IsDebugEnabled() const;
             bool IsInfoEnabled() const;
             bool IsWarnEnabled() const;
+            bool IsProgEnabled() const;
             bool IsErrorEnabled() const;
             bool IsFatalEnabled() const;
 
@@ -146,6 +152,7 @@ namespace Katydid {
             void logDebug(const std::string& message, const Location& loc = Location());
             void logInfo(const std::string& message, const Location& loc = Location());
             void logWarn(const std::string& message, const Location& loc = Location());
+            void logProg(const std::string& message, const Location& loc = Location());
             void logError(const std::string& message, const Location& loc = Location());
             void logFatal(const std::string& message, const Location& loc = Location());
 
@@ -176,6 +183,14 @@ namespace Katydid {
             I.logInfo(stream.str(), __KTLOG_LOCATION); \
         }
 #define __KTLOG_INFO_1(M)        __KTLOG_INFO_2(__DEFAULT_LOGGER,M)
+
+#define __KTLOG_PROG_2(I,M) \
+        if (I.IsProgEnabled()) { \
+            std::ostringstream stream; \
+            stream << M; \
+            I.logProg(stream.str(), __KTLOG_LOCATION); \
+        }
+#define __KTLOG_PROG_1(M)        __KTLOG_PROG_2(__DEFAULT_LOGGER,M)
 
 #define __KTLOG_WARN_2(I,M) \
         if (I.IsWarnEnabled()) { \
@@ -227,6 +242,7 @@ namespace Katydid {
 #define KTLOG(...)         macro_dispatcher(__KTLOG_LOG_, __VA_ARGS__)(__VA_ARGS__)
 #define KTDEBUG(...)       macro_dispatcher(__KTLOG_DEBUG_, __VA_ARGS__)(__VA_ARGS__)
 #define KTINFO(...)        macro_dispatcher(__KTLOG_INFO_, __VA_ARGS__)(__VA_ARGS__)
+#define KTPROG(...)        macro_dispatcher(__KTLOG_PROG_, __VA_ARGS__)(__VA_ARGS__)
 #define KTWARN(...)        macro_dispatcher(__KTLOG_WARN_, __VA_ARGS__)(__VA_ARGS__)
 #define KTERROR(...)       macro_dispatcher(__KTLOG_ERROR_, __VA_ARGS__)(__VA_ARGS__)
 #define KTFATAL(...)       macro_dispatcher(__KTLOG_FATAL_, __VA_ARGS__)(__VA_ARGS__)

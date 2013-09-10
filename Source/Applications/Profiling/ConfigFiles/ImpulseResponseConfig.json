@@ -1,0 +1,125 @@
+{
+    "impulse-response":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "sinusoid-generator",
+                "name": "sg"
+            },
+            "processor":
+            {
+                "type": "windower",
+                "name": "windower"
+            },
+            "processor":
+            {
+                "type": "simple-fft",
+                "name": "fft"
+            },
+            "processor":
+            {
+                "type": "impulse-analysis",
+                "name": "imp"
+            },
+            "processor":
+            {
+                "type": "basic-root-writer",
+                "name": "writer"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "sg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "sg",
+                "signal-name": "header",
+                "slot-processor": "windower",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "sg",
+                "signal-name": "slice",
+                "slot-processor": "windower",
+                "slot-name": "ts-real"
+            },
+            "connection":
+            {
+                "signal-processor": "windower",
+                "signal-name": "windowed",
+                "slot-processor": "fft",
+                "slot-name": "ts"
+            },
+            "connection":
+            {
+                "signal-processor": "fft",
+                "signal-name": "fft",
+                "slot-processor": "imp",
+                "slot-name": "fs-polar"
+            },
+            "connection":
+            {
+                "signal-processor": "fft",
+                "signal-name": "fft",
+                "slot-processor": "writer",
+                "slot-name": "fs-polar"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "windower",
+                "signal-name": "windowed",
+                "slot-processor": "writer",
+                "slot-name": "ts"
+            },
+            
+            "run-queue":
+            {
+                "processor": "sg"
+            }
+        },
+        
+
+        "sg":
+        {
+            "n-slices": 1,
+            "n-channels": 1,
+            "time-series-size": 16384,
+            "bin-width": 5.0e-9,
+            "time-series-type": "real",
+            "frequency": 50.0e6,
+            "amplitude": 1.0
+        },
+        
+        "windower":
+        {
+            "window-function-type": "rectangular",
+            "window-function":
+            {
+                "boxcar-size": 12000
+            }
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE"
+        },
+        
+        "imp":
+        {  
+        },
+        
+        "writer":
+        {
+            "output-file": "impulse-response.root",
+            "file-flag": "recreate"
+        }
+    }
+}

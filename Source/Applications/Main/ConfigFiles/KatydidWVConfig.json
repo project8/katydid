@@ -1,0 +1,102 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg"
+            },
+            "processor":
+            {
+                "type": "wigner-ville",
+                "name": "wv"
+            },
+            "processor":
+            {
+                "type": "hough-transform",
+                "name": "hough",
+                "is-top-level": true
+            },
+            "processor":
+            {
+                "type": "basic-root-writer",
+                "name": "writer"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "wv",
+                "slot-name": "header"
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "bundle",
+                "slot-processor": "wv",
+                "slot-name": "bundle",
+                "group-order": 0
+            },
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "bundle",
+                "slot-processor": "hough",
+                "slot-name": "bundle",
+                "group-order": 1
+            },
+            "connection":
+            {
+                "signal-processor": "wv",
+                "signal-name": "wigner-ville",
+                "slot-processor": "writer",
+                "slot-name": "write-sliding-window-fs-fftw"
+            },
+            "connection":
+            {
+                "signal-processor": "hough",
+                "signal-name": "hough-transform",
+                "slot-processor": "writer",
+                "slot-name": "write-data"
+            },
+            
+            "run-queue":
+            {
+                "processor": "egg"
+            }
+        },
+        
+
+        "egg":
+        {
+            "filename": "/path/to/file.egg",
+            "number-of-bundles": 1,
+            "slice-size": 16384,
+            "time-series-type": "fftw"
+        },
+        
+        "wv":
+        {
+            "wv-pair": "0, 1",
+            "complex-fftw":
+            {
+                "transform-flag": "ESTIMATE"
+            }
+        },
+        
+        "hough":
+        {
+            "n-theta-points": 100,
+            "n-r-points": 100
+        },
+        
+        "writer":
+        {
+            "output-file": "/path/to/file.root",
+            "file-flag": "recreate"
+        }
+    }
+}

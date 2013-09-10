@@ -1,0 +1,174 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "egg-processor",
+                "name": "egg"
+            },
+            "processor":
+            {
+                "type": "complex-fftw",
+                "name": "fft"
+            },
+            "processor":
+            {
+                "type": "gain-variation",
+                "name": "gainvar"
+            },
+            "processor":
+            {
+                "type": "gain-normalization",
+                "name": "gainnorm"
+            },
+            "processor":
+            {
+                "type": "correlator",
+                "name": "corr"
+            },
+            "processor":
+            {
+                "type": "spectrum-discriminator",
+                "name": "discrim"
+            },
+            "processor":
+            {
+                "type": "multi-slice-clustering",
+                "name": "clustering"
+            },
+
+            "processor":
+            {
+                "type": "root-tree-writer",
+                "name": "treewriter"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "header",
+                "slot-processor": "fft",
+                "slot-name": "header"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "slice",
+                "slot-processor": "fft",
+                "slot-name": "ts"
+            },
+            "connection":
+            {
+                "signal-processor": "fft",
+                "signal-name": "fft-forward",
+                "slot-processor": "gainvar",
+                "slot-name": "fs-fftw"
+            },
+            "connection":
+            {
+                "signal-processor": "gainvar",
+                "signal-name": "gain-var",
+                "slot-processor": "gainnorm",
+                "slot-name": "fs-fftw"
+            },
+            "connection":
+            {
+                "signal-processor": "gainnorm",
+                "signal-name": "norm-fs-fftw",
+                "slot-processor": "corr",
+                "slot-name": "norm-fs-fftw"
+            },
+            "connection":
+            {
+                "signal-processor": "corr",
+                "signal-name": "correlation",
+                "slot-processor": "discrim",
+                "slot-name": "corr"
+            },
+            "connection":
+            {
+                "signal-processor": "discrim",
+                "signal-name": "disc-1d",
+                "slot-processor": "clustering",
+                "slot-name": "correlation"
+            },
+            "connection":
+            {
+                "signal-processor": "clustering",
+                "signal-name": "cluster",
+                "slot-processor": "treewriter",
+                "slot-name": "waterfall-candidates"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "egg",
+                "signal-name": "egg-done",
+                "slot-processor": "treewriter",
+                "slot-name": "close-file"
+            },
+            
+            "run-queue":
+            {
+                "processor": "egg"
+            }
+        },
+        
+        "egg":
+        {
+            "filename": "${INPUT}",
+            "number-of-slices": 0,
+            "time-series-size": 8192,
+            "time-series-type": "fftw",
+            "stride": 6144
+        },
+        
+        "fft":
+        {
+            "transform-flag": "ESTIMATE"
+        },
+        
+        "gainvar":
+        {
+            "min-frequency": 10e6,
+            "max-frequency": 90e6,
+            "fit-points": 8
+        },
+        
+        "gainnorm":
+        {
+            "min-frequency": 10e6,
+            "max-frequency": 90e6
+        },
+        
+        "corr":
+        {
+            "corr-pair": "0,0"
+        },
+        
+        "discrim":
+        {
+            "min-frequency": 10e6,
+            "max-frequency": 90e6,
+            "snr-threshold-power": 6.0
+        },
+        
+        "clustering":
+        {
+            "timeout": 5000,
+            "max-frequency-distance": 2000.0,
+            "min-time-bins": 3,
+            "n-framing-time-bins": 2,
+            "n-framing-freq-bins": 2
+        },
+        
+        "treewriter":
+        {
+            "output-file": "ps_cand_${INPUT_SEQUENCE}.root",
+            "file-flag": "recreate"
+        }
+    }
+}

@@ -1,21 +1,55 @@
 # CMakeLists for Katydid/Source/Applications/Main
 # Author: N. Oblath
 
-add_executable (SimpleElectronHunt ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt.cc)
-target_link_libraries (SimpleElectronHunt KatydidUtility KatydidEgg KatydidFFT)
+# Config files
+set (VALIDATION_CONFIGFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ChannelCorrelatorConfig.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/EvaluateCandidates.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ExtractPowerSpectraConfig.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/FSPeakAnalysisConfig.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSComplexConfig.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSConfig.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidWVConfig.json
+)
 
-add_executable (SimpleElectronHunt2 ${CMAKE_CURRENT_SOURCE_DIR}/SimpleElectronHunt2.cc)
-target_link_libraries (SimpleElectronHunt2 KatydidUtility KatydidEgg KatydidFFT KatydidAnalysis)
+pbuilder_install_config (${VALIDATION_CONFIGFILES})
+    
 
-add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
-target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidEgg KatydidFFT)
+# Executables
+
+add_executable (EvaluateCandidates ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
+target_link_libraries (EvaluateCandidates KatydidUtility KatydidCore KatydidData KatydidOutput KatydidInput KatydidEvaluation ${EXTERNAL_LIBRARIES})
+
+add_executable (ConfigCheck ${CMAKE_CURRENT_SOURCE_DIR}/ConfigCheck.cc)
+target_link_libraries (ConfigCheck KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
+
+add_executable (EggScanner ${CMAKE_CURRENT_SOURCE_DIR}/EggScanner.cc)
+target_link_libraries (EggScanner KatydidUtility KatydidCore KatydidData KatydidOutput KatydidEgg ${EXTERNAL_LIBRARIES})
+
+add_executable (Katydid ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
+target_link_libraries (Katydid KatydidUtility KatydidCore KatydidData KatydidOutput KatydidSimulation KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
 
 add_executable (Truncate ${CMAKE_CURRENT_SOURCE_DIR}/Truncate.cc)
-target_link_libraries (Truncate KatydidUtility)
+target_link_libraries (Truncate KatydidUtility ${EXTERNAL_LIBRARIES})
 
-install (TARGETS SimpleElectronHunt
-                 SimpleElectronHunt2
-                 ExtractPowerSpectra
-                 Truncate
-         DESTINATION ${BIN_INSTALL_DIR})
-         
+pbuilder_install_executables ( 
+    ConfigCheck
+    EggScanner
+    EvaluateCandidates
+    Katydid
+    Truncate
+)
+
+
+if (ROOT_FOUND)
+    add_executable (ChannelCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/ChannelCorrelator.cc)
+    target_link_libraries (ChannelCorrelator KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis ${EXTERNAL_LIBRARIES})
+
+    add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
+    target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT ${EXTERNAL_LIBRARIES})
+    
+    pbuilder_install_executables ( 
+                ChannelCorrelator
+                ExtractPowerSpectra
+     )
+endif (ROOT_FOUND)

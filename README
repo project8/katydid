@@ -1,47 +1,64 @@
 Katydid is a data analysis package for Project 8.
-It is written in C++ and uses ROOT classes extensively.
 
 Requirements:
-  ROOT (tested with 5.26.00), including the FFTW package (root.cern.ch)
+  Monarch (included as a submodule of Katydid)
+  Protobuf
+  Boost -- headers, plus the following libraries: date_time, filesystem, program_options, system, thread
+  FFTW3 -- version 3.3 or newer
+  Eigen -- optional, though some functionality will not be available without it
+  ROOT -- optional, though some functionality will not be available without it
+  log4cxx -- optional
   
   If building from source:
   CMake (tested with 2.8)
 
 Directory contents:
-  Scripts - A collection of useful (or not) shell and ROOT scripts
+  cmake - Files that CMake uses to build Katydid.
+  Documentation - Doxygen-based code documentation.
+  External - A few dependencies that are included with the distribution.
+  Scripts - A CMakeLists.txt file that will allow you to easily build an external applicaiton using Katydid classes.
   Source
-    Analysis - A set of classes doing high-level analysis that don't fit in any other category.
-    Applications - Analysis and validation applications
+
+    Analysis - Classes that don't yet fit into any of the other libraries.
+    Applications - Source code for executables.
+    Candidates - Classes that identify and represent candidate signals
+    Core - Classes that form the basis of the various systems that make up Katydid (e.g. processors, configuration, etc.)
     Egg - Classes involved in getting an event out of a data file.
     FFT - Classes involved in making FFTs from events
-    Lice - Submodule for slow controls
-    Utility - Useful classes that get used throughout Katydid
+    Output -- Classes for writing data to disk in various formats.
+    Utility -- Generic classes that are used throughout Katydid.
   
 Installation:
-  1. mkdir cbuild
-  2. cd cbuild
-  2. cmake ..
-  3. make
-  4. make install
-  
-  At step 2 you can alternatively use ccmake or cmake-gui to have easier control over the configuration.
-  
+  1. Download a copy of the repository
+        > git clone git@github.com:project8/katydid.git
+  2. Enter the top-level directory
+        > cd katydid
+  3. Download the Monarch submodule
+        > git submodule init
+        > git submodule update
+  4. Create and enter the build directory
+        > mkdir cbuild
+        > cd cbuild
+  5. Configure your installation with cmake (or ccmake, or cmake-gui . . .)
+        > ccmake ..
+  6. Build
+        > make
+  7. Install
+        > make install
+    
 Documentation:
   1. This README file contains some useful information.
-  2. Code reference material can be found in Documenation/html/index.html
+  2. The Github-based wiki contains (or will contain) detailed descriptions of what's included with Katydid and how to use it.
+  3. Code reference material can be found in Documenation/html/index.html
   
 Usage notes:
   0. The default build location is a subdirectory called cbuild.
   1. The libraries will be installed in the lib directory.
   2. The binaries will be installed in the bin directory.
-  3. You will need to load the libraries into ROOT, if using this code in an interactive ROOT session.
-  4. You may need to add cbuild/include to the include path in the ROOT session.
-  5. The classes are in the namespace Katydid.
-  6. Scripts/PlotPowerSpectrum.C will give you an idea of how the package should be used.
-  
-Other notes:
-  1. KTEgg and KTEvent are C++ ports of Lisa McBride's monarch library.
-  2. The executable ExtractEvents is based on Lisa's code for printing power spectra to text files, though it doesn't perform the FFT or write any files.  It's there for testing purposes only.
+  3. The classes are in the namespace Katydid.
+  4. The Scripts directory contains an example of how to build an external application using Katydid classes. 
+     The included CMakeLists.txt file can be dropped in a directory with your own code to, 
+     with a little customization, build against Katydid.
   
 Contact:
   Noah Oblath (nsoblath@mit.edu)

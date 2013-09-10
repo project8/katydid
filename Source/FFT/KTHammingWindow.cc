@@ -7,23 +7,23 @@
 
 #include "KTHammingWindow.hh"
 
-#include "TArrayD.h"
-#include "TMath.h"
+#include "KTNOFactory.hh"
+#include "KTLogger.hh"
+#include "KTMath.hh"
+#include "KTPStoreNode.hh"
 
 #include <cmath>
 
-ClassImp(Katydid::KTHammingWindow);
+using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(windowlog, "katydid.fft");
 
-    KTHammingWindow::KTHammingWindow() :
-            KTEventWindowFunction()
-    {
-    }
+    static KTDerivedNORegistrar< KTWindowFunction, KTHammingWindow > sWFHammRegistrar("hamming");
 
-    KTHammingWindow::KTHammingWindow(const KTEvent* event) :
-            KTEventWindowFunction(event)
+    KTHammingWindow::KTHammingWindow(const string& name) :
+            KTWindowFunction(name)
     {
     }
 
@@ -31,25 +31,24 @@ namespace Katydid
     {
     }
 
-    Double_t KTHammingWindow::GetWeight(Double_t time) const
+    Bool_t KTHammingWindow::ConfigureWFSubclass(const KTPStoreNode* node)
     {
-        if (fabs(time) <= fLength/2.) return fWindowFunction[TMath::Nint((time+fLength/2.) / fBinWidth)];
-        return 0.;
+        KTDEBUG(windowlog, "Hamming WF configured");
+        return true;
     }
 
-    Double_t KTHammingWindow::GetWeight(UInt_t bin) const
+    Double_t KTHammingWindow::GetWeight(Double_t time) const
     {
-        if (bin < fSize) return fWindowFunction[bin];
-        return 0.;
+        return GetWeight(KTMath::Nint(time / fBinWidth));
     }
 
     void KTHammingWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t twoPiOverNBinsMinus1 = TMath::TwoPi() / (Double_t)(fSize - 1);
+        Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(fSize - 1);
         for (Int_t iBin=0; iBin<fSize; iBin++)
         {
-            fWindowFunction[iBin] = 0.54 - 0.46 * TMath::Cos((Double_t)iBin * twoPiOverNBinsMinus1);
+            fWindowFunction[iBin] = 0.54 - 0.46 * cos((Double_t)iBin * twoPiOverNBinsMinus1);
         }
         return;
     }

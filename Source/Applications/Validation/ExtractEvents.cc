@@ -1,5 +1,5 @@
 /*
- * ExtractEvents.cxx
+ * ExtractBundles.cxx
  *
  *  Created on: Sep 9, 2011
  *      Author: nsoblath
@@ -7,7 +7,7 @@
  */
 
 #include "KTEgg.hh"
-#include "KTEvent.hh"
+#include "KTBundle.hh"
 
 #include "Rtypes.h"
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     Int_t arg;
     string fileName = string("No_File_Name_Given");
     string outputFilePrefix = string("file");
-    UInt_t numEvents = 1;
+    UInt_t numBundles = 1;
 
     extern char *optarg;
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
                 outputFilePrefix = string(optarg);
                 break;
             case 'n':
-                numEvents = (UInt_t)atoi(optarg);
+                numBundles = (UInt_t)atoi(optarg);
                 break;
         }
 
@@ -56,9 +56,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    for (UInt_t iEvent = 0; iEvent < numEvents; iEvent++)
+    for (UInt_t iBundle = 0; iBundle < numBundles; iBundle++)
     {
-        if (! egg.HatchNextEvent()) return 1;
+        if (! egg.HatchNextBundle()) return 1;
     }
 
     return 0;

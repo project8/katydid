@@ -1,0 +1,22 @@
+{
+    "extract-power-spectra":
+    {
+        "egg-processor":
+        {
+            "filename": "/path/to/file.egg",
+            "slice-size": 16384,
+            "number-of-slices": 1
+        },
+        
+        "simple-fft":
+        {
+            "transform-flag": "ESTIMATE"
+        },
+        
+        "basic-root-writer":
+        {
+            "output-file": "/path/to/file.root",
+            "file-flag": "recreate"
+        }
+    }
+}

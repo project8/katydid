@@ -57,6 +57,16 @@ namespace Katydid
         return *this;
     }
 
+    bool KTAxisProperties< 1 >::empty() const
+    {
+        return size() == 0;
+    }
+
+    size_t KTAxisProperties< 1 >::size() const
+    {
+        return (*fGetNBinsFunc)();
+    }
+
     size_t KTAxisProperties< 1 >::GetNBins() const
     {
         return (*fGetNBinsFunc)();
@@ -124,7 +134,7 @@ namespace Katydid
         return fRangeMin + fBinWidth * ((Double_t)bin + 0.5);
     }
 
-    size_t KTAxisProperties< 1 >::FindBin(Double_t pos)
+    size_t KTAxisProperties< 1 >::FindBin(Double_t pos) const
     {
         return (size_t)(floor((pos - fRangeMin) / fBinWidth));
     }

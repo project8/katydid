@@ -1,7 +1,7 @@
 /**
  @file KTEggProcessor.hh
  @brief Contains KTEggProcessor
- @details Iterates over events in an Egg file.
+ @details Iterates over slices in an Egg file.
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
@@ -9,93 +9,199 @@
 #ifndef KTEGGPROCESSOR_HH_
 #define KTEGGPROCESSOR_HH_
 
-#include "KTProcessor.hh"
+#include "KTPrimaryProcessor.hh"
 
-#include "KTEgg.hh"
+#include "KTEggReader.hh"
+#include "KTSlot.hh"
 
-#include "Rtypes.h"
-
-#include <boost/signals2.hpp>
-
-#include <string>
+#include <boost/shared_ptr.hpp>
 
 namespace Katydid
 {
-    class KTEvent;
+    class KTProcSummary;
+    class KTPStoreNode;
+    class KTTimeSeriesData;
 
     /*!
      @class KTEggProcessor
      @author N. S. Oblath
 
-     @brief Iterates over the events in an Egg file.
+     @brief Iterates over the slices in an Egg file.
 
      @details
-     Iterates over events in an egg file; events are extracted until fNEvents is reached.
+     Iterates over slices in an egg file; slices are extracted until fNSlices is reached.
 
-     A signal is emitted when the header is parsed.  The signature for the signal call is void (KTEgg::HeaderInfo info).
-     A signal is emitted for each event extracted.  The signature for the signal call is void (UInt_t iEvent, const KTEvent* eventPtr).
+     Configuration name: "egg-processor"
+
+     Available configuration options:
+     - "number-of-slices": UInt_t -- Number of slices to process
+     - "progress-report-interval": UInt_t -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
+     - "filename": string -- Egg filename to use
+     - "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
+     - "slice-size": UInt_t -- Specify the size of the time series (required)
+     - "stride": UInt_t -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
+     - "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
+
+     Command-line options defined
+     - -n (n-slices): Number of slices to process
+     - -e (egg-file): Egg filename to use
+     - -z (--use-2011-egg-reader): Use the 2011 egg reader
+
+     Signals:
+     - "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
+     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced; Guarantees KTTimeSeriesData
+     - "egg-done": void () --  emitted when a file is finished.
+     - "summary": void (const KTProcSummary*) -- emitted when a file is finished (after "egg-done")
     */
-    class KTEggProcessor : public KTProcessor
+    class KTEggProcessor : public KTPrimaryProcessor
     {
         public:
-            typedef boost::signals2::signal< void (KTEgg::HeaderInfo) > HeaderSignal;
-            typedef boost::signals2::signal< void (UInt_t, const KTEvent*) > EventSignal;
-            typedef boost::signals2::signal< void () > EggDoneSignal;
+            enum EggReaderType
+            {
+                k2011EggReader,
+                kMonarchEggReader
+            };
+
+            enum TimeSeriesType
+            {
+                kRealTimeSeries,
+                kFFTWTimeSeries
+            };
 
         public:
-            KTEggProcessor();
+            KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
-            Bool_t ApplySetting(const KTSetting* setting);
+            Bool_t Configure(const KTPStoreNode* node);
 
-            Bool_t ProcessEgg(const std::string& fileName);
+            Bool_t Run();
 
-            UInt_t GetNEvents() const;
-            void SetNEvents(UInt_t nEvents);
+            Bool_t ProcessEgg();
+
+            UInt_t GetNSlices() const;
+            UInt_t GetProgressReportInterval() const;
+            const std::string& GetFilename() const;
+            EggReaderType GetEggReaderType() const;
+            UInt_t GetSliceSize() const;
+            UInt_t GetStride() const;
+            TimeSeriesType GetTimeSeriesType() const;
+
+            void SetNSlices(UInt_t nSlices);
+            void SetProgressReportInterval(UInt_t nSlices);
+            void SetFilename(const std::string& filename);
+            void SetEggReaderType(EggReaderType type);
+            void SetSliceSize(UInt_t size);
+            void SetStride(UInt_t stride);
+            void SetTimeSeriesType(TimeSeriesType type);
 
         private:
-            UInt_t fNEvents;
+            void UnlimitedLoop(KTEggReader* reader);
+            void LimitedLoop(KTEggReader* reader);
+
+            UInt_t fNSlices;
+            UInt_t fProgressReportInterval;
+
+            std::string fFilename;
+
+            EggReaderType fEggReaderType;
+
+            UInt_t fSliceSize;
+            UInt_t fStride;
+
+            TimeSeriesType fTimeSeriesType;
 
             //***************
             // Signals
             //***************
 
-        public:
-            boost::signals2::connection ConnectToHeaderSignal(const HeaderSignal::slot_type &subscriber);
-            boost::signals2::connection ConnectToEventSignal(const EventSignal::slot_type &subscriber);
-            boost::signals2::connection ConnectToEggDoneSignal(const EggDoneSignal::slot_type &subscriber);
-
         private:
-            HeaderSignal fHeaderSignal;
-            EventSignal fEventSignal;
-            EggDoneSignal fEggDoneSignal;
+            KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
+            KTSignalData fDataSignal;
+            KTSignalOneArg< void > fEggDoneSignal;
+            KTSignalOneArg< const KTProcSummary* > fSummarySignal;
 
     };
 
-    inline UInt_t KTEggProcessor::GetNEvents() const
+    inline Bool_t KTEggProcessor::Run()
     {
-        return fNEvents;
+        return ProcessEgg();
     }
 
-    inline void KTEggProcessor::SetNEvents(UInt_t nEvents)
+    inline UInt_t KTEggProcessor::GetNSlices() const
     {
-        fNEvents = nEvents;
+        return fNSlices;
+    }
+
+    inline UInt_t KTEggProcessor::GetProgressReportInterval() const
+    {
+        return fProgressReportInterval;
+    }
+
+    inline void KTEggProcessor::SetNSlices(UInt_t nSlices)
+    {
+        fNSlices = nSlices;
         return;
     }
 
-    inline boost::signals2::connection KTEggProcessor::ConnectToHeaderSignal(const HeaderSignal::slot_type &subscriber)
+    inline void KTEggProcessor::SetProgressReportInterval(UInt_t nSlices)
     {
-        return fHeaderSignal.connect(subscriber);
+        fProgressReportInterval = nSlices;
+        return;
     }
 
-    inline boost::signals2::connection KTEggProcessor::ConnectToEventSignal(const EventSignal::slot_type &subscriber)
+    inline const std::string& KTEggProcessor::GetFilename() const
     {
-        return fEventSignal.connect(subscriber);
+        return fFilename;
     }
 
-    inline boost::signals2::connection KTEggProcessor::ConnectToEggDoneSignal(const EggDoneSignal::slot_type &subscriber)
+    inline void KTEggProcessor::SetFilename(const std::string& filename)
     {
-        return fEggDoneSignal.connect(subscriber);
+        fFilename = filename;
+        return;
+    }
+
+    inline KTEggProcessor::EggReaderType KTEggProcessor::GetEggReaderType() const
+    {
+        return fEggReaderType;
+    }
+
+    inline void KTEggProcessor::SetEggReaderType(EggReaderType type)
+    {
+        fEggReaderType = type;
+        return;
+    }
+
+    inline UInt_t KTEggProcessor::GetSliceSize() const
+    {
+        return fSliceSize;
+    }
+
+    inline void KTEggProcessor::SetSliceSize(UInt_t size)
+    {
+        fSliceSize = size;
+        return;
+    }
+
+    inline UInt_t KTEggProcessor::GetStride() const
+    {
+        return fStride;
+    }
+
+    inline void KTEggProcessor::SetStride(UInt_t stride)
+    {
+        fStride = stride;
+        return;
+    }
+
+    inline KTEggProcessor::TimeSeriesType KTEggProcessor::GetTimeSeriesType() const
+    {
+        return fTimeSeriesType;
+    }
+
+    inline void KTEggProcessor::SetTimeSeriesType(TimeSeriesType type)
+    {
+        fTimeSeriesType = type;
+        return;
     }
 
 } /* namespace Katydid */
@@ -114,19 +220,23 @@ namespace Katydid
  <hr>
  \li Send your question by email to Noah Oblath: nsoblath-at-mit.edu
  \li For installation problems see below.
- \li For ROOT problems: see the <a href="http://root.cern.ch/drupal">ROOT website</a>
 
  <br>
  \section Requirements System Requirements
  <hr>
  Linux/MacOS with a reasonably new C++ compiler:
  \li The minimum supported gcc version is 4.2.
- \li LLVM will hopefully be supported in the future.
+ \li LLVM (minimum version unknown)
 
  Dependencies:
- \li <a href="http://root.cern.ch/drupal">ROOT</a> version 5.24 or higher
+ \li <a href="https://github.com/project8/monarch">Monarch</a> included as a submodule of Katyid
  \li <a href="http://www.cmake.org">CMake</a> version 2.6 or higher
-
+ \li <a href="https://code.google.com/p/protobuf/">Protobuf</a>
+ \li <a href="http://www.boost.org">Boost</a>
+ \li <a href="http://www.fftw.org">FFTW</a> version 3.3 or higher
+ \li <a href="http://eigen.tuxfamily.org">Eigen</a> (optional, though some functionality wil be disabled without it)
+ \li <a href="http://root.cern.ch/drupal">ROOT</a> version 5.24 or higher (optional, though some functionality will be disabled without it)
+ \li <a href="http://logging.apache.org/log4cxx">log4cxx</a> (optional)
 
  <br>
  \section GettingKT Getting Katydid
@@ -183,12 +293,12 @@ namespace Katydid
  \section ExternalCode External Packages and Imported Code
  <hr>
  Two external packages are distributed with Katydid:
- \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the event header in the Egg files.  The code is distributed under the Boost Software License v1.0.
- \li <a href="hhtp://cimg.sourceforge.net">CImg</a> version 1.4.9 is available for any image processing tasks.  It is distributed under the CeCILL License.
+ \li <a href="http://rapidxml.sourceforge.net">RapidXml</a> is used for parsing the header in the 2011-type Egg files.
+ \li <a href="https://code.google.com/p/rapidjson/">RapidJSON</a> is used for reading and writing JSON files.
 
- Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Framework classes and is restricted to infrastructure-related activities.
+ Code has also been imported with permission from the Kassiopeia package developed by the KATRIN collaboration.  The imported code resides in the Utility and Core libraries and is restricted to infrastructure-related activities.
 
- <!--The source of this documentation can be found in: Katydid/Egg/KTEgg.hh-->
+ <!--The source of this documentation can be found in: Katydid/Egg/KTEggProcessor.hh-->
 
  */
 

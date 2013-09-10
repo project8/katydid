@@ -10,7 +10,7 @@
 
 #include "KTLogger.hh"
 
-#if defined(LOG4CXX)
+#ifdef LOG4CXX_FOUND
 
 #include <cstdlib>
 
@@ -23,6 +23,8 @@
 #include <log4cxx/logmanager.h>
 #include <log4cxx/logger.h>
 
+#include <boost/algorithm/string.hpp>
+
 using namespace std;
 using namespace log4cxx;
 
@@ -33,6 +35,7 @@ const string KTColoredPatternLayout::fBright = COLOR_BRIGHT;
 const string KTColoredPatternLayout::fForegroundRed = COLOR_FOREGROUND_RED;
 const string KTColoredPatternLayout::fForegroundGreen = COLOR_FOREGROUND_GREEN;
 const string KTColoredPatternLayout::fForegroundYellow = COLOR_FOREGROUND_YELLOW;
+const string KTColoredPatternLayout::fForegroundBlue = COLOR_FOREGROUND_BLUE;
 const string KTColoredPatternLayout::fForegroundCyan = COLOR_FOREGROUND_CYAN;
 const string KTColoredPatternLayout::fForegroundWhite = COLOR_FOREGROUND_WHITE;
 const string KTColoredPatternLayout::fPrefix = COLOR_PREFIX;
@@ -43,6 +46,7 @@ const string KTColoredPatternLayout::fEndColor = KTColoredPatternLayout::fPrefix
 const string KTColoredPatternLayout::fFatalColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundRed + fSuffix;
 const string KTColoredPatternLayout::fErrorColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundRed + fSuffix;
 const string KTColoredPatternLayout::fWarnColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundYellow + fSuffix;
+const string KTColoredPatternLayout::fProgColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundBlue + fSuffix;
 const string KTColoredPatternLayout::fInfoColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundGreen + fSuffix;
 const string KTColoredPatternLayout::fDebugColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundCyan + fSuffix;
 const string KTColoredPatternLayout::fOtherColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundWhite + fSuffix;
@@ -81,6 +85,9 @@ string KTColoredPatternLayout::getColor(const LevelPtr& level) const
             break;
         case Level::WARN_INT:
             return fWarnColor;
+            break;
+        case KTLevel::PROG_INT:
+            return fProgColor;
             break;
         case Level::INFO_INT:
             return fInfoColor;
@@ -152,17 +159,54 @@ namespace Katydid
 
     bool KTLogger::IsLevelEnabled(const string& level) const
     {
+#ifdef STANDARD
+        if (boost::icontains(level, "debug"))
+            return false;
+        else
+            return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
+#else // STANDARD
+#ifdef NDEBUG
+        if (boost::icontains(level, "debug") || boost::icontains(level, "info"))
+            return false;
+        else
+            return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
+#else // NDEBUG
         return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
+#endif // NDEBUG
+#endif // STANDARD
     }
 
     bool KTLogger::IsDebugEnabled() const
     {
+#ifdef NDEBUG
+        return false;
+#else
         return fPrivate->fLogger->isDebugEnabled();
+#endif
     }
 
     bool KTLogger::IsInfoEnabled() const
     {
+#ifdef STANDARD
         return fPrivate->fLogger->isInfoEnabled();
+#else // STANDARD
+#ifdef NDEBUG
+        return false;
+#else // NDEBUG
+        return fPrivate->fLogger->isInfoEnabled();
+#endif // NDEBUG
+#endif // STANDARD
+    }
+
+    bool KTLogger::IsProgEnabled() const
+    {
+        /*
+        if(fPrivate->fLogger->repository == 0 || fPrivate->fLogger->repository->isDisabled(KTLevel::PROG_INT))
+        {
+            return false;
+        }
+        */
+        return fPrivate->fLogger->getEffectiveLevel()->toInt() <= KTLevel::PROG_INT;
     }
 
     bool KTLogger::IsWarnEnabled() const
@@ -193,6 +237,11 @@ namespace Katydid
     void KTLogger::logInfo (const string &message, const Location& loc)
     {
         fPrivate->log(Level::getInfo(), message, loc);
+    }
+
+    void KTLogger::logProg (const string &message, const Location& loc)
+    {
+        fPrivate->log(KTLevel::getProg(), message, loc);
     }
 
     void KTLogger::logWarn (const string &message, const Location& loc)
@@ -235,6 +284,7 @@ namespace Katydid
             const static string fForegroundRed;
             const static string fForegroundGreen;
             const static string fForegroundYellow;
+            const static string fForegroundBlue;
             const static string fForegroundCyan;
             const static string fForegroundWhite;
 
@@ -246,6 +296,7 @@ namespace Katydid
             const static string fFatalColor;
             const static string fErrorColor;
             const static string fWarnColor;
+            const static string fProgColor;
             const static string fInfoColor;
             const static string fDebugColor;
             const static string fOtherColor;
@@ -257,6 +308,7 @@ namespace Katydid
     const string KTLogger::Private::fForegroundRed = COLOR_FOREGROUND_RED;
     const string KTLogger::Private::fForegroundGreen = COLOR_FOREGROUND_GREEN;
     const string KTLogger::Private::fForegroundYellow = COLOR_FOREGROUND_YELLOW;
+    const string KTLogger::Private::fForegroundBlue = COLOR_FOREGROUND_BLUE;
     const string KTLogger::Private::fForegroundCyan = COLOR_FOREGROUND_CYAN;
     const string KTLogger::Private::fForegroundWhite = COLOR_FOREGROUND_WHITE;
     const string KTLogger::Private::fPrefix = COLOR_PREFIX;
@@ -267,6 +319,7 @@ namespace Katydid
     const string KTLogger::Private::fFatalColor = fPrefix + fBright + fSeparator + fForegroundRed + fSuffix;
     const string KTLogger::Private::fErrorColor = fPrefix + fBright + fSeparator + fForegroundRed + fSuffix;
     const string KTLogger::Private::fWarnColor = fPrefix + fBright + fSeparator + fForegroundYellow + fSuffix;
+    const string KTLogger::Private::fProgColor = fPrefix + fBright + fSeparator + fForegroundBlue + fSuffix;
     const string KTLogger::Private::fInfoColor = fPrefix + fBright + fSeparator + fForegroundGreen + fSuffix;
     const string KTLogger::Private::fDebugColor = fPrefix + fBright + fSeparator + fForegroundCyan + fSuffix;
     const string KTLogger::Private::fOtherColor = fPrefix + fBright + fSeparator + fForegroundWhite + fSuffix;
@@ -280,12 +333,16 @@ namespace Katydid
 
     bool KTLogger::IsLevelEnabled(const string& level) const
     {
-#ifdef NDEBUG
+#ifdef STANDARD
         return !boost::icontains(level, "debug");
-#else
+#else // STANDARD
+#ifdef NDEBUG
+        return !boost::icontains(level, "debug") && !boost::icontains(level, "info");
+#else // NDEBUG
         (void) level;
         return true;
-#endif
+#endif // NDEBUG
+#endif // STANDARD
     }
 
     bool KTLogger::IsDebugEnabled() const
@@ -298,6 +355,19 @@ namespace Katydid
     }
 
     bool KTLogger::IsInfoEnabled() const
+    {
+#ifdef STANDARD
+        return true;
+#else // STANDARD
+#ifdef NDEBUG
+        return false;
+#else // NDEBUG
+        return true;
+#endif // NDEBUG
+#endif // STANDARD
+    }
+
+    bool KTLogger::IsProgEnabled() const
     {
         return true;
     }
@@ -335,6 +405,11 @@ namespace Katydid
     void KTLogger::logInfo (const string &message, const Location& loc)
     {
         fPrivate->logCout("INFO", message, loc, KTLogger::Private::fInfoColor);
+    }
+
+    void KTLogger::logProg (const string &message, const Location& loc)
+    {
+        fPrivate->logCout("PROG", message, loc, KTLogger::Private::fProgColor);
     }
 
     void KTLogger::logWarn (const string &message, const Location& loc)

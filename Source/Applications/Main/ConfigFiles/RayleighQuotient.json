@@ -1,0 +1,83 @@
+{
+    "katydid":
+    {
+	"processor-toolbox":
+	{
+	    "processor":
+	    {
+		"type": "egg-processor",
+		"name": "noise-egg"
+	    },
+
+	    "processor":
+	    {
+		"type": "egg-processor",
+		"name": "candidate-egg"
+	    },
+
+	    "processor":
+	    {
+		"type": "rayleigh-quotient",
+		"name": "nrq-est"
+	    },
+
+	    "processor":
+	    {
+		"type": "basic-ascii-writer",
+		"name": "ascii-out"
+	    },
+
+	    "connection":
+	    {
+		"signal-processor": "noise-egg",
+		"signal-name": "slice",
+		"slot-processor": "nrq-est",
+		"slot-name": "noise-ts"
+	    },
+
+	    "connection":
+	    {
+		"signal-processor": "candidate-egg",
+		"signal-name": "slice",
+		"slot-processor": "nrq-est",
+		"slot-name": "candidate-ts"
+	    },
+
+	    "connection":
+	    {
+	    	"signal-processor": "nrq-est",
+	    	"signal-name": "rq",
+	    	"slot-processor": "ascii-out",
+	    	"slot-name": "ts"
+	    },
+	    
+	    "run-queue":
+	    {
+		"processor": "noise-egg",
+		"processor": "candidate-egg"
+	    }
+	},
+
+	"noise-egg":
+	{
+	    "filename": "sweep_2013_01_14_16:31:08_.egg",
+	    "number-of-bundles": 1
+	},
+
+	"candidate-egg":
+	{
+	    "filename": "sweep_2013_01_14_16:31:08_.egg",
+	    "number-of-bundles": 1
+	},
+	
+	"nrq-est":
+	{
+	    "chunk-size": 512
+	},
+
+	"ascii-out":
+	{
+		"output-file": "ascii.txt"
+	}
+    }
+}

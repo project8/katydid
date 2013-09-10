@@ -1,0 +1,28 @@
+{
+    "channel-correlation":
+    {
+        "egg-processor":
+        {
+            "filename": "/path/to/file.egg",
+            "slice-size": 16384,
+            "number-of-slices": 1
+        },
+        
+        "simple-fft":
+        {
+            "transform-flag": "ESTIMATE"
+        },
+        
+        "correlator":
+        {
+            "corr-pair": "0, 0",
+            "corr-pair": "0, 1"
+        },
+        
+        "basic-root-writer":
+        {
+            "output-file": "/path/to/file.root",
+            "file-flag": "recreate"
+        }
+    }
+}

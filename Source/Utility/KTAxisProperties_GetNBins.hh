@@ -10,8 +10,6 @@
 
 #include "KTLogger.hh"
 
-#include "Rtypes.h"
-
 #include <cmath>
 
 namespace Katydid
@@ -59,12 +57,12 @@ namespace Katydid
 
             size_t GetNBinsByDimDirectly(size_t dim) const
             {
-                return ((*fPtrToArray).*fDirectNBinsPtr)(dim);
+                return (fPtrToArray->*fDirectNBinsPtr)(dim-1);
             }
             size_t GetNBinsByDimWithArray(size_t dim) const
             {
-                if (dim >= NDims) return 0;
-                return ((*fPtrToArray).*fArrayOfGetNBinsPtrs[dim])();
+                if (dim > NDims) return 0;
+                return (fPtrToArray->*fArrayOfGetNBinsPtrs[dim-1])();
             }
 
 
@@ -89,20 +87,27 @@ namespace Katydid
                     fArrayOfGetNBinsPtrs(NULL),
                     fMode(kMultipleFunc)
             {
+                //KTWARN(utillog_getnbins, "in constructor for funcgetnbinsonedim, " << NDims);
                 fPtrToArray = ptrToArray;
                 fNBinsFuncPtr = &KTNBinsInArray::GetNBinsByDimWithArray;
                 fArrayOfGetNBinsPtrs = new FuncGetNBinsOneDim [NDims];
-                for (size_t iDim=0; iDim<NDims; iDim++)
+                for (size_t arrPos=0; arrPos<NDims; arrPos++)
                 {
-                    fArrayOfGetNBinsPtrs[iDim] = funcGetNBinsArray[iDim];
+                    fArrayOfGetNBinsPtrs[arrPos] = funcGetNBinsArray[arrPos];
                 }
+                //KTWARN(utillog_getnbins, fArrayOfGetNBinsPtrs[0] << "  " << fArrayOfGetNBinsPtrs[1]);
+                //KTWARN(utillog_getnbins, (fPtrToArray->*fArrayOfGetNBinsPtrs[0])() << "  " << (fPtrToArray->*fArrayOfGetNBinsPtrs[1])());
             }
 
-            virtual ~KTNBinsInArray() {}
+            virtual ~KTNBinsInArray()
+            {
+                if (fMode == kMultipleFunc)
+                    delete [] fArrayOfGetNBinsPtrs;
+            }
 
             virtual size_t operator()(size_t dim=1) const
             {
-                return ((*this).*fNBinsFuncPtr)(dim);
+                return (this->*fNBinsFuncPtr)(dim);
             }
 
             virtual KTNBinsFunctor< NDims >* Clone() const
@@ -133,9 +138,9 @@ namespace Katydid
             KTNBinsInArray(const size_t* nBins)
             {
                 fNBins = new size_t[NDims];
-                for (size_t iDim=0; iDim<NDims; iDim++)
+                for (size_t arrPos=0; arrPos<NDims; arrPos++)
                 {
-                    fNBins[iDim] = nBins[iDim];
+                    fNBins[arrPos] = nBins[arrPos];
                 }
             }
             virtual ~KTNBinsInArray() {}
@@ -206,7 +211,7 @@ namespace Katydid
 
             virtual size_t operator()() const
             {
-                return (*fPtrToArray.*fFuncPtr)();
+                return (fPtrToArray->*fFuncPtr)();
             }
 
             virtual KTNBinsFunctor< 1 >* Clone() const

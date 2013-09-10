@@ -1,163 +1,68 @@
 /**
  @file ExtractPowerSpectra.cc
  @brief Executable to produce 1-D power spectra
- @details Produces 1-D power spectra from Egg events; optionally can average multiple events together
+ @details Produces 1-D power spectra from time series; optionally can average multiple slices together
  @author: N. S. Oblath
  @date: Jan 5, 2012
  */
 
+#include "KTApplication.hh"
+#include "KTBasicROOTFileWriter.hh"
 #include "KTEggProcessor.hh"
-#include "KTSimpleFFTProcessor.hh"
-#include "KTSetting.hh"
+#include "KTLogger.hh"
+#include "KTSimpleFFT.hh"
 
-#include "TFile.h"
-#include "TH1D.h"
-
-//#include <boost/bind.hpp>
-//#include <boost/signals2.hpp>
-
-#include <cmath>
-#include <cstdlib>
 #include <string>
-#include <unistd.h>
-#include <vector>
 
 using namespace std;
 using namespace Katydid;
 
-class PowerSpectraContainer
-{
-    public:
-        PowerSpectraContainer();
-        ~PowerSpectraContainer();
-        void AddPowerSpectrum(UInt_t iEvent, const KTSimpleFFT* fft);
-        const vector< TH1D* >& GetPowerSpectra() const;
-        void ReleasePowerSpectra();
-    private:
-        vector< TH1D* > fPowerSpectra;
-};
+KTLOGGER(extpslog, "katydid.extractps");
+
 
 int main(int argc, char** argv)
 {
-    string outputFileNameBase("power_spectra");
-    string inputFileName("");
-    UInt_t numEvents = 1;
-    UInt_t eventsPerAverage = 1;
-
-    Int_t arg;
-    extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:p:n:a")) != -1)
-        switch (arg)
-        {
-            case 'e':
-                cout << optarg << endl;
-                inputFileName = string(optarg);
-                break;
-            case 'p':
-                cout << optarg << endl;
-                outputFileNameBase = string(optarg);
-                break;
-            case 'n':
-                cout << optarg << endl;
-                numEvents = (UInt_t)abs(atoi(optarg));
-                break;
-            case 'a':
-                cout << optarg << endl;
-                eventsPerAverage = (UInt_t)abs(atof(optarg));
-                break;
-        }
-
-    if (inputFileName.empty())
+    KTApplication* app = new KTApplication(argc, argv);
+    if (! app->ReadConfigFile())
     {
-        cout << "Error: No egg filename given" << endl;
+        KTERROR(extpslog, "Unable to read config file");
         return -1;
     }
 
-    string outputFileNameRoot = outputFileNameBase + string(".root");
+    string appConfigName("extract-power-spectra");
 
     // Setup the processors and their signal/slot connections
     KTEggProcessor procEgg;
-    KTSetting settingEggNEvents("NEvents", numEvents);
-    procEgg.ApplySetting(&settingEggNEvents);
+    KTSimpleFFT procFFT;
+    KTBasicROOTFileWriter procPub;
 
-    KTSimpleFFTProcessor procFFT;
-    KTSetting settingFFTTransFlag("TransformFlag", string("ES"));
-    procFFT.ApplySetting(&settingFFTTransFlag);
+    // Configure the processors
+    app->Configure(&procEgg, appConfigName);
+    app->Configure(&procFFT, appConfigName);
+    app->Configure(&procPub, appConfigName);
 
-    PowerSpectraContainer powerSpectra;
-
-    // this will ensure that every time procEgg hatches an event, procFFT.ProcessEvent will be called
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    procFFT.SetEventSlotConnection(procEgg.ConnectToEventSignal( boost::bind(&KTSimpleFFTProcessor::ProcessEvent, boost::ref(procFFT), _1, _2) ));
-
-    // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
-    //procFFT.ConnectToEventSignalFrom(procEgg);
-    procFFT.SetHeaderSlotConnection(procEgg.ConnectToHeaderSignal( boost::bind(&KTSimpleFFTProcessor::ProcessHeader, boost::ref(procFFT), _1) ));
-
-    // get the output histogram when an FFT is complete
-    boost::signals2::connection fftConnection = procFFT.ConnectToFFTSignal( boost::bind(&PowerSpectraContainer::AddPowerSpectrum, boost::ref(powerSpectra), _1, _2) );
-
-    Bool_t success = procEgg.ProcessEgg(inputFileName);
-
-    fftConnection.disconnect();
-
-    vector< TH1D* > powerSpectrumHistograms = powerSpectra.GetPowerSpectra();
-    powerSpectra.ReleasePowerSpectra();
-
-    cout << "There are " << powerSpectrumHistograms.size() << " histograms saved" << endl;
-
-    TFile* outFile = new TFile(outputFileNameRoot.c_str(), "recreate");
-    for (UInt_t iHist=0; iHist<(UInt_t)powerSpectrumHistograms.size(); iHist++)
+    try
     {
-        powerSpectrumHistograms[iHist]->SetDirectory(outFile);
-        powerSpectrumHistograms[iHist]->Write();
+        // this will ensure that every time procEgg hatches a slice, procFFT.ProcessTimeSeriesData will be called
+        procEgg.ConnectASlot("slice", &procFFT, "ts");
+
+        // this will ensure that when procEgg parses the header, the info is passed to PrepareFFT
+        procEgg.ConnectASlot("header", &procFFT, "header");
+
+        // this will get the output histogram when an FFT is complete
+        //procFFT.ConnectASlot("fft", &powerSpectra, "get_ps");
+        procFFT.ConnectASlot("fft", &procPub, "fs-polar");
     }
-    outFile->Close();
-    delete outFile;
+    catch (std::exception& e)
+    {
+        KTERROR(extpslog, "An error occurred while connecting signals and slots:\n"
+                << '\t' << e.what());
+        return -1;
+    }
+
+    // Process the egg file
+    Bool_t success = procEgg.ProcessEgg();
 
     if (! success) return -1;
     return 0;
-}
-
-
-//**************************************
-// Definitions for PowerSpectraContainer
-//**************************************
-
-PowerSpectraContainer::PowerSpectraContainer() :
-        fPowerSpectra()
-{
-}
-
-PowerSpectraContainer::~PowerSpectraContainer()
-{
-    while (! fPowerSpectra.empty())
-    {
-        delete fPowerSpectra.back();
-        fPowerSpectra.pop_back();
-    }
-}
-
-void PowerSpectraContainer::AddPowerSpectrum(UInt_t iEvent, const KTSimpleFFT* fft)
-{
-    stringstream conv;
-    string histName;
-    conv << iEvent;
-    conv >> histName;
-    histName = "histPS" + histName;
-    TH1D* powerSpectrum = fft->CreatePowerSpectrumHistogram(histName);
-    // set name and/or title?
-    fPowerSpectra.push_back(powerSpectrum);
-    return;
-}
-
-const vector< TH1D* >& PowerSpectraContainer::GetPowerSpectra() const
-{
-    return fPowerSpectra;
-}
-
-void PowerSpectraContainer::ReleasePowerSpectra()
-{
-    fPowerSpectra.clear();
-    return;
 }

@@ -3,133 +3,182 @@
  *
  *  Created on: Dec 22, 2011
  *      Author: nsoblath
+ *
+ *  Usage:
+ *      > TestSlidingWindowFFT filename.egg [fftw]
+ *
+ *      If "fftw" is given as the second argument, KTSlidingWindowFFTW is used instead of KTSlidingWindowFFT.
  */
 
 #include "KTEgg.hh"
-#include "KTEvent.hh"
-#include "KTHannWindow.hh"
-#include "KTPowerSpectrum.hh"
+#include "KTEggHeader.hh"
+#include "KTEggReaderMonarch.hh"
+#include "KTBundle.hh"
+#include "KTLogger.hh"
+#include "KTRectangularWindow.hh"
 #include "KTSlidingWindowFFT.hh"
+#include "KTSlidingWindowFFTW.hh"
+#include "KTSlidingWindowFSData.hh"
+#include "KTSlidingWindowFSDataFFTW.hh"
+#include "KTTimeSeriesChannelData.hh"
 
-#include "TApplication.h"
-#include "TCanvas.h"
-#include "TH2.h"
-#include "TROOT.h"
-#include "TStyle.h"
-
-#include <cstdio>
-#include <unistd.h>
-#include <iostream>
+#ifdef ROOT_FOUND
+#include "KTBasicROOTFileWriter.hh"
+#endif
 
 
 using namespace std;
 using namespace Katydid;
 
+
+KTLOGGER(testsw, "katydid.validation");
+
+
 int main(int argc, char** argv)
 {
-    string outputFileNameBase("test_slidingwindowfft");
-    string inputFileName("");
-    Bool_t drawWaterfall = kFALSE;
 
-    Int_t arg;
-    extern char *optarg;
-    while ((arg = getopt(argc, argv, "e:d")) != -1)
-        switch (arg)
-        {
-            case 'e':
-                inputFileName = string(optarg);
-                break;
-            case 'd':
-                drawWaterfall = kTRUE;
-                break;
-        }
-
-    if (inputFileName.empty())
+    if (argc < 2)
     {
-        cout << "Error: No egg filename given" << endl;
-        return -1;
+        KTERROR(testsw, "No filename supplied");
+        return 0;
+    }
+    string filename(argv[1]);
+    Bool_t UseFFTW = false;
+    if (argc > 2)
+    {
+        UseFFTW = string(argv[2]) == "fftw";
     }
 
-    string outputFileNamePS = outputFileNameBase + string(".ps");
+    KTINFO(testsw, "Test of hatching egg file <" << filename << ">");
 
     KTEgg egg;
-    egg.SetFileName(inputFileName);
-    if (! egg.BreakEgg())
+    UInt_t recordSize = 0;
+    KTINFO(testsw, "Record size will be " << recordSize << " (if 0, it should be the same as the Monarch record size)");
+    KTEggReaderMonarch* reader = new KTEggReaderMonarch();
+    reader->SetTimeSeriesSizeRequest(recordSize);
+    if (! UseFFTW)
     {
-        cout << "Error: Egg did not break" << endl;
-        return -1;
-    }
-    if (! egg.ParseEggHeader())
-    {
-        cout << "Error: Header did not parse" << endl;
-        return -1;
-    }
-
-    TApplication* app = new TApplication("", 0, 0);
-    TStyle *plain = new TStyle("Plain", "Plain Style");
-    plain->SetCanvasBorderMode(0);
-    plain->SetPadBorderMode(0);
-    plain->SetPadColor(0);
-    plain->SetCanvasColor(0);
-    plain->SetTitleColor(0);
-    plain->SetStatColor(0);
-    plain->SetPalette(1);
-    plain->SetOptStat(0);
-    gROOT->SetStyle("Plain");
-
-    TCanvas *c1 = NULL;
-    Char_t tempFileName[256];
-    if (drawWaterfall)
-    {
-        c1 = new TCanvas("c1", "c1");
-        sprintf(tempFileName, "%s[", outputFileNamePS.c_str());
-        c1->Print(tempFileName);
-        c1->SetLogz(1);
-    }
-
-    // Hatch the event
-    KTEvent* event = egg.HatchNextEvent();
-    if (event == NULL)
-    {
-        cout << "No event hatched" << endl;
-        delete c1;
-        return -1;
-    }
-
-    // Now the windowed FFT
-    KTWindowFunction* wfunc = new KTHannWindow(event);
-    wfunc->SetLength(1.e-5);
-    cout << "window length: " << wfunc->GetLength() << " s; bin width: " << wfunc->GetBinWidth() << " s; size: " << wfunc->GetSize() << endl;
-
-    KTSlidingWindowFFT fft;
-    fft.SetWindowFunction(wfunc);
-    fft.SetOverlap(wfunc->GetSize() / 5);
-    fft.SetTransformFlag("ES");
-    fft.InitializeFFT();
-    fft.TakeData(event);
-    fft.Transform();
-
-    TH2D* hist = fft.CreatePowerSpectrumHistogram();
-
-    if (drawWaterfall)
-    {
-        hist->Draw();
-        c1->Print(outputFileNamePS.c_str());
-    }
-
-    delete event;
-
-    if (drawWaterfall)
-    {
-        sprintf(tempFileName, "%s]", outputFileNamePS.c_str());
-        c1->Print(tempFileName);
-        delete c1;
+        reader->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
     }
     else
     {
-        delete hist;
+        reader->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
+    }
+    egg.SetReader(reader);
+
+    KTINFO(testsw, "Opening file");
+    if (egg.BreakEgg(filename))
+    {
+        KTINFO(testsw, "Egg opened successfully");
+    }
+    else
+    {
+        KTERROR(testsw, "Egg file was not opened");
+        return -1;
     }
 
-    return 0;
-}
+    const KTEggHeader* header = egg.GetHeader();
+    if (header == NULL)
+    {
+        KTERROR(testsw, "No header received");
+        egg.CloseEgg();
+        return -1;
+    }
 
+    KTINFO(testsw, "Hatching bundle");
+    // Hatch the bundle
+    boost::shared_ptr<KTBundle> bundle = egg.HatchNextBundle();
+    if (bundle.get() == NULL)
+    {
+        KTERROR(testsw, "Bundle did not hatch");
+        egg.CloseEgg();
+        return -1;
+    }
+
+    // Get the time-series data from the bundle.
+    // The data is still owned by the bundle.
+    KTTimeSeriesData* tsData = bundle->GetData<KTProgenitorTimeSeriesData>("time-series");
+    if (tsData == NULL)
+    {
+        KTWARN(testsw, "No time-series data present in bundle");
+        egg.CloseEgg();
+        return -1;
+    }
+
+    UInt_t windowSize = 512;
+    if (! UseFFTW)
+    {
+        // Create the transform, and manually configure it.
+        KTINFO(testsw, "Creating and configuring sliding window FFT");
+        KTSlidingWindowFFT fft;
+        KTBundleWindowFunction* windowFunc = new KTRectangularWindow(tsData);
+        windowFunc->SetSize(windowSize);
+        fft.SetTransformFlag("ESTIMATE");
+        fft.SetWindowFunction(windowFunc);
+        fft.SetOverlap((UInt_t)0);
+        fft.InitializeFFT();
+
+        // Transform the data.
+        // The data is not owned by the bundle because TransformData was used, not ProcessBundle.
+        KTINFO(testsw, "Transforming data");
+        KTSlidingWindowFSData* swData = fft.TransformData(tsData);
+
+        if (swData == NULL)
+        {
+            KTWARN(testsw, "No data was returned by the FFT: test failed");
+        }
+        else
+        {
+#ifdef ROOT_FOUND
+            KTBasicROOTFileWriter writer;
+            writer.SetFilename("SWFFTTest.root");
+            writer.SetFileFlag("recreate");
+
+            KTINFO(testsw, "Writing data to file");
+            writer.Publish(swData);
+#endif
+        }
+        delete swData;
+    }
+    else
+    {
+        // Create the transform, and manually configure it.
+        KTINFO(testsw, "Creating and configuring sliding window FFTW");
+        KTSlidingWindowFFTW fft;
+        KTBundleWindowFunction* windowFunc = new KTRectangularWindow(tsData);
+        windowFunc->SetSize(windowSize);
+        fft.SetTransformFlag("ESTIMATE");
+        fft.SetWindowFunction(windowFunc);
+        fft.SetOverlap((UInt_t)0);
+        fft.InitializeFFT();
+
+        // Transform the data.
+        // The data is not owned by the bundle because TransformData was used, not ProcessBundle.
+        KTINFO(testsw, "Transforming data");
+        KTSlidingWindowFSDataFFTW* swData = fft.TransformData(tsData);
+
+        if (swData == NULL)
+        {
+            KTWARN(testsw, "No data was returned by the FFT: test failed");
+        }
+        else
+        {
+#ifdef ROOT_FOUND
+            KTBasicROOTFileWriter writer;
+            writer.SetFilename("SWFFTWTest.root");
+            writer.SetFileFlag("recreate");
+
+            KTINFO(testsw, "Writing data to file");
+            writer.Publish(swData);
+#endif
+        }
+        delete swData;
+    }
+
+    KTINFO(testsw, "Test complete; cleaning up");
+    egg.CloseEgg();
+
+    return 0;
+
+
+}

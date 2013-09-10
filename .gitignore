@@ -13,6 +13,7 @@
 CMakeCache.txt
 CMakeFiles/
 Makefile
+*build/
 cbuild/
 ebuild/
 cmake_install.cmake
@@ -23,3 +24,6 @@ Source/Main/ExtractEvents
 Source/Main/SimpleElectronHunt
 Source/Applications/Main/SimpleElectronHunt
 install_manifest.txt
+
+# from emacs
+*~

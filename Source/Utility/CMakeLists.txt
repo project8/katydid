@@ -8,57 +8,68 @@ if (LOG4CXX_FOUND)
     )
 endif (LOG4CXX_FOUND)
 
-
-set (UTILITY_DICT_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTArrayUC.hh
-)
-
-set (UTILITY_NODICT_HEADERFILES
+set (UTILITY_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties_GetNBins.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTConcurrentQueue.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCutable.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCutableArray.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDestroyer.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTInitializer.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTExtensibleStruct.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTFactory.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMaskedArray.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTMath.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTNOFactory.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArray.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSetting.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSingleton.hh
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlot.hh
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTTestSlot.hh
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalTest.hh
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTConnectionTest.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTECDF.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTIFactory.hh
 )
 
-set (UTILITY_HEADERFILES ${UTILITY_DICT_HEADERFILES} ${UTILITY_NODICT_HEADERFILES})
+set (UTILITY_HEADER_SUBDIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar
+)
 
 set (UTILITY_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar/specialization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTArrayUC.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSetting.cc
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTTestSlot.cc
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalTest.cc
-#    ${CMAKE_CURRENT_SOURCE_DIR}/KTConnectionTest.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTECDF.cc
 )
 
-set (UTILITY_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/UtilityLinkDef.hh)
-set (UTILITY_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/UtilityDict.cxx)
+if (LOG4CXX_FOUND)
+    set (UTILITY_HEADER_SUBDIRS
+        ${UTILITY_HEADER_SUBDIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx
+    )
+    
+    set (UTILITY_SOURCEFILES
+        ${UTILITY_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx/KTLevel.cc
+    )
+endif (LOG4CXX_FOUND)
+
 
 ##################################################
 
-ROOT_GENERATE_DICTIONARY ("${UTILITY_DICT_HEADERFILES}" "${UTILITY_LINKDEF_HEADERFILE}" "${UTILITY_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+add_library (KatydidUtility ${UTILITY_SOURCEFILES})
+target_link_libraries (KatydidUtility ${EXTERNAL_LIBRARIES})
 
-add_library (KatydidUtility ${UTILITY_SOURCEFILES} ${UTILITY_DICT_OUTFILE})
-set_target_properties(KatydidUtility PROPERTIES INSTALL_NAME_DIR ${LIB_INSTALL_DIR})
-target_link_libraries (KatydidUtility ${LIBS})
-
-install (FILES ${UTILITY_HEADERFILES}  DESTINATION ${INCLUDE_INSTALL_DIR})
-install (TARGETS KatydidUtility  DESTINATION ${LIB_INSTALL_DIR})
+pbuilder_install_headers (${UTILITY_HEADERFILES})
+pbuilder_install_header_dirs ("*.hh" ${UTILITY_HEADER_SUBDIRS})
+pbuilder_install_libraries (KatydidUtility)
 
 # install the log4cxx config file
-install (FILES config/log4cxx.properties DESTINATION ${CONFIG_INSTALL_DIR})
+set (LEVEL "info")
+if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+    set (LEVEL "debug")
+endif (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
+if (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
+    set (LEVEL "prog#KTLevel")
+endif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
+configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx/config/log4cxx.properties.in ${CONFIG_INSTALL_DIR}/log4cxx.properties @ONLY )
 

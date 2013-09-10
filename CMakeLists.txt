@@ -1,130 +1,197 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-# minimum cmake version 2.6 required by the scripts to get Git information
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 
-# specify the local directory for CMake modules
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+# Specify the local directory for CMake modules
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 
-# define the project
+# Define the project
 project (Katydid)
 
-# get git revision information
-include (GetGitRevisionDescription)
-git_describe (GIT_REV)
+# Include the build script
+include (PackageBuilder)
 
-# define the variables to describe the package (will go in the KatydidConfig.hh file)
-set (Katydid_VERSION_MAJOR 0)
-set (Katydid_VERSION_MINOR 9)
-set (Katydid_REVISION 0)
-set (Katydid_VERSION "${Katydid_VERSION_MAJOR}.${Katydid_VERSION_MINOR}.${Katydid_REVISION}")
-set (Katydid_FULL_VERSION "${Katydid_VERSION_MAJOR}.${Katydid_VERSION_MINOR} (${GIT_REV})")
-set (Katydid_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
-set (Katydid_PACKAGE_STRING "${CMAKE_PROJECT_NAME} ${Katydid_FULL_VERSION}")
+# Set the version and associated variables
+pbuilder_prepare_project (1 6 0)
 
+# Add a "Standard" build type
+#set (CMAKE_BUILD_TYPE standard)
+set (CMAKE_CXX_FLAGS_STANDARD "-O1 -DNDEBUG -DSTANDARD" CACHE STRING "Flags used by the compiler during standard builds.")
+set (CMAKE_C_FLAGS_STANDARD "-O1 -DNDEBUG -DSTANDARD" CACHE STRING "Flags used by the compiler during standard builds.")
+set (CMAKE_EXE_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
+set (CMAKE_MODULE_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
+set (CMAKE_SHARED_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
+mark_as_advanced(CMAKE_CXX_FLAGS_STANDARD CMAKE_C_FLAGS_STANDARD CMAKE_EXE_LINKER_FLAGS_STANDARD CMAKE_MODULE_LINKER_FLAGS_STANDARD CMAKE_SHARED_LINKER_FLAGS_STANDARD)
 
-# Setup the default install prefix
-# This gets set to the binary directory upon first configuring.
-# If the user changes the prefix, but leaves the flag OFF, then it will remain as the user specified.
-# If the user wants to reset the prefix to the default (i.e. the binary directory), then the flag should be set ON.
-if (NOT DEFINED SET_INSTALL_PREFIX_TO_DEFAULT)
-    set (SET_INSTALL_PREFIX_TO_DEFAULT ON)
-endif (NOT DEFINED SET_INSTALL_PREFIX_TO_DEFAULT)
-if (SET_INSTALL_PREFIX_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR} CACHE PATH "Install prefix" FORCE)
-    set (SET_INSTALL_PREFIX_TO_DEFAULT OFF CACHE BOOL "Reset default install path when when configuring" FORCE)
-endif (SET_INSTALL_PREFIX_TO_DEFAULT)
+set (Katydid_SINGLETHREADED FALSE CACHE BOOL "Flag for running in single-threaded mode")
+if (Katydid_SINGLETHREADED)
+    add_definitions(-DSINGLETHREADED)
+else (Katydid_SINGLETHREADED)
+    remove_definitions(-DSINGLETHREADED)
+endif(Katydid_SINGLETHREADED)
 
-# install subdirectories
-set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE PATH "Install directory for headers")
-set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE PATH "Install directory for libraries")
-set (BIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/bin" CACHE PATH "Install directory for binaries")
-set (CONFIG_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/config" CACHE PATH "Install directory for config files")
+#optional build switches
+set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
+set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
+set (Katydid_USE_LOG4CXX TRUE CACHE BOOL "Flag to optionally use log4cxx")
 
-# build shared libraries
-set (BUILD_SHARED_LIBS ON)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    pbuilder_add_ext_libraries (rt)
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
-# add an option to build the validation tests
-option (ENABLE_TESTING "Build the validation test and enable CMake testing" OFF)
-if (ENABLE_TESTING)
-    enable_testing ()
-endif (ENABLE_TESTING)
-
-# setup the Boost install
-# at the time of this writing, CMake 2.8.6 searched for boost up to 1.46, but boost 1.48 exists, so it must be added
-# see FindBoost.cmake for additional information about Boost_ADDITIONAL_VERSIONS
-set (Boost_ADDITIONAL_VERSIONS "1.48" "1.48.0")
-find_package (Boost 1.36.0 REQUIRED)
+# Boost (1.46 required for filesystem version 3)
+find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
 include_directories (${Boost_INCLUDE_DIRS})
-set (LIBS ${LIBS} ${Boost_LIBRARIES})
+pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 
-# setup the ROOT install
-find_package (ROOT 5.28 REQUIRED)
+# FFTW
+find_package(FFTW REQUIRED)
+include_directories (${FFTW_INCLUDE_DIR})
+pbuilder_add_ext_libraries (${FFTW_LIBRARIES})
+if (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+    set (FFTW_NTHREADS 1 CACHE STRING "Number of threads to use for FFTW processes")
+    add_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
+    message (STATUS "FFTW configured to use up to ${FFTW_NTHREADS} threads.")
+else (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+    remove_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
+endif (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+
+
+# ROOT
+if (Katydid_USE_ROOT)
+    find_package (ROOT 5.28)
+else (Katydid_USE_ROOT)
+    set (ROOT_FOUND FALSE)
+endif (Katydid_USE_ROOT)
 if (ROOT_FOUND)
     add_definitions(-DROOT_FOUND)
+    pbuilder_add_ext_libraries (${ROOT_LIBRARIES})
+else (ROOT_FOUND)
+    message(STATUS "Building without ROOT")
+    remove_definitions(-DROOT_FOUND)
+    # option for not building with ROOT: need a few include files for file types
+    set (ROOT_INCLUDES ${PROJECT_SOURCE_DIR}/External/ROOT)
 endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
-# have to add the FFTW library because it doesn't automatically get included for some reason
-set (ROOT_LIBRARIES ${ROOT_LIBRARIES} -lFFTW)
-set (LIBS ${LIBS} ${ROOT_LIBRARIES})
 
-# setup the log4cxx install
-find_package (LOG4CXX)
+# log4cxx
+if (Katydid_USE_LOG4CXX)
+    find_package (Log4CXX)
+else (Katydid_USE_LOG4CXX)
+    set (LOG4CXX_FOUND FALSE)
+endif (Katydid_USE_LOG4CXX)
 if (LOG4CXX_FOUND)
     message (STATUS "Log4cxx found")
-    list (APPEND LIBS ${LOG4CXX_LIBRARY})
+    pbuilder_add_ext_libraries (${LOG4CXX_LIBRARY})
     include_directories (${LOG4CXX_INCLUDE_DIRS})
+    add_definitions(-DLOG4CXX_FOUND)
+else (LOG4CXX_FOUND)
+    remove_definitions(-DLOG4CXX_FOUND)
 endif (LOG4CXX_FOUND)
 
+# eigen
+if (Katydid_USE_EIGEN)
+    find_package (Eigen3)
+else (Katydid_USE_EIGEN)
+    set (EIGEN3_FOUND FALSE)
+endif (Katydid_USE_EIGEN)
+if (EIGEN3_FOUND)
+   message (STATUS "Eigen found.")
+   include_directories (${EIGEN3_INCLUDE_DIR})
+endif (EIGEN3_FOUND)
 
+# OpenMP
+find_package (OpenMP)
+if (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    add_definitions(-DUSE_OPENMP)
+else (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
+    remove_definitions(-DUSE_OPENMP)
+endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 
-# external packages distributed with Katydid
+# External packages distributed with Katydid
+include_directories ("${PROJECT_SOURCE_DIR}/External/RapidJSON")
 include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
-include_directories ("${PROJECT_SOURCE_DIR}/External/CImg")
 
+# add an option to build the validation tests
+option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
+if (Katydid_ENABLE_TESTING)
+    enable_testing ()
+endif (Katydid_ENABLE_TESTING)
 
-# configuration header file
-configure_file (
-    "${PROJECT_SOURCE_DIR}/KatydidConfig.hh.in"
-    "${PROJECT_BINARY_DIR}/KatydidConfig.hh"
-)
+# add an option to build the profiling tests
+option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 
+# Monarch
+include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
+add_subdirectory (Source/Egg/Monarch)
+pbuilder_add_ext_libraries (${Monarch_LIBRARIES})
 
-# install location for the configuration header
-install (FILES "${PROJECT_BINARY_DIR}/KatydidConfig.hh" DESTINATION include)
+# add to the RPATH to be used when installing, but only if it's not a system directory
+list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
+if ("${isSystemDir}" STREQUAL "-1")
+   list (APPEND CMAKE_INSTALL_RPATH ${Monarch_LIBRARY_DIR})
+endif ("${isSystemDir}" STREQUAL "-1")
 
-# add the binary tree to the search path for include files so that the config file is found
-include_directories ("${PROJECT_BINARY_DIR}")
-
-# subdirectories
+# Subdirectories
 include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Utility
-    #${PROJECT_SOURCE_DIR}/Source/Framework
+    ${PROJECT_SOURCE_DIR}/Source/Core
+    ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
+    ${PROJECT_SOURCE_DIR}/Source/Data/Candidates
+    ${PROJECT_SOURCE_DIR}/Source/Data/Egg
+    ${PROJECT_SOURCE_DIR}/Source/Data/FFT
+    ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
+    ${PROJECT_SOURCE_DIR}/Source/Input
+    ${PROJECT_SOURCE_DIR}/Source/Output
     ${PROJECT_SOURCE_DIR}/Source/Egg
+    ${PROJECT_SOURCE_DIR}/Source/Simulation
+    ${PROJECT_SOURCE_DIR}/Source/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/FFT
     ${PROJECT_SOURCE_DIR}/Source/Analysis
-    ${PROJECT_SOURCE_DIR}/Source/Waterfall
-    ${PROJECT_SOURCE_DIR}/Source/Lice
+    ${PROJECT_SOURCE_DIR}/Source/Candidates
 )
 
 add_subdirectory (Source/Utility)
-#add_subdirectory (Source/Framework)
+add_subdirectory (Source/Core)
+add_subdirectory (Source/Data)
+add_subdirectory (Source/Input)
+add_subdirectory (Source/Output)
 add_subdirectory (Source/Egg)
+add_subdirectory (Source/Simulation)
+add_subdirectory (Source/Evaluation)
 add_subdirectory (Source/FFT)
 add_subdirectory (Source/Analysis)
-add_subdirectory (Source/Waterfall)
-add_subdirectory (Source/Lice)
+add_subdirectory (Source/Candidates)
 add_subdirectory (Source/Applications/Main)
+add_subdirectory (Source/Applications/Profiling)
 add_subdirectory (Source/Applications/Validation)
+
+if (NOT ROOT_FOUND)
+    add_subdirectory (External/ROOT)
+endif (NOT ROOT_FOUND)
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
 add_subdirectory (Documentation/ReferenceGuide)
 
 
+# Install config files
+pbuilder_install_config_files()
+
+# Install the example CMakeLists file for building with this installation of Katydid
+configure_file (${PROJECT_SOURCE_DIR}/Scripts/CMakeLists.txt.in ${CMAKE_INSTALL_PREFIX}/example/CMakeLists.txt @ONLY)
+pbuilder_install_files (${CMAKE_INSTALL_PREFIX}/example ${PROJECT_SOURCE_DIR}/Scripts/MyApplication.cc)
+
 # this is apparently not the right way to run the link_dylibs script
 #execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)
 
-install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${PROJECT_BINARY_DIR}/lib)")
+if (ROOT_FOUND)
+    install (CODE "execute_process (COMMAND ${PROJECT_SOURCE_DIR}/Scripts/link_dylibs.sh ${LIB_INSTALL_DIR})")
+    configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Scripts/LoadLibraries.C.in ${PROJECT_BINARY_DIR}/LoadLibraries.C)
+    install (FILES ${PROJECT_BINARY_DIR}/LoadLibraries.C DESTINATION ${LIB_INSTALL_DIR})
+endif (ROOT_FOUND)
