@@ -19,6 +19,14 @@ namespace Katydid
 {
     class KTData;
 
+    struct TDiscriminatedPoints1DData
+    {
+        UShort_t fComponent;
+        UInt_t fPoint;
+        Double_t fValue;
+        Double_t fThreshold;
+    };
+
     struct TAmplitudeDistributionData
     {
         UShort_t fComponent;
@@ -36,19 +44,29 @@ namespace Katydid
             void RegisterSlots();
 
         public:
+            void WriteDiscriminatedPoints1D(boost::shared_ptr< KTData > data);
             void WriteAmplitudeDistributions(boost::shared_ptr< KTData > data);
 
         public:
+            TTree* GetDiscriminatedPoints1DTree() const;
             TTree* GetAmplitudeDistributionTree() const;
 
         private:
+            Bool_t SetupDiscriminatedPoints1DTree();
             Bool_t SetupAmplitudeDistributionTree();
 
+            TTree* fDiscPoints1DTree;
             TTree* fAmpDistTree;
 
+            TDiscriminatedPoints1DData fDiscPoints1DData;
             TAmplitudeDistributionData fAmpDistData;
 
     };
+
+    inline TTree* KTROOTTreeTypeWriterAnalysis::GetDiscriminatedPoints1DTree() const
+    {
+        return fDiscPoints1DTree;
+    }
 
     inline TTree* KTROOTTreeTypeWriterAnalysis::GetAmplitudeDistributionTree() const
     {
