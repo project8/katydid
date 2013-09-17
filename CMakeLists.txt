@@ -146,8 +146,7 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Data/Egg
     ${PROJECT_SOURCE_DIR}/Source/Data/FFT
     ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
-    ${PROJECT_SOURCE_DIR}/Source/Input
-    ${PROJECT_SOURCE_DIR}/Source/Output
+    ${PROJECT_SOURCE_DIR}/Source/IO
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/Simulation
     ${PROJECT_SOURCE_DIR}/Source/Evaluation
@@ -159,8 +158,7 @@ include_directories (
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Core)
 add_subdirectory (Source/Data)
-add_subdirectory (Source/Input)
-add_subdirectory (Source/Output)
+add_subdirectory (Source/IO)
 add_subdirectory (Source/Egg)
 add_subdirectory (Source/Simulation)
 add_subdirectory (Source/Evaluation)

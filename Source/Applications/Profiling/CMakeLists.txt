@@ -21,7 +21,7 @@ if (Katydid_ENABLE_PROFILING)
     
     # Executables that do NOT require ROOT
     add_executable (ImpulseResponse ${CMAKE_CURRENT_SOURCE_DIR}/ImpulseResponse.cc)
-    target_link_libraries (ImpulseResponse KatydidUtility KatydidCore KatydidData KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis KatydidSimulation ${EXTERNAL_LIBRARIES})
+    target_link_libraries (ImpulseResponse KatydidUtility KatydidCore KatydidData KatydidIO KatydidEgg KatydidFFT KatydidAnalysis KatydidSimulation ${EXTERNAL_LIBRARIES})
         
     add_executable (ProfileDataAccessMethods ${CMAKE_CURRENT_SOURCE_DIR}/ProfileDataAccessMethods.cc)
     target_link_libraries (ProfileDataAccessMethods KatydidUtility KatydidCore KatydidData KatydidEgg ${EXTERNAL_LIBRARIES})
@@ -42,7 +42,7 @@ if (Katydid_ENABLE_PROFILING)
     # executables that DO require ROOT
     if (ROOT_FOUND)
         #add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)
-        #target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidData KatydidEgg KatydidFFT KatydidOutput ${EXTERNAL_LIBRARIES})
+        #target_link_libraries (TestBasicROOTFileWriter KatydidUtility KatydidCore KatydidData KatydidEgg KatydidFFT KatydidIO ${EXTERNAL_LIBRARIES})
         
         #pbuilder_install_executables ( 
         #)

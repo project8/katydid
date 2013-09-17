@@ -18,16 +18,16 @@ pbuilder_install_config (${VALIDATION_CONFIGFILES})
 # Executables
 
 add_executable (EvaluateCandidates ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
-target_link_libraries (EvaluateCandidates KatydidUtility KatydidCore KatydidData KatydidOutput KatydidInput KatydidEvaluation ${EXTERNAL_LIBRARIES})
+target_link_libraries (EvaluateCandidates KatydidUtility KatydidCore KatydidData KatydidIO KatydidEvaluation ${EXTERNAL_LIBRARIES})
 
 add_executable (ConfigCheck ${CMAKE_CURRENT_SOURCE_DIR}/ConfigCheck.cc)
 target_link_libraries (ConfigCheck KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
 
 add_executable (EggScanner ${CMAKE_CURRENT_SOURCE_DIR}/EggScanner.cc)
-target_link_libraries (EggScanner KatydidUtility KatydidCore KatydidData KatydidOutput KatydidEgg ${EXTERNAL_LIBRARIES})
+target_link_libraries (EggScanner KatydidUtility KatydidCore KatydidData KatydidIO KatydidEgg ${EXTERNAL_LIBRARIES})
 
 add_executable (Katydid ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
-target_link_libraries (Katydid KatydidUtility KatydidCore KatydidData KatydidOutput KatydidSimulation KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
+target_link_libraries (Katydid KatydidUtility KatydidCore KatydidData KatydidIO KatydidSimulation KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
 
 add_executable (Truncate ${CMAKE_CURRENT_SOURCE_DIR}/Truncate.cc)
 target_link_libraries (Truncate KatydidUtility ${EXTERNAL_LIBRARIES})
@@ -43,10 +43,10 @@ pbuilder_install_executables (
 
 if (ROOT_FOUND)
     add_executable (ChannelCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/ChannelCorrelator.cc)
-    target_link_libraries (ChannelCorrelator KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    target_link_libraries (ChannelCorrelator KatydidUtility KatydidCore KatydidIO KatydidEgg KatydidFFT KatydidAnalysis ${EXTERNAL_LIBRARIES})
 
     add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
-    target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidCore KatydidOutput KatydidEgg KatydidFFT ${EXTERNAL_LIBRARIES})
+    target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidCore KatydidIO KatydidEgg KatydidFFT ${EXTERNAL_LIBRARIES})
     
     pbuilder_install_executables ( 
                 ChannelCorrelator

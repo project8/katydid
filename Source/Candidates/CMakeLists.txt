@@ -18,7 +18,7 @@ set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
     KatydidData
-    KatydidOutput
+    KatydidIO
 )
 
 ##################################################
