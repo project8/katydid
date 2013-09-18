@@ -25,10 +25,12 @@ set (ANALYSIS_SOURCEFILES
 
 if (FFTW_FOUND)
     set (ANALYSIS_HEADERFILES
+        ${ANALYSIS_HEADERFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.hh
         ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
     )
     set (ANALYSIS_SOURCEFILES
+        ${ANALYSIS_SOURCEFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
     )
