@@ -59,7 +59,9 @@ namespace Katydid
 
 #ifdef ROOT_FOUND
             TH1D* CreateHistogram(const std::string& name = "hWindowFunction") const;
+#ifdef FFTW_FOUND
             TH1D* CreateFrequencyResponseHistogram(const std::string& name = "hWFFrequencyResponse") const;
+#endif
 #endif
 
             Double_t GetLength() const;

@@ -7,7 +7,10 @@
 
 #include "KTWindowFunction.hh"
 
+#ifdef FFTW_FOUND
 #include "KTComplexFFTW.hh"
+#endif
+
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
@@ -65,6 +68,7 @@ namespace Katydid
         return hist;
     }
 
+#ifdef FFTW_FOUND
     TH1D* KTWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
     {
         KTTimeSeriesFFTW timeData(fSize, 0., Double_t(fSize) * fBinWidth);
@@ -82,6 +86,7 @@ namespace Katydid
         delete freqSpect;
         return hist;
     }
+#endif
 #endif
 
     Double_t KTWindowFunction::SetLength(Double_t length)

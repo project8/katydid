@@ -10,7 +10,11 @@
 
 #include "KTPhysicalArray.hh"
 
+#ifdef FFTW_FOUND
 #include <fftw3.h>
+#else
+#include "FFTWStandIn.hh"
+#endif
 
 namespace Katydid
 {
