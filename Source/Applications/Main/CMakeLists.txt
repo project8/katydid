@@ -21,9 +21,6 @@ target_link_libraries (EvaluateCandidates KatydidUtility KatydidCore KatydidData
 add_executable (ConfigCheck ${CMAKE_CURRENT_SOURCE_DIR}/ConfigCheck.cc)
 target_link_libraries (ConfigCheck KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
 
-add_executable (EggScanner ${CMAKE_CURRENT_SOURCE_DIR}/EggScanner.cc)
-target_link_libraries (EggScanner KatydidUtility KatydidCore KatydidData KatydidIO KatydidEgg ${EXTERNAL_LIBRARIES})
-
 add_executable (Katydid ${CMAKE_CURRENT_SOURCE_DIR}/Katydid.cc)
 target_link_libraries (Katydid KatydidUtility KatydidCore KatydidData KatydidIO KatydidSimulation KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
 
@@ -32,8 +29,16 @@ target_link_libraries (Truncate KatydidUtility ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_executables ( 
     ConfigCheck
-    EggScanner
     EvaluateCandidates
     Katydid
     Truncate
 )
+
+if (Katydid_USE_MONARCH)
+    add_executable (EggScanner ${CMAKE_CURRENT_SOURCE_DIR}/EggScanner.cc)
+    target_link_libraries (EggScanner KatydidUtility KatydidCore KatydidData KatydidIO KatydidEgg ${EXTERNAL_LIBRARIES})
+    
+    pbuilder_install_executables ( 
+        EggScanner
+    )
+endif (Katydid_USE_MONARCH)

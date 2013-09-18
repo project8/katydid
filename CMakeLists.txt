@@ -142,16 +142,22 @@ option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 
 # Monarch
 if (Katydid_USE_MONARCH)
-    include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
     add_subdirectory (Source/Egg/Monarch)
     pbuilder_add_ext_libraries (${Monarch_LIBRARIES})
+    add_definitions(-DUSE_MONARCH)
 
     # add to the RPATH to be used when installing, but only if it's not a system directory
     list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
     if ("${isSystemDir}" STREQUAL "-1")
        list (APPEND CMAKE_INSTALL_RPATH ${Monarch_LIBRARY_DIR})
     endif ("${isSystemDir}" STREQUAL "-1")
+else (Katydid_USE_MONARCH)
+    message(STATUS "Building without Monarch")
+    add_subdirectory(Source/Egg/Monarch EXCLUDE_FROM_ALL)
+    remove_definitions(-DUSE_MONARCH)
 endif (Katydid_USE_MONARCH)
+include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
+
 
 # Subdirectories
 include_directories (
