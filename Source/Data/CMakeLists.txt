@@ -81,6 +81,13 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.cc
 )
 
+if (NOT FFTW_FOUND)
+    set (DATA_SOURCEFILES
+        ${DATA_SOURCEFILES}
+        ${PROJECT_SOURCE_DIR}/External/FFTW/FFTWStandIn.cc
+    )
+endif (NOT FFTW_FOUND)
+
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore

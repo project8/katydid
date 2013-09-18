@@ -25,10 +25,7 @@ if (Katydid_ENABLE_PROFILING)
         
     add_executable (ProfileDataAccessMethods ${CMAKE_CURRENT_SOURCE_DIR}/ProfileDataAccessMethods.cc)
     target_link_libraries (ProfileDataAccessMethods KatydidUtility KatydidCore KatydidData KatydidEgg ${EXTERNAL_LIBRARIES})
-        
-    add_executable (ProfileFFTWandMonarch ${CMAKE_CURRENT_SOURCE_DIR}/ProfileFFTWandMonarch.cc)
-    target_link_libraries (ProfileFFTWandMonarch KatydidUtility KatydidCore KatydidData KatydidEgg KatydidFFT ${EXTERNAL_LIBRARIES})
-
+    
     add_executable (ProfileManualAnalysis ${CMAKE_CURRENT_SOURCE_DIR}/ProfileManualAnalysis.cc)
     target_link_libraries (ProfileManualAnalysis KatydidUtility KatydidCore KatydidData KatydidEgg KatydidFFT KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
 
@@ -39,6 +36,16 @@ if (Katydid_ENABLE_PROFILING)
         ProfileManualAnalysis
     )
              
+    
+    if (Katydid_USE_MONARCH AND FFTW_FOUND)
+        add_executable (ProfileFFTWandMonarch ${CMAKE_CURRENT_SOURCE_DIR}/ProfileFFTWandMonarch.cc)
+        target_link_libraries (ProfileFFTWandMonarch KatydidUtility KatydidCore KatydidData KatydidEgg KatydidFFT ${EXTERNAL_LIBRARIES})
+
+        pbuilder_install_executables (
+            ProfileFFTWandMonarch
+        )
+    endif (Katydid_USE_MONARCH AND FFTW_FOUND)
+
     # executables that DO require ROOT
     if (ROOT_FOUND)
         #add_executable (TestBasicROOTFileWriter ${CMAKE_CURRENT_SOURCE_DIR}/TestBasicROOTFileWriter.cc)

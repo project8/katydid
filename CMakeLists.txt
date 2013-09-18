@@ -33,6 +33,8 @@ else (Katydid_SINGLETHREADED)
 endif(Katydid_SINGLETHREADED)
 
 #optional build switches
+set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
+set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_LOG4CXX TRUE CACHE BOOL "Flag to optionally use log4cxx")
@@ -48,16 +50,28 @@ include_directories (${Boost_INCLUDE_DIRS})
 pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 
 # FFTW
-find_package(FFTW REQUIRED)
-include_directories (${FFTW_INCLUDE_DIR})
-pbuilder_add_ext_libraries (${FFTW_LIBRARIES})
-if (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
-    set (FFTW_NTHREADS 1 CACHE STRING "Number of threads to use for FFTW processes")
-    add_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
-    message (STATUS "FFTW configured to use up to ${FFTW_NTHREADS} threads.")
-else (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+if (Katydid_USE_FFTW)
+    find_package(FFTW REQUIRED)
+else (Katydid_USE_FFTW)
+    set (FFTW_FOUND FALSE)
+endif (Katydid_USE_FFTW)
+if (FFTW_FOUND)
+    add_definitions(-DFFTW_FOUND)
+    pbuilder_add_ext_libraries (${FFTW_LIBRARIES})
+    if (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+        set (FFTW_NTHREADS 1 CACHE STRING "Number of threads to use for FFTW processes")
+        add_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
+        message (STATUS "FFTW configured to use up to ${FFTW_NTHREADS} threads.")
+    else (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+        remove_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
+    endif (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+else (FFTW_FOUND)
+    message(STATUS "Building without FFTW")
+    remove_definitions(-DFFTW_FOUND)
     remove_definitions (-DFFTW_NTHREADS=${FFTW_NTHREADS})
-endif (FFTW_THREADS_FOUND AND NOT Katydid_SINGLETHREADED)
+    set (FFTW_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/External/FFTW)
+endif (FFTW_FOUND)
+include_directories (${FFTW_INCLUDE_DIR})
 
 
 # ROOT
@@ -127,15 +141,17 @@ endif (Katydid_ENABLE_TESTING)
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 
 # Monarch
-include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
-add_subdirectory (Source/Egg/Monarch)
-pbuilder_add_ext_libraries (${Monarch_LIBRARIES})
+if (Katydid_USE_MONARCH)
+    include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
+    add_subdirectory (Source/Egg/Monarch)
+    pbuilder_add_ext_libraries (${Monarch_LIBRARIES})
 
-# add to the RPATH to be used when installing, but only if it's not a system directory
-list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
-if ("${isSystemDir}" STREQUAL "-1")
-   list (APPEND CMAKE_INSTALL_RPATH ${Monarch_LIBRARY_DIR})
-endif ("${isSystemDir}" STREQUAL "-1")
+    # add to the RPATH to be used when installing, but only if it's not a system directory
+    list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
+    if ("${isSystemDir}" STREQUAL "-1")
+       list (APPEND CMAKE_INSTALL_RPATH ${Monarch_LIBRARY_DIR})
+    endif ("${isSystemDir}" STREQUAL "-1")
+endif (Katydid_USE_MONARCH)
 
 # Subdirectories
 include_directories (
