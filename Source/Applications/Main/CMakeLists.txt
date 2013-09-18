@@ -3,9 +3,7 @@
 
 # Config files
 set (VALIDATION_CONFIGFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ChannelCorrelatorConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/EvaluateCandidates.json
-    ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/ExtractPowerSpectraConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/FSPeakAnalysisConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSComplexConfig.json
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/KatydidPSConfig.json
@@ -39,17 +37,3 @@ pbuilder_install_executables (
     Katydid
     Truncate
 )
-
-
-if (ROOT_FOUND)
-    add_executable (ChannelCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/ChannelCorrelator.cc)
-    target_link_libraries (ChannelCorrelator KatydidUtility KatydidCore KatydidIO KatydidEgg KatydidFFT KatydidAnalysis ${EXTERNAL_LIBRARIES})
-
-    add_executable (ExtractPowerSpectra ${CMAKE_CURRENT_SOURCE_DIR}/ExtractPowerSpectra.cc)
-    target_link_libraries (ExtractPowerSpectra KatydidUtility KatydidCore KatydidIO KatydidEgg KatydidFFT ${EXTERNAL_LIBRARIES})
-    
-    pbuilder_install_executables ( 
-                ChannelCorrelator
-                ExtractPowerSpectra
-     )
-endif (ROOT_FOUND)

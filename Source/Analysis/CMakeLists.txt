@@ -3,29 +3,36 @@
 
 set (ANALYSIS_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAmplitudeDistributor.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSwitchFFTWPolar.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
     #${CMAKE_CURRENT_SOURCE_DIR}/KTAutoCorrMatrix.hh
 )
 
 set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAmplitudeDistributor.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpectrumDiscriminator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSwitchFFTWPolar.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
     #${CMAKE_CURRENT_SOURCE_DIR}/KTAutoCorrMatrix.cc
 )
+
+if (FFTW_FOUND)
+    set (ANALYSIS_HEADERFILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.hh
+    )
+    set (ANALYSIS_SOURCEFILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTWignerVille.cc
+    )
+endif (FFTW_FOUND)
 
 if (ROOT_FOUND)
     set (ANALYSIS_HEADERFILES 
