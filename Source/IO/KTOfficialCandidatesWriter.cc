@@ -280,6 +280,12 @@ namespace Katydid
     {
         ScopedLock lock(fMutex);
 
+        if (fStatus == kPriorToCandidates)
+        {
+            fJSONMaker->String("candidates");
+            fJSONMaker->StartArray();
+            fJSONMaker->EndArray();
+        }
         if (fStatus == kWritingCandidates)
         {
             // end the array of candidates

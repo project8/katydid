@@ -52,6 +52,17 @@ namespace Katydid
         const KTMCTruthEvents::EventSet& events = mcEventData.GetEvents();
         const KTAnalysisCandidates::CandidateSet& candidates = candidateData.GetCandidates();
 
+        if (events.size() == 0)
+        {
+            KTINFO(cclog, "No events are present");
+            return true;
+        }
+        if (candidates.size() == 0)
+        {
+            KTINFO(cclog, "No candidates are present");
+            return true;
+        }
+
         const UInt_t eventRecordSize = mcEventData.GetRecordSize();
         const UInt_t candidateRecordSize = candidateData.GetRecordSize();
 
