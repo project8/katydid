@@ -312,7 +312,7 @@ namespace Katydid
                 thisPoint = pIt->first;
                 if (thisPoint - activeFBCluster.fLastPoint > fMaxFreqSepBins)
                 {
-                    KTDEBUG(sclog, "Adding freq cluster: " << activeFBCluster.fFirstPoint << "  " << activeFBCluster.fLastPoint);
+                    //KTDEBUG(sclog, "Adding freq cluster: " << activeFBCluster.fFirstPoint << "  " << activeFBCluster.fLastPoint);
                     freqBinClusters.push_back(activeFBCluster);
                     activeFBCluster.fPoints.clear();
                     activeFBCluster.fFirstPoint = thisPoint;
@@ -390,7 +390,7 @@ namespace Katydid
             {
                 if (acHasBeenMergedElsewhere[iCluster])
                 {
-                    KTDEBUG(sclog, "    continuing ac loop due to merged-elsewhere");
+                    //KTDEBUG(sclog, "    continuing ac loop due to merged-elsewhere");
                     iCluster++;
                     continue;
                 }
@@ -408,32 +408,32 @@ namespace Katydid
                     if (fbIt->fAddedToActiveCluster)
                     {
                         // second+ active cluster this fb cluster matches; merge active clusters
-                        KTDEBUG(sclog, "        found another ac cluster to match the fb cluster; merging ac clusters");
+                        //KTDEBUG(sclog, "        found another ac cluster to match the fb cluster; merging ac clusters");
                         acHasBeenMergedElsewhere[iCluster] = true;
                         acHasBeenAddedTo[iCluster] = true;
-                        KTDEBUG(sclog, "        new range: " << acNewFreqRange[fbIt->fACNumber].first << " - " << acNewFreqRange[fbIt->fACNumber].second);
+                        //KTDEBUG(sclog, "        new range: " << acNewFreqRange[fbIt->fACNumber].first << " - " << acNewFreqRange[fbIt->fACNumber].second);
                         // assign the new ac's (cluster # iCluster) points to the previous active cluster (cluster # fbIt->fACNumber)
                         for (SetOfPoints::const_iterator acIt_pIt = acIt->fPoints.begin(); acIt_pIt != acIt->fPoints.end(); acIt_pIt++)
                         {
                             fbIt->fActiveCluster->fPoints.insert(*acIt_pIt);
                         }
-                        KTDEBUG(sclog, "        ac cluster updated; now contains " << fbIt->fActiveCluster->fPoints.size() << " points");
+                        //KTDEBUG(sclog, "        ac cluster updated; now contains " << fbIt->fActiveCluster->fPoints.size() << " points");
                     }
                     else
                     {
                         // first active cluster this fb cluster matches
-                        KTDEBUG(sclog, "        found a new ac cluster to match the fb cluster");
+                        //KTDEBUG(sclog, "        found a new ac cluster to match the fb cluster");
                         if (! acHasBeenAddedTo[iCluster])
                         {
                             acHasBeenAddedTo[iCluster] = true;
                             acNewFreqRange[iCluster] = pair< UInt_t, UInt_t >(fbIt->fFirstPoint, fbIt->fLastPoint);
-                            KTDEBUG(sclog, "        this ac has not already been added to; setting new range: " << acNewFreqRange[iCluster].first << " - " << acNewFreqRange[iCluster].second);
+                            //KTDEBUG(sclog, "        this ac has not already been added to; setting new range: " << acNewFreqRange[iCluster].first << " - " << acNewFreqRange[iCluster].second);
                         }
                         else
                         {
                             if (fbIt->fFirstPoint < acNewFreqRange[iCluster].first) acNewFreqRange[iCluster].first = fbIt->fFirstPoint;
                             if (fbIt->fLastPoint > acNewFreqRange[iCluster].second) acNewFreqRange[iCluster].second = fbIt->fLastPoint;
-                            KTDEBUG(sclog, "        this ac has not been added to; updating range: " << acNewFreqRange[iCluster].first << " - " << acNewFreqRange[iCluster].second);
+                            //KTDEBUG(sclog, "        this ac has not been added to; updating range: " << acNewFreqRange[iCluster].first << " - " << acNewFreqRange[iCluster].second);
                         }
                         // assign this frequency-bin cluster (at fbIt) to the current active cluster (at acIt)
                         // add points to acIt->fPoints
@@ -444,7 +444,7 @@ namespace Katydid
                             newPoint.fAmplitude = fbPointsIt->second;
                             acIt->fPoints.insert(newPoint);
                         }
-                        KTDEBUG(sclog, "        ac cluster updated; now contains " << acIt->fPoints.size() << " points");
+                        //KTDEBUG(sclog, "        ac cluster updated; now contains " << acIt->fPoints.size() << " points");
                         fbIt->fAddedToActiveCluster = true;
                         fbIt->fActiveCluster = acIt;
                         fbIt->fACNumber = iCluster;
@@ -531,7 +531,7 @@ namespace Katydid
             //KTDEBUG(sclog, "next fb cluster");
             if (! fbIt->fAddedToActiveCluster)
             {
-                KTDEBUG(sclog, "    adding new active cluster");
+                //KTDEBUG(sclog, "    adding new active cluster");
                 newCluster.fPoints.clear();
                 for (SetOfDiscriminatedPoints::const_iterator fbPointsIt = fbIt->fPoints.begin(); fbPointsIt != fbIt->fPoints.end(); fbPointsIt++)
                 {
