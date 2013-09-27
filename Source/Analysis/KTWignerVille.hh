@@ -333,6 +333,7 @@ namespace Katydid
 
             // This is declared outside of the buffer loop so that after the loop we know which slice the last window started in
             Bool_t windowStartInFirstSlice = false;
+            Bool_t windowEndInFirstSlice = false;
 
             // loop over the buffer until we get too close to the end to fit another window
             Bool_t exitBufferLoop = false;
@@ -385,7 +386,17 @@ namespace Katydid
                             fOutputSHData->SetAcquisitionID(fSecondHeader.GetAcquisitionID(firstChannel), iPair);
                             fOutputSHData->SetRecordID(fSecondHeader.GetRecordID(firstChannel), iPair);
                         }
-                    }
+                      }
+                }
+
+                // check where the window ends
+                if (endOfCurrentWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
+                {
+                    windowEndInFirstSlice = true;
+                }
+                else
+                {
+                    windowEndInFirstSlice = false;
                 }
 
                 // analyze the data in the buffer
@@ -408,7 +419,7 @@ namespace Katydid
                     {
                         // this is done here with DoTransform to avoid the repeated allocation of new memory
                         fFFT->DoTransform(fInputArray, fOutputArrays[iPair]);
-                        *(fOutputWVData->GetSpectrumFFTW(iPair)) += *fInputArray;
+                        *(fOutputWVData->GetSpectrumFFTW(iPair)) += *(fOutputArrays[iPair]);
                     }
                 }
 
@@ -440,6 +451,8 @@ namespace Katydid
                     }
                     else
                     {
+                        // we are unable to move the start of the next window forward within the buffer.
+                        // this change to futureStarWindow will guarantee that the next if statement will cause the buffer loop to exit
                         futureStartWindow[iComponent] = fBuffer[iComponent].end();
                         fSliceSampleOffset = 0;
                     }
@@ -462,7 +475,7 @@ namespace Katydid
                     fOutputData->fCounter = fDataOutCounter;
 
                     fOutputSHData->SetSliceNumber(fDataOutCounter);
-                    if (windowStartInFirstSlice)
+                    if (windowEndInFirstSlice)
                     {
                         fOutputSHData->SetEndRecordAndSample(fFirstHeader.GetRecordSamplePairAtSample(fSliceSampleOffset-fWindowStride+fWindowSize));
                     }
