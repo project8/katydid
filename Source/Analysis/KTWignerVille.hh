@@ -137,6 +137,8 @@ namespace Katydid
 
             Bool_t fReceivedLastData;
 
+            UInt_t fSamplesUsedByWVSlice;
+
             std::vector< Buffer > fBuffer;
             UInt_t fSliceSampleOffset;
 
@@ -308,7 +310,7 @@ namespace Katydid
             }
 
             // iterators to track where to start the next window
-            std::vector< Buffer::iterator > futureStartWindow(nComponents);
+            std::vector< Buffer::iterator > windowStartIterator(nComponents);
             // iterators to track where this window ends
             std::vector< Buffer::iterator > endOfCurrentWindow(nComponents);
 
@@ -321,7 +323,7 @@ namespace Katydid
                 {
                     fBuffer[iComponent].push_back(std::complex< Double_t >((*ts)(iBin)[0], (*ts)(iBin)[1]));
                 }
-                futureStartWindow[iComponent] = fBuffer[iComponent].begin();
+                windowStartIterator[iComponent] = fBuffer[iComponent].begin() + fSliceSampleOffset;
             }
 
             // set the iterators that point to the break between the slices
@@ -333,7 +335,6 @@ namespace Katydid
 
             // This is declared outside of the buffer loop so that after the loop we know which slice the last window started in
             Bool_t windowStartInFirstSlice = false;
-            Bool_t windowEndInFirstSlice = false;
 
             // loop over the buffer until we get too close to the end to fit another window
             Bool_t exitBufferLoop = false;
@@ -345,12 +346,12 @@ namespace Katydid
 
                 for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
                 {
-                    endOfCurrentWindow[iComponent] = futureStartWindow[iComponent] + (fWindowSize - 1);
+                    endOfCurrentWindow[iComponent] = windowStartIterator[iComponent] + (fWindowSize - 1);
                     KTDEBUG(wvlog, "End of current window " << iComponent << " offset: " << endOfCurrentWindow[iComponent] - fBuffer[iComponent].begin());
                 }
 
                 // a few things need to be done depending on if the window starts in the first slice or the second slice
-                if (futureStartWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
+                if (windowStartIterator[0] < fSliceBreak[0])
                 {
                     windowStartInFirstSlice = true;
                     // set the slice header information if necessary
@@ -389,15 +390,7 @@ namespace Katydid
                       }
                 }
 
-                // check where the window ends
-                if (endOfCurrentWindow[fPairs[0].first] < fSliceBreak[fPairs[0].first])
-                {
-                    windowEndInFirstSlice = true;
-                }
-                else
-                {
-                    windowEndInFirstSlice = false;
-                }
+
 
                 // analyze the data in the buffer
                 for (UInt_t iPair = 0; iPair < nPairs; iPair++)
@@ -405,8 +398,8 @@ namespace Katydid
                     UInt_t firstChannel = fPairs[iPair].first;
                     UInt_t secondChannel =  fPairs[iPair].second;
 
-                    Buffer::iterator startWindowFC = futureStartWindow[firstChannel];
-                    Buffer::iterator startWindowSC = futureStartWindow[secondChannel];
+                    Buffer::iterator startWindowFC = windowStartIterator[firstChannel];
+                    Buffer::iterator startWindowSC = windowStartIterator[secondChannel];
 
                     KTDEBUG(wvlog, "Data remaining in buffer before transform -- ch " << firstChannel << ": " << fBuffer[firstChannel].end() - startWindowFC << "    ch " << secondChannel << ": " << fBuffer[secondChannel].end() - startWindowSC);
                     CalculateACF(startWindowFC, startWindowSC, fWindowCounter);
@@ -423,47 +416,9 @@ namespace Katydid
                     }
                 }
 
-                // move the start pointers up by fWindowStride
-                for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
-                {
-                    // if this is true, then we have enough space to move the start of the next window forward
-                    // otherwise we'll need to exit (which will happen at the next if statement)
-                    // it may still be, of course, that the window itself won't fit
-                    // but that's okay; we want to answer that question separately
-                    if (fBuffer[iComponent].end() - futureStartWindow[iComponent] > fWindowStride) // (note: this is a comparison to fWindowSTRIDE)
-                    {
-                        futureStartWindow[iComponent] += fWindowStride;
-                        // only update fSliceSampleOffset for component 0
-                        if (iComponent == 0)
-                        {
-                            // if we're still on the first slice in the buffer, advance the offset
-                            // if we're on the second slice, set the offset based on distance from the slice break
-                            if (futureStartWindow[iComponent] < fSliceBreak[iComponent])
-                            {
-                                fSliceSampleOffset += fWindowStride;
-                            }
-                            else
-                            {
-                                fSliceSampleOffset = futureStartWindow[iComponent] - fSliceBreak[iComponent];
-                            }
-
-                        }
-                    }
-                    else
-                    {
-                        // we are unable to move the start of the next window forward within the buffer.
-                        // this change to futureStarWindow will guarantee that the next if statement will cause the buffer loop to exit
-                        futureStartWindow[iComponent] = fBuffer[iComponent].end();
-                        fSliceSampleOffset = 0;
-                    }
-
-                    // if this is true, then we can't fit the next window in what remains of the buffer
-                    if (fBuffer[iComponent].end() - futureStartWindow[iComponent] < fWindowSize) // (note: this is a comparison to fWindowSIZE)
-                        exitBufferLoop = true;
-                }
-
                 fWindowCounter++;
                 fWindowAverageCounter++;
+
 
                 // time to output new data!
                 if (fWindowAverageCounter == fNWindowsToAverage)
@@ -475,14 +430,8 @@ namespace Katydid
                     fOutputData->fCounter = fDataOutCounter;
 
                     fOutputSHData->SetSliceNumber(fDataOutCounter);
-                    if (windowEndInFirstSlice)
-                    {
-                        fOutputSHData->SetEndRecordAndSample(fFirstHeader.GetRecordSamplePairAtSample(fSliceSampleOffset-fWindowStride+fWindowSize));
-                    }
-                    else
-                    {
-                        fOutputSHData->SetEndRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(fSliceSampleOffset-fWindowStride+fWindowSize));
-                    }
+                    // window ALWAYS ends in the second slice
+                    fOutputSHData->SetEndRecordAndSample(fSecondHeader.GetRecordSamplePairAtSample(endOfCurrentWindow[0] - fSliceBreak[0]));
 
                     KTDEBUG(wvlog, "Signaling output data;\n" << *fOutputSHData);
 
@@ -492,19 +441,68 @@ namespace Katydid
                     fDataOutCounter++;
                     fWindowAverageCounter = 0;
                 }
-            }
+
+
+                // Move the iterators and sample offset counters
+                // if this next if statement is true, then we have enough space to move the start of the next window forward
+                // otherwise we'll need to exit (which will happen at the next if statement)
+                // it may still be, of course, that the window itself won't fit
+                // but that's okay; we want to answer that question separately
+                if (fBuffer[0].end() - windowStartIterator[0] > fWindowStride) // (note: this is a comparison to fWindowSTRIDE)
+                {
+                    // everything fits in the buffer, so just move the iterators up by fWindowStride
+                    for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                    {
+                        windowStartIterator[iComponent] += fWindowStride;
+                    }
+                    // update fSliceSampleOffset based on component 0
+                    // if we're still on the first slice in the buffer, advance the offset
+                    // if we're on the second slice, set the offset based on distance from the slice break
+                    if (windowStartIterator[0] < fSliceBreak[0])
+                    {
+                        // move fSliceSampleOffset along in the first slice
+                        fSliceSampleOffset += fWindowStride;
+                    }
+                    else
+                    {
+                        // the offset we will have in the second slice
+                        fSliceSampleOffset = windowStartIterator[0] - fSliceBreak[0];
+                    }
+
+                }
+                else
+                {
+                    // we are unable to move the start of the next window forward within the buffer.
+                    // this offset is how far into the next slice, when its received, we need to start
+                    fSliceSampleOffset = fWindowStride - (fBuffer[0].end() - windowStartIterator[0]);
+                    // this change to futureStarWindow will guarantee that the next if statement will cause the buffer loop to exit
+                    // we'll need to update windowStartIterator the next time this method is called; we haven't received the next slice yet, so we can't set pointers to the buffer
+                    for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                    {
+                        windowStartIterator[iComponent] = fBuffer[iComponent].end();
+                    }
+                }
+
+                // at this point, windowStartIterator has been updated for the next window
+
+                // determine if we need to exit the loop
+                // if this next if statement is true, then we can't fit the next window in what remains of the buffer
+                if (fBuffer[0].end() - windowStartIterator[0] < fWindowSize) // (note: this is a comparison to fWindowSIZE)
+                    exitBufferLoop = true;
+
+            } // end of the loop over windows in the buffer
 
 
 
             // remove data that has now been analyzed completely
             for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
             {
-                // just in case the futureStartWindow iterator is beyond the end of the buffer
-                if (! (futureStartWindow[iComponent] < fBuffer[iComponent].end()))
-                    futureStartWindow[iComponent] = fBuffer[iComponent].end();
+                // just in case the windowStartIterator iterator is beyond the end of the buffer
+                if (! (windowStartIterator[iComponent] < fBuffer[iComponent].end()))
+                    windowStartIterator[iComponent] = fBuffer[iComponent].end();
 
-                // pop from the front until the front reaches futureStartWindow
-                while (fBuffer[iComponent].begin() != futureStartWindow[iComponent])
+                // pop from the front until the front reaches windowStartIterator
+                while (fBuffer[iComponent].begin() != windowStartIterator[iComponent])
                 {
                     fBuffer[iComponent].pop_front();
                 }

@@ -134,6 +134,8 @@ namespace Katydid
             fSliceBreak[iComponent] = fBuffer[iComponent].end();
         }
 
+        fSamplesUsedByWVSlice = fWindowSize + (fNWindowsToAverage - 1) * fWindowStride;
+
         fSliceSampleOffset = 0;
 
         // initialize the output data
