@@ -104,8 +104,8 @@ namespace Katydid
         if (! this->IsCompatibleWith(rhs)) return *this;
         for (size_t iBin=0; iBin<rhs.size(); iBin++)
         {
-            fTempCache[0] = fData[iBin][0] + rhs.fData[iBin][0];
-            fTempCache[1] = fData[iBin][1] + rhs.fData[iBin][1];
+            fData[iBin][0] = fData[iBin][0] + rhs.fData[iBin][0];
+            fData[iBin][1] = fData[iBin][1] + rhs.fData[iBin][1];
         }
         return *this;
     }
