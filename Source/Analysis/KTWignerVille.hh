@@ -40,6 +40,7 @@ namespace Katydid
     class KTEggHeader;
     //class KTSliceHeader;
     class KTTimeSeriesData;
+    class KTWindower;
 
     /*!
      @class KTWignerVille
@@ -104,6 +105,12 @@ namespace Katydid
             UInt_t GetNWindowsToAverage() const;
             void SetNWindowsToAverage(UInt_t nAvg);
 
+            Bool_t GetUseWindowFunction() const;
+            void SetUseWindowFunction(Bool_t flag);
+
+            KTWindower* GetWindower();
+            const KTWindower* GetWindower() const;
+
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
 
@@ -137,14 +144,16 @@ namespace Katydid
 
             Bool_t fReceivedLastData;
 
-            UInt_t fSamplesUsedByWVSlice;
-
             std::vector< Buffer > fBuffer;
             UInt_t fSliceSampleOffset;
+            Bool_t fAdvanceStartIteratorOnNewSlice;
 
             std::vector< Buffer::iterator > fSliceBreak;
 
             KTTimeSeriesFFTW* fInputArray;
+
+            Bool_t fUseWindowFunction;
+            KTWindower* fWindower;
 
             KTComplexFFTW* fFFT;
 
@@ -237,6 +246,26 @@ namespace Katydid
         return;
     }
 
+    inline Bool_t KTWignerVille::GetUseWindowFunction() const
+    {
+        return fUseWindowFunction;
+    }
+
+    inline void KTWignerVille::SetUseWindowFunction(Bool_t flag)
+    {
+        fUseWindowFunction = flag;
+        return;
+    }
+
+    inline KTWindower* KTWignerVille::GetWindower()
+    {
+        return fWindower;
+    }
+
+    inline const KTWindower* KTWignerVille::GetWindower() const
+    {
+        return fWindower;
+    }
 
     inline KTComplexFFTW* KTWignerVille::GetFFT()
     {
@@ -289,7 +318,7 @@ namespace Katydid
             UInt_t nPairs = fOutputWVData->GetNComponents();
 
             std::vector< UInt_t > preCopyBufferSize(nComponents);
-            for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 preCopyBufferSize[iComponent] = fBuffer[iComponent].size();
                 KTDEBUG(wvlog, "Pre-copy buffer " << iComponent << " size: " << preCopyBufferSize[iComponent]);
@@ -303,7 +332,7 @@ namespace Katydid
             if (header.GetIsNewAcquisition())
             {
                 localIsNewAcquisition = true;
-                for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     fBuffer[iComponent].clear();
                 }
@@ -315,19 +344,29 @@ namespace Katydid
             std::vector< Buffer::iterator > endOfCurrentWindow(nComponents);
 
             // copy the data into the circular buffer
-            for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 const KTTimeSeriesFFTW* ts = static_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
                 UInt_t tsSize = ts->size();
-                for (UInt_t iBin = 0; iBin < tsSize; iBin++)
+                for (UInt_t iBin = 0; iBin < tsSize; ++iBin)
                 {
                     fBuffer[iComponent].push_back(std::complex< Double_t >((*ts)(iBin)[0], (*ts)(iBin)[1]));
                 }
-                windowStartIterator[iComponent] = fBuffer[iComponent].begin() + fSliceSampleOffset;
+                // we should only need to advance the start iterator if the start of this window
+                // didn't fit in the last slice during the previous iteration
+                if (fAdvanceStartIteratorOnNewSlice)
+                {
+                    windowStartIterator[iComponent] = fBuffer[iComponent].begin() + fSliceSampleOffset;
+                    fAdvanceStartIteratorOnNewSlice = false;
+                }
+                else
+                {
+                    windowStartIterator[iComponent] = fBuffer[iComponent].begin();
+                }
             }
 
             // set the iterators that point to the break between the slices
-            for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 fSliceBreak[iComponent] = fBuffer[iComponent].begin() + preCopyBufferSize[iComponent];
                 KTDEBUG(wvlog, "Slice break " << iComponent << " offset: " << fSliceBreak[iComponent] - fBuffer[iComponent].begin());
@@ -344,7 +383,7 @@ namespace Katydid
 
                 fOutputWVData->Clear();
 
-                for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     endOfCurrentWindow[iComponent] = windowStartIterator[iComponent] + (fWindowSize - 1);
                     KTDEBUG(wvlog, "End of current window " << iComponent << " offset: " << endOfCurrentWindow[iComponent] - fBuffer[iComponent].begin());
@@ -361,7 +400,7 @@ namespace Katydid
                         fOutputSHData->SetTimeInRun(fFirstHeader.GetTimeInRunAtSample(fSliceSampleOffset));
                         fOutputSHData->SetIsNewAcquisition(false);
                         fOutputSHData->SetRecordSize(fFirstHeader.GetRecordSize());
-                        for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+                        for (UInt_t iPair = 0; iPair < nPairs; ++iPair)
                         {
                             UInt_t firstChannel = fPairs[iPair].first;
                             fOutputSHData->SetTimeStamp(fFirstHeader.GetTimeStampAtSample(fSliceSampleOffset, firstChannel), iPair);
@@ -380,7 +419,7 @@ namespace Katydid
                         fOutputSHData->SetTimeInRun(fSecondHeader.GetTimeInRunAtSample(fSliceSampleOffset));
                         fOutputSHData->SetIsNewAcquisition(localIsNewAcquisition);
                         fOutputSHData->SetRecordSize(fSecondHeader.GetRecordSize());
-                        for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+                        for (UInt_t iPair = 0; iPair < nPairs; ++iPair)
                         {
                             UInt_t firstChannel = fPairs[iPair].first;
                             fOutputSHData->SetTimeStamp(fSecondHeader.GetTimeStampAtSample(fSliceSampleOffset, firstChannel), iPair);
@@ -393,7 +432,7 @@ namespace Katydid
 
 
                 // analyze the data in the buffer
-                for (UInt_t iPair = 0; iPair < nPairs; iPair++)
+                for (UInt_t iPair = 0; iPair < nPairs; ++iPair)
                 {
                     UInt_t firstChannel = fPairs[iPair].first;
                     UInt_t secondChannel =  fPairs[iPair].second;
@@ -416,8 +455,8 @@ namespace Katydid
                     }
                 }
 
-                fWindowCounter++;
-                fWindowAverageCounter++;
+                ++fWindowCounter;
+                ++fWindowAverageCounter;
 
 
                 // time to output new data!
@@ -438,7 +477,7 @@ namespace Katydid
                     // Call the signal on the output data
                     fWVSignal(fOutputData);
 
-                    fDataOutCounter++;
+                    ++fDataOutCounter;
                     fWindowAverageCounter = 0;
                 }
 
@@ -450,8 +489,8 @@ namespace Katydid
                 // but that's okay; we want to answer that question separately
                 if (fBuffer[0].end() - windowStartIterator[0] > fWindowStride) // (note: this is a comparison to fWindowSTRIDE)
                 {
-                    // everything fits in the buffer, so just move the iterators up by fWindowStride
-                    for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                    // the beginning of the next window fits in the buffer, so just move the iterators up by fWindowStride
+                    for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
                     {
                         windowStartIterator[iComponent] += fWindowStride;
                     }
@@ -475,9 +514,10 @@ namespace Katydid
                     // we are unable to move the start of the next window forward within the buffer.
                     // this offset is how far into the next slice, when its received, we need to start
                     fSliceSampleOffset = fWindowStride - (fBuffer[0].end() - windowStartIterator[0]);
+                    fAdvanceStartIteratorOnNewSlice = true;
                     // this change to futureStarWindow will guarantee that the next if statement will cause the buffer loop to exit
                     // we'll need to update windowStartIterator the next time this method is called; we haven't received the next slice yet, so we can't set pointers to the buffer
-                    for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                    for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
                     {
                         windowStartIterator[iComponent] = fBuffer[iComponent].end();
                     }
@@ -495,7 +535,7 @@ namespace Katydid
 
 
             // remove data that has now been analyzed completely
-            for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 // just in case the windowStartIterator iterator is beyond the end of the buffer
                 if (! (windowStartIterator[iComponent] < fBuffer[iComponent].end()))

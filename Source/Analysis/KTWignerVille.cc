@@ -13,6 +13,7 @@
 #include "KTFrequencySpectrumFFTW.hh"
 //#include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
+#include "KTWindower.hh"
 
 #include <algorithm>
 
@@ -37,8 +38,11 @@ namespace Katydid
             fReceivedLastData(false),
             fBuffer(),
             fSliceSampleOffset(0),
+            fAdvanceStartIteratorOnNewSlice(false),
             fSliceBreak(),
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
+            fUseWindowFunction(false),
+            fWindower(new KTWindower()),
             fFFT(new KTComplexFFTW()),
             fOutputArrays(),
             fOutputData(new KTData()),
@@ -67,10 +71,17 @@ namespace Katydid
 
     Bool_t KTWignerVille::Configure(const KTPStoreNode* node)
     {
-        const KTPStoreNode childNode = node->GetChild("complex-fftw");
-        if (childNode.IsValid())
+        const KTPStoreNode fftNode = node->GetChild("complex-fftw");
+        if (fftNode.IsValid())
         {
-            fFFT->Configure(&childNode);
+            fFFT->Configure(&fftNode);
+        }
+
+        const KTPStoreNode windowerNode = node->GetChild("windower");
+        if (windowerNode.IsValid())
+        {
+            fUseWindowFunction = true;
+            fWindower->Configure(&windowerNode);
         }
 
         KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
@@ -98,6 +109,12 @@ namespace Katydid
         UInt_t nPairs = fPairs.size();
 
         if (fNWindowsToAverage == 0) fNWindowsToAverage = 1;
+
+        // initialize the Windower
+        if (fUseWindowFunction)
+        {
+            fWindower->InitializeWindow(1. / acqRate, fWindowSize);
+        }
 
         // initialize the FFT
         fFFT->SetSize(fWindowSize);
@@ -134,9 +151,8 @@ namespace Katydid
             fSliceBreak[iComponent] = fBuffer[iComponent].end();
         }
 
-        fSamplesUsedByWVSlice = fWindowSize + (fNWindowsToAverage - 1) * fWindowStride;
-
         fSliceSampleOffset = 0;
+        fAdvanceStartIteratorOnNewSlice = false;
 
         // initialize the output data
         fOutputData.reset(new KTData());
@@ -212,7 +228,7 @@ namespace Katydid
         for (UInt_t fftBin = 0; fftBin < fWindowSize; fftBin++)
         {
             // decrement data2It first so that it doesn't run past begin() on the first window
-            data2It--;
+            --data2It;
             t1_real = data1It->real();
             t1_imag = data1It->imag();
             t2_real = data2It->real();
@@ -220,7 +236,12 @@ namespace Katydid
             (*fInputArray)(fftBin)[0] = t1_real * t2_real + t1_imag * t2_imag;
             (*fInputArray)(fftBin)[1] = t1_imag * t2_real - t1_real * t2_imag;
             //KTWARN(wvlog, "  " << fftBin << " -- " << t1_real << "  " << t1_imag << " -- " << t2_real << "  " << t2_imag << " -- " << (*fInputArray)(fftBin)[0] << "  " << (*fInputArray)(fftBin)[1]);
-            data1It++;
+            ++data1It;
+        }
+
+        if (fUseWindowFunction)
+        {
+            fWindower->ApplyWindow(fInputArray);
         }
 
         return;
