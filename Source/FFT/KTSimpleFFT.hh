@@ -46,7 +46,8 @@ namespace Katydid
      @brief A one-dimensional real-to-complex FFT class.
 
      @details
-     KTSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
+     KTSimpleFFT performs a real-to-complex forward FFT on a one-dimensional array of doubles,
+     or a complex-to-real reverse FFT on a one-dimensional array of complexpolar pairs.
 
      The FFT is implemented using FFTW.
 
@@ -70,7 +71,8 @@ namespace Katydid
      - "ts": void (shared_ptr<KTData>) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft"
 
      Signals:
-     - "fft": void (shared_ptr<KTData>) -- Emitted upon successful performance of an FFT; Guarantees KTFrequencySpectrumDataPolar
+     - "fft-forward": void (shared_ptr<KTData>) -- Emitted upon successful performance of a forward FFT; Guarantees KTFrequencySpectrumDataPolar
+     - "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon successful performance of a reverse FFT; Guarantees KTFrequencySpectrumDataPolar
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
