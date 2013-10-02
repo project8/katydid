@@ -20,8 +20,6 @@
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_comp, "katydid.fft");
-
     class KTData;
     class KTEggHeader;
     class KTPStoreNode;
@@ -66,12 +64,13 @@ namespace Katydid
 
             KTWindowFunction* GetWindowFunction() const;
             void SetWindowFunction(KTWindowFunction* wf);
+            Bool_t SelectWindowFunction(const std::string& windowType);
 
         private:
             KTWindowFunction* fWindowFunction;
 
         public:
-            Bool_t InitializeWindow();
+            Bool_t InitializeWindow(Double_t binWidth, Double_t size);
             void InitializeWithHeader(const KTEggHeader* header);
 
             /// Window the data object's time series (real-type)
@@ -80,9 +79,9 @@ namespace Katydid
             Bool_t WindowDataFFTW(KTTimeSeriesData& tsData);
 
             /// Window a single time series (real-type)
-            Bool_t ApplyWindow(KTTimeSeriesReal* data) const;
+            Bool_t ApplyWindow(KTTimeSeriesReal* ts) const;
             /// Window a single time series (fftw-type)
-            Bool_t ApplyWindow(KTTimeSeriesFFTW* data) const;
+            Bool_t ApplyWindow(KTTimeSeriesFFTW* ts) const;
 
             //***************
             // Signals

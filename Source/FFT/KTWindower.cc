@@ -46,13 +46,10 @@ namespace Katydid
         if (node != NULL)
         {
             string windowType = node->GetData< string >("window-function-type", "rectangular");
-            KTWindowFunction* tempWF = KTNOFactory< KTWindowFunction >::GetInstance()->Create(windowType);
-            if (tempWF == NULL)
+            if (! SelectWindowFunction(windowType))
             {
-                KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");
                 return false;
             }
-            SetWindowFunction(tempWF);
 
             KTPStoreNode wfNode = node->GetChild("window-function");
             if (! wfNode.IsValid())
@@ -61,7 +58,7 @@ namespace Katydid
             }
             else
             {
-                if (! tempWF->Configure(&wfNode))
+                if (! fWindowFunction->Configure(&wfNode))
                 {
                     KTERROR(windowlog, "Problems occurred while configuring the window function");
                     return false;
@@ -72,17 +69,29 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTWindower::InitializeWindow()
+    Bool_t KTWindower::SelectWindowFunction(const string& windowType)
     {
+        KTWindowFunction* tempWF = KTNOFactory< KTWindowFunction >::GetInstance()->Create(windowType);
+        if (tempWF == NULL)
+        {
+            KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");
+            return false;
+        }
+        SetWindowFunction(tempWF);
+        return true;
+    }
+
+    Bool_t KTWindower::InitializeWindow(Double_t binWidth, Double_t size)
+    {
+        fWindowFunction->SetBinWidth(binWidth);
+        fWindowFunction->SetSize(size);
         fWindowFunction->RebuildWindowFunction();
         return true;
     }
 
     void KTWindower::InitializeWithHeader(const KTEggHeader* header)
     {
-        fWindowFunction->SetBinWidth(1. / header->GetAcquisitionRate());
-        fWindowFunction->SetSize(header->GetSliceSize());
-        if (! InitializeWindow())
+        if (! InitializeWindow(1. / header->GetAcquisitionRate(), header->GetSliceSize()))
         {
             KTERROR(windowlog, "Something went wrong while initializing the window function!");
             return;
@@ -100,7 +109,7 @@ namespace Katydid
 
         UInt_t nComponents = tsData.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesReal* nextInput = dynamic_cast< KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -118,7 +127,7 @@ namespace Katydid
             }
         }
 
-        KTINFO(fftlog_comp, "Windowing complete");
+        KTINFO(windowlog, "Windowing complete");
 
         return true;
     }
@@ -132,7 +141,7 @@ namespace Katydid
 
         UInt_t nComponents = tsData.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesFFTW* nextInput = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -150,14 +159,14 @@ namespace Katydid
             }
         }
 
-        KTINFO(fftlog_comp, "Windowing complete");
+        KTINFO(windowlog, "Windowing complete");
 
         return true;
     }
 
-    Bool_t KTWindower::ApplyWindow(KTTimeSeriesReal* data) const
+    Bool_t KTWindower::ApplyWindow(KTTimeSeriesReal* ts) const
     {
-        UInt_t nBins = data->size();
+        UInt_t nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
         {
             KTWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
@@ -165,17 +174,17 @@ namespace Katydid
             return false;
         }
 
-        for (UInt_t iBin=0; iBin < nBins; iBin++)
+        for (UInt_t iBin=0; iBin < nBins; ++iBin)
         {
-            (*data)(iBin) = (*data)(iBin) * fWindowFunction->GetWeight(iBin);
+            (*ts)(iBin) = (*ts)(iBin) * fWindowFunction->GetWeight(iBin);
         }
 
         return true;
     }
 
-    Bool_t KTWindower::ApplyWindow(KTTimeSeriesFFTW* data) const
+    Bool_t KTWindower::ApplyWindow(KTTimeSeriesFFTW* ts) const
     {
-        UInt_t nBins = data->size();
+        UInt_t nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
         {
             KTWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
@@ -184,11 +193,11 @@ namespace Katydid
         }
 
         Double_t weight;
-        for (UInt_t iBin=0; iBin < nBins; iBin++)
+        for (UInt_t iBin=0; iBin < nBins; ++iBin)
         {
             weight = fWindowFunction->GetWeight(iBin);
-            (*data)(iBin)[0] = (*data)(iBin)[0] * weight;
-            (*data)(iBin)[1] = (*data)(iBin)[1] * weight;
+            (*ts)(iBin)[0] = (*ts)(iBin)[0] * weight;
+            (*ts)(iBin)[1] = (*ts)(iBin)[1] * weight;
         }
 
         return true;
