@@ -112,6 +112,8 @@ namespace Katydid
                 UInt_t fEndMinFreqPoint;
                 UInt_t fEndMaxFreqPoint;
 
+                UInt_t fTimeBinSkipCounter;
+
                 UInt_t fDataComponent;
 
                 ListOfSpectra fPreClusterSpectra;
