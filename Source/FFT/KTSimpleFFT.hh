@@ -68,7 +68,8 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader*) -- Initialize the FFT from an Egg file header
-     - "ts": void (shared_ptr<KTData>) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft"
+     - "ts": void (shared_ptr<KTData>) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft-forward"
+     - "fs-polar": void (shared_ptr<KTData>) -- Perform a reverse FFT; Requires KTFrequencySpectrumDataPolar; Emits signal signal "fft-reverse"
 
      Signals:
      - "fft-forward": void (shared_ptr<KTData>) -- Emitted upon successful performance of a forward FFT; Guarantees KTFrequencySpectrumDataPolar
