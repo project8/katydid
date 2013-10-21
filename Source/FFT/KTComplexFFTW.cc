@@ -158,7 +158,7 @@ namespace Katydid
         {
             KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
                     << "   Please first call InitializeFFT(), then perform the transform.");
-            return NULL;
+            return false;
         }
 
         UInt_t nComponents = tsData.GetNComponents();
@@ -202,7 +202,7 @@ namespace Katydid
         {
             KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
                     << "   Please first call InitializeFFT(), then perform the transform.");
-            return NULL;
+            return false;
         }
 
         UInt_t nComponents = tsData.GetNComponents();

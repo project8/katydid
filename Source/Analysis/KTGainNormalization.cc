@@ -120,7 +120,7 @@ namespace Katydid
         if (nComponents != gvData.GetNComponents())
         {
             KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
-            return NULL;
+            return false;
         }
 
         KTNormalizedFSDataFFTW& newData = fsData.Of< KTNormalizedFSDataFFTW >().SetNComponents(nComponents);
