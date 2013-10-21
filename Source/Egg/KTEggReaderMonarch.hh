@@ -135,9 +135,6 @@ namespace Katydid
 
             Double_t fSampleRateUnitsInHz;
 
-            Double_t fFullVoltageScale;
-            UInt_t fNADCLevels;
-
             UInt_t fRecordSize;
             Double_t fBinWidth;
 
@@ -181,15 +178,6 @@ namespace Katydid
     inline Double_t KTEggReaderMonarch::GetSampleRateUnitsInHz() const
     {
         return fSampleRateUnitsInHz;
-    }
-
-    inline Double_t KTEggReaderMonarch::GetFullVoltageScale() const
-    {
-        return fFullVoltageScale;
-    }
-    inline UInt_t KTEggReaderMonarch::GetNADCLevels() const
-    {
-        return fNADCLevels;
     }
 
     inline UInt_t KTEggReaderMonarch::GetRecordSize() const

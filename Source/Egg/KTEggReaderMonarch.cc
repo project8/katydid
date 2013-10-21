@@ -44,8 +44,6 @@ namespace Katydid
             fNumberOfChannels(),
             fGetTimeInRun(&KTEggReaderMonarch::GetTimeInRunFirstCall),
             fSampleRateUnitsInHz(1.e6),
-            fFullVoltageScale(0.5),
-            fNADCLevels(256),
             fRecordSize(0),
             fBinWidth(0.),
             fSliceNumber(0)
@@ -254,9 +252,6 @@ namespace Katydid
         sliceHeader.SetRecordSize(fHeader.GetRecordSize());
         KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
-        // Normalization of the record values
-        Double_t normalization = fFullVoltageScale / (Double_t)fNADCLevels;
-
         // Setup pointers to monarch and new katydid records
         UInt_t nChannels = fHeader.GetNChannels();
         vector< const MonarchRecord* > monarchRecords(nChannels);
@@ -358,7 +353,7 @@ namespace Katydid
             for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
             {
                 // set the data
-                newRecords[iChannel]->SetValue(iBin, Double_t(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]) * normalization);
+                newRecords[iChannel]->SetValue(iBin, Double_t(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]));
             }
 
             // advance the pointer for the next bin

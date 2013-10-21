@@ -40,6 +40,11 @@ namespace Katydid
             fEggReaderType(kMonarchEggReader),
             fSliceSize(1024),
             fStride(1024),
+            fNormalizeVoltages(true),
+            fFullVoltageScale(0.5),
+            fNADCLevels(256),
+            fNormalization(1.),
+            fCalculateNormalization(true),
             fTimeSeriesType(kRealTimeSeries),
             fHeaderSignal("header", this),
             fDataSignal("slice", this),
@@ -102,6 +107,15 @@ namespace Katydid
                 KTERROR(egglog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
                 return false;
             }
+
+            // whether or not to normalize voltage values, and what the normalization is
+            SetNormalizeVoltages(node->GetData< Bool_t >("normalize-voltages", fNormalizeVoltages));
+            if (node->HasData("full-voltage-scale"))
+                SetFullVoltageScale(node->GetData< Double_t >("full-voltage-scale", fFullVoltageScale));
+            if (node->HasData("n-adc-levels"))
+                SetNADCLevels(node->GetData< UInt_t >("n-adc-levels", fNADCLevels));
+            if (node->HasData("normalization"))
+                SetNormalization(node->GetData< Double_t >("normalization", fNormalization));
         }
 
         // Command-line settings
@@ -146,6 +160,8 @@ namespace Katydid
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
 
+        if (fCalculateNormalization) CalculateNormalization();
+
         if (fNSlices == 0) UnlimitedLoop(reader);
         else LimitedLoop(reader);
 
@@ -168,17 +184,19 @@ namespace Katydid
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
     {
         UInt_t iSlice = 0, iProgress = 0;
+        shared_ptr<KTData> data;
         while (kTRUE)
         {
             KTINFO(egglog, "Hatching slice " << iSlice);
 
             // Hatch the slice
             shared_ptr<KTData> data = reader->HatchNextSlice();
-            if (data.get() == NULL) break;
+            if (! HatchNextSlice(reader, data)) break;
 
             if (data->Has< KTTimeSeriesData >())
             {
                 KTDEBUG(egglog, "Time series data is present.");
+                NormalizeData(data);
                 fDataSignal(data);
             }
             else
@@ -201,6 +219,7 @@ namespace Katydid
     void KTEggProcessor::LimitedLoop(KTEggReader* reader)
     {
         UInt_t iSlice = 0, iProgress = 0;
+        shared_ptr<KTData> data;
         while (kTRUE)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
@@ -212,14 +231,14 @@ namespace Katydid
             KTINFO(egglog, "Hatching slice " << iSlice << "/" << fNSlices);
 
             // Hatch the slice
-            shared_ptr<KTData> data = reader->HatchNextSlice();
-            if (data.get() == NULL) break;
+            if (! HatchNextSlice(reader, data)) break;
 
             if (iSlice == fNSlices - 1) data->Of< KTData >().fLastData = true;
 
             if (data->Has< KTTimeSeriesData >())
             {
                 KTDEBUG(egglog, "Time series data is present.");
+                NormalizeData(data);
                 fDataSignal(data);
             }
             else
@@ -234,6 +253,20 @@ namespace Katydid
             {
                 iProgress = 0;
                 KTPROG(egglog, iSlice << " slices processed (" << Double_t(iSlice) / Double_t(fNSlices) * 100. << " %)");
+            }
+        }
+        return;
+    }
+
+    void KTEggProcessor::NormalizeData(boost::shared_ptr< KTData >& data) const
+    {
+        if (fNormalizeVoltages)
+        {
+            KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
+            UInt_t nComponents = tsData.GetNComponents();
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+                tsData.GetTimeSeries(iComponent)->Scale(fNormalization);
             }
         }
         return;

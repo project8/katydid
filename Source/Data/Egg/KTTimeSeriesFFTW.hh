@@ -25,6 +25,8 @@ namespace Katydid
 
             KTTimeSeriesFFTW& operator=(const KTTimeSeriesFFTW& rhs);
 
+            virtual void Scale(Double_t scale);
+
             virtual UInt_t GetNTimeBins() const;
             virtual Double_t GetTimeBinWidth() const;
 
@@ -40,6 +42,12 @@ namespace Katydid
             virtual TH1D* CreateAmplitudeDistributionHistogram(const std::string& name = "hTimeSeriesDist") const;
 #endif
     };
+
+    inline void KTTimeSeriesFFTW::Scale(Double_t scale)
+    {
+        this->KTPhysicalArray< 1, fftw_complex >::operator*=(scale);
+        return;
+    }
 
     inline UInt_t KTTimeSeriesFFTW::GetNTimeBins() const
     {

@@ -78,20 +78,41 @@ namespace Katydid
 
             Bool_t ProcessEgg();
 
-            UInt_t GetNSlices() const;
-            UInt_t GetProgressReportInterval() const;
-            const std::string& GetFilename() const;
-            EggReaderType GetEggReaderType() const;
-            UInt_t GetSliceSize() const;
-            UInt_t GetStride() const;
-            TimeSeriesType GetTimeSeriesType() const;
+            Bool_t HatchNextSlice(KTEggReader* reader, boost::shared_ptr< KTData >& data) const;
+            void NormalizeData(boost::shared_ptr< KTData >& data) const;
 
+            UInt_t GetNSlices() const;
             void SetNSlices(UInt_t nSlices);
+
+            UInt_t GetProgressReportInterval() const;
             void SetProgressReportInterval(UInt_t nSlices);
+
+            const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
+
+            EggReaderType GetEggReaderType() const;
             void SetEggReaderType(EggReaderType type);
+
+            UInt_t GetSliceSize() const;
             void SetSliceSize(UInt_t size);
+
+            UInt_t GetStride() const;
             void SetStride(UInt_t stride);
+
+            Bool_t GetNormalizeVoltages() const;
+            void SetNormalizeVoltages(Bool_t flag);
+
+            Double_t GetFullVoltageScale() const;
+            void SetFullVoltageScale(Double_t vScale);
+
+            UInt_t GetNADCLevels() const;
+            void SetNADCLevels(UInt_t adcLevels);
+
+            Double_t GetNormalization() const;
+            void CalculateNormalization(); /// Calculate the normalization from the full voltage scale, and number of ADC levels
+            void SetNormalization(Double_t norm); /// Set the normalization directly
+
+            TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
 
         private:
@@ -107,6 +128,12 @@ namespace Katydid
 
             UInt_t fSliceSize;
             UInt_t fStride;
+
+            Bool_t fNormalizeVoltages;
+            Double_t fFullVoltageScale;
+            UInt_t fNADCLevels;
+            Double_t fNormalization; // final value of the normalization
+            Bool_t fCalculateNormalization; // flag for automatically calculating the normalization
 
             TimeSeriesType fTimeSeriesType;
 
@@ -125,6 +152,13 @@ namespace Katydid
     inline Bool_t KTEggProcessor::Run()
     {
         return ProcessEgg();
+    }
+
+    inline Bool_t KTEggProcessor::HatchNextSlice(KTEggReader* reader, boost::shared_ptr< KTData >& data) const
+    {
+        data = reader->HatchNextSlice();
+        if (data) return true;
+        return false;
     }
 
     inline UInt_t KTEggProcessor::GetNSlices() const
@@ -190,6 +224,60 @@ namespace Katydid
     inline void KTEggProcessor::SetStride(UInt_t stride)
     {
         fStride = stride;
+        return;
+    }
+
+    inline Bool_t KTEggProcessor::GetNormalizeVoltages() const
+    {
+        return fNormalizeVoltages;
+    }
+
+    inline void KTEggProcessor::SetNormalizeVoltages(Bool_t flag)
+    {
+        fNormalizeVoltages = flag;
+        return;
+    }
+
+    inline Double_t KTEggProcessor::GetFullVoltageScale() const
+    {
+        return fFullVoltageScale;
+    }
+
+    inline void KTEggProcessor::SetFullVoltageScale(Double_t vScale)
+    {
+        fFullVoltageScale = vScale;
+        fCalculateNormalization = true;
+        return;
+    }
+
+    inline UInt_t KTEggProcessor::GetNADCLevels() const
+    {
+        return fNADCLevels;
+    }
+
+    inline void KTEggProcessor::SetNADCLevels(UInt_t adcLevels)
+    {
+        fNADCLevels = adcLevels;
+        fCalculateNormalization = true;
+        return;
+    }
+
+    inline Double_t KTEggProcessor::GetNormalization() const
+    {
+        return fNormalization;
+    }
+
+    inline void KTEggProcessor::CalculateNormalization()
+    {
+        fNormalization = fFullVoltageScale / (Double_t)fNADCLevels;
+        fCalculateNormalization = false;
+        return;
+    }
+
+    inline void KTEggProcessor::SetNormalization(Double_t norm)
+    {
+        fNormalization = norm;
+        fCalculateNormalization = false;
         return;
     }
 

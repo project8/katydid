@@ -24,6 +24,9 @@ namespace Katydid
             KTTimeSeries();
             virtual ~KTTimeSeries();
 
+            /// Scale the time series
+            virtual void Scale(Double_t scale) = 0;
+
             /// Get the size of the time series via the KTTimeSeries interface
             virtual UInt_t GetNTimeBins() const = 0;
 
