@@ -62,7 +62,7 @@
             "connection":
             {
                 "signal-processor": "fft",
-                "signal-name": "fft",
+                "signal-name": "fft-forward",
                 "slot-processor": "writer",
                 "slot-name": "fs-polar"
             },
