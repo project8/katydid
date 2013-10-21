@@ -174,7 +174,7 @@ namespace Katydid
         }
         else
         {
-            fSliceNumber++;
+            ++fSliceNumber;
 
             if (fReadState.fStatus == MonarchReadState::kReachedNextRecord)
             {
@@ -187,9 +187,9 @@ namespace Katydid
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
                     return shared_ptr< KTData >();
                 }
-                fReadState.fAbsoluteRecordOffset++;
+                ++(fReadState.fAbsoluteRecordOffset);
                 fReadState.fReadPtrOffset = 0;
-                fReadState.fReadPtrRecordOffset++;
+                ++(fReadState.fReadPtrRecordOffset);
                 fReadState.fStatus = MonarchReadState::kContinueReading;
             }
 
@@ -200,7 +200,7 @@ namespace Katydid
             while (fReadState.fSliceStartPtrOffset >= recordSize)
             {
                 fReadState.fSliceStartPtrOffset -= recordSize;
-                sliceStartRecordOffset++;
+                ++sliceStartRecordOffset;
             }
 
             // Calculate whether we need to move the read pointer to a different record by subtracing the number
@@ -214,7 +214,7 @@ namespace Katydid
                 fReadState.fAbsoluteRecordOffset += readPtrRecordOffsetShift;
                 if (readPtrRecordOffsetShift != 0)
                 {
-                    readPtrRecordOffsetShift--;
+                    --readPtrRecordOffsetShift;
                     KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
                     // move the read pointer to the slice start pointer (first move monarch to the correct record)
                     if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
@@ -256,7 +256,7 @@ namespace Katydid
         UInt_t nChannels = fHeader.GetNChannels();
         vector< const MonarchRecord* > monarchRecords(nChannels);
         vector< KTTimeSeries* > newRecords(nChannels);
-        for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
+        for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
         {
             monarchRecords[iChannel] = (fMonarch->*fMonarchGetRecord[iChannel])();
             sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
@@ -290,7 +290,7 @@ namespace Katydid
         }
 
         // Loop over bins
-        for (UInt_t iBin = 0; iBin < fSliceSize; iBin++)
+        for (UInt_t iBin = 0; iBin < fSliceSize; ++iBin)
         {
             if (fReadState.fStatus == MonarchReadState::kReachedNextRecord)
             {
@@ -300,15 +300,15 @@ namespace Katydid
                 {
                     // the end of the file has been reached or there was some other error preventing the reading of the next record
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                    for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
+                    for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
                     {
                         delete newRecords[iChannel];
                     }
                     return shared_ptr< KTData >();
                 }
-                fReadState.fAbsoluteRecordOffset++;
+                ++(fReadState.fAbsoluteRecordOffset);
                 fReadState.fReadPtrOffset = 0;
-                fReadState.fReadPtrRecordOffset++;
+                ++(fReadState.fReadPtrRecordOffset);
 
                 // check if the acquisition ID has changed on any channel
                 if (fReadState.fAcquisitionID != monarchRecords[0]->fAcquisitionId)
@@ -326,7 +326,7 @@ namespace Katydid
                     sliceHeader.SetIsNewAcquisition(true);
                     sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
                     sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
-                    for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
+                    for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
                     {
                         sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
                         sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
@@ -350,14 +350,14 @@ namespace Katydid
             }
 
             // Read the data from the records
-            for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
+            for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
             {
                 // set the data
                 newRecords[iChannel]->SetValue(iBin, Double_t(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]));
             }
 
             // advance the pointer for the next bin
-            fReadState.fReadPtrOffset++;
+            ++(fReadState.fReadPtrOffset);
 
             // check if we've reached the end of a monarch record
             if (fReadState.fReadPtrOffset >= recordSize)
@@ -373,7 +373,7 @@ namespace Katydid
 
         // finally, set the records in the new data object
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nChannels);
-        for (UInt_t iChannel = 0; iChannel < nChannels; iChannel++)
+        for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
         {
             tsData.SetTimeSeries(newRecords[iChannel], iChannel);
         }

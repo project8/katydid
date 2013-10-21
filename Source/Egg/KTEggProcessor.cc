@@ -203,8 +203,8 @@ namespace Katydid
                 KTWARN(egglog, "No time-series data present in slice");
             }
 
-            iSlice++;
-            iProgress++;
+            ++iSlice;
+            ++iProgress;
 
             if (iProgress == fProgressReportInterval)
             {
@@ -245,8 +245,8 @@ namespace Katydid
                 KTWARN(egglog, "No time-series data present in slice");
             }
 
-            iSlice++;
-            iProgress++;
+            ++iSlice;
+            ++iProgress;
 
             if (iProgress == fProgressReportInterval)
             {
