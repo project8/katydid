@@ -40,6 +40,10 @@ namespace Katydid
      - "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
      - "slice-size": UInt_t -- Specify the size of the time series (required)
      - "stride": UInt_t -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
+     - "normalize-voltages": Bool_t -- Flag to toggle the normalization of ADC values from the egg file (default: true)
+     - "full-voltage-scale": Double_t -- Normalization parameter specifying the full voltage range of the digitizer
+     - "n-adc-levels": UInt_t -- Number of ADC levels (for an N-bit digitizer, # of levels = 2^N)
+     - "normalization": Double_t -- Directly set the voltage normalization
      - "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
