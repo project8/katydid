@@ -190,7 +190,6 @@ namespace Katydid
             KTINFO(egglog, "Hatching slice " << iSlice);
 
             // Hatch the slice
-            shared_ptr<KTData> data = reader->HatchNextSlice();
             if (! HatchNextSlice(reader, data)) break;
 
             if (data->Has< KTTimeSeriesData >())
