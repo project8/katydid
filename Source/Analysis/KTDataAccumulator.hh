@@ -40,7 +40,7 @@ namespace Katydid
 
      Available configuration options:
      - "number-to-average": UInt_t -- Number of slices to average
-     - "signal-interval": UInt_t -- Number of slices between signaling
+     - "signal-interval": UInt_t -- (not currently in use) Number of slices between signaling
 
      Slots:
      - "ts": void (boost::shared_ptr<KTData>) -- add to the ts sum; Requires KTTimeSeriesData; Emits signal "ts"
@@ -64,7 +64,6 @@ namespace Katydid
                 }
             };
 
-        private:
             struct Accumulator
             {
                 UInt_t fCount;
@@ -97,6 +96,10 @@ namespace Katydid
             Bool_t AddData(KTTimeSeriesData& data);
             Bool_t AddData(KTFrequencySpectrumDataPolar& data);
             Bool_t AddData(KTFrequencySpectrumDataFFTW& data);
+
+            const AccumulatorMap& GetAccumulators() const;
+            template< class XDataType >
+            const Accumulator& GetAccumulator() const;
 
         private:
             Bool_t CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
@@ -154,6 +157,18 @@ namespace Katydid
         fSignalInterval = interval;
         return;
     }
+
+    inline const KTDataAccumulator::AccumulatorMap& KTDataAccumulator::GetAccumulators() const
+    {
+        return fDataMap;
+    }
+
+    template< class XDataType >
+    const KTDataAccumulator::Accumulator& KTDataAccumulator::GetAccumulator() const
+    {
+        return fDataMap.at(&typeid(XDataType));
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTDATAACCUMULATOR_HH_ */

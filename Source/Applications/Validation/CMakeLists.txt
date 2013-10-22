@@ -47,6 +47,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestCutableArray ${CMAKE_CURRENT_SOURCE_DIR}/TestCutableArray.cc)
     target_link_libraries (TestCutableArray KatydidUtility ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestDataAccumulator ${CMAKE_CURRENT_SOURCE_DIR}/TestDataAccumulator.cc)
+    target_link_libraries (TestDataAccumulator KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestDistanceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestDistanceClustering.cc)
     target_link_libraries (TestDistanceClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
@@ -121,6 +124,7 @@ if (Katydid_ENABLE_TESTING)
                      TestCorrelator
                      TestCutIterator
                      TestCutableArray
+                     TestDataAccumulator
                      TestDistanceClustering
                      TestEggHatching
                      TestFrequencySpectrumFFTW
@@ -152,6 +156,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_Correlator TestCorrelator)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
+    add_test (Test_DataAccumulator TestDataAccumulator)
     add_test (Test_DistanceClustering TestDistanceClustering)
     add_test (Test_EggHatching TestEggHatching)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)

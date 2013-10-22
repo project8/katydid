@@ -116,12 +116,6 @@ namespace Katydid
             }
         }
 
-        if (accDataStruct.fSignalCount == fSignalInterval)
-        {
-            // emit signal
-            accDataStruct.fSignalCount = 0;
-        }
-
         return true;
     }
 
@@ -157,12 +151,6 @@ namespace Katydid
                 (*avTS)(iBin)[0] = (*avTS)(iBin)[0] * remainingFrac + (*newTS)(iBin)[0] * fAveragingFrac;
                 (*avTS)(iBin)[1] = (*avTS)(iBin)[1] * remainingFrac + (*newTS)(iBin)[1] * fAveragingFrac;
             }
-        }
-
-        if (accDataStruct.fSignalCount == fSignalInterval)
-        {
-            // emit signal
-            accDataStruct.fSignalCount = 0;
         }
 
         return true;
@@ -202,12 +190,6 @@ namespace Katydid
             }
         }
 
-        if (accDataStruct.fSignalCount == fSignalInterval)
-        {
-            // emit signal
-            accDataStruct.fSignalCount = 0;
-        }
-
         return true;
     }
 
@@ -243,12 +225,6 @@ namespace Katydid
                 (*avSpect)(iBin)[0] = (*avSpect)(iBin)[0] * remainingFrac + (*newSpect)(iBin)[0] * fAveragingFrac;
                 (*avSpect)(iBin)[1] = (*avSpect)(iBin)[1] * remainingFrac + (*newSpect)(iBin)[1] * fAveragingFrac;
             }
-        }
-
-        if (accDataStruct.fSignalCount == fSignalInterval)
-        {
-            // emit signal
-            accDataStruct.fSignalCount = 0;
         }
 
         return true;
