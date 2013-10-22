@@ -5,6 +5,7 @@ set (ANALYSIS_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAmplitudeDistributor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDataAccumulator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.hh
@@ -18,6 +19,7 @@ set (ANALYSIS_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAmplitudeDistributor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAnalyticAssociator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTDataAccumulator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDistanceClustering.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTGainVariationProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTHoughTransform.cc
