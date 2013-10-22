@@ -69,6 +69,8 @@ namespace Katydid
                 UInt_t fCount;
                 UInt_t fSignalCount;
                 boost::shared_ptr< KTData > fData;
+                Accumulator() : fCount(0), fSignalCount(0), fData(new KTData())
+                {}
             };
 
             typedef std::map< const std::type_info*, Accumulator > AccumulatorMap;
@@ -102,6 +104,9 @@ namespace Katydid
             const Accumulator& GetAccumulator() const;
 
         private:
+            template< class XDataType >
+            Accumulator& GetOrCreateAccumulator();
+
             Bool_t CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
             Bool_t CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
 
@@ -167,6 +172,12 @@ namespace Katydid
     const KTDataAccumulator::Accumulator& KTDataAccumulator::GetAccumulator() const
     {
         return fDataMap.at(&typeid(XDataType));
+    }
+
+    template< class XDataType >
+    KTDataAccumulator::Accumulator& KTDataAccumulator::GetOrCreateAccumulator()
+    {
+        return fDataMap[&typeid(XDataType)];
     }
 
 

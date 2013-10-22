@@ -57,9 +57,9 @@ namespace Katydid
 
     Bool_t KTDataAccumulator::AddData(KTTimeSeriesData& data)
     {
-        Accumulator& accDataStruct = fDataMap[&typeid(KTTimeSeriesData)];
+        Accumulator& accDataStruct = GetOrCreateAccumulator< KTTimeSeriesData >();
         KTTimeSeriesData& accData = accDataStruct.fData->Of<KTTimeSeriesData>();
-        if (dynamic_cast< KTTimeSeriesReal* >(accData.GetTimeSeries()) != NULL)
+        if (dynamic_cast< KTTimeSeriesReal* >(data.GetTimeSeries(0)) != NULL)
         {
             return CoreAddTSDataReal(data, accDataStruct, accData);
         }
@@ -71,14 +71,14 @@ namespace Katydid
 
     Bool_t KTDataAccumulator::AddData(KTFrequencySpectrumDataPolar& data)
     {
-        Accumulator& accDataStruct = fDataMap[&typeid(KTFrequencySpectrumDataPolar)];
+        Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataPolar >();
         KTFrequencySpectrumDataPolar& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataPolar>();
         return CoreAddData(data, accDataStruct, accData);
     }
 
     Bool_t KTDataAccumulator::AddData(KTFrequencySpectrumDataFFTW& data)
     {
-        Accumulator& accDataStruct = fDataMap[&typeid(KTFrequencySpectrumDataFFTW)];
+        Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataFFTW >();
         KTFrequencySpectrumDataFFTW& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataFFTW>();
         return CoreAddData(data, accDataStruct, accData);
     }
@@ -89,10 +89,21 @@ namespace Katydid
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
+        UInt_t nComponents = data.GetNComponents();
+
+        if (accDataStruct.fCount == 0)
+        {
+            accData.SetNComponents(nComponents);
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+                KTTimeSeriesReal* dataTS = static_cast< KTTimeSeriesReal* >(data.GetTimeSeries(iComponent));
+                accData.SetTimeSeries(new KTTimeSeriesReal(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax()), iComponent);
+            }
+        }
+
         ++accDataStruct.fCount;
         ++accDataStruct.fSignalCount;
 
-        UInt_t nComponents = data.GetNComponents();
         if (nComponents != accData.GetNComponents())
         {
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
@@ -125,10 +136,21 @@ namespace Katydid
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
+        UInt_t nComponents = data.GetNComponents();
+
+        if (accDataStruct.fCount == 0)
+        {
+            accData.SetNComponents(nComponents);
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+                KTTimeSeriesFFTW* dataTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
+                accData.SetTimeSeries(new KTTimeSeriesFFTW(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax()), iComponent);
+            }
+        }
+
         ++accDataStruct.fCount;
         ++accDataStruct.fSignalCount;
 
-        UInt_t nComponents = data.GetNComponents();
         if (nComponents != accData.GetNComponents())
         {
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
@@ -163,10 +185,21 @@ namespace Katydid
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
+        UInt_t nComponents = data.GetNComponents();
+
+        if (accDataStruct.fCount == 0)
+        {
+            accData.SetNComponents(nComponents);
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+                KTFrequencySpectrumPolar* dataFS = data.GetSpectrumPolar(iComponent);
+                accData.SetSpectrum(new KTFrequencySpectrumPolar(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax()), iComponent);
+            }
+        }
+
         ++accDataStruct.fCount;
         ++accDataStruct.fSignalCount;
 
-        UInt_t nComponents = data.GetNComponents();
         if (nComponents != accData.GetNComponents())
         {
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
@@ -199,10 +232,22 @@ namespace Katydid
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
+        UInt_t nComponents = data.GetNComponents();
+
+        if (accDataStruct.fCount == 0)
+        {
+            accData.SetNComponents(nComponents);
+            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+                KTFrequencySpectrumFFTW* dataFS = data.GetSpectrumFFTW(iComponent);
+                accData.SetSpectrum(new KTFrequencySpectrumFFTW(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax()), iComponent);
+            }
+        }
+
         ++accDataStruct.fCount;
         ++accDataStruct.fSignalCount;
 
-        UInt_t nComponents = data.GetNComponents();
+
         if (nComponents != accData.GetNComponents())
         {
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
