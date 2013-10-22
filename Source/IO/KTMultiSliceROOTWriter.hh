@@ -33,7 +33,7 @@ namespace Katydid
     class KTMultiSliceROOTWriter : public KTWriterWithTypists< KTMultiSliceROOTWriter >//public KTWriter
     {
         public:
-            KTMultiSliceROOTWriter(const std::string& name = "multi-slice-root-writer");
+            KTMultiSliceROOTWriter(const std::string& name = "multislice-root-writer");
             virtual ~KTMultiSliceROOTWriter();
 
             Bool_t Configure(const KTPStoreNode* node);

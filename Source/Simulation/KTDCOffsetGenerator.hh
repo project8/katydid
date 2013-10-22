@@ -50,7 +50,7 @@ namespace Katydid
     class KTDCOffsetGenerator : public KTTSGenerator
     {
         public:
-            KTDCOffsetGenerator(const std::string& name = "sinusoid-generator");
+            KTDCOffsetGenerator(const std::string& name = "dc-offset-generator");
             virtual ~KTDCOffsetGenerator();
 
             virtual Bool_t ConfigureDerivedGenerator(const KTPStoreNode* node);

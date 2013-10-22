@@ -18,8 +18,8 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedNORegistrar< KTWriter, KTMultiSliceROOTWriter > sMSRWriterRegistrar("multi-slice-root-writer");
-    static KTDerivedNORegistrar< KTProcessor, KTMultiSliceROOTWriter > sMSRWProcRegistrar("multi-slice-root-writer");
+    static KTDerivedNORegistrar< KTWriter, KTMultiSliceROOTWriter > sMSRWriterRegistrar("multislice-root-writer");
+    static KTDerivedNORegistrar< KTProcessor, KTMultiSliceROOTWriter > sMSRWProcRegistrar("multislice-root-writer");
 
     KTMultiSliceROOTWriter::KTMultiSliceROOTWriter(const std::string& name) :
             KTWriterWithTypists< KTMultiSliceROOTWriter >(name),
