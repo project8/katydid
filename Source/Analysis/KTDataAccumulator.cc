@@ -88,6 +88,7 @@ namespace Katydid
         Double_t remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
+        //KTDEBUG(avlog, "averaging frac: " << fAveragingFrac << "    remaining frac: " << remainingFrac);
 
         UInt_t nComponents = data.GetNComponents();
 
@@ -97,7 +98,9 @@ namespace Katydid
             for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesReal* dataTS = static_cast< KTTimeSeriesReal* >(data.GetTimeSeries(iComponent));
-                accData.SetTimeSeries(new KTTimeSeriesReal(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax()), iComponent);
+                KTTimeSeriesReal* newTS = new KTTimeSeriesReal(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
+                (*newTS) *= 0.;
+                accData.SetTimeSeries(newTS, iComponent);
             }
         }
 
@@ -123,7 +126,9 @@ namespace Katydid
             KTTimeSeriesReal* avTS = static_cast< KTTimeSeriesReal* >(accData.GetTimeSeries(iComponent));
             for (UInt_t iBin = 0; iBin < arraySize; iBin++)
             {
+                //KTDEBUG(avlog, (*avTS)(iBin) << "  " << (*newTS)(iBin) << "  " << remainingFrac << "  " << fAveragingFrac);
                 (*avTS)(iBin) = (*avTS)(iBin) * remainingFrac + (*newTS)(iBin) * fAveragingFrac;
+                //KTDEBUG(avlog, (*avTS)(iBin));
             }
         }
 
@@ -144,7 +149,9 @@ namespace Katydid
             for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesFFTW* dataTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
-                accData.SetTimeSeries(new KTTimeSeriesFFTW(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax()), iComponent);
+                KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
+                (*newTS) *= 0.;
+                accData.SetTimeSeries(newTS, iComponent);
             }
         }
 
@@ -193,7 +200,9 @@ namespace Katydid
             for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTFrequencySpectrumPolar* dataFS = data.GetSpectrumPolar(iComponent);
-                accData.SetSpectrum(new KTFrequencySpectrumPolar(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax()), iComponent);
+                KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
+                newFS->operator*=(Double_t(0.));
+                accData.SetSpectrum(newFS, iComponent);
             }
         }
 
@@ -240,7 +249,9 @@ namespace Katydid
             for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTFrequencySpectrumFFTW* dataFS = data.GetSpectrumFFTW(iComponent);
-                accData.SetSpectrum(new KTFrequencySpectrumFFTW(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax()), iComponent);
+                KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
+                newFS->operator*=(Double_t(0.));
+                accData.SetSpectrum(newFS, iComponent);
             }
         }
 
