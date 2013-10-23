@@ -46,12 +46,13 @@ int main(int argc, char** argv)
 
     TH1D* wfHist = wf.CreateHistogram();
     wfHist->SetDirectory(&file);
+    wfHist->Write();
 
+#ifdef FFTW_FOUND
     TH1D* wfFRHist = wf.CreateFrequencyResponseHistogram();
     wfFRHist->SetDirectory(&file);
-
-    wfHist->Write();
     wfFRHist->Write();
+#endif
 
     file.Close();
 #endif

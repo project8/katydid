@@ -8,10 +8,13 @@
 
 #include "KTEggProcessor.hh"
 
+#ifdef USE_MONARCH
+#include "KTEggReaderMonarch.hh"
+#endif
+
 #include "KTCommandLineOption.hh"
 #include "KTData.hh"
 #include "KTEggHeader.hh"
-#include "KTEggReaderMonarch.hh"
 #include "KTEggReader2011.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
@@ -78,6 +81,14 @@ namespace Katydid
             SetEggReaderType(k2011EggReader);
         }
 
+#ifndef USE_MONARCH
+        if (fEggReaderType == kMonarchEggReader)
+        {
+            KTERROR(egglog, "Monarch is not enabled; please select another egg reader type");
+            return false;
+        }
+#endif
+
         // Other settings
 
         // Config-file settings
@@ -133,6 +144,7 @@ namespace Katydid
         // Create egg reader and transfer information
         if (fEggReaderType == kMonarchEggReader)
         {
+#ifdef USE_MONARCH
             KTEggReaderMonarch* eggReaderMonarch = new KTEggReaderMonarch();
             eggReaderMonarch->SetSliceSize(fSliceSize);
             eggReaderMonarch->SetStride(fStride);
@@ -141,6 +153,10 @@ namespace Katydid
             else if (fTimeSeriesType == kFFTWTimeSeries)
                 eggReaderMonarch->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
             reader = eggReaderMonarch;
+#else
+            KTERROR(egglog, "Monarch is not enabled; please select another egg reader type");
+            return false;
+#endif
         }
         else
         {

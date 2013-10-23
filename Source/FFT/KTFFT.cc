@@ -9,8 +9,9 @@
 
 #include "KTLogger.hh"
 
+#ifdef FFTW_FOUND
 #include <fftw3.h>
-
+#endif
 
 namespace Katydid
 {
