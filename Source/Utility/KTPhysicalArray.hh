@@ -201,7 +201,7 @@ namespace Katydid
 
         public:
             KTPhysicalArray();
-            KTPhysicalArray(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            explicit KTPhysicalArray(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
             KTPhysicalArray(const KTPhysicalArray< 1, value_type >& orig);
             virtual ~KTPhysicalArray();
 
