@@ -5,6 +5,9 @@
 *.a
 *.dylib
 
+#mac
+.DS_Store
+
 #from Eclipse
 .project
 .cproject
@@ -14,8 +17,7 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 *build/
-cbuild/
-ebuild/
+cbuild*/
 cmake_install.cmake
 *Dict.h
 *Dict.cxx
