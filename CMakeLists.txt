@@ -143,7 +143,7 @@ option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 # Monarch
 if (Katydid_USE_MONARCH)
     add_subdirectory (Source/Egg/Monarch)
-    pbuilder_add_ext_libraries (${Monarch_LIBRARIES})
+    pbuilder_add_submodule_libraries (${Monarch_LIBRARIES})
     add_definitions(-DUSE_MONARCH)
 
     # add to the RPATH to be used when installing, but only if it's not a system directory
@@ -157,6 +157,8 @@ else (Katydid_USE_MONARCH)
     remove_definitions(-DUSE_MONARCH)
 endif (Katydid_USE_MONARCH)
 include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
+include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
+include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
 
 
 # Subdirectories

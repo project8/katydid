@@ -16,7 +16,7 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
-#include "MonarchTypes.hpp"
+#include "thorax.hh"
 
 #include <cmath>
 
@@ -160,14 +160,7 @@ namespace Katydid
         newHeader->SetRunSource(sSourceSimulation);
         //newHeader->SetFormatMode();
 
-        // Get local time as is done in MantisFileWriter
-        time_t tRawTime;
-        time( &tRawTime );
-        struct tm* tTimeInfo = localtime( &tRawTime );
-        const size_t tDateSize = 512;
-        char tDateString[tDateSize];
-        strftime( tDateString, tDateSize,  sDateTimeFormat.c_str(), tTimeInfo ); // sDateTimeFormat is defined in MonarchTypes.hpp
-        newHeader->SetTimestamp(tDateString);
+        newHeader->SetTimestamp(get_absolute_time_string());
 
         return newHeader;
     }
@@ -195,7 +188,7 @@ namespace Katydid
 
         for (UInt_t iComponent = 0; iComponent < fNChannels; iComponent++)
         {
-            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * 1.e9/*nsec per sec*/), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (Double_t)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
             sliceHeader.SetRecordID(0);
         }
