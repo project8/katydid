@@ -46,11 +46,15 @@ namespace Katydid
      - "ts": void (boost::shared_ptr<KTData>) -- add to the ts sum; Requires KTTimeSeriesData; Emits signal "ts"
      - "fs-polar": void (boost::shared_ptr<KTData>) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
      - "fs-fftw": void (boost::shared_ptr<KTData>) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
+     - "finish": void () -- call all slots for which data has accumulated
 
      Signals:
      - "ts": void (boost::shared_ptr<KTData>) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
      - "fs-polar": void (boost::shared_ptr<KTData>) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw": void (boost::shared_ptr<KTData>) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
+     - "ts-finished": void (boost::shared_ptr<KTData>) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
+     - "fs-polar-finished": void (boost::shared_ptr<KTData>) -- emitted when the <finish> slot is called; guarantees KTFrequencySpectrumDataPolar
+     - "fs-fftw-finished": void (boost::shared_ptr<KTData>) -- emitted when the <finish> slot is called; guarantees KTFrequencySpectrumDataFFTW
     */
 
     class KTDataAccumulator : public KTProcessor
@@ -75,6 +79,19 @@ namespace Katydid
 
             typedef std::map< const std::type_info*, Accumulator > AccumulatorMap;
             typedef AccumulatorMap::iterator AccumulatorMapIt;
+
+            struct SignalSet
+            {
+                    KTSignalData* fAccumulatingSignal;
+                    KTSignalData* fFinishedSignal;
+                    SignalSet(KTSignalData* accSig, KTSignalData* finishedSig) :
+                        fAccumulatingSignal(accSig),
+                        fFinishedSignal(finishedSig)
+                    {}
+            };
+            typedef std::map< const std::type_info*, SignalSet > SignalMap;
+            typedef SignalMap::iterator SignalMapIt;
+            typedef SignalMap::value_type SignalMapValue;
 
         public:
             KTDataAccumulator(const std::string& name = "data-averager");
@@ -114,6 +131,7 @@ namespace Katydid
             Bool_t CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataFFTWCore& avData);
 
             AccumulatorMap fDataMap;
+            mutable Accumulator* fLastAccumulatorPtr;
 
 
             //***************
@@ -125,14 +143,24 @@ namespace Katydid
             KTSignalData fFSPolarSignal;
             KTSignalData fFSFFTWSignal;
 
+            KTSignalData fTSFinishedSignal;
+            KTSignalData fFSPolarFinishedSignal;
+            KTSignalData fFSFFTWFinishedSignal;
+
+            SignalMap fSignalMap;
+
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            KTSlotNoArg< void () > fFinishAccumulationSlot;
+
+            template< class XDataType >
+            void SlotFunction(boost::shared_ptr< KTData > data);
+
+            void CallAllSlots();
+
     };
 
     inline UInt_t KTDataAccumulator::GetAccumulatorSize() const
@@ -171,14 +199,42 @@ namespace Katydid
     template< class XDataType >
     const KTDataAccumulator::Accumulator& KTDataAccumulator::GetAccumulator() const
     {
-        return fDataMap.at(&typeid(XDataType));
+        fLastAccumulatorPtr = const_cast< Accumulator* >(&fDataMap.at(&typeid(XDataType)));
+        return *fLastAccumulatorPtr;
     }
 
     template< class XDataType >
     KTDataAccumulator::Accumulator& KTDataAccumulator::GetOrCreateAccumulator()
     {
-        return fDataMap[&typeid(XDataType)];
+        fLastAccumulatorPtr = &fDataMap[&typeid(XDataType)];
+        return *fLastAccumulatorPtr;
     }
+
+    template< class XDataType >
+    void KTDataAccumulator::SlotFunction(boost::shared_ptr< KTData > data)
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data type is present
+        if (! data->Has< XDataType >())
+        {
+            KTERROR(slotlog, "Data not found with type <" << typeid(XDataType).name() << ">");
+            return;
+        }
+        // Call the function
+        if (! AddData(data->Of< XDataType >()))
+        {
+            KTERROR(slotlog, "Something went wrong while analyzing data with type <" << typeid(XDataType).name() << ">");
+            return;
+        }
+        // If there's a signal pointer, emit the signal
+        SignalMapIt sigIt = fSignalMap.find(&typeid(XDataType));
+        if (sigIt != fSignalMap.end())
+        {
+            (*sigIt->second.fAccumulatingSignal)(fLastAccumulatorPtr->fData);
+        }
+        return;
+    }
+
 
 
 } /* namespace Katydid */
