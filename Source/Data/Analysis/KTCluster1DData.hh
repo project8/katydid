@@ -26,7 +26,7 @@ namespace Katydid
             {
                     bool operator() (const Cluster& lhs, const Cluster& rhs)
                     {
-                        return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.first < rhs.first);
+                        return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
                     }
             };
 
