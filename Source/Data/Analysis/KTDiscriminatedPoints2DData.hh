@@ -20,7 +20,7 @@ namespace Katydid
     {
         bool operator() (const std::pair< UInt_t, UInt_t >& lhs, const std::pair< UInt_t, UInt_t >& rhs)
         {
-            return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.first < rhs.first);
+            return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
         }
     };
 
