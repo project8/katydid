@@ -44,7 +44,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::Configure(const KTPStoreNode* node)
+    Bool_t KTFrequencyCandidateIdentifier::Configure(const KTPStoreNode*)
     {
         return true;
     }

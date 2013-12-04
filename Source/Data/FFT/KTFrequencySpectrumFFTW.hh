@@ -164,8 +164,8 @@ namespace Katydid
     inline void KTFrequencySpectrumFFTW::SetPolar(UInt_t bin, Double_t abs, Double_t arg)
     {
         fPointCache = &(*this)(bin);
-        (*const_cast< fftw_complex* >(fPointCache))[0] = sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
-        (*const_cast< fftw_complex* >(fPointCache))[1] = atan2((*fPointCache)[1], (*fPointCache)[0]);
+        (*const_cast< fftw_complex* >(fPointCache))[0] = abs * cos(arg);
+        (*const_cast< fftw_complex* >(fPointCache))[1] = abs * sin(arg);
         return;
     }
 

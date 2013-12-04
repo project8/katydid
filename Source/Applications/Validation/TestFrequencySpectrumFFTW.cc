@@ -28,7 +28,7 @@ int main()
     KTPhysicalArray<1, fftw_complex> physArr(size, min, max);
     KTFrequencySpectrumFFTW freqSpect(size, min, max);
 
-    for (Int_t i=0; i<size; i++)
+    for (UInt_t i=0; i<size; i++)
     {
         physArr(i)[0] = Double_t(i);
         physArr(i)[1] = 0.;
@@ -43,7 +43,7 @@ int main()
     stringstream printer;
     printer << '\n';
     printer << "\tphysArr\tfreqSpect\n" << "\t-------\t---------\n";
-    for (Int_t i=0; i<size; i++)
+    for (UInt_t i=0; i<size; i++)
     {
         printer << '\t' << dataForPhysArr[i] << '\t' << dataForFreqSpect[i] << '\n';
     }

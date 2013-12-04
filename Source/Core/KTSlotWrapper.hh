@@ -40,7 +40,9 @@ namespace Katydid
                 public:
                     KTSpecifiedInternalSlotWrapper(XSignature* funcPtr, XTypeContainer* typeCont=NULL) :
                             fSlot(funcPtr)
-                    {}
+                    {
+                        (void)typeCont; // to suppress warnings
+                    }
                     virtual ~KTSpecifiedInternalSlotWrapper()
                     {
                         delete fSlot;

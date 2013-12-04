@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 static KTDerivedNORegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
 
 KTImpulseAnalysis::KTImpulseAnalysis(const std::string& name) :
-        KTProcessor(),
+        KTProcessor(name),
         fFSDataPolarSlot("fs-polar", this, &KTImpulseAnalysis::Analyze)
 {
 }
@@ -122,7 +122,7 @@ KTImpulseAnalysis::~KTImpulseAnalysis()
 {
 }
 
-Bool_t KTImpulseAnalysis::Configure(const KTPStoreNode* node)
+Bool_t KTImpulseAnalysis::Configure(const KTPStoreNode*)
 {
     return true;
 }

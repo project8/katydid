@@ -24,7 +24,7 @@ using namespace std;
 
 KTLOGGER(vallog, "katydid.applications.validation");
 
-int main(int argc, char** argv)
+int main()
 {
     //KTRectangularWindow wf;
     //wf.SetBoxcarSize(10000);

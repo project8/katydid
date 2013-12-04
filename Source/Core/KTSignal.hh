@@ -147,7 +147,7 @@ namespace Katydid
     {}
 
     template< class XSignalArgument >
-    KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const KTSignalOneArg& rhs) :
+    KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const KTSignalOneArg&) :
             fSignal()
     {}
 

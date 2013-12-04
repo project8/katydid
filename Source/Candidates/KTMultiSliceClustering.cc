@@ -639,7 +639,7 @@ namespace Katydid
         Int_t firstFreqBinWithFrame = (Int_t)firstFreqBin - (Int_t)fNFramingFreqBins;
         Int_t lastFreqBinWithFrame =(Int_t) lastFreqBin + (Int_t)fNFramingFreqBins;
         UInt_t firstFreqBinToUse = firstFreqBinWithFrame >= 0 ? (UInt_t)firstFreqBinWithFrame : 0;
-        UInt_t lastFreqBinToUse = lastFreqBinWithFrame < cluster.fPoints.begin()->fSpectrumPtr->size() ? (UInt_t)lastFreqBinWithFrame : cluster.fPoints.begin()->fSpectrumPtr->size() - 1;
+        UInt_t lastFreqBinToUse = lastFreqBinWithFrame < (Int_t)(cluster.fPoints.begin()->fSpectrumPtr->size()) ? (UInt_t)lastFreqBinWithFrame : cluster.fPoints.begin()->fSpectrumPtr->size() - 1;
         UInt_t freqBinOffset = UInt_t((Int_t)firstFreqBinToUse - firstFreqBinWithFrame);
 
         Double_t timeOverlapFrac = cluster.fPoints.begin()->fHeaderPtr->GetNonOverlapFrac();

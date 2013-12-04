@@ -322,7 +322,7 @@ namespace Katydid
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
             KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
-            for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
+            for (int iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
                 //(*newRecord)(iBin) = Double_t(readBuffer[iBin]);
                 newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));

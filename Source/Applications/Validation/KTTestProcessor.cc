@@ -23,7 +23,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTTestProcessorA::Configure(const KTPStoreNode* node)
+    Bool_t KTTestProcessorA::Configure(const KTPStoreNode*)
     {
         return true;
     }
@@ -47,7 +47,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTTestProcessorB::Configure(const KTPStoreNode* node)
+    Bool_t KTTestProcessorB::Configure(const KTPStoreNode*)
     {
         return true;
     }

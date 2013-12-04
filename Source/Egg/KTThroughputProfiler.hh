@@ -83,7 +83,7 @@ namespace Katydid
 
             timespec Elapsed();
 
-            const Bool_t GetOutputFileFlag() const;
+            Bool_t GetOutputFileFlag() const;
             void SetOutputFileFlag(Bool_t flag);
 
             const std::string& GetOutputFilename() const;
@@ -110,7 +110,7 @@ namespace Katydid
 
     };
 
-    inline const Bool_t KTThroughputProfiler::GetOutputFileFlag() const
+    inline Bool_t KTThroughputProfiler::GetOutputFileFlag() const
     {
         return fOutputFileFlag;
     }

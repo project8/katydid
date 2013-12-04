@@ -213,7 +213,7 @@ namespace Katydid
         return TransformFFTWBasedData(data, header);
     }
 
-    void KTWignerVille::CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, UInt_t iWindow)
+    void KTWignerVille::CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, UInt_t /*iWindow*/)
     {
         // data2It will be decremented before it's used
         Buffer::iterator data2It = data2End + fWindowSize;
@@ -248,7 +248,7 @@ namespace Katydid
     }
 
 
-    void KTWignerVille::CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
+    void KTWignerVille::CalculateLaggedACF(const KTTimeSeriesFFTW* /*data1*/, const KTTimeSeriesFFTW* /*data2*/, UInt_t /*offset*/)
     {
         //UInt_t sliceSize = data1->size();
         //UInt_t fftSize = GetWindowSize();

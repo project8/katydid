@@ -16,7 +16,7 @@ using namespace Katydid;
 
 KTLOGGER(corrtestlog, "katydid.applications.validation");
 
-int main(int argc, char** argv)
+int main()
 {
     // Prepare the input data
 

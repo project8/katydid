@@ -20,7 +20,7 @@ namespace Katydid
             fSignal()
     {}
 
-    KTSignalOneArg< void >::KTSignalOneArg(const KTSignalOneArg& rhs) :
+    KTSignalOneArg< void >::KTSignalOneArg(const KTSignalOneArg&) :
             fSignal()
     {}
 

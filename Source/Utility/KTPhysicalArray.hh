@@ -83,7 +83,7 @@ namespace Katydid
     }
 
     template< size_t NDims, typename XDataType >
-    KTPhysicalArray< NDims, XDataType >::KTPhysicalArray(const KTPhysicalArray< NDims, value_type >& orig) :
+    KTPhysicalArray< NDims, XDataType >::KTPhysicalArray(const KTPhysicalArray< NDims, value_type >& /*orig*/) :
             KTAxisProperties< NDims >(),
             fData(1)
     {

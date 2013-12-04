@@ -170,7 +170,7 @@ namespace Katydid
 
             virtual size_t operator()(size_t dim=1) const
             {
-                return 1;
+                return dim;
             }
 
             virtual KTNBinsFunctor< NDims >* Clone() const
