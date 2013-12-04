@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     for (UInt_t iSlice=0; iSlice < nSlices; iSlice++)
     {
         KTINFO(testegg, "Slice " << iSlice);
-        boost::shared_ptr<KTData> data = reader->HatchNextSlice();
+        KTDataPtr data = reader->HatchNextSlice();
         if (! data)
         {
             KTERROR(testegg, "Slice did not hatch");

@@ -12,7 +12,7 @@ using namespace Katydid;
 
 KTLOGGER(vallog, "katydid.applications.validation");
 
-int main(int argc, char** argv)
+int main()
 {
     KTRNGEngine* engine = KTGlobalRNGEngine::GetInstance();
     engine->SetSeed(20398);

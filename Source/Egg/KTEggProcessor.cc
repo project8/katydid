@@ -23,7 +23,7 @@
 #include "KTTimeSeriesData.hh"
 
 using std::string;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -200,7 +200,7 @@ namespace Katydid
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
     {
         UInt_t iSlice = 0, iProgress = 0;
-        shared_ptr<KTData> data;
+        KTDataPtr data;
         while (kTRUE)
         {
             KTINFO(egglog, "Hatching slice " << iSlice);
@@ -234,7 +234,7 @@ namespace Katydid
     void KTEggProcessor::LimitedLoop(KTEggReader* reader)
     {
         UInt_t iSlice = 0, iProgress = 0;
-        shared_ptr<KTData> data;
+        KTDataPtr data;
         while (kTRUE)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
@@ -273,7 +273,7 @@ namespace Katydid
         return;
     }
 
-    void KTEggProcessor::NormalizeData(boost::shared_ptr< KTData >& data) const
+    void KTEggProcessor::NormalizeData(KTDataPtr& data) const
     {
         if (fNormalizeVoltages)
         {

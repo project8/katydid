@@ -11,7 +11,7 @@
 #include "KTTIFactory.hh"
 //#include "KTLogger.hh"
 
-using boost::shared_ptr;
+
 
 using std::vector;
 
@@ -42,7 +42,7 @@ namespace Katydid
     // Frequency Evaluation
     //*********************
 
-    void KTJSONTypeWriterEvaluation::WriteCCResults(shared_ptr< KTData > data)
+    void KTJSONTypeWriterEvaluation::WriteCCResults(KTDataPtr data)
     {
         using rapidjson::SizeType;
 

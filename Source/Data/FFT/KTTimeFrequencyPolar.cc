@@ -103,7 +103,7 @@ namespace Katydid
         UInt_t nTimeBins = size(1);
         UInt_t nFreqBins = size(2);
         TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Magnitude", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
-        Double_t value;
+        //Double_t value;
         for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
             for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
@@ -121,7 +121,7 @@ namespace Katydid
         UInt_t nTimeBins = size(1);
         UInt_t nFreqBins = size(2);
         TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Phase", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
-        Double_t value;
+        //Double_t value;
         for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
             for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)

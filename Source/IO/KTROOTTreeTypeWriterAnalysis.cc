@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -34,8 +34,8 @@ namespace Katydid
             KTROOTTreeTypeWriter(),
             //KTTypeWriterAnalysis()
             fDiscPoints1DTree(NULL),
-            fDiscPoints1DData(),
             fAmpDistTree(NULL),
+            fDiscPoints1DData(),
             fAmpDistData()
     {
     }
@@ -57,7 +57,7 @@ namespace Katydid
     // Frequency Analysis
     //*********************
 
-    void KTROOTTreeTypeWriterAnalysis::WriteDiscriminatedPoints1D(shared_ptr< KTData > data)
+    void KTROOTTreeTypeWriterAnalysis::WriteDiscriminatedPoints1D(KTDataPtr data)
     {
         KTDiscriminatedPoints1DData& fcData = data->Of< KTDiscriminatedPoints1DData >();
 
@@ -113,10 +113,10 @@ namespace Katydid
     // Amplitude Distribution
     //**************************
 
-    void KTROOTTreeTypeWriterAnalysis::WriteAmplitudeDistributions(shared_ptr< KTData > data)
+    void KTROOTTreeTypeWriterAnalysis::WriteAmplitudeDistributions(KTDataPtr data)
     {
         KTAmplitudeDistribution& adData = data->Of< KTAmplitudeDistribution >();
-        KTSliceHeader& header = data->Of< KTSliceHeader >();
+        //KTSliceHeader& header = data->Of< KTSliceHeader >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 

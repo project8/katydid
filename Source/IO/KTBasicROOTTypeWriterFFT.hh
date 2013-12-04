@@ -10,9 +10,10 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
+#include "KTData.hh"
+
 namespace Katydid
 {
-    class KTData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataFFTW;
     class KTMultiFSDataPolar;
@@ -31,35 +32,35 @@ namespace Katydid
             // Frequency Spectrum Data
             //************************
         public:
-            void WriteFrequencySpectrumDataPolar(boost::shared_ptr<KTData> data);
-            void WriteFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data);
-            void WriteFrequencySpectrumDataPolarPhase(boost::shared_ptr<KTData> data);
-            void WriteFrequencySpectrumDataFFTWPhase(boost::shared_ptr<KTData> data);
-            void WriteFrequencySpectrumDataPolarPower(boost::shared_ptr<KTData> data);
-            void WriteFrequencySpectrumDataFFTWPower(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataPolar(KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTW(KTDataPtr data);
+            void WriteFrequencySpectrumDataPolarPhase(KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data);
+            void WriteFrequencySpectrumDataPolarPower(KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTWPower(KTDataPtr data);
 
-            void WriteFrequencySpectrumDataPolarMagnitudeDistribution(boost::shared_ptr<KTData> data);
-            void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(boost::shared_ptr<KTData> data);
-            void WriteFrequencySpectrumDataPolarPowerDistribution(boost::shared_ptr<KTData> data);
-            void WriteFrequencySpectrumDataFFTWPowerDistribution(boost::shared_ptr<KTData> data);
+            void WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(KTDataPtr data);
+            void WriteFrequencySpectrumDataPolarPowerDistribution(KTDataPtr data);
+            void WriteFrequencySpectrumDataFFTWPowerDistribution(KTDataPtr data);
 
             //************************
             // Time/Frequency Data
             //************************
-            void WriteTimeFrequencyDataPolar(boost::shared_ptr<KTData> data);
-            //void WriteFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data);
-            void WriteTimeFrequencyDataPolarPhase(boost::shared_ptr<KTData> data);
-            //void WriteFrequencySpectrumDataFFTWPhase(boost::shared_ptr<KTData> data);
-            void WriteTimeFrequencyDataPolarPower(boost::shared_ptr<KTData> data);
-            //void WriteFrequencySpectrumDataFFTWPower(boost::shared_ptr<KTData> data);
+            void WriteTimeFrequencyDataPolar(KTDataPtr data);
+            //void WriteFrequencySpectrumDataFFTW(KTDataPtr data);
+            void WriteTimeFrequencyDataPolarPhase(KTDataPtr data);
+            //void WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data);
+            void WriteTimeFrequencyDataPolarPower(KTDataPtr data);
+            //void WriteFrequencySpectrumDataFFTWPower(KTDataPtr data);
 
 
             //************************
             // Multi-FS Data
             //************************
         public:
-            void WriteMultiFSDataPolar(boost::shared_ptr<KTData> data);
-            void WriteMultiFSDataFFTW(boost::shared_ptr<KTData> data);
+            void WriteMultiFSDataPolar(KTDataPtr data);
+            void WriteMultiFSDataFFTW(KTDataPtr data);
     };
 
 } /* namespace Katydid */

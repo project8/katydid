@@ -18,7 +18,7 @@
 #include "KTWindowFunction.hh"
 
 using std::string;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -95,18 +95,18 @@ namespace Katydid
         return false;
     }
 
-    boost::shared_ptr< KTData > KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
+    KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
     {
         KTSliceHeader& oldSliceHeader = tsData.Of< KTSliceHeader >();
 
-        boost::shared_ptr< KTData > newData(new KTData());
+        KTDataPtr newData(new KTData());
 
         // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
         if (! TransferHeaderInformation(oldSliceHeader, sliceHeader))
         {
             KTERROR(pfblog, "Header information was not transferred");
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
         KTDEBUG(pfblog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
@@ -126,7 +126,7 @@ namespace Katydid
             if (newTS == NULL)
             {
                 KTERROR(pfblog, "Time series for component " << iComponent << " was not created!");
-                return boost::shared_ptr< KTData >();
+                return KTDataPtr();
             }
             tsData.SetTimeSeries(newTS, iComponent);
         }
@@ -134,7 +134,7 @@ namespace Katydid
         return newData;
     }
 
-    boost::shared_ptr< KTData > KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
+    KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
     {
         UInt_t nComponents = tsData.GetNComponents();
 

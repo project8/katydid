@@ -5,13 +5,16 @@ namespace Katydid {
 
   KTRQProcessor::KTRQProcessor(const std::string& name) :
     KTProcessor(name),
+    fNoiseSlot("noise-ts", this, &KTRQProcessor::ProcessNoiseData, &fRQSignal),
+    fCandidateSlot("candidate-ts", this, &KTRQProcessor::ProcessCandidateData, &fRQSignal),
     fRQSignal("rq", this),
     fChunkSize(512),
     fNACMDidConverge(false),
     fNoiseACM(NULL),
     fDataMap(NULL),
-    fNoiseSlot("noise-ts", this, &KTRQProcessor::ProcessNoiseData, &fRQSignal),
-    fCandidateSlot("candidate-ts", this, &KTRQProcessor::ProcessCandidateData, &fRQSignal)
+    fNoiseName(),
+    fCandidateName(),
+    fOutputDataName()
   {
   }
 
@@ -100,7 +103,7 @@ namespace Katydid {
       // We need to iterate over the chunks in the time series and produce our 
       // own time series.  First things first, get the pointer to the raw data
       // held in the time series.
-      unsigned nElem = (noiseDt->GetData()).data().size();
+      //(unused) unsigned nElem = (noiseDt->GetData()).data().size();
       const double* rawPtr = (noiseDt->GetData()).data().begin();
 
       // Now we point the data map at the first fChunkSize piece of data and process it. 

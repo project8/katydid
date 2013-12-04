@@ -7,6 +7,7 @@
 
 #include "KTCompareCandidates.hh"
 
+#include "KTData.hh"
 #include "KTCCResults.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
@@ -15,7 +16,7 @@
 #include <sstream>
 #include <vector>
 
-using boost::shared_ptr;
+
 
 using std::string;
 using std::vector;
@@ -137,7 +138,7 @@ namespace Katydid
             eventCounter++;
         }
 
-        shared_ptr< KTData > dataPtr(new KTData());
+        KTDataPtr dataPtr(new KTData());
         dataPtr->fLastData = true;
         KTCCResults& ccrData = dataPtr->Of< KTCCResults >();
 

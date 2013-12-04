@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSincWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    Bool_t KTSincWindow::ConfigureWFSubclass(const KTPStoreNode*)
     {
         KTDEBUG(windowlog, "Sinc WF configured");
         return true;
@@ -48,7 +48,7 @@ namespace Katydid
         Double_t xVal = 0.;
         Int_t halfSize = Int_t(fSize / 2);
         Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(halfSize - 1);
-        for (Int_t iBin=0; iBin < Int_t(fSize); iBin++)
+        for (UInt_t iBin=0; iBin < fSize; iBin++)
         {
             xVal = twoPiOverNBinsMinus1 * Double_t(iBin-halfSize);
             fWindowFunction[iBin] = xVal == 0. ? 1. : sin(xVal) / xVal;

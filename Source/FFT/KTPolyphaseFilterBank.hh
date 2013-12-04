@@ -11,10 +11,9 @@
 
 #include "KTProcessor.hh"
 
+#include "KTData.hh"
 #include "KTLogger.hh"
 #include "KTSlot.hh"
-
-#include <boost/shared_ptr.hpp>
 
 #include <string>
 
@@ -22,7 +21,6 @@ namespace Katydid
 {
     KTLOGGER(fftlog_comp, "katydid.fft");
 
-    class KTData;
     class KTEggHeader;
     class KTPStoreNode;
     class KTSliceHeader;
@@ -50,11 +48,11 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
-     - "ts-real": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
-     - "ts-fftw": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
+     - "ts-real": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
+     - "ts-fftw": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
      Signals:
-     - "windowed": void (shared_ptr<KTData>) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
+     - "windowed": void (KTDataPtr) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
     */
 
     class KTPolyphaseFilterBank : public KTProcessor
@@ -85,9 +83,9 @@ namespace Katydid
             Bool_t ProcessDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Create a new data object for the filtered time series (real-type)
-            boost::shared_ptr< KTData > CreateFilteredDataReal(const KTTimeSeriesData& tsData);
+            KTDataPtr CreateFilteredDataReal(const KTTimeSeriesData& tsData);
             /// Create a new data object for the filtered time series (fftw-type)
-            boost::shared_ptr< KTData > CreateFilteredDataFFTW(const KTTimeSeriesData& tsData);
+            KTDataPtr CreateFilteredDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Apply PFB to a single time series (real-type); a new time series is produced
             KTTimeSeriesReal* ApplyPFB(const KTTimeSeriesReal* data) const;

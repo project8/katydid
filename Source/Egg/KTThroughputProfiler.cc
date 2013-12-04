@@ -23,7 +23,7 @@
 #define MACGIGA UINT64_C(1000000000)
 #endif
 
-using boost::shared_ptr;
+
 
 using std::string;
 using std::stringstream;
@@ -91,8 +91,9 @@ namespace Katydid
         return;
     }
 
-    void KTThroughputProfiler::ProcessData(shared_ptr<KTData> data)
+    void KTThroughputProfiler::ProcessData(KTDataPtr data)
     {
+        (void)data;
         fNDataProcessed++;
         return;
     }
@@ -126,7 +127,7 @@ namespace Katydid
         timespec ts;
 #ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
         if (!fMacTimestart) {
-            mach_timebase_info_data_t tb = { 0 };
+            mach_timebase_info_data_t tb = { .numer = 0, .denom = 1 };
             mach_timebase_info(&tb);
             fMacTimebase = tb.numer;
             fMacTimebase /= tb.denom;

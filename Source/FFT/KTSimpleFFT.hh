@@ -16,8 +16,6 @@
 #include "KTLogger.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
 #include <fftw3.h>
 
@@ -31,7 +29,6 @@ namespace Katydid
 
     class KTCorrelationData;
     class KTCorrelationTSData;
-    class KTData;
     class KTEggHeader;
     class KTFrequencySpectrumDataPolar;
     class KTPStoreNode;
@@ -68,12 +65,12 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader*) -- Initialize the FFT from an Egg file header
-     - "ts": void (shared_ptr<KTData>) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft-forward"
-     - "fs-polar": void (shared_ptr<KTData>) -- Perform a reverse FFT; Requires KTFrequencySpectrumDataPolar; Emits signal signal "fft-reverse"
+     - "ts": void (KTDataPtr) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft-forward"
+     - "fs-polar": void (KTDataPtr) -- Perform a reverse FFT; Requires KTFrequencySpectrumDataPolar; Emits signal signal "fft-reverse"
 
      Signals:
-     - "fft-forward": void (shared_ptr<KTData>) -- Emitted upon successful performance of a forward FFT; Guarantees KTFrequencySpectrumDataPolar
-     - "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon successful performance of a reverse FFT; Guarantees KTFrequencySpectrumDataPolar
+     - "fft-forward": void (KTDataPtr) -- Emitted upon successful performance of a forward FFT; Guarantees KTFrequencySpectrumDataPolar
+     - "fft-reverse": void (KTDataPtr) -- Emitted upon successful performance of a reverse FFT; Guarantees KTFrequencySpectrumDataPolar
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor

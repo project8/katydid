@@ -167,7 +167,7 @@ namespace Katydid
 
         inline result_type operator()() {return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());}
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode*)
         {
             return true;
         }

@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    Bool_t KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTPStoreNode*)
     {
         KTDEBUG(windowlog, "Blackman-Harris WF configured");
         return true;
@@ -46,7 +46,7 @@ namespace Katydid
     {
         fWindowFunction.resize(fSize);
         Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(fSize - 1);
-        for (Int_t iBin=0; iBin<fSize; iBin++)
+        for (UInt_t iBin=0; iBin<fSize; iBin++)
         {
             fWindowFunction[iBin] = 0.35875 - 0.48829 * cos(Double_t(iBin) * twoPiOverNBinsMinus1) +
                     0.14128 * cos(Double_t(2 * iBin) * twoPiOverNBinsMinus1) - 0.01168 * cos(Double_t(3 * iBin) * twoPiOverNBinsMinus1);

@@ -13,8 +13,6 @@
 
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <cstdio>
 #include <deque>
 #include <string>
@@ -24,8 +22,6 @@ class TTree;
 
 namespace Katydid
 {
-    class KTData;
-
     /*!
      @class KTMultiFileROOTTreeReader
      @author N. S. Oblath
@@ -48,10 +44,10 @@ namespace Katydid
      - "amp-dist" -- Emits signal "amp-dist" after file read
 
      Slots:
-     - "amp-dist": void (shared_ptr<KTData>) -- Add amplitude distribution data; Requires KTData; Adds KTAmplitudeDistribution; Emits signal "amp-dist" upon successful file read.
+     - "amp-dist": void (KTDataPtr) -- Add amplitude distribution data; Requires KTData; Adds KTAmplitudeDistribution; Emits signal "amp-dist" upon successful file read.
 
      Signals:
-     - "amp-dist": void (shared_ptr<KTData>) -- Emitted after reading an amp-dist file; Guarantees KTAmplitudeDistribution.
+     - "amp-dist": void (KTDataPtr) -- Emitted after reading an amp-dist file; Guarantees KTAmplitudeDistribution.
     */
 
 

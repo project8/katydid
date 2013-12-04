@@ -7,12 +7,11 @@
 
 #include "KTBasicROOTFileWriter.hh"
 #include "KTBasicROOTTypeWriterFFT.hh"
+#include "KTData.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTSliceHeader.hh"
 #include "complexpolar.hh"
-
-#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 
@@ -22,7 +21,7 @@ using namespace std;
 int main()
 {
     // Set up the data
-    boost::shared_ptr< KTData > data(new KTData);
+    KTDataPtr data(new KTData);
 
     KTSliceHeader& header = data->Of< KTSliceHeader >();
     header.SetSliceNumber(1);

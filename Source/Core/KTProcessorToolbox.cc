@@ -251,7 +251,9 @@ namespace Katydid
     Bool_t KTProcessorToolbox::Run()
     {
         KTPROG(proclog, "Beginning processing . . .");
+#ifndef SINGLETHREADED
         UInt_t iGroup = 0;
+#endif
         for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); rqIter++)
         {
 #ifdef SINGLETHREADED

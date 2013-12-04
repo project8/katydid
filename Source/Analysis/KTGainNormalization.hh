@@ -13,11 +13,8 @@
 
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 namespace Katydid
 {
-    class KTData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumFFTW;

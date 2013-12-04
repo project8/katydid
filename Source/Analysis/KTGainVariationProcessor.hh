@@ -14,12 +14,9 @@
 #include "KTPhysicalArray.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 
 namespace Katydid
 {
-    class KTData;
     class KTCorrelationData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
@@ -49,12 +46,12 @@ namespace Katydid
      - "max-bin": unsigned -- maximum bin for the fit
 
      Slots:
-     - "fs-polar": void (shared_ptr< KTData >) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
-     - "fs-fftw": void (shared_ptr< KTData >) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
-     - "corr": void (shared_ptr< KTData >) -- Calculates gain variation on a corrlation data object; Requires KTCorrlationData; Adds KTGainVariationData
+     - "fs-polar": void (KTDataPtr) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
+     - "fs-fftw": void (KTDataPtr) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
+     - "corr": void (KTDataPtr) -- Calculates gain variation on a corrlation data object; Requires KTCorrlationData; Adds KTGainVariationData
 
      Signals:
-     - "gain-var": void (shared_ptr< KTData >) emitted upon performance of a fit; Guarantees KTGainVariationData
+     - "gain-var": void (KTDataPtr) emitted upon performance of a fit; Guarantees KTGainVariationData
     */
 
     class KTGainVariationProcessor : public KTProcessor

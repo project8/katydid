@@ -31,7 +31,7 @@ using namespace Katydid;
 
 KTLOGGER(vallog, "katydid.applications.validation");
 
-int main(int argc, char** argv)
+int main()
 {
     const Double_t pi = 3.14159265359;
 

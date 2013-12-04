@@ -10,14 +10,13 @@
 
 #include "KTMultiSliceROOTWriter.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 class TH1D;
 
 namespace Katydid
 {
     class KTEggHeader;
-    class KTData;
 
     class KTMultiSliceROOTTypeWriterEgg : public KTMEROOTTypeWriterBase//, public KTTypeWriterEgg
     {
@@ -37,7 +36,7 @@ namespace Katydid
         public:
             void StartByHeader(const KTEggHeader* header);
 
-            void AddTimeSeriesData(boost::shared_ptr<KTData> data);
+            void AddTimeSeriesData(KTDataPtr data);
 
         private:
             std::vector< TH1D* > fTSHists;

@@ -20,7 +20,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -107,11 +107,11 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiSliceROOTTypeWriterAnalysis::AddCorrelationData(shared_ptr< KTData > data)
+    void KTMultiSliceROOTTypeWriterAnalysis::AddCorrelationData(KTDataPtr data)
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        //ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTCorrelationData& corrData = data->Of<KTCorrelationData>();
         UInt_t nComponents = corrData.GetNComponents();

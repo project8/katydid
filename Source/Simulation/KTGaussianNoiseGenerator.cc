@@ -48,7 +48,7 @@ namespace Katydid
 
     Bool_t KTGaussianNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
     {
-        const Double_t binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
+        //const Double_t binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
         const UInt_t sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 
         UInt_t nComponents = data.GetNComponents();

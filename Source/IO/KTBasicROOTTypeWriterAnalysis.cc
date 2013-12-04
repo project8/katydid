@@ -26,7 +26,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -75,7 +75,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolar(boost::shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolar(KTDataPtr data)
     {
         if (! data) return;
 
@@ -104,7 +104,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTW(boost::shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTW(KTDataPtr data)
     {
         if (! data) return;
 
@@ -133,7 +133,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolarPhase(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolarPhase(KTDataPtr data)
     {
         if (! data) return;
 
@@ -162,7 +162,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTWPhase(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTWPhase(KTDataPtr data)
     {
         if (! data) return;
 
@@ -191,7 +191,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolarPower(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolarPower(KTDataPtr data)
     {
         if (! data) return;
 
@@ -220,7 +220,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTWPower(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTWPower(KTDataPtr data)
     {
         if (! data) return;
 
@@ -253,7 +253,7 @@ namespace Katydid
     // Analytic Associate Data
     //************************
 
-    void KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData(KTDataPtr data)
     {
         if (! data) return;
 
@@ -285,7 +285,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -321,7 +321,7 @@ namespace Katydid
     // Correlation Data
     //************************
 
-    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationData(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationData(KTDataPtr data)
     {
         if (! data) return;
 
@@ -354,7 +354,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationDataDistribution(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationDataDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -391,7 +391,7 @@ namespace Katydid
     // Correlation Data
     //************************
 
-    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationTSData(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationTSData(KTDataPtr data)
     {
         if (! data) return;
 
@@ -420,7 +420,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationTSDataDistribution(boost::shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteCorrelationTSDataDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -453,7 +453,7 @@ namespace Katydid
     // Hough Transform Data
     //************************
 
-    void KTBasicROOTTypeWriterAnalysis::WriteHoughData(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteHoughData(KTDataPtr data)
     {
         if (! data) return;
 
@@ -482,7 +482,7 @@ namespace Katydid
     // Gain Variation Data
     //************************
 
-    void KTBasicROOTTypeWriterAnalysis::WriteGainVariationData(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteGainVariationData(KTDataPtr data)
     {
         if (! data) return;
 
@@ -528,7 +528,7 @@ namespace Katydid
     // WignerVille Data
     //************************
 
-    void KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData(KTDataPtr data)
     {
         if (! data) return;
 
@@ -561,7 +561,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution(shared_ptr< KTData > data)
+    void KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -594,7 +594,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterAnalysis::WriteWV2DData(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterAnalysis::WriteWV2DData(KTDataPtr data)
     {
         if (! data) return;
 

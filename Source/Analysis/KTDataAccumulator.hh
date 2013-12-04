@@ -13,8 +13,6 @@
 #include "KTData.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <map>
 #include <typeinfo>
 
@@ -72,7 +70,7 @@ namespace Katydid
             {
                 UInt_t fCount;
                 UInt_t fSignalCount;
-                boost::shared_ptr< KTData > fData;
+                KTDataPtr fData;
                 Accumulator() : fCount(0), fSignalCount(0), fData(new KTData())
                 {}
             };

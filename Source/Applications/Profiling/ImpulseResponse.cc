@@ -20,11 +20,9 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesData.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <string>
 
-using boost::shared_ptr;
+
 
 using namespace std;
 using namespace Katydid;
@@ -113,7 +111,7 @@ int main(int argc, char** argv)
 static KTDerivedNORegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
 
 KTImpulseAnalysis::KTImpulseAnalysis(const std::string& name) :
-        KTProcessor(),
+        KTProcessor(name),
         fFSDataPolarSlot("fs-polar", this, &KTImpulseAnalysis::Analyze)
 {
 }
@@ -122,7 +120,7 @@ KTImpulseAnalysis::~KTImpulseAnalysis()
 {
 }
 
-Bool_t KTImpulseAnalysis::Configure(const KTPStoreNode* node)
+Bool_t KTImpulseAnalysis::Configure(const KTPStoreNode*)
 {
     return true;
 }

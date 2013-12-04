@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     reader.AddFilename(filename);
     reader.AddDataType(fileType);
 
-    boost::shared_ptr<KTData> parsedData(new KTData);
+    KTDataPtr parsedData(new KTData);
     if (fileType == "mc-truth-events")
     {
         if (! reader.Append(*(parsedData.get())))

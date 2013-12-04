@@ -225,11 +225,11 @@ namespace Katydid
         return eggHeader;
     }
 
-    boost::shared_ptr< KTData > KTEggReader2011::HatchNextSlice()
+    KTDataPtr KTEggReader2011::HatchNextSlice()
     {
-        if (! fEggStream.good()) return boost::shared_ptr< KTData >();
+        if (! fEggStream.good()) return KTDataPtr();
 
-        boost::shared_ptr< KTData > newData(new KTData());
+        KTDataPtr newData(new KTData());
 
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(1);
 
@@ -259,7 +259,7 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading time stamp size");
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
 
         // read the frame size
@@ -291,7 +291,7 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading frame size");
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
 
         // Other information
@@ -316,13 +316,13 @@ namespace Katydid
                     << "\tExpected: :" << fHeaderInfo.fRecordSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
             KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
-            for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
+            for (int iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
                 //(*newRecord)(iBin) = Double_t(readBuffer[iBin]);
                 newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));

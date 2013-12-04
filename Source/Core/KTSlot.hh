@@ -209,11 +209,11 @@ namespace Katydid
      @class KTDataSlotOneArg
      @author N. S. Oblath
 
-     @brief Creates a slot that takes a boost::shared_ptr<Data> object as the argument; the function that gets called should take DataType& as its argument.
+     @brief Creates a slot that takes a KTDataPtr object as the argument; the function that gets called should take DataType& as its argument.
 
      @details
      Usage:
-     This slot type adds the slot function (signature void (boost::shared_ptr<KTData>).
+     This slot type adds the slot function (signature void (KTDataPtr).
      Your processor (or, optionally, a different object) must have a member function with the signature Bool_t (DataType&).
      The slot function checks that the provided KTData object contains data of type DataType, and then calls the member function.
 
@@ -228,7 +228,7 @@ namespace Katydid
     {
         public:
             typedef XDataType data_type;
-            typedef boost::function< void (boost::shared_ptr< KTData >) > function_signature;
+            typedef boost::function< void (KTDataPtr) > function_signature;
             typedef typename function_signature::result_type return_type;
             typedef typename function_signature::argument_type argument_type;
 
@@ -241,7 +241,7 @@ namespace Katydid
             KTSlotDataOneType(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr=NULL);
             virtual ~KTSlotDataOneType();
 
-            void operator()(boost::shared_ptr< KTData > data);
+            void operator()(KTDataPtr data);
 
         protected:
             boost::function< Bool_t (data_type&) > fFunc;
@@ -256,7 +256,7 @@ namespace Katydid
         public:
             typedef XDataType1 first_data_type;
             typedef XDataType2 second_data_type;
-            typedef boost::function< void (boost::shared_ptr< KTData >) > function_signature;
+            typedef boost::function< void (KTDataPtr) > function_signature;
             typedef typename function_signature::result_type return_type;
             typedef typename function_signature::argument_type argument_type;
 
@@ -269,7 +269,7 @@ namespace Katydid
             KTSlotDataTwoTypes(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr=NULL);
             virtual ~KTSlotDataTwoTypes();
 
-            void operator()(boost::shared_ptr< KTData > data);
+            void operator()(KTDataPtr data);
 
         protected:
             boost::function< Bool_t (first_data_type&, second_data_type&) > fFunc;
@@ -305,7 +305,7 @@ namespace Katydid
     }
 
     template< class XDataType >
-    void KTSlotDataOneType< XDataType >::operator()(boost::shared_ptr< KTData > data)
+    void KTSlotDataOneType< XDataType >::operator()(KTDataPtr data)
     {
         // Standard data slot pattern:
         // Check to ensure that the required data type is present
@@ -354,7 +354,7 @@ namespace Katydid
     }
 
     template< class XDataType1, class XDataType2 >
-    void KTSlotDataTwoTypes< XDataType1, XDataType2 >::operator()(boost::shared_ptr< KTData > data)
+    void KTSlotDataTwoTypes< XDataType1, XDataType2 >::operator()(KTDataPtr data)
     {
         // Standard data slot pattern:
         // Check to ensure that the required data type is present

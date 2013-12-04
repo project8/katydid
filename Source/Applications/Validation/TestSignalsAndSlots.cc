@@ -13,7 +13,7 @@ using namespace Katydid;
 
 KTLOGGER(testsiglog, "katydid.verification.testsig")
 
-int main(int argc, char** argv)
+int main()
 {
 
     KTTestProcessorA tpA;

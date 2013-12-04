@@ -17,7 +17,7 @@
 #include "MonarchException.hpp"
 #include "MonarchHeader.hpp"
 
-using boost::shared_ptr;
+
 
 using std::map;
 using std::string;
@@ -142,19 +142,19 @@ namespace Katydid
         return new KTEggHeader(fHeader);
     }
 
-    boost::shared_ptr< KTData > KTEggReaderMonarch::HatchNextSlice()
+    KTDataPtr KTEggReaderMonarch::HatchNextSlice()
     {
         UInt_t recordSize = fHeader.GetRecordSize();
 
         if (fMonarch == NULL)
         {
             KTERROR(eggreadlog, "Monarch file has not been opened");
-            return shared_ptr< KTData >();
+            return KTDataPtr();
         }
         if (fReadState.fStatus == MonarchReadState::kInvalid)
         {
             KTERROR(eggreadlog, "Read state status is <invalid>. Did you hatch the egg first?");
-            return shared_ptr< KTData >();
+            return KTDataPtr();
         }
 
         if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
@@ -164,7 +164,7 @@ namespace Katydid
             if (! fMonarch->ReadRecord())
             {
                 KTERROR(eggreadlog, "File appears to contain no slices.");
-                return shared_ptr< KTData >();
+                return KTDataPtr();
             }
             fReadState.fReadPtrOffset = 0;
             fReadState.fReadPtrRecordOffset = 0;
@@ -185,7 +185,7 @@ namespace Katydid
                 if (! fMonarch->ReadRecord())
                 {
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                    return shared_ptr< KTData >();
+                    return KTDataPtr();
                 }
                 ++(fReadState.fAbsoluteRecordOffset);
                 fReadState.fReadPtrOffset = 0;
@@ -220,7 +220,7 @@ namespace Katydid
                     if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
                     {
                         KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                        return shared_ptr< KTData >();
+                        return KTDataPtr();
                     }
                 }
             }
@@ -229,7 +229,7 @@ namespace Katydid
             fReadState.fReadPtrOffset = fReadState.fSliceStartPtrOffset;
         }
 
-        boost::shared_ptr< KTData > newData(new KTData());
+        KTDataPtr newData(new KTData());
 
         // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(fHeader.GetNChannels());
@@ -304,7 +304,7 @@ namespace Katydid
                     {
                         delete newRecords[iChannel];
                     }
-                    return shared_ptr< KTData >();
+                    return KTDataPtr();
                 }
                 ++(fReadState.fAbsoluteRecordOffset);
                 fReadState.fReadPtrOffset = 0;

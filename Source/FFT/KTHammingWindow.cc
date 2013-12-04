@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHammingWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    Bool_t KTHammingWindow::ConfigureWFSubclass(const KTPStoreNode*)
     {
         KTDEBUG(windowlog, "Hamming WF configured");
         return true;
@@ -46,7 +46,7 @@ namespace Katydid
     {
         fWindowFunction.resize(fSize);
         Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(fSize - 1);
-        for (Int_t iBin=0; iBin<fSize; iBin++)
+        for (UInt_t iBin=0; iBin<fSize; iBin++)
         {
             fWindowFunction[iBin] = 0.54 - 0.46 * cos((Double_t)iBin * twoPiOverNBinsMinus1);
         }

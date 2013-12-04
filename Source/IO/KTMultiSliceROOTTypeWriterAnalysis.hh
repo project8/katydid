@@ -10,14 +10,12 @@
 
 #include "KTMultiSliceROOTWriter.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 class TH1D;
 
 namespace Katydid
 {
-    class KTData;
-
     class KTMultiSliceROOTTypeWriterAnalysis : public KTMEROOTTypeWriterBase//, public KTTypeWriterAnalysis
     {
 
@@ -36,7 +34,7 @@ namespace Katydid
 
         public:
 
-            void AddCorrelationData(boost::shared_ptr< KTData >);
+            void AddCorrelationData(KTDataPtr);
 
         private:
             std::vector< TH1D* > fCorrHists;

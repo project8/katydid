@@ -11,10 +11,10 @@
 
 #include "KTPrimaryProcessor.hh"
 
+#include "KTData.hh"
 #include "KTEggReader.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
 
 namespace Katydid
 {
@@ -53,7 +53,7 @@ namespace Katydid
 
      Signals:
      - "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced; Guarantees KTTimeSeriesData
+     - "slice": void (KTDataPtr) -- emitted when the new time series is produced; Guarantees KTTimeSeriesData
      - "egg-done": void () --  emitted when a file is finished.
      - "summary": void (const KTProcSummary*) -- emitted when a file is finished (after "egg-done")
     */
@@ -82,8 +82,8 @@ namespace Katydid
 
             Bool_t ProcessEgg();
 
-            Bool_t HatchNextSlice(KTEggReader* reader, boost::shared_ptr< KTData >& data) const;
-            void NormalizeData(boost::shared_ptr< KTData >& data) const;
+            Bool_t HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const;
+            void NormalizeData(KTDataPtr& data) const;
 
             UInt_t GetNSlices() const;
             void SetNSlices(UInt_t nSlices);
@@ -158,7 +158,7 @@ namespace Katydid
         return ProcessEgg();
     }
 
-    inline Bool_t KTEggProcessor::HatchNextSlice(KTEggReader* reader, boost::shared_ptr< KTData >& data) const
+    inline Bool_t KTEggProcessor::HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const
     {
         data = reader->HatchNextSlice();
         if (data) return true;

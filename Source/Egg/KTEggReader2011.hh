@@ -32,10 +32,10 @@ namespace Katydid
                 double fSecondsPerRunLengthUnit;
 
                 HeaderInfo() :
-                    fTimeStampSize(0),
+                    fSliceSize(0),
                     fFrameIDSize(0),
                     fRecordSize(0),
-                    fSliceSize(0),
+                    fTimeStampSize(0),
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),
@@ -49,7 +49,7 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string& filename);
-            virtual boost::shared_ptr< KTData > HatchNextSlice();
+            virtual KTDataPtr HatchNextSlice();
             virtual bool CloseEgg();
 
             /// Returns the time since the run started in seconds

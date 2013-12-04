@@ -16,8 +16,8 @@ namespace Katydid
         fdfdt(0.),
         fSignalPower(0.),
         fEvents(),
-        fNRecords(0),
-        fRecordSize(1)
+        fRecordSize(1),
+        fNRecords(0)
     {
     }
 

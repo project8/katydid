@@ -5,6 +5,7 @@
  *      Author: nsoblath
  */
 
+#include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTThroughputProfiler.hh"
@@ -13,8 +14,6 @@
 #include "MonarchException.hpp"
 
 #include <fftw3.h>
-
-#include <boost/shared_ptr.hpp>
 
 #include <cstdlib>
 
@@ -69,7 +68,7 @@ int main(const int argc, const char** argv)
     KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
     // Dummy data pointer
-    boost::shared_ptr<KTData> dataPtr(new KTData());
+    KTDataPtr dataPtr(new KTData());
 
     // Create FFT
     KTINFO(proflog, "Setting up the FFT");

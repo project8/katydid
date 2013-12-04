@@ -4,7 +4,7 @@
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 
-using boost::shared_ptr;
+
 
 namespace Katydid 
 {
@@ -27,7 +27,7 @@ namespace Katydid
                 &KTBasicASCIITypeWriterTS::WriteTimeSeriesData);
     }
 
-    void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(shared_ptr< KTData > data)
+    void KTBasicASCIITypeWriterTS::WriteTimeSeriesData(KTDataPtr data)
     {
         if (! data) return;
 

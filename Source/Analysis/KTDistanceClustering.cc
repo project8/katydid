@@ -23,7 +23,7 @@
 using std::string;
 using std::map;
 using std::set;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -111,7 +111,7 @@ namespace Katydid
         return true;
     }
 
-    void KTDistanceClustering::Process1DData(shared_ptr< KTData > data)
+    void KTDistanceClustering::Process1DData(KTDataPtr data)
     {
         if (! data->Has< KTDiscriminatedPoints1DData >())
         {

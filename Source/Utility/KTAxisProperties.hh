@@ -240,7 +240,7 @@ namespace Katydid
     template< size_t NDims >
     void KTAxisProperties< NDims >::SetRangeMin(const Double_t* mins)
     {
-        for (Int_t arrPos=0; arrPos<NDims; arrPos++)
+        for (UInt_t arrPos=0; arrPos<NDims; arrPos++)
         {
             fRangeMin[arrPos] = mins[arrPos];
             fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (Double_t)((*fGetNBinsFunc)(arrPos+1));
@@ -259,7 +259,7 @@ namespace Katydid
     template< size_t NDims >
     void KTAxisProperties< NDims >::SetRangeMax(const Double_t* maxes)
     {
-        for (Int_t arrPos=0; arrPos<NDims; arrPos++)
+        for (UInt_t arrPos=0; arrPos<NDims; arrPos++)
         {
             fRangeMax[arrPos] = maxes[arrPos];
             fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (Double_t)((*fGetNBinsFunc)(arrPos+1));

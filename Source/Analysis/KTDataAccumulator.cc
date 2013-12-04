@@ -17,7 +17,7 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
-using boost::shared_ptr;
+
 
 using std::map;
 using std::string;

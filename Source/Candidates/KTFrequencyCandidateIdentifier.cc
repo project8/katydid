@@ -20,7 +20,7 @@
 
 using std::string;
 
-using boost::shared_ptr;
+
 
 
 namespace Katydid
@@ -44,7 +44,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::Configure(const KTPStoreNode* node)
+    Bool_t KTFrequencyCandidateIdentifier::Configure(const KTPStoreNode*)
     {
         return true;
     }

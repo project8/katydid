@@ -22,6 +22,7 @@
 #include "KTGainNormalization.hh"
 #endif
 
+#include "KTData.hh"
 #include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 
@@ -38,14 +39,12 @@
 #include "KTTimeSeriesData.hh"
 
 
-#include <boost/shared_ptr.hpp>
-
 
 using namespace Katydid;
 using namespace std;
 
 using std::string;
-//using boost::shared_ptr;
+//
 
 KTLOGGER(proflog, "katydid.applications.profiling");
 
@@ -140,7 +139,7 @@ int main()
         KTINFO(proflog, "Slice " << iSlice);
 
         // Hatch the slice
-        boost::shared_ptr<KTData> data = eggReader->HatchNextSlice();
+        KTDataPtr data = eggReader->HatchNextSlice();
         if (data.get() == NULL) break;
 
         if (iSlice == nSlices - 1) data->fLastData = true;
@@ -215,7 +214,7 @@ int main()
             KTERROR(proflog, "A problem occurred while identifying candidates");
             continue;
         }
-        KTFrequencyCandidateData& freqCandData = data->Of< KTFrequencyCandidateData >();
+        //KTFrequencyCandidateData& freqCandData = data->Of< KTFrequencyCandidateData >();
 
         // Write out the candidates
         typeWriter->WriteFrequencyCandidates(data);

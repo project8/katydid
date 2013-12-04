@@ -23,7 +23,7 @@
 using std::copy;
 using std::string;
 using std::vector;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -320,7 +320,7 @@ namespace Katydid
         UInt_t freqSize = GetFrequencySize();
         Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
 
-        Double_t tempReal, tempImag;
+        //Double_t tempReal, tempImag;
         KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
         for (UInt_t iPoint = 0; iPoint<freqSize; iPoint++)
         {
@@ -363,7 +363,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessTimeSeriesData(shared_ptr<KTData> data)
+    void KTSimpleFFT::ProcessTimeSeriesData(KTDataPtr data)
     {
         if (! data->Has< KTTimeSeriesData >())
         {

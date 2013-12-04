@@ -16,7 +16,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -50,7 +50,7 @@ namespace Katydid
     // Meta CC Locust MC
     //*********************
 
-    void KTROOTTreeTypeWriterEvaluation::WriteMetaCCLocustMC(shared_ptr< KTData > data)
+    void KTROOTTreeTypeWriterEvaluation::WriteMetaCCLocustMC(KTDataPtr data)
     {
         KTCCResults& ccResults = data->Of< KTCCResults >();
 

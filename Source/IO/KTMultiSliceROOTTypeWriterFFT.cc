@@ -21,7 +21,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 using std::stringstream;
 using std::string;
 using std::vector;
@@ -135,7 +135,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiSliceROOTTypeWriterFFT::AddFrequencySpectrumDataPolar(shared_ptr<KTData> data)
+    void KTMultiSliceROOTTypeWriterFFT::AddFrequencySpectrumDataPolar(KTDataPtr data)
     {
         KTFrequencySpectrumDataPolar& fsData = data->Of< KTFrequencySpectrumDataPolar >();
         if (fFSHists.size() == 0)
@@ -164,7 +164,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiSliceROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW(shared_ptr<KTData> data)
+    void KTMultiSliceROOTTypeWriterFFT::AddFrequencySpectrumDataFFTW(KTDataPtr data)
     {
         KTFrequencySpectrumDataFFTW& fsData = data->Of< KTFrequencySpectrumDataFFTW >();
         if (fFSFFTWHists.size() == 0)

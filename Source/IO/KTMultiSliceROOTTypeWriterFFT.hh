@@ -10,14 +10,12 @@
 
 #include "KTMultiSliceROOTWriter.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 class TH1D;
 
 namespace Katydid
 {
-    class KTData;
-
     class KTMultiSliceROOTTypeWriterFFT : public KTMEROOTTypeWriterBase//, public KTTypeWriterFFT
     {
         public:
@@ -35,8 +33,8 @@ namespace Katydid
 
         public:
 
-            void AddFrequencySpectrumDataPolar(boost::shared_ptr<KTData> data);
-            void AddFrequencySpectrumDataFFTW(boost::shared_ptr<KTData> data);
+            void AddFrequencySpectrumDataPolar(KTDataPtr data);
+            void AddFrequencySpectrumDataFFTW(KTDataPtr data);
 
         private:
             std::vector< TH1D* > fFSHists;

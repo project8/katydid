@@ -17,7 +17,7 @@
 using namespace Katydid;
 using namespace std;
 
-int main(int argc, char** argv)
+int main()
 {
     //*******************
     // test with an array

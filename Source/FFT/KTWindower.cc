@@ -17,7 +17,7 @@
 #include "KTWindowFunction.hh"
 
 using std::string;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -30,8 +30,8 @@ namespace Katydid
             fWindowFunction(NULL),
             fWindowed("windowed", this),
             fHeaderSlot("header", this, &KTWindower::InitializeWithHeader),
-            fTimeSeriesRealSlot("ts-real", this, &KTWindower::WindowDataReal, &fWindowed),
-            fTimeSeriesFFTWSlot("ts-fftw", this, &KTWindower::WindowDataFFTW, &fWindowed)
+            fTimeSeriesFFTWSlot("ts-fftw", this, &KTWindower::WindowDataFFTW, &fWindowed),
+            fTimeSeriesRealSlot("ts-real", this, &KTWindower::WindowDataReal, &fWindowed)
     {
     }
 

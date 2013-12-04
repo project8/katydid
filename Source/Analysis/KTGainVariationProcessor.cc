@@ -25,7 +25,7 @@
 
 using std::string;
 using std::vector;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -40,9 +40,9 @@ namespace Katydid
             fMaxFrequency(1.),
             fMinBin(0),
             fMaxBin(1),
+            fNFitPoints(5),
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
-            fNFitPoints(5),
             fGainVarSignal("gain-var", this),
             fFSPolarSlot("fs-polar", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
             fFSFFTWSlot("fs-fftw", this, &KTGainVariationProcessor::CalculateGainVariation, &fGainVarSignal),
@@ -128,7 +128,7 @@ namespace Katydid
 
         UInt_t nComponents = data.GetNComponents();
 
-        Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
+        //Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
@@ -216,7 +216,7 @@ namespace Katydid
 
         UInt_t nComponents = data.GetNComponents();
 
-        Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
+        //Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);

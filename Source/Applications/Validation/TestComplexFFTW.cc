@@ -33,7 +33,7 @@ using namespace Katydid;
 
 KTLOGGER(vallog, "katydid.applications.validation");
 
-int main(int argc, char** argv)
+int main()
 {
     const Double_t pi = 3.14159265359;
 
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     KTINFO(vallog, "Performing FFT");
     KTFrequencySpectrumFFTW* frequencySpectrum = fullFFT.Transform(timeSeries);
     KTFrequencySpectrumPolar* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
-    size_t nFreqBins2 = frequencySpectrum2->size();
+    //size_t nFreqBins2 = frequencySpectrum2->size();
 
     // Find the peak frequency
     Double_t peakFrequency = -1.;
