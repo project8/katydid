@@ -250,8 +250,8 @@ namespace Katydid
 
     void KTWignerVille::CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset)
     {
-        UInt_t sliceSize = data1->size();
-        UInt_t fftSize = GetWindowSize();
+        //UInt_t sliceSize = data1->size();
+        //UInt_t fftSize = GetWindowSize();
 
         /*
         if (fInputArray->size() != size)
@@ -267,15 +267,15 @@ namespace Katydid
             fInputArray->SetRange(data1->GetRangeMin(), data1->GetRangeMax());
         }
         */
-        fInputArray->SetRange(0., (Double_t)fftSize * data1->GetBinWidth());
+        //fInputArray->SetRange(0., (Double_t)fftSize * data1->GetBinWidth());
 
-        KTERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
+        //KTERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
 
         // Now calculate the lagged ACF at all possible lags.
-        register Double_t t1_real;
-        register Double_t t1_imag;
-        register Double_t t2_real;
-        register Double_t t2_imag;
+        //register Double_t t1_real;
+        //register Double_t t1_imag;
+        //register Double_t t2_real;
+        //register Double_t t2_imag;
 /*
         UInt_t binsToFill = std::min(fftSize, sliceSize - fLeftStartPointer);
         register UInt_t rightStartPointer = fLeftStartPointer + binsToFill - 1;

@@ -34,8 +34,8 @@ namespace Katydid
             KTROOTTreeTypeWriter(),
             //KTTypeWriterAnalysis()
             fDiscPoints1DTree(NULL),
-            fDiscPoints1DData(),
             fAmpDistTree(NULL),
+            fDiscPoints1DData(),
             fAmpDistData()
     {
     }
@@ -116,7 +116,7 @@ namespace Katydid
     void KTROOTTreeTypeWriterAnalysis::WriteAmplitudeDistributions(shared_ptr< KTData > data)
     {
         KTAmplitudeDistribution& adData = data->Of< KTAmplitudeDistribution >();
-        KTSliceHeader& header = data->Of< KTSliceHeader >();
+        //KTSliceHeader& header = data->Of< KTSliceHeader >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 

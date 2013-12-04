@@ -215,7 +215,7 @@ int main()
             KTERROR(proflog, "A problem occurred while identifying candidates");
             continue;
         }
-        KTFrequencyCandidateData& freqCandData = data->Of< KTFrequencyCandidateData >();
+        //KTFrequencyCandidateData& freqCandData = data->Of< KTFrequencyCandidateData >();
 
         // Write out the candidates
         typeWriter->WriteFrequencyCandidates(data);

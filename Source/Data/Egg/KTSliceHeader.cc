@@ -13,9 +13,9 @@ namespace Katydid
 {
     KTSliceHeader::KTSliceHeader() :
             KTExtensibleData< KTSliceHeader >(),
-            fIsNewAcquisition(true),
             fTimeInRun(0.),
             fSliceNumber(0),
+            fIsNewAcquisition(true),
             fSliceSize(1),
             fSliceLength(0.),
             fNonOverlapFrac(0.),
@@ -33,9 +33,9 @@ namespace Katydid
 
     KTSliceHeader::KTSliceHeader(const KTSliceHeader& orig) :
             KTExtensibleData< KTSliceHeader >(orig),
-            fIsNewAcquisition(orig.fIsNewAcquisition),
             fTimeInRun(orig.fTimeInRun),
             fSliceNumber(orig.fSliceNumber),
+            fIsNewAcquisition(orig.fIsNewAcquisition),
             fSliceSize(orig.fSliceSize),
             fSliceLength(orig.fSliceLength),
             fNonOverlapFrac(orig.fNonOverlapFrac),

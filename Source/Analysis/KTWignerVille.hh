@@ -36,7 +36,7 @@ namespace Katydid
 
     class KTAnalyticAssociateData;
     class KTComplexFFTW;
-    //class KTData;
+    //struct KTData;
     class KTEggHeader;
     //class KTSliceHeader;
     class KTTimeSeriesData;

@@ -17,7 +17,7 @@
 namespace Katydid
 {
     class KTEggHeader;
-    class KTData;
+    struct KTData;
 
     class KTEggReader
     {

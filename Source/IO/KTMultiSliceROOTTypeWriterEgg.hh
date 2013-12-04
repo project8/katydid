@@ -17,7 +17,7 @@ class TH1D;
 namespace Katydid
 {
     class KTEggHeader;
-    class KTData;
+    struct KTData;
 
     class KTMultiSliceROOTTypeWriterEgg : public KTMEROOTTypeWriterBase//, public KTTypeWriterEgg
     {

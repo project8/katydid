@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    class KTData;
+    struct KTData;
     class KTCorrelationData;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;

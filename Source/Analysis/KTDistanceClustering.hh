@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    class KTData;
+    struct KTData;
     class KTDiscriminatedPoints1DData;
     //class KTDiscriminatedPoints2DData;
 

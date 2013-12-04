@@ -31,7 +31,7 @@ namespace Katydid
 
     class KTCorrelationData;
     class KTCorrelationTSData;
-    class KTData;
+    struct KTData;
     class KTEggHeader;
     class KTFrequencySpectrumDataPolar;
     class KTPStoreNode;

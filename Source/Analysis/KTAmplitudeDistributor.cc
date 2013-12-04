@@ -38,10 +38,10 @@ namespace Katydid
             fCalculateMinBin(true),
             fCalculateMaxBin(true),
             fDistNBins(100),
-            fUseBuffer(true),
             fBufferSize(0),
             fDistMin(0.),
             fDistMax(1.),
+            fUseBuffer(true),
             fTakeValuesPolar(&KTAmplitudeDistributor::TakeValuesToBuffer),
             fTakeValuesFFTW(&KTAmplitudeDistributor::TakeValuesToBuffer),
             fInvDistBinWidth(1.),
@@ -379,7 +379,7 @@ namespace Katydid
         }
 
         Double_t distMin, distMax, value;
-        UInt_t distBin;
+        //UInt_t distBin;
         for (UInt_t iComponent = 0; iComponent < fNComponents; iComponent++)
         {
             for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)

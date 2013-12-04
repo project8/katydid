@@ -15,11 +15,11 @@
 #include "MonarchTypes.hpp"
 
 class Monarch;
-class MonarchRecord;
+struct MonarchRecord;
 
 namespace Katydid
 {
-    class KTData;
+    struct KTData;
     class KTEggHeader;
     class KTSliceHeader;
     class KTTimeSeriesData;

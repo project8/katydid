@@ -23,7 +23,7 @@
 
 namespace Katydid
 {
-    class KTData;
+    struct KTData;
 
     /*!
      @class KTMultiFileJSONReader

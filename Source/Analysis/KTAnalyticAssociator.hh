@@ -21,7 +21,7 @@
 namespace Katydid
 {
     class KTEggHeader;
-    class KTData;
+    struct KTData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTNormalizedFSDataFFTW;

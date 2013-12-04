@@ -20,7 +20,7 @@
 
 namespace Katydid
 {
-    class KTData;
+    struct KTData;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     //class KTSlidingWindowFSDataFFTW;

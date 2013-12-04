@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    class KTData;
+    struct KTData;
 
     class KTJSONTypeWriterEvaluation : public KTJSONTypeWriter
     {

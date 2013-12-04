@@ -44,7 +44,7 @@ namespace Katydid
     {
         UInt_t nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        Double_t value;
+        //Double_t value;
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, (*this)(iBin));

@@ -32,10 +32,10 @@ namespace Katydid
                 double fSecondsPerRunLengthUnit;
 
                 HeaderInfo() :
-                    fTimeStampSize(0),
+                    fSliceSize(0),
                     fFrameIDSize(0),
                     fRecordSize(0),
-                    fSliceSize(0),
+                    fTimeStampSize(0),
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),

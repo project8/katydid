@@ -16,7 +16,7 @@
 #include <boost/shared_ptr.hpp>
 
 namespace Katydid {
-    class KTData;
+    struct KTData;
 
     class KTBasicASCIITypeWriterTS : public KTBasicASCIITypeWriter
     {

@@ -16,7 +16,7 @@ class TH1D;
 
 namespace Katydid
 {
-    class KTData;
+    struct KTData;
 
     class KTMultiSliceROOTTypeWriterAnalysis : public KTMEROOTTypeWriterBase//, public KTTypeWriterAnalysis
     {

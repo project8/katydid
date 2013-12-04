@@ -14,8 +14,8 @@ namespace Katydid {
 
   KTBasicASCIIWriter::KTBasicASCIIWriter(const std::string& name) :
     KTWriterWithTypists<KTBasicASCIIWriter>(name),
-    fOutputFilename("basic_ascii_output.txt"),
-    fOutputStream(NULL)
+    fOutputStream(NULL),
+    fOutputFilename("basic_ascii_output.txt")
   {
   } // default constructor
 

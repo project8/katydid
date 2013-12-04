@@ -22,7 +22,7 @@ namespace Katydid
 {
     KTLOGGER(fftlog_comp, "katydid.fft");
 
-    class KTData;
+    struct KTData;
     class KTEggHeader;
     class KTPStoreNode;
     class KTSliceHeader;

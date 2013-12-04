@@ -19,7 +19,7 @@
 namespace Katydid
 {
     class KTCorrelationData;
-    class KTData;
+    struct KTData;
     class KTDiscriminatedPoints1DData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;

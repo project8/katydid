@@ -335,7 +335,7 @@ namespace Katydid
         ccResultsData.ResizeNEventsWithXCandidateMatches(newxcm.Size());
         for (rapidjson::Value::ConstValueIterator newxcmIt = newxcm.Begin(); newxcmIt != newxcm.End(); newxcmIt++)
         {
-            UInt_t thisNEvents = (*newxcmIt).GetUint();
+            //UInt_t thisNEvents = (*newxcmIt).GetUint();
             ccResultsData.SetNEventsWithXCandidateMatches(index, (*newxcmIt).GetUint());
             index++;
         }
@@ -351,7 +351,7 @@ namespace Katydid
         ccResultsData.ResizeNCandidatesWithXEventMatches(ncwxem.Size());
         for (rapidjson::Value::ConstValueIterator ncwxemIt = ncwxem.Begin(); ncwxemIt != ncwxem.End(); ncwxemIt++)
         {
-            UInt_t thisNEvents = (*ncwxemIt).GetUint();
+            //UInt_t thisNEvents = (*ncwxemIt).GetUint();
             ccResultsData.SetNEventsWithXCandidateMatches(index, (*ncwxemIt).GetUint());
             index++;
         }
