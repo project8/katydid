@@ -18,7 +18,7 @@ namespace Katydid
 {
     struct KTPairCompare
     {
-        bool operator() (const std::pair< UInt_t, UInt_t >& lhs, const std::pair< UInt_t, UInt_t >& rhs)
+        bool operator() (const std::pair< UInt_t, UInt_t >& lhs, const std::pair< UInt_t, UInt_t >& rhs) const
         {
             return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
         }
