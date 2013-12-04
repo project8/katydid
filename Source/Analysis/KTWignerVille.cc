@@ -20,7 +20,7 @@
 using std::string;
 using std::vector;
 
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -356,7 +356,7 @@ namespace Katydid
         ///}
     }
 
-    void KTWignerVille::ProcessTimeSeries(shared_ptr< KTData > data)
+    void KTWignerVille::ProcessTimeSeries(KTDataPtr data)
     {
         // Standard data slot pattern, except the signal is called asynchronously
 
@@ -387,7 +387,7 @@ namespace Katydid
         return;
     }
 
-    void KTWignerVille::ProcessAnalyticAssociate(shared_ptr< KTData > data)
+    void KTWignerVille::ProcessAnalyticAssociate(KTDataPtr data)
     {
         // Standard data slot pattern, except the signal is called asynchronously
 

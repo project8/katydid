@@ -86,7 +86,7 @@ namespace Katydid
             /// Opens the egg file and returns a new copy of the header information.
             KTEggHeader* BreakEgg(const std::string& filename);
             /// Returns the next slice's time series data.
-            boost::shared_ptr< KTData > HatchNextSlice();
+            KTDataPtr HatchNextSlice();
             /// Closes the file.
             Bool_t CloseEgg();
 

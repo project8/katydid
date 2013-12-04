@@ -13,8 +13,6 @@
 
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include "document.h"
 
 #include <cstdio>
@@ -23,8 +21,6 @@
 
 namespace Katydid
 {
-    struct KTData;
-
     /*!
      @class KTMultiFileJSONReader
      @author N. S. Oblath
@@ -48,14 +44,14 @@ namespace Katydid
      - "cc-results" -- Emits signal "cc-results" after a file is read
 
      Slots:
-     - "mc-truth-events": void (shared_ptr<KTData>) -- Add MC truth events data; Requires KTData; Adds KTMCTruthEvents; Emits signal "mc-truth-events" upon successful file read.
-     - "analysis-candidates": void (shared_ptr<KTData>) -- Add analysis candidates data; Requires KTData; Adds KTAnalysisCandidates; Emits signal "analysis-candidates" upon successful file read.
-     - "cc-results": void (shared_ptr<KTData>) -- Add CC (candidate comparison) Results data; Requires KTData; Adds KTCCResults; Emits signal "cc-results" upon successful file read.
+     - "mc-truth-events": void (KTDataPtr) -- Add MC truth events data; Requires KTData; Adds KTMCTruthEvents; Emits signal "mc-truth-events" upon successful file read.
+     - "analysis-candidates": void (KTDataPtr) -- Add analysis candidates data; Requires KTData; Adds KTAnalysisCandidates; Emits signal "analysis-candidates" upon successful file read.
+     - "cc-results": void (KTDataPtr) -- Add CC (candidate comparison) Results data; Requires KTData; Adds KTCCResults; Emits signal "cc-results" upon successful file read.
 
      Signals:
-     - "mc-truth-events": void (shared_ptr<KTData>) -- Emitted after reading an mc-truth-events file; Guarantees KTMCTruthEvents.
+     - "mc-truth-events": void (KTDataPtr) -- Emitted after reading an mc-truth-events file; Guarantees KTMCTruthEvents.
      - "analysis-candidates": void (shared-ptr<KTData>) -- Emitted after reading an analysis candidates file; Guarantees KTAnalysisCandidates.
-     - "cc-results": void (shared_ptr<KTData>) -- Emitted after reading an cc-results file; Guarantees KTCCResults.
+     - "cc-results": void (KTDataPtr) -- Emitted after reading an cc-results file; Guarantees KTCCResults.
     */
 
 

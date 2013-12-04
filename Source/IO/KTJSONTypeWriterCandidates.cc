@@ -14,7 +14,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -47,7 +47,7 @@ namespace Katydid
     // Frequency Candidates
     //*********************
 
-    void KTJSONTypeWriterCandidates::WriteFrequencyCandidates(shared_ptr< KTData > data)
+    void KTJSONTypeWriterCandidates::WriteFrequencyCandidates(KTDataPtr data)
     {
         using rapidjson::SizeType;
 

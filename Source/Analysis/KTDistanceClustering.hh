@@ -12,14 +12,12 @@
 
 #include "KTProcessor.hh"
 
+#include "KTData.hh"
 #include "KTSlot.hh"
-
-#include <boost/shared_ptr.hpp>
 
 
 namespace Katydid
 {
-    struct KTData;
     class KTDiscriminatedPoints1DData;
     //class KTDiscriminatedPoints2DData;
 
@@ -38,10 +36,10 @@ namespace Katydid
      - "max-bin-distance": unsigned int -- Set maximum separation within a cluster by bin
 
       Slots:
-     - "disc-1d": void (shared_ptr< KTData >) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
+     - "disc-1d": void (KTDataPtr) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
 
      Signals:
-     - "cluster-1d": void (shared_ptr< KTData >) -- Emitted after forming clusters; Guarantees KTCluster1DData
+     - "cluster-1d": void (KTDataPtr) -- Emitted after forming clusters; Guarantees KTCluster1DData
     */
     class KTDistanceClustering : public KTProcessor
     {
@@ -80,7 +78,7 @@ namespace Katydid
             //***************
 
         public:
-            void Process1DData(boost::shared_ptr< KTData > data);
+            void Process1DData(KTDataPtr data);
             //void Process2DData(const KTDiscriminatedPoints2DData* data);
 
         private:

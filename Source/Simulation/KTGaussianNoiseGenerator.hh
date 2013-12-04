@@ -39,11 +39,11 @@ namespace Katydid
        - "sigma": Double_t -- Standard deviation for the randomly-chosen time-series values
 
      Slots: (inherited from KTTSGenerator)
-     - "slice": void (boost::shared_ptr<KTData>) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
+     - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
 
      Signals: (inherited from KTTSGenerator)
      - "header": void (const KTEggHeader*) -- emitted when the egg header is created.
-     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced or processed.
+     - "slice": void (KTDataPtr) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
     */
     class KTGaussianNoiseGenerator : public KTTSGenerator

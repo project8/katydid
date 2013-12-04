@@ -11,16 +11,14 @@
 #include "KTProcessor.hh"
 
 #include "KTAmplitudeDistribution.hh"
+#include "KTData.hh"
 #include "KTSlot.hh"
-
-#include <boost/shared_ptr.hpp>
 
 #include <vector>
 
 namespace Katydid
 {
     class KTCorrelationData;
-    struct KTData;
     class KTDiscriminatedPoints1DData;
     class KTEggHeader;
     class KTFrequencySpectrumDataFFTW;
@@ -56,17 +54,17 @@ namespace Katydid
 
      Slots:
      - Running
-       - "fs-polar": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
-       - "fs-fftw": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataFFTW
-       - "norm-fs-polar": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
-       - "norm-fs-fftw": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTNormalizedFSDataFFTW
-       - "corr": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTCorrelationData
-       - "wv": void (shared_ptr< KTData >) -- Adds values from a spectrum to the amplitude distribution; Requires KTWignerVilleData
+       - "fs-polar": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
+       - "fs-fftw": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataFFTW
+       - "norm-fs-polar": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTFrequencySpectrumDataPolar
+       - "norm-fs-fftw": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTNormalizedFSDataFFTW
+       - "corr": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTCorrelationData
+       - "wv": void (KTDataPtr) -- Adds values from a spectrum to the amplitude distribution; Requires KTWignerVilleData
      - Completion
        - "finish": void () -- Completes the calculation of the amplitude distribution; Emits "amp-dist"
 
      Signals:
-     \li \c "amp-dist": void (shared_ptr< KTData >) Emitted upon completion of an amplitude distribution; Guarantees KTAmplitudeDistributor
+     \li \c "amp-dist": void (KTDataPtr) Emitted upon completion of an amplitude distribution; Guarantees KTAmplitudeDistributor
     */
 
     class KTAmplitudeDistributor : public KTProcessor
@@ -160,7 +158,7 @@ namespace Katydid
 
             UInt_t fNSlicesProcessed;
 
-            boost::shared_ptr< KTData > fDistributionData;
+            KTDataPtr fDistributionData;
             KTAmplitudeDistribution* fDistributions;
 
 

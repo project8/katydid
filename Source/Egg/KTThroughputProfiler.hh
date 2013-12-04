@@ -17,8 +17,6 @@
 #include "KTEggHeader.hh"
 #include "KTData.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <string>
 
 #include <time.h>
@@ -59,7 +57,7 @@ namespace Katydid
 
      Slots:
      - "start": void (const KTEggHeader*) -- Start the timer
-     - "data": void (shared_ptr< KTData >) -- Increment the counter on the number of data slices
+     - "data": void (KTDataPtr) -- Increment the counter on the number of data slices
      - "stop": void () -- Stop the timer
 
     */
@@ -77,7 +75,7 @@ namespace Katydid
 
             void ProcessHeader(const KTEggHeader* header);
 
-            void ProcessData(boost::shared_ptr<KTData> data);
+            void ProcessData(KTDataPtr data);
 
             void Finish();
 

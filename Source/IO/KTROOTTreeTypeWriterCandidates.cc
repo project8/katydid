@@ -22,7 +22,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -62,7 +62,7 @@ namespace Katydid
     // Frequency Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates(shared_ptr< KTData > data)
+    void KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates(KTDataPtr data)
     {
         KTFrequencyCandidateData& fcData = data->Of< KTFrequencyCandidateData >();
         KTSliceHeader& header = data->Of< KTSliceHeader >();
@@ -132,7 +132,7 @@ namespace Katydid
     // Waterfall Candidates
     //*********************
 
-    void KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate(shared_ptr< KTData > data)
+    void KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate(KTDataPtr data)
     {
         KTDEBUG(publog, "attempting to write to root tree");
         KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();

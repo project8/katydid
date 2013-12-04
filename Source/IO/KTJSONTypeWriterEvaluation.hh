@@ -10,12 +10,10 @@
 
 #include "KTJSONWriter.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 namespace Katydid
 {
-    struct KTData;
-
     class KTJSONTypeWriterEvaluation : public KTJSONTypeWriter
     {
         public:
@@ -25,7 +23,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteCCResults(boost::shared_ptr< KTData > data);
+            void WriteCCResults(KTDataPtr data);
 
     };
 

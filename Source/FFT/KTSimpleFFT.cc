@@ -23,7 +23,7 @@
 using std::copy;
 using std::string;
 using std::vector;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -363,7 +363,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::ProcessTimeSeriesData(shared_ptr<KTData> data)
+    void KTSimpleFFT::ProcessTimeSeriesData(KTDataPtr data)
     {
         if (! data->Has< KTTimeSeriesData >())
         {

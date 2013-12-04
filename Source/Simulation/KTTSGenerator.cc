@@ -20,7 +20,7 @@
 
 #include <cmath>
 
-using boost::shared_ptr;
+
 
 using std::string;
 
@@ -107,7 +107,7 @@ namespace Katydid
         // The local copy of the data shared pointer is created and destroyed in each iteration of the loop
         for (fSliceCounter = 0; fSliceCounter < fNSlices; fSliceCounter++)
         {
-            shared_ptr< KTData > newData = CreateNewData();
+            KTDataPtr newData = CreateNewData();
 
             if (! AddSliceHeader(*newData.get()))
             {
@@ -165,9 +165,9 @@ namespace Katydid
         return newHeader;
     }
 
-    shared_ptr< KTData > KTTSGenerator::CreateNewData() const
+    KTDataPtr KTTSGenerator::CreateNewData() const
     {
-        shared_ptr<KTData> newData(new KTData());
+        KTDataPtr newData(new KTData());
 
         newData->fCounter = fSliceCounter;
 

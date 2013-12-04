@@ -50,7 +50,7 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; not valid if candidate writing has started
-     - "waterfall-candidate": void (boost::shared_ptr<KTData>) -- writes candidate information; starts candidate writing mode if it hasn't started yet
+     - "waterfall-candidate": void (KTDataPtr) -- writes candidate information; starts candidate writing mode if it hasn't started yet
      - "summary": void (const KTProcSummary*) -- stops writing candidates, writes the summary information and closes the file
      - "stop": void () -- stops writing candidates and closes the file
      - "summary-after-stop": void (const KTProcSummary*) -- copies the summary information and waits until the "stop-close-after-summary" signal is received to write the summary and close the file.

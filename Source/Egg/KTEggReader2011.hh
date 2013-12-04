@@ -49,7 +49,7 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string& filename);
-            virtual boost::shared_ptr< KTData > HatchNextSlice();
+            virtual KTDataPtr HatchNextSlice();
             virtual bool CloseEgg();
 
             /// Returns the time since the run started in seconds

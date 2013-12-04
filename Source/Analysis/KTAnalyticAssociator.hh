@@ -15,13 +15,10 @@
 #include "KTComplexFFTW.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 
 namespace Katydid
 {
     class KTEggHeader;
-    struct KTData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
     class KTNormalizedFSDataFFTW;
@@ -43,12 +40,12 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader*) -- Initializes the FFT
-     - "ts": void (shared_ptr< KTData >) -- Calculates an analytic associate of the time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
-     - "fs-fftw": void (shared_ptr< KTData >) -- Calculates an analytic associate of the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTAnalyticAssociateData
-     - "norm-fs-fftw": void (shared_ptr< KTData >) -- Calculates an analytic associate of the frequency spectrum; Requires KTNormalizedFSDataFFTW; Adds KTAnalyticAssociateData
+     - "ts": void (KTDataPtr) -- Calculates an analytic associate of the time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
+     - "fs-fftw": void (KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTAnalyticAssociateData
+     - "norm-fs-fftw": void (KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTNormalizedFSDataFFTW; Adds KTAnalyticAssociateData
 
      Signals:
-     - "aa": void (shared_ptr< KTData >) -- Emitted upon creation of an analytic associate; Guarantees KTAnalyticAssociateData
+     - "aa": void (KTDataPtr) -- Emitted upon creation of an analytic associate; Guarantees KTAnalyticAssociateData
     */
     class KTAnalyticAssociator : public KTProcessor
     {

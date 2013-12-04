@@ -22,7 +22,7 @@
 //#include "TFile.h"
 //#include "TH2.h"
 
-using boost::shared_ptr;
+
 
 using std::string;
 using std::vector;

@@ -10,12 +10,10 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 namespace Katydid
 {
-    struct KTData;
-
     class KTBasicROOTTypeWriterAnalysis : public KTBasicROOTTypeWriter
     {
         public:
@@ -29,53 +27,53 @@ namespace Katydid
             // Normalized Frequency Spectrum Data
             //************************
         public:
-            void WriteNormalizedFSDataPolar(boost::shared_ptr<KTData> data);
-            void WriteNormalizedFSDataFFTW(boost::shared_ptr<KTData> data);
-            void WriteNormalizedFSDataPolarPhase(boost::shared_ptr<KTData> data);
-            void WriteNormalizedFSDataFFTWPhase(boost::shared_ptr<KTData> data);
-            void WriteNormalizedFSDataPolarPower(boost::shared_ptr<KTData> data);
-            void WriteNormalizedFSDataFFTWPower(boost::shared_ptr<KTData> data);
+            void WriteNormalizedFSDataPolar(KTDataPtr data);
+            void WriteNormalizedFSDataFFTW(KTDataPtr data);
+            void WriteNormalizedFSDataPolarPhase(KTDataPtr data);
+            void WriteNormalizedFSDataFFTWPhase(KTDataPtr data);
+            void WriteNormalizedFSDataPolarPower(KTDataPtr data);
+            void WriteNormalizedFSDataFFTWPower(KTDataPtr data);
 
             //************************
             // Analytic Associate Data
             //************************
         public:
-            void WriteAnalyticAssociateData(boost::shared_ptr<KTData> data);
-            void WriteAnalyticAssociateDataDistribution(boost::shared_ptr<KTData> data);
+            void WriteAnalyticAssociateData(KTDataPtr data);
+            void WriteAnalyticAssociateDataDistribution(KTDataPtr data);
 
             //************************
             // Correlation Data
             //************************
         public:
-            void WriteCorrelationData(boost::shared_ptr<KTData> data);
-            void WriteCorrelationDataDistribution(boost::shared_ptr<KTData> data);
+            void WriteCorrelationData(KTDataPtr data);
+            void WriteCorrelationDataDistribution(KTDataPtr data);
 
             //************************
             // Correlation TS Data
             //************************
         public:
-            void WriteCorrelationTSData(boost::shared_ptr<KTData> data);
-            void WriteCorrelationTSDataDistribution(boost::shared_ptr<KTData> data);
+            void WriteCorrelationTSData(KTDataPtr data);
+            void WriteCorrelationTSDataDistribution(KTDataPtr data);
 
             //************************
             // Hough Transform Data
             //************************
         public:
-            void WriteHoughData(boost::shared_ptr<KTData> data);
+            void WriteHoughData(KTDataPtr data);
 
             //************************
             // Gain Variation Data
             //************************
         public:
-            void WriteGainVariationData(boost::shared_ptr<KTData> data);
+            void WriteGainVariationData(KTDataPtr data);
 
             //************************
             // WignerVille Data
             //************************
         public:
-            void WriteWignerVilleData(boost::shared_ptr<KTData> data);
-            void WriteWignerVilleDataDistribution(boost::shared_ptr<KTData> data);
-            void WriteWV2DData(boost::shared_ptr<KTData> data);
+            void WriteWignerVilleData(KTDataPtr data);
+            void WriteWignerVilleDataDistribution(KTDataPtr data);
+            void WriteWV2DData(KTDataPtr data);
 
     };
 

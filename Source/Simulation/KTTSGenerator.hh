@@ -11,12 +11,10 @@
 #include "KTPrimaryProcessor.hh"
 
 #include "KTSlot.hh"
-
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 namespace Katydid
 {
-    struct KTData;
     class KTEggHeader;
     class KTProcSummary;
     class KTTimeSeriesData;
@@ -42,11 +40,11 @@ namespace Katydid
        - "record-size": UInt_t -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
 
      Slots:
-     - "slice": void (boost::shared_ptr<KTData>) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
+     - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
 
      Signals:
      - "header": void (const KTEggHeader*) -- emitted when the egg header is created.
-     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced or processed.
+     - "slice": void (KTDataPtr) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
      - "summary": void (const KTProcSummary*) -- emitted when the job is complete, after "done"
     */
@@ -99,7 +97,7 @@ namespace Katydid
 
             KTEggHeader* CreateEggHeader() const;
 
-            boost::shared_ptr< KTData > CreateNewData() const;
+            KTDataPtr CreateNewData() const;
 
             Bool_t AddSliceHeader(KTData& data) const;
 

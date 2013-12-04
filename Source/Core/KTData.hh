@@ -12,6 +12,8 @@
 
 #include "Rtypes.h"
 
+#include <boost/shared_ptr.hpp>
+
 #include <string>
 
 namespace Katydid
@@ -28,6 +30,8 @@ namespace Katydid
             UInt_t fCounter;
             Bool_t fLastData;
     };
+
+    typedef boost::shared_ptr< KTData > KTDataPtr;
 
 } /* namespace Katydid */
 #endif /* KTDATA_HH_ */

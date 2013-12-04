@@ -17,7 +17,7 @@
 
 #include "filestream.h"
 
-using boost::shared_ptr;
+
 
 using std::deque;
 using std::string;
@@ -136,7 +136,7 @@ namespace Katydid
                 return false;
             }
 
-            shared_ptr< KTData > newData(new KTData());
+            KTDataPtr newData(new KTData());
             for (deque< DataType >::const_iterator dtIt = fDataTypes.begin(); dtIt != fDataTypes.end(); dtIt++)
             {
                 KTDEBUG(inlog, "Appending data of type " << dtIt->fName);

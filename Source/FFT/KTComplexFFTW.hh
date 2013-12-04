@@ -15,8 +15,6 @@
 #include "KTLogger.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <fftw3.h>
 
 #include <map>
@@ -28,7 +26,6 @@ namespace Katydid
     KTLOGGER(fftlog_comp, "katydid.fft");
 
     class KTAnalyticAssociateData;
-    struct KTData;
     class KTEggHeader;
     class KTPStoreNode;
     class KTTimeSeriesFFTW;
@@ -65,13 +62,13 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader* header) -- Initialize the FFT from an Egg header
-     - "ts": void (shared_ptr<KTData>) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
-     - "aa": void (shared_ptr<KTData>) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
-     - "fs-fftw": void (shared_ptr<KTData>) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
+     - "ts": void (KTDataPtr) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
+     - "aa": void (KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
+     - "fs-fftw": void (KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
 
      Signals:
-     - "fft-forward": void (shared_ptr<KTData>) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
-     - "fft-reverse": void (shared_ptr<KTData>) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
+     - "fft-forward": void (KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     - "fft-reverse": void (KTDataPtr) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
     class KTComplexFFTW : public KTFFTW, public KTProcessor

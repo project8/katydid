@@ -10,15 +10,13 @@
 
 #include "KTROOTTreeWriter.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 class TH2D;
 class TTree;
 
 namespace Katydid
 {
-    struct KTData;
-
     struct TCCLocustMC
     {
         Double_t fLength;
@@ -37,7 +35,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteMetaCCLocustMC(boost::shared_ptr< KTData > data);
+            void WriteMetaCCLocustMC(KTDataPtr data);
 
         public:
             TTree* GetMetaCCLocustMCTree() const;

@@ -11,16 +11,15 @@
 
 #include "KTProcessor.hh"
 
+#include "KTData.hh"
 #include "KTDiscriminatedPoints2DData.hh"
 #include "KTPhysicalArray.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
 
 
 namespace Katydid
 {
-    struct KTData;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     //class KTSlidingWindowFSDataFFTW;
@@ -43,11 +42,11 @@ namespace Katydid
      - "output-data-name": string -- name to give to the data produced by an FFT
 
      Slots:
-     <!--- "swfs-data": void (shared_ptr< KTData >)-->
-     - "disc-data": void (shared_ptr< KTData >) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
+     <!--- "swfs-data": void (KTDataPtr)-->
+     - "disc-data": void (KTDataPtr) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
 
      Signals:
-     - "hough-transform": void (shared_ptr< KTData >) Emitted upon performance of a transform; Guarantees KTHoughData
+     - "hough-transform": void (KTDataPtr) Emitted upon performance of a transform; Guarantees KTHoughData
     */
 
     class KTHoughTransform : public KTProcessor
@@ -56,7 +55,7 @@ namespace Katydid
             typedef KTDiscriminatedPoints2DData::SetOfPoints SetOfPoints;
 
         protected:
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal HTSignal;
+            typedef KTSignalConcept< void (KTDataPtr) >::signal HTSignal;
 
         public:
             KTHoughTransform(const std::string& name = "hough-transform");

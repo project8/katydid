@@ -19,7 +19,6 @@ struct MonarchRecord;
 
 namespace Katydid
 {
-    struct KTData;
     class KTEggHeader;
     class KTSliceHeader;
     class KTTimeSeriesData;
@@ -47,7 +46,7 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; opens the file first if it hasn't been opened
-     - "ts": void (boost::shared_ptr<KTData>) -- writes a record from a time series;
+     - "ts": void (KTDataPtr) -- writes a record from a time series;
      - "done": void () -- closes the file
     */
     class KTEggWriter : public KTWriter

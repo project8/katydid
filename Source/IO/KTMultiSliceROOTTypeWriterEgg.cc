@@ -19,7 +19,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -116,7 +116,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiSliceROOTTypeWriterEgg::AddTimeSeriesData(shared_ptr<KTData> data)
+    void KTMultiSliceROOTTypeWriterEgg::AddTimeSeriesData(KTDataPtr data)
     {
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
         if (fTSHists.size() == 0)

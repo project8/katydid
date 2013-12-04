@@ -10,7 +10,7 @@
 #include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 
-using boost::shared_ptr;
+
 
 //using std::list;
 
@@ -36,18 +36,18 @@ namespace Katydid
         return true;
     }
 
-    void KTDataQueueProcessor::EmitDataSignal(boost::shared_ptr<KTData> data)
+    void KTDataQueueProcessor::EmitDataSignal(KTDataPtr data)
     {
         fDataSignal(data);
         return;
     }
 
-    void KTDataQueueProcessor::QueueData(shared_ptr< KTData>& data)
+    void KTDataQueueProcessor::QueueData(KTDataPtr& data)
     {
         return DoQueueData(data, &KTDataQueueProcessor::EmitDataSignal);
     }
 /*
-    void KTDataQueueProcessor::QueueDataList(list< shared_ptr< KTData > >* dataList)
+    void KTDataQueueProcessor::QueueDataList(list< KTDataPtr >* dataList)
     {
         return DoQueueDataList(dataList, &KTDataQueueProcessor::EmitDataSignal);
     }

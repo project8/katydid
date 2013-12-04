@@ -13,8 +13,6 @@
 #include "KTData.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <map>
 #include <typeinfo>
 
@@ -43,14 +41,14 @@ namespace Katydid
      - "signal-interval": UInt_t -- (not currently in use) Number of slices between signaling
 
      Slots:
-     - "ts": void (boost::shared_ptr<KTData>) -- add to the ts sum; Requires KTTimeSeriesData; Emits signal "ts"
-     - "fs-polar": void (boost::shared_ptr<KTData>) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
-     - "fs-fftw": void (boost::shared_ptr<KTData>) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
+     - "ts": void (KTDataPtr) -- add to the ts sum; Requires KTTimeSeriesData; Emits signal "ts"
+     - "fs-polar": void (KTDataPtr) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
+     - "fs-fftw": void (KTDataPtr) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
 
      Signals:
-     - "ts": void (boost::shared_ptr<KTData>) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
-     - "fs-polar": void (boost::shared_ptr<KTData>) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
-     - "fs-fftw": void (boost::shared_ptr<KTData>) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
+     - "ts": void (KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
+     - "fs-polar": void (KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
+     - "fs-fftw": void (KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
     */
 
     class KTDataAccumulator : public KTProcessor
@@ -68,7 +66,7 @@ namespace Katydid
             {
                 UInt_t fCount;
                 UInt_t fSignalCount;
-                boost::shared_ptr< KTData > fData;
+                KTDataPtr fData;
                 Accumulator() : fCount(0), fSignalCount(0), fData(new KTData())
                 {}
             };

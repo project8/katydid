@@ -15,8 +15,6 @@
 
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <utility>
 #include <vector>
 
@@ -43,13 +41,13 @@ namespace Katydid
      - "corr-pair": string -- channel pair to be correlated: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
 
       Slots:
-     - "fs-polar": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataPolar; Adds KTCorrelationData
-     - "fs-fftw": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataFFTW; Adds KTCorrelationData
-     - "norm-fs-polar": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataPolar; Adds KTCorrelationData
-     - "norm-fs-fftw": void (shared_ptr< KTData >) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataFFTW; Adds KTCorrelationData
+     - "fs-polar": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataPolar; Adds KTCorrelationData
+     - "fs-fftw": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataFFTW; Adds KTCorrelationData
+     - "norm-fs-polar": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataPolar; Adds KTCorrelationData
+     - "norm-fs-fftw": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFSNormalizedDataFFTW; Adds KTCorrelationData
 
      Signals:
-     - "correlation": void (shared_ptr< KTData >) -- Emitted upon performance of a correlation; Guarantees KTCorrelationData
+     - "correlation": void (KTDataPtr) -- Emitted upon performance of a correlation; Guarantees KTCorrelationData
     */
     class KTCorrelator : public KTProcessor
     {

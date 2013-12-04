@@ -13,13 +13,10 @@
 
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 
 namespace Katydid
 {
     class KTCorrelationData;
-    struct KTData;
     class KTDiscriminatedPoints1DData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
@@ -50,15 +47,15 @@ namespace Katydid
      - "max-bin": unsigned -- maximum frequency by bin
 
      Slots:
-     - "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
-     - "fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
-     - "norm-fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
-     - "norm-fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
-     - "corr": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
-     - "wv": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
+     - "fs-polar": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     - "fs-fftw": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-polar": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-fftw": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
+     - "corr": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
+     - "wv": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
 
      Signals:
-     - "disc-1d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
+     - "disc-1d": void (KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData-->
     */
     class KTSpectrumDiscriminator : public KTProcessor
     {

@@ -17,7 +17,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -51,7 +51,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesData(boost::shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesData(KTDataPtr data)
     {
         if (! data) return;
 
@@ -80,7 +80,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution(boost::shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution(KTDataPtr data)
     {
         if (! data) return;
 

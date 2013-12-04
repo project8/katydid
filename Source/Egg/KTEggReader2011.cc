@@ -225,11 +225,11 @@ namespace Katydid
         return eggHeader;
     }
 
-    boost::shared_ptr< KTData > KTEggReader2011::HatchNextSlice()
+    KTDataPtr KTEggReader2011::HatchNextSlice()
     {
-        if (! fEggStream.good()) return boost::shared_ptr< KTData >();
+        if (! fEggStream.good()) return KTDataPtr();
 
-        boost::shared_ptr< KTData > newData(new KTData());
+        KTDataPtr newData(new KTData());
 
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(1);
 
@@ -259,7 +259,7 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading time stamp size");
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
 
         // read the frame size
@@ -291,7 +291,7 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading frame size");
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
 
         // Other information
@@ -316,7 +316,7 @@ namespace Katydid
                     << "\tExpected: :" << fHeaderInfo.fRecordSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
         else
         {

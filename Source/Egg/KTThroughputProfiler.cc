@@ -23,7 +23,7 @@
 #define MACGIGA UINT64_C(1000000000)
 #endif
 
-using boost::shared_ptr;
+
 
 using std::string;
 using std::stringstream;
@@ -91,7 +91,7 @@ namespace Katydid
         return;
     }
 
-    void KTThroughputProfiler::ProcessData(shared_ptr<KTData> data)
+    void KTThroughputProfiler::ProcessData(KTDataPtr data)
     {
         (void)data;
         fNDataProcessed++;

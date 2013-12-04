@@ -13,11 +13,9 @@
 //#include "KTTimeSeriesData.hh"
 #include "KTBasicAsciiWriter.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 namespace Katydid {
-    struct KTData;
-
     class KTBasicASCIITypeWriterTS : public KTBasicASCIITypeWriter
     {
 
@@ -28,7 +26,7 @@ namespace Katydid {
             void RegisterSlots();
     
         public:
-            void WriteTimeSeriesData(boost::shared_ptr< KTData >);
+            void WriteTimeSeriesData(KTDataPtr);
 
     }; // class definition
 

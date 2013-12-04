@@ -12,7 +12,6 @@
 #include "KTProcessor.hh"
 
 #include "KTComplexFFTW.hh"
-#include "KTData.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
@@ -24,7 +23,6 @@
 //#include "KTWV2DData.hh"
 
 #include <boost/circular_buffer.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <complex>
 #include <utility>
@@ -36,7 +34,6 @@ namespace Katydid
 
     class KTAnalyticAssociateData;
     class KTComplexFFTW;
-    //struct KTData;
     class KTEggHeader;
     //class KTSliceHeader;
     class KTTimeSeriesData;
@@ -70,11 +67,11 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader*) -- Initializes the transform using an Egg header
-     - "ts": void (shared_ptr< KTData >) -- Perform a WV transform on a time series; Requires KTTimeSeriesData; Adds KTWignerVilleData
-     - "aa": void (shared_ptr< KTData >) -- Perform a WV transform on an analytic associate: Requires KTAnalyticAssociateData; Adds KTWignerVilleData
+     - "ts": void (KTDataPtr) -- Perform a WV transform on a time series; Requires KTTimeSeriesData; Adds KTWignerVilleData
+     - "aa": void (KTDataPtr) -- Perform a WV transform on an analytic associate: Requires KTAnalyticAssociateData; Adds KTWignerVilleData
 
      Signals:
-     - "wv": void (shared_ptr< KTData >) -- Emitted upon performance of a WV transform; Guarantees KTWignerVilleData
+     - "wv": void (KTDataPtr) -- Emitted upon performance of a WV transform; Guarantees KTWignerVilleData
      */
 
     class KTWignerVille : public KTProcessor
@@ -159,7 +156,7 @@ namespace Katydid
 
             std::vector< KTFrequencySpectrumFFTW* > fOutputArrays;
 
-            boost::shared_ptr< KTData > fOutputData;
+            KTDataPtr fOutputData;
             KTSliceHeader* fOutputSHData; // pointer to object that is part of fOutputData
             //KTWV2DData* fOutputWVData;
             KTWignerVilleData* fOutputWVData; // pointer to object that is part of fOutputData
@@ -185,8 +182,8 @@ namespace Katydid
             //KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
             //KTSlotDataOneType< KTAnalyticAssociateData > fAnalyticAssociateSlot;
 
-            void ProcessTimeSeries(boost::shared_ptr< KTData > data);
-            void ProcessAnalyticAssociate(boost::shared_ptr< KTData > data);
+            void ProcessTimeSeries(KTDataPtr data);
+            void ProcessAnalyticAssociate(KTDataPtr data);
 
     };
 

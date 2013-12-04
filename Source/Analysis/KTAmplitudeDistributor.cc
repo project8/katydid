@@ -21,7 +21,7 @@
 
 using std::string;
 using std::vector;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
@@ -50,7 +50,7 @@ namespace Katydid
             fBuffer(),
             fNBuffered(0),
             fNSlicesProcessed(0),
-            fDistributionData(shared_ptr< KTData >()),
+            fDistributionData(KTDataPtr()),
             fDistributions(NULL),
             fAmpDistSignal("amp-dist", this),
             fFSPolarSlot("fs-polar", this, &KTAmplitudeDistributor::AddValues),

@@ -19,7 +19,6 @@
 #include "KTSliceHeader.hh"
 
 #include <boost/filesystem.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 #include <string>
@@ -28,7 +27,7 @@
 using namespace std;
 using namespace Katydid;
 
-using boost::shared_ptr;
+
 
 KTLOGGER(eggscan, "katydid.applications.main");
 
@@ -115,7 +114,7 @@ int main(int argc, char** argv)
             KTINFO(eggscan, "Hatching slice " << iSlice);
 
             // Hatch the slice
-            shared_ptr<KTData> data = reader->HatchNextSlice();
+            KTDataPtr data = reader->HatchNextSlice();
             if (data.get() == NULL) break;
 
             KTPROG(eggscan, data->Of< KTSliceHeader >());

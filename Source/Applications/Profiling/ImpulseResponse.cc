@@ -20,11 +20,9 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesData.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <string>
 
-using boost::shared_ptr;
+
 
 using namespace std;
 using namespace Katydid;

@@ -23,7 +23,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -70,7 +70,7 @@ namespace Katydid
     // Frequency Spectrum Data
     //************************
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolar(KTDataPtr data)
     {
         if (! data) return;
 
@@ -99,7 +99,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTW(KTDataPtr data)
     {
         if (! data) return;
 
@@ -128,7 +128,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPhase(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPhase(KTDataPtr data)
     {
         if (! data) return;
 
@@ -157,7 +157,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPhase(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data)
     {
         if (! data) return;
 
@@ -186,7 +186,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPower(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPower(KTDataPtr data)
     {
         if (! data) return;
 
@@ -215,7 +215,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPower(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPower(KTDataPtr data)
     {
         if (! data) return;
 
@@ -244,7 +244,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarMagnitudeDistribution(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -273,7 +273,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWMagnitudeDistribution(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWMagnitudeDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -302,7 +302,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPowerDistribution(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataPolarPowerDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -331,7 +331,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPowerDistribution(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteFrequencySpectrumDataFFTWPowerDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -365,7 +365,7 @@ namespace Katydid
     // Time/Frequency Data
     //************************
 
-    void KTBasicROOTTypeWriterFFT::WriteTimeFrequencyDataPolar(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteTimeFrequencyDataPolar(KTDataPtr data)
     {
         if (! data) return;
 
@@ -394,7 +394,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteTimeFrequencyDataPolarPhase(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteTimeFrequencyDataPolarPhase(KTDataPtr data)
     {
         if (! data) return;
 
@@ -422,7 +422,7 @@ namespace Katydid
         }
         return;
     }
-    void KTBasicROOTTypeWriterFFT::WriteTimeFrequencyDataPolarPower(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteTimeFrequencyDataPolarPower(KTDataPtr data)
     {
         if (! data) return;
 
@@ -456,7 +456,7 @@ namespace Katydid
     // Multi-FS Data
     //*****************
 
-    void KTBasicROOTTypeWriterFFT::WriteMultiFSDataPolar(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteMultiFSDataPolar(KTDataPtr data)
     {
         if (! data) return;
 
@@ -481,7 +481,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterFFT::WriteMultiFSDataFFTW(shared_ptr<KTData> data)
+    void KTBasicROOTTypeWriterFFT::WriteMultiFSDataFFTW(KTDataPtr data)
     {
         if (! data) return;
 

@@ -20,7 +20,7 @@
 
 #include <sstream>
 
-using boost::shared_ptr;
+
 
 using std::stringstream;
 using std::string;
@@ -107,7 +107,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTMultiSliceROOTTypeWriterAnalysis::AddCorrelationData(shared_ptr< KTData > data)
+    void KTMultiSliceROOTTypeWriterAnalysis::AddCorrelationData(KTDataPtr data)
     {
         if (! data) return;
 

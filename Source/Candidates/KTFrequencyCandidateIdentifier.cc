@@ -20,7 +20,7 @@
 
 using std::string;
 
-using boost::shared_ptr;
+
 
 
 namespace Katydid

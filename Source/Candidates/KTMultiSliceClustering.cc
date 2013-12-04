@@ -18,11 +18,12 @@
 #include "KTWaterfallCandidateData.hh"
 #include "KTWignerVilleData.hh"
 
+#include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
 #include <set>
 
-using boost::shared_ptr;
+
 using boost::weak_ptr;
 
 using std::list;
@@ -106,7 +107,7 @@ namespace Katydid
     KTMultiSliceClustering::DataList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataPolar& fsData, const KTSliceHeader& header)
     {
         // Make a copy of the slice header
-        shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader());
+        boost::shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader());
         headerPtr->SetIsCopyDisabled(true);
         (*(headerPtr.get())) = header;
 
@@ -127,7 +128,7 @@ namespace Katydid
     KTMultiSliceClustering::DataList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataFFTW& fsData, const KTSliceHeader& header)
     {
         // Make a copy of the slice header
-        shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader());
+        boost::shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader());
         headerPtr->SetIsCopyDisabled(true);
         (*(headerPtr.get())) = header;
 
@@ -148,7 +149,7 @@ namespace Katydid
     KTMultiSliceClustering::DataList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTCorrelationData& corrData, const KTSliceHeader& header)
     {
         // Make a copy of the slice header
-        shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader());
+        boost::shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader());
         headerPtr->SetIsCopyDisabled(true);
         (*(headerPtr.get())) = header;
 
@@ -169,7 +170,7 @@ namespace Katydid
     KTMultiSliceClustering::DataList* KTMultiSliceClustering::FindClusters(const KTDiscriminatedPoints1DData& dpData, const KTWignerVilleData& wvData, const KTSliceHeader& header)
     {
         // Make a copy of the slice header
-        shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader());
+        boost::shared_ptr< KTSliceHeader > headerPtr(new KTSliceHeader());
         headerPtr->SetIsCopyDisabled(true);
         (*(headerPtr.get())) = header;
 
@@ -226,7 +227,7 @@ namespace Katydid
 
 
 
-    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataPolarCore& spectrumData, shared_ptr< KTSliceHeader >& headerPtr)
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataPolarCore& spectrumData, boost::shared_ptr< KTSliceHeader >& headerPtr)
     {
         if (dpData.GetBinWidth() != fFreqBinWidth)
             SetFrequencyBinWidth(dpData.GetBinWidth());
@@ -243,7 +244,7 @@ namespace Katydid
         for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
         {
             // Make a copy of the frequency spectrum
-            shared_ptr< KTFrequencySpectrumPolar > fsPtr(new KTFrequencySpectrumPolar(*(spectrumData.GetSpectrumPolar(iComponent))));
+            boost::shared_ptr< KTFrequencySpectrumPolar > fsPtr(new KTFrequencySpectrumPolar(*(spectrumData.GetSpectrumPolar(iComponent))));
             // Add these points to the list of clusters and return any that are complete
             ClusterList* clustersFromComponent = AddPointsToClusters(dpData.GetSetOfPoints(iComponent), fsPtr, iComponent, headerPtr);
             // Splice newly completed clusters into the full list of completed clusters
@@ -256,7 +257,7 @@ namespace Katydid
         return newClustersAC;
     }
 
-    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataFFTWCore& spectrumData, shared_ptr< KTSliceHeader >& headerPtr)
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataFFTWCore& spectrumData, boost::shared_ptr< KTSliceHeader >& headerPtr)
     {
         if (dpData.GetBinWidth() != fFreqBinWidth)
             SetFrequencyBinWidth(dpData.GetBinWidth());
@@ -273,7 +274,7 @@ namespace Katydid
         for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
         {
             // Make a copy of the frequency spectrum
-            shared_ptr< KTFrequencySpectrumPolar > fsPtr(spectrumData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar());
+            boost::shared_ptr< KTFrequencySpectrumPolar > fsPtr(spectrumData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar());
             // Add these points to the list of clusters and return any that are complete
             ClusterList* clustersFromComponent = AddPointsToClusters(dpData.GetSetOfPoints(iComponent), fsPtr, iComponent, headerPtr);
             // Splice newly completed clusters into the full list of completed clusters
@@ -286,7 +287,7 @@ namespace Katydid
         return newClustersAC;
     }
 
-    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, shared_ptr< KTFrequencySpectrumPolar >& spectrumPtr, UInt_t component, shared_ptr< KTSliceHeader >& headerPtr)
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, boost::shared_ptr< KTFrequencySpectrumPolar >& spectrumPtr, UInt_t component, boost::shared_ptr< KTSliceHeader >& headerPtr)
     {
         // Process a single time bin's worth of frequency bins
 
@@ -577,12 +578,12 @@ namespace Katydid
         return;
     }
 
-    shared_ptr<KTData> KTMultiSliceClustering::CreateDataFromCluster(const Cluster& cluster)
+    KTDataPtr KTMultiSliceClustering::CreateDataFromCluster(const Cluster& cluster)
     {
         KTDEBUG(sclog, "Creating data object # " << fDataCount);
         ++fDataCount;
 
-        shared_ptr< KTData > data(new KTData());
+        KTDataPtr data(new KTData());
 
         KTWaterfallCandidateData& wfcData = data->Of< KTWaterfallCandidateData >();
         wfcData.SetComponent(cluster.fDataComponent);
@@ -654,7 +655,7 @@ namespace Katydid
 
         //KTWARN(sclog, "loading spectrum pointers; expecting " << nTimeBinsWithFrame << " spectra");
         // Create a vector of pointers to spectra, where each component is for a single time bin
-        vector< shared_ptr< KTFrequencySpectrumPolar > > spectra(nTimeBinsWithFrame);
+        vector< boost::shared_ptr< KTFrequencySpectrumPolar > > spectra(nTimeBinsWithFrame);
         // Pre-cluster frame bins
         UInt_t frameBin = fNFramingTimeBins - cluster.fPreClusterSpectra.size();
         for (ListOfSpectra::const_iterator losIt = cluster.fPreClusterSpectra.begin(); losIt != cluster.fPreClusterSpectra.end(); ++losIt)

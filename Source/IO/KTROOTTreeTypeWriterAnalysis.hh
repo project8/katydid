@@ -10,15 +10,13 @@
 
 #include "KTROOTTreeWriter.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 class TH1D;
 class TTree;
 
 namespace Katydid
 {
-    struct KTData;
-
     struct TDiscriminatedPoints1DData
     {
         UShort_t fComponent;
@@ -44,8 +42,8 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteDiscriminatedPoints1D(boost::shared_ptr< KTData > data);
-            void WriteAmplitudeDistributions(boost::shared_ptr< KTData > data);
+            void WriteDiscriminatedPoints1D(KTDataPtr data);
+            void WriteAmplitudeDistributions(KTDataPtr data);
 
         public:
             TTree* GetDiscriminatedPoints1DTree() const;

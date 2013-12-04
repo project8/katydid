@@ -13,10 +13,10 @@
 #include "KTProcessor.hh"
 
 #include "KTCluster1DData.hh"
+#include "KTData.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
 
 
 namespace Katydid
@@ -47,10 +47,10 @@ namespace Katydid
      - "output-data-name": string -- name to give to the data produced by an FFT
 
      Slots:
-     - "clusters": void (shared_ptr< KTData >) --
+     - "clusters": void (KTDataPtr) --
 
      Signals:
-     - "frequency-candidates": void (shared_ptr< KTData >) -- Emitted after identifying candidates; Guarantees KTFrequencyCandidateData
+     - "frequency-candidates": void (KTDataPtr) -- Emitted after identifying candidates; Guarantees KTFrequencyCandidateData
     */
 
 
@@ -58,7 +58,7 @@ namespace Katydid
     class KTFrequencyCandidateIdentifier : public KTProcessor
     {
         protected:
-            typedef KTSignalConcept< void (boost::shared_ptr< KTData >) >::signal FCSignal;
+            typedef KTSignalConcept< void (KTDataPtr) >::signal FCSignal;
 
         public:
             KTFrequencyCandidateIdentifier(const std::string& name = "frequency-candidate-identifier");
