@@ -44,7 +44,7 @@ namespace Katydid
                 }
             };
 
-            typedef boost::mutex::scoped_lock ScopedLock;
+            typedef boost::unique_lock< boost::mutex > ScopedLock;
 
         public:
             KTConcurrentQueue() :
