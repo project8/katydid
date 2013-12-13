@@ -1,8 +1,6 @@
 # CMakeLists for Katydid/Source/IO
 # Author: N. Oblath
 
-set (IO_DICT_HEADER_FILES)
-
 set (IO_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicAsciiWriter.hh
@@ -17,6 +15,19 @@ set (IO_NODICT_HEADERFILES
 )
 
 if (ROOT_FOUND)
+    if (NOT Katydid_SINGLETHREADED)
+        set (IO_DICT_HEADERFILES
+            ${IO_DICT_HEADERFILES}
+            ${CMAKE_CURRENT_SOURCE_DIR}/KTDisplayWindow.hh
+        )
+        
+        set (IO_NODICT_HEADERFILES
+            ${IO_NODICT_HEADERFILES}
+            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataDisplay.hh
+            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayEgg.hh
+        )
+    endif (NOT Katydid_SINGLETHREADED)
+    
     set (IO_NODICT_HEADERFILES
         ${IO_NODICT_HEADERFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.hh
@@ -67,13 +78,24 @@ if (ROOT_FOUND)
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterEvaluation.cc
         ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeWriter.cc
     )
+    
+    if (NOT Katydid_SINGLETHREADED)
+        set (IO_SOURCEFILES
+            ${IO_SOURCEFILES}
+            ${CMAKE_CURRENT_SOURCE_DIR}/KTDisplayWindow.cc
+            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayEgg.cc
+            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataDisplay.cc
+        )
+    endif (NOT Katydid_SINGLETHREADED)
 endif (ROOT_FOUND)
 
 
-#if (ROOT_FOUND)
-#    set (IO_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/CoreLinkDef.hh)
-#    set (IO_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CoreDict.cxx)
-#endif (ROOT_FOUND)
+if (NOT Katydid_SINGLETHREADED)
+    if (ROOT_FOUND)
+        set (IO_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/IOLinkDef.hh)
+        set (IO_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/IODict.cxx)
+    endif (ROOT_FOUND)
+endif (NOT Katydid_SINGLETHREADED)
 
 set (KATYDID_LIBS
     KatydidUtility
@@ -83,11 +105,13 @@ set (KATYDID_LIBS
 
 ##################################################
 
-#if (ROOT_FOUND)
-#    ROOT_GENERATE_DICTIONARY ("${IO_DICT_HEADERFILES}" "${IO_LINKDEF_HEADERFILE}" "${IO_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
-#endif (ROOT_FOUND)
+if (NOT Katydid_SINGLETHREADED)
+    if (ROOT_FOUND)
+        ROOT_GENERATE_DICTIONARY ("${IO_DICT_HEADERFILES}" "${IO_LINKDEF_HEADERFILE}" "${IO_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+    endif (ROOT_FOUND)
+endif (NOT Katydid_SINGLETHREADED)
 
-add_library (KatydidIO ${IO_SOURCEFILES})
+add_library (KatydidIO ${IO_SOURCEFILES} ${IO_DICT_OUTFILE})
 target_link_libraries (KatydidIO ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${IO_HEADERFILES})
