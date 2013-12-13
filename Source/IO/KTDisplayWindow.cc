@@ -11,7 +11,7 @@
 #include "TGClient.h"
 #include "TCanvas.h"
 #include "TH1.h"
-//#include "TRandom.h"
+#include "TH2.h"
 #include "TGButton.h"
 #include "TGFrame.h"
 #include "TRootEmbeddedCanvas.h"
@@ -88,13 +88,10 @@ namespace Katydid
         pthread_mutex_unlock(&fMutex);
         return;
     }
-/*
-    void KTDisplayWindow::Draw()
+
+    void KTDisplayWindow::Draw(TH1* hist)
     {
-        // Draws function graphics in randomly choosen interval
-        TF1 *f1 = new TF1("f1", "sin(x)/x", 0, gRandom->Rndm()*10);
-        f1->SetLineWidth(3);
-        f1->Draw();
+        hist->Draw();
         TCanvas *canvas = fEcanvas->GetCanvas();
         canvas->cd();
         canvas->Update();
@@ -102,8 +99,8 @@ namespace Katydid
         Wait();
         return;
     }
-*/
-    void KTDisplayWindow::Draw(TH1* hist)
+
+    void KTDisplayWindow::Draw(TH2* hist)
     {
         hist->Draw();
         TCanvas *canvas = fEcanvas->GetCanvas();

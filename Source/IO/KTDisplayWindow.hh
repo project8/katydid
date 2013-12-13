@@ -16,6 +16,7 @@
 class TApplication;
 class TGMainFrame;
 class TH1;
+class TH2;
 class TRootEmbeddedCanvas;
 
 //#include <boost/thread.hpp>
@@ -44,10 +45,7 @@ namespace Katydid
             void Continue();
 
             void Draw(TH1* hist);
-
-            // general form for non-recognized types; prints error message
-            //template< typename Drawable >
-            //void Draw(Drawable* drawable);
+            void Draw(TH2* hist);
 
         private:
             void Wait();
@@ -63,13 +61,6 @@ namespace Katydid
 
             ClassDef(KTDisplayWindow, 0);
     };
-/*
-    template< typename XDrawable >
-    void KTDisplayWindow::Draw(XDrawable* drawable)
-    {
-        KTERROR(ddlog, "Draw was called with an unsupported type");
-        return;
-    }
-*/
+
 } /* namespace Katydid */
 #endif /* KTDISPLAYWINDOW_HH_ */
