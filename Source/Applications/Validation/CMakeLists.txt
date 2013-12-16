@@ -47,6 +47,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestDataAccumulator ${CMAKE_CURRENT_SOURCE_DIR}/TestDataAccumulator.cc)
     target_link_libraries (TestDataAccumulator KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestDataDisplay ${CMAKE_CURRENT_SOURCE_DIR}/TestDataDisplay.cc)
+    target_link_libraries (TestDataDisplay KatydidUtility KatydidCore KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestDistanceClustering ${CMAKE_CURRENT_SOURCE_DIR}/TestDistanceClustering.cc)
     target_link_libraries (TestDistanceClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
@@ -112,6 +115,7 @@ if (Katydid_ENABLE_TESTING)
                      TestCutIterator
                      TestCutableArray
                      TestDataAccumulator
+                     TestDataDisplay
                      TestDistanceClustering
                      TestFrequencySpectrumFFTW
                      #TestHoughTransform
@@ -140,6 +144,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_DataAccumulator TestDataAccumulator)
+    add_test (Test_DataDisplay TestDataDisplay)
     add_test (Test_DistanceClustering TestDistanceClustering)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)
     #add_test (Test_HoughTransform TestHoughTransform)

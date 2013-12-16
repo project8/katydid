@@ -45,7 +45,7 @@ namespace Katydid
     void KTDataDisplay::Initialize()
     {
         // start thread
-        fDisplayWindow = new KTDisplayWindow();
+        fDisplayWindow = new KTDisplayWindow(fWidth, fHeight);
         pthread_create( &fThreadID, 0, &KTDataDisplay::ThreadSetupAndExecute, fDisplayWindow );
 
         return;

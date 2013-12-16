@@ -15,6 +15,7 @@
 #include "TGButton.h"
 #include "TGFrame.h"
 #include "TRootEmbeddedCanvas.h"
+#include "TPluginManager.h"
 
 ClassImp(Katydid::KTDisplayWindow);
 
@@ -26,12 +27,18 @@ namespace Katydid
             fMain(NULL),
             fEcanvas(NULL),
             fDisplayCondition(),
-            fMutex()
+            fMutex(),
+            fStatus(kStopped)
     {
         pthread_mutex_init( &fMutex, NULL );
         pthread_cond_init( &fDisplayCondition, NULL );
 
+        pthread_mutex_lock(&fMutex);
+
         fApp = new TApplication("DisplayWindow", 0, 0);
+        //fApp->SetReturnFromRun(true);
+
+        gPluginMgr->AddHandler("TVirtualHistPainter", "*", "THistPainter", "HistPainter", "THistPainter()");
 
         const TGWindow* parent = gClient->GetRoot();
 
@@ -65,10 +72,13 @@ namespace Katydid
 
         // Map main frame
         fMain->MapWindow();
+
+        //pthread_mutex_unlock(&fMutex);
     }
 
     KTDisplayWindow::~KTDisplayWindow()
     {
+        Stop();
         fMain->Cleanup();
         delete fMain;
         delete fApp;
@@ -76,7 +86,25 @@ namespace Katydid
 
     void KTDisplayWindow::Run()
     {
-        fApp->Run();
+        if (fStatus == kStopped)
+        {
+            fStatus = kRunning;
+            pthread_mutex_unlock(&fMutex);
+            fApp->Run();
+            pthread_mutex_lock(&fMutex);
+            fStatus = kStopped;
+        }
+        return;
+    }
+
+    void KTDisplayWindow::Stop()
+    {
+        if (fStatus == kRunning)
+        {
+            pthread_mutex_lock(&fMutex);
+            fApp->Terminate();
+            fStatus = kStopped;
+        }
         return;
     }
 
@@ -91,10 +119,13 @@ namespace Katydid
 
     void KTDisplayWindow::Draw(TH1* hist)
     {
+
+        pthread_mutex_lock(&fMutex);
         hist->Draw();
         TCanvas *canvas = fEcanvas->GetCanvas();
         canvas->cd();
         canvas->Update();
+        pthread_mutex_unlock(&fMutex);
 
         Wait();
         return;
@@ -102,10 +133,12 @@ namespace Katydid
 
     void KTDisplayWindow::Draw(TH2* hist)
     {
+        pthread_mutex_lock(&fMutex);
         hist->Draw();
         TCanvas *canvas = fEcanvas->GetCanvas();
         canvas->cd();
         canvas->Update();
+        pthread_mutex_unlock(&fMutex);
 
         Wait();
         return;
