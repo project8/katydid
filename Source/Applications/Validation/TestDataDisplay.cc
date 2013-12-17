@@ -54,6 +54,7 @@ int main()
         }
 
         window->Draw(hist1);
+        window->Stop();
         delete window;
     }
 
