@@ -70,10 +70,10 @@ namespace Katydid
         KTINFO(htlog, "Radius axis: " << (*fTransforms[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
         KTINFO(htlog, "Angle axis: " << fTransforms[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fTransforms[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fTransforms[component]->size(); iBinX++)
         {
             KTPhysicalArray< 1, double >* fs = (*fTransforms[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1));
             }

@@ -55,7 +55,7 @@ namespace Katydid
         }
     }
 
-    bool KTCommandLineHandler::TakeArguments(Int_t argC, Char_t**argV)
+    bool KTCommandLineHandler::TakeArguments(int argC, Char_t**argV)
     {
         if (fArgumentsTaken) return false;
 
@@ -75,7 +75,7 @@ namespace Katydid
         return fArgumentsTaken;
     }
 
-    Int_t KTCommandLineHandler::GetNArgs()
+    int KTCommandLineHandler::GetNArgs()
     {
         return fNArgs;
     }

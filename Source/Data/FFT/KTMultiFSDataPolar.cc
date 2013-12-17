@@ -49,10 +49,10 @@ namespace Katydid
         KTINFO(mfsdlog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(mfsdlog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumPolar* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1).abs());
             }
@@ -75,10 +75,10 @@ namespace Katydid
         KTINFO(mfsdlog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(mfsdlog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumPolar* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1).arg());
             }
@@ -102,10 +102,10 @@ namespace Katydid
         KTINFO(mfsdlog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
         double value;
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumPolar* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 value =(*fs)(iBinY-1).abs();
                 hist->SetBinContent(iBinX, iBinY, value*value);

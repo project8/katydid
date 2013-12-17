@@ -71,10 +71,10 @@ namespace Katydid
     TH1D* KTTimeSeriesFFTW::CreateHistogram(const std::string& name) const
     {
         unsigned nBins = GetNBins();
-        TH1D* hist = new TH1D(name.c_str(), "Time Series", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Time Series", (int)nBins, GetRangeMin(), GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin)[0]);
+            hist->SetBinContent((int)iBin+1, (*this)(iBin)[0]);
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");

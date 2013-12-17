@@ -36,7 +36,7 @@ namespace Katydid
             typedef const MonarchRecord* (Monarch::*GetRecordFunction)() const;
             typedef double (KTEggReaderMonarch::*GetTIRFunction)() const;
 
-            typedef std::map< unsigned, Int_t > AcquisitionModeMap;
+            typedef std::map< unsigned, int > AcquisitionModeMap;
             typedef AcquisitionModeMap::value_type AcqModeMapValue;
 
             struct MonarchReadState

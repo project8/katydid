@@ -298,11 +298,11 @@ namespace Katydid
 */
 /*
         register unsigned time = offset;
-        register Int_t taumax = std::min(std::min((Int_t)time, (Int_t)sliceSize - (Int_t)time -1), (Int_t)fftSize/2-1);
+        register int taumax = std::min(std::min((int)time, (int)sliceSize - (int)time -1), (int)fftSize/2-1);
         KTERROR(wvlog, "time = " << time << "  taumax = " << taumax);
 
         unsigned fftBin = 0;
-        for (Int_t tau = -taumax; tau <= taumax; tau++)
+        for (int tau = -taumax; tau <= taumax; tau++)
         {
             t1_real = (*data1)(time + tau)[0];
             t1_imag = (*data1)(time + tau)[1];
@@ -321,8 +321,8 @@ namespace Katydid
 */
         //register unsigned tau_plus = size - 1;
         //register unsigned tau_minus = 0;
-        ///register unsigned start = (unsigned)std::max(0, (Int_t)offset - ((Int_t)size - 1));
-        ///register unsigned end = (unsigned)std::min((Int_t)offset, (Int_t)size - 1);
+        ///register unsigned start = (unsigned)std::max(0, (int)offset - ((int)size - 1));
+        ///register unsigned end = (unsigned)std::min((int)offset, (int)size - 1);
         ///for (unsigned inArrBin = 0; inArrBin < start; inArrBin++)
         ///{
         ///    (*fInputArray)(inArrBin)[0] = 0.;

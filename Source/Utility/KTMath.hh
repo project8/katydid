@@ -36,7 +36,7 @@ namespace Katydid
         /// From ROOT's TMath
         /// This templated version should only be used for types that can be added to floating point numbers, and cast to int.
         template< typename T >
-        Int_t Nint(T x)
+        int Nint(T x)
         {
 
            int i;

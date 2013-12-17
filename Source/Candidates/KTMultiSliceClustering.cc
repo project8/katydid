@@ -596,8 +596,8 @@ namespace Katydid
         unsigned firstTimeBin = cluster.FirstTimeBin();
         unsigned lastTimeBin = cluster.LastTimeBin();
 
-        Int_t firstTimeBinWithFrame = (Int_t)firstTimeBin - (Int_t)fNFramingTimeBins;
-        Int_t lastTimeBinWithFrame = (Int_t)lastTimeBin + (Int_t)fNFramingTimeBins;
+        int firstTimeBinWithFrame = (int)firstTimeBin - (int)fNFramingTimeBins;
+        int lastTimeBinWithFrame = (int)lastTimeBin + (int)fNFramingTimeBins;
 
         KTDEBUG(sclog, "final time range: " << firstTimeBin << " - " << lastTimeBin << "; with frame: " << firstTimeBinWithFrame << " - " << lastTimeBinWithFrame);
 
@@ -637,11 +637,11 @@ namespace Katydid
         }
         KTDEBUG(sclog, "final freq range: " << firstFreqBin << " - " << lastFreqBin);
 
-        Int_t firstFreqBinWithFrame = (Int_t)firstFreqBin - (Int_t)fNFramingFreqBins;
-        Int_t lastFreqBinWithFrame =(Int_t) lastFreqBin + (Int_t)fNFramingFreqBins;
+        int firstFreqBinWithFrame = (int)firstFreqBin - (int)fNFramingFreqBins;
+        int lastFreqBinWithFrame =(int) lastFreqBin + (int)fNFramingFreqBins;
         unsigned firstFreqBinToUse = firstFreqBinWithFrame >= 0 ? (unsigned)firstFreqBinWithFrame : 0;
-        unsigned lastFreqBinToUse = lastFreqBinWithFrame < (Int_t)(cluster.fPoints.begin()->fSpectrumPtr->size()) ? (unsigned)lastFreqBinWithFrame : cluster.fPoints.begin()->fSpectrumPtr->size() - 1;
-        unsigned freqBinOffset = unsigned((Int_t)firstFreqBinToUse - firstFreqBinWithFrame);
+        unsigned lastFreqBinToUse = lastFreqBinWithFrame < (int)(cluster.fPoints.begin()->fSpectrumPtr->size()) ? (unsigned)lastFreqBinWithFrame : cluster.fPoints.begin()->fSpectrumPtr->size() - 1;
+        unsigned freqBinOffset = unsigned((int)firstFreqBinToUse - firstFreqBinWithFrame);
 
         double timeOverlapFrac = cluster.fPoints.begin()->fHeaderPtr->GetNonOverlapFrac();
         double timeBinWidthWithOverlap = cluster.fPoints.begin()->fHeaderPtr->GetSliceLength();
@@ -704,10 +704,10 @@ namespace Katydid
 
         KTDEBUG(sclog, "Creating KTTimeFrequency with " << nTimeBinsWithFrame << " time bins and " << nFreqBinsWithFrame << " freq bins;  cluster dimensions are " << nTimeBins << " by " << nFreqBins);
         double tfStartTime = wfcData.GetTimeInRun() + endTimeBinShift - double(fNFramingTimeBins) * timeBinWidth;
-        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, tfStartTime, tfStartTime + double(nTimeBinsWithFrame)*timeBinWidth, nFreqBinsWithFrame, freqBinWidth * double(firstFreqBinWithFrame), freqBinWidth * double(firstFreqBinWithFrame + (Int_t)nFreqBins));
-        for (Int_t iTBin=firstTimeBinWithFrame; iTBin <= lastTimeBinWithFrame; ++iTBin)
+        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, tfStartTime, tfStartTime + double(nTimeBinsWithFrame)*timeBinWidth, nFreqBinsWithFrame, freqBinWidth * double(firstFreqBinWithFrame), freqBinWidth * double(firstFreqBinWithFrame + (int)nFreqBins));
+        for (int iTBin=firstTimeBinWithFrame; iTBin <= lastTimeBinWithFrame; ++iTBin)
         {
-            Int_t spectrumNum = iTBin - firstTimeBinWithFrame;
+            int spectrumNum = iTBin - firstTimeBinWithFrame;
             if (spectra[spectrumNum])
             {
                 //KTDEBUG(sclog, "    have spectrum for spectrumNum = " << spectrumNum);

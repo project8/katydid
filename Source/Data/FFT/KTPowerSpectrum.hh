@@ -60,7 +60,7 @@ namespace Katydid
 
             double GetPowerAtFrequency(double freq);
             double GetPhaseAtFrequency(double freq);
-            Int_t GetBin(double freq);
+            int GetBin(double freq);
 
             virtual TH1D* CreateMagnitudeHistogram() const;
             virtual TH1D* CreateMagnitudeHistogram(const std::string& name) const;
@@ -93,9 +93,9 @@ namespace Katydid
         return fPhase[GetBin(freq)];
     }
 
-    inline Int_t KTPowerSpectrum::GetBin(double freq)
+    inline int KTPowerSpectrum::GetBin(double freq)
     {
-        return Int_t(freq / fBinWidth);
+        return int(freq / fBinWidth);
     }
 
     inline double KTPowerSpectrum::GetBinWidth() const

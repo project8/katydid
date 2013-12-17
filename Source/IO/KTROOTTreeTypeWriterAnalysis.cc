@@ -137,10 +137,10 @@ namespace Katydid
                 name << "histAmpDist_" << fAmpDistData.fComponent << "_" << fAmpDistData.fFreqBin;
                 const KTAmplitudeDistribution::Distribution& dist = adData.GetDistribution(fAmpDistData.fFreqBin, fAmpDistData.fComponent);
                 unsigned nBins = dist.size();
-                fAmpDistData.fDistribution = new TH1D(name.str().c_str(), "Amplitude Distribution", (Int_t)nBins, dist.GetRangeMin(), dist.GetRangeMax());
+                fAmpDistData.fDistribution = new TH1D(name.str().c_str(), "Amplitude Distribution", (int)nBins, dist.GetRangeMin(), dist.GetRangeMax());
                 for (unsigned iBin=0; iBin<nBins; iBin++)
                 {
-                    fAmpDistData.fDistribution->SetBinContent((Int_t)iBin+1, dist(iBin));
+                    fAmpDistData.fDistribution->SetBinContent((int)iBin+1, dist(iBin));
                 }
                 fAmpDistData.fDistribution->SetXTitle("Amplitude");
                 fAmpDistData.fDistribution->SetYTitle("Slices");

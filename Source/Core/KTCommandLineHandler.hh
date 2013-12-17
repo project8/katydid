@@ -88,13 +88,13 @@ namespace Katydid
             //**************
 
         public:
-            bool TakeArguments(Int_t argC, Char_t** argV);
+            bool TakeArguments(int argC, Char_t** argV);
             bool GetArgumentsTaken();
-            Int_t GetNArgs();
+            int GetNArgs();
             Char_t** GetArgV();
 
         protected:
-            Int_t fNArgs;
+            int fNArgs;
             Char_t** fArgV;
             bool fArgumentsTaken;
 

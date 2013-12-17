@@ -130,7 +130,7 @@ namespace Katydid
         }
 
         // Command-line settings
-        SetNSlices(fCLHandler->GetCommandLineValue< Int_t >("n-slices", fNSlices));
+        SetNSlices(fCLHandler->GetCommandLineValue< int >("n-slices", fNSlices));
         SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
 
         return true;

@@ -147,11 +147,11 @@ namespace Katydid
             string slotName = subNode.GetData("slot-name");
 
             bool useGroupOrdering = false;
-            Int_t groupOrder = 0;
+            int groupOrder = 0;
             if (subNode.HasData("group-order"))
             {
                 useGroupOrdering = true;
-                groupOrder = subNode.GetData< Int_t >("group-order");
+                groupOrder = subNode.GetData< int >("group-order");
             }
 
             try

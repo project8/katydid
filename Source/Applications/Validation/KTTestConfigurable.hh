@@ -22,17 +22,17 @@ namespace Katydid
             bool Configure(const KTPStoreNode* node);
 
         public:
-            Int_t GetIntData() const;
+            int GetIntData() const;
             double GetDoubleData() const;
             const std::string& GetStringData() const;
 
         private:
-            Int_t fIntData;
+            int fIntData;
             double fDoubleData;
             std::string fStringData;
     };
 
-    inline Int_t KTTestConfigurable::GetIntData() const
+    inline int KTTestConfigurable::GetIntData() const
     {
         return fIntData;
     }

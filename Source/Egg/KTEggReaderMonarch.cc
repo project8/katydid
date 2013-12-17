@@ -207,7 +207,7 @@ namespace Katydid
             // of records read in the last slice (fReadPtrRecordOffset)
             // If this is 0, it doesn't need to be moved
             // If it's > 0, then it needs to be reduced by 1 because of how the offset number in Monarch::ReadRecord is used (offset=0 will advance to the next record)
-            Int_t readPtrRecordOffsetShift = Int_t(sliceStartRecordOffset) - Int_t(fReadState.fReadPtrRecordOffset);
+            int readPtrRecordOffsetShift = int(sliceStartRecordOffset) - int(fReadState.fReadPtrRecordOffset);
             if (readPtrRecordOffsetShift != 0)
             {
                 // change the absolute record offset first because it should be done before the adjustment to Monarch::ReadRecord offset counting is made

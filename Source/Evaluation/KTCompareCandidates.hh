@@ -76,7 +76,7 @@ namespace Katydid
             //   -1 if candidate occurs completely before event
             //    0 if candidate and event overlap
             //    1 if candidate occurs completely after event
-            Int_t CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate, unsigned eventRecordSize, unsigned candidateRecordSize) const;
+            int CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate, unsigned eventRecordSize, unsigned candidateRecordSize) const;
 
             //***************
             // Slots

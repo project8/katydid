@@ -43,11 +43,11 @@ namespace Katydid
      TH1D* KTPowerSpectrum::CreatePowerHistogram(const std::string& name) const
     {
         unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, GetRangeMin(), GetRangeMax());
         //double value;
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin));
+            hist->SetBinContent((int)iBin+1, (*this)(iBin));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Power (W)");
@@ -128,10 +128,10 @@ namespace Katydid
 
     void KTPowerSpectrum::TakeFrequencySpectrum(unsigned int nBins, const double* real, const double* imag)
     {
-        fMagnitude.ResizeTo((Int_t)nBins);
-        fPhase.ResizeTo((Int_t)nBins);
+        fMagnitude.ResizeTo((int)nBins);
+        fPhase.ResizeTo((int)nBins);
 
-        for (Int_t iBin=0; iBin<nBins; iBin++)
+        for (int iBin=0; iBin<nBins; iBin++)
         {
             fMagnitude(iBin) = real(iBin)*real(iBin) + imag(iBin)*imag(iBin);
             fPhase(iBin) = atan2(imag(iBin), real(iBin));
@@ -149,10 +149,10 @@ namespace Katydid
     {
         double freqMult = 1.e-6;
         unsigned int nBins = (unsigned int)fMagnitude.GetNoElements();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((double)nBins-0.5) * freqMult);
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((double)nBins-0.5) * freqMult);
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, fMagnitude(iBin));
+            hist->SetBinContent((int)iBin+1, fMagnitude(iBin));
         }
         hist->SetXTitle("Frequency (MHz)");
         hist->SetYTitle("Power");
@@ -169,10 +169,10 @@ namespace Katydid
     {
         double freqMult = 1.e-6;
         unsigned int nBins = fPhase.GetNoElements();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum Phase", (Int_t)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((double)nBins-0.5) * freqMult);
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum Phase", (int)nBins, -0.5*fBinWidth*freqMult, fBinWidth * ((double)nBins-0.5) * freqMult);
         for (unsigned int iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, fPhase(iBin));
+            hist->SetBinContent((int)iBin+1, fPhase(iBin));
         }
         hist->SetXTitle("Frequency (MHz)");
         hist->SetYTitle("Phase");

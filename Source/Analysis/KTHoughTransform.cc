@@ -212,7 +212,7 @@ namespace Katydid
         unsigned nTimeBins = inputSpectrum->size();
         KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* newFrequencySpectra = new KTPhysicalArray< 1, KTFrequencySpectrumPolar* >(nTimeBins, inputSpectrum->GetRangeMin(), inputSpectrum->GetRangeMax());
 
-        for (Int_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
+        for (int iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
             KTFrequencySpectrumPolar* newSpectrum = (*inputSpectrum)(iTimeBin)->CreateFrequencySpectrum();
             (*newFrequencySpectra)(iTimeBin) = newSpectrum;

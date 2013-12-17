@@ -102,13 +102,13 @@ namespace Katydid
     {
         unsigned nTimeBins = size(1);
         unsigned nFreqBins = size(2);
-        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Magnitude", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Magnitude", (int)nTimeBins, GetRangeMin(1), GetRangeMax(1), (int)nFreqBins, GetRangeMin(2), GetRangeMax(2));
         //double value;
         for (unsigned iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
             for (unsigned iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
             {
-                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).abs());
+                hist->SetBinContent((int)iTimeBin + 1, (int)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).abs());
             }
         }
         hist->SetXTitle("Time (s)");
@@ -120,13 +120,13 @@ namespace Katydid
     {
         unsigned nTimeBins = size(1);
         unsigned nFreqBins = size(2);
-        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Phase", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Phase", (int)nTimeBins, GetRangeMin(1), GetRangeMax(1), (int)nFreqBins, GetRangeMin(2), GetRangeMax(2));
         //double value;
         for (unsigned iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
             for (unsigned iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
             {
-                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).arg());
+                hist->SetBinContent((int)iTimeBin + 1, (int)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).arg());
             }
         }
         hist->SetXTitle("Time (s)");
@@ -138,7 +138,7 @@ namespace Katydid
     {
         unsigned nTimeBins = size(1);
         unsigned nFreqBins = size(2);
-        TH2D* hist = new TH2D(name.c_str(), "Power Spectrum", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        TH2D* hist = new TH2D(name.c_str(), "Power Spectrum", (int)nTimeBins, GetRangeMin(1), GetRangeMax(1), (int)nFreqBins, GetRangeMin(2), GetRangeMax(2));
         double value;
         double scaling = 1. / KTPowerSpectrum::GetResistance();
         for (unsigned iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
@@ -146,7 +146,7 @@ namespace Katydid
             for (unsigned iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
             {
                 value = (*this)(iTimeBin, iFreqBin).abs();
-                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, value * value * scaling);
+                hist->SetBinContent((int)iTimeBin + 1, (int)iFreqBin + 1, value * value * scaling);
             }
         }
         hist->SetXTitle("Time (s)");

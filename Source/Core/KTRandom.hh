@@ -285,7 +285,7 @@ namespace Katydid
      Available configuration options:
        - "mean": double -- Mean of the Poisson distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename IntType = Int_t, typename RealType = double >
+    template< typename Engine = KTGlobalRNGEngine, typename IntType = int, typename RealType = double >
     struct KTRNGPoisson : KTRNGDistribution< Engine >, boost::random::poisson_distribution<IntType, RealType>
     {
         typedef boost::random::poisson_distribution<IntType, RealType> dist_type;

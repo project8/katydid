@@ -92,7 +92,7 @@ namespace Katydid
         // fTransformFlag is guaranteed to be valid in the Set method.
         KTDEBUG(fftlog_simp, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
-        Int_t transformFlag = iter->second;
+        int transformFlag = iter->second;
 
         if (fUseWisdom)
         {

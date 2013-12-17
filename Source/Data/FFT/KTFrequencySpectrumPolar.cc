@@ -97,10 +97,10 @@ namespace Katydid
     TH1D* KTFrequencySpectrumPolar::CreateMagnitudeHistogram(const std::string& name) const
     {
         unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int)nBins, GetRangeMin(), GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin).abs());
+            hist->SetBinContent((int)iBin+1, (*this)(iBin).abs());
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Voltage (V)");
@@ -110,10 +110,10 @@ namespace Katydid
     TH1D* KTFrequencySpectrumPolar::CreatePhaseHistogram(const std::string& name) const
     {
         unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int)nBins, GetRangeMin(), GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin).arg());
+            hist->SetBinContent((int)iBin+1, (*this)(iBin).arg());
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Phase");
@@ -123,13 +123,13 @@ namespace Katydid
     TH1D* KTFrequencySpectrumPolar::CreatePowerHistogram(const std::string& name) const
     {
         unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, GetRangeMin(), GetRangeMax());
         double value;
         double scaling = 1. / KTPowerSpectrum::GetResistance();
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
-            hist->SetBinContent((Int_t)iBin + 1, value * value * scaling);
+            hist->SetBinContent((int)iBin + 1, value * value * scaling);
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Power (W)");

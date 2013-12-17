@@ -51,7 +51,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", nBins, spline->GetXMin(), spline->GetXMax());
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, spline->Evaluate(hist->GetBinCenter(iBin+1)));
+            hist->SetBinContent((int)iBin+1, spline->Evaluate(hist->GetBinCenter(iBin+1)));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Gain Variation");

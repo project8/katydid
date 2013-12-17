@@ -279,7 +279,7 @@ namespace Katydid
     template< size_t NDims >
     void KTAxisProperties< NDims >::SetRange(const double* mins, const double* maxes)
     {
-        for (Int_t arrPos=0; arrPos<NDims; arrPos++)
+        for (int arrPos=0; arrPos<NDims; arrPos++)
         {
             fRangeMin[arrPos] = mins[arrPos];
             fRangeMax[arrPos] = maxes[arrPos];

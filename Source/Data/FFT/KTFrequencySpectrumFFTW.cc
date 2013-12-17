@@ -256,11 +256,11 @@ namespace Katydid
     TH1D* KTFrequencySpectrumFFTW::CreateMagnitudeHistogram(const std::string& name) const
     {
         unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int)nBins, GetRangeMin(), GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             // order matters, so use (*this)() to access values
-            hist->SetBinContent((Int_t)iBin+1, std::sqrt((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]));
+            hist->SetBinContent((int)iBin+1, std::sqrt((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Voltage (V)");
@@ -270,11 +270,11 @@ namespace Katydid
     TH1D* KTFrequencySpectrumFFTW::CreatePhaseHistogram(const std::string& name) const
     {
         unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int)nBins, GetRangeMin(), GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             // order matters, so use (*this)() to access values
-            hist->SetBinContent((Int_t)iBin+1, std::atan2((*this)(iBin)[1], (*this)(iBin)[0]));
+            hist->SetBinContent((int)iBin+1, std::atan2((*this)(iBin)[1], (*this)(iBin)[0]));
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Phase");
@@ -284,7 +284,7 @@ namespace Katydid
     TH1D* KTFrequencySpectrumFFTW::CreatePowerHistogram(const std::string& name) const
     {
         unsigned nBins = fDCBin + 1;
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, -0.5 * GetBinWidth(), GetRangeMax());
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, -0.5 * GetBinWidth(), GetRangeMax());
         double value, valueImag, valueReal;
         double scaling = 1. / KTPowerSpectrum::GetResistance();
 

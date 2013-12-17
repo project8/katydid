@@ -77,7 +77,7 @@ int main(int argc, char** argv)
 
     if (app->GetCommandLineHandler()->IsCommandLineOptSet("int-data"))
     {
-        KTINFO(testapplog, "Test option <int-data> is set to value <" << app->GetCommandLineHandler()->GetCommandLineValue< Int_t >("int-data") << ">");
+        KTINFO(testapplog, "Test option <int-data> is set to value <" << app->GetCommandLineHandler()->GetCommandLineValue< int >("int-data") << ">");
     }
     else
     {

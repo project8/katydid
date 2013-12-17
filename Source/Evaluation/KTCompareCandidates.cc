@@ -88,7 +88,7 @@ namespace Katydid
         unsigned candidateCounter = 0;
         KTAnalysisCandidates::CandidateSet::const_iterator candStartHere = candidates.begin();
         unsigned candidateCounterStart = 0;
-        Int_t comparison = 0;
+        int comparison = 0;
         KTDEBUG(cclog, "Comparing candidates to events");
         for (KTMCTruthEvents::EventSet::const_iterator truthIt = events.begin(); truthIt != events.end() && continueEventLoop; truthIt++)
         {
@@ -215,7 +215,7 @@ namespace Katydid
         return true;
     }
 
-    Int_t KTCompareCandidates::CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate, unsigned eventRecordSize, unsigned candidateRecordSize) const
+    int KTCompareCandidates::CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate, unsigned eventRecordSize, unsigned candidateRecordSize) const
     {
         /* more readable version
         uint64_t candidateSampleStart = candidate.fStartRecord * candidateRecordSize + candidate.fStartSample;

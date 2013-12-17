@@ -53,7 +53,7 @@ int main()
     double tolerance = 1.e-10;
     bool theyAgree =
             fabs(array.GetBinWidth() - histCompare.GetBinWidth(testBin1+1)) / histCompare.GetBinWidth(testBin1) < tolerance &&
-            (Int_t)array.FindBin(testPosition1) == histCompare.FindBin(testPosition1)-1 &&
+            (int)array.FindBin(testPosition1) == histCompare.FindBin(testPosition1)-1 &&
             fabs(array.GetBinLowEdge(testBin1) - histCompare.GetBinLowEdge(testBin1+1)) / histCompare.GetBinLowEdge(testBin1) < tolerance &&
             fabs(array.GetBinCenter(testBin1) - histCompare.GetBinCenter(testBin1+1)) / histCompare.GetBinCenter(testBin1) < tolerance;
 
@@ -93,7 +93,7 @@ int main()
     // relative magnitude floating point comparisons
     theyAgree =
             fabs(array2D.GetBinWidth(1) - xAxis->GetBinWidth(testBin1+1)) / xAxis->GetBinWidth(testBin1) < tolerance &&
-            (Int_t)array2D.FindBin(1, testPosition1) == xAxis->FindBin(testPosition1)-1 &&
+            (int)array2D.FindBin(1, testPosition1) == xAxis->FindBin(testPosition1)-1 &&
             fabs(array2D.GetBinLowEdge(1, testBin1) - xAxis->GetBinLowEdge(testBin1+1)) / xAxis->GetBinLowEdge(testBin1) < tolerance &&
             fabs(array2D.GetBinCenter(1, testBin1) - xAxis->GetBinCenter(testBin1+1)) / xAxis->GetBinCenter(testBin1) < tolerance;
 
@@ -106,7 +106,7 @@ int main()
 
     theyAgree =
             fabs(array2D.GetBinWidth(2) - yAxis->GetBinWidth(testBin2+1)) / yAxis->GetBinWidth(testBin2) < tolerance &&
-            (Int_t)array2D.FindBin(2, testPosition2) == yAxis->FindBin(testPosition2)-1 &&
+            (int)array2D.FindBin(2, testPosition2) == yAxis->FindBin(testPosition2)-1 &&
             fabs(array2D.GetBinLowEdge(2, testBin2) - yAxis->GetBinLowEdge(testBin2+1)) / yAxis->GetBinLowEdge(testBin2) < tolerance &&
             fabs(array2D.GetBinCenter(2, testBin2) - yAxis->GetBinCenter(testBin2+1)) / yAxis->GetBinCenter(testBin2) < tolerance;
 

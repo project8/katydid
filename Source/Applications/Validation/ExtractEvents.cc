@@ -21,7 +21,7 @@ using namespace::std;
 int main(int argc, char *argv[])
 {
 
-    Int_t arg;
+    int arg;
     string fileName = string("No_File_Name_Given");
     string outputFilePrefix = string("file");
     unsigned numBundles = 1;
