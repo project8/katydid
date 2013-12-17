@@ -73,7 +73,7 @@ int main(int argc, char** argv)
     // Doing-something phase
     //**************************
 
-    ULong64_t fileSize = boost::filesystem::file_size(filename); // in bytes
+    uint64_t fileSize = boost::filesystem::file_size(filename); // in bytes
 
     const KTEggHeader* header = reader->BreakEgg(filename);
     if (header == NULL)
@@ -84,9 +84,9 @@ int main(int argc, char** argv)
 
     KTPROG(eggscan, *header);
 
-    ULong64_t recordMemorySize = header->GetSliceSize(); // each time bin is represented by 1 byte
-    ULong64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
-    ULong64_t slicesInFile = recordsInFile * ULong64_t(header->GetRecordSize() / header->GetSliceSize()); // upper limit, assuming continuous acquisition
+    uint64_t recordMemorySize = header->GetSliceSize(); // each time bin is represented by 1 byte
+    uint64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
+    uint64_t slicesInFile = recordsInFile * uint64_t(header->GetRecordSize() / header->GetSliceSize()); // upper limit, assuming continuous acquisition
 
     unsigned fsSizeFFTW = header->GetSliceSize();
     unsigned fsSizePolar = fsSizeFFTW / 2 + 1;

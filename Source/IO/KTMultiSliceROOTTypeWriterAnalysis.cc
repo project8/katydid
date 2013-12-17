@@ -111,7 +111,7 @@ namespace Katydid
     {
         if (! data) return;
 
-        //ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        //uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTCorrelationData& corrData = data->Of<KTCorrelationData>();
         unsigned nComponents = corrData.GetNComponents();

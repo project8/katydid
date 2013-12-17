@@ -55,7 +55,7 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
         unsigned nComponents = tsData.GetNComponents();
@@ -84,7 +84,7 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
         unsigned nComponents = tsData.GetNComponents();

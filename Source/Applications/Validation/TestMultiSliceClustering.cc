@@ -116,7 +116,7 @@ int main()
     KTMultiSliceClustering::DataList allNewData;
 
     KTINFO(vallog, "Commencing with the clustering process");
-    ULong64_t iSlice = 0;
+    uint64_t iSlice = 0;
     for (vector< KTDiscriminatedPoints1DData::SetOfPoints >::const_iterator setIt = allPoints.begin(); setIt != allPoints.end(); setIt++)
     {
         KTINFO(vallog, "Creating time bin " << iSlice);

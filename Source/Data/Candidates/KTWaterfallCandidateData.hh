@@ -33,8 +33,8 @@ namespace Katydid
 
             double GetTimeInRun() const;
             double GetTimeLength() const;
-            ULong64_t GetFirstSliceNumber() const;
-            ULong64_t GetLastSliceNumber() const;
+            uint64_t GetFirstSliceNumber() const;
+            uint64_t GetLastSliceNumber() const;
             double GetMinimumFrequency() const;
             double GetMaximumFrequency() const;
             double GetMeanStartFrequency() const;
@@ -51,8 +51,8 @@ namespace Katydid
 
             void SetTimeInRun(double tir);
             void SetTimeLength(double length);
-            void SetFirstSliceNumber(ULong64_t slice);
-            void SetLastSliceNumber(ULong64_t slice);
+            void SetFirstSliceNumber(uint64_t slice);
+            void SetLastSliceNumber(uint64_t slice);
             void SetMinimumFrequency(double freq);
             void SetMaximumFrequency(double freq);
             void SetMeanStartFrequency(double freq);
@@ -70,8 +70,8 @@ namespace Katydid
 
             double fTimeInRun;
             double fTimeLength;
-            ULong64_t fFirstSliceNumber;
-            ULong64_t fLastSliceNumber;
+            uint64_t fFirstSliceNumber;
+            uint64_t fLastSliceNumber;
             double fMinFrequency;
             double fMaxFrequency;
             double fMeanStartFrequency;
@@ -124,12 +124,12 @@ namespace Katydid
         return fTimeLength;
     }
 
-    inline ULong64_t KTWaterfallCandidateData::GetFirstSliceNumber() const
+    inline uint64_t KTWaterfallCandidateData::GetFirstSliceNumber() const
     {
         return fFirstSliceNumber;
     }
 
-    inline ULong64_t KTWaterfallCandidateData::GetLastSliceNumber() const
+    inline uint64_t KTWaterfallCandidateData::GetLastSliceNumber() const
     {
         return fLastSliceNumber;
     }
@@ -197,13 +197,13 @@ namespace Katydid
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetFirstSliceNumber(ULong64_t slice)
+    inline void KTWaterfallCandidateData::SetFirstSliceNumber(uint64_t slice)
     {
         fFirstSliceNumber = slice;
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetLastSliceNumber(ULong64_t slice)
+    inline void KTWaterfallCandidateData::SetLastSliceNumber(uint64_t slice)
     {
         fLastSliceNumber = slice;
         return;

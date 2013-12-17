@@ -300,7 +300,7 @@ namespace Katydid
         sliceHeader.SetSliceSize(fHeaderInfo.fRecordSize);
         sliceHeader.SetSliceLength(double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
         sliceHeader.SetTimeInRun(GetTimeInRun());
-        sliceHeader.SetSliceNumber((ULong64_t)fRecordsRead);
+        sliceHeader.SetSliceNumber((uint64_t)fRecordsRead);
         sliceHeader.SetStartRecordNumber(fRecordsRead);
         sliceHeader.SetStartSampleNumber(0);
         sliceHeader.SetEndRecordNumber(fRecordsRead);

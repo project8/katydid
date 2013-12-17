@@ -79,9 +79,9 @@ namespace Katydid
         // candidateMatches: each position in the vector represents one of the candidates; this vector records how many events matched each candidate.
         vector< unsigned > candidateMatches(candidates.size());
 
-        //ULong64_t candidateSampleSum = 0;
-        //ULong64_t eventSampleSum = 0;
-        //ULong64_t candidateCorrectSampleSum = 0;
+        //uint64_t candidateSampleSum = 0;
+        //uint64_t eventSampleSum = 0;
+        //uint64_t candidateCorrectSampleSum = 0;
 
         unsigned eventCounter = 0;
         bool continueEventLoop = true;
@@ -218,12 +218,12 @@ namespace Katydid
     Int_t KTCompareCandidates::CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate, unsigned eventRecordSize, unsigned candidateRecordSize) const
     {
         /* more readable version
-        ULong64_t candidateSampleStart = candidate.fStartRecord * candidateRecordSize + candidate.fStartSample;
-        ULong64_t eventSampleEnd = event.fEndRecord * eventRecordSize + event.fEndSample;
+        uint64_t candidateSampleStart = candidate.fStartRecord * candidateRecordSize + candidate.fStartSample;
+        uint64_t eventSampleEnd = event.fEndRecord * eventRecordSize + event.fEndSample;
         if (candidateSampleStart > eventSampleEnd) return 1;
 
-        ULong64_t candidateSampleEnd = candidate.fEndRecord * candidateRecordSize + candidate.fEndSample;
-        ULong64_t eventSampleStart = event.fStartRecord * eventRecordSize + event.fStartSample;
+        uint64_t candidateSampleEnd = candidate.fEndRecord * candidateRecordSize + candidate.fEndSample;
+        uint64_t eventSampleStart = event.fStartRecord * eventRecordSize + event.fStartSample;
         if (candidateSampleEnd < eventSampleStart) return -1;
         */
 

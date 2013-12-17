@@ -138,7 +138,7 @@ namespace Katydid
             unsigned fRecordSize;
             double fBinWidth;
 
-            ULong64_t fSliceNumber;
+            uint64_t fSliceNumber;
 
     };
 
