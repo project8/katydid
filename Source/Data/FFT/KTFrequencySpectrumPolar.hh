@@ -12,8 +12,6 @@
 #include "KTFrequencySpectrum.hh"
 #include "KTPhysicalArray.hh"
 
-#include "Rtypes.h"
-
 #include <cmath>
 #include <string>
 

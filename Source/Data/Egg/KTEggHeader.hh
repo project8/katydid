@@ -10,8 +10,6 @@
 
 #include "MonarchTypes.hpp"
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid

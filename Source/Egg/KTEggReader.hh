@@ -8,8 +8,6 @@
 #ifndef KTEGGREADER_HH_
 #define KTEGGREADER_HH_
 
-#include "Rtypes.h"
-
 #include "KTData.hh"
 
 #include <string>

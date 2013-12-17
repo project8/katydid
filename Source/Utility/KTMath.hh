@@ -10,8 +10,6 @@
 #ifndef KTMATH_HH_
 #define KTMATH_HH_
 
-#include "Rtypes.h"
-
 namespace Katydid
 {
 

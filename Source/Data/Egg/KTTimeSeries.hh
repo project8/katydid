@@ -8,8 +8,6 @@
 #ifndef KTTIMESERIES_HH_
 #define KTTIMESERIES_HH_
 
-#include "Rtypes.h"
-
 #include <string>
 
 #ifdef ROOT_FOUND

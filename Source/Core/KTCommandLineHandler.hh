@@ -12,8 +12,6 @@
 #include "KTLogger.hh"
 #include "KTSingleton.hh"
 
-#include "Rtypes.h"
-
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 

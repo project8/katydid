@@ -8,8 +8,6 @@
 #ifndef KTPROCSUMMARY_HH_
 #define KTPROCSUMMARY_HH_
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid

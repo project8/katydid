@@ -8,8 +8,6 @@
 #ifndef KTFREQUENCYCANDIDATE_HH_
 #define KTFREQUENCYCANDIDATE_HH_
 
-#include "Rtypes.h"
-
 namespace Katydid
 {
 

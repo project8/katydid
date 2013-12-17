@@ -10,8 +10,6 @@
 
 #include "KTCommandLineHandler.hh"
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid

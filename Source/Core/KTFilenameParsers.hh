@@ -8,8 +8,6 @@
 #ifndef KTFILENAMEPARSERS_HH_
 #define KTFILENAMEPARSES_HH_
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid

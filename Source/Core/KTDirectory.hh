@@ -8,8 +8,6 @@
 #ifndef KTDIRECTORY_HH_
 #define KTDIRECTORY_HH_
 
-#include "Rtypes.h"
-
 #include <boost/filesystem.hpp>
 
 #include <string>

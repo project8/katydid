@@ -8,8 +8,6 @@
 #ifndef KTFFT_HH_
 #define KTFFT_HH_
 
-#include "Rtypes.h"
-
 namespace Katydid
 {
     class KTTimeSeriesData;

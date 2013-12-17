@@ -10,8 +10,6 @@
 
 #include "KTSingleton.hh"
 
-#include "Rtypes.h"
-
 #include <boost/property_tree/ptree.hpp>
 
 #include <sstream>

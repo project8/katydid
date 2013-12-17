@@ -8,8 +8,6 @@
 #ifndef KTFREQUENCYSPECTRUM_HH_
 #define KTFREQUENCYSPECTRUM_HH_
 
-#include "Rtypes.h"
-
 #include <string>
 
 #ifdef ROOT_FOUND

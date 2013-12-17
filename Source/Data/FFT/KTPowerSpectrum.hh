@@ -12,8 +12,6 @@
 
 #include "KTPhysicalArray.hh"
 
-#include "Rtypes.h"
-
 #include <string>
 
 class TH1D;

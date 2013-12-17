@@ -10,8 +10,6 @@
 
 #ifdef ROOT_FOUND
 #include "TSpline.h"
-#else
-#include "Rtypes.h"
 #endif
 
 #include <list>

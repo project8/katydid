@@ -11,8 +11,6 @@
 
 #include "KTAxisProperties_GetNBins.hh"
 
-#include "Rtypes.h"
-
 #include <cmath>
 
 namespace Katydid

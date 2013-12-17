@@ -17,8 +17,6 @@
 #include "TApplication.h"
 #endif
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid

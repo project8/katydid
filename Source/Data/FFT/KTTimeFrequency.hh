@@ -8,8 +8,6 @@
 #ifndef KTTIMEFREQUENCY_HH_
 #define KTTIMEFREQUENCY_HH_
 
-#include "Rtypes.h"
-
 //#include <string>
 
 #ifdef ROOT_FOUND

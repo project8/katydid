@@ -8,8 +8,6 @@
 #ifndef KTCONFIGURABLE_HH_
 #define KTCONFIGURABLE_HH_
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid
