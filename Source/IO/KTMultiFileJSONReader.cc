@@ -49,7 +49,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTMultiFileJSONReader::Configure(const KTPStoreNode* node)
+    bool KTMultiFileJSONReader::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node == NULL) return false;
@@ -73,7 +73,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileJSONReader::AddDataType(const std::string& type)
+    bool KTMultiFileJSONReader::AddDataType(const std::string& type)
     {
         if (type == "cc-results")
         {
@@ -96,7 +96,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileJSONReader::OpenAndParseFile(const string& filename, rapidjson::Document& document) const
+    bool KTMultiFileJSONReader::OpenAndParseFile(const string& filename, rapidjson::Document& document) const
     {
         FILE* file = fopen(filename.c_str(), fFileMode.c_str());
         if (file == NULL)
@@ -125,7 +125,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileJSONReader::Run()
+    bool KTMultiFileJSONReader::Run()
     {
         for (fFileIter = fFilenames.begin(); fFileIter != fFilenames.end(); fFileIter++)
         {
@@ -153,7 +153,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileJSONReader::Append(KTData& data)
+    bool KTMultiFileJSONReader::Append(KTData& data)
     {
         if (fFileIter == fFilenames.end())
         {
@@ -182,7 +182,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileJSONReader::AppendMCTruthEvents(rapidjson::Document& document, KTData& appendToData)
+    bool KTMultiFileJSONReader::AppendMCTruthEvents(rapidjson::Document& document, KTData& appendToData)
     {
         if (! document["record_size"].IsUint())
         {
@@ -250,7 +250,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileJSONReader::AppendAnalysisCandidates(rapidjson::Document& document, KTData& appendToData)
+    bool KTMultiFileJSONReader::AppendAnalysisCandidates(rapidjson::Document& document, KTData& appendToData)
     {
         if (! document["record_size"].IsUint())
         {
@@ -308,7 +308,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTMultiFileJSONReader::AppendCCResults(rapidjson::Document& document, KTData& appendToData)
+    bool KTMultiFileJSONReader::AppendCCResults(rapidjson::Document& document, KTData& appendToData)
     {
         const rapidjson::Value& ccResults = document["cc-results"];
         if (! ccResults.IsObject())

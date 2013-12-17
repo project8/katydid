@@ -51,7 +51,7 @@ int main()
     TH1I histCompare("histCompare", "histCompare", nBins1, rangeMin1, rangeMax1);
     // relative magnitude floating point comparisons
     double tolerance = 1.e-10;
-    Bool_t theyAgree =
+    bool theyAgree =
             fabs(array.GetBinWidth() - histCompare.GetBinWidth(testBin1+1)) / histCompare.GetBinWidth(testBin1) < tolerance &&
             (Int_t)array.FindBin(testPosition1) == histCompare.FindBin(testPosition1)-1 &&
             fabs(array.GetBinLowEdge(testBin1) - histCompare.GetBinLowEdge(testBin1+1)) / histCompare.GetBinLowEdge(testBin1) < tolerance &&

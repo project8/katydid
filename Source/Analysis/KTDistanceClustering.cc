@@ -45,7 +45,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTDistanceClustering::Configure(const KTPStoreNode* node)
+    bool KTDistanceClustering::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -62,7 +62,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTDistanceClustering::FindClusters(KTDiscriminatedPoints1DData& data)
+    bool KTDistanceClustering::FindClusters(KTDiscriminatedPoints1DData& data)
     {
         typedef KTDiscriminatedPoints1DData::SetOfPoints OriginalPoints;
         typedef set< unsigned > Cluster;

@@ -36,7 +36,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSinusoidGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
+    bool KTSinusoidGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -47,7 +47,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSinusoidGenerator::GenerateTS(KTTimeSeriesData& data)
+    bool KTSinusoidGenerator::GenerateTS(KTTimeSeriesData& data)
     {
         const double mult = 2. * KTMath::Pi() * fFrequency;
         const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();

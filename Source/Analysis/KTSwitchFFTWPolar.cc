@@ -42,17 +42,17 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSwitchFFTWPolar::Configure(const KTPStoreNode* node)
+    bool KTSwitchFFTWPolar::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
-        SetUseNegFreqs(node->GetData< Bool_t >("use-neg-freqs", fUseNegFreqs));
+        SetUseNegFreqs(node->GetData< bool >("use-neg-freqs", fUseNegFreqs));
 
         return true;
     }
 
 
-    Bool_t KTSwitchFFTWPolar::SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData)
+    bool KTSwitchFFTWPolar::SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData)
     {
         unsigned nComponents = fsData.GetNComponents();
 
@@ -79,7 +79,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSwitchFFTWPolar::SwitchToPolar(KTNormalizedFSDataFFTW& fsData)
+    bool KTSwitchFFTWPolar::SwitchToPolar(KTNormalizedFSDataFFTW& fsData)
     {
         unsigned nComponents = fsData.GetNComponents();
 
@@ -106,7 +106,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSwitchFFTWPolar::SwitchToPolar(KTWignerVilleData& fsData)
+    bool KTSwitchFFTWPolar::SwitchToPolar(KTWignerVilleData& fsData)
     {
         unsigned nComponents = fsData.GetNComponents();
 

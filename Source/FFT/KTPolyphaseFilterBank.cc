@@ -41,7 +41,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTPolyphaseFilterBank::Configure(const KTPStoreNode* node)
+    bool KTPolyphaseFilterBank::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node == NULL)
@@ -61,7 +61,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTPolyphaseFilterBank::ProcessDataReal(const KTTimeSeriesData& tsData)
+    bool KTPolyphaseFilterBank::ProcessDataReal(const KTTimeSeriesData& tsData)
     {
         if (dynamic_cast< KTTimeSeriesReal* >(tsData.GetTimeSeries(0)) == NULL)
         {
@@ -78,7 +78,7 @@ namespace Katydid
         return false;
     }
 
-    Bool_t KTPolyphaseFilterBank::ProcessDataFFTW(const KTTimeSeriesData& tsData)
+    bool KTPolyphaseFilterBank::ProcessDataFFTW(const KTTimeSeriesData& tsData)
     {
         if (dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries(0)) == NULL)
         {
@@ -154,7 +154,7 @@ namespace Katydid
 
     }
 
-    Bool_t KTPolyphaseFilterBank::TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader)
+    bool KTPolyphaseFilterBank::TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader)
     {
         newHeader.SetNComponents(oldHeader.GetNComponents());
         newHeader.SetSampleRate(oldHeader.GetSampleRate());

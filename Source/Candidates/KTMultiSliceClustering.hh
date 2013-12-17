@@ -125,7 +125,7 @@ namespace Katydid
                 SetOfDiscriminatedPoints fPoints;
                 unsigned fFirstPoint;
                 unsigned fLastPoint;
-                Bool_t fAddedToActiveCluster;
+                bool fAddedToActiveCluster;
                 ClusterList::iterator fActiveCluster;
                 unsigned fACNumber;
             };
@@ -138,7 +138,7 @@ namespace Katydid
             KTMultiSliceClustering(const std::string& name = "multi-slice-clustering");
             virtual ~KTMultiSliceClustering();
 
-            Bool_t ConfigureSubClass(const KTPStoreNode* node);
+            bool ConfigureSubClass(const KTPStoreNode* node);
 
             double GetMaxFrequencySeparation() const;
             void SetMaxFrequencySeparation(double freqSep);
@@ -166,8 +166,8 @@ namespace Katydid
             double fMaxTimeSep;
             unsigned fMaxFreqSepBins;
             unsigned fMaxTimeSepBins;
-            Bool_t fCalculateMaxFreqSepBins;
-            Bool_t fCalculateMaxTimeSepBins;
+            bool fCalculateMaxFreqSepBins;
+            bool fCalculateMaxTimeSepBins;
             unsigned fMinTimeBins;
             unsigned fNFramingTimeBins;
             unsigned fNFramingFreqBins;

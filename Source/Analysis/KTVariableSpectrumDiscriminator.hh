@@ -83,7 +83,7 @@ namespace Katydid
             KTVariableSpectrumDiscriminator(const std::string& name = "variable-spectrum-discriminator");
             virtual ~KTVariableSpectrumDiscriminator();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             double GetSNRThreshold() const;
             void SetSNRAmplitudeThreshold(double thresh);
@@ -114,23 +114,23 @@ namespace Katydid
             double fMaxFrequency;
             unsigned fMinBin;
             unsigned fMaxBin;
-            Bool_t fCalculateMinBin;
-            Bool_t fCalculateMaxBin;
+            bool fCalculateMinBin;
+            bool fCalculateMaxBin;
 
         public:
-            Bool_t Discriminate(KTFrequencySpectrumDataPolar& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTFrequencySpectrumDataFFTW& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTNormalizedFSDataPolar& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTNormalizedFSDataFFTW& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTCorrelationData& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTWignerVilleData& data, KTGainVariationData& gvData);
+            bool Discriminate(KTFrequencySpectrumDataPolar& data, KTGainVariationData& gvData);
+            bool Discriminate(KTFrequencySpectrumDataFFTW& data, KTGainVariationData& gvData);
+            bool Discriminate(KTNormalizedFSDataPolar& data, KTGainVariationData& gvData);
+            bool Discriminate(KTNormalizedFSDataFFTW& data, KTGainVariationData& gvData);
+            bool Discriminate(KTCorrelationData& data, KTGainVariationData& gvData);
+            bool Discriminate(KTWignerVilleData& data, KTGainVariationData& gvData);
 
-            Bool_t DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component=0);
-            Bool_t DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component=0);
+            bool DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component=0);
+            bool DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component=0);
 
         private:
-            Bool_t CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
-            Bool_t CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
+            bool CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
+            bool CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
 
             std::vector< double > fMagnitudeCache;
 

@@ -57,7 +57,7 @@ namespace Katydid
             KTGainNormalization(const std::string& name = "gain-normalization");
             virtual ~KTGainNormalization();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);
@@ -76,12 +76,12 @@ namespace Katydid
             double fMaxFrequency;
             unsigned fMinBin;
             unsigned fMaxBin;
-            Bool_t fCalculateMinBin;
-            Bool_t fCalculateMaxBin;
+            bool fCalculateMinBin;
+            bool fCalculateMaxBin;
 
         public:
-            Bool_t Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData);
-            Bool_t Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
+            bool Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData);
+            bool Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
 
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
             //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);

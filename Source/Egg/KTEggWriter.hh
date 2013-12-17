@@ -64,7 +64,7 @@ namespace Katydid
             KTEggWriter(const std::string& name = "egg-writer");
             virtual ~KTEggWriter();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
@@ -83,17 +83,17 @@ namespace Katydid
             double fDigitizerFullscale;
 
         public:
-            Bool_t OpenFile();
+            bool OpenFile();
             void CloseFile();
 
             void WriteHeader(const KTEggHeader* header);
 
-            Bool_t WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData);
+            bool WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData);
 
             FileStatus GetFileStatus() const;
 
         private:
-            Bool_t CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record);
+            bool CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record);
 
             FileStatus fFileStatus;
             unsigned fExpectedNChannels;

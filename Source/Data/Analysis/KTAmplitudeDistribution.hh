@@ -41,14 +41,14 @@ namespace Katydid
 
             unsigned FindDistBin(double value, unsigned freqBin, unsigned component = 0);
 
-            Bool_t ClearDistributions();
+            bool ClearDistributions();
 
             /// Clear distributions and initialize new vectors with NULL distribution pointers
-            Bool_t InitializeNull(unsigned nComponents, unsigned nFreqBins);
+            bool InitializeNull(unsigned nComponents, unsigned nFreqBins);
             /// Clear distributions and initialize new vectors with new, uniform, distributions pointers
-            Bool_t InitializeNew(unsigned nComponents, unsigned nFreqBins, unsigned distNBins, double distMin, double distMax);
+            bool InitializeNew(unsigned nComponents, unsigned nFreqBins, unsigned distNBins, double distMin, double distMax);
             /// Initialize a single new distribution (only removes the specified distribution, if it already exists)
-            Bool_t InitializeADistribution(unsigned component, unsigned freqBin, unsigned distNBins, double distMin, double distMax);
+            bool InitializeADistribution(unsigned component, unsigned freqBin, unsigned distNBins, double distMin, double distMax);
 
         protected:
             Distributions fDistributions;
@@ -70,7 +70,7 @@ namespace Katydid
         return unsigned(fDistributions[0].size());
     }
 
-    inline Bool_t KTAmplitudeDistribution::ClearDistributions()
+    inline bool KTAmplitudeDistribution::ClearDistributions()
     {
         for (unsigned iComponent = 0; iComponent < fDistributions.size(); iComponent++)
         {
@@ -82,7 +82,7 @@ namespace Katydid
         return true;
     }
 
-    inline Bool_t KTAmplitudeDistribution::InitializeNull(unsigned nComponents, unsigned nFreqBins)
+    inline bool KTAmplitudeDistribution::InitializeNull(unsigned nComponents, unsigned nFreqBins)
     {
         //fDistributions.resize(nComponents, ComponentDistributions(nFreqBins, NULL));
         fDistributions.resize(nComponents);
@@ -93,7 +93,7 @@ namespace Katydid
         return true;
     }
 
-    inline Bool_t KTAmplitudeDistribution::InitializeNew(unsigned nComponents, unsigned nFreqBins, unsigned distNBins, double distMin, double distMax)
+    inline bool KTAmplitudeDistribution::InitializeNew(unsigned nComponents, unsigned nFreqBins, unsigned distNBins, double distMin, double distMax)
     {
         fDistributions.resize(nComponents, ComponentDistributions(nFreqBins, new Distribution(distNBins, distMin, distMax)));
         return true;

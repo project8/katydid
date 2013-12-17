@@ -35,12 +35,12 @@ namespace Katydid
             virtual ~KTFrequencySpectrumFFTW();
 
         public:
-            Bool_t GetIsSizeEven() const;
+            bool GetIsSizeEven() const;
             size_t GetNegFreqOffset() const;
             size_t GetDCBin() const;
 
         protected:
-            Bool_t fIsSizeEven; /// Flag to indicate if the size of the array is even
+            bool fIsSizeEven; /// Flag to indicate if the size of the array is even
             size_t fNegFreqOffset; /// The number of bins by which the negative-frequency Nyquist bin is offset
             size_t fDCBin; /// The bin number of the DC bin
 
@@ -84,7 +84,7 @@ namespace Katydid
             /// In-place calculation of the analytic associate
             virtual KTFrequencySpectrumFFTW& AnalyticAssociate();
 
-            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar(Bool_t addNegFreqs = true) const;
+            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar(bool addNegFreqs = true) const;
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
@@ -104,7 +104,7 @@ namespace Katydid
             mutable const fftw_complex* fPointCache;
     };
 
-    inline Bool_t KTFrequencySpectrumFFTW::GetIsSizeEven() const
+    inline bool KTFrequencySpectrumFFTW::GetIsSizeEven() const
     {
         return fIsSizeEven;
     }

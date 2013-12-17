@@ -49,7 +49,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTTSGenerator::Configure(const KTPStoreNode* node)
+    bool KTTSGenerator::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -81,7 +81,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTTSGenerator::Run()
+    bool KTTSGenerator::Run()
     {
         // Create, signal, and destroy the egg header
         KTEggHeader* newHeader = CreateEggHeader();
@@ -177,7 +177,7 @@ namespace Katydid
         return newData;
     }
 
-    Bool_t KTTSGenerator::AddSliceHeader(KTData& data) const
+    bool KTTSGenerator::AddSliceHeader(KTData& data) const
     {
         KTSliceHeader& sliceHeader = data.Of< KTSliceHeader >().SetNComponents(1);
         sliceHeader.SetSampleRate(1. / fBinWidth);
@@ -206,7 +206,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTTSGenerator::AddEmptySlice(KTData& data) const
+    bool KTTSGenerator::AddEmptySlice(KTData& data) const
     {
         KTTimeSeriesData& tsData = data.Of< KTTimeSeriesData >().SetNComponents(fNChannels);
 

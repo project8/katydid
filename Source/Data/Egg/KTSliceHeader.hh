@@ -34,8 +34,8 @@ namespace Katydid
 
             // Slice information
 
-            Bool_t GetIsNewAcquisition() const;
-            void SetIsNewAcquisition(Bool_t flag);
+            bool GetIsNewAcquisition() const;
+            void SetIsNewAcquisition(bool flag);
             double GetTimeInRun() const;
             void SetTimeInRun(double time);
             ULong64_t GetSliceNumber() const;
@@ -104,7 +104,7 @@ namespace Katydid
 
             double fTimeInRun; // in sec
             ULong64_t fSliceNumber;
-            Bool_t fIsNewAcquisition;
+            bool fIsNewAcquisition;
 
             unsigned fSliceSize; // number of bins
             double fSliceLength; // in sec
@@ -140,12 +140,12 @@ namespace Katydid
         return *this;
     }
 
-    inline Bool_t KTSliceHeader::GetIsNewAcquisition() const
+    inline bool KTSliceHeader::GetIsNewAcquisition() const
     {
         return fIsNewAcquisition;
     }
 
-    inline void KTSliceHeader::SetIsNewAcquisition(Bool_t flag)
+    inline void KTSliceHeader::SetIsNewAcquisition(bool flag)
     {
         fIsNewAcquisition = flag;
         return;

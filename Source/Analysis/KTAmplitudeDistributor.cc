@@ -67,7 +67,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTAmplitudeDistributor::Configure(const KTPStoreNode* node)
+    bool KTAmplitudeDistributor::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -91,7 +91,7 @@ namespace Katydid
 
         SetDistNBins(node->GetData< unsigned >("dist-n-bins", fDistNBins));
 
-        SetUseBuffer(node->GetData< Bool_t >("use-buffers", fUseBuffer));
+        SetUseBuffer(node->GetData< bool >("use-buffers", fUseBuffer));
 
         if (node->HasData("buffer-size"))
         {
@@ -110,7 +110,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::Initialize(unsigned nComponents, unsigned nFreqBins)
+    bool KTAmplitudeDistributor::Initialize(unsigned nComponents, unsigned nFreqBins)
     {
         fNComponents = nComponents;
         fNFreqBins = nFreqBins;
@@ -159,37 +159,37 @@ namespace Katydid
     }
 
 
-    Bool_t KTAmplitudeDistributor::AddValues(KTFrequencySpectrumDataPolar& data)
+    bool KTAmplitudeDistributor::AddValues(KTFrequencySpectrumDataPolar& data)
     {
         return CoreAddValues(data);
     }
 
-    Bool_t KTAmplitudeDistributor::AddValues(KTFrequencySpectrumDataFFTW& data)
+    bool KTAmplitudeDistributor::AddValues(KTFrequencySpectrumDataFFTW& data)
     {
         return CoreAddValues(data);
     }
 
-    Bool_t KTAmplitudeDistributor::AddValues(KTNormalizedFSDataPolar& data)
+    bool KTAmplitudeDistributor::AddValues(KTNormalizedFSDataPolar& data)
     {
         return CoreAddValues(data);
     }
 
-    Bool_t KTAmplitudeDistributor::AddValues(KTNormalizedFSDataFFTW& data)
+    bool KTAmplitudeDistributor::AddValues(KTNormalizedFSDataFFTW& data)
     {
         return CoreAddValues(data);
     }
 
-    Bool_t KTAmplitudeDistributor::AddValues(KTCorrelationData& data)
+    bool KTAmplitudeDistributor::AddValues(KTCorrelationData& data)
     {
         return CoreAddValues(data);
     }
 
-    Bool_t KTAmplitudeDistributor::AddValues(KTWignerVilleData& data)
+    bool KTAmplitudeDistributor::AddValues(KTWignerVilleData& data)
     {
         return CoreAddValues(data);
     }
 
-    Bool_t KTAmplitudeDistributor::CoreAddValues(KTFrequencySpectrumDataFFTWCore& data)
+    bool KTAmplitudeDistributor::CoreAddValues(KTFrequencySpectrumDataFFTWCore& data)
     {
         if (fCalculateMinBin)
         {
@@ -235,7 +235,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::CoreAddValues(KTFrequencySpectrumDataPolarCore& data)
+    bool KTAmplitudeDistributor::CoreAddValues(KTFrequencySpectrumDataPolarCore& data)
     {
         if (fCalculateMinBin)
         {
@@ -282,7 +282,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, unsigned component)
+    bool KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, unsigned component)
     {
         if (fNSlicesProcessed == fBufferSize)
         {
@@ -307,7 +307,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, unsigned component)
+    bool KTAmplitudeDistributor::TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, unsigned component)
     {
         for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
@@ -316,7 +316,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, unsigned component)
+    bool KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, unsigned component)
     {
         if (fNSlicesProcessed == fBufferSize)
         {
@@ -341,7 +341,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, unsigned component)
+    bool KTAmplitudeDistributor::TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, unsigned component)
     {
         for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
@@ -351,7 +351,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTAmplitudeDistributor::CreateDistributionsFromBuffer()
+    bool KTAmplitudeDistributor::CreateDistributionsFromBuffer()
     {
         if (fBuffer.size() == 0)
         {

@@ -86,7 +86,7 @@ namespace Katydid
             KTWignerVille(const std::string& name = "wigner-ville");
             virtual ~KTWignerVille();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);
@@ -102,8 +102,8 @@ namespace Katydid
             unsigned GetNWindowsToAverage() const;
             void SetNWindowsToAverage(unsigned nAvg);
 
-            Bool_t GetUseWindowFunction() const;
-            void SetUseWindowFunction(Bool_t flag);
+            bool GetUseWindowFunction() const;
+            void SetUseWindowFunction(bool flag);
 
             KTWindower* GetWindower();
             const KTWindower* GetWindower() const;
@@ -123,13 +123,13 @@ namespace Katydid
 
         public:
             /// Performs the W-V transform on the given time series data.
-            Bool_t TransformData(KTTimeSeriesData& data, KTSliceHeader& header);
+            bool TransformData(KTTimeSeriesData& data, KTSliceHeader& header);
             /// Performs the WV transform on the given analytic associate data.
-            Bool_t TransformData(KTAnalyticAssociateData& data, KTSliceHeader& header);
+            bool TransformData(KTAnalyticAssociateData& data, KTSliceHeader& header);
 
         private:
             template< class XDataType >
-            Bool_t TransformFFTWBasedData(XDataType& data, KTSliceHeader& header);
+            bool TransformFFTWBasedData(XDataType& data, KTSliceHeader& header);
 
             //void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, unsigned offset);
             // TODO: remove iWindow argument
@@ -139,17 +139,17 @@ namespace Katydid
             KTSliceHeader fFirstHeader;
             KTSliceHeader fSecondHeader;
 
-            Bool_t fReceivedLastData;
+            bool fReceivedLastData;
 
             std::vector< Buffer > fBuffer;
             unsigned fSliceSampleOffset;
-            Bool_t fAdvanceStartIteratorOnNewSlice;
+            bool fAdvanceStartIteratorOnNewSlice;
 
             std::vector< Buffer::iterator > fSliceBreak;
 
             KTTimeSeriesFFTW* fInputArray;
 
-            Bool_t fUseWindowFunction;
+            bool fUseWindowFunction;
             KTWindower* fWindower;
 
             KTComplexFFTW* fFFT;
@@ -243,12 +243,12 @@ namespace Katydid
         return;
     }
 
-    inline Bool_t KTWignerVille::GetUseWindowFunction() const
+    inline bool KTWignerVille::GetUseWindowFunction() const
     {
         return fUseWindowFunction;
     }
 
-    inline void KTWignerVille::SetUseWindowFunction(Bool_t flag)
+    inline void KTWignerVille::SetUseWindowFunction(bool flag)
     {
         fUseWindowFunction = flag;
         return;
@@ -275,7 +275,7 @@ namespace Katydid
     }
 
     template< class XDataType >
-    Bool_t KTWignerVille::TransformFFTWBasedData(XDataType& data, KTSliceHeader& header)
+    bool KTWignerVille::TransformFFTWBasedData(XDataType& data, KTSliceHeader& header)
     {
             //if (fPairs.empty())
             //{
@@ -325,7 +325,7 @@ namespace Katydid
             fSecondHeader.CopySliceHeaderOnly(header);
 
             // check if the data that just arrived is from a new acquisition
-            Bool_t localIsNewAcquisition = false;
+            bool localIsNewAcquisition = false;
             if (header.GetIsNewAcquisition())
             {
                 localIsNewAcquisition = true;
@@ -370,10 +370,10 @@ namespace Katydid
             }
 
             // This is declared outside of the buffer loop so that after the loop we know which slice the last window started in
-            Bool_t windowStartInFirstSlice = false;
+            bool windowStartInFirstSlice = false;
 
             // loop over the buffer until we get too close to the end to fit another window
-            Bool_t exitBufferLoop = false;
+            bool exitBufferLoop = false;
             while (! exitBufferLoop)
             {
                 KTDEBUG(wvlog, "Slice sample offset: " << fSliceSampleOffset);

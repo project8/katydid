@@ -34,7 +34,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
+    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -46,7 +46,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTGaussianNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
+    bool KTGaussianNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
     {
         //const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
         const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();

@@ -52,7 +52,7 @@ namespace Katydid
         delete fMonarch;
     }
 
-    Bool_t KTEggWriter::Configure(const KTPStoreNode* node)
+    bool KTEggWriter::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -81,7 +81,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTEggWriter::OpenFile()
+    bool KTEggWriter::OpenFile()
     {
         if (fFileStatus != kClosed)
         {
@@ -186,7 +186,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTEggWriter::WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData)
+    bool KTEggWriter::WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData)
     {
         if (fFileStatus == kClosed)
         {
@@ -234,7 +234,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTEggWriter::CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
+    bool KTEggWriter::CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
     {
         const KTTimeSeries* ts = tsData.GetTimeSeries(component);
         if (ts->GetNTimeBins() != fExpectedRecordSize)

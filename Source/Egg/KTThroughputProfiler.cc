@@ -55,9 +55,9 @@ namespace Katydid
     {
     };
 
-    Bool_t KTThroughputProfiler::Configure(const KTPStoreNode* node)
+    bool KTThroughputProfiler::Configure(const KTPStoreNode* node)
     {
-        SetOutputFileFlag(node->GetData< Bool_t >("output-file-flag", fOutputFileFlag));
+        SetOutputFileFlag(node->GetData< bool >("output-file-flag", fOutputFileFlag));
         SetOutputFilename(node->GetData< string >("output-filename-base", fOutputFilename));
 
         return true;

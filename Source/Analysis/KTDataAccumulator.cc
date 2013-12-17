@@ -45,7 +45,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTDataAccumulator::Configure(const KTPStoreNode* node)
+    bool KTDataAccumulator::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -55,7 +55,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTDataAccumulator::AddData(KTTimeSeriesData& data)
+    bool KTDataAccumulator::AddData(KTTimeSeriesData& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTTimeSeriesData >();
         KTTimeSeriesData& accData = accDataStruct.fData->Of<KTTimeSeriesData>();
@@ -69,21 +69,21 @@ namespace Katydid
         }
     }
 
-    Bool_t KTDataAccumulator::AddData(KTFrequencySpectrumDataPolar& data)
+    bool KTDataAccumulator::AddData(KTFrequencySpectrumDataPolar& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataPolar >();
         KTFrequencySpectrumDataPolar& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataPolar>();
         return CoreAddData(data, accDataStruct, accData);
     }
 
-    Bool_t KTDataAccumulator::AddData(KTFrequencySpectrumDataFFTW& data)
+    bool KTDataAccumulator::AddData(KTFrequencySpectrumDataFFTW& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataFFTW >();
         KTFrequencySpectrumDataFFTW& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataFFTW>();
         return CoreAddData(data, accDataStruct, accData);
     }
 
-    Bool_t KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
+    bool KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
         double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
@@ -135,7 +135,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
+    bool KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
         double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
@@ -186,7 +186,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
+    bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
     {
         double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
@@ -235,7 +235,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData)
+    bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData)
     {
         double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)

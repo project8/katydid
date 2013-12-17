@@ -68,7 +68,7 @@ namespace Katydid
             void InitializeMultithreaded();
 
             static unsigned sInstanceCount;
-            static Bool_t sMultithreadedIsInitialized;
+            static bool sMultithreadedIsInitialized;
     };
 
 

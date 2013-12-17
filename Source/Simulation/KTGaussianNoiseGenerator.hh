@@ -52,7 +52,7 @@ namespace Katydid
             KTGaussianNoiseGenerator(const std::string& name = "gaussian-noise-generator");
             virtual ~KTGaussianNoiseGenerator();
 
-            virtual Bool_t ConfigureDerivedGenerator(const KTPStoreNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTPStoreNode* node);
 
             double GetMean() const;
             void SetMean(double mean);
@@ -64,7 +64,7 @@ namespace Katydid
             KTRNGGaussian<> fRNG;
 
         public:
-            virtual Bool_t GenerateTS(KTTimeSeriesData& data);
+            virtual bool GenerateTS(KTTimeSeriesData& data);
 
     };
 

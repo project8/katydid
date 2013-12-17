@@ -61,7 +61,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSpectrumDiscriminator::Configure(const KTPStoreNode* node)
+    bool KTSpectrumDiscriminator::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -99,43 +99,43 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataPolar& data)
+    bool KTSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataPolar& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
         return CoreDiscriminate(data, newData);
     }
 
-    Bool_t KTSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataFFTW& data)
+    bool KTSpectrumDiscriminator::Discriminate(KTFrequencySpectrumDataFFTW& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
         return CoreDiscriminate(data, newData);
     }
 
-    Bool_t KTSpectrumDiscriminator::Discriminate(KTNormalizedFSDataPolar& data)
+    bool KTSpectrumDiscriminator::Discriminate(KTNormalizedFSDataPolar& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
         return CoreDiscriminate(data, newData);
     }
 
-    Bool_t KTSpectrumDiscriminator::Discriminate(KTNormalizedFSDataFFTW& data)
+    bool KTSpectrumDiscriminator::Discriminate(KTNormalizedFSDataFFTW& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
         return CoreDiscriminate(data, newData);
     }
 
-    Bool_t KTSpectrumDiscriminator::Discriminate(KTCorrelationData& data)
+    bool KTSpectrumDiscriminator::Discriminate(KTCorrelationData& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
         return CoreDiscriminate(data, newData);
     }
 
-    Bool_t KTSpectrumDiscriminator::Discriminate(KTWignerVilleData& data)
+    bool KTSpectrumDiscriminator::Discriminate(KTWignerVilleData& data)
     {
         KTDiscriminatedPoints1DData& newData = data.Of< KTDiscriminatedPoints1DData >().SetNComponents(data.GetNComponents());
         return CoreDiscriminate(data, newData);
     }
 
-    Bool_t KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData)
+    bool KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData)
     {
         if (fCalculateMinBin)
         {
@@ -228,7 +228,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData)
+    bool KTSpectrumDiscriminator::CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData)
     {
         if (fCalculateMinBin)
         {

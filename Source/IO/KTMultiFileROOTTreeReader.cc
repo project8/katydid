@@ -48,7 +48,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTMultiFileROOTTreeReader::Configure(const KTPStoreNode* node)
+    bool KTMultiFileROOTTreeReader::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node == NULL) return false;
@@ -71,7 +71,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileROOTTreeReader::AddDataType(const std::string& type, const std::string& treeName)
+    bool KTMultiFileROOTTreeReader::AddDataType(const std::string& type, const std::string& treeName)
     {
         if (type == "amp-dist")
         {
@@ -105,7 +105,7 @@ namespace Katydid
         return (TTree*)(file->Get(treeName.c_str()));
     }
 
-    Bool_t KTMultiFileROOTTreeReader::Run()
+    bool KTMultiFileROOTTreeReader::Run()
     {
         for (fFileIter = fFilenames.begin(); fFileIter != fFilenames.end(); fFileIter++)
         {
@@ -142,7 +142,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileROOTTreeReader::Append(KTData& data)
+    bool KTMultiFileROOTTreeReader::Append(KTData& data)
     {
         if (fFileIter == fFilenames.end())
         {
@@ -180,7 +180,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, KTData& appendToData)
+    bool KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, KTData& appendToData)
     {
         // Determine the number of components and the number of frequency bins
         unsigned nComponents = 0;

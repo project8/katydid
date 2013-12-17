@@ -381,7 +381,7 @@ namespace Katydid
         return newData;
     }
 
-    Bool_t KTEggReaderMonarch::CloseEgg()
+    bool KTEggReaderMonarch::CloseEgg()
     {
         try
         {

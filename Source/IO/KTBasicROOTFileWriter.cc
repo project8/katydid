@@ -34,7 +34,7 @@ namespace Katydid
         CloseFile();
     }
 
-    Bool_t KTBasicROOTFileWriter::Configure(const KTPStoreNode* node)
+    bool KTBasicROOTFileWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
@@ -46,7 +46,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTBasicROOTFileWriter::OpenAndVerifyFile()
+    bool KTBasicROOTFileWriter::OpenAndVerifyFile()
     {
         if (fFile == NULL)
         {

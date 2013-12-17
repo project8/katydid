@@ -32,7 +32,7 @@ using namespace Katydid;
 KTLOGGER(eggscan, "katydid.applications.main");
 
 static KTCommandLineOption< unsigned > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
-static KTCommandLineOption< Bool_t > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
+static KTCommandLineOption< bool > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
 
 int main(int argc, char** argv)
 {
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         reader = readerMonarch;
     }
 
-    Bool_t scanRecords = clOpts->IsCommandLineOptSet("scan-records");
+    bool scanRecords = clOpts->IsCommandLineOptSet("scan-records");
 
     //**************************
     // Doing-something phase

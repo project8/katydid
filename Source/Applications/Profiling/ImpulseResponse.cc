@@ -45,10 +45,10 @@ namespace Katydid
             KTImpulseAnalysis(const std::string& name = "impulse-analysis");
             virtual ~KTImpulseAnalysis();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            Bool_t Analyze(KTFrequencySpectrumDataPolar& fsData);
-            //Bool_t Analyze(KTFrequencySpectrumDataFFTW& fsData);
+            bool Analyze(KTFrequencySpectrumDataPolar& fsData);
+            //bool Analyze(KTFrequencySpectrumDataFFTW& fsData);
 
             //***************
             // Slots
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     }
 
     // Execute the run queue!
-    Bool_t success = procTB.Run();
+    bool success = procTB.Run();
 
     if (! success) return -4;
     return 0;
@@ -120,12 +120,12 @@ KTImpulseAnalysis::~KTImpulseAnalysis()
 {
 }
 
-Bool_t KTImpulseAnalysis::Configure(const KTPStoreNode*)
+bool KTImpulseAnalysis::Configure(const KTPStoreNode*)
 {
     return true;
 }
 
-Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
+bool KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
 {
     KTFrequencySpectrumPolar* fs = fsData.GetSpectrumPolar(0);
     unsigned size = fs->size();

@@ -30,7 +30,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTTestConfigurable::Configure(const KTPStoreNode* node)
+    bool KTTestConfigurable::Configure(const KTPStoreNode* node)
     {
         // Config-file options
         if (node != NULL)

@@ -39,16 +39,16 @@ namespace Katydid
     {
     }
 
-    Bool_t KTCompareCandidates::Configure(const KTPStoreNode* node)
+    bool KTCompareCandidates::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
-        SetAssumeSparseCandidates(node->GetData<Bool_t>("assume-sparse-candidates", fAssumeSparseCandidates));
+        SetAssumeSparseCandidates(node->GetData<bool>("assume-sparse-candidates", fAssumeSparseCandidates));
 
         return true;
     }
 
-    Bool_t KTCompareCandidates::CompareTruthAndAnalysis(KTMCTruthEvents& mcEventData, KTAnalysisCandidates& candidateData)
+    bool KTCompareCandidates::CompareTruthAndAnalysis(KTMCTruthEvents& mcEventData, KTAnalysisCandidates& candidateData)
     {
         const KTMCTruthEvents::EventSet& events = mcEventData.GetEvents();
         const KTAnalysisCandidates::CandidateSet& candidates = candidateData.GetCandidates();
@@ -84,7 +84,7 @@ namespace Katydid
         //ULong64_t candidateCorrectSampleSum = 0;
 
         unsigned eventCounter = 0;
-        Bool_t continueEventLoop = true;
+        bool continueEventLoop = true;
         unsigned candidateCounter = 0;
         KTAnalysisCandidates::CandidateSet::const_iterator candStartHere = candidates.begin();
         unsigned candidateCounterStart = 0;

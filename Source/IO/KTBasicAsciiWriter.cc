@@ -25,7 +25,7 @@ namespace Katydid {
   }
 
   // Configuration method
-  Bool_t KTBasicASCIIWriter::Configure(const KTPStoreNode* n) {
+  bool KTBasicASCIIWriter::Configure(const KTPStoreNode* n) {
     if (n != NULL) {
       fOutputFilename = n->GetData<std::string>("output-file",fOutputFilename);
       if( this->OpenFile() == false ) {
@@ -36,7 +36,7 @@ namespace Katydid {
     return true;
   }
 
-  Bool_t KTBasicASCIIWriter::OpenFile() {
+  bool KTBasicASCIIWriter::OpenFile() {
     fOutputStream = new std::ofstream(fOutputFilename.c_str(), std::ios_base::out);
     if( fOutputStream->is_open() == false ) {
       delete fOutputStream;

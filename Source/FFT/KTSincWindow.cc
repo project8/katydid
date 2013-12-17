@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSincWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTSincWindow::ConfigureWFSubclass(const KTPStoreNode*)
     {
         KTDEBUG(windowlog, "Sinc WF configured");
         return true;

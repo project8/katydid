@@ -36,20 +36,20 @@ namespace Katydid
         CloseFile();
     }
 
-    Bool_t KTJSONWriter::Configure(const KTPStoreNode* node)
+    bool KTJSONWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
             SetFilename(node->GetData<string>("output-file", fFilename));
             SetFileMode(node->GetData<string>("file-mode", fFileMode));
-            SetPrettyJSONFlag(node->GetData<Bool_t>("pretty-json", fPrettyJSONFlag));
+            SetPrettyJSONFlag(node->GetData<bool>("pretty-json", fPrettyJSONFlag));
         }
 
         return true;
     }
 
-    Bool_t KTJSONWriter::OpenFile()
+    bool KTJSONWriter::OpenFile()
     {
         CloseFile();
 
@@ -105,7 +105,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTJSONWriter::OpenAndVerifyFile()
+    bool KTJSONWriter::OpenAndVerifyFile()
     {
         if (fFileStream == NULL || fJSONMaker == NULL)
         {

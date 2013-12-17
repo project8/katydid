@@ -74,7 +74,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTMultiSliceClustering::ConfigureSubClass(const KTPStoreNode* node)
+    bool KTMultiSliceClustering::ConfigureSubClass(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -369,9 +369,9 @@ namespace Katydid
 
 
         // Make a bool for each active cluster to indicate whether or not it had frequency-bin clusters added to it from this frequency bin
-        vector< Bool_t > acHasBeenAddedTo(fActiveClusters[component].size(), false);
+        vector< bool > acHasBeenAddedTo(fActiveClusters[component].size(), false);
         // Make a bool for each active cluster to indicate if it has been merged with another cluster
-        vector< Bool_t > acHasBeenMergedElsewhere(fActiveClusters[component].size(), false);
+        vector< bool > acHasBeenMergedElsewhere(fActiveClusters[component].size(), false);
         // Make a vector of pairs to hold the frequency-axis ranges from the current frequency bin
         vector< pair< unsigned, unsigned > > acNewFreqRange(fActiveClusters[component].size());
 
@@ -661,7 +661,7 @@ namespace Katydid
         for (ListOfSpectra::const_iterator losIt = cluster.fPreClusterSpectra.begin(); losIt != cluster.fPreClusterSpectra.end(); ++losIt)
         {
             spectra[frameBin] = *losIt;
-            //KTDEBUG(sclog, "put spectrum in frame bin " << frameBin << ": " << Bool_t(spectra[frameBin]));
+            //KTDEBUG(sclog, "put spectrum in frame bin " << frameBin << ": " << bool(spectra[frameBin]));
             ++frameBin;
         }
         // Cluster bins
@@ -672,14 +672,14 @@ namespace Katydid
                 KTWARN(sclog, "Spectrum pointer is NULL! " << it->fSpectrumPtr.get());
             }
             spectra[it->fTimeBin - firstTimeBin + fNFramingTimeBins] = it->fSpectrumPtr;
-            //KTDEBUG(sclog, "put spectrum in frame bin " << it->fTimeBin - firstTimeBin + fNFramingTimeBins << ": " << Bool_t(spectra[it->fTimeBin - firstTimeBin + fNFramingTimeBins]));
+            //KTDEBUG(sclog, "put spectrum in frame bin " << it->fTimeBin - firstTimeBin + fNFramingTimeBins << ": " << bool(spectra[it->fTimeBin - firstTimeBin + fNFramingTimeBins]));
         }
         // Post-cluster frame bins
         frameBin = lastTimeBin - firstTimeBin + 1 + fNFramingTimeBins;
         for (ListOfSpectra::const_iterator losIt = cluster.fPostClusterSpectra.begin(); losIt != cluster.fPostClusterSpectra.end(); ++losIt)
         {
             spectra[frameBin] = *losIt;
-            //KTDEBUG(sclog, "put spectrum in frame bin " << frameBin << ": " << Bool_t(spectra[frameBin]));
+            //KTDEBUG(sclog, "put spectrum in frame bin " << frameBin << ": " << bool(spectra[frameBin]));
             ++frameBin;
         }
 

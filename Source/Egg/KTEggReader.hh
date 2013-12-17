@@ -27,7 +27,7 @@ namespace Katydid
         public:
             virtual KTEggHeader* BreakEgg(const std::string&) = 0;
             virtual KTDataPtr HatchNextSlice() = 0;
-            virtual Bool_t CloseEgg() = 0;
+            virtual bool CloseEgg() = 0;
 
             virtual unsigned GetNSlicesProcessed() const = 0;
             virtual unsigned GetNRecordsProcessed() const = 0;

@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHammingWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTHammingWindow::ConfigureWFSubclass(const KTPStoreNode*)
     {
         KTDEBUG(windowlog, "Hamming WF configured");
         return true;

@@ -61,7 +61,7 @@ namespace Katydid
             KTPolyphaseFilterBank(const std::string& name = "polyphase-filter-bank");
             virtual ~KTPolyphaseFilterBank();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             unsigned GetNSubsets() const;
             void SetNSubsets(unsigned subsets);
@@ -74,13 +74,13 @@ namespace Katydid
             unsigned fSubsetSize;
 
         public:
-            Bool_t InitializeWindow();
+            bool InitializeWindow();
             void InitializeWithHeader(const KTEggHeader* header);
 
             /// Apply the PFB to the data object's time series (real-type)
-            Bool_t ProcessDataReal(const KTTimeSeriesData& tsData);
+            bool ProcessDataReal(const KTTimeSeriesData& tsData);
             /// Apply the PFB to the data object's time series (fftw-type)
-            Bool_t ProcessDataFFTW(const KTTimeSeriesData& tsData);
+            bool ProcessDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Create a new data object for the filtered time series (real-type)
             KTDataPtr CreateFilteredDataReal(const KTTimeSeriesData& tsData);
@@ -93,7 +93,7 @@ namespace Katydid
             KTTimeSeriesFFTW* ApplyPFB(const KTTimeSeriesFFTW* data) const;
 
         private:
-            Bool_t TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader);
+            bool TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader);
 
             //***************
             // Signals

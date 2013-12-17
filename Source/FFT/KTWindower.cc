@@ -40,7 +40,7 @@ namespace Katydid
         delete fWindowFunction;
     }
 
-    Bool_t KTWindower::Configure(const KTPStoreNode* node)
+    bool KTWindower::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
@@ -69,7 +69,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTWindower::SelectWindowFunction(const string& windowType)
+    bool KTWindower::SelectWindowFunction(const string& windowType)
     {
         KTWindowFunction* tempWF = KTNOFactory< KTWindowFunction >::GetInstance()->Create(windowType);
         if (tempWF == NULL)
@@ -81,7 +81,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTWindower::InitializeWindow(double binWidth, double size)
+    bool KTWindower::InitializeWindow(double binWidth, double size)
     {
         fWindowFunction->SetBinWidth(binWidth);
         fWindowFunction->SetSize(size);
@@ -100,7 +100,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTWindower::WindowDataReal(KTTimeSeriesData& tsData)
+    bool KTWindower::WindowDataReal(KTTimeSeriesData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != fWindowFunction->GetSize())
         {
@@ -118,7 +118,7 @@ namespace Katydid
                 return false;
             }
 
-            Bool_t result = ApplyWindow(nextInput);
+            bool result = ApplyWindow(nextInput);
 
             if (! result)
             {
@@ -132,7 +132,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTWindower::WindowDataFFTW(KTTimeSeriesData& tsData)
+    bool KTWindower::WindowDataFFTW(KTTimeSeriesData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != fWindowFunction->GetSize())
         {
@@ -150,7 +150,7 @@ namespace Katydid
                 return false;
             }
 
-            Bool_t result = ApplyWindow(nextInput);
+            bool result = ApplyWindow(nextInput);
 
             if (! result)
             {
@@ -164,7 +164,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTWindower::ApplyWindow(KTTimeSeriesReal* ts) const
+    bool KTWindower::ApplyWindow(KTTimeSeriesReal* ts) const
     {
         unsigned nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
@@ -182,7 +182,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTWindower::ApplyWindow(KTTimeSeriesFFTW* ts) const
+    bool KTWindower::ApplyWindow(KTTimeSeriesFFTW* ts) const
     {
         unsigned nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())

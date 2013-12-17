@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTRectangularWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    bool KTRectangularWindow::ConfigureWFSubclass(const KTPStoreNode* node)
     {
         SetBoxcarSize(node->GetData< unsigned >("boxcar-size", fBoxcarSize));
 

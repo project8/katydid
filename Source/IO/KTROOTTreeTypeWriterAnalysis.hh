@@ -50,8 +50,8 @@ namespace Katydid
             TTree* GetAmplitudeDistributionTree() const;
 
         private:
-            Bool_t SetupDiscriminatedPoints1DTree();
-            Bool_t SetupAmplitudeDistributionTree();
+            bool SetupDiscriminatedPoints1DTree();
+            bool SetupAmplitudeDistributionTree();
 
             TTree* fDiscPoints1DTree;
             TTree* fAmpDistTree;

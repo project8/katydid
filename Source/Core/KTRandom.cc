@@ -26,7 +26,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTRNGEngine::Configure(const KTPStoreNode* node)
+    bool KTRNGEngine::Configure(const KTPStoreNode* node)
     {
         if (node->HasData("seed"))
         {

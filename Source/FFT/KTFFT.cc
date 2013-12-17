@@ -58,6 +58,6 @@ namespace Katydid
 
 
     unsigned KTFFTW::sInstanceCount = 0;
-    Bool_t KTFFTW::sMultithreadedIsInitialized = false;
+    bool KTFFTW::sMultithreadedIsInitialized = false;
 
 } /* namespace Katydid */

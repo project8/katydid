@@ -39,7 +39,7 @@ namespace Katydid
         ClearProcessors();
     }
 
-    Bool_t KTProcessorToolbox::Configure(const KTPStoreNode* node)
+    bool KTProcessorToolbox::Configure(const KTPStoreNode* node)
     {
         KTPROG(proclog, "Configuring . . .");
         // Deal with "processor" blocks first
@@ -71,10 +71,10 @@ namespace Katydid
                 return false;
             }
 
-            Bool_t isTopLevel = false;
+            bool isTopLevel = false;
             if (subNode.HasData("is-top-level"))
             {
-                isTopLevel = subNode.GetData< Bool_t >("is-top-level");
+                isTopLevel = subNode.GetData< bool >("is-top-level");
             }
 
             if (! AddProcessor(procName, newProc))
@@ -146,7 +146,7 @@ namespace Katydid
             string signalName = subNode.GetData("signal-name");
             string slotName = subNode.GetData("slot-name");
 
-            Bool_t useGroupOrdering = false;
+            bool useGroupOrdering = false;
             Int_t groupOrder = 0;
             if (subNode.HasData("group-order"))
             {
@@ -213,7 +213,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTProcessorToolbox::ConfigureProcessors(const KTPStoreNode* node)
+    bool KTProcessorToolbox::ConfigureProcessors(const KTPStoreNode* node)
     {
         for (ProcMapIt iter = fProcMap.begin(); iter != fProcMap.end(); iter++)
         {
@@ -248,7 +248,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTProcessorToolbox::Run()
+    bool KTProcessorToolbox::Run()
     {
         KTPROG(proclog, "Beginning processing . . .");
 #ifndef SINGLETHREADED
@@ -307,7 +307,7 @@ namespace Katydid
         return it->second.fProc;
     }
 
-    Bool_t KTProcessorToolbox::AddProcessor(const std::string& procName, KTProcessor* proc)
+    bool KTProcessorToolbox::AddProcessor(const std::string& procName, KTProcessor* proc)
     {
         ProcMapIt it = fProcMap.find(procName);
         if (it == fProcMap.end())
@@ -322,7 +322,7 @@ namespace Katydid
         return false;
     }
 
-    Bool_t KTProcessorToolbox::RemoveProcessor(const std::string& procName)
+    bool KTProcessorToolbox::RemoveProcessor(const std::string& procName)
     {
         KTProcessor* procToRemove = ReleaseProcessor(procName);
         if (procToRemove == NULL)

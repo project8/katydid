@@ -88,7 +88,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTROOTTreeTypeWriterAnalysis::SetupDiscriminatedPoints1DTree()
+    bool KTROOTTreeTypeWriterAnalysis::SetupDiscriminatedPoints1DTree()
     {
         fDiscPoints1DTree = new TTree("discPoints1D", "Discriminated Points 1D");
         if (fDiscPoints1DTree == NULL)
@@ -153,7 +153,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTROOTTreeTypeWriterAnalysis::SetupAmplitudeDistributionTree()
+    bool KTROOTTreeTypeWriterAnalysis::SetupAmplitudeDistributionTree()
     {
         fAmpDistTree = new TTree("freqCand", "Frequency Analysis");
         if (fAmpDistTree == NULL)

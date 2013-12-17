@@ -80,16 +80,16 @@ namespace Katydid
             KTComplexFFTW(const std::string& name = "complex-fftw");
             virtual ~KTComplexFFTW();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             void InitializeFFT();
             void InitializeWithHeader(const KTEggHeader* header);
 
             /// Forward FFT
-            Bool_t TransformData(KTTimeSeriesData& tsData);
-            Bool_t TransformData(KTAnalyticAssociateData& aaData);
+            bool TransformData(KTTimeSeriesData& tsData);
+            bool TransformData(KTAnalyticAssociateData& aaData);
             /// Reverse FFT
-            Bool_t TransformData(KTFrequencySpectrumDataFFTW& fsData);
+            bool TransformData(KTFrequencySpectrumDataFFTW& fsData);
 
             /// Forward FFT
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* ts) const;
@@ -105,8 +105,8 @@ namespace Katydid
             virtual double GetMaxFrequency(double timeBinWidth) const;
 
             const std::string& GetTransformFlag() const;
-            Bool_t GetIsInitialized() const;
-            Bool_t GetUseWisdom() const;
+            bool GetIsInitialized() const;
+            bool GetUseWisdom() const;
             const std::string& GetWisdomFilename() const;
 
             /// note: SetSize creates a new fTransform.
@@ -115,7 +115,7 @@ namespace Katydid
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
-            void SetUseWisdom(Bool_t flag);
+            void SetUseWisdom(bool flag);
             void SetWisdomFilename(const std::string& fname);
 
         protected:
@@ -133,8 +133,8 @@ namespace Katydid
             std::string fTransformFlag;
             TransformFlagMap fTransformFlagMap;
 
-            Bool_t fIsInitialized;
-            Bool_t fUseWisdom;
+            bool fIsInitialized;
+            bool fUseWisdom;
             std::string fWisdomFilename;
 
             //***************
@@ -195,12 +195,12 @@ namespace Katydid
         return fTransformFlag;
     }
 
-    inline Bool_t KTComplexFFTW::GetIsInitialized() const
+    inline bool KTComplexFFTW::GetIsInitialized() const
     {
         return fIsInitialized;
     }
 
-    inline Bool_t KTComplexFFTW::GetUseWisdom() const
+    inline bool KTComplexFFTW::GetUseWisdom() const
     {
         return fUseWisdom;
     }
@@ -210,7 +210,7 @@ namespace Katydid
         return fWisdomFilename;
     }
 
-    inline void KTComplexFFTW::SetUseWisdom(Bool_t flag)
+    inline void KTComplexFFTW::SetUseWisdom(bool flag)
     {
         fUseWisdom = flag;
         return;

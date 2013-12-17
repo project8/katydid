@@ -69,7 +69,7 @@ namespace Katydid
         }
     }
 
-    Bool_t KTWignerVille::Configure(const KTPStoreNode* node)
+    bool KTWignerVille::Configure(const KTPStoreNode* node)
     {
         const KTPStoreNode fftNode = node->GetChild("complex-fftw");
         if (fftNode.IsValid())
@@ -203,12 +203,12 @@ namespace Katydid
         return Initialize(header->GetAcquisitionRate(), header->GetNChannels(), header->GetSliceSize());
     }
 
-    Bool_t KTWignerVille::TransformData(KTTimeSeriesData& data, KTSliceHeader& header)
+    bool KTWignerVille::TransformData(KTTimeSeriesData& data, KTSliceHeader& header)
     {
         return TransformFFTWBasedData(data, header);
     }
 
-    Bool_t KTWignerVille::TransformData(KTAnalyticAssociateData& data, KTSliceHeader& header)
+    bool KTWignerVille::TransformData(KTAnalyticAssociateData& data, KTSliceHeader& header)
     {
         return TransformFFTWBasedData(data, header);
     }

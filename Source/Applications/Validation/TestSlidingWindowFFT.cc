@@ -43,7 +43,7 @@ int main(int argc, char** argv)
         return 0;
     }
     string filename(argv[1]);
-    Bool_t UseFFTW = false;
+    bool UseFFTW = false;
     if (argc > 2)
     {
         UseFFTW = string(argv[2]) == "fftw";

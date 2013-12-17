@@ -46,7 +46,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHoughTransform::Configure(const KTPStoreNode* node)
+    bool KTHoughTransform::Configure(const KTPStoreNode* node)
     {
         SetNThetaPoints(node->GetData< unsigned >("n-theta-points", fNThetaPoints));
         SetNRPoints(node->GetData< unsigned >("n-r-points", fNRPoints));
@@ -54,7 +54,7 @@ namespace Katydid
         return true;
     }
 /*
-    Bool_t KTHoughTransform::TransformData(KTSlidingWindowFSDataFFTW& data)
+    bool KTHoughTransform::TransformData(KTSlidingWindowFSDataFFTW& data)
     {
         KTHoughData* newData = new KTHoughData(data->GetNComponents());
 
@@ -138,7 +138,7 @@ namespace Katydid
     }
 */
 
-    Bool_t KTHoughTransform::TransformData(KTDiscriminatedPoints2DData& data)
+    bool KTHoughTransform::TransformData(KTDiscriminatedPoints2DData& data)
     {
         unsigned nComponents = data.GetNComponents();
         KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(nComponents);

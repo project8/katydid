@@ -47,7 +47,7 @@ namespace Katydid
             KTDistanceClustering(const std::string& name = "distance-clustering");
             virtual ~KTDistanceClustering();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             double GetMaxFrequencyDistance() const;
             void SetMaxFrequencyDistance(double freq);
@@ -59,10 +59,10 @@ namespace Katydid
 
             double fMaxFrequencyDistance;
             unsigned fMaxBinDistance;
-            Bool_t fCalculateMaxBinDistance;
+            bool fCalculateMaxBinDistance;
 
         public:
-            Bool_t FindClusters(KTDiscriminatedPoints1DData& data);
+            bool FindClusters(KTDiscriminatedPoints1DData& data);
             //KTCluster2DData* FindClusters(const KTDiscriminatedPoints2DData* data);
 
             //***************

@@ -45,7 +45,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTWindowFunction::Configure(const KTPStoreNode* node)
+    bool KTWindowFunction::Configure(const KTPStoreNode* node)
     {
         return ConfigureWFSubclass(node);
     }

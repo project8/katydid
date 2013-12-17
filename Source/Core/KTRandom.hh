@@ -45,8 +45,8 @@ namespace Katydid
         public:
             using KTSelfConfigurable::Configure;
 
-            virtual Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t IsReady() const;
+            virtual bool Configure(const KTPStoreNode* node);
+            virtual bool IsReady() const;
 
             virtual void SetSeed(unsigned seed);
 
@@ -56,7 +56,7 @@ namespace Katydid
             generator_type fGenerator;
     };
 
-    inline Bool_t KTRNGEngine::IsReady() const
+    inline bool KTRNGEngine::IsReady() const
     {
         return true;
     }
@@ -112,8 +112,8 @@ namespace Katydid
             Engine* fEngine;
 
         public:
-            virtual Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t ConfigureDistribution(const KTPStoreNode* node) = 0;
+            virtual bool Configure(const KTPStoreNode* node);
+            virtual bool ConfigureDistribution(const KTPStoreNode* node) = 0;
 
     };
 
@@ -131,7 +131,7 @@ namespace Katydid
     }
 
     template< class Engine >
-    inline Bool_t KTRNGDistribution< Engine >::Configure(const KTPStoreNode* node)
+    inline bool KTRNGDistribution< Engine >::Configure(const KTPStoreNode* node)
     {
         return this->ConfigureDistribution(node);
     }
@@ -167,7 +167,7 @@ namespace Katydid
 
         inline result_type operator()() {return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());}
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode*)
+        inline virtual bool ConfigureDistribution(const KTPStoreNode*)
         {
             return true;
         }
@@ -212,7 +212,7 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(min, max));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTPStoreNode* node)
         {
             input_type min = node->GetData< input_type >("min", this->a());
             input_type max = node->GetData< input_type >("max", this->b());
@@ -262,7 +262,7 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean, sigma));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTPStoreNode* node)
         {
             input_type mean = node->GetData< input_type >("mean", this->mean());
             input_type sigma = node->GetData< input_type >("sigma", this->sigma());
@@ -311,7 +311,7 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTPStoreNode* node)
         {
             input_type mean = node->GetData< input_type >("mean", this->mean());
             this->param(param_type(mean));
@@ -359,7 +359,7 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(lambda));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTPStoreNode* node)
         {
             input_type lambda = node->GetData< input_type >("lambda", this->lambda());
             this->param(param_type(lambda));
@@ -407,7 +407,7 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(n));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTPStoreNode* node)
         {
             input_type n = node->GetData< input_type >("n", this->n());
             this->param(param_type(n));

@@ -70,7 +70,7 @@ namespace Katydid
 
             KTPStoreNode& operator=(const KTPStoreNode& rhs);
 
-            Bool_t IsValid() const;
+            bool IsValid() const;
 
             /// Returns an iterator to the beginning of the node, preserving the order of insertion.
             const_iterator Begin() const;
@@ -107,7 +107,7 @@ namespace Katydid
             //UIntPair GetValue() const;
 
             /// Returns true if an immediate-child exists with name dataName, and that child contains data (non-recursive).
-            Bool_t HasData(const std::string& dataName) const;
+            bool HasData(const std::string& dataName) const;
 
             /// Returns data with name dataName as a string.
             /// If a child with name dataName doesn't exist, or the child does not contain data, throws a KTPStoreNodeDataNotFound exception.
@@ -143,7 +143,7 @@ namespace Katydid
 
     };
 
-    inline Bool_t KTPStoreNode::IsValid() const
+    inline bool KTPStoreNode::IsValid() const
     {
         return fTree == NULL ? false : true;
     }

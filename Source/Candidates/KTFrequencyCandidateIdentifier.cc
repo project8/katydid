@@ -44,36 +44,36 @@ namespace Katydid
     {
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::Configure(const KTPStoreNode*)
+    bool KTFrequencyCandidateIdentifier::Configure(const KTPStoreNode*)
     {
         return true;
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataPolar& fsData)
+    bool KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataPolar& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataFFTW& fsData)
+    bool KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataFFTW& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataPolar& fsData)
+    bool KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataPolar& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataFFTW& fsData)
+    bool KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataFFTW& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTCorrelationData& fsData)
+    bool KTFrequencyCandidateIdentifier::IdentifyCandidates(KTCluster1DData& clusterData, KTCorrelationData& fsData)
     {
         KTFrequencyCandidateData& fcData = clusterData.Of< KTFrequencyCandidateData >().SetNComponents(clusterData.GetNComponents());
         return CoreIdentifyCandidates(clusterData, fsData, fcData);
@@ -171,7 +171,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTFrequencyCandidateIdentifier::CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolarCore& fsData, KTFrequencyCandidateData& fcData)
+    bool KTFrequencyCandidateIdentifier::CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolarCore& fsData, KTFrequencyCandidateData& fcData)
     {
         if (clusterData.GetBinWidth() != fsData.GetSpectrumPolar(0)->GetBinWidth())
         {
@@ -197,7 +197,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTFrequencyCandidateIdentifier::CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTWCore& fsData, KTFrequencyCandidateData& fcData)
+    bool KTFrequencyCandidateIdentifier::CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTWCore& fsData, KTFrequencyCandidateData& fcData)
     {
         if (clusterData.GetBinWidth() != fsData.GetSpectrumFFTW(0)->GetBinWidth())
         {

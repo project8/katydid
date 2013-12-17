@@ -61,14 +61,14 @@ namespace Katydid
         fftw_destroy_plan(fReversePlan);
     }
 
-    Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
+    bool KTSimpleFFT::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
             SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
 
-            SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
+            SetUseWisdom(node->GetData<bool>("use-wisdom", fUseWisdom));
             SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
         }
 
@@ -148,7 +148,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTSimpleFFT::TransformData(KTTimeSeriesData& tsData)
+    bool KTSimpleFFT::TransformData(KTTimeSeriesData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
@@ -188,7 +188,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSimpleFFT::TransformData(KTFrequencySpectrumDataPolar& fsData)
+    bool KTSimpleFFT::TransformData(KTFrequencySpectrumDataPolar& fsData)
     {
         if (fsData.GetSpectrumPolar(0)->GetNFrequencyBins() != GetFrequencySize())
         {
@@ -229,7 +229,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSimpleFFT::TransformData(KTCorrelationData& fsData)
+    bool KTSimpleFFT::TransformData(KTCorrelationData& fsData)
     {
         if (fsData.GetSpectrumPolar(0)->GetNFrequencyBins() != GetFrequencySize())
         {

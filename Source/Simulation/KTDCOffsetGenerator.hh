@@ -53,7 +53,7 @@ namespace Katydid
             KTDCOffsetGenerator(const std::string& name = "dc-offset-generator");
             virtual ~KTDCOffsetGenerator();
 
-            virtual Bool_t ConfigureDerivedGenerator(const KTPStoreNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTPStoreNode* node);
 
             const std::vector< double >& GetOffsets() const;
             void SetOffset(unsigned component, double freq);
@@ -62,7 +62,7 @@ namespace Katydid
             std::vector< double > fOffsets;
 
         public:
-            virtual Bool_t GenerateTS(KTTimeSeriesData& data);
+            virtual bool GenerateTS(KTTimeSeriesData& data);
 
     };
 

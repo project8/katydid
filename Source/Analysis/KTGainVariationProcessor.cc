@@ -54,11 +54,11 @@ namespace Katydid
     {
     }
 
-    Bool_t KTGainVariationProcessor::Configure(const KTPStoreNode* node)
+    bool KTGainVariationProcessor::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
-        SetNormalize(node->GetData< Bool_t >("normalize", fNormalize));
+        SetNormalize(node->GetData< bool >("normalize", fNormalize));
 
         if (node->HasData("min-frequency"))
         {
@@ -83,25 +83,25 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data)
+    bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataPolar& data)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
         return CoreGainVarCalc(data, newData);
     }
 
-    Bool_t KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
+    bool KTGainVariationProcessor::CalculateGainVariation(KTFrequencySpectrumDataFFTW& data)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
         return CoreGainVarCalc(data, newData);
     }
 
-    Bool_t KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data)
+    bool KTGainVariationProcessor::CalculateGainVariation(KTCorrelationData& data)
     {
         KTGainVariationData& newData = data.Of< KTGainVariationData >().SetNComponents(data.GetNComponents());
         return CoreGainVarCalc(data, newData);
     }
 
-    Bool_t KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData)
+    bool KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData)
     {
         if (fCalculateMinBin)
         {
@@ -188,7 +188,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData)
+    bool KTGainVariationProcessor::CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData)
     {
         // Frequency spectra include negative and positive frequencies; this algorithm operates only on the positive frequencies.
         if (fCalculateMinBin)

@@ -78,7 +78,7 @@ namespace Katydid
             KTDataAccumulator(const std::string& name = "data-averager");
             virtual ~KTDataAccumulator();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             unsigned GetAccumulatorSize() const;
             double GetAveragingFrac() const;
@@ -93,9 +93,9 @@ namespace Katydid
             unsigned fSignalInterval;
 
         public:
-            Bool_t AddData(KTTimeSeriesData& data);
-            Bool_t AddData(KTFrequencySpectrumDataPolar& data);
-            Bool_t AddData(KTFrequencySpectrumDataFFTW& data);
+            bool AddData(KTTimeSeriesData& data);
+            bool AddData(KTFrequencySpectrumDataPolar& data);
+            bool AddData(KTFrequencySpectrumDataFFTW& data);
 
             const AccumulatorMap& GetAccumulators() const;
             template< class XDataType >
@@ -105,11 +105,11 @@ namespace Katydid
             template< class XDataType >
             Accumulator& GetOrCreateAccumulator();
 
-            Bool_t CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
-            Bool_t CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
+            bool CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
+            bool CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
 
-            Bool_t CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataPolarCore& avData);
-            Bool_t CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataFFTWCore& avData);
+            bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataPolarCore& avData);
+            bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataFFTWCore& avData);
 
             AccumulatorMap fDataMap;
 

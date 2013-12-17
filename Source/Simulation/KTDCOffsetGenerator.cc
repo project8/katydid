@@ -33,7 +33,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTDCOffsetGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
+    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -48,7 +48,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTDCOffsetGenerator::GenerateTS(KTTimeSeriesData& data)
+    bool KTDCOffsetGenerator::GenerateTS(KTTimeSeriesData& data)
     {
         const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 

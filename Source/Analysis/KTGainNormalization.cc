@@ -52,7 +52,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTGainNormalization::Configure(const KTPStoreNode* node)
+    bool KTGainNormalization::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -78,7 +78,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData)
+    bool KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData)
     {
         if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumPolar(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
@@ -111,7 +111,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTGainNormalization::Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData)
+    bool KTGainNormalization::Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData)
     {
         if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));

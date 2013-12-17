@@ -51,13 +51,13 @@ namespace Katydid
             KTJSONWriter(const std::string& name = "json-writer");
             virtual ~KTJSONWriter();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
         public:
-            Bool_t OpenFile();
+            bool OpenFile();
             void CloseFile();
 
-            Bool_t OpenAndVerifyFile();
+            bool OpenAndVerifyFile();
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
@@ -65,8 +65,8 @@ namespace Katydid
             const std::string& GetFileMode() const;
             void SetFileMode(const std::string& mode);
 
-            Bool_t GetPrettyJSONFlag() const;
-            void SetPrettyJSONFlag(Bool_t flag);
+            bool GetPrettyJSONFlag() const;
+            void SetPrettyJSONFlag(bool flag);
 
             KTJSONMaker< rapidjson::FileStream >* GetJSONMaker() const;
 
@@ -74,7 +74,7 @@ namespace Katydid
             std::string fFilename;
             std::string fFileMode;
 
-            Bool_t fPrettyJSONFlag;
+            bool fPrettyJSONFlag;
 
             FILE* fFile;
             rapidjson::FileStream* fFileStream;
@@ -105,11 +105,11 @@ namespace Katydid
         return;
     }
 
-    inline Bool_t KTJSONWriter::GetPrettyJSONFlag() const
+    inline bool KTJSONWriter::GetPrettyJSONFlag() const
     {
         return fPrettyJSONFlag;
     }
-    inline void KTJSONWriter::SetPrettyJSONFlag(Bool_t flag)
+    inline void KTJSONWriter::SetPrettyJSONFlag(bool flag)
     {
         fPrettyJSONFlag = flag;
         return;

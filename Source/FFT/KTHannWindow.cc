@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHannWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTHannWindow::ConfigureWFSubclass(const KTPStoreNode*)
     {
         KTDEBUG(windowlog, "Hann WF configured");
         return true;

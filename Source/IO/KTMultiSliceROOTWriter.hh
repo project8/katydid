@@ -36,14 +36,14 @@ namespace Katydid
             KTMultiSliceROOTWriter(const std::string& name = "multislice-root-writer");
             virtual ~KTMultiSliceROOTWriter();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);
             void CloseFile();
 
-            Bool_t GetUseTFile() const;
-            void SetUseTFile(Bool_t flag);
+            bool GetUseTFile() const;
+            void SetUseTFile(bool flag);
 
             const std::string& GetTFilename() const;
             void SetTFilename(const std::string& filename);
@@ -51,8 +51,8 @@ namespace Katydid
             const std::string& GetTFileFlag() const;
             void SetTFileFlag(const std::string& flag);
 
-            Bool_t GetUseGraphics() const;
-            void SetUseGraphics(Bool_t flag);
+            bool GetUseGraphics() const;
+            void SetUseGraphics(bool flag);
 
             const std::string& GetGraphicsFilePath() const;
             void SetGraphicsFilePath(const std::string& path);
@@ -65,14 +65,14 @@ namespace Katydid
 
             TFile* GetFile();
 
-            Bool_t OpenAndVerifyFile();
+            bool OpenAndVerifyFile();
 
         private:
-            Bool_t fUseTFile;
+            bool fUseTFile;
             std::string fTFilename;
             std::string fTFileFlag;
 
-            Bool_t fUseGraphics;
+            bool fUseGraphics;
             std::string fGraphicsFilePath;
             std::string fGraphicsFilenameBase;
             std::string fGraphicsFileType;
@@ -107,11 +107,11 @@ namespace Katydid
         return;
     }
 
-    inline Bool_t KTMultiSliceROOTWriter::GetUseTFile() const
+    inline bool KTMultiSliceROOTWriter::GetUseTFile() const
     {
         return fUseTFile;
     }
-    inline void KTMultiSliceROOTWriter::SetUseTFile(Bool_t flag)
+    inline void KTMultiSliceROOTWriter::SetUseTFile(bool flag)
     {
         fUseTFile = flag;
         return;
@@ -137,11 +137,11 @@ namespace Katydid
         return;
     }
 
-    inline Bool_t KTMultiSliceROOTWriter::GetUseGraphics() const
+    inline bool KTMultiSliceROOTWriter::GetUseGraphics() const
     {
         return fUseGraphics;
     }
-    inline void KTMultiSliceROOTWriter::SetUseGraphics(Bool_t flag)
+    inline void KTMultiSliceROOTWriter::SetUseGraphics(bool flag)
     {
         fUseGraphics = flag;
         return;

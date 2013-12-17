@@ -61,8 +61,8 @@ namespace Katydid
             KTTSGenerator(const std::string& name = "default-ts-generator");
             virtual ~KTTSGenerator();
 
-            virtual Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t ConfigureDerivedGenerator(const KTPStoreNode* node) = 0;
+            virtual bool Configure(const KTPStoreNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTPStoreNode* node) = 0;
 
             unsigned GetNSlices() const;
             void SetNSlices(unsigned slices);
@@ -93,17 +93,17 @@ namespace Katydid
             TimeSeriesType fTimeSeriesType;
 
         public:
-            Bool_t Run();
+            bool Run();
 
             KTEggHeader* CreateEggHeader() const;
 
             KTDataPtr CreateNewData() const;
 
-            Bool_t AddSliceHeader(KTData& data) const;
+            bool AddSliceHeader(KTData& data) const;
 
-            Bool_t AddEmptySlice(KTData& data) const;
+            bool AddEmptySlice(KTData& data) const;
 
-            virtual Bool_t GenerateTS(KTTimeSeriesData& data) = 0;
+            virtual bool GenerateTS(KTTimeSeriesData& data) = 0;
 
             unsigned GetSliceCounter() const;
             void SetSliceCounter(unsigned slices);

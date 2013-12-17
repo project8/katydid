@@ -60,10 +60,10 @@ namespace Katydid
             KTGainVariationProcessor(const std::string& name = "gain-variation");
             virtual ~KTGainVariationProcessor();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            Bool_t GetNormalize() const;
-            void SetNormalize(Bool_t flag);
+            bool GetNormalize() const;
+            void SetNormalize(bool flag);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);
@@ -81,23 +81,23 @@ namespace Katydid
             void SetNFitPoints(unsigned nPoints);
 
         private:
-            Bool_t fNormalize;
+            bool fNormalize;
             double fMinFrequency;
             double fMaxFrequency;
             unsigned fMinBin;
             unsigned fMaxBin;
             unsigned fNFitPoints;
-            Bool_t fCalculateMinBin;
-            Bool_t fCalculateMaxBin;
+            bool fCalculateMinBin;
+            bool fCalculateMaxBin;
 
         public:
-            Bool_t CalculateGainVariation(KTFrequencySpectrumDataPolar& data);
-            Bool_t CalculateGainVariation(KTFrequencySpectrumDataFFTW& data);
-            Bool_t CalculateGainVariation(KTCorrelationData& data);
+            bool CalculateGainVariation(KTFrequencySpectrumDataPolar& data);
+            bool CalculateGainVariation(KTFrequencySpectrumDataFFTW& data);
+            bool CalculateGainVariation(KTCorrelationData& data);
 
         private:
-            Bool_t CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
-            Bool_t CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
+            bool CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
+            bool CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
             //GainVariation* CreateGainVariation(KTSpline* spline, unsigned nBins, double rangeMin, double rangeMax) const;
 
             //***************
@@ -118,12 +118,12 @@ namespace Katydid
 
     };
 
-    inline Bool_t KTGainVariationProcessor::GetNormalize() const
+    inline bool KTGainVariationProcessor::GetNormalize() const
     {
         return fNormalize;
     }
 
-    inline void KTGainVariationProcessor::SetNormalize(Bool_t flag)
+    inline void KTGainVariationProcessor::SetNormalize(bool flag)
     {
         fNormalize = flag;
         return;

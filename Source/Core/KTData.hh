@@ -28,7 +28,7 @@ namespace Katydid
     {
             KTData();
             unsigned fCounter;
-            Bool_t fLastData;
+            bool fLastData;
     };
 
     typedef boost::shared_ptr< KTData > KTDataPtr;

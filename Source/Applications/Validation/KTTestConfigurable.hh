@@ -19,7 +19,7 @@ namespace Katydid
             virtual ~KTTestConfigurable();
 
         public:
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
         public:
             Int_t GetIntData() const;

@@ -71,7 +71,7 @@ namespace Katydid
             KTSpectrumDiscriminator(const std::string& name = "spectrum-discriminator");
             virtual ~KTSpectrumDiscriminator();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             double GetSNRThreshold() const;
             void SetSNRAmplitudeThreshold(double thresh);
@@ -102,20 +102,20 @@ namespace Katydid
             double fMaxFrequency;
             unsigned fMinBin;
             unsigned fMaxBin;
-            Bool_t fCalculateMinBin;
-            Bool_t fCalculateMaxBin;
+            bool fCalculateMinBin;
+            bool fCalculateMaxBin;
 
         public:
-            Bool_t Discriminate(KTFrequencySpectrumDataPolar& data);
-            Bool_t Discriminate(KTFrequencySpectrumDataFFTW& data);
-            Bool_t Discriminate(KTNormalizedFSDataPolar& data);
-            Bool_t Discriminate(KTNormalizedFSDataFFTW& data);
-            Bool_t Discriminate(KTCorrelationData& data);
-            Bool_t Discriminate(KTWignerVilleData& data);
+            bool Discriminate(KTFrequencySpectrumDataPolar& data);
+            bool Discriminate(KTFrequencySpectrumDataFFTW& data);
+            bool Discriminate(KTNormalizedFSDataPolar& data);
+            bool Discriminate(KTNormalizedFSDataFFTW& data);
+            bool Discriminate(KTCorrelationData& data);
+            bool Discriminate(KTWignerVilleData& data);
 
         private:
-            Bool_t CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData);
-            Bool_t CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData);
+            bool CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTDiscriminatedPoints1DData& newData);
+            bool CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTDiscriminatedPoints1DData& newData);
 
 
             //***************

@@ -78,7 +78,7 @@ namespace Katydid
             KTAmplitudeDistributor(const std::string& name = "amplitude-distributor");
             virtual ~KTAmplitudeDistributor();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);
@@ -95,8 +95,8 @@ namespace Katydid
             unsigned GetDistNBins() const;
             void SetDistNBins(unsigned nBins);
 
-            Bool_t GetUseBuffer() const;
-            void SetUseBuffer(Bool_t useBuffer);
+            bool GetUseBuffer() const;
+            void SetUseBuffer(bool useBuffer);
 
             unsigned GetBufferSize() const;
             void SetBufferSize(unsigned buffer);
@@ -112,41 +112,41 @@ namespace Katydid
             double fMaxFrequency;
             unsigned fMinBin;
             unsigned fMaxBin;
-            Bool_t fCalculateMinBin;
-            Bool_t fCalculateMaxBin;
+            bool fCalculateMinBin;
+            bool fCalculateMaxBin;
 
             unsigned fDistNBins;
             unsigned fBufferSize;
             double fDistMin;
             double fDistMax;
-            Bool_t fUseBuffer;
+            bool fUseBuffer;
 
         public:
-            Bool_t Initialize(unsigned nComponents, unsigned nFreqBins);
+            bool Initialize(unsigned nComponents, unsigned nFreqBins);
 
-            Bool_t AddValues(KTFrequencySpectrumDataPolar& data);
-            Bool_t AddValues(KTFrequencySpectrumDataFFTW& data);
-            Bool_t AddValues(KTNormalizedFSDataPolar& data);
-            Bool_t AddValues(KTNormalizedFSDataFFTW& data);
-            Bool_t AddValues(KTCorrelationData& data);
-            Bool_t AddValues(KTWignerVilleData& data);
+            bool AddValues(KTFrequencySpectrumDataPolar& data);
+            bool AddValues(KTFrequencySpectrumDataFFTW& data);
+            bool AddValues(KTNormalizedFSDataPolar& data);
+            bool AddValues(KTNormalizedFSDataFFTW& data);
+            bool AddValues(KTCorrelationData& data);
+            bool AddValues(KTWignerVilleData& data);
 
             void FinishAmpDist();
 
         private:
-            Bool_t CoreAddValues(KTFrequencySpectrumDataPolarCore& data);
-            Bool_t CoreAddValues(KTFrequencySpectrumDataFFTWCore& data);
+            bool CoreAddValues(KTFrequencySpectrumDataPolarCore& data);
+            bool CoreAddValues(KTFrequencySpectrumDataFFTWCore& data);
 
-            Bool_t (KTAmplitudeDistributor::*fTakeValuesPolar)(const KTFrequencySpectrumPolar*, unsigned);
-            Bool_t TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, unsigned component);
-            Bool_t TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, unsigned component);
+            bool (KTAmplitudeDistributor::*fTakeValuesPolar)(const KTFrequencySpectrumPolar*, unsigned);
+            bool TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, unsigned component);
+            bool TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, unsigned component);
 
-            Bool_t (KTAmplitudeDistributor::*fTakeValuesFFTW)(const KTFrequencySpectrumFFTW*, unsigned);
-            Bool_t TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, unsigned component);
-            Bool_t TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, unsigned component);
+            bool (KTAmplitudeDistributor::*fTakeValuesFFTW)(const KTFrequencySpectrumFFTW*, unsigned);
+            bool TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, unsigned component);
+            bool TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, unsigned component);
 
-            Bool_t CreateDistributionsEmpty();
-            Bool_t CreateDistributionsFromBuffer();
+            bool CreateDistributionsEmpty();
+            bool CreateDistributionsFromBuffer();
 
             double fInvDistBinWidth;
 
@@ -244,12 +244,12 @@ namespace Katydid
         return;
     }
 
-    inline Bool_t KTAmplitudeDistributor::GetUseBuffer() const
+    inline bool KTAmplitudeDistributor::GetUseBuffer() const
     {
         return fUseBuffer;
     }
 
-    inline void KTAmplitudeDistributor::SetUseBuffer(Bool_t useBuffer)
+    inline void KTAmplitudeDistributor::SetUseBuffer(bool useBuffer)
     {
         fUseBuffer = useBuffer;
         return;

@@ -50,20 +50,20 @@ namespace Katydid
         delete fSummaryCopy;
     }
 
-    Bool_t KTOfficialCandidatesWriter::Configure(const KTPStoreNode* node)
+    bool KTOfficialCandidatesWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
             SetFilename(node->GetData<string>("output-file", fFilename));
             SetFileMode(node->GetData<string>("file-mode", fFileMode));
-            SetPrettyJSONFlag(node->GetData<Bool_t>("pretty-json", fPrettyJSONFlag));
+            SetPrettyJSONFlag(node->GetData<bool>("pretty-json", fPrettyJSONFlag));
         }
 
         return true;
     }
 
-    Bool_t KTOfficialCandidatesWriter::OpenFile()
+    bool KTOfficialCandidatesWriter::OpenFile()
     {
         ScopedLock lock(fMutex);
 
@@ -131,7 +131,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTOfficialCandidatesWriter::OpenAndVerifyFile()
+    bool KTOfficialCandidatesWriter::OpenAndVerifyFile()
     {
         ScopedLock lock(fMutex);
 
@@ -170,7 +170,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTOfficialCandidatesWriter::WriteWaterfallCandidate(KTWaterfallCandidateData& wcData)
+    bool KTOfficialCandidatesWriter::WriteWaterfallCandidate(KTWaterfallCandidateData& wcData)
     {
         using rapidjson::SizeType;
 

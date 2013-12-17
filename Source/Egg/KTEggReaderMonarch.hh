@@ -88,7 +88,7 @@ namespace Katydid
             /// Returns the next slice's time series data.
             KTDataPtr HatchNextSlice();
             /// Closes the file.
-            Bool_t CloseEgg();
+            bool CloseEgg();
 
             static unsigned GetMaxChannels();
 

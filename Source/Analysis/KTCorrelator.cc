@@ -42,7 +42,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTCorrelator::Configure(const KTPStoreNode* node)
+    bool KTCorrelator::Configure(const KTPStoreNode* node)
     {
         KTPStoreNode::csi_pair itPair = node->EqualRange("corr-pair");
         for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
@@ -55,31 +55,31 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTCorrelator::Correlate(KTFrequencySpectrumDataPolar& data)
+    bool KTCorrelator::Correlate(KTFrequencySpectrumDataPolar& data)
     {
         KTCorrelationData& newData = data.Of< KTCorrelationData >().SetNComponents(fPairs.size());
         return CoreCorrelate(data, newData);
     }
 
-    Bool_t KTCorrelator::Correlate(KTFrequencySpectrumDataFFTW& data)
+    bool KTCorrelator::Correlate(KTFrequencySpectrumDataFFTW& data)
     {
         KTCorrelationData& newData = data.Of< KTCorrelationData >().SetNComponents(fPairs.size());
         return CoreCorrelate(data, newData);
     }
 
-    Bool_t KTCorrelator::Correlate(KTNormalizedFSDataPolar& data)
+    bool KTCorrelator::Correlate(KTNormalizedFSDataPolar& data)
     {
         KTCorrelationData& newData = data.Of< KTCorrelationData >().SetNComponents(fPairs.size());
         return CoreCorrelate(data, newData);
     }
 
-    Bool_t KTCorrelator::Correlate(KTNormalizedFSDataFFTW& data)
+    bool KTCorrelator::Correlate(KTNormalizedFSDataFFTW& data)
     {
         KTCorrelationData& newData = data.Of< KTCorrelationData >().SetNComponents(fPairs.size());
         return CoreCorrelate(data, newData);
     }
 
-    Bool_t KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData)
+    bool KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData)
     {
         unsigned iPair = 0;
         for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
@@ -103,7 +103,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData)
+    bool KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData)
     {
         unsigned iPair = 0;
         for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)

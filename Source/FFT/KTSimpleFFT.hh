@@ -82,17 +82,17 @@ namespace Katydid
             KTSimpleFFT(const std::string& name = "simple-fft");
             virtual ~KTSimpleFFT();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             void InitializeFFT();
             void InitializeWithHeader(const KTEggHeader* header);
 
             /// Forward FFT
-            Bool_t TransformData(KTTimeSeriesData& tsData);
+            bool TransformData(KTTimeSeriesData& tsData);
 
             /// Reverse FFT
-            Bool_t TransformData(KTFrequencySpectrumDataPolar& fsData);
-            Bool_t TransformData(KTCorrelationData& corrData);
+            bool TransformData(KTFrequencySpectrumDataPolar& fsData);
+            bool TransformData(KTCorrelationData& corrData);
 
             /// Forward FFT
             KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
@@ -110,13 +110,13 @@ namespace Katydid
             void SetTimeSize(unsigned nBins);
 
             const std::string& GetTransformFlag() const;
-            Bool_t GetIsInitialized() const;
-            Bool_t GetUseWisdom() const;
+            bool GetIsInitialized() const;
+            bool GetUseWisdom() const;
             const std::string& GetWisdomFilename() const;
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
-            void SetUseWisdom(Bool_t flag);
+            void SetUseWisdom(bool flag);
             void SetWisdomFilename(const std::string& fname);
 
         protected:
@@ -133,8 +133,8 @@ namespace Katydid
             std::string fTransformFlag;
             TransformFlagMap fTransformFlagMap;
 
-            Bool_t fIsInitialized;
-            Bool_t fUseWisdom;
+            bool fIsInitialized;
+            bool fUseWisdom;
             std::string fWisdomFilename;
 
             //***************
@@ -183,12 +183,12 @@ namespace Katydid
         return fTransformFlag;
     }
 
-    inline Bool_t KTSimpleFFT::GetIsInitialized() const
+    inline bool KTSimpleFFT::GetIsInitialized() const
     {
         return fIsInitialized;
     }
 
-    inline Bool_t KTSimpleFFT::GetUseWisdom() const
+    inline bool KTSimpleFFT::GetUseWisdom() const
     {
         return fUseWisdom;
     }
@@ -198,7 +198,7 @@ namespace Katydid
         return fWisdomFilename;
     }
 
-    inline void KTSimpleFFT::SetUseWisdom(Bool_t flag)
+    inline void KTSimpleFFT::SetUseWisdom(bool flag)
     {
         fUseWisdom = flag;
         return;

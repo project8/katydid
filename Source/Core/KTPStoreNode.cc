@@ -20,7 +20,7 @@ namespace Katydid
     UIntPair ParsePairUInt(const std::string& pairString)
     {
         unsigned first = 0, second = 0;
-        Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
+        bool parsed = phrase_parse(pairString.begin(), pairString.end(),
                 (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> int_[ref(second) = boost::spirit::qi::_1]),
                 space);
         if (! parsed)
@@ -34,7 +34,7 @@ namespace Katydid
     {
         unsigned first = 0;
         double second = 0.;
-        Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
+        bool parsed = phrase_parse(pairString.begin(), pairString.end(),
                 (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> double_[ref(second) = boost::spirit::qi::_1]),
                 space);
         if (! parsed)
@@ -96,7 +96,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTPStoreNode::HasData(const string& dataName) const
+    bool KTPStoreNode::HasData(const string& dataName) const
     {
         KTPStoreNodeDataNotFound dnfException;
         TreeNode::const_assoc_iterator it = fTree->find(dataName);

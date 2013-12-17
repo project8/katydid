@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTPStoreNode*)
     {
         KTDEBUG(windowlog, "Blackman-Harris WF configured");
         return true;

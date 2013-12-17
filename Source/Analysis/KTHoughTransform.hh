@@ -61,7 +61,7 @@ namespace Katydid
             KTHoughTransform(const std::string& name = "hough-transform");
             virtual ~KTHoughTransform();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             unsigned GetNThetaPoints() const;
             void SetNThetaPoints(unsigned nPoints);
@@ -75,10 +75,10 @@ namespace Katydid
             unsigned fNRPoints;
 
         public:
-            //Bool_t TransformData(KTSlidingWindowFSDataFFTW& data);
+            //bool TransformData(KTSlidingWindowFSDataFFTW& data);
             //KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum);
 
-            Bool_t TransformData(KTDiscriminatedPoints2DData& data);
+            bool TransformData(KTDiscriminatedPoints2DData& data);
             KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSetOfPoints(const SetOfPoints& points, unsigned nTimeBins, unsigned nFreqBins);
 
 

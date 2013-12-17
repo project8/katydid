@@ -60,7 +60,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTEggProcessor::Configure(const KTPStoreNode* node)
+    bool KTEggProcessor::Configure(const KTPStoreNode* node)
     {
         // First determine the egg reader type
         // config file setting
@@ -120,7 +120,7 @@ namespace Katydid
             }
 
             // whether or not to normalize voltage values, and what the normalization is
-            SetNormalizeVoltages(node->GetData< Bool_t >("normalize-voltages", fNormalizeVoltages));
+            SetNormalizeVoltages(node->GetData< bool >("normalize-voltages", fNormalizeVoltages));
             if (node->HasData("full-voltage-scale"))
                 SetFullVoltageScale(node->GetData< double >("full-voltage-scale", fFullVoltageScale));
             if (node->HasData("n-adc-levels"))
@@ -137,7 +137,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTEggProcessor::ProcessEgg()
+    bool KTEggProcessor::ProcessEgg()
     {
         KTEggReader* reader = NULL;
 
