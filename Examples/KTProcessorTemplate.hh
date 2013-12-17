@@ -13,7 +13,6 @@
 
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
 
 
 namespace Katydid
@@ -21,7 +20,6 @@ namespace Katydid
     // Forward declare whatever classes you can
     // input data type . . .
     // output data type . . .
-    class KTData;
     class KTEggHeader;
     class KTPStoreNode;
 
