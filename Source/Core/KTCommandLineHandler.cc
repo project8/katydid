@@ -55,7 +55,7 @@ namespace Katydid
         }
     }
 
-    bool KTCommandLineHandler::TakeArguments(int argC, Char_t**argV)
+    bool KTCommandLineHandler::TakeArguments(int argC, char** argV)
     {
         if (fArgumentsTaken) return false;
 
@@ -80,7 +80,7 @@ namespace Katydid
         return fNArgs;
     }
 
-    Char_t** KTCommandLineHandler::GetArgV()
+    char** KTCommandLineHandler::GetArgV()
     {
         return fArgV;
     }
@@ -100,7 +100,7 @@ namespace Katydid
         return result.first;
     }
 
-    bool KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt, bool aWarnOnDuplicate)
+    bool KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {

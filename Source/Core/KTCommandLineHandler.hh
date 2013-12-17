@@ -86,14 +86,14 @@ namespace Katydid
             //**************
 
         public:
-            bool TakeArguments(int argC, Char_t** argV);
+            bool TakeArguments(int argC, char** argV);
             bool GetArgumentsTaken();
             int GetNArgs();
-            Char_t** GetArgV();
+            char** GetArgV();
 
         protected:
             int fNArgs;
-            Char_t** fArgV;
+            char** fArgV;
             bool fArgumentsTaken;
 
             //**************
@@ -105,13 +105,13 @@ namespace Katydid
             OptDescMapIt CreateNewOptionGroup(const std::string& aTitle);
 
             /// Simple option adding function, with short option (flag only; no values allowed)
-            bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, bool aWarnOnDuplicate=true);
+            bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate=true);
             /// Simple option adding function, without short option (flag only; no values allowed)
             bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, bool aWarnOnDuplicate=true);
 
             /// Option-with-value adding function with short option
             template< class XValueType >
-            bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, bool aWarnOnDuplicate=true);
+            bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate=true);
             /// Option-with-value adding function without short option
             template< class XValueType >
             bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, bool aWarnOnDuplicate=true);
@@ -126,7 +126,7 @@ namespace Katydid
             OptDescMap fProposedGroups;
             std::set< std::string > fAllGroupKeys;
             std::set< std::string > fAllOptionsLong;
-            std::set< Char_t > fAllOptionsShort;
+            std::set< char > fAllOptionsShort;
 
             po::options_description fCommandLineOptions;
             po::options_description fPrintHelpOptions;
@@ -200,7 +200,7 @@ namespace Katydid
     }
 
     template< class XValueType >
-    bool KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, bool aWarnOnDuplicate)
+    bool KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
