@@ -31,13 +31,13 @@ namespace Katydid
 
         public:
             KTSpline();
-            KTSpline(double* xVals, double* yVals, UInt_t nVals);
+            KTSpline(double* xVals, double* yVals, unsigned nVals);
             virtual ~KTSpline();
 
             double Evaluate(double xValue);
             double Evaluate(double xValue) const;
 
-            Implementation* Implement(UInt_t nBins, double xMin, double xMax) const;
+            Implementation* Implement(unsigned nBins, double xMin, double xMax) const;
 
             double GetXMin() const;
             void SetXMin(double min);
@@ -62,7 +62,7 @@ namespace Katydid
             /// Adds a new spline implementation to the cache. If a matching implementation already exists in the cache, the older implementation is deleted.  Ownership of the new implementation is taken by the cache.
             void AddToCache(Implementation* imp) const;
             /// Retrieves a matching implemtation from the cache; returns NULL if one does not exist. The matching implementation is removed from the cache and ownership is transferred to the caller.
-            Implementation* GetFromCache(UInt_t nBins, double xMin, double xMax) const;
+            Implementation* GetFromCache(unsigned nBins, double xMin, double xMax) const;
 
             void ClearCache() const;
 

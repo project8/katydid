@@ -16,11 +16,11 @@ int main()
 {
     KTThroughputProfiler prof;
 
-    UInt_t nIterations = 1000000;
-    UInt_t sum = 0;
+    unsigned nIterations = 1000000;
+    unsigned sum = 0;
     KTINFO(testlog, "Test 1: " << nIterations << " iterations");
     prof.Start();
-    for (UInt_t i=0; i<nIterations; i++)
+    for (unsigned i=0; i<nIterations; i++)
     {
         sum++;
     }
@@ -32,7 +32,7 @@ int main()
     sum = 0;
     KTINFO(testlog, "Test 2: " << nIterations << " iterations");
     prof.Start();
-    for (UInt_t i=0; i<nIterations; i++)
+    for (unsigned i=0; i<nIterations; i++)
     {
         sum++;
     }

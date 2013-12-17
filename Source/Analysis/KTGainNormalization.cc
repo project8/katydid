@@ -67,11 +67,11 @@ namespace Katydid
 
         if (node->HasData("min-bin"))
         {
-            SetMinBin(node->GetData< UInt_t >("min-bin"));
+            SetMinBin(node->GetData< unsigned >("min-bin"));
         }
         if (node->HasData("max-bin"))
         {
-            SetMaxBin(node->GetData< UInt_t >("max-bin"));
+            SetMaxBin(node->GetData< unsigned >("max-bin"));
         }
 
         return true;
@@ -83,7 +83,7 @@ namespace Katydid
         if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumPolar(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumPolar(0)->FindBin(fMaxFrequency));
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
         if (nComponents != gvData.GetNComponents())
         {
             KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
@@ -92,7 +92,7 @@ namespace Katydid
 
         KTNormalizedFSDataPolar& newData = fsData.Of< KTNormalizedFSDataPolar >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             KTFrequencySpectrumPolar* newSpectrum = Normalize(fsData.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent));
             if (newSpectrum == NULL)
@@ -116,7 +116,7 @@ namespace Katydid
         if (fCalculateMinBin) SetMinBin(fsData.GetSpectrumFFTW(0)->FindBin(fMinFrequency));
         if (fCalculateMaxBin) SetMaxBin(fsData.GetSpectrumFFTW(0)->FindBin(fMaxFrequency));
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
         if (nComponents != gvData.GetNComponents())
         {
             KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
@@ -125,7 +125,7 @@ namespace Katydid
 
         KTNormalizedFSDataFFTW& newData = fsData.Of< KTNormalizedFSDataFFTW >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             KTFrequencySpectrumFFTW* newSpectrum = Normalize(fsData.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent));
             if (newSpectrum == NULL)
@@ -146,13 +146,13 @@ namespace Katydid
 
     KTFrequencySpectrumPolar* KTGainNormalization::Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline)
     {
-        UInt_t nBins = fMaxBin - fMinBin + 1;
+        unsigned nBins = fMaxBin - fMinBin + 1;
         double freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
         double freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
 
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
-        UInt_t nSpectrumBins = frequencySpectrum->size();
+        unsigned nSpectrumBins = frequencySpectrum->size();
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
         double freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
@@ -160,7 +160,7 @@ namespace Katydid
         KTFrequencySpectrumPolar* newSpectrum = new KTFrequencySpectrumPolar(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
 
         // First directly copy data that's outside the scaling range
-        UInt_t iBin;
+        unsigned iBin;
 #pragma omp parallel default(shared)
         {
 #pragma omp for private(iBin)
@@ -192,13 +192,13 @@ namespace Katydid
         // PLEASE NOTE: There is on situation in which this normalization function will not operate properly: if the array size
         //              is even, and scaling is requested all the way up to the Nyquist bin, the Nyquist bin will not be scaled.
 
-        UInt_t nBins = fMaxBin - fMinBin + 1;
+        unsigned nBins = fMaxBin - fMinBin + 1;
         double freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
         double freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
 
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
-        UInt_t nSpectrumBins = frequencySpectrum->size();
+        unsigned nSpectrumBins = frequencySpectrum->size();
         double freqSpectrumMin = frequencySpectrum->GetRangeMin();
         double freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
@@ -210,13 +210,13 @@ namespace Katydid
 
         // First directly copy data that's outside the scaling range
         // DC bin
-        UInt_t dcBin = frequencySpectrum->GetDCBin();
+        unsigned dcBin = frequencySpectrum->GetDCBin();
         (*newSpectrum)(dcBin)[0] = (*frequencySpectrum)(dcBin)[0];
         (*newSpectrum)(dcBin)[1] = (*frequencySpectrum)(dcBin)[1];
         //KTDEBUG(gnlog, "bin = " << dcBin);
 
         // Nyquist bin if the array size is even
-        UInt_t lastBinNeg = 0;
+        unsigned lastBinNeg = 0;
         if (frequencySpectrum->GetIsSizeEven())
         {
             (*newSpectrum)(0)[0] = (*frequencySpectrum)(0)[0];
@@ -225,16 +225,16 @@ namespace Katydid
             //KTDEBUG(gnlog, "bin = 0");
         }
 
-        UInt_t minOffsetBin = fMinBin - dcBin;
-        UInt_t maxOffsetBin = fMaxBin - dcBin;
-        UInt_t spectrumSizeOffset = frequencySpectrum->size() - dcBin;
+        unsigned minOffsetBin = fMinBin - dcBin;
+        unsigned maxOffsetBin = fMaxBin - dcBin;
+        unsigned spectrumSizeOffset = frequencySpectrum->size() - dcBin;
 
         double scaling = 1.;
-        UInt_t iBinPos, iBinNeg, iBin, iOffsetBin;
+        unsigned iBinPos, iBinNeg, iBin, iOffsetBin;
 #pragma omp parallel default(shared) private(iBinPos, iBinNeg, iBin, iOffsetBin, scaling)
         {
             // All of the other bins outside the scaling range, both positive and negative frequencies
-            //for (UInt_t iBinPos=dcBin + 1, iBinNeg=dcBin - 1; iBinPos < fMinBin; iBinPos++, iBinNeg--)
+            //for (unsigned iBinPos=dcBin + 1, iBinNeg=dcBin - 1; iBinPos < fMinBin; iBinPos++, iBinNeg--)
 //#pragma omp master
             //KTDEBUG(gnlog, "loop: 1 - " << minOffsetBin-1);
 #pragma omp for
@@ -251,7 +251,7 @@ namespace Katydid
 
 
             // Then scale the bins within the scaling range
-            //for (UInt_t iBinPos=fMinBin, iBinNeg=dcBin - (fMinBin-dcBin), iBin=0; iBinPos < fMaxBin+1; iBinPos++, iBinNeg--, iBin++)
+            //for (unsigned iBinPos=fMinBin, iBinNeg=dcBin - (fMinBin-dcBin), iBin=0; iBinPos < fMaxBin+1; iBinPos++, iBinNeg--, iBin++)
 //#pragma omp master
             //KTDEBUG(gnlog, "loop: " << minOffsetBin << " - " << maxOffsetBin);
 #pragma omp for
@@ -271,7 +271,7 @@ namespace Katydid
 
 
 
-            //for (UInt_t iBinPos=fMaxBin+1, iBinNeg=dcBin - (fMaxBin+1-dcBin); iBinPos < nSpectrumBins; iBinPos++, iBinNeg--)
+            //for (unsigned iBinPos=fMaxBin+1, iBinNeg=dcBin - (fMaxBin+1-dcBin); iBinPos < nSpectrumBins; iBinPos++, iBinNeg--)
 //#pragma omp master
             //KTDEBUG(gnlog, "loop: " << maxOffsetBin+1 << " - " << spectrumSizeOffset);
 #pragma omp for

@@ -99,7 +99,7 @@ namespace Katydid
             timespec fTimeStart;
             timespec fTimeEnd;
 
-            UInt_t fNDataProcessed;
+            unsigned fNDataProcessed;
 
 //#ifdef __MACH__
             double fMacTimebase;

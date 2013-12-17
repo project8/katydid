@@ -48,7 +48,7 @@ namespace Katydid
         double xVal = 0.;
         Int_t halfSize = Int_t(fSize / 2);
         double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(halfSize - 1);
-        for (UInt_t iBin=0; iBin < fSize; iBin++)
+        for (unsigned iBin=0; iBin < fSize; iBin++)
         {
             xVal = twoPiOverNBinsMinus1 * double(iBin-halfSize);
             fWindowFunction[iBin] = xVal == 0. ? 1. : sin(xVal) / xVal;

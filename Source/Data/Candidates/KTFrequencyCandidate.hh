@@ -22,11 +22,11 @@ namespace Katydid
 
             KTFrequencyCandidate& operator=(const KTFrequencyCandidate& rhs);
 
-            UInt_t GetFirstBin() const;
-            void SetFirstBin(UInt_t bin);
+            unsigned GetFirstBin() const;
+            void SetFirstBin(unsigned bin);
 
-            UInt_t GetLastBin() const;
-            void SetLastBin(UInt_t bin);
+            unsigned GetLastBin() const;
+            void SetLastBin(unsigned bin);
 
             double GetMeanFrequency() const;
             void SetMeanFrequency(double freq);
@@ -38,30 +38,30 @@ namespace Katydid
             void SetAmplitudeSum(double amp);
 
         protected:
-            UInt_t fFirstBin;
-            UInt_t fLastBin;
+            unsigned fFirstBin;
+            unsigned fLastBin;
             double fMeanFrequency;
             double fPeakAmplitude;
             double fAmplitudeSum;
     };
 
-    inline UInt_t KTFrequencyCandidate::GetFirstBin() const
+    inline unsigned KTFrequencyCandidate::GetFirstBin() const
     {
         return fFirstBin;
     }
 
-    inline void KTFrequencyCandidate::SetFirstBin(UInt_t bin)
+    inline void KTFrequencyCandidate::SetFirstBin(unsigned bin)
     {
         fFirstBin = bin;
         return;
     }
 
-    inline UInt_t KTFrequencyCandidate::GetLastBin() const
+    inline unsigned KTFrequencyCandidate::GetLastBin() const
     {
         return fLastBin;
     }
 
-    inline void KTFrequencyCandidate::SetLastBin(UInt_t bin)
+    inline void KTFrequencyCandidate::SetLastBin(unsigned bin)
     {
         fLastBin = bin;
         return;

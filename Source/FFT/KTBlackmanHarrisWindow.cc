@@ -46,7 +46,7 @@ namespace Katydid
     {
         fWindowFunction.resize(fSize);
         double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(fSize - 1);
-        for (UInt_t iBin=0; iBin<fSize; iBin++)
+        for (unsigned iBin=0; iBin<fSize; iBin++)
         {
             fWindowFunction[iBin] = 0.35875 - 0.48829 * cos(double(iBin) * twoPiOverNBinsMinus1) +
                     0.14128 * cos(double(2 * iBin) * twoPiOverNBinsMinus1) - 0.01168 * cos(double(3 * iBin) * twoPiOverNBinsMinus1);

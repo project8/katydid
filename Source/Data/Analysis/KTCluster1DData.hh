@@ -19,7 +19,7 @@ namespace Katydid
     class KTCluster1DData : public KTExtensibleData< KTCluster1DData >
     {
         public:
-            typedef std::pair< UInt_t, UInt_t > Cluster; // first unsigned: first bin in cluster; second unsigned: last bin in cluster
+            typedef std::pair< unsigned, unsigned > Cluster; // first unsigned: first bin in cluster; second unsigned: last bin in cluster
 
         protected:
             struct ClusterCompare
@@ -44,73 +44,73 @@ namespace Katydid
             KTCluster1DData();
             virtual ~KTCluster1DData();
 
-            const SetOfClusters& GetSetOfClusters(UInt_t component = 0) const;
-            double GetThreshold(UInt_t component = 0) const;
+            const SetOfClusters& GetSetOfClusters(unsigned component = 0) const;
+            double GetThreshold(unsigned component = 0) const;
 
-            UInt_t GetNComponents() const;
+            unsigned GetNComponents() const;
 
-            void AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t component = 0);
-            void AddClusters(const SetOfClusters& clusters, UInt_t component = 0);
-            void SetThreshold(double threshold, UInt_t component = 0);
+            void AddCluster(unsigned firstPoint, unsigned lastPoint, unsigned component = 0);
+            void AddClusters(const SetOfClusters& clusters, unsigned component = 0);
+            void SetThreshold(double threshold, unsigned component = 0);
 
-            KTCluster1DData& SetNComponents(UInt_t components);
+            KTCluster1DData& SetNComponents(unsigned components);
 
-            UInt_t GetNBins() const;
+            unsigned GetNBins() const;
             double GetBinWidth() const;
 
-            void SetNBins(UInt_t nBins);
+            void SetNBins(unsigned nBins);
             void SetBinWidth(double binWidth);
 
         protected:
             std::vector< PerComponentData > fComponentData;
 
-            UInt_t fNBins;
+            unsigned fNBins;
             double fBinWidth;
 
 
     };
 
-    inline const KTCluster1DData::SetOfClusters& KTCluster1DData::GetSetOfClusters(UInt_t component) const
+    inline const KTCluster1DData::SetOfClusters& KTCluster1DData::GetSetOfClusters(unsigned component) const
     {
         return fComponentData[component].fClusters;
     }
 
-    inline double KTCluster1DData::GetThreshold(UInt_t component) const
+    inline double KTCluster1DData::GetThreshold(unsigned component) const
     {
         return fComponentData[component].fThreshold;
     }
 
-    inline UInt_t KTCluster1DData::GetNComponents() const
+    inline unsigned KTCluster1DData::GetNComponents() const
     {
-        return UInt_t(fComponentData.size());
+        return unsigned(fComponentData.size());
     }
 
-    inline void KTCluster1DData::AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t component)
+    inline void KTCluster1DData::AddCluster(unsigned firstPoint, unsigned lastPoint, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fClusters.insert(std::make_pair(firstPoint, lastPoint));
     }
 
-    inline void KTCluster1DData::SetThreshold(double threshold, UInt_t component)
+    inline void KTCluster1DData::SetThreshold(double threshold, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fThreshold = threshold;
     }
 
-    inline void KTCluster1DData::AddClusters(const SetOfClusters& clusters, UInt_t component)
+    inline void KTCluster1DData::AddClusters(const SetOfClusters& clusters, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fClusters.insert(clusters.begin(), clusters.end());
         return;
     }
 
-    inline KTCluster1DData& KTCluster1DData::SetNComponents(UInt_t components)
+    inline KTCluster1DData& KTCluster1DData::SetNComponents(unsigned components)
     {
         fComponentData.resize(components);
         return *this;
     }
 
-    inline UInt_t KTCluster1DData::GetNBins() const
+    inline unsigned KTCluster1DData::GetNBins() const
     {
         return fNBins;
     }
@@ -120,7 +120,7 @@ namespace Katydid
         return fBinWidth;
     }
 
-    inline void KTCluster1DData::SetNBins(UInt_t nBins)
+    inline void KTCluster1DData::SetNBins(unsigned nBins)
     {
         fNBins = nBins;
         return;

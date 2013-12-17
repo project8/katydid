@@ -31,7 +31,7 @@ using namespace Katydid;
 
 KTLOGGER(eggscan, "katydid.applications.main");
 
-static KTCommandLineOption< UInt_t > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
+static KTCommandLineOption< unsigned > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
 static KTCommandLineOption< Bool_t > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
 
 int main(int argc, char** argv)
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     }
     string filename(clOpts->GetCommandLineValue< string >("egg-file"));
 
-    UInt_t sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
+    unsigned sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
 
     KTEggReader* reader;
     if (clOpts->IsCommandLineOptSet("use-2011-egg-reader"))
@@ -88,8 +88,8 @@ int main(int argc, char** argv)
     ULong64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
     ULong64_t slicesInFile = recordsInFile * ULong64_t(header->GetRecordSize() / header->GetSliceSize()); // upper limit, assuming continuous acquisition
 
-    UInt_t fsSizeFFTW = header->GetSliceSize();
-    UInt_t fsSizePolar = fsSizeFFTW / 2 + 1;
+    unsigned fsSizeFFTW = header->GetSliceSize();
+    unsigned fsSizePolar = fsSizeFFTW / 2 + 1;
     double timeBinWidth = 1. / header->GetAcquisitionRate();
     double freqBinWidth = 1. / (timeBinWidth * double(fsSizeFFTW));
     double sliceLength = timeBinWidth * double(header->GetSliceSize());
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 
     if (scanRecords)
     {
-        UInt_t iSlice = 0;
+        unsigned iSlice = 0;
         while (kTRUE)
         {
             KTINFO(eggscan, "Hatching slice " << iSlice);

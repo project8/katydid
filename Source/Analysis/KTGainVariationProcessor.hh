@@ -71,22 +71,22 @@ namespace Katydid
             double GetMaxFrequency() const;
             void SetMaxFrequency(double freq);
 
-            UInt_t GetMinBin() const;
-            void SetMinBin(UInt_t bin);
+            unsigned GetMinBin() const;
+            void SetMinBin(unsigned bin);
 
-            UInt_t GetMaxBin() const;
-            void SetMaxBin(UInt_t bin);
+            unsigned GetMaxBin() const;
+            void SetMaxBin(unsigned bin);
 
-            UInt_t GetNFitPoints() const;
-            void SetNFitPoints(UInt_t nPoints);
+            unsigned GetNFitPoints() const;
+            void SetNFitPoints(unsigned nPoints);
 
         private:
             Bool_t fNormalize;
             double fMinFrequency;
             double fMaxFrequency;
-            UInt_t fMinBin;
-            UInt_t fMaxBin;
-            UInt_t fNFitPoints;
+            unsigned fMinBin;
+            unsigned fMaxBin;
+            unsigned fNFitPoints;
             Bool_t fCalculateMinBin;
             Bool_t fCalculateMaxBin;
 
@@ -98,7 +98,7 @@ namespace Katydid
         private:
             Bool_t CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
             Bool_t CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
-            //GainVariation* CreateGainVariation(KTSpline* spline, UInt_t nBins, double rangeMin, double rangeMax) const;
+            //GainVariation* CreateGainVariation(KTSpline* spline, unsigned nBins, double rangeMin, double rangeMax) const;
 
             //***************
             // Signals
@@ -153,36 +153,36 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTGainVariationProcessor::GetMinBin() const
+    inline unsigned KTGainVariationProcessor::GetMinBin() const
     {
         return fMinBin;
     }
 
-    inline void KTGainVariationProcessor::SetMinBin(UInt_t bin)
+    inline void KTGainVariationProcessor::SetMinBin(unsigned bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
     }
 
-    inline UInt_t KTGainVariationProcessor::GetMaxBin() const
+    inline unsigned KTGainVariationProcessor::GetMaxBin() const
     {
         return fMaxBin;
     }
 
-    inline void KTGainVariationProcessor::SetMaxBin(UInt_t bin)
+    inline void KTGainVariationProcessor::SetMaxBin(unsigned bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;
         return;
     }
 
-    inline UInt_t KTGainVariationProcessor::GetNFitPoints() const
+    inline unsigned KTGainVariationProcessor::GetNFitPoints() const
     {
         return fNFitPoints;
     }
 
-    inline void KTGainVariationProcessor::SetNFitPoints(UInt_t nPoints)
+    inline void KTGainVariationProcessor::SetNFitPoints(unsigned nPoints)
     {
         fNFitPoints = nPoints;
     }

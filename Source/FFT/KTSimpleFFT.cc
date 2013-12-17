@@ -163,10 +163,10 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
         KTFrequencySpectrumDataPolar& newData = tsData.Of< KTFrequencySpectrumDataPolar >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -204,10 +204,10 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
         KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* nextInput = fsData.GetSpectrumPolar(iComponent);
             if (nextInput == NULL)
@@ -245,10 +245,10 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
         KTCorrelationTSData& newData = fsData.Of< KTCorrelationTSData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* nextInput = fsData.GetSpectrumPolar(iComponent);
             if (nextInput == NULL)
@@ -272,7 +272,7 @@ namespace Katydid
 
     KTFrequencySpectrumPolar* KTSimpleFFT::Transform(const KTTimeSeriesReal* data) const
     {
-        UInt_t nTimeBins = (UInt_t)data->size();
+        unsigned nTimeBins = (unsigned)data->size();
         if (nTimeBins != fTimeSize)
         {
             KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -291,9 +291,9 @@ namespace Katydid
 
     KTTimeSeriesReal* KTSimpleFFT::Transform(const KTFrequencySpectrumPolar* data) const
     {
-        UInt_t nBins = (UInt_t)data->size();
-        UInt_t freqSize = GetFrequencySize();
-        UInt_t timeSize = GetTimeSize();
+        unsigned nBins = (unsigned)data->size();
+        unsigned freqSize = GetFrequencySize();
+        unsigned timeSize = GetTimeSize();
         if (nBins != freqSize)
         {
             KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -301,7 +301,7 @@ namespace Katydid
             return NULL;
         }
 
-        for (UInt_t iPoint = 0; iPoint < freqSize; iPoint++)
+        for (unsigned iPoint = 0; iPoint < freqSize; iPoint++)
         {
             fFSArray[iPoint][0] = real((*data)(iPoint));
             fFSArray[iPoint][1] = imag((*data)(iPoint));
@@ -317,12 +317,12 @@ namespace Katydid
 
     KTFrequencySpectrumPolar* KTSimpleFFT::ExtractForwardTransformResult(double freqMin, double freqMax) const
     {
-        UInt_t freqSize = GetFrequencySize();
+        unsigned freqSize = GetFrequencySize();
         double normalization = sqrt(2. / (double)GetTimeSize());
 
         //double tempReal, tempImag;
         KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
-        for (UInt_t iPoint = 0; iPoint<freqSize; iPoint++)
+        for (unsigned iPoint = 0; iPoint<freqSize; iPoint++)
         {
             (*newSpect)(iPoint).set_rect(fFSArray[iPoint][0], fFSArray[iPoint][1]);
             (*newSpect)(iPoint) *= normalization;
@@ -331,7 +331,7 @@ namespace Katydid
         return newSpect;
     }
 
-    void KTSimpleFFT::SetTimeSize(UInt_t nBins)
+    void KTSimpleFFT::SetTimeSize(unsigned nBins)
     {
         fTimeSize = nBins;
         if (fTSArray != NULL) fftw_free(fTSArray);

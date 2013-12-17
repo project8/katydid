@@ -30,7 +30,7 @@ namespace Katydid
     {
         if (node->HasData("seed"))
         {
-            SetSeed(node->GetData< UInt_t >("seed"));
+            SetSeed(node->GetData< unsigned >("seed"));
         }
         else
         {

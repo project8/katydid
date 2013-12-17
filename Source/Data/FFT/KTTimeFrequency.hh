@@ -27,21 +27,21 @@ namespace Katydid
             virtual ~KTTimeFrequency();
 
             /// Get the size of the array using the KTTimeFrequency interface
-            virtual UInt_t GetNTimeBins() const = 0;
-            virtual UInt_t GetNFrequencyBins() const = 0;
+            virtual unsigned GetNTimeBins() const = 0;
+            virtual unsigned GetNFrequencyBins() const = 0;
 
             virtual double GetTimeBinWidth() const = 0;
             virtual double GetFrequencyBinWidth() const = 0;
 
-            virtual double GetReal(UInt_t timebin, UInt_t freqbin) const = 0;
-            virtual double GetImag(UInt_t timebin, UInt_t freqbin) const = 0;
+            virtual double GetReal(unsigned timebin, unsigned freqbin) const = 0;
+            virtual double GetImag(unsigned timebin, unsigned freqbin) const = 0;
 
-            virtual void SetRect(UInt_t timebin, UInt_t freqbin, double real, double imag) = 0;
+            virtual void SetRect(unsigned timebin, unsigned freqbin, double real, double imag) = 0;
 
-            virtual double GetAbs(UInt_t timebin, UInt_t freqbin) const = 0;
-            virtual double GetArg(UInt_t timebin, UInt_t freqbin) const = 0;
+            virtual double GetAbs(unsigned timebin, unsigned freqbin) const = 0;
+            virtual double GetArg(unsigned timebin, unsigned freqbin) const = 0;
 
-            virtual void SetPolar(UInt_t timebin, UInt_t freqbin, double abs, double arg) = 0;
+            virtual void SetPolar(unsigned timebin, unsigned freqbin, double abs, double arg) = 0;
 
             virtual KTTimeFrequency& CConjugate() = 0;
 

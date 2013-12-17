@@ -58,11 +58,11 @@ namespace Katydid
         ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -87,11 +87,11 @@ namespace Katydid
         ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)

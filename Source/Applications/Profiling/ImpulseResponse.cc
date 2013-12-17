@@ -128,17 +128,17 @@ Bool_t KTImpulseAnalysis::Configure(const KTPStoreNode*)
 Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
 {
     KTFrequencySpectrumPolar* fs = fsData.GetSpectrumPolar(0);
-    UInt_t size = fs->size();
+    unsigned size = fs->size();
     double binWidth = fs->GetBinWidth();
 
     // Loop over all the bins in the FS
     // Calculate the sum and keep the peak bin information
-    UInt_t peakBin = 0, previousPeakBin = 0;
+    unsigned peakBin = 0, previousPeakBin = 0;
     double peakBinValue = -1.;
     double previousPeakValue = -1.;
     double sum = 0.; // sum of squares, since we want to calculate the power
     double value;
-    for (UInt_t iBin=0; iBin < size; iBin++)
+    for (unsigned iBin=0; iBin < size; iBin++)
     {
         value = (*fs)(iBin).abs();
         sum += value * value;
@@ -160,7 +160,7 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
 
     // Examine fractional peak width
     double fraction = 0.1;
-    UInt_t leftSideBin = peakBin, rightSideBin = peakBin;
+    unsigned leftSideBin = peakBin, rightSideBin = peakBin;
     if (peakBinValue > 0.)
     {
         double fractionalPowerValue = sqrt(fraction) * peakBinValue;
@@ -176,7 +176,7 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
         if (rightSideBin != size-1 && (*fs)(rightSideBin).abs() < fractionalPowerValue) rightSideBin--; // if we didn't heit the right edge, we went one beyond the FWHM peak
     }
 
-    UInt_t fracWidthBins = rightSideBin - leftSideBin + 1;
+    unsigned fracWidthBins = rightSideBin - leftSideBin + 1;
     double fracWidth = double(fracWidthBins) * binWidth;
 
     KTPROG(irlog, "Frequency of peak: " << fs->GetBinCenter(peakBin) << " Hz (bin # " << peakBin << ")");

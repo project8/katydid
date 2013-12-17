@@ -50,7 +50,7 @@ namespace Katydid
     {
         public:
             KTPowerSpectrum();
-            KTPowerSpectrum(UInt_t nBins, double binWidth=1.);
+            KTPowerSpectrum(unsigned nBins, double binWidth=1.);
             KTPowerSpectrum(const KTPowerSpectrum& original);
             virtual ~KTPowerSpectrum();
 

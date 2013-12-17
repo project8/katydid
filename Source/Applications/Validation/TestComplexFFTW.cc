@@ -37,7 +37,7 @@ int main()
 {
     const double pi = 3.14159265359;
 
-    const UInt_t nBins = 1024;
+    const unsigned nBins = 1024;
     const double startTime = 0.;
     const double endTime = 10.;
 
@@ -54,7 +54,7 @@ int main()
 
     // Fill the time series with a sinusoid.
     // The units are volts.
-    for (UInt_t iBin=0; iBin<nBins; iBin++)
+    for (unsigned iBin=0; iBin<nBins; iBin++)
     {
         (*timeSeries)(iBin)[0] = sin(timeSeries->GetBinCenter(iBin) * mult);
         (*timeSeries2)(iBin) = sin(timeSeries2->GetBinCenter(iBin) * mult);
@@ -85,7 +85,7 @@ int main()
     size_t nFreqBins = frequencySpectrum->size();
 
     size_t dcBin = frequencySpectrum->GetDCBin();
-    for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
+    for (unsigned iBin = 0; iBin < nFreqBins; iBin++)
     {
         value = (*frequencySpectrum)(iBin)[0]*(*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1]*(*frequencySpectrum)(iBin)[1];
         if (value > maxValue)
@@ -131,7 +131,7 @@ int main()
 
     // Calculate sum(timeSeries[i]^2)
     double tsSum = 0.; // units: volts^2
-    for (UInt_t iBin=0; iBin<nBins; iBin++)
+    for (unsigned iBin=0; iBin<nBins; iBin++)
     {
         tsSum += (*timeSeries)(iBin)[0] * (*timeSeries)(iBin)[0];
     }
@@ -140,7 +140,7 @@ int main()
 
     // calculate (1/N) * sum(freqSpectrum[i]^2
     double fsSum = 0.; // units: volts^2
-    for (UInt_t iBin=0; iBin<nFreqBins; iBin++)
+    for (unsigned iBin=0; iBin<nFreqBins; iBin++)
     {
         fsSum += (*frequencySpectrum)(iBin)[0] * (*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1] * (*frequencySpectrum)(iBin)[1];
     }

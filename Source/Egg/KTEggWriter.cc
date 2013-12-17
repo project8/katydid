@@ -200,7 +200,7 @@ namespace Katydid
         }
         fFileStatus = kWritingRecords;
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
         if (nComponents != fExpectedNChannels)
         {
             KTERROR(eggwritelog, "Received data contains " << nComponents << " channels of data; " << fExpectedNChannels << " were expected");
@@ -234,7 +234,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTEggWriter::CopyATimeSeries(UInt_t component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
+    Bool_t KTEggWriter::CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
     {
         const KTTimeSeries* ts = tsData.GetTimeSeries(component);
         if (ts->GetNTimeBins() != fExpectedRecordSize)
@@ -249,7 +249,7 @@ namespace Katydid
 
         double value;
         double scale = 255. / fDigitizerFullscale;
-        for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
+        for (unsigned iBin = 0; iBin < fExpectedRecordSize; iBin++)
         {
             value = ts->GetValue(iBin) * scale;
             if (value >= 256) value = 255.;

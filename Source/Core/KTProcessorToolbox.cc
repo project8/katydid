@@ -252,7 +252,7 @@ namespace Katydid
     {
         KTPROG(proclog, "Beginning processing . . .");
 #ifndef SINGLETHREADED
-        UInt_t iGroup = 0;
+        unsigned iGroup = 0;
 #endif
         for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); rqIter++)
         {
@@ -267,7 +267,7 @@ namespace Katydid
 #else
             KTDEBUG(proclog, "Starting thread group " << iGroup);
             boost::thread_group parallelThreads;
-            UInt_t iThread = 0;
+            unsigned iThread = 0;
             for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); tgIter++)
             {
                 // create a boost::thread object to launch the thread

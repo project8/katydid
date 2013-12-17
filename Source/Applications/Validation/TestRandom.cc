@@ -17,11 +17,11 @@ int main()
     KTRNGEngine* engine = KTGlobalRNGEngine::GetInstance();
     engine->SetSeed(20398);
 
-    UInt_t nLoops = 10;
+    unsigned nLoops = 10;
 
     KTRNGUniform01<> dist;
 
-    for (UInt_t i = 0; i < nLoops; i++)
+    for (unsigned i = 0; i < nLoops; i++)
     {
         KTINFO(vallog, "loop " << i << ":  " << dist());
     }

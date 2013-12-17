@@ -50,12 +50,12 @@ namespace Katydid
 
     Bool_t KTDCOffsetGenerator::GenerateTS(KTTimeSeriesData& data)
     {
-        const UInt_t sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
+        const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
         if (fOffsets.size() <= nComponents) fOffsets.resize(nComponents + 1);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             KTTimeSeries* timeSeries = data.GetTimeSeries(iComponent);
 
@@ -65,7 +65,7 @@ namespace Katydid
                 continue;
             }
 
-            for (UInt_t iBin = 0; iBin < sliceSize; iBin++)
+            for (unsigned iBin = 0; iBin < sliceSize; iBin++)
             {
                 timeSeries->SetValue(iBin, fOffsets[iComponent] + timeSeries->GetValue(iBin));
             }

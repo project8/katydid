@@ -35,7 +35,7 @@ int main()
 {
     const double pi = 3.14159265359;
 
-    const UInt_t nBins = 1024;
+    const unsigned nBins = 1024;
     const double startTime = 0.;
     const double endTime = 10.;
 
@@ -51,7 +51,7 @@ int main()
 
     // Fill the time series with a sinusoid.
     // The units are volts.
-    for (UInt_t iBin=0; iBin<nBins; iBin++)
+    for (unsigned iBin=0; iBin<nBins; iBin++)
     {
         (*timeSeries)(iBin) = sin(timeSeries->GetBinCenter(iBin) * mult);
         //KTDEBUG(vallog, iBin << "  " << (*timeSeries)(iBin));
@@ -71,7 +71,7 @@ int main()
     double peakFrequency = -1.;
     double maxValue = -999999.;
     size_t nFreqBins = frequencySpectrum->size();
-    for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
+    for (unsigned iBin = 0; iBin < nFreqBins; iBin++)
     {
         if ((*frequencySpectrum)(iBin).abs() > maxValue)
         {
@@ -106,7 +106,7 @@ int main()
 
     // Calculate sum(timeSeries[i]^2)
     double tsSum = 0.; // units: volts^2
-    for (UInt_t iBin=0; iBin<nBins; iBin++)
+    for (unsigned iBin=0; iBin<nBins; iBin++)
     {
         tsSum += (*timeSeries)(iBin) * (*timeSeries)(iBin);
     }
@@ -115,7 +115,7 @@ int main()
 
     // calculate (1/N) * sum(freqSpectrum[i]^2
     double fsSum = 0.; // units: volts^2
-    for (UInt_t iBin=0; iBin<nFreqBins; iBin++)
+    for (unsigned iBin=0; iBin<nFreqBins; iBin++)
     {
         fsSum += norm((*frequencySpectrum)(iBin));
     }

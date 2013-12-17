@@ -38,59 +38,59 @@ namespace Katydid
             KTGainVariationData();
             virtual ~KTGainVariationData();
 
-            //const GainVariation* GetGainVariation(UInt_t component = 0) const;
-            //GainVariation* GetGainVariation(UInt_t component = 0);
-            const KTSpline* GetSpline(UInt_t component = 0) const;
-            KTSpline* GetSpline(UInt_t component = 0);
+            //const GainVariation* GetGainVariation(unsigned component = 0) const;
+            //GainVariation* GetGainVariation(unsigned component = 0);
+            const KTSpline* GetSpline(unsigned component = 0) const;
+            KTSpline* GetSpline(unsigned component = 0);
 
-            UInt_t GetNComponents() const;
+            unsigned GetNComponents() const;
 
-            //void SetGainVariation(GainVariation* record, UInt_t component = 0);
-            void SetSpline(KTSpline* spline, UInt_t component = 0);
+            //void SetGainVariation(GainVariation* record, unsigned component = 0);
+            void SetSpline(KTSpline* spline, unsigned component = 0);
 
-            KTGainVariationData& SetNComponents(UInt_t components);
+            KTGainVariationData& SetNComponents(unsigned components);
 
         protected:
             std::vector< PerComponentData > fComponentData;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateGainVariationHistogram(UInt_t nBins, UInt_t component = 0, const std::string& name = "hGainVariation") const;
+            virtual TH1D* CreateGainVariationHistogram(unsigned nBins, unsigned component = 0, const std::string& name = "hGainVariation") const;
 #endif
     };
 /*
-    inline const KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(UInt_t component) const
+    inline const KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(unsigned component) const
     {
         return fChannelData[component].fGainVar;
     }
 
-    inline KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(UInt_t component)
+    inline KTGainVariationData::GainVariation* KTGainVariationData::GetGainVariation(unsigned component)
     {
         return fChannelData[component].fGainVar;
     }
 */
-    inline const KTSpline* KTGainVariationData::GetSpline(UInt_t component) const
+    inline const KTSpline* KTGainVariationData::GetSpline(unsigned component) const
     {
         return fComponentData[component].fSpline;
     }
 
-    inline KTSpline* KTGainVariationData::GetSpline(UInt_t component)
+    inline KTSpline* KTGainVariationData::GetSpline(unsigned component)
     {
         return fComponentData[component].fSpline;
     }
 
-    inline UInt_t KTGainVariationData::GetNComponents() const
+    inline unsigned KTGainVariationData::GetNComponents() const
     {
-        return UInt_t(fComponentData.size());
+        return unsigned(fComponentData.size());
     }
 /*
-    inline void KTGainVariationData::SetGainVariation(GainVariation* record, UInt_t component)
+    inline void KTGainVariationData::SetGainVariation(GainVariation* record, unsigned component)
     {
         if (component >= fChannelData.size()) fChannelData.resize(component+1);
         fChannelData[component].fGainVar = record;
     }
 */
-    inline void KTGainVariationData::SetSpline(KTSpline* spline, UInt_t component)
+    inline void KTGainVariationData::SetSpline(KTSpline* spline, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fSpline = spline;

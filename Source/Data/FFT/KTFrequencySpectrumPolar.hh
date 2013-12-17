@@ -35,17 +35,17 @@ namespace Katydid
 
             virtual KTFrequencySpectrumPolar& operator=(const KTFrequencySpectrumPolar& rhs);
 
-            virtual double GetReal(UInt_t bin) const;
-            virtual double GetImag(UInt_t bin) const;
+            virtual double GetReal(unsigned bin) const;
+            virtual double GetImag(unsigned bin) const;
 
-            virtual void SetRect(UInt_t bin, double real, double imag);
+            virtual void SetRect(unsigned bin, double real, double imag);
 
-            virtual double GetAbs(UInt_t bin) const;
-            virtual double GetArg(UInt_t bin) const;
+            virtual double GetAbs(unsigned bin) const;
+            virtual double GetArg(unsigned bin) const;
 
-            virtual void SetPolar(UInt_t bin, double abs, double arg);
+            virtual void SetPolar(unsigned bin, double abs, double arg);
 
-            virtual UInt_t GetNFrequencyBins() const;
+            virtual unsigned GetNFrequencyBins() const;
             virtual double GetFrequencyBinWidth() const;
 
             virtual KTFrequencySpectrumPolar& CConjugate();
@@ -66,39 +66,39 @@ namespace Katydid
 #endif
     };
 
-    inline double KTFrequencySpectrumPolar::GetReal(UInt_t bin) const
+    inline double KTFrequencySpectrumPolar::GetReal(unsigned bin) const
     {
         return (*this)(bin).abs() * std::cos((*this)(bin).arg());
     }
 
-    inline double KTFrequencySpectrumPolar::GetImag(UInt_t bin) const
+    inline double KTFrequencySpectrumPolar::GetImag(unsigned bin) const
     {
         return (*this)(bin).abs() * std::sin((*this)(bin).arg());
     }
 
-    inline void KTFrequencySpectrumPolar::SetRect(UInt_t bin, double real, double imag)
+    inline void KTFrequencySpectrumPolar::SetRect(unsigned bin, double real, double imag)
     {
         (*this)(bin).set_rect(real, imag);
         return;
     }
 
-    inline double KTFrequencySpectrumPolar::GetAbs(UInt_t bin) const
+    inline double KTFrequencySpectrumPolar::GetAbs(unsigned bin) const
     {
         return (*this)(bin).abs();
     }
 
-    inline double KTFrequencySpectrumPolar::GetArg(UInt_t bin) const
+    inline double KTFrequencySpectrumPolar::GetArg(unsigned bin) const
     {
         return (*this)(bin).arg();
     }
 
-    inline void KTFrequencySpectrumPolar::SetPolar(UInt_t bin, double abs, double arg)
+    inline void KTFrequencySpectrumPolar::SetPolar(unsigned bin, double abs, double arg)
     {
         (*this)(bin).set_polar(abs, arg);
         return;
     }
 
-    inline UInt_t KTFrequencySpectrumPolar::GetNFrequencyBins() const
+    inline unsigned KTFrequencySpectrumPolar::GetNFrequencyBins() const
     {
         return size();
     }

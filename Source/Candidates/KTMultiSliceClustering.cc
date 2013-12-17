@@ -89,17 +89,17 @@ namespace Katydid
 
         if (node->HasData("max-frequency-sep-bins"))
         {
-            SetMaxFrequencySeparationBins(node->GetData< UInt_t >("max-frequency-sep-bins"));
+            SetMaxFrequencySeparationBins(node->GetData< unsigned >("max-frequency-sep-bins"));
         }
         if (node->HasData("max-time-sep-bins"))
         {
-            SetMaxTimeSeparationBins(node->GetData< UInt_t >("max-time-sep-bins"));
+            SetMaxTimeSeparationBins(node->GetData< unsigned >("max-time-sep-bins"));
         }
 
-        SetMinTimeBins(node->GetData< UInt_t >("min-time-bins", fMinTimeBins));
+        SetMinTimeBins(node->GetData< unsigned >("min-time-bins", fMinTimeBins));
 
-        SetNFramingTimeBins(node->GetData< UInt_t >("n-framing-time-bins", fNFramingTimeBins));
-        SetNFramingFreqBins(node->GetData< UInt_t >("n-framing-freq-bins", fNFramingFreqBins));
+        SetNFramingTimeBins(node->GetData< unsigned >("n-framing-time-bins", fNFramingTimeBins));
+        SetNFramingFreqBins(node->GetData< unsigned >("n-framing-freq-bins", fNFramingFreqBins));
 
         return true;
     }
@@ -194,7 +194,7 @@ namespace Katydid
     {
         DataList* newDataList = new DataList();
 
-        for (UInt_t iComponent = 0; iComponent < fAlmostCompleteClusters.size(); ++iComponent)
+        for (unsigned iComponent = 0; iComponent < fAlmostCompleteClusters.size(); ++iComponent)
         {
             for (ClusterList::iterator accIt = fAlmostCompleteClusters[iComponent].begin(); accIt != fAlmostCompleteClusters[iComponent].end();)
             {
@@ -204,7 +204,7 @@ namespace Katydid
             fAlmostCompleteClusters[iComponent].clear();
         }
 
-        for (UInt_t iComponent = 0; iComponent < fActiveClusters.size(); ++iComponent)
+        for (unsigned iComponent = 0; iComponent < fActiveClusters.size(); ++iComponent)
         {
             for (ClusterList::iterator acIt = fActiveClusters[iComponent].begin(); acIt != fActiveClusters[iComponent].end();)
             {
@@ -217,7 +217,7 @@ namespace Katydid
             fActiveClusters[iComponent].clear();
         }
 
-        for (UInt_t iComponent = 0; iComponent < fPreClusterSpectra.size(); ++iComponent)
+        for (unsigned iComponent = 0; iComponent < fPreClusterSpectra.size(); ++iComponent)
         {
             fPreClusterSpectra[iComponent].clear();
         }
@@ -234,14 +234,14 @@ namespace Katydid
         if (headerPtr->GetSliceLength() != fTimeBinWidth)
             SetTimeBinWidth(headerPtr->GetSliceLength());
 
-        UInt_t nComponents = dpData.GetNComponents();
+        unsigned nComponents = dpData.GetNComponents();
         if (fActiveClusters.size() < nComponents) fActiveClusters.resize(nComponents);
         if (fAlmostCompleteClusters.size() < nComponents) fAlmostCompleteClusters.resize(nComponents);
         if (fPreClusterSpectra.size() < nComponents) fPreClusterSpectra.resize(nComponents);
 
         ClusterList* newClustersAC = new ClusterList();
 
-        for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             // Make a copy of the frequency spectrum
             boost::shared_ptr< KTFrequencySpectrumPolar > fsPtr(new KTFrequencySpectrumPolar(*(spectrumData.GetSpectrumPolar(iComponent))));
@@ -264,14 +264,14 @@ namespace Katydid
         if (headerPtr->GetSliceLength() != fTimeBinWidth)
             SetTimeBinWidth(headerPtr->GetSliceLength());
 
-        UInt_t nComponents = dpData.GetNComponents();
+        unsigned nComponents = dpData.GetNComponents();
         if (fActiveClusters.size() < nComponents) fActiveClusters.resize(nComponents);
         if (fAlmostCompleteClusters.size() < nComponents) fAlmostCompleteClusters.resize(nComponents);
         if (fPreClusterSpectra.size() < nComponents) fPreClusterSpectra.resize(nComponents);
 
         ClusterList* newClustersAC = new ClusterList();
 
-        for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             // Make a copy of the frequency spectrum
             boost::shared_ptr< KTFrequencySpectrumPolar > fsPtr(spectrumData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar());
@@ -287,7 +287,7 @@ namespace Katydid
         return newClustersAC;
     }
 
-    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, boost::shared_ptr< KTFrequencySpectrumPolar >& spectrumPtr, UInt_t component, boost::shared_ptr< KTSliceHeader >& headerPtr)
+    KTMultiSliceClustering::ClusterList* KTMultiSliceClustering::AddPointsToClusters(const SetOfDiscriminatedPoints& points, boost::shared_ptr< KTFrequencySpectrumPolar >& spectrumPtr, unsigned component, boost::shared_ptr< KTSliceHeader >& headerPtr)
     {
         // Process a single time bin's worth of frequency bins
 
@@ -305,7 +305,7 @@ namespace Katydid
             activeFBCluster.fAddedToActiveCluster = false;
             activeFBCluster.fActiveCluster = fActiveClusters[component].end();
             activeFBCluster.fACNumber = fActiveClusters[component].size();
-            UInt_t thisPoint;
+            unsigned thisPoint;
 
             KTDEBUG(sclog, "Clustering frequency points");
             for (++pIt; pIt != points.end(); ++pIt)
@@ -331,12 +331,12 @@ namespace Katydid
         /*// this stuff is no longer necessary since we're not skipping bins in time
 
         // loop over all of the active clusters to determine their active range in frequency (i.e. the range over which new frequency bins can be added)
-        deque< std::pair< UInt_t, UInt_t > > activeClusterFBRanges;
+        deque< std::pair< unsigned, unsigned > > activeClusterFBRanges;
         for (ActiveClusters::iterator acIt = fActiveClusters[component].begin(); acIt != fActiveClusters[component].end(); ++acIt)
         {
-            std::pair< UInt_t, UInt_t > activeRange(1, 0);
-            std::deque< std::pair< UInt_t, UInt_t > >::const_iterator frIt = (*acIt).fFreqRanges.begin();
-            UInt_t nTimeBinsBack = 1;
+            std::pair< unsigned, unsigned > activeRange(1, 0);
+            std::deque< std::pair< unsigned, unsigned > >::const_iterator frIt = (*acIt).fFreqRanges.begin();
+            unsigned nTimeBinsBack = 1;
             for (; frIt != (*acIt).fFreqRanges.end() && nTimeBinsBack <= fMaxTimeSepBins; ++frIt, ++nTimeBinsBack)
             {
                 if (frIt->first < frIt->second)
@@ -373,13 +373,13 @@ namespace Katydid
         // Make a bool for each active cluster to indicate if it has been merged with another cluster
         vector< Bool_t > acHasBeenMergedElsewhere(fActiveClusters[component].size(), false);
         // Make a vector of pairs to hold the frequency-axis ranges from the current frequency bin
-        vector< pair< UInt_t, UInt_t > > acNewFreqRange(fActiveClusters[component].size());
+        vector< pair< unsigned, unsigned > > acNewFreqRange(fActiveClusters[component].size());
 
         // Assign frequency bin clusters to active clusters
         ClusterPoint newPoint;
         newPoint.fSpectrumPtr = spectrumPtr; // adds another smart pointer pointing to this spectrum
         newPoint.fHeaderPtr = headerPtr; // adds another smart pointer pointing to this slice header
-        UInt_t iCluster;
+        unsigned iCluster;
         // loop over all of the frequency-bin clusters
         KTDEBUG(sclog, "assigning FB clusters to active clusters");
         for (FreqBinClusters::iterator fbIt = freqBinClusters.begin(); fbIt != freqBinClusters.end(); ++fbIt)
@@ -427,7 +427,7 @@ namespace Katydid
                         if (! acHasBeenAddedTo[iCluster])
                         {
                             acHasBeenAddedTo[iCluster] = true;
-                            acNewFreqRange[iCluster] = pair< UInt_t, UInt_t >(fbIt->fFirstPoint, fbIt->fLastPoint);
+                            acNewFreqRange[iCluster] = pair< unsigned, unsigned >(fbIt->fFirstPoint, fbIt->fLastPoint);
                             //KTDEBUG(sclog, "        this ac has not already been added to; setting new range: " << acNewFreqRange[iCluster].first << " - " << acNewFreqRange[iCluster].second);
                         }
                         else
@@ -593,8 +593,8 @@ namespace Katydid
         wfcData.SetEndRecordNumber(cluster.fPoints.rbegin()->fHeaderPtr->GetEndRecordNumber());
         wfcData.SetEndSampleNumber(cluster.fPoints.rbegin()->fHeaderPtr->GetEndSampleNumber());
 
-        UInt_t firstTimeBin = cluster.FirstTimeBin();
-        UInt_t lastTimeBin = cluster.LastTimeBin();
+        unsigned firstTimeBin = cluster.FirstTimeBin();
+        unsigned lastTimeBin = cluster.LastTimeBin();
 
         Int_t firstTimeBinWithFrame = (Int_t)firstTimeBin - (Int_t)fNFramingTimeBins;
         Int_t lastTimeBinWithFrame = (Int_t)lastTimeBin + (Int_t)fNFramingTimeBins;
@@ -605,8 +605,8 @@ namespace Katydid
         double ltbSumOfWeights = 0., ltbWeightedSum = 0.;
 
         SetOfPoints::const_iterator it = cluster.fPoints.begin();
-        UInt_t firstFreqBin = it->fFreqBin;
-        UInt_t lastFreqBin = firstFreqBin;
+        unsigned firstFreqBin = it->fFreqBin;
+        unsigned lastFreqBin = firstFreqBin;
 
         if (it->fTimeBin == firstTimeBin)
         {
@@ -639,25 +639,25 @@ namespace Katydid
 
         Int_t firstFreqBinWithFrame = (Int_t)firstFreqBin - (Int_t)fNFramingFreqBins;
         Int_t lastFreqBinWithFrame =(Int_t) lastFreqBin + (Int_t)fNFramingFreqBins;
-        UInt_t firstFreqBinToUse = firstFreqBinWithFrame >= 0 ? (UInt_t)firstFreqBinWithFrame : 0;
-        UInt_t lastFreqBinToUse = lastFreqBinWithFrame < (Int_t)(cluster.fPoints.begin()->fSpectrumPtr->size()) ? (UInt_t)lastFreqBinWithFrame : cluster.fPoints.begin()->fSpectrumPtr->size() - 1;
-        UInt_t freqBinOffset = UInt_t((Int_t)firstFreqBinToUse - firstFreqBinWithFrame);
+        unsigned firstFreqBinToUse = firstFreqBinWithFrame >= 0 ? (unsigned)firstFreqBinWithFrame : 0;
+        unsigned lastFreqBinToUse = lastFreqBinWithFrame < (Int_t)(cluster.fPoints.begin()->fSpectrumPtr->size()) ? (unsigned)lastFreqBinWithFrame : cluster.fPoints.begin()->fSpectrumPtr->size() - 1;
+        unsigned freqBinOffset = unsigned((Int_t)firstFreqBinToUse - firstFreqBinWithFrame);
 
         double timeOverlapFrac = cluster.fPoints.begin()->fHeaderPtr->GetNonOverlapFrac();
         double timeBinWidthWithOverlap = cluster.fPoints.begin()->fHeaderPtr->GetSliceLength();
         double timeBinWidth = timeBinWidthWithOverlap * timeOverlapFrac;
         double freqBinWidth = cluster.fPoints.begin()->fSpectrumPtr->GetBinWidth();
-        UInt_t nTimeBins = lastTimeBin - firstTimeBin + 1;
-        UInt_t nFreqBins = lastFreqBin - firstFreqBin + 1;
+        unsigned nTimeBins = lastTimeBin - firstTimeBin + 1;
+        unsigned nFreqBins = lastFreqBin - firstFreqBin + 1;
 
-        UInt_t nTimeBinsWithFrame = nTimeBins + 2 * fNFramingTimeBins;
-        UInt_t nFreqBinsWithFrame = nFreqBins + 2 * fNFramingFreqBins;
+        unsigned nTimeBinsWithFrame = nTimeBins + 2 * fNFramingTimeBins;
+        unsigned nFreqBinsWithFrame = nFreqBins + 2 * fNFramingFreqBins;
 
         //KTWARN(sclog, "loading spectrum pointers; expecting " << nTimeBinsWithFrame << " spectra");
         // Create a vector of pointers to spectra, where each component is for a single time bin
         vector< boost::shared_ptr< KTFrequencySpectrumPolar > > spectra(nTimeBinsWithFrame);
         // Pre-cluster frame bins
-        UInt_t frameBin = fNFramingTimeBins - cluster.fPreClusterSpectra.size();
+        unsigned frameBin = fNFramingTimeBins - cluster.fPreClusterSpectra.size();
         for (ListOfSpectra::const_iterator losIt = cluster.fPreClusterSpectra.begin(); losIt != cluster.fPreClusterSpectra.end(); ++losIt)
         {
             spectra[frameBin] = *losIt;
@@ -694,7 +694,7 @@ namespace Katydid
         wfcData.SetMeanEndFrequency(ltbWeightedSum / ltbSumOfWeights);
         wfcData.SetFrequencyWidth(freqBinWidth * double(nFreqBins));
 
-        UInt_t i = 0;
+        unsigned i = 0;
         for (; ! spectra[i]; ++i);
         if (i != spectra.size())
         {
@@ -711,7 +711,7 @@ namespace Katydid
             if (spectra[spectrumNum])
             {
                 //KTDEBUG(sclog, "    have spectrum for spectrumNum = " << spectrumNum);
-                for (UInt_t iFBin=firstFreqBinToUse; iFBin <= lastFreqBinToUse; ++iFBin)
+                for (unsigned iFBin=firstFreqBinToUse; iFBin <= lastFreqBinToUse; ++iFBin)
                 {
                     //KTDEBUG(sclog, "    setting point at (" << spectrumNum << ", " << iFBin-firstFreqBinToUse << "), aka (" << iTBin << ", " << iFBin << "); length of spectrum: " << spectra[spectrumNum]->size());
                     tf->SetPolar(spectrumNum, iFBin - firstFreqBinToUse + freqBinOffset, spectra[spectrumNum]->GetAbs(iFBin), spectra[spectrumNum]->GetArg(iFBin));

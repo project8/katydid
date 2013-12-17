@@ -93,14 +93,14 @@ namespace Katydid
             const PairVector& GetPairVector() const;
             void ClearPairs();
 
-            UInt_t GetWindowSize() const;
-            void SetWindowSize(UInt_t size);
+            unsigned GetWindowSize() const;
+            void SetWindowSize(unsigned size);
 
-            UInt_t GetWindowStride() const;
-            void SetWindowStride(UInt_t stride);
+            unsigned GetWindowStride() const;
+            void SetWindowStride(unsigned stride);
 
-            UInt_t GetNWindowsToAverage() const;
-            void SetNWindowsToAverage(UInt_t nAvg);
+            unsigned GetNWindowsToAverage() const;
+            void SetNWindowsToAverage(unsigned nAvg);
 
             Bool_t GetUseWindowFunction() const;
             void SetUseWindowFunction(Bool_t flag);
@@ -111,15 +111,15 @@ namespace Katydid
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
 
-            void Initialize(double acqRate, UInt_t nComponents, UInt_t inputSliceSize);
+            void Initialize(double acqRate, unsigned nComponents, unsigned inputSliceSize);
             void InitializeWithHeader(const KTEggHeader* header);
 
         private:
             PairVector fPairs;
 
-            UInt_t fWindowSize;
-            UInt_t fWindowStride;
-            UInt_t fNWindowsToAverage;
+            unsigned fWindowSize;
+            unsigned fWindowStride;
+            unsigned fNWindowsToAverage;
 
         public:
             /// Performs the W-V transform on the given time series data.
@@ -131,10 +131,10 @@ namespace Katydid
             template< class XDataType >
             Bool_t TransformFFTWBasedData(XDataType& data, KTSliceHeader& header);
 
-            //void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+            //void CrossMultiplyToInputArray(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, unsigned offset);
             // TODO: remove iWindow argument
-            void CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, UInt_t iWindow);
-            void CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, UInt_t offset);
+            void CalculateACF(Buffer::iterator data1It, const Buffer::iterator& data2End, unsigned iWindow);
+            void CalculateLaggedACF(const KTTimeSeriesFFTW* data1, const KTTimeSeriesFFTW* data2, unsigned offset);
 
             KTSliceHeader fFirstHeader;
             KTSliceHeader fSecondHeader;
@@ -142,7 +142,7 @@ namespace Katydid
             Bool_t fReceivedLastData;
 
             std::vector< Buffer > fBuffer;
-            UInt_t fSliceSampleOffset;
+            unsigned fSliceSampleOffset;
             Bool_t fAdvanceStartIteratorOnNewSlice;
 
             std::vector< Buffer::iterator > fSliceBreak;
@@ -161,10 +161,10 @@ namespace Katydid
             //KTWV2DData* fOutputWVData;
             KTWignerVilleData* fOutputWVData; // pointer to object that is part of fOutputData
 
-            UInt_t fWindowAverageCounter;
-            UInt_t fWindowCounter;
-            UInt_t fDataOutCounter;
-            //UInt_t fLeftStartPointer;
+            unsigned fWindowAverageCounter;
+            unsigned fWindowCounter;
+            unsigned fDataOutCounter;
+            //unsigned fLeftStartPointer;
 
             //***************
             // Signals
@@ -210,34 +210,34 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTWignerVille::GetWindowSize() const
+    inline unsigned KTWignerVille::GetWindowSize() const
     {
         return fWindowSize;
     }
 
-    inline void KTWignerVille::SetWindowSize(UInt_t size)
+    inline void KTWignerVille::SetWindowSize(unsigned size)
     {
         fWindowSize = size;
         return;
     }
 
-    inline UInt_t KTWignerVille::GetWindowStride() const
+    inline unsigned KTWignerVille::GetWindowStride() const
     {
         return fWindowStride;
     }
 
-    inline void KTWignerVille::SetWindowStride(UInt_t stride)
+    inline void KTWignerVille::SetWindowStride(unsigned stride)
     {
         fWindowStride = stride;
         return;
     }
 
-    inline UInt_t KTWignerVille::GetNWindowsToAverage() const
+    inline unsigned KTWignerVille::GetNWindowsToAverage() const
     {
         return fNWindowsToAverage;
     }
 
-    inline void KTWignerVille::SetNWindowsToAverage(UInt_t nAvg)
+    inline void KTWignerVille::SetNWindowsToAverage(unsigned nAvg)
     {
         fNWindowsToAverage = nAvg;
         return;
@@ -291,7 +291,7 @@ namespace Katydid
 
             fOutputWVData->Clear();
 
-            UInt_t nComponents = data.GetNComponents();
+            unsigned nComponents = data.GetNComponents();
             if (nComponents != fBuffer.size())
             {
                 KTERROR(wvlog, "Number of components mismatched between the buffer (" << fBuffer.size() << ") and the data (" << nComponents << ")");
@@ -301,7 +301,7 @@ namespace Katydid
             /*
             // cast all time series into KTTimeSeriesFFTW
             std::vector< const KTTimeSeriesFFTW* > timeSeries(nComponents);
-            for (UInt_t iTS=0; iTS < nComponents; iTS++)
+            for (unsigned iTS=0; iTS < nComponents; iTS++)
             {
                 timeSeries[iTS] = dynamic_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(iTS));
                 if (timeSeries[iTS] == NULL)
@@ -312,10 +312,10 @@ namespace Katydid
             }
              */
 
-            UInt_t nPairs = fOutputWVData->GetNComponents();
+            unsigned nPairs = fOutputWVData->GetNComponents();
 
-            std::vector< UInt_t > preCopyBufferSize(nComponents);
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            std::vector< unsigned > preCopyBufferSize(nComponents);
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 preCopyBufferSize[iComponent] = fBuffer[iComponent].size();
                 KTDEBUG(wvlog, "Pre-copy buffer " << iComponent << " size: " << preCopyBufferSize[iComponent]);
@@ -329,7 +329,7 @@ namespace Katydid
             if (header.GetIsNewAcquisition())
             {
                 localIsNewAcquisition = true;
-                for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+                for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     fBuffer[iComponent].clear();
                 }
@@ -341,11 +341,11 @@ namespace Katydid
             std::vector< Buffer::iterator > endOfCurrentWindow(nComponents);
 
             // copy the data into the circular buffer
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 const KTTimeSeriesFFTW* ts = static_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
-                UInt_t tsSize = ts->size();
-                for (UInt_t iBin = 0; iBin < tsSize; ++iBin)
+                unsigned tsSize = ts->size();
+                for (unsigned iBin = 0; iBin < tsSize; ++iBin)
                 {
                     fBuffer[iComponent].push_back(std::complex< double >((*ts)(iBin)[0], (*ts)(iBin)[1]));
                 }
@@ -363,7 +363,7 @@ namespace Katydid
             }
 
             // set the iterators that point to the break between the slices
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 fSliceBreak[iComponent] = fBuffer[iComponent].begin() + preCopyBufferSize[iComponent];
                 KTDEBUG(wvlog, "Slice break " << iComponent << " offset: " << fSliceBreak[iComponent] - fBuffer[iComponent].begin());
@@ -380,7 +380,7 @@ namespace Katydid
 
                 fOutputWVData->Clear();
 
-                for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+                for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     endOfCurrentWindow[iComponent] = windowStartIterator[iComponent] + (fWindowSize - 1);
                     KTDEBUG(wvlog, "End of current window " << iComponent << " offset: " << endOfCurrentWindow[iComponent] - fBuffer[iComponent].begin());
@@ -397,9 +397,9 @@ namespace Katydid
                         fOutputSHData->SetTimeInRun(fFirstHeader.GetTimeInRunAtSample(fSliceSampleOffset));
                         fOutputSHData->SetIsNewAcquisition(false);
                         fOutputSHData->SetRecordSize(fFirstHeader.GetRecordSize());
-                        for (UInt_t iPair = 0; iPair < nPairs; ++iPair)
+                        for (unsigned iPair = 0; iPair < nPairs; ++iPair)
                         {
-                            UInt_t firstChannel = fPairs[iPair].first;
+                            unsigned firstChannel = fPairs[iPair].first;
                             fOutputSHData->SetTimeStamp(fFirstHeader.GetTimeStampAtSample(fSliceSampleOffset, firstChannel), iPair);
                             fOutputSHData->SetAcquisitionID(fFirstHeader.GetAcquisitionID(firstChannel), iPair);
                             fOutputSHData->SetRecordID(fFirstHeader.GetRecordID(firstChannel), iPair);
@@ -416,9 +416,9 @@ namespace Katydid
                         fOutputSHData->SetTimeInRun(fSecondHeader.GetTimeInRunAtSample(fSliceSampleOffset));
                         fOutputSHData->SetIsNewAcquisition(localIsNewAcquisition);
                         fOutputSHData->SetRecordSize(fSecondHeader.GetRecordSize());
-                        for (UInt_t iPair = 0; iPair < nPairs; ++iPair)
+                        for (unsigned iPair = 0; iPair < nPairs; ++iPair)
                         {
-                            UInt_t firstChannel = fPairs[iPair].first;
+                            unsigned firstChannel = fPairs[iPair].first;
                             fOutputSHData->SetTimeStamp(fSecondHeader.GetTimeStampAtSample(fSliceSampleOffset, firstChannel), iPair);
                             fOutputSHData->SetAcquisitionID(fSecondHeader.GetAcquisitionID(firstChannel), iPair);
                             fOutputSHData->SetRecordID(fSecondHeader.GetRecordID(firstChannel), iPair);
@@ -429,10 +429,10 @@ namespace Katydid
 
 
                 // analyze the data in the buffer
-                for (UInt_t iPair = 0; iPair < nPairs; ++iPair)
+                for (unsigned iPair = 0; iPair < nPairs; ++iPair)
                 {
-                    UInt_t firstChannel = fPairs[iPair].first;
-                    UInt_t secondChannel =  fPairs[iPair].second;
+                    unsigned firstChannel = fPairs[iPair].first;
+                    unsigned secondChannel =  fPairs[iPair].second;
 
                     Buffer::iterator startWindowFC = windowStartIterator[firstChannel];
                     Buffer::iterator startWindowSC = windowStartIterator[secondChannel];
@@ -487,7 +487,7 @@ namespace Katydid
                 if (fBuffer[0].end() - windowStartIterator[0] > fWindowStride) // (note: this is a comparison to fWindowSTRIDE)
                 {
                     // the beginning of the next window fits in the buffer, so just move the iterators up by fWindowStride
-                    for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+                    for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                     {
                         windowStartIterator[iComponent] += fWindowStride;
                     }
@@ -514,7 +514,7 @@ namespace Katydid
                     fAdvanceStartIteratorOnNewSlice = true;
                     // this change to futureStarWindow will guarantee that the next if statement will cause the buffer loop to exit
                     // we'll need to update windowStartIterator the next time this method is called; we haven't received the next slice yet, so we can't set pointers to the buffer
-                    for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+                    for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                     {
                         windowStartIterator[iComponent] = fBuffer[iComponent].end();
                     }
@@ -532,7 +532,7 @@ namespace Katydid
 
 
             // remove data that has now been analyzed completely
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 // just in case the windowStartIterator iterator is beyond the end of the buffer
                 if (! (windowStartIterator[iComponent] < fBuffer[iComponent].end()))
@@ -552,25 +552,25 @@ namespace Katydid
 
 
             /*
-            UInt_t nPairs = fPairs.size();
+            unsigned nPairs = fPairs.size();
 
             //KTWV2DData& newData = data.template Of< KTWV2DData >().SetNComponents(nPairs);
             ////KTWignerVilleData& newData = data.template Of< KTWignerVilleData >().SetNComponents(nPairs);
 
             // Do WV transform for each pair
-            UInt_t iPair = 0;
+            unsigned iPair = 0;
             for (PairVector::const_iterator pairIt = fPairs.begin(); pairIt != fPairs.end(); pairIt++)
             {
-                UInt_t firstChannel = (*pairIt).first;
-                UInt_t secondChannel = (*pairIt).second;
+                unsigned firstChannel = (*pairIt).first;
+                unsigned secondChannel = (*pairIt).second;
 
-                //UInt_t nOffsets = timeSeries[firstChannel]->size();
-                UInt_t nOffsets = 896;
+                //unsigned nOffsets = timeSeries[firstChannel]->size();
+                unsigned nOffsets = 896;
                 double timeBW = timeSeries[firstChannel]->GetBinWidth();
 
                 newData.SetInputPair(firstChannel, secondChannel, iPair);
                 KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nOffsets, -0.5 * timeBW, timeBW * (double(nOffsets) - 0.5));
-                for (UInt_t iSpectrum = 0; iSpectrum < nOffsets; iSpectrum++)
+                for (unsigned iSpectrum = 0; iSpectrum < nOffsets; iSpectrum++)
                 {
                     (*newSpectra)(iSpectrum) = NULL;
                 }
@@ -583,7 +583,7 @@ namespace Katydid
                 }
                 KTDEBUG(wvlog, "Left start pointer now at " << fLeftStartPointer);
 
-                //for(UInt_t offset = 0; offset < nOffsets; offset++)
+                //for(unsigned offset = 0; offset < nOffsets; offset++)
                 //{
                 //    CalculateLaggedACF(timeSeries[firstChannel], timeSeries[secondChannel], offset);
                 //    newData.SetSpectrum(fFFT->Transform(fInputArray), offset, iPair);

@@ -24,7 +24,7 @@ namespace Katydid
      Outside of the window area, the weights are 0.
 
      Available configuration values:
-      - boxcar-size: UInt_t -- size (# of bins) of the interval where the weight is 1; this interval is centered in the window
+      - boxcar-size: unsigned -- size (# of bins) of the interval where the weight is 1; this interval is centered in the window
     */
 
     class KTRectangularWindow : public KTWindowFunction
@@ -40,20 +40,20 @@ namespace Katydid
             virtual void RebuildWindowFunction();
 
         public:
-            UInt_t GetBoxcarSize() const;
-            void SetBoxcarSize(UInt_t size);
+            unsigned GetBoxcarSize() const;
+            void SetBoxcarSize(unsigned size);
 
         private:
-            UInt_t fBoxcarSize;
+            unsigned fBoxcarSize;
 
     };
 
-    inline UInt_t KTRectangularWindow::GetBoxcarSize() const
+    inline unsigned KTRectangularWindow::GetBoxcarSize() const
     {
         return fBoxcarSize;
     }
 
-    inline void KTRectangularWindow::SetBoxcarSize(UInt_t size)
+    inline void KTRectangularWindow::SetBoxcarSize(unsigned size)
     {
         fBoxcarSize = size;
         return;

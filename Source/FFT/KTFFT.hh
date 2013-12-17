@@ -20,8 +20,8 @@ namespace Katydid
             KTFFT();
             virtual ~KTFFT();
 
-            virtual UInt_t GetTimeSize() const = 0;
-            virtual UInt_t GetFrequencySize() const = 0;
+            virtual unsigned GetTimeSize() const = 0;
+            virtual unsigned GetFrequencySize() const = 0;
 
             /// Returns the time bin width that corresponds to a frequency bin width (and frequency size).
             double GetTimeBinWidth(double freqBinWidth) const;
@@ -67,7 +67,7 @@ namespace Katydid
 
             void InitializeMultithreaded();
 
-            static UInt_t sInstanceCount;
+            static unsigned sInstanceCount;
             static Bool_t sMultithreadedIsInitialized;
     };
 

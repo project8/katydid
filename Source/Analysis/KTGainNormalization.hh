@@ -65,17 +65,17 @@ namespace Katydid
             double GetMaxFrequency() const;
             void SetMaxFrequency(double freq);
 
-            UInt_t GetMinBin() const;
-            void SetMinBin(UInt_t bin);
+            unsigned GetMinBin() const;
+            void SetMinBin(unsigned bin);
 
-            UInt_t GetMaxBin() const;
-            void SetMaxBin(UInt_t bin);
+            unsigned GetMaxBin() const;
+            void SetMaxBin(unsigned bin);
 
         private:
             double fMinFrequency;
             double fMaxFrequency;
-            UInt_t fMinBin;
-            UInt_t fMaxBin;
+            unsigned fMinBin;
+            unsigned fMaxBin;
             Bool_t fCalculateMinBin;
             Bool_t fCalculateMaxBin;
 
@@ -133,24 +133,24 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTGainNormalization::GetMinBin() const
+    inline unsigned KTGainNormalization::GetMinBin() const
     {
         return fMinBin;
     }
 
-    inline void KTGainNormalization::SetMinBin(UInt_t bin)
+    inline void KTGainNormalization::SetMinBin(unsigned bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
     }
 
-    inline UInt_t KTGainNormalization::GetMaxBin() const
+    inline unsigned KTGainNormalization::GetMaxBin() const
     {
         return fMaxBin;
     }
 
-    inline void KTGainNormalization::SetMaxBin(UInt_t bin)
+    inline void KTGainNormalization::SetMaxBin(unsigned bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;

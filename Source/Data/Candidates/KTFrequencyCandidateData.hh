@@ -33,74 +33,74 @@ namespace Katydid
             KTFrequencyCandidateData();
             virtual ~KTFrequencyCandidateData();
 
-            const Candidates& GetCandidates(UInt_t component = 0) const;
-            double GetThreshold(UInt_t component = 0) const;
+            const Candidates& GetCandidates(unsigned component = 0) const;
+            double GetThreshold(unsigned component = 0) const;
 
-            UInt_t GetNComponents() const;
+            unsigned GetNComponents() const;
 
-            void AddCandidate(const KTFrequencyCandidate& candidate, UInt_t component = 0);
-            void AddCandidates(const Candidates& candidates, UInt_t component = 0);
-            void SetThreshold(double threshold, UInt_t component = 0);
+            void AddCandidate(const KTFrequencyCandidate& candidate, unsigned component = 0);
+            void AddCandidates(const Candidates& candidates, unsigned component = 0);
+            void SetThreshold(double threshold, unsigned component = 0);
 
-            KTFrequencyCandidateData& SetNComponents(UInt_t components);
+            KTFrequencyCandidateData& SetNComponents(unsigned components);
 
-            UInt_t GetNBins() const;
+            unsigned GetNBins() const;
             double GetBinWidth() const;
 
-            void SetNBins(UInt_t nBins);
+            void SetNBins(unsigned nBins);
             void SetBinWidth(double binWidth);
 
         protected:
             std::vector< PerComponentData > fComponentData;
 
-            UInt_t fNBins;
+            unsigned fNBins;
             double fBinWidth;
 
     };
 
-    inline const KTFrequencyCandidateData::Candidates& KTFrequencyCandidateData::GetCandidates(UInt_t component) const
+    inline const KTFrequencyCandidateData::Candidates& KTFrequencyCandidateData::GetCandidates(unsigned component) const
     {
         return fComponentData[component].fCandidates;
     }
 
-    inline double KTFrequencyCandidateData::GetThreshold(UInt_t component) const
+    inline double KTFrequencyCandidateData::GetThreshold(unsigned component) const
     {
         return fComponentData[component].fThreshold;
     }
 
-    inline UInt_t KTFrequencyCandidateData::GetNComponents() const
+    inline unsigned KTFrequencyCandidateData::GetNComponents() const
     {
-        return UInt_t(fComponentData.size());
+        return unsigned(fComponentData.size());
     }
 
-    inline void KTFrequencyCandidateData::AddCandidate(const KTFrequencyCandidate& candidate, UInt_t component)
+    inline void KTFrequencyCandidateData::AddCandidate(const KTFrequencyCandidate& candidate, unsigned component)
     {
         if (component >= fComponentData.size()) SetNComponents(component+1);
         fComponentData[component].fCandidates.push_back(candidate);
         return;
     }
 
-    inline void KTFrequencyCandidateData::AddCandidates(const Candidates& candidates, UInt_t component)
+    inline void KTFrequencyCandidateData::AddCandidates(const Candidates& candidates, unsigned component)
     {
         if (component >= fComponentData.size()) SetNComponents(component+1);
         fComponentData[component].fCandidates.insert(fComponentData[component].fCandidates.end(), candidates.begin(), candidates.end());
         return;
     }
 
-    inline void KTFrequencyCandidateData::SetThreshold(double threshold, UInt_t component)
+    inline void KTFrequencyCandidateData::SetThreshold(double threshold, unsigned component)
     {
         if (component >= fComponentData.size()) SetNComponents(component+1);
         fComponentData[component].fThreshold = threshold;
         return;
     }
 
-    inline KTFrequencyCandidateData& KTFrequencyCandidateData::SetNComponents(UInt_t components)
+    inline KTFrequencyCandidateData& KTFrequencyCandidateData::SetNComponents(unsigned components)
     {
         fComponentData.resize(components);
         return *this;
     }
 
-    inline UInt_t KTFrequencyCandidateData::GetNBins() const
+    inline unsigned KTFrequencyCandidateData::GetNBins() const
     {
         return fNBins;
     }
@@ -110,7 +110,7 @@ namespace Katydid
         return fBinWidth;
     }
 
-    inline void KTFrequencyCandidateData::SetNBins(UInt_t nBins)
+    inline void KTFrequencyCandidateData::SetNBins(unsigned nBins)
     {
         fNBins = nBins;
         return;

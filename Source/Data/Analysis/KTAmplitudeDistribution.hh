@@ -29,52 +29,52 @@ namespace Katydid
             KTAmplitudeDistribution();
             virtual ~KTAmplitudeDistribution();
 
-            const Distribution& GetDistribution(UInt_t freqBins, UInt_t component = 0) const;
+            const Distribution& GetDistribution(unsigned freqBins, unsigned component = 0) const;
 
-            UInt_t GetNComponents() const;
-            UInt_t GetNFreqBins() const;
+            unsigned GetNComponents() const;
+            unsigned GetNFreqBins() const;
 
-            void SetDistValue(double value, UInt_t freqBin, UInt_t iDistBin, UInt_t component = 0);
+            void SetDistValue(double value, unsigned freqBin, unsigned iDistBin, unsigned component = 0);
 
-            void AddToDist(UInt_t freqBin, UInt_t iDistBin, UInt_t component = 0, double weight = 1.);
-            void AddToDist(UInt_t freqBin, double distValue, UInt_t component = 0, double weight = 1.);
+            void AddToDist(unsigned freqBin, unsigned iDistBin, unsigned component = 0, double weight = 1.);
+            void AddToDist(unsigned freqBin, double distValue, unsigned component = 0, double weight = 1.);
 
-            UInt_t FindDistBin(double value, UInt_t freqBin, UInt_t component = 0);
+            unsigned FindDistBin(double value, unsigned freqBin, unsigned component = 0);
 
             Bool_t ClearDistributions();
 
             /// Clear distributions and initialize new vectors with NULL distribution pointers
-            Bool_t InitializeNull(UInt_t nComponents, UInt_t nFreqBins);
+            Bool_t InitializeNull(unsigned nComponents, unsigned nFreqBins);
             /// Clear distributions and initialize new vectors with new, uniform, distributions pointers
-            Bool_t InitializeNew(UInt_t nComponents, UInt_t nFreqBins, UInt_t distNBins, double distMin, double distMax);
+            Bool_t InitializeNew(unsigned nComponents, unsigned nFreqBins, unsigned distNBins, double distMin, double distMax);
             /// Initialize a single new distribution (only removes the specified distribution, if it already exists)
-            Bool_t InitializeADistribution(UInt_t component, UInt_t freqBin, UInt_t distNBins, double distMin, double distMax);
+            Bool_t InitializeADistribution(unsigned component, unsigned freqBin, unsigned distNBins, double distMin, double distMax);
 
         protected:
             Distributions fDistributions;
 
     };
 
-    inline const KTAmplitudeDistribution::Distribution& KTAmplitudeDistribution::GetDistribution(UInt_t freqBins, UInt_t component) const
+    inline const KTAmplitudeDistribution::Distribution& KTAmplitudeDistribution::GetDistribution(unsigned freqBins, unsigned component) const
     {
         return *fDistributions[component][freqBins];
     }
 
-    inline UInt_t KTAmplitudeDistribution::GetNComponents() const
+    inline unsigned KTAmplitudeDistribution::GetNComponents() const
     {
-        return UInt_t(fDistributions.size());
+        return unsigned(fDistributions.size());
     }
 
-    inline UInt_t KTAmplitudeDistribution::GetNFreqBins() const
+    inline unsigned KTAmplitudeDistribution::GetNFreqBins() const
     {
-        return UInt_t(fDistributions[0].size());
+        return unsigned(fDistributions[0].size());
     }
 
     inline Bool_t KTAmplitudeDistribution::ClearDistributions()
     {
-        for (UInt_t iComponent = 0; iComponent < fDistributions.size(); iComponent++)
+        for (unsigned iComponent = 0; iComponent < fDistributions.size(); iComponent++)
         {
-            for (UInt_t iFreqBin = 0; iFreqBin < fDistributions[iComponent].size(); iFreqBin++)
+            for (unsigned iFreqBin = 0; iFreqBin < fDistributions[iComponent].size(); iFreqBin++)
             {
                 delete fDistributions[iComponent][iFreqBin];
             }
@@ -82,24 +82,24 @@ namespace Katydid
         return true;
     }
 
-    inline Bool_t KTAmplitudeDistribution::InitializeNull(UInt_t nComponents, UInt_t nFreqBins)
+    inline Bool_t KTAmplitudeDistribution::InitializeNull(unsigned nComponents, unsigned nFreqBins)
     {
         //fDistributions.resize(nComponents, ComponentDistributions(nFreqBins, NULL));
         fDistributions.resize(nComponents);
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             fDistributions[iComponent].resize(nFreqBins, NULL);
         }
         return true;
     }
 
-    inline Bool_t KTAmplitudeDistribution::InitializeNew(UInt_t nComponents, UInt_t nFreqBins, UInt_t distNBins, double distMin, double distMax)
+    inline Bool_t KTAmplitudeDistribution::InitializeNew(unsigned nComponents, unsigned nFreqBins, unsigned distNBins, double distMin, double distMax)
     {
         fDistributions.resize(nComponents, ComponentDistributions(nFreqBins, new Distribution(distNBins, distMin, distMax)));
         return true;
     }
 
-    inline UInt_t KTAmplitudeDistribution::FindDistBin(double value, UInt_t freqBin, UInt_t component)
+    inline unsigned KTAmplitudeDistribution::FindDistBin(double value, unsigned freqBin, unsigned component)
     {
         return fDistributions[component][freqBin]->FindBin(value);
     }

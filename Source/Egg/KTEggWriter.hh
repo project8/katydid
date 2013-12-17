@@ -93,11 +93,11 @@ namespace Katydid
             FileStatus GetFileStatus() const;
 
         private:
-            Bool_t CopyATimeSeries(UInt_t component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record);
+            Bool_t CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record);
 
             FileStatus fFileStatus;
-            UInt_t fExpectedNChannels;
-            UInt_t fExpectedRecordSize;
+            unsigned fExpectedNChannels;
+            unsigned fExpectedRecordSize;
 
             Monarch* fMonarch;
 

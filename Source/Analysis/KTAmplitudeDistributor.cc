@@ -82,20 +82,20 @@ namespace Katydid
 
         if (node->HasData("min-bin"))
         {
-            SetMinBin(node->GetData< UInt_t >("min-bin"));
+            SetMinBin(node->GetData< unsigned >("min-bin"));
         }
         if (node->HasData("max-bin"))
         {
-            SetMaxBin(node->GetData< UInt_t >("max-bin"));
+            SetMaxBin(node->GetData< unsigned >("max-bin"));
         }
 
-        SetDistNBins(node->GetData< UInt_t >("dist-n-bins", fDistNBins));
+        SetDistNBins(node->GetData< unsigned >("dist-n-bins", fDistNBins));
 
         SetUseBuffer(node->GetData< Bool_t >("use-buffers", fUseBuffer));
 
         if (node->HasData("buffer-size"))
         {
-            SetBufferSize(node->GetData< UInt_t >("buffer-size"));
+            SetBufferSize(node->GetData< unsigned >("buffer-size"));
         }
 
         if (node->HasData("dist-min"))
@@ -110,7 +110,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::Initialize(UInt_t nComponents, UInt_t nFreqBins)
+    Bool_t KTAmplitudeDistributor::Initialize(unsigned nComponents, unsigned nFreqBins)
     {
         fNComponents = nComponents;
         fNFreqBins = nFreqBins;
@@ -123,10 +123,10 @@ namespace Katydid
             // This command initializes the nested vectors with the correct number of elements
             // It's assumed that fBufferSize is set before this function is called.
             fBuffer.resize(fBufferSize);
-            for (UInt_t iBuffer = 0; iBuffer < fBufferSize; iBuffer++)
+            for (unsigned iBuffer = 0; iBuffer < fBufferSize; iBuffer++)
             {
                 fBuffer[iBuffer].resize(nComponents);
-                for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+                for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
                 {
                     fBuffer[iBuffer][iComponent].resize(fNFreqBins);
                 }
@@ -211,8 +211,8 @@ namespace Katydid
             }
         }
 
-        UInt_t nComponents = data.GetNComponents();
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
             if (spectrum == NULL)
@@ -257,8 +257,8 @@ namespace Katydid
             }
         }
 
-        UInt_t nComponents = data.GetNComponents();
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
             if (spectrum == NULL)
@@ -282,7 +282,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, UInt_t component)
+    Bool_t KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumPolar* spectrum, unsigned component)
     {
         if (fNSlicesProcessed == fBufferSize)
         {
@@ -298,7 +298,7 @@ namespace Katydid
             return TakeValuesToDistributions(spectrum, component);
         }
 
-        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
             fBuffer[fNSlicesProcessed][component][iBin] = (*spectrum)(iBin).abs();
         }
@@ -307,16 +307,16 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, UInt_t component)
+    Bool_t KTAmplitudeDistributor::TakeValuesToDistributions(const KTFrequencySpectrumPolar* spectrum, unsigned component)
     {
-        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
             fDistributions->AddToDist(iBin, (*spectrum)(iBin).abs(), component);
         }
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, UInt_t component)
+    Bool_t KTAmplitudeDistributor::TakeValuesToBuffer(const KTFrequencySpectrumFFTW* spectrum, unsigned component)
     {
         if (fNSlicesProcessed == fBufferSize)
         {
@@ -332,7 +332,7 @@ namespace Katydid
             return TakeValuesToDistributions(spectrum, component);
         }
 
-        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
             fBuffer[fNSlicesProcessed][component][iBin] = sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]);
         }
@@ -341,9 +341,9 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAmplitudeDistributor::TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, UInt_t component)
+    Bool_t KTAmplitudeDistributor::TakeValuesToDistributions(const KTFrequencySpectrumFFTW* spectrum, unsigned component)
     {
-        for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+        for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
         {
             fDistributions->AddToDist(iBin, sqrt((*spectrum)(iBin)[0]*(*spectrum)(iBin)[0] + (*spectrum)(iBin)[1]*(*spectrum)(iBin)[1]), component);
         }
@@ -379,16 +379,16 @@ namespace Katydid
         }
 
         double distMin, distMax, value;
-        //UInt_t distBin;
-        for (UInt_t iComponent = 0; iComponent < fNComponents; iComponent++)
+        //unsigned distBin;
+        for (unsigned iComponent = 0; iComponent < fNComponents; iComponent++)
         {
-            for (UInt_t iBin = fMinBin; iBin <= fMaxBin; iBin++)
+            for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
             {
                 KTWARN(adlog, "0  " << iComponent << "  " << iBin << "  " << fBuffer[0][iComponent][iBin]);
                 distMin = fBuffer[0][iComponent][iBin];
                 distMax = distMin;
                 KTERROR(adlog, distMin << "  " << distMax << "  buffer size: " << fBuffer.size());
-                for (UInt_t iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
+                for (unsigned iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
                 {
                     value = fBuffer[iSpectrum][iComponent][iBin];
                     if (value < distMin) distMin = value;
@@ -401,7 +401,7 @@ namespace Katydid
                     return false;
                 }
                 KTDEBUG(adlog, "Distribution initialized; filling in from buffer");
-                for (UInt_t iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
+                for (unsigned iSpectrum = 1; iSpectrum < fBuffer.size(); iSpectrum++)
                 {
                     value = fBuffer[iSpectrum][iComponent][iBin];
                     fDistributions->AddToDist(iBin, value, iComponent);

@@ -34,17 +34,17 @@ namespace Katydid
     {
     }
 
-    KTTimeSeriesData& KTTimeSeriesData::SetNComponents(UInt_t num)
+    KTTimeSeriesData& KTTimeSeriesData::SetNComponents(unsigned num)
     {
-        UInt_t oldSize = fTimeSeries.size();
+        unsigned oldSize = fTimeSeries.size();
         // if num < oldSize
-        for (UInt_t iComponent = num; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = num; iComponent < oldSize; iComponent++)
         {
             delete fTimeSeries[iComponent];
         }
         fTimeSeries.resize(num);
         // if num > oldSize
-        for (UInt_t iComponent = oldSize; iComponent < num; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < num; iComponent++)
         {
             fTimeSeries[iComponent] = NULL;
         }

@@ -39,7 +39,7 @@ namespace Katydid
         }
     }
 
-    void KTMultiFSDataFFTWCore::SetSpectrum(KTFrequencySpectrumFFTW* spectrum, UInt_t iSpect, UInt_t component)
+    void KTMultiFSDataFFTWCore::SetSpectrum(KTFrequencySpectrumFFTW* spectrum, unsigned iSpect, unsigned component)
     {
         if (component >= fSpectra.size())
         {
@@ -56,7 +56,7 @@ namespace Katydid
     }
 
 #ifdef ROOT_FOUND
-    TH2D* KTMultiFSDataFFTWCore::CreateMagnitudeHistogram(UInt_t component, const std::string& name) const
+    TH2D* KTMultiFSDataFFTWCore::CreateMagnitudeHistogram(unsigned component, const std::string& name) const
     {
         if (component >= fSpectra.size()) return NULL;
         if (fSpectra[component]->empty()) return NULL;
@@ -83,7 +83,7 @@ namespace Katydid
         return hist;
     }
 
-    TH2D* KTMultiFSDataFFTWCore::CreatePhaseHistogram(UInt_t component, const std::string& name) const
+    TH2D* KTMultiFSDataFFTWCore::CreatePhaseHistogram(unsigned component, const std::string& name) const
     {
         if (component >= fSpectra.size()) return NULL;
         if (fSpectra[component]->empty()) return NULL;
@@ -110,7 +110,7 @@ namespace Katydid
         return hist;
     }
 
-    TH2D* KTMultiFSDataFFTWCore::CreatePowerHistogram(UInt_t component, const std::string& name) const
+    TH2D* KTMultiFSDataFFTWCore::CreatePowerHistogram(unsigned component, const std::string& name) const
     {
         if (component >= fSpectra.size()) return NULL;
         if (fSpectra[component]->empty()) return NULL;
@@ -152,17 +152,17 @@ namespace Katydid
     }
 
 
-    KTMultiFSDataFFTW& KTMultiFSDataFFTW::SetNComponents(UInt_t components)
+    KTMultiFSDataFFTW& KTMultiFSDataFFTW::SetNComponents(unsigned components)
     {
-        UInt_t oldSize = fSpectra.size();
+        unsigned oldSize = fSpectra.size();
         // if components < oldSize
-        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
         {
             DeleteSpectra(iComponent);
         }
         fSpectra.resize(components);
         // if components > oldSize
-        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
         {
             fSpectra[iComponent] = NULL;
         }

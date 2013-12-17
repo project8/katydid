@@ -26,7 +26,7 @@ namespace Katydid
     {
     }
 
-    KTSpline::KTSpline(double* xVals, double* yVals, UInt_t nVals) :
+    KTSpline::KTSpline(double* xVals, double* yVals, unsigned nVals) :
             fSpline("spline", xVals, yVals, nVals),
             fXMin(xVals[0]),
             fXMax(xVals[nVals-1]),
@@ -49,13 +49,13 @@ namespace Katydid
         return fSpline.Eval(xValue);
     }
 
-    KTPhysicalArray< 1, double >* KTSpline::Implement(UInt_t nBins, double xMin, double xMax) const
+    KTPhysicalArray< 1, double >* KTSpline::Implement(unsigned nBins, double xMin, double xMax) const
     {
         Implementation* imp = GetFromCache(nBins, xMin, xMax);
         if (imp != NULL) return imp;
 
         imp = new KTPhysicalArray< 1, double >(nBins, xMin, xMax);
-        for (UInt_t iBin=0; iBin < nBins; iBin++)
+        for (unsigned iBin=0; iBin < nBins; iBin++)
         {
             (*imp)(iBin) = Evaluate(imp->GetBinCenter(iBin));
         }
@@ -74,7 +74,7 @@ namespace Katydid
         KTERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
     }
 
-    KTSpline::KTSpline(double* xVals, double* yVals, UInt_t nVals) :
+    KTSpline::KTSpline(double* xVals, double* yVals, unsigned nVals) :
             fXMin(xVals[0]),
             fXMax(xVals[nVals-1])
     {
@@ -106,7 +106,7 @@ namespace Katydid
         return;
     }
 
-    KTSpline::Implementation* KTSpline::GetFromCache(UInt_t nBins, double xMin, double xMax) const
+    KTSpline::Implementation* KTSpline::GetFromCache(unsigned nBins, double xMin, double xMax) const
     {
         for (ImplementationCache::iterator it = fCache.begin(); it != fCache.end(); it++)
         {

@@ -35,20 +35,20 @@ namespace Katydid
         }
     }
 
-    KTHoughData& KTHoughData::SetNComponents(UInt_t components)
+    KTHoughData& KTHoughData::SetNComponents(unsigned components)
     {
-        UInt_t oldSize = fTransforms.size();
+        unsigned oldSize = fTransforms.size();
         // if components < oldSize
-        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
         {
-            for (UInt_t iTransform = 0; iTransform < fTransforms.size(); iTransform++)
+            for (unsigned iTransform = 0; iTransform < fTransforms.size(); iTransform++)
             {
                 delete (*fTransforms[iComponent])(iTransform);
             }
         }
         fTransforms.resize(components);
         // if components > oldSize
-        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
         {
             fTransforms[iComponent] = NULL;
         }
@@ -58,7 +58,7 @@ namespace Katydid
 
 #ifdef ROOT_FOUND
 
-    TH2D* KTHoughData::CreateHistogram(UInt_t component, const std::string& name) const
+    TH2D* KTHoughData::CreateHistogram(unsigned component, const std::string& name) const
     {
         if (component >= fTransforms.size()) return NULL;
         if (fTransforms[component]->empty()) return NULL;

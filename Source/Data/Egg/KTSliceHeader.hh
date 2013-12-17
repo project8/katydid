@@ -29,8 +29,8 @@ namespace Katydid
             /// Copy the data in rhs only; do not copy any additional extensible data
             void CopySliceHeaderOnly(const KTSliceHeader& rhs);
 
-            UInt_t GetNComponents() const;
-            KTSliceHeader& SetNComponents(UInt_t num);
+            unsigned GetNComponents() const;
+            KTSliceHeader& SetNComponents(unsigned num);
 
             // Slice information
 
@@ -41,8 +41,8 @@ namespace Katydid
             ULong64_t GetSliceNumber() const;
             void SetSliceNumber(ULong64_t slice);
 
-            UInt_t GetSliceSize() const;
-            void SetSliceSize(UInt_t size);
+            unsigned GetSliceSize() const;
+            void SetSliceSize(unsigned size);
             double GetSliceLength() const;
             void SetSliceLength(double length);
             double GetNonOverlapFrac() const;
@@ -54,45 +54,45 @@ namespace Katydid
 
             void CalculateBinWidthAndSliceLength();
 
-            double GetTimeInRunAtSample(UInt_t sample);
+            double GetTimeInRunAtSample(unsigned sample);
 
 
             // Record-related information
 
-            UInt_t GetStartRecordNumber() const;
-            void SetStartRecordNumber(UInt_t rec);
+            unsigned GetStartRecordNumber() const;
+            void SetStartRecordNumber(unsigned rec);
 
-            UInt_t GetStartSampleNumber() const;
-            void SetStartSampleNumber(UInt_t sample);
+            unsigned GetStartSampleNumber() const;
+            void SetStartSampleNumber(unsigned sample);
 
-            void SetStartRecordAndSample(std::pair< UInt_t, UInt_t > rsPair);
+            void SetStartRecordAndSample(std::pair< unsigned, unsigned > rsPair);
 
-            UInt_t GetEndRecordNumber() const;
-            void SetEndRecordNumber(UInt_t rec);
+            unsigned GetEndRecordNumber() const;
+            void SetEndRecordNumber(unsigned rec);
 
-            UInt_t GetEndSampleNumber() const;
-            void SetEndSampleNumber(UInt_t sample);
+            unsigned GetEndSampleNumber() const;
+            void SetEndSampleNumber(unsigned sample);
 
-            void SetEndRecordAndSample(std::pair< UInt_t, UInt_t > rsPair);
+            void SetEndRecordAndSample(std::pair< unsigned, unsigned > rsPair);
 
-            UInt_t GetRecordSize() const;
-            void SetRecordSize(UInt_t record);
+            unsigned GetRecordSize() const;
+            void SetRecordSize(unsigned record);
 
-            std::pair< UInt_t, UInt_t > GetRecordSamplePairAtSample(UInt_t sampleInSlice);
+            std::pair< unsigned, unsigned > GetRecordSamplePairAtSample(unsigned sampleInSlice);
 
 
             // Per-Component Information
 
-            TimeType GetTimeStamp(UInt_t component = 0) const;
-            void SetTimeStamp(TimeType timeStamp, UInt_t component = 0);
+            TimeType GetTimeStamp(unsigned component = 0) const;
+            void SetTimeStamp(TimeType timeStamp, unsigned component = 0);
 
-            AcquisitionIdType GetAcquisitionID(UInt_t component = 0) const;
-            void SetAcquisitionID(AcquisitionIdType acqId, UInt_t component = 0);
+            AcquisitionIdType GetAcquisitionID(unsigned component = 0) const;
+            void SetAcquisitionID(AcquisitionIdType acqId, unsigned component = 0);
 
-            RecordIdType GetRecordID(UInt_t component = 0) const;
-            void SetRecordID(RecordIdType recId, UInt_t component = 0);
+            RecordIdType GetRecordID(unsigned component = 0) const;
+            void SetRecordID(RecordIdType recId, unsigned component = 0);
 
-            TimeType GetTimeStampAtSample(UInt_t sample, UInt_t component = 0);
+            TimeType GetTimeStampAtSample(unsigned sample, unsigned component = 0);
 
         private:
             struct PerComponentData
@@ -106,35 +106,35 @@ namespace Katydid
             ULong64_t fSliceNumber;
             Bool_t fIsNewAcquisition;
 
-            UInt_t fSliceSize; // number of bins
+            unsigned fSliceSize; // number of bins
             double fSliceLength; // in sec
             double fNonOverlapFrac; // fraction of the slice for which there is no overlap with another slice
             double fSampleRate; // in Hz
             double fBinWidth; // in sec
 
-            UInt_t fStartRecordNumber; // record in the run in which the slice starts
-            UInt_t fStartSampleNumber; // sample number in the start record
-            UInt_t fEndRecordNumber; // record in the run in which the slice ends
-            UInt_t fEndSampleNumber; // sample number in the end record
+            unsigned fStartRecordNumber; // record in the run in which the slice starts
+            unsigned fStartSampleNumber; // sample number in the start record
+            unsigned fEndRecordNumber; // record in the run in which the slice ends
+            unsigned fEndSampleNumber; // sample number in the end record
 
-            UInt_t fRecordSize; // number of bins in the records on the egg file
+            unsigned fRecordSize; // number of bins in the records on the egg file
 
             std::vector< PerComponentData > fComponentData;
 
             // Some temporary storage members to avoid allocating new variables
-            UInt_t fTemp1, fTemp2, fTemp3;
+            unsigned fTemp1, fTemp2, fTemp3;
 
     };
 
     std::ostream& operator<<(std::ostream& out, const KTSliceHeader& hdr);
 
 
-    inline UInt_t KTSliceHeader::GetNComponents() const
+    inline unsigned KTSliceHeader::GetNComponents() const
     {
-        return UInt_t(fComponentData.size());
+        return unsigned(fComponentData.size());
     }
 
-    inline KTSliceHeader& KTSliceHeader::SetNComponents(UInt_t num)
+    inline KTSliceHeader& KTSliceHeader::SetNComponents(unsigned num)
     {
         fComponentData.resize(num);
         return *this;
@@ -173,12 +173,12 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTSliceHeader::GetSliceSize() const
+    inline unsigned KTSliceHeader::GetSliceSize() const
     {
         return fSliceSize;
     }
 
-    inline void KTSliceHeader::SetSliceSize(UInt_t size)
+    inline void KTSliceHeader::SetSliceSize(unsigned size)
     {
         fSliceSize = size;
         return;
@@ -235,82 +235,82 @@ namespace Katydid
         return;
     }
 
-    inline double KTSliceHeader::GetTimeInRunAtSample(UInt_t sample)
+    inline double KTSliceHeader::GetTimeInRunAtSample(unsigned sample)
     {
         return fTimeInRun + fBinWidth * double(sample);
     }
 
 
-    inline UInt_t KTSliceHeader::GetStartRecordNumber() const
+    inline unsigned KTSliceHeader::GetStartRecordNumber() const
     {
         return fStartRecordNumber;
     }
 
-    inline void KTSliceHeader::SetStartRecordNumber(UInt_t rec)
+    inline void KTSliceHeader::SetStartRecordNumber(unsigned rec)
     {
         fStartRecordNumber = rec;
         return;
     }
 
-    inline UInt_t KTSliceHeader::GetStartSampleNumber() const
+    inline unsigned KTSliceHeader::GetStartSampleNumber() const
     {
         return fStartSampleNumber;
     }
 
-    inline void KTSliceHeader::SetStartSampleNumber(UInt_t sample)
+    inline void KTSliceHeader::SetStartSampleNumber(unsigned sample)
     {
         fStartSampleNumber = sample;
         return;
     }
 
-    inline void KTSliceHeader::SetStartRecordAndSample(std::pair< UInt_t, UInt_t > rsPair)
+    inline void KTSliceHeader::SetStartRecordAndSample(std::pair< unsigned, unsigned > rsPair)
     {
         fStartRecordNumber = rsPair.first;
         fStartSampleNumber = rsPair.second;
         return;
     }
 
-    inline UInt_t KTSliceHeader::GetEndRecordNumber() const
+    inline unsigned KTSliceHeader::GetEndRecordNumber() const
     {
         return fEndRecordNumber;
     }
 
-    inline void KTSliceHeader::SetEndRecordNumber(UInt_t rec)
+    inline void KTSliceHeader::SetEndRecordNumber(unsigned rec)
     {
         fEndRecordNumber = rec;
         return;
     }
 
-    inline void KTSliceHeader::SetEndRecordAndSample(std::pair< UInt_t, UInt_t > rsPair)
+    inline void KTSliceHeader::SetEndRecordAndSample(std::pair< unsigned, unsigned > rsPair)
     {
         fEndRecordNumber = rsPair.first;
         fEndSampleNumber = rsPair.second;
         return;
     }
 
-    inline UInt_t KTSliceHeader::GetEndSampleNumber() const
+    inline unsigned KTSliceHeader::GetEndSampleNumber() const
     {
         return fEndSampleNumber;
     }
 
-    inline void KTSliceHeader::SetEndSampleNumber(UInt_t sample)
+    inline void KTSliceHeader::SetEndSampleNumber(unsigned sample)
     {
         fEndSampleNumber = sample;
         return;
     }
 
-    inline UInt_t KTSliceHeader::GetRecordSize() const
+    inline unsigned KTSliceHeader::GetRecordSize() const
     {
         return fRecordSize;
     }
 
-    inline void KTSliceHeader::SetRecordSize(UInt_t size)
+    inline void KTSliceHeader::SetRecordSize(unsigned size)
     {
         fRecordSize = size;
         return;
     }
 
-    inline std::pair< UInt_t, UInt_t > KTSliceHeader::GetRecordSamplePairAtSample(UInt_t sampleInSlice)
+    inline std::pair< unsigned, unsigned > KTSliceHeader::GetRecordSamplePairAtSample(unsigned sampleInSlice)
     {
         // NOTE 1: doing these both at once, we can take advantage of compiler optimization,
         // which will most likely only perform one division operation
@@ -323,43 +323,43 @@ namespace Katydid
         return std::make_pair (fTemp2, fTemp3);
     }
 
-    inline TimeType KTSliceHeader::GetTimeStamp(UInt_t component) const
+    inline TimeType KTSliceHeader::GetTimeStamp(unsigned component) const
     {
         return fComponentData[component].fTimeStamp;
     }
 
-    inline void KTSliceHeader::SetTimeStamp(TimeType timeStamp, UInt_t component)
+    inline void KTSliceHeader::SetTimeStamp(TimeType timeStamp, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fTimeStamp = timeStamp;
         return;
     }
 
-    inline AcquisitionIdType KTSliceHeader::GetAcquisitionID(UInt_t component) const
+    inline AcquisitionIdType KTSliceHeader::GetAcquisitionID(unsigned component) const
     {
         return fComponentData[component].fAcquisitionID;
     }
 
-    inline void KTSliceHeader::SetAcquisitionID(AcquisitionIdType acqId, UInt_t component)
+    inline void KTSliceHeader::SetAcquisitionID(AcquisitionIdType acqId, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fAcquisitionID = acqId;
         return;
     }
 
-    inline RecordIdType KTSliceHeader::GetRecordID(UInt_t component) const
+    inline RecordIdType KTSliceHeader::GetRecordID(unsigned component) const
     {
         return fComponentData[component].fRecordID;
     }
 
-    inline void KTSliceHeader::SetRecordID(RecordIdType recId, UInt_t component)
+    inline void KTSliceHeader::SetRecordID(RecordIdType recId, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fRecordID = recId;
         return;
     }
 
-    inline TimeType KTSliceHeader::GetTimeStampAtSample(UInt_t sample, UInt_t component)
+    inline TimeType KTSliceHeader::GetTimeStampAtSample(unsigned sample, unsigned component)
     {
         return fComponentData[component].fTimeStamp + (TimeType)sample * (TimeType)(fBinWidth * 1.e9); // have to convert bin width to ns
     }

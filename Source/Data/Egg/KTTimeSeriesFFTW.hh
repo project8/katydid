@@ -27,13 +27,13 @@ namespace Katydid
 
             virtual void Scale(double scale);
 
-            virtual UInt_t GetNTimeBins() const;
+            virtual unsigned GetNTimeBins() const;
             virtual double GetTimeBinWidth() const;
 
-            virtual void SetValue(UInt_t bin, double value);
-            virtual double GetValue(UInt_t bin) const;
+            virtual void SetValue(unsigned bin, double value);
+            virtual double GetValue(unsigned bin) const;
 
-            virtual void Print(UInt_t startPrint, UInt_t nToPrint) const;
+            virtual void Print(unsigned startPrint, unsigned nToPrint) const;
 
 #ifdef ROOT_FOUND
         public:
@@ -49,7 +49,7 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTTimeSeriesFFTW::GetNTimeBins() const
+    inline unsigned KTTimeSeriesFFTW::GetNTimeBins() const
     {
         return this->size();
     }
@@ -59,14 +59,14 @@ namespace Katydid
         return this->GetBinWidth();
     }
 
-    inline void KTTimeSeriesFFTW::SetValue(UInt_t bin, double value)
+    inline void KTTimeSeriesFFTW::SetValue(unsigned bin, double value)
     {
         (*this)(bin)[0] = value;
         (*this)(bin)[1] = 0.;
         return;
     }
 
-    inline double KTTimeSeriesFFTW::GetValue(UInt_t bin) const
+    inline double KTTimeSeriesFFTW::GetValue(unsigned bin) const
     {
         return (*this)(bin)[0];
     }

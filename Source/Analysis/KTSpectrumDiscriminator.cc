@@ -89,11 +89,11 @@ namespace Katydid
 
         if (node->HasData("min-bin"))
         {
-            SetMinBin(node->GetData< UInt_t >("min-bin"));
+            SetMinBin(node->GetData< unsigned >("min-bin"));
         }
         if (node->HasData("max-bin"))
         {
-            SetMaxBin(node->GetData< UInt_t >("max-bin"));
+            SetMaxBin(node->GetData< unsigned >("max-bin"));
         }
 
         return true;
@@ -148,19 +148,19 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         newData.SetNBins(data.GetSpectrumFFTW(0)->size());
         newData.SetBinWidth(data.GetSpectrumFFTW(0)->GetBinWidth());
 
         // Interval: [fMinBin, fMaxBin)
-        UInt_t nBins = fMaxBin - fMinBin + 1;
+        unsigned nBins = fMaxBin - fMinBin + 1;
         double sigmaNorm = 1. / double(nBins - 1);
 
         // Temporary storage for magnitude values
         vector< double > magnitude(data.GetSpectrumFFTW(0)->size());
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
             if (spectrum == NULL)
@@ -175,7 +175,7 @@ namespace Katydid
 
             double mean = 0.;
 #pragma omp parallel for reduction(+:mean)
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 mean += magnitude[iBin];
@@ -199,7 +199,7 @@ namespace Katydid
             {
                 double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
-                for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+                for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     diff = magnitude[iBin] - mean;
                     sigma += diff * diff;
@@ -215,7 +215,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value;
 #pragma omp parallel for private(value)
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = magnitude[iBin];
                 if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
@@ -241,19 +241,19 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
         }
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         newData.SetNBins(data.GetSpectrumPolar(0)->size());
         newData.SetBinWidth(data.GetSpectrumPolar(0)->GetBinWidth());
 
         // Interval: [fMinBin, fMaxBin)
-        UInt_t nBins = fMaxBin - fMinBin + 1;
+        unsigned nBins = fMaxBin - fMinBin + 1;
         double sigmaNorm = 1. / double(nBins - 1);
 
         // Temporary storage for magnitude values
         vector< double > magnitude(data.GetSpectrumPolar(0)->size());
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
             if (spectrum == NULL)
@@ -267,7 +267,7 @@ namespace Katydid
             }
 
             double mean = 0.;
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 mean += (*spectrum)(iBin).abs();
             }
@@ -289,7 +289,7 @@ namespace Katydid
             else if (fThresholdMode == eSigma)
             {
                 double sigma = 0., diff;
-                for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+                for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     diff = (*spectrum)(iBin).abs() - mean;
                     sigma += diff * diff;
@@ -305,7 +305,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value;
             //std::stringstream printer;
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = (*spectrum)(iBin).abs();
                 if (value >= threshold)

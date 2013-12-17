@@ -74,7 +74,7 @@ namespace Katydid
     class KTComplexFFTW : public KTFFTW, public KTProcessor
     {
         protected:
-            typedef std::map< std::string, UInt_t > TransformFlagMap;
+            typedef std::map< std::string, unsigned > TransformFlagMap;
 
         public:
             KTComplexFFTW(const std::string& name = "complex-fftw");
@@ -98,9 +98,9 @@ namespace Katydid
             KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* fs) const;
             void DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const;
 
-            virtual UInt_t GetSize() const;
-            virtual UInt_t GetTimeSize() const;
-            virtual UInt_t GetFrequencySize() const;
+            virtual unsigned GetSize() const;
+            virtual unsigned GetTimeSize() const;
+            virtual unsigned GetFrequencySize() const;
             virtual double GetMinFrequency(double timeBinWidth) const;
             virtual double GetMaxFrequency(double timeBinWidth) const;
 
@@ -111,7 +111,7 @@ namespace Katydid
 
             /// note: SetSize creates a new fTransform.
             ///       It also sets fIsInitialized to kFALSE.
-            void SetSize(UInt_t nBins);
+            void SetSize(unsigned nBins);
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
@@ -126,7 +126,7 @@ namespace Katydid
             fftw_plan fForwardPlan;
             fftw_plan fReversePlan;
 
-            UInt_t fSize;
+            unsigned fSize;
             fftw_complex* fInputArray;
             fftw_complex* fOutputArray;
 
@@ -158,17 +158,17 @@ namespace Katydid
     };
 
 
-    inline UInt_t KTComplexFFTW::GetSize() const
+    inline unsigned KTComplexFFTW::GetSize() const
     {
         return fSize;
     }
 
-    inline UInt_t KTComplexFFTW::GetTimeSize() const
+    inline unsigned KTComplexFFTW::GetTimeSize() const
     {
         return fSize;
     }
 
-    inline UInt_t KTComplexFFTW::GetFrequencySize() const
+    inline unsigned KTComplexFFTW::GetFrequencySize() const
     {
         return fSize;
     }
@@ -186,7 +186,7 @@ namespace Katydid
         // There's one bin at the center, always: the DC bin.
         // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
         // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
-        UInt_t nBinsToSide = fSize / 2;
+        unsigned nBinsToSide = fSize / 2;
         return GetFrequencyBinWidth(timeBinWidth) * (double(nBinsToSide*2 == fSize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
     }
 

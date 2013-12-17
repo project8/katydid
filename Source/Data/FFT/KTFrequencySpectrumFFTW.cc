@@ -74,9 +74,9 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::CConjugate()
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
 #pragma omp parallel for
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             // order doesn't matter, so use fData[] to access values
             fData[iBin][1] = -fData[iBin][1];
@@ -90,16 +90,16 @@ namespace Katydid
         // Nyquist bin(s) and negative frequency bins are set to 0 (from size/2 to the end of the array)
         // DC bin stays as is (array position 0).
         // Positive frequency bins are multiplied by 2 (from array position 1 to size/2).
-        UInt_t nBins = size();
-        UInt_t nyquistPos = nBins / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
+        unsigned nBins = size();
+        unsigned nyquistPos = nBins / 2; // either the sole nyquist bin (if even # of bins) or the first of the two (if odd # of bins; bins are sequential in the array).
 #pragma omp parallel for
-        for (UInt_t arrayPos=1; arrayPos<nyquistPos; arrayPos++)
+        for (unsigned arrayPos=1; arrayPos<nyquistPos; arrayPos++)
         {
             fData[arrayPos][0] = fData[arrayPos][0] * 2.;
             fData[arrayPos][1] = fData[arrayPos][1] * 2.;
         }
 #pragma omp parallel for
-        for (UInt_t arrayPos=nyquistPos; arrayPos<nBins; arrayPos++)
+        for (unsigned arrayPos=nyquistPos; arrayPos<nBins; arrayPos++)
         {
             fData[arrayPos][0] = 0.;
             fData[arrayPos][1] = 0.;
@@ -113,18 +113,18 @@ namespace Katydid
         // The negative frequency values will be combined with the positive ones,
         // so the power spectrum will go from the DC bin to the max frequency
 
-        UInt_t nBins = fDCBin + 1;
+        unsigned nBins = fDCBin + 1;
         KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar(nBins, -0.5 * GetBinWidth(), GetRangeMax());
 
         // DC bin
         (*newFS)(0).set_rect((*this)(fDCBin)[0], (*this)(fDCBin)[1]);
 
         // All bins besides the Nyquist and DC bins
-        UInt_t totalBins = size();
+        unsigned totalBins = size();
         /*
-        UInt_t iPosBin = fDCBin + 1;
-        UInt_t iNegBin = fDCBin - 1;
-        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+        unsigned iPosBin = fDCBin + 1;
+        unsigned iNegBin = fDCBin - 1;
+        for (unsigned iBin=1; iBin<nBins-1; iBin++)
         {
             //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
             // order matters, so use (*this)() to access values
@@ -139,7 +139,7 @@ namespace Katydid
         {
             double valueImag, valueReal;
 #pragma omp parallel for private(valueReal, valueImag)
-            for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+            for (unsigned iBin=1; iBin<nBins-1; iBin++)
             {
                 valueReal = (*this)(fDCBin - iBin)[0] + (*this)(fDCBin + iBin)[0];
                 valueImag = (*this)(fDCBin - iBin)[1] + (*this)(fDCBin + iBin)[1];
@@ -161,7 +161,7 @@ namespace Katydid
         else
         {
 #pragma omp parallel for
-            for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+            for (unsigned iBin=1; iBin<nBins-1; iBin++)
             {
                 (*newFS)(iBin).set_rect((*this)(fDCBin + iBin)[0], (*this)(fDCBin + iBin)[1]);
             }
@@ -186,7 +186,7 @@ namespace Katydid
         // The negative frequency values will be combined with the positive ones,
         // so the power spectrum will go from the DC bin to the max frequency
 
-        UInt_t nBins = fDCBin + 1;
+        unsigned nBins = fDCBin + 1;
         KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
         double value, valueImag, valueReal;
         double scaling = 1. / KTPowerSpectrum::GetResistance();
@@ -196,11 +196,11 @@ namespace Katydid
         (*newPS)(0) = value * scaling;
 
         // All bins besides the Nyquist and DC bins
-        UInt_t totalBins = size();
+        unsigned totalBins = size();
         /*
-        UInt_t iPosBin = fDCBin + 1;
-        UInt_t iNegBin = fDCBin - 1;
-        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+        unsigned iPosBin = fDCBin + 1;
+        unsigned iNegBin = fDCBin - 1;
+        for (unsigned iBin=1; iBin<nBins-1; iBin++)
         {
             //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
             // order matters, so use (*this)() to access values
@@ -213,7 +213,7 @@ namespace Katydid
         }
         */
 #pragma omp parallel for private(valueReal, valueImag)
-        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+        for (unsigned iBin=1; iBin<nBins-1; iBin++)
         {
             valueReal = (*this)(fDCBin - iBin)[0] + (*this)(fDCBin + iBin)[0];
             valueImag = (*this)(fDCBin - iBin)[1] + (*this)(fDCBin + iBin)[1];
@@ -255,9 +255,9 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH1D* KTFrequencySpectrumFFTW::CreateMagnitudeHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             // order matters, so use (*this)() to access values
             hist->SetBinContent((Int_t)iBin+1, std::sqrt((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]));
@@ -269,9 +269,9 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePhaseHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             // order matters, so use (*this)() to access values
             hist->SetBinContent((Int_t)iBin+1, std::atan2((*this)(iBin)[1], (*this)(iBin)[0]));
@@ -283,7 +283,7 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = fDCBin + 1;
+        unsigned nBins = fDCBin + 1;
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, -0.5 * GetBinWidth(), GetRangeMax());
         double value, valueImag, valueReal;
         double scaling = 1. / KTPowerSpectrum::GetResistance();
@@ -293,10 +293,10 @@ namespace Katydid
         hist->SetBinContent(1, value * scaling);
 
         // All bins besides the Nyquist and DC bins
-        UInt_t totalBins = size();
-        UInt_t iPosBin = fDCBin + 1;
-        UInt_t iNegBin = fDCBin - 1;
-        for (UInt_t iBin=1; iBin<nBins-1; iBin++)
+        unsigned totalBins = size();
+        unsigned iPosBin = fDCBin + 1;
+        unsigned iNegBin = fDCBin - 1;
+        for (unsigned iBin=1; iBin<nBins-1; iBin++)
         {
             //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
             // order matters, so use (*this)() to access values
@@ -329,12 +329,12 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreateMagnitudeDistributionHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
         double tMaxMag = -1.;
         double tMinMag = 1.e9;
         double value;
         // skip the DC bin; start at iBin = 1
-        for (UInt_t iBin=1; iBin<nBins; iBin++)
+        for (unsigned iBin=1; iBin<nBins; iBin++)
         {
             // order doesn't matter, so use fData[iBin] to access values
             value = std::sqrt(fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]);
@@ -343,7 +343,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             // order matters, so use (*this)() to access values
             value = sqrt((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]);
@@ -355,13 +355,13 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumFFTW::CreatePowerDistributionHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
         double tMaxMag = -1.;
         double tMinMag = 1.e9;
         double value;
         double scaling = 1. / KTPowerSpectrum::GetResistance();
         // skip the DC bin; start at iBin = 1
-        for (UInt_t iBin=1; iBin<nBins; iBin++)
+        for (unsigned iBin=1; iBin<nBins; iBin++)
         {
             // order doesn't matter, so use fData[iBin] to access values
             value = (fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]) * scaling;
@@ -370,7 +370,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             // order matters, so use (*this)() to access values
             value = (*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1];

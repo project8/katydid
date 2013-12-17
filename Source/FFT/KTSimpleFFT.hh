@@ -76,7 +76,7 @@ namespace Katydid
     class KTSimpleFFT : public KTFFT, public KTProcessor
     {
         protected:
-            typedef std::map< std::string, UInt_t > TransformFlagMap;
+            typedef std::map< std::string, unsigned > TransformFlagMap;
 
         public:
             KTSimpleFFT(const std::string& name = "simple-fft");
@@ -100,14 +100,14 @@ namespace Katydid
             /// Reverse FFT
             KTTimeSeriesReal* Transform(const KTFrequencySpectrumPolar* data) const;
 
-            virtual UInt_t GetTimeSize() const;
-            virtual UInt_t GetFrequencySize() const;
+            virtual unsigned GetTimeSize() const;
+            virtual unsigned GetFrequencySize() const;
             virtual double GetMinFrequency(double timeBinWidth) const;
             virtual double GetMaxFrequency(double timeBinWidth) const;
 
             /// note: SetTimeSize creates a new fTransform.
             ///       It also sets fIsInitialized to kFALSE.
-            void SetTimeSize(UInt_t nBins);
+            void SetTimeSize(unsigned nBins);
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
@@ -120,13 +120,13 @@ namespace Katydid
             void SetWisdomFilename(const std::string& fname);
 
         protected:
-            UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
+            unsigned CalculateNFrequencyBins(unsigned nTimeBins) const; // do not make this virtual (called from the constructor)
             KTFrequencySpectrumPolar* ExtractForwardTransformResult(double freqMin, double freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fForwardPlan;
             fftw_plan fReversePlan;
-            UInt_t fTimeSize;
+            unsigned fTimeSize;
             double* fTSArray;
             fftw_complex* fFSArray;
 
@@ -158,12 +158,12 @@ namespace Katydid
     };
 
 
-    inline UInt_t KTSimpleFFT::GetTimeSize() const
+    inline unsigned KTSimpleFFT::GetTimeSize() const
     {
         return fTimeSize;
     }
 
-    inline UInt_t KTSimpleFFT::GetFrequencySize() const
+    inline unsigned KTSimpleFFT::GetFrequencySize() const
     {
         return CalculateNFrequencyBins(fTimeSize);
     }
@@ -210,7 +210,7 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTSimpleFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const
+    inline unsigned KTSimpleFFT::CalculateNFrequencyBins(unsigned nTimeBins) const
     {
         // Integer division is rounded down, per FFTW's instructions
         return nTimeBins / 2 + 1;

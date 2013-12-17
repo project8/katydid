@@ -24,13 +24,13 @@ KTLOGGER(testlog, "katydid.applications.validation");
 
 int main()
 {
-    UInt_t nBins = 1000000;
+    unsigned nBins = 1000000;
     double minFreq = 0., maxFreq = 100.;
 
     double meanValue = 5.;
     double noiseSigma = 1.;
 
-    UInt_t nPeaks = 10;
+    unsigned nPeaks = 10;
     double meanPeakMult = 5.;
     double sigmaPeakMult = 3.;
 
@@ -46,7 +46,7 @@ int main()
 
     // Fill in the noise
     KTINFO(testlog, "Creating the baseline and noise");
-    for (UInt_t iBin=0; iBin<nBins; iBin++)
+    for (unsigned iBin=0; iBin<nBins; iBin++)
     {
 #ifdef ROOT_FOUND
         (*spectrum)(iBin).set_polar(rand.Gaus(meanValue, noiseSigma), 0.);
@@ -56,13 +56,13 @@ int main()
     }
 
     // Add some peaks
-    for (UInt_t iPeak=0; iPeak<nPeaks; iPeak++)
+    for (unsigned iPeak=0; iPeak<nPeaks; iPeak++)
     {
 #ifdef ROOT_FOUND
-        UInt_t iBin = UInt_t(rand.Rndm() * (double)nBins);
+        unsigned iBin = unsigned(rand.Rndm() * (double)nBins);
         double multiplier = rand.Gaus(meanPeakMult, sigmaPeakMult);
 #else
-        UInt_t iBin = iPeak * nBins/nPeaks;
+        unsigned iBin = iPeak * nBins/nPeaks;
         double multiplier = meanPeakMult;
 #endif
         (*spectrum)(iBin).set_polar((*spectrum)(iBin).abs() * multiplier, 0.);

@@ -107,9 +107,9 @@ namespace Katydid
             fWindowFunction->AdaptTo(&tsData); // this call rebuilds the window, so that doesn't need to be done separately
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesReal* nextInput = dynamic_cast< KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -139,9 +139,9 @@ namespace Katydid
             fWindowFunction->AdaptTo(&tsData); // this call rebuilds the window, so that doesn't need to be done separately
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesFFTW* nextInput = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -166,7 +166,7 @@ namespace Katydid
 
     Bool_t KTWindower::ApplyWindow(KTTimeSeriesReal* ts) const
     {
-        UInt_t nBins = ts->size();
+        unsigned nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
         {
             KTWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
@@ -174,7 +174,7 @@ namespace Katydid
             return false;
         }
 
-        for (UInt_t iBin=0; iBin < nBins; ++iBin)
+        for (unsigned iBin=0; iBin < nBins; ++iBin)
         {
             (*ts)(iBin) = (*ts)(iBin) * fWindowFunction->GetWeight(iBin);
         }
@@ -184,7 +184,7 @@ namespace Katydid
 
     Bool_t KTWindower::ApplyWindow(KTTimeSeriesFFTW* ts) const
     {
-        UInt_t nBins = ts->size();
+        unsigned nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
         {
             KTWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
@@ -193,7 +193,7 @@ namespace Katydid
         }
 
         double weight;
-        for (UInt_t iBin=0; iBin < nBins; ++iBin)
+        for (unsigned iBin=0; iBin < nBins; ++iBin)
         {
             weight = fWindowFunction->GetWeight(iBin);
             (*ts)(iBin)[0] = (*ts)(iBin)[0] * weight;

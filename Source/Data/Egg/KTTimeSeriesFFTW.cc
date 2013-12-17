@@ -33,7 +33,7 @@ namespace Katydid
             KTTimeSeries(),
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax)
     {
-        for (UInt_t iBin = 0; iBin < nBins; iBin++)
+        for (unsigned iBin = 0; iBin < nBins; iBin++)
         {
             fData[iBin][0] = 0.;
             fData[iBin][1] = 0.;
@@ -70,9 +70,9 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH1D* KTTimeSeriesFFTW::CreateHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
+        unsigned nBins = GetNBins();
         TH1D* hist = new TH1D(name.c_str(), "Time Series", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             hist->SetBinContent((Int_t)iBin+1, (*this)(iBin)[0]);
         }
@@ -85,9 +85,9 @@ namespace Katydid
     {
         double tMaxMag = -1.;
         double tMinMag = 1.e9;
-        UInt_t nBins = GetNTimeBins();
+        unsigned nBins = GetNTimeBins();
         double value;
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin)[0];
             //value *= value;
@@ -96,7 +96,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             //value = (*this)(iBin)[0];
             //hist->Fill(value*value);

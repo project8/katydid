@@ -98,11 +98,11 @@ namespace Katydid
             double GetMaxFrequency() const;
             void SetMaxFrequency(double freq);
 
-            UInt_t GetMinBin() const;
-            void SetMinBin(UInt_t bin);
+            unsigned GetMinBin() const;
+            void SetMinBin(unsigned bin);
 
-            UInt_t GetMaxBin() const;
-            void SetMaxBin(UInt_t bin);
+            unsigned GetMaxBin() const;
+            void SetMaxBin(unsigned bin);
 
         private:
 
@@ -112,8 +112,8 @@ namespace Katydid
 
             double fMinFrequency;
             double fMaxFrequency;
-            UInt_t fMinBin;
-            UInt_t fMaxBin;
+            unsigned fMinBin;
+            unsigned fMaxBin;
             Bool_t fCalculateMinBin;
             Bool_t fCalculateMaxBin;
 
@@ -125,8 +125,8 @@ namespace Katydid
             Bool_t Discriminate(KTCorrelationData& data, KTGainVariationData& gvData);
             Bool_t Discriminate(KTWignerVilleData& data, KTGainVariationData& gvData);
 
-            Bool_t DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, UInt_t component=0);
-            Bool_t DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, UInt_t component=0);
+            Bool_t DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component=0);
+            Bool_t DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component=0);
 
         private:
             Bool_t CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
@@ -210,24 +210,24 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTVariableSpectrumDiscriminator::GetMinBin() const
+    inline unsigned KTVariableSpectrumDiscriminator::GetMinBin() const
     {
         return fMinBin;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMinBin(UInt_t bin)
+    inline void KTVariableSpectrumDiscriminator::SetMinBin(unsigned bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
     }
 
-    inline UInt_t KTVariableSpectrumDiscriminator::GetMaxBin() const
+    inline unsigned KTVariableSpectrumDiscriminator::GetMaxBin() const
     {
         return fMaxBin;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMaxBin(UInt_t bin)
+    inline void KTVariableSpectrumDiscriminator::SetMaxBin(unsigned bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;

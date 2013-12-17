@@ -42,7 +42,7 @@ namespace Katydid
 #ifdef ROOT_FOUND
      TH1D* KTPowerSpectrum::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
         //double value;
         for (unsigned int iBin=0; iBin<nBins; iBin++)
@@ -58,9 +58,9 @@ namespace Katydid
     {
         double tMaxMag = -1.;
         double tMinMag = 1.e9;
-        UInt_t nBins = size();
+        unsigned nBins = size();
         double value;
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin);
             if (value < tMinMag) tMinMag = value;
@@ -68,7 +68,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             hist->Fill((*this)(iBin));
         }
@@ -99,7 +99,7 @@ namespace Katydid
     {
     }
 
-    KTPowerSpectrum::KTPowerSpectrum(UInt_t nBins, double binWidth) :
+    KTPowerSpectrum::KTPowerSpectrum(unsigned nBins, double binWidth) :
             KTComplexVector(nBins),
             fBinWidth(binWidth)
     {

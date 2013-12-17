@@ -33,18 +33,18 @@ namespace Katydid
 
             virtual KTTimeFrequencyPolar& operator=(const KTTimeFrequencyPolar& rhs);
 
-            virtual double GetReal(UInt_t timebin, UInt_t freqbin) const;
-            virtual double GetImag(UInt_t timebin, UInt_t freqbin) const;
+            virtual double GetReal(unsigned timebin, unsigned freqbin) const;
+            virtual double GetImag(unsigned timebin, unsigned freqbin) const;
 
-            virtual void SetRect(UInt_t timebin, UInt_t freqbin, double real, double imag);
+            virtual void SetRect(unsigned timebin, unsigned freqbin, double real, double imag);
 
-            virtual double GetAbs(UInt_t timebin, UInt_t freqbin) const;
-            virtual double GetArg(UInt_t timebin, UInt_t freqbin) const;
+            virtual double GetAbs(unsigned timebin, unsigned freqbin) const;
+            virtual double GetArg(unsigned timebin, unsigned freqbin) const;
 
-            virtual void SetPolar(UInt_t timebin, UInt_t freqbin, double abs, double arg);
+            virtual void SetPolar(unsigned timebin, unsigned freqbin, double abs, double arg);
 
-            virtual UInt_t GetNTimeBins() const;
-            virtual UInt_t GetNFrequencyBins() const;
+            virtual unsigned GetNTimeBins() const;
+            virtual unsigned GetNFrequencyBins() const;
 
             virtual double GetTimeBinWidth() const;
             virtual double GetFrequencyBinWidth() const;
@@ -67,44 +67,44 @@ namespace Katydid
 
     };
 
-    inline double KTTimeFrequencyPolar::GetReal(UInt_t timebin, UInt_t freqbin) const
+    inline double KTTimeFrequencyPolar::GetReal(unsigned timebin, unsigned freqbin) const
     {
         return (*this)(timebin, freqbin).abs() * std::cos((*this)(timebin, freqbin).arg());
     }
 
-    inline double KTTimeFrequencyPolar::GetImag(UInt_t timebin, UInt_t freqbin) const
+    inline double KTTimeFrequencyPolar::GetImag(unsigned timebin, unsigned freqbin) const
     {
         return (*this)(timebin, freqbin).abs() * std::sin((*this)(timebin, freqbin).arg());
     }
 
-    inline void KTTimeFrequencyPolar::SetRect(UInt_t timebin, UInt_t freqbin, double real, double imag)
+    inline void KTTimeFrequencyPolar::SetRect(unsigned timebin, unsigned freqbin, double real, double imag)
     {
         (*this)(timebin, freqbin).set_rect(real, imag);
         return;
     }
 
-    inline double KTTimeFrequencyPolar::GetAbs(UInt_t timebin, UInt_t freqbin) const
+    inline double KTTimeFrequencyPolar::GetAbs(unsigned timebin, unsigned freqbin) const
     {
         return (*this)(timebin, freqbin).abs();
     }
 
-    inline double KTTimeFrequencyPolar::GetArg(UInt_t timebin, UInt_t freqbin) const
+    inline double KTTimeFrequencyPolar::GetArg(unsigned timebin, unsigned freqbin) const
     {
         return (*this)(timebin, freqbin).arg();
     }
 
-    inline void KTTimeFrequencyPolar::SetPolar(UInt_t timebin, UInt_t freqbin, double abs, double arg)
+    inline void KTTimeFrequencyPolar::SetPolar(unsigned timebin, unsigned freqbin, double abs, double arg)
     {
         (*this)(timebin, freqbin).set_polar(abs, arg);
         return;
     }
 
-    inline UInt_t KTTimeFrequencyPolar::GetNTimeBins() const
+    inline unsigned KTTimeFrequencyPolar::GetNTimeBins() const
     {
         return size(1);
     }
 
-    inline UInt_t KTTimeFrequencyPolar::GetNFrequencyBins() const
+    inline unsigned KTTimeFrequencyPolar::GetNFrequencyBins() const
     {
         return size(2);
     }

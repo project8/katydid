@@ -17,18 +17,18 @@ namespace Katydid
     KTCorrelationData::~KTCorrelationData()
     {}
 
-    KTCorrelationData& KTCorrelationData::SetNComponents(UInt_t components)
+    KTCorrelationData& KTCorrelationData::SetNComponents(unsigned components)
     {
-        UInt_t oldSize = fSpectra.size();
+        unsigned oldSize = fSpectra.size();
         // if components < oldSize
-        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
         {
             delete fSpectra[iComponent];
         }
         fSpectra.resize(components);
         fComponentData.resize(components);
         // if components > oldSize
-        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
         {
             fSpectra[iComponent] = NULL;
         }

@@ -92,11 +92,11 @@ namespace Katydid
 
         if (node->HasData("min-bin"))
         {
-            SetMinBin(node->GetData< UInt_t >("min-bin"));
+            SetMinBin(node->GetData< unsigned >("min-bin"));
         }
         if (node->HasData("max-bin"))
         {
-            SetMaxBin(node->GetData< UInt_t >("max-bin"));
+            SetMaxBin(node->GetData< unsigned >("max-bin"));
         }
 
         return true;
@@ -151,12 +151,12 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin);
         }
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         newData.SetNBins(data.GetSpectrumFFTW(0)->size());
         newData.SetBinWidth(data.GetSpectrumFFTW(0)->GetBinWidth());
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             if (! DiscriminateSpectrum(data.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
             {
@@ -183,12 +183,12 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
         }
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         newData.SetNBins(data.GetSpectrumPolar(0)->size());
         newData.SetBinWidth(data.GetSpectrumPolar(0)->GetBinWidth());
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             if (! DiscriminateSpectrum(data.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
             {
@@ -202,7 +202,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, UInt_t component)
+    Bool_t KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component)
     {
         if (spectrum == NULL)
         {
@@ -210,7 +210,7 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nBins = fMaxBin - fMinBin + 1;
+        unsigned nBins = fMaxBin - fMinBin + 1;
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
@@ -238,7 +238,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value;
 #pragma omp parallel for private(value)
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = (*spectrum)(iBin).abs();
                 if (value >= thresholdMult * (*splineImp)(iBin - fMinBin))
@@ -253,7 +253,7 @@ namespace Katydid
             double sigmaNorm = 1. / double(nBins - 1);
             double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 diff = (*spectrum)(iBin).abs() - (*splineImp)(iBin - fMinBin);
                 sigma += diff * diff;
@@ -267,7 +267,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value;
 #pragma omp parallel for private(value)
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = (*spectrum)(iBin).abs();
                 if (value >= thresholdAdd + (*splineImp)(iBin - fMinBin))
@@ -281,7 +281,7 @@ namespace Katydid
 
     }
 
-    Bool_t KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, UInt_t component)
+    Bool_t KTVariableSpectrumDiscriminator::DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component)
     {
         if (spectrum == NULL)
         {
@@ -289,7 +289,7 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nBins = fMaxBin - fMinBin + 1;
+        unsigned nBins = fMaxBin - fMinBin + 1;
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
@@ -317,7 +317,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value;
 #pragma omp parallel for private(value)
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 if (value >= thresholdMult * (*splineImp)(iBin - fMinBin))
@@ -336,7 +336,7 @@ namespace Katydid
             double sigmaNorm = 1. / double(nBins - 1);
             double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 fMagnitudeCache[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 diff = fMagnitudeCache[iBin] - (*splineImp)(iBin - fMinBin);
@@ -351,7 +351,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value;
 #pragma omp parallel for private(value)
-            for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = fMagnitudeCache[iBin];
                 if (value >= thresholdAdd + (*splineImp)(iBin - fMinBin))

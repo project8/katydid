@@ -16,7 +16,7 @@ namespace Katydid
 {
     struct KTLocustMCFilename
     {
-            UInt_t fNEvents;
+            unsigned fNEvents;
             double fEventLength; // sec
             double fdfdt; // Hz/sec ?
             double fSignalPower; // Watts

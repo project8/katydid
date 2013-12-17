@@ -71,14 +71,14 @@ namespace Katydid
 
         if (node->HasData("min-bin"))
         {
-            SetMinBin(node->GetData< UInt_t >("min-bin"));
+            SetMinBin(node->GetData< unsigned >("min-bin"));
         }
         if (node->HasData("max-bin"))
         {
-            SetMaxBin(node->GetData< UInt_t >("max-bin"));
+            SetMaxBin(node->GetData< unsigned >("max-bin"));
         }
 
-        SetNFitPoints(node->GetData< UInt_t >("fit-points", fNFitPoints));
+        SetNFitPoints(node->GetData< unsigned >("fit-points", fNFitPoints));
 
         return true;
     }
@@ -121,15 +121,15 @@ namespace Katydid
         }
         KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumPolar(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumPolar(0)->GetRangeMax());
 
-        UInt_t nTotalBins = fMaxBin - fMinBin + 1;
-        UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
+        unsigned nTotalBins = fMaxBin - fMinBin + 1;
+        unsigned nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
         KTDEBUG(gvlog, "Performing gain variation fits with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         //double sigmaNorm = 1. / double(nBinsPerFitPoint - 1);
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
 
@@ -138,17 +138,17 @@ namespace Katydid
 
             // Calculate fit points
 #pragma omp parallel for default(shared)
-            for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
             {
-                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
-                UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
+                unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
+                unsigned fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
                 double leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
                 double rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
                 xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
 
                 double mean = 0.;
-                for (UInt_t iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
+                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
                 {
                     mean += (*spectrum)(iBin).abs();
                 }
@@ -162,11 +162,11 @@ namespace Katydid
             {
                 // Normalize the fit points to 1
                 double minYVal = yVals[0];
-                for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
                 {
                     if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
                 }
-                for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
                 {
                     yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
                 }
@@ -209,15 +209,15 @@ namespace Katydid
         }
         KTDEBUG(gvlog, "min frequency: " << fMinFrequency << "; max frequency: " << fMaxFrequency << "; min bin: " << fMinBin << "; max bin " << fMaxBin << "; input range max " << data.GetSpectrumFFTW(0)->GetRangeMin() << "; input range min: " << data.GetSpectrumFFTW(0)->GetRangeMax());
 
-        UInt_t nTotalBins = fMaxBin - fMinBin + 1;
-        UInt_t nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
+        unsigned nTotalBins = fMaxBin - fMinBin + 1;
+        unsigned nBinsPerFitPoint = nTotalBins / fNFitPoints; // integer division rounds down; there may be bins leftover unused
 
         KTDEBUG(gvlog, "Performing gain variation fit with " << fNFitPoints << " points, and " << nBinsPerFitPoint << " bins averaged per fit point.");
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         //double sigmaNorm = 1. / double(nBinsPerFitPoint - 1);
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
 
@@ -226,17 +226,17 @@ namespace Katydid
 
             // Calculate fit points
 #pragma omp parallel for default(shared)
-            for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+            for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
             {
-                UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
-                UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
+                unsigned fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
+                unsigned fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
                 double leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
                 double rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
                 xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
 
                 double mean = 0.;
-                for (UInt_t iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
+                for (unsigned iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
                 {
                     mean += sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 }
@@ -250,11 +250,11 @@ namespace Katydid
             if (fNormalize)
             {
                 double minYVal = yVals[0];
-                for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
                 {
                     if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
                 }
-                for (UInt_t iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
+                for (unsigned iFitPoint=0; iFitPoint < fNFitPoints; iFitPoint++)
                 {
                     yVals[iFitPoint] = yVals[iFitPoint] / minYVal;
                 }
@@ -277,14 +277,14 @@ namespace Katydid
     }
 
     /*
-    KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateGainVariation(TSpline* spline, UInt_t nBins, double rangeMin, double rangeMax) const
+    KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateGainVariation(TSpline* spline, unsigned nBins, double rangeMin, double rangeMax) const
     {
         GainVariation* newGainVar = new GainVariation(nBins, rangeMin, rangeMax);
 
         // The fit region: [fMinBin, fMaxBin)
         // Keep track of the minimum value so we can shift it down to 1
         double minVal = spline->Eval(newGainVar->GetBinCenter(fMinBin));
-        for (UInt_t iBin = fMinBin; iBin < fMaxBin; iBin++)
+        for (unsigned iBin = fMinBin; iBin < fMaxBin; iBin++)
         {
             (*newGainVar)(iBin) = spline->Eval(newGainVar->GetBinCenter(iBin));
             if ((*newGainVar)(iBin) < minVal)
@@ -292,19 +292,19 @@ namespace Katydid
                 minVal = (*newGainVar)(iBin);
             }
         }
-        for (UInt_t iBin = fMinBin; iBin < fMaxBin; iBin++)
+        for (unsigned iBin = fMinBin; iBin < fMaxBin; iBin++)
         {
             (*newGainVar)(iBin) = (*newGainVar)(iBin) / minVal;
         }
 
         // Before the fit region: [0, fMinBin)
-        for (UInt_t iBin = 0; iBin < fMinBin; iBin++)
+        for (unsigned iBin = 0; iBin < fMinBin; iBin++)
         {
             (*newGainVar)(iBin) = 1.;
         }
 
         // After the fit region: [fMaxBin, nBins)
-        for (UInt_t iBin = fMaxBin; iBin < nBins; iBin++)
+        for (unsigned iBin = fMaxBin; iBin < nBins; iBin++)
         {
             (*newGainVar)(iBin) = 1.;
         }

@@ -20,12 +20,12 @@ namespace Katydid
         public:
             struct Candidate
             {
-                UInt_t fStartRecord;
-                UInt_t fStartSample;
-                UInt_t fEndRecord;
-                UInt_t fEndSample;
+                unsigned fStartRecord;
+                unsigned fStartSample;
+                unsigned fEndRecord;
+                unsigned fEndSample;
 
-                Candidate(UInt_t startRec, UInt_t startSample, UInt_t endRec, UInt_t endSample)
+                Candidate(unsigned startRec, unsigned startSample, unsigned endRec, unsigned endSample)
                 {
                     fStartRecord = startRec;
                     fStartSample = startSample;
@@ -55,17 +55,17 @@ namespace Katydid
             void AddCandidate(const Candidate& electron);
             void ClearCandidates();
 
-            UInt_t GetRecordSize() const;
-            void SetRecordSize(UInt_t size);
+            unsigned GetRecordSize() const;
+            void SetRecordSize(unsigned size);
 
-            UInt_t GetNRecords() const;
-            void SetNRecords(UInt_t rec);
+            unsigned GetNRecords() const;
+            void SetNRecords(unsigned rec);
 
         protected:
             CandidateSet fCandidates;
 
-            UInt_t fRecordSize;
-            UInt_t fNRecords;
+            unsigned fRecordSize;
+            unsigned fNRecords;
     };
 
     inline const KTAnalysisCandidates::CandidateSet& KTAnalysisCandidates::GetCandidates() const
@@ -85,23 +85,23 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTAnalysisCandidates::GetRecordSize() const
+    inline unsigned KTAnalysisCandidates::GetRecordSize() const
     {
         return fRecordSize;
     }
 
-    inline void KTAnalysisCandidates::SetRecordSize(UInt_t size)
+    inline void KTAnalysisCandidates::SetRecordSize(unsigned size)
     {
         fRecordSize = size;
         return;
     }
 
-    inline UInt_t KTAnalysisCandidates::GetNRecords() const
+    inline unsigned KTAnalysisCandidates::GetNRecords() const
     {
         return fNRecords;
     }
 
-    inline void KTAnalysisCandidates::SetNRecords(UInt_t rec)
+    inline void KTAnalysisCandidates::SetNRecords(unsigned rec)
     {
         fNRecords = rec;
         return;

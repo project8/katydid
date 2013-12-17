@@ -34,15 +34,15 @@ namespace Katydid
         ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
-        UInt_t nCh = tsData.GetNComponents();
+        unsigned nCh = tsData.GetNComponents();
 
         if( fWriter->CanWrite() == true ) {
 
-            for(UInt_t iCh = 0; iCh < nCh; iCh++) {
+            for(unsigned iCh = 0; iCh < nCh; iCh++) {
                 std::ofstream* file_ptr = fWriter->GetStream();
                 const KTTimeSeries* sCh = tsData.GetTimeSeries(iCh);
                 if(sCh != NULL) {
-                    for(UInt_t iB = 0; iB < sCh->GetNTimeBins(); iB++) {
+                    for(unsigned iB = 0; iB < sCh->GetNTimeBins(); iB++) {
                         (*file_ptr) << sliceNumber
                                 << ","
                                 << iCh

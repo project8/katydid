@@ -63,15 +63,15 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            UInt_t GetNSubsets() const;
-            void SetNSubsets(UInt_t subsets);
+            unsigned GetNSubsets() const;
+            void SetNSubsets(unsigned subsets);
 
-            UInt_t GetSubsetSize() const;
-            void SetSubsetSize(UInt_t size);
+            unsigned GetSubsetSize() const;
+            void SetSubsetSize(unsigned size);
 
         private:
-            UInt_t fNSubsets;
-            UInt_t fSubsetSize;
+            unsigned fNSubsets;
+            unsigned fSubsetSize;
 
         public:
             Bool_t InitializeWindow();
@@ -114,23 +114,23 @@ namespace Katydid
     };
 
 
-    inline UInt_t KTPolyphaseFilterBank::GetNSubsets() const
+    inline unsigned KTPolyphaseFilterBank::GetNSubsets() const
     {
         return fNSubsets;
     }
 
-    inline void KTPolyphaseFilterBank::SetNSubsets(UInt_t subsets)
+    inline void KTPolyphaseFilterBank::SetNSubsets(unsigned subsets)
     {
         fNSubsets = subsets;
         return;
     }
 
-    inline UInt_t KTPolyphaseFilterBank::GetSubsetSize() const
+    inline unsigned KTPolyphaseFilterBank::GetSubsetSize() const
     {
         return fSubsetSize;
     }
 
-    inline void KTPolyphaseFilterBank::SetSubsetSize(UInt_t size)
+    inline void KTPolyphaseFilterBank::SetSubsetSize(unsigned size)
     {
         fNSubsets = size;
         return;

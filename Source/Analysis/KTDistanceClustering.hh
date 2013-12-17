@@ -52,13 +52,13 @@ namespace Katydid
             double GetMaxFrequencyDistance() const;
             void SetMaxFrequencyDistance(double freq);
 
-            UInt_t GetMaxBinDistance() const;
-            void SetMaxBinDistance(UInt_t bin);
+            unsigned GetMaxBinDistance() const;
+            void SetMaxBinDistance(unsigned bin);
 
         private:
 
             double fMaxFrequencyDistance;
-            UInt_t fMaxBinDistance;
+            unsigned fMaxBinDistance;
             Bool_t fCalculateMaxBinDistance;
 
         public:
@@ -99,12 +99,12 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTDistanceClustering::GetMaxBinDistance() const
+    inline unsigned KTDistanceClustering::GetMaxBinDistance() const
     {
         return fMaxBinDistance;
     }
 
-    inline void KTDistanceClustering::SetMaxBinDistance(UInt_t bin)
+    inline void KTDistanceClustering::SetMaxBinDistance(unsigned bin)
     {
         fMaxBinDistance = bin;
         fCalculateMaxBinDistance = false;

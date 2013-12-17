@@ -63,23 +63,23 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            UInt_t GetNThetaPoints() const;
-            void SetNThetaPoints(UInt_t nPoints);
+            unsigned GetNThetaPoints() const;
+            void SetNThetaPoints(unsigned nPoints);
 
-            UInt_t GetNRPoints() const;
-            void SetNRPoints(UInt_t nPoints);
+            unsigned GetNRPoints() const;
+            void SetNRPoints(unsigned nPoints);
 
         private:
 
-            UInt_t fNThetaPoints;
-            UInt_t fNRPoints;
+            unsigned fNThetaPoints;
+            unsigned fNRPoints;
 
         public:
             //Bool_t TransformData(KTSlidingWindowFSDataFFTW& data);
             //KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum);
 
             Bool_t TransformData(KTDiscriminatedPoints2DData& data);
-            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSetOfPoints(const SetOfPoints& points, UInt_t nTimeBins, UInt_t nFreqBins);
+            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSetOfPoints(const SetOfPoints& points, unsigned nTimeBins, unsigned nFreqBins);
 
 
         private:
@@ -102,23 +102,23 @@ namespace Katydid
 
     };
 
-    inline UInt_t KTHoughTransform::GetNThetaPoints() const
+    inline unsigned KTHoughTransform::GetNThetaPoints() const
     {
         return fNThetaPoints;
     }
 
-    inline void KTHoughTransform::SetNThetaPoints(UInt_t nPoints)
+    inline void KTHoughTransform::SetNThetaPoints(unsigned nPoints)
     {
         fNThetaPoints = nPoints;
         return;
     }
 
-    inline UInt_t KTHoughTransform::GetNRPoints() const
+    inline unsigned KTHoughTransform::GetNRPoints() const
     {
         return fNRPoints;
     }
 
-    inline void KTHoughTransform::SetNRPoints(UInt_t nPoints)
+    inline void KTHoughTransform::SetNRPoints(unsigned nPoints)
     {
         fNRPoints = nPoints;
         return;

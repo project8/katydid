@@ -27,7 +27,7 @@ namespace Katydid
     struct KTData : public KTExtensibleData< KTData >
     {
             KTData();
-            UInt_t fCounter;
+            unsigned fCounter;
             Bool_t fLastData;
     };
 

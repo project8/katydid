@@ -24,40 +24,40 @@ namespace Katydid
             KTProcSummary& operator=(const KTProcSummary& rhs);
 
         public:
-            void SetNSlicesProcessed(UInt_t slices);
-            UInt_t GetNSlicesProcessed() const;
+            void SetNSlicesProcessed(unsigned slices);
+            unsigned GetNSlicesProcessed() const;
 
-            void SetNRecordsProcessed(UInt_t recs);
-            UInt_t GetNRecordsProcessed() const;
+            void SetNRecordsProcessed(unsigned recs);
+            unsigned GetNRecordsProcessed() const;
 
             void SetIntegratedTime(double acqr);
             double GetIntegratedTime() const;
 
         protected:
-            UInt_t fNSlicesProcessed;
-            UInt_t fNRecordsProcessed; /// if any samples from a record were used, it's counted
+            unsigned fNSlicesProcessed;
+            unsigned fNRecordsProcessed; /// if any samples from a record were used, it's counted
             double fIntegratedTime; /// # of slices * slice size * bin width
 
     };
 
-    inline void KTProcSummary::SetNSlicesProcessed(UInt_t slices)
+    inline void KTProcSummary::SetNSlicesProcessed(unsigned slices)
     {
         fNSlicesProcessed = slices;
         return;
     }
 
-    inline UInt_t KTProcSummary::GetNSlicesProcessed() const
+    inline unsigned KTProcSummary::GetNSlicesProcessed() const
     {
         return fNSlicesProcessed;
     }
 
-    inline void KTProcSummary::SetNRecordsProcessed(UInt_t recs)
+    inline void KTProcSummary::SetNRecordsProcessed(unsigned recs)
     {
         fNRecordsProcessed = recs;
         return;
     }
 
-    inline UInt_t KTProcSummary::GetNRecordsProcessed() const
+    inline unsigned KTProcSummary::GetNRecordsProcessed() const
     {
         return fNRecordsProcessed;
     }

@@ -48,7 +48,7 @@ namespace Katydid
             virtual Bool_t Configure(const KTPStoreNode* node);
             virtual Bool_t IsReady() const;
 
-            virtual void SetSeed(UInt_t seed);
+            virtual void SetSeed(unsigned seed);
 
             generator_type& GetGenerator();
 
@@ -61,7 +61,7 @@ namespace Katydid
         return true;
     }
 
-    inline void KTRNGEngine::SetSeed(UInt_t seed)
+    inline void KTRNGEngine::SetSeed(unsigned seed)
     {
         fGenerator.seed(seed);
         return;

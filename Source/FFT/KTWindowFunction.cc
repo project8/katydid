@@ -60,7 +60,7 @@ namespace Katydid
     TH1D* KTWindowFunction::CreateHistogram(const string& name) const
     {
         TH1D* hist = new TH1D(name.c_str(), "Window Function", fSize, 0, fLength);
-        for (UInt_t iHistBin=1; iHistBin<=fSize; iHistBin++)
+        for (unsigned iHistBin=1; iHistBin<=fSize; iHistBin++)
         {
             hist->SetBinContent(iHistBin, this->GetWeight(iHistBin-1));
         }
@@ -72,7 +72,7 @@ namespace Katydid
     TH1D* KTWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
     {
         KTTimeSeriesFFTW timeData(fSize, 0., double(fSize) * fBinWidth);
-        for (UInt_t iBin=0; iBin<fSize+0; iBin++)
+        for (unsigned iBin=0; iBin<fSize+0; iBin++)
         {
             timeData.SetValue(iBin, GetWeight(iBin));
         }
@@ -96,7 +96,7 @@ namespace Katydid
         {
             // Priority is to preserve the bin width, but it might not be an even divisor of the new length
             double prelimSize = fLength / fBinWidth;
-            fSize = (UInt_t)KTMath::Nint(prelimSize);
+            fSize = (unsigned)KTMath::Nint(prelimSize);
             fBinWidth = fLength / (double)fSize;
         }
         else if (fLastSetParameter == kSize || fLastSetParameter == kLength)
@@ -119,7 +119,7 @@ namespace Katydid
         {
             // Priority is to preserve the length, but it might not be an even multiple of the new bin width
             double prelimNBins = fLength / fBinWidth;
-            fSize = (UInt_t)KTMath::Nint(prelimNBins);
+            fSize = (unsigned)KTMath::Nint(prelimNBins);
             fLength = (double)fSize * fBinWidth;
         }
         RebuildWindowFunction();
@@ -131,7 +131,7 @@ namespace Katydid
     {
         fBinWidth = fabs(bw);
         double prelimNBins = fabs(length) / fBinWidth;
-        fSize = (UInt_t)KTMath::Nint(prelimNBins);
+        fSize = (unsigned)KTMath::Nint(prelimNBins);
         fLength = (double)fSize * fBinWidth;
         RebuildWindowFunction();
         fLastSetParameter = kBinWidth;
@@ -142,14 +142,14 @@ namespace Katydid
     {
         fLength = fabs(length);
         double prelimNBins = fLength / fabs(bw);
-        fSize = (UInt_t)KTMath::Nint(prelimNBins);
+        fSize = (unsigned)KTMath::Nint(prelimNBins);
         fBinWidth = fLength / (double)fSize;
         RebuildWindowFunction();
         fLastSetParameter = kLength;
         return fBinWidth;
     }
 
-    double KTWindowFunction::SetSize(UInt_t wib)
+    double KTWindowFunction::SetSize(unsigned wib)
     {
         fSize = wib;
         if (fLastSetParameter == kBinWidth || fLastSetParameter == kSize)

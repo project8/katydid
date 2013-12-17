@@ -81,11 +81,11 @@ namespace Katydid
 
     Bool_t KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData)
     {
-        UInt_t iPair = 0;
+        unsigned iPair = 0;
         for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
         {
-            UInt_t firstChannel = (*iter).first;
-            UInt_t secondChannel = (*iter).second;
+            unsigned firstChannel = (*iter).first;
+            unsigned secondChannel = (*iter).second;
             KTFrequencySpectrumPolar* result = DoCorrelation(data.GetSpectrumPolar(firstChannel), data.GetSpectrumPolar(secondChannel));
             if (result == NULL)
             {
@@ -105,11 +105,11 @@ namespace Katydid
 
     Bool_t KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData)
     {
-        UInt_t iPair = 0;
+        unsigned iPair = 0;
         for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
         {
-            UInt_t firstChannel = (*iter).first;
-            UInt_t secondChannel = (*iter).second;
+            unsigned firstChannel = (*iter).first;
+            unsigned secondChannel = (*iter).second;
             KTFrequencySpectrumPolar* result = DoCorrelation(data.GetSpectrumFFTW(firstChannel), data.GetSpectrumFFTW(secondChannel));
             if (result == NULL)
             {

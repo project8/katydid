@@ -54,15 +54,15 @@ namespace Katydid
         if (node == NULL) return false;
 
         // set the number of slices to create
-        fNSlices = node->GetData< UInt_t >("n-slices", fNSlices);
+        fNSlices = node->GetData< unsigned >("n-slices", fNSlices);
 
         // number of slices
-        fNChannels = node->GetData< UInt_t >("n-channels", fNChannels);
+        fNChannels = node->GetData< unsigned >("n-channels", fNChannels);
 
         // specify the length of the time series
-        fSliceSize = node->GetData< UInt_t >("time-series-size", fSliceSize);
+        fSliceSize = node->GetData< unsigned >("time-series-size", fSliceSize);
         // record size, after slice size
-        fRecordSize = node->GetData< UInt_t >("record-size", fSliceSize);
+        fRecordSize = node->GetData< unsigned >("record-size", fSliceSize);
 
         fBinWidth = node->GetData< double >("bin-width", fBinWidth);
 
@@ -136,7 +136,7 @@ namespace Katydid
 
         KTProcSummary* summary = new KTProcSummary();
         summary->SetNSlicesProcessed(fSliceCounter);
-        summary->SetNRecordsProcessed((UInt_t)ceil(double(fSliceCounter * fSliceSize) / fRecordSize));
+        summary->SetNRecordsProcessed((unsigned)ceil(double(fSliceCounter * fSliceSize) / fRecordSize));
         summary->SetIntegratedTime(double(fSliceCounter * fSliceSize) * fBinWidth);
         fSummarySignal(summary);
         delete summary;
@@ -186,7 +186,7 @@ namespace Katydid
         sliceHeader.SetTimeInRun(double(fSliceCounter * fSliceSize) * fBinWidth);
         sliceHeader.SetSliceNumber(fSliceCounter);
 
-        for (UInt_t iComponent = 0; iComponent < fNChannels; iComponent++)
+        for (unsigned iComponent = 0; iComponent < fNChannels; iComponent++)
         {
             sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
@@ -210,7 +210,7 @@ namespace Katydid
     {
         KTTimeSeriesData& tsData = data.Of< KTTimeSeriesData >().SetNComponents(fNChannels);
 
-        for (UInt_t iChannel = 0; iChannel < fNChannels; iChannel++)
+        for (unsigned iChannel = 0; iChannel < fNChannels; iChannel++)
         {
             if (fTimeSeriesType == kRealTimeSeries)
             {

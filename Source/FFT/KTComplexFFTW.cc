@@ -89,7 +89,7 @@ namespace Katydid
         // fTransformFlag is guaranteed to be valid in the Set method.
         KTDEBUG(fftlog_comp, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
-        UInt_t transformFlag = iter->second;
+        unsigned transformFlag = iter->second;
 
         // allocate the input and output arrays if they're not there already
         AllocateArrays();
@@ -161,11 +161,11 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -205,11 +205,11 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -249,11 +249,11 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
             if (nextInput == NULL)
@@ -279,7 +279,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* ts) const
     {
-        UInt_t nBins = ts->size();
+        unsigned nBins = ts->size();
         if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -308,7 +308,7 @@ namespace Katydid
 
     KTTimeSeriesFFTW* KTComplexFFTW::Transform(const KTFrequencySpectrumFFTW* fs) const
     {
-        UInt_t nBins = fs->size();
+        unsigned nBins = fs->size();
         if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -333,7 +333,7 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::SetSize(UInt_t nBins)
+    void KTComplexFFTW::SetSize(unsigned nBins)
     {
         fSize = nBins;
         if (fInputArray != NULL)

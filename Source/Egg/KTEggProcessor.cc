@@ -94,14 +94,14 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNSlices(node->GetData< UInt_t >("number-of-slices", fNSlices));
-            SetProgressReportInterval(node->GetData< UInt_t >("progress-report-interval", fProgressReportInterval));
+            SetNSlices(node->GetData< unsigned >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->GetData< unsigned >("progress-report-interval", fProgressReportInterval));
             SetFilename(node->GetData< string >("filename", fFilename));
 
             // specify the length of the time series
-            fSliceSize = node->GetData< UInt_t >("slice-size", fSliceSize);
+            fSliceSize = node->GetData< unsigned >("slice-size", fSliceSize);
             // specify the stride (leave unset to make stride == slice size)
-            fStride = node->GetData< UInt_t >("stride", fSliceSize);
+            fStride = node->GetData< unsigned >("stride", fSliceSize);
 
             if (fSliceSize == 0)
             {
@@ -124,7 +124,7 @@ namespace Katydid
             if (node->HasData("full-voltage-scale"))
                 SetFullVoltageScale(node->GetData< double >("full-voltage-scale", fFullVoltageScale));
             if (node->HasData("n-adc-levels"))
-                SetNADCLevels(node->GetData< UInt_t >("n-adc-levels", fNADCLevels));
+                SetNADCLevels(node->GetData< unsigned >("n-adc-levels", fNADCLevels));
             if (node->HasData("normalization"))
                 SetNormalization(node->GetData< double >("normalization", fNormalization));
         }
@@ -199,7 +199,7 @@ namespace Katydid
 
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
     {
-        UInt_t iSlice = 0, iProgress = 0;
+        unsigned iSlice = 0, iProgress = 0;
         KTDataPtr data;
         while (kTRUE)
         {
@@ -233,7 +233,7 @@ namespace Katydid
 
     void KTEggProcessor::LimitedLoop(KTEggReader* reader)
     {
-        UInt_t iSlice = 0, iProgress = 0;
+        unsigned iSlice = 0, iProgress = 0;
         KTDataPtr data;
         while (kTRUE)
         {
@@ -278,8 +278,8 @@ namespace Katydid
         if (fNormalizeVoltages)
         {
             KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
-            UInt_t nComponents = tsData.GetNComponents();
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            unsigned nComponents = tsData.GetNComponents();
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 tsData.GetTimeSeries(iComponent)->Scale(fNormalization);
             }

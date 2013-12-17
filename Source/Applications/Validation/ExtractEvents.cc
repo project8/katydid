@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     Int_t arg;
     string fileName = string("No_File_Name_Given");
     string outputFilePrefix = string("file");
-    UInt_t numBundles = 1;
+    unsigned numBundles = 1;
 
     extern char *optarg;
 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
                 outputFilePrefix = string(optarg);
                 break;
             case 'n':
-                numBundles = (UInt_t)atoi(optarg);
+                numBundles = (unsigned)atoi(optarg);
                 break;
         }
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    for (UInt_t iBundle = 0; iBundle < numBundles; iBundle++)
+    for (unsigned iBundle = 0; iBundle < numBundles; iBundle++)
     {
         if (! egg.HatchNextBundle()) return 1;
     }

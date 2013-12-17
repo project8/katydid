@@ -37,8 +37,8 @@ namespace Katydid
 {
     KTLOGGER(utillog_psnode, "katydid.utility");
 
-    typedef std::pair< UInt_t, UInt_t > UIntPair;
-    typedef std::pair< UInt_t, double > UIntDoublePair;
+    typedef std::pair< unsigned, unsigned > UIntPair;
+    typedef std::pair< unsigned, double > UIntDoublePair;
 
     UIntPair ParsePairUInt(const std::string& pair);
     UIntDoublePair ParsePairUIntDouble(const std::string& pair);
@@ -78,7 +78,7 @@ namespace Katydid
             const_iterator End() const;
 
             /// Counts how many immediate-child nodes with nodeName exist (non-recursive).
-            UInt_t CountNodes(const std::string& nodeName) const;
+            unsigned CountNodes(const std::string& nodeName) const;
 
             /// Returns an interator to the beginning of the node, sorted alphabetically.
             const_sorted_iterator SortedBegin() const;
@@ -225,7 +225,7 @@ namespace Katydid
         return fTree->end();
     }
 
-    inline UInt_t KTPStoreNode::CountNodes(const std::string& nodeName) const
+    inline unsigned KTPStoreNode::CountNodes(const std::string& nodeName) const
     {
         return fTree->count(nodeName);
     }

@@ -35,7 +35,7 @@ int main()
 
     KTSincWindow wf;
 
-    UInt_t size = 16384;
+    unsigned size = 16384;
     double bw = 5.e-9;
 
     wf.SetBinWidth(bw);

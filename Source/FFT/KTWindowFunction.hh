@@ -55,7 +55,7 @@ namespace Katydid
             double AdaptTo(const KTTimeSeriesData* tsData);
 
             virtual double GetWeight(double time) const = 0;
-            double GetWeight(UInt_t bin) const;
+            double GetWeight(unsigned bin) const;
 
 #ifdef ROOT_FOUND
             TH1D* CreateHistogram(const std::string& name = "hWindowFunction") const;
@@ -66,7 +66,7 @@ namespace Katydid
 
             double GetLength() const;
             double GetBinWidth() const;
-            UInt_t GetSize() const;
+            unsigned GetSize() const;
 
             /// Sets fLength to length, and adapts the bin width to be an integral number of bins closest to the current bw.
             /// Returns the adapted bin width.
@@ -87,7 +87,7 @@ namespace Katydid
             /// Sets the number of bins; leaves fBinWidth as is, and sets fLength accordingly.
             /// Returns the adapted length.
             /// NOTE: this changes the size of the window! (duh)
-            double SetSize(UInt_t size);
+            double SetSize(unsigned size);
 
             virtual void RebuildWindowFunction() = 0;
 
@@ -96,13 +96,13 @@ namespace Katydid
 
             double fLength;
             double fBinWidth;
-            UInt_t fSize;
+            unsigned fSize;
 
             ParameterName fLastSetParameter;
 
     };
 
-   inline double KTWindowFunction::GetWeight(UInt_t bin) const
+   inline double KTWindowFunction::GetWeight(unsigned bin) const
    {
        return bin < fSize ? fWindowFunction[bin] : 0.;
    }
@@ -112,7 +112,7 @@ namespace Katydid
        return fLength;
    }
 
-   inline UInt_t KTWindowFunction::GetSize() const
+   inline unsigned KTWindowFunction::GetSize() const
    {
        return fSize;
    }

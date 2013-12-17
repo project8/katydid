@@ -33,7 +33,7 @@ namespace Katydid
 
     Bool_t KTRectangularWindow::ConfigureWFSubclass(const KTPStoreNode* node)
     {
-        SetBoxcarSize(node->GetData< UInt_t >("boxcar-size", fBoxcarSize));
+        SetBoxcarSize(node->GetData< unsigned >("boxcar-size", fBoxcarSize));
 
         KTDEBUG(windowlog, "Rectangular WF configured: boxcar size = " << fBoxcarSize);
         return true;
@@ -49,7 +49,7 @@ namespace Katydid
     {
         fWindowFunction.resize(fSize);
         double halfBW = 0.5 * fBinWidth;
-        for (UInt_t iBin=0; iBin < fSize; iBin++)
+        for (unsigned iBin=0; iBin < fSize; iBin++)
         {
             fWindowFunction[iBin] = GetWeight(double(iBin) * fBinWidth + halfBW);
         }

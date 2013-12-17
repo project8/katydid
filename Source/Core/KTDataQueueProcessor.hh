@@ -33,7 +33,7 @@ namespace Katydid
      @details
 
      Available configuration values:
-     - "timeout": UInt_t -- maximum time to wait for new data (integer number of milliseconds)
+     - "timeout": unsigned -- maximum time to wait for new data (integer number of milliseconds)
 
      Slots:
      - "use-timed-pop": void () -- Switch the queue-popping function to the TIMED version
@@ -219,7 +219,7 @@ namespace Katydid
     template< class XProcessorType >
     Bool_t KTDataQueueProcessorTemplate< XProcessorType >::Configure(const KTPStoreNode* node)
     {
-        fQueue.set_timeout(node->GetData< UInt_t >("timeout", fQueue.get_timeout()));
+        fQueue.set_timeout(node->GetData< unsigned >("timeout", fQueue.get_timeout()));
 
         if (! ConfigureSubClass(node)) return false;
         return true;

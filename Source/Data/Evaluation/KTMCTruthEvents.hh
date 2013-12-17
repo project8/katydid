@@ -20,12 +20,12 @@ namespace Katydid
         public:
             struct Event
             {
-                UInt_t fStartRecord;
-                UInt_t fStartSample;
-                UInt_t fEndRecord;
-                UInt_t fEndSample;
+                unsigned fStartRecord;
+                unsigned fStartSample;
+                unsigned fEndRecord;
+                unsigned fEndSample;
 
-                Event(UInt_t startRec, UInt_t startSample, UInt_t endRec, UInt_t endSample)
+                Event(unsigned startRec, unsigned startSample, unsigned endRec, unsigned endSample)
                 {
                     fStartRecord = startRec;
                     fStartSample = startSample;
@@ -64,11 +64,11 @@ namespace Katydid
             void AddEvent(const Event& electron);
             void ClearEvents();
 
-            UInt_t GetRecordSize() const;
-            void SetRecordSize(UInt_t size);
+            unsigned GetRecordSize() const;
+            void SetRecordSize(unsigned size);
 
-            UInt_t GetNRecords() const;
-            void SetNRecords(UInt_t rec);
+            unsigned GetNRecords() const;
+            void SetNRecords(unsigned rec);
 
         protected:
             double fEventLength;
@@ -77,8 +77,8 @@ namespace Katydid
 
             EventSet fEvents;
 
-            UInt_t fRecordSize;
-            UInt_t fNRecords;
+            unsigned fRecordSize;
+            unsigned fNRecords;
     };
 
     inline double KTMCTruthEvents::GetEventLength()
@@ -131,23 +131,23 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTMCTruthEvents::GetRecordSize() const
+    inline unsigned KTMCTruthEvents::GetRecordSize() const
     {
         return fRecordSize;
     }
 
-    inline void KTMCTruthEvents::SetRecordSize(UInt_t size)
+    inline void KTMCTruthEvents::SetRecordSize(unsigned size)
     {
         fRecordSize = size;
         return;
     }
 
-    inline UInt_t KTMCTruthEvents::GetNRecords() const
+    inline unsigned KTMCTruthEvents::GetNRecords() const
     {
         return fNRecords;
     }
 
-    inline void KTMCTruthEvents::SetNRecords(UInt_t rec)
+    inline void KTMCTruthEvents::SetNRecords(unsigned rec)
     {
         fNRecords = rec;
         return;

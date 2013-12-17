@@ -19,22 +19,22 @@ namespace Katydid
             KTWignerVilleData();
             virtual ~KTWignerVilleData();
 
-            const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const;
+            const std::pair< unsigned, unsigned >& GetInputPair(unsigned component = 0) const;
 
-            void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0);
+            void SetInputPair(unsigned first, unsigned second, unsigned component = 0);
 
-            virtual KTWignerVilleData& SetNComponents(UInt_t components);
+            virtual KTWignerVilleData& SetNComponents(unsigned components);
 
         protected:
-            std::vector< std::pair< UInt_t, UInt_t > > fWVComponentData;
+            std::vector< std::pair< unsigned, unsigned > > fWVComponentData;
     };
 
-    inline const std::pair< UInt_t, UInt_t >& KTWignerVilleData::GetInputPair(UInt_t component) const
+    inline const std::pair< unsigned, unsigned >& KTWignerVilleData::GetInputPair(unsigned component) const
     {
         return fWVComponentData[component];
     }
 
-    inline void KTWignerVilleData::SetInputPair(UInt_t first, UInt_t second, UInt_t component)
+    inline void KTWignerVilleData::SetInputPair(unsigned first, unsigned second, unsigned component)
     {
         if (component >= fSpectra.size()) SetNComponents(component+1);
         fWVComponentData[component].first = first;

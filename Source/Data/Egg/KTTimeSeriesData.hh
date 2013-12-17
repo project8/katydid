@@ -1,7 +1,7 @@
 /**
  @file KTTimeSeriesData.hh
  @brief Contains KTTimeSeriesData
- @details Contains the information from a single Egg slice in the form of a 1-D std::vector of UInt_tegers.
+ @details Contains the information from a single Egg slice in the form of a 1-D std::vector of unsignedegers.
  The data are the time series of the slice.
  @note Prior to August 24, 2012, this class was called KTEvent.
  @author: N. S. Oblath
@@ -27,36 +27,36 @@ namespace Katydid
             KTTimeSeriesDataCore();
             virtual ~KTTimeSeriesDataCore();
 
-            UInt_t GetNComponents() const;
+            unsigned GetNComponents() const;
 
-            const KTTimeSeries* GetTimeSeries(UInt_t component = 0) const;
-            KTTimeSeries* GetTimeSeries(UInt_t component = 0);
+            const KTTimeSeries* GetTimeSeries(unsigned component = 0) const;
+            KTTimeSeries* GetTimeSeries(unsigned component = 0);
 
-            virtual KTTimeSeriesDataCore& SetNComponents(UInt_t num) = 0;
+            virtual KTTimeSeriesDataCore& SetNComponents(unsigned num) = 0;
 
-            void SetTimeSeries(KTTimeSeries* record, UInt_t component = 0);
+            void SetTimeSeries(KTTimeSeries* record, unsigned component = 0);
 
         protected:
             std::vector< KTTimeSeries* > fTimeSeries;
     };
 
 
-    inline UInt_t KTTimeSeriesDataCore::GetNComponents() const
+    inline unsigned KTTimeSeriesDataCore::GetNComponents() const
     {
-        return UInt_t(fTimeSeries.size());
+        return unsigned(fTimeSeries.size());
     }
 
-    inline KTTimeSeries* KTTimeSeriesDataCore::GetTimeSeries(UInt_t component)
-    {
-        return fTimeSeries[component];
-    }
-
-    inline const KTTimeSeries* KTTimeSeriesDataCore::GetTimeSeries(UInt_t component) const
+    inline KTTimeSeries* KTTimeSeriesDataCore::GetTimeSeries(unsigned component)
     {
         return fTimeSeries[component];
     }
 
-    inline void KTTimeSeriesDataCore::SetTimeSeries(KTTimeSeries* record, UInt_t component)
+    inline const KTTimeSeries* KTTimeSeriesDataCore::GetTimeSeries(unsigned component) const
+    {
+        return fTimeSeries[component];
+    }
+
+    inline void KTTimeSeriesDataCore::SetTimeSeries(KTTimeSeries* record, unsigned component)
     {
         if (component >= fTimeSeries.size()) SetNComponents(component+1);
         fTimeSeries[component] = record;
@@ -71,7 +71,7 @@ namespace Katydid
             KTTimeSeriesData();
             virtual ~KTTimeSeriesData();
 
-            virtual KTTimeSeriesData& SetNComponents(UInt_t num);
+            virtual KTTimeSeriesData& SetNComponents(unsigned num);
     };
 
 } /* namespace Katydid */

@@ -117,10 +117,10 @@ namespace Katydid
                 << "\tSlice number: " << sliceHeader.GetSliceNumber());
 
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             KTTimeSeries* newTS = ApplyPFB(static_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent)));
             if (newTS == NULL)
@@ -136,9 +136,9 @@ namespace Katydid
 
     KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
     {
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             KTTimeSeriesFFTW* newTS = ApplyPFB(static_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent)));
         }
@@ -163,8 +163,8 @@ namespace Katydid
         newHeader.SetTimeInRun(GetNewTimeInRun(oldHeader));
         newHeader.SetSliceNumber(GetNewSliceNumber(oldHeader));
 
-        UInt_t nComponents = newHeader.GetNComponents();
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        unsigned nComponents = newHeader.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             newHeader.SetAcquisitionID(oldHeader.GetAcquisitionID(iComponent), iComponent);
             newHeader.SetRecordID(oldHeader.GetRecordID(iComponent), iComponent);

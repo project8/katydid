@@ -58,8 +58,8 @@ int main()
     //***********************************
 
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
-    UInt_t nSlices = 50;
-    UInt_t recordSize = 32768;
+    unsigned nSlices = 50;
+    unsigned recordSize = 32768;
     KTEggReaderMonarch::TimeSeriesType tsType = KTEggReaderMonarch::kFFTWTimeSeries;
 
     KTComplexFFTW compFFT;
@@ -131,7 +131,7 @@ int main()
     // Do the processing work
     //**************************
 
-    UInt_t iSlice = 0;
+    unsigned iSlice = 0;
     while (kTRUE)
     {
         if (iSlice >= nSlices) break;

@@ -136,9 +136,9 @@ namespace Katydid
                 stringstream name;
                 name << "histAmpDist_" << fAmpDistData.fComponent << "_" << fAmpDistData.fFreqBin;
                 const KTAmplitudeDistribution::Distribution& dist = adData.GetDistribution(fAmpDistData.fFreqBin, fAmpDistData.fComponent);
-                UInt_t nBins = dist.size();
+                unsigned nBins = dist.size();
                 fAmpDistData.fDistribution = new TH1D(name.str().c_str(), "Amplitude Distribution", (Int_t)nBins, dist.GetRangeMin(), dist.GetRangeMax());
-                for (UInt_t iBin=0; iBin<nBins; iBin++)
+                for (unsigned iBin=0; iBin<nBins; iBin++)
                 {
                     fAmpDistData.fDistribution->SetBinContent((Int_t)iBin+1, dist(iBin));
                 }

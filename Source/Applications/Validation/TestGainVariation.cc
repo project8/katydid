@@ -44,9 +44,9 @@ int main(int argc, char** argv)
 {
     KTINFO(vallog, "Commencing gain variation test");
 
-    UInt_t nBins = 1000000;
+    unsigned nBins = 1000000;
 
-    UInt_t nFitPoints = 3;
+    unsigned nFitPoints = 3;
 
     Parameters funcParams;
     funcParams.fA = 0.;
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 
     double value;
     double value0 = TestFunction(funcParams, spectrum->GetBinCenter(0));
-    for (UInt_t iBin=0; iBin < nBins; iBin++)
+    for (unsigned iBin=0; iBin < nBins; iBin++)
     {
 #ifdef ROOT_FOUND
         value = TestFunction(funcParams, spectrum->GetBinCenter(iBin));

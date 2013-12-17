@@ -37,8 +37,8 @@ namespace Katydid
      Configuration name: "data-averager"
 
      Available configuration options:
-     - "number-to-average": UInt_t -- Number of slices to average
-     - "signal-interval": UInt_t -- (not currently in use) Number of slices between signaling
+     - "number-to-average": unsigned -- Number of slices to average
+     - "signal-interval": unsigned -- (not currently in use) Number of slices between signaling
 
      Slots:
      - "ts": void (KTDataPtr) -- add to the ts sum; Requires KTTimeSeriesData; Emits signal "ts"
@@ -64,8 +64,8 @@ namespace Katydid
 
             struct Accumulator
             {
-                UInt_t fCount;
-                UInt_t fSignalCount;
+                unsigned fCount;
+                unsigned fSignalCount;
                 KTDataPtr fData;
                 Accumulator() : fCount(0), fSignalCount(0), fData(new KTData())
                 {}
@@ -80,17 +80,17 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            UInt_t GetAccumulatorSize() const;
+            unsigned GetAccumulatorSize() const;
             double GetAveragingFrac() const;
-            void SetAccumulatorSize(UInt_t size);
+            void SetAccumulatorSize(unsigned size);
 
-            UInt_t GetSignalInterval() const;
-            void SetSignalInterval(UInt_t interval);
+            unsigned GetSignalInterval() const;
+            void SetSignalInterval(unsigned interval);
 
         private:
-            UInt_t fAccumulatorSize;
+            unsigned fAccumulatorSize;
             double fAveragingFrac;
-            UInt_t fSignalInterval;
+            unsigned fSignalInterval;
 
         public:
             Bool_t AddData(KTTimeSeriesData& data);
@@ -133,7 +133,7 @@ namespace Katydid
             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
     };
 
-    inline UInt_t KTDataAccumulator::GetAccumulatorSize() const
+    inline unsigned KTDataAccumulator::GetAccumulatorSize() const
     {
         return fAccumulatorSize;
     }
@@ -143,19 +143,19 @@ namespace Katydid
         return fAveragingFrac;
     }
 
-    inline void KTDataAccumulator::SetAccumulatorSize(UInt_t size)
+    inline void KTDataAccumulator::SetAccumulatorSize(unsigned size)
     {
         fAccumulatorSize = size;
         fAveragingFrac = 1. / (double)fAccumulatorSize;
         return;
     }
 
-    inline UInt_t KTDataAccumulator::GetSignalInterval() const
+    inline unsigned KTDataAccumulator::GetSignalInterval() const
     {
         return fSignalInterval;
     }
 
-    inline void KTDataAccumulator::SetSignalInterval(UInt_t interval)
+    inline void KTDataAccumulator::SetSignalInterval(unsigned interval)
     {
         fSignalInterval = interval;
         return;

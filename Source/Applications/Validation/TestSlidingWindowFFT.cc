@@ -52,7 +52,7 @@ int main(int argc, char** argv)
     KTINFO(testsw, "Test of hatching egg file <" << filename << ">");
 
     KTEgg egg;
-    UInt_t recordSize = 0;
+    unsigned recordSize = 0;
     KTINFO(testsw, "Record size will be " << recordSize << " (if 0, it should be the same as the Monarch record size)");
     KTEggReaderMonarch* reader = new KTEggReaderMonarch();
     reader->SetTimeSeriesSizeRequest(recordSize);
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    UInt_t windowSize = 512;
+    unsigned windowSize = 512;
     if (! UseFFTW)
     {
         // Create the transform, and manually configure it.
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
         windowFunc->SetSize(windowSize);
         fft.SetTransformFlag("ESTIMATE");
         fft.SetWindowFunction(windowFunc);
-        fft.SetOverlap((UInt_t)0);
+        fft.SetOverlap((unsigned)0);
         fft.InitializeFFT();
 
         // Transform the data.
@@ -149,7 +149,7 @@ int main(int argc, char** argv)
         windowFunc->SetSize(windowSize);
         fft.SetTransformFlag("ESTIMATE");
         fft.SetWindowFunction(windowFunc);
-        fft.SetOverlap((UInt_t)0);
+        fft.SetOverlap((unsigned)0);
         fft.InitializeFFT();
 
         // Transform the data.

@@ -48,8 +48,8 @@ namespace Katydid
 
     Bool_t KTHoughTransform::Configure(const KTPStoreNode* node)
     {
-        SetNThetaPoints(node->GetData< UInt_t >("n-theta-points", fNThetaPoints));
-        SetNRPoints(node->GetData< UInt_t >("n-r-points", fNRPoints));
+        SetNThetaPoints(node->GetData< unsigned >("n-theta-points", fNThetaPoints));
+        SetNRPoints(node->GetData< unsigned >("n-r-points", fNRPoints));
 
         return true;
     }
@@ -58,7 +58,7 @@ namespace Katydid
     {
         KTHoughData* newData = new KTHoughData(data->GetNComponents());
 
-        for (UInt_t iComponent=0; iComponent<data->GetNComponents(); iComponent++)
+        for (unsigned iComponent=0; iComponent<data->GetNComponents(); iComponent++)
         {
             const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum = data->GetSpectra(iComponent);
 
@@ -74,7 +74,7 @@ namespace Katydid
                 newData->SetTransform(newTransform, iComponent);
             }
 
-            for (UInt_t iPS = 0; iPS < freqSpectra->size(); iPS++)
+            for (unsigned iPS = 0; iPS < freqSpectra->size(); iPS++)
             {
                 delete (*freqSpectra)(iPS);
             }
@@ -86,8 +86,8 @@ namespace Katydid
 
     KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughTransform::TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum)
     {
-        UInt_t nTimeBins = powerSpectrum->size();
-        UInt_t nFreqBins = (*powerSpectrum)(0)->size();
+        unsigned nTimeBins = powerSpectrum->size();
+        unsigned nFreqBins = (*powerSpectrum)(0)->size();
 
         KTINFO(htlog, "time info: " << nTimeBins << "  " << powerSpectrum->GetRangeMin() << "  " << powerSpectrum->GetRangeMax() << "  " << powerSpectrum->GetBinWidth());
         KTINFO(htlog, "freq info: " << nFreqBins << "  " << (*powerSpectrum)(0)->GetRangeMin() << "  " << (*powerSpectrum)(0)->GetRangeMax() << "  " << (*powerSpectrum)(0)->GetBinWidth());
@@ -102,7 +102,7 @@ namespace Katydid
         vector< double > cosTheta(fNThetaPoints);
         vector< double > sinTheta(fNThetaPoints);
         double theta = newTransform->GetBinCenter(0);
-        for (UInt_t iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+        for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
         {
             (*newTransform)(iTheta) = new KTPhysicalArray< 1, double >(fNRPoints, -maxR, maxR);
             cosTheta[iTheta] = cos(theta);
@@ -111,19 +111,19 @@ namespace Katydid
         }
 
         double timeVal, freqVal, value, radius;
-        UInt_t iRadius;
-        for (UInt_t iTime = 0; iTime < nTimeBins; iTime++)
+        unsigned iRadius;
+        for (unsigned iTime = 0; iTime < nTimeBins; iTime++)
         {
             timeVal = double(iTime);
 
-            for (UInt_t iFreq = 0; iFreq < nFreqBins; iFreq++)
+            for (unsigned iFreq = 0; iFreq < nFreqBins; iFreq++)
             {
                 value = (*(*powerSpectrum)(iTime))(iFreq).abs();
                 if (value < 1.e-4) continue; // HARD CODED THRESHOLD
 
                 freqVal = double(iFreq);
 
-                for (UInt_t iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+                for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
                 {
                     radius = timeVal * cosTheta[iTheta] + freqVal * sinTheta[iTheta];
 
@@ -140,10 +140,10 @@ namespace Katydid
 
     Bool_t KTHoughTransform::TransformData(KTDiscriminatedPoints2DData& data)
     {
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
         KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTDiscriminatedPoints2DData::SetOfPoints inputPoints = data.GetSetOfPoints(iComponent);
 
@@ -163,7 +163,7 @@ namespace Katydid
         return true;
     }
 
-    KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughTransform::TransformSetOfPoints(const SetOfPoints& points, UInt_t nTimeBins, UInt_t nFreqBins)
+    KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughTransform::TransformSetOfPoints(const SetOfPoints& points, unsigned nTimeBins, unsigned nFreqBins)
     {
         KTINFO(htlog, "Number of time/frequency points: " << points.size());
 
@@ -177,7 +177,7 @@ namespace Katydid
         vector< double > cosTheta(fNThetaPoints);
         vector< double > sinTheta(fNThetaPoints);
         double theta = newTransform->GetBinCenter(0);
-        for (UInt_t iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+        for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
         {
             (*newTransform)(iTheta) = new KTPhysicalArray< 1, double >(fNRPoints, -maxR, maxR);
             cosTheta[iTheta] = cos(theta);
@@ -186,14 +186,14 @@ namespace Katydid
         }
 
         double timeVal, freqVal, value, radius;
-        UInt_t iRadius;
+        unsigned iRadius;
         for (SetOfPoints::const_iterator pIt = points.begin(); pIt != points.end(); pIt++)
         {
             timeVal = pIt->first.first;
             freqVal = pIt->first.second;
             value = pIt->second;
 
-            for (UInt_t iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+            for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
             {
                 radius = timeVal * cosTheta[iTheta] + freqVal * sinTheta[iTheta];
 
@@ -209,7 +209,7 @@ namespace Katydid
 /*
     KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTHoughTransform::RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum)
     {
-        UInt_t nTimeBins = inputSpectrum->size();
+        unsigned nTimeBins = inputSpectrum->size();
         KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* newFrequencySpectra = new KTPhysicalArray< 1, KTFrequencySpectrumPolar* >(nTimeBins, inputSpectrum->GetRangeMin(), inputSpectrum->GetRangeMax());
 
         for (Int_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)

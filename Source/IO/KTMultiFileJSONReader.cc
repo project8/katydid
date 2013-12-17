@@ -189,14 +189,14 @@ namespace Katydid
             KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
             return false;
         }
-        UInt_t recordSize = document["record_size"].GetUint();
+        unsigned recordSize = document["record_size"].GetUint();
 
         if (! document["records_simulated"].IsUint())
         {
             KTERROR(inlog, "\"records_simulated\" value is missing or is not an unsigned integer");
             return false;
         }
-        UInt_t recordsSimulated = document["records_simulated"].GetUint();
+        unsigned recordsSimulated = document["records_simulated"].GetUint();
 
         if (! document["egg_name"].IsString())
         {
@@ -225,10 +225,10 @@ namespace Katydid
             const rapidjson::Value& support = (*evIt)["support"];
             if (support.IsArray())
             {
-                UInt_t startRec = support[rapidjson::SizeType(0)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
-                UInt_t startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
-                UInt_t endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
-                UInt_t endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                unsigned startRec = support[rapidjson::SizeType(0)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                unsigned startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                unsigned endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                unsigned endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
                 if (endRec < startRec || (endRec == startRec && endSample < startSample))
                 {
@@ -257,14 +257,14 @@ namespace Katydid
             KTERROR(inlog, "\"record_size\" value is missing or is not an unsigned integer");
             return false;
         }
-        UInt_t recordSize = document["record_size"].GetUint();
+        unsigned recordSize = document["record_size"].GetUint();
 
         if (! document["records_analyzed"].IsUint())
         {
             KTERROR(inlog, "\"records_analyzed\" value is missing or is not an unsigned integer");
             return false;
         }
-        UInt_t recordsAnalyzed = document["records_analyzed"].GetUint();
+        unsigned recordsAnalyzed = document["records_analyzed"].GetUint();
 
         const rapidjson::Value& events = document["candidates"];
         if (! events.IsArray())
@@ -282,10 +282,10 @@ namespace Katydid
             const rapidjson::Value& support = (*evIt)["support"];
             if (support.IsArray())
             {
-                UInt_t startRec = support[rapidjson::SizeType(0)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
-                UInt_t startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
-                UInt_t endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
-                UInt_t endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                unsigned startRec = support[rapidjson::SizeType(0)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                unsigned startSample = support[rapidjson::SizeType(1)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                unsigned endRec = support[rapidjson::SizeType(2)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
+                unsigned endSample = support[rapidjson::SizeType(3)].GetUint(); // explicit cast of array index to SizeType used because of abiguous overload
                 KTDEBUG(inlog, "extracted (" << startRec << ", " << startSample << ", " << endRec << ", " << endSample << ")");
                 if (endRec < startRec || (endRec == startRec && endSample < startSample))
                 {
@@ -331,11 +331,11 @@ namespace Katydid
             return false;
         }
 
-        UInt_t index = 0;
+        unsigned index = 0;
         ccResultsData.ResizeNEventsWithXCandidateMatches(newxcm.Size());
         for (rapidjson::Value::ConstValueIterator newxcmIt = newxcm.Begin(); newxcmIt != newxcm.End(); newxcmIt++)
         {
-            //UInt_t thisNEvents = (*newxcmIt).GetUint();
+            //unsigned thisNEvents = (*newxcmIt).GetUint();
             ccResultsData.SetNEventsWithXCandidateMatches(index, (*newxcmIt).GetUint());
             index++;
         }
@@ -351,7 +351,7 @@ namespace Katydid
         ccResultsData.ResizeNCandidatesWithXEventMatches(ncwxem.Size());
         for (rapidjson::Value::ConstValueIterator ncwxemIt = ncwxem.Begin(); ncwxemIt != ncwxem.End(); ncwxemIt++)
         {
-            //UInt_t thisNEvents = (*ncwxemIt).GetUint();
+            //unsigned thisNEvents = (*ncwxemIt).GetUint();
             ccResultsData.SetNEventsWithXCandidateMatches(index, (*ncwxemIt).GetUint());
             index++;
         }

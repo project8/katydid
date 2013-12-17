@@ -84,11 +84,11 @@ namespace Katydid
         KTFrequencyCandidateData::Candidates candidates(clusters.size());
 
         KTFrequencyCandidate newCandidate;
-        UInt_t iCandidate = 0;
+        unsigned iCandidate = 0;
         for (KTCluster1DData::SetOfClusters::const_iterator it=clusters.begin(); it != clusters.end(); it++)
         {
-            UInt_t firstBin = it->first;
-            UInt_t lastBin = it->second;
+            unsigned firstBin = it->first;
+            unsigned lastBin = it->second;
 
             if (firstBin >= freqSpec->size() || lastBin >= freqSpec->size())
             {
@@ -105,7 +105,7 @@ namespace Katydid
             double weightedMean = 0.;
             double integral = 0.;
             double peakValue = 0.;
-            for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
+            for (unsigned iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 weightedMean += freqSpec->GetBinCenter(iBin) * (*freqSpec)(iBin).abs();
                 integral += (*freqSpec)(iBin).abs();
@@ -129,11 +129,11 @@ namespace Katydid
         KTFrequencyCandidateData::Candidates candidates(clusters.size());
 
         KTFrequencyCandidate newCandidate;
-        UInt_t iCandidate = 0;
+        unsigned iCandidate = 0;
         for (KTCluster1DData::SetOfClusters::const_iterator it=clusters.begin(); it != clusters.end(); it++)
         {
-            UInt_t firstBin = it->first;
-            UInt_t lastBin = it->second;
+            unsigned firstBin = it->first;
+            unsigned lastBin = it->second;
 
             if (firstBin >= freqSpec->size() || lastBin >= freqSpec->size())
             {
@@ -151,7 +151,7 @@ namespace Katydid
             double integral = 0.;
             double value = 0.;
             double peakValue = 0.;
-            for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
+            for (unsigned iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 value = sqrt((*freqSpec)(iBin)[0] * (*freqSpec)(iBin)[0] + (*freqSpec)(iBin)[1] * (*freqSpec)(iBin)[1]);
                 weightedMean += freqSpec->GetBinCenter(iBin) * value;
@@ -180,12 +180,12 @@ namespace Katydid
                     "\tFrequency spectrum: " << fsData.GetSpectrumPolar(0)->GetBinWidth());
         }
 
-        UInt_t nComponents = clusterData.GetNComponents();
+        unsigned nComponents = clusterData.GetNComponents();
 
         fcData.SetBinWidth(clusterData.GetBinWidth());
         fcData.SetNBins(clusterData.GetNBins());
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData.GetSetOfClusters(iComponent);
             const KTFrequencySpectrumPolar* freqSpec = fsData.GetSpectrumPolar(iComponent);
@@ -206,12 +206,12 @@ namespace Katydid
                     "\tFrequency spectrum: " << fsData.GetSpectrumFFTW(0)->GetBinWidth());
         }
 
-        UInt_t nComponents = clusterData.GetNComponents();
+        unsigned nComponents = clusterData.GetNComponents();
 
         fcData.SetBinWidth(clusterData.GetBinWidth());
         fcData.SetNBins(clusterData.GetNBins());
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData.GetSetOfClusters(iComponent);
             const KTFrequencySpectrumFFTW* freqSpec = fsData.GetSpectrumFFTW(iComponent);

@@ -331,7 +331,7 @@ namespace Katydid
         fCommandLineParseLater = po::collect_unrecognized(tParsedOpts.options, po::include_positional);
         /* some debugging couts
         std::cout << "there are " << fCommandLineParseLater.size() << " tokens to parse later." << std::endl;
-        for (UInt_t i = 0; i < fCommandLineParseLater.size(); i++)
+        for (unsigned i = 0; i < fCommandLineParseLater.size(); i++)
         {
             std::cout << "   " << fCommandLineParseLater[i] << std::endl;
         }

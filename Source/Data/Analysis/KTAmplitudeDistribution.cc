@@ -24,7 +24,7 @@ namespace Katydid
         ClearDistributions();
     }
 
-    void KTAmplitudeDistribution::SetDistValue(double value, UInt_t freqBin, UInt_t iDistBin, UInt_t component)
+    void KTAmplitudeDistribution::SetDistValue(double value, unsigned freqBin, unsigned iDistBin, unsigned component)
     {
 #ifdef Katydid_DEBUG
         if (component > fDistributions.size())
@@ -42,7 +42,7 @@ namespace Katydid
         return;
     }
 
-    void KTAmplitudeDistribution::AddToDist(UInt_t freqBin, UInt_t iDistBin, UInt_t component, double weight)
+    void KTAmplitudeDistribution::AddToDist(unsigned freqBin, unsigned iDistBin, unsigned component, double weight)
     {
 #ifdef Katydid_DEBUG
         if (component > fDistributions.size())
@@ -65,7 +65,7 @@ namespace Katydid
         return;
     }
 
-    void KTAmplitudeDistribution::AddToDist(UInt_t freqBin, double distValue, UInt_t component, double weight)
+    void KTAmplitudeDistribution::AddToDist(unsigned freqBin, double distValue, unsigned component, double weight)
     {
 #ifdef Katydid_DEBUG
         if (component > fDistributions.size())
@@ -79,11 +79,11 @@ namespace Katydid
             return;
         }
 #endif
-        AddToDist(freqBin, UInt_t(fDistributions[component][freqBin]->FindBin(distValue)), component, weight);
+        AddToDist(freqBin, unsigned(fDistributions[component][freqBin]->FindBin(distValue)), component, weight);
         return;
     }
 
-    Bool_t KTAmplitudeDistribution::InitializeADistribution(UInt_t component, UInt_t freqBin, UInt_t distNBins, double distMin, double distMax)
+    Bool_t KTAmplitudeDistribution::InitializeADistribution(unsigned component, unsigned freqBin, unsigned distNBins, double distMin, double distMax)
     {
         if (component > fDistributions.size())
         {
