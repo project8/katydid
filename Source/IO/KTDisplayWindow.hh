@@ -8,8 +8,6 @@
 #ifndef KTDISPLAYWINDOW_HH_
 #define KTDISPLAYWINDOW_HH_
 
-#include "KTLogger.hh"
-
 #include <TQObject.h>
 #include <RQ_OBJECT.h>
 
@@ -30,8 +28,6 @@ struct pthread_mutex_t;
 
 namespace Katydid
 {
-    KTLOGGER(ddlog, "katydid.io");
-
     class KTDisplayWindow
     {
         RQ_OBJECT("KTDataDisplay")
