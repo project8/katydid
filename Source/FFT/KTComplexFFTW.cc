@@ -287,9 +287,9 @@ namespace Katydid
             return NULL;
         }
 
-        Double_t timeBinWidth = ts->GetTimeBinWidth();
-        Double_t freqMin = GetMinFrequency(timeBinWidth);
-        Double_t freqMax = GetMaxFrequency(timeBinWidth);
+        double timeBinWidth = ts->GetTimeBinWidth();
+        double freqMin = GetMinFrequency(timeBinWidth);
+        double freqMax = GetMaxFrequency(timeBinWidth);
 
         KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
 
@@ -328,7 +328,7 @@ namespace Katydid
     void KTComplexFFTW::DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const
     {
         fftw_execute_dft(fReversePlan, fsIn->GetData(), tsOut->GetData());
-        (*tsOut) *= sqrt(1. / Double_t(fSize));
+        (*tsOut) *= sqrt(1. / double(fSize));
 
         return;
     }

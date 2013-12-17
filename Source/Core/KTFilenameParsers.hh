@@ -17,9 +17,9 @@ namespace Katydid
     struct KTLocustMCFilename
     {
             UInt_t fNEvents;
-            Double_t fEventLength; // sec
-            Double_t fdfdt; // Hz/sec ?
-            Double_t fSignalPower; // Watts
+            double fEventLength; // sec
+            double fdfdt; // Hz/sec ?
+            double fSignalPower; // Watts
             KTLocustMCFilename(const std::string& filename);
     };
 

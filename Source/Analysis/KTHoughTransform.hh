@@ -76,10 +76,10 @@ namespace Katydid
 
         public:
             //Bool_t TransformData(KTSlidingWindowFSDataFFTW& data);
-            //KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum);
+            //KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum);
 
             Bool_t TransformData(KTDiscriminatedPoints2DData& data);
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* TransformSetOfPoints(const SetOfPoints& points, UInt_t nTimeBins, UInt_t nFreqBins);
+            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSetOfPoints(const SetOfPoints& points, UInt_t nTimeBins, UInt_t nFreqBins);
 
 
         private:

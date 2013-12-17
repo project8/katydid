@@ -154,7 +154,7 @@ namespace Katydid
      Available configuration options:
        N/A
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGUniform01 : KTRNGDistribution< Engine >, boost::random::uniform_01<RealType>
     {
         typedef boost::random::uniform_01<RealType> dist_type;
@@ -183,10 +183,10 @@ namespace Katydid
      Returns a floating point value distributed in the range [min, max)
 
      Available configuration options:
-       - "min": Double_t -- Minimum for the uniform distribution range (inclusive)
-       - "max": Double_t -- Maximum for the uniform distribution range (exclusive)
+       - "min": double -- Minimum for the uniform distribution range (inclusive)
+       - "max": double -- Maximum for the uniform distribution range (exclusive)
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGUniform : KTRNGDistribution< Engine >, boost::random::uniform_real_distribution<RealType>
     {
         typedef boost::random::uniform_real_distribution<RealType> dist_type;
@@ -233,10 +233,10 @@ namespace Katydid
      The PDF for the distribution is: \f$ p(x) = \frac{1}{\sqrt{2\pi\sigma}} \exp{-\frac{(x-\mu)^2}{2\sigma^2}} \f$
 
      Available configuration options:
-       - "mean": Double_t -- Mean of the Gaussian distribution
-       - "sigma": Double_t -- Standard deviation of the Gaussian distribution
+       - "mean": double -- Mean of the Gaussian distribution
+       - "sigma": double -- Standard deviation of the Gaussian distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGGaussian : KTRNGDistribution< Engine >, boost::random::normal_distribution<RealType>
     {
         typedef boost::random::normal_distribution<RealType> dist_type;
@@ -283,9 +283,9 @@ namespace Katydid
      The PDF for the distribution is: \f$ p(i) = \frac{exp{-\lambda}\lambda^i}{i!} \f$
 
      Available configuration options:
-       - "mean": Double_t -- Mean of the Poisson distribution
+       - "mean": double -- Mean of the Poisson distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename IntType = Int_t, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename IntType = Int_t, typename RealType = double >
     struct KTRNGPoisson : KTRNGDistribution< Engine >, boost::random::poisson_distribution<IntType, RealType>
     {
         typedef boost::random::poisson_distribution<IntType, RealType> dist_type;
@@ -331,9 +331,9 @@ namespace Katydid
      The PDF for the distribution is: \f$ p(x) = \lambda\exp{-\lambda{}x} \f$
 
      Available configuration options:
-       - "lambda": Double_t -- rate parameter of the exponential distribution
+       - "lambda": double -- rate parameter of the exponential distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGExponential : KTRNGDistribution< Engine >, boost::random::exponential_distribution<RealType>
     {
         typedef boost::random::exponential_distribution<RealType> dist_type;
@@ -379,9 +379,9 @@ namespace Katydid
      The PDF for the distribution is: \f$ p(x) = \frac{x^{n/2-1}\exp{-x/2}}{\Gamma(n/2)2^{n/2}} \f$
 
      Available configuration options:
-       - "lambda": Double_t -- rate parameter of the exponential distribution
+       - "lambda": double -- rate parameter of the exponential distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGChiSquared : KTRNGDistribution< Engine >, boost::random::chi_squared_distribution<RealType>
     {
         typedef boost::random::chi_squared_distribution<RealType> dist_type;

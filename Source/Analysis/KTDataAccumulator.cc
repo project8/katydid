@@ -85,7 +85,7 @@ namespace Katydid
 
     Bool_t KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
-        Double_t remainingFrac = 1.;
+        double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
         //KTDEBUG(avlog, "averaging frac: " << fAveragingFrac << "    remaining frac: " << remainingFrac);
@@ -137,7 +137,7 @@ namespace Katydid
 
     Bool_t KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
-        Double_t remainingFrac = 1.;
+        double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
@@ -188,7 +188,7 @@ namespace Katydid
 
     Bool_t KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
     {
-        Double_t remainingFrac = 1.;
+        double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
@@ -201,7 +201,7 @@ namespace Katydid
             {
                 KTFrequencySpectrumPolar* dataFS = data.GetSpectrumPolar(iComponent);
                 KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
-                newFS->operator*=(Double_t(0.));
+                newFS->operator*=(double(0.));
                 accData.SetSpectrum(newFS, iComponent);
             }
         }
@@ -237,7 +237,7 @@ namespace Katydid
 
     Bool_t KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData)
     {
-        Double_t remainingFrac = 1.;
+        double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
@@ -250,7 +250,7 @@ namespace Katydid
             {
                 KTFrequencySpectrumFFTW* dataFS = data.GetSpectrumFFTW(iComponent);
                 KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
-                newFS->operator*=(Double_t(0.));
+                newFS->operator*=(double(0.));
                 accData.SetSpectrum(newFS, iComponent);
             }
         }

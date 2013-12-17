@@ -39,19 +39,19 @@ namespace Katydid
         return true;
     }
 
-    Double_t KTRectangularWindow::GetWeight(Double_t time) const
+    double KTRectangularWindow::GetWeight(double time) const
     {
-        if (fabs(time - 0.5 * fLength) <= 0.5 * Double_t(fBoxcarSize) * fBinWidth) return 1.;
+        if (fabs(time - 0.5 * fLength) <= 0.5 * double(fBoxcarSize) * fBinWidth) return 1.;
         return 0.;
     }
 
     void KTRectangularWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t halfBW = 0.5 * fBinWidth;
+        double halfBW = 0.5 * fBinWidth;
         for (UInt_t iBin=0; iBin < fSize; iBin++)
         {
-            fWindowFunction[iBin] = GetWeight(Double_t(iBin) * fBinWidth + halfBW);
+            fWindowFunction[iBin] = GetWeight(double(iBin) * fBinWidth + halfBW);
         }
         return;
     }

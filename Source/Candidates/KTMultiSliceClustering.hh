@@ -84,7 +84,7 @@ namespace Katydid
             {
                  UInt_t fTimeBin;
                  UInt_t fFreqBin;
-                 Double_t fAmplitude;
+                 double fAmplitude;
                  boost::shared_ptr< KTSliceHeader > fHeaderPtr;
                  boost::shared_ptr< KTFrequencySpectrumPolar > fSpectrumPtr;
             };
@@ -140,11 +140,11 @@ namespace Katydid
 
             Bool_t ConfigureSubClass(const KTPStoreNode* node);
 
-            Double_t GetMaxFrequencySeparation() const;
-            void SetMaxFrequencySeparation(Double_t freqSep);
+            double GetMaxFrequencySeparation() const;
+            void SetMaxFrequencySeparation(double freqSep);
 
-            Double_t GetMaxTimeSeparation() const;
-            void SetMaxTimeSeparation(Double_t timeSep);
+            double GetMaxTimeSeparation() const;
+            void SetMaxTimeSeparation(double timeSep);
 
             UInt_t GetMaxFrequencySeparationBins() const;
             void SetMaxFrequencySeparationBins(UInt_t bins);
@@ -162,8 +162,8 @@ namespace Katydid
             void SetNFramingFreqBins(UInt_t bins);
 
         private:
-            Double_t fMaxFreqSep;
-            Double_t fMaxTimeSep;
+            double fMaxFreqSep;
+            double fMaxTimeSep;
             UInt_t fMaxFreqSepBins;
             UInt_t fMaxTimeSepBins;
             Bool_t fCalculateMaxFreqSepBins;
@@ -196,11 +196,11 @@ namespace Katydid
             void Reset();
             UInt_t GetTimeBin() const;
 
-            Double_t GetTimeBinWidth() const;
-            void SetTimeBinWidth(Double_t bw);
+            double GetTimeBinWidth() const;
+            void SetTimeBinWidth(double bw);
 
-            Double_t GetFrequencyBinWidth() const;
-            void SetFrequencyBinWidth(Double_t bw);
+            double GetFrequencyBinWidth() const;
+            void SetFrequencyBinWidth(double bw);
 
             UInt_t GetDataCount() const;
 
@@ -208,8 +208,8 @@ namespace Katydid
             KTDataPtr CreateDataFromCluster(const Cluster& cluster);
 
             UInt_t fTimeBin;
-            Double_t fTimeBinWidth;
-            Double_t fFreqBinWidth;
+            double fTimeBinWidth;
+            double fFreqBinWidth;
 
             UInt_t fDataCount;
 
@@ -258,24 +258,24 @@ namespace Katydid
     };
 
 
-    inline Double_t KTMultiSliceClustering::GetMaxFrequencySeparation() const
+    inline double KTMultiSliceClustering::GetMaxFrequencySeparation() const
     {
         return fMaxFreqSep;
     }
 
-    inline void KTMultiSliceClustering::SetMaxFrequencySeparation(Double_t freqSep)
+    inline void KTMultiSliceClustering::SetMaxFrequencySeparation(double freqSep)
     {
         fMaxFreqSep = freqSep;
         fCalculateMaxFreqSepBins = true;
         return;
     }
 
-    inline Double_t KTMultiSliceClustering::GetMaxTimeSeparation() const
+    inline double KTMultiSliceClustering::GetMaxTimeSeparation() const
     {
         return fMaxTimeSep;
     }
 
-    inline void KTMultiSliceClustering::SetMaxTimeSeparation(Double_t timeSep)
+    inline void KTMultiSliceClustering::SetMaxTimeSeparation(double timeSep)
     {
         fMaxTimeSep = timeSep;
         fCalculateMaxTimeSepBins = true;
@@ -344,12 +344,12 @@ namespace Katydid
         return fTimeBin;
     }
 
-    inline Double_t KTMultiSliceClustering::GetTimeBinWidth() const
+    inline double KTMultiSliceClustering::GetTimeBinWidth() const
     {
         return fTimeBinWidth;
     }
 
-    inline void KTMultiSliceClustering::SetTimeBinWidth(Double_t bw)
+    inline void KTMultiSliceClustering::SetTimeBinWidth(double bw)
     {
         fTimeBinWidth = bw;
         if (fCalculateMaxTimeSepBins)
@@ -357,12 +357,12 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTMultiSliceClustering::GetFrequencyBinWidth() const
+    inline double KTMultiSliceClustering::GetFrequencyBinWidth() const
     {
         return fFreqBinWidth;
     }
 
-    inline void KTMultiSliceClustering::SetFrequencyBinWidth(Double_t bw)
+    inline void KTMultiSliceClustering::SetFrequencyBinWidth(double bw)
     {
         fFreqBinWidth = bw;
         if (fCalculateMaxFreqSepBins)

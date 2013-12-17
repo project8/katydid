@@ -50,8 +50,8 @@ KTLOGGER(proflog, "katydid.applications.profiling");
 
 int main()
 {
-    Double_t minAnalysisFreq = 6.e6;
-    Double_t maxAnalysisFreq = 95.e6;
+    double minAnalysisFreq = 6.e6;
+    double maxAnalysisFreq = 95.e6;
 
     //***********************************
     // Create and configure processors

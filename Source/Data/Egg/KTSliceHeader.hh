@@ -36,25 +36,25 @@ namespace Katydid
 
             Bool_t GetIsNewAcquisition() const;
             void SetIsNewAcquisition(Bool_t flag);
-            Double_t GetTimeInRun() const;
-            void SetTimeInRun(Double_t time);
+            double GetTimeInRun() const;
+            void SetTimeInRun(double time);
             ULong64_t GetSliceNumber() const;
             void SetSliceNumber(ULong64_t slice);
 
             UInt_t GetSliceSize() const;
             void SetSliceSize(UInt_t size);
-            Double_t GetSliceLength() const;
-            void SetSliceLength(Double_t length);
-            Double_t GetNonOverlapFrac() const;
-            void SetNonOverlapFrac(Double_t frac);
-            Double_t GetSampleRate() const;
-            void SetSampleRate(Double_t sampleRate);
-            Double_t GetBinWidth() const;
-            void SetBinWidth(Double_t binWidth);
+            double GetSliceLength() const;
+            void SetSliceLength(double length);
+            double GetNonOverlapFrac() const;
+            void SetNonOverlapFrac(double frac);
+            double GetSampleRate() const;
+            void SetSampleRate(double sampleRate);
+            double GetBinWidth() const;
+            void SetBinWidth(double binWidth);
 
             void CalculateBinWidthAndSliceLength();
 
-            Double_t GetTimeInRunAtSample(UInt_t sample);
+            double GetTimeInRunAtSample(UInt_t sample);
 
 
             // Record-related information
@@ -102,15 +102,15 @@ namespace Katydid
                 RecordIdType fRecordID;
             };
 
-            Double_t fTimeInRun; // in sec
+            double fTimeInRun; // in sec
             ULong64_t fSliceNumber;
             Bool_t fIsNewAcquisition;
 
             UInt_t fSliceSize; // number of bins
-            Double_t fSliceLength; // in sec
-            Double_t fNonOverlapFrac; // fraction of the slice for which there is no overlap with another slice
-            Double_t fSampleRate; // in Hz
-            Double_t fBinWidth; // in sec
+            double fSliceLength; // in sec
+            double fNonOverlapFrac; // fraction of the slice for which there is no overlap with another slice
+            double fSampleRate; // in Hz
+            double fBinWidth; // in sec
 
             UInt_t fStartRecordNumber; // record in the run in which the slice starts
             UInt_t fStartSampleNumber; // sample number in the start record
@@ -151,12 +151,12 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTSliceHeader::GetTimeInRun() const
+    inline double KTSliceHeader::GetTimeInRun() const
     {
         return fTimeInRun;
     }
 
-    inline void KTSliceHeader::SetTimeInRun(Double_t tir)
+    inline void KTSliceHeader::SetTimeInRun(double tir)
     {
         fTimeInRun = tir;
         return;
@@ -184,45 +184,45 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTSliceHeader::GetSliceLength() const
+    inline double KTSliceHeader::GetSliceLength() const
     {
         return fSliceLength;
     }
 
-    inline void KTSliceHeader::SetSliceLength(Double_t length)
+    inline void KTSliceHeader::SetSliceLength(double length)
     {
         fSliceLength = length;
         return;
     }
 
-    inline Double_t KTSliceHeader::GetNonOverlapFrac() const
+    inline double KTSliceHeader::GetNonOverlapFrac() const
     {
         return fNonOverlapFrac;
     }
 
-    inline void KTSliceHeader::SetNonOverlapFrac(Double_t frac)
+    inline void KTSliceHeader::SetNonOverlapFrac(double frac)
     {
         fNonOverlapFrac = frac;
         return;
     }
 
-    inline Double_t KTSliceHeader::GetSampleRate() const
+    inline double KTSliceHeader::GetSampleRate() const
     {
         return fSampleRate;
     }
 
-    inline void KTSliceHeader::SetSampleRate(Double_t sampleRate)
+    inline void KTSliceHeader::SetSampleRate(double sampleRate)
     {
         fSampleRate = sampleRate;
         return;
     }
 
-    inline Double_t KTSliceHeader::GetBinWidth() const
+    inline double KTSliceHeader::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline void KTSliceHeader::SetBinWidth(Double_t binWidth)
+    inline void KTSliceHeader::SetBinWidth(double binWidth)
     {
         fBinWidth = binWidth;
         return;
@@ -231,13 +231,13 @@ namespace Katydid
     inline void KTSliceHeader::CalculateBinWidthAndSliceLength()
     {
         SetBinWidth(1. / fSampleRate);
-        SetSliceLength(Double_t(fSliceSize) * fBinWidth);
+        SetSliceLength(double(fSliceSize) * fBinWidth);
         return;
     }
 
-    inline Double_t KTSliceHeader::GetTimeInRunAtSample(UInt_t sample)
+    inline double KTSliceHeader::GetTimeInRunAtSample(UInt_t sample)
     {
-        return fTimeInRun + fBinWidth * Double_t(sample);
+        return fTimeInRun + fBinWidth * double(sample);
     }
 
 

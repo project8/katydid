@@ -67,24 +67,24 @@ namespace Katydid
 
         if (node->HasData("snr-threshold-amplitude"))
         {
-            SetSNRAmplitudeThreshold(node->GetData< Double_t >("snr-threshold-amplitude"));
+            SetSNRAmplitudeThreshold(node->GetData< double >("snr-threshold-amplitude"));
         }
         if (node->HasData("snr-threshold-power"))
         {
-            SetSNRPowerThreshold(node->GetData< Double_t >("snr-threshold-power"));
+            SetSNRPowerThreshold(node->GetData< double >("snr-threshold-power"));
         }
         if (node->HasData("sigma-threshold"))
         {
-            SetSigmaThreshold(node->GetData< Double_t >("sigma-threshold"));
+            SetSigmaThreshold(node->GetData< double >("sigma-threshold"));
         }
 
         if (node->HasData("min-frequency"))
         {
-            SetMinFrequency(node->GetData< Double_t >("min-frequency"));
+            SetMinFrequency(node->GetData< double >("min-frequency"));
         }
         if (node->HasData("max-frequency"))
         {
-            SetMaxFrequency(node->GetData< Double_t >("max-frequency"));
+            SetMaxFrequency(node->GetData< double >("max-frequency"));
         }
 
         if (node->HasData("min-bin"))
@@ -155,10 +155,10 @@ namespace Katydid
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
-        Double_t sigmaNorm = 1. / Double_t(nBins - 1);
+        double sigmaNorm = 1. / double(nBins - 1);
 
         // Temporary storage for magnitude values
-        vector< Double_t > magnitude(data.GetSpectrumFFTW(0)->size());
+        vector< double > magnitude(data.GetSpectrumFFTW(0)->size());
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
@@ -173,16 +173,16 @@ namespace Katydid
                 magnitude.resize(spectrum->size());
             }
 
-            Double_t mean = 0.;
+            double mean = 0.;
 #pragma omp parallel for reduction(+:mean)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 magnitude[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 mean += magnitude[iBin];
             }
-            mean /= (Double_t)nBins;
+            mean /= (double)nBins;
 
-            Double_t threshold = 0.;
+            double threshold = 0.;
             if (fThresholdMode == eSNR_Amplitude)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
@@ -197,7 +197,7 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                Double_t sigma = 0., diff;
+                double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
                 for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
@@ -213,7 +213,7 @@ namespace Katydid
             newData.SetThreshold(threshold, iComponent);
 
             // loop over bins, checking against the threshold
-            Double_t value;
+            double value;
 #pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
@@ -248,10 +248,10 @@ namespace Katydid
 
         // Interval: [fMinBin, fMaxBin)
         UInt_t nBins = fMaxBin - fMinBin + 1;
-        Double_t sigmaNorm = 1. / Double_t(nBins - 1);
+        double sigmaNorm = 1. / double(nBins - 1);
 
         // Temporary storage for magnitude values
-        vector< Double_t > magnitude(data.GetSpectrumPolar(0)->size());
+        vector< double > magnitude(data.GetSpectrumPolar(0)->size());
 
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
@@ -266,14 +266,14 @@ namespace Katydid
                 magnitude.resize(spectrum->size());
             }
 
-            Double_t mean = 0.;
+            double mean = 0.;
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 mean += (*spectrum)(iBin).abs();
             }
-            mean /= (Double_t)nBins;
+            mean /= (double)nBins;
 
-            Double_t threshold = 0.;
+            double threshold = 0.;
             if (fThresholdMode == eSNR_Amplitude)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
@@ -288,7 +288,7 @@ namespace Katydid
             }
             else if (fThresholdMode == eSigma)
             {
-                Double_t sigma = 0., diff;
+                double sigma = 0., diff;
                 for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
                 {
                     diff = (*spectrum)(iBin).abs() - mean;
@@ -303,7 +303,7 @@ namespace Katydid
             newData.SetThreshold(threshold, iComponent);
 
             // loop over bins, checking against the threshold
-            Double_t value;
+            double value;
             //std::stringstream printer;
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {

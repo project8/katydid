@@ -25,28 +25,28 @@ namespace Katydid
 {
     class KTPowerSpectrum;
 
-    class KTFrequencySpectrumPolar : public KTPhysicalArray< 1, complexpolar< Double_t > >, public KTFrequencySpectrum
+    class KTFrequencySpectrumPolar : public KTPhysicalArray< 1, complexpolar< double > >, public KTFrequencySpectrum
     {
         public:
             KTFrequencySpectrumPolar();
-            KTFrequencySpectrumPolar(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            KTFrequencySpectrumPolar(size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTFrequencySpectrumPolar(const KTFrequencySpectrumPolar& orig);
             virtual ~KTFrequencySpectrumPolar();
 
             virtual KTFrequencySpectrumPolar& operator=(const KTFrequencySpectrumPolar& rhs);
 
-            virtual Double_t GetReal(UInt_t bin) const;
-            virtual Double_t GetImag(UInt_t bin) const;
+            virtual double GetReal(UInt_t bin) const;
+            virtual double GetImag(UInt_t bin) const;
 
-            virtual void SetRect(UInt_t bin, Double_t real, Double_t imag);
+            virtual void SetRect(UInt_t bin, double real, double imag);
 
-            virtual Double_t GetAbs(UInt_t bin) const;
-            virtual Double_t GetArg(UInt_t bin) const;
+            virtual double GetAbs(UInt_t bin) const;
+            virtual double GetArg(UInt_t bin) const;
 
-            virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg);
+            virtual void SetPolar(UInt_t bin, double abs, double arg);
 
             virtual UInt_t GetNFrequencyBins() const;
-            virtual Double_t GetFrequencyBinWidth() const;
+            virtual double GetFrequencyBinWidth() const;
 
             virtual KTFrequencySpectrumPolar& CConjugate();
 
@@ -66,33 +66,33 @@ namespace Katydid
 #endif
     };
 
-    inline Double_t KTFrequencySpectrumPolar::GetReal(UInt_t bin) const
+    inline double KTFrequencySpectrumPolar::GetReal(UInt_t bin) const
     {
         return (*this)(bin).abs() * std::cos((*this)(bin).arg());
     }
 
-    inline Double_t KTFrequencySpectrumPolar::GetImag(UInt_t bin) const
+    inline double KTFrequencySpectrumPolar::GetImag(UInt_t bin) const
     {
         return (*this)(bin).abs() * std::sin((*this)(bin).arg());
     }
 
-    inline void KTFrequencySpectrumPolar::SetRect(UInt_t bin, Double_t real, Double_t imag)
+    inline void KTFrequencySpectrumPolar::SetRect(UInt_t bin, double real, double imag)
     {
         (*this)(bin).set_rect(real, imag);
         return;
     }
 
-    inline Double_t KTFrequencySpectrumPolar::GetAbs(UInt_t bin) const
+    inline double KTFrequencySpectrumPolar::GetAbs(UInt_t bin) const
     {
         return (*this)(bin).abs();
     }
 
-    inline Double_t KTFrequencySpectrumPolar::GetArg(UInt_t bin) const
+    inline double KTFrequencySpectrumPolar::GetArg(UInt_t bin) const
     {
         return (*this)(bin).arg();
     }
 
-    inline void KTFrequencySpectrumPolar::SetPolar(UInt_t bin, Double_t abs, Double_t arg)
+    inline void KTFrequencySpectrumPolar::SetPolar(UInt_t bin, double abs, double arg)
     {
         (*this)(bin).set_polar(abs, arg);
         return;
@@ -103,7 +103,7 @@ namespace Katydid
         return size();
     }
 
-    inline Double_t KTFrequencySpectrumPolar::GetFrequencyBinWidth() const
+    inline double KTFrequencySpectrumPolar::GetFrequencyBinWidth() const
     {
         return GetBinWidth();
     }

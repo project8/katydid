@@ -37,7 +37,7 @@ namespace Katydid
             struct PerComponentData
             {
                 SetOfClusters fClusters;
-                Double_t fThreshold;
+                double fThreshold;
             };
 
         public:
@@ -45,27 +45,27 @@ namespace Katydid
             virtual ~KTCluster1DData();
 
             const SetOfClusters& GetSetOfClusters(UInt_t component = 0) const;
-            Double_t GetThreshold(UInt_t component = 0) const;
+            double GetThreshold(UInt_t component = 0) const;
 
             UInt_t GetNComponents() const;
 
             void AddCluster(UInt_t firstPoint, UInt_t lastPoint, UInt_t component = 0);
             void AddClusters(const SetOfClusters& clusters, UInt_t component = 0);
-            void SetThreshold(Double_t threshold, UInt_t component = 0);
+            void SetThreshold(double threshold, UInt_t component = 0);
 
             KTCluster1DData& SetNComponents(UInt_t components);
 
             UInt_t GetNBins() const;
-            Double_t GetBinWidth() const;
+            double GetBinWidth() const;
 
             void SetNBins(UInt_t nBins);
-            void SetBinWidth(Double_t binWidth);
+            void SetBinWidth(double binWidth);
 
         protected:
             std::vector< PerComponentData > fComponentData;
 
             UInt_t fNBins;
-            Double_t fBinWidth;
+            double fBinWidth;
 
 
     };
@@ -75,7 +75,7 @@ namespace Katydid
         return fComponentData[component].fClusters;
     }
 
-    inline Double_t KTCluster1DData::GetThreshold(UInt_t component) const
+    inline double KTCluster1DData::GetThreshold(UInt_t component) const
     {
         return fComponentData[component].fThreshold;
     }
@@ -91,7 +91,7 @@ namespace Katydid
         fComponentData[component].fClusters.insert(std::make_pair(firstPoint, lastPoint));
     }
 
-    inline void KTCluster1DData::SetThreshold(Double_t threshold, UInt_t component)
+    inline void KTCluster1DData::SetThreshold(double threshold, UInt_t component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fThreshold = threshold;
@@ -115,7 +115,7 @@ namespace Katydid
         return fNBins;
     }
 
-    inline Double_t KTCluster1DData::GetBinWidth() const
+    inline double KTCluster1DData::GetBinWidth() const
     {
         return fBinWidth;
     }
@@ -126,7 +126,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTCluster1DData::SetBinWidth(Double_t binWidth)
+    inline void KTCluster1DData::SetBinWidth(double binWidth)
     {
         fBinWidth = binWidth;
         return;

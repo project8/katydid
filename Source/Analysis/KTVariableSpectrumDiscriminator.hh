@@ -85,18 +85,18 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            Double_t GetSNRThreshold() const;
-            void SetSNRAmplitudeThreshold(Double_t thresh);
-            void SetSNRPowerThreshold(Double_t thresh);
+            double GetSNRThreshold() const;
+            void SetSNRAmplitudeThreshold(double thresh);
+            void SetSNRPowerThreshold(double thresh);
 
-            Double_t GetSigmaThreshold() const;
-            void SetSigmaThreshold(Double_t thresh);
+            double GetSigmaThreshold() const;
+            void SetSigmaThreshold(double thresh);
 
-            Double_t GetMinFrequency() const;
-            void SetMinFrequency(Double_t freq);
+            double GetMinFrequency() const;
+            void SetMinFrequency(double freq);
 
-            Double_t GetMaxFrequency() const;
-            void SetMaxFrequency(Double_t freq);
+            double GetMaxFrequency() const;
+            void SetMaxFrequency(double freq);
 
             UInt_t GetMinBin() const;
             void SetMinBin(UInt_t bin);
@@ -106,12 +106,12 @@ namespace Katydid
 
         private:
 
-            Double_t fSNRThreshold;
-            Double_t fSigmaThreshold;
+            double fSNRThreshold;
+            double fSigmaThreshold;
             ThresholdMode fThresholdMode;
 
-            Double_t fMinFrequency;
-            Double_t fMaxFrequency;
+            double fMinFrequency;
+            double fMaxFrequency;
             UInt_t fMinBin;
             UInt_t fMaxBin;
             Bool_t fCalculateMinBin;
@@ -132,7 +132,7 @@ namespace Katydid
             Bool_t CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
             Bool_t CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
 
-            std::vector< Double_t > fMagnitudeCache;
+            std::vector< double > fMagnitudeCache;
 
             //***************
             // Signals
@@ -155,55 +155,55 @@ namespace Katydid
 
     };
 
-    inline Double_t KTVariableSpectrumDiscriminator::GetSNRThreshold() const
+    inline double KTVariableSpectrumDiscriminator::GetSNRThreshold() const
     {
         return fSNRThreshold;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetSNRAmplitudeThreshold(Double_t thresh)
+    inline void KTVariableSpectrumDiscriminator::SetSNRAmplitudeThreshold(double thresh)
     {
         fSNRThreshold = thresh;
         fThresholdMode = eSNR_Amplitude;
         return;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetSNRPowerThreshold(Double_t thresh)
+    inline void KTVariableSpectrumDiscriminator::SetSNRPowerThreshold(double thresh)
     {
         fSNRThreshold = thresh;
         fThresholdMode = eSNR_Power;
         return;
     }
 
-    inline Double_t KTVariableSpectrumDiscriminator::GetSigmaThreshold() const
+    inline double KTVariableSpectrumDiscriminator::GetSigmaThreshold() const
     {
         return fSigmaThreshold;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetSigmaThreshold(Double_t thresh)
+    inline void KTVariableSpectrumDiscriminator::SetSigmaThreshold(double thresh)
     {
         fSigmaThreshold = thresh;
         fThresholdMode = eSigma;
         return;
     }
 
-    inline Double_t KTVariableSpectrumDiscriminator::GetMinFrequency() const
+    inline double KTVariableSpectrumDiscriminator::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMinFrequency(Double_t freq)
+    inline void KTVariableSpectrumDiscriminator::SetMinFrequency(double freq)
     {
         fMinFrequency = freq;
         fCalculateMinBin = true;
         return;
     }
 
-    inline Double_t KTVariableSpectrumDiscriminator::GetMaxFrequency() const
+    inline double KTVariableSpectrumDiscriminator::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMaxFrequency(Double_t freq)
+    inline void KTVariableSpectrumDiscriminator::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;

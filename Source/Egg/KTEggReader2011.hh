@@ -53,8 +53,8 @@ namespace Katydid
             virtual bool CloseEgg();
 
             /// Returns the time since the run started in seconds
-            Double_t GetTimeInRun() const;
-            virtual Double_t GetIntegratedTime() const;
+            double GetTimeInRun() const;
+            virtual double GetIntegratedTime() const;
 
             virtual UInt_t GetNSlicesProcessed() const ;
             virtual UInt_t GetNRecordsProcessed() const;
@@ -89,12 +89,12 @@ namespace Katydid
         return converted;
     }
 
-    inline Double_t KTEggReader2011::GetTimeInRun() const
+    inline double KTEggReader2011::GetTimeInRun() const
     {
-        return Double_t(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
+        return double(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
     }
 
-    inline Double_t KTEggReader2011::GetIntegratedTime() const
+    inline double KTEggReader2011::GetIntegratedTime() const
     {
         return GetTimeInRun();
     }

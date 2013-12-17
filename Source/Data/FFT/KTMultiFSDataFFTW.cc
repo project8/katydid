@@ -122,7 +122,7 @@ namespace Katydid
         KTINFO(datalog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(datalog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        Double_t value;
+        double value;
         for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);

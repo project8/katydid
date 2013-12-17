@@ -62,11 +62,11 @@ namespace Katydid
 
         if (node->HasData("min-frequency"))
         {
-            SetMinFrequency(node->GetData< Double_t >("min-frequency"));
+            SetMinFrequency(node->GetData< double >("min-frequency"));
         }
         if (node->HasData("max-frequency"))
         {
-            SetMaxFrequency(node->GetData< Double_t >("max-frequency"));
+            SetMaxFrequency(node->GetData< double >("max-frequency"));
         }
 
         if (node->HasData("min-bin"))
@@ -128,13 +128,13 @@ namespace Katydid
 
         UInt_t nComponents = data.GetNComponents();
 
-        //Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
+        //double sigmaNorm = 1. / double(nBinsPerFitPoint - 1);
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
 
-            Double_t* xVals = new Double_t[fNFitPoints];
-            Double_t* yVals = new Double_t[fNFitPoints];
+            double* xVals = new double[fNFitPoints];
+            double* yVals = new double[fNFitPoints];
 
             // Calculate fit points
 #pragma omp parallel for default(shared)
@@ -143,16 +143,16 @@ namespace Katydid
                 UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
-                Double_t leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
-                Double_t rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
+                double leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
+                double rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
                 xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
 
-                Double_t mean = 0.;
+                double mean = 0.;
                 for (UInt_t iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
                 {
                     mean += (*spectrum)(iBin).abs();
                 }
-                mean /= (Double_t)nBinsPerFitPoint;
+                mean /= (double)nBinsPerFitPoint;
                 yVals[iFitPoint] = mean;
 
                 KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
@@ -161,7 +161,7 @@ namespace Katydid
             if (fNormalize)
             {
                 // Normalize the fit points to 1
-                Double_t minYVal = yVals[0];
+                double minYVal = yVals[0];
                 for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
                 {
                     if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
@@ -216,13 +216,13 @@ namespace Katydid
 
         UInt_t nComponents = data.GetNComponents();
 
-        //Double_t sigmaNorm = 1. / Double_t(nBinsPerFitPoint - 1);
+        //double sigmaNorm = 1. / double(nBinsPerFitPoint - 1);
         for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
 
-            Double_t* xVals = new Double_t[fNFitPoints];
-            Double_t* yVals = new Double_t[fNFitPoints];
+            double* xVals = new double[fNFitPoints];
+            double* yVals = new double[fNFitPoints];
 
             // Calculate fit points
 #pragma omp parallel for default(shared)
@@ -231,16 +231,16 @@ namespace Katydid
                 UInt_t fitPointStartBin = iFitPoint * nBinsPerFitPoint + fMinBin;
                 UInt_t fitPointEndBin = fitPointStartBin + nBinsPerFitPoint;
 
-                Double_t leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
-                Double_t rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
+                double leftEdge = spectrum->GetBinLowEdge(fitPointStartBin);
+                double rightEdge = spectrum->GetBinLowEdge(fitPointEndBin);
                 xVals[iFitPoint] = leftEdge + 0.5 * (rightEdge - leftEdge);
 
-                Double_t mean = 0.;
+                double mean = 0.;
                 for (UInt_t iBin=fitPointStartBin; iBin<fitPointEndBin; iBin++)
                 {
                     mean += sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 }
-                mean /= (Double_t)nBinsPerFitPoint;
+                mean /= (double)nBinsPerFitPoint;
                 yVals[iFitPoint] = mean;
 
                 KTDEBUG(gvlog, "Fit point " << iFitPoint << "  " << xVals[iFitPoint] << "  " << yVals[iFitPoint]);
@@ -249,7 +249,7 @@ namespace Katydid
             // Normalize the fit points to 1
             if (fNormalize)
             {
-                Double_t minYVal = yVals[0];
+                double minYVal = yVals[0];
                 for (UInt_t iFitPoint=1; iFitPoint < fNFitPoints; iFitPoint++)
                 {
                     if (yVals[iFitPoint] < minYVal) minYVal = yVals[iFitPoint];
@@ -277,13 +277,13 @@ namespace Katydid
     }
 
     /*
-    KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateGainVariation(TSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const
+    KTGainVariationProcessor::GainVariation* KTGainVariationProcessor::CreateGainVariation(TSpline* spline, UInt_t nBins, double rangeMin, double rangeMax) const
     {
         GainVariation* newGainVar = new GainVariation(nBins, rangeMin, rangeMax);
 
         // The fit region: [fMinBin, fMaxBin)
         // Keep track of the minimum value so we can shift it down to 1
-        Double_t minVal = spline->Eval(newGainVar->GetBinCenter(fMinBin));
+        double minVal = spline->Eval(newGainVar->GetBinCenter(fMinBin));
         for (UInt_t iBin = fMinBin; iBin < fMaxBin; iBin++)
         {
             (*newGainVar)(iBin) = spline->Eval(newGainVar->GetBinCenter(iBin));

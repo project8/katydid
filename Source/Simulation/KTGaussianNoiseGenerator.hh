@@ -31,12 +31,12 @@ namespace Katydid
        - "n-slices": UInt_t -- Number of slices to create (used only if creating new slices)
        - "n-channels": UInt_t -- Number of channels per slice to create (used only if creating new slices)
        - "time-series-size": UInt_t -- Specify the size of the time series (used only if creating new slices)
-       - "bin-width": Double_t -- Specify the bin width
+       - "bin-width": double -- Specify the bin width
        - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
        - "record-size": UInt_t -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
      - From KTGaussianNoiseGenerator
-       - "mean": Double_t -- Mean for the randomly-chosen time-series values
-       - "sigma": Double_t -- Standard deviation for the randomly-chosen time-series values
+       - "mean": double -- Mean for the randomly-chosen time-series values
+       - "sigma": double -- Standard deviation for the randomly-chosen time-series values
 
      Slots: (inherited from KTTSGenerator)
      - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
@@ -54,11 +54,11 @@ namespace Katydid
 
             virtual Bool_t ConfigureDerivedGenerator(const KTPStoreNode* node);
 
-            Double_t GetMean() const;
-            void SetMean(Double_t mean);
+            double GetMean() const;
+            void SetMean(double mean);
 
-            Double_t GetSigma() const;
-            void SetSigma(Double_t sigma);
+            double GetSigma() const;
+            void SetSigma(double sigma);
 
         private:
             KTRNGGaussian<> fRNG;
@@ -68,23 +68,23 @@ namespace Katydid
 
     };
 
-    inline Double_t KTGaussianNoiseGenerator::GetMean() const
+    inline double KTGaussianNoiseGenerator::GetMean() const
     {
         return fRNG.mean();
     }
 
-    inline void KTGaussianNoiseGenerator::SetMean(Double_t mean)
+    inline void KTGaussianNoiseGenerator::SetMean(double mean)
     {
         fRNG.param(KTRNGGaussian<>::param_type(mean, GetSigma()));
         return;
     }
 
-    inline Double_t KTGaussianNoiseGenerator::GetSigma() const
+    inline double KTGaussianNoiseGenerator::GetSigma() const
     {
         return fRNG.sigma();
     }
 
-    inline void KTGaussianNoiseGenerator::SetSigma(Double_t sigma)
+    inline void KTGaussianNoiseGenerator::SetSigma(double sigma)
     {
         fRNG.param(KTRNGGaussian<>::param_type(GetMean(), sigma));
         return;

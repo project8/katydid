@@ -67,7 +67,7 @@ namespace Katydid
             KTWindowFunction* fWindowFunction;
 
         public:
-            Bool_t InitializeWindow(Double_t binWidth, Double_t size);
+            Bool_t InitializeWindow(double binWidth, double size);
             void InitializeWithHeader(const KTEggHeader* header);
 
             /// Window the data object's time series (real-type)

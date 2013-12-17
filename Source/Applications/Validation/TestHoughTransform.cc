@@ -61,14 +61,14 @@ int main()
     hough.SetNThetaPoints(nThetaPoints);
     hough.SetNRPoints(nRPoints);
 
-    KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* output = hough.TransformSpectrum(&input);
+    KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* output = hough.TransformSpectrum(&input);
 
 #ifdef ROOT_FOUND
-    Double_t maxR = (*output)(0)->GetRangeMax();
+    double maxR = (*output)(0)->GetRangeMax();
     TH2D* hOutput = new TH2D("hOutput", "Output", nThetaPoints, 0., KTMath::Pi(), nRPoints, 0., maxR);
     for (UInt_t iTheta=0; iTheta<nThetaPoints; iTheta++)
     {
-        KTPhysicalArray< 1, Double_t >* thetaArray = (*output)(iTheta);
+        KTPhysicalArray< 1, double >* thetaArray = (*output)(iTheta);
         for (UInt_t iR=0; iR<nRPoints; iR++)
         {
             hOutput->SetBinContent(iTheta+1, iR+1, (*thetaArray)(iR));

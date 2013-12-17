@@ -41,9 +41,9 @@ namespace Katydid
      - "slice-size": UInt_t -- Specify the size of the time series (required)
      - "stride": UInt_t -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
      - "normalize-voltages": Bool_t -- Flag to toggle the normalization of ADC values from the egg file (default: true)
-     - "full-voltage-scale": Double_t -- Normalization parameter specifying the full voltage range of the digitizer
+     - "full-voltage-scale": double -- Normalization parameter specifying the full voltage range of the digitizer
      - "n-adc-levels": UInt_t -- Number of ADC levels (for an N-bit digitizer, # of levels = 2^N)
-     - "normalization": Double_t -- Directly set the voltage normalization
+     - "normalization": double -- Directly set the voltage normalization
      - "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
@@ -106,15 +106,15 @@ namespace Katydid
             Bool_t GetNormalizeVoltages() const;
             void SetNormalizeVoltages(Bool_t flag);
 
-            Double_t GetFullVoltageScale() const;
-            void SetFullVoltageScale(Double_t vScale);
+            double GetFullVoltageScale() const;
+            void SetFullVoltageScale(double vScale);
 
             UInt_t GetNADCLevels() const;
             void SetNADCLevels(UInt_t adcLevels);
 
-            Double_t GetNormalization() const;
+            double GetNormalization() const;
             void CalculateNormalization(); /// Calculate the normalization from the full voltage scale, and number of ADC levels
-            void SetNormalization(Double_t norm); /// Set the normalization directly
+            void SetNormalization(double norm); /// Set the normalization directly
 
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
@@ -134,9 +134,9 @@ namespace Katydid
             UInt_t fStride;
 
             Bool_t fNormalizeVoltages;
-            Double_t fFullVoltageScale;
+            double fFullVoltageScale;
             UInt_t fNADCLevels;
-            Double_t fNormalization; // final value of the normalization
+            double fNormalization; // final value of the normalization
             Bool_t fCalculateNormalization; // flag for automatically calculating the normalization
 
             TimeSeriesType fTimeSeriesType;
@@ -242,12 +242,12 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTEggProcessor::GetFullVoltageScale() const
+    inline double KTEggProcessor::GetFullVoltageScale() const
     {
         return fFullVoltageScale;
     }
 
-    inline void KTEggProcessor::SetFullVoltageScale(Double_t vScale)
+    inline void KTEggProcessor::SetFullVoltageScale(double vScale)
     {
         fFullVoltageScale = vScale;
         fCalculateNormalization = true;
@@ -266,19 +266,19 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTEggProcessor::GetNormalization() const
+    inline double KTEggProcessor::GetNormalization() const
     {
         return fNormalization;
     }
 
     inline void KTEggProcessor::CalculateNormalization()
     {
-        fNormalization = fFullVoltageScale / (Double_t)fNADCLevels;
+        fNormalization = fFullVoltageScale / (double)fNADCLevels;
         fCalculateNormalization = false;
         return;
     }
 
-    inline void KTEggProcessor::SetNormalization(Double_t norm)
+    inline void KTEggProcessor::SetNormalization(double norm)
     {
         fNormalization = norm;
         fCalculateNormalization = false;

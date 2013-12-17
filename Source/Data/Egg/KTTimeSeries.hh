@@ -25,19 +25,19 @@ namespace Katydid
             virtual ~KTTimeSeries();
 
             /// Scale the time series
-            virtual void Scale(Double_t scale) = 0;
+            virtual void Scale(double scale) = 0;
 
             /// Get the size of the time series via the KTTimeSeries interface
             virtual UInt_t GetNTimeBins() const = 0;
 
             /// Get the bin width via the KTTimeSeries interface
-            virtual Double_t GetTimeBinWidth() const = 0;
+            virtual double GetTimeBinWidth() const = 0;
 
             /// Set values in the time series via the KTTimeSeries interface
-            virtual void SetValue(UInt_t bin, Double_t value) = 0;
+            virtual void SetValue(UInt_t bin, double value) = 0;
 
             /// Get values in the time series via the KTTimeSeries interface
-            virtual Double_t GetValue(UInt_t bin) const = 0;
+            virtual double GetValue(UInt_t bin) const = 0;
 
             virtual void Print(UInt_t startPrint, UInt_t nToPrint) const = 0;
 

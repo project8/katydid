@@ -28,21 +28,21 @@ namespace Katydid
             UInt_t GetLastBin() const;
             void SetLastBin(UInt_t bin);
 
-            Double_t GetMeanFrequency() const;
-            void SetMeanFrequency(Double_t freq);
+            double GetMeanFrequency() const;
+            void SetMeanFrequency(double freq);
 
-            Double_t GetPeakAmplitude() const;
-            void SetPeakAmplitude(Double_t amp);
+            double GetPeakAmplitude() const;
+            void SetPeakAmplitude(double amp);
 
-            Double_t GetAmplitudeSum() const;
-            void SetAmplitudeSum(Double_t amp);
+            double GetAmplitudeSum() const;
+            void SetAmplitudeSum(double amp);
 
         protected:
             UInt_t fFirstBin;
             UInt_t fLastBin;
-            Double_t fMeanFrequency;
-            Double_t fPeakAmplitude;
-            Double_t fAmplitudeSum;
+            double fMeanFrequency;
+            double fPeakAmplitude;
+            double fAmplitudeSum;
     };
 
     inline UInt_t KTFrequencyCandidate::GetFirstBin() const
@@ -67,34 +67,34 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTFrequencyCandidate::GetMeanFrequency() const
+    inline double KTFrequencyCandidate::GetMeanFrequency() const
     {
         return fMeanFrequency;
     }
 
-    inline void KTFrequencyCandidate::SetMeanFrequency(Double_t freq)
+    inline void KTFrequencyCandidate::SetMeanFrequency(double freq)
     {
         fMeanFrequency = freq;
         return;
     }
 
-    inline Double_t KTFrequencyCandidate::GetPeakAmplitude() const
+    inline double KTFrequencyCandidate::GetPeakAmplitude() const
     {
         return fPeakAmplitude;
     }
 
-    inline void KTFrequencyCandidate::SetPeakAmplitude(Double_t amp)
+    inline void KTFrequencyCandidate::SetPeakAmplitude(double amp)
     {
         fPeakAmplitude = amp;
         return;
     }
 
-    inline Double_t KTFrequencyCandidate::GetAmplitudeSum() const
+    inline double KTFrequencyCandidate::GetAmplitudeSum() const
     {
         return fAmplitudeSum;
     }
 
-    inline void KTFrequencyCandidate::SetAmplitudeSum(Double_t amp)
+    inline void KTFrequencyCandidate::SetAmplitudeSum(double amp)
     {
         fAmplitudeSum = amp;
         return;

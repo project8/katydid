@@ -34,7 +34,7 @@ namespace Katydid
     {
         protected:
             typedef const MonarchRecord* (Monarch::*GetRecordFunction)() const;
-            typedef Double_t (KTEggReaderMonarch::*GetTIRFunction)() const;
+            typedef double (KTEggReaderMonarch::*GetTIRFunction)() const;
 
             typedef std::map< UInt_t, Int_t > AcquisitionModeMap;
             typedef AcquisitionModeMap::value_type AcqModeMapValue;
@@ -106,18 +106,18 @@ namespace Katydid
             AcquisitionModeMap fNumberOfChannels;
 
         public:
-            Double_t GetSampleRateUnitsInHz() const;
+            double GetSampleRateUnitsInHz() const;
 
-            Double_t GetFullVoltageScale() const;
+            double GetFullVoltageScale() const;
             UInt_t GetNADCLevels() const;
 
             UInt_t GetRecordSize() const;
-            Double_t GetBinWidth() const;
+            double GetBinWidth() const;
 
             /// Returns the time since the run started in seconds
-            Double_t GetTimeInRun() const;
+            double GetTimeInRun() const;
             /// Same as GetTimeInRun
-            virtual Double_t GetIntegratedTime() const;
+            virtual double GetIntegratedTime() const;
 
             /// Returns the number of slices processed
             virtual UInt_t GetNSlicesProcessed() const;
@@ -129,14 +129,14 @@ namespace Katydid
 
         private:
             mutable GetTIRFunction fGetTimeInRun;
-            Double_t GetTimeInRunFirstCall() const;
-            Double_t GetTimeInRunFromMonarch() const;
-            Double_t GetTimeInRunManually() const;
+            double GetTimeInRunFirstCall() const;
+            double GetTimeInRunFromMonarch() const;
+            double GetTimeInRunManually() const;
 
-            Double_t fSampleRateUnitsInHz;
+            double fSampleRateUnitsInHz;
 
             UInt_t fRecordSize;
-            Double_t fBinWidth;
+            double fBinWidth;
 
             ULong64_t fSliceNumber;
 
@@ -175,7 +175,7 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTEggReaderMonarch::GetSampleRateUnitsInHz() const
+    inline double KTEggReaderMonarch::GetSampleRateUnitsInHz() const
     {
         return fSampleRateUnitsInHz;
     }
@@ -184,27 +184,27 @@ namespace Katydid
     {
         return fRecordSize;
     }
-    inline Double_t KTEggReaderMonarch::GetBinWidth() const
+    inline double KTEggReaderMonarch::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline Double_t KTEggReaderMonarch::GetTimeInRun() const
+    inline double KTEggReaderMonarch::GetTimeInRun() const
     {
         return (this->*fGetTimeInRun)();
     }
 
-    inline Double_t KTEggReaderMonarch::GetTimeInRunFromMonarch() const
+    inline double KTEggReaderMonarch::GetTimeInRunFromMonarch() const
     {
-        return Double_t((fMonarch->*fMonarchGetRecord[0])()->fTime) * SEC_PER_NSEC + fBinWidth * Double_t(fReadState.fReadPtrOffset);
+        return double((fMonarch->*fMonarchGetRecord[0])()->fTime) * SEC_PER_NSEC + fBinWidth * double(fReadState.fReadPtrOffset);
     }
 
-    inline Double_t KTEggReaderMonarch::GetTimeInRunManually() const
+    inline double KTEggReaderMonarch::GetTimeInRunManually() const
     {
-        return fBinWidth * Double_t(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
+        return fBinWidth * double(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
     }
 
-    inline Double_t KTEggReaderMonarch::GetIntegratedTime() const
+    inline double KTEggReaderMonarch::GetIntegratedTime() const
     {
         return GetTimeInRun();
     }

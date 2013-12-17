@@ -40,17 +40,17 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        fFrequency = node->GetData< Double_t >("frequency", fFrequency);
-        fPhase = node->GetData< Double_t >("phase", fPhase);
-        fAmplitude = node->GetData< Double_t >("amplitude", fAmplitude);
+        fFrequency = node->GetData< double >("frequency", fFrequency);
+        fPhase = node->GetData< double >("phase", fPhase);
+        fAmplitude = node->GetData< double >("amplitude", fAmplitude);
 
         return true;
     }
 
     Bool_t KTSinusoidGenerator::GenerateTS(KTTimeSeriesData& data)
     {
-        const Double_t mult = 2. * KTMath::Pi() * fFrequency;
-        const Double_t binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
+        const double mult = 2. * KTMath::Pi() * fFrequency;
+        const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
         const UInt_t sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 
         UInt_t nComponents = data.GetNComponents();
@@ -65,7 +65,7 @@ namespace Katydid
                 continue;
             }
 
-            Double_t binCenter = 0.5 * binWidth;
+            double binCenter = 0.5 * binWidth;
             for (UInt_t iBin = 0; iBin < sliceSize; iBin++)
             {
                 timeSeries->SetValue(iBin, fAmplitude * sin(binCenter * mult + fPhase) + timeSeries->GetValue(iBin));

@@ -37,7 +37,7 @@ namespace Katydid
     {
     }
 
-    KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
+    KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, double rangeMin, double rangeMax) :
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax),
             KTFrequencySpectrum(),
             fIsSizeEven(nBins%2 == 0),
@@ -137,7 +137,7 @@ namespace Katydid
          */
         if (addNegFreqs)
         {
-            Double_t valueImag, valueReal;
+            double valueImag, valueReal;
 #pragma omp parallel for private(valueReal, valueImag)
             for (UInt_t iBin=1; iBin<nBins-1; iBin++)
             {
@@ -188,8 +188,8 @@ namespace Katydid
 
         UInt_t nBins = fDCBin + 1;
         KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
-        Double_t value, valueImag, valueReal;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
+        double value, valueImag, valueReal;
+        double scaling = 1. / KTPowerSpectrum::GetResistance();
 
         // DC bin
         value = (*this)(fDCBin)[0] * (*this)(fDCBin)[0] + (*this)(fDCBin)[1] * (*this)(fDCBin)[1];
@@ -285,8 +285,8 @@ namespace Katydid
     {
         UInt_t nBins = fDCBin + 1;
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, -0.5 * GetBinWidth(), GetRangeMax());
-        Double_t value, valueImag, valueReal;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
+        double value, valueImag, valueReal;
+        double scaling = 1. / KTPowerSpectrum::GetResistance();
 
         // DC bin
         value = (*this)(fDCBin)[0] * (*this)(fDCBin)[0] + (*this)(fDCBin)[1] * (*this)(fDCBin)[1];
@@ -330,9 +330,9 @@ namespace Katydid
     TH1D* KTFrequencySpectrumFFTW::CreateMagnitudeDistributionHistogram(const std::string& name) const
     {
         UInt_t nBins = size();
-        Double_t tMaxMag = -1.;
-        Double_t tMinMag = 1.e9;
-        Double_t value;
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        double value;
         // skip the DC bin; start at iBin = 1
         for (UInt_t iBin=1; iBin<nBins; iBin++)
         {
@@ -356,10 +356,10 @@ namespace Katydid
     TH1D* KTFrequencySpectrumFFTW::CreatePowerDistributionHistogram(const std::string& name) const
     {
         UInt_t nBins = size();
-        Double_t tMaxMag = -1.;
-        Double_t tMinMag = 1.e9;
-        Double_t value;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance();
         // skip the DC bin; start at iBin = 1
         for (UInt_t iBin=1; iBin<nBins; iBin++)
         {

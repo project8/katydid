@@ -90,10 +90,10 @@ int main(int argc, char** argv)
 
     UInt_t fsSizeFFTW = header->GetSliceSize();
     UInt_t fsSizePolar = fsSizeFFTW / 2 + 1;
-    Double_t timeBinWidth = 1. / header->GetAcquisitionRate();
-    Double_t freqBinWidth = 1. / (timeBinWidth * Double_t(fsSizeFFTW));
-    Double_t sliceLength = timeBinWidth * Double_t(header->GetSliceSize());
-    Double_t fsMaxFreq = freqBinWidth * (Double_t(fsSizePolar) - 0.5);
+    double timeBinWidth = 1. / header->GetAcquisitionRate();
+    double freqBinWidth = 1. / (timeBinWidth * double(fsSizeFFTW));
+    double sliceLength = timeBinWidth * double(header->GetSliceSize());
+    double fsMaxFreq = freqBinWidth * (double(fsSizePolar) - 0.5);
 
     KTPROG(eggscan, "Additional information:\n"
            << "\tFile size: " << fileSize/1000000 << " MB\n"

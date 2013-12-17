@@ -73,18 +73,18 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            Double_t GetSNRThreshold() const;
-            void SetSNRAmplitudeThreshold(Double_t thresh);
-            void SetSNRPowerThreshold(Double_t thresh);
+            double GetSNRThreshold() const;
+            void SetSNRAmplitudeThreshold(double thresh);
+            void SetSNRPowerThreshold(double thresh);
 
-            Double_t GetSigmaThreshold() const;
-            void SetSigmaThreshold(Double_t thresh);
+            double GetSigmaThreshold() const;
+            void SetSigmaThreshold(double thresh);
 
-            Double_t GetMinFrequency() const;
-            void SetMinFrequency(Double_t freq);
+            double GetMinFrequency() const;
+            void SetMinFrequency(double freq);
 
-            Double_t GetMaxFrequency() const;
-            void SetMaxFrequency(Double_t freq);
+            double GetMaxFrequency() const;
+            void SetMaxFrequency(double freq);
 
             UInt_t GetMinBin() const;
             void SetMinBin(UInt_t bin);
@@ -94,12 +94,12 @@ namespace Katydid
 
         private:
 
-            Double_t fSNRThreshold;
-            Double_t fSigmaThreshold;
+            double fSNRThreshold;
+            double fSigmaThreshold;
             ThresholdMode fThresholdMode;
 
-            Double_t fMinFrequency;
-            Double_t fMaxFrequency;
+            double fMinFrequency;
+            double fMaxFrequency;
             UInt_t fMinBin;
             UInt_t fMaxBin;
             Bool_t fCalculateMinBin;
@@ -139,55 +139,55 @@ namespace Katydid
 
     };
 
-    inline Double_t KTSpectrumDiscriminator::GetSNRThreshold() const
+    inline double KTSpectrumDiscriminator::GetSNRThreshold() const
     {
         return fSNRThreshold;
     }
 
-    inline void KTSpectrumDiscriminator::SetSNRAmplitudeThreshold(Double_t thresh)
+    inline void KTSpectrumDiscriminator::SetSNRAmplitudeThreshold(double thresh)
     {
         fSNRThreshold = thresh;
         fThresholdMode = eSNR_Amplitude;
         return;
     }
 
-    inline void KTSpectrumDiscriminator::SetSNRPowerThreshold(Double_t thresh)
+    inline void KTSpectrumDiscriminator::SetSNRPowerThreshold(double thresh)
     {
         fSNRThreshold = thresh;
         fThresholdMode = eSNR_Power;
         return;
     }
 
-    inline Double_t KTSpectrumDiscriminator::GetSigmaThreshold() const
+    inline double KTSpectrumDiscriminator::GetSigmaThreshold() const
     {
         return fSigmaThreshold;
     }
 
-    inline void KTSpectrumDiscriminator::SetSigmaThreshold(Double_t thresh)
+    inline void KTSpectrumDiscriminator::SetSigmaThreshold(double thresh)
     {
         fSigmaThreshold = thresh;
         fThresholdMode = eSigma;
         return;
     }
 
-    inline Double_t KTSpectrumDiscriminator::GetMinFrequency() const
+    inline double KTSpectrumDiscriminator::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline void KTSpectrumDiscriminator::SetMinFrequency(Double_t freq)
+    inline void KTSpectrumDiscriminator::SetMinFrequency(double freq)
     {
         fMinFrequency = freq;
         fCalculateMinBin = true;
         return;
     }
 
-    inline Double_t KTSpectrumDiscriminator::GetMaxFrequency() const
+    inline double KTSpectrumDiscriminator::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline void KTSpectrumDiscriminator::SetMaxFrequency(Double_t freq)
+    inline void KTSpectrumDiscriminator::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;

@@ -81,7 +81,7 @@ namespace Katydid
             Bool_t Configure(const KTPStoreNode* node);
 
             UInt_t GetAccumulatorSize() const;
-            Double_t GetAveragingFrac() const;
+            double GetAveragingFrac() const;
             void SetAccumulatorSize(UInt_t size);
 
             UInt_t GetSignalInterval() const;
@@ -89,7 +89,7 @@ namespace Katydid
 
         private:
             UInt_t fAccumulatorSize;
-            Double_t fAveragingFrac;
+            double fAveragingFrac;
             UInt_t fSignalInterval;
 
         public:
@@ -138,7 +138,7 @@ namespace Katydid
         return fAccumulatorSize;
     }
 
-    inline Double_t KTDataAccumulator::GetAveragingFrac() const
+    inline double KTDataAccumulator::GetAveragingFrac() const
     {
         return fAveragingFrac;
     }
@@ -146,7 +146,7 @@ namespace Katydid
     inline void KTDataAccumulator::SetAccumulatorSize(UInt_t size)
     {
         fAccumulatorSize = size;
-        fAveragingFrac = 1. / (Double_t)fAccumulatorSize;
+        fAveragingFrac = 1. / (double)fAccumulatorSize;
         return;
     }
 

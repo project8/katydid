@@ -25,8 +25,8 @@ namespace Katydid
     {
         while (! fTransforms.empty())
         {
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* backTransform = fTransforms.back();
-            for (KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >::iterator iter = backTransform->begin(); iter != backTransform->end(); iter++)
+            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* backTransform = fTransforms.back();
+            for (KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >::iterator iter = backTransform->begin(); iter != backTransform->end(); iter++)
             {
                 delete *iter;
             }
@@ -72,7 +72,7 @@ namespace Katydid
 
         for (Int_t iBinX=1; iBinX<=(Int_t)fTransforms[component]->size(); iBinX++)
         {
-            KTPhysicalArray< 1, Double_t >* fs = (*fTransforms[component])(iBinX-1);
+            KTPhysicalArray< 1, double >* fs = (*fTransforms[component])(iBinX-1);
             for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1));

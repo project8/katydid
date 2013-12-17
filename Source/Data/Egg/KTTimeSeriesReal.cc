@@ -23,14 +23,14 @@ namespace Katydid
 
     KTTimeSeriesReal::KTTimeSeriesReal() :
             KTTimeSeries(),
-            KTPhysicalArray< 1, Double_t >()
+            KTPhysicalArray< 1, double >()
     {
         fData[0] = 0.;
     }
 
-    KTTimeSeriesReal::KTTimeSeriesReal(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
+    KTTimeSeriesReal::KTTimeSeriesReal(size_t nBins, double rangeMin, double rangeMax) :
             KTTimeSeries(),
-            KTPhysicalArray< 1, Double_t >(nBins, rangeMin, rangeMax)
+            KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax)
     {
         for (UInt_t iBin = 0; iBin < nBins; iBin++)
         {
@@ -39,7 +39,7 @@ namespace Katydid
     }
     KTTimeSeriesReal::KTTimeSeriesReal(const KTTimeSeriesReal& orig) :
             KTTimeSeries(),
-            KTPhysicalArray< 1, Double_t >(orig)
+            KTPhysicalArray< 1, double >(orig)
     {
     }
 
@@ -49,7 +49,7 @@ namespace Katydid
 
     KTTimeSeriesReal& KTTimeSeriesReal::operator=(const KTTimeSeriesReal& rhs)
     {
-        KTPhysicalArray< 1, Double_t >::operator=(rhs);
+        KTPhysicalArray< 1, double >::operator=(rhs);
         return *this;
     }
 
@@ -81,10 +81,10 @@ namespace Katydid
 
     TH1D* KTTimeSeriesReal::CreateAmplitudeDistributionHistogram(const std::string& name) const
     {
-        Double_t tMaxMag = -1.;
-        Double_t tMinMag = 1.e9;
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
         UInt_t nBins = GetNTimeBins();
-        Double_t value;
+        double value;
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin);

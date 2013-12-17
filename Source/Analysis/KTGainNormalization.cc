@@ -58,11 +58,11 @@ namespace Katydid
 
         if (node->HasData("min-frequency"))
         {
-            SetMinFrequency(node->GetData< Double_t >("min-frequency"));
+            SetMinFrequency(node->GetData< double >("min-frequency"));
         }
         if (node->HasData("max-frequency"))
         {
-            SetMaxFrequency(node->GetData< Double_t >("max-frequency"));
+            SetMaxFrequency(node->GetData< double >("max-frequency"));
         }
 
         if (node->HasData("min-bin"))
@@ -147,14 +147,14 @@ namespace Katydid
     KTFrequencySpectrumPolar* KTGainNormalization::Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline)
     {
         UInt_t nBins = fMaxBin - fMinBin + 1;
-        Double_t freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
-        Double_t freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
+        double freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
+        double freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
 
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
         UInt_t nSpectrumBins = frequencySpectrum->size();
-        Double_t freqSpectrumMin = frequencySpectrum->GetRangeMin();
-        Double_t freqSpectrumMax = frequencySpectrum->GetRangeMax();
+        double freqSpectrumMin = frequencySpectrum->GetRangeMin();
+        double freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
         KTDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTFrequencySpectrumPolar* newSpectrum = new KTFrequencySpectrumPolar(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
@@ -193,14 +193,14 @@ namespace Katydid
         //              is even, and scaling is requested all the way up to the Nyquist bin, the Nyquist bin will not be scaled.
 
         UInt_t nBins = fMaxBin - fMinBin + 1;
-        Double_t freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
-        Double_t freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
+        double freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
+        double freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
 
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
         UInt_t nSpectrumBins = frequencySpectrum->size();
-        Double_t freqSpectrumMin = frequencySpectrum->GetRangeMin();
-        Double_t freqSpectrumMax = frequencySpectrum->GetRangeMax();
+        double freqSpectrumMin = frequencySpectrum->GetRangeMin();
+        double freqSpectrumMax = frequencySpectrum->GetRangeMax();
 
         KTDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
@@ -229,7 +229,7 @@ namespace Katydid
         UInt_t maxOffsetBin = fMaxBin - dcBin;
         UInt_t spectrumSizeOffset = frequencySpectrum->size() - dcBin;
 
-        Double_t scaling = 1.;
+        double scaling = 1.;
         UInt_t iBinPos, iBinNeg, iBin, iOffsetBin;
 #pragma omp parallel default(shared) private(iBinPos, iBinNeg, iBin, iOffsetBin, scaling)
         {

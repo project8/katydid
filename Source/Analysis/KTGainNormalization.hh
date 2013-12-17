@@ -59,11 +59,11 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            Double_t GetMinFrequency() const;
-            void SetMinFrequency(Double_t freq);
+            double GetMinFrequency() const;
+            void SetMinFrequency(double freq);
 
-            Double_t GetMaxFrequency() const;
-            void SetMaxFrequency(Double_t freq);
+            double GetMaxFrequency() const;
+            void SetMaxFrequency(double freq);
 
             UInt_t GetMinBin() const;
             void SetMinBin(UInt_t bin);
@@ -72,8 +72,8 @@ namespace Katydid
             void SetMaxBin(UInt_t bin);
 
         private:
-            Double_t fMinFrequency;
-            Double_t fMaxFrequency;
+            double fMinFrequency;
+            double fMaxFrequency;
             UInt_t fMinBin;
             UInt_t fMaxBin;
             Bool_t fCalculateMinBin;
@@ -109,24 +109,24 @@ namespace Katydid
 
     };
 
-    inline Double_t KTGainNormalization::GetMinFrequency() const
+    inline double KTGainNormalization::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline void KTGainNormalization::SetMinFrequency(Double_t freq)
+    inline void KTGainNormalization::SetMinFrequency(double freq)
     {
         fMinFrequency = freq;
         fCalculateMinBin = true;
         return;
     }
 
-    inline Double_t KTGainNormalization::GetMaxFrequency() const
+    inline double KTGainNormalization::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline void KTGainNormalization::SetMaxFrequency(Double_t freq)
+    inline void KTGainNormalization::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;

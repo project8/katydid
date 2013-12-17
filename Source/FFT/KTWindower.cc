@@ -81,7 +81,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTWindower::InitializeWindow(Double_t binWidth, Double_t size)
+    Bool_t KTWindower::InitializeWindow(double binWidth, double size)
     {
         fWindowFunction->SetBinWidth(binWidth);
         fWindowFunction->SetSize(size);
@@ -192,7 +192,7 @@ namespace Katydid
             return false;
         }
 
-        Double_t weight;
+        double weight;
         for (UInt_t iBin=0; iBin < nBins; ++iBin)
         {
             weight = fWindowFunction->GetWeight(iBin);

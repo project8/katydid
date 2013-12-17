@@ -37,7 +37,7 @@ namespace Katydid
         return true;
     }
 
-    Double_t KTSincWindow::GetWeight(Double_t time) const
+    double KTSincWindow::GetWeight(double time) const
     {
         return GetWeight(KTMath::Nint(time / fBinWidth));
     }
@@ -45,12 +45,12 @@ namespace Katydid
     void KTSincWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t xVal = 0.;
+        double xVal = 0.;
         Int_t halfSize = Int_t(fSize / 2);
-        Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(halfSize - 1);
+        double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(halfSize - 1);
         for (UInt_t iBin=0; iBin < fSize; iBin++)
         {
-            xVal = twoPiOverNBinsMinus1 * Double_t(iBin-halfSize);
+            xVal = twoPiOverNBinsMinus1 * double(iBin-halfSize);
             fWindowFunction[iBin] = xVal == 0. ? 1. : sin(xVal) / xVal;
         }
         return;

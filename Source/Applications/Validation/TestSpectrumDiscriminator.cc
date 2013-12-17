@@ -25,16 +25,16 @@ KTLOGGER(testlog, "katydid.applications.validation");
 int main()
 {
     UInt_t nBins = 1000000;
-    Double_t minFreq = 0., maxFreq = 100.;
+    double minFreq = 0., maxFreq = 100.;
 
-    Double_t meanValue = 5.;
-    Double_t noiseSigma = 1.;
+    double meanValue = 5.;
+    double noiseSigma = 1.;
 
     UInt_t nPeaks = 10;
-    Double_t meanPeakMult = 5.;
-    Double_t sigmaPeakMult = 3.;
+    double meanPeakMult = 5.;
+    double sigmaPeakMult = 3.;
 
-    Double_t sigmaThresh = 5.;
+    double sigmaThresh = 5.;
 
 #ifdef ROOT_FOUND
     TRandom3 rand(0);
@@ -59,11 +59,11 @@ int main()
     for (UInt_t iPeak=0; iPeak<nPeaks; iPeak++)
     {
 #ifdef ROOT_FOUND
-        UInt_t iBin = UInt_t(rand.Rndm() * (Double_t)nBins);
-        Double_t multiplier = rand.Gaus(meanPeakMult, sigmaPeakMult);
+        UInt_t iBin = UInt_t(rand.Rndm() * (double)nBins);
+        double multiplier = rand.Gaus(meanPeakMult, sigmaPeakMult);
 #else
         UInt_t iBin = iPeak * nBins/nPeaks;
-        Double_t multiplier = meanPeakMult;
+        double multiplier = meanPeakMult;
 #endif
         (*spectrum)(iBin).set_polar((*spectrum)(iBin).abs() * multiplier, 0.);
         KTINFO(testlog, "Adding peak at bin " << iBin << "; new value: " << (*spectrum)(iBin).abs());

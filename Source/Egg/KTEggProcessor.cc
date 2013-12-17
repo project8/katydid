@@ -122,11 +122,11 @@ namespace Katydid
             // whether or not to normalize voltage values, and what the normalization is
             SetNormalizeVoltages(node->GetData< Bool_t >("normalize-voltages", fNormalizeVoltages));
             if (node->HasData("full-voltage-scale"))
-                SetFullVoltageScale(node->GetData< Double_t >("full-voltage-scale", fFullVoltageScale));
+                SetFullVoltageScale(node->GetData< double >("full-voltage-scale", fFullVoltageScale));
             if (node->HasData("n-adc-levels"))
                 SetNADCLevels(node->GetData< UInt_t >("n-adc-levels", fNADCLevels));
             if (node->HasData("normalization"))
-                SetNormalization(node->GetData< Double_t >("normalization", fNormalization));
+                SetNormalization(node->GetData< double >("normalization", fNormalization));
         }
 
         // Command-line settings
@@ -267,7 +267,7 @@ namespace Katydid
             if (iProgress == fProgressReportInterval)
             {
                 iProgress = 0;
-                KTPROG(egglog, iSlice << " slices processed (" << Double_t(iSlice) / Double_t(fNSlices) * 100. << " %)");
+                KTPROG(egglog, iSlice << " slices processed (" << double(iSlice) / double(fNSlices) * 100. << " %)");
             }
         }
         return;

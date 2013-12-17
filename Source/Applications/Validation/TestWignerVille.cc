@@ -35,17 +35,17 @@ int main()
 {
     UInt_t nTimeBins = 32768;
 
-    Double_t amplitude = 1.;
-    Double_t startFreq = 2000.; // Hz
-    Double_t deltaFreq = -10.; // Hz
-    Double_t twoPi = 2. * KTMath::Pi();
+    double amplitude = 1.;
+    double startFreq = 2000.; // Hz
+    double deltaFreq = -10.; // Hz
+    double twoPi = 2. * KTMath::Pi();
 
     KTTimeSeriesFFTW* ts1 = new KTTimeSeriesFFTW(nTimeBins, 0., 1.);
     KTTimeSeriesFFTW* ts2 = new KTTimeSeriesFFTW(nTimeBins, 0., 1.);
     for (UInt_t iBin=0; iBin<nTimeBins; iBin++)
     {
-        Double_t freq = startFreq + Double_t(iBin)/1000. * deltaFreq;
-        Double_t binCent = ts1->GetBinCenter(iBin);
+        double freq = startFreq + double(iBin)/1000. * deltaFreq;
+        double binCent = ts1->GetBinCenter(iBin);
         ts1->SetValue(iBin, amplitude * sin(twoPi * freq * binCent));
         ts2->SetValue(iBin, amplitude * sin(twoPi * freq * binCent));
     }
@@ -85,8 +85,8 @@ int main()
     {
         KTINFO(testlog, "window: " << iWindow);
         //KTBasicTimeSeriesData windowData(2);
-        KTTimeSeriesFFTW* windowTS1 = new KTTimeSeriesFFTW(wvSize, ts1->GetBinLowEdge(windowStart), ts1->GetBinLowEdge(windowStart) + ts1->GetBinWidth() * (Double_t)wvSize);
-        KTTimeSeriesFFTW* windowTS2 = new KTTimeSeriesFFTW(wvSize, ts2->GetBinLowEdge(windowStart), ts2->GetBinLowEdge(windowStart) + ts2->GetBinWidth() * (Double_t)wvSize);
+        KTTimeSeriesFFTW* windowTS1 = new KTTimeSeriesFFTW(wvSize, ts1->GetBinLowEdge(windowStart), ts1->GetBinLowEdge(windowStart) + ts1->GetBinWidth() * (double)wvSize);
+        KTTimeSeriesFFTW* windowTS2 = new KTTimeSeriesFFTW(wvSize, ts2->GetBinLowEdge(windowStart), ts2->GetBinLowEdge(windowStart) + ts2->GetBinWidth() * (double)wvSize);
 
         for (UInt_t iBin=windowStart; iBin < windowStart+wvSize; iBin++)
         {
@@ -127,7 +127,7 @@ int main()
     UInt_t nBinsX = spectra.size();
     UInt_t nBinsY = spectra(0)->size();
     TH2D* histOut = new TH2D("wv", "Wigner-Ville", nBinsX, spectra.GetRangeMin(), spectra.GetRangeMax(), nBinsY, spectra(0)->GetRangeMin(), spectra(0)->GetRangeMax());
-    Double_t value;
+    double value;
     for (UInt_t iX=0; iX<nBinsX; iX++)
     {
         KTFrequencySpectrumFFTW* spectrum = spectra(iX);

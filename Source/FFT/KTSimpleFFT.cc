@@ -280,7 +280,7 @@ namespace Katydid
             return NULL;
         }
 
-        Double_t timeBinWidth = data->GetTimeBinWidth();
+        double timeBinWidth = data->GetTimeBinWidth();
 
         copy(data->begin(), data->end(), fTSArray);
 
@@ -315,12 +315,12 @@ namespace Katydid
         return newTS;
     }
 
-    KTFrequencySpectrumPolar* KTSimpleFFT::ExtractForwardTransformResult(Double_t freqMin, Double_t freqMax) const
+    KTFrequencySpectrumPolar* KTSimpleFFT::ExtractForwardTransformResult(double freqMin, double freqMax) const
     {
         UInt_t freqSize = GetFrequencySize();
-        Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
+        double normalization = sqrt(2. / (double)GetTimeSize());
 
-        //Double_t tempReal, tempImag;
+        //double tempReal, tempImag;
         KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
         for (UInt_t iPoint = 0; iPoint<freqSize; iPoint++)
         {

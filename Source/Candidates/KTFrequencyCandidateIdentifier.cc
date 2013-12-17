@@ -102,9 +102,9 @@ namespace Katydid
             newCandidate.SetFirstBin(firstBin);
             newCandidate.SetLastBin(lastBin);
 
-            Double_t weightedMean = 0.;
-            Double_t integral = 0.;
-            Double_t peakValue = 0.;
+            double weightedMean = 0.;
+            double integral = 0.;
+            double peakValue = 0.;
             for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 weightedMean += freqSpec->GetBinCenter(iBin) * (*freqSpec)(iBin).abs();
@@ -147,10 +147,10 @@ namespace Katydid
             newCandidate.SetFirstBin(firstBin);
             newCandidate.SetLastBin(lastBin);
 
-            Double_t weightedMean = 0.;
-            Double_t integral = 0.;
-            Double_t value = 0.;
-            Double_t peakValue = 0.;
+            double weightedMean = 0.;
+            double integral = 0.;
+            double value = 0.;
+            double peakValue = 0.;
             for (UInt_t iBin=firstBin; iBin <= lastBin; iBin++)
             {
                 value = sqrt((*freqSpec)(iBin)[0] * (*freqSpec)(iBin)[0] + (*freqSpec)(iBin)[1] * (*freqSpec)(iBin)[1]);

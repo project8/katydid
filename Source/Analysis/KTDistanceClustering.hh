@@ -49,15 +49,15 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            Double_t GetMaxFrequencyDistance() const;
-            void SetMaxFrequencyDistance(Double_t freq);
+            double GetMaxFrequencyDistance() const;
+            void SetMaxFrequencyDistance(double freq);
 
             UInt_t GetMaxBinDistance() const;
             void SetMaxBinDistance(UInt_t bin);
 
         private:
 
-            Double_t fMaxFrequencyDistance;
+            double fMaxFrequencyDistance;
             UInt_t fMaxBinDistance;
             Bool_t fCalculateMaxBinDistance;
 
@@ -87,12 +87,12 @@ namespace Katydid
 
     };
 
-    inline Double_t KTDistanceClustering::GetMaxFrequencyDistance() const
+    inline double KTDistanceClustering::GetMaxFrequencyDistance() const
     {
         return fMaxFrequencyDistance;
     }
 
-    inline void KTDistanceClustering::SetMaxFrequencyDistance(Double_t freq)
+    inline void KTDistanceClustering::SetMaxFrequencyDistance(double freq)
     {
         fMaxFrequencyDistance = freq;
         fCalculateMaxBinDistance = true;

@@ -51,7 +51,7 @@ namespace Katydid
 
         if (node->HasData("max-frequency-distance"))
         {
-            SetMaxFrequencyDistance(node->GetData< Double_t >("max-frequency-distance"));
+            SetMaxFrequencyDistance(node->GetData< double >("max-frequency-distance"));
         }
 
         if (node->HasData("max-bin-distance"))

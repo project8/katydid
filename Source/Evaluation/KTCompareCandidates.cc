@@ -179,7 +179,7 @@ namespace Katydid
         }
         KTINFO(cclog, "Number of events (y axis) with a given number of candidate matches (x axis):\n" << textHist1.str());
 
-        ccrData.SetEfficiency(Double_t(nEventsWithAtLeastOneCandidateMatch) / Double_t(events.size()));
+        ccrData.SetEfficiency(double(nEventsWithAtLeastOneCandidateMatch) / double(events.size()));
         KTPROG(cclog, "Detection efficiency (# events with at least 1 match / # events): " << ccrData.GetEfficiency());
 
 
@@ -207,7 +207,7 @@ namespace Katydid
         }
         KTINFO(cclog, "Number of candidates (y axis) with a given number of event matches (x axis):\n" << textHist2.str());
 
-        ccrData.SetFalseRate(1.e6 * Double_t(nCandidatesWithXEventMatches[0]) / (Double_t(nRecords) * Double_t(eventRecordSize)));
+        ccrData.SetFalseRate(1.e6 * double(nCandidatesWithXEventMatches[0]) / (double(nRecords) * double(eventRecordSize)));
         KTPROG(cclog, "False rate (10^6 * # candidates not matching events / # of samples simulated): " << ccrData.GetFalseRate());
 
         fCCResultsSignal(dataPtr);

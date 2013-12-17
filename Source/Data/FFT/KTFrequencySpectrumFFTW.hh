@@ -30,7 +30,7 @@ namespace Katydid
     {
         public:
             KTFrequencySpectrumFFTW();
-            KTFrequencySpectrumFFTW(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            KTFrequencySpectrumFFTW(size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig);
             virtual ~KTFrequencySpectrumFFTW();
 
@@ -51,18 +51,18 @@ namespace Katydid
             const fftw_complex& operator()(unsigned i) const;
             fftw_complex& operator()(unsigned i);
 
-            virtual Double_t GetReal(UInt_t bin) const;
-            virtual Double_t GetImag(UInt_t bin) const;
+            virtual double GetReal(UInt_t bin) const;
+            virtual double GetImag(UInt_t bin) const;
 
-            virtual void SetRect(UInt_t bin, Double_t real, Double_t imag);
+            virtual void SetRect(UInt_t bin, double real, double imag);
 
-            virtual Double_t GetAbs(UInt_t bin) const;
-            virtual Double_t GetArg(UInt_t bin) const;
+            virtual double GetAbs(UInt_t bin) const;
+            virtual double GetArg(UInt_t bin) const;
 
-            virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg);
+            virtual void SetPolar(UInt_t bin, double abs, double arg);
 
             virtual UInt_t GetNFrequencyBins() const;
-            virtual Double_t GetFrequencyBinWidth() const;
+            virtual double GetFrequencyBinWidth() const;
 
             /// Returns the size of the positive-frequency part of the array
             //size_t size() const;
@@ -131,17 +131,17 @@ namespace Katydid
         //return fData[i];
     }
 
-    inline Double_t KTFrequencySpectrumFFTW::GetReal(UInt_t bin) const
+    inline double KTFrequencySpectrumFFTW::GetReal(UInt_t bin) const
     {
         return (*this)(bin)[0];
     }
 
-    inline Double_t KTFrequencySpectrumFFTW::GetImag(UInt_t bin) const
+    inline double KTFrequencySpectrumFFTW::GetImag(UInt_t bin) const
     {
         return (*this)(bin)[1];
     }
 
-    inline void KTFrequencySpectrumFFTW::SetRect(UInt_t bin, Double_t real, Double_t imag)
+    inline void KTFrequencySpectrumFFTW::SetRect(UInt_t bin, double real, double imag)
     {
         fPointCache = &(*this)(bin);
         (*const_cast< fftw_complex* >(fPointCache))[0] = real;
@@ -149,19 +149,19 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTFrequencySpectrumFFTW::GetAbs(UInt_t bin) const
+    inline double KTFrequencySpectrumFFTW::GetAbs(UInt_t bin) const
     {
         fPointCache = &(*this)(bin);
         return sqrt((*fPointCache)[0]*(*fPointCache)[0] + (*fPointCache)[1]*(*fPointCache)[1]);
     }
 
-    inline Double_t KTFrequencySpectrumFFTW::GetArg(UInt_t bin) const
+    inline double KTFrequencySpectrumFFTW::GetArg(UInt_t bin) const
     {
         fPointCache = &(*this)(bin);
         return atan2((*fPointCache)[1], (*fPointCache)[0]);
     }
 
-    inline void KTFrequencySpectrumFFTW::SetPolar(UInt_t bin, Double_t abs, Double_t arg)
+    inline void KTFrequencySpectrumFFTW::SetPolar(UInt_t bin, double abs, double arg)
     {
         fPointCache = &(*this)(bin);
         (*const_cast< fftw_complex* >(fPointCache))[0] = abs * cos(arg);
@@ -174,7 +174,7 @@ namespace Katydid
         return size();
     }
 
-    inline Double_t KTFrequencySpectrumFFTW::GetFrequencyBinWidth() const
+    inline double KTFrequencySpectrumFFTW::GetFrequencyBinWidth() const
     {
         return GetBinWidth();
     }

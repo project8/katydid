@@ -70,24 +70,24 @@ namespace Katydid
 
         if (node->HasData("snr-threshold-amplitude"))
         {
-            SetSNRAmplitudeThreshold(node->GetData< Double_t >("snr-threshold-amplitude"));
+            SetSNRAmplitudeThreshold(node->GetData< double >("snr-threshold-amplitude"));
         }
         if (node->HasData("snr-threshold-power"))
         {
-            SetSNRPowerThreshold(node->GetData< Double_t >("snr-threshold-power"));
+            SetSNRPowerThreshold(node->GetData< double >("snr-threshold-power"));
         }
         if (node->HasData("sigma-threshold"))
         {
-            SetSigmaThreshold(node->GetData< Double_t >("sigma-threshold"));
+            SetSigmaThreshold(node->GetData< double >("sigma-threshold"));
         }
 
         if (node->HasData("min-frequency"))
         {
-            SetMinFrequency(node->GetData< Double_t >("min-frequency"));
+            SetMinFrequency(node->GetData< double >("min-frequency"));
         }
         if (node->HasData("max-frequency"))
         {
-            SetMaxFrequency(node->GetData< Double_t >("max-frequency"));
+            SetMaxFrequency(node->GetData< double >("max-frequency"));
         }
 
         if (node->HasData("min-bin"))
@@ -211,8 +211,8 @@ namespace Katydid
         }
 
         UInt_t nBins = fMaxBin - fMinBin + 1;
-        Double_t freqMin = spectrum->GetBinLowEdge(fMinBin);
-        Double_t freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
+        double freqMin = spectrum->GetBinLowEdge(fMinBin);
+        double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
         //************
@@ -220,7 +220,7 @@ namespace Katydid
         //************
         if (fThresholdMode == eSNR_Amplitude || fThresholdMode == eSNR_Power)
         {
-            Double_t thresholdMult = 0.;
+            double thresholdMult = 0.;
             if (fThresholdMode == eSNR_Amplitude)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
@@ -236,7 +236,7 @@ namespace Katydid
             newData.SetThreshold(thresholdMult, component);
 
             // loop over bins, checking against the threshold
-            Double_t value;
+            double value;
 #pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
@@ -250,8 +250,8 @@ namespace Katydid
         //**************
         else if (fThresholdMode == eSigma)
         {
-            Double_t sigmaNorm = 1. / Double_t(nBins - 1);
-            Double_t sigma = 0., diff;
+            double sigmaNorm = 1. / double(nBins - 1);
+            double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
@@ -260,12 +260,12 @@ namespace Katydid
             }
             sigma = sqrt(sigma * sigmaNorm);
 
-            Double_t thresholdAdd = fSigmaThreshold * sigma;
+            double thresholdAdd = fSigmaThreshold * sigma;
             KTDEBUG(sdlog, "Discriminator threshold diff for component " << component << " set at <" << thresholdAdd << "> (Sigma mode)");
             newData.SetThreshold(thresholdAdd, component);
 
             // loop over bins, checking against the threshold
-            Double_t value;
+            double value;
 #pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
@@ -290,8 +290,8 @@ namespace Katydid
         }
 
         UInt_t nBins = fMaxBin - fMinBin + 1;
-        Double_t freqMin = spectrum->GetBinLowEdge(fMinBin);
-        Double_t freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
+        double freqMin = spectrum->GetBinLowEdge(fMinBin);
+        double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
         //************
@@ -299,7 +299,7 @@ namespace Katydid
         //************
         if (fThresholdMode == eSNR_Amplitude || fThresholdMode == eSNR_Power)
         {
-            Double_t thresholdMult = 0.;
+            double thresholdMult = 0.;
             if (fThresholdMode == eSNR_Amplitude)
             {
                 // SNR = P_signal / P_noise = (A_signal / A_noise)^2, A_noise = mean
@@ -315,7 +315,7 @@ namespace Katydid
             newData.SetThreshold(thresholdMult, component);
 
             // loop over bins, checking against the threshold
-            Double_t value;
+            double value;
 #pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
@@ -333,8 +333,8 @@ namespace Katydid
             {
                 fMagnitudeCache.resize(spectrum->size());
             }
-            Double_t sigmaNorm = 1. / Double_t(nBins - 1);
-            Double_t sigma = 0., diff;
+            double sigmaNorm = 1. / double(nBins - 1);
+            double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
@@ -344,12 +344,12 @@ namespace Katydid
             }
             sigma = sqrt(sigma * sigmaNorm);
 
-            Double_t thresholdAdd = fSigmaThreshold * sigma;
+            double thresholdAdd = fSigmaThreshold * sigma;
             KTDEBUG(sdlog, "Discriminator threshold diff for component " << component << " set at <" << thresholdAdd << "> (Sigma mode)");
             newData.SetThreshold(thresholdAdd, component);
 
             // loop over bins, checking against the threshold
-            Double_t value;
+            double value;
 #pragma omp parallel for private(value)
             for (UInt_t iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {

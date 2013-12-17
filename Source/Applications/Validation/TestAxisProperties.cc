@@ -23,17 +23,17 @@ using namespace std;
 int main()
 {
     size_t nBins1 = 100;
-    Double_t rangeMin1 = 1.0;
-    Double_t rangeMax1 = 2.0;
+    double rangeMin1 = 1.0;
+    double rangeMax1 = 2.0;
 
-    Double_t testPosition1 = 1.82235;
+    double testPosition1 = 1.82235;
     size_t testBin1 = 35;
 
     size_t nBins2 = 541;
-    Double_t rangeMin2 = -23;
-    Double_t rangeMax2 = 2039;
+    double rangeMin2 = -23;
+    double rangeMax2 = 2039;
 
-    Double_t testPosition2 = 820;
+    double testPosition2 = 820;
     size_t testBin2 = 18;
 
     // Test the 1-D array
@@ -50,7 +50,7 @@ int main()
 #ifdef ROOT_FOUND
     TH1I histCompare("histCompare", "histCompare", nBins1, rangeMin1, rangeMax1);
     // relative magnitude floating point comparisons
-    Double_t tolerance = 1.e-10;
+    double tolerance = 1.e-10;
     Bool_t theyAgree =
             fabs(array.GetBinWidth() - histCompare.GetBinWidth(testBin1+1)) / histCompare.GetBinWidth(testBin1) < tolerance &&
             (Int_t)array.FindBin(testPosition1) == histCompare.FindBin(testPosition1)-1 &&
@@ -73,8 +73,8 @@ int main()
     size_t nBinses [2] = {nBins1, nBins2};
     KTNBinsInArray< 2, FixedSize >* nBinsFunctor2 = new KTNBinsInArray< 2, FixedSize >(nBinses);
     KTAxisProperties< 2 > array2D;
-    Double_t rangeMins [2] = {rangeMin1, rangeMin2};
-    Double_t rangeMaxes [2] = {rangeMax1, rangeMax2};
+    double rangeMins [2] = {rangeMin1, rangeMin2};
+    double rangeMaxes [2] = {rangeMax1, rangeMax2};
     array2D.SetNBinsFunc(nBinsFunctor2);
     array2D.SetRangeMin(rangeMins);
     array2D.SetRangeMax(rangeMaxes);

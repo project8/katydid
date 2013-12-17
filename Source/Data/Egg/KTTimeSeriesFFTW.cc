@@ -29,7 +29,7 @@ namespace Katydid
         fData[0][1] = 0.;
     }
 
-    KTTimeSeriesFFTW::KTTimeSeriesFFTW(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
+    KTTimeSeriesFFTW::KTTimeSeriesFFTW(size_t nBins, double rangeMin, double rangeMax) :
             KTTimeSeries(),
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax)
     {
@@ -83,10 +83,10 @@ namespace Katydid
 
     TH1D* KTTimeSeriesFFTW::CreateAmplitudeDistributionHistogram(const std::string& name) const
     {
-        Double_t tMaxMag = -1.;
-        Double_t tMinMag = 1.e9;
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
         UInt_t nBins = GetNTimeBins();
-        Double_t value;
+        double value;
         for (UInt_t iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin)[0];

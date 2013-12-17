@@ -37,7 +37,7 @@ namespace Katydid
         return true;
     }
 
-    Double_t KTBlackmanHarrisWindow::GetWeight(Double_t time) const
+    double KTBlackmanHarrisWindow::GetWeight(double time) const
     {
         return GetWeight(KTMath::Nint(time / fBinWidth));
     }
@@ -45,11 +45,11 @@ namespace Katydid
     void KTBlackmanHarrisWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(fSize - 1);
+        double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(fSize - 1);
         for (UInt_t iBin=0; iBin<fSize; iBin++)
         {
-            fWindowFunction[iBin] = 0.35875 - 0.48829 * cos(Double_t(iBin) * twoPiOverNBinsMinus1) +
-                    0.14128 * cos(Double_t(2 * iBin) * twoPiOverNBinsMinus1) - 0.01168 * cos(Double_t(3 * iBin) * twoPiOverNBinsMinus1);
+            fWindowFunction[iBin] = 0.35875 - 0.48829 * cos(double(iBin) * twoPiOverNBinsMinus1) +
+                    0.14128 * cos(double(2 * iBin) * twoPiOverNBinsMinus1) - 0.01168 * cos(double(3 * iBin) * twoPiOverNBinsMinus1);
         }
         return;
     }

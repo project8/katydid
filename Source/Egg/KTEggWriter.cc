@@ -76,7 +76,7 @@ namespace Katydid
             }
         }
 
-        SetDigitizerFullscale(node->GetData<Double_t>("digitizer-fullscale", fDigitizerFullscale));
+        SetDigitizerFullscale(node->GetData<double>("digitizer-fullscale", fDigitizerFullscale));
 
         return true;
     }
@@ -247,8 +247,8 @@ namespace Katydid
         record->fRecordId = slHeader.GetRecordID(component);
         record->fTime = slHeader.GetTimeStamp(component);
 
-        Double_t value;
-        Double_t scale = 255. / fDigitizerFullscale;
+        double value;
+        double scale = 255. / fDigitizerFullscale;
         for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
         {
             value = ts->GetValue(iBin) * scale;

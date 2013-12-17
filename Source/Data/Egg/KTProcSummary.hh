@@ -30,13 +30,13 @@ namespace Katydid
             void SetNRecordsProcessed(UInt_t recs);
             UInt_t GetNRecordsProcessed() const;
 
-            void SetIntegratedTime(Double_t acqr);
-            Double_t GetIntegratedTime() const;
+            void SetIntegratedTime(double acqr);
+            double GetIntegratedTime() const;
 
         protected:
             UInt_t fNSlicesProcessed;
             UInt_t fNRecordsProcessed; /// if any samples from a record were used, it's counted
-            Double_t fIntegratedTime; /// # of slices * slice size * bin width
+            double fIntegratedTime; /// # of slices * slice size * bin width
 
     };
 
@@ -62,13 +62,13 @@ namespace Katydid
         return fNRecordsProcessed;
     }
 
-     inline void KTProcSummary::SetIntegratedTime(Double_t time)
+     inline void KTProcSummary::SetIntegratedTime(double time)
     {
         fIntegratedTime = time;
         return;
     }
 
-    inline Double_t KTProcSummary::GetIntegratedTime() const
+    inline double KTProcSummary::GetIntegratedTime() const
     {
         return fIntegratedTime;
     }

@@ -44,8 +44,8 @@ namespace Katydid
             void SetRunDuration(UInt_t acqt);
             UInt_t GetRunDuration() const;
 
-            void SetAcquisitionRate(Double_t acqr);
-            Double_t GetAcquisitionRate() const;
+            void SetAcquisitionRate(double acqr);
+            double GetAcquisitionRate() const;
 
             void SetTimestamp( const std::string& aTimestamp );
             const std::string& GetTimestamp() const;
@@ -69,7 +69,7 @@ namespace Katydid
             std::size_t fSliceSize; /// Number of bins per record-written-to-disk
             std::size_t fRecordSize; /// Number of bins per Katydid record
             UInt_t fRunDuration;
-            Double_t fAcquisitionRate; /// in Hz
+            double fAcquisitionRate; /// in Hz
             std::string fTimestamp;
             std::string fDescription;
             RunType fRunType;
@@ -146,13 +146,13 @@ namespace Katydid
         return fRunDuration;
     }
 
-    inline void KTEggHeader::SetAcquisitionRate(Double_t acqr)
+    inline void KTEggHeader::SetAcquisitionRate(double acqr)
     {
         fAcquisitionRate = acqr;
         return;
     }
 
-    inline Double_t KTEggHeader::GetAcquisitionRate() const
+    inline double KTEggHeader::GetAcquisitionRate() const
     {
         return fAcquisitionRate;
     }

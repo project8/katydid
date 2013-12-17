@@ -79,7 +79,7 @@ namespace Katydid
         public:
             typedef std::vector< UIntPair > PairVector;
 
-            typedef std::complex< Double_t > Complex;
+            typedef std::complex< double > Complex;
             typedef boost::circular_buffer< Complex > Buffer;
 
         public:
@@ -111,7 +111,7 @@ namespace Katydid
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
 
-            void Initialize(Double_t acqRate, UInt_t nComponents, UInt_t inputSliceSize);
+            void Initialize(double acqRate, UInt_t nComponents, UInt_t inputSliceSize);
             void InitializeWithHeader(const KTEggHeader* header);
 
         private:
@@ -347,7 +347,7 @@ namespace Katydid
                 UInt_t tsSize = ts->size();
                 for (UInt_t iBin = 0; iBin < tsSize; ++iBin)
                 {
-                    fBuffer[iComponent].push_back(std::complex< Double_t >((*ts)(iBin)[0], (*ts)(iBin)[1]));
+                    fBuffer[iComponent].push_back(std::complex< double >((*ts)(iBin)[0], (*ts)(iBin)[1]));
                 }
                 // we should only need to advance the start iterator if the start of this window
                 // didn't fit in the last slice during the previous iteration
@@ -566,10 +566,10 @@ namespace Katydid
 
                 //UInt_t nOffsets = timeSeries[firstChannel]->size();
                 UInt_t nOffsets = 896;
-                Double_t timeBW = timeSeries[firstChannel]->GetBinWidth();
+                double timeBW = timeSeries[firstChannel]->GetBinWidth();
 
                 newData.SetInputPair(firstChannel, secondChannel, iPair);
-                KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nOffsets, -0.5 * timeBW, timeBW * (Double_t(nOffsets) - 0.5));
+                KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nOffsets, -0.5 * timeBW, timeBW * (double(nOffsets) - 0.5));
                 for (UInt_t iSpectrum = 0; iSpectrum < nOffsets; iSpectrum++)
                 {
                     (*newSpectra)(iSpectrum) = NULL;

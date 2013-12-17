@@ -23,12 +23,12 @@ namespace Katydid
 
         public:
             Int_t GetIntData() const;
-            Double_t GetDoubleData() const;
+            double GetDoubleData() const;
             const std::string& GetStringData() const;
 
         private:
             Int_t fIntData;
-            Double_t fDoubleData;
+            double fDoubleData;
             std::string fStringData;
     };
 
@@ -37,7 +37,7 @@ namespace Katydid
         return fIntData;
     }
 
-    inline Double_t KTTestConfigurable::GetDoubleData() const
+    inline double KTTestConfigurable::GetDoubleData() const
     {
         return fDoubleData;
     }

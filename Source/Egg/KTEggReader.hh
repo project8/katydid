@@ -31,7 +31,7 @@ namespace Katydid
 
             virtual UInt_t GetNSlicesProcessed() const = 0;
             virtual UInt_t GetNRecordsProcessed() const = 0;
-            virtual Double_t GetIntegratedTime() const = 0;
+            virtual double GetIntegratedTime() const = 0;
 
     };
 

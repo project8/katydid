@@ -38,7 +38,7 @@ namespace Katydid
     KTLOGGER(utillog_psnode, "katydid.utility");
 
     typedef std::pair< UInt_t, UInt_t > UIntPair;
-    typedef std::pair< UInt_t, Double_t > UIntDoublePair;
+    typedef std::pair< UInt_t, double > UIntDoublePair;
 
     UIntPair ParsePairUInt(const std::string& pair);
     UIntDoublePair ParsePairUIntDouble(const std::string& pair);

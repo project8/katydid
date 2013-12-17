@@ -99,7 +99,7 @@ namespace Katydid
         return true;
     }
 
-    void KTWignerVille::Initialize(Double_t acqRate, UInt_t nComponents, UInt_t inputSliceSize)
+    void KTWignerVille::Initialize(double acqRate, UInt_t nComponents, UInt_t inputSliceSize)
     {
         if (fPairs.empty())
         {
@@ -120,11 +120,11 @@ namespace Katydid
         fFFT->SetSize(fWindowSize);
         fFFT->InitializeFFT();
 
-        Double_t timeBW = 1. / acqRate;
+        double timeBW = 1. / acqRate;
 
         // initialize the input array
         delete fInputArray;
-        fInputArray = new KTTimeSeriesFFTW(fWindowSize, 0., Double_t(fWindowSize) * timeBW);
+        fInputArray = new KTTimeSeriesFFTW(fWindowSize, 0., double(fWindowSize) * timeBW);
 
         // initialize the output arrays
         if (fNWindowsToAverage > 1)
@@ -169,7 +169,7 @@ namespace Katydid
         fOutputSHData->SetSampleRate(acqRate);
         fOutputSHData->SetSliceSize(fWindowSize + (fNWindowsToAverage - 1) * fWindowStride); // this includes the fact that windows might be averaged together
         fOutputSHData->CalculateBinWidthAndSliceLength();
-        fOutputSHData->SetNonOverlapFrac((Double_t)(fNWindowsToAverage * fWindowStride) / (Double_t)fOutputSHData->GetSliceSize()); // this includes the fact that windows might be averaged together
+        fOutputSHData->SetNonOverlapFrac((double)(fNWindowsToAverage * fWindowStride) / (double)fOutputSHData->GetSliceSize()); // this includes the fact that windows might be averaged together
 
         //fOutputWVData = &(fOutputData->Of< KTWV2DData >().SetNComponents(fPairs.size()));
         fOutputWVData = &(fOutputData->Of< KTWignerVilleData >().SetNComponents(nPairs));
@@ -181,7 +181,7 @@ namespace Katydid
             UInt_t secondChannel = (*pairIt).second;
             fOutputWVData->SetInputPair(firstChannel, secondChannel, iPair);
             /*
-            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nWindows, -0.5 * timeBW, timeBW * (Double_t(nWindows) - 0.5));
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* newSpectra = new KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >(nWindows, -0.5 * timeBW, timeBW * (double(nWindows) - 0.5));
             for (UInt_t iSpectrum = 0; iSpectrum < nWindows; iSpectrum++)
             {
                 (*newSpectra)(iSpectrum) = NULL;
@@ -218,10 +218,10 @@ namespace Katydid
         // data2It will be decremented before it's used
         Buffer::iterator data2It = data2End + fWindowSize;
 
-        register Double_t t1_real;
-        register Double_t t1_imag;
-        register Double_t t2_real;
-        register Double_t t2_imag;
+        register double t1_real;
+        register double t1_imag;
+        register double t2_real;
+        register double t2_imag;
 
         //KTERROR(wvlog, "iWindow = " << iWindow);
 
@@ -267,15 +267,15 @@ namespace Katydid
             fInputArray->SetRange(data1->GetRangeMin(), data1->GetRangeMax());
         }
         */
-        //fInputArray->SetRange(0., (Double_t)fftSize * data1->GetBinWidth());
+        //fInputArray->SetRange(0., (double)fftSize * data1->GetBinWidth());
 
         //KTERROR(wvlog, "offset = " << offset << "  inArr Size = " << fInputArray->size() << "  data1 Size = " << data1->size() << "  data2 Size = " << data2->size());
 
         // Now calculate the lagged ACF at all possible lags.
-        //register Double_t t1_real;
-        //register Double_t t1_imag;
-        //register Double_t t2_real;
-        //register Double_t t2_imag;
+        //register double t1_real;
+        //register double t1_imag;
+        //register double t2_real;
+        //register double t2_imag;
 /*
         UInt_t binsToFill = std::min(fftSize, sliceSize - fLeftStartPointer);
         register UInt_t rightStartPointer = fLeftStartPointer + binsToFill - 1;

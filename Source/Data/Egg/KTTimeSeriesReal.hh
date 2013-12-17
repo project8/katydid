@@ -13,23 +13,23 @@
 
 namespace Katydid
 {
-    class KTTimeSeriesReal : public KTTimeSeries, public KTPhysicalArray< 1, Double_t >
+    class KTTimeSeriesReal : public KTTimeSeries, public KTPhysicalArray< 1, double >
     {
         public:
             KTTimeSeriesReal();
-            KTTimeSeriesReal(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            KTTimeSeriesReal(size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTTimeSeriesReal(const KTTimeSeriesReal& orig);
             virtual ~KTTimeSeriesReal();
 
             KTTimeSeriesReal& operator=(const KTTimeSeriesReal& rhs);
 
-            virtual void Scale(Double_t scale);
+            virtual void Scale(double scale);
 
             virtual UInt_t GetNTimeBins() const;
-            virtual Double_t GetTimeBinWidth() const;
+            virtual double GetTimeBinWidth() const;
 
-            virtual void SetValue(UInt_t bin, Double_t value);
-            virtual Double_t GetValue(UInt_t bin) const;
+            virtual void SetValue(UInt_t bin, double value);
+            virtual double GetValue(UInt_t bin) const;
 
             virtual void Print(UInt_t startPrint, UInt_t nToPrint) const;
 
@@ -41,9 +41,9 @@ namespace Katydid
 #endif
     };
 
-    inline void KTTimeSeriesReal::Scale(Double_t scale)
+    inline void KTTimeSeriesReal::Scale(double scale)
     {
-        this->KTPhysicalArray< 1, Double_t >::operator*=(scale);
+        this->KTPhysicalArray< 1, double >::operator*=(scale);
         return;
     }
 
@@ -52,18 +52,18 @@ namespace Katydid
         return this->size();
     }
 
-    inline Double_t KTTimeSeriesReal::GetTimeBinWidth() const
+    inline double KTTimeSeriesReal::GetTimeBinWidth() const
     {
         return this->GetBinWidth();
     }
 
-    inline void KTTimeSeriesReal::SetValue(UInt_t bin, Double_t value)
+    inline void KTTimeSeriesReal::SetValue(UInt_t bin, double value)
     {
         (*this)(bin) = value;
         return;
     }
 
-    inline Double_t KTTimeSeriesReal::GetValue(UInt_t bin) const
+    inline double KTTimeSeriesReal::GetValue(UInt_t bin) const
     {
         return (*this)(bin);
     }

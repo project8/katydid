@@ -27,13 +27,13 @@ namespace Katydid
     class KTDiscriminatedPoints2DData : public KTExtensibleData< KTDiscriminatedPoints2DData >
     {
         public:
-            typedef std::map< std::pair< UInt_t, UInt_t >, Double_t, KTPairCompare > SetOfPoints;
+            typedef std::map< std::pair< UInt_t, UInt_t >, double, KTPairCompare > SetOfPoints;
 
         protected:
             struct PerComponentData
             {
                 SetOfPoints fPoints;
-                Double_t fThreshold;
+                double fThreshold;
             };
 
         public:
@@ -41,32 +41,32 @@ namespace Katydid
             virtual ~KTDiscriminatedPoints2DData();
 
             const SetOfPoints& GetSetOfPoints(UInt_t component = 0) const;
-            Double_t GetThreshold(UInt_t component = 0) const;
+            double GetThreshold(UInt_t component = 0) const;
 
             UInt_t GetNComponents() const;
 
-            void AddPoint(UInt_t pointX, UInt_t pointY, Double_t value, UInt_t component = 0);
-            void SetThreshold(Double_t threshold, UInt_t component = 0);
+            void AddPoint(UInt_t pointX, UInt_t pointY, double value, UInt_t component = 0);
+            void SetThreshold(double threshold, UInt_t component = 0);
 
             KTDiscriminatedPoints2DData& SetNComponents(UInt_t channels);
 
             UInt_t GetNBinsX() const;
             UInt_t GetNBinsY() const;
-            Double_t GetBinWidthX() const;
-            Double_t GetBinWidthY() const;
+            double GetBinWidthX() const;
+            double GetBinWidthY() const;
 
             void SetNBinsX(UInt_t nBins);
             void SetNBinsY(UInt_t nBins);
-            void SetBinWidthX(Double_t binWidth);
-            void SetBinWidthY(Double_t binWidth);
+            void SetBinWidthX(double binWidth);
+            void SetBinWidthY(double binWidth);
 
         protected:
             std::vector< PerComponentData > fComponentData;
 
             UInt_t fNBinsX;
             UInt_t fNBinsY;
-            Double_t fBinWidthX;
-            Double_t fBinWidthY;
+            double fBinWidthX;
+            double fBinWidthY;
 
     };
 
@@ -75,7 +75,7 @@ namespace Katydid
         return fComponentData[component].fPoints;
     }
 
-    inline Double_t KTDiscriminatedPoints2DData::GetThreshold(UInt_t component) const
+    inline double KTDiscriminatedPoints2DData::GetThreshold(UInt_t component) const
     {
         return fComponentData[component].fThreshold;
     }
@@ -85,13 +85,13 @@ namespace Katydid
         return UInt_t(fComponentData.size());
     }
 
-    inline void KTDiscriminatedPoints2DData::AddPoint(UInt_t pointX, UInt_t pointY, Double_t value, UInt_t component)
+    inline void KTDiscriminatedPoints2DData::AddPoint(UInt_t pointX, UInt_t pointY, double value, UInt_t component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fPoints.insert(std::make_pair(std::make_pair(pointX, pointY), value));
     }
 
-    inline void KTDiscriminatedPoints2DData::SetThreshold(Double_t threshold, UInt_t component)
+    inline void KTDiscriminatedPoints2DData::SetThreshold(double threshold, UInt_t component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fThreshold = threshold;
@@ -113,12 +113,12 @@ namespace Katydid
         return fNBinsY;
     }
 
-    inline Double_t KTDiscriminatedPoints2DData::GetBinWidthX() const
+    inline double KTDiscriminatedPoints2DData::GetBinWidthX() const
     {
         return fBinWidthX;
     }
 
-    inline Double_t KTDiscriminatedPoints2DData::GetBinWidthY() const
+    inline double KTDiscriminatedPoints2DData::GetBinWidthY() const
     {
         return fBinWidthY;
     }
@@ -135,13 +135,13 @@ namespace Katydid
         return;
     }
 
-    inline void KTDiscriminatedPoints2DData::SetBinWidthX(Double_t binWidth)
+    inline void KTDiscriminatedPoints2DData::SetBinWidthX(double binWidth)
     {
         fBinWidthX = binWidth;
         return;
     }
 
-    inline void KTDiscriminatedPoints2DData::SetBinWidthY(Double_t binWidth)
+    inline void KTDiscriminatedPoints2DData::SetBinWidthY(double binWidth)
     {
         fBinWidthY = binWidth;
         return;

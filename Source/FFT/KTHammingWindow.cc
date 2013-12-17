@@ -37,7 +37,7 @@ namespace Katydid
         return true;
     }
 
-    Double_t KTHammingWindow::GetWeight(Double_t time) const
+    double KTHammingWindow::GetWeight(double time) const
     {
         return GetWeight(KTMath::Nint(time / fBinWidth));
     }
@@ -45,10 +45,10 @@ namespace Katydid
     void KTHammingWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(fSize - 1);
+        double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(fSize - 1);
         for (UInt_t iBin=0; iBin<fSize; iBin++)
         {
-            fWindowFunction[iBin] = 0.54 - 0.46 * cos((Double_t)iBin * twoPiOverNBinsMinus1);
+            fWindowFunction[iBin] = 0.54 - 0.46 * cos((double)iBin * twoPiOverNBinsMinus1);
         }
         return;
     }

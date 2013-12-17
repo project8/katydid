@@ -51,14 +51,14 @@ namespace Katydid
             KTMCTruthEvents();
             virtual ~KTMCTruthEvents();
 
-            Double_t GetEventLength();
-            void SetEventLength(Double_t length);
+            double GetEventLength();
+            void SetEventLength(double length);
 
-            Double_t Getdfdt();
-            void Setdfdt(Double_t dfdt);
+            double Getdfdt();
+            void Setdfdt(double dfdt);
 
-            Double_t GetSignalPower();
-            void SetSignalPower(Double_t power);
+            double GetSignalPower();
+            void SetSignalPower(double power);
 
             const EventSet& GetEvents() const;
             void AddEvent(const Event& electron);
@@ -71,9 +71,9 @@ namespace Katydid
             void SetNRecords(UInt_t rec);
 
         protected:
-            Double_t fEventLength;
-            Double_t fdfdt;
-            Double_t fSignalPower;
+            double fEventLength;
+            double fdfdt;
+            double fSignalPower;
 
             EventSet fEvents;
 
@@ -81,34 +81,34 @@ namespace Katydid
             UInt_t fNRecords;
     };
 
-    inline Double_t KTMCTruthEvents::GetEventLength()
+    inline double KTMCTruthEvents::GetEventLength()
     {
         return fEventLength;
     }
 
-    inline void KTMCTruthEvents::SetEventLength(Double_t length)
+    inline void KTMCTruthEvents::SetEventLength(double length)
     {
         fEventLength = length;
         return;
     }
 
-    inline Double_t KTMCTruthEvents::Getdfdt()
+    inline double KTMCTruthEvents::Getdfdt()
     {
         return fdfdt;
     }
 
-    inline void KTMCTruthEvents::Setdfdt(Double_t dfdt)
+    inline void KTMCTruthEvents::Setdfdt(double dfdt)
     {
         fdfdt = dfdt;
         return;
     }
 
-    inline Double_t KTMCTruthEvents::GetSignalPower()
+    inline double KTMCTruthEvents::GetSignalPower()
     {
         return fSignalPower;
     }
 
-    inline void KTMCTruthEvents::SetSignalPower(Double_t power)
+    inline void KTMCTruthEvents::SetSignalPower(double power)
     {
         fSignalPower = power;
         return;

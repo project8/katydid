@@ -244,7 +244,7 @@ namespace Katydid
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
-        sliceHeader.SetNonOverlapFrac((Double_t)fStride / (Double_t)fSliceSize);
+        sliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
         sliceHeader.SetTimeInRun(GetTimeInRun());
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
@@ -267,11 +267,11 @@ namespace Katydid
             KTTimeSeries* newRecord;
             if (fTimeSeriesType == kRealTimeSeries)
             {
-                newRecord = new KTTimeSeriesReal(fSliceSize, 0., Double_t(fSliceSize) * sliceHeader.GetBinWidth());
+                newRecord = new KTTimeSeriesReal(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
             }
             else
             {
-                newRecord = new KTTimeSeriesFFTW(fSliceSize, 0., Double_t(fSliceSize) * sliceHeader.GetBinWidth());
+                newRecord = new KTTimeSeriesFFTW(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
             }
             newRecords[iChannel] = newRecord;
         }
@@ -353,7 +353,7 @@ namespace Katydid
             for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
             {
                 // set the data
-                newRecords[iChannel]->SetValue(iBin, Double_t(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]));
+                newRecords[iChannel]->SetValue(iBin, double(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]));
             }
 
             // advance the pointer for the next bin
@@ -413,7 +413,7 @@ namespace Katydid
         return;
     }
 
-    Double_t KTEggReaderMonarch::GetTimeInRunFirstCall() const
+    double KTEggReaderMonarch::GetTimeInRunFirstCall() const
     {
         if ((fMonarch->*fMonarchGetRecord[0])()->fTime == 0)
         {

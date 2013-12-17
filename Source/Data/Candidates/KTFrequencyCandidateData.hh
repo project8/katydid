@@ -26,7 +26,7 @@ namespace Katydid
             struct PerComponentData
             {
                 Candidates fCandidates;
-                Double_t fThreshold;
+                double fThreshold;
             };
 
         public:
@@ -34,27 +34,27 @@ namespace Katydid
             virtual ~KTFrequencyCandidateData();
 
             const Candidates& GetCandidates(UInt_t component = 0) const;
-            Double_t GetThreshold(UInt_t component = 0) const;
+            double GetThreshold(UInt_t component = 0) const;
 
             UInt_t GetNComponents() const;
 
             void AddCandidate(const KTFrequencyCandidate& candidate, UInt_t component = 0);
             void AddCandidates(const Candidates& candidates, UInt_t component = 0);
-            void SetThreshold(Double_t threshold, UInt_t component = 0);
+            void SetThreshold(double threshold, UInt_t component = 0);
 
             KTFrequencyCandidateData& SetNComponents(UInt_t components);
 
             UInt_t GetNBins() const;
-            Double_t GetBinWidth() const;
+            double GetBinWidth() const;
 
             void SetNBins(UInt_t nBins);
-            void SetBinWidth(Double_t binWidth);
+            void SetBinWidth(double binWidth);
 
         protected:
             std::vector< PerComponentData > fComponentData;
 
             UInt_t fNBins;
-            Double_t fBinWidth;
+            double fBinWidth;
 
     };
 
@@ -63,7 +63,7 @@ namespace Katydid
         return fComponentData[component].fCandidates;
     }
 
-    inline Double_t KTFrequencyCandidateData::GetThreshold(UInt_t component) const
+    inline double KTFrequencyCandidateData::GetThreshold(UInt_t component) const
     {
         return fComponentData[component].fThreshold;
     }
@@ -87,7 +87,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTFrequencyCandidateData::SetThreshold(Double_t threshold, UInt_t component)
+    inline void KTFrequencyCandidateData::SetThreshold(double threshold, UInt_t component)
     {
         if (component >= fComponentData.size()) SetNComponents(component+1);
         fComponentData[component].fThreshold = threshold;
@@ -105,7 +105,7 @@ namespace Katydid
         return fNBins;
     }
 
-    inline Double_t KTFrequencyCandidateData::GetBinWidth() const
+    inline double KTFrequencyCandidateData::GetBinWidth() const
     {
         return fBinWidth;
     }
@@ -116,7 +116,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTFrequencyCandidateData::SetBinWidth(Double_t binWidth)
+    inline void KTFrequencyCandidateData::SetBinWidth(double binWidth)
     {
         fBinWidth = binWidth;
         return;

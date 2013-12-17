@@ -26,20 +26,20 @@ namespace Katydid
             UInt_t GetComponent() const;
 
             UInt_t GetNTimeBins() const;
-            Double_t GetTimeBinWidth() const;
+            double GetTimeBinWidth() const;
 
             UInt_t GetNFreqBins() const;
-            Double_t GetFreqBinWidth() const;
+            double GetFreqBinWidth() const;
 
-            Double_t GetTimeInRun() const;
-            Double_t GetTimeLength() const;
+            double GetTimeInRun() const;
+            double GetTimeLength() const;
             ULong64_t GetFirstSliceNumber() const;
             ULong64_t GetLastSliceNumber() const;
-            Double_t GetMinimumFrequency() const;
-            Double_t GetMaximumFrequency() const;
-            Double_t GetMeanStartFrequency() const;
-            Double_t GetMeanEndFrequency() const;
-            Double_t GetFrequencyWidth() const;
+            double GetMinimumFrequency() const;
+            double GetMaximumFrequency() const;
+            double GetMeanStartFrequency() const;
+            double GetMeanEndFrequency() const;
+            double GetFrequencyWidth() const;
 
             UInt_t GetStartRecordNumber() const;
             UInt_t GetStartSampleNumber() const;
@@ -49,15 +49,15 @@ namespace Katydid
             void SetCandidate(KTTimeFrequency* candidate);
             void SetComponent(UInt_t component);
 
-            void SetTimeInRun(Double_t tir);
-            void SetTimeLength(Double_t length);
+            void SetTimeInRun(double tir);
+            void SetTimeLength(double length);
             void SetFirstSliceNumber(ULong64_t slice);
             void SetLastSliceNumber(ULong64_t slice);
-            void SetMinimumFrequency(Double_t freq);
-            void SetMaximumFrequency(Double_t freq);
-            void SetMeanStartFrequency(Double_t freq);
-            void SetMeanEndFrequency(Double_t freq);
-            void SetFrequencyWidth(Double_t width);
+            void SetMinimumFrequency(double freq);
+            void SetMaximumFrequency(double freq);
+            void SetMeanStartFrequency(double freq);
+            void SetMeanEndFrequency(double freq);
+            void SetFrequencyWidth(double width);
 
             void SetStartRecordNumber(UInt_t rec);
             void SetStartSampleNumber(UInt_t sample);
@@ -68,15 +68,15 @@ namespace Katydid
             KTTimeFrequency* fCandidate;
             UInt_t fComponent;
 
-            Double_t fTimeInRun;
-            Double_t fTimeLength;
+            double fTimeInRun;
+            double fTimeLength;
             ULong64_t fFirstSliceNumber;
             ULong64_t fLastSliceNumber;
-            Double_t fMinFrequency;
-            Double_t fMaxFrequency;
-            Double_t fMeanStartFrequency;
-            Double_t fMeanEndFrequency;
-            Double_t fFrequencyWidth;
+            double fMinFrequency;
+            double fMaxFrequency;
+            double fMeanStartFrequency;
+            double fMeanEndFrequency;
+            double fFrequencyWidth;
 
             UInt_t fStartRecordNumber;
             UInt_t fStartSampleNumber;
@@ -104,22 +104,22 @@ namespace Katydid
         return fCandidate->GetNFrequencyBins();
     }
 
-    inline Double_t KTWaterfallCandidateData::GetTimeBinWidth() const
+    inline double KTWaterfallCandidateData::GetTimeBinWidth() const
     {
         return fCandidate->GetTimeBinWidth();
     }
 
-    inline Double_t KTWaterfallCandidateData::GetFreqBinWidth() const
+    inline double KTWaterfallCandidateData::GetFreqBinWidth() const
     {
         return fCandidate->GetFrequencyBinWidth();
     }
 
-    inline Double_t KTWaterfallCandidateData::GetTimeInRun() const
+    inline double KTWaterfallCandidateData::GetTimeInRun() const
     {
         return fTimeInRun;
     }
 
-    inline Double_t KTWaterfallCandidateData::GetTimeLength() const
+    inline double KTWaterfallCandidateData::GetTimeLength() const
     {
         return fTimeLength;
     }
@@ -134,27 +134,27 @@ namespace Katydid
         return fLastSliceNumber;
     }
 
-    inline Double_t KTWaterfallCandidateData::GetMinimumFrequency() const
+    inline double KTWaterfallCandidateData::GetMinimumFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline Double_t KTWaterfallCandidateData::GetMaximumFrequency() const
+    inline double KTWaterfallCandidateData::GetMaximumFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline Double_t KTWaterfallCandidateData::GetMeanStartFrequency() const
+    inline double KTWaterfallCandidateData::GetMeanStartFrequency() const
     {
         return fMeanStartFrequency;
     }
 
-    inline Double_t KTWaterfallCandidateData::GetMeanEndFrequency() const
+    inline double KTWaterfallCandidateData::GetMeanEndFrequency() const
     {
         return fMeanEndFrequency;
     }
 
-    inline Double_t KTWaterfallCandidateData::GetFrequencyWidth() const
+    inline double KTWaterfallCandidateData::GetFrequencyWidth() const
     {
         return fFrequencyWidth;
     }
@@ -185,13 +185,13 @@ namespace Katydid
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetTimeInRun(Double_t tir)
+    inline void KTWaterfallCandidateData::SetTimeInRun(double tir)
     {
         fTimeInRun = tir;
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetTimeLength(Double_t length)
+    inline void KTWaterfallCandidateData::SetTimeLength(double length)
     {
         fTimeLength = length;
         return;
@@ -209,31 +209,31 @@ namespace Katydid
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetMinimumFrequency(Double_t freq)
+    inline void KTWaterfallCandidateData::SetMinimumFrequency(double freq)
     {
         fMinFrequency = freq;
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetMaximumFrequency(Double_t freq)
+    inline void KTWaterfallCandidateData::SetMaximumFrequency(double freq)
     {
         fMaxFrequency = freq;
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetMeanStartFrequency(Double_t freq)
+    inline void KTWaterfallCandidateData::SetMeanStartFrequency(double freq)
     {
         fMeanStartFrequency = freq;
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetMeanEndFrequency(Double_t freq)
+    inline void KTWaterfallCandidateData::SetMeanEndFrequency(double freq)
     {
         fMeanEndFrequency = freq;
         return;
     }
 
-    inline void KTWaterfallCandidateData::SetFrequencyWidth(Double_t width)
+    inline void KTWaterfallCandidateData::SetFrequencyWidth(double width)
     {
         fFrequencyWidth = width;
         return;

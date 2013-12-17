@@ -35,7 +35,7 @@ namespace Katydid
        - "n-slices": UInt_t -- Number of slices to create (used only if creating new slices)
        - "n-channels": UInt_t -- Number of channels per slice to create (used only if creating new slices)
        - "time-series-size": UInt_t -- Specify the size of the time series (used only if creating new slices)
-       - "bin-width": Double_t -- Specify the bin width
+       - "bin-width": double -- Specify the bin width
        - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
        - "record-size": UInt_t -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
 
@@ -73,8 +73,8 @@ namespace Katydid
             UInt_t GetSliceSize() const;
             void SetSliceSize(UInt_t size);
 
-            Double_t GetBinWidth() const;
-            void SetBinWidth(Double_t bw);
+            double GetBinWidth() const;
+            void SetBinWidth(double bw);
 
             UInt_t GetRecordSize() const;
             void SetRecordSize(UInt_t rec);
@@ -87,7 +87,7 @@ namespace Katydid
 
             UInt_t fNChannels;
             UInt_t fSliceSize;
-            Double_t fBinWidth;
+            double fBinWidth;
             UInt_t fRecordSize;
 
             TimeSeriesType fTimeSeriesType;
@@ -161,12 +161,12 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTTSGenerator::GetBinWidth() const
+    inline double KTTSGenerator::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline void KTTSGenerator::SetBinWidth(Double_t bw)
+    inline void KTTSGenerator::SetBinWidth(double bw)
     {
         fBinWidth = bw;
         return;

@@ -32,12 +32,12 @@ KTLOGGER(vallog, "katydid.applications.validation");
 struct Parameters
 {
     // y = fA * x^2 + fB * x + fC
-    Double_t fA;
-    Double_t fB;
-    Double_t fC;
+    double fA;
+    double fB;
+    double fC;
 };
 
-Double_t TestFunction(const Parameters& results, Double_t x);
+double TestFunction(const Parameters& results, double x);
 
 
 int main(int argc, char** argv)
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     funcParams.fB = 0.;
     funcParams.fC = 15.;
 
-    Double_t noiseSigma = 20.;
+    double noiseSigma = 20.;
 
     if (argc >= 2)
     {
@@ -99,8 +99,8 @@ int main(int argc, char** argv)
     KTWARN(vallog, "No noise is being added");
 #endif
 
-    Double_t value;
-    Double_t value0 = TestFunction(funcParams, spectrum->GetBinCenter(0));
+    double value;
+    double value0 = TestFunction(funcParams, spectrum->GetBinCenter(0));
     for (UInt_t iBin=0; iBin < nBins; iBin++)
     {
 #ifdef ROOT_FOUND
@@ -182,7 +182,7 @@ int main(int argc, char** argv)
 }
 
 
-Double_t TestFunction(const Parameters& params, Double_t x)
+double TestFunction(const Parameters& params, double x)
 {
     return params.fA * x * x + params.fB * x + params.fC;
 }

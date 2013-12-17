@@ -19,19 +19,19 @@ namespace Katydid
     {
         public:
             KTTimeSeriesFFTW();
-            KTTimeSeriesFFTW(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            KTTimeSeriesFFTW(size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTTimeSeriesFFTW(const KTTimeSeriesFFTW& orig);
             virtual ~KTTimeSeriesFFTW();
 
             KTTimeSeriesFFTW& operator=(const KTTimeSeriesFFTW& rhs);
 
-            virtual void Scale(Double_t scale);
+            virtual void Scale(double scale);
 
             virtual UInt_t GetNTimeBins() const;
-            virtual Double_t GetTimeBinWidth() const;
+            virtual double GetTimeBinWidth() const;
 
-            virtual void SetValue(UInt_t bin, Double_t value);
-            virtual Double_t GetValue(UInt_t bin) const;
+            virtual void SetValue(UInt_t bin, double value);
+            virtual double GetValue(UInt_t bin) const;
 
             virtual void Print(UInt_t startPrint, UInt_t nToPrint) const;
 
@@ -43,7 +43,7 @@ namespace Katydid
 #endif
     };
 
-    inline void KTTimeSeriesFFTW::Scale(Double_t scale)
+    inline void KTTimeSeriesFFTW::Scale(double scale)
     {
         this->KTPhysicalArray< 1, fftw_complex >::operator*=(scale);
         return;
@@ -54,19 +54,19 @@ namespace Katydid
         return this->size();
     }
 
-    inline Double_t KTTimeSeriesFFTW::GetTimeBinWidth() const
+    inline double KTTimeSeriesFFTW::GetTimeBinWidth() const
     {
         return this->GetBinWidth();
     }
 
-    inline void KTTimeSeriesFFTW::SetValue(UInt_t bin, Double_t value)
+    inline void KTTimeSeriesFFTW::SetValue(UInt_t bin, double value)
     {
         (*this)(bin)[0] = value;
         (*this)(bin)[1] = 0.;
         return;
     }
 
-    inline Double_t KTTimeSeriesFFTW::GetValue(UInt_t bin) const
+    inline double KTTimeSeriesFFTW::GetValue(UInt_t bin) const
     {
         return (*this)(bin)[0];
     }

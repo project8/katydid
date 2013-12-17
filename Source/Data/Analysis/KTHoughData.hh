@@ -27,17 +27,17 @@ namespace Katydid
             KTHoughData();
             virtual ~KTHoughData();
 
-            const KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* GetTransform(UInt_t component = 0) const;
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* GetTransform(UInt_t component = 0);
+            const KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* GetTransform(UInt_t component = 0) const;
+            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* GetTransform(UInt_t component = 0);
 
             UInt_t GetNComponents() const;
 
-            void SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t component = 0);
+            void SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* transform, UInt_t component = 0);
 
             KTHoughData& SetNComponents(UInt_t nTransforms);
 
         protected:
-            std::vector< KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* > fTransforms;
+            std::vector< KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* > fTransforms;
 
 #ifdef ROOT_FOUND
         public:
@@ -47,12 +47,12 @@ namespace Katydid
 
     };
 
-    inline const KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughData::GetTransform(UInt_t component) const
+    inline const KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughData::GetTransform(UInt_t component) const
     {
         return fTransforms[component];
     }
 
-    inline KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughData::GetTransform(UInt_t component)
+    inline KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughData::GetTransform(UInt_t component)
     {
         return fTransforms[component];
     }
@@ -62,7 +62,7 @@ namespace Katydid
         return UInt_t(fTransforms.size());
     }
 
-    inline void KTHoughData::SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t component)
+    inline void KTHoughData::SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* transform, UInt_t component)
     {
         if (component >= fTransforms.size()) SetNComponents(component+1);
         fTransforms[component] = transform;

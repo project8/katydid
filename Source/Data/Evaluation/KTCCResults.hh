@@ -21,14 +21,14 @@ namespace Katydid
             KTCCResults();
             virtual ~KTCCResults();
 
-            Double_t GetEventLength();
-            void SetEventLength(Double_t length);
+            double GetEventLength();
+            void SetEventLength(double length);
 
-            Double_t Getdfdt();
-            void Setdfdt(Double_t dfdt);
+            double Getdfdt();
+            void Setdfdt(double dfdt);
 
-            Double_t GetSignalPower();
-            void SetSignalPower(Double_t power);
+            double GetSignalPower();
+            void SetSignalPower(double power);
 
             UInt_t GetNEvents() const;
             void SetNEvents(UInt_t nEvents);
@@ -46,16 +46,16 @@ namespace Katydid
             void IncrementNCandidatesWithXEventMatches(UInt_t xEventMatches);
             void ResizeNCandidatesWithXEventMatches(UInt_t size);
 
-            Double_t GetEfficiency() const;
-            void SetEfficiency(Double_t eff);
+            double GetEfficiency() const;
+            void SetEfficiency(double eff);
 
-            Double_t GetFalseRate() const;
-            void SetFalseRate(Double_t rate);
+            double GetFalseRate() const;
+            void SetFalseRate(double rate);
 
         private:
-            Double_t fEventLength;
-            Double_t fdfdt;
-            Double_t fSignalPower;
+            double fEventLength;
+            double fdfdt;
+            double fSignalPower;
 
             UInt_t fNEvents;
             std::vector< UInt_t > fNEventsWithXCandidateMatches;
@@ -63,38 +63,38 @@ namespace Katydid
             UInt_t fNCandidates;
             std::vector< UInt_t > fNCandidatesWithXEventMatches;
 
-            Double_t fEfficiency;
-            Double_t fFalseRate;
+            double fEfficiency;
+            double fFalseRate;
     };
 
-    inline Double_t KTCCResults::GetEventLength()
+    inline double KTCCResults::GetEventLength()
     {
         return fEventLength;
     }
 
-    inline void KTCCResults::SetEventLength(Double_t length)
+    inline void KTCCResults::SetEventLength(double length)
     {
         fEventLength = length;
         return;
     }
 
-    inline Double_t KTCCResults::Getdfdt()
+    inline double KTCCResults::Getdfdt()
     {
         return fdfdt;
     }
 
-    inline void KTCCResults::Setdfdt(Double_t dfdt)
+    inline void KTCCResults::Setdfdt(double dfdt)
     {
         fdfdt = dfdt;
         return;
     }
 
-    inline Double_t KTCCResults::GetSignalPower()
+    inline double KTCCResults::GetSignalPower()
     {
         return fSignalPower;
     }
 
-    inline void KTCCResults::SetSignalPower(Double_t power)
+    inline void KTCCResults::SetSignalPower(double power)
     {
         fSignalPower = power;
         return;
@@ -168,23 +168,23 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTCCResults::GetEfficiency() const
+    inline double KTCCResults::GetEfficiency() const
     {
         return fEfficiency;
     }
 
-    inline void KTCCResults::SetEfficiency(Double_t eff)
+    inline void KTCCResults::SetEfficiency(double eff)
     {
         fEfficiency = eff;
         return;
     }
 
-    inline Double_t KTCCResults::GetFalseRate() const
+    inline double KTCCResults::GetFalseRate() const
     {
         return fFalseRate;
     }
 
-    inline void KTCCResults::SetFalseRate(Double_t rate)
+    inline void KTCCResults::SetFalseRate(double rate)
     {
         fFalseRate = rate;
         return;

@@ -72,15 +72,15 @@ namespace Katydid
             FormatModeType GetFormatMode() const;
             void SetFormatMode(FormatModeType mode);
 
-            Double_t GetDigitizerFullscale() const;
-            void SetDigitizerFullscale(Double_t scale);
+            double GetDigitizerFullscale() const;
+            void SetDigitizerFullscale(double scale);
 
         private:
             std::string fFilename;
 
             FormatModeType fFormatMode;
 
-            Double_t fDigitizerFullscale;
+            double fDigitizerFullscale;
 
         public:
             Bool_t OpenFile();
@@ -136,12 +136,12 @@ namespace Katydid
         return fFileStatus;
     }
 
-    inline Double_t KTEggWriter::GetDigitizerFullscale() const
+    inline double KTEggWriter::GetDigitizerFullscale() const
     {
         return fDigitizerFullscale;
     }
 
-    inline void KTEggWriter::SetDigitizerFullscale(Double_t scale)
+    inline void KTEggWriter::SetDigitizerFullscale(double scale)
     {
         fDigitizerFullscale = scale;
         return;

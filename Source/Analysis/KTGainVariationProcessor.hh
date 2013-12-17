@@ -65,11 +65,11 @@ namespace Katydid
             Bool_t GetNormalize() const;
             void SetNormalize(Bool_t flag);
 
-            Double_t GetMinFrequency() const;
-            void SetMinFrequency(Double_t freq);
+            double GetMinFrequency() const;
+            void SetMinFrequency(double freq);
 
-            Double_t GetMaxFrequency() const;
-            void SetMaxFrequency(Double_t freq);
+            double GetMaxFrequency() const;
+            void SetMaxFrequency(double freq);
 
             UInt_t GetMinBin() const;
             void SetMinBin(UInt_t bin);
@@ -82,8 +82,8 @@ namespace Katydid
 
         private:
             Bool_t fNormalize;
-            Double_t fMinFrequency;
-            Double_t fMaxFrequency;
+            double fMinFrequency;
+            double fMaxFrequency;
             UInt_t fMinBin;
             UInt_t fMaxBin;
             UInt_t fNFitPoints;
@@ -98,7 +98,7 @@ namespace Katydid
         private:
             Bool_t CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
             Bool_t CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
-            //GainVariation* CreateGainVariation(KTSpline* spline, UInt_t nBins, Double_t rangeMin, Double_t rangeMax) const;
+            //GainVariation* CreateGainVariation(KTSpline* spline, UInt_t nBins, double rangeMin, double rangeMax) const;
 
             //***************
             // Signals
@@ -129,24 +129,24 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTGainVariationProcessor::GetMinFrequency() const
+    inline double KTGainVariationProcessor::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline void KTGainVariationProcessor::SetMinFrequency(Double_t freq)
+    inline void KTGainVariationProcessor::SetMinFrequency(double freq)
     {
         fMinFrequency = freq;
         fCalculateMinBin = true;
         return;
     }
 
-    inline Double_t KTGainVariationProcessor::GetMaxFrequency() const
+    inline double KTGainVariationProcessor::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline void KTGainVariationProcessor::SetMaxFrequency(Double_t freq)
+    inline void KTGainVariationProcessor::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;

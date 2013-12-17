@@ -22,14 +22,14 @@ namespace Katydid
         /* * From ROOT's TMath     * */
         /* ************************* */
 
-        inline Double_t Pi()       { return 3.14159265358979323846; }
-        inline Double_t TwoPi()    { return 6.28318530717958623; }
-        inline Double_t PiOver2()  { return 1.57079632679489656; }
-        inline Double_t PiOver4()  { return 0.785398163397448279; }
-        inline Double_t InvPi()    { return 0.318309886183790691; }
-        inline Double_t RadToDeg() { return 57.2957795130823229; }
-        inline Double_t DegToRad() { return 1.74532925199432955e-02; }
-        inline Double_t Sqrt2()    { return 1.4142135623730950488016887242097; }
+        inline double Pi()       { return 3.14159265358979323846; }
+        inline double TwoPi()    { return 6.28318530717958623; }
+        inline double PiOver2()  { return 1.57079632679489656; }
+        inline double PiOver4()  { return 0.785398163397448279; }
+        inline double InvPi()    { return 0.318309886183790691; }
+        inline double RadToDeg() { return 57.2957795130823229; }
+        inline double DegToRad() { return 1.74532925199432955e-02; }
+        inline double Sqrt2()    { return 1.4142135623730950488016887242097; }
 
 
         /// Round to nearest integer. Rounds half integers to the nearest even integer.

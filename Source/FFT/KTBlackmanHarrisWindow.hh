@@ -37,7 +37,7 @@ namespace Katydid
 
             virtual Bool_t ConfigureWFSubclass(const KTPStoreNode* node);
 
-            virtual Double_t GetWeight(Double_t time) const;
+            virtual double GetWeight(double time) const;
 
             virtual void RebuildWindowFunction();
 

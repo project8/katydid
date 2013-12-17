@@ -102,8 +102,8 @@ namespace Katydid
 
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
-            virtual Double_t GetMinFrequency(Double_t timeBinWidth) const;
-            virtual Double_t GetMaxFrequency(Double_t timeBinWidth) const;
+            virtual double GetMinFrequency(double timeBinWidth) const;
+            virtual double GetMaxFrequency(double timeBinWidth) const;
 
             /// note: SetTimeSize creates a new fTransform.
             ///       It also sets fIsInitialized to kFALSE.
@@ -121,13 +121,13 @@ namespace Katydid
 
         protected:
             UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrumPolar* ExtractForwardTransformResult(Double_t freqMin, Double_t freqMax) const;
+            KTFrequencySpectrumPolar* ExtractForwardTransformResult(double freqMin, double freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fForwardPlan;
             fftw_plan fReversePlan;
             UInt_t fTimeSize;
-            Double_t* fTSArray;
+            double* fTSArray;
             fftw_complex* fFSArray;
 
             std::string fTransformFlag;
@@ -168,14 +168,14 @@ namespace Katydid
         return CalculateNFrequencyBins(fTimeSize);
     }
 
-    inline Double_t KTSimpleFFT::GetMinFrequency(Double_t timeBinWidth) const
+    inline double KTSimpleFFT::GetMinFrequency(double timeBinWidth) const
     {
         return -0.5 * GetFrequencyBinWidth(timeBinWidth);
     }
 
-    inline Double_t KTSimpleFFT::GetMaxFrequency(Double_t timeBinWidth) const
+    inline double KTSimpleFFT::GetMaxFrequency(double timeBinWidth) const
     {
-        return GetFrequencyBinWidth(timeBinWidth) * ((Double_t)GetFrequencySize() - 0.5);
+        return GetFrequencyBinWidth(timeBinWidth) * ((double)GetFrequencySize() - 0.5);
     }
 
     inline const std::string& KTSimpleFFT::GetTransformFlag() const

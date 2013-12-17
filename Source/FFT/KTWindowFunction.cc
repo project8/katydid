@@ -50,7 +50,7 @@ namespace Katydid
         return ConfigureWFSubclass(node);
     }
 
-    Double_t KTWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
+    double KTWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
     {
         SetBinWidth(tsData->GetTimeSeries(0)->GetTimeBinWidth());
         return SetSize(tsData->GetTimeSeries(0)->GetNTimeBins());
@@ -71,7 +71,7 @@ namespace Katydid
 #ifdef FFTW_FOUND
     TH1D* KTWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
     {
-        KTTimeSeriesFFTW timeData(fSize, 0., Double_t(fSize) * fBinWidth);
+        KTTimeSeriesFFTW timeData(fSize, 0., double(fSize) * fBinWidth);
         for (UInt_t iBin=0; iBin<fSize+0; iBin++)
         {
             timeData.SetValue(iBin, GetWeight(iBin));
@@ -89,15 +89,15 @@ namespace Katydid
 #endif
 #endif
 
-    Double_t KTWindowFunction::SetLength(Double_t length)
+    double KTWindowFunction::SetLength(double length)
     {
         fLength = fabs(length);
         if (fLastSetParameter == kBinWidth)
         {
             // Priority is to preserve the bin width, but it might not be an even divisor of the new length
-            Double_t prelimSize = fLength / fBinWidth;
+            double prelimSize = fLength / fBinWidth;
             fSize = (UInt_t)KTMath::Nint(prelimSize);
-            fBinWidth = fLength / (Double_t)fSize;
+            fBinWidth = fLength / (double)fSize;
         }
         else if (fLastSetParameter == kSize || fLastSetParameter == kLength)
         {
@@ -108,7 +108,7 @@ namespace Katydid
         return fBinWidth;
     }
 
-    Double_t KTWindowFunction::SetBinWidth(Double_t bw)
+    double KTWindowFunction::SetBinWidth(double bw)
     {
         fBinWidth = fabs(bw);
         if (fLastSetParameter == kSize || fLastSetParameter == kBinWidth)
@@ -118,47 +118,47 @@ namespace Katydid
         else if (fLastSetParameter == kLength)
         {
             // Priority is to preserve the length, but it might not be an even multiple of the new bin width
-            Double_t prelimNBins = fLength / fBinWidth;
+            double prelimNBins = fLength / fBinWidth;
             fSize = (UInt_t)KTMath::Nint(prelimNBins);
-            fLength = (Double_t)fSize * fBinWidth;
+            fLength = (double)fSize * fBinWidth;
         }
         RebuildWindowFunction();
         fLastSetParameter = kBinWidth;
         return fLength;
     }
 
-    Double_t KTWindowFunction::SetBinWidthAndLength(Double_t bw, Double_t length)
+    double KTWindowFunction::SetBinWidthAndLength(double bw, double length)
     {
         fBinWidth = fabs(bw);
-        Double_t prelimNBins = fabs(length) / fBinWidth;
+        double prelimNBins = fabs(length) / fBinWidth;
         fSize = (UInt_t)KTMath::Nint(prelimNBins);
-        fLength = (Double_t)fSize * fBinWidth;
+        fLength = (double)fSize * fBinWidth;
         RebuildWindowFunction();
         fLastSetParameter = kBinWidth;
         return fLength;
     }
 
-    Double_t KTWindowFunction::SetLengthAndBinWidth(Double_t length, Double_t bw)
+    double KTWindowFunction::SetLengthAndBinWidth(double length, double bw)
     {
         fLength = fabs(length);
-        Double_t prelimNBins = fLength / fabs(bw);
+        double prelimNBins = fLength / fabs(bw);
         fSize = (UInt_t)KTMath::Nint(prelimNBins);
-        fBinWidth = fLength / (Double_t)fSize;
+        fBinWidth = fLength / (double)fSize;
         RebuildWindowFunction();
         fLastSetParameter = kLength;
         return fBinWidth;
     }
 
-    Double_t KTWindowFunction::SetSize(UInt_t wib)
+    double KTWindowFunction::SetSize(UInt_t wib)
     {
         fSize = wib;
         if (fLastSetParameter == kBinWidth || fLastSetParameter == kSize)
         {
-            fLength = (Double_t)fSize * fBinWidth;
+            fLength = (double)fSize * fBinWidth;
         }
         else if (fLastSetParameter == kLength)
         {
-            fBinWidth = fLength / (Double_t)fSize;
+            fBinWidth = fLength / (double)fSize;
         }
         RebuildWindowFunction();
         fLastSetParameter = kSize;

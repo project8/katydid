@@ -21,8 +21,8 @@ namespace Katydid
     {
         UShort_t fComponent;
         UInt_t fPoint;
-        Double_t fValue;
-        Double_t fThreshold;
+        double fValue;
+        double fThreshold;
     };
 
     struct TAmplitudeDistributionData

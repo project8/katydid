@@ -22,17 +22,17 @@ int main()
     KTINFO(testlog, "Access to the arrays will be via operator().");
 
     UInt_t size = 10;
-    Double_t min = 0.;
-    Double_t max = 10.;
+    double min = 0.;
+    double max = 10.;
 
     KTPhysicalArray<1, fftw_complex> physArr(size, min, max);
     KTFrequencySpectrumFFTW freqSpect(size, min, max);
 
     for (UInt_t i=0; i<size; i++)
     {
-        physArr(i)[0] = Double_t(i);
+        physArr(i)[0] = double(i);
         physArr(i)[1] = 0.;
-        freqSpect(i)[0] = Double_t(i);
+        freqSpect(i)[0] = double(i);
         freqSpect(i)[1] = 0.;
     }
 

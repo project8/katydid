@@ -23,31 +23,31 @@ namespace Katydid
 {
     //class KTPowerSpectrum;
 
-    class KTTimeFrequencyPolar : public KTPhysicalArray< 2, complexpolar< Double_t > >, public KTTimeFrequency
+    class KTTimeFrequencyPolar : public KTPhysicalArray< 2, complexpolar< double > >, public KTTimeFrequency
     {
         public:
             KTTimeFrequencyPolar();
-            KTTimeFrequencyPolar(size_t nTimeBins, Double_t timeRangeMin, Double_t timeRangeMax, size_t nFreqBins, Double_t freqRangeMin, Double_t freqRangeMax);
+            KTTimeFrequencyPolar(size_t nTimeBins, double timeRangeMin, double timeRangeMax, size_t nFreqBins, double freqRangeMin, double freqRangeMax);
             KTTimeFrequencyPolar(const KTTimeFrequencyPolar& orig);
             virtual ~KTTimeFrequencyPolar();
 
             virtual KTTimeFrequencyPolar& operator=(const KTTimeFrequencyPolar& rhs);
 
-            virtual Double_t GetReal(UInt_t timebin, UInt_t freqbin) const;
-            virtual Double_t GetImag(UInt_t timebin, UInt_t freqbin) const;
+            virtual double GetReal(UInt_t timebin, UInt_t freqbin) const;
+            virtual double GetImag(UInt_t timebin, UInt_t freqbin) const;
 
-            virtual void SetRect(UInt_t timebin, UInt_t freqbin, Double_t real, Double_t imag);
+            virtual void SetRect(UInt_t timebin, UInt_t freqbin, double real, double imag);
 
-            virtual Double_t GetAbs(UInt_t timebin, UInt_t freqbin) const;
-            virtual Double_t GetArg(UInt_t timebin, UInt_t freqbin) const;
+            virtual double GetAbs(UInt_t timebin, UInt_t freqbin) const;
+            virtual double GetArg(UInt_t timebin, UInt_t freqbin) const;
 
-            virtual void SetPolar(UInt_t timebin, UInt_t freqbin, Double_t abs, Double_t arg);
+            virtual void SetPolar(UInt_t timebin, UInt_t freqbin, double abs, double arg);
 
             virtual UInt_t GetNTimeBins() const;
             virtual UInt_t GetNFrequencyBins() const;
 
-            virtual Double_t GetTimeBinWidth() const;
-            virtual Double_t GetFrequencyBinWidth() const;
+            virtual double GetTimeBinWidth() const;
+            virtual double GetFrequencyBinWidth() const;
 
             virtual KTTimeFrequencyPolar& CConjugate();
 
@@ -67,33 +67,33 @@ namespace Katydid
 
     };
 
-    inline Double_t KTTimeFrequencyPolar::GetReal(UInt_t timebin, UInt_t freqbin) const
+    inline double KTTimeFrequencyPolar::GetReal(UInt_t timebin, UInt_t freqbin) const
     {
         return (*this)(timebin, freqbin).abs() * std::cos((*this)(timebin, freqbin).arg());
     }
 
-    inline Double_t KTTimeFrequencyPolar::GetImag(UInt_t timebin, UInt_t freqbin) const
+    inline double KTTimeFrequencyPolar::GetImag(UInt_t timebin, UInt_t freqbin) const
     {
         return (*this)(timebin, freqbin).abs() * std::sin((*this)(timebin, freqbin).arg());
     }
 
-    inline void KTTimeFrequencyPolar::SetRect(UInt_t timebin, UInt_t freqbin, Double_t real, Double_t imag)
+    inline void KTTimeFrequencyPolar::SetRect(UInt_t timebin, UInt_t freqbin, double real, double imag)
     {
         (*this)(timebin, freqbin).set_rect(real, imag);
         return;
     }
 
-    inline Double_t KTTimeFrequencyPolar::GetAbs(UInt_t timebin, UInt_t freqbin) const
+    inline double KTTimeFrequencyPolar::GetAbs(UInt_t timebin, UInt_t freqbin) const
     {
         return (*this)(timebin, freqbin).abs();
     }
 
-    inline Double_t KTTimeFrequencyPolar::GetArg(UInt_t timebin, UInt_t freqbin) const
+    inline double KTTimeFrequencyPolar::GetArg(UInt_t timebin, UInt_t freqbin) const
     {
         return (*this)(timebin, freqbin).arg();
     }
 
-    inline void KTTimeFrequencyPolar::SetPolar(UInt_t timebin, UInt_t freqbin, Double_t abs, Double_t arg)
+    inline void KTTimeFrequencyPolar::SetPolar(UInt_t timebin, UInt_t freqbin, double abs, double arg)
     {
         (*this)(timebin, freqbin).set_polar(abs, arg);
         return;
@@ -109,12 +109,12 @@ namespace Katydid
         return size(2);
     }
 
-    inline Double_t KTTimeFrequencyPolar::GetTimeBinWidth() const
+    inline double KTTimeFrequencyPolar::GetTimeBinWidth() const
     {
         return GetBinWidth(1);
     }
 
-    inline Double_t KTTimeFrequencyPolar::GetFrequencyBinWidth() const
+    inline double KTTimeFrequencyPolar::GetFrequencyBinWidth() const
     {
         return GetBinWidth(2);
     }

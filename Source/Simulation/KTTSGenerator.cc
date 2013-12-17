@@ -64,7 +64,7 @@ namespace Katydid
         // record size, after slice size
         fRecordSize = node->GetData< UInt_t >("record-size", fSliceSize);
 
-        fBinWidth = node->GetData< Double_t >("bin-width", fBinWidth);
+        fBinWidth = node->GetData< double >("bin-width", fBinWidth);
 
         // type of time series
         string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
@@ -136,8 +136,8 @@ namespace Katydid
 
         KTProcSummary* summary = new KTProcSummary();
         summary->SetNSlicesProcessed(fSliceCounter);
-        summary->SetNRecordsProcessed((UInt_t)ceil(Double_t(fSliceCounter * fSliceSize) / fRecordSize));
-        summary->SetIntegratedTime(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+        summary->SetNRecordsProcessed((UInt_t)ceil(double(fSliceCounter * fSliceSize) / fRecordSize));
+        summary->SetIntegratedTime(double(fSliceCounter * fSliceSize) * fBinWidth);
         fSummarySignal(summary);
         delete summary;
 
@@ -183,12 +183,12 @@ namespace Katydid
         sliceHeader.SetSampleRate(1. / fBinWidth);
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
-        sliceHeader.SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+        sliceHeader.SetTimeInRun(double(fSliceCounter * fSliceSize) * fBinWidth);
         sliceHeader.SetSliceNumber(fSliceCounter);
 
         for (UInt_t iComponent = 0; iComponent < fNChannels; iComponent++)
         {
-            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (Double_t)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
             sliceHeader.SetRecordID(0);
         }
@@ -214,11 +214,11 @@ namespace Katydid
         {
             if (fTimeSeriesType == kRealTimeSeries)
             {
-                tsData.SetTimeSeries(new KTTimeSeriesReal(fSliceSize, 0., Double_t(fSliceSize) * fBinWidth), iChannel);
+                tsData.SetTimeSeries(new KTTimeSeriesReal(fSliceSize, 0., double(fSliceSize) * fBinWidth), iChannel);
             }
             else
             {
-                tsData.SetTimeSeries(new KTTimeSeriesFFTW(fSliceSize, 0., Double_t(fSliceSize) * fBinWidth), iChannel);
+                tsData.SetTimeSeries(new KTTimeSeriesFFTW(fSliceSize, 0., double(fSliceSize) * fBinWidth), iChannel);
             }
         }
 

@@ -43,7 +43,7 @@ namespace Katydid
             }
 
             // option: don't check for data before getting it from the node; rely on the default if it's not there.
-            fDoubleData = node->GetData< Double_t >("double-data", fDoubleData);
+            fDoubleData = node->GetData< double >("double-data", fDoubleData);
             KTINFO(testparamlog, "Configured double (= existing value if not provided): " << fDoubleData);
             fStringData = node->GetData< string >("string-data", fStringData);
             KTINFO(testparamlog, "Configured string (= existing value if not provided): " << fStringData);

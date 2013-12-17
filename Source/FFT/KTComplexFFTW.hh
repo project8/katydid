@@ -101,8 +101,8 @@ namespace Katydid
             virtual UInt_t GetSize() const;
             virtual UInt_t GetTimeSize() const;
             virtual UInt_t GetFrequencySize() const;
-            virtual Double_t GetMinFrequency(Double_t timeBinWidth) const;
-            virtual Double_t GetMaxFrequency(Double_t timeBinWidth) const;
+            virtual double GetMinFrequency(double timeBinWidth) const;
+            virtual double GetMaxFrequency(double timeBinWidth) const;
 
             const std::string& GetTransformFlag() const;
             Bool_t GetIsInitialized() const;
@@ -173,21 +173,21 @@ namespace Katydid
         return fSize;
     }
 
-    inline Double_t KTComplexFFTW::GetMinFrequency(Double_t timeBinWidth) const
+    inline double KTComplexFFTW::GetMinFrequency(double timeBinWidth) const
     {
         // There's one bin at the center, always: the DC bin.
         // # of bins on the negative side is nFreqBins/2 (rounded down because of integer division).
         // 0.5 is added to the # of bins because of the half of the DC bin on the negative frequency side.
-        return -GetFrequencyBinWidth(timeBinWidth) * (Double_t(fSize/2) + 0.5);
+        return -GetFrequencyBinWidth(timeBinWidth) * (double(fSize/2) + 0.5);
     }
 
-    inline Double_t KTComplexFFTW::GetMaxFrequency(Double_t timeBinWidth) const
+    inline double KTComplexFFTW::GetMaxFrequency(double timeBinWidth) const
     {
         // There's one bin at the center, always: the DC bin.
         // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
         // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
         UInt_t nBinsToSide = fSize / 2;
-        return GetFrequencyBinWidth(timeBinWidth) * (Double_t(nBinsToSide*2 == fSize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
+        return GetFrequencyBinWidth(timeBinWidth) * (double(nBinsToSide*2 == fSize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
     }
 
     inline const std::string& KTComplexFFTW::GetTransformFlag() const

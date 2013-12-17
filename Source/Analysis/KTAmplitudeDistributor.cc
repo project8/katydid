@@ -73,11 +73,11 @@ namespace Katydid
 
         if (node->HasData("min-frequency"))
         {
-            SetMinFrequency(node->GetData< Double_t >("min-frequency"));
+            SetMinFrequency(node->GetData< double >("min-frequency"));
         }
         if (node->HasData("max-frequency"))
         {
-            SetMaxFrequency(node->GetData< Double_t >("max-frequency"));
+            SetMaxFrequency(node->GetData< double >("max-frequency"));
         }
 
         if (node->HasData("min-bin"))
@@ -100,11 +100,11 @@ namespace Katydid
 
         if (node->HasData("dist-min"))
         {
-            SetDistMin(node->GetData< Double_t >("dist-min"));
+            SetDistMin(node->GetData< double >("dist-min"));
         }
         if (node->HasData("dist-max"))
         {
-            SetDistMax(node->GetData< Double_t >("dist-max"));
+            SetDistMax(node->GetData< double >("dist-max"));
         }
 
         return true;
@@ -378,7 +378,7 @@ namespace Katydid
             fBuffer.resize(fNSlicesProcessed);
         }
 
-        Double_t distMin, distMax, value;
+        double distMin, distMax, value;
         //UInt_t distBin;
         for (UInt_t iComponent = 0; iComponent < fNComponents; iComponent++)
         {

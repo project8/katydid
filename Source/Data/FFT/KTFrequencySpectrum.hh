@@ -30,17 +30,17 @@ namespace Katydid
             virtual UInt_t GetNFrequencyBins() const = 0;
 
             /// Get the bin width of the array using the KTFrequencySpectrum interface
-            virtual Double_t GetFrequencyBinWidth() const = 0;
+            virtual double GetFrequencyBinWidth() const = 0;
 
-            virtual Double_t GetReal(UInt_t bin) const = 0;
-            virtual Double_t GetImag(UInt_t bin) const = 0;
+            virtual double GetReal(UInt_t bin) const = 0;
+            virtual double GetImag(UInt_t bin) const = 0;
 
-            virtual void SetRect(UInt_t bin, Double_t real, Double_t imag) = 0;
+            virtual void SetRect(UInt_t bin, double real, double imag) = 0;
 
-            virtual Double_t GetAbs(UInt_t bin) const = 0;
-            virtual Double_t GetArg(UInt_t bin) const = 0;
+            virtual double GetAbs(UInt_t bin) const = 0;
+            virtual double GetArg(UInt_t bin) const = 0;
 
-            virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg) = 0;
+            virtual void SetPolar(UInt_t bin, double abs, double arg) = 0;
 
             virtual KTFrequencySpectrum& CConjugate() = 0;
 

@@ -70,7 +70,7 @@ namespace Katydid
     class KTAmplitudeDistributor : public KTProcessor
     {
         public:
-            typedef std::vector< Double_t > Spectrum; // indexed over frequency-axis bins
+            typedef std::vector< double > Spectrum; // indexed over frequency-axis bins
             typedef std::vector< Spectrum > Spectra; // indexed over component
             typedef std::vector< Spectra > Buffer; // indexed over slice number
 
@@ -80,11 +80,11 @@ namespace Katydid
 
             Bool_t Configure(const KTPStoreNode* node);
 
-            Double_t GetMinFrequency() const;
-            void SetMinFrequency(Double_t freq);
+            double GetMinFrequency() const;
+            void SetMinFrequency(double freq);
 
-            Double_t GetMaxFrequency() const;
-            void SetMaxFrequency(Double_t freq);
+            double GetMaxFrequency() const;
+            void SetMaxFrequency(double freq);
 
             UInt_t GetMinBin() const;
             void SetMinBin(UInt_t bin);
@@ -101,15 +101,15 @@ namespace Katydid
             UInt_t GetBufferSize() const;
             void SetBufferSize(UInt_t buffer);
 
-            Double_t GetDistMin() const;
-            void SetDistMin(Double_t min);
+            double GetDistMin() const;
+            void SetDistMin(double min);
 
-            Double_t GetDistMax() const;
-            void SetDistMax(Double_t max);
+            double GetDistMax() const;
+            void SetDistMax(double max);
 
         private:
-            Double_t fMinFrequency;
-            Double_t fMaxFrequency;
+            double fMinFrequency;
+            double fMaxFrequency;
             UInt_t fMinBin;
             UInt_t fMaxBin;
             Bool_t fCalculateMinBin;
@@ -117,8 +117,8 @@ namespace Katydid
 
             UInt_t fDistNBins;
             UInt_t fBufferSize;
-            Double_t fDistMin;
-            Double_t fDistMax;
+            double fDistMin;
+            double fDistMax;
             Bool_t fUseBuffer;
 
         public:
@@ -148,7 +148,7 @@ namespace Katydid
             Bool_t CreateDistributionsEmpty();
             Bool_t CreateDistributionsFromBuffer();
 
-            Double_t fInvDistBinWidth;
+            double fInvDistBinWidth;
 
             UInt_t fNFreqBins;
             UInt_t fNComponents;
@@ -185,24 +185,24 @@ namespace Katydid
 
     };
 
-    inline Double_t KTAmplitudeDistributor::GetMinFrequency() const
+    inline double KTAmplitudeDistributor::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline void KTAmplitudeDistributor::SetMinFrequency(Double_t freq)
+    inline void KTAmplitudeDistributor::SetMinFrequency(double freq)
     {
         fMinFrequency = freq;
         fCalculateMinBin = true;
         return;
     }
 
-    inline Double_t KTAmplitudeDistributor::GetMaxFrequency() const
+    inline double KTAmplitudeDistributor::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline void KTAmplitudeDistributor::SetMaxFrequency(Double_t freq)
+    inline void KTAmplitudeDistributor::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;
@@ -266,27 +266,27 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTAmplitudeDistributor::GetDistMin() const
+    inline double KTAmplitudeDistributor::GetDistMin() const
     {
         return fDistMin;
     }
 
-    inline void KTAmplitudeDistributor::SetDistMin(Double_t min)
+    inline void KTAmplitudeDistributor::SetDistMin(double min)
     {
         fDistMin = min;
-        fInvDistBinWidth = Double_t (fDistNBins) / (fDistMax - fDistMin);
+        fInvDistBinWidth = double (fDistNBins) / (fDistMax - fDistMin);
         return;
     }
 
-    inline Double_t KTAmplitudeDistributor::GetDistMax() const
+    inline double KTAmplitudeDistributor::GetDistMax() const
     {
         return fDistMax;
     }
 
-    inline void KTAmplitudeDistributor::SetDistMax(Double_t max)
+    inline void KTAmplitudeDistributor::SetDistMax(double max)
     {
         fDistMax = max;
-        fInvDistBinWidth = Double_t (fDistNBins) / (fDistMax - fDistMin);
+        fInvDistBinWidth = double (fDistNBins) / (fDistMax - fDistMin);
         return;
     }
 

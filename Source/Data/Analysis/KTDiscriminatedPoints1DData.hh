@@ -20,13 +20,13 @@ namespace Katydid
     class KTDiscriminatedPoints1DData : public KTExtensibleData< KTDiscriminatedPoints1DData >
     {
         public:
-            typedef std::map< UInt_t, Double_t > SetOfPoints;
+            typedef std::map< UInt_t, double > SetOfPoints;
 
         protected:
             struct PerComponentData
             {
                 SetOfPoints fPoints;
-                Double_t fThreshold;
+                double fThreshold;
             };
 
         public:
@@ -34,26 +34,26 @@ namespace Katydid
             virtual ~KTDiscriminatedPoints1DData();
 
             const SetOfPoints& GetSetOfPoints(UInt_t component = 0) const;
-            Double_t GetThreshold(UInt_t component = 0) const;
+            double GetThreshold(UInt_t component = 0) const;
 
             UInt_t GetNComponents() const;
 
-            void AddPoint(UInt_t point, Double_t value, UInt_t component = 0);
-            void SetThreshold(Double_t threshold, UInt_t component = 0);
+            void AddPoint(UInt_t point, double value, UInt_t component = 0);
+            void SetThreshold(double threshold, UInt_t component = 0);
 
             KTDiscriminatedPoints1DData& SetNComponents(UInt_t channels);
 
             UInt_t GetNBins() const;
-            Double_t GetBinWidth() const;
+            double GetBinWidth() const;
 
             void SetNBins(UInt_t nBins);
-            void SetBinWidth(Double_t binWidth);
+            void SetBinWidth(double binWidth);
 
         protected:
             std::vector< PerComponentData > fComponentData;
 
             UInt_t fNBins;
-            Double_t fBinWidth;
+            double fBinWidth;
 
     };
 
@@ -62,7 +62,7 @@ namespace Katydid
         return fComponentData[component].fPoints;
     }
 
-    inline Double_t KTDiscriminatedPoints1DData::GetThreshold(UInt_t component) const
+    inline double KTDiscriminatedPoints1DData::GetThreshold(UInt_t component) const
     {
         return fComponentData[component].fThreshold;
     }
@@ -72,13 +72,13 @@ namespace Katydid
         return UInt_t(fComponentData.size());
     }
 
-    inline void KTDiscriminatedPoints1DData::AddPoint(UInt_t point, Double_t value, UInt_t component)
+    inline void KTDiscriminatedPoints1DData::AddPoint(UInt_t point, double value, UInt_t component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fPoints.insert(std::make_pair(point, value));
     }
 
-    inline void KTDiscriminatedPoints1DData::SetThreshold(Double_t threshold, UInt_t component)
+    inline void KTDiscriminatedPoints1DData::SetThreshold(double threshold, UInt_t component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fThreshold = threshold;
@@ -95,7 +95,7 @@ namespace Katydid
         return fNBins;
     }
 
-    inline Double_t KTDiscriminatedPoints1DData::GetBinWidth() const
+    inline double KTDiscriminatedPoints1DData::GetBinWidth() const
     {
         return fBinWidth;
     }
@@ -106,7 +106,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTDiscriminatedPoints1DData::SetBinWidth(Double_t binWidth)
+    inline void KTDiscriminatedPoints1DData::SetBinWidth(double binWidth)
     {
         fBinWidth = binWidth;
         return;
