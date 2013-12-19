@@ -8,8 +8,6 @@
 #ifndef KTDIRECTORY_HH_
 #define KTDIRECTORY_HH_
 
-#include "Rtypes.h"
-
 #include <boost/filesystem.hpp>
 
 #include <string>
@@ -33,14 +31,14 @@ namespace Katydid
 
         public:
             const std::string& GetPath() const;
-            Bool_t GetPathExists() const;
+            bool GetPathExists() const;
             Access GetAccess() const;
 
-            Bool_t SetPath(const std::string& strPath);
+            bool SetPath(const std::string& strPath);
 
         protected:
             boost::filesystem::path fPath;
-            Bool_t fPathExists;
+            bool fPathExists;
             Access fAccess;
 
     };

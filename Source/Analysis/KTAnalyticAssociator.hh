@@ -53,24 +53,24 @@ namespace Katydid
             KTAnalyticAssociator(const std::string& name = "analytic-associator");
             virtual ~KTAnalyticAssociator();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             void InitializeWithHeader(const KTEggHeader* header);
 
             KTComplexFFTW* GetFullFFT();
 
-            Bool_t GetSaveFrequencySpectrum() const;
-            void SetSaveFrequencySpectrum(Bool_t flag);
+            bool GetSaveFrequencySpectrum() const;
+            void SetSaveFrequencySpectrum(bool flag);
 
         private:
             KTComplexFFTW fFullFFT;
 
-            Bool_t fSaveFrequencySpectrum;
+            bool fSaveFrequencySpectrum;
 
         public:
-            Bool_t CreateAssociateData(KTTimeSeriesData& tsData);
-            Bool_t CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData);
-            Bool_t CreateAssociateData(KTNormalizedFSDataFFTW& fsData);
+            bool CreateAssociateData(KTTimeSeriesData& tsData);
+            bool CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData);
+            bool CreateAssociateData(KTNormalizedFSDataFFTW& fsData);
 
            /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
             KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
@@ -100,12 +100,12 @@ namespace Katydid
         return &fFullFFT;
     }
 
-    inline Bool_t KTAnalyticAssociator::GetSaveFrequencySpectrum() const
+    inline bool KTAnalyticAssociator::GetSaveFrequencySpectrum() const
     {
         return fSaveFrequencySpectrum;
     }
 
-    inline void KTAnalyticAssociator::SetSaveFrequencySpectrum(Bool_t flag)
+    inline void KTAnalyticAssociator::SetSaveFrequencySpectrum(bool flag)
     {
         fSaveFrequencySpectrum = flag;
         return;

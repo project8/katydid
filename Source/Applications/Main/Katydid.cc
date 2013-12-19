@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     }
 
     // Execute the run queue!
-    Bool_t success = procTB.Run();
+    bool success = procTB.Run();
 
     KTPROG(katydidlog, "That's all, folks!");
 

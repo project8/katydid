@@ -27,7 +27,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTCacheDirectory::Configure(const KTPStoreNode* node)
+    bool KTCacheDirectory::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 

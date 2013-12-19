@@ -48,18 +48,18 @@ namespace Katydid
             KTSwitchFFTWPolar(const std::string& name = "switch-fftw-polar");
             virtual ~KTSwitchFFTWPolar();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            Bool_t GetUseNegFreqs() const;
-            void SetUseNegFreqs(Bool_t flag);
+            bool GetUseNegFreqs() const;
+            void SetUseNegFreqs(bool flag);
 
         private:
-            Bool_t fUseNegFreqs;
+            bool fUseNegFreqs;
 
         public:
-            Bool_t SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData);
-            Bool_t SwitchToPolar(KTNormalizedFSDataFFTW& fsData);
-            Bool_t SwitchToPolar(KTWignerVilleData& fsData);
+            bool SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData);
+            bool SwitchToPolar(KTNormalizedFSDataFFTW& fsData);
+            bool SwitchToPolar(KTWignerVilleData& fsData);
 
             //***************
             // Signals
@@ -80,12 +80,12 @@ namespace Katydid
 
     };
 
-    inline Bool_t KTSwitchFFTWPolar::GetUseNegFreqs() const
+    inline bool KTSwitchFFTWPolar::GetUseNegFreqs() const
     {
         return fUseNegFreqs;
     }
 
-    inline void KTSwitchFFTWPolar::SetUseNegFreqs(Bool_t flag)
+    inline void KTSwitchFFTWPolar::SetUseNegFreqs(bool flag)
     {
         fUseNegFreqs = flag;
         return;

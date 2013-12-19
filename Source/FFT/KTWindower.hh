@@ -57,28 +57,28 @@ namespace Katydid
             KTWindower(const std::string& name = "windower");
             virtual ~KTWindower();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             KTWindowFunction* GetWindowFunction() const;
             void SetWindowFunction(KTWindowFunction* wf);
-            Bool_t SelectWindowFunction(const std::string& windowType);
+            bool SelectWindowFunction(const std::string& windowType);
 
         private:
             KTWindowFunction* fWindowFunction;
 
         public:
-            Bool_t InitializeWindow(Double_t binWidth, Double_t size);
+            bool InitializeWindow(double binWidth, double size);
             void InitializeWithHeader(const KTEggHeader* header);
 
             /// Window the data object's time series (real-type)
-            Bool_t WindowDataReal(KTTimeSeriesData& tsData);
+            bool WindowDataReal(KTTimeSeriesData& tsData);
             /// Window the data object's time series (fftw-type)
-            Bool_t WindowDataFFTW(KTTimeSeriesData& tsData);
+            bool WindowDataFFTW(KTTimeSeriesData& tsData);
 
             /// Window a single time series (real-type)
-            Bool_t ApplyWindow(KTTimeSeriesReal* ts) const;
+            bool ApplyWindow(KTTimeSeriesReal* ts) const;
             /// Window a single time series (fftw-type)
-            Bool_t ApplyWindow(KTTimeSeriesFFTW* ts) const;
+            bool ApplyWindow(KTTimeSeriesFFTW* ts) const;
 
             //***************
             // Signals

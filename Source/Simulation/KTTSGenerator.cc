@@ -49,22 +49,22 @@ namespace Katydid
     {
     }
 
-    Bool_t KTTSGenerator::Configure(const KTPStoreNode* node)
+    bool KTTSGenerator::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
         // set the number of slices to create
-        fNSlices = node->GetData< UInt_t >("n-slices", fNSlices);
+        fNSlices = node->GetData< unsigned >("n-slices", fNSlices);
 
         // number of slices
-        fNChannels = node->GetData< UInt_t >("n-channels", fNChannels);
+        fNChannels = node->GetData< unsigned >("n-channels", fNChannels);
 
         // specify the length of the time series
-        fSliceSize = node->GetData< UInt_t >("time-series-size", fSliceSize);
+        fSliceSize = node->GetData< unsigned >("time-series-size", fSliceSize);
         // record size, after slice size
-        fRecordSize = node->GetData< UInt_t >("record-size", fSliceSize);
+        fRecordSize = node->GetData< unsigned >("record-size", fSliceSize);
 
-        fBinWidth = node->GetData< Double_t >("bin-width", fBinWidth);
+        fBinWidth = node->GetData< double >("bin-width", fBinWidth);
 
         // type of time series
         string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
@@ -81,7 +81,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTTSGenerator::Run()
+    bool KTTSGenerator::Run()
     {
         // Create, signal, and destroy the egg header
         KTEggHeader* newHeader = CreateEggHeader();
@@ -136,8 +136,8 @@ namespace Katydid
 
         KTProcSummary* summary = new KTProcSummary();
         summary->SetNSlicesProcessed(fSliceCounter);
-        summary->SetNRecordsProcessed((UInt_t)ceil(Double_t(fSliceCounter * fSliceSize) / fRecordSize));
-        summary->SetIntegratedTime(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+        summary->SetNRecordsProcessed((unsigned)ceil(double(fSliceCounter * fSliceSize) / fRecordSize));
+        summary->SetIntegratedTime(double(fSliceCounter * fSliceSize) * fBinWidth);
         fSummarySignal(summary);
         delete summary;
 
@@ -177,18 +177,18 @@ namespace Katydid
         return newData;
     }
 
-    Bool_t KTTSGenerator::AddSliceHeader(KTData& data) const
+    bool KTTSGenerator::AddSliceHeader(KTData& data) const
     {
         KTSliceHeader& sliceHeader = data.Of< KTSliceHeader >().SetNComponents(1);
         sliceHeader.SetSampleRate(1. / fBinWidth);
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
-        sliceHeader.SetTimeInRun(Double_t(fSliceCounter * fSliceSize) * fBinWidth);
+        sliceHeader.SetTimeInRun(double(fSliceCounter * fSliceSize) * fBinWidth);
         sliceHeader.SetSliceNumber(fSliceCounter);
 
-        for (UInt_t iComponent = 0; iComponent < fNChannels; iComponent++)
+        for (unsigned iComponent = 0; iComponent < fNChannels; iComponent++)
         {
-            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (Double_t)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
             sliceHeader.SetRecordID(0);
         }
@@ -206,19 +206,19 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTTSGenerator::AddEmptySlice(KTData& data) const
+    bool KTTSGenerator::AddEmptySlice(KTData& data) const
     {
         KTTimeSeriesData& tsData = data.Of< KTTimeSeriesData >().SetNComponents(fNChannels);
 
-        for (UInt_t iChannel = 0; iChannel < fNChannels; iChannel++)
+        for (unsigned iChannel = 0; iChannel < fNChannels; iChannel++)
         {
             if (fTimeSeriesType == kRealTimeSeries)
             {
-                tsData.SetTimeSeries(new KTTimeSeriesReal(fSliceSize, 0., Double_t(fSliceSize) * fBinWidth), iChannel);
+                tsData.SetTimeSeries(new KTTimeSeriesReal(fSliceSize, 0., double(fSliceSize) * fBinWidth), iChannel);
             }
             else
             {
-                tsData.SetTimeSeries(new KTTimeSeriesFFTW(fSliceSize, 0., Double_t(fSliceSize) * fBinWidth), iChannel);
+                tsData.SetTimeSeries(new KTTimeSeriesFFTW(fSliceSize, 0., double(fSliceSize) * fBinWidth), iChannel);
             }
         }
 

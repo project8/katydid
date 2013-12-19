@@ -10,8 +10,6 @@
 
 #include "KTExtensibleStruct.hh"
 
-#include "Rtypes.h"
-
 #include <boost/shared_ptr.hpp>
 
 #include <string>
@@ -27,8 +25,8 @@ namespace Katydid
     struct KTData : public KTExtensibleData< KTData >
     {
             KTData();
-            UInt_t fCounter;
-            Bool_t fLastData;
+            unsigned fCounter;
+            bool fLastData;
     };
 
     typedef boost::shared_ptr< KTData > KTDataPtr;

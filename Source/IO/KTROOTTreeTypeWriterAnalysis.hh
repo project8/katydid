@@ -12,6 +12,8 @@
 
 #include "KTData.hh"
 
+#include "Rtypes.h"
+
 class TH1D;
 class TTree;
 
@@ -21,8 +23,8 @@ namespace Katydid
     {
         UShort_t fComponent;
         UInt_t fPoint;
-        Double_t fValue;
-        Double_t fThreshold;
+        double fValue;
+        double fThreshold;
     };
 
     struct TAmplitudeDistributionData
@@ -50,8 +52,8 @@ namespace Katydid
             TTree* GetAmplitudeDistributionTree() const;
 
         private:
-            Bool_t SetupDiscriminatedPoints1DTree();
-            Bool_t SetupAmplitudeDistributionTree();
+            bool SetupDiscriminatedPoints1DTree();
+            bool SetupAmplitudeDistributionTree();
 
             TTree* fDiscPoints1DTree;
             TTree* fAmpDistTree;

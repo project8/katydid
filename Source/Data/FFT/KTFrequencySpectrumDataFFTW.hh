@@ -28,58 +28,58 @@ namespace Katydid
             KTFrequencySpectrumDataFFTWCore();
             virtual ~KTFrequencySpectrumDataFFTWCore();
 
-            UInt_t GetNComponents() const;
+            unsigned GetNComponents() const;
 
-            const KTFrequencySpectrumFFTW* GetSpectrumFFTW(UInt_t component = 0) const;
-            KTFrequencySpectrumFFTW* GetSpectrumFFTW(UInt_t component = 0);
+            const KTFrequencySpectrumFFTW* GetSpectrumFFTW(unsigned component = 0) const;
+            KTFrequencySpectrumFFTW* GetSpectrumFFTW(unsigned component = 0);
 
-            const KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) const;
-            KTFrequencySpectrum* GetSpectrum(UInt_t component = 0);
+            const KTFrequencySpectrum* GetSpectrum(unsigned component = 0) const;
+            KTFrequencySpectrum* GetSpectrum(unsigned component = 0);
 
             void SetSpectrum(KTFrequencySpectrumFFTW* record, unsigned component = 0);
 
-            virtual KTFrequencySpectrumDataFFTWCore& SetNComponents(UInt_t channels) = 0;
+            virtual KTFrequencySpectrumDataFFTWCore& SetNComponents(unsigned channels) = 0;
 
         protected:
             std::vector< KTFrequencySpectrumFFTW* > fSpectra;
 
 #ifdef ROOT_FOUND
         public:
-            TH1D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumMag") const;
-            TH1D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPhase") const;
+            TH1D* CreateMagnitudeHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumMag") const;
+            TH1D* CreatePhaseHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPhase") const;
 
-            TH1D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPower") const;
+            TH1D* CreatePowerHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPower") const;
 
-            TH1D* CreatePowerDistributionHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
+            TH1D* CreatePowerDistributionHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
     };
 
-    inline const KTFrequencySpectrumFFTW* KTFrequencySpectrumDataFFTWCore::GetSpectrumFFTW(UInt_t component) const
+    inline const KTFrequencySpectrumFFTW* KTFrequencySpectrumDataFFTWCore::GetSpectrumFFTW(unsigned component) const
     {
         return fSpectra[component];
     }
 
-    inline KTFrequencySpectrumFFTW* KTFrequencySpectrumDataFFTWCore::GetSpectrumFFTW(UInt_t component)
+    inline KTFrequencySpectrumFFTW* KTFrequencySpectrumDataFFTWCore::GetSpectrumFFTW(unsigned component)
     {
         return fSpectra[component];
     }
 
-    inline const KTFrequencySpectrum* KTFrequencySpectrumDataFFTWCore::GetSpectrum(UInt_t component) const
+    inline const KTFrequencySpectrum* KTFrequencySpectrumDataFFTWCore::GetSpectrum(unsigned component) const
     {
         return fSpectra[component];
     }
 
-    inline KTFrequencySpectrum* KTFrequencySpectrumDataFFTWCore::GetSpectrum(UInt_t component)
+    inline KTFrequencySpectrum* KTFrequencySpectrumDataFFTWCore::GetSpectrum(unsigned component)
     {
         return fSpectra[component];
     }
 
-    inline UInt_t KTFrequencySpectrumDataFFTWCore::GetNComponents() const
+    inline unsigned KTFrequencySpectrumDataFFTWCore::GetNComponents() const
     {
-        return UInt_t(fSpectra.size());
+        return unsigned(fSpectra.size());
     }
 
-    inline void KTFrequencySpectrumDataFFTWCore::SetSpectrum(KTFrequencySpectrumFFTW* record, UInt_t component)
+    inline void KTFrequencySpectrumDataFFTWCore::SetSpectrum(KTFrequencySpectrumFFTW* record, unsigned component)
     {
         if (component >= fSpectra.size()) SetNComponents(component+1);
         else delete fSpectra[component];
@@ -88,21 +88,21 @@ namespace Katydid
     }
 
 #ifdef ROOT_FOUND
-    inline TH1D* KTFrequencySpectrumDataFFTWCore::CreateMagnitudeHistogram(UInt_t component, const std::string& name) const
+    inline TH1D* KTFrequencySpectrumDataFFTWCore::CreateMagnitudeHistogram(unsigned component, const std::string& name) const
     {
         return fSpectra[component]->CreateMagnitudeHistogram(name);
     }
-    inline TH1D* KTFrequencySpectrumDataFFTWCore::CreatePhaseHistogram(UInt_t component, const std::string& name) const
+    inline TH1D* KTFrequencySpectrumDataFFTWCore::CreatePhaseHistogram(unsigned component, const std::string& name) const
     {
         return fSpectra[component]->CreatePhaseHistogram(name);
     }
 
-    inline TH1D* KTFrequencySpectrumDataFFTWCore::CreatePowerHistogram(UInt_t component, const std::string& name) const
+    inline TH1D* KTFrequencySpectrumDataFFTWCore::CreatePowerHistogram(unsigned component, const std::string& name) const
     {
         return fSpectra[component]->CreatePowerHistogram(name);
     }
 
-    inline TH1D* KTFrequencySpectrumDataFFTWCore::CreatePowerDistributionHistogram(UInt_t component, const std::string& name) const
+    inline TH1D* KTFrequencySpectrumDataFFTWCore::CreatePowerDistributionHistogram(unsigned component, const std::string& name) const
     {
         return fSpectra[component]->CreatePowerDistributionHistogram(name);
     }
@@ -115,7 +115,7 @@ namespace Katydid
             KTFrequencySpectrumDataFFTW();
             virtual ~KTFrequencySpectrumDataFFTW();
 
-            virtual KTFrequencySpectrumDataFFTW& SetNComponents(UInt_t components);
+            virtual KTFrequencySpectrumDataFFTW& SetNComponents(unsigned components);
     };
 
 } /* namespace Katydid */

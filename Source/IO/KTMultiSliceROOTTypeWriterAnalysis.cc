@@ -63,7 +63,7 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         gStyle->SetOptStat(0);
-        for (UInt_t iComponent=0; iComponent < fCorrHists.size(); iComponent++)
+        for (unsigned iComponent=0; iComponent < fCorrHists.size(); iComponent++)
         {
             // Printing to graphics files
             stringstream conv;
@@ -111,17 +111,17 @@ namespace Katydid
     {
         if (! data) return;
 
-        //ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        //uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTCorrelationData& corrData = data->Of<KTCorrelationData>();
-        UInt_t nComponents = corrData.GetNComponents();
+        unsigned nComponents = corrData.GetNComponents();
 
         if (fCorrHists.size() == 0)
         {
             fCorrHists.resize(nComponents);
 
             std::string histNameBase("Correlation");
-            for (UInt_t iComponent=0; iComponent < nComponents; iComponent++)
+            for (unsigned iComponent=0; iComponent < nComponents; iComponent++)
             {
                 std::stringstream conv;
                 conv << iComponent;
@@ -132,7 +132,7 @@ namespace Katydid
         }
         else
         {
-            for (UInt_t iComponent=0; iComponent < nComponents; iComponent++)
+            for (unsigned iComponent=0; iComponent < nComponents; iComponent++)
             {
                 TH1D* newCorr = corrData.GetSpectrum(iComponent)->CreateMagnitudeHistogram();
                 fCorrHists[iComponent]->Add(newCorr);

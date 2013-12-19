@@ -54,7 +54,7 @@ namespace Katydid
     class KTMultiFileROOTTreeReader : public KTReader
     {
         private:
-            typedef Bool_t (KTMultiFileROOTTreeReader::*AppendFcn)(TTree*, KTData&);
+            typedef bool (KTMultiFileROOTTreeReader::*AppendFcn)(TTree*, KTData&);
             struct DataType
             {
                     std::string fName;
@@ -74,13 +74,13 @@ namespace Katydid
             KTMultiFileROOTTreeReader(const std::string& name = "mf-root-tree-reader");
             virtual ~KTMultiFileROOTTreeReader();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             const std::deque< std::string >& GetFilenames() const;
             void AddFilename(const std::string& filename);
 
             const std::deque< DataType >& GetDataTypes() const;
-            Bool_t AddDataType(const std::string& type, const std::string& treeName);
+            bool AddDataType(const std::string& type, const std::string& treeName);
 
         private:
             std::deque< std::string > fFilenames;
@@ -89,16 +89,16 @@ namespace Katydid
             std::deque< DataType > fDataTypes;
 
         public:
-            virtual Bool_t Run();
+            virtual bool Run();
 
-            Bool_t Append(KTData& data);
+            bool Append(KTData& data);
 
         private:
             TFile* OpenFile(const std::string& filename) const;
             TTree* ExtractTree(TFile* file, const std::string& treeName) const;
 
         private:
-            Bool_t AppendAmpDistData(TTree*, KTData& data);
+            bool AppendAmpDistData(TTree*, KTData& data);
 
 
             //**************

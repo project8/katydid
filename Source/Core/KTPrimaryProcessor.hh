@@ -27,7 +27,7 @@ namespace Katydid
 
         public:
             /// Starts the  main action of the processor
-            virtual Bool_t Run() = 0;
+            virtual bool Run() = 0;
 
     };
 

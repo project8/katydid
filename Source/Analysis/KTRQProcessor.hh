@@ -43,15 +43,15 @@ namespace Katydid {
      * Configuration, setters and getters.
      */
   public:
-    Bool_t Configure(const KTPStoreNode* node);
+    bool Configure(const KTPStoreNode* node);
     unsigned GetChunkSize();
     void SetChunkSize(unsigned newsize);
     std::string GetNoiseDataName();
     void SetNoiseDataName(std::string noisename);
     std::string GetCandidateDataName();
     void SetCandidateDataName(std::string noisename);
-    Bool_t GetNACMConverged();
-    void SetNACMConverged(Bool_t newval);
+    bool GetNACMConverged();
+    void SetNACMConverged(bool newval);
 
     /*
      * Slots and signals.
@@ -62,9 +62,9 @@ namespace Katydid {
 
   private:
     KTSlotDataOneType< KTTimeSeriesData > fNoiseSlot;
-    Bool_t ProcessNoiseData(KTTimeSeriesData& noise);
+    bool ProcessNoiseData(KTTimeSeriesData& noise);
     KTSlotDataOneType< KTTimeSeriesData > fCandidateSlot;
-    Bool_t ProcessCandidateData(KTTimeSeriesData& candidate);
+    bool ProcessCandidateData(KTTimeSeriesData& candidate);
     KTSignalData fRQSignal;
 
     /*

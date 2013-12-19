@@ -47,7 +47,7 @@ namespace Katydid
         delete fFile;
     }
 
-    Bool_t KTROOTTreeWriter::Configure(const KTPStoreNode* node)
+    bool KTROOTTreeWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
@@ -62,7 +62,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTROOTTreeWriter::OpenAndVerifyFile()
+    bool KTROOTTreeWriter::OpenAndVerifyFile()
     {
         if (fFile == NULL)
         {

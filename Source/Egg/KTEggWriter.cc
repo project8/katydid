@@ -52,7 +52,7 @@ namespace Katydid
         delete fMonarch;
     }
 
-    Bool_t KTEggWriter::Configure(const KTPStoreNode* node)
+    bool KTEggWriter::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
@@ -76,12 +76,12 @@ namespace Katydid
             }
         }
 
-        SetDigitizerFullscale(node->GetData<Double_t>("digitizer-fullscale", fDigitizerFullscale));
+        SetDigitizerFullscale(node->GetData<double>("digitizer-fullscale", fDigitizerFullscale));
 
         return true;
     }
 
-    Bool_t KTEggWriter::OpenFile()
+    bool KTEggWriter::OpenFile()
     {
         if (fFileStatus != kClosed)
         {
@@ -186,7 +186,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTEggWriter::WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData)
+    bool KTEggWriter::WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData)
     {
         if (fFileStatus == kClosed)
         {
@@ -200,7 +200,7 @@ namespace Katydid
         }
         fFileStatus = kWritingRecords;
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
         if (nComponents != fExpectedNChannels)
         {
             KTERROR(eggwritelog, "Received data contains " << nComponents << " channels of data; " << fExpectedNChannels << " were expected");
@@ -234,7 +234,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTEggWriter::CopyATimeSeries(UInt_t component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
+    bool KTEggWriter::CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
     {
         const KTTimeSeries* ts = tsData.GetTimeSeries(component);
         if (ts->GetNTimeBins() != fExpectedRecordSize)
@@ -247,9 +247,9 @@ namespace Katydid
         record->fRecordId = slHeader.GetRecordID(component);
         record->fTime = slHeader.GetTimeStamp(component);
 
-        Double_t value;
-        Double_t scale = 255. / fDigitizerFullscale;
-        for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
+        double value;
+        double scale = 255. / fDigitizerFullscale;
+        for (unsigned iBin = 0; iBin < fExpectedRecordSize; iBin++)
         {
             value = ts->GetValue(iBin) * scale;
             if (value >= 256) value = 255.;

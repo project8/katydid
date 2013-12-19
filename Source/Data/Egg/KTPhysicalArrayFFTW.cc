@@ -24,7 +24,7 @@ namespace Katydid
     }
 
 
-    KTPhysicalArray< 1, fftw_complex >::KTPhysicalArray(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
+    KTPhysicalArray< 1, fftw_complex >::KTPhysicalArray(size_t nBins, double rangeMin, double rangeMax) :
             KTAxisProperties< 1 >(rangeMin, rangeMax),
             fData(NULL),
             fTempCache()

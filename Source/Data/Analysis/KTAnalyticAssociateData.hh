@@ -19,7 +19,7 @@ namespace Katydid
             KTAnalyticAssociateData();
             virtual ~KTAnalyticAssociateData();
 
-            virtual KTAnalyticAssociateData& SetNComponents(UInt_t num);
+            virtual KTAnalyticAssociateData& SetNComponents(unsigned num);
     };
 
 } /* namespace Katydid */

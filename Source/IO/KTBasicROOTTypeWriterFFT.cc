@@ -74,10 +74,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -103,10 +103,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -132,10 +132,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -161,10 +161,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -190,10 +190,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -219,10 +219,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -248,10 +248,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -277,10 +277,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -306,10 +306,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -335,10 +335,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -369,10 +369,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTTimeFrequencyDataPolar& fsData = data->Of<KTTimeFrequencyDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -398,10 +398,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTTimeFrequencyDataPolar& fsData = data->Of<KTTimeFrequencyDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -426,10 +426,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTTimeFrequencyDataPolar& fsData = data->Of<KTTimeFrequencyDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -460,10 +460,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTMultiFSDataPolar& fsData = data->Of<KTMultiFSDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -485,10 +485,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTMultiFSDataPolar& fsData = data->Of<KTMultiFSDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 

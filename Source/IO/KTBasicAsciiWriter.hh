@@ -22,13 +22,13 @@ namespace Katydid {
 
     // Configuration
   public:
-    Bool_t Configure(const KTPStoreNode* node);
+    bool Configure(const KTPStoreNode* node);
   protected:
     std::ofstream* fOutputStream;
     std::string fOutputFilename;
 
   public:
-    Bool_t OpenFile();
+    bool OpenFile();
 
     // Basic publish and write
   public:

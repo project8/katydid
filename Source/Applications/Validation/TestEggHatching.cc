@@ -43,7 +43,7 @@ int main(int argc, char** argv)
         readerOption = argv[2];
     }
 
-    UInt_t nSlices = 5;
+    unsigned nSlices = 5;
 
     KTINFO(testegg, "Test of hatching egg file <" << filename << ">");
 
@@ -58,9 +58,9 @@ int main(int argc, char** argv)
     else
     {
         KTINFO(testegg, "Using Monarch egg reader");
-        UInt_t sliceSize = 500000;
+        unsigned sliceSize = 500000;
         KTINFO(testegg, "Slice size should be " << sliceSize);
-        UInt_t stride = 700000;
+        unsigned stride = 700000;
         KTINFO(testegg, "Stride should be " << stride << " (if 0, it should be the same as the slice size");
         KTEggReaderMonarch* readerMonarch = new KTEggReaderMonarch();
         readerMonarch->SetSliceSize(sliceSize);
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
            << "\tRecord Size: " << header->GetRecordSize());
 
     KTINFO(testegg, "Hatching slices");
-    for (UInt_t iSlice=0; iSlice < nSlices; iSlice++)
+    for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
     {
         KTINFO(testegg, "Slice " << iSlice);
         KTDataPtr data = reader->HatchNextSlice();
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 
         KTINFO(testegg, "Time in run: " << sliceHeader.GetTimeInRun() << " s");
 
-        UInt_t nRecords = tsData.GetNComponents();
+        unsigned nRecords = tsData.GetNComponents();
         KTINFO(testegg, "This slice contains " << nRecords << " records");
         if (nRecords >= 1)
         {

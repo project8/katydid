@@ -53,7 +53,7 @@ namespace Katydid
 
         KTFrequencyCandidateData& fcData = data->Of< KTFrequencyCandidateData >();
 
-        UInt_t nComponents = fcData.GetNComponents();
+        unsigned nComponents = fcData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -64,7 +64,7 @@ namespace Katydid
         jsonMaker->String("candidates");
         jsonMaker->StartObject();
 
-        for (UInt_t iGroup=0; iGroup < nComponents; iGroup++)
+        for (unsigned iGroup=0; iGroup < nComponents; iGroup++)
         {
             const KTFrequencyCandidateData::Candidates& candidates = fcData.GetCandidates(iGroup);
             conv << iGroup;

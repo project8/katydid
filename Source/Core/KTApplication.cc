@@ -23,7 +23,7 @@ namespace Katydid
 {
     KTLOGGER(applog, "katydid.core");
 
-    KTApplication::KTApplication(Bool_t makeTApp) :
+    KTApplication::KTApplication(bool makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
             fParamStore(KTParameterStore::GetInstance()),
             fConfigFilename()
@@ -43,7 +43,7 @@ namespace Katydid
 #endif
     }
 
-    KTApplication::KTApplication(int argC, char** argV, Bool_t makeTApp) :
+    KTApplication::KTApplication(int argC, char** argV, bool makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
             fParamStore(KTParameterStore::GetInstance())
     {
@@ -92,7 +92,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTApplication::ReadConfigFile()
+    bool KTApplication::ReadConfigFile()
     {
         if (! fParamStore->ReadConfigFile(fConfigFilename)) return false;
         AddConfigOptionsToCLHandler(fParamStore->GetTree());
@@ -125,7 +125,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTApplication::FinishProcessingCommandLine()
+    bool KTApplication::FinishProcessingCommandLine()
     {
         if (! fCLHandler->DelayedCommandLineProcessing())
         {
@@ -135,7 +135,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTApplication::Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress)
+    bool KTApplication::Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress)
     {
         string address = baseAddress;
         if (! address.empty())

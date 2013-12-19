@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 
 
     // Process the egg file
-    Bool_t success = procEgg.ProcessEgg();
+    bool success = procEgg.ProcessEgg();
 
 
     if (! success) return -1;

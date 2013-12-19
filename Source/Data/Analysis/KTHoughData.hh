@@ -27,42 +27,42 @@ namespace Katydid
             KTHoughData();
             virtual ~KTHoughData();
 
-            const KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* GetTransform(UInt_t component = 0) const;
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* GetTransform(UInt_t component = 0);
+            const KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* GetTransform(unsigned component = 0) const;
+            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* GetTransform(unsigned component = 0);
 
-            UInt_t GetNComponents() const;
+            unsigned GetNComponents() const;
 
-            void SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t component = 0);
+            void SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* transform, unsigned component = 0);
 
-            KTHoughData& SetNComponents(UInt_t nTransforms);
+            KTHoughData& SetNComponents(unsigned nTransforms);
 
         protected:
-            std::vector< KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* > fTransforms;
+            std::vector< KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* > fTransforms;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH2D* CreateHistogram(UInt_t component = 0, const std::string& name = "hHoughSpace") const;
+            virtual TH2D* CreateHistogram(unsigned component = 0, const std::string& name = "hHoughSpace") const;
 #endif
 
 
     };
 
-    inline const KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughData::GetTransform(UInt_t component) const
+    inline const KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughData::GetTransform(unsigned component) const
     {
         return fTransforms[component];
     }
 
-    inline KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* KTHoughData::GetTransform(UInt_t component)
+    inline KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughData::GetTransform(unsigned component)
     {
         return fTransforms[component];
     }
 
-    inline UInt_t KTHoughData::GetNComponents() const
+    inline unsigned KTHoughData::GetNComponents() const
     {
-        return UInt_t(fTransforms.size());
+        return unsigned(fTransforms.size());
     }
 
-    inline void KTHoughData::SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* transform, UInt_t component)
+    inline void KTHoughData::SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* transform, unsigned component)
     {
         if (component >= fTransforms.size()) SetNComponents(component+1);
         fTransforms[component] = transform;

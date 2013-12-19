@@ -27,58 +27,58 @@ namespace Katydid
             KTFrequencySpectrumDataPolarCore();
             virtual ~KTFrequencySpectrumDataPolarCore();
 
-            UInt_t GetNComponents() const;
+            unsigned GetNComponents() const;
 
-            const KTFrequencySpectrumPolar* GetSpectrumPolar(UInt_t component = 0) const;
-            KTFrequencySpectrumPolar* GetSpectrumPolar(UInt_t component = 0);
+            const KTFrequencySpectrumPolar* GetSpectrumPolar(unsigned component = 0) const;
+            KTFrequencySpectrumPolar* GetSpectrumPolar(unsigned component = 0);
 
-            const KTFrequencySpectrum* GetSpectrum(UInt_t component = 0) const;
-            KTFrequencySpectrum* GetSpectrum(UInt_t component = 0);
+            const KTFrequencySpectrum* GetSpectrum(unsigned component = 0) const;
+            KTFrequencySpectrum* GetSpectrum(unsigned component = 0);
 
-            void SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component = 0);
+            void SetSpectrum(KTFrequencySpectrumPolar* record, unsigned component = 0);
 
-            virtual KTFrequencySpectrumDataPolarCore& SetNComponents(UInt_t channels) = 0;
+            virtual KTFrequencySpectrumDataPolarCore& SetNComponents(unsigned channels) = 0;
 
         protected:
             std::vector< KTFrequencySpectrumPolar* > fSpectra;
 
 #ifdef ROOT_FOUND
         public:
-            TH1D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumMag") const;
-            TH1D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPhase") const;
+            TH1D* CreateMagnitudeHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumMag") const;
+            TH1D* CreatePhaseHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPhase") const;
 
-            TH1D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPower") const;
+            TH1D* CreatePowerHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPower") const;
 
-            TH1D* CreatePowerDistributionHistogram(UInt_t component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
+            TH1D* CreatePowerDistributionHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
     };
 
-    inline const KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolarCore::GetSpectrumPolar(UInt_t component) const
+    inline const KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolarCore::GetSpectrumPolar(unsigned component) const
     {
         return fSpectra[component];
     }
 
-    inline KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolarCore::GetSpectrumPolar(UInt_t component)
+    inline KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolarCore::GetSpectrumPolar(unsigned component)
     {
         return fSpectra[component];
     }
 
-    inline const KTFrequencySpectrum* KTFrequencySpectrumDataPolarCore::GetSpectrum(UInt_t component) const
+    inline const KTFrequencySpectrum* KTFrequencySpectrumDataPolarCore::GetSpectrum(unsigned component) const
     {
         return fSpectra[component];
     }
 
-    inline KTFrequencySpectrum* KTFrequencySpectrumDataPolarCore::GetSpectrum(UInt_t component)
+    inline KTFrequencySpectrum* KTFrequencySpectrumDataPolarCore::GetSpectrum(unsigned component)
     {
         return fSpectra[component];
     }
 
-    inline UInt_t KTFrequencySpectrumDataPolarCore::GetNComponents() const
+    inline unsigned KTFrequencySpectrumDataPolarCore::GetNComponents() const
     {
-        return UInt_t(fSpectra.size());
+        return unsigned(fSpectra.size());
     }
 
-    inline void KTFrequencySpectrumDataPolarCore::SetSpectrum(KTFrequencySpectrumPolar* record, UInt_t component)
+    inline void KTFrequencySpectrumDataPolarCore::SetSpectrum(KTFrequencySpectrumPolar* record, unsigned component)
     {
         if (component >= fSpectra.size()) SetNComponents(component+1);
         else delete fSpectra[component];
@@ -87,21 +87,21 @@ namespace Katydid
     }
 
 #ifdef ROOT_FOUND
-    inline TH1D* KTFrequencySpectrumDataPolarCore::CreateMagnitudeHistogram(UInt_t component, const std::string& name) const
+    inline TH1D* KTFrequencySpectrumDataPolarCore::CreateMagnitudeHistogram(unsigned component, const std::string& name) const
     {
         return fSpectra[component]->CreateMagnitudeHistogram(name);
     }
-    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePhaseHistogram(UInt_t component, const std::string& name) const
+    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePhaseHistogram(unsigned component, const std::string& name) const
     {
         return fSpectra[component]->CreatePhaseHistogram(name);
     }
 
-    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePowerHistogram(UInt_t component, const std::string& name) const
+    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePowerHistogram(unsigned component, const std::string& name) const
     {
         return fSpectra[component]->CreatePowerHistogram(name);
     }
 
-    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePowerDistributionHistogram(UInt_t component, const std::string& name) const
+    inline TH1D* KTFrequencySpectrumDataPolarCore::CreatePowerDistributionHistogram(unsigned component, const std::string& name) const
     {
         return fSpectra[component]->CreatePowerDistributionHistogram(name);
     }
@@ -117,7 +117,7 @@ namespace Katydid
             KTFrequencySpectrumDataPolar();
             virtual ~KTFrequencySpectrumDataPolar();
 
-            KTFrequencySpectrumDataPolar& SetNComponents(UInt_t component);
+            KTFrequencySpectrumDataPolar& SetNComponents(unsigned component);
     };
 
 } /* namespace Katydid */

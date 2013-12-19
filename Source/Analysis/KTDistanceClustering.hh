@@ -47,22 +47,22 @@ namespace Katydid
             KTDistanceClustering(const std::string& name = "distance-clustering");
             virtual ~KTDistanceClustering();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            Double_t GetMaxFrequencyDistance() const;
-            void SetMaxFrequencyDistance(Double_t freq);
+            double GetMaxFrequencyDistance() const;
+            void SetMaxFrequencyDistance(double freq);
 
-            UInt_t GetMaxBinDistance() const;
-            void SetMaxBinDistance(UInt_t bin);
+            unsigned GetMaxBinDistance() const;
+            void SetMaxBinDistance(unsigned bin);
 
         private:
 
-            Double_t fMaxFrequencyDistance;
-            UInt_t fMaxBinDistance;
-            Bool_t fCalculateMaxBinDistance;
+            double fMaxFrequencyDistance;
+            unsigned fMaxBinDistance;
+            bool fCalculateMaxBinDistance;
 
         public:
-            Bool_t FindClusters(KTDiscriminatedPoints1DData& data);
+            bool FindClusters(KTDiscriminatedPoints1DData& data);
             //KTCluster2DData* FindClusters(const KTDiscriminatedPoints2DData* data);
 
             //***************
@@ -87,24 +87,24 @@ namespace Katydid
 
     };
 
-    inline Double_t KTDistanceClustering::GetMaxFrequencyDistance() const
+    inline double KTDistanceClustering::GetMaxFrequencyDistance() const
     {
         return fMaxFrequencyDistance;
     }
 
-    inline void KTDistanceClustering::SetMaxFrequencyDistance(Double_t freq)
+    inline void KTDistanceClustering::SetMaxFrequencyDistance(double freq)
     {
         fMaxFrequencyDistance = freq;
         fCalculateMaxBinDistance = true;
         return;
     }
 
-    inline UInt_t KTDistanceClustering::GetMaxBinDistance() const
+    inline unsigned KTDistanceClustering::GetMaxBinDistance() const
     {
         return fMaxBinDistance;
     }
 
-    inline void KTDistanceClustering::SetMaxBinDistance(UInt_t bin)
+    inline void KTDistanceClustering::SetMaxBinDistance(unsigned bin)
     {
         fMaxBinDistance = bin;
         fCalculateMaxBinDistance = false;

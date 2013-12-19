@@ -42,23 +42,23 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSwitchFFTWPolar::Configure(const KTPStoreNode* node)
+    bool KTSwitchFFTWPolar::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
-        SetUseNegFreqs(node->GetData< Bool_t >("use-neg-freqs", fUseNegFreqs));
+        SetUseNegFreqs(node->GetData< bool >("use-neg-freqs", fUseNegFreqs));
 
         return true;
     }
 
 
-    Bool_t KTSwitchFFTWPolar::SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData)
+    bool KTSwitchFFTWPolar::SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData)
     {
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         KTFrequencySpectrumDataPolar& newData = fsData.Of< KTFrequencySpectrumDataPolar >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar(fUseNegFreqs);
             if (newSpectrum == NULL)
@@ -79,13 +79,13 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSwitchFFTWPolar::SwitchToPolar(KTNormalizedFSDataFFTW& fsData)
+    bool KTSwitchFFTWPolar::SwitchToPolar(KTNormalizedFSDataFFTW& fsData)
     {
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         KTFrequencySpectrumDataPolar& newData = fsData.Of< KTFrequencySpectrumDataPolar >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar(fUseNegFreqs);
             if (newSpectrum == NULL)
@@ -106,13 +106,13 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSwitchFFTWPolar::SwitchToPolar(KTWignerVilleData& fsData)
+    bool KTSwitchFFTWPolar::SwitchToPolar(KTWignerVilleData& fsData)
     {
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         KTFrequencySpectrumDataPolar& newData = fsData.Of< KTFrequencySpectrumDataPolar >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             KTFrequencySpectrumPolar* newSpectrum = fsData.GetSpectrumFFTW(iComponent)->CreateFrequencySpectrumPolar(fUseNegFreqs);
             if (newSpectrum == NULL)

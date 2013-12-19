@@ -10,8 +10,6 @@
 
 #include "MonarchTypes.hpp"
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid
@@ -29,11 +27,11 @@ namespace Katydid
             void SetFilename(const std::string& fname);
             const std::string& GetFilename() const;
 
-            void SetAcquisitionMode(UInt_t mode);
-            UInt_t GetAcquisitionMode() const;
+            void SetAcquisitionMode(unsigned mode);
+            unsigned GetAcquisitionMode() const;
 
-            void SetNChannels(UInt_t channels);
-            UInt_t GetNChannels() const;
+            void SetNChannels(unsigned channels);
+            unsigned GetNChannels() const;
 
             void SetSliceSize(std::size_t recsize);
             std::size_t GetSliceSize() const;
@@ -41,11 +39,11 @@ namespace Katydid
             void SetRecordSize(std::size_t mrecsize);
             std::size_t GetRecordSize() const;
 
-            void SetRunDuration(UInt_t acqt);
-            UInt_t GetRunDuration() const;
+            void SetRunDuration(unsigned acqt);
+            unsigned GetRunDuration() const;
 
-            void SetAcquisitionRate(Double_t acqr);
-            Double_t GetAcquisitionRate() const;
+            void SetAcquisitionRate(double acqr);
+            double GetAcquisitionRate() const;
 
             void SetTimestamp( const std::string& aTimestamp );
             const std::string& GetTimestamp() const;
@@ -64,12 +62,12 @@ namespace Katydid
 
         protected:
             std::string fFilename;
-            UInt_t fAcquisitionMode;
-            UInt_t fNChannels;
+            unsigned fAcquisitionMode;
+            unsigned fNChannels;
             std::size_t fSliceSize; /// Number of bins per record-written-to-disk
             std::size_t fRecordSize; /// Number of bins per Katydid record
-            UInt_t fRunDuration;
-            Double_t fAcquisitionRate; /// in Hz
+            unsigned fRunDuration;
+            double fAcquisitionRate; /// in Hz
             std::string fTimestamp;
             std::string fDescription;
             RunType fRunType;
@@ -91,24 +89,24 @@ namespace Katydid
         return fFilename;
     }
 
-    inline void KTEggHeader::SetAcquisitionMode(UInt_t mode)
+    inline void KTEggHeader::SetAcquisitionMode(unsigned mode)
     {
         fAcquisitionMode = mode;
         return;
     }
 
-    inline UInt_t KTEggHeader::GetAcquisitionMode() const
+    inline unsigned KTEggHeader::GetAcquisitionMode() const
     {
         return fAcquisitionMode;
     }
 
-    inline void KTEggHeader::SetNChannels(UInt_t channels)
+    inline void KTEggHeader::SetNChannels(unsigned channels)
     {
         fNChannels = channels;
         return;
     }
 
-    inline UInt_t KTEggHeader::GetNChannels() const
+    inline unsigned KTEggHeader::GetNChannels() const
     {
         return fNChannels;
     }
@@ -135,24 +133,24 @@ namespace Katydid
         return fRecordSize;
     }
 
-    inline void KTEggHeader::SetRunDuration(UInt_t acqt)
+    inline void KTEggHeader::SetRunDuration(unsigned acqt)
     {
         fRunDuration = acqt;
         return;
     }
 
-    inline UInt_t KTEggHeader::GetRunDuration() const
+    inline unsigned KTEggHeader::GetRunDuration() const
     {
         return fRunDuration;
     }
 
-    inline void KTEggHeader::SetAcquisitionRate(Double_t acqr)
+    inline void KTEggHeader::SetAcquisitionRate(double acqr)
     {
         fAcquisitionRate = acqr;
         return;
     }
 
-    inline Double_t KTEggHeader::GetAcquisitionRate() const
+    inline double KTEggHeader::GetAcquisitionRate() const
     {
         return fAcquisitionRate;
     }

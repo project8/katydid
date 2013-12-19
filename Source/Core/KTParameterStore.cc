@@ -32,7 +32,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTParameterStore::ReadConfigFile(const string& filename)
+    bool KTParameterStore::ReadConfigFile(const string& filename)
     {
         if (filename.empty())
         {
@@ -52,7 +52,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTParameterStore::NodeExists(const string& address) const
+    bool KTParameterStore::NodeExists(const string& address) const
     {
         try
         {
@@ -85,7 +85,7 @@ namespace Katydid
         return KTPStoreNode(NULL); // the code should not reach this point
     }
 
-    Bool_t KTParameterStore::ChangeValue(const string& address, const string& newValue)
+    bool KTParameterStore::ChangeValue(const string& address, const string& newValue)
     {
         if (! NodeExists(address))
         {

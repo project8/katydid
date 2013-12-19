@@ -58,7 +58,7 @@ namespace Katydid
             KTCorrelator(const std::string& name = "correlator");
             virtual ~KTCorrelator();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);
@@ -70,14 +70,14 @@ namespace Katydid
 
         public:
 
-            Bool_t Correlate(KTFrequencySpectrumDataPolar& data);
-            Bool_t Correlate(KTFrequencySpectrumDataFFTW& data);
-            Bool_t Correlate(KTNormalizedFSDataPolar& data);
-            Bool_t Correlate(KTNormalizedFSDataFFTW& data);
+            bool Correlate(KTFrequencySpectrumDataPolar& data);
+            bool Correlate(KTFrequencySpectrumDataFFTW& data);
+            bool Correlate(KTNormalizedFSDataPolar& data);
+            bool Correlate(KTNormalizedFSDataFFTW& data);
 
         protected:
-            Bool_t CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData);
-            Bool_t CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData);
+            bool CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData);
+            bool CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData);
 
             KTFrequencySpectrumPolar* DoCorrelation(const KTFrequencySpectrumPolar* firstSpectrum, const KTFrequencySpectrumPolar* secondSpectrum);
             KTFrequencySpectrumPolar* DoCorrelation(const KTFrequencySpectrumFFTW* firstSpectrum, const KTFrequencySpectrumFFTW* secondSpectrum);
