@@ -21,7 +21,7 @@ namespace Katydid
             KTNormalizedFSDataPolar();
             virtual ~KTNormalizedFSDataPolar();
 
-            KTNormalizedFSDataPolar& SetNComponents(UInt_t components);
+            KTNormalizedFSDataPolar& SetNComponents(unsigned components);
     };
 
     class KTNormalizedFSDataFFTW : public KTFrequencySpectrumDataFFTWCore, public KTExtensibleData< KTNormalizedFSDataFFTW >
@@ -30,7 +30,7 @@ namespace Katydid
             KTNormalizedFSDataFFTW();
             virtual ~KTNormalizedFSDataFFTW();
 
-            KTNormalizedFSDataFFTW& SetNComponents(UInt_t components);
+            KTNormalizedFSDataFFTW& SetNComponents(unsigned components);
     };
 
 } /* namespace Katydid */

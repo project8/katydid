@@ -49,7 +49,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSelfConfigurable::Configure()
+    bool KTSelfConfigurable::Configure()
     {
         if (fIsConfigured) return true;
 

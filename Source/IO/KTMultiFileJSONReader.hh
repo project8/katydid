@@ -58,7 +58,7 @@ namespace Katydid
     class KTMultiFileJSONReader : public KTReader
     {
         private:
-            typedef Bool_t (KTMultiFileJSONReader::*AppendFcn)(rapidjson::Document&, KTData&);
+            typedef bool (KTMultiFileJSONReader::*AppendFcn)(rapidjson::Document&, KTData&);
             struct DataType
             {
                     std::string fName;
@@ -76,7 +76,7 @@ namespace Katydid
             KTMultiFileJSONReader(const std::string& name = "multifile-json-reader");
             virtual ~KTMultiFileJSONReader();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             const std::deque< std::string >& GetFilenames() const;
             void AddFilename(const std::string& filename);
@@ -85,7 +85,7 @@ namespace Katydid
             void SetFileMode(const std::string& mode);
 
             const std::deque< DataType >& GetDataTypes() const;
-            Bool_t AddDataType(const std::string& type);
+            bool AddDataType(const std::string& type);
 
         private:
             std::deque< std::string > fFilenames;
@@ -94,19 +94,19 @@ namespace Katydid
             std::string fFileMode;
 
         public:
-            virtual Bool_t Run();
+            virtual bool Run();
 
-            Bool_t Append(KTData& data);
+            bool Append(KTData& data);
 
         private:
             std::deque< DataType > fDataTypes;
 
-            Bool_t OpenAndParseFile(const std::string& filename, rapidjson::Document& document) const;
+            bool OpenAndParseFile(const std::string& filename, rapidjson::Document& document) const;
 
         private:
-            Bool_t AppendMCTruthEvents(rapidjson::Document& document, KTData& data);
-            Bool_t AppendAnalysisCandidates(rapidjson::Document& document, KTData& data);
-            Bool_t AppendCCResults(rapidjson::Document& document, KTData& data);
+            bool AppendMCTruthEvents(rapidjson::Document& document, KTData& data);
+            bool AppendAnalysisCandidates(rapidjson::Document& document, KTData& data);
+            bool AppendCCResults(rapidjson::Document& document, KTData& data);
 
 
             //**************

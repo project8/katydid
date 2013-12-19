@@ -33,7 +33,7 @@ namespace Katydid
      @details
 
      Available configuration values:
-     - "timeout": UInt_t -- maximum time to wait for new data (integer number of milliseconds)
+     - "timeout": unsigned -- maximum time to wait for new data (integer number of milliseconds)
 
      Slots:
      - "use-timed-pop": void () -- Switch the queue-popping function to the TIMED version
@@ -68,8 +68,8 @@ namespace Katydid
             KTDataQueueProcessorTemplate(const std::string& name = "default-data-queue-proc-template-name");
             virtual ~KTDataQueueProcessorTemplate();
 
-            Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t ConfigureSubClass(const KTPStoreNode* node) = 0;
+            bool Configure(const KTPStoreNode* node);
+            virtual bool ConfigureSubClass(const KTPStoreNode* node) = 0;
 
             Status GetStatus() const;
             void SetStatus(KTDataQueueProcessorTemplate< XProcessorType >::Status);
@@ -92,13 +92,13 @@ namespace Katydid
             //*********
         public:
             /// Begins processing of queue (switches status from kStopped to kRunning)
-            Bool_t Run();
+            bool Run();
 
             /// Stops processing of queue (switches status to kStopped)
             void Stop();
 
             /// Begins processing of queue if status is already kRunning; otherwise does nothing.
-            Bool_t ProcessQueue();
+            bool ProcessQueue();
 
             void ClearQueue();
 
@@ -164,7 +164,7 @@ namespace Katydid
             KTDataQueueProcessor(const std::string& name = "data-queue");
             virtual ~KTDataQueueProcessor();
 
-            Bool_t ConfigureSubClass(const KTPStoreNode* node);
+            bool ConfigureSubClass(const KTPStoreNode* node);
 
         public:
             void EmitDataSignal(KTDataPtr data);
@@ -217,16 +217,16 @@ namespace Katydid
     }
 
     template< class XProcessorType >
-    Bool_t KTDataQueueProcessorTemplate< XProcessorType >::Configure(const KTPStoreNode* node)
+    bool KTDataQueueProcessorTemplate< XProcessorType >::Configure(const KTPStoreNode* node)
     {
-        fQueue.set_timeout(node->GetData< UInt_t >("timeout", fQueue.get_timeout()));
+        fQueue.set_timeout(node->GetData< unsigned >("timeout", fQueue.get_timeout()));
 
         if (! ConfigureSubClass(node)) return false;
         return true;
     }
 
     template< class XProcessorType >
-    Bool_t KTDataQueueProcessorTemplate< XProcessorType >::Run()
+    bool KTDataQueueProcessorTemplate< XProcessorType >::Run()
     {
         fStatus = kRunning;
         KTINFO(eqplog, "Queue started");
@@ -251,7 +251,7 @@ namespace Katydid
 
 
     template< class XProcessorType >
-    Bool_t KTDataQueueProcessorTemplate< XProcessorType >::ProcessQueue()
+    bool KTDataQueueProcessorTemplate< XProcessorType >::ProcessQueue()
     {
         KTINFO(eqplog, "Beginning to process queue");
         while (fStatus != kStopped)

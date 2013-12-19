@@ -25,8 +25,8 @@ namespace Katydid
     {
         while (! fTransforms.empty())
         {
-            KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >* backTransform = fTransforms.back();
-            for (KTPhysicalArray< 1, KTPhysicalArray< 1, Double_t >* >::iterator iter = backTransform->begin(); iter != backTransform->end(); iter++)
+            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* backTransform = fTransforms.back();
+            for (KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >::iterator iter = backTransform->begin(); iter != backTransform->end(); iter++)
             {
                 delete *iter;
             }
@@ -35,20 +35,20 @@ namespace Katydid
         }
     }
 
-    KTHoughData& KTHoughData::SetNComponents(UInt_t components)
+    KTHoughData& KTHoughData::SetNComponents(unsigned components)
     {
-        UInt_t oldSize = fTransforms.size();
+        unsigned oldSize = fTransforms.size();
         // if components < oldSize
-        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
         {
-            for (UInt_t iTransform = 0; iTransform < fTransforms.size(); iTransform++)
+            for (unsigned iTransform = 0; iTransform < fTransforms.size(); iTransform++)
             {
                 delete (*fTransforms[iComponent])(iTransform);
             }
         }
         fTransforms.resize(components);
         // if components > oldSize
-        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
         {
             fTransforms[iComponent] = NULL;
         }
@@ -58,7 +58,7 @@ namespace Katydid
 
 #ifdef ROOT_FOUND
 
-    TH2D* KTHoughData::CreateHistogram(UInt_t component, const std::string& name) const
+    TH2D* KTHoughData::CreateHistogram(unsigned component, const std::string& name) const
     {
         if (component >= fTransforms.size()) return NULL;
         if (fTransforms[component]->empty()) return NULL;
@@ -70,10 +70,10 @@ namespace Katydid
         KTINFO(htlog, "Radius axis: " << (*fTransforms[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
         KTINFO(htlog, "Angle axis: " << fTransforms[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fTransforms[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fTransforms[component]->size(); iBinX++)
         {
-            KTPhysicalArray< 1, Double_t >* fs = (*fTransforms[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            KTPhysicalArray< 1, double >* fs = (*fTransforms[component])(iBinX-1);
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1));
             }

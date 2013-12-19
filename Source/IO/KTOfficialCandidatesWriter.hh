@@ -76,13 +76,13 @@ namespace Katydid
             KTOfficialCandidatesWriter(const std::string& name = "official-candidate-writer");
             virtual ~KTOfficialCandidatesWriter();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
         public:
-            Bool_t OpenFile();
+            bool OpenFile();
             void CloseFile();
 
-            Bool_t OpenAndVerifyFile();
+            bool OpenAndVerifyFile();
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
@@ -90,8 +90,8 @@ namespace Katydid
             const std::string& GetFileMode() const;
             void SetFileMode(const std::string& mode);
 
-            Bool_t GetPrettyJSONFlag() const;
-            void SetPrettyJSONFlag(Bool_t flag);
+            bool GetPrettyJSONFlag() const;
+            void SetPrettyJSONFlag(bool flag);
 
             KTJSONMaker< rapidjson::FileStream >* GetJSONMaker() const;
 
@@ -101,7 +101,7 @@ namespace Katydid
             std::string fFilename;
             std::string fFileMode;
 
-            Bool_t fPrettyJSONFlag;
+            bool fPrettyJSONFlag;
 
             FILE* fFile;
             rapidjson::FileStream* fFileStream;
@@ -110,14 +110,14 @@ namespace Katydid
             Status fStatus;
 
             KTProcSummary* fSummaryCopy;
-            Bool_t fWaitingForSummary;
+            bool fWaitingForSummary;
 
             mutable boost::recursive_mutex fMutex;
 
         public:
             void WriteHeaderInformation(const KTEggHeader* header);
 
-            Bool_t WriteWaterfallCandidate(KTWaterfallCandidateData& wcData);
+            bool WriteWaterfallCandidate(KTWaterfallCandidateData& wcData);
 
             void WriteSummaryInformation(const KTProcSummary* summary);
             void WriteSummaryInformationAndCloseFile(const KTProcSummary* summary);
@@ -163,11 +163,11 @@ namespace Katydid
         return;
     }
 
-    inline Bool_t KTOfficialCandidatesWriter::GetPrettyJSONFlag() const
+    inline bool KTOfficialCandidatesWriter::GetPrettyJSONFlag() const
     {
         return fPrettyJSONFlag;
     }
-    inline void KTOfficialCandidatesWriter::SetPrettyJSONFlag(Bool_t flag)
+    inline void KTOfficialCandidatesWriter::SetPrettyJSONFlag(bool flag)
     {
         fPrettyJSONFlag = flag;
         return;

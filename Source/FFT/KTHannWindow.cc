@@ -31,13 +31,13 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHannWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTHannWindow::ConfigureWFSubclass(const KTPStoreNode*)
     {
         KTDEBUG(windowlog, "Hann WF configured");
         return true;
     }
 
-    Double_t KTHannWindow::GetWeight(Double_t time) const
+    double KTHannWindow::GetWeight(double time) const
     {
         return GetWeight(KTMath::Nint(time / fBinWidth));
     }
@@ -45,10 +45,10 @@ namespace Katydid
     void KTHannWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(fSize - 1);
-        for (UInt_t iBin=0; iBin<fSize; iBin++)
+        double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(fSize - 1);
+        for (unsigned iBin=0; iBin<fSize; iBin++)
         {
-            fWindowFunction[iBin] = 0.5 * (1. - cos((Double_t)iBin * twoPiOverNBinsMinus1));
+            fWindowFunction[iBin] = 0.5 * (1. - cos((double)iBin * twoPiOverNBinsMinus1));
         }
         return;
     }

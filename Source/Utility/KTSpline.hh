@@ -10,8 +10,6 @@
 
 #ifdef ROOT_FOUND
 #include "TSpline.h"
-#else
-#include "Rtypes.h"
 #endif
 
 #include <list>
@@ -24,26 +22,26 @@ namespace Katydid
     class KTSpline
     {
         public:
-            typedef KTPhysicalArray< 1, Double_t > Implementation;
+            typedef KTPhysicalArray< 1, double > Implementation;
 
         private:
             typedef std::list< Implementation* > ImplementationCache;
 
         public:
             KTSpline();
-            KTSpline(Double_t* xVals, Double_t* yVals, UInt_t nVals);
+            KTSpline(double* xVals, double* yVals, unsigned nVals);
             virtual ~KTSpline();
 
-            Double_t Evaluate(Double_t xValue);
-            Double_t Evaluate(Double_t xValue) const;
+            double Evaluate(double xValue);
+            double Evaluate(double xValue) const;
 
-            Implementation* Implement(UInt_t nBins, Double_t xMin, Double_t xMax) const;
+            Implementation* Implement(unsigned nBins, double xMin, double xMax) const;
 
-            Double_t GetXMin() const;
-            void SetXMin(Double_t min);
+            double GetXMin() const;
+            void SetXMin(double min);
 
-            Double_t GetXMax() const;
-            void SetXMax(Double_t max);
+            double GetXMax() const;
+            void SetXMax(double max);
 
 #ifdef ROOT_FOUND
             TSpline3* GetSpline();
@@ -55,14 +53,14 @@ namespace Katydid
             TSpline3 fSpline;
 #endif
 
-            Double_t fXMin;
-            Double_t fXMax;
+            double fXMin;
+            double fXMax;
 
         public:
             /// Adds a new spline implementation to the cache. If a matching implementation already exists in the cache, the older implementation is deleted.  Ownership of the new implementation is taken by the cache.
             void AddToCache(Implementation* imp) const;
             /// Retrieves a matching implemtation from the cache; returns NULL if one does not exist. The matching implementation is removed from the cache and ownership is transferred to the caller.
-            Implementation* GetFromCache(UInt_t nBins, Double_t xMin, Double_t xMax) const;
+            Implementation* GetFromCache(unsigned nBins, double xMin, double xMax) const;
 
             void ClearCache() const;
 
@@ -71,23 +69,23 @@ namespace Katydid
 
     };
 
-    inline Double_t KTSpline::GetXMin() const
+    inline double KTSpline::GetXMin() const
     {
         return fXMin;
     }
 
-    inline void KTSpline::SetXMin(Double_t min)
+    inline void KTSpline::SetXMin(double min)
     {
         fXMin = min;
         return;
     }
 
-    inline Double_t KTSpline::GetXMax() const
+    inline double KTSpline::GetXMax() const
     {
         return fXMax;
     }
 
-    inline void KTSpline::SetXMax(Double_t max)
+    inline void KTSpline::SetXMax(double max)
     {
         fXMax = max;
         return;

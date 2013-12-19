@@ -26,16 +26,16 @@ namespace Katydid
 
      Available configuration options:
      - Inherited from KTTSGenerator
-       - "n-slices": UInt_t -- Number of slices to create (used only if creating new slices)
-       - "n-channels": UInt_t -- Number of channels per slice to create (used only if creating new slices)
-       - "time-series-size": UInt_t -- Specify the size of the time series (used only if creating new slices)
-       - "bin-width": Double_t -- Specify the bin width
+       - "n-slices": unsigned -- Number of slices to create (used only if creating new slices)
+       - "n-channels": unsigned -- Number of channels per slice to create (used only if creating new slices)
+       - "time-series-size": unsigned -- Specify the size of the time series (used only if creating new slices)
+       - "bin-width": double -- Specify the bin width
        - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
-       - "record-size": UInt_t -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
+       - "record-size": unsigned -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
      - From KTSinusoidGenerator
-       - "frequency": Double_t -- Frequency of the sinusoid
-       - "phase": Double_t -- Phase of the sinusoid
-       - "amplitude": Double_t -- Amplitude of the sinusoid
+       - "frequency": double -- Frequency of the sinusoid
+       - "phase": double -- Phase of the sinusoid
+       - "amplitude": double -- Amplitude of the sinusoid
 
      Slots: (inherited from KTTSGenerator)
      - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
@@ -51,55 +51,55 @@ namespace Katydid
             KTSinusoidGenerator(const std::string& name = "sinusoid-generator");
             virtual ~KTSinusoidGenerator();
 
-            virtual Bool_t ConfigureDerivedGenerator(const KTPStoreNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTPStoreNode* node);
 
-            Double_t GetFrequency() const;
-            void SetFrequency(Double_t freq);
+            double GetFrequency() const;
+            void SetFrequency(double freq);
 
-            Double_t GetPhase() const;
-            void SetPhase(Double_t phase);
+            double GetPhase() const;
+            void SetPhase(double phase);
 
-            Double_t GetAmplitude() const;
-            void SetAmplitude(Double_t amp);
+            double GetAmplitude() const;
+            void SetAmplitude(double amp);
 
         private:
-            Double_t fFrequency;
-            Double_t fPhase;
-            Double_t fAmplitude;
+            double fFrequency;
+            double fPhase;
+            double fAmplitude;
 
         public:
-            virtual Bool_t GenerateTS(KTTimeSeriesData& data);
+            virtual bool GenerateTS(KTTimeSeriesData& data);
 
     };
 
-    inline Double_t KTSinusoidGenerator::GetFrequency() const
+    inline double KTSinusoidGenerator::GetFrequency() const
     {
         return fFrequency;
     }
 
-    inline void KTSinusoidGenerator::SetFrequency(Double_t freq)
+    inline void KTSinusoidGenerator::SetFrequency(double freq)
     {
         fFrequency = freq;
         return;
     }
 
-    inline Double_t KTSinusoidGenerator::GetPhase() const
+    inline double KTSinusoidGenerator::GetPhase() const
     {
         return fPhase;
     }
 
-    inline void KTSinusoidGenerator::SetPhase(Double_t phase)
+    inline void KTSinusoidGenerator::SetPhase(double phase)
     {
         fPhase = phase;
         return;
     }
 
-    inline Double_t KTSinusoidGenerator::GetAmplitude() const
+    inline double KTSinusoidGenerator::GetAmplitude() const
     {
         return fAmplitude;
     }
 
-    inline void KTSinusoidGenerator::SetAmplitude(Double_t amp)
+    inline void KTSinusoidGenerator::SetAmplitude(double amp)
     {
         fAmplitude = amp;
         return;

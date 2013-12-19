@@ -10,8 +10,6 @@
 
 #include "KTSingleton.hh"
 
-#include "Rtypes.h"
-
 #include <boost/property_tree/ptree.hpp>
 
 #include <sstream>
@@ -29,17 +27,17 @@ namespace Katydid
 
             // Config file reading interface
         public:
-            Bool_t ReadConfigFile(const std::string& filename);
+            bool ReadConfigFile(const std::string& filename);
 
             // Parameter store interface
         public:
-            Bool_t NodeExists(const std::string& address) const;
+            bool NodeExists(const std::string& address) const;
             KTPStoreNode GetNode(const std::string& address) const;
 
             // Parameter storage
         public:
             const PStoreTree* GetTree() const;
-            Bool_t ChangeValue(const std::string& address, const std::string& value);
+            bool ChangeValue(const std::string& address, const std::string& value);
 
             void PrintTree() const;
 
@@ -68,7 +66,7 @@ namespace Katydid
     template< typename XValueType >
     inline XValueType KTParameterStore::GetParameter(const std::string address) const
     {
-        Bool_t foundParam = false;
+        bool foundParam = false;
         for (StoreDB::const_iterator iter = fStore.begin(); iter != fStore.end(); iter++)
         {
             XValueType returnVal = (*iter).get< XValueType >(address);

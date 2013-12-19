@@ -201,7 +201,7 @@ namespace Katydid
 
         public:
             KTPhysicalArray();
-            explicit KTPhysicalArray(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            explicit KTPhysicalArray(size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTPhysicalArray(const KTPhysicalArray< 1, value_type >& orig);
             virtual ~KTPhysicalArray();
 
@@ -257,7 +257,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 1, XDataType >::KTPhysicalArray(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
+    KTPhysicalArray< 1, XDataType >::KTPhysicalArray(size_t nBins, double rangeMin, double rangeMax) :
             KTAxisProperties< 1 >(rangeMin, rangeMax),
             fData(nBins)
     {
@@ -511,7 +511,7 @@ namespace Katydid
 
         public:
             KTPhysicalArray();
-            KTPhysicalArray(size_t xNBins, Double_t xRangeMin, Double_t xRangeMax, size_t yNBins, Double_t yRangeMin, Double_t yRangeMax);
+            KTPhysicalArray(size_t xNBins, double xRangeMin, double xRangeMax, size_t yNBins, double yRangeMin, double yRangeMax);
             KTPhysicalArray(const KTPhysicalArray< 2, value_type >& orig);
             virtual ~KTPhysicalArray();
 
@@ -573,7 +573,7 @@ namespace Katydid
     }
 
     template< typename XDataType >
-    KTPhysicalArray< 2, XDataType >::KTPhysicalArray(size_t xNBins, Double_t xRangeMin, Double_t xRangeMax, size_t yNBins, Double_t yRangeMin, Double_t yRangeMax) :
+    KTPhysicalArray< 2, XDataType >::KTPhysicalArray(size_t xNBins, double xRangeMin, double xRangeMax, size_t yNBins, double yRangeMin, double yRangeMax) :
             KTAxisProperties< 2 >(),
             fData(xNBins, yNBins)
     {

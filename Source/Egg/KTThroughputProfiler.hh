@@ -68,7 +68,7 @@ namespace Katydid
             KTThroughputProfiler(const std::string& name = "throughput-profiler");
             virtual ~KTThroughputProfiler();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             void Start();
             void Stop();
@@ -81,8 +81,8 @@ namespace Katydid
 
             timespec Elapsed();
 
-            Bool_t GetOutputFileFlag() const;
-            void SetOutputFileFlag(Bool_t flag);
+            bool GetOutputFileFlag() const;
+            void SetOutputFileFlag(bool flag);
 
             const std::string& GetOutputFilename() const;
             void SetOutputFilename(const std::string& fname);
@@ -91,7 +91,7 @@ namespace Katydid
             timespec CurrentTime();
             timespec Diff(timespec start, timespec end) const;
 
-            Bool_t fOutputFileFlag;
+            bool fOutputFileFlag;
             std::string fOutputFilename;
 
             KTEggHeader fEggHeader;
@@ -99,7 +99,7 @@ namespace Katydid
             timespec fTimeStart;
             timespec fTimeEnd;
 
-            UInt_t fNDataProcessed;
+            unsigned fNDataProcessed;
 
 //#ifdef __MACH__
             double fMacTimebase;
@@ -108,12 +108,12 @@ namespace Katydid
 
     };
 
-    inline Bool_t KTThroughputProfiler::GetOutputFileFlag() const
+    inline bool KTThroughputProfiler::GetOutputFileFlag() const
     {
         return fOutputFileFlag;
     }
 
-    inline void KTThroughputProfiler::SetOutputFileFlag(Bool_t flag)
+    inline void KTThroughputProfiler::SetOutputFileFlag(bool flag)
     {
         fOutputFileFlag = flag;
         return;

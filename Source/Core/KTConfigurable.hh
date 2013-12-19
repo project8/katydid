@@ -8,8 +8,6 @@
 #ifndef KTCONFIGURABLE_HH_
 #define KTCONFIGURABLE_HH_
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid
@@ -29,9 +27,9 @@ namespace Katydid
             virtual ~KTConfigurable();
 
             /// Should perform parameter store and command-line configurations
-            virtual Bool_t Configure(const KTPStoreNode* node) = 0;
+            virtual bool Configure(const KTPStoreNode* node) = 0;
             /// Implement the option for calling Configure without passing a parameter store node.
-            //virtual Bool_t Configure();
+            //virtual bool Configure();
 
         protected:
             KTCommandLineHandler* fCLHandler;
@@ -45,7 +43,7 @@ namespace Katydid
 
     };
 /*
-    inline Bool_t KTConfigurable::Configure()
+    inline bool KTConfigurable::Configure()
     {
         return Configure(NULL);
     }
@@ -72,21 +70,21 @@ namespace Katydid
             virtual ~KTSelfConfigurable();
 
             /// Should perform parameter store and command-line configurations
-            virtual Bool_t Configure(const KTPStoreNode* node) = 0;
+            virtual bool Configure(const KTPStoreNode* node) = 0;
             /// Configure by getting the top-level node from the parameter store
-            virtual Bool_t Configure();
+            virtual bool Configure();
 
             /// Check if everything has been correctly configured
-            virtual Bool_t IsReady() const = 0;
+            virtual bool IsReady() const = 0;
 
-            Bool_t GetIsConfigured();
+            bool GetIsConfigured();
 
         private:
-            Bool_t fIsConfigured;
+            bool fIsConfigured;
 
     };
 
-    inline Bool_t KTSelfConfigurable::GetIsConfigured()
+    inline bool KTSelfConfigurable::GetIsConfigured()
     {
         return fIsConfigured;
     }

@@ -60,7 +60,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTEggProcessor::Configure(const KTPStoreNode* node)
+    bool KTEggProcessor::Configure(const KTPStoreNode* node)
     {
         // First determine the egg reader type
         // config file setting
@@ -94,14 +94,14 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNSlices(node->GetData< UInt_t >("number-of-slices", fNSlices));
-            SetProgressReportInterval(node->GetData< UInt_t >("progress-report-interval", fProgressReportInterval));
+            SetNSlices(node->GetData< unsigned >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->GetData< unsigned >("progress-report-interval", fProgressReportInterval));
             SetFilename(node->GetData< string >("filename", fFilename));
 
             // specify the length of the time series
-            fSliceSize = node->GetData< UInt_t >("slice-size", fSliceSize);
+            fSliceSize = node->GetData< unsigned >("slice-size", fSliceSize);
             // specify the stride (leave unset to make stride == slice size)
-            fStride = node->GetData< UInt_t >("stride", fSliceSize);
+            fStride = node->GetData< unsigned >("stride", fSliceSize);
 
             if (fSliceSize == 0)
             {
@@ -120,24 +120,24 @@ namespace Katydid
             }
 
             // whether or not to normalize voltage values, and what the normalization is
-            SetNormalizeVoltages(node->GetData< Bool_t >("normalize-voltages", fNormalizeVoltages));
+            SetNormalizeVoltages(node->GetData< bool >("normalize-voltages", fNormalizeVoltages));
             if (node->HasData("full-voltage-scale"))
-                SetFullVoltageScale(node->GetData< Double_t >("full-voltage-scale", fFullVoltageScale));
+                SetFullVoltageScale(node->GetData< double >("full-voltage-scale", fFullVoltageScale));
             if (node->HasData("n-adc-levels"))
-                SetNADCLevels(node->GetData< UInt_t >("n-adc-levels", fNADCLevels));
+                SetNADCLevels(node->GetData< unsigned >("n-adc-levels", fNADCLevels));
             if (node->HasData("normalization"))
-                SetNormalization(node->GetData< Double_t >("normalization", fNormalization));
+                SetNormalization(node->GetData< double >("normalization", fNormalization));
         }
 
         // Command-line settings
-        SetNSlices(fCLHandler->GetCommandLineValue< Int_t >("n-slices", fNSlices));
+        SetNSlices(fCLHandler->GetCommandLineValue< int >("n-slices", fNSlices));
         SetFilename(fCLHandler->GetCommandLineValue< string >("egg-file", fFilename));
 
         return true;
     }
 
 
-    Bool_t KTEggProcessor::ProcessEgg()
+    bool KTEggProcessor::ProcessEgg()
     {
         KTEggReader* reader = NULL;
 
@@ -199,9 +199,9 @@ namespace Katydid
 
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
     {
-        UInt_t iSlice = 0, iProgress = 0;
+        unsigned iSlice = 0, iProgress = 0;
         KTDataPtr data;
-        while (kTRUE)
+        while (true)
         {
             KTINFO(egglog, "Hatching slice " << iSlice);
 
@@ -233,9 +233,9 @@ namespace Katydid
 
     void KTEggProcessor::LimitedLoop(KTEggReader* reader)
     {
-        UInt_t iSlice = 0, iProgress = 0;
+        unsigned iSlice = 0, iProgress = 0;
         KTDataPtr data;
-        while (kTRUE)
+        while (true)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
             {
@@ -267,7 +267,7 @@ namespace Katydid
             if (iProgress == fProgressReportInterval)
             {
                 iProgress = 0;
-                KTPROG(egglog, iSlice << " slices processed (" << Double_t(iSlice) / Double_t(fNSlices) * 100. << " %)");
+                KTPROG(egglog, iSlice << " slices processed (" << double(iSlice) / double(fNSlices) * 100. << " %)");
             }
         }
         return;
@@ -278,8 +278,8 @@ namespace Katydid
         if (fNormalizeVoltages)
         {
             KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
-            UInt_t nComponents = tsData.GetNComponents();
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            unsigned nComponents = tsData.GetNComponents();
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 tsData.GetTimeSeries(iComponent)->Scale(fNormalization);
             }

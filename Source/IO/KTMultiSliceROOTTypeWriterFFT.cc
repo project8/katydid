@@ -64,7 +64,7 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         gStyle->SetOptStat(0);
-        for (UInt_t iChannel=0; iChannel < fFSHists.size(); iChannel++)
+        for (unsigned iChannel=0; iChannel < fFSHists.size(); iChannel++)
         {
             // Printing to graphics files
             stringstream conv;
@@ -85,7 +85,7 @@ namespace Katydid
             fFSHists[iChannel]->Write();
         }
 
-        for (UInt_t iChannel=0; iChannel < fFSFFTWHists.size(); iChannel++)
+        for (unsigned iChannel=0; iChannel < fFSFFTWHists.size(); iChannel++)
         {
             // Printing to graphics files
             stringstream conv;
@@ -143,7 +143,7 @@ namespace Katydid
             fFSHists.resize(fsData.GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
+            for (unsigned iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;
@@ -154,7 +154,7 @@ namespace Katydid
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
+            for (unsigned iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
                 TH1D* newPS = fsData.GetSpectrumPolar(iChannel)->CreatePowerHistogram();
                 fFSHists[iChannel]->Add(newPS);
@@ -172,7 +172,7 @@ namespace Katydid
             fFSFFTWHists.resize(fsData.GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (UInt_t iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
+            for (unsigned iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
                 std::stringstream conv;
                 conv << iChannel;
@@ -183,7 +183,7 @@ namespace Katydid
         }
         else
         {
-            for (UInt_t iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
+            for (unsigned iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
                 TH1D* newPS = fsData.GetSpectrumFFTW(iChannel)->CreatePowerHistogram();
                 fFSFFTWHists[iChannel]->Add(newPS);

@@ -36,7 +36,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTProcessorTemplate::Configure(const KTPStoreNode* node)
+    bool KTProcessorTemplate::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 

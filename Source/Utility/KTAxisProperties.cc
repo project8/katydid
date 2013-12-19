@@ -16,7 +16,7 @@ namespace Katydid
     {
     }
 
-    KTAxisProperties< 1 >::KTAxisProperties(Double_t rangeMin, Double_t rangeMax, KTNBinsFunctor< 1 >* getNBinsFunc) :
+    KTAxisProperties< 1 >::KTAxisProperties(double rangeMin, double rangeMax, KTNBinsFunctor< 1 >* getNBinsFunc) :
             fGetNBinsFunc(getNBinsFunc),
             fBinWidth(1.),
             fRangeMin(rangeMin),
@@ -24,7 +24,7 @@ namespace Katydid
             fLabel()
     {
         if (fGetNBinsFunc == NULL) fGetNBinsFunc = new KTDefaultNBins< 1 >();
-        fBinWidth = (rangeMax - rangeMin) / (Double_t)(*fGetNBinsFunc)();
+        fBinWidth = (rangeMax - rangeMin) / (double)(*fGetNBinsFunc)();
         //std::cout << "created KTAxisProperties<1>: nbins: " << (*fGetNBinsFunc)() << "  binwidth: " << fBinWidth << "  rangemin: " << fRangeMin << "  rangemax: " << fRangeMax << std::endl;
     }
 
@@ -76,65 +76,65 @@ namespace Katydid
     {
         delete fGetNBinsFunc;
         fGetNBinsFunc = getNBinsFunc;
-        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)(*fGetNBinsFunc)();
+        fBinWidth = (fRangeMax - fRangeMin) / (double)(*fGetNBinsFunc)();
         return;
     }
 
-    Double_t KTAxisProperties< 1 >::GetBinWidth() const
+    double KTAxisProperties< 1 >::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    Double_t KTAxisProperties< 1 >::GetRangeMin() const
+    double KTAxisProperties< 1 >::GetRangeMin() const
     {
         return fRangeMin;
     }
 
-    Double_t KTAxisProperties< 1 >::GetRangeMax() const
+    double KTAxisProperties< 1 >::GetRangeMax() const
     {
         return fRangeMax;
     }
 
-    void KTAxisProperties< 1 >::GetRange(Double_t& min, Double_t& max) const
+    void KTAxisProperties< 1 >::GetRange(double& min, double& max) const
     {
         min = GetRangeMin();
         max = GetRangeMax();
         return;
     }
 
-    void KTAxisProperties< 1 >::SetRangeMin(Double_t min)
+    void KTAxisProperties< 1 >::SetRangeMin(double min)
     {
         fRangeMin = min;
-        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)(*fGetNBinsFunc)();
+        fBinWidth = (fRangeMax - fRangeMin) / (double)(*fGetNBinsFunc)();
         return;
     }
 
-    void KTAxisProperties< 1 >::SetRangeMax(Double_t max)
+    void KTAxisProperties< 1 >::SetRangeMax(double max)
     {
         fRangeMax = max;
-        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)(*fGetNBinsFunc)();
+        fBinWidth = (fRangeMax - fRangeMin) / (double)(*fGetNBinsFunc)();
         return;
     }
 
-    void KTAxisProperties< 1 >::SetRange(Double_t min, Double_t max)
+    void KTAxisProperties< 1 >::SetRange(double min, double max)
     {
         SetRangeMin(min);
         SetRangeMax(max);
-        fBinWidth = (fRangeMax - fRangeMin) / (Double_t)(*fGetNBinsFunc)();
+        fBinWidth = (fRangeMax - fRangeMin) / (double)(*fGetNBinsFunc)();
         return;
     }
 
-    Double_t KTAxisProperties< 1 >::GetBinLowEdge(size_t bin) const
+    double KTAxisProperties< 1 >::GetBinLowEdge(size_t bin) const
     {
-        return fRangeMin + fBinWidth * (Double_t)bin;
+        return fRangeMin + fBinWidth * (double)bin;
     }
 
-    Double_t KTAxisProperties< 1 >::GetBinCenter(size_t bin) const
+    double KTAxisProperties< 1 >::GetBinCenter(size_t bin) const
     {
-        return fRangeMin + fBinWidth * ((Double_t)bin + 0.5);
+        return fRangeMin + fBinWidth * ((double)bin + 0.5);
     }
 
-    size_t KTAxisProperties< 1 >::FindBin(Double_t pos) const
+    size_t KTAxisProperties< 1 >::FindBin(double pos) const
     {
         return (size_t)(floor((pos - fRangeMin) / fBinWidth));
     }

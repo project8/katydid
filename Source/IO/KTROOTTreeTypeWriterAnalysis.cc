@@ -88,7 +88,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTROOTTreeTypeWriterAnalysis::SetupDiscriminatedPoints1DTree()
+    bool KTROOTTreeTypeWriterAnalysis::SetupDiscriminatedPoints1DTree()
     {
         fDiscPoints1DTree = new TTree("discPoints1D", "Discriminated Points 1D");
         if (fDiscPoints1DTree == NULL)
@@ -136,11 +136,11 @@ namespace Katydid
                 stringstream name;
                 name << "histAmpDist_" << fAmpDistData.fComponent << "_" << fAmpDistData.fFreqBin;
                 const KTAmplitudeDistribution::Distribution& dist = adData.GetDistribution(fAmpDistData.fFreqBin, fAmpDistData.fComponent);
-                UInt_t nBins = dist.size();
-                fAmpDistData.fDistribution = new TH1D(name.str().c_str(), "Amplitude Distribution", (Int_t)nBins, dist.GetRangeMin(), dist.GetRangeMax());
-                for (UInt_t iBin=0; iBin<nBins; iBin++)
+                unsigned nBins = dist.size();
+                fAmpDistData.fDistribution = new TH1D(name.str().c_str(), "Amplitude Distribution", (int)nBins, dist.GetRangeMin(), dist.GetRangeMax());
+                for (unsigned iBin=0; iBin<nBins; iBin++)
                 {
-                    fAmpDistData.fDistribution->SetBinContent((Int_t)iBin+1, dist(iBin));
+                    fAmpDistData.fDistribution->SetBinContent((int)iBin+1, dist(iBin));
                 }
                 fAmpDistData.fDistribution->SetXTitle("Amplitude");
                 fAmpDistData.fDistribution->SetYTitle("Slices");
@@ -153,7 +153,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTROOTTreeTypeWriterAnalysis::SetupAmplitudeDistributionTree()
+    bool KTROOTTreeTypeWriterAnalysis::SetupAmplitudeDistributionTree()
     {
         fAmpDistTree = new TTree("freqCand", "Frequency Analysis");
         if (fAmpDistTree == NULL)

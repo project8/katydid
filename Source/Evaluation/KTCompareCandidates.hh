@@ -60,23 +60,23 @@ namespace Katydid
             KTCompareCandidates(const std::string& name = "compare-candidates");
             virtual ~KTCompareCandidates();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            Bool_t GetAssumeSparseCandidates() const;
-            void SetAssumeSparseCandidates(Bool_t flag);
+            bool GetAssumeSparseCandidates() const;
+            void SetAssumeSparseCandidates(bool flag);
 
         private:
-            Bool_t fAssumeSparseCandidates;
+            bool fAssumeSparseCandidates;
 
         public:
-            Bool_t CompareTruthAndAnalysis(KTMCTruthEvents& mcEventData, KTAnalysisCandidates& candidateData);
+            bool CompareTruthAndAnalysis(KTMCTruthEvents& mcEventData, KTAnalysisCandidates& candidateData);
 
         private:
             // Return values:
             //   -1 if candidate occurs completely before event
             //    0 if candidate and event overlap
             //    1 if candidate occurs completely after event
-            Int_t CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate, UInt_t eventRecordSize, UInt_t candidateRecordSize) const;
+            int CompareAnEventToACandidate(const KTMCTruthEvents::Event& event, const KTAnalysisCandidates::Candidate& candidate, unsigned eventRecordSize, unsigned candidateRecordSize) const;
 
             //***************
             // Slots
@@ -92,12 +92,12 @@ namespace Katydid
 
     };
 
-    inline Bool_t KTCompareCandidates::GetAssumeSparseCandidates() const
+    inline bool KTCompareCandidates::GetAssumeSparseCandidates() const
     {
         return fAssumeSparseCandidates;
     }
 
-    inline void KTCompareCandidates::SetAssumeSparseCandidates(Bool_t flag)
+    inline void KTCompareCandidates::SetAssumeSparseCandidates(bool flag)
     {
         fAssumeSparseCandidates = flag;
         return;

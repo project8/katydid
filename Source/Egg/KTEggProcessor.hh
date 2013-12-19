@@ -34,16 +34,16 @@ namespace Katydid
      Configuration name: "egg-processor"
 
      Available configuration options:
-     - "number-of-slices": UInt_t -- Number of slices to process
-     - "progress-report-interval": UInt_t -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
+     - "number-of-slices": unsigned -- Number of slices to process
+     - "progress-report-interval": unsigned -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
      - "filename": string -- Egg filename to use
      - "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
-     - "slice-size": UInt_t -- Specify the size of the time series (required)
-     - "stride": UInt_t -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
-     - "normalize-voltages": Bool_t -- Flag to toggle the normalization of ADC values from the egg file (default: true)
-     - "full-voltage-scale": Double_t -- Normalization parameter specifying the full voltage range of the digitizer
-     - "n-adc-levels": UInt_t -- Number of ADC levels (for an N-bit digitizer, # of levels = 2^N)
-     - "normalization": Double_t -- Directly set the voltage normalization
+     - "slice-size": unsigned -- Specify the size of the time series (required)
+     - "stride": unsigned -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
+     - "normalize-voltages": bool -- Flag to toggle the normalization of ADC values from the egg file (default: true)
+     - "full-voltage-scale": double -- Normalization parameter specifying the full voltage range of the digitizer
+     - "n-adc-levels": unsigned -- Number of ADC levels (for an N-bit digitizer, # of levels = 2^N)
+     - "normalization": double -- Directly set the voltage normalization
      - "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
 
      Command-line options defined
@@ -76,20 +76,20 @@ namespace Katydid
             KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            Bool_t Run();
+            bool Run();
 
-            Bool_t ProcessEgg();
+            bool ProcessEgg();
 
-            Bool_t HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const;
+            bool HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const;
             void NormalizeData(KTDataPtr& data) const;
 
-            UInt_t GetNSlices() const;
-            void SetNSlices(UInt_t nSlices);
+            unsigned GetNSlices() const;
+            void SetNSlices(unsigned nSlices);
 
-            UInt_t GetProgressReportInterval() const;
-            void SetProgressReportInterval(UInt_t nSlices);
+            unsigned GetProgressReportInterval() const;
+            void SetProgressReportInterval(unsigned nSlices);
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
@@ -97,24 +97,24 @@ namespace Katydid
             EggReaderType GetEggReaderType() const;
             void SetEggReaderType(EggReaderType type);
 
-            UInt_t GetSliceSize() const;
-            void SetSliceSize(UInt_t size);
+            unsigned GetSliceSize() const;
+            void SetSliceSize(unsigned size);
 
-            UInt_t GetStride() const;
-            void SetStride(UInt_t stride);
+            unsigned GetStride() const;
+            void SetStride(unsigned stride);
 
-            Bool_t GetNormalizeVoltages() const;
-            void SetNormalizeVoltages(Bool_t flag);
+            bool GetNormalizeVoltages() const;
+            void SetNormalizeVoltages(bool flag);
 
-            Double_t GetFullVoltageScale() const;
-            void SetFullVoltageScale(Double_t vScale);
+            double GetFullVoltageScale() const;
+            void SetFullVoltageScale(double vScale);
 
-            UInt_t GetNADCLevels() const;
-            void SetNADCLevels(UInt_t adcLevels);
+            unsigned GetNADCLevels() const;
+            void SetNADCLevels(unsigned adcLevels);
 
-            Double_t GetNormalization() const;
+            double GetNormalization() const;
             void CalculateNormalization(); /// Calculate the normalization from the full voltage scale, and number of ADC levels
-            void SetNormalization(Double_t norm); /// Set the normalization directly
+            void SetNormalization(double norm); /// Set the normalization directly
 
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
@@ -123,21 +123,21 @@ namespace Katydid
             void UnlimitedLoop(KTEggReader* reader);
             void LimitedLoop(KTEggReader* reader);
 
-            UInt_t fNSlices;
-            UInt_t fProgressReportInterval;
+            unsigned fNSlices;
+            unsigned fProgressReportInterval;
 
             std::string fFilename;
 
             EggReaderType fEggReaderType;
 
-            UInt_t fSliceSize;
-            UInt_t fStride;
+            unsigned fSliceSize;
+            unsigned fStride;
 
-            Bool_t fNormalizeVoltages;
-            Double_t fFullVoltageScale;
-            UInt_t fNADCLevels;
-            Double_t fNormalization; // final value of the normalization
-            Bool_t fCalculateNormalization; // flag for automatically calculating the normalization
+            bool fNormalizeVoltages;
+            double fFullVoltageScale;
+            unsigned fNADCLevels;
+            double fNormalization; // final value of the normalization
+            bool fCalculateNormalization; // flag for automatically calculating the normalization
 
             TimeSeriesType fTimeSeriesType;
 
@@ -153,35 +153,35 @@ namespace Katydid
 
     };
 
-    inline Bool_t KTEggProcessor::Run()
+    inline bool KTEggProcessor::Run()
     {
         return ProcessEgg();
     }
 
-    inline Bool_t KTEggProcessor::HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const
+    inline bool KTEggProcessor::HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const
     {
         data = reader->HatchNextSlice();
         if (data) return true;
         return false;
     }
 
-    inline UInt_t KTEggProcessor::GetNSlices() const
+    inline unsigned KTEggProcessor::GetNSlices() const
     {
         return fNSlices;
     }
 
-    inline UInt_t KTEggProcessor::GetProgressReportInterval() const
+    inline unsigned KTEggProcessor::GetProgressReportInterval() const
     {
         return fProgressReportInterval;
     }
 
-    inline void KTEggProcessor::SetNSlices(UInt_t nSlices)
+    inline void KTEggProcessor::SetNSlices(unsigned nSlices)
     {
         fNSlices = nSlices;
         return;
     }
 
-    inline void KTEggProcessor::SetProgressReportInterval(UInt_t nSlices)
+    inline void KTEggProcessor::SetProgressReportInterval(unsigned nSlices)
     {
         fProgressReportInterval = nSlices;
         return;
@@ -209,76 +209,76 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTEggProcessor::GetSliceSize() const
+    inline unsigned KTEggProcessor::GetSliceSize() const
     {
         return fSliceSize;
     }
 
-    inline void KTEggProcessor::SetSliceSize(UInt_t size)
+    inline void KTEggProcessor::SetSliceSize(unsigned size)
     {
         fSliceSize = size;
         return;
     }
 
-    inline UInt_t KTEggProcessor::GetStride() const
+    inline unsigned KTEggProcessor::GetStride() const
     {
         return fStride;
     }
 
-    inline void KTEggProcessor::SetStride(UInt_t stride)
+    inline void KTEggProcessor::SetStride(unsigned stride)
     {
         fStride = stride;
         return;
     }
 
-    inline Bool_t KTEggProcessor::GetNormalizeVoltages() const
+    inline bool KTEggProcessor::GetNormalizeVoltages() const
     {
         return fNormalizeVoltages;
     }
 
-    inline void KTEggProcessor::SetNormalizeVoltages(Bool_t flag)
+    inline void KTEggProcessor::SetNormalizeVoltages(bool flag)
     {
         fNormalizeVoltages = flag;
         return;
     }
 
-    inline Double_t KTEggProcessor::GetFullVoltageScale() const
+    inline double KTEggProcessor::GetFullVoltageScale() const
     {
         return fFullVoltageScale;
     }
 
-    inline void KTEggProcessor::SetFullVoltageScale(Double_t vScale)
+    inline void KTEggProcessor::SetFullVoltageScale(double vScale)
     {
         fFullVoltageScale = vScale;
         fCalculateNormalization = true;
         return;
     }
 
-    inline UInt_t KTEggProcessor::GetNADCLevels() const
+    inline unsigned KTEggProcessor::GetNADCLevels() const
     {
         return fNADCLevels;
     }
 
-    inline void KTEggProcessor::SetNADCLevels(UInt_t adcLevels)
+    inline void KTEggProcessor::SetNADCLevels(unsigned adcLevels)
     {
         fNADCLevels = adcLevels;
         fCalculateNormalization = true;
         return;
     }
 
-    inline Double_t KTEggProcessor::GetNormalization() const
+    inline double KTEggProcessor::GetNormalization() const
     {
         return fNormalization;
     }
 
     inline void KTEggProcessor::CalculateNormalization()
     {
-        fNormalization = fFullVoltageScale / (Double_t)fNADCLevels;
+        fNormalization = fFullVoltageScale / (double)fNADCLevels;
         fCalculateNormalization = false;
         return;
     }
 
-    inline void KTEggProcessor::SetNormalization(Double_t norm)
+    inline void KTEggProcessor::SetNormalization(double norm)
     {
         fNormalization = norm;
         fCalculateNormalization = false;

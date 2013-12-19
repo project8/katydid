@@ -34,9 +34,9 @@ namespace Katydid
     {
         protected:
             typedef const MonarchRecord* (Monarch::*GetRecordFunction)() const;
-            typedef Double_t (KTEggReaderMonarch::*GetTIRFunction)() const;
+            typedef double (KTEggReaderMonarch::*GetTIRFunction)() const;
 
-            typedef std::map< UInt_t, Int_t > AcquisitionModeMap;
+            typedef std::map< unsigned, int > AcquisitionModeMap;
             typedef AcquisitionModeMap::value_type AcqModeMapValue;
 
             struct MonarchReadState
@@ -49,10 +49,10 @@ namespace Katydid
                     kReachedNextRecord
                 };
                 AcquisitionIdType fAcquisitionID;
-                UInt_t fReadPtrOffset; // sample offset of the read pointer in the current record
-                UInt_t fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
-                UInt_t fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
-                UInt_t fAbsoluteRecordOffset; // number of records read in the run
+                unsigned fReadPtrOffset; // sample offset of the read pointer in the current record
+                unsigned fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
+                unsigned fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
+                unsigned fAbsoluteRecordOffset; // number of records read in the run
                 Status fStatus;
             };
 
@@ -71,16 +71,16 @@ namespace Katydid
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
 
-            UInt_t GetSliceSize() const;
-            void SetSliceSize(UInt_t size);
+            unsigned GetSliceSize() const;
+            void SetSliceSize(unsigned size);
 
-            UInt_t GetStride() const;
-            void SetStride(UInt_t stride);
+            unsigned GetStride() const;
+            void SetStride(unsigned stride);
 
         protected:
             TimeSeriesType fTimeSeriesType;
-            UInt_t fSliceSize;
-            UInt_t fStride;
+            unsigned fSliceSize;
+            unsigned fStride;
 
         public:
             /// Opens the egg file and returns a new copy of the header information.
@@ -88,9 +88,9 @@ namespace Katydid
             /// Returns the next slice's time series data.
             KTDataPtr HatchNextSlice();
             /// Closes the file.
-            Bool_t CloseEgg();
+            bool CloseEgg();
 
-            static UInt_t GetMaxChannels();
+            static unsigned GetMaxChannels();
 
         private:
             /// Copy header information from the MonarchHeader object
@@ -100,45 +100,45 @@ namespace Katydid
             KTEggHeader fHeader;
             MonarchReadState fReadState;
 
-            static const UInt_t fMaxChannels = 2;
+            static const unsigned fMaxChannels = 2;
             GetRecordFunction fMonarchGetRecord[fMaxChannels];
 
             AcquisitionModeMap fNumberOfChannels;
 
         public:
-            Double_t GetSampleRateUnitsInHz() const;
+            double GetSampleRateUnitsInHz() const;
 
-            Double_t GetFullVoltageScale() const;
-            UInt_t GetNADCLevels() const;
+            double GetFullVoltageScale() const;
+            unsigned GetNADCLevels() const;
 
-            UInt_t GetRecordSize() const;
-            Double_t GetBinWidth() const;
+            unsigned GetRecordSize() const;
+            double GetBinWidth() const;
 
             /// Returns the time since the run started in seconds
-            Double_t GetTimeInRun() const;
+            double GetTimeInRun() const;
             /// Same as GetTimeInRun
-            virtual Double_t GetIntegratedTime() const;
+            virtual double GetIntegratedTime() const;
 
             /// Returns the number of slices processed
-            virtual UInt_t GetNSlicesProcessed() const;
+            virtual unsigned GetNSlicesProcessed() const;
 
             /// Returns the number of records processed (including partial usage)
-            virtual UInt_t GetNRecordsProcessed() const;
+            virtual unsigned GetNRecordsProcessed() const;
 
             const MonarchReadState& GetReadState() const;
 
         private:
             mutable GetTIRFunction fGetTimeInRun;
-            Double_t GetTimeInRunFirstCall() const;
-            Double_t GetTimeInRunFromMonarch() const;
-            Double_t GetTimeInRunManually() const;
+            double GetTimeInRunFirstCall() const;
+            double GetTimeInRunFromMonarch() const;
+            double GetTimeInRunManually() const;
 
-            Double_t fSampleRateUnitsInHz;
+            double fSampleRateUnitsInHz;
 
-            UInt_t fRecordSize;
-            Double_t fBinWidth;
+            unsigned fRecordSize;
+            double fBinWidth;
 
-            ULong64_t fSliceNumber;
+            uint64_t fSliceNumber;
 
     };
 
@@ -153,68 +153,68 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTEggReaderMonarch::GetSliceSize() const
+    inline unsigned KTEggReaderMonarch::GetSliceSize() const
     {
         return fSliceSize;
     }
 
-    inline void KTEggReaderMonarch::SetSliceSize(UInt_t size)
+    inline void KTEggReaderMonarch::SetSliceSize(unsigned size)
     {
         fSliceSize = size;
         return;
     }
 
-    inline UInt_t KTEggReaderMonarch::GetStride() const
+    inline unsigned KTEggReaderMonarch::GetStride() const
     {
         return fStride;
     }
 
-    inline void KTEggReaderMonarch::SetStride(UInt_t stride)
+    inline void KTEggReaderMonarch::SetStride(unsigned stride)
     {
         fStride = stride;
         return;
     }
 
-    inline Double_t KTEggReaderMonarch::GetSampleRateUnitsInHz() const
+    inline double KTEggReaderMonarch::GetSampleRateUnitsInHz() const
     {
         return fSampleRateUnitsInHz;
     }
 
-    inline UInt_t KTEggReaderMonarch::GetRecordSize() const
+    inline unsigned KTEggReaderMonarch::GetRecordSize() const
     {
         return fRecordSize;
     }
-    inline Double_t KTEggReaderMonarch::GetBinWidth() const
+    inline double KTEggReaderMonarch::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline Double_t KTEggReaderMonarch::GetTimeInRun() const
+    inline double KTEggReaderMonarch::GetTimeInRun() const
     {
         return (this->*fGetTimeInRun)();
     }
 
-    inline Double_t KTEggReaderMonarch::GetTimeInRunFromMonarch() const
+    inline double KTEggReaderMonarch::GetTimeInRunFromMonarch() const
     {
-        return Double_t((fMonarch->*fMonarchGetRecord[0])()->fTime) * SEC_PER_NSEC + fBinWidth * Double_t(fReadState.fReadPtrOffset);
+        return double((fMonarch->*fMonarchGetRecord[0])()->fTime) * SEC_PER_NSEC + fBinWidth * double(fReadState.fReadPtrOffset);
     }
 
-    inline Double_t KTEggReaderMonarch::GetTimeInRunManually() const
+    inline double KTEggReaderMonarch::GetTimeInRunManually() const
     {
-        return fBinWidth * Double_t(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
+        return fBinWidth * double(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
     }
 
-    inline Double_t KTEggReaderMonarch::GetIntegratedTime() const
+    inline double KTEggReaderMonarch::GetIntegratedTime() const
     {
         return GetTimeInRun();
     }
 
-    inline UInt_t KTEggReaderMonarch::GetNSlicesProcessed() const
+    inline unsigned KTEggReaderMonarch::GetNSlicesProcessed() const
     {
-        return (UInt_t)fSliceNumber;
+        return (unsigned)fSliceNumber;
     }
 
-    inline UInt_t KTEggReaderMonarch::GetNRecordsProcessed() const
+    inline unsigned KTEggReaderMonarch::GetNRecordsProcessed() const
     {
         return fReadState.fAbsoluteRecordOffset + 1;
     }

@@ -82,9 +82,9 @@ namespace Katydid
 
             struct ClusterPoint
             {
-                 UInt_t fTimeBin;
-                 UInt_t fFreqBin;
-                 Double_t fAmplitude;
+                 unsigned fTimeBin;
+                 unsigned fFreqBin;
+                 double fAmplitude;
                  boost::shared_ptr< KTSliceHeader > fHeaderPtr;
                  boost::shared_ptr< KTFrequencySpectrumPolar > fSpectrumPtr;
             };
@@ -104,15 +104,15 @@ namespace Katydid
             {
                 SetOfPoints fPoints; // every point in the cluster
 
-                UInt_t FirstTimeBin() const {return fPoints.begin()->fTimeBin;}
-                UInt_t LastTimeBin() const {return fPoints.rbegin()->fTimeBin;}
+                unsigned FirstTimeBin() const {return fPoints.begin()->fTimeBin;}
+                unsigned LastTimeBin() const {return fPoints.rbegin()->fTimeBin;}
 
-                UInt_t fEndMinFreqPoint;
-                UInt_t fEndMaxFreqPoint;
+                unsigned fEndMinFreqPoint;
+                unsigned fEndMaxFreqPoint;
 
-                UInt_t fTimeBinSkipCounter;
+                unsigned fTimeBinSkipCounter;
 
-                UInt_t fDataComponent;
+                unsigned fDataComponent;
 
                 ListOfSpectra fPreClusterSpectra;
                 ListOfSpectra fPostClusterSpectra;
@@ -123,11 +123,11 @@ namespace Katydid
             struct FreqBinCluster
             {
                 SetOfDiscriminatedPoints fPoints;
-                UInt_t fFirstPoint;
-                UInt_t fLastPoint;
-                Bool_t fAddedToActiveCluster;
+                unsigned fFirstPoint;
+                unsigned fLastPoint;
+                bool fAddedToActiveCluster;
                 ClusterList::iterator fActiveCluster;
-                UInt_t fACNumber;
+                unsigned fACNumber;
             };
             typedef std::list< FreqBinCluster > FreqBinClusters;
 
@@ -138,39 +138,39 @@ namespace Katydid
             KTMultiSliceClustering(const std::string& name = "multi-slice-clustering");
             virtual ~KTMultiSliceClustering();
 
-            Bool_t ConfigureSubClass(const KTPStoreNode* node);
+            bool ConfigureSubClass(const KTPStoreNode* node);
 
-            Double_t GetMaxFrequencySeparation() const;
-            void SetMaxFrequencySeparation(Double_t freqSep);
+            double GetMaxFrequencySeparation() const;
+            void SetMaxFrequencySeparation(double freqSep);
 
-            Double_t GetMaxTimeSeparation() const;
-            void SetMaxTimeSeparation(Double_t timeSep);
+            double GetMaxTimeSeparation() const;
+            void SetMaxTimeSeparation(double timeSep);
 
-            UInt_t GetMaxFrequencySeparationBins() const;
-            void SetMaxFrequencySeparationBins(UInt_t bins);
+            unsigned GetMaxFrequencySeparationBins() const;
+            void SetMaxFrequencySeparationBins(unsigned bins);
 
-            UInt_t GetMaxTimeSeparationBins() const;
-            void SetMaxTimeSeparationBins(UInt_t bins);
+            unsigned GetMaxTimeSeparationBins() const;
+            void SetMaxTimeSeparationBins(unsigned bins);
 
-            UInt_t GetMinTimeBins() const;
-            void SetMinTimeBins(UInt_t bins);
+            unsigned GetMinTimeBins() const;
+            void SetMinTimeBins(unsigned bins);
 
-            UInt_t GetNFramingTimeBins() const;
-            void SetNFramingTimeBins(UInt_t bins);
+            unsigned GetNFramingTimeBins() const;
+            void SetNFramingTimeBins(unsigned bins);
 
-            UInt_t GetNFramingFreqBins() const;
-            void SetNFramingFreqBins(UInt_t bins);
+            unsigned GetNFramingFreqBins() const;
+            void SetNFramingFreqBins(unsigned bins);
 
         private:
-            Double_t fMaxFreqSep;
-            Double_t fMaxTimeSep;
-            UInt_t fMaxFreqSepBins;
-            UInt_t fMaxTimeSepBins;
-            Bool_t fCalculateMaxFreqSepBins;
-            Bool_t fCalculateMaxTimeSepBins;
-            UInt_t fMinTimeBins;
-            UInt_t fNFramingTimeBins;
-            UInt_t fNFramingFreqBins;
+            double fMaxFreqSep;
+            double fMaxTimeSep;
+            unsigned fMaxFreqSepBins;
+            unsigned fMaxTimeSepBins;
+            bool fCalculateMaxFreqSepBins;
+            bool fCalculateMaxTimeSepBins;
+            unsigned fMinTimeBins;
+            unsigned fNFramingTimeBins;
+            unsigned fNFramingFreqBins;
 
         public:
             /// Add points from dpData to the active clusters and create candidates
@@ -191,27 +191,27 @@ namespace Katydid
             ClusterList* AddPointsToClusters(const KTDiscriminatedPoints1DData& dpData, const KTFrequencySpectrumDataFFTWCore& spectrumData, boost::shared_ptr< KTSliceHeader >& header);
 
             /// Add points from a set of points to the active clusters
-            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, boost::shared_ptr<KTFrequencySpectrumPolar>& spectrumPtr, UInt_t component, boost::shared_ptr< KTSliceHeader >& header);
+            ClusterList* AddPointsToClusters(const SetOfDiscriminatedPoints& points, boost::shared_ptr<KTFrequencySpectrumPolar>& spectrumPtr, unsigned component, boost::shared_ptr< KTSliceHeader >& header);
 
             void Reset();
-            UInt_t GetTimeBin() const;
+            unsigned GetTimeBin() const;
 
-            Double_t GetTimeBinWidth() const;
-            void SetTimeBinWidth(Double_t bw);
+            double GetTimeBinWidth() const;
+            void SetTimeBinWidth(double bw);
 
-            Double_t GetFrequencyBinWidth() const;
-            void SetFrequencyBinWidth(Double_t bw);
+            double GetFrequencyBinWidth() const;
+            void SetFrequencyBinWidth(double bw);
 
-            UInt_t GetDataCount() const;
+            unsigned GetDataCount() const;
 
         private:
             KTDataPtr CreateDataFromCluster(const Cluster& cluster);
 
-            UInt_t fTimeBin;
-            Double_t fTimeBinWidth;
-            Double_t fFreqBinWidth;
+            unsigned fTimeBin;
+            double fTimeBinWidth;
+            double fFreqBinWidth;
 
-            UInt_t fDataCount;
+            unsigned fDataCount;
 
             // the vectors are over the components, so there is one list per component
             std::vector< ClusterList > fActiveClusters;
@@ -258,98 +258,98 @@ namespace Katydid
     };
 
 
-    inline Double_t KTMultiSliceClustering::GetMaxFrequencySeparation() const
+    inline double KTMultiSliceClustering::GetMaxFrequencySeparation() const
     {
         return fMaxFreqSep;
     }
 
-    inline void KTMultiSliceClustering::SetMaxFrequencySeparation(Double_t freqSep)
+    inline void KTMultiSliceClustering::SetMaxFrequencySeparation(double freqSep)
     {
         fMaxFreqSep = freqSep;
         fCalculateMaxFreqSepBins = true;
         return;
     }
 
-    inline Double_t KTMultiSliceClustering::GetMaxTimeSeparation() const
+    inline double KTMultiSliceClustering::GetMaxTimeSeparation() const
     {
         return fMaxTimeSep;
     }
 
-    inline void KTMultiSliceClustering::SetMaxTimeSeparation(Double_t timeSep)
+    inline void KTMultiSliceClustering::SetMaxTimeSeparation(double timeSep)
     {
         fMaxTimeSep = timeSep;
         fCalculateMaxTimeSepBins = true;
         return;
     }
 
-    inline UInt_t KTMultiSliceClustering::GetMaxFrequencySeparationBins() const
+    inline unsigned KTMultiSliceClustering::GetMaxFrequencySeparationBins() const
     {
         return fMaxFreqSepBins;
     }
 
-    inline void KTMultiSliceClustering::SetMaxFrequencySeparationBins(UInt_t bins)
+    inline void KTMultiSliceClustering::SetMaxFrequencySeparationBins(unsigned bins)
     {
         fMaxFreqSepBins = bins;
         fCalculateMaxFreqSepBins = false;
         return;
     }
 
-    inline UInt_t KTMultiSliceClustering::GetMaxTimeSeparationBins() const
+    inline unsigned KTMultiSliceClustering::GetMaxTimeSeparationBins() const
     {
         return fMaxTimeSepBins;
     }
 
-    inline void KTMultiSliceClustering::SetMaxTimeSeparationBins(UInt_t bins)
+    inline void KTMultiSliceClustering::SetMaxTimeSeparationBins(unsigned bins)
     {
         fMaxTimeSepBins = bins;
         fCalculateMaxTimeSepBins = false;
         return;
     }
 
-    inline UInt_t KTMultiSliceClustering::GetMinTimeBins() const
+    inline unsigned KTMultiSliceClustering::GetMinTimeBins() const
     {
         return fMinTimeBins;
     }
 
-    inline void KTMultiSliceClustering::SetMinTimeBins(UInt_t bins)
+    inline void KTMultiSliceClustering::SetMinTimeBins(unsigned bins)
     {
         fMinTimeBins = bins;
         return;
     }
 
-    inline UInt_t KTMultiSliceClustering::GetNFramingTimeBins() const
+    inline unsigned KTMultiSliceClustering::GetNFramingTimeBins() const
     {
         return fNFramingTimeBins;
     }
 
-    inline void KTMultiSliceClustering::SetNFramingTimeBins(UInt_t bins)
+    inline void KTMultiSliceClustering::SetNFramingTimeBins(unsigned bins)
     {
         fNFramingTimeBins = bins;
         return;
     }
 
-    inline UInt_t KTMultiSliceClustering::GetNFramingFreqBins() const
+    inline unsigned KTMultiSliceClustering::GetNFramingFreqBins() const
     {
         return fNFramingFreqBins;
     }
 
-    inline void KTMultiSliceClustering::SetNFramingFreqBins(UInt_t bins)
+    inline void KTMultiSliceClustering::SetNFramingFreqBins(unsigned bins)
     {
         fNFramingFreqBins = bins;
         return;
     }
 
-    inline UInt_t KTMultiSliceClustering::GetTimeBin() const
+    inline unsigned KTMultiSliceClustering::GetTimeBin() const
     {
         return fTimeBin;
     }
 
-    inline Double_t KTMultiSliceClustering::GetTimeBinWidth() const
+    inline double KTMultiSliceClustering::GetTimeBinWidth() const
     {
         return fTimeBinWidth;
     }
 
-    inline void KTMultiSliceClustering::SetTimeBinWidth(Double_t bw)
+    inline void KTMultiSliceClustering::SetTimeBinWidth(double bw)
     {
         fTimeBinWidth = bw;
         if (fCalculateMaxTimeSepBins)
@@ -357,12 +357,12 @@ namespace Katydid
         return;
     }
 
-    inline Double_t KTMultiSliceClustering::GetFrequencyBinWidth() const
+    inline double KTMultiSliceClustering::GetFrequencyBinWidth() const
     {
         return fFreqBinWidth;
     }
 
-    inline void KTMultiSliceClustering::SetFrequencyBinWidth(Double_t bw)
+    inline void KTMultiSliceClustering::SetFrequencyBinWidth(double bw)
     {
         fFreqBinWidth = bw;
         if (fCalculateMaxFreqSepBins)
@@ -370,7 +370,7 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTMultiSliceClustering::GetDataCount() const
+    inline unsigned KTMultiSliceClustering::GetDataCount() const
     {
         return fDataCount;
     }

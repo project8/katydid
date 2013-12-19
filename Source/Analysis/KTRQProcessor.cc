@@ -23,9 +23,9 @@ namespace Katydid {
     if(fNoiseACM != NULL) delete fNoiseACM;
   }
 
-  Bool_t KTRQProcessor::Configure(const KTPStoreNode* node) 
+  bool KTRQProcessor::Configure(const KTPStoreNode* node) 
   {
-    Bool_t result = true;
+    bool result = true;
     // Get settings out of config file
     if (node != NULL) {
 
@@ -84,17 +84,17 @@ namespace Katydid {
     return fCandidateName;
   }
 
-  void KTRQProcessor::SetNACMConverged(Bool_t newval)
+  void KTRQProcessor::SetNACMConverged(bool newval)
   {
     this->fNACMDidConverge = newval;
   }
   
-  Bool_t KTRQProcessor::GetNACMConverged()
+  bool KTRQProcessor::GetNACMConverged()
   {
     return this->fNACMDidConverge;
   }
   
-  Bool_t KTRQProcessor::ProcessNoiseData(KTTimeSeriesData& noise)
+  bool KTRQProcessor::ProcessNoiseData(KTTimeSeriesData& noise)
   {
     if( !(this->fNACMDidConverge) ) {
       // Grab the first channel of data out to use. 
@@ -169,7 +169,7 @@ namespace Katydid {
     return (tsptr->normalized())*(*(this->fNoiseACM))*(tsptr->adjoint());
   }
 
-  Bool_t KTRQProcessor::ProcessCandidateData(KTTimeSeriesData& c)
+  bool KTRQProcessor::ProcessCandidateData(KTTimeSeriesData& c)
   {
     if( this->fNACMDidConverge ) {
       // grab data from the bundle.
