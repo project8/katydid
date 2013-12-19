@@ -12,6 +12,8 @@
 
 #include "KTData.hh"
 
+#include "Rtypes.h"
+
 class TH2D;
 class TTree;
 

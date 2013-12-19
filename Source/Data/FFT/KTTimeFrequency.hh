@@ -8,7 +8,7 @@
 #ifndef KTTIMEFREQUENCY_HH_
 #define KTTIMEFREQUENCY_HH_
 
-//#include <string>
+#include <string>
 
 #ifdef ROOT_FOUND
 class TH2D;
