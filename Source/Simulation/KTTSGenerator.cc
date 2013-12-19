@@ -54,13 +54,13 @@ namespace Katydid
         if (node == NULL) return false;
 
         // set the number of slices to create
-        fNSlices = node->GetData< unsigned >("n-slices", fNSlices);
+        fNSlices = node->GetData< unsigned >("number-of-slices", fNSlices);
 
         // number of slices
         fNChannels = node->GetData< unsigned >("n-channels", fNChannels);
 
         // specify the length of the time series
-        fSliceSize = node->GetData< unsigned >("time-series-size", fSliceSize);
+        fSliceSize = node->GetData< unsigned >("slice-size", fSliceSize);
         // record size, after slice size
         fRecordSize = node->GetData< unsigned >("record-size", fSliceSize);
 
@@ -105,7 +105,7 @@ namespace Katydid
 
         // Loop over slices
         // The local copy of the data shared pointer is created and destroyed in each iteration of the loop
-        for (fSliceCounter = 0; fSliceCounter < fNSlices; fSliceCounter++)
+        for (fSliceCounter = 0; fSliceCounter < fNSlices; ++fSliceCounter)
         {
             KTDataPtr newData = CreateNewData();
 
@@ -186,7 +186,7 @@ namespace Katydid
         sliceHeader.SetTimeInRun(double(fSliceCounter * fSliceSize) * fBinWidth);
         sliceHeader.SetSliceNumber(fSliceCounter);
 
-        for (unsigned iComponent = 0; iComponent < fNChannels; iComponent++)
+        for (unsigned iComponent = 0; iComponent < fNChannels; ++iComponent)
         {
             sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
@@ -210,7 +210,7 @@ namespace Katydid
     {
         KTTimeSeriesData& tsData = data.Of< KTTimeSeriesData >().SetNComponents(fNChannels);
 
-        for (unsigned iChannel = 0; iChannel < fNChannels; iChannel++)
+        for (unsigned iChannel = 0; iChannel < fNChannels; ++iChannel)
         {
             if (fTimeSeriesType == kRealTimeSeries)
             {
