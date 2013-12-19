@@ -19,29 +19,29 @@ namespace Katydid
 
     UIntPair ParsePairUInt(const std::string& pairString)
     {
-        UInt_t first = 0, second = 0;
-        Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
+        unsigned first = 0, second = 0;
+        bool parsed = phrase_parse(pairString.begin(), pairString.end(),
                 (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> int_[ref(second) = boost::spirit::qi::_1]),
                 space);
         if (! parsed)
         {
             KTWARN(utillog_psnode, "Unable to parse pair: " << pairString);
         }
-        return std::make_pair< UInt_t, UInt_t >(first, second);
+        return std::make_pair< unsigned, unsigned >(first, second);
     }
 
     UIntDoublePair ParsePairUIntDouble(const std::string& pairString)
     {
-        UInt_t first = 0;
-        Double_t second = 0.;
-        Bool_t parsed = phrase_parse(pairString.begin(), pairString.end(),
+        unsigned first = 0;
+        double second = 0.;
+        bool parsed = phrase_parse(pairString.begin(), pairString.end(),
                 (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> double_[ref(second) = boost::spirit::qi::_1]),
                 space);
         if (! parsed)
         {
             KTWARN(utillog_psnode, "Unable to parse pair: " << pairString);
         }
-        return std::make_pair< UInt_t, Double_t >(first, second);
+        return std::make_pair< unsigned, double >(first, second);
     }
 
 
@@ -96,7 +96,7 @@ namespace Katydid
     }
 
 
-    Bool_t KTPStoreNode::HasData(const string& dataName) const
+    bool KTPStoreNode::HasData(const string& dataName) const
     {
         KTPStoreNodeDataNotFound dnfException;
         TreeNode::const_assoc_iterator it = fTree->find(dataName);

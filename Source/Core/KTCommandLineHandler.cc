@@ -55,7 +55,7 @@ namespace Katydid
         }
     }
 
-    Bool_t KTCommandLineHandler::TakeArguments(Int_t argC, Char_t**argV)
+    bool KTCommandLineHandler::TakeArguments(int argC, char** argV)
     {
         if (fArgumentsTaken) return false;
 
@@ -70,17 +70,17 @@ namespace Katydid
 
     //**************
 
-    Bool_t KTCommandLineHandler::GetArgumentsTaken()
+    bool KTCommandLineHandler::GetArgumentsTaken()
     {
         return fArgumentsTaken;
     }
 
-    Int_t KTCommandLineHandler::GetNArgs()
+    int KTCommandLineHandler::GetNArgs()
     {
         return fNArgs;
     }
 
-    Char_t** KTCommandLineHandler::GetArgV()
+    char** KTCommandLineHandler::GetArgV()
     {
         return fArgV;
     }
@@ -90,7 +90,7 @@ namespace Katydid
     KTCommandLineHandler::OptDescMapIt KTCommandLineHandler::CreateNewOptionGroup(const string& aTitle)
     {
         po::options_description* tNewOpts = new po::options_description(aTitle);
-        std::pair< OptDescMapIt, Bool_t > result = fProposedGroups.insert(OptDescMap::value_type(aTitle, tNewOpts));
+        std::pair< OptDescMapIt, bool > result = fProposedGroups.insert(OptDescMap::value_type(aTitle, tNewOpts));
         if (! result.second)
         {
             KTWARN(utillog, "There is already an option group with title <" << aTitle << ">");
@@ -100,7 +100,7 @@ namespace Katydid
         return result.first;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate)
+    bool KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
@@ -138,7 +138,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Bool_t aWarnOnDuplicate)
+    bool KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, bool aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
@@ -174,7 +174,7 @@ namespace Katydid
 
     //**************
 
-   Bool_t KTCommandLineHandler::FinalizeNewOptionGroups()
+   bool KTCommandLineHandler::FinalizeNewOptionGroups()
     {
         for (OptDescMapIt tIter = fProposedGroups.begin(); tIter != fProposedGroups.end(); tIter++)
         {
@@ -189,7 +189,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTCommandLineHandler::AddCommandLineOptions(const po::options_description& aSetOfOpts)
+    bool KTCommandLineHandler::AddCommandLineOptions(const po::options_description& aSetOfOpts)
     {
         try
         {
@@ -211,14 +211,14 @@ namespace Katydid
 
     //**************
 
-    Bool_t KTCommandLineHandler::IsCommandLineOptSet(const string& aCLOption)
+    bool KTCommandLineHandler::IsCommandLineOptSet(const string& aCLOption)
     {
         return fCommandLineVarMap.count(aCLOption) != 0;
     }
 
     //**************
 
-    Bool_t KTCommandLineHandler::DelayedCommandLineProcessing()
+    bool KTCommandLineHandler::DelayedCommandLineProcessing()
     {
         if (! fProposedGroups.empty())
         {
@@ -331,7 +331,7 @@ namespace Katydid
         fCommandLineParseLater = po::collect_unrecognized(tParsedOpts.options, po::include_positional);
         /* some debugging couts
         std::cout << "there are " << fCommandLineParseLater.size() << " tokens to parse later." << std::endl;
-        for (UInt_t i = 0; i < fCommandLineParseLater.size(); i++)
+        for (unsigned i = 0; i < fCommandLineParseLater.size(); i++)
         {
             std::cout << "   " << fCommandLineParseLater[i] << std::endl;
         }

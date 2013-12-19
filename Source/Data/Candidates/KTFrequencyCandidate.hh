@@ -8,8 +8,6 @@
 #ifndef KTFREQUENCYCANDIDATE_HH_
 #define KTFREQUENCYCANDIDATE_HH_
 
-#include "Rtypes.h"
-
 namespace Katydid
 {
 
@@ -22,79 +20,79 @@ namespace Katydid
 
             KTFrequencyCandidate& operator=(const KTFrequencyCandidate& rhs);
 
-            UInt_t GetFirstBin() const;
-            void SetFirstBin(UInt_t bin);
+            unsigned GetFirstBin() const;
+            void SetFirstBin(unsigned bin);
 
-            UInt_t GetLastBin() const;
-            void SetLastBin(UInt_t bin);
+            unsigned GetLastBin() const;
+            void SetLastBin(unsigned bin);
 
-            Double_t GetMeanFrequency() const;
-            void SetMeanFrequency(Double_t freq);
+            double GetMeanFrequency() const;
+            void SetMeanFrequency(double freq);
 
-            Double_t GetPeakAmplitude() const;
-            void SetPeakAmplitude(Double_t amp);
+            double GetPeakAmplitude() const;
+            void SetPeakAmplitude(double amp);
 
-            Double_t GetAmplitudeSum() const;
-            void SetAmplitudeSum(Double_t amp);
+            double GetAmplitudeSum() const;
+            void SetAmplitudeSum(double amp);
 
         protected:
-            UInt_t fFirstBin;
-            UInt_t fLastBin;
-            Double_t fMeanFrequency;
-            Double_t fPeakAmplitude;
-            Double_t fAmplitudeSum;
+            unsigned fFirstBin;
+            unsigned fLastBin;
+            double fMeanFrequency;
+            double fPeakAmplitude;
+            double fAmplitudeSum;
     };
 
-    inline UInt_t KTFrequencyCandidate::GetFirstBin() const
+    inline unsigned KTFrequencyCandidate::GetFirstBin() const
     {
         return fFirstBin;
     }
 
-    inline void KTFrequencyCandidate::SetFirstBin(UInt_t bin)
+    inline void KTFrequencyCandidate::SetFirstBin(unsigned bin)
     {
         fFirstBin = bin;
         return;
     }
 
-    inline UInt_t KTFrequencyCandidate::GetLastBin() const
+    inline unsigned KTFrequencyCandidate::GetLastBin() const
     {
         return fLastBin;
     }
 
-    inline void KTFrequencyCandidate::SetLastBin(UInt_t bin)
+    inline void KTFrequencyCandidate::SetLastBin(unsigned bin)
     {
         fLastBin = bin;
         return;
     }
 
-    inline Double_t KTFrequencyCandidate::GetMeanFrequency() const
+    inline double KTFrequencyCandidate::GetMeanFrequency() const
     {
         return fMeanFrequency;
     }
 
-    inline void KTFrequencyCandidate::SetMeanFrequency(Double_t freq)
+    inline void KTFrequencyCandidate::SetMeanFrequency(double freq)
     {
         fMeanFrequency = freq;
         return;
     }
 
-    inline Double_t KTFrequencyCandidate::GetPeakAmplitude() const
+    inline double KTFrequencyCandidate::GetPeakAmplitude() const
     {
         return fPeakAmplitude;
     }
 
-    inline void KTFrequencyCandidate::SetPeakAmplitude(Double_t amp)
+    inline void KTFrequencyCandidate::SetPeakAmplitude(double amp)
     {
         fPeakAmplitude = amp;
         return;
     }
 
-    inline Double_t KTFrequencyCandidate::GetAmplitudeSum() const
+    inline double KTFrequencyCandidate::GetAmplitudeSum() const
     {
         return fAmplitudeSum;
     }
 
-    inline void KTFrequencyCandidate::SetAmplitudeSum(Double_t amp)
+    inline void KTFrequencyCandidate::SetAmplitudeSum(double amp)
     {
         fAmplitudeSum = amp;
         return;

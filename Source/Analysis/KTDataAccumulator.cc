@@ -45,17 +45,17 @@ namespace Katydid
     {
     }
 
-    Bool_t KTDataAccumulator::Configure(const KTPStoreNode* node)
+    bool KTDataAccumulator::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
-        SetAccumulatorSize(node->GetData<UInt_t>("number-to-average", fAccumulatorSize));
-        SetSignalInterval(node->GetData<UInt_t>("signal-interval", fSignalInterval));
+        SetAccumulatorSize(node->GetData<unsigned>("number-to-average", fAccumulatorSize));
+        SetSignalInterval(node->GetData<unsigned>("signal-interval", fSignalInterval));
 
         return true;
     }
 
-    Bool_t KTDataAccumulator::AddData(KTTimeSeriesData& data)
+    bool KTDataAccumulator::AddData(KTTimeSeriesData& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTTimeSeriesData >();
         KTTimeSeriesData& accData = accDataStruct.fData->Of<KTTimeSeriesData>();
@@ -69,33 +69,33 @@ namespace Katydid
         }
     }
 
-    Bool_t KTDataAccumulator::AddData(KTFrequencySpectrumDataPolar& data)
+    bool KTDataAccumulator::AddData(KTFrequencySpectrumDataPolar& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataPolar >();
         KTFrequencySpectrumDataPolar& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataPolar>();
         return CoreAddData(data, accDataStruct, accData);
     }
 
-    Bool_t KTDataAccumulator::AddData(KTFrequencySpectrumDataFFTW& data)
+    bool KTDataAccumulator::AddData(KTFrequencySpectrumDataFFTW& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTFrequencySpectrumDataFFTW >();
         KTFrequencySpectrumDataFFTW& accData = accDataStruct.fData->Of<KTFrequencySpectrumDataFFTW>();
         return CoreAddData(data, accDataStruct, accData);
     }
 
-    Bool_t KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
+    bool KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
-        Double_t remainingFrac = 1.;
+        double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
         //KTDEBUG(avlog, "averaging frac: " << fAveragingFrac << "    remaining frac: " << remainingFrac);
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         if (accDataStruct.fCount == 0)
         {
             accData.SetNComponents(nComponents);
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesReal* dataTS = static_cast< KTTimeSeriesReal* >(data.GetTimeSeries(iComponent));
                 KTTimeSeriesReal* newTS = new KTTimeSeriesReal(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
@@ -113,18 +113,18 @@ namespace Katydid
             return false;
         }
 
-        UInt_t arraySize = data.GetTimeSeries(0)->GetNTimeBins();
+        unsigned arraySize = data.GetTimeSeries(0)->GetNTimeBins();
         if (arraySize != accData.GetTimeSeries(0)->GetNTimeBins())
         {
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesReal* newTS = static_cast< KTTimeSeriesReal* >(data.GetTimeSeries(iComponent));
             KTTimeSeriesReal* avTS = static_cast< KTTimeSeriesReal* >(accData.GetTimeSeries(iComponent));
-            for (UInt_t iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; iBin++)
             {
                 //KTDEBUG(avlog, (*avTS)(iBin) << "  " << (*newTS)(iBin) << "  " << remainingFrac << "  " << fAveragingFrac);
                 (*avTS)(iBin) = (*avTS)(iBin) * remainingFrac + (*newTS)(iBin) * fAveragingFrac;
@@ -135,18 +135,18 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
+    bool KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
-        Double_t remainingFrac = 1.;
+        double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         if (accDataStruct.fCount == 0)
         {
             accData.SetNComponents(nComponents);
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesFFTW* dataTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
                 KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(dataTS->GetNTimeBins(), dataTS->GetRangeMin(), dataTS->GetRangeMax());
@@ -164,18 +164,18 @@ namespace Katydid
             return false;
         }
 
-        UInt_t arraySize = data.GetTimeSeries(0)->GetNTimeBins();
+        unsigned arraySize = data.GetTimeSeries(0)->GetNTimeBins();
         if (arraySize != accData.GetTimeSeries(0)->GetNTimeBins())
         {
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesFFTW* newTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
             KTTimeSeriesFFTW* avTS = static_cast< KTTimeSeriesFFTW* >(accData.GetTimeSeries(iComponent));
-            for (UInt_t iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; iBin++)
             {
                 (*avTS)(iBin)[0] = (*avTS)(iBin)[0] * remainingFrac + (*newTS)(iBin)[0] * fAveragingFrac;
                 (*avTS)(iBin)[1] = (*avTS)(iBin)[1] * remainingFrac + (*newTS)(iBin)[1] * fAveragingFrac;
@@ -186,22 +186,22 @@ namespace Katydid
     }
 
 
-    Bool_t KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
+    bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
     {
-        Double_t remainingFrac = 1.;
+        double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         if (accDataStruct.fCount == 0)
         {
             accData.SetNComponents(nComponents);
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTFrequencySpectrumPolar* dataFS = data.GetSpectrumPolar(iComponent);
                 KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
-                newFS->operator*=(Double_t(0.));
+                newFS->operator*=(double(0.));
                 accData.SetSpectrum(newFS, iComponent);
             }
         }
@@ -215,18 +215,18 @@ namespace Katydid
             return false;
         }
 
-        UInt_t arraySize = data.GetSpectrumPolar(0)->size();
+        unsigned arraySize = data.GetSpectrumPolar(0)->size();
         if (arraySize != accData.GetSpectrumPolar(0)->size())
         {
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTFrequencySpectrumPolar* newSpect = data.GetSpectrumPolar(iComponent);
             KTFrequencySpectrumPolar* avSpect = accData.GetSpectrumPolar(iComponent);
-            for (UInt_t iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; iBin++)
             {
                 (*avSpect)(iBin) = (*avSpect)(iBin) * remainingFrac + (*newSpect)(iBin) * fAveragingFrac;
             }
@@ -235,22 +235,22 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData)
+    bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData)
     {
-        Double_t remainingFrac = 1.;
+        double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         if (accDataStruct.fCount == 0)
         {
             accData.SetNComponents(nComponents);
-            for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTFrequencySpectrumFFTW* dataFS = data.GetSpectrumFFTW(iComponent);
                 KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
-                newFS->operator*=(Double_t(0.));
+                newFS->operator*=(double(0.));
                 accData.SetSpectrum(newFS, iComponent);
             }
         }
@@ -265,18 +265,18 @@ namespace Katydid
             return false;
         }
 
-        UInt_t arraySize = data.GetSpectrumFFTW(0)->size();
+        unsigned arraySize = data.GetSpectrumFFTW(0)->size();
         if (arraySize != accData.GetSpectrumFFTW(0)->size())
         {
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; ++iComponent)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTFrequencySpectrumFFTW* newSpect = data.GetSpectrumFFTW(iComponent);
             KTFrequencySpectrumFFTW* avSpect = accData.GetSpectrumFFTW(iComponent);
-            for (UInt_t iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; iBin++)
             {
                 (*avSpect)(iBin)[0] = (*avSpect)(iBin)[0] * remainingFrac + (*newSpect)(iBin)[0] * fAveragingFrac;
                 (*avSpect)(iBin)[1] = (*avSpect)(iBin)[1] * remainingFrac + (*newSpect)(iBin)[1] * fAveragingFrac;

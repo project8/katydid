@@ -45,10 +45,10 @@ namespace Katydid
             KTImpulseAnalysis(const std::string& name = "impulse-analysis");
             virtual ~KTImpulseAnalysis();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            Bool_t Analyze(KTFrequencySpectrumDataPolar& fsData);
-            //Bool_t Analyze(KTFrequencySpectrumDataFFTW& fsData);
+            bool Analyze(KTFrequencySpectrumDataPolar& fsData);
+            //bool Analyze(KTFrequencySpectrumDataFFTW& fsData);
 
             //***************
             // Slots
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     }
 
     // Execute the run queue!
-    Bool_t success = procTB.Run();
+    bool success = procTB.Run();
 
     if (! success) return -4;
     return 0;
@@ -120,25 +120,25 @@ KTImpulseAnalysis::~KTImpulseAnalysis()
 {
 }
 
-Bool_t KTImpulseAnalysis::Configure(const KTPStoreNode*)
+bool KTImpulseAnalysis::Configure(const KTPStoreNode*)
 {
     return true;
 }
 
-Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
+bool KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
 {
     KTFrequencySpectrumPolar* fs = fsData.GetSpectrumPolar(0);
-    UInt_t size = fs->size();
-    Double_t binWidth = fs->GetBinWidth();
+    unsigned size = fs->size();
+    double binWidth = fs->GetBinWidth();
 
     // Loop over all the bins in the FS
     // Calculate the sum and keep the peak bin information
-    UInt_t peakBin = 0, previousPeakBin = 0;
-    Double_t peakBinValue = -1.;
-    Double_t previousPeakValue = -1.;
-    Double_t sum = 0.; // sum of squares, since we want to calculate the power
-    Double_t value;
-    for (UInt_t iBin=0; iBin < size; iBin++)
+    unsigned peakBin = 0, previousPeakBin = 0;
+    double peakBinValue = -1.;
+    double previousPeakValue = -1.;
+    double sum = 0.; // sum of squares, since we want to calculate the power
+    double value;
+    for (unsigned iBin=0; iBin < size; iBin++)
     {
         value = (*fs)(iBin).abs();
         sum += value * value;
@@ -151,19 +151,19 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
         }
     }
 
-    Double_t peakFraction = peakBinValue * peakBinValue / sum;
-    Double_t leakagePeakBin = 1. - peakFraction;
-    Double_t peakThreeBinFraction = (peakBinValue*peakBinValue + (*fs)(peakBin-1).abs()*(*fs)(peakBin-1).abs() + (*fs)(peakBin+1).abs()*(*fs)(peakBin+1).abs()) / sum;
-    Double_t leakagePeakThreeBin = 1. - peakThreeBinFraction;
-    Double_t secondHighestBinRatio = previousPeakValue / peakBinValue;
+    double peakFraction = peakBinValue * peakBinValue / sum;
+    double leakagePeakBin = 1. - peakFraction;
+    double peakThreeBinFraction = (peakBinValue*peakBinValue + (*fs)(peakBin-1).abs()*(*fs)(peakBin-1).abs() + (*fs)(peakBin+1).abs()*(*fs)(peakBin+1).abs()) / sum;
+    double leakagePeakThreeBin = 1. - peakThreeBinFraction;
+    double secondHighestBinRatio = previousPeakValue / peakBinValue;
     //KTDEBUG(irlog, peakFraction << "  " << leakagePeakBin << "  " << peakThreeBinFraction << "  " << leakagePeakThreeBin << "  " << peakBinValue << "  " << peakThreeBinValue << "  " << sum);
 
     // Examine fractional peak width
-    Double_t fraction = 0.1;
-    UInt_t leftSideBin = peakBin, rightSideBin = peakBin;
+    double fraction = 0.1;
+    unsigned leftSideBin = peakBin, rightSideBin = peakBin;
     if (peakBinValue > 0.)
     {
-        Double_t fractionalPowerValue = sqrt(fraction) * peakBinValue;
+        double fractionalPowerValue = sqrt(fraction) * peakBinValue;
         while (leftSideBin > 0 && (*fs)(leftSideBin).abs() >= fractionalPowerValue)
         {
             leftSideBin--;
@@ -176,8 +176,8 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
         if (rightSideBin != size-1 && (*fs)(rightSideBin).abs() < fractionalPowerValue) rightSideBin--; // if we didn't heit the right edge, we went one beyond the FWHM peak
     }
 
-    UInt_t fracWidthBins = rightSideBin - leftSideBin + 1;
-    Double_t fracWidth = Double_t(fracWidthBins) * binWidth;
+    unsigned fracWidthBins = rightSideBin - leftSideBin + 1;
+    double fracWidth = double(fracWidthBins) * binWidth;
 
     KTPROG(irlog, "Frequency of peak: " << fs->GetBinCenter(peakBin) << " Hz (bin # " << peakBin << ")");
     KTPROG(irlog, "Leakage fraction (1 bin): " << leakagePeakBin);

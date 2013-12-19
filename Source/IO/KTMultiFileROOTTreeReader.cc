@@ -48,7 +48,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTMultiFileROOTTreeReader::Configure(const KTPStoreNode* node)
+    bool KTMultiFileROOTTreeReader::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node == NULL) return false;
@@ -71,7 +71,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileROOTTreeReader::AddDataType(const std::string& type, const std::string& treeName)
+    bool KTMultiFileROOTTreeReader::AddDataType(const std::string& type, const std::string& treeName)
     {
         if (type == "amp-dist")
         {
@@ -105,7 +105,7 @@ namespace Katydid
         return (TTree*)(file->Get(treeName.c_str()));
     }
 
-    Bool_t KTMultiFileROOTTreeReader::Run()
+    bool KTMultiFileROOTTreeReader::Run()
     {
         for (fFileIter = fFilenames.begin(); fFileIter != fFilenames.end(); fFileIter++)
         {
@@ -142,7 +142,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileROOTTreeReader::Append(KTData& data)
+    bool KTMultiFileROOTTreeReader::Append(KTData& data)
     {
         if (fFileIter == fFilenames.end())
         {
@@ -180,16 +180,16 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, KTData& appendToData)
+    bool KTMultiFileROOTTreeReader::AppendAmpDistData(TTree* tree, KTData& appendToData)
     {
         // Determine the number of components and the number of frequency bins
-        UInt_t nComponents = 0;
-        UInt_t nFreqBins = 0;
+        unsigned nComponents = 0;
+        unsigned nFreqBins = 0;
         while (true)
         {
             stringstream cut;
             cut << "Component == " << nComponents;
-            UInt_t nEntriesForComponent = (UInt_t)tree->GetEntries(cut.str().c_str());
+            unsigned nEntriesForComponent = (unsigned)tree->GetEntries(cut.str().c_str());
             if (nEntriesForComponent == 0)
             {
                 nComponents++; // advance this by 1 to be the number of components, not the last component number
@@ -212,14 +212,14 @@ namespace Katydid
         ampDist.InitializeNull(nComponents, nFreqBins);
 
         // Read in the data
-        UInt_t nEntries = (UInt_t)tree->GetEntries();
-        for (UInt_t iEntry=0; iEntry < nEntries; iEntry++)
+        unsigned nEntries = (unsigned)tree->GetEntries();
+        for (unsigned iEntry=0; iEntry < nEntries; iEntry++)
         {
             tree->GetEntry(iEntry);
 
-            UInt_t nDistBins = (UInt_t)ampDistData.fDistribution->GetNbinsX();
+            unsigned nDistBins = (unsigned)ampDistData.fDistribution->GetNbinsX();
             ampDist.InitializeADistribution(ampDistData.fComponent, ampDistData.fFreqBin, nDistBins, ampDistData.fDistribution->GetXaxis()->GetXmin(), ampDistData.fDistribution->GetXaxis()->GetXmax());
-            for (UInt_t iDistBin = 0; iDistBin < nDistBins; iDistBin++)
+            for (unsigned iDistBin = 0; iDistBin < nDistBins; iDistBin++)
             {
                 ampDist.SetDistValue(ampDistData.fDistribution->GetBinContent(iDistBin+1), ampDistData.fFreqBin, iDistBin, ampDistData.fComponent);
             }

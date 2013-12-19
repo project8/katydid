@@ -101,7 +101,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTROOTTreeTypeWriterCandidates::SetupFrequencyCandidateTree()
+    bool KTROOTTreeTypeWriterCandidates::SetupFrequencyCandidateTree()
     {
         fFreqCandidateTree = new TTree("freqCand", "Frequency Candidates");
         if (fFreqCandidateTree == NULL)
@@ -171,7 +171,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTROOTTreeTypeWriterCandidates::SetupWaterfallCandidateTree()
+    bool KTROOTTreeTypeWriterCandidates::SetupWaterfallCandidateTree()
     {
         fWaterfallCandidateTree = new TTree("freqCand", "Frequency Candidates");
         if (fWaterfallCandidateTree == NULL)

@@ -64,21 +64,21 @@ namespace Katydid
             KTFrequencyCandidateIdentifier(const std::string& name = "frequency-candidate-identifier");
             virtual ~KTFrequencyCandidateIdentifier();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
         public:
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataPolar& fsData);
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataFFTW& fsData);
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataPolar& fsData);
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataFFTW& fsData);
-            Bool_t IdentifyCandidates(KTCluster1DData& clusterData, KTCorrelationData& fsData);
+            bool IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataPolar& fsData);
+            bool IdentifyCandidates(KTCluster1DData& clusterData, KTFrequencySpectrumDataFFTW& fsData);
+            bool IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataPolar& fsData);
+            bool IdentifyCandidates(KTCluster1DData& clusterData, KTNormalizedFSDataFFTW& fsData);
+            bool IdentifyCandidates(KTCluster1DData& clusterData, KTCorrelationData& fsData);
 
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumPolar* freqSpec);
             KTFrequencyCandidateData::Candidates IdentifyCandidates(const KTCluster1DData::SetOfClusters& clusters, const KTFrequencySpectrumFFTW* freqSpec);
 
         private:
-            Bool_t CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolarCore& fsData, KTFrequencyCandidateData& fcData);
-            Bool_t CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTWCore& fsData, KTFrequencyCandidateData& fcData);
+            bool CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataPolarCore& fsData, KTFrequencyCandidateData& fcData);
+            bool CoreIdentifyCandidates(KTCluster1DData& clusterData, const KTFrequencySpectrumDataFFTWCore& fsData, KTFrequencyCandidateData& fcData);
 
             //***************
             // Signals

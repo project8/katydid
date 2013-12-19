@@ -27,7 +27,7 @@ namespace Katydid
 {
     KTLOGGER(eggreadlog, "katydid.egg");
 
-    UInt_t KTEggReaderMonarch::GetMaxChannels()
+    unsigned KTEggReaderMonarch::GetMaxChannels()
     {
         return fMaxChannels;
     }
@@ -144,7 +144,7 @@ namespace Katydid
 
     KTDataPtr KTEggReaderMonarch::HatchNextSlice()
     {
-        UInt_t recordSize = fHeader.GetRecordSize();
+        unsigned recordSize = fHeader.GetRecordSize();
 
         if (fMonarch == NULL)
         {
@@ -196,7 +196,7 @@ namespace Katydid
             // shift the slice start pointer by the stride
             // note that this pointer refers to the record in which the previous slice started
             fReadState.fSliceStartPtrOffset += fStride;
-            UInt_t sliceStartRecordOffset = 0; // how many records to shift to the start of the slice
+            unsigned sliceStartRecordOffset = 0; // how many records to shift to the start of the slice
             while (fReadState.fSliceStartPtrOffset >= recordSize)
             {
                 fReadState.fSliceStartPtrOffset -= recordSize;
@@ -207,7 +207,7 @@ namespace Katydid
             // of records read in the last slice (fReadPtrRecordOffset)
             // If this is 0, it doesn't need to be moved
             // If it's > 0, then it needs to be reduced by 1 because of how the offset number in Monarch::ReadRecord is used (offset=0 will advance to the next record)
-            Int_t readPtrRecordOffsetShift = Int_t(sliceStartRecordOffset) - Int_t(fReadState.fReadPtrRecordOffset);
+            int readPtrRecordOffsetShift = int(sliceStartRecordOffset) - int(fReadState.fReadPtrRecordOffset);
             if (readPtrRecordOffsetShift != 0)
             {
                 // change the absolute record offset first because it should be done before the adjustment to Monarch::ReadRecord offset counting is made
@@ -244,7 +244,7 @@ namespace Katydid
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
-        sliceHeader.SetNonOverlapFrac((Double_t)fStride / (Double_t)fSliceSize);
+        sliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
         sliceHeader.SetTimeInRun(GetTimeInRun());
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
@@ -253,10 +253,10 @@ namespace Katydid
         KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // Setup pointers to monarch and new katydid records
-        UInt_t nChannels = fHeader.GetNChannels();
+        unsigned nChannels = fHeader.GetNChannels();
         vector< const MonarchRecord* > monarchRecords(nChannels);
         vector< KTTimeSeries* > newRecords(nChannels);
-        for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
+        for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
             monarchRecords[iChannel] = (fMonarch->*fMonarchGetRecord[iChannel])();
             sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
@@ -267,11 +267,11 @@ namespace Katydid
             KTTimeSeries* newRecord;
             if (fTimeSeriesType == kRealTimeSeries)
             {
-                newRecord = new KTTimeSeriesReal(fSliceSize, 0., Double_t(fSliceSize) * sliceHeader.GetBinWidth());
+                newRecord = new KTTimeSeriesReal(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
             }
             else
             {
-                newRecord = new KTTimeSeriesFFTW(fSliceSize, 0., Double_t(fSliceSize) * sliceHeader.GetBinWidth());
+                newRecord = new KTTimeSeriesFFTW(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
             }
             newRecords[iChannel] = newRecord;
         }
@@ -290,7 +290,7 @@ namespace Katydid
         }
 
         // Loop over bins
-        for (UInt_t iBin = 0; iBin < fSliceSize; ++iBin)
+        for (unsigned iBin = 0; iBin < fSliceSize; ++iBin)
         {
             if (fReadState.fStatus == MonarchReadState::kReachedNextRecord)
             {
@@ -300,7 +300,7 @@ namespace Katydid
                 {
                     // the end of the file has been reached or there was some other error preventing the reading of the next record
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                    for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
+                    for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
                     {
                         delete newRecords[iChannel];
                     }
@@ -326,7 +326,7 @@ namespace Katydid
                     sliceHeader.SetIsNewAcquisition(true);
                     sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
                     sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
-                    for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
+                    for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
                     {
                         sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
                         sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
@@ -350,10 +350,10 @@ namespace Katydid
             }
 
             // Read the data from the records
-            for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
+            for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
             {
                 // set the data
-                newRecords[iChannel]->SetValue(iBin, Double_t(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]));
+                newRecords[iChannel]->SetValue(iBin, double(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]));
             }
 
             // advance the pointer for the next bin
@@ -373,7 +373,7 @@ namespace Katydid
 
         // finally, set the records in the new data object
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nChannels);
-        for (UInt_t iChannel = 0; iChannel < nChannels; ++iChannel)
+        for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
             tsData.SetTimeSeries(newRecords[iChannel], iChannel);
         }
@@ -381,7 +381,7 @@ namespace Katydid
         return newData;
     }
 
-    Bool_t KTEggReaderMonarch::CloseEgg()
+    bool KTEggReaderMonarch::CloseEgg()
     {
         try
         {
@@ -413,7 +413,7 @@ namespace Katydid
         return;
     }
 
-    Double_t KTEggReaderMonarch::GetTimeInRunFirstCall() const
+    double KTEggReaderMonarch::GetTimeInRunFirstCall() const
     {
         if ((fMonarch->*fMonarchGetRecord[0])()->fTime == 0)
         {

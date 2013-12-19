@@ -55,9 +55,9 @@ namespace Katydid
     {
     };
 
-    Bool_t KTThroughputProfiler::Configure(const KTPStoreNode* node)
+    bool KTThroughputProfiler::Configure(const KTPStoreNode* node)
     {
-        SetOutputFileFlag(node->GetData< Bool_t >("output-file-flag", fOutputFileFlag));
+        SetOutputFileFlag(node->GetData< bool >("output-file-flag", fOutputFileFlag));
         SetOutputFilename(node->GetData< string >("output-filename-base", fOutputFilename));
 
         return true;
@@ -104,16 +104,16 @@ namespace Katydid
         KTINFO(proflog, "Profiling stopped");
         timespec diffTime = Elapsed();
         KTPROG(proflog, fNDataProcessed << " slices processed");
-        Double_t totalSeconds = Double_t(diffTime.tv_sec) + Double_t(diffTime.tv_nsec) * 1.e-9;
+        double totalSeconds = double(diffTime.tv_sec) + double(diffTime.tv_nsec) * 1.e-9;
         KTPROG(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
 
         // Data production rate in bytes per second
-        Double_t dataProductionRate = Double_t(fEggHeader.GetNChannels()) * fEggHeader.GetAcquisitionRate() * Double_t(sizeof(DataType));
+        double dataProductionRate = double(fEggHeader.GetNChannels()) * fEggHeader.GetAcquisitionRate() * double(sizeof(DataType));
 
         // Data throughput rate in bytes per second
-        Double_t dataThroughputRate = 0.;
+        double dataThroughputRate = 0.;
         if (totalSeconds != 0)
-            dataThroughputRate = Double_t(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNDataProcessed * sizeof(DataType)) / totalSeconds;
+            dataThroughputRate = double(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNDataProcessed * sizeof(DataType)) / totalSeconds;
 
         KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
         KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");

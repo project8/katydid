@@ -19,22 +19,22 @@ namespace Katydid
             KTCorrelationTSData();
             virtual ~KTCorrelationTSData();
 
-            const std::pair< UInt_t, UInt_t >& GetInputPair(UInt_t component = 0) const;
+            const std::pair< unsigned, unsigned >& GetInputPair(unsigned component = 0) const;
 
-            void SetInputPair(UInt_t first, UInt_t second, UInt_t component = 0);
+            void SetInputPair(unsigned first, unsigned second, unsigned component = 0);
 
-            virtual KTCorrelationTSData& SetNComponents(UInt_t components);
+            virtual KTCorrelationTSData& SetNComponents(unsigned components);
 
         protected:
-            std::vector< std::pair< UInt_t, UInt_t > > fComponentData;
+            std::vector< std::pair< unsigned, unsigned > > fComponentData;
     };
 
-    inline const std::pair< UInt_t, UInt_t >& KTCorrelationTSData::GetInputPair(UInt_t component) const
+    inline const std::pair< unsigned, unsigned >& KTCorrelationTSData::GetInputPair(unsigned component) const
     {
         return fComponentData[component];
     }
 
-    inline void KTCorrelationTSData::SetInputPair(UInt_t first, UInt_t second, UInt_t component)
+    inline void KTCorrelationTSData::SetInputPair(unsigned first, unsigned second, unsigned component)
     {
         if (component >= fTimeSeries.size()) SetNComponents(component+1);
         fComponentData[component].first = first;

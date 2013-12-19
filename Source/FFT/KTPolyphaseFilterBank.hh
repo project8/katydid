@@ -61,26 +61,26 @@ namespace Katydid
             KTPolyphaseFilterBank(const std::string& name = "polyphase-filter-bank");
             virtual ~KTPolyphaseFilterBank();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            UInt_t GetNSubsets() const;
-            void SetNSubsets(UInt_t subsets);
+            unsigned GetNSubsets() const;
+            void SetNSubsets(unsigned subsets);
 
-            UInt_t GetSubsetSize() const;
-            void SetSubsetSize(UInt_t size);
+            unsigned GetSubsetSize() const;
+            void SetSubsetSize(unsigned size);
 
         private:
-            UInt_t fNSubsets;
-            UInt_t fSubsetSize;
+            unsigned fNSubsets;
+            unsigned fSubsetSize;
 
         public:
-            Bool_t InitializeWindow();
+            bool InitializeWindow();
             void InitializeWithHeader(const KTEggHeader* header);
 
             /// Apply the PFB to the data object's time series (real-type)
-            Bool_t ProcessDataReal(const KTTimeSeriesData& tsData);
+            bool ProcessDataReal(const KTTimeSeriesData& tsData);
             /// Apply the PFB to the data object's time series (fftw-type)
-            Bool_t ProcessDataFFTW(const KTTimeSeriesData& tsData);
+            bool ProcessDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Create a new data object for the filtered time series (real-type)
             KTDataPtr CreateFilteredDataReal(const KTTimeSeriesData& tsData);
@@ -93,7 +93,7 @@ namespace Katydid
             KTTimeSeriesFFTW* ApplyPFB(const KTTimeSeriesFFTW* data) const;
 
         private:
-            Bool_t TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader);
+            bool TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader);
 
             //***************
             // Signals
@@ -114,23 +114,23 @@ namespace Katydid
     };
 
 
-    inline UInt_t KTPolyphaseFilterBank::GetNSubsets() const
+    inline unsigned KTPolyphaseFilterBank::GetNSubsets() const
     {
         return fNSubsets;
     }
 
-    inline void KTPolyphaseFilterBank::SetNSubsets(UInt_t subsets)
+    inline void KTPolyphaseFilterBank::SetNSubsets(unsigned subsets)
     {
         fNSubsets = subsets;
         return;
     }
 
-    inline UInt_t KTPolyphaseFilterBank::GetSubsetSize() const
+    inline unsigned KTPolyphaseFilterBank::GetSubsetSize() const
     {
         return fSubsetSize;
     }
 
-    inline void KTPolyphaseFilterBank::SetSubsetSize(UInt_t size)
+    inline void KTPolyphaseFilterBank::SetSubsetSize(unsigned size)
     {
         fNSubsets = size;
         return;

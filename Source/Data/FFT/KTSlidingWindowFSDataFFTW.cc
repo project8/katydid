@@ -58,10 +58,10 @@ namespace Katydid
         KTINFO("Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz; bin width: " << hist->GetYaxis()->GetBinWidth(1) << " Hz");
         KTINFO("Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s; bin width: " << hist->GetXaxis()->GetBinWidth(1) << " s");
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, sqrt((*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1]));
             }
@@ -84,10 +84,10 @@ namespace Katydid
         KTINFO("Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO("Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, atan2((*fs)(iBinY-1)[1], (*fs)(iBinY-1)[0]));
             }
@@ -110,11 +110,11 @@ namespace Katydid
         KTINFO("Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO("Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        Double_t value;
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        double value;
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumFFTW* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 value = (*fs)(iBinY-1)[0] * (*fs)(iBinY-1)[0] + (*fs)(iBinY-1)[1] * (*fs)(iBinY-1)[1];
                 hist->SetBinContent(iBinX, iBinY, value);

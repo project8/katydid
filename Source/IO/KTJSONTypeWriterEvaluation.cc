@@ -70,8 +70,8 @@ namespace Katydid
         // n events with x cand vector
         jsonMaker->String("n-events-with-x-cand-matches");
         jsonMaker->StartArray();
-        const vector< UInt_t >& evVec = ccrData.GetNEventsWithXCandidateMatches();
-        for (UInt_t nEvents = 0; nEvents < evVec.size(); nEvents++)
+        const vector< unsigned >& evVec = ccrData.GetNEventsWithXCandidateMatches();
+        for (unsigned nEvents = 0; nEvents < evVec.size(); nEvents++)
         {
             jsonMaker->Uint(evVec[nEvents]);
         }
@@ -83,8 +83,8 @@ namespace Katydid
         // n cand with x ev vector
         jsonMaker->String("n-cands-with-x-event-matches");
         jsonMaker->StartArray();
-        const vector< UInt_t >& candVec = ccrData.GetNCandidatesWithXEventMatches();
-        for (UInt_t nCands = 0; nCands < candVec.size(); nCands++)
+        const vector< unsigned >& candVec = ccrData.GetNCandidatesWithXEventMatches();
+        for (unsigned nCands = 0; nCands < candVec.size(); nCands++)
         {
             jsonMaker->Uint(candVec[nCands]);
         }

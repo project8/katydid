@@ -300,7 +300,7 @@ namespace Katydid
         sliceHeader.SetSliceSize(fHeaderInfo.fRecordSize);
         sliceHeader.SetSliceLength(double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
         sliceHeader.SetTimeInRun(GetTimeInRun());
-        sliceHeader.SetSliceNumber((ULong64_t)fRecordsRead);
+        sliceHeader.SetSliceNumber((uint64_t)fRecordsRead);
         sliceHeader.SetStartRecordNumber(fRecordsRead);
         sliceHeader.SetStartSampleNumber(0);
         sliceHeader.SetEndRecordNumber(fRecordsRead);
@@ -321,11 +321,11 @@ namespace Katydid
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
+            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
             for (int iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
-                //(*newRecord)(iBin) = Double_t(readBuffer[iBin]);
-                newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));
+                //(*newRecord)(iBin) = double(readBuffer[iBin]);
+                newRecord->SetValue(iBin, double(readBuffer[iBin]));
             }
             delete [] readBuffer;
             KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(1);

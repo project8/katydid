@@ -33,13 +33,13 @@ KTLOGGER(vallog, "katydid.applications.validation");
 
 int main()
 {
-    const Double_t pi = 3.14159265359;
+    const double pi = 3.14159265359;
 
-    const UInt_t nBins = 1024;
-    const Double_t startTime = 0.;
-    const Double_t endTime = 10.;
+    const unsigned nBins = 1024;
+    const double startTime = 0.;
+    const double endTime = 10.;
 
-    const Double_t mult = 30.;
+    const double mult = 30.;
 
     KTINFO(vallog, "Testing the 1D real-to-complex FFT\n"
            "\tTime series characteristics:\n"
@@ -51,7 +51,7 @@ int main()
 
     // Fill the time series with a sinusoid.
     // The units are volts.
-    for (UInt_t iBin=0; iBin<nBins; iBin++)
+    for (unsigned iBin=0; iBin<nBins; iBin++)
     {
         (*timeSeries)(iBin) = sin(timeSeries->GetBinCenter(iBin) * mult);
         //KTDEBUG(vallog, iBin << "  " << (*timeSeries)(iBin));
@@ -68,10 +68,10 @@ int main()
     KTFrequencySpectrumPolar* frequencySpectrum = fullFFT.Transform(timeSeries);
 
     // Find the peak frequency
-    Double_t peakFrequency = -1.;
-    Double_t maxValue = -999999.;
+    double peakFrequency = -1.;
+    double maxValue = -999999.;
     size_t nFreqBins = frequencySpectrum->size();
-    for (UInt_t iBin = 0; iBin < nFreqBins; iBin++)
+    for (unsigned iBin = 0; iBin < nFreqBins; iBin++)
     {
         if ((*frequencySpectrum)(iBin).abs() > maxValue)
         {
@@ -101,12 +101,12 @@ int main()
 
     // Use Parseval's theorem to check the normalization of the FFT
     KTINFO(vallog, "Using Parceval's theorem to check the normalization\n"
-           "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (Double_t)nBins);
+           "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (double)nBins);
     // the latter is true because the average of sin^2 is 1/2, and we're effectively calculating avg(sin^2)*nbins.
 
     // Calculate sum(timeSeries[i]^2)
-    Double_t tsSum = 0.; // units: volts^2
-    for (UInt_t iBin=0; iBin<nBins; iBin++)
+    double tsSum = 0.; // units: volts^2
+    for (unsigned iBin=0; iBin<nBins; iBin++)
     {
         tsSum += (*timeSeries)(iBin) * (*timeSeries)(iBin);
     }
@@ -114,16 +114,16 @@ int main()
     KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
 
     // calculate (1/N) * sum(freqSpectrum[i]^2
-    Double_t fsSum = 0.; // units: volts^2
-    for (UInt_t iBin=0; iBin<nFreqBins; iBin++)
+    double fsSum = 0.; // units: volts^2
+    for (unsigned iBin=0; iBin<nFreqBins; iBin++)
     {
         fsSum += norm((*frequencySpectrum)(iBin));
     }
 
     KTINFO(vallog, "sum(freqSpectrum[i]^2) = " << fsSum << " V^2");
 
-    Double_t fractionalDiff = fabs(tsSum - fsSum) / (0.5 * (tsSum + fsSum));
-    Double_t threshold = 1.e-4;
+    double fractionalDiff = fabs(tsSum - fsSum) / (0.5 * (tsSum + fsSum));
+    double threshold = 1.e-4;
     if (fractionalDiff > threshold)
     {
         KTWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"

@@ -35,7 +35,7 @@ int main()
     discPoints.AddPoint(90, 0.9, 0);
     discPoints.AddPoint(87, 0.5, 0);
 
-    UInt_t iPoint = 0;
+    unsigned iPoint = 0;
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt=discPoints.GetSetOfPoints(0).begin(); pIt != discPoints.GetSetOfPoints(0).end(); pIt++)
     {
         KTINFO(testlog, "Point #" << iPoint << ":  " << pIt->first << "  " << pIt->second);
@@ -53,7 +53,7 @@ int main()
     }
     KTCluster1DData& clusters = discPoints.Of< KTCluster1DData >();
 
-    UInt_t iCluster = 0;
+    unsigned iCluster = 0;
     for (KTCluster1DData::SetOfClusters::const_iterator cIt = clusters.GetSetOfClusters(0).begin(); cIt != clusters.GetSetOfClusters(0).end(); cIt++)
     {
         KTINFO(testlog, "Cluster #" << iCluster << ":  " << cIt->first << " --> " << cIt->second);

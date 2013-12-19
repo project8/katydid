@@ -16,8 +16,6 @@
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 
-#include "Rtypes.h"
-
 #include <exception>
 #include <string>
 #include <utility>
@@ -37,8 +35,8 @@ namespace Katydid
 {
     KTLOGGER(utillog_psnode, "katydid.utility");
 
-    typedef std::pair< UInt_t, UInt_t > UIntPair;
-    typedef std::pair< UInt_t, Double_t > UIntDoublePair;
+    typedef std::pair< unsigned, unsigned > UIntPair;
+    typedef std::pair< unsigned, double > UIntDoublePair;
 
     UIntPair ParsePairUInt(const std::string& pair);
     UIntDoublePair ParsePairUIntDouble(const std::string& pair);
@@ -70,7 +68,7 @@ namespace Katydid
 
             KTPStoreNode& operator=(const KTPStoreNode& rhs);
 
-            Bool_t IsValid() const;
+            bool IsValid() const;
 
             /// Returns an iterator to the beginning of the node, preserving the order of insertion.
             const_iterator Begin() const;
@@ -78,7 +76,7 @@ namespace Katydid
             const_iterator End() const;
 
             /// Counts how many immediate-child nodes with nodeName exist (non-recursive).
-            UInt_t CountNodes(const std::string& nodeName) const;
+            unsigned CountNodes(const std::string& nodeName) const;
 
             /// Returns an interator to the beginning of the node, sorted alphabetically.
             const_sorted_iterator SortedBegin() const;
@@ -107,7 +105,7 @@ namespace Katydid
             //UIntPair GetValue() const;
 
             /// Returns true if an immediate-child exists with name dataName, and that child contains data (non-recursive).
-            Bool_t HasData(const std::string& dataName) const;
+            bool HasData(const std::string& dataName) const;
 
             /// Returns data with name dataName as a string.
             /// If a child with name dataName doesn't exist, or the child does not contain data, throws a KTPStoreNodeDataNotFound exception.
@@ -143,7 +141,7 @@ namespace Katydid
 
     };
 
-    inline Bool_t KTPStoreNode::IsValid() const
+    inline bool KTPStoreNode::IsValid() const
     {
         return fTree == NULL ? false : true;
     }
@@ -225,7 +223,7 @@ namespace Katydid
         return fTree->end();
     }
 
-    inline UInt_t KTPStoreNode::CountNodes(const std::string& nodeName) const
+    inline unsigned KTPStoreNode::CountNodes(const std::string& nodeName) const
     {
         return fTree->count(nodeName);
     }

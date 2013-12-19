@@ -45,16 +45,16 @@ namespace Katydid
         delete fFile;
     }
 
-    Bool_t KTMultiSliceROOTWriter::Configure(const KTPStoreNode* node)
+    bool KTMultiSliceROOTWriter::Configure(const KTPStoreNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetUseTFile(node->GetData<Bool_t>("use-tfile", fUseTFile));
+            SetUseTFile(node->GetData<bool>("use-tfile", fUseTFile));
             SetTFilename(node->GetData<string>("output-tfile", fTFilename));
             SetTFileFlag(node->GetData<string>("tfile-flag", fTFileFlag));
 
-            SetUseGraphics(node->GetData<Bool_t>("use-graphics", fUseGraphics));
+            SetUseGraphics(node->GetData<bool>("use-graphics", fUseGraphics));
             SetGraphicsFilePath(node->GetData<string>("graphics-file-path", fGraphicsFilePath));
             SetGraphicsFilenameBase(node->GetData<string>("graphics-filename-base", fGraphicsFilenameBase));
             SetGraphicsFileType(node->GetData<string>("graphics-file-type", fGraphicsFileType));
@@ -63,7 +63,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTMultiSliceROOTWriter::OpenAndVerifyFile()
+    bool KTMultiSliceROOTWriter::OpenAndVerifyFile()
     {
         if (fUseTFile)
         {

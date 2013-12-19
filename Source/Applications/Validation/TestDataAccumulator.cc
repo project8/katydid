@@ -22,14 +22,14 @@ KTLOGGER(vallog, "katydid.applications.validation");
 
 int main()
 {
-    const UInt_t nToAccumulate = 10;
-    const UInt_t multiplier = 2;
-    UInt_t nBins = (nToAccumulate + 1) * multiplier;
+    const unsigned nToAccumulate = 10;
+    const unsigned multiplier = 2;
+    unsigned nBins = (nToAccumulate + 1) * multiplier;
 
     KTDataAccumulator accumulator;
     accumulator.SetAccumulatorSize(nToAccumulate);
 
-    for (UInt_t iAcc = 0; iAcc < nToAccumulate; ++iAcc)
+    for (unsigned iAcc = 0; iAcc < nToAccumulate; ++iAcc)
     {
         KTINFO(vallog, "Iteration: " << iAcc);
 
@@ -42,7 +42,7 @@ int main()
         accumulator.AddData(newData);
     }
 
-    for (UInt_t iAcc = 0; iAcc < nToAccumulate; ++iAcc)
+    for (unsigned iAcc = 0; iAcc < nToAccumulate; ++iAcc)
     {
         KTINFO(vallog, "Iteration: " << nToAccumulate + iAcc);
 

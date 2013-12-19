@@ -12,6 +12,8 @@
 
 #include "KTData.hh"
 
+#include "Rtypes.h"
+
 class TH2D;
 class TTree;
 
@@ -41,7 +43,7 @@ namespace Katydid
             TTree* GetMetaCCLocustMCTree() const;
 
         private:
-            Bool_t SetupMetaCCLocustMCTree();
+            bool SetupMetaCCLocustMCTree();
 
             TTree* fMetaCCLocustMCTree;
 

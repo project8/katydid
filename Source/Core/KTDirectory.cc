@@ -36,7 +36,7 @@ namespace Katydid
         return fPath.string();
     }
 
-    Bool_t KTDirectory::GetPathExists() const
+    bool KTDirectory::GetPathExists() const
     {
         return fPathExists;
     }
@@ -46,7 +46,7 @@ namespace Katydid
         return fAccess;
     }
 
-    Bool_t KTDirectory::SetPath(const string& strPath)
+    bool KTDirectory::SetPath(const string& strPath)
     {
         path newPath(strPath);
         if (! newPath.is_absolute())

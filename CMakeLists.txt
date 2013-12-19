@@ -119,8 +119,6 @@ if (ROOT_FOUND)
 else (ROOT_FOUND)
     message(STATUS "Building without ROOT")
     remove_definitions(-DROOT_FOUND)
-    # option for not building with ROOT: need a few include files for file types
-    set (ROOT_INCLUDES ${PROJECT_SOURCE_DIR}/External/ROOT)
 endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
 

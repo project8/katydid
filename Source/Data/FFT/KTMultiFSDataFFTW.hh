@@ -27,47 +27,47 @@ namespace Katydid
             KTMultiFSDataFFTWCore();
             virtual ~KTMultiFSDataFFTWCore();
 
-            const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* GetSpectra(UInt_t component = 0) const;
-            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* GetSpectra(UInt_t component = 0);
-            UInt_t GetNComponents() const;
+            const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* GetSpectra(unsigned component = 0) const;
+            KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* GetSpectra(unsigned component = 0);
+            unsigned GetNComponents() const;
 
-            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* spectra, UInt_t component = 0);
-            void SetSpectrum(KTFrequencySpectrumFFTW* spectrum, UInt_t iSpect, UInt_t component = 0);
+            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* spectra, unsigned component = 0);
+            void SetSpectrum(KTFrequencySpectrumFFTW* spectrum, unsigned iSpect, unsigned component = 0);
 
-            void SetNSpectra(UInt_t nSpectra);
-            virtual KTMultiFSDataFFTWCore& SetNComponents(UInt_t components) = 0;
+            void SetNSpectra(unsigned nSpectra);
+            virtual KTMultiFSDataFFTWCore& SetNComponents(unsigned components) = 0;
 
         protected:
-            void DeleteSpectra(UInt_t component = 0);
+            void DeleteSpectra(unsigned component = 0);
 
             std::vector< KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* > fSpectra;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH2D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hMultiFSMag") const;
-            virtual TH2D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hMultiFSPhase") const;
+            virtual TH2D* CreateMagnitudeHistogram(unsigned component = 0, const std::string& name = "hMultiFSMag") const;
+            virtual TH2D* CreatePhaseHistogram(unsigned component = 0, const std::string& name = "hMultiFSPhase") const;
 
-            virtual TH2D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hMultiFSPower") const;
+            virtual TH2D* CreatePowerHistogram(unsigned component = 0, const std::string& name = "hMultiFSPower") const;
 #endif
 
     };
 
-    inline const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTMultiFSDataFFTWCore::GetSpectra(UInt_t component) const
+    inline const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTMultiFSDataFFTWCore::GetSpectra(unsigned component) const
     {
         return fSpectra[component];
     }
 
-    inline KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTMultiFSDataFFTWCore::GetSpectra(UInt_t component)
+    inline KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* KTMultiFSDataFFTWCore::GetSpectra(unsigned component)
     {
         return fSpectra[component];
     }
 
-    inline UInt_t KTMultiFSDataFFTWCore::GetNComponents() const
+    inline unsigned KTMultiFSDataFFTWCore::GetNComponents() const
     {
-        return UInt_t(fSpectra.size());
+        return unsigned(fSpectra.size());
     }
 
-    inline void KTMultiFSDataFFTWCore::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* spectra, UInt_t component)
+    inline void KTMultiFSDataFFTWCore::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* spectra, unsigned component)
     {
         if (component >= fSpectra.size())
             SetNComponents(component+1);
@@ -76,7 +76,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTMultiFSDataFFTWCore::DeleteSpectra(UInt_t component)
+    inline void KTMultiFSDataFFTWCore::DeleteSpectra(unsigned component)
     {
         if (component >= fSpectra.size())
             return;
@@ -97,7 +97,7 @@ namespace Katydid
             KTMultiFSDataFFTW();
             virtual ~KTMultiFSDataFFTW();
 
-            KTMultiFSDataFFTW& SetNComponents(UInt_t component);
+            KTMultiFSDataFFTW& SetNComponents(unsigned component);
     };
 
 } /* namespace Katydid */

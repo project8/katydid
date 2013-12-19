@@ -12,8 +12,6 @@
 
 #include "KTPhysicalArray.hh"
 
-#include "Rtypes.h"
-
 #include <string>
 
 class TH1D;
@@ -21,20 +19,20 @@ class TH1D;
 namespace Katydid
 {
 
-    class KTPowerSpectrum : public KTPhysicalArray< 1, Double_t >
+    class KTPowerSpectrum : public KTPhysicalArray< 1, double >
     {
         public:
             KTPowerSpectrum();
-            KTPowerSpectrum(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            KTPowerSpectrum(size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTPowerSpectrum(const KTPowerSpectrum& orig);
             virtual ~KTPowerSpectrum();
 
         public:
             /// Returns the resistance used to calculate the power from the voltage in a frequency spectrum
-            static Double_t GetResistance();
+            static double GetResistance();
 
         protected:
-            const static Double_t fResistance; // ohms
+            const static double fResistance; // ohms
 
 #ifdef ROOT_FOUND
         public:
@@ -50,60 +48,60 @@ namespace Katydid
     {
         public:
             KTPowerSpectrum();
-            KTPowerSpectrum(UInt_t nBins, Double_t binWidth=1.);
+            KTPowerSpectrum(unsigned nBins, double binWidth=1.);
             KTPowerSpectrum(const KTPowerSpectrum& original);
             virtual ~KTPowerSpectrum();
 
             /// Input should be the direct FFT, not a power spectrum
             virtual void TakeFrequencySpectrum(const KTComplexVector& freqSpect);
-            virtual void TakeFrequencySpectrum(unsigned int nBins, const Double_t* real, const Double_t* imag);
+            virtual void TakeFrequencySpectrum(unsigned int nBins, const double* real, const double* imag);
 
-            Double_t GetPowerAtFrequency(Double_t freq);
-            Double_t GetPhaseAtFrequency(Double_t freq);
-            Int_t GetBin(Double_t freq);
+            double GetPowerAtFrequency(double freq);
+            double GetPhaseAtFrequency(double freq);
+            int GetBin(double freq);
 
             virtual TH1D* CreateMagnitudeHistogram() const;
             virtual TH1D* CreateMagnitudeHistogram(const std::string& name) const;
             virtual TH1D* CreatePhaseHistogram() const;
             virtual TH1D* CreatePhaseHistogram(const std::string& name) const;
 
-            virtual KTPhysicalArray< 1, Double_t >* CreateMagnitudePhysArr() const;
-            virtual KTPhysicalArray< 1, Double_t >* CreatePhasePhysArr() const;
+            virtual KTPhysicalArray< 1, double >* CreateMagnitudePhysArr() const;
+            virtual KTPhysicalArray< 1, double >* CreatePhasePhysArr() const;
 
             virtual TH1D* CreatePowerDistributionHistogram() const;
             virtual TH1D* CreatePowerDistributionHistogram(const std::string& name) const;
 
-            Double_t GetBinWidth() const;
+            double GetBinWidth() const;
 
-            void SetBinWidth(Double_t bw);
+            void SetBinWidth(double bw);
 
         protected:
-            Double_t fBinWidth;
+            double fBinWidth;
 
             ClassDef(KTPowerSpectrum, 2);
     };
 
-    inline Double_t KTPowerSpectrum::GetPowerAtFrequency(Double_t freq)
+    inline double KTPowerSpectrum::GetPowerAtFrequency(double freq)
     {
         return fMagnitude[GetBin(freq)];
     }
 
-    inline Double_t KTPowerSpectrum::GetPhaseAtFrequency(Double_t freq)
+    inline double KTPowerSpectrum::GetPhaseAtFrequency(double freq)
     {
         return fPhase[GetBin(freq)];
     }
 
-    inline Int_t KTPowerSpectrum::GetBin(Double_t freq)
+    inline int KTPowerSpectrum::GetBin(double freq)
     {
-        return Int_t(freq / fBinWidth);
+        return int(freq / fBinWidth);
     }
 
-    inline Double_t KTPowerSpectrum::GetBinWidth() const
+    inline double KTPowerSpectrum::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline void KTPowerSpectrum::SetBinWidth(Double_t bw)
+    inline void KTPowerSpectrum::SetBinWidth(double bw)
     {
         fBinWidth = bw;
         return;

@@ -50,16 +50,16 @@ KTLOGGER(proflog, "katydid.applications.profiling");
 
 int main()
 {
-    Double_t minAnalysisFreq = 6.e6;
-    Double_t maxAnalysisFreq = 95.e6;
+    double minAnalysisFreq = 6.e6;
+    double maxAnalysisFreq = 95.e6;
 
     //***********************************
     // Create and configure processors
     //***********************************
 
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
-    UInt_t nSlices = 50;
-    UInt_t recordSize = 32768;
+    unsigned nSlices = 50;
+    unsigned recordSize = 32768;
     KTEggReaderMonarch::TimeSeriesType tsType = KTEggReaderMonarch::kFFTWTimeSeries;
 
     KTComplexFFTW compFFT;
@@ -131,8 +131,8 @@ int main()
     // Do the processing work
     //**************************
 
-    UInt_t iSlice = 0;
-    while (kTRUE)
+    unsigned iSlice = 0;
+    while (true)
     {
         if (iSlice >= nSlices) break;
 

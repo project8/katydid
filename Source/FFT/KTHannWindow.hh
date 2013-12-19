@@ -42,9 +42,9 @@ namespace Katydid
             KTHannWindow(const std::string& name = "hann");
             virtual ~KTHannWindow();
 
-            virtual Bool_t ConfigureWFSubclass(const KTPStoreNode* node);
+            virtual bool ConfigureWFSubclass(const KTPStoreNode* node);
 
-            virtual Double_t GetWeight(Double_t time) const;
+            virtual double GetWeight(double time) const;
 
             virtual void RebuildWindowFunction();
 

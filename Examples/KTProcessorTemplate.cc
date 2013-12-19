@@ -21,23 +21,22 @@ namespace Katydid
     // The name of the registrar object must be unique within Katydid
     static KTDerivedNORegistrar< KTProcessor, KTProcessorTemplate > sProcTempRegistrar("[config-name]");
 
-    KTComplexFFTW::KTComplexFFTW(const std::string& name) :
+    KTProcessorTemplate::KTProcessorTemplate(const std::string& name) :
             KTProcessor(name),
             // initialize all member variables
             // initialize signals:
             // f[SomeName]Signal("[signal-name]", this)
             // initialize slots:
-            // fHeaderSlot("header", this, &KTComplexFFTW::[function to call with header]),
+            // fHeaderSlot("header", this, &KTProcessorTemplate::[function to call with header]),
             // f[SomeName]Slot("[slot-name]", this, &KTProcessorTemplate::[function to call], &f[SomeName]Signal)
     {
-        SetupInternalMaps();
     }
 
-    KTComplexFFTW::~KTComplexFFTW()
+    KTProcessorTemplate::~KTProcessorTemplate()
     {
     }
 
-    Bool_t KTComplexFFTW::Configure(const KTPStoreNode* node)
+    bool KTProcessorTemplate::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 

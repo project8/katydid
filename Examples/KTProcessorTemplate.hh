@@ -13,7 +13,6 @@
 
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
 
 
 namespace Katydid
@@ -21,7 +20,6 @@ namespace Katydid
     // Forward declare whatever classes you can
     // input data type . . .
     // output data type . . .
-    class KTData;
     class KTEggHeader;
     class KTPStoreNode;
 
@@ -53,7 +51,7 @@ namespace Katydid
             KTProcessorTemplate(const std::string& name = "[config-name]");
             virtual ~KTProcessorTemplate();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             // Getters and setters for configurable parameters go here
         private:

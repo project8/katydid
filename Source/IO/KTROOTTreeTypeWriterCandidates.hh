@@ -12,6 +12,8 @@
 
 #include "KTData.hh"
 
+#include "Rtypes.h"
+
 class TH2D;
 class TTree;
 
@@ -66,8 +68,8 @@ namespace Katydid
             TTree* GetWaterfallCandidateTree() const;
 
         private:
-            Bool_t SetupFrequencyCandidateTree();
-            Bool_t SetupWaterfallCandidateTree();
+            bool SetupFrequencyCandidateTree();
+            bool SetupWaterfallCandidateTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;

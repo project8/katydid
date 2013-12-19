@@ -79,10 +79,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTNormalizedFSDataPolar& fsData = data->Of<KTNormalizedFSDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -108,10 +108,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTNormalizedFSDataFFTW& fsData = data->Of<KTNormalizedFSDataFFTW>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -137,10 +137,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTNormalizedFSDataPolar& fsData = data->Of<KTNormalizedFSDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -166,10 +166,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTNormalizedFSDataFFTW& fsData = data->Of<KTNormalizedFSDataFFTW>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -195,10 +195,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTNormalizedFSDataPolar& fsData = data->Of<KTNormalizedFSDataPolar>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -224,10 +224,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTNormalizedFSDataFFTW& fsData = data->Of<KTNormalizedFSDataFFTW>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -257,14 +257,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTAnalyticAssociateData& aaData = data->Of<KTAnalyticAssociateData>();
-        UInt_t nComponents = aaData.GetNComponents();
+        unsigned nComponents = aaData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTTimeSeries* timeSeries = aaData.GetTimeSeries(iPair);
             if (timeSeries != NULL)
@@ -289,14 +289,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTAnalyticAssociateData& aaData = data->Of<KTAnalyticAssociateData>();
-        UInt_t nComponents = aaData.GetNComponents();
+        unsigned nComponents = aaData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTTimeSeries* timeSeries = aaData.GetTimeSeries(iPair);
             if (timeSeries != NULL)
@@ -325,14 +325,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTCorrelationData& corrData = data->Of<KTCorrelationData>();
-        UInt_t nComponents = corrData.GetNComponents();
+        unsigned nComponents = corrData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTFrequencySpectrumPolar* spectrum = corrData.GetSpectrumPolar(iPair);
             if (spectrum != NULL)
@@ -358,14 +358,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTCorrelationData& corrData = data->Of<KTCorrelationData>();
-        UInt_t nComponents = corrData.GetNComponents();
+        unsigned nComponents = corrData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTFrequencySpectrumPolar* spectrum = corrData.GetSpectrumPolar(iPair);
             if (spectrum != NULL)
@@ -395,14 +395,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTCorrelationTSData& tsData = data->Of<KTCorrelationTSData>();
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -424,14 +424,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTCorrelationTSData& tsData = data->Of<KTCorrelationTSData>();
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -457,14 +457,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTHoughData& houghData = data->Of<KTHoughData>();
-        UInt_t nComponents = houghData.GetNComponents();
+        unsigned nComponents = houghData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPlot=0; iPlot<nComponents; iPlot++)
+        for (unsigned iPlot=0; iPlot<nComponents; iPlot++)
         {
             stringstream conv;
             conv << "histHT_" << sliceNumber << "_" << iPlot;
@@ -486,14 +486,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTGainVariationData& gvData = data->Of<KTGainVariationData>();
-        UInt_t nComponents = gvData.GetNComponents();
+        unsigned nComponents = gvData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPlot=0; iPlot<nComponents; iPlot++)
+        for (unsigned iPlot=0; iPlot<nComponents; iPlot++)
         {
             stringstream conv;
             conv << "histGV_" << sliceNumber << "_" << iPlot;
@@ -532,14 +532,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTWignerVilleData& wvData = data->Of<KTWignerVilleData>();
-        UInt_t nComponents = wvData.GetNComponents();
+        unsigned nComponents = wvData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTFrequencySpectrumFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
             if (spectrum != NULL)
@@ -565,14 +565,14 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTWignerVilleData& wvData = data->Of<KTWignerVilleData>();
-        UInt_t nComponents = wvData.GetNComponents();
+        unsigned nComponents = wvData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (UInt_t iPair=0; iPair<nComponents; iPair++)
+        for (unsigned iPair=0; iPair<nComponents; iPair++)
         {
             const KTFrequencySpectrumFFTW* spectrum = wvData.GetSpectrumFFTW(iPair);
             if (spectrum != NULL)
@@ -598,10 +598,10 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
         KTWV2DData& fsData = data->Of<KTWV2DData>();
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 

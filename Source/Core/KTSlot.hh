@@ -214,7 +214,7 @@ namespace Katydid
      @details
      Usage:
      This slot type adds the slot function (signature void (KTDataPtr).
-     Your processor (or, optionally, a different object) must have a member function with the signature Bool_t (DataType&).
+     Your processor (or, optionally, a different object) must have a member function with the signature bool (DataType&).
      The slot function checks that the provided KTData object contains data of type DataType, and then calls the member function.
 
      In your Processor's header add a member variable of type KTSlotOneArg< ProcessorType, DataType >.
@@ -235,16 +235,16 @@ namespace Katydid
         public:
             /// Constructor for the case where the processor has the function that will be called by the slot
             template< class XFuncOwnerType >
-            KTSlotDataOneType(const std::string& name, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr=NULL);
+            KTSlotDataOneType(const std::string& name, XFuncOwnerType* owner, bool (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr=NULL);
             /// Constructor for the case where the processor and the object with the function that will be called are different
             template< class XFuncOwnerType >
-            KTSlotDataOneType(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr=NULL);
+            KTSlotDataOneType(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, bool (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr=NULL);
             virtual ~KTSlotDataOneType();
 
             void operator()(KTDataPtr data);
 
         protected:
-            boost::function< Bool_t (data_type&) > fFunc;
+            boost::function< bool (data_type&) > fFunc;
 
             KTSignalData* fSignalPtr;
     };
@@ -263,16 +263,16 @@ namespace Katydid
         public:
             /// Constructor for the case where the processor has the function that will be called by the slot
             template< class XFuncOwnerType >
-            KTSlotDataTwoTypes(const std::string& name, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr=NULL);
+            KTSlotDataTwoTypes(const std::string& name, XFuncOwnerType* owner, bool (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr=NULL);
             /// Constructor for the case where the processor and the object with the function that will be called are different
             template< class XFuncOwnerType >
-            KTSlotDataTwoTypes(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr=NULL);
+            KTSlotDataTwoTypes(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, bool (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr=NULL);
             virtual ~KTSlotDataTwoTypes();
 
             void operator()(KTDataPtr data);
 
         protected:
-            boost::function< Bool_t (first_data_type&, second_data_type&) > fFunc;
+            boost::function< bool (first_data_type&, second_data_type&) > fFunc;
 
             KTSignalData* fSignalPtr;
     };
@@ -283,7 +283,7 @@ namespace Katydid
 
     template< class XDataType >
     template< class XFuncOwnerType >
-    KTSlotDataOneType< XDataType >::KTSlotDataOneType(const std::string& name, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr) :
+    KTSlotDataOneType< XDataType >::KTSlotDataOneType(const std::string& name, XFuncOwnerType* owner, bool (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr) :
             fFunc(boost::bind(func, owner, _1)),
             fSignalPtr(signalPtr)
     {
@@ -292,7 +292,7 @@ namespace Katydid
 
     template< class XDataType >
     template< class XFuncOwnerType >
-    KTSlotDataOneType< XDataType >::KTSlotDataOneType(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr) :
+    KTSlotDataOneType< XDataType >::KTSlotDataOneType(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, bool (XFuncOwnerType::*func)(data_type&), KTSignalData* signalPtr) :
             fFunc(boost::bind(func, owner, _1)),
             fSignalPtr(signalPtr)
     {
@@ -332,7 +332,7 @@ namespace Katydid
 
     template< class XDataType1, class XDataType2 >
     template< class XFuncOwnerType >
-    KTSlotDataTwoTypes< XDataType1, XDataType2 >::KTSlotDataTwoTypes(const std::string& name, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr) :
+    KTSlotDataTwoTypes< XDataType1, XDataType2 >::KTSlotDataTwoTypes(const std::string& name, XFuncOwnerType* owner, bool (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr) :
             fFunc(boost::bind(func, owner, _1, _2)),
             fSignalPtr(signalPtr)
     {
@@ -341,7 +341,7 @@ namespace Katydid
 
     template< class XDataType1, class XDataType2 >
     template< class XFuncOwnerType >
-    KTSlotDataTwoTypes< XDataType1, XDataType2 >::KTSlotDataTwoTypes(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, Bool_t (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr) :
+    KTSlotDataTwoTypes< XDataType1, XDataType2 >::KTSlotDataTwoTypes(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, bool (XFuncOwnerType::*func)(first_data_type&, second_data_type&), KTSignalData* signalPtr) :
             fFunc(boost::bind(func, owner, _1, _2)),
             fSignalPtr(signalPtr)
     {

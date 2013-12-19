@@ -77,7 +77,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTROOTTreeTypeWriterEvaluation::SetupMetaCCLocustMCTree()
+    bool KTROOTTreeTypeWriterEvaluation::SetupMetaCCLocustMCTree()
     {
         fMetaCCLocustMCTree = new TTree("mccLocustMC", "Meta-Candidate Comparison -- Locust MC");
         if (fMetaCCLocustMCTree == NULL)

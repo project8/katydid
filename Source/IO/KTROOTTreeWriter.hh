@@ -29,7 +29,7 @@ namespace Katydid
             KTROOTTreeWriter(const std::string& name = "root-tree-writer");
             virtual ~KTROOTTreeWriter();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);
@@ -43,7 +43,7 @@ namespace Katydid
 
             TFile* GetFile();
 
-            Bool_t OpenAndVerifyFile();
+            bool OpenAndVerifyFile();
             void AddTree(TTree* newTree);
 
             void WriteTrees();
