@@ -53,7 +53,7 @@ namespace Katydid
             KTProcessorTemplate(const std::string& name = "[config-name]");
             virtual ~KTProcessorTemplate();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
             // Getters and setters for configurable parameters go here
         private:

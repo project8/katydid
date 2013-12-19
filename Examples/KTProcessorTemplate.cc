@@ -37,7 +37,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTComplexFFTW::Configure(const KTPStoreNode* node)
+    bool KTComplexFFTW::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
