@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(utillog_factory, "katydid.utility");
+    KTLOGGER(utillog_no_factory, "katydid.utility");
 
     template< class XBaseType >
     class KTNOFactory;
@@ -97,7 +97,7 @@ namespace Katydid
         FactoryCIt it = fMap->find(className);
         if (it == fMap->end())
         {
-            KTERROR(utillog_factory, "Did not find factory for <" << className << ">.");
+            KTERROR(utillog_no_factory, "Did not find factory for <" << className << ">.");
             return NULL;
         }
 
@@ -116,7 +116,7 @@ namespace Katydid
         FactoryCIt it = fMap->find(className);
         if (it == fMap->end())
         {
-            KTERROR(utillog_factory, "Did not find factory for <" << className << ">.");
+            KTERROR(utillog_no_factory, "Did not find factory for <" << className << ">.");
             return NULL;
         }
 
@@ -127,16 +127,16 @@ namespace Katydid
     void KTNOFactory< XBaseType >::Register(const std::string& className, const KTNORegistrar< XBaseType >* registrar)
     {
         // A local (static) logger is created inside this function to avoid static initialization order problems
-        KTLOGGER(utillog_factory_reg, "katydid.utility");
+        KTLOGGER(utillog_no_factory_reg, "katydid.utility");
 
         FactoryCIt it = fMap->find(className);
         if (it != fMap->end())
         {
-            KTERROR(utillog_factory_reg, "Already have factory registered for <" << className << ">.");
+            KTERROR(utillog_no_factory_reg, "Already have factory registered for <" << className << ">.");
             return;
         }
         fMap->insert(std::pair< std::string, const KTNORegistrar< XBaseType >* >(className, registrar));
-        KTDEBUG(utillog_factory_reg, "Registered a factory for class " << className << ", factory #" << fMap->size()-1);
+        KTDEBUG(utillog_no_factory_reg, "Registered a factory for class " << className << ", factory #" << fMap->size()-1);
     }
 
     template< class XBaseType >
