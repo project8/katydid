@@ -110,7 +110,7 @@ namespace Katydid
             const std::string& GetWisdomFilename() const;
 
             /// note: SetSize creates a new fTransform.
-            ///       It also sets fIsInitialized to kFALSE.
+            ///       It also sets fIsInitialized to false.
             void SetSize(unsigned nBins);
 
             /// note: SetTransoformFlag sets fIsInitialized to false.

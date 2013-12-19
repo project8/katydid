@@ -109,7 +109,7 @@ int main(int argc, char** argv)
     if (scanRecords)
     {
         unsigned iSlice = 0;
-        while (kTRUE)
+        while (true)
         {
             KTINFO(eggscan, "Hatching slice " << iSlice);
 

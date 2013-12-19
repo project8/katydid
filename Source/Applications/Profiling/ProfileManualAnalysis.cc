@@ -132,7 +132,7 @@ int main()
     //**************************
 
     unsigned iSlice = 0;
-    while (kTRUE)
+    while (true)
     {
         if (iSlice >= nSlices) break;
 

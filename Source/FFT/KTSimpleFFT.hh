@@ -106,7 +106,7 @@ namespace Katydid
             virtual double GetMaxFrequency(double timeBinWidth) const;
 
             /// note: SetTimeSize creates a new fTransform.
-            ///       It also sets fIsInitialized to kFALSE.
+            ///       It also sets fIsInitialized to false.
             void SetTimeSize(unsigned nBins);
 
             const std::string& GetTransformFlag() const;

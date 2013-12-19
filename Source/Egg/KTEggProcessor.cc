@@ -201,7 +201,7 @@ namespace Katydid
     {
         unsigned iSlice = 0, iProgress = 0;
         KTDataPtr data;
-        while (kTRUE)
+        while (true)
         {
             KTINFO(egglog, "Hatching slice " << iSlice);
 
@@ -235,7 +235,7 @@ namespace Katydid
     {
         unsigned iSlice = 0, iProgress = 0;
         KTDataPtr data;
-        while (kTRUE)
+        while (true)
         {
             if (fNSlices != 0 && iSlice >= fNSlices)
             {
