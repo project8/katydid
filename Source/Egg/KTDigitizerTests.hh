@@ -11,11 +11,16 @@
 
 #include "KTProcessor.hh"
 
+#include "KTDigitizerTestData.hh"
 #include "KTSlot.hh"
 
+#include <cmath>
+#include <map>
+#include <typeinfo>
 
 namespace Katydid
 {
+    //class KTDigitizerTestData;
     class KTPStoreNode;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
@@ -39,9 +44,9 @@ namespace Katydid
      Configuration name: "digitizer-tests"
 
      Available configuration values:
-     - "n-digitizer-bits": UInt_t -- Sets the full number of bits for the ADC in question
-     - "test-bit-occupancy": Bool_t -- Determines whether the bit occupancy test is run
-     - "test-clipping": Bool_t -- Determines whether the clipping test is run
+     - "n-digitizer-bits": unsigned -- Sets the full number of bits for the ADC in question
+     - "test-bit-occupancy": bool -- Determines whether the bit occupancy test is run
+     - "test-clipping": bool -- Determines whether the clipping test is run
 
      Slots:
      - "ts": void (KTDataPtr) -- [what it does]; Requires KTTimeSeriesData; Adds KTDigitizerTestData; Emits signal "dig-test"
@@ -53,65 +58,53 @@ namespace Katydid
     class KTDigitizerTests : public KTProcessor
     {
         private:
-            typedef Bool_t (KTDigitizerTests::*ptrToRealTestFunc)(const KTTimeSeriesReal*, KTDigitizerTestData&, UInt_t);
-            typedef Bool_t (KTDigitizerTests::*ptrToFFTWTestFunc)(const KTTimeSeriesFFTW*, KTDigitizerTestData&, UInt_t);
+            typedef bool (KTDigitizerTests::*ptrToRealTestFunc)(const KTTimeSeriesReal*, KTDigitizerTestData&, unsigned);
+            typedef bool (KTDigitizerTests::*ptrToFFTWTestFunc)(const KTTimeSeriesFFTW*, KTDigitizerTestData&, unsigned);
+
+            typedef std::map< unsigned, ptrToRealTestFunc > RealTestFuncs;
+            typedef std::map< unsigned, ptrToFFTWTestFunc > FFTWTestFuncs;
 
          public:
             KTDigitizerTests(const std::string& name = "digitizer-tests");
             virtual ~KTDigitizerTests();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTPStoreNode* node);
 
-            UInt_t GetNDigitizerBits() const;
-            void SetNDigitizerBits(UInt_t nBits);
+            unsigned GetNDigitizerBits() const;
+            unsigned GetNDigitizerLevels() const;
+            void SetNDigitizerBits(unsigned nBits);
 
-            Bool_t GetTestBitOccupancy() const;
-            void SetTestBitOccupancy(Bool_t flag);
+            bool GetTestBitOccupancy() const;
+            void SetTestBitOccupancy(bool flag);
 
-            Bool_t GetTestClipping() const;
-            void SetTestClipping(Bool_t flag);
-
-            void Initialize();
+            bool GetTestClipping() const;
+            void SetTestClipping(bool flag);
 
         private:
-            UInt_t fNDigitizerBits;
+            unsigned fNDigitizerBits;
+            unsigned fNDigitizerLevels;
 
-            Bool_t fTestBitOccupancy;
+            bool fTestBitOccupancy;
 
-            Bool_t fTestClipping;
-
-            Bool_t fRunInitialize;
+            bool fTestClipping;
 
         public:
-            Bool_t RunTestsOnRealTS(KTTimeSeriesData& data);
-            Bool_t RunTestsOnFFTWTS(KTTimeSeriesData& data);
-
-            Bool_t RunBitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component);
-            Bool_t RunBitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component);
-
-            Bool_t RunClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component);
-            Bool_t RunClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component);
-
-        private:
-            // Test function pointers
-            ptrToFFTWTestFunc* fBitOccupancyFFTWTestPtr;
-            ptrToRealTestFunc* fBitOccupancyRealTestPtr;
-
-            ptrToFFTWTestFunc* fClippingFFTWTestPtr;
-            ptrToRealTestFunc* fClippingRealTestPtr;
+            bool RunTestsOnRealTS(KTTimeSeriesData& data);
+            bool RunTestsOnFFTWTS(KTTimeSeriesData& data);
 
             // Actual test functions
-            Bool_t BitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component);
-            Bool_t BitOccupancyTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, UInt_t component);
+            bool BitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component);
+            bool BitOccupancyTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component);
 
-            Bool_t ClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component);
-            Bool_t ClippingTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, UInt_t component);
+            bool ClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component);
+            bool ClippingTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component);
 
+        private:
+            FFTWTestFuncs fFFTWTestFuncs;
+            RealTestFuncs fRealTestFuncs;
 
-            // Null test functions
-            Bool_t NullTest(const KTTimeSeriesFFTW*, KTDigitizerTestData&, UInt_t);
-            Bool_t NullTest(const KTTimeSeriesReal*, KTDigitizerTestData&, UInt_t);
-
+            unsigned fBitOccupancyTestID;
+            unsigned fClippingTestID;
 
             //***************
             // Signals
@@ -130,69 +123,30 @@ namespace Katydid
 
     };
 
-    inline UInt_t KTDigitizerTests::GetNDigitizerBits() const
+    inline unsigned KTDigitizerTests::GetNDigitizerBits() const
     {
         return fNDigitizerBits;
     }
-    inline void KTDigitizerTests::SetNDigitizerBits(UInt_t nBits)
+    inline unsigned KTDigitizerTests::GetNDigitizerLevels() const
+    {
+        return fNDigitizerLevels;
+    }
+    inline void KTDigitizerTests::SetNDigitizerBits(unsigned nBits)
     {
         fNDigitizerBits = nBits;
+        fNDigitizerLevels = pow(2, nBits);
         return;
     }
 
-    inline Bool_t KTDigitizerTests::GetTestBitOccupancy() const
+    inline bool KTDigitizerTests::GetTestBitOccupancy() const
     {
         return fTestBitOccupancy;
     }
-    inline void KTDigitizerTests::SetTestBitOccupancy(Bool_t flag)
-    {
-        fTestBitOccupancy = flag;
-        fRunInitialize = true;
-        return;
-    }
 
-    inline Bool_t KTDigitizerTests::GetTestClipping() const
+    inline bool KTDigitizerTests::GetTestClipping() const
     {
         return fTestClipping;
     }
-    inline void KTDigitizerTests::SetTestClipping(Bool_t flag)
-    {
-        fTestClipping = flag;
-        fRunInitialize = true;
-        return;
-    }
 
-    inline Bool_t KTDigitizerTests::RunBitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component)
-    {
-        if (fRunInitialize) Initialize();
-        return (this->*fBitOccupancyRealTestPtr)(ts, testData, component);
-    }
-    inline Bool_t KTDigitizerTests::RunBitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component)
-    {
-        if (fRunInitialize) Initialize();
-        return (this->*fBitOccupancyFFTWTestPtr)(ts, testData, component);
-    }
-
-    inline Bool_t KTDigitizerTests::RunClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component)
-    {
-        if (fRunInitialize) Initialize();
-        return (this->*fClippingRealTestPtr)(ts, testData, component);
-    }
-    inline Bool_t KTDigitizerTests::RunClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component)
-    {
-        if (fRunInitialize) Initialize();
-        return (this->*fClippingFFTWTestPtr)(ts, testData, component);
-    }
-
-    inline Bool_t KTDigitizerTests::NullTest(const KTTimeSeriesFFTW*, KTDigitizerTestData&, UInt_t)
-    {
-        return true;
-    }
-
-    inline Bool_t KTDigitizerTests::NullTest(const KTTimeSeriesReal*, KTDigitizerTestData&, UInt_t)
-    {
-        return true;
-    }
-
- /* namespace Katydid */
+} /* namespace Katydid */
 #endif /* KTDIGITIZERTESTS_HH_ */

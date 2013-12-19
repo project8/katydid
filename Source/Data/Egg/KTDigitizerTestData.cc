@@ -19,4 +19,15 @@ namespace Katydid
     {
     }
 
+    unsigned KTDigitizerTestData::GetNComponents() const
+    {
+        return 0;
+    }
+
+    KTDigitizerTestData& KTDigitizerTestData::SetNComponents(unsigned num)
+    {
+        return *this;
+    }
+
+
 } /* namespace Katydid */

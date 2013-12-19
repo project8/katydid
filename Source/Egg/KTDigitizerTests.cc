@@ -15,6 +15,8 @@
 #include "KTTimeSeriesReal.hh"
 #include "KTTimeSeriesData.hh"
 
+#include <cmath>
+
 using boost::shared_ptr;
 
 namespace Katydid
@@ -26,90 +28,128 @@ namespace Katydid
     KTDigitizerTests::KTDigitizerTests(const std::string& name) :
             KTProcessor(name),
             fNDigitizerBits(8),
+            fNDigitizerLevels(pow(2, fNDigitizerBits)),
             fTestBitOccupancy(true),
             fTestClipping(true),
-            fRunInitialize(true),
-            fBitOccupancyFFTWTestPtr(&KTDigitizerTests::BitOccupancyTest),
-            fBitOccupancyRealTestPtr(&KTDigitizerTests::BitOccupancyTest),
-            fClippingFFTWTestPtr(&KTDigitizerTests::ClippingTest),
-            fClippingRealTestPtr(&KTDigitizerTests::ClippingTest),
+            fFFTWTestFuncs(),
+            fRealTestFuncs(),
+            fBitOccupancyTestID(0),
+            fClippingTestID(0),
             fDigTestSignal("dig-test", this),
             fDigTestRealSlot("ts-real", this, &KTDigitizerTests::RunTestsOnRealTS, &fDigTestSignal),
             fDigTestFFTWSlot("ts-fftw", this, &KTDigitizerTests::RunTestsOnFFTWTS, &fDigTestSignal)
     {
+        unsigned id = 0;
+
+        fBitOccupancyTestID = ++id;
+        fClippingTestID = ++id;
+
+        SetTestBitOccupancy(fTestBitOccupancy);
+        SetTestClipping(fTestClipping);
     }
 
     KTDigitizerTests::~KTDigitizerTests()
     {
     }
 
-    Bool_t KTDigitizerTests::Configure(const KTPStoreNode* node)
+    bool KTDigitizerTests::Configure(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
-        fNDigitizerBits = node->GetData< UInt_t >("n-digitizer-bits", fNDigitizerBits);
+        fNDigitizerBits = node->GetData< unsigned >("n-digitizer-bits", fNDigitizerBits);
 
-        SetTestBitOccupancy(node->GetData< Bool_t >("test-bit-occupancy", fTestBitOccupancy));
+        SetTestBitOccupancy(node->GetData< bool >("test-bit-occupancy", fTestBitOccupancy));
 
-        SetTestClipping(node->GetData< Bool_t >("test-clipping", fTestClipping));
+        SetTestClipping(node->GetData< bool >("test-clipping", fTestClipping));
 
         return true;
     }
 
-    void KTDigitizerTests::Initialize()
+    bool KTDigitizerTests::RunTestsOnRealTS(KTTimeSeriesData& data)
     {
-        if (fTestBitOccupancy)
+        unsigned nComponents = data.GetNComponents();
+        KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
+        for (unsigned component = 0; component < nComponents; ++component)
         {
-            fBitOccupancyFFTWTestPtr = &KTDigitizerTests::BitOccupancyTest;
-            fBitOccupancyRealTestPtr = &KTDigitizerTests::BitOccupancyTest;
+            const KTTimeSeriesReal* ts = static_cast< const KTTimeSeriesReal* >(data.GetTimeSeries(component));
+            for (RealTestFuncs::const_iterator func_it = fRealTestFuncs.begin(); func_it != fRealTestFuncs.end(); ++func_it)
+            {
+                (this->*(func_it->second))(ts, dtData, component);
+            }
+        }
+        return true;
+    }
+
+    bool KTDigitizerTests::RunTestsOnFFTWTS(KTTimeSeriesData& data)
+    {
+        unsigned nComponents = data.GetNComponents();
+        KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
+        for (unsigned component = 0; component < nComponents; ++component)
+        {
+            const KTTimeSeriesFFTW* ts = static_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(component));
+            for (FFTWTestFuncs::const_iterator func_it = fFFTWTestFuncs.begin(); func_it != fFFTWTestFuncs.end(); ++func_it)
+            {
+                (this->*(func_it->second))(ts, dtData, component);
+            }
+        }
+        return true;
+    }
+
+    bool KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component)
+    {
+        return true;
+    }
+    bool KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component)
+    {
+        return true;
+    }
+
+    bool KTDigitizerTests::ClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component)
+    {
+        size_t nBins = ts->size();
+        for (size_t iBin = 0; iBin < nBins; ++iBin)
+        {
+
+        }
+        return true;
+    }
+    bool KTDigitizerTests::ClippingTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component)
+    {
+        return true;
+    }
+
+    void KTDigitizerTests::SetTestBitOccupancy(bool flag)
+    {
+        fTestBitOccupancy = flag;
+        if (flag)
+        {
+            fFFTWTestFuncs.insert(FFTWTestFuncs::value_type(fBitOccupancyTestID, &KTDigitizerTests::BitOccupancyTest));
+            fRealTestFuncs.insert(RealTestFuncs::value_type(fBitOccupancyTestID, &KTDigitizerTests::BitOccupancyTest));
         }
         else
         {
-            fBitOccupancyFFTWTestPtr = &KTDigitizerTests::NullTest;
-            fBitOccupancyRealTestPtr = &KTDigitizerTests::NullTest;
+            fFFTWTestFuncs.erase(fBitOccupancyTestID);
+            fRealTestFuncs.erase(fBitOccupancyTestID);
         }
-
-        if (fTestClipping)
-        {
-            fBitOccupancyFFTWTestPtr = &KTDigitizerTests::ClippingTest;
-            fBitOccupancyRealTestPtr = &KTDigitizerTests::ClippingTest;
-        }
-        else
-        {
-            fBitOccupancyFFTWTestPtr = &KTDigitizerTests::NullTest;
-            fBitOccupancyRealTestPtr = &KTDigitizerTests::NullTest;
-        }
-
         return;
     }
 
-    Bool_t KTDigitizerTests::RunTestsOnRealTS(KTTimeSeriesData& data)
+    void KTDigitizerTests::SetTestClipping(bool flag)
     {
-        return true;
+        fTestClipping = flag;
+        if (flag)
+        {
+            fFFTWTestFuncs.insert(FFTWTestFuncs::value_type(fClippingTestID, &KTDigitizerTests::ClippingTest));
+            fRealTestFuncs.insert(RealTestFuncs::value_type(fClippingTestID, &KTDigitizerTests::ClippingTest));
+        }
+        else
+        {
+            fFFTWTestFuncs.erase(fClippingTestID);
+            fRealTestFuncs.erase(fClippingTestID);
+        }
+        return;
     }
 
-    Bool_t KTDigitizerTests::RunTestsOnFFTWTS(KTTimeSeriesData& data)
-    {
-        return true;
-    }
-
-    Bool_t KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component)
-    {
-        return true;
-    }
-    Bool_t KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, UInt_t component)
-    {
-        return true;
-    }
-
-    Bool_t KTDigitizerTests::ClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, UInt_t component)
-    {
-        return true;
-    }
-    Bool_t KTDigitizerTests::ClippingTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, UInt_t component)
-    {
-        return true;
-    }
 
 
 } /* namespace Katydid */

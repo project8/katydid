@@ -19,9 +19,11 @@ namespace Katydid
             KTDigitizerTestData();
             virtual ~KTDigitizerTestData();
 
+            unsigned GetNComponents() const;
 
+            KTDigitizerTestData& SetNComponents(unsigned num);
 
-        private:
+        //private:
 
     };
 
