@@ -26,9 +26,9 @@ namespace Katydid
 
      Available configuration options:
      - Inherited from KTTSGenerator
-       - "n-slices": unsigned -- Number of slices to create (used only if creating new slices)
+       - "number-of-slices": unsigned -- Number of slices to create (used only if creating new slices)
        - "n-channels": unsigned -- Number of channels per slice to create (used only if creating new slices)
-       - "time-series-size": unsigned -- Specify the size of the time series (used only if creating new slices)
+       - "slice-size": unsigned -- Specify the size of the time series (used only if creating new slices)
        - "bin-width": double -- Specify the bin width
        - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
        - "record-size": unsigned -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
