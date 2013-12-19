@@ -38,7 +38,7 @@ namespace Katydid
         if (node == NULL) return false;
 
         KTPStoreNode::csi_pair itPair = node->EqualRange("offset");
-        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
+        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; ++citer)
         {
             UIntDoublePair pair = ParsePairUIntDouble(citer->second.get_value< string >());
             if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1);
@@ -55,7 +55,7 @@ namespace Katydid
         unsigned nComponents = data.GetNComponents();
         if (fOffsets.size() <= nComponents) fOffsets.resize(nComponents + 1);
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeries* timeSeries = data.GetTimeSeries(iComponent);
 
@@ -65,7 +65,7 @@ namespace Katydid
                 continue;
             }
 
-            for (unsigned iBin = 0; iBin < sliceSize; iBin++)
+            for (unsigned iBin = 0; iBin < sliceSize; ++iBin)
             {
                 timeSeries->SetValue(iBin, fOffsets[iComponent] + timeSeries->GetValue(iBin));
             }

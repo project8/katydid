@@ -32,9 +32,9 @@ namespace Katydid
             KTTimeSeries(),
             KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax)
     {
-        for (unsigned iBin = 0; iBin < nBins; iBin++)
+        for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            fData[0] = 0.;
+            fData[iBin] = 0.0;
         }
     }
     KTTimeSeriesReal::KTTimeSeriesReal(const KTTimeSeriesReal& orig) :
@@ -56,7 +56,7 @@ namespace Katydid
     void KTTimeSeriesReal::Print(unsigned startPrint, unsigned nToPrint) const
     {
         stringstream printStream;
-        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; iBin++)
+        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; ++iBin)
         {
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
                     ";   y = " << (*this)(iBin) << "\n";
@@ -70,7 +70,7 @@ namespace Katydid
     {
         unsigned nBins = GetNBins();
         TH1D* hist = new TH1D(name.c_str(), "Time Series", (int)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->SetBinContent((int)iBin+1, (*this)(iBin));
         }
@@ -85,7 +85,7 @@ namespace Katydid
         double tMinMag = 1.e9;
         unsigned nBins = GetNTimeBins();
         double value;
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             value = (*this)(iBin);
             //value *= value;
@@ -94,7 +94,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             //value = (*this)(iBin);
             //hist->Fill(value*value);
