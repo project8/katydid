@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    static KTDerivedNORegistrar< KTProcessor, KTDataQueueProcessor > sDQProcRegistrar("data-queue");
+    static KTNORegistrar< KTProcessor, KTDataQueueProcessor > sDQProcRegistrar("data-queue");
 
     KTDataQueueProcessor::KTDataQueueProcessor(const std::string& name) :
         KTDataQueueProcessorTemplate< KTDataQueueProcessor >(name),

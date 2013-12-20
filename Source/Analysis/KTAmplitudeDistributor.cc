@@ -27,7 +27,7 @@ namespace Katydid
 {
     KTLOGGER(adlog, "katydid.analysis");
 
-    static KTDerivedNORegistrar< KTProcessor, KTAmplitudeDistributor > sADRegistrar("amplitude-distributor");
+    static KTNORegistrar< KTProcessor, KTAmplitudeDistributor > sADRegistrar("amplitude-distributor");
 
     KTAmplitudeDistributor::KTAmplitudeDistributor(const string& name) :
             KTProcessor(name),

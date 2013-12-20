@@ -21,7 +21,7 @@ namespace Katydid
 {
     KTLOGGER(genlog, "katydid.simulation");
 
-    static KTDerivedNORegistrar< KTProcessor, KTDCOffsetGenerator > sDCOffGenRegistrar("dc-offset-generator");
+    static KTNORegistrar< KTProcessor, KTDCOffsetGenerator > sDCOffGenRegistrar("dc-offset-generator");
 
     KTDCOffsetGenerator::KTDCOffsetGenerator(const string& name) :
             KTTSGenerator(name),

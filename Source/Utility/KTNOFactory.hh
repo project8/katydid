@@ -22,11 +22,11 @@ namespace Katydid
     class KTNOFactory;
 
     template< class XBaseType >
-    class KTNORegistrar
+    class KTNORegistrarBase
     {
         public:
-            KTNORegistrar() {}
-            virtual ~KTNORegistrar() {}
+            KTNORegistrarBase() {}
+            virtual ~KTNORegistrarBase() {}
 
         public:
             friend class KTNOFactory< XBaseType >;
@@ -38,11 +38,11 @@ namespace Katydid
     };
 
     template< class XBaseType, class XDerivedType >
-    class KTDerivedNORegistrar : public KTNORegistrar< XBaseType >
+    class KTNORegistrar : public KTNORegistrarBase< XBaseType >
     {
         public:
-            KTDerivedNORegistrar(const std::string& className);
-            virtual ~KTDerivedNORegistrar();
+            KTNORegistrar(const std::string& className);
+            virtual ~KTNORegistrar();
 
         protected:
             void Register(const std::string& className) const;
@@ -57,7 +57,7 @@ namespace Katydid
     class KTNOFactory : public KTSingleton< KTNOFactory< XBaseType > >
     {
         public:
-            typedef std::map< std::string, const KTNORegistrar< XBaseType >* > FactoryMap;
+            typedef std::map< std::string, const KTNORegistrarBase< XBaseType >* > FactoryMap;
             typedef typename FactoryMap::value_type FactoryEntry;
             typedef typename FactoryMap::iterator FactoryIt;
             typedef typename FactoryMap::const_iterator FactoryCIt;
@@ -69,7 +69,7 @@ namespace Katydid
             XBaseType* CreateNamed(const std::string& className);
             XBaseType* CreateNamed(const FactoryCIt& iter);
 
-            void Register(const std::string& className, const KTNORegistrar< XBaseType >* registrar);
+            void Register(const std::string& className, const KTNORegistrarBase< XBaseType >* registrar);
 
             FactoryCIt GetFactoryMapBegin() const;
             FactoryCIt GetFactoryMapEnd() const;
@@ -124,7 +124,7 @@ namespace Katydid
     }
 
     template< class XBaseType >
-    void KTNOFactory< XBaseType >::Register(const std::string& className, const KTNORegistrar< XBaseType >* registrar)
+    void KTNOFactory< XBaseType >::Register(const std::string& className, const KTNORegistrarBase< XBaseType >* registrar)
     {
         // A local (static) logger is created inside this function to avoid static initialization order problems
         KTLOGGER(utillog_no_factory_reg, "katydid.utility");
@@ -135,7 +135,7 @@ namespace Katydid
             KTERROR(utillog_no_factory_reg, "Already have factory registered for <" << className << ">.");
             return;
         }
-        fMap->insert(std::pair< std::string, const KTNORegistrar< XBaseType >* >(className, registrar));
+        fMap->insert(std::pair< std::string, const KTNORegistrarBase< XBaseType >* >(className, registrar));
         KTDEBUG(utillog_no_factory_reg, "Registered a factory for class " << className << ", factory #" << fMap->size()-1);
     }
 
@@ -166,31 +166,31 @@ namespace Katydid
 
 
     template< class XBaseType, class XDerivedType >
-    KTDerivedNORegistrar< XBaseType, XDerivedType >::KTDerivedNORegistrar(const std::string& className) :
-            KTNORegistrar< XBaseType >()
+    KTNORegistrar< XBaseType, XDerivedType >::KTNORegistrar(const std::string& className) :
+            KTNORegistrarBase< XBaseType >()
     {
         Register(className);
     }
 
     template< class XBaseType, class XDerivedType >
-    KTDerivedNORegistrar< XBaseType, XDerivedType >::~KTDerivedNORegistrar()
+    KTNORegistrar< XBaseType, XDerivedType >::~KTNORegistrar()
     {}
 
     template< class XBaseType, class XDerivedType >
-    void KTDerivedNORegistrar< XBaseType, XDerivedType >::Register(const std::string& className) const
+    void KTNORegistrar< XBaseType, XDerivedType >::Register(const std::string& className) const
     {
         KTNOFactory< XBaseType >::GetInstance()->Register(className, this);
         return;
     }
 
     template< class XBaseType, class XDerivedType >
-    XBaseType* KTDerivedNORegistrar< XBaseType, XDerivedType >::Create() const
+    XBaseType* KTNORegistrar< XBaseType, XDerivedType >::Create() const
     {
         return dynamic_cast< XBaseType* >(new XDerivedType());
     }
 
     template< class XBaseType, class XDerivedType >
-    XBaseType* KTDerivedNORegistrar< XBaseType, XDerivedType >::CreateNamed(const std::string& objectName) const
+    XBaseType* KTNORegistrar< XBaseType, XDerivedType >::CreateNamed(const std::string& objectName) const
     {
         return dynamic_cast< XBaseType* >(new XDerivedType(objectName));
     }

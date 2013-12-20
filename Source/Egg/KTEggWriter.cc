@@ -27,8 +27,8 @@ namespace Katydid
 {
     KTLOGGER(eggwritelog, "katydid.output");
 
-    static KTDerivedNORegistrar< KTWriter, KTEggWriter > sEWriterRegistrar("egg-writer");
-    static KTDerivedNORegistrar< KTProcessor, KTEggWriter > sEWProcRegistrar("egg-writer");
+    static KTNORegistrar< KTWriter, KTEggWriter > sEWriterRegistrar("egg-writer");
+    static KTNORegistrar< KTProcessor, KTEggWriter > sEWProcRegistrar("egg-writer");
 
 
     KTEggWriter::KTEggWriter(const std::string& name) :

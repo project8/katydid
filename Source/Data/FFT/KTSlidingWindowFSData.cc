@@ -16,7 +16,7 @@ using std::vector;
 
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTDataMap, KTDerivedDataMap< KTSlidingWindowFSData > > sSWFSDMRegistrar;
+    static KTTIRegistrar< KTDataMap, KTDerivedDataMap< KTSlidingWindowFSData > > sSWFSDMRegistrar;
 
     KTSlidingWindowFSData::KTSlidingWindowFSData(unsigned nChannels) :
             KTWriteableData(),

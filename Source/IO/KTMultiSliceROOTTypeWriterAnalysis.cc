@@ -30,7 +30,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterAnalysis > sMERTWARegistrar;
+    static KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterAnalysis > sMERTWARegistrar;
 
     KTMultiSliceROOTTypeWriterAnalysis::KTMultiSliceROOTTypeWriterAnalysis() :
             KTMEROOTTypeWriterBase(),

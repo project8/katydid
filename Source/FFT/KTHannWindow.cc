@@ -18,7 +18,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTDerivedNORegistrar< KTWindowFunction, KTHannWindow > sWFHannRegistrar("hann");
+    static KTNORegistrar< KTWindowFunction, KTHannWindow > sWFHannRegistrar("hann");
 
     KTLOGGER(windowlog, "katydid.fft");
 

@@ -33,7 +33,7 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterFFT > sBRTWFFTRegistrar;
+    static KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterFFT > sBRTWFFTRegistrar;
 
     KTBasicROOTTypeWriterFFT::KTBasicROOTTypeWriterFFT() :
             KTBasicROOTTypeWriter()

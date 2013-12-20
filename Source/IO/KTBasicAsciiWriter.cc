@@ -6,10 +6,10 @@ namespace Katydid {
 
   KTLOGGER(asciilog, "katydid.output.ascii");
   
-  static KTDerivedNORegistrar< KTWriter, KTBasicASCIIWriter > 
+  static KTNORegistrar< KTWriter, KTBasicASCIIWriter > 
   sAWR("basic-ascii-writer");
 
-  static KTDerivedNORegistrar< KTProcessor, KTBasicASCIIWriter > 
+  static KTNORegistrar< KTProcessor, KTBasicASCIIWriter > 
   sAPR("basic-ascii-writer");
 
   KTBasicASCIIWriter::KTBasicASCIIWriter(const std::string& name) :
