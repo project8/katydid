@@ -10,12 +10,15 @@
 #include "KTDigitizerTestData.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
+#include "KTMath.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 
 #include "thorax.hh"
 
+#include <algorithm> // for max
+#include <cstdio> // for sprintf
 #include <sstream>
 
 
@@ -40,7 +43,7 @@ namespace Katydid
     void KTTerminalTypeWriterEgg::RegisterSlots()
     {
         fWriter->RegisterSlot("ts", this, &KTTerminalTypeWriterEgg::WriteTimeSeriesData);
-        fWriter->RegisterSlot("dig", this, &KTTerminalTypeWriterEgg::WriteDigitizerTestData);
+        fWriter->RegisterSlot("dig-test", this, &KTTerminalTypeWriterEgg::WriteDigitizerTestData);
         return;
     }
 
@@ -55,15 +58,15 @@ namespace Katydid
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
-        KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
-        unsigned nComponents = tsData.GetNComponents();
+        KTTimeSeriesData& digData = data->Of< KTTimeSeriesData >();
+        unsigned nComponents = digData.GetNComponents();
 
         KTPROG(termlog, "Slice " << sliceNumber << " (" << nComponents << " components)\n" <<
                         "-----");
 
         for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
-            const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
+            const KTTimeSeries* spectrum = digData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
             {
                 stringstream toTerm;
@@ -85,25 +88,105 @@ namespace Katydid
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
-        KTDigitizerTestData& tsData = data->Of< KTDigitizerTestData >();
-        unsigned nComponents = tsData.GetNComponents();
+        KTDigitizerTestData& digData = data->Of< KTDigitizerTestData >();
+        unsigned nComponents = digData.GetNComponents();
 
-        KTPROG(termlog, "Slice " << sliceNumber << " (" << nComponents << " components)\n" <<
-                        "------");
+        KTPROG(termlog, "Slice " << sliceNumber << " (" << nComponents << " components)\n\n");
+
+        unsigned nBits = digData.GetNBits();
 
         // Bit Occupancy
+        if (digData.GetBitOccupancyFlag())
+        {
+            string prefixSpc("          |  ");
+            string prefixOcc("Occupancy |  ");
+            string prefixBit("      Bit |  ");
+            unsigned prefixSize = prefixOcc.size();
+            unsigned maxHistRows = 10;
+            string betweenBins(" | ");
+            string filledBin("   #   ");
+            string  emptyBin("       ");
+            unsigned binWidth = filledBin.size();
+            unsigned binPadding = betweenBins.size();
+            unsigned bufferSize = (binWidth + binPadding) * (nBits + 1) + prefixSize;
+            char* buffer = new char[bufferSize];
+            stringstream toTermBitOcc;
+            toTermBitOcc << "Bit Occupancy Test\n";
+            for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+            {
+                toTermBitOcc << "Component " << iComponent << '\n';
+                // histogram
+                unsigned maxValue = 0;
+                for (int bit = (int)nBits-1; bit >= 0; --bit)
+                {
+                    maxValue = std::max(maxValue, digData.GetBitHistogram()->operator()(bit));
+                }
+                unsigned histRows = std::min(maxHistRows, maxValue);
+                unsigned occPerRow = (unsigned)KTMath::Nint((double)maxValue / (double)histRows);
+                for (int row = (int)histRows-1; row >= 0; --row)
+                {
+                    sprintf(buffer, "%s", prefixSpc.c_str());
+                    for (int bit = (int)nBits-1; bit >= 0; --bit)
+                    {
+                        int printOffset = (int)nBits - 1 - bit;
+                        if (digData.GetBitHistogram()->operator()(bit) > (unsigned)row * occPerRow)
+                        {
+                            sprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, "%s", filledBin.c_str());
+                        }
+                        else
+                        {
+                            sprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, "%s", emptyBin.c_str());
+                        }
+                        if (bit != 0)
+                        {
+                            sprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, "%s", betweenBins.c_str());
+                        }
+                    }
+                    toTermBitOcc << buffer << '\n';
+                }
+                // bit occupancy line
+                sprintf(buffer, "%s", prefixOcc.c_str());
+                for (int bit = (int)nBits-1; bit >= 0; --bit)
+                {
+                    int printOffset = (int)nBits - 1 - bit;
+                    sprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, "%*u", binWidth, digData.GetBitHistogram()->operator()(bit));
+                    if (bit != 0)
+                    {
+                        sprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, "%s", betweenBins.c_str());
+                    }
+                }
+                toTermBitOcc << buffer << '\n';
+
+                // bit number line
+                sprintf(buffer, "%s", prefixBit.c_str());
+                for (int bit = (int)nBits-1; bit >= 0; --bit)
+                {
+                    int printOffset = (int)nBits - 1 - bit;
+                    sprintf(buffer + prefixSize + printOffset*binWidth + printOffset*binPadding, "%*u", binWidth, bit);
+                    if (bit != 0)
+                    {
+                        sprintf(buffer + prefixSize + (printOffset+1)*binWidth + printOffset*binPadding, "%s", betweenBins.c_str());
+                    }
+                }
+                toTermBitOcc << buffer;
+            }
+            delete [] buffer;
+            KTPROG(termlog, toTermBitOcc.str() << '\n');
+        }
 
         // Clipping
-        stringstream toTermClipping;
-        toTermClipping << "Clipping Test\n";
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        if (digData.GetClippingFlag())
         {
-            toTermClipping << "Component " << iComponent << '\n';
-            toTermClipping << "\t\t\tNumber\tFraction\n";
-            toTermClipping << "\tTop   \t" << tsData.GetNClipTop(iComponent) << '\t' << tsData.GetTopClipFrac(iComponent) << '\n';
-            toTermClipping << "\tBottom\t" << tsData.GetNClipBottom(iComponent) << '\t' << tsData.GetBottomClipFrac(iComponent) << '\n';
-            toTermClipping << '\n';
-            KTPROG(termlog, toTermClipping.str());
+            stringstream toTermClipping;
+            toTermClipping << "Clipping Test\n";
+            for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+            {
+                toTermClipping << "Component " << iComponent << '\n';
+                toTermClipping << "\t\tNumber\tFraction\n";
+                toTermClipping << "\tTop   \t" << digData.GetNClipTop(iComponent) << '\t' << digData.GetTopClipFrac(iComponent) << '\n';
+                toTermClipping << "\tBottom\t" << digData.GetNClipBottom(iComponent) << '\t' << digData.GetBottomClipFrac(iComponent) << '\n';
+                KTPROG(termlog, toTermClipping.str());
+            }
         }
         return;
     }
