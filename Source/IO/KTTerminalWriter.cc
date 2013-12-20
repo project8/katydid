@@ -15,8 +15,8 @@ using std::string;
 
 namespace Katydid
 {
-    static KTDerivedNORegistrar< KTWriter, KTTerminalWriter > sTermWriterRegistrar("terminal-writer");
-    static KTDerivedNORegistrar< KTProcessor, KTTerminalWriter > sTermWProcRegistrar("terminal-writer");
+    static KTNORegistrar< KTWriter, KTTerminalWriter > sTermWriterRegistrar("terminal-writer");
+    static KTNORegistrar< KTProcessor, KTTerminalWriter > sTermWProcRegistrar("terminal-writer");
 
     KTTerminalWriter::KTTerminalWriter(const std::string& name) :
             KTWriterWithTypists< KTTerminalWriter >(name)

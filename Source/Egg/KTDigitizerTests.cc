@@ -23,7 +23,7 @@ namespace Katydid
 {
     KTLOGGER(dtlog, "katydid.egg");
 
-    static KTDerivedNORegistrar< KTProcessor, KTDigitizerTests > sDigTestRegistrar("digitizer-tests");
+    static KTNORegistrar< KTProcessor, KTDigitizerTests > sDigTestRegistrar("digitizer-tests");
 
     KTDigitizerTests::KTDigitizerTests(const std::string& name) :
             KTProcessor(name),

@@ -25,7 +25,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTDerivedTIRegistrar< KTTerminalTypeWriter, KTTerminalTypeWriterEgg > sTermTWERegistrar;
+    static KTTIRegistrar< KTTerminalTypeWriter, KTTerminalTypeWriterEgg > sTermTWERegistrar;
 
     KTTerminalTypeWriterEgg::KTTerminalTypeWriterEgg() :
             KTTerminalTypeWriter()
