@@ -107,14 +107,25 @@ namespace Katydid
     bool KTDigitizerTests::ClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component)
     {
         size_t nBins = ts->size();
+        unsigned nClipTop = 0, nClipBottom = 0;
         for (size_t iBin = 0; iBin < nBins; ++iBin)
         {
-
+            if ((*ts)(iBin)[0] >= fNDigitizerLevels) ++nClipTop;
+            if ((*ts)(iBin)[0] <= 0) ++nClipBottom;
         }
+        testData.SetClippingData(nClipTop, nClipBottom, (double)nClipTop / (double)ts->size(), (double)nClipBottom / (double)ts->size(), component);
         return true;
     }
     bool KTDigitizerTests::ClippingTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component)
     {
+        size_t nBins = ts->size();
+        unsigned nClipTop = 0, nClipBottom = 0;
+        for (size_t iBin = 0; iBin < nBins; ++iBin)
+        {
+            if ((*ts)(iBin) >= fNDigitizerLevels) ++nClipTop;
+            if ((*ts)(iBin) <= 0) ++nClipBottom;
+        }
+        testData.SetClippingData(nClipTop, nClipBottom, (double)nClipTop / (double)ts->size(), (double)nClipBottom / (double)ts->size(), component);
         return true;
     }
 

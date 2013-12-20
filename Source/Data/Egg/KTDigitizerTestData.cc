@@ -11,7 +11,8 @@ namespace Katydid
 {
 
     KTDigitizerTestData::KTDigitizerTestData() :
-            KTExtensibleData< KTDigitizerTestData >()
+            KTExtensibleData< KTDigitizerTestData >(),
+            fClippingData()
     {
     }
 
@@ -21,13 +22,26 @@ namespace Katydid
 
     unsigned KTDigitizerTestData::GetNComponents() const
     {
-        return 0;
+        return fClippingData.size();
     }
 
     KTDigitizerTestData& KTDigitizerTestData::SetNComponents(unsigned num)
     {
+        fClippingData.resize(num);
         return *this;
     }
+
+    void KTDigitizerTestData::SetClippingData(unsigned nClipTop, unsigned nClipBottom, double topClipFrac, double bottomClipFrac, unsigned component = 0)
+    {
+        if (component >= fClippingData.size())
+            SetNComponents(component + 1);
+        fClippingData[component].fNClipTop = nClipTop;
+        fClippingData[component].fNClipBottom = nClipBottom;
+        fClippingData[component].fTopClipFrac = topClipFrac;
+        fClippingData[component].fBottomClipFrac = bottomClipFrac;
+        return;
+    }
+
 
 
 } /* namespace Katydid */
