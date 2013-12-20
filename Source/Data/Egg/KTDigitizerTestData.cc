@@ -15,7 +15,9 @@ namespace Katydid
     KTDigitizerTestData::KTDigitizerTestData() :
             KTExtensibleData< KTDigitizerTestData >(),
             fNBits(8),
+            fBitOccupancyFlag(false),
             fBitOccupancyData(),
+            fClippingFlag(false),
             fClippingData()
     {
     }

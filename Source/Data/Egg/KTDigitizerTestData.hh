@@ -28,9 +28,13 @@ namespace Katydid
             unsigned GetNBits() const;
             void SetNBits(unsigned nBits);
 
+            bool GetBitOccupancyFlag() const;
+            void SetBitOccupancyFlag(bool flag);
             KTCountHistogram* GetBitHistogram(unsigned component = 0) const;
             void AddBits(unsigned value, unsigned component = 0);
 
+            bool GetClippingFlag() const;
+            void SetClippingFlag(bool flag);
             unsigned GetNClipTop(unsigned component = 0) const;
             unsigned GetNClipBottom(unsigned component = 0) const;
             double GetTopClipFrac(unsigned component = 0) const;
@@ -45,6 +49,7 @@ namespace Katydid
                 KTCountHistogram* fBitHistogram;
             };
 
+            bool fBitOccupancyFlag;
             std::vector< BitOccupancyData > fBitOccupancyData;
 
             struct ClippingData
@@ -55,6 +60,7 @@ namespace Katydid
                 double fBottomClipFrac;
             };
 
+            bool fClippingFlag;
             std::vector< ClippingData > fClippingData;
 
     };
@@ -64,11 +70,29 @@ namespace Katydid
         return fNBits;
     }
 
+    inline bool KTDigitizerTestData::GetBitOccupancyFlag() const
+    {
+        return fBitOccupancyFlag;
+    }
+    inline void KTDigitizerTestData::SetBitOccupancyFlag(bool flag)
+    {
+        fBitOccupancyFlag = flag;
+        return;
+    }
     inline KTCountHistogram* KTDigitizerTestData::GetBitHistogram(unsigned component) const
     {
         return fBitOccupancyData[component].fBitHistogram;
     }
 
+    inline bool KTDigitizerTestData::GetClippingFlag() const
+    {
+        return fClippingFlag;
+    }
+    inline void KTDigitizerTestData::SetClippingFlag(bool flag)
+    {
+        fClippingFlag = flag;
+        return;
+    }
     inline unsigned KTDigitizerTestData::GetNClipTop(unsigned component) const
     {
         return fClippingData[component].fNClipTop;

@@ -97,6 +97,7 @@ namespace Katydid
 
     bool KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component)
     {
+        testData.SetBitOccupancyFlag(true);
         size_t nBins = ts->size();
         for (size_t iBin = 0; iBin < nBins; ++iBin)
         {
@@ -106,6 +107,7 @@ namespace Katydid
     }
     bool KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component)
     {
+        testData.SetBitOccupancyFlag(true);
         size_t nBins = ts->size();
         for (size_t iBin = 0; iBin < nBins; ++iBin)
         {
@@ -116,6 +118,7 @@ namespace Katydid
 
     bool KTDigitizerTests::ClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component)
     {
+        testData.SetClippingFlag(true);
         size_t nBins = ts->size();
         unsigned nClipTop = 0, nClipBottom = 0;
         for (size_t iBin = 0; iBin < nBins; ++iBin)
@@ -128,6 +131,7 @@ namespace Katydid
     }
     bool KTDigitizerTests::ClippingTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component)
     {
+        testData.SetClippingFlag(true);
         size_t nBins = ts->size();
         unsigned nClipTop = 0, nClipBottom = 0;
         for (size_t iBin = 0; iBin < nBins; ++iBin)
