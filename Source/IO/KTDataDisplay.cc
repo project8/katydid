@@ -16,8 +16,8 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedNORegistrar< KTWriter, KTDataDisplay > sDDWriterRegistrar("data-display");
-    static KTDerivedNORegistrar< KTProcessor, KTDataDisplay > sDDProcRegistrar("data-display");
+    static KTNORegistrar< KTWriter, KTDataDisplay > sDDWriterRegistrar("data-display");
+    static KTNORegistrar< KTProcessor, KTDataDisplay > sDDProcRegistrar("data-display");
 
     KTDataDisplay::KTDataDisplay(const std::string& name) :
             KTWriterWithTypists< KTDataDisplay >(name),

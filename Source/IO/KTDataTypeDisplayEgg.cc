@@ -24,7 +24,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayEgg > sDTDERegistrar;
+    static KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayEgg > sDTDERegistrar;
 
     KTDataTypeDisplayEgg::KTDataTypeDisplayEgg() :
             KTDataTypeDisplay()

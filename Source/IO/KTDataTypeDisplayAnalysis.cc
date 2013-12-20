@@ -36,7 +36,7 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayAnalysis > sBRTWAnalysisRegistrar;
+    static KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayAnalysis > sBRTWAnalysisRegistrar;
 
     KTDataTypeDisplayAnalysis::KTDataTypeDisplayAnalysis() :
             KTDataTypeDisplay()

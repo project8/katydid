@@ -33,7 +33,7 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayFFT > sBRTWFFTRegistrar;
+    static KTTIRegistrar< KTDataTypeDisplay, KTDataTypeDisplayFFT > sBRTWFFTRegistrar;
 
     KTDataTypeDisplayFFT::KTDataTypeDisplayFFT() :
             KTDataTypeDisplay()
