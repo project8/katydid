@@ -68,10 +68,12 @@ namespace Katydid
     {
         if (fBitOccupancyData[component].fBitHistogram == NULL)
             fBitOccupancyData[component].fBitHistogram = new KTCountHistogram(fNBits, -0.5, (double)fNBits - 0.5);
+        unsigned bit = 0;
         while (value)
         {
-            if (value & 1) fBitOccupancyData[component].fBitHistogram->Increment(value);
+            if (value & 1) fBitOccupancyData[component].fBitHistogram->Increment(bit);
             value >>= 1;
+            ++bit;
         }
         return;
     }
