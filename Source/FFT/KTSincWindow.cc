@@ -20,7 +20,7 @@ namespace Katydid
 {
     KTLOGGER(windowlog, "katydid.fft");
 
-    static KTDerivedNORegistrar< KTWindowFunction, KTSincWindow > sWFSincRegistrar("sinc");
+    static KTNORegistrar< KTWindowFunction, KTSincWindow > sWFSincRegistrar("sinc");
 
     KTSincWindow::KTSincWindow(const string& name) :
             KTWindowFunction(name)

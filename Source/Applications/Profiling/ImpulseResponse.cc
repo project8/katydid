@@ -108,7 +108,7 @@ int main(int argc, char** argv)
 // Implementation of KTImpulseAnalysis
 //***************************************
 
-static KTDerivedNORegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
+static KTNORegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
 
 KTImpulseAnalysis::KTImpulseAnalysis(const std::string& name) :
         KTProcessor(name),

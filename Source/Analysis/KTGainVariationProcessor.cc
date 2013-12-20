@@ -31,7 +31,7 @@ namespace Katydid
 {
     KTLOGGER(gvlog, "katydid.analysis");
 
-    static KTDerivedNORegistrar< KTProcessor, KTGainVariationProcessor > sGainVarRegistrar("gain-variation");
+    static KTNORegistrar< KTProcessor, KTGainVariationProcessor > sGainVarRegistrar("gain-variation");
 
     KTGainVariationProcessor::KTGainVariationProcessor(const std::string& name) :
             KTProcessor(name),

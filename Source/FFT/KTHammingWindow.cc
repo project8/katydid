@@ -20,7 +20,7 @@ namespace Katydid
 {
     KTLOGGER(windowlog, "katydid.fft");
 
-    static KTDerivedNORegistrar< KTWindowFunction, KTHammingWindow > sWFHammRegistrar("hamming");
+    static KTNORegistrar< KTWindowFunction, KTHammingWindow > sWFHammRegistrar("hamming");
 
     KTHammingWindow::KTHammingWindow(const string& name) :
             KTWindowFunction(name)

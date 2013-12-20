@@ -27,7 +27,7 @@ namespace Katydid
 {
     KTLOGGER(aalog, "katydid.analysis");
 
-    static KTDerivedNORegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
+    static KTNORegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
 
     KTAnalyticAssociator::KTAnalyticAssociator(const std::string& name) :
             KTProcessor(name),

@@ -24,7 +24,7 @@ namespace Katydid
 {
     KTLOGGER(pfblog, "katydid.fft");
 
-    static KTDerivedNORegistrar< KTProcessor, KTPolyphaseFilterBank > sPFBRegistrar("polyphase-filter-bank");
+    static KTNORegistrar< KTProcessor, KTPolyphaseFilterBank > sPFBRegistrar("polyphase-filter-bank");
 
     KTPolyphaseFilterBank::KTPolyphaseFilterBank(const std::string& name) :
             KTProcessor(name),

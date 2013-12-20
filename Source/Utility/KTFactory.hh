@@ -22,11 +22,11 @@ namespace Katydid
     class KTFactory;
 
     template< class XBaseType >
-    class KTRegistrar
+    class KTRegistrarBase
     {
         public:
-            KTRegistrar() {}
-            virtual ~KTRegistrar() {}
+            KTRegistrarBase() {}
+            virtual ~KTRegistrarBase() {}
 
         public:
             friend class KTFactory< XBaseType >;
@@ -37,11 +37,11 @@ namespace Katydid
     };
 
     template< class XBaseType, class XDerivedType >
-    class KTDerivedRegistrar : public KTRegistrar< XBaseType >
+    class KTRegistrar : public KTRegistrarBase< XBaseType >
     {
         public:
-            KTDerivedRegistrar(const std::string& className);
-            virtual ~KTDerivedRegistrar();
+            KTRegistrar(const std::string& className);
+            virtual ~KTRegistrar();
 
         protected:
             void Register(const std::string& className) const;
@@ -55,7 +55,7 @@ namespace Katydid
     class KTFactory : public KTSingleton< KTFactory< XBaseType > >
     {
         public:
-            typedef std::map< std::string, const KTRegistrar< XBaseType >* > FactoryMap;
+            typedef std::map< std::string, const KTRegistrarBase< XBaseType >* > FactoryMap;
             typedef typename FactoryMap::value_type FactoryEntry;
             typedef typename FactoryMap::iterator FactoryIt;
             typedef typename FactoryMap::const_iterator FactoryCIt;
@@ -64,7 +64,7 @@ namespace Katydid
             XBaseType* Create(const std::string& className);
             XBaseType* Create(const FactoryCIt& iter);
 
-            void Register(const std::string& className, const KTRegistrar< XBaseType >* registrar);
+            void Register(const std::string& className, const KTRegistrarBase< XBaseType >* registrar);
 
             FactoryCIt GetFactoryMapBegin() const;
             FactoryCIt GetFactoryMapEnd() const;
@@ -100,7 +100,7 @@ namespace Katydid
     }
 
     template< class XBaseType >
-    void KTFactory< XBaseType >::Register(const std::string& className, const KTRegistrar< XBaseType >* registrar)
+    void KTFactory< XBaseType >::Register(const std::string& className, const KTRegistrarBase< XBaseType >* registrar)
     {
         // A local (static) logger is created inside this function to avoid static initialization order problems
         KTLOGGER(utillog_factory_reg, "katydid.utility");
@@ -111,7 +111,7 @@ namespace Katydid
             KTERROR(utillog_factory_reg, "Already have factory registered for <" << className << ">.");
             return;
         }
-        fMap->insert(std::pair< std::string, const KTRegistrar< XBaseType >* >(className, registrar));
+        fMap->insert(std::pair< std::string, const KTRegistrarBase< XBaseType >* >(className, registrar));
         KTDEBUG(utillog_factory_reg, "Registered a factory for class " << className << ", factory #" << fMap->size()-1);
     }
 
@@ -142,25 +142,25 @@ namespace Katydid
 
 
     template< class XBaseType, class XDerivedType >
-    KTDerivedRegistrar< XBaseType, XDerivedType >::KTDerivedRegistrar(const std::string& className) :
-            KTRegistrar< XBaseType >()
+    KTRegistrar< XBaseType, XDerivedType >::KTRegistrar(const std::string& className) :
+            KTRegistrarBase< XBaseType >()
     {
         Register(className);
     }
 
     template< class XBaseType, class XDerivedType >
-    KTDerivedRegistrar< XBaseType, XDerivedType >::~KTDerivedRegistrar()
+    KTRegistrar< XBaseType, XDerivedType >::~KTRegistrar()
     {}
 
     template< class XBaseType, class XDerivedType >
-    void KTDerivedRegistrar< XBaseType, XDerivedType >::Register(const std::string& className) const
+    void KTRegistrar< XBaseType, XDerivedType >::Register(const std::string& className) const
     {
         KTFactory< XBaseType >::GetInstance()->Register(className, this);
         return;
     }
 
     template< class XBaseType, class XDerivedType >
-    XBaseType* KTDerivedRegistrar< XBaseType, XDerivedType >::Create() const
+    XBaseType* KTRegistrar< XBaseType, XDerivedType >::Create() const
     {
         return dynamic_cast< XBaseType* >(new XDerivedType());
     }

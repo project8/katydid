@@ -25,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(corrlog, "katydid.analysis");
 
-    static KTDerivedNORegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
+    static KTNORegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
 
     KTCorrelator::KTCorrelator(const std::string& name) :
             KTProcessor(name),

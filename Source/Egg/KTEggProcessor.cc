@@ -33,7 +33,7 @@ namespace Katydid
 
     KTLOGGER(egglog, "katydid.egg");
 
-    static KTDerivedNORegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
+    static KTNORegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
 
     KTEggProcessor::KTEggProcessor(const std::string& name) :
             KTPrimaryProcessor(name),

@@ -30,8 +30,8 @@ namespace Katydid
 {
     KTLOGGER(inlog, "katydid.input");
 
-    static KTDerivedNORegistrar< KTReader, KTMultiFileROOTTreeReader > sMFRTReaderRegistrar("mf-root-tree-reader");
-    static KTDerivedNORegistrar< KTProcessor, KTMultiFileROOTTreeReader > sMFRTRProcRegistrar("mf-root-tree-reader");
+    static KTNORegistrar< KTReader, KTMultiFileROOTTreeReader > sMFRTReaderRegistrar("mf-root-tree-reader");
+    static KTNORegistrar< KTProcessor, KTMultiFileROOTTreeReader > sMFRTRProcRegistrar("mf-root-tree-reader");
 
     KTMultiFileROOTTreeReader::KTMultiFileROOTTreeReader(const std::string& name) :
             KTReader(name),

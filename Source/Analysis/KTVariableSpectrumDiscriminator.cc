@@ -36,7 +36,7 @@ namespace Katydid
 {
     KTLOGGER(sdlog, "katydid.analysis");
 
-    static KTDerivedNORegistrar< KTProcessor, KTVariableSpectrumDiscriminator > sSpectDiscRegistrar("variable-spectrum-discriminator");
+    static KTNORegistrar< KTProcessor, KTVariableSpectrumDiscriminator > sSpectDiscRegistrar("variable-spectrum-discriminator");
 
     KTVariableSpectrumDiscriminator::KTVariableSpectrumDiscriminator(const std::string& name) :
             KTProcessor(name),

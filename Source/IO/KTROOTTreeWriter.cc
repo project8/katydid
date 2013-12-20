@@ -23,8 +23,8 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedNORegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
-    static KTDerivedNORegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
+    static KTNORegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
+    static KTNORegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
 
     static KTCommandLineOption< string > sRTWFilenameCLO("ROOT Tree Writer", "ROOT Tree writer filename", "rtw-file");
 

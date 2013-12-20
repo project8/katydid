@@ -31,7 +31,7 @@ namespace Katydid
 {
     KTLOGGER(gnlog, "katydid.analysis");
 
-    static KTDerivedNORegistrar< KTProcessor, KTGainNormalization > sGainNormRegistrar("gain-normalization");
+    static KTNORegistrar< KTProcessor, KTGainNormalization > sGainNormRegistrar("gain-normalization");
 
     KTGainNormalization::KTGainNormalization(const std::string& name) :
             KTProcessor(name),

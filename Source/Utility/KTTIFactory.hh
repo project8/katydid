@@ -24,11 +24,11 @@ namespace Katydid
     class KTTIFactory;
 
     template< class XBaseType >
-    class KTTIRegistrar
+    class KTTIRegistrarBase
     {
         public:
-            KTTIRegistrar() {}
-            virtual ~KTTIRegistrar() {}
+            KTTIRegistrarBase() {}
+            virtual ~KTTIRegistrarBase() {}
 
         public:
             friend class KTTIFactory< XBaseType >;
@@ -39,11 +39,11 @@ namespace Katydid
     };
 
     template< class XBaseType, class XDerivedType >
-    class KTDerivedTIRegistrar : public KTTIRegistrar< XBaseType >
+    class KTTIRegistrar : public KTTIRegistrarBase< XBaseType >
     {
         public:
-            KTDerivedTIRegistrar();
-            virtual ~KTDerivedTIRegistrar();
+            KTTIRegistrar();
+            virtual ~KTTIRegistrar();
 
         protected:
             void Register() const;
@@ -66,7 +66,7 @@ namespace Katydid
             };
 
         public:
-            typedef std::map< const std::type_info*, const KTTIRegistrar< XBaseType >* > FactoryMap;
+            typedef std::map< const std::type_info*, const KTTIRegistrarBase< XBaseType >* > FactoryMap;
             typedef typename FactoryMap::value_type FactoryEntry;
             typedef typename FactoryMap::iterator FactoryIt;
             typedef typename FactoryMap::const_iterator FactoryCIt;
@@ -78,7 +78,7 @@ namespace Katydid
             XBaseType* Create(const FactoryCIt& iter);
 
             template< class XDerivedType >
-            void Register(const KTTIRegistrar< XBaseType >* registrar);
+            void Register(const KTTIRegistrarBase< XBaseType >* registrar);
 
             FactoryCIt GetFactoryMapBegin() const;
             FactoryCIt GetFactoryMapEnd() const;
@@ -116,7 +116,7 @@ namespace Katydid
 
     template< class XBaseType >
     template< class XDerivedType >
-    void KTTIFactory< XBaseType >::Register(const KTTIRegistrar< XBaseType >* registrar)
+    void KTTIFactory< XBaseType >::Register(const KTTIRegistrarBase< XBaseType >* registrar)
     {
         // A local (static) logger is created inside this function to avoid static initialization order problems
         KTLOGGER(utillog_ti_factory_reg, "katydid.utility");
@@ -127,7 +127,7 @@ namespace Katydid
             KTERROR(utillog_ti_factory_reg, "Already have factory registered for type <" << typeid(XDerivedType).name() << ">.");
             return;
         }
-        fMap->insert(std::pair< const std::type_info*, const KTTIRegistrar< XBaseType >* >(&typeid(XDerivedType), registrar));
+        fMap->insert(std::pair< const std::type_info*, const KTTIRegistrarBase< XBaseType >* >(&typeid(XDerivedType), registrar));
         KTDEBUG(utillog_ti_factory_reg, "Registered a factory for class type " << typeid(XDerivedType).name() << ", factory #" << fMap->size()-1);
     }
 
@@ -158,25 +158,25 @@ namespace Katydid
 
 
     template< class XBaseType, class XDerivedType >
-    KTDerivedTIRegistrar< XBaseType, XDerivedType >::KTDerivedTIRegistrar() :
-            KTTIRegistrar< XBaseType >()
+    KTTIRegistrar< XBaseType, XDerivedType >::KTTIRegistrar() :
+            KTTIRegistrarBase< XBaseType >()
     {
         Register();
     }
 
     template< class XBaseType, class XDerivedType >
-    KTDerivedTIRegistrar< XBaseType, XDerivedType >::~KTDerivedTIRegistrar()
+    KTTIRegistrar< XBaseType, XDerivedType >::~KTTIRegistrar()
     {}
 
     template< class XBaseType, class XDerivedType >
-    void KTDerivedTIRegistrar< XBaseType, XDerivedType >::Register() const
+    void KTTIRegistrar< XBaseType, XDerivedType >::Register() const
     {
         KTTIFactory< XBaseType >::GetInstance()->template Register<XDerivedType>(this);
         return;
     }
 
     template< class XBaseType, class XDerivedType >
-    XBaseType* KTDerivedTIRegistrar< XBaseType, XDerivedType >::Create() const
+    XBaseType* KTTIRegistrar< XBaseType, XDerivedType >::Create() const
     {
         return dynamic_cast< XBaseType* >(new XDerivedType());
     }
