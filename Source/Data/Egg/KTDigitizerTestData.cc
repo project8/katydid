@@ -31,7 +31,7 @@ namespace Katydid
         return *this;
     }
 
-    void KTDigitizerTestData::SetClippingData(unsigned nClipTop, unsigned nClipBottom, double topClipFrac, double bottomClipFrac, unsigned component = 0)
+    void KTDigitizerTestData::SetClippingData(unsigned nClipTop, unsigned nClipBottom, double topClipFrac, double bottomClipFrac, unsigned component)
     {
         if (component >= fClippingData.size())
             SetNComponents(component + 1);
