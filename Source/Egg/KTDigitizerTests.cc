@@ -97,10 +97,20 @@ namespace Katydid
 
     bool KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component)
     {
+        size_t nBins = ts->size();
+        for (size_t iBin = 0; iBin < nBins; ++iBin)
+        {
+            testData.AddBits((*ts)(iBin)[0], component);
+        }
         return true;
     }
     bool KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component)
     {
+        size_t nBins = ts->size();
+        for (size_t iBin = 0; iBin < nBins; ++iBin)
+        {
+            testData.AddBits((*ts)(iBin), component);
+        }
         return true;
     }
 

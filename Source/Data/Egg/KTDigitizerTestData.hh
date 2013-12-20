@@ -10,11 +10,12 @@
 
 #include "KTData.hh"
 
+#include "KTCountHistogram.hh"
+
 #include <vector>
 
 namespace Katydid
 {
-
     class KTDigitizerTestData : public KTExtensibleData< KTDigitizerTestData >
     {
         public:
@@ -24,6 +25,12 @@ namespace Katydid
             unsigned GetNComponents() const;
             KTDigitizerTestData& SetNComponents(unsigned num);
 
+            unsigned GetNBits() const;
+            void SetNBits(unsigned nBits);
+
+            KTCountHistogram* GetBitHistogram(unsigned component = 0) const;
+            void AddBits(unsigned value, unsigned component = 0);
+
             unsigned GetNClipTop(unsigned component = 0) const;
             unsigned GetNClipBottom(unsigned component = 0) const;
             double GetTopClipFrac(unsigned component = 0) const;
@@ -31,6 +38,15 @@ namespace Katydid
             void SetClippingData(unsigned nClipTop, unsigned nClipBottom, double topClipFrac, double bottomClipFrac, unsigned component = 0);
 
         private:
+            unsigned fNBits;
+
+            struct BitOccupancyData
+            {
+                KTCountHistogram* fBitHistogram;
+            };
+
+            std::vector< BitOccupancyData > fBitOccupancyData;
+
             struct ClippingData
             {
                 unsigned fNClipTop;
@@ -42,6 +58,16 @@ namespace Katydid
             std::vector< ClippingData > fClippingData;
 
     };
+
+    inline unsigned KTDigitizerTestData::GetNBits() const
+    {
+        return fNBits;
+    }
+
+    inline KTCountHistogram* KTDigitizerTestData::GetBitHistogram(unsigned component) const
+    {
+        return fBitOccupancyData[component].fBitHistogram;
+    }
 
     inline unsigned KTDigitizerTestData::GetNClipTop(unsigned component) const
     {
