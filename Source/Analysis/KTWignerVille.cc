@@ -25,7 +25,7 @@ using std::vector;
 namespace Katydid
 {
 
-    static KTDerivedNORegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
+    static KTNORegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
 
     KTWignerVille::KTWignerVille(const std::string& name) :
             KTProcessor(name),

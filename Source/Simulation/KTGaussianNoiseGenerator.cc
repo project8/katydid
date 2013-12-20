@@ -22,7 +22,7 @@ namespace Katydid
 {
     KTLOGGER(genlog, "katydid.simulation");
 
-    static KTDerivedNORegistrar< KTProcessor, KTGaussianNoiseGenerator > sGaussNoiseGenRegistrar("gaussian-noise-generator");
+    static KTNORegistrar< KTProcessor, KTGaussianNoiseGenerator > sGaussNoiseGenRegistrar("gaussian-noise-generator");
 
     KTGaussianNoiseGenerator::KTGaussianNoiseGenerator(const string& name) :
             KTTSGenerator(name),

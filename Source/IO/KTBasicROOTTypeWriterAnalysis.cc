@@ -36,7 +36,7 @@ namespace Katydid
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTDerivedTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterAnalysis > sBRTWAnalysisRegistrar;
+    static KTTIRegistrar< KTBasicROOTTypeWriter, KTBasicROOTTypeWriterAnalysis > sBRTWAnalysisRegistrar;
 
     KTBasicROOTTypeWriterAnalysis::KTBasicROOTTypeWriterAnalysis() :
             KTBasicROOTTypeWriter()

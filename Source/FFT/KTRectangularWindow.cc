@@ -19,7 +19,7 @@ namespace Katydid
 {
     KTLOGGER(windowlog, "katydid.fft");
 
-    static KTDerivedNORegistrar< KTWindowFunction, KTRectangularWindow > sWFRectRegistrar("rectangular");
+    static KTNORegistrar< KTWindowFunction, KTRectangularWindow > sWFRectRegistrar("rectangular");
 
     KTRectangularWindow::KTRectangularWindow(const string& name) :
             KTWindowFunction(name),

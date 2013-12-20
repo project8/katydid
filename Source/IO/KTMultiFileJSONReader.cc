@@ -26,8 +26,8 @@ namespace Katydid
 {
     KTLOGGER(inlog, "katydid.input");
 
-    static KTDerivedNORegistrar< KTReader, KTMultiFileJSONReader > sMFJSONReaderRegistrar("multifile-json-reader");
-    static KTDerivedNORegistrar< KTProcessor, KTMultiFileJSONReader > sMFJSONRProcRegistrar("multifile-json-reader");
+    static KTNORegistrar< KTReader, KTMultiFileJSONReader > sMFJSONReaderRegistrar("multifile-json-reader");
+    static KTNORegistrar< KTProcessor, KTMultiFileJSONReader > sMFJSONRProcRegistrar("multifile-json-reader");
 
     KTMultiFileJSONReader::KTMultiFileJSONReader(const std::string& name) :
             KTReader(name),

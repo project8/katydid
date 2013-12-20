@@ -23,7 +23,7 @@ namespace Katydid
 {
     KTLOGGER(windowlog, "katydid.fft");
 
-    static KTDerivedNORegistrar< KTProcessor, KTWindower > sWindowerRegistrar("windower");
+    static KTNORegistrar< KTProcessor, KTWindower > sWindowerRegistrar("windower");
 
     KTWindower::KTWindower(const std::string& name) :
             KTProcessor(name),

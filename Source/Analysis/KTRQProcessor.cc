@@ -1,7 +1,7 @@
 #include "KTRQProcessor.hh"
 
 namespace Katydid {
-  static KTDerivedNORegistrar<KTProcessor, KTRQProcessor> sRQProcessor("rayleigh-quotient");
+  static KTNORegistrar<KTProcessor, KTRQProcessor> sRQProcessor("rayleigh-quotient");
 
   KTRQProcessor::KTRQProcessor(const std::string& name) :
     KTProcessor(name),

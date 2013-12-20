@@ -33,7 +33,7 @@ namespace Katydid
 {
     KTLOGGER(proflog, "katydid.egg");
 
-    static KTDerivedNORegistrar< KTProcessor, KTThroughputProfiler > sTProfRegistrar("throughput-profiler");
+    static KTNORegistrar< KTProcessor, KTThroughputProfiler > sTProfRegistrar("throughput-profiler");
 
     KTThroughputProfiler::KTThroughputProfiler(const std::string& name) :
             KTProcessor(name),

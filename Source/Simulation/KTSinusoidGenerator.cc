@@ -22,7 +22,7 @@ namespace Katydid
 {
     KTLOGGER(genlog, "katydid.simulation");
 
-    static KTDerivedNORegistrar< KTProcessor, KTSinusoidGenerator > sSinusoidGenRegistrar("sinusoid-generator");
+    static KTNORegistrar< KTProcessor, KTSinusoidGenerator > sSinusoidGenRegistrar("sinusoid-generator");
 
     KTSinusoidGenerator::KTSinusoidGenerator(const string& name) :
             KTTSGenerator(name),

@@ -31,7 +31,7 @@ namespace Katydid
 {
     KTLOGGER(htlog, "katydid.analysis");
 
-    static KTDerivedNORegistrar< KTProcessor, KTHoughTransform > sHTRegistrar("hough-transform");
+    static KTNORegistrar< KTProcessor, KTHoughTransform > sHTRegistrar("hough-transform");
 
     KTHoughTransform::KTHoughTransform(const std::string& name) :
             KTProcessor(name),

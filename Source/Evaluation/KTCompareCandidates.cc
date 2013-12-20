@@ -23,7 +23,7 @@ using std::vector;
 
 namespace Katydid
 {
-    static KTDerivedNORegistrar< KTProcessor, KTCompareCandidates > sCompCandRegistrar("compare-candidates");
+    static KTNORegistrar< KTProcessor, KTCompareCandidates > sCompCandRegistrar("compare-candidates");
 
     KTLOGGER(cclog, "katydid.evaluate");
 

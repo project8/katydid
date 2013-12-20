@@ -17,7 +17,7 @@ namespace Katydid
 {
     //KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEgg > sJSONTWERegistrar;
+    static KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEgg > sJSONTWERegistrar;
 
     KTJSONTypeWriterEgg::KTJSONTypeWriterEgg() :
             KTJSONTypeWriter()

@@ -25,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
-    static KTDerivedTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEvaluation > sRTTWERegistrar;
+    static KTTIRegistrar< KTROOTTreeTypeWriter, KTROOTTreeTypeWriterEvaluation > sRTTWERegistrar;
 
     KTROOTTreeTypeWriterEvaluation::KTROOTTreeTypeWriterEvaluation() :
             KTROOTTreeTypeWriter(),
