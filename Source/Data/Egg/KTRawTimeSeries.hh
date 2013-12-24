@@ -19,7 +19,11 @@ namespace Katydid
     {
         public:
             KTRawTimeSeries();
+            KTRawTimeSeries(size_t nBins, double rangeMin, double rangeMax);
+            KTRawTimeSeries(const KTRawTimeSeries& orig);
             virtual ~KTRawTimeSeries();
+
+            KTRawTimeSeries& operator=(const KTRawTimeSeries& rhs);
 
     };
 

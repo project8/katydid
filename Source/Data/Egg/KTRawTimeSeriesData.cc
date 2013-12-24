@@ -7,6 +7,8 @@
 
 #include "KTRawTimeSeriesData.hh"
 
+#include "KTRawTimeSeries.hh"
+
 namespace Katydid
 {
 
@@ -17,9 +19,14 @@ namespace Katydid
 
     KTRawTimeSeriesData::~KTRawTimeSeriesData()
     {
+        while (! fTimeSeries.empty())
+        {
+            delete fTimeSeries.back();
+            fTimeSeries.pop_back();
+        }
     }
 
-    KTTimeSeriesData& KTTimeSeriesData::SetNComponents(unsigned num)
+    KTRawTimeSeriesData& KTRawTimeSeriesData::SetNComponents(unsigned num)
     {
         unsigned oldSize = fTimeSeries.size();
         // if num < oldSize

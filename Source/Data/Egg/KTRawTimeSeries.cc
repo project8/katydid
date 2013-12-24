@@ -11,12 +11,32 @@ namespace Katydid
 {
 
     KTRawTimeSeries::KTRawTimeSeries() :
-            KTExtensibleData< KTRawTimeSeries >()
+            KTPhysicalArray< 1, uint16_t >()
+    {
+        fData[0] = 0;
+    }
+
+    KTRawTimeSeries::KTRawTimeSeries(size_t nBins, double rangeMin, double rangeMax) :
+            KTPhysicalArray< 1, uint16_t >(nBins, rangeMin, rangeMax)
+    {
+        for (unsigned iBin = 0; iBin < nBins; ++iBin)
+        {
+            fData[iBin] = 0;
+        }
+    }
+    KTRawTimeSeries::KTRawTimeSeries(const KTRawTimeSeries& orig) :
+            KTPhysicalArray< 1, uint16_t >(orig)
     {
     }
 
     KTRawTimeSeries::~KTRawTimeSeries()
     {
+    }
+
+    KTRawTimeSeries& KTRawTimeSeries::operator=(const KTRawTimeSeries& rhs)
+    {
+        KTPhysicalArray< 1, uint16_t >::operator=(rhs);
+        return *this;
     }
 
 } /* namespace Katydid */

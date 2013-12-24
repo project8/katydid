@@ -5,14 +5,16 @@
  *      Author: nsoblath
  */
 
-#ifndef KTRAWTIMESERIES_HH_
-#define KTRAWTIMESERIES_HH_
+#ifndef KTRAWTIMESERIESDATA_HH_
+#define KTRAWTIMESERIESDATA_HH_
 
 #include "KTData.hh"
 
+#include <vector>
+
 namespace Katydid
 {
-    class KTTimeSeriesRaw;
+    class KTRawTimeSeries;
 
     class KTRawTimeSeriesData : public KTExtensibleData< KTRawTimeSeriesData >
     {
@@ -23,12 +25,12 @@ namespace Katydid
             unsigned GetNComponents() const;
             KTRawTimeSeriesData& SetNComponents(unsigned num);
 
-            const KTTimeSeriesRaw* GetTimeSeries(unsigned component = 0) const;
-            KTTimeSeriesRaw* GetTimeSeries(unsigned component = 0);
-            void SetTimeSeries(KTTimeSeriesRaw* record, unsigned component = 0);
+            const KTRawTimeSeries* GetTimeSeries(unsigned component = 0) const;
+            KTRawTimeSeries* GetTimeSeries(unsigned component = 0);
+            void SetTimeSeries(KTRawTimeSeries* record, unsigned component = 0);
 
         protected:
-            std::vector< KTTimeSeriesRaw* > fTimeSeries;
+            std::vector< KTRawTimeSeries* > fTimeSeries;
 
     };
 
@@ -37,17 +39,17 @@ namespace Katydid
         return unsigned(fTimeSeries.size());
     }
 
-    inline KTTimeSeriesRaw* KTRawTimeSeriesData::GetTimeSeries(unsigned component)
+    inline KTRawTimeSeries* KTRawTimeSeriesData::GetTimeSeries(unsigned component)
     {
         return fTimeSeries[component];
     }
 
-    inline const KTTimeSeriesRaw* KTRawTimeSeriesData::GetTimeSeries(unsigned component) const
+    inline const KTRawTimeSeries* KTRawTimeSeriesData::GetTimeSeries(unsigned component) const
     {
         return fTimeSeries[component];
     }
 
-    inline void KTRawTimeSeriesData::SetTimeSeries(KTTimeSeriesRaw* record, unsigned component)
+    inline void KTRawTimeSeriesData::SetTimeSeries(KTRawTimeSeries* record, unsigned component)
     {
         if (component >= fTimeSeries.size()) SetNComponents(component+1);
         fTimeSeries[component] = record;
@@ -56,4 +58,4 @@ namespace Katydid
 
 
 } /* namespace Katydid */
-#endif /* KTRAWTIMESERIES_HH_ */
+#endif /* KTRAWTIMESERIESDATA_HH_ */
