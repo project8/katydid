@@ -18,6 +18,7 @@
 
 namespace Katydid
 {
+    class KTDAC;
     class KTProcSummary;
     class KTPStoreNode;
     class KTTimeSeriesData;
@@ -41,10 +42,7 @@ namespace Katydid
      - "slice-size": unsigned -- Specify the size of the time series (required)
      - "stride": unsigned -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
      - "normalize-voltages": bool -- Flag to toggle the normalization of ADC values from the egg file (default: true)
-     - "full-voltage-scale": double -- Normalization parameter specifying the full voltage range of the digitizer
-     - "n-adc-levels": unsigned -- Number of ADC levels (for an N-bit digitizer, # of levels = 2^N)
-     - "normalization": double -- Directly set the voltage normalization
-     - "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
+     - "dac": object -- configure the DAC
 
      Command-line options defined
      - -n (n-slices): Number of slices to process
@@ -66,24 +64,11 @@ namespace Katydid
                 kMonarchEggReader
             };
 
-            enum TimeSeriesType
-            {
-                kRealTimeSeries,
-                kFFTWTimeSeries
-            };
-
         public:
             KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
             bool Configure(const KTPStoreNode* node);
-
-            bool Run();
-
-            bool ProcessEgg();
-
-            bool HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const;
-            void NormalizeData(KTDataPtr& data) const;
 
             unsigned GetNSlices() const;
             void SetNSlices(unsigned nSlices);
@@ -106,23 +91,7 @@ namespace Katydid
             bool GetNormalizeVoltages() const;
             void SetNormalizeVoltages(bool flag);
 
-            double GetFullVoltageScale() const;
-            void SetFullVoltageScale(double vScale);
-
-            unsigned GetNADCLevels() const;
-            void SetNADCLevels(unsigned adcLevels);
-
-            double GetNormalization() const;
-            void CalculateNormalization(); /// Calculate the normalization from the full voltage scale, and number of ADC levels
-            void SetNormalization(double norm); /// Set the normalization directly
-
-            TimeSeriesType GetTimeSeriesType() const;
-            void SetTimeSeriesType(TimeSeriesType type);
-
         private:
-            void UnlimitedLoop(KTEggReader* reader);
-            void LimitedLoop(KTEggReader* reader);
-
             unsigned fNSlices;
             unsigned fProgressReportInterval;
 
@@ -133,13 +102,22 @@ namespace Katydid
             unsigned fSliceSize;
             unsigned fStride;
 
-            bool fNormalizeVoltages;
-            double fFullVoltageScale;
-            unsigned fNADCLevels;
-            double fNormalization; // final value of the normalization
-            bool fCalculateNormalization; // flag for automatically calculating the normalization
+            KTDAC* fDAC;
 
-            TimeSeriesType fTimeSeriesType;
+            bool fNormalizeVoltages;
+
+        public:
+            bool Run();
+
+            bool ProcessEgg();
+
+            bool HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const;
+            void NormalizeData(KTDataPtr& data);
+
+        private:
+            void UnlimitedLoop(KTEggReader* reader);
+            void LimitedLoop(KTEggReader* reader);
+
 
             //***************
             // Signals
@@ -147,6 +125,7 @@ namespace Katydid
 
         private:
             KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
+            KTSignalData fRawDataSignal;
             KTSignalData fDataSignal;
             KTSignalOneArg< void > fEggDoneSignal;
             KTSignalOneArg< const KTProcSummary* > fSummarySignal;
@@ -239,60 +218,6 @@ namespace Katydid
     inline void KTEggProcessor::SetNormalizeVoltages(bool flag)
     {
         fNormalizeVoltages = flag;
-        return;
-    }
-
-    inline double KTEggProcessor::GetFullVoltageScale() const
-    {
-        return fFullVoltageScale;
-    }
-
-    inline void KTEggProcessor::SetFullVoltageScale(double vScale)
-    {
-        fFullVoltageScale = vScale;
-        fCalculateNormalization = true;
-        return;
-    }
-
-    inline unsigned KTEggProcessor::GetNADCLevels() const
-    {
-        return fNADCLevels;
-    }
-
-    inline void KTEggProcessor::SetNADCLevels(unsigned adcLevels)
-    {
-        fNADCLevels = adcLevels;
-        fCalculateNormalization = true;
-        return;
-    }
-
-    inline double KTEggProcessor::GetNormalization() const
-    {
-        return fNormalization;
-    }
-
-    inline void KTEggProcessor::CalculateNormalization()
-    {
-        fNormalization = fFullVoltageScale / (double)fNADCLevels;
-        fCalculateNormalization = false;
-        return;
-    }
-
-    inline void KTEggProcessor::SetNormalization(double norm)
-    {
-        fNormalization = norm;
-        fCalculateNormalization = false;
-        return;
-    }
-
-    inline KTEggProcessor::TimeSeriesType KTEggProcessor::GetTimeSeriesType() const
-    {
-        return fTimeSeriesType;
-    }
-
-    inline void KTEggProcessor::SetTimeSeriesType(TimeSeriesType type)
-    {
-        fTimeSeriesType = type;
         return;
     }
 
