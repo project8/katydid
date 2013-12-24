@@ -8,6 +8,8 @@
 #ifndef KT2ROOT_HH_
 #define KT2ROOT_HH_
 
+#include <string>
+
 class TH1I;
 
 namespace Katydid

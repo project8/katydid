@@ -21,6 +21,8 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTProcSummary.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTRawTimeSeries.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTRawTimeSeriesData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.hh
@@ -62,6 +64,8 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTProcSummary.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTRawTimeSeries.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTRawTimeSeriesData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.cc
@@ -82,6 +86,17 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.cc
 )
+
+if (ROOT_FOUND)
+    set (DATA_HEADERFILES
+        ${DATA_HEADERFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/Conversions/KT2ROOT.hh
+    )
+    set (DATA_SOURCEFILES
+        ${DATA_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/Conversions/KT2ROOT.cc
+    )
+endif (ROOT_FOUND)
 
 if (NOT FFTW_FOUND)
     set (DATA_SOURCEFILES
