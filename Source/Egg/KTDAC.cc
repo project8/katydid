@@ -61,6 +61,8 @@ namespace Katydid
             return false;
         }
 
+        CalculateVoltages();
+
         return true;
     }
 
