@@ -11,10 +11,13 @@
 #include <string>
 
 class TH1I;
+class TH1D;
 
 namespace Katydid
 {
     class KTRawTimeSeries;
+    class KTTimeSeriesFFTW;
+    class KTTimeSeriesReal;
 
     class KT2ROOT
     {
@@ -24,6 +27,12 @@ namespace Katydid
 
             static TH1I* CreateHistogram(const KTRawTimeSeries* ts, const std::string& histName = "hRawTimeSeries");
             static TH1I* CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const std::string& histName = "hRawTSDist");
+
+            static TH1D* CreateHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeries");
+            static TH1D* CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeriesDist");
+
+            static TH1D* CreateHistogram(const KTTimeSeriesReal* ts, const std::string& histName = "hTimeSeries");
+            static TH1D* CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName = "hTimeSeriesDist");
     };
 
 } /* namespace Katydid */

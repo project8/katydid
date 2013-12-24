@@ -8,8 +8,12 @@
 #include "KT2ROOT.hh"
 
 #include "KTRawTimeSeries.hh"
+#include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 
-#include "TH1I.h"
+#include "TH1.h"
+
+#include <cfloat>
 
 using std::string;
 
@@ -63,5 +67,80 @@ namespace Katydid
         return hist;
     }
 
+    TH1D* KT2ROOT::CreateHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
+    {
+        unsigned nBins = ts->GetNBins();
+        TH1D* hist = new TH1D(histName.c_str(), "Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*ts)(iBin)[0]);
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
+    {
+        double tMaxMag = -DBL_MAX;
+        double tMinMag = DBL_MAX;
+        unsigned nBins = ts->GetNTimeBins();
+        double value;
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            value = (*ts)(iBin)[0];
+            //value *= value;
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(histName.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            //value = (*this)(iBin);
+            //hist->Fill(value*value);
+            hist->Fill((*ts)(iBin)[0]);
+        }
+        hist->SetXTitle("Voltage (V)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreateHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
+    {
+        unsigned nBins = ts->GetNBins();
+        TH1D* hist = new TH1D(histName.c_str(), "Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
+    {
+        double tMaxMag = -DBL_MAX;
+        double tMinMag = DBL_MAX;
+        unsigned nBins = ts->GetNTimeBins();
+        double value;
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            value = (*ts)(iBin);
+            //value *= value;
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(histName.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            //value = (*this)(iBin);
+            //hist->Fill(value*value);
+            hist->Fill((*ts)(iBin));
+        }
+        hist->SetXTitle("Voltage (V)");
+        return hist;
+    }
 
 } /* namespace Katydid */
