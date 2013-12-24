@@ -32,13 +32,23 @@ namespace Katydid
             fAveragingFrac(0.1),
             fSignalInterval(1),
             fDataMap(),
+            fLastAccumulatorPtr(),
             fTSSignal("ts", this),
             fFSPolarSignal("fs-polar", this),
             fFSFFTWSignal("fs-fftw", this),
-            fTSSlot("ts", this, &KTDataAccumulator::AddData, &fTSSignal),
-            fFSPolarSlot("fs-polar", this, &KTDataAccumulator::AddData, &fFSPolarSignal),
-            fFSFFTWSlot("fs-fftw", this, &KTDataAccumulator::AddData, &fFSFFTWSignal)
+            fTSFinishedSignal("ts-finished", this),
+            fFSPolarFinishedSignal("fs-polar-finished", this),
+            fFSFFTWFinishedSignal("fs-fftw-finished", this),
+            fSignalMap(),
+            fFinishAccumulationSlot("finish", this, &KTDataAccumulator::CallAllSlots)
     {
+        RegisterSlot("ts", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesData >);
+        RegisterSlot("fs-polar", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataPolar >);
+        RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
+
+        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesData), SignalSet(&fTSSignal, &fTSFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataPolar), SignalSet(&fFSPolarSignal, &fFSPolarFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWFinishedSignal)));
     }
 
     KTDataAccumulator::~KTDataAccumulator()
@@ -284,6 +294,19 @@ namespace Katydid
         }
 
         return true;
+    }
+
+    void KTDataAccumulator::CallAllSlots()
+    {
+        for (AccumulatorMapIt accIt = fDataMap.begin(); accIt != fDataMap.end(); ++accIt)
+        {
+            SignalMapIt sigIt = fSignalMap.find(accIt->first);
+            if (sigIt != fSignalMap.end())
+            {
+                (*sigIt->second.fFinishedSignal)(accIt->second.fData);
+            }
+        }
+        return;
     }
 
 
