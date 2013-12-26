@@ -56,7 +56,7 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "slice",
+                "signal-name": "ts",
                 "slot-processor": "fft",
                 "slot-name": "ts"
             },
@@ -122,8 +122,11 @@
             "filename": "${INPUT}",
             "number-of-slices": 0,
             "time-series-size": 8192,
-            "time-series-type": "fftw",
-            "stride": 6144
+            "stride": 6144,
+            "dac":
+            {
+                "time-series-type": "fftw"
+            }
         },
         
         "fft":
