@@ -22,6 +22,8 @@ namespace Katydid
 {
     //class KTDigitizerTestData;
     class KTPStoreNode;
+    class KTRawTimeSeriesData;
+    class KTRawTimeSeries;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
@@ -58,11 +60,9 @@ namespace Katydid
     class KTDigitizerTests : public KTProcessor
     {
         private:
-            typedef bool (KTDigitizerTests::*ptrToRealTestFunc)(const KTTimeSeriesReal*, KTDigitizerTestData&, unsigned);
-            typedef bool (KTDigitizerTests::*ptrToFFTWTestFunc)(const KTTimeSeriesFFTW*, KTDigitizerTestData&, unsigned);
+            typedef bool (KTDigitizerTests::*ptrToTestFunc)(const KTRawTimeSeries*, KTDigitizerTestData&, unsigned);
 
-            typedef std::map< unsigned, ptrToRealTestFunc > RealTestFuncs;
-            typedef std::map< unsigned, ptrToFFTWTestFunc > FFTWTestFuncs;
+            typedef std::map< unsigned, ptrToTestFunc > TestFuncs;
 
          public:
             KTDigitizerTests(const std::string& name = "digitizer-tests");
@@ -89,19 +89,15 @@ namespace Katydid
             bool fTestClipping;
 
         public:
-            bool RunTestsOnRealTS(KTTimeSeriesData& data);
-            bool RunTestsOnFFTWTS(KTTimeSeriesData& data);
+            bool RunTests(KTRawTimeSeriesData& data);
 
             // Actual test functions
-            bool BitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component);
-            bool BitOccupancyTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component);
+            bool BitOccupancyTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component);
 
-            bool ClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component);
-            bool ClippingTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component);
+            bool ClippingTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component);
 
         private:
-            FFTWTestFuncs fFFTWTestFuncs;
-            RealTestFuncs fRealTestFuncs;
+            TestFuncs fRawTestFuncs;
 
             unsigned fBitOccupancyTestID;
             unsigned fClippingTestID;
@@ -118,8 +114,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotDataOneType< KTTimeSeriesData > fDigTestRealSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fDigTestFFTWSlot;
+            KTSlotDataOneType< KTRawTimeSeriesData > fDigTestRawSlot;
 
     };
 

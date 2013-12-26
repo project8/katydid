@@ -11,6 +11,8 @@
 #include "KTLogger.hh"
 #include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
+#include "KTRawTimeSeries.hh"
+#include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTTimeSeriesData.hh"
@@ -31,13 +33,11 @@ namespace Katydid
             fNDigitizerLevels(pow(2, fNDigitizerBits)),
             fTestBitOccupancy(true),
             fTestClipping(true),
-            fFFTWTestFuncs(),
-            fRealTestFuncs(),
+            fRawTestFuncs(),
             fBitOccupancyTestID(0),
             fClippingTestID(0),
             fDigTestSignal("dig-test", this),
-            fDigTestRealSlot("ts-real", this, &KTDigitizerTests::RunTestsOnRealTS, &fDigTestSignal),
-            fDigTestFFTWSlot("ts-fftw", this, &KTDigitizerTests::RunTestsOnFFTWTS, &fDigTestSignal)
+            fDigTestRawSlot("raw-ts", this, &KTDigitizerTests::RunTests, &fDigTestSignal)
     {
         unsigned id = 0;
 
@@ -65,14 +65,14 @@ namespace Katydid
         return true;
     }
 
-    bool KTDigitizerTests::RunTestsOnRealTS(KTTimeSeriesData& data)
+    bool KTDigitizerTests::RunTests(KTRawTimeSeriesData& data)
     {
         unsigned nComponents = data.GetNComponents();
         KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)
         {
-            const KTTimeSeriesReal* ts = static_cast< const KTTimeSeriesReal* >(data.GetTimeSeries(component));
-            for (RealTestFuncs::const_iterator func_it = fRealTestFuncs.begin(); func_it != fRealTestFuncs.end(); ++func_it)
+            const KTRawTimeSeries* ts = static_cast< const KTRawTimeSeries* >(data.GetTimeSeries(component));
+            for (TestFuncs::const_iterator func_it = fRawTestFuncs.begin(); func_it != fRawTestFuncs.end(); ++func_it)
             {
                 (this->*(func_it->second))(ts, dtData, component);
             }
@@ -80,35 +80,9 @@ namespace Katydid
         return true;
     }
 
-    bool KTDigitizerTests::RunTestsOnFFTWTS(KTTimeSeriesData& data)
+    bool KTDigitizerTests::BitOccupancyTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component)
     {
-        unsigned nComponents = data.GetNComponents();
-        KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
-        for (unsigned component = 0; component < nComponents; ++component)
-        {
-            const KTTimeSeriesFFTW* ts = static_cast< const KTTimeSeriesFFTW* >(data.GetTimeSeries(component));
-            for (FFTWTestFuncs::const_iterator func_it = fFFTWTestFuncs.begin(); func_it != fFFTWTestFuncs.end(); ++func_it)
-            {
-                (this->*(func_it->second))(ts, dtData, component);
-            }
-        }
-        return true;
-    }
-
-    bool KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component)
-    {
-        KTDEBUG(dtlog, "Running FFTW Bit Occupancy test");
-        testData.SetBitOccupancyFlag(true);
-        size_t nBins = ts->size();
-        for (size_t iBin = 0; iBin < nBins; ++iBin)
-        {
-            testData.AddBits((*ts)(iBin)[0], component);
-        }
-        return true;
-    }
-    bool KTDigitizerTests::BitOccupancyTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component)
-    {
-        KTDEBUG(dtlog, "Running real Bit Occupancy test");
+        KTDEBUG(dtlog, "Running Bit Occupancy test");
         testData.SetBitOccupancyFlag(true);
         size_t nBins = ts->size();
         for (size_t iBin = 0; iBin < nBins; ++iBin)
@@ -118,23 +92,9 @@ namespace Katydid
         return true;
     }
 
-    bool KTDigitizerTests::ClippingTest(const KTTimeSeriesFFTW* ts, KTDigitizerTestData& testData, unsigned component)
+    bool KTDigitizerTests::ClippingTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component)
     {
-        KTDEBUG(dtlog, "Running FFTW Clipping test");
-        testData.SetClippingFlag(true);
-        size_t nBins = ts->size();
-        unsigned nClipTop = 0, nClipBottom = 0;
-        for (size_t iBin = 0; iBin < nBins; ++iBin)
-        {
-            if ((*ts)(iBin)[0] >= fNDigitizerLevels) ++nClipTop;
-            if ((*ts)(iBin)[0] <= 0) ++nClipBottom;
-        }
-        testData.SetClippingData(nClipTop, nClipBottom, (double)nClipTop / (double)ts->size(), (double)nClipBottom / (double)ts->size(), component);
-        return true;
-    }
-    bool KTDigitizerTests::ClippingTest(const KTTimeSeriesReal* ts, KTDigitizerTestData& testData, unsigned component)
-    {
-        KTDEBUG(dtlog, "Running real Clipping test");
+        KTDEBUG(dtlog, "Running Clipping test");
         testData.SetClippingFlag(true);
         size_t nBins = ts->size();
         unsigned nClipTop = 0, nClipBottom = 0;
@@ -152,13 +112,11 @@ namespace Katydid
         fTestBitOccupancy = flag;
         if (flag)
         {
-            fFFTWTestFuncs.insert(FFTWTestFuncs::value_type(fBitOccupancyTestID, &KTDigitizerTests::BitOccupancyTest));
-            fRealTestFuncs.insert(RealTestFuncs::value_type(fBitOccupancyTestID, &KTDigitizerTests::BitOccupancyTest));
+            fRawTestFuncs.insert(TestFuncs::value_type(fBitOccupancyTestID, &KTDigitizerTests::BitOccupancyTest));
         }
         else
         {
-            fFFTWTestFuncs.erase(fBitOccupancyTestID);
-            fRealTestFuncs.erase(fBitOccupancyTestID);
+            fRawTestFuncs.erase(fBitOccupancyTestID);
         }
         return;
     }
@@ -168,13 +126,11 @@ namespace Katydid
         fTestClipping = flag;
         if (flag)
         {
-            fFFTWTestFuncs.insert(FFTWTestFuncs::value_type(fClippingTestID, &KTDigitizerTests::ClippingTest));
-            fRealTestFuncs.insert(RealTestFuncs::value_type(fClippingTestID, &KTDigitizerTests::ClippingTest));
-        }
+            fRawTestFuncs.insert(TestFuncs::value_type(fClippingTestID, &KTDigitizerTests::ClippingTest));
+       }
         else
         {
-            fFFTWTestFuncs.erase(fClippingTestID);
-            fRealTestFuncs.erase(fClippingTestID);
+            fRawTestFuncs.erase(fClippingTestID);
         }
         return;
     }
