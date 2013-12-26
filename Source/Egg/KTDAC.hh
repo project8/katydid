@@ -42,10 +42,10 @@ namespace Katydid
      - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
 
      Slots:
-     - "[slot-name]": void (shared_ptr<KTData>) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
+     - "raw-ts": void (KTDataPtr) -- Performs the DAC process on a single slice; Requires KTRawTimeSeriesData; Adds KTTimeSeriesData; Emits signal "ts"
 
      Signals:
-     - "[signal-name]": void (shared_ptr<KTData>) -- Emitted upon [whatever was done]; Guarantees [output data type].
+     - "ts": void (KTDataPtr) -- Emitted upon DAC completion for a single slice; Guarantees KTTimeSeriesData.
     */
 
     class KTDAC : public KTProcessor

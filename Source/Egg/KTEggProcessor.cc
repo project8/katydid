@@ -48,7 +48,7 @@ namespace Katydid
             fNormalizeVoltages(true),
             fHeaderSignal("header", this),
             fRawDataSignal("raw-ts", this),
-            fDataSignal("slice", this),
+            fDataSignal("ts", this),
             fEggDoneSignal("egg-done", this),
             fSummarySignal("summary", this)
     {

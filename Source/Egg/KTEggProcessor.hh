@@ -51,7 +51,8 @@ namespace Katydid
 
      Signals:
      - "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     - "slice": void (KTDataPtr) -- emitted when the new time series is produced; Guarantees KTTimeSeriesData
+     - "raw-ts" void (KTDataPtr) -- emitted when a new raw time series is produced; guarantees KTRawTimeSeriesData
+     - "ts": void (KTDataPtr) -- emitted when the new calibrated time series is produced; Guarantees KTTimeSeriesData
      - "egg-done": void () --  emitted when a file is finished.
      - "summary": void (const KTProcSummary*) -- emitted when a file is finished (after "egg-done")
     */
