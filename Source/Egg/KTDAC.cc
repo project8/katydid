@@ -32,8 +32,12 @@ namespace Katydid
             fMinVoltage(-0.25),
             fVoltageRange(0.5),
             fTimeSeriesType(kRealTimeSeries),
+            fBitDepthMode(kNoChange),
+            fReducedNBits(fNBits),
+            fIncreasedNBits(fNBits),
             fVoltages(),
             fConvertTSFunc(&KTDAC::ConvertToReal),
+            fOversamplingScaleFactor(1.),
             fTimeSeriesSignal("ts", this),
             fRawTSSlot("raw-ts", this, &KTDAC::ConvertData, &fTimeSeriesSignal)
     {
@@ -61,6 +65,21 @@ namespace Katydid
             return false;
         }
 
+        if (node->HasData("reduced-n-bits"))
+        {
+            if (! SetReducedNBits(node->GetData< unsigned >("reduced-n-bits", fReducedNBits)))
+            {
+                return false;
+            }
+        }
+        if (node->HasData("increased-n-bits"))
+        {
+            if (! SetIncreasedNBits(node->GetData< unsigned >("increased-n-bits", fIncreasedNBits)))
+            {
+                return false;
+            }
+        }
+
         CalculateVoltages();
 
         return true;
@@ -73,15 +92,36 @@ namespace Katydid
             fVoltages.clear();
         }
 
+        unsigned nVoltages = 1 << fNBits;
+        unsigned levelDivisor = 1;
+
         dig_calib_params params;
-        params.levels = 1 << fNBits;
+        if (fBitDepthMode == kReducing)
+        {
+            params.levels = 1 << fReducedNBits;
+            levelDivisor = 1 << (fNBits - fReducedNBits);
+        }
+        else
+        {
+            params.levels = nVoltages;
+        }
         params.v_range = fVoltageRange;
         params.v_min = fMinVoltage;
 
-        fVoltages.resize(params.levels);
-        for (unsigned level = 0; level < params.levels; ++level)
+        KTDEBUG(egglog, "Assigning voltages with:\n" <<
+                "\tDigitizer bits: " << fNBits << '\n' <<
+                "\tVoltage levels: " << nVoltages << '\n' <<
+                "\tReduced bits: " << fReducedNBits << '\n' <<
+                "\tLevel divisor: " << levelDivisor << '\n' <<
+                "\tReduced levels: " << params.levels << '\n' <<
+                "\tVoltage range: " << params.v_range << '\n' <<
+                "\tMinimum voltage: " << params.v_min << " V\n");
+
+
+        fVoltages.resize(nVoltages);
+        for (unsigned level = 0; level < nVoltages; ++level)
         {
-            fVoltages[level] = dd2a((data_type)level, &params);
+            fVoltages[level] = dd2a((data_type)level / levelDivisor, &params);
         }
     }
 
@@ -118,6 +158,103 @@ namespace Katydid
         }
         return newTS;
     }
+
+    KTTimeSeries* KTDAC::ConvertToFFTWOversampled(KTRawTimeSeries* ts)
+    {
+        unsigned nBins = ts->size() / fOversamplingBins;
+        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        double avgValue;
+        unsigned bin = 0;
+        for (unsigned oversampledBin = 0; oversampledBin < nBins; ++oversampledBin)
+        {
+            avgValue = 0.;
+            for (unsigned iOSBin = 0; iOSBin < fOversamplingBins; ++iOSBin)
+            {
+                avgValue += Convert((*ts)(bin));
+                ++bin;
+            }
+            (*newTS)(oversampledBin)[0] = avgValue * fOversamplingScaleFactor;
+        }
+#ifndef NDEBUG
+        if (bin != ts->size())
+        {
+            KTWARN(egglog, "Data lost upon oversampling: " << ts->size() - bin << " samples");
+        }
+#endif
+        return newTS;
+    }
+
+    KTTimeSeries* KTDAC::ConvertToRealOversampled(KTRawTimeSeries* ts)
+    {
+        unsigned nBins = ts->size() / fOversamplingBins;
+        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        double avgValue;
+        unsigned bin = 0;
+        for (unsigned oversampledBin = 0; oversampledBin < nBins; ++oversampledBin)
+        {
+            avgValue = 0.;
+            for (unsigned iOSBin = 0; iOSBin < fOversamplingBins; ++iOSBin)
+            {
+                avgValue += Convert((*ts)(bin));
+                ++bin;
+            }
+            (*newTS)(oversampledBin) = avgValue * fOversamplingScaleFactor;
+        }
+#ifndef NDEBUG
+        if (bin != ts->size())
+        {
+            KTWARN(egglog, "Data lost upon oversampling: " << ts->size() - bin << " samples");
+        }
+#endif
+        return newTS;
+    }
+
+    void KTDAC::SetTimeSeriesType(KTDAC::TimeSeriesType type)
+    {
+        fTimeSeriesType = type;
+        if (type == kFFTWTimeSeries)
+        {
+            fConvertTSFunc = &KTDAC::ConvertToFFTW;
+        }
+        else
+        {
+            fConvertTSFunc = &KTDAC::ConvertToReal;
+        }
+        return;
+    }
+
+    bool KTDAC::SetReducedNBits(unsigned nBits)
+    {
+        if (nBits >= fNBits)
+        {
+            KTERROR(egglog, "Reduced bits >= actual bits is does not make sense; assigning emulated bits = actual bits");
+            fBitDepthMode = kNoChange;
+            fReducedNBits = nBits;
+            return false;
+        }
+
+        fBitDepthMode = kReducing;
+        fReducedNBits = nBits;
+        return true;
+    }
+
+    bool KTDAC::SetIncreasedNBits(unsigned nBits)
+    {
+        if (nBits <= fNBits)
+        {
+            KTERROR(egglog, "Increased bits <= actual bits is does not make sense; assigning emulated bits = actual bits");
+            fBitDepthMode = kNoChange;
+            fIncreasedNBits = nBits;
+            return false;
+        }
+
+        fBitDepthMode = kIncreasing;
+        fIncreasedNBits = nBits;
+        fOversamplingBins = 1 << 2 * fIncreasedNBits;
+        fOversamplingScaleFactor = 1. / double(1 << fIncreasedNBits);
+        return true;
+    }
+
 
 
 

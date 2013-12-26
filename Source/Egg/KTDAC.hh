@@ -40,6 +40,7 @@ namespace Katydid
      - "min-voltage": double -- Set the minimum voltage for the digitizer
      - "voltage-range": double -- Set the full-scale voltage range for the digitizer
      - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
+     - "n-bits-emulated": unsigned -- Set the number of bits to emulate
 
      Slots:
      - "raw-ts": void (KTDataPtr) -- Performs the DAC process on a single slice; Requires KTRawTimeSeriesData; Adds KTTimeSeriesData; Emits signal "ts"
@@ -55,6 +56,13 @@ namespace Katydid
             {
                 kRealTimeSeries,
                 kFFTWTimeSeries
+            };
+
+            enum BitDepthMode
+            {
+                kNoChange,
+                kReducing,
+                kIncreasing
             };
 
         public:
@@ -75,12 +83,25 @@ namespace Katydid
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
 
+            BitDepthMode GetBitDepthMode() const;
+
+            unsigned GetReducedNBits() const;
+            bool SetReducedNBits(unsigned nBits);
+
+            unsigned GetIncreasedNBits() const;
+            bool SetIncreasedNBits(unsigned nBits);
+
         private:
             unsigned fNBits;
             double fMinVoltage;
             double fVoltageRange;
 
             TimeSeriesType fTimeSeriesType;
+
+            BitDepthMode fBitDepthMode;
+
+            unsigned fReducedNBits;
+            unsigned fIncreasedNBits;
 
         public:
             void CalculateVoltages();
@@ -90,12 +111,18 @@ namespace Katydid
             KTTimeSeries* ConvertToFFTW(KTRawTimeSeries* ts);
             KTTimeSeries* ConvertToReal(KTRawTimeSeries* ts);
 
+            KTTimeSeries* ConvertToFFTWOversampled(KTRawTimeSeries* ts);
+            KTTimeSeries* ConvertToRealOversampled(KTRawTimeSeries* ts);
+
             double Convert(uint16_t level);
 
         private:
             std::vector< double > fVoltages;
 
             KTTimeSeries* (KTDAC::*fConvertTSFunc)(KTRawTimeSeries*);
+
+            unsigned fOversamplingBins;
+            double fOversamplingScaleFactor;
 
             //***************
             // Signals
@@ -147,19 +174,22 @@ namespace Katydid
     {
         return fTimeSeriesType;
     }
-    inline void KTDAC::SetTimeSeriesType(KTDAC::TimeSeriesType type)
+
+    inline KTDAC::BitDepthMode KTDAC::GetBitDepthMode() const
     {
-        fTimeSeriesType = type;
-        if (type == kFFTWTimeSeries)
-        {
-            fConvertTSFunc = &KTDAC::ConvertToFFTW;
-        }
-        else
-        {
-            fConvertTSFunc = &KTDAC::ConvertToReal;
-        }
-        return;
+        return fBitDepthMode;
     }
+
+    inline unsigned KTDAC::GetReducedNBits() const
+    {
+        return fReducedNBits;
+    }
+
+    inline unsigned KTDAC::GetIncreasedNBits() const
+    {
+        return fIncreasedNBits;
+    }
+
 
     inline double KTDAC::Convert(uint16_t level)
     {
