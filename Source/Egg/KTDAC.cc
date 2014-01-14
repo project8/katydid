@@ -14,7 +14,7 @@
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
-#include "KTTimeSeriesREal.hh"
+#include "KTTimeSeriesReal.hh"
 
 #include "thorax.hh"
 
