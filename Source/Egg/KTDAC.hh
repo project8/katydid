@@ -85,11 +85,8 @@ namespace Katydid
 
             BitDepthMode GetBitDepthMode() const;
 
-            unsigned GetReducedNBits() const;
-            bool SetReducedNBits(unsigned nBits);
-
-            unsigned GetIncreasedNBits() const;
-            bool SetIncreasedNBits(unsigned nBits);
+            unsigned GetEmulatedNBits() const;
+            bool SetEmulatedNBits(unsigned nBits);
 
         private:
             unsigned fNBits;
@@ -99,9 +96,7 @@ namespace Katydid
             TimeSeriesType fTimeSeriesType;
 
             BitDepthMode fBitDepthMode;
-
-            unsigned fReducedNBits;
-            unsigned fIncreasedNBits;
+            unsigned fEmulatedNBits;
 
         public:
             void CalculateVoltages();
@@ -180,16 +175,10 @@ namespace Katydid
         return fBitDepthMode;
     }
 
-    inline unsigned KTDAC::GetReducedNBits() const
+    inline unsigned KTDAC::GetEmulatedNBits() const
     {
-        return fReducedNBits;
+        return fEmulatedNBits;
     }
-
-    inline unsigned KTDAC::GetIncreasedNBits() const
-    {
-        return fIncreasedNBits;
-    }
-
 
     inline double KTDAC::Convert(uint16_t level)
     {
