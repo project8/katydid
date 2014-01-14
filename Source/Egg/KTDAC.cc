@@ -33,8 +33,7 @@ namespace Katydid
             fVoltageRange(0.5),
             fTimeSeriesType(kRealTimeSeries),
             fBitDepthMode(kNoChange),
-            fReducedNBits(fNBits),
-            fIncreasedNBits(fNBits),
+            fEmulatedNBits(fNBits),
             fVoltages(),
             fConvertTSFunc(&KTDAC::ConvertToReal),
             fOversamplingScaleFactor(1.),
@@ -65,19 +64,9 @@ namespace Katydid
             return false;
         }
 
-        if (node->HasData("reduced-n-bits"))
+        if (node->HasData("n-bits-emulated"))
         {
-            if (! SetReducedNBits(node->GetData< unsigned >("reduced-n-bits", fReducedNBits)))
-            {
-                return false;
-            }
-        }
-        if (node->HasData("increased-n-bits"))
-        {
-            if (! SetIncreasedNBits(node->GetData< unsigned >("increased-n-bits", fIncreasedNBits)))
-            {
-                return false;
-            }
+            SetEmulatedNBits(node->GetData< unsigned >("n-bits-emulated", fEmulatedNBits));
         }
 
         CalculateVoltages();
@@ -98,8 +87,8 @@ namespace Katydid
         dig_calib_params params;
         if (fBitDepthMode == kReducing)
         {
-            params.levels = 1 << fReducedNBits;
-            levelDivisor = 1 << (fNBits - fReducedNBits);
+            params.levels = 1 << fEmulatedNBits;
+            levelDivisor = 1 << (fNBits - fEmulatedNBits);
         }
         else
         {
@@ -111,7 +100,7 @@ namespace Katydid
         KTDEBUG(egglog, "Assigning voltages with:\n" <<
                 "\tDigitizer bits: " << fNBits << '\n' <<
                 "\tVoltage levels: " << nVoltages << '\n' <<
-                "\tReduced bits: " << fReducedNBits << '\n' <<
+                "\tEmulated bits: " << fEmulatedNBits << '\n' <<
                 "\tLevel divisor: " << levelDivisor << '\n' <<
                 "\tReduced levels: " << params.levels << '\n' <<
                 "\tVoltage range: " << params.v_range << '\n' <<
@@ -223,39 +212,29 @@ namespace Katydid
         return;
     }
 
-    bool KTDAC::SetReducedNBits(unsigned nBits)
+    bool KTDAC::SetEmulatedNBits(unsigned nBits)
     {
-        if (nBits >= fNBits)
+        if (nBits == fNBits)
         {
-            KTERROR(egglog, "Reduced bits >= actual bits is does not make sense; assigning emulated bits = actual bits");
+            KTWARN(egglog, "Number of emulated bits == actual bits; no emulation used");
             fBitDepthMode = kNoChange;
-            fReducedNBits = nBits;
-            return false;
+            fEmulatedNBits = fNBits;
+            return true;
         }
 
+        if (nBits > fNBits)
+        {
+            KTDEBUG(egglog, "Increasing bit depth from " << fNBits << " to " << nBits);
+            fBitDepthMode = kIncreasing;
+            fEmulatedNBits = nBits;
+            return true;
+        }
+
+        // otherwise nBits < fNBits
+        KTDEBUG(egglog, "Decreasing bit depth from " << fNBits << " to " << nBits);
         fBitDepthMode = kReducing;
-        fReducedNBits = nBits;
+        fEmulatedNBits = nBits;
         return true;
     }
-
-    bool KTDAC::SetIncreasedNBits(unsigned nBits)
-    {
-        if (nBits <= fNBits)
-        {
-            KTERROR(egglog, "Increased bits <= actual bits is does not make sense; assigning emulated bits = actual bits");
-            fBitDepthMode = kNoChange;
-            fIncreasedNBits = nBits;
-            return false;
-        }
-
-        fBitDepthMode = kIncreasing;
-        fIncreasedNBits = nBits;
-        fOversamplingBins = 1 << 2 * fIncreasedNBits;
-        fOversamplingScaleFactor = 1. / double(1 << fIncreasedNBits);
-        return true;
-    }
-
-
-
 
 } /* namespace Katydid */
