@@ -99,7 +99,8 @@ namespace Katydid
             unsigned fEmulatedNBits;
 
         public:
-            void CalculateVoltages();
+            void Initialize();
+            bool GetShouldRunInitialize();
 
             bool ConvertData(KTRawTimeSeriesData& rawData);
 
@@ -112,6 +113,8 @@ namespace Katydid
             double Convert(uint16_t level);
 
         private:
+            bool fShouldRunInitialize;
+
             std::vector< double > fVoltages;
 
             KTTimeSeries* (KTDAC::*fConvertTSFunc)(KTRawTimeSeries*);
@@ -184,6 +187,12 @@ namespace Katydid
     {
         return fVoltages[level];
     }
+
+    inline bool KTDAC::GetShouldRunInitialize()
+    {
+        return fShouldRunInitialize;
+    }
+
 
 }
  /* namespace Katydid */
