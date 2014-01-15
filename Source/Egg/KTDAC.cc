@@ -34,13 +34,14 @@ namespace Katydid
             fTimeSeriesType(kRealTimeSeries),
             fBitDepthMode(kNoChange),
             fEmulatedNBits(fNBits),
+            fShouldRunInitialize(true),
             fVoltages(),
             fConvertTSFunc(&KTDAC::ConvertToReal),
+            fOversamplingBins(1),
             fOversamplingScaleFactor(1.),
             fTimeSeriesSignal("ts", this),
             fRawTSSlot("raw-ts", this, &KTDAC::ConvertData, &fTimeSeriesSignal)
     {
-        CalculateVoltages();
     }
 
     KTDAC::~KTDAC()
@@ -69,12 +70,12 @@ namespace Katydid
             SetEmulatedNBits(node->GetData< unsigned >("n-bits-emulated", fEmulatedNBits));
         }
 
-        CalculateVoltages();
+        Initialize();
 
         return true;
     }
 
-    void KTDAC::CalculateVoltages()
+    void KTDAC::Initialize()
     {
         if (! fVoltages.empty())
         {
@@ -97,6 +98,18 @@ namespace Katydid
         params.v_range = fVoltageRange;
         params.v_min = fMinVoltage;
 
+        if (fBitDepthMode == kIncreasing)
+        {
+            if (fNBits >= fEmulatedNBits)
+            {
+                KTERROR(egglog, "Increasing-bit-depth mode was indicated, but emulated bits (" << fEmulatedNBits << ") <= actual bits (" << fNBits << ")");
+                return;
+            }
+            unsigned additionalBits = fEmulatedNBits - fNBits;
+            fOversamplingBins = pow(2, 2 * additionalBits);
+            fOversamplingScaleFactor = 1. / pow(2, additionalBits);
+        }
+
         KTDEBUG(egglog, "Assigning voltages with:\n" <<
                 "\tDigitizer bits: " << fNBits << '\n' <<
                 "\tVoltage levels: " << nVoltages << '\n' <<
@@ -104,7 +117,9 @@ namespace Katydid
                 "\tLevel divisor: " << levelDivisor << '\n' <<
                 "\tReduced levels: " << params.levels << '\n' <<
                 "\tVoltage range: " << params.v_range << '\n' <<
-                "\tMinimum voltage: " << params.v_min << " V\n");
+                "\tMinimum voltage: " << params.v_min << " V\n" <<
+                "\tOversampling bins: " << fOversamplingBins << '\n' <<
+                "\tOversampling scale factor: " << fOversamplingScaleFactor << '\n');
 
 
         fVoltages.resize(nVoltages);
@@ -112,6 +127,9 @@ namespace Katydid
         {
             fVoltages[level] = dd2a((data_type)level / levelDivisor, &params);
         }
+
+        fShouldRunInitialize = false;
+        return;
     }
 
     bool KTDAC::ConvertData(KTRawTimeSeriesData& rawData)
@@ -128,6 +146,10 @@ namespace Katydid
 
     KTTimeSeries* KTDAC::ConvertToFFTW(KTRawTimeSeries* ts)
     {
+        KTWARN(egglog, "convert to FFTW");
+        if (fShouldRunInitialize)
+            Initialize();
+
         unsigned nBins = ts->size();
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned bin = 0; bin < nBins; ++bin)
@@ -139,6 +161,10 @@ namespace Katydid
 
     KTTimeSeries* KTDAC::ConvertToReal(KTRawTimeSeries* ts)
     {
+        KTWARN(egglog, "convert to real");
+        if (fShouldRunInitialize)
+            Initialize();
+
         unsigned nBins = ts->size();
         KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned bin = 0; bin < nBins; ++bin)
@@ -150,6 +176,10 @@ namespace Katydid
 
     KTTimeSeries* KTDAC::ConvertToFFTWOversampled(KTRawTimeSeries* ts)
     {
+        KTWARN(egglog, "convert to FFTW oversampled");
+        if (fShouldRunInitialize)
+            Initialize();
+
         unsigned nBins = ts->size() / fOversamplingBins;
         KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts->GetRangeMin(), ts->GetRangeMax());
         double avgValue;
@@ -175,6 +205,10 @@ namespace Katydid
 
     KTTimeSeries* KTDAC::ConvertToRealOversampled(KTRawTimeSeries* ts)
     {
+        KTWARN(egglog, "convert to real oversampled");
+        if (fShouldRunInitialize)
+            Initialize();
+
         unsigned nBins = ts->size() / fOversamplingBins;
         KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, ts->GetRangeMin(), ts->GetRangeMax());
         double avgValue;
@@ -203,12 +237,32 @@ namespace Katydid
         fTimeSeriesType = type;
         if (type == kFFTWTimeSeries)
         {
-            fConvertTSFunc = &KTDAC::ConvertToFFTW;
+            if (fBitDepthMode != kIncreasing)
+            {
+                fConvertTSFunc = &KTDAC::ConvertToFFTW;
+                KTWARN(egglog, "type setting: convert func set to fftw");
+            }
+            else
+            {
+                KTWARN(egglog, "type setting: convert func set to fftw oversampled");
+                fConvertTSFunc = &KTDAC::ConvertToFFTWOversampled;
+            }
         }
         else
         {
-            fConvertTSFunc = &KTDAC::ConvertToReal;
+            if (fBitDepthMode != kIncreasing)
+            {
+                KTWARN(egglog, "type setting: convert func set to real");
+                fConvertTSFunc = &KTDAC::ConvertToReal;
+            }
+            else
+            {
+                KTWARN(egglog, "type setting: convert func set to real oversampled");
+                fConvertTSFunc = &KTDAC::ConvertToRealOversampled;
+            }
         }
+
+        fShouldRunInitialize = true;
         return;
     }
 
@@ -219,21 +273,51 @@ namespace Katydid
             KTWARN(egglog, "Number of emulated bits == actual bits; no emulation used");
             fBitDepthMode = kNoChange;
             fEmulatedNBits = fNBits;
-            return true;
         }
-
-        if (nBits > fNBits)
+        else if (nBits > fNBits)
         {
             KTDEBUG(egglog, "Increasing bit depth from " << fNBits << " to " << nBits);
             fBitDepthMode = kIncreasing;
             fEmulatedNBits = nBits;
-            return true;
+        }
+        else
+        {
+            // otherwise nBits < fNBits
+            KTDEBUG(egglog, "Decreasing bit depth from " << fNBits << " to " << nBits);
+            fBitDepthMode = kReducing;
+            fEmulatedNBits = nBits;
+        }
+        KTWARN(egglog, "bit setting: bit depth mode is " << fBitDepthMode);
+
+        // now update the conversion function pointer
+        if (fConvertTSFunc == &KTDAC::ConvertToReal || fConvertTSFunc == &KTDAC::ConvertToRealOversampled)
+        {
+            if (fBitDepthMode != kIncreasing)
+            {
+                KTWARN(egglog, "bit setting: convert func set to real");
+                fConvertTSFunc = &KTDAC::ConvertToReal;
+            }
+            else
+            {
+                KTWARN(egglog, "bit setting: convert func set to real oversampled");
+                fConvertTSFunc = &KTDAC::ConvertToRealOversampled;
+            }
+        }
+        else
+        {
+            if (fBitDepthMode != kIncreasing)
+            {
+                KTWARN(egglog, "bit setting: convert func set to fftw");
+                fConvertTSFunc = &KTDAC::ConvertToFFTW;
+            }
+            else
+            {
+                KTWARN(egglog, "bit setting: convert func set to fftw oversampled");
+                fConvertTSFunc = &KTDAC::ConvertToFFTWOversampled;
+            }
         }
 
-        // otherwise nBits < fNBits
-        KTDEBUG(egglog, "Decreasing bit depth from " << fNBits << " to " << nBits);
-        fBitDepthMode = kReducing;
-        fEmulatedNBits = nBits;
+        fShouldRunInitialize = true;
         return true;
     }
 
