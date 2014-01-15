@@ -146,7 +146,6 @@ namespace Katydid
 
     KTTimeSeries* KTDAC::ConvertToFFTW(KTRawTimeSeries* ts)
     {
-        KTWARN(egglog, "convert to FFTW");
         if (fShouldRunInitialize)
             Initialize();
 
@@ -161,7 +160,6 @@ namespace Katydid
 
     KTTimeSeries* KTDAC::ConvertToReal(KTRawTimeSeries* ts)
     {
-        KTWARN(egglog, "convert to real");
         if (fShouldRunInitialize)
             Initialize();
 
@@ -176,7 +174,6 @@ namespace Katydid
 
     KTTimeSeries* KTDAC::ConvertToFFTWOversampled(KTRawTimeSeries* ts)
     {
-        KTWARN(egglog, "convert to FFTW oversampled");
         if (fShouldRunInitialize)
             Initialize();
 
@@ -205,7 +202,6 @@ namespace Katydid
 
     KTTimeSeries* KTDAC::ConvertToRealOversampled(KTRawTimeSeries* ts)
     {
-        KTWARN(egglog, "convert to real oversampled");
         if (fShouldRunInitialize)
             Initialize();
 
@@ -240,11 +236,11 @@ namespace Katydid
             if (fBitDepthMode != kIncreasing)
             {
                 fConvertTSFunc = &KTDAC::ConvertToFFTW;
-                KTWARN(egglog, "type setting: convert func set to fftw");
+                KTDEBUG(egglog, "Convert function set to FFTW");
             }
             else
             {
-                KTWARN(egglog, "type setting: convert func set to fftw oversampled");
+                KTDEBUG(egglog, "Convert function set to FFTW oversampled");
                 fConvertTSFunc = &KTDAC::ConvertToFFTWOversampled;
             }
         }
@@ -252,12 +248,12 @@ namespace Katydid
         {
             if (fBitDepthMode != kIncreasing)
             {
-                KTWARN(egglog, "type setting: convert func set to real");
+                KTDEBUG(egglog, "Convert function set to real");
                 fConvertTSFunc = &KTDAC::ConvertToReal;
             }
             else
             {
-                KTWARN(egglog, "type setting: convert func set to real oversampled");
+                KTDEBUG(egglog, "Convert function set to real oversampled");
                 fConvertTSFunc = &KTDAC::ConvertToRealOversampled;
             }
         }
@@ -270,36 +266,32 @@ namespace Katydid
     {
         if (nBits == fNBits)
         {
-            KTWARN(egglog, "Number of emulated bits == actual bits; no emulation used");
             fBitDepthMode = kNoChange;
             fEmulatedNBits = fNBits;
         }
         else if (nBits > fNBits)
         {
-            KTDEBUG(egglog, "Increasing bit depth from " << fNBits << " to " << nBits);
             fBitDepthMode = kIncreasing;
             fEmulatedNBits = nBits;
         }
         else
         {
             // otherwise nBits < fNBits
-            KTDEBUG(egglog, "Decreasing bit depth from " << fNBits << " to " << nBits);
             fBitDepthMode = kReducing;
             fEmulatedNBits = nBits;
         }
-        KTWARN(egglog, "bit setting: bit depth mode is " << fBitDepthMode);
 
         // now update the conversion function pointer
         if (fConvertTSFunc == &KTDAC::ConvertToReal || fConvertTSFunc == &KTDAC::ConvertToRealOversampled)
         {
             if (fBitDepthMode != kIncreasing)
             {
-                KTWARN(egglog, "bit setting: convert func set to real");
+                KTDEBUG(egglog, "Convert function set to real");
                 fConvertTSFunc = &KTDAC::ConvertToReal;
             }
             else
             {
-                KTWARN(egglog, "bit setting: convert func set to real oversampled");
+                KTDEBUG(egglog, "Convert function set to real oversampled");
                 fConvertTSFunc = &KTDAC::ConvertToRealOversampled;
             }
         }
@@ -307,12 +299,12 @@ namespace Katydid
         {
             if (fBitDepthMode != kIncreasing)
             {
-                KTWARN(egglog, "bit setting: convert func set to fftw");
+                KTDEBUG(egglog, "Convert function set to FFTW");
                 fConvertTSFunc = &KTDAC::ConvertToFFTW;
             }
             else
             {
-                KTWARN(egglog, "bit setting: convert func set to fftw oversampled");
+                KTDEBUG(egglog, "Convert function set to FFTW oversampled");
                 fConvertTSFunc = &KTDAC::ConvertToFFTWOversampled;
             }
         }
