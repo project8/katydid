@@ -80,6 +80,9 @@ namespace Katydid
             bool GetTestClipping() const;
             void SetTestClipping(bool flag);
 
+            bool GetTestLinearity() const;
+            void SetTestLinearity(bool flag);
+
         private:
             unsigned fNDigitizerBits;
             unsigned fNDigitizerLevels;
@@ -87,6 +90,8 @@ namespace Katydid
             bool fTestBitOccupancy;
 
             bool fTestClipping;
+
+            bool fTestLinearity;
 
         public:
             bool RunTests(KTRawTimeSeriesData& data);
@@ -96,11 +101,14 @@ namespace Katydid
 
             bool ClippingTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component);
 
+            bool LinearityTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component);
+
         private:
             TestFuncs fRawTestFuncs;
 
             unsigned fBitOccupancyTestID;
             unsigned fClippingTestID;
+            unsigned fLinearityTestID; 
 
             //***************
             // Signals
@@ -141,6 +149,11 @@ namespace Katydid
     inline bool KTDigitizerTests::GetTestClipping() const
     {
         return fTestClipping;
+    }
+
+ inline bool KTDigitizerTests::GetTestLinearity() const
+    {
+        return fTestLinearity;
     }
 
 } /* namespace Katydid */

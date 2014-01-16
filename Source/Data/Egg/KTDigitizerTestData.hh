@@ -41,6 +41,9 @@ namespace Katydid
             double GetBottomClipFrac(unsigned component = 0) const;
             void SetClippingData(unsigned nClipTop, unsigned nClipBottom, double topClipFrac, double bottomClipFrac, unsigned component = 0);
 
+            bool GetLinearityFlag() const;
+            void SetLinearityFlag(bool flat);
+
         private:
             unsigned fNBits;
 
@@ -62,6 +65,14 @@ namespace Katydid
 
             bool fClippingFlag;
             std::vector< ClippingData > fClippingData;
+
+            struct LinearityData
+	    {
+	         bool dummy;
+	    };
+
+            bool fLinearityFlag;
+            std::vector< LinearityData > fLinearityData;
 
     };
 
@@ -108,6 +119,15 @@ namespace Katydid
     inline double KTDigitizerTestData::GetBottomClipFrac(unsigned component) const
     {
         return fClippingData[component].fBottomClipFrac;
+    }
+    inline bool KTDigitizerTestData::GetLinearityFlag() const
+    {
+        return fLinearityFlag;
+    }
+    inline void KTDigitizerTestData::SetLinearityFlag(bool flag)
+    {
+        fLinearityFlag = flag;
+        return;
     }
 
 

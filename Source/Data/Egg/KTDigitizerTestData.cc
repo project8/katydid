@@ -18,7 +18,9 @@ namespace Katydid
             fBitOccupancyFlag(false),
             fBitOccupancyData(),
             fClippingFlag(false),
-            fClippingData()
+            fClippingData(),
+	    fLinearityFlag(false),
+	    fLinearityData()
     {
     }
 
