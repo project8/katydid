@@ -2,11 +2,9 @@
 # Author: N. Oblath
 
 set (DATA_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTAmplitudeDistribution.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTAnalyticAssociateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCluster1DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCorrelationData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCorrelationTSData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTDiscriminatedPoints1DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTDiscriminatedPoints2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.hh
@@ -23,6 +21,8 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDist.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDistData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTAnalysisCandidates.hh
@@ -42,11 +42,9 @@ set (DATA_HEADERFILES
 )
 
 set (DATA_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTAmplitudeDistribution.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTAnalyticAssociateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCluster1DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCorrelationData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTCorrelationTSData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTDiscriminatedPoints1DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTDiscriminatedPoints2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.cc
@@ -63,6 +61,8 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDist.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDistData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTAnalysisCandidates.cc
@@ -80,13 +80,6 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.cc
 )
-
-if (NOT FFTW_FOUND)
-    set (DATA_SOURCEFILES
-        ${DATA_SOURCEFILES}
-        ${PROJECT_SOURCE_DIR}/External/FFTW/FFTWStandIn.cc
-    )
-endif (NOT FFTW_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
