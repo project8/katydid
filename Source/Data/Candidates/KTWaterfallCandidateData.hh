@@ -5,6 +5,8 @@
  *      Author: nsoblath
  */
 
+#include "stdint.h"
+
 #ifndef KTWATERFALLCANDIDATEDATA_HH_
 #define KTWATERFALLCANDIDATEDATA_HH_
 
