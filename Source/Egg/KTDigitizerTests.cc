@@ -33,9 +33,11 @@ namespace Katydid
             fNDigitizerLevels(pow(2, fNDigitizerBits)),
             fTestBitOccupancy(true),
             fTestClipping(true),
+	    fTestLinearity(true),
             fRawTestFuncs(),
             fBitOccupancyTestID(0),
-            fClippingTestID(0),
+	    fClippingTestID(0),
+	    fLinearityTestID(0),
             fDigTestSignal("dig-test", this),
             fDigTestRawSlot("raw-ts", this, &KTDigitizerTests::RunTests, &fDigTestSignal)
     {
@@ -43,9 +45,11 @@ namespace Katydid
 
         fBitOccupancyTestID = ++id;
         fClippingTestID = ++id;
+	fLinearityTestID = ++id;
 
         SetTestBitOccupancy(fTestBitOccupancy);
         SetTestClipping(fTestClipping);
+	SetTestLinearity(fTestLinearity);
     }
 
     KTDigitizerTests::~KTDigitizerTests()
@@ -62,12 +66,17 @@ namespace Katydid
 
         SetTestClipping(node->GetData< bool >("test-clipping", fTestClipping));
 
+	SetTestLinearity(node->GetData< bool >("test-linearity", fTestLinearity));
+
+	KTWARN(dtlog, "fTestLinearity is " << fTestLinearity);
+
         return true;
     }
 
     bool KTDigitizerTests::RunTests(KTRawTimeSeriesData& data)
     {
         unsigned nComponents = data.GetNComponents();
+	KTWARN(dtlog, "Size of fRawTestFuncs = " << fRawTestFuncs.size());
         KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)
         {
@@ -107,6 +116,93 @@ namespace Katydid
         return true;
     }
 
+   bool KTDigitizerTests::LinearityTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component)
+    {
+        KTDEBUG(dtlog, "Running Linearity test");
+        testData.SetLinearityFlag(true);
+        size_t nBins = ts->size();
+	int fitstart = -1;
+	int fitend = -1;
+	//find fitstart
+        for (size_t iBin = 1; iBin < nBins; ++iBin)
+        {
+	  if ((*ts)(iBin)!=0)
+	    {
+	      fitstart=iBin-1;
+	      break;
+	    }
+        }
+	//error finding fitstart
+	if (fitstart==-1)
+	  {
+	    KTERROR(dtlog, "Unable to find fitstart");
+	    return false;
+	  }
+	//find fitend
+	int bpa = 50; //bins per average
+	double wherehigh[50]={};
+	double oldaverage=0;
+	     for (size_t iBin = fitstart+1; iBin < nBins; ++iBin) //testing 
+		  {
+		    if ((*ts)(iBin)==185)
+		      {
+			  break;
+		      }
+		  }
+	for (size_t iBin = fitstart+1; iBin < nBins; ++iBin)
+	  {
+	    wherehigh[iBin % bpa]=(*ts)(iBin);
+	    double total = 0;
+	    for (int i=0; i<bpa; i++)
+	      {
+		total = total + wherehigh[i];
+	      }
+	    double average = total/bpa;
+	    
+	    if (average < (oldaverage))
+	      {
+		fitend = iBin-bpa;
+		break;
+	      }
+	    oldaverage=average;
+	  }
+	//error finding fitend
+	if (fitend==-1)
+	  {
+	    fitend=nBins-1;
+	  }
+  	double slope = double(((*ts)(fitend))-((*ts)(fitstart)))/double(fitend-fitstart);
+	//Linear Regression
+	 double sumXY = 0;
+	 double sumX=0;
+         double sumY=0;
+         double sumX2=0;
+	 for (size_t iBin = fitstart; iBin < fitend; ++iBin)
+	    {
+	      sumXY = sumXY + ((double)iBin * (double)((*ts)(iBin)));
+	      sumX = sumX + iBin;
+	      sumY = sumY + (double)((*ts)(iBin));
+	      sumX2 = sumX2 + iBin*iBin;
+	     }
+	  // Max difference from linreg line and chisquared
+	  double linregslope = ((fitend-fitstart+1)*sumXY-sumX*sumY)/((fitend-fitstart+1)*(sumX2)-sumX*sumX);
+	  double linregintercept = (sumY - linregslope*sumX)/(fitend-fitstart+1);
+	  double regbigdist = 0;
+	  double totalsqdist = 0;
+	  for (size_t iBin = fitstart; iBin < fitend; ++iBin)
+	    {
+	      double regydist = ((*ts)(iBin))-((iBin-fitstart)*(linregslope)+linregintercept); 
+	      totalsqdist = totalsqdist + regydist*regydist;	     
+	      if (regydist > regbigdist)
+		{
+		  regbigdist = regydist;
+		    }
+		}
+	  double avgsqdist = totalsqdist / (fitend-fitstart+1);
+	  testData.SetLinearityData(regbigdist/256, avgsqdist, fitstart, fitend, linregslope, linregintercept, component);
+        return true;
+    }
+
     void KTDigitizerTests::SetTestBitOccupancy(bool flag)
     {
         fTestBitOccupancy = flag;
@@ -135,6 +231,18 @@ namespace Katydid
         return;
     }
 
-
+ void KTDigitizerTests::SetTestLinearity(bool flag)
+    {
+        fTestLinearity = flag;
+        if (flag)
+        {
+            fRawTestFuncs.insert(TestFuncs::value_type(fLinearityTestID, &KTDigitizerTests::LinearityTest));
+       }
+        else
+        {
+            fRawTestFuncs.erase(fLinearityTestID);
+        }
+        return;
+    }
 
 } /* namespace Katydid */

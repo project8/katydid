@@ -41,6 +41,17 @@ namespace Katydid
             double GetBottomClipFrac(unsigned component = 0) const;
             void SetClippingData(unsigned nClipTop, unsigned nClipBottom, double topClipFrac, double bottomClipFrac, unsigned component = 0);
 
+            bool GetLinearityFlag() const;
+            void SetLinearityFlag(bool flat);
+            double GetFracMaxDiff(unsigned component = 0) const;
+            double GetChiSquared(unsigned component = 0) const;
+            size_t GetFitStart(unsigned componenet = 0) const;
+            size_t GetFitEnd(unsigned component = 0) const;
+            double GetRegSlope(unsigned component = 0) const;
+            double GetRegIntercept(unsigned component = 0) const;
+            void SetLinearityData(double fracMaxDiff, double chiSquared, size_t fitStart, size_t fitEnd, double regSlope, double regIntercept, unsigned component = 0);
+
+
         private:
             unsigned fNBits;
 
@@ -62,6 +73,19 @@ namespace Katydid
 
             bool fClippingFlag;
             std::vector< ClippingData > fClippingData;
+
+            struct LinearityData
+	    {
+	         double fFracMaxDiff;
+	         double fChiSquared;
+	         size_t fFitStart;
+	         size_t fFitEnd;
+	         double fRegSlope;
+	         double fRegIntercept;
+	    };
+
+            bool fLinearityFlag;
+            std::vector< LinearityData > fLinearityData;
 
     };
 
@@ -108,6 +132,40 @@ namespace Katydid
     inline double KTDigitizerTestData::GetBottomClipFrac(unsigned component) const
     {
         return fClippingData[component].fBottomClipFrac;
+    }
+
+    inline bool KTDigitizerTestData::GetLinearityFlag() const
+    {
+        return fLinearityFlag;
+    }
+    inline void KTDigitizerTestData::SetLinearityFlag(bool flag)
+    {
+        fLinearityFlag = flag;
+        return;
+    }
+    inline double KTDigitizerTestData::GetFracMaxDiff(unsigned component) const
+    {
+        return fLinearityData[component].fFracMaxDiff;
+    }
+    inline double KTDigitizerTestData::GetChiSquared(unsigned component) const
+    {
+        return fLinearityData[component].fChiSquared;
+    }
+    inline size_t  KTDigitizerTestData::GetFitStart(unsigned component) const
+    {
+        return fLinearityData[component].fFitStart;
+    }
+    inline size_t KTDigitizerTestData::GetFitEnd(unsigned component) const
+    {
+        return fLinearityData[component].fFitEnd;
+    }
+    inline double KTDigitizerTestData::GetRegSlope(unsigned component) const
+    {
+        return fLinearityData[component].fRegSlope;
+    }
+    inline double KTDigitizerTestData::GetRegIntercept(unsigned component) const
+    {
+        return fLinearityData[component].fRegIntercept;
     }
 
 

@@ -18,7 +18,9 @@ namespace Katydid
             fBitOccupancyFlag(false),
             fBitOccupancyData(),
             fClippingFlag(false),
-            fClippingData()
+            fClippingData(),
+	    fLinearityFlag(false),
+	    fLinearityData()
     {
     }
 
@@ -47,6 +49,7 @@ namespace Katydid
             }
         }
         fClippingData.resize(num);
+	fLinearityData.resize(num);
         return *this;
     }
 
@@ -66,6 +69,8 @@ namespace Katydid
 
     void KTDigitizerTestData::AddBits(unsigned value, unsigned component)
     {
+        if (component >= fBitOccupancyData.size())
+            SetNComponents(component + 1);
         if (fBitOccupancyData[component].fBitHistogram == NULL)
             fBitOccupancyData[component].fBitHistogram = new KTCountHistogram(fNBits, -0.5, (double)fNBits - 0.5);
         unsigned bit = 0;
@@ -88,6 +93,18 @@ namespace Katydid
         fClippingData[component].fBottomClipFrac = bottomClipFrac;
         return;
     }
+
+  void KTDigitizerTestData::SetLinearityData(double fracMaxDiff, double chiSquared, size_t fitStart, size_t fitEnd, double regSlope, double regIntercept, unsigned component)
+  {
+           if (component >= fLinearityData.size())
+            SetNComponents(component + 1); 
+    fLinearityData[component].fFracMaxDiff = fracMaxDiff;
+    fLinearityData[component].fChiSquared = chiSquared;
+    fLinearityData[component].fFitStart = fitStart;
+    fLinearityData[component].fFitEnd = fitEnd;
+    fLinearityData[component].fRegSlope = regSlope;
+    fLinearityData[component].fRegIntercept = regIntercept;
+  }
 
 
 
