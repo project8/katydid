@@ -185,9 +185,26 @@ namespace Katydid
                 toTermClipping << "\t\tNumber\tFraction\n";
                 toTermClipping << "\tTop   \t" << digData.GetNClipTop(iComponent) << '\t' << digData.GetTopClipFrac(iComponent) << '\n';
                 toTermClipping << "\tBottom\t" << digData.GetNClipBottom(iComponent) << '\t' << digData.GetBottomClipFrac(iComponent) << '\n';
-                KTPROG(termlog, toTermClipping.str());
-            }
+	    }                
+            KTPROG(termlog, toTermClipping.str());
         }
+	//Linearity
+	if (digData.GetLinearityFlag())
+	  {
+	    stringstream toTermLinearity;
+	    toTermLinearity << "Linearity Test\n";
+	    for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+	      {
+		toTermLinearity << "Component " << iComponent << '\n';
+		toTermLinearity << '\t' << "Fractional Max Difference: "<<digData.GetFracMaxDiff(iComponent)<<'\n';
+		toTermLinearity << '\t' << "Chi Squared: "<<digData.GetChiSquared(iComponent)<<'\n';
+		toTermLinearity << '\t' << "Fit Range: Bins "<<digData.GetFitStart(iComponent)<<"-"<<digData.GetFitEnd(iComponent)<<'\n';
+		toTermLinearity << '\t' << "LinReg Slope: "<<digData.GetRegSlope(iComponent)<<'\n';
+		toTermLinearity << '\t' << "LinReg Intercept: "<<digData.GetRegIntercept(iComponent)<<'\n';
+		  }
+	    KTPROG(termlog, toTermLinearity.str());
+	  }
+
         return;
     }
 

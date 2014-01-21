@@ -129,7 +129,6 @@ namespace Katydid
 	  if ((*ts)(iBin)!=0)
 	    {
 	      fitstart=iBin-1;
-     	KTDEBUG(dtlog, fitstart);
 	      break;
 	    }
         }
@@ -140,32 +139,67 @@ namespace Katydid
 	    return false;
 	  }
 	//find fitend
+	int bpa = 50; //bins per average
+	double wherehigh[50]={};
+	double oldaverage=0;
+	     for (size_t iBin = fitstart+1; iBin < nBins; ++iBin) //testing 
+		  {
+		    if ((*ts)(iBin)==185)
+		      {
+			  break;
+		      }
+		  }
 	for (size_t iBin = fitstart+1; iBin < nBins; ++iBin)
 	  {
-	    if ((*ts)(iBin)<=(*ts)(iBin-1))
+	    wherehigh[iBin % bpa]=(*ts)(iBin);
+	    double total = 0;
+	    for (int i=0; i<bpa; i++)
 	      {
-		fitend=iBin-1;
+		total = total + wherehigh[i];
+	      }
+	    double average = total/bpa;
+	    
+	    if (average < (oldaverage))
+	      {
+		fitend = iBin-bpa;
 		break;
 	      }
+	    oldaverage=average;
 	  }
 	//error finding fitend
 	if (fitend==-1)
 	  {
 	    fitend=nBins-1;
 	  }
-	KTDEBUG(dtlog, "fitstart is " << fitstart);
-	KTDEBUG(dtlog, "fitend is " << fitend);
-	//linreg
-	KTDEBUG(dtlog, "Slope of the fitted line  is " << (((*ts)(fitend)-(*ts)(fitstart))/(fitend-fitstart)));
-	double totalsqdist = 0;
-	for (size_t iBin = fitstart; iBin < fitend; ++iBin)
+  	double slope = double(((*ts)(fitend))-((*ts)(fitstart)))/double(fitend-fitstart);
+	//Linear Regression
+	 double sumXY = 0;
+	 double sumX=0;
+         double sumY=0;
+         double sumX2=0;
+	 for (size_t iBin = fitstart; iBin < fitend; ++iBin)
 	    {
-	      double ydist = ((*ts)(iBin))-((iBin-fitstart)*(((*ts)(fitend)-(*ts)(fitstart))/(fitend-fitstart))); //since hight of fitted line is slope * number of bins
-		totalsqdist = totalsqdist + ydist*ydist;
+	      sumXY = sumXY + ((double)iBin * (double)((*ts)(iBin)));
+	      sumX = sumX + iBin;
+	      sumY = sumY + (double)((*ts)(iBin));
+	      sumX2 = sumX2 + iBin*iBin;
+	     }
+	  // Max difference from linreg line and chisquared
+	  double linregslope = ((fitend-fitstart+1)*sumXY-sumX*sumY)/((fitend-fitstart+1)*(sumX2)-sumX*sumX);
+	  double linregintercept = (sumY - linregslope*sumX)/(fitend-fitstart+1);
+	  double regbigdist = 0;
+	  double totalsqdist = 0;
+	  for (size_t iBin = fitstart; iBin < fitend; ++iBin)
+	    {
+	      double regydist = ((*ts)(iBin))-((iBin-fitstart)*(linregslope)+linregintercept); 
+	      totalsqdist = totalsqdist + regydist*regydist;	     
+	      if (regydist > regbigdist)
+		{
+		  regbigdist = regydist;
+		    }
 		}
 	  double avgsqdist = totalsqdist / (fitend-fitstart+1);
-	  KTDEBUG(dtlog, "Average of the y distances squared is " << totalsqdist);
-
+	  testData.SetLinearityData(regbigdist/256, avgsqdist, fitstart, fitend, linregslope, linregintercept, component);
         return true;
     }
 
