@@ -14,6 +14,7 @@
 #include "TH1.h"
 
 #include <cfloat>
+#include <stdint.h>
 
 using std::string;
 
@@ -45,7 +46,7 @@ namespace Katydid
     TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
     {
         unsigned tMaxMag = 0;
-        unsigned tMinMag = UINT16_MAX;
+        unsigned tMinMag = 9999999;
         unsigned nBins = ts->GetNBins();
         unsigned value;
         for (unsigned iBin=0; iBin<nBins; ++iBin)
