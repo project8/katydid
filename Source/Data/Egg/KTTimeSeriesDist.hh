@@ -1,12 +1,12 @@
 /*
- * KTTimeSeries.hh
+ * KTTimeSeriesDist.hh
  *
- *  Created on: Sept 4, 2012
- *      Author: nsoblath
+ *  Created on: Jan 21, 2014
+ *      Author: laroque
  */
 
-#ifndef KTTIMESERIES_HH_
-#define KTTIMESERIES_HH_
+#ifndef KTTIMESERIESDIST_HH_
+#define KTTIMESERIESDIST_HH_
 
 #include <string>
 
@@ -16,36 +16,36 @@ class TH1D;
 
 namespace Katydid
 {
-    class KTTimeSeries
+    class KTTimeSeriesDist
     {
         public:
-            KTTimeSeries();
-            virtual ~KTTimeSeries();
+            KTTimeSeriesDist();
+            virtual ~KTTimeSeriesDist();
 
             /// Scale the time series
             virtual void Scale(double scale) = 0;
 
-            /// Get the size of the time series via the KTTimeSeries interface
+            /// Get the size of the time series via the KTTimeSeriesDist interface
             virtual unsigned GetNTimeBins() const = 0;
 
-            /// Get the bin width via the KTTimeSeries interface
+            /// Get the bin width via the KTTimeSeriesDist interface
             virtual double GetTimeBinWidth() const = 0;
 
-            /// Set values in the time series via the KTTimeSeries interface
+            /// Set values in the time series via the KTTimeSeriesDist interface
             virtual void SetValue(unsigned bin, double value) = 0;
 
-            /// Get values in the time series via the KTTimeSeries interface
+            /// Get values in the time series via the KTTimeSeriesDist interface
             virtual double GetValue(unsigned bin) const = 0;
 
             virtual void Print(unsigned startPrint, unsigned nToPrint) const = 0;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH1D* CreateHistogram(const std::string& name = "hTimeSeries") const = 0;
+            virtual TH1D* CreateHistogram(const std::string& name = "hTimeSeriesDist") const = 0;
 
             virtual TH1D* CreateAmplitudeDistributionHistogram(const std::string& name = "hTimeSeriesDist") const = 0;
 #endif
     };
 
 } /* namespace Katydid */
-#endif /* KTTIMESERIES_HH_ */
+#endif /* KTTIMESERIESDIST_HH_ */

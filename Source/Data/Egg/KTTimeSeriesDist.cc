@@ -1,20 +1,20 @@
 /*
- * KTTimeSeries.cc
+ * KTTimeSeriesDist.cc
  *
- *  Created on: Aug 28, 2012
- *      Author: nsoblath
+ *  Created on: Jan 21, 2014
+ *      Author: laroque
  */
 
-#include "KTTimeSeries.hh"
+#include "KTTimeSeriesDist.hh"
 
 namespace Katydid
 {
 
-    KTTimeSeries::KTTimeSeries()
+    KTTimeSeriesDist::KTTimeSeriesDist()
     {
     }
 
-    KTTimeSeries::~KTTimeSeries()
+    KTTimeSeriesDist::~KTTimeSeriesDist()
     {
     }
 
