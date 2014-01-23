@@ -17,16 +17,17 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTWaterfallCandidateData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Conversions/KT2ROOT.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTProcSummary.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDist.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDistData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTAnalysisCandidates.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTCCResults.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTMCTruthEvents.hh
@@ -59,16 +60,17 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTWaterfallCandidateData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Conversions/KT2ROOT.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTProcSummary.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDist.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDistData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTAnalysisCandidates.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTCCResults.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTMCTruthEvents.cc
