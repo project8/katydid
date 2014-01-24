@@ -15,7 +15,11 @@
 #include "TH1.h"
 
 #include <cfloat>
-#include <limits>
+#include "stdint.h"
+#ifndef UINT16_MAX
+#define UINT16_MAX (32767)
+#endif
+//#include <limits>
 
 using std::string;
 
@@ -47,7 +51,7 @@ namespace Katydid
     TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
     {
         unsigned tMaxMag = 0;
-        unsigned tMinMag = std::numeric_limits<int16_t>::max();//UINT16_MAX;
+        unsigned tMinMag = UINT16_MAX;//std::numeric_limits<int16_t>::max();
         unsigned nBins = ts->GetNBins();
         unsigned value;
         for (unsigned iBin=0; iBin<nBins; ++iBin)
