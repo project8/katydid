@@ -100,7 +100,7 @@ namespace Katydid
                 conv << "histTSDist_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
-                TH1D* powerSpectrum = spectrum->CreateAmplitudeDistributionHistogram(histName);
+                TH1D* powerSpectrum = spectrum->CreateHistogram(histName);
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
