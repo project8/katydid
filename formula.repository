@@ -1,8 +1,0 @@
-\form#0:$\mu \equiv$
-\form#1:$\sigma \equiv$
-\form#2:$ p(x) = \frac{1}{\sqrt{2\pi\sigma}} \exp{-\frac{(x-\mu)^2}{2\sigma^2}} $
-\form#3:$\lambda \equiv$
-\form#4:$ p(i) = \frac{exp{-\lambda}\lambda^i}{i!} $
-\form#5:$ p(x) = \lambda\exp{-\lambda{}x} $
-\form#6:$n$
-\form#7:$ p(x) = \frac{x^{n/2-1}\exp{-x/2}}{\Gamma(n/2)2^{n/2}} $
