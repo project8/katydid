@@ -11,6 +11,8 @@
 
 #include "KTProcessor.hh"
 
+#include "KTTimeSeriesData.hh"
+
 #include "KTSlot.hh"
 
 
@@ -68,22 +70,22 @@ namespace Katydid
 
             // And then any non-configurable member variables
 
-            //***************
-            // Signals
-            //***************
+        //***************
+        // Signals
+        //***************
 
         private:
-            KTSignalData f[SomeName]Signal;
+            KTSignalData fTSDistSignal;
 
-            //***************
-            // Slots
-            //***************
+        //***************
+        // Slots
+        //***************
 
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
-            KTSlotDataOneType< [Input Data Type] > f[SomeName]Slot;
+            //KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
 
     };
 
  /* namespace Katydid */
-#endif KTAMPLITUDECOUNTER_HH_
+#endif //KTAMPLITUDECOUNTER_HH_

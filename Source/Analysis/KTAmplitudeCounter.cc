@@ -1,5 +1,5 @@
 /*
- * KTProcessorTemplate.cc
+ * KTAmplitudeCounter.cc
  *
  *  Created on: Jan 24, 2014
  *      Author: laroque
@@ -16,7 +16,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    KTLOGGER([logger], "katydid.fft");
+    KTLOGGER([logger], "katydid.analysis");
 
     // The name of the registrar object must be unique within Katydid
     static KTDerivedNORegistrar< KTProcessor, KTAmplitudeCounter > sProcTempRegistrar("amp-counter");
@@ -24,11 +24,13 @@ namespace Katydid
     KTAmplitudeCounter::KTAmplitudeCounter(const std::string& name) :
             KTProcessor(name),
             // initialize all member variables
+            fNumberBins(256),
             // initialize signals:
-            // f[SomeName]Signal("[signal-name]", this)
+            fTSDistSignal("[ts-dist]", this)
             // initialize slots:
-            // fHeaderSlot("header", this, &KTProcessorTemplate::[function to call with header]),
-            // f[SomeName]Slot("[slot-name]", this, &KTProcessorTemplate::[function to call], &f[SomeName]Signal)
+            // fHeaderSlot("header", this, &KTAmplitudeCounter::[function to call with header]),
+            fTSSlot("ts", this, &KTAmplitudeCounter::AddData, &fTSDistDataSignal)
+            // f[SomeName]Slot("[slot-name]", this, &KTAmplitudeCounter::[function to call], &f[SomeName]Signal)
     {
     }
 
