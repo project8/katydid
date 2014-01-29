@@ -107,12 +107,38 @@ namespace Katydid
         testData.SetClippingFlag(true);
         size_t nBins = ts->size();
         unsigned nClipTop = 0, nClipBottom = 0;
-        for (size_t iBin = 0; iBin < nBins; ++iBin)
+	unsigned nMultClipTop = 0, nMultClipBottom = 0;
+        for (size_t iBin = 0; iBin < nBins; ++iBin) //Find all max/min
         {
-            if ((*ts)(iBin) >= fNDigitizerLevels) ++nClipTop;
-            if ((*ts)(iBin) <= 0) ++nClipBottom;
+            if ((*ts)(iBin) >= fNDigitizerLevels-1)
+	      {
+		++nClipTop;
+	      }
+            if ((*ts)(iBin) <= 0)
+	      {
+		++nClipBottom;
+	      }
         }
-        testData.SetClippingData(nClipTop, nClipBottom, (double)nClipTop / (double)ts->size(), (double)nClipBottom / (double)ts->size(), component);
+	for (size_t iBin = 0; iBin < nBins-1; ++iBin) //Find all sequential max/min except for the last bin
+        {
+	  if ((*ts)(iBin) >= fNDigitizerLevels-1 && (*ts)(iBin+1) >= fNDigitizerLevels-1)
+	    {
+	      ++nMultClipTop;
+	    }
+          if ((*ts)(iBin) <= 0 && (*ts)(iBin+1) <= 0)
+	    {
+	      ++nMultClipBottom;
+	    }
+        }
+	if ((*ts)(nBins-1) >= fNDigitizerLevels-1 && (*ts)(nBins-2) >= fNDigitizerLevels-1) //Find if last bin is sequential max
+	  {
+	    ++nMultClipTop;
+	  }
+	if ((*ts)(nBins-1) <= 0 && (*ts)(nBins-2) <= 0) //Find if last bin is sequential min
+	  {
+	    ++nMultClipBottom;
+	  }
+        testData.SetClippingData(nClipTop, nClipBottom, nMultClipTop, nMultClipBottom, (double)nClipTop / (double)ts->size(), (double)nClipBottom / (double)ts->size(), (double)nMultClipTop/(double)nClipTop, (double)nMultClipBottom/(double)nClipBottom, component);
         return true;
     }
 

@@ -83,14 +83,18 @@ namespace Katydid
         return;
     }
 
-    void KTDigitizerTestData::SetClippingData(unsigned nClipTop, unsigned nClipBottom, double topClipFrac, double bottomClipFrac, unsigned component)
+  void KTDigitizerTestData::SetClippingData(unsigned nClipTop, unsigned nClipBottom, unsigned nMultClipTop, unsigned nMultClipBottom, double topClipFrac, double bottomClipFrac, double multTopClipFrac, double multBottomClipFrac, unsigned component)
     {
         if (component >= fClippingData.size())
             SetNComponents(component + 1);
         fClippingData[component].fNClipTop = nClipTop;
         fClippingData[component].fNClipBottom = nClipBottom;
+	fClippingData[component].fNMultClipTop = nMultClipTop;
+	fClippingData[component].fNMultClipBottom = nMultClipBottom;
         fClippingData[component].fTopClipFrac = topClipFrac;
         fClippingData[component].fBottomClipFrac = bottomClipFrac;
+	fClippingData[component].fMultTopClipFrac = multTopClipFrac;
+	fClippingData[component].fMultBottomClipFrac = multBottomClipFrac;
         return;
     }
 

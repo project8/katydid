@@ -37,9 +37,13 @@ namespace Katydid
             void SetClippingFlag(bool flag);
             unsigned GetNClipTop(unsigned component = 0) const;
             unsigned GetNClipBottom(unsigned component = 0) const;
+            unsigned GetNMultClipTop(unsigned component = 0) const;
+            unsigned GetNMultClipBottom(unsigned component = 0) const;
             double GetTopClipFrac(unsigned component = 0) const;
             double GetBottomClipFrac(unsigned component = 0) const;
-            void SetClippingData(unsigned nClipTop, unsigned nClipBottom, double topClipFrac, double bottomClipFrac, unsigned component = 0);
+            double GetMultTopClipFrac(unsigned component = 0) const;
+            double GetMultBottomClipFrac(unsigned component = 0) const;
+            void SetClippingData(unsigned nClipTop, unsigned nClipBottom, unsigned nMultClipTop, unsigned nMultClipBottom, double topClipFrac, double bottomClipFrac, double multTopClipFrac, double multBottomClipFrac, unsigned component = 0);
 
             bool GetLinearityFlag() const;
             void SetLinearityFlag(bool flat);
@@ -67,8 +71,13 @@ namespace Katydid
             {
                 unsigned fNClipTop;
                 unsigned fNClipBottom;
+	        unsigned fNMultClipTop;
+	        unsigned fNMultClipBottom;
                 double fTopClipFrac;
                 double fBottomClipFrac;
+	        double fMultTopClipFrac;
+	        double fMultBottomClipFrac;
+
             };
 
             bool fClippingFlag;
@@ -125,6 +134,14 @@ namespace Katydid
     {
         return fClippingData[component].fNClipBottom;
     }
+    inline unsigned KTDigitizerTestData::GetNMultClipTop(unsigned component) const
+    {
+        return fClippingData[component].fNMultClipTop;
+    }
+    inline unsigned KTDigitizerTestData::GetNMultClipBottom(unsigned component) const
+    {
+        return fClippingData[component].fNMultClipBottom;
+    }
     inline double KTDigitizerTestData::GetTopClipFrac(unsigned component) const
     {
         return fClippingData[component].fTopClipFrac;
@@ -132,6 +149,14 @@ namespace Katydid
     inline double KTDigitizerTestData::GetBottomClipFrac(unsigned component) const
     {
         return fClippingData[component].fBottomClipFrac;
+    }
+    inline double KTDigitizerTestData::GetMultTopClipFrac(unsigned component) const
+    {
+        return fClippingData[component].fMultTopClipFrac;
+    }
+    inline double KTDigitizerTestData::GetMultBottomClipFrac(unsigned component) const
+    {
+        return fClippingData[component].fMultBottomClipFrac;
     }
 
     inline bool KTDigitizerTestData::GetLinearityFlag() const

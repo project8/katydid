@@ -185,6 +185,8 @@ namespace Katydid
                 toTermClipping << "\t\tNumber\tFraction\n";
                 toTermClipping << "\tTop   \t" << digData.GetNClipTop(iComponent) << '\t' << digData.GetTopClipFrac(iComponent) << '\n';
                 toTermClipping << "\tBottom\t" << digData.GetNClipBottom(iComponent) << '\t' << digData.GetBottomClipFrac(iComponent) << '\n';
+                toTermClipping << "\tSequential Top   \t" << digData.GetNMultClipTop(iComponent) << '\t' << digData.GetMultTopClipFrac(iComponent) << '\n';
+                toTermClipping << "\tSequential Bottom\t" << digData.GetNMultClipBottom(iComponent) << '\t' << digData.GetMultBottomClipFrac(iComponent) << '\n';
 	    }                
             KTPROG(termlog, toTermClipping.str());
         }
