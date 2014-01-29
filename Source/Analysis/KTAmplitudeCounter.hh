@@ -59,6 +59,7 @@ namespace Katydid
             // Getters and setters for configurable parameters go here
         private:
             // configurable member parameters go here
+            unsigned fNumberBins;
 
         public:
             // Functions to do the job of the processor go here
@@ -75,7 +76,7 @@ namespace Katydid
         //***************
 
         private:
-            KTSignalData fTSDistSignal;
+//            KTSignalData fTSDistSignal;
 
         //***************
         // Slots
@@ -83,9 +84,9 @@ namespace Katydid
 
         private:
             //KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
+//            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
 
     };
 
- /* namespace Katydid */
+} /* namespace Katydid */
 #endif //KTAMPLITUDECOUNTER_HH_

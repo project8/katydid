@@ -19,17 +19,17 @@ namespace Katydid
     KTLOGGER(avlog, "katydid.analysis");
 
     // The name of the registrar object must be unique within Katydid
-    static KTDerivedNORegistrar< KTProcessor, KTAmplitudeCounter > sProcTempRegistrar("amp-counter");
+    static KTNORegistrar< KTProcessor, KTAmplitudeCounter > sProcTempRegistrar("amp-counter");
 
     KTAmplitudeCounter::KTAmplitudeCounter(const std::string& name) :
             KTProcessor(name),
             // initialize all member variables
-            fNumberBins(256),
+            fNumberBins(256)
             // initialize signals:
-            fTSDistSignal("[ts-dist]", this)
+//            fTSDistSignal("ts-dist", this),
             // initialize slots:
             // fHeaderSlot("header", this, &KTAmplitudeCounter::[function to call with header]),
-            fTSSlot("ts", this, &KTAmplitudeCounter::AddData, &fTSDistDataSignal)
+//            fTSSlot("ts", this, &KTAmplitudeCounter::AddData, &fTSDistDataSignal)
             // f[SomeName]Slot("[slot-name]", this, &KTAmplitudeCounter::[function to call], &f[SomeName]Signal)
     {
     }

@@ -16,10 +16,10 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    KTLOGGER([logger], "katydid.fft");
+    KTLOGGER(avlog, "katydid.egg");
 
     // The name of the registrar object must be unique within Katydid
-    static KTNORegistrar< KTProcessor, KTProcessorTemplate > sProcTempRegistrar("[config-name]");
+    static KTNORegistrar< KTProcessor, KTProcessorTemplate > sProcTempRegistrar("foo");
 
     KTProcessorTemplate::KTProcessorTemplate(const std::string& name) :
             KTProcessor(name)
