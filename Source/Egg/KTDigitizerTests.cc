@@ -119,22 +119,30 @@ namespace Katydid
 		++nClipBottom;
 	      }
         }
-	for (size_t iBin = 0; iBin < nBins-1; ++iBin) //Find all sequential max/min except for the last bin
+	for (size_t iBin = 1; iBin < nBins-1; ++iBin) //Find all sequential max/min except last and first
         {
-	  if ((*ts)(iBin) >= fNDigitizerLevels-1 && (*ts)(iBin+1) >= fNDigitizerLevels-1)
+	  if ((*ts)(iBin) >= fNDigitizerLevels-1 && ((*ts)(iBin+1) >= fNDigitizerLevels-1 || (*ts)(iBin-1) >= fNDigitizerLevels-1))
 	    {
 	      ++nMultClipTop;
 	    }
-          if ((*ts)(iBin) <= 0 && (*ts)(iBin+1) <= 0)
+          if ((*ts)(iBin) <= 0 && ((*ts)(iBin+1) <= 0 || (*ts)(iBin-1) <= 0))
 	    {
 	      ++nMultClipBottom;
 	    }
-        }
-	if ((*ts)(nBins-1) >= fNDigitizerLevels-1 && (*ts)(nBins-2) >= fNDigitizerLevels-1) //Find if last bin is sequential max
-	  {
+         }
+		if ((*ts)(0) >= fNDigitizerLevels-1 && (*ts)(1) >= fNDigitizerLevels-1) //Find if first bin is sequential max
+ 	  {
 	    ++nMultClipTop;
 	  }
-	if ((*ts)(nBins-1) <= 0 && (*ts)(nBins-2) <= 0) //Find if last bin is sequential min
+		if ((*ts)(0) <= 0 && (*ts)(1) <= 0) //Find if first bin is sequential min
+	  {
+	    ++nMultClipBottom;
+	  }
+		if ((*ts)(nBins-1) >= fNDigitizerLevels-1 && (*ts)(nBins-2) >= fNDigitizerLevels-1) //Find if last bin is sequential max
+ 	  {
+	    ++nMultClipTop;
+	  }
+		if ((*ts)(nBins-1) <= 0 && (*ts)(nBins-2) <= 0) //Find if last bin is sequential min
 	  {
 	    ++nMultClipBottom;
 	  }
