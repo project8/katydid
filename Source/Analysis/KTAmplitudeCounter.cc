@@ -16,7 +16,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    KTLOGGER([logger], "katydid.analysis");
+    KTLOGGER(avlog, "katydid.analysis");
 
     // The name of the registrar object must be unique within Katydid
     static KTDerivedNORegistrar< KTProcessor, KTAmplitudeCounter > sProcTempRegistrar("amp-counter");
