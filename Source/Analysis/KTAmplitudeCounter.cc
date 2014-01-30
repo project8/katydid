@@ -24,12 +24,12 @@ namespace Katydid
     KTAmplitudeCounter::KTAmplitudeCounter(const std::string& name) :
             KTProcessor(name),
             // initialize all member variables
-            fNumberBins(256)
+            fNumberOfBins(256),
             // initialize signals:
-//            fTSDistSignal("ts-dist", this),
+            fTSDistSignal("ts-dist", this),
             // initialize slots:
             // fHeaderSlot("header", this, &KTAmplitudeCounter::[function to call with header]),
-//            fTSSlot("ts", this, &KTAmplitudeCounter::AddData, &fTSDistDataSignal)
+            fTSSlot("ts", this, &KTAmplitudeCounter::AddData, &fTSDistSignal)
             // f[SomeName]Slot("[slot-name]", this, &KTAmplitudeCounter::[function to call], &f[SomeName]Signal)
     {
     }
@@ -48,5 +48,10 @@ namespace Katydid
     }
 
     // All the normal stuff goes here
+
+    bool KTAmplitudeCounter::AddData(KTTimeSeriesData& data)
+    {
+        return true;
+    }
 
 } /* namespace Katydid */

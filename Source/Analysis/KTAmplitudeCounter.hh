@@ -57,13 +57,16 @@ namespace Katydid
             bool Configure(const KTPStoreNode* node);
 
             // Getters and setters for configurable parameters go here
+            unsigned GetNumberOfBins() const;
+            void SetNumberOfBins(unsigned nbins);
         private:
             // configurable member parameters go here
-            unsigned fNumberBins;
+            unsigned fNumberOfBins;
 
         public:
             // Functions to do the job of the processor go here
             // These allow the processor to be used on data objects manually
+            bool AddData(KTTimeSeriesData& data);
 
 
         private:
@@ -76,7 +79,7 @@ namespace Katydid
         //***************
 
         private:
-//            KTSignalData fTSDistSignal;
+            KTSignalData fTSDistSignal;
 
         //***************
         // Slots
@@ -84,9 +87,21 @@ namespace Katydid
 
         private:
             //KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
-//            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
+            //KTSlotOneArg< void (const KTTimeSeriesData*) > fTSSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
 
     };
+    
+    inline unsigned KTAmplitudeCounter::GetNumberOfBins() const
+    {
+        return fNumberOfBins;
+    }
+
+    inline void KTAmplitudeCounter::SetNumberOfBins(unsigned nbins)
+    {
+        fNumberOfBins = nbins;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif //KTAMPLITUDECOUNTER_HH_
