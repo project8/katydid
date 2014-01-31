@@ -39,7 +39,7 @@ namespace Katydid
      Available configuration values:
      - "min_amp": double -- amplitude value of the lower edge of the lowest bin
      - "max_amp": double -- amplitude value of the upper edge of the highest bin
-     - "n_bins": unsigned -- number of evenly spaced bins
+     - "num-bins": unsigned -- number of evenly spaced bins
 
      Slots:
      - "ts": void (KTDataPtr) -- Converts a time series to a value distribution; Requires KTTimeSeriesData; Adds KTTimeSeriesDistribution; Emits signal "ts-dist"
@@ -59,9 +59,15 @@ namespace Katydid
             // Getters and setters for configurable parameters go here
             unsigned GetNumberOfBins() const;
             void SetNumberOfBins(unsigned nbins);
+            double GetMinimumAmplitude() const;
+            void SetMinimumAmplitude(double minamp);
+            double GetMaximumAmplitude() const;
+            void SetMaximumAmplitude(double maxamp);
         private:
             // configurable member parameters go here
             unsigned fNumberOfBins;
+            double fMinimumAmplitude;
+            double fMaximumAmplitude;
 
         public:
             // Functions to do the job of the processor go here
@@ -100,6 +106,28 @@ namespace Katydid
     inline void KTAmplitudeCounter::SetNumberOfBins(unsigned nbins)
     {
         fNumberOfBins = nbins;
+        return;
+    }
+
+    inline double KTAmplitudeCounter::GetMinimumAmplitude() const
+    {
+        return fMinimumAmplitude;
+    }
+
+    inline void KTAmplitudeCounter::SetMinimumAmplitude(double minamp)
+    {
+        fMinimumAmplitude = minamp;
+        return;
+    }
+
+    inline double KTAmplitudeCounter::GetMaximumAmplitude() const
+    {
+        return fMaximumAmplitude;
+    }
+
+    inline void KTAmplitudeCounter::SetMaximumAmplitude(double maxamp)
+    {
+        fMaximumAmplitude = maxamp;
         return;
     }
 

@@ -40,11 +40,16 @@ namespace Katydid
 
     bool KTAmplitudeCounter::Configure(const KTPStoreNode* node)
     {
-        if (node == NULL) return false;
-
         // Configure parameters
-
-        return true;
+        if (node != NULL)
+        {
+            SetMinimumAmplitude(node->GetData<double>("min-amp", fMinimumAmplitude));
+            SetMaximumAmplitude(node->GetData<double>("max-amp", fMaximumAmplitude));
+            SetNumberOfBins(node->GetData<unsigned>("num-bins", fNumberOfBins));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // All the normal stuff goes here
