@@ -119,7 +119,7 @@ namespace Katydid
 		++nClipBottom;
 	      }
         }
-	for (size_t iBin = 1; iBin < nBins-1; ++iBin) //Find all sequential max/min except last and first
+		for (size_t iBin = 1; iBin < nBins-1; ++iBin) //Find all sequential max/min except last and first
         {
 	  if ((*ts)(iBin) >= fNDigitizerLevels-1 && ((*ts)(iBin+1) >= fNDigitizerLevels-1 || (*ts)(iBin-1) >= fNDigitizerLevels-1))
 	    {
@@ -146,6 +146,46 @@ namespace Katydid
 	  {
 	    ++nMultClipBottom;
 	  }
+	
+	/*
+		///hello i'm finding pairs now//
+	for (size_t iBin = 1; iBin < nBins-2; ++iBin) //Find all sequential max/min pairs except last and first
+        {
+	  if ((*ts)(iBin) >= fNDigitizerLevels-1 && (*ts)(iBin+1) >= fNDigitizerLevels-1 && (*ts)(iBin+2) < fNDigitizerLevels-1 && (*ts)(iBin-1) < fNDigitizerLevels-1)
+	    {
+	      ++nMultClipTop;
+	    }
+          if ((*ts)(iBin) <= 0 && (*ts)(iBin+1) <= 0 && (*ts)(iBin+2) > 0 && (*ts)(iBin-1) > 0)
+	    {
+	      ++nMultClipBottom;
+	    }
+         }
+	if ((*ts)(0) >= fNDigitizerLevels-1 && (*ts)(1) >= fNDigitizerLevels-1 && (*ts)(2) < fNDigitizerLevels-1) //Find if first bin is sequential max pair
+ 	  {
+	    ++nMultClipTop;
+	  }
+	if ((*ts)(0)<=0 && (*ts)(1)<=0 && (*ts)(2)>0) //Find if first bin is sequential min pair
+	  {
+	    ++nMultClipBottom;
+	  }
+	if ((*ts)(nBins-1) >= fNDigitizerLevels-1 && (*ts)(nBins-2) >= fNDigitizerLevels-1 && (*ts)(nBins-3)<fNDigitizerLevels-1) //Find if last bin is sequential max pair
+ 	  {
+	    ++nMultClipTop;
+	  }
+	if ((*ts)(nBins-1) <= 0 && (*ts)(nBins-2) <= 0 && (*ts)(nBins-3)>0) //Find if last bin is sequential min pair
+	  {
+	    ++nMultClipBottom;
+	  }
+	if ((*ts)(nBins-2) >= fNDigitizerLevels-1 && (*ts)(nBins-3) >= fNDigitizerLevels-1 && (*ts)(nBins-4)<fNDigitizerLevels-1 && (*ts)(nBins-1)<fNDigitizerLevels-1) //Find if second to last bin is sequential max pair
+ 	  {
+	    ++nMultClipTop;
+	  }
+	if ((*ts)(nBins-2) <= 0 && (*ts)(nBins-3) <= 0 && (*ts)(nBins-2)>0 && (*ts)(nBins-1)>0) //Find if second to last bin is sequential min pair
+	  {
+	    ++nMultClipBottom;
+	  }
+		///okay i have found pairs now///
+*/
         testData.SetClippingData(nClipTop, nClipBottom, nMultClipTop, nMultClipBottom, (double)nClipTop / (double)ts->size(), (double)nClipBottom / (double)ts->size(), (double)nMultClipTop/(double)nClipTop, (double)nMultClipBottom/(double)nClipBottom, component);
         return true;
     }
