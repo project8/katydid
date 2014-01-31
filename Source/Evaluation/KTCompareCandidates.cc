@@ -56,12 +56,12 @@ namespace Katydid
         if (events.size() == 0)
         {
             KTINFO(cclog, "No events are present");
-            return true;
+	    //  return true;
         }
         if (candidates.size() == 0)
         {
             KTINFO(cclog, "No candidates are present");
-            return true;
+	    //   return true;
         }
 
         const unsigned eventRecordSize = mcEventData.GetRecordSize();
@@ -184,7 +184,7 @@ namespace Katydid
 
 
         largestNumberOfMatches = 0;
-        ccrData.ResizeNCandidatesWithXEventMatches(events.size()); //  the largest size this should be is the number of events
+        ccrData.ResizeNCandidatesWithXEventMatches(events.size()+1); //  the largest size this should be is the number of events
         if (ccrData.GetNCandidatesWithXEventMatches().size() > 0)
         {
             for (unsigned iCandidate = 0; iCandidate < candidateMatches.size(); iCandidate++)
