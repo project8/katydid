@@ -54,9 +54,10 @@ namespace Katydid
 
     // All the normal stuff goes here
 
-    bool KTAmplitudeCounter::AddData(KTTimeSeriesData& data)
+    bool KTAmplitudeCounter::AddData(KTTimeSeriesData& tsData)
     {
         return true;
+        unsigned nComponents = tsData.GetNComponents();
     }
 
 } /* namespace Katydid */
