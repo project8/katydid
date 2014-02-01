@@ -9,8 +9,11 @@
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeriesDistData.hh"
 #include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
+
+//#include "KTTimeSeriesReal.hh"
 
 using boost::shared_ptr;
 
@@ -43,8 +46,6 @@ namespace Katydid
         // Configure parameters
         if (node != NULL)
         {
-            SetMinimumAmplitude(node->GetData<double>("min-amp", fMinimumAmplitude));
-            SetMaximumAmplitude(node->GetData<double>("max-amp", fMaximumAmplitude));
             SetNumberOfBins(node->GetData<unsigned>("num-bins", fNumberOfBins));
             return true;
         } else {
@@ -54,10 +55,16 @@ namespace Katydid
 
     // All the normal stuff goes here
 
-    bool KTAmplitudeCounter::AddData(KTTimeSeriesData& tsData)
+    bool KTAmplitudeCounter::AddData(KTRawTimeSeriesData& tsData)
     {
         return true;
         unsigned nComponents = tsData.GetNComponents();
+        KTTimeSeriesDistData& newData =tsData.Of< KTTimeSeriesDistData >().SetNComponents(nComponents);
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        {
+            const KTRawTimeSeries* componentTS = tsData.GetTimeSeries(iComponent);
+            
+        }
     }
 
 } /* namespace Katydid */

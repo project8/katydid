@@ -11,7 +11,8 @@
 
 #include "KTProcessor.hh"
 
-#include "KTTimeSeriesData.hh"
+//#include "KTTimeSeriesData.hh"
+#include "KTRawTimeSeriesData.hh"
 
 #include "KTSlot.hh"
 
@@ -37,8 +38,6 @@ namespace Katydid
      Configuration name: "amp-counter"
 
      Available configuration values:
-     - "min_amp": double -- amplitude value of the lower edge of the lowest bin
-     - "max_amp": double -- amplitude value of the upper edge of the highest bin
      - "num-bins": unsigned -- number of evenly spaced bins
 
      Slots:
@@ -59,10 +58,6 @@ namespace Katydid
             // Getters and setters for configurable parameters go here
             unsigned GetNumberOfBins() const;
             void SetNumberOfBins(unsigned nbins);
-            double GetMinimumAmplitude() const;
-            void SetMinimumAmplitude(double minamp);
-            double GetMaximumAmplitude() const;
-            void SetMaximumAmplitude(double maxamp);
         private:
             // configurable member parameters go here
             unsigned fNumberOfBins;
@@ -72,7 +67,7 @@ namespace Katydid
         public:
             // Functions to do the job of the processor go here
             // These allow the processor to be used on data objects manually
-            bool AddData(KTTimeSeriesData& data);
+            bool AddData(KTRawTimeSeriesData& data);
 
 
         private:
@@ -94,7 +89,7 @@ namespace Katydid
         private:
             //KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
             //KTSlotOneArg< void (const KTTimeSeriesData*) > fTSSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
+            KTSlotDataOneType< KTRawTimeSeriesData > fTSSlot;
 
     };
     
@@ -106,28 +101,6 @@ namespace Katydid
     inline void KTAmplitudeCounter::SetNumberOfBins(unsigned nbins)
     {
         fNumberOfBins = nbins;
-        return;
-    }
-
-    inline double KTAmplitudeCounter::GetMinimumAmplitude() const
-    {
-        return fMinimumAmplitude;
-    }
-
-    inline void KTAmplitudeCounter::SetMinimumAmplitude(double minamp)
-    {
-        fMinimumAmplitude = minamp;
-        return;
-    }
-
-    inline double KTAmplitudeCounter::GetMaximumAmplitude() const
-    {
-        return fMaximumAmplitude;
-    }
-
-    inline void KTAmplitudeCounter::SetMaximumAmplitude(double maxamp)
-    {
-        fMaximumAmplitude = maxamp;
         return;
     }
 

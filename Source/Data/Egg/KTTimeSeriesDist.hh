@@ -9,6 +9,7 @@
 #define KTTIMESERIESDIST_HH_
 
 #include "KTPhysicalArray.hh"
+#include "KTRawTimeSeries.hh"
 
 #include <stdint.h>
 
@@ -22,6 +23,8 @@ namespace Katydid
             KTTimeSeriesDist(size_t nBins, double rangeMin, double rangeMax);
             KTTimeSeriesDist(const KTTimeSeriesDist& orig);
             virtual ~KTTimeSeriesDist();
+
+         //   void IncrementBinValue(const KTRawTimeSeries tseries);
 
             KTTimeSeriesDist& operator=(const KTTimeSeriesDist& rhs);
 
