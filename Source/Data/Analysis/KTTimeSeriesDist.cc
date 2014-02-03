@@ -39,15 +39,4 @@ namespace Katydid
         return *this;
     }
 
-    /*void KTTimeSeriesDist::IncrementBinValue(const KTRawTimeSeries tseries)
-    {
-        unsigned nTimeBins = tseries.GetNTimeBins();
-        for (unsigned tBin = 0; tBin < nTimeBins; ++tbin)
-        {
-            unsigned thisAmp = tseries[tBin];
-            fData[thisAmp] += 1;
-        }
-        return;
-    }*/
-
 } /* namespace Katydid */

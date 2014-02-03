@@ -28,8 +28,6 @@ namespace Katydid
             const KTTimeSeriesDist* GetTimeSeriesDist(unsigned component = 0) const;
             KTTimeSeriesDist* GetTimeSeriesDist(unsigned component = 0);
             void SetTimeSeriesDist(KTTimeSeriesDist* record, unsigned component = 0);
-//            void IncrementBinValue(unsigned component);
-//            void IncrementBinValue(unsigned component, unsigned value);
 
         protected:
             std::vector< KTTimeSeriesDist* > fTimeSeriesDist;

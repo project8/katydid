@@ -12,6 +12,8 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTHoughData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTNormalizedFSData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTTimeSeriesDist.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTTimeSeriesDistData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWV2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWignerVilleData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.hh
@@ -26,8 +28,6 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDist.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDistData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTAnalysisCandidates.hh
@@ -57,6 +57,8 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTHoughData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTNormalizedFSData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTTimeSeriesDist.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTTimeSeriesDistData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWV2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWignerVilleData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.cc
@@ -71,8 +73,6 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTSliceHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeries.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDist.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesDistData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesFFTW.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTTimeSeriesReal.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Evaluation/KTAnalysisCandidates.cc

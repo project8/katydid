@@ -24,7 +24,6 @@ namespace Katydid
             KTTimeSeriesDist(const KTTimeSeriesDist& orig);
             virtual ~KTTimeSeriesDist();
 
-         //   void IncrementBinValue(const KTRawTimeSeries tseries);
 
             KTTimeSeriesDist& operator=(const KTTimeSeriesDist& rhs);
 
