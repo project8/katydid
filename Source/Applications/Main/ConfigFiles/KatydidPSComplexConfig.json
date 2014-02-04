@@ -30,7 +30,7 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "slice",
+                "signal-name": "ts",
                 "slot-processor": "fft",
                 "slot-name": "ts"
             },
@@ -55,7 +55,10 @@
             "filename": "/path/to/file.egg",
             "slice-size": 16384,
             "number-of-slices": 1,
-            "time-series-type": "fftw"
+            "dac":
+            {
+                "time-series-type": "fftw"
+            }
         },
         
         "fft":

@@ -46,7 +46,7 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "slice",
+                "signal-name": "ts",
                 "slot-processor": "profiler",
                 "slot-name": "data",
                 "group-order": 0
@@ -54,7 +54,7 @@
             "connection":
             {
                 "signal-processor": "egg",
-                "signal-name": "slice",
+                "signal-name": "ts",
                 "slot-processor": "fft",
                 "slot-name": "ts",
                 "group-order": 1

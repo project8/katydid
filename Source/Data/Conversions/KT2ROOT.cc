@@ -19,7 +19,7 @@
 #ifndef UINT16_MAX
 #define UINT16_MAX (32767)
 #endif
-//#include <limits>
+//#include <stdint.h>
 
 using std::string;
 

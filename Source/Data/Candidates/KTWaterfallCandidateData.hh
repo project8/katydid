@@ -14,6 +14,8 @@
 
 #include "KTTimeFrequency.hh"
 
+#include <inttypes.h>
+
 namespace Katydid
 {
     class KTTimeFrequency;
