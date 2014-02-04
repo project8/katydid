@@ -14,7 +14,6 @@
 #include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 
-//#include "KTRawTimeSeriesReal.hh"
 
 using boost::shared_ptr;
 
