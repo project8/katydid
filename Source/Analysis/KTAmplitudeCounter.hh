@@ -11,8 +11,8 @@
 
 #include "KTProcessor.hh"
 
-//#include "KTTimeSeriesData.hh"
-#include "KTRawTimeSeriesData.hh"
+#include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesDistData.hh"
 
 #include "KTSlot.hh"
 
@@ -41,10 +41,10 @@ namespace Katydid
      - "num-bins": unsigned -- number of evenly spaced bins
 
      Slots:
-     - "ts": void (KTDataPtr) -- Converts a time series to a value distribution; Requires KTTimeSeriesData; Adds KTTimeSeriesDistribution; Emits signal "ts-dist"
+     - "raw-ts": void (KTDataPtr) -- Converts a raw time series to a value distribution; Requires KTRawTimeSeriesData; Adds KTTimeSeriesDist; Emits signal "ts-dist"
 
      Signals:
-     - "ts-dist": void (shared_ptr<KTData>) -- Emitted upon [whatever was done]; Guarantees [output data type].
+     - "ts-dist": void (shared_ptr<KTData>) -- Emitted upon [whatever was done]; Guarantees KTTimeSeriesDistData
     */
 
     class KTAmplitudeCounter : public KTProcessor
@@ -67,7 +67,8 @@ namespace Katydid
         public:
             // Functions to do the job of the processor go here
             // These allow the processor to be used on data objects manually
-            bool AddData(KTRawTimeSeriesData& data);
+            bool AddData(KTTimeSeriesData& data);
+            bool CountTimeSeries(KTTimeSeriesDist* tsdist, KTTimeSeries* ts);
 
 
         private:
@@ -88,8 +89,8 @@ namespace Katydid
 
         private:
             //KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
-            //KTSlotOneArg< void (const KTTimeSeriesData*) > fTSSlot;
-            KTSlotDataOneType< KTRawTimeSeriesData > fTSSlot;
+            //KTSlotOneArg< void (const KTRawTimeSeriesData*) > fTSSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
 
     };
     

@@ -9,11 +9,12 @@
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
+#include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesDistData.hh"
 #include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 
-//#include "KTTimeSeriesReal.hh"
+//#include "KTRawTimeSeriesReal.hh"
 
 using boost::shared_ptr;
 
@@ -55,16 +56,27 @@ namespace Katydid
 
     // All the normal stuff goes here
 
-    bool KTAmplitudeCounter::AddData(KTRawTimeSeriesData& tsData)
+    bool KTAmplitudeCounter::AddData(KTTimeSeriesData& tsData)
     {
-        return true;
         unsigned nComponents = tsData.GetNComponents();
         KTTimeSeriesDistData& newData =tsData.Of< KTTimeSeriesDistData >().SetNComponents(nComponents);
         for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
-            const KTRawTimeSeries* componentTS = tsData.GetTimeSeries(iComponent);
-            
+            const KTTimeSeries* componentTS = tsData.GetTimeSeries(iComponent);
+
         }
+        return true;
+    }
+
+    bool KTAmplitudeCounter::CountTimeSeries(KTTimeSeriesDist* tsdist, KTTimeSeries* ts)
+    {
+        //if (fTimeSeries[0][0]==1) cout <<"foo"<<endl;
+        unsigned nTimeBins = ts->GetNTimeBins();
+        for (unsigned iBin=0; iBin<nTimeBins; ++iBin)
+        {
+            unsigned val = (*ts)(iBin);
+        }
+        return true;
     }
 
 } /* namespace Katydid */
