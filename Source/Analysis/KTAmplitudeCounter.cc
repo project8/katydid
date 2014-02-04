@@ -62,8 +62,9 @@ namespace Katydid
         for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTRawTimeSeries* iTS = tsData.GetTimeSeries(iComponent);
-            KTTimeSeriesDist* iTSDist = newData.GetTimeSeriesDist(iComponent);
+            KTTimeSeriesDist* iTSDist = new KTTimeSeriesDist(256, 0, 256);//::KTTimeSeriesDist();// = newData.GetTimeSeriesDist(iComponent);
             this->CountTimeSeries(iTSDist, iTS);
+            newData.SetTimeSeriesDist(iTSDist, iComponent);
         }
         return true;
     }
