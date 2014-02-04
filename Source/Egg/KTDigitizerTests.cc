@@ -33,11 +33,12 @@ namespace Katydid
             fNDigitizerLevels(pow(2, fNDigitizerBits)),
             fTestBitOccupancy(true),
             fTestClipping(true),
-	    fTestLinearity(true),
+            fTestLinearity(true),
+            fBinsPerAverage(50),
             fRawTestFuncs(),
             fBitOccupancyTestID(0),
-	    fClippingTestID(0),
-	    fLinearityTestID(0),
+            fClippingTestID(0),
+            fLinearityTestID(0),
             fDigTestSignal("dig-test", this),
             fDigTestRawSlot("raw-ts", this, &KTDigitizerTests::RunTests, &fDigTestSignal)
     {
@@ -45,11 +46,11 @@ namespace Katydid
 
         fBitOccupancyTestID = ++id;
         fClippingTestID = ++id;
-	fLinearityTestID = ++id;
+        fLinearityTestID = ++id;
 
         SetTestBitOccupancy(fTestBitOccupancy);
         SetTestClipping(fTestClipping);
-	SetTestLinearity(fTestLinearity);
+        SetTestLinearity(fTestLinearity);
     }
 
     KTDigitizerTests::~KTDigitizerTests()
@@ -66,9 +67,9 @@ namespace Katydid
 
         SetTestClipping(node->GetData< bool >("test-clipping", fTestClipping));
 
-	SetTestLinearity(node->GetData< bool >("test-linearity", fTestLinearity));
+        SetTestLinearity(node->GetData< bool >("test-linearity", fTestLinearity));
 
-	KTWARN(dtlog, "fTestLinearity is " << fTestLinearity);
+        KTWARN(dtlog, "fTestLinearity is " << fTestLinearity);
 
         return true;
     }
@@ -76,7 +77,7 @@ namespace Katydid
     bool KTDigitizerTests::RunTests(KTRawTimeSeriesData& data)
     {
         unsigned nComponents = data.GetNComponents();
-	KTWARN(dtlog, "Size of fRawTestFuncs = " << fRawTestFuncs.size());
+        KTWARN(dtlog, "Size of fRawTestFuncs = " << fRawTestFuncs.size());
         KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)
         {
@@ -107,173 +108,182 @@ namespace Katydid
         testData.SetClippingFlag(true);
         size_t nBins = ts->size();
         unsigned nClipTop = 0, nClipBottom = 0;
-	unsigned nMultClipTop = 0, nMultClipBottom = 0;
+        unsigned nMultClipTop = 0, nMultClipBottom = 0;
         for (size_t iBin = 0; iBin < nBins; ++iBin) //Find all max/min
         {
             if ((*ts)(iBin) >= fNDigitizerLevels-1)
-	      {
-		++nClipTop;
-	      }
+            {
+                ++nClipTop;
+            }
             if ((*ts)(iBin) <= 0)
-	      {
-		++nClipBottom;
-	      }
+            {
+                ++nClipBottom;
+            }
         }
-		for (size_t iBin = 1; iBin < nBins-1; ++iBin) //Find all sequential max/min except last and first
+        for (size_t iBin = 1; iBin < nBins-1; ++iBin) //Find all sequential max/min except last and first
         {
-	  if ((*ts)(iBin) >= fNDigitizerLevels-1 && ((*ts)(iBin+1) >= fNDigitizerLevels-1 || (*ts)(iBin-1) >= fNDigitizerLevels-1))
-	    {
-	      ++nMultClipTop;
-	    }
-          if ((*ts)(iBin) <= 0 && ((*ts)(iBin+1) <= 0 || (*ts)(iBin-1) <= 0))
-	    {
-	      ++nMultClipBottom;
-	    }
-         }
-		if ((*ts)(0) >= fNDigitizerLevels-1 && (*ts)(1) >= fNDigitizerLevels-1) //Find if first bin is sequential max
- 	  {
-	    ++nMultClipTop;
-	  }
-		if ((*ts)(0) <= 0 && (*ts)(1) <= 0) //Find if first bin is sequential min
-	  {
-	    ++nMultClipBottom;
-	  }
-		if ((*ts)(nBins-1) >= fNDigitizerLevels-1 && (*ts)(nBins-2) >= fNDigitizerLevels-1) //Find if last bin is sequential max
- 	  {
-	    ++nMultClipTop;
-	  }
-		if ((*ts)(nBins-1) <= 0 && (*ts)(nBins-2) <= 0) //Find if last bin is sequential min
-	  {
-	    ++nMultClipBottom;
-	  }
-	
-	/*
+            if ((*ts)(iBin) >= fNDigitizerLevels-1 && ((*ts)(iBin+1) >= fNDigitizerLevels-1 || (*ts)(iBin-1) >= fNDigitizerLevels-1))
+            {
+                ++nMultClipTop;
+            }
+            if ((*ts)(iBin) <= 0 && ((*ts)(iBin+1) <= 0 || (*ts)(iBin-1) <= 0))
+            {
+                ++nMultClipBottom;
+            }
+        }
+        if ((*ts)(0) >= fNDigitizerLevels-1 && (*ts)(1) >= fNDigitizerLevels-1) //Find if first bin is sequential max
+        {
+            ++nMultClipTop;
+        }
+        if ((*ts)(0) <= 0 && (*ts)(1) <= 0) //Find if first bin is sequential min
+        {
+            ++nMultClipBottom;
+        }
+        if ((*ts)(nBins-1) >= fNDigitizerLevels-1 && (*ts)(nBins-2) >= fNDigitizerLevels-1) //Find if last bin is sequential max
+        {
+            ++nMultClipTop;
+        }
+        if ((*ts)(nBins-1) <= 0 && (*ts)(nBins-2) <= 0) //Find if last bin is sequential min
+        {
+            ++nMultClipBottom;
+        }
+
+        /*
 		///hello i'm finding pairs now//
-	for (size_t iBin = 1; iBin < nBins-2; ++iBin) //Find all sequential max/min pairs except last and first
+	    for (size_t iBin = 1; iBin < nBins-2; ++iBin) //Find all sequential max/min pairs except last and first
         {
-	  if ((*ts)(iBin) >= fNDigitizerLevels-1 && (*ts)(iBin+1) >= fNDigitizerLevels-1 && (*ts)(iBin+2) < fNDigitizerLevels-1 && (*ts)(iBin-1) < fNDigitizerLevels-1)
-	    {
-	      ++nMultClipTop;
+	        if ((*ts)(iBin) >= fNDigitizerLevels-1 && (*ts)(iBin+1) >= fNDigitizerLevels-1 && (*ts)(iBin+2) < fNDigitizerLevels-1 && (*ts)(iBin-1) < fNDigitizerLevels-1)
+	        {
+	            ++nMultClipTop;
+	        }
+            if ((*ts)(iBin) <= 0 && (*ts)(iBin+1) <= 0 && (*ts)(iBin+2) > 0 && (*ts)(iBin-1) > 0)
+	        {
+	            ++nMultClipBottom;
+	        }
+        }
+	    if ((*ts)(0) >= fNDigitizerLevels-1 && (*ts)(1) >= fNDigitizerLevels-1 && (*ts)(2) < fNDigitizerLevels-1) //Find if first bin is sequential max pair
+ 	    {
+	        ++nMultClipTop;
 	    }
-          if ((*ts)(iBin) <= 0 && (*ts)(iBin+1) <= 0 && (*ts)(iBin+2) > 0 && (*ts)(iBin-1) > 0)
+	    if ((*ts)(0)<=0 && (*ts)(1)<=0 && (*ts)(2)>0) //Find if first bin is sequential min pair
 	    {
-	      ++nMultClipBottom;
+	        ++nMultClipBottom;
 	    }
-         }
-	if ((*ts)(0) >= fNDigitizerLevels-1 && (*ts)(1) >= fNDigitizerLevels-1 && (*ts)(2) < fNDigitizerLevels-1) //Find if first bin is sequential max pair
- 	  {
-	    ++nMultClipTop;
-	  }
-	if ((*ts)(0)<=0 && (*ts)(1)<=0 && (*ts)(2)>0) //Find if first bin is sequential min pair
-	  {
-	    ++nMultClipBottom;
-	  }
-	if ((*ts)(nBins-1) >= fNDigitizerLevels-1 && (*ts)(nBins-2) >= fNDigitizerLevels-1 && (*ts)(nBins-3)<fNDigitizerLevels-1) //Find if last bin is sequential max pair
- 	  {
-	    ++nMultClipTop;
-	  }
-	if ((*ts)(nBins-1) <= 0 && (*ts)(nBins-2) <= 0 && (*ts)(nBins-3)>0) //Find if last bin is sequential min pair
-	  {
-	    ++nMultClipBottom;
-	  }
-	if ((*ts)(nBins-2) >= fNDigitizerLevels-1 && (*ts)(nBins-3) >= fNDigitizerLevels-1 && (*ts)(nBins-4)<fNDigitizerLevels-1 && (*ts)(nBins-1)<fNDigitizerLevels-1) //Find if second to last bin is sequential max pair
- 	  {
-	    ++nMultClipTop;
-	  }
-	if ((*ts)(nBins-2) <= 0 && (*ts)(nBins-3) <= 0 && (*ts)(nBins-2)>0 && (*ts)(nBins-1)>0) //Find if second to last bin is sequential min pair
-	  {
-	    ++nMultClipBottom;
-	  }
+	    if ((*ts)(nBins-1) >= fNDigitizerLevels-1 && (*ts)(nBins-2) >= fNDigitizerLevels-1 && (*ts)(nBins-3)<fNDigitizerLevels-1) //Find if last bin is sequential max pair
+ 	    {
+	        ++nMultClipTop;
+	    }
+	    if ((*ts)(nBins-1) <= 0 && (*ts)(nBins-2) <= 0 && (*ts)(nBins-3)>0) //Find if last bin is sequential min pair
+	    {
+	        ++nMultClipBottom;
+	    }
+	    if ((*ts)(nBins-2) >= fNDigitizerLevels-1 && (*ts)(nBins-3) >= fNDigitizerLevels-1 && (*ts)(nBins-4)<fNDigitizerLevels-1 && (*ts)(nBins-1)<fNDigitizerLevels-1) //Find if second to last bin is sequential max pair
+ 	    {
+	        ++nMultClipTop;
+	    }
+	    if ((*ts)(nBins-2) <= 0 && (*ts)(nBins-3) <= 0 && (*ts)(nBins-2)>0 && (*ts)(nBins-1)>0) //Find if second to last bin is sequential min pair
+	    {
+	        ++nMultClipBottom;
+	    }
 		///okay i have found pairs now///
-*/
+         */
         testData.SetClippingData(nClipTop, nClipBottom, nMultClipTop, nMultClipBottom, (double)nClipTop / (double)ts->size(), (double)nClipBottom / (double)ts->size(), (double)nMultClipTop/(double)nClipTop, (double)nMultClipBottom/(double)nClipBottom, component);
         return true;
     }
 
-   bool KTDigitizerTests::LinearityTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component)
+    bool KTDigitizerTests::LinearityTest(const KTRawTimeSeries* ts, KTDigitizerTestData& testData, unsigned component)
     {
         KTDEBUG(dtlog, "Running Linearity test");
         testData.SetLinearityFlag(true);
         size_t nBins = ts->size();
-	int fitstart = -1;
-	int fitend = -1;
-	//find fitstart
+        int fitStart = -1;
+        int fitEnd = -1;
+        //find fitStart
         for (size_t iBin = 1; iBin < nBins; ++iBin)
         {
-	  if ((*ts)(iBin)!=0)
-	    {
-	      fitstart=iBin-1;
-	      break;
-	    }
+            if ((*ts)(iBin) != 0)
+            {
+                fitStart = iBin - 1;
+                break;
+            }
         }
-	//error finding fitstart
-	if (fitstart==-1)
-	  {
-	    KTERROR(dtlog, "Unable to find fitstart");
-	    return false;
-	  }
-	//find fitend
-	int bpa = 50; //bins per average
-	double wherehigh[50]={};
-	double oldaverage=0;
-	     for (size_t iBin = fitstart+1; iBin < nBins; ++iBin) //testing 
-		  {
-		    if ((*ts)(iBin)==185)
-		      {
-			  break;
-		      }
-		  }
-	for (size_t iBin = fitstart+1; iBin < nBins; ++iBin)
-	  {
-	    wherehigh[iBin % bpa]=(*ts)(iBin);
-	    double total = 0;
-	    for (int i=0; i<bpa; i++)
-	      {
-		total = total + wherehigh[i];
-	      }
-	    double average = total/bpa;
-	    
-	    if (average < (oldaverage))
-	      {
-		fitend = iBin-bpa;
-		break;
-	      }
-	    oldaverage=average;
-	  }
-	//error finding fitend
-	if (fitend==-1)
-	  {
-	    fitend=nBins-1;
-	  }
-  	double slope = double(((*ts)(fitend))-((*ts)(fitstart)))/double(fitend-fitstart);
-	//Linear Regression
-	 double sumXY = 0;
-	 double sumX=0;
-         double sumY=0;
-         double sumX2=0;
-	 for (size_t iBin = fitstart; iBin < fitend; ++iBin)
-	    {
-	      sumXY = sumXY + ((double)iBin * (double)((*ts)(iBin)));
-	      sumX = sumX + iBin;
-	      sumY = sumY + (double)((*ts)(iBin));
-	      sumX2 = sumX2 + iBin*iBin;
-	     }
-	  // Max difference from linreg line and chisquared
-	  double linregslope = ((fitend-fitstart+1)*sumXY-sumX*sumY)/((fitend-fitstart+1)*(sumX2)-sumX*sumX);
-	  double linregintercept = (sumY - linregslope*sumX)/(fitend-fitstart+1);
-	  double regbigdist = 0;
-	  double totalsqdist = 0;
-	  for (size_t iBin = fitstart; iBin < fitend; ++iBin)
-	    {
-	      double regydist = ((*ts)(iBin))-((iBin-fitstart)*(linregslope)+linregintercept); 
-	      totalsqdist = totalsqdist + regydist*regydist;	     
-	      if (regydist > regbigdist)
-		{
-		  regbigdist = regydist;
-		    }
-		}
-	  double avgsqdist = totalsqdist / (fitend-fitstart+1);
-	  testData.SetLinearityData(regbigdist/256, avgsqdist, fitstart, fitend, linregslope, linregintercept, component);
+        //error finding fitStart
+        if (fitStart == -1)
+        {
+            KTERROR(dtlog, "Unable to find fit start");
+            return false;
+        }
+
+        //find fitEnd
+        double* whereHigh = new double[fBinsPerAverage];
+        double oldAverage = 0;
+        /*
+        for (size_t iBin = fitStart+1; iBin < nBins; ++iBin) //testing
+        {
+            if ((*ts)(iBin) == 185)
+            {
+                break;
+            }
+        }
+        */
+        for (size_t iBin = fitStart+1; iBin < nBins; ++iBin)
+        {
+            whereHigh[iBin % fBinsPerAverage] = (*ts)(iBin);
+            double total = 0;
+            for (int i=0; i < fBinsPerAverage; ++i)
+            {
+                total = total + whereHigh[i];
+            }
+            double average = total / fBinsPerAverage;
+
+            if (average < oldAverage)
+            {
+                fitEnd = iBin - fBinsPerAverage;
+                break;
+            }
+            oldAverage = average;
+        }
+        //error finding fitEnd
+        if (fitEnd == -1)
+        {
+            fitEnd = nBins-1;
+        }
+
+        delete [] whereHigh;
+
+        double slope = double((*ts)(fitEnd) - (*ts)(fitStart)) / double(fitEnd - fitStart);
+
+        //Linear Regression
+        double sumXY = 0;
+        double sumX = 0;
+        double sumY = 0;
+        double sumX2 = 0;
+        for (size_t iBin = fitStart; iBin < fitEnd; ++iBin)
+        {
+            sumXY += (double)iBin * (double)((*ts)(iBin));
+            sumX += iBin;
+            sumY += (double)((*ts)(iBin));
+            sumX2 += iBin * iBin;
+        }
+
+        double linRegSlope = ((fitEnd - fitStart+1) * sumXY - sumX * sumY) / ((fitEnd - fitStart+1) * sumX2 - sumX * sumX);
+        double linRegIntercept = (sumY - linRegSlope * sumX) / (fitEnd - fitStart + 1);
+
+        // Max difference from linreg line and chisquared
+        double regBigDist = 0;
+        double totalSqDist = 0;
+        for (size_t iBin = fitStart; iBin < fitEnd; ++iBin)
+        {
+            double regYDist = (*ts)(iBin) - ((iBin-fitStart) * linRegSlope + linRegIntercept);
+            totalSqDist = totalSqDist + regYDist*regYDist;
+            if (regYDist > regBigDist)
+            {
+                regBigDist = regYDist;
+            }
+        }
+        double avgSqDist = totalSqDist / (fitEnd - fitStart + 1);
+
+        testData.SetLinearityData(regBigDist/256, avgSqDist, fitStart, fitEnd, linRegSlope, linRegIntercept, component);
         return true;
     }
 
@@ -297,7 +307,7 @@ namespace Katydid
         if (flag)
         {
             fRawTestFuncs.insert(TestFuncs::value_type(fClippingTestID, &KTDigitizerTests::ClippingTest));
-       }
+        }
         else
         {
             fRawTestFuncs.erase(fClippingTestID);
@@ -305,13 +315,13 @@ namespace Katydid
         return;
     }
 
- void KTDigitizerTests::SetTestLinearity(bool flag)
+    void KTDigitizerTests::SetTestLinearity(bool flag)
     {
         fTestLinearity = flag;
         if (flag)
         {
             fRawTestFuncs.insert(TestFuncs::value_type(fLinearityTestID, &KTDigitizerTests::LinearityTest));
-       }
+        }
         else
         {
             fRawTestFuncs.erase(fLinearityTestID);

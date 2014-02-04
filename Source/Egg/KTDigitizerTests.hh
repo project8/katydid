@@ -49,13 +49,16 @@ namespace Katydid
      - "n-digitizer-bits": unsigned -- Sets the full number of bits for the ADC in question
      - "test-bit-occupancy": bool -- Determines whether the bit occupancy test is run
      - "test-clipping": bool -- Determines whether the clipping test is run
+     - "test-linearity": bool -- Determines whether the linearity test is run
+     - "linearity": object -- Configuration specific to the linearity test
+         - "bins-per-average": unsigned -- Window size for finding fit start and end points
 
      Slots:
-     - "ts": void (KTDataPtr) -- [what it does]; Requires KTTimeSeriesData; Adds KTDigitizerTestData; Emits signal "dig-test"
+     - "raw-ts": void (KTDataPtr) -- Performs the requested digitizer tests; Requires KTRawTimeSeriesData; Adds KTDigitizerTestData; Emits signal "dig-test"
 
      Signals:
      - "dig-test": void (KTDataPtr) -- Emitted upon completion of digitizer tests; Guarantees KTdigitizerTestData.
-    */
+     */
 
     class KTDigitizerTests : public KTProcessor
     {
@@ -64,7 +67,7 @@ namespace Katydid
 
             typedef std::map< unsigned, ptrToTestFunc > TestFuncs;
 
-         public:
+        public:
             KTDigitizerTests(const std::string& name = "digitizer-tests");
             virtual ~KTDigitizerTests();
 
@@ -83,6 +86,9 @@ namespace Katydid
             bool GetTestLinearity() const;
             void SetTestLinearity(bool flag);
 
+            unsigned GetBinsPerAverage() const;
+            void SetBinsPerAverage(unsigned bins);
+
         private:
             unsigned fNDigitizerBits;
             unsigned fNDigitizerLevels;
@@ -92,6 +98,7 @@ namespace Katydid
             bool fTestClipping;
 
             bool fTestLinearity;
+            unsigned fBinsPerAverage;
 
         public:
             bool RunTests(KTRawTimeSeriesData& data);
@@ -151,10 +158,22 @@ namespace Katydid
         return fTestClipping;
     }
 
- inline bool KTDigitizerTests::GetTestLinearity() const
+    inline bool KTDigitizerTests::GetTestLinearity() const
     {
         return fTestLinearity;
     }
+
+    inline unsigned KTDigitizerTests::GetBinsPerAverage() const
+    {
+        return fBinsPerAverage;
+    }
+
+    inline void KTDigitizerTests::SetBinsPerAverage(unsigned bins)
+    {
+        fBinsPerAverage = bins;
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTDIGITIZERTESTS_HH_ */
