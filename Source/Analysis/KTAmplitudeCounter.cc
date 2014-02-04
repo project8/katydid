@@ -33,7 +33,7 @@ namespace Katydid
             fTSDistSignal("ts-dist", this),
             // initialize slots:
             // fHeaderSlot("header", this, &KTAmplitudeCounter::[function to call with header]),
-            fTSSlot("ts", this, &KTAmplitudeCounter::AddData, &fTSDistSignal)
+            fTSSlot("raw-ts", this, &KTAmplitudeCounter::AddData, &fTSDistSignal)
             // f[SomeName]Slot("[slot-name]", this, &KTAmplitudeCounter::[function to call], &f[SomeName]Signal)
     {
     }
@@ -56,25 +56,26 @@ namespace Katydid
 
     // All the normal stuff goes here
 
-    bool KTAmplitudeCounter::AddData(KTTimeSeriesData& tsData)
+    bool KTAmplitudeCounter::AddData(KTRawTimeSeriesData& tsData)
     {
         unsigned nComponents = tsData.GetNComponents();
         KTTimeSeriesDistData& newData =tsData.Of< KTTimeSeriesDistData >().SetNComponents(nComponents);
         for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
-            const KTTimeSeries* componentTS = tsData.GetTimeSeries(iComponent);
-
+            const KTRawTimeSeries* iTS = tsData.GetTimeSeries(iComponent);
+            KTTimeSeriesDist* iTSDist = newData.GetTimeSeriesDist(iComponent);
+            this->CountTimeSeries(iTSDist, iTS);
         }
         return true;
     }
 
-    bool KTAmplitudeCounter::CountTimeSeries(KTTimeSeriesDist* tsdist, KTTimeSeries* ts)
+    bool KTAmplitudeCounter::CountTimeSeries(KTTimeSeriesDist* tsdist, const KTRawTimeSeries* ts)
     {
-        //if (fTimeSeries[0][0]==1) cout <<"foo"<<endl;
-        unsigned nTimeBins = ts->GetNTimeBins();
+        unsigned nTimeBins = ts->size();
         for (unsigned iBin=0; iBin<nTimeBins; ++iBin)
         {
             unsigned val = (*ts)(iBin);
+            (*tsdist)(val) += 1;
         }
         return true;
     }

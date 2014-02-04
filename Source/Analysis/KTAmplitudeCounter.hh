@@ -11,7 +11,7 @@
 
 #include "KTProcessor.hh"
 
-#include "KTTimeSeriesData.hh"
+#include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesDistData.hh"
 
 #include "KTSlot.hh"
@@ -67,8 +67,8 @@ namespace Katydid
         public:
             // Functions to do the job of the processor go here
             // These allow the processor to be used on data objects manually
-            bool AddData(KTTimeSeriesData& data);
-            bool CountTimeSeries(KTTimeSeriesDist* tsdist, KTTimeSeries* ts);
+            bool AddData(KTRawTimeSeriesData& data);
+            bool CountTimeSeries(KTTimeSeriesDist* tsdist, const KTRawTimeSeries* ts);
 
 
         private:
@@ -90,7 +90,7 @@ namespace Katydid
         private:
             //KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
             //KTSlotOneArg< void (const KTRawTimeSeriesData*) > fTSSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
+            KTSlotDataOneType< KTRawTimeSeriesData > fTSSlot;
 
     };
     
