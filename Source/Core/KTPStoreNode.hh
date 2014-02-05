@@ -53,7 +53,7 @@ namespace Katydid
     class KTPStoreNode
     {
         public:
-            typedef boost::property_tree::ptree TreeNode;
+            typedef ::boost::property_tree::ptree TreeNode;
             typedef TreeNode::iterator iterator;
             typedef TreeNode::const_iterator const_iterator;
             typedef TreeNode::assoc_iterator assoc_iterator;
@@ -153,7 +153,7 @@ namespace Katydid
         {
             return fTree->get_value< XType >();
         }
-        catch (boost::property_tree::ptree_bad_data& e)
+        catch (::boost::property_tree::ptree_bad_data& e)
         {
             KTERROR(utillog_psnode, "Unable to convert to the specified type.");
             throw KTPStoreNodeDataNotFound();
@@ -179,12 +179,12 @@ namespace Katydid
             // get_value will only return data from this node (whereas get can return data from subnodes)
             return it->second.get_value< XType >();
         }
-        catch (boost::property_tree::ptree_bad_path& e)
+        catch (::boost::property_tree::ptree_bad_path& e)
         {
             KTERROR(utillog_psnode, "Subnode <" << dataName << "> did not contain data.");
             throw dnfException;
         }
-        catch (boost::property_tree::ptree_bad_data& e)
+        catch (::boost::property_tree::ptree_bad_data& e)
         {
             KTERROR(utillog_psnode, "Unable to convert to the specified type for parameter named <" << dataName << ">.");
             throw dnfException;

@@ -8,13 +8,18 @@
 #include "KT2ROOT.hh"
 
 #include "KTRawTimeSeries.hh"
+#include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
 #include "TH1.h"
 
 #include <cfloat>
-#include <stdint.h>
+#include "stdint.h"
+#ifndef UINT16_MAX
+#define UINT16_MAX (32767)
+#endif
+//#include <stdint.h>
 
 using std::string;
 
@@ -38,15 +43,28 @@ namespace Katydid
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));
         }
         hist->SetXTitle("Time (s)");
-        hist->SetYTitle("Voltage (V)");
+        hist->SetYTitle("Voltage (ADC)");
         return hist;
 
+    }
+
+    TH1I* KT2ROOT::CreateHistogram(const KTTimeSeriesDist* tsDist, const string& histName)
+    {
+        unsigned nBins = tsDist->size();
+        TH1I* hist = new TH1I(histName.c_str(), "Time Series Distribution", (int)nBins, tsDist->GetRangeMin(), tsDist->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*tsDist)(iBin));
+        }
+        hist->SetXTitle("Amplitude (ADC)");
+        hist->SetYTitle("Occurances (#)");
+        return hist;
     }
 
     TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
     {
         unsigned tMaxMag = 0;
-        unsigned tMinMag = 9999999;
+        unsigned tMinMag = UINT16_MAX;//std::numeric_limits<int16_t>::max();
         unsigned nBins = ts->GetNBins();
         unsigned value;
         for (unsigned iBin=0; iBin<nBins; ++iBin)

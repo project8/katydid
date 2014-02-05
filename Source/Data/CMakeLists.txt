@@ -12,11 +12,14 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTHoughData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTNormalizedFSData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTTimeSeriesDist.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTTimeSeriesDistData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWV2DData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWignerVilleData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidateData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTWaterfallCandidateData.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Conversions/KT2ROOT.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTDigitizerTestData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.hh
@@ -55,11 +58,14 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTGainVariationData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTHoughData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTNormalizedFSData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTTimeSeriesDist.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTTimeSeriesDistData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWV2DData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Analysis/KTWignerVilleData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidate.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTFrequencyCandidateData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Candidates/KTWaterfallCandidateData.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Conversions/KT2ROOT.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTDigitizerTestData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTEggHeader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/Egg/KTPhysicalArrayFFTW.cc

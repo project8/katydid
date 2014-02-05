@@ -21,7 +21,7 @@ namespace Katydid
     {
         unsigned first = 0, second = 0;
         bool parsed = phrase_parse(pairString.begin(), pairString.end(),
-                (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> int_[ref(second) = boost::spirit::qi::_1]),
+                (int_[ref(first)=::boost::spirit::qi::_1] >> ',' >> int_[ref(second) = ::boost::spirit::qi::_1]),
                 space);
         if (! parsed)
         {
@@ -35,7 +35,7 @@ namespace Katydid
         unsigned first = 0;
         double second = 0.;
         bool parsed = phrase_parse(pairString.begin(), pairString.end(),
-                (int_[ref(first)=boost::spirit::qi::_1] >> ',' >> double_[ref(second) = boost::spirit::qi::_1]),
+                (int_[ref(first)=::boost::spirit::qi::_1] >> ',' >> double_[ref(second) = ::boost::spirit::qi::_1]),
                 space);
         if (! parsed)
         {
@@ -111,7 +111,7 @@ namespace Katydid
             // get_value will only return data from this node (whereas get can return data from subnodes)
             string temp = it->second.get_value< string >();
         }
-        catch (boost::property_tree::ptree_bad_path& e)
+        catch (::boost::property_tree::ptree_bad_path& e)
         {
             // subnode with dataName was found, but was not data
             return false;
@@ -135,12 +135,12 @@ namespace Katydid
             // get_value will only return data from this node (whereas get can return data from subnodes)
             return it->second.get_value< string >();
         }
-        catch (boost::property_tree::ptree_bad_path& e)
+        catch (::boost::property_tree::ptree_bad_path& e)
         {
             KTERROR(utillog_psnode, "Subnode <" << dataName << "> did not contain data.");
             throw dnfException;
         }
-        catch (boost::property_tree::ptree_bad_data& e)
+        catch (::boost::property_tree::ptree_bad_data& e)
         {
             KTERROR(utillog_psnode, "Unable to convert to the specified type for parameter named <" << dataName << ">.");
             throw dnfException;
@@ -215,12 +215,12 @@ namespace Katydid
             // get_value will only return data from this node (whereas get can return data from subnodes)
             return ParsePairUInt(fTree->get_value< std::string >());
         }
-        catch (boost::property_tree::ptree_bad_path& e)
+        catch (::boost::property_tree::ptree_bad_path& e)
         {
             KTERROR(utillog_psnode, "Subnode <" << dataName << "> did not contain data.");
             throw dnfException;
         }
-        catch (boost::property_tree::ptree_bad_data& e)
+        catch (::boost::property_tree::ptree_bad_data& e)
         {
             KTERROR(utillog_psnode, "Unable to convert to the specified type for parameter named <" << dataName << ">.");
             throw dnfException;

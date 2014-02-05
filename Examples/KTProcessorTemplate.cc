@@ -19,10 +19,10 @@ namespace Katydid
     KTLOGGER([logger], "katydid.fft");
 
     // The name of the registrar object must be unique within Katydid
-    static KTDerivedNORegistrar< KTProcessor, KTProcessorTemplate > sProcTempRegistrar("[config-name]");
+    static KTNORegistrar< KTProcessor, KTProcessorTemplate > sProcTempRegistrar("[config-name]");
 
     KTProcessorTemplate::KTProcessorTemplate(const std::string& name) :
-            KTProcessor(name),
+            KTProcessor(name)
             // initialize all member variables
             // initialize signals:
             // f[SomeName]Signal("[signal-name]", this)

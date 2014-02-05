@@ -15,6 +15,8 @@
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesDist.hh"
+#include "KTTimeSeriesDistData.hh"
 
 #include "TH1.h"
 
@@ -149,27 +151,29 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution(KTDataPtr data)
     {
+        KTDEBUG(publog, "starting a write .... ");
         if (! data) return;
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
 
-        KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
-        unsigned nComponents = tsData.GetNComponents();
+        KTTimeSeriesDistData& tsDistData = data->Of<KTTimeSeriesDistData>();
+        unsigned nComponents = tsDistData.GetNComponents();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
         for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
-            const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
-            if (spectrum != NULL)
+            const KTTimeSeriesDist* distribution = tsDistData.GetTimeSeriesDist(iComponent);
+            if (distribution != NULL)
             {
                 stringstream conv;
                 conv << "histTSDist_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
-                TH1D* powerSpectrum = spectrum->CreateAmplitudeDistributionHistogram(histName);
-                powerSpectrum->SetDirectory(fWriter->GetFile());
-                powerSpectrum->Write();
+                //TH1I* amplitudeSpectrum = distribution->CreateHistogram(histName);
+                TH1I* amplitudeSpectrum = KT2ROOT::CreateHistogram(distribution, histName);
+                amplitudeSpectrum->SetDirectory(fWriter->GetFile());
+                amplitudeSpectrum->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
