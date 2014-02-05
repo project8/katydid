@@ -24,8 +24,11 @@ namespace Katydid
             KTTimeSeriesDist(const KTTimeSeriesDist& orig);
             virtual ~KTTimeSeriesDist();
 
-
             KTTimeSeriesDist& operator=(const KTTimeSeriesDist& rhs);
+#ifdef ROOT_FOUND
+        public:
+            virtual TH1D* CreateHistogram(const std::string& name = "hTimeSeriesDist") const = 0;
+#endif
 
     };
 
