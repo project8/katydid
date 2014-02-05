@@ -164,13 +164,13 @@ namespace Katydid {
 
 // PRIVATE MACROS
 
-#define __DEFAULT_LOGGER        Katydid::KTLogger(__FILENAME_LINE__)
+#define __DEFAULT_LOGGER        ::Katydid::KTLogger(__FILENAME_LINE__)
 
-#define __KTLOG_LOCATION         Katydid::KTLogger::Location(__FILE__, __FUNC__, __LINE__)
+#define __KTLOG_LOCATION         ::Katydid::KTLogger::Location(__FILE__, __FUNC__, __LINE__)
 
 #define __KTLOG_DEBUG_2(I,M) \
         if (I.IsDebugEnabled()) { \
-            std::ostringstream stream; \
+            ::std::ostringstream stream; \
             stream << M; \
             I.logDebug(stream.str(), __KTLOG_LOCATION); \
         }
@@ -178,7 +178,7 @@ namespace Katydid {
 
 #define __KTLOG_INFO_2(I,M) \
         if (I.IsInfoEnabled()) { \
-            std::ostringstream stream; \
+            ::std::ostringstream stream; \
             stream << M; \
             I.logInfo(stream.str(), __KTLOG_LOCATION); \
         }
@@ -186,7 +186,7 @@ namespace Katydid {
 
 #define __KTLOG_PROG_2(I,M) \
         if (I.IsProgEnabled()) { \
-            std::ostringstream stream; \
+            ::std::ostringstream stream; \
             stream << M; \
             I.logProg(stream.str(), __KTLOG_LOCATION); \
         }
@@ -194,7 +194,7 @@ namespace Katydid {
 
 #define __KTLOG_WARN_2(I,M) \
         if (I.IsWarnEnabled()) { \
-            std::ostringstream stream; \
+            ::std::ostringstream stream; \
             stream << M; \
             I.logWarn(stream.str(), __KTLOG_LOCATION); \
         }
@@ -202,7 +202,7 @@ namespace Katydid {
 
 #define __KTLOG_ERROR_2(I,M) \
         if (I.IsErrorEnabled()) { \
-            std::ostringstream stream; \
+            ::std::ostringstream stream; \
             stream << M; \
             I.logError(stream.str(), __KTLOG_LOCATION); \
         }
@@ -210,7 +210,7 @@ namespace Katydid {
 
 #define __KTLOG_FATAL_2(I,M) \
         if (I.IsFatalEnabled()) { \
-            std::ostringstream stream; \
+            ::std::ostringstream stream; \
             stream << M; \
             I.logFatal(stream.str(), __KTLOG_LOCATION); \
         }
@@ -218,7 +218,7 @@ namespace Katydid {
 
 #define __KTLOG_ASSERT_3(I,C,M) \
         if (!(C) && I.IsErrorEnabled()) { \
-            std::ostringstream stream; \
+            ::std::ostringstream stream; \
             stream << M; \
             I.logError(stream.str(), __KTLOG_LOCATION); \
         }
@@ -227,7 +227,7 @@ namespace Katydid {
 
 #define __KTLOG_LOG_3(I,L,M) \
         if (I.IsLevelEnabled(L)) { \
-            std::ostringstream stream; \
+            ::std::ostringstream stream; \
             stream << M; \
             I.logLevel(L,stream.str(), __KTLOG_LOCATION); \
         }
@@ -237,7 +237,7 @@ namespace Katydid {
 
 // PUBLIC MACROS
 
-#define KTLOGGER(I,K)      static Katydid::KTLogger I(K);
+#define KTLOGGER(I,K)      static ::Katydid::KTLogger I(K);
 
 #define KTLOG(...)         macro_dispatcher(__KTLOG_LOG_, __VA_ARGS__)(__VA_ARGS__)
 #define KTDEBUG(...)       macro_dispatcher(__KTLOG_DEBUG_, __VA_ARGS__)(__VA_ARGS__)
