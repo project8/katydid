@@ -43,23 +43,22 @@ namespace Katydid
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));
         }
         hist->SetXTitle("Time (s)");
-        hist->SetYTitle("Voltage (V)");
+        hist->SetYTitle("Voltage (ADC)");
         return hist;
 
     }
 
     TH1I* KT2ROOT::CreateHistogram(const KTTimeSeriesDist* tsDist, const string& histName)
     {
-        unsigned nBins = ts->size();
-        TH1I* hist = new TH1I(histName.c_str(), "Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        unsigned nBins = tsDist->size();
+        TH1I* hist = new TH1I(histName.c_str(), "Time Series Distribution", (int)nBins, tsDist->GetRangeMin(), tsDist->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
-            hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+            hist->SetBinContent((int)iBin+1, (*tsDist)(iBin));
         }
-        hist->SetXTitle("Time (s)");
-        hist->SetYTitle("Voltage (V)");
+        hist->SetXTitle("Amplitude (ADC)");
+        hist->SetYTitle("Occurances (#)");
         return hist;
-
     }
 
     TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
