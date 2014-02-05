@@ -170,7 +170,8 @@ namespace Katydid
                 conv << "histTSDist_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
-                TH1D* amplitudeSpectrum = distribution->CreateHistogram(histName);
+                //TH1I* amplitudeSpectrum = distribution->CreateHistogram(histName);
+                TH1I* amplitudeSpectrum = KT2ROOT::CreateHistogram(distribution, histName);
                 amplitudeSpectrum->SetDirectory(fWriter->GetFile());
                 amplitudeSpectrum->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");

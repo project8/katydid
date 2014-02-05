@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 
+
 namespace Katydid
 {
 
@@ -25,10 +26,6 @@ namespace Katydid
             virtual ~KTTimeSeriesDist();
 
             KTTimeSeriesDist& operator=(const KTTimeSeriesDist& rhs);
-#ifdef ROOT_FOUND
-        public:
-            virtual TH1D* CreateHistogram(const std::string& name = "hTimeSeriesDist") const = 0;
-#endif
 
     };
 

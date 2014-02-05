@@ -27,6 +27,7 @@ namespace Katydid
             virtual ~KT2ROOT();
 
             static TH1I* CreateHistogram(const KTRawTimeSeries* ts, const std::string& histName = "hRawTimeSeries");
+            static TH1I* CreateHistogram(const KTTimeSeriesDist* tsDist, const std::string& histName = "hTSDist");
             static TH1I* CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const std::string& histName = "hRawTSDist");
 
             static TH1D* CreateHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName = "hTimeSeries");
