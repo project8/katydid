@@ -47,7 +47,7 @@ namespace Katydid
     void KTBasicROOTTypeWriterEgg::RegisterSlots()
     {
         fWriter->RegisterSlot("raw-ts", this, &KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesData);
-        fWriter->RegisterSlot("raw-ts-dist", this, &KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesDataDistribution);
+        //fWriter->RegisterSlot("raw-ts-dist", this, &KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesDataDistribution);
         fWriter->RegisterSlot("ts", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData);
         fWriter->RegisterSlot("ts-dist", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution);
         return;
@@ -87,7 +87,7 @@ namespace Katydid
         return;
     }
 
-    void KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesDataDistribution(KTDataPtr data)
+    /*void KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesDataDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -115,6 +115,7 @@ namespace Katydid
         }
         return;
     }
+    */
 
     //*****************
     // Time Series Data

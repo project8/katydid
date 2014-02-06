@@ -24,7 +24,7 @@ namespace Katydid
 
         public:
             void WriteRawTimeSeriesData(KTDataPtr data);
-            void WriteRawTimeSeriesDataDistribution(KTDataPtr data);
+            //void WriteRawTimeSeriesDataDistribution(KTDataPtr data);
 
             void WriteTimeSeriesData(KTDataPtr data);
             void WriteTimeSeriesDataDistribution(KTDataPtr data);

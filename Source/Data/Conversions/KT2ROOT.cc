@@ -61,7 +61,7 @@ namespace Katydid
         return hist;
     }
 
-    TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
+    /*TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
     {
         unsigned tMaxMag = 0;
         unsigned tMinMag = UINT16_MAX;//std::numeric_limits<int16_t>::max();
@@ -84,7 +84,7 @@ namespace Katydid
         }
         hist->SetXTitle("Voltage (V)");
         return hist;
-    }
+    }*/
 
     TH1D* KT2ROOT::CreateHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
@@ -99,7 +99,7 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
+/*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
         double tMaxMag = -DBL_MAX;
         double tMinMag = DBL_MAX;
@@ -123,6 +123,7 @@ namespace Katydid
         hist->SetXTitle("Voltage (V)");
         return hist;
     }
+*/
 
     TH1D* KT2ROOT::CreateHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
     {
@@ -137,7 +138,7 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
+/*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
     {
         double tMaxMag = -DBL_MAX;
         double tMinMag = DBL_MAX;
@@ -161,5 +162,6 @@ namespace Katydid
         hist->SetXTitle("Voltage (V)");
         return hist;
     }
+*/
 
 } /* namespace Katydid */
