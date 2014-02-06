@@ -14,7 +14,7 @@
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesDistData.hh"
+//#include "KTTimeSeriesDistData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -81,14 +81,12 @@ namespace Katydid
         }
     }
 
-/*
     bool KTDataAccumulator::AddData(KTTimeSeriesDistData& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTTimeSeriesDistData >();
         KTTimeSeriesDistData& accData = accDataStruct.fData->Of<KTTimeSeriesDistData>();
         return CoreAddData(data, accDataStruct, accData);
     }
-    */
 
     bool KTDataAccumulator::AddData(KTFrequencySpectrumDataPolar& data)
     {
@@ -206,9 +204,10 @@ namespace Katydid
         return true;
     }
 
-/*////// **************************************************************************
+////// **************************************************************************
     bool KTDataAccumulator::CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData)
     {
+
         double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
@@ -220,17 +219,20 @@ namespace Katydid
             accData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
+                /*
                 KTTimeSeriesDist* dataFS = data.GetTimeSeriesDist(iComponent);
                 unsigned dataSize = dataFS->size();
                 KTTimeSeriesDist* newFS = new KTTimeSeriesDist(dataSize);
                 newFS->operator*=(double(0.));
                 accData.SetTimeSeriesDist(newFS, iComponent);
+                */
             }
         }
 
         ++accDataStruct.fCount;
         ++accDataStruct.fSignalCount;
 
+        /*
         if (nComponents != accData.GetNComponents())
         {
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
@@ -254,10 +256,9 @@ namespace Katydid
             }
         }
 
+*/
         return true;
     }
-
-*/
 
     bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
     {

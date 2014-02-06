@@ -25,7 +25,6 @@ namespace Katydid
     class KTFrequencySpectrumDataPolarCore;
     class KTPStoreNode;
     class KTTimeSeriesData;
-    //class KTTimeSeriesDistData;
 
     /*!
      @class KTDataAccumulator
@@ -113,7 +112,7 @@ namespace Katydid
 
         public:
             bool AddData(KTTimeSeriesData& data);
-            //bool AddData(KTTimeSeriesDistData& data);
+            bool AddData(KTTimeSeriesDistData& data);
             bool AddData(KTFrequencySpectrumDataPolar& data);
             bool AddData(KTFrequencySpectrumDataFFTW& data);
 
