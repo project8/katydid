@@ -16,8 +16,8 @@ namespace Katydid
         fData[0] = 0;
     }
 
-    KTTimeSeriesDist::KTTimeSeriesDist(size_t nBins, double rangeMin, double rangeMax) :
-            KTPhysicalArray< 1, uint32_t >(nBins, rangeMin, rangeMax)
+    KTTimeSeriesDist::KTTimeSeriesDist(size_t nBins) :
+            KTPhysicalArray< 1, uint32_t >(nBins)
     {
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {

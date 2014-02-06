@@ -61,8 +61,6 @@ namespace Katydid
         private:
             // configurable member parameters go here
             unsigned fNumberOfBins;
-            double fMinimumAmplitude;
-            double fMaximumAmplitude;
 
         public:
             // Functions to do the job of the processor go here

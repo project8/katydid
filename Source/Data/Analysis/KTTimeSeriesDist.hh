@@ -21,7 +21,7 @@ namespace Katydid
     {
         public:
             KTTimeSeriesDist();
-            KTTimeSeriesDist(size_t nBins, double rangeMin, double rangeMax);
+            KTTimeSeriesDist(size_t nBins);
             KTTimeSeriesDist(const KTTimeSeriesDist& orig);
             virtual ~KTTimeSeriesDist();
 

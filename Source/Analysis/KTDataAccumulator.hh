@@ -12,6 +12,7 @@
 
 #include "KTData.hh"
 #include "KTSlot.hh"
+#include "KTTimeSeriesDistData.hh"
 
 #include <map>
 #include <typeinfo>
@@ -24,6 +25,7 @@ namespace Katydid
     class KTFrequencySpectrumDataPolarCore;
     class KTPStoreNode;
     class KTTimeSeriesData;
+    //class KTTimeSeriesDistData;
 
     /*!
      @class KTDataAccumulator
@@ -111,6 +113,7 @@ namespace Katydid
 
         public:
             bool AddData(KTTimeSeriesData& data);
+            bool AddData(KTTimeSeriesDistData& data);
             bool AddData(KTFrequencySpectrumDataPolar& data);
             bool AddData(KTFrequencySpectrumDataFFTW& data);
 
@@ -125,6 +128,7 @@ namespace Katydid
             bool CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
             bool CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
 
+            bool CoreAddData(KTTimeSeriesDistData& data, Accumulator& avDataStruct, KTTimeSeriesDistData& avData);
             bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataPolarCore& avData);
             bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataFFTWCore& avData);
 
@@ -138,10 +142,12 @@ namespace Katydid
 
         private:
             KTSignalData fTSSignal;
+            KTSignalData fTSDistSignal;
             KTSignalData fFSPolarSignal;
             KTSignalData fFSFFTWSignal;
 
             KTSignalData fTSFinishedSignal;
+            KTSignalData fTSDistFinishedSignal;
             KTSignalData fFSPolarFinishedSignal;
             KTSignalData fFSFFTWFinishedSignal;
 
