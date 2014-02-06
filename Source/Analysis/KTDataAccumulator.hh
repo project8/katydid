@@ -113,7 +113,7 @@ namespace Katydid
 
         public:
             bool AddData(KTTimeSeriesData& data);
-            bool AddData(KTTimeSeriesDistData& data);
+            //bool AddData(KTTimeSeriesDistData& data);
             bool AddData(KTFrequencySpectrumDataPolar& data);
             bool AddData(KTFrequencySpectrumDataFFTW& data);
 
@@ -142,12 +142,12 @@ namespace Katydid
 
         private:
             KTSignalData fTSSignal;
-            KTSignalData fTSDistSignal;
+            //KTSignalData fTSDistSignal;
             KTSignalData fFSPolarSignal;
             KTSignalData fFSFFTWSignal;
 
             KTSignalData fTSFinishedSignal;
-            KTSignalData fTSDistFinishedSignal;
+            //KTSignalData fTSDistFinishedSignal;
             KTSignalData fFSPolarFinishedSignal;
             KTSignalData fFSFFTWFinishedSignal;
 

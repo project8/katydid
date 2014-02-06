@@ -35,7 +35,7 @@ namespace Katydid
             fDataMap(),
             fLastAccumulatorPtr(),
             fTSSignal("ts", this),
-            fTSDistSignal("ts-dist", this),
+            //fTSDistSignal("ts-dist", this),
             fFSPolarSignal("fs-polar", this),
             fFSFFTWSignal("fs-fftw", this),
             fTSFinishedSignal("ts-finished", this),
@@ -81,12 +81,14 @@ namespace Katydid
         }
     }
 
+/*
     bool KTDataAccumulator::AddData(KTTimeSeriesDistData& data)
     {
         Accumulator& accDataStruct = GetOrCreateAccumulator< KTTimeSeriesDistData >();
         KTTimeSeriesDistData& accData = accDataStruct.fData->Of<KTTimeSeriesDistData>();
         return CoreAddData(data, accDataStruct, accData);
     }
+    */
 
     bool KTDataAccumulator::AddData(KTFrequencySpectrumDataPolar& data)
     {
@@ -204,7 +206,7 @@ namespace Katydid
         return true;
     }
 
-///////**************************************************************************
+/*////// **************************************************************************
     bool KTDataAccumulator::CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData)
     {
         double remainingFrac = 1.;
@@ -254,6 +256,8 @@ namespace Katydid
 
         return true;
     }
+
+*/
 
     bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
     {
