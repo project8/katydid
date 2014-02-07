@@ -141,7 +141,7 @@ namespace Katydid
 
         private:
             KTSignalData fTSSignal;
-            //KTSignalData fTSDistSignal;
+            KTSignalData fTSDistSignal;
             KTSignalData fFSPolarSignal;
             KTSignalData fFSFFTWSignal;
 

@@ -35,7 +35,7 @@ namespace Katydid
             fDataMap(),
             fLastAccumulatorPtr(),
             fTSSignal("ts", this),
-            //fTSDistSignal("ts-dist", this),
+            fTSDistSignal("ts-dist", this),
             fFSPolarSignal("fs-polar", this),
             fFSFFTWSignal("fs-fftw", this),
             fTSFinishedSignal("ts-finished", this),
@@ -235,14 +235,12 @@ namespace Katydid
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
-/**/
         unsigned arraySize = data.GetTimeSeriesDist(0)->size();
         if (arraySize != accData.GetTimeSeriesDist(0)->size())
         {
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
-/*
 
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -254,7 +252,6 @@ namespace Katydid
             }
         }
 
-*/
         return true;
     }
 
