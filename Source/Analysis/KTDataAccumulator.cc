@@ -219,32 +219,30 @@ namespace Katydid
             accData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
-                /*
                 KTTimeSeriesDist* dataFS = data.GetTimeSeriesDist(iComponent);
                 unsigned dataSize = dataFS->size();
                 KTTimeSeriesDist* newFS = new KTTimeSeriesDist(dataSize);
                 newFS->operator*=(double(0.));
                 accData.SetTimeSeriesDist(newFS, iComponent);
-                */
             }
         }
 
         ++accDataStruct.fCount;
         ++accDataStruct.fSignalCount;
 
-        /*
         if (nComponents != accData.GetNComponents())
         {
             KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
             return false;
         }
-
+/**/
         unsigned arraySize = data.GetTimeSeriesDist(0)->size();
         if (arraySize != accData.GetTimeSeriesDist(0)->size())
         {
             KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
             return false;
         }
+/*
 
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
