@@ -7,6 +7,7 @@
 
 #include "KT2ROOT.hh"
 
+#include "KTLogger.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -25,6 +26,7 @@ using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(dblog, "katydid.conversion");
 
     KT2ROOT::KT2ROOT()
     {
@@ -50,6 +52,7 @@ namespace Katydid
 
     TH1I* KT2ROOT::CreateHistogram(const KTTimeSeriesDist* tsDist, const string& histName)
     {
+        KTDEBUG(dblog, "in KT2ROOT CreateHist(KTTimeSeriesDist)");
         unsigned nBins = tsDist->size();
         TH1I* hist = new TH1I(histName.c_str(), "Time Series Distribution", (int)nBins, tsDist->GetRangeMin(), tsDist->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)

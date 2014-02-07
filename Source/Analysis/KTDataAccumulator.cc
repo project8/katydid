@@ -52,6 +52,7 @@ namespace Katydid
         RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
 
         fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesData), SignalSet(&fTSSignal, &fTSFinishedSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesDistData), SignalSet(&fTSDistSignal)));
         fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataPolar), SignalSet(&fFSPolarSignal, &fFSPolarFinishedSignal)));
         fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWFinishedSignal)));
     }
@@ -210,7 +211,7 @@ namespace Katydid
 ////// **************************************************************************
     bool KTDataAccumulator::CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData)
     {
-
+        KTWARN(avlog, "adding up dist");
         double remainingFrac = 1.;
         if (accDataStruct.fCount >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
