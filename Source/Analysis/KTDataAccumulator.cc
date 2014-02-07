@@ -47,6 +47,7 @@ namespace Katydid
             fFinishAccumulationSlot("finish", this, &KTDataAccumulator::CallAllSlots)
     {
         RegisterSlot("ts", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesData >);
+        RegisterSlot("ts-dist", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesDistData >);
         RegisterSlot("fs-polar", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataPolar >);
         RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
 
