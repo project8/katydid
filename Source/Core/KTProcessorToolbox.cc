@@ -173,6 +173,7 @@ namespace Katydid
                         << '\t' << e.what());
                 return false;
             }
+            KTINFO(proclog, "Signal <" << subNode.GetData("signal-processor") << ":" << signalName << "> connected to slot <" << subNode.GetData("slot-processor") << ":" << signalName << ">");
         }
 
         // Finally, deal with processor-run specifications

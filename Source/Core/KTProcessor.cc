@@ -62,7 +62,7 @@ namespace Katydid
                     string("\tIf the slot pointer is NULL, you may have the slot name wrong.");
             throw std::logic_error(errorMsg);
         }
-        KTINFO(processorlog, "Connected signal <" << signalName << "> to slot <" << slotName << ">");
+        KTDEBUG(processorlog, "Connected signal <" << signalName << "> to slot <" << slotName << ">");
 
         return;
     }
@@ -83,7 +83,7 @@ namespace Katydid
                     string("Check that the signatures of the signal and slot match exactly.");
             throw std::logic_error(errorMsg);
         }
-        KTINFO(processorlog, "Connected slot <" << signalName << "> to signal <" << slotName << ">");
+        KTDEBUG(processorlog, "Connected slot <" << signalName << "> to signal <" << slotName << ">");
 
         return;
     }
