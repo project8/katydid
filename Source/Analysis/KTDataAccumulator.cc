@@ -41,6 +41,7 @@ namespace Katydid
             fFSPolarSignal("fs-polar", this),
             fFSFFTWSignal("fs-fftw", this),
             fTSFinishedSignal("ts-finished", this),
+            fTSDistFinishedSignal("ts-dist-finished", this),
             fFSPolarFinishedSignal("fs-polar-finished", this),
             fFSFFTWFinishedSignal("fs-fftw-finished", this),
             fSignalMap(),
@@ -52,7 +53,7 @@ namespace Katydid
         RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
 
         fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesData), SignalSet(&fTSSignal, &fTSFinishedSignal)));
-        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesDistData), SignalSet(&fTSDistSignal)));
+        fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesDistData), SignalSet(&fTSDistSignal, &fTSDistFinishedSignal)));
         fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataPolar), SignalSet(&fFSPolarSignal, &fFSPolarFinishedSignal)));
         fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWFinishedSignal)));
     }
@@ -231,6 +232,8 @@ namespace Katydid
             }
         }
 
+        //accDataStruct.BumpSliceNumber();
+        accDataStruct.fSliceHeader.SetSliceNumber(data.Of<KTSliceHeader>().GetSliceNumber());
         ++accDataStruct.fCount;
         ++accDataStruct.fSignalCount;
 

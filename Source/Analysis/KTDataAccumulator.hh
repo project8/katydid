@@ -12,6 +12,7 @@
 
 #include "KTData.hh"
 #include "KTSlot.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeSeriesDistData.hh"
 
 #include <map>
@@ -72,8 +73,18 @@ namespace Katydid
                 unsigned fCount;
                 unsigned fSignalCount;
                 KTDataPtr fData;
+                KTSliceHeader fSliceHeader;
+
+                void IncrementSlice();
                 Accumulator() : fCount(0), fSignalCount(0), fData(new KTData())
-                {}
+                {
+                    fSliceHeader = fData->Of<KTSliceHeader>();
+                }
+                void BumpSliceNumber()
+                {
+                    fSliceHeader.SetSliceNumber(fSliceHeader.GetSliceNumber() + 1);
+                    //return true;
+                }
             };
 
             typedef std::map< const std::type_info*, Accumulator > AccumulatorMap;
@@ -146,7 +157,7 @@ namespace Katydid
             KTSignalData fFSFFTWSignal;
 
             KTSignalData fTSFinishedSignal;
-            //KTSignalData fTSDistFinishedSignal;
+            KTSignalData fTSDistFinishedSignal;
             KTSignalData fFSPolarFinishedSignal;
             KTSignalData fFSFFTWFinishedSignal;
 
