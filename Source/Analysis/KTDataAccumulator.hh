@@ -83,7 +83,7 @@ namespace Katydid
                 Accumulator() : fData(new KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
                 {
                 }
-                unsigned GetSliceNumber()
+                unsigned GetSliceNumber() const
                 {
                     return fSliceHeader.GetSliceNumber();
                 }
