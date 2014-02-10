@@ -7,6 +7,7 @@
 
 #include "KT2ROOT.hh"
 
+#include "KTLogger.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -25,6 +26,7 @@ using std::string;
 
 namespace Katydid
 {
+    KTLOGGER(dblog, "katydid.conversion");
 
     KT2ROOT::KT2ROOT()
     {
@@ -56,12 +58,12 @@ namespace Katydid
         {
             hist->SetBinContent((int)iBin+1, (*tsDist)(iBin));
         }
-        hist->SetXTitle("Amplitude (ADC)");
-        hist->SetYTitle("Occurances (#)");
+        hist->SetXTitle("Amplitude");
+        hist->SetYTitle("Occurrences (#)");
         return hist;
     }
 
-    TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
+    /*TH1I* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const string& histName)
     {
         unsigned tMaxMag = 0;
         unsigned tMinMag = UINT16_MAX;//std::numeric_limits<int16_t>::max();
@@ -84,7 +86,7 @@ namespace Katydid
         }
         hist->SetXTitle("Voltage (V)");
         return hist;
-    }
+    }*/
 
     TH1D* KT2ROOT::CreateHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
@@ -99,7 +101,7 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
+/*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesFFTW* ts, const std::string& histName)
     {
         double tMaxMag = -DBL_MAX;
         double tMinMag = DBL_MAX;
@@ -123,6 +125,7 @@ namespace Katydid
         hist->SetXTitle("Voltage (V)");
         return hist;
     }
+*/
 
     TH1D* KT2ROOT::CreateHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
     {
@@ -137,7 +140,7 @@ namespace Katydid
         return hist;
     }
 
-    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
+/*    TH1D* KT2ROOT::CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName)
     {
         double tMaxMag = -DBL_MAX;
         double tMinMag = DBL_MAX;
@@ -161,5 +164,6 @@ namespace Katydid
         hist->SetXTitle("Voltage (V)");
         return hist;
     }
+*/
 
 } /* namespace Katydid */

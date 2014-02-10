@@ -9,12 +9,13 @@
 #define KTTIMESERIESDISTDATA_HH_
 
 #include "KTData.hh"
+#include "KTTimeSeriesDist.hh"
 
 #include <vector>
 
 namespace Katydid
 {
-    class KTTimeSeriesDist;
+    //class KTTimeSeriesDist;
 
     class KTTimeSeriesDistData : public KTExtensibleData< KTTimeSeriesDistData >
     {

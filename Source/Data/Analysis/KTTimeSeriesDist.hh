@@ -17,7 +17,7 @@
 namespace Katydid
 {
 
-    class KTTimeSeriesDist :public KTPhysicalArray< 1, uint32_t >
+    class KTTimeSeriesDist :public KTPhysicalArray< 1, double >
     {
         public:
             KTTimeSeriesDist();

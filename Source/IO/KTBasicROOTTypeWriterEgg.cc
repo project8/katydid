@@ -47,7 +47,7 @@ namespace Katydid
     void KTBasicROOTTypeWriterEgg::RegisterSlots()
     {
         fWriter->RegisterSlot("raw-ts", this, &KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesData);
-        fWriter->RegisterSlot("raw-ts-dist", this, &KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesDataDistribution);
+        //fWriter->RegisterSlot("raw-ts-dist", this, &KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesDataDistribution);
         fWriter->RegisterSlot("ts", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesData);
         fWriter->RegisterSlot("ts-dist", this, &KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution);
         return;
@@ -82,12 +82,13 @@ namespace Katydid
                 powerSpectrum->SetDirectory(fWriter->GetFile());
                 powerSpectrum->Write();
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+                KTINFO(publog, "raw ts hist written");
             }
         }
         return;
     }
 
-    void KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesDataDistribution(KTDataPtr data)
+    /*void KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesDataDistribution(KTDataPtr data)
     {
         if (! data) return;
 
@@ -115,6 +116,7 @@ namespace Katydid
         }
         return;
     }
+    */
 
     //*****************
     // Time Series Data
@@ -151,7 +153,6 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution(KTDataPtr data)
     {
-        KTDEBUG(publog, "starting a write .... ");
         if (! data) return;
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
@@ -170,7 +171,6 @@ namespace Katydid
                 conv << "histTSDist_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
-                //TH1I* amplitudeSpectrum = distribution->CreateHistogram(histName);
                 TH1I* amplitudeSpectrum = KT2ROOT::CreateHistogram(distribution, histName);
                 amplitudeSpectrum->SetDirectory(fWriter->GetFile());
                 amplitudeSpectrum->Write();

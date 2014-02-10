@@ -21,19 +21,15 @@ namespace Katydid
 {
     KTLOGGER(avlog, "katydid.analysis");
 
-    // The name of the registrar object must be unique within Katydid
     static KTNORegistrar< KTProcessor, KTAmplitudeCounter > sProcTempRegistrar("amp-counter");
 
     KTAmplitudeCounter::KTAmplitudeCounter(const std::string& name) :
             KTProcessor(name),
-            // initialize all member variables
             fNumberOfBins(256),
-            // initialize signals:
+            fRangeMin(0.),
+            fRangeMax(-1.),
             fTSDistSignal("ts-dist", this),
-            // initialize slots:
-            // fHeaderSlot("header", this, &KTAmplitudeCounter::[function to call with header]),
             fTSSlot("raw-ts", this, &KTAmplitudeCounter::AddData, &fTSDistSignal)
-            // f[SomeName]Slot("[slot-name]", this, &KTAmplitudeCounter::[function to call], &f[SomeName]Signal)
     {
     }
 
@@ -43,17 +39,16 @@ namespace Katydid
 
     bool KTAmplitudeCounter::Configure(const KTPStoreNode* node)
     {
-        // Configure parameters
         if (node != NULL)
         {
-            SetNumberOfBins(node->GetData<unsigned>("num-bins", fNumberOfBins));
+            SetNumberOfBins(node->GetData< unsigned >("num-bins", fNumberOfBins));
+            SetRangeMin(node->GetData< double >("range-min", fRangeMin));
+            SetRangeMax(node->GetData< double >("range-max", fRangeMax));
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
-    // All the normal stuff goes here
 
     bool KTAmplitudeCounter::AddData(KTRawTimeSeriesData& tsData)
     {
@@ -62,9 +57,17 @@ namespace Katydid
         for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTRawTimeSeries* iTS = tsData.GetTimeSeries(iComponent);
-            KTTimeSeriesDist* iTSDist = new KTTimeSeriesDist(256, 0, 256);//::KTTimeSeriesDist();// = newData.GetTimeSeriesDist(iComponent);
-            this->CountTimeSeries(iTSDist, iTS);
-            newData.SetTimeSeriesDist(iTSDist, iComponent);
+            KTTimeSeriesDist* tsDist;
+            if (fRangeMax <= fRangeMin)
+            {
+                tsDist = new KTTimeSeriesDist(fNumberOfBins, -0.5, (double)fNumberOfBins - 0.5);
+            }
+            else
+            {
+                tsDist = new KTTimeSeriesDist(fNumberOfBins, fRangeMin, fRangeMax);
+            }
+            this->CountTimeSeries(tsDist, iTS);
+            newData.SetTimeSeriesDist(tsDist, iComponent);
         }
         return true;
     }
