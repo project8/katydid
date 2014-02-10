@@ -221,8 +221,7 @@ namespace Katydid
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
             {
                 KTTimeSeriesDist* dataFS = data.GetTimeSeriesDist(iComponent);
-                unsigned dataSize = dataFS->size();
-                KTTimeSeriesDist* newFS = new KTTimeSeriesDist(dataSize);
+                KTTimeSeriesDist* newFS = new KTTimeSeriesDist(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
                 newFS->operator*=(double(0.));
                 accData.SetTimeSeriesDist(newFS, iComponent);
             }

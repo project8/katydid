@@ -36,6 +36,8 @@ namespace Katydid
 
      Available configuration values:
      - "num-bins": unsigned -- number of evenly spaced bins
+     - "range-min": double -- minimum value for the x-axis of the distribution
+     - "range-max": double -- maximum value for the x-axis of the distribution
 
      Slots:
      - "raw-ts": void (KTDataPtr) -- Converts a raw time series to a value distribution; Requires KTRawTimeSeriesData; Adds KTTimeSeriesDist; Emits signal "ts-dist"
@@ -55,8 +57,16 @@ namespace Katydid
             unsigned GetNumberOfBins() const;
             void SetNumberOfBins(unsigned nbins);
 
+            double GetRangeMin() const;
+            void SetRangeMin(double min);
+
+            double GetRangeMax() const;
+            void SetRangeMax(double max);
+
         private:
             unsigned fNumberOfBins;
+            double fRangeMin;
+            double fRangeMax;
 
         public:
             bool AddData(KTRawTimeSeriesData& data);
@@ -90,6 +100,29 @@ namespace Katydid
         fNumberOfBins = nbins;
         return;
     }
+
+    inline double KTAmplitudeCounter::GetRangeMin() const
+    {
+        return fRangeMin;
+    }
+
+    inline void KTAmplitudeCounter::SetRangeMin(double min)
+    {
+        fRangeMin = min;
+        return;
+    }
+
+    inline double KTAmplitudeCounter::GetRangeMax() const
+    {
+        return fRangeMax;
+    }
+
+    inline void KTAmplitudeCounter::SetRangeMax(double max)
+    {
+        fRangeMax = max;
+        return;
+    }
+
 
 } /* namespace Katydid */
 #endif //KTAMPLITUDECOUNTER_HH_
