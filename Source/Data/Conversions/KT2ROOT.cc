@@ -52,15 +52,14 @@ namespace Katydid
 
     TH1I* KT2ROOT::CreateHistogram(const KTTimeSeriesDist* tsDist, const string& histName)
     {
-        KTDEBUG(dblog, "in KT2ROOT CreateHist(KTTimeSeriesDist)");
         unsigned nBins = tsDist->size();
         TH1I* hist = new TH1I(histName.c_str(), "Time Series Distribution", (int)nBins, tsDist->GetRangeMin(), tsDist->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->SetBinContent((int)iBin+1, (*tsDist)(iBin));
         }
-        hist->SetXTitle("Amplitude (ADC)");
-        hist->SetYTitle("Occurances (#)");
+        hist->SetXTitle("Amplitude");
+        hist->SetYTitle("Occurrences (#)");
         return hist;
     }
 

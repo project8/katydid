@@ -27,7 +27,7 @@ using std::string;
 namespace Katydid
 {
     KTLOGGER(avlog, "katydid.analysis");
-    static KTNORegistrar< KTProcessor, KTDataAccumulator > sDataAccumulator("data-averager");
+    static KTNORegistrar< KTProcessor, KTDataAccumulator > sDataAccumulator("data-accumulator");
 
     KTDataAccumulator::KTDataAccumulator(const std::string& name) :
             KTProcessor(name),
@@ -110,13 +110,13 @@ namespace Katydid
     bool KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.fCount >= fAccumulatorSize)
+        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
         //KTDEBUG(avlog, "averaging frac: " << fAveragingFrac << "    remaining frac: " << remainingFrac);
 
         unsigned nComponents = data.GetNComponents();
 
-        if (accDataStruct.fCount == 0)
+        if (accDataStruct.GetSliceNumber() == 0)
         {
             accData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -128,8 +128,7 @@ namespace Katydid
             }
         }
 
-        ++accDataStruct.fCount;
-        ++accDataStruct.fSignalCount;
+        accDataStruct.BumpSliceNumber();
 
         if (nComponents != accData.GetNComponents())
         {
@@ -162,12 +161,12 @@ namespace Katydid
     bool KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.fCount >= fAccumulatorSize)
+        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
         unsigned nComponents = data.GetNComponents();
 
-        if (accDataStruct.fCount == 0)
+        if (accDataStruct.GetSliceNumber() == 0)
         {
             accData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -179,8 +178,7 @@ namespace Katydid
             }
         }
 
-        ++accDataStruct.fCount;
-        ++accDataStruct.fSignalCount;
+        accDataStruct.BumpSliceNumber();
 
         if (nComponents != accData.GetNComponents())
         {
@@ -209,17 +207,15 @@ namespace Katydid
         return true;
     }
 
-////// **************************************************************************
     bool KTDataAccumulator::CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData)
     {
-        KTWARN(avlog, "adding up dist");
         double remainingFrac = 1.;
-        if (accDataStruct.fCount >= fAccumulatorSize)
+        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
         unsigned nComponents = data.GetNComponents();
 
-        if (accDataStruct.fCount == 0)
+        if (accDataStruct.GetSliceNumber() == 0)
         {
             accData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -232,10 +228,7 @@ namespace Katydid
             }
         }
 
-        //accDataStruct.BumpSliceNumber();
-        accDataStruct.fSliceHeader.SetSliceNumber(data.Of<KTSliceHeader>().GetSliceNumber());
-        ++accDataStruct.fCount;
-        ++accDataStruct.fSignalCount;
+        accDataStruct.BumpSliceNumber();
 
         if (nComponents != accData.GetNComponents())
         {
@@ -265,12 +258,12 @@ namespace Katydid
     bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.fCount >= fAccumulatorSize)
+        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
         unsigned nComponents = data.GetNComponents();
 
-        if (accDataStruct.fCount == 0)
+        if (accDataStruct.GetSliceNumber() == 0)
         {
             accData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -282,8 +275,7 @@ namespace Katydid
             }
         }
 
-        ++accDataStruct.fCount;
-        ++accDataStruct.fSignalCount;
+        accDataStruct.BumpSliceNumber();
 
         if (nComponents != accData.GetNComponents())
         {
@@ -314,12 +306,12 @@ namespace Katydid
     bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.fCount >= fAccumulatorSize)
+        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
         unsigned nComponents = data.GetNComponents();
 
-        if (accDataStruct.fCount == 0)
+        if (accDataStruct.GetSliceNumber() == 0)
         {
             accData.SetNComponents(nComponents);
             for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
@@ -331,8 +323,7 @@ namespace Katydid
             }
         }
 
-        ++accDataStruct.fCount;
-        ++accDataStruct.fSignalCount;
+        accDataStruct.BumpSliceNumber();
 
 
         if (nComponents != accData.GetNComponents())

@@ -11,13 +11,13 @@ namespace Katydid
 {
 
     KTTimeSeriesDist::KTTimeSeriesDist() :
-            KTPhysicalArray< 1, uint32_t >()
+            KTPhysicalArray< 1, double >()
     {
         fData[0] = 0;
     }
 
     KTTimeSeriesDist::KTTimeSeriesDist(size_t nBins) :
-            KTPhysicalArray< 1, uint32_t >(nBins)
+            KTPhysicalArray< 1, double >(nBins)
     {
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
@@ -25,7 +25,7 @@ namespace Katydid
         }
     }
     KTTimeSeriesDist::KTTimeSeriesDist(const KTTimeSeriesDist& orig) :
-            KTPhysicalArray< 1, uint32_t >(orig)
+            KTPhysicalArray< 1, double >(orig)
     {
     }
 
@@ -35,7 +35,7 @@ namespace Katydid
 
     KTTimeSeriesDist& KTTimeSeriesDist::operator=(const KTTimeSeriesDist& rhs)
     {
-        KTPhysicalArray< 1, uint32_t >::operator=(rhs);
+        KTPhysicalArray< 1, double >::operator=(rhs);
         return *this;
     }
 

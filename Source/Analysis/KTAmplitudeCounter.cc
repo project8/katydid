@@ -26,14 +26,9 @@ namespace Katydid
 
     KTAmplitudeCounter::KTAmplitudeCounter(const std::string& name) :
             KTProcessor(name),
-            // initialize all member variables
             fNumberOfBins(256),
-            // initialize signals:
             fTSDistSignal("ts-dist", this),
-            // initialize slots:
-            // fHeaderSlot("header", this, &KTAmplitudeCounter::[function to call with header]),
             fTSSlot("raw-ts", this, &KTAmplitudeCounter::AddData, &fTSDistSignal)
-            // f[SomeName]Slot("[slot-name]", this, &KTAmplitudeCounter::[function to call], &f[SomeName]Signal)
     {
     }
 
@@ -43,14 +38,12 @@ namespace Katydid
 
     bool KTAmplitudeCounter::Configure(const KTPStoreNode* node)
     {
-        // Configure parameters
         if (node != NULL)
         {
             SetNumberOfBins(node->GetData<unsigned>("num-bins", fNumberOfBins));
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     // All the normal stuff goes here

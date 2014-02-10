@@ -20,9 +20,6 @@
 
 namespace Katydid
 {
-    // Forward declare whatever classes you can
-    // input data type . . .
-    // output data type . . .
     class KTEggHeader;
     class KTPStoreNode;
 
@@ -44,8 +41,8 @@ namespace Katydid
      - "raw-ts": void (KTDataPtr) -- Converts a raw time series to a value distribution; Requires KTRawTimeSeriesData; Adds KTTimeSeriesDist; Emits signal "ts-dist"
 
      Signals:
-     - "ts-dist": void (shared_ptr<KTData>) -- Emitted upon [whatever was done]; Guarantees KTTimeSeriesDistData
-    */
+     - "ts-dist": void (KTDataPtr) -- Emitted upon calculation of a time-series distribution; Guarantees KTTimeSeriesDistData
+     */
 
     class KTAmplitudeCounter : public KTProcessor
     {
@@ -55,43 +52,34 @@ namespace Katydid
 
             bool Configure(const KTPStoreNode* node);
 
-            // Getters and setters for configurable parameters go here
             unsigned GetNumberOfBins() const;
             void SetNumberOfBins(unsigned nbins);
+
         private:
-            // configurable member parameters go here
             unsigned fNumberOfBins;
 
         public:
-            // Functions to do the job of the processor go here
-            // These allow the processor to be used on data objects manually
             bool AddData(KTRawTimeSeriesData& data);
+
             bool CountTimeSeries(KTTimeSeriesDist* tsdist, const KTRawTimeSeries* ts);
 
 
-        private:
-            // Perhaps there are some non-public helper functions?
-
-            // And then any non-configurable member variables
-
-        //***************
-        // Signals
-        //***************
+            //***************
+            // Signals
+            //***************
 
         private:
             KTSignalData fTSDistSignal;
 
-        //***************
-        // Slots
-        //***************
+            //***************
+            // Slots
+            //***************
 
         private:
-            //KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
-            //KTSlotOneArg< void (const KTRawTimeSeriesData*) > fTSSlot;
             KTSlotDataOneType< KTRawTimeSeriesData > fTSSlot;
 
     };
-    
+
     inline unsigned KTAmplitudeCounter::GetNumberOfBins() const
     {
         return fNumberOfBins;

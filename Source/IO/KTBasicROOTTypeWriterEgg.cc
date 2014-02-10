@@ -153,7 +153,6 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterEgg::WriteTimeSeriesDataDistribution(KTDataPtr data)
     {
-        KTINFO(publog, "starting a write .... ");
         if (! data) return;
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
@@ -172,11 +171,9 @@ namespace Katydid
                 conv << "histTSDist_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
-                //TH1I* amplitudeSpectrum = distribution->CreateHistogram(histName);
                 TH1I* amplitudeSpectrum = KT2ROOT::CreateHistogram(distribution, histName);
                 amplitudeSpectrum->SetDirectory(fWriter->GetFile());
                 amplitudeSpectrum->Write();
-                KTINFO(publog, "dist hist written");
                 KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
             }
         }
