@@ -17,7 +17,9 @@
 #include "MonarchException.hpp"
 #include "MonarchHeader.hpp"
 
-
+using monarch::Monarch;
+using monarch::MonarchHeader;
+using monarch::MonarchException;
 
 using std::map;
 using std::string;

@@ -24,8 +24,11 @@
 #define SEC_PER_NSEC 1.e-9
 #endif
 
-class Monarch;
-class MonarchHeader;
+namespace monarch
+{
+    class Monarch;
+    class MonarchHeader;
+}
 
 namespace Katydid
 {
@@ -33,7 +36,7 @@ namespace Katydid
     class KTEggReaderMonarch : public KTEggReader
     {
         protected:
-            typedef const MonarchRecord* (Monarch::*GetRecordFunction)() const;
+            typedef const monarch::MonarchRecord* (monarch::Monarch::*GetRecordFunction)() const;
             typedef double (KTEggReaderMonarch::*GetTIRFunction)() const;
 
             typedef std::map< unsigned, int > AcquisitionModeMap;
@@ -48,7 +51,7 @@ namespace Katydid
                     kContinueReading,
                     kReachedNextRecord
                 };
-                AcquisitionIdType fAcquisitionID;
+                monarch::AcquisitionIdType fAcquisitionID;
                 unsigned fReadPtrOffset; // sample offset of the read pointer in the current record
                 unsigned fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
                 unsigned fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
@@ -94,9 +97,9 @@ namespace Katydid
 
         private:
             /// Copy header information from the MonarchHeader object
-            void CopyHeaderInformation(const MonarchHeader* monarchHeader);
+            void CopyHeaderInformation(const monarch::MonarchHeader* monarchHeader);
 
-            const Monarch* fMonarch;
+            const monarch::Monarch* fMonarch;
             KTEggHeader fHeader;
             MonarchReadState fReadState;
 
