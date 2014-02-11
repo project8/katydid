@@ -45,7 +45,7 @@ namespace Katydid
     bool KTCorrelator::Configure(const KTPStoreNode* node)
     {
         KTPStoreNode::csi_pair itPair = node->EqualRange("corr-pair");
-        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
+        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; ++citer)
         {
             UIntPair pair = ParsePairUInt(citer->second.get_value< string >());
             KTINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
@@ -82,7 +82,7 @@ namespace Katydid
     bool KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData)
     {
         unsigned iPair = 0;
-        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
+        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); ++iter)
         {
             unsigned firstChannel = (*iter).first;
             unsigned secondChannel = (*iter).second;
@@ -106,7 +106,7 @@ namespace Katydid
     bool KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData)
     {
         unsigned iPair = 0;
-        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
+        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); ++iter)
         {
             unsigned firstChannel = (*iter).first;
             unsigned secondChannel = (*iter).second;
