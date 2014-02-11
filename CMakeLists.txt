@@ -198,6 +198,7 @@ include_directories (
     ${PROJECT_SOURCE_DIR}/Source/Core
     ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Data/Candidates
+    ${PROJECT_SOURCE_DIR}/Source/Data/Conversions
     ${PROJECT_SOURCE_DIR}/Source/Data/Egg
     ${PROJECT_SOURCE_DIR}/Source/Data/FFT
     ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation

@@ -22,7 +22,7 @@ namespace Katydid
     static KTNORegistrar< KTProcessor, KTProcessorTemplate > sProcTempRegistrar("[config-name]");
 
     KTProcessorTemplate::KTProcessorTemplate(const std::string& name) :
-            KTProcessor(name),
+            KTProcessor(name)
             // initialize all member variables
             // initialize signals:
             // f[SomeName]Signal("[signal-name]", this)

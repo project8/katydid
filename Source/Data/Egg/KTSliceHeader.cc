@@ -15,6 +15,7 @@ namespace Katydid
             KTExtensibleData< KTSliceHeader >(),
             fTimeInRun(0.),
             fSliceNumber(0),
+            fNSlicesIncluded(1),
             fIsNewAcquisition(true),
             fSliceSize(1),
             fSliceLength(0.),
@@ -35,6 +36,7 @@ namespace Katydid
             KTExtensibleData< KTSliceHeader >(orig),
             fTimeInRun(orig.fTimeInRun),
             fSliceNumber(orig.fSliceNumber),
+            fNSlicesIncluded(orig.fNSlicesIncluded),
             fIsNewAcquisition(orig.fIsNewAcquisition),
             fSliceSize(orig.fSliceSize),
             fSliceLength(orig.fSliceLength),
@@ -67,6 +69,7 @@ namespace Katydid
         fIsNewAcquisition = rhs.fIsNewAcquisition;
         fTimeInRun = rhs.fTimeInRun;
         fSliceNumber = rhs.fSliceNumber;
+        fNSlicesIncluded = rhs.fNSlicesIncluded;
         fSliceSize = rhs.fSliceSize;
         fSliceLength = rhs.fSliceLength;
         fNonOverlapFrac = rhs.fNonOverlapFrac;
@@ -86,6 +89,7 @@ namespace Katydid
     {
         out << "Slice Header Contents:\n" <<
                 "\tSlice number: " << hdr.GetSliceNumber() << '\n' <<
+                "\tIncludes " << hdr.GetNSlicesIncluded() << " slices\n" <<
                 "\tSlice size: " << hdr.GetSliceSize() << '\n' <<
                 "\tSlice Length: " << hdr.GetSliceLength() << " s\n" <<
                 "\tNon-Overlap Fraction: " << hdr.GetNonOverlapFrac() << '\n' <<

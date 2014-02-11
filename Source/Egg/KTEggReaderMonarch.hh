@@ -57,20 +57,10 @@ namespace Katydid
             };
 
         public:
-            enum TimeSeriesType
-            {
-                kRealTimeSeries,
-                kFFTWTimeSeries
-            };
-
-        public:
             KTEggReaderMonarch();
             virtual ~KTEggReaderMonarch();
 
         public:
-            TimeSeriesType GetTimeSeriesType() const;
-            void SetTimeSeriesType(TimeSeriesType type);
-
             unsigned GetSliceSize() const;
             void SetSliceSize(unsigned size);
 
@@ -78,7 +68,6 @@ namespace Katydid
             void SetStride(unsigned stride);
 
         protected:
-            TimeSeriesType fTimeSeriesType;
             unsigned fSliceSize;
             unsigned fStride;
 
@@ -141,17 +130,6 @@ namespace Katydid
             uint64_t fSliceNumber;
 
     };
-
-    inline KTEggReaderMonarch::TimeSeriesType KTEggReaderMonarch::GetTimeSeriesType() const
-    {
-        return fTimeSeriesType;
-    }
-
-    inline void KTEggReaderMonarch::SetTimeSeriesType(TimeSeriesType type)
-    {
-        fTimeSeriesType = type;
-        return;
-    }
 
     inline unsigned KTEggReaderMonarch::GetSliceSize() const
     {

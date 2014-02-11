@@ -9,9 +9,8 @@
 
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
-#include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesFFTW.hh"
-#include "KTTimeSeriesReal.hh"
+#include "KTRawTimeSeriesData.hh"
+#include "KTRawTimeSeries.hh"
 
 #include "Monarch.hpp"
 #include "MonarchException.hpp"
@@ -35,7 +34,6 @@ namespace Katydid
 
     KTEggReaderMonarch::KTEggReaderMonarch() :
             KTEggReader(),
-            fTimeSeriesType(kRealTimeSeries),
             fSliceSize(1024),
             fStride(0),
             fMonarch(NULL),
@@ -255,7 +253,7 @@ namespace Katydid
         // Setup pointers to monarch and new katydid records
         unsigned nChannels = fHeader.GetNChannels();
         vector< const MonarchRecord* > monarchRecords(nChannels);
-        vector< KTTimeSeries* > newRecords(nChannels);
+        vector< KTRawTimeSeries* > newRecords(nChannels);
         for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
             monarchRecords[iChannel] = (fMonarch->*fMonarchGetRecord[iChannel])();
@@ -264,16 +262,7 @@ namespace Katydid
             sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTime, iChannel);
 
             //tsData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
-            KTTimeSeries* newRecord;
-            if (fTimeSeriesType == kRealTimeSeries)
-            {
-                newRecord = new KTTimeSeriesReal(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
-            }
-            else
-            {
-                newRecord = new KTTimeSeriesFFTW(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
-            }
-            newRecords[iChannel] = newRecord;
+            newRecords[iChannel] = new KTRawTimeSeries(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
         }
 
         KTDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
@@ -353,7 +342,7 @@ namespace Katydid
             for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
             {
                 // set the data
-                newRecords[iChannel]->SetValue(iBin, double(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]));
+                (*newRecords[iChannel])(iBin) = monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset];
             }
 
             // advance the pointer for the next bin
@@ -372,7 +361,7 @@ namespace Katydid
 
 
         // finally, set the records in the new data object
-        KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nChannels);
+        KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(nChannels);
         for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
             tsData.SetTimeSeries(newRecords[iChannel], iChannel);

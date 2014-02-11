@@ -30,7 +30,7 @@
 	    "connection":
 	    {
 		"signal-processor": "noise-egg",
-		"signal-name": "slice",
+		"signal-name": "ts",
 		"slot-processor": "nrq-est",
 		"slot-name": "noise-ts"
 	    },
@@ -38,7 +38,7 @@
 	    "connection":
 	    {
 		"signal-processor": "candidate-egg",
-		"signal-name": "slice",
+		"signal-name": "ts§",
 		"slot-processor": "nrq-est",
 		"slot-name": "candidate-ts"
 	    },
