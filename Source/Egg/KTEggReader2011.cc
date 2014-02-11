@@ -10,8 +10,8 @@
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
-#include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesReal.hh"
+#include "KTRawTimeSeriesData.hh"
+#include "KTRawTimeSeries.hh"
 
 #include "rapidxml.hpp"
 //#include "rapidxml_print.hpp"
@@ -321,14 +321,13 @@ namespace Katydid
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
+            KTRawTimeSeries* newRecord = new KTRawTimeSeries(fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
             for (int iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
-                //(*newRecord)(iBin) = double(readBuffer[iBin]);
-                newRecord->SetValue(iBin, double(readBuffer[iBin]));
+                (*newRecord)(iBin) = readBuffer[iBin];
             }
             delete [] readBuffer;
-            KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(1);
+            KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(1);
             tsData.SetTimeSeries(newRecord);
             fRecordsRead++;
         }

@@ -13,6 +13,7 @@ set (UTILITY_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties_GetNBins.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTConcurrentQueue.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTCountHistogram.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCutable.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCutableArray.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDestroyer.hh
@@ -36,6 +37,7 @@ set (UTILITY_HEADER_SUBDIRS
 set (UTILITY_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar/specialization.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTCountHistogram.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTECDF.cc

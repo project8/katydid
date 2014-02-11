@@ -2,6 +2,7 @@
 # Author: N. Oblath
 
 set (ANALYSIS_HEADERFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTAmplitudeCounter.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAmplitudeDistributor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataAccumulator.hh
@@ -14,6 +15,7 @@ set (ANALYSIS_HEADERFILES
 )
 
 set (ANALYSIS_SOURCEFILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTAmplitudeCounter.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTAmplitudeDistributor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCorrelator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataAccumulator.cc
