@@ -252,18 +252,18 @@ namespace Katydid {
 
 // PRIVATE MACROS
 
-#define __KTDEFAULT_LOGGER        Katydid::KTLogger::GetRootLogger()
+#define __KTDEFAULT_LOGGER        ::Katydid::KTLogger::GetRootLogger()
 
-#define __KTLOG_LOCATION         Katydid::KTLogger::Location(__FILE__, __FUNC__, __LINE__)
+#define __KTLOG_LOCATION         ::Katydid::KTLogger::Location(__FILE__, __FUNC__, __LINE__)
 
 #define __KTLOG_LOG_4(I,L,M,O) \
         { \
-    if (I.IsLevelEnabled(Katydid::KTLogger::e##L)) { \
+    if (I.IsLevelEnabled(::Katydid::KTLogger::e##L)) { \
         static bool _sLoggerMarker = false; \
         if (!O || !_sLoggerMarker) { \
             _sLoggerMarker = true; \
-            std::ostringstream stream; stream << M; \
-            I.Log(Katydid::KTLogger::e##L, stream.str(), __KTLOG_LOCATION); \
+            ::std::ostringstream stream; stream << M; \
+            I.Log(::Katydid::KTLogger::e##L, stream.str(), __KTLOG_LOCATION); \
         } \
     } \
         }
@@ -325,7 +325,7 @@ namespace Katydid {
 
 // PUBLIC MACROS
 
-#define KTLOGGER(I,K)      static Katydid::KTLogger I(K);
+#define KTLOGGER(I,K)      static ::Katydid::KTLogger I(K);
 
 #define KTLOG(...)         macro_dispatcher(__KTLOG_LOG_, __VA_ARGS__)(__VA_ARGS__)
 #define KTTRACE(...)       macro_dispatcher(__KTLOG_TRACE_, __VA_ARGS__)(__VA_ARGS__)
