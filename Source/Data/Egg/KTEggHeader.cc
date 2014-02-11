@@ -24,9 +24,10 @@ namespace Katydid
             fAcquisitionRate(0),
             fTimestamp(),
             fDescription(),
-            fRunType(sRunTypeOther),
-            fRunSource(sSourceMantis),
-            fFormatMode(sFormatSingle)
+            fRunType(monarch::sRunTypeOther),
+            fRunSource(monarch::sSourceMantis),
+            fFormatMode(monarch::sFormatSingle),
+            fDataTypeSize(1)
     {
     }
 
@@ -42,7 +43,8 @@ namespace Katydid
             fDescription(orig.fDescription),
             fRunType(orig.fRunType),
             fRunSource(orig.fRunSource),
-            fFormatMode(orig.fFormatMode)
+            fFormatMode(orig.fFormatMode),
+            fDataTypeSize(orig.fDataTypeSize)
     {
     }
 
@@ -64,6 +66,7 @@ namespace Katydid
         fRunType = rhs.fRunType;
         fRunSource = rhs.fRunSource;
         fFormatMode = rhs.fFormatMode;
+        fDataTypeSize = rhs.fDataTypeSize;
         return *this;
     }
 
@@ -81,7 +84,8 @@ namespace Katydid
                 << "\tDescription: " << header.GetDescription() << '\n'
                 << "\tRun Type: " << header.GetRunType() << '\n'
                 << "\tRun Source: " << header.GetRunSource() << '\n'
-                << "\tFormat Mode: " << header.GetFormatMode();
+                << "\tFormat Mode: " << header.GetFormatMode() << '\n'
+                << "\tData Type Size: " << header.GetDataTypeSize();
         return out;
     }
 

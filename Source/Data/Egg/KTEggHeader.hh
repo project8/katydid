@@ -51,14 +51,17 @@ namespace Katydid
             void SetDescription( const std::string& aDescription );
             const std::string& GetDescription() const;
 
-            void SetRunType( RunType aRunType );
-            RunType GetRunType() const;
+            void SetRunType( monarch::RunType aRunType );
+            monarch::RunType GetRunType() const;
 
-            void SetRunSource( RunSourceType aRunSource );
-            RunSourceType GetRunSource() const;
+            void SetRunSource( monarch::RunSourceType aRunSource );
+            monarch::RunSourceType GetRunSource() const;
 
-            void SetFormatMode( FormatModeType aFormatMode );
-            FormatModeType GetFormatMode() const;
+            void SetFormatMode( monarch::FormatModeType aFormatMode );
+            monarch::FormatModeType GetFormatMode() const;
+
+            void SetDataTypeSize(unsigned aSize);
+            unsigned GetDataTypeSize() const;
 
         protected:
             std::string fFilename;
@@ -70,9 +73,10 @@ namespace Katydid
             double fAcquisitionRate; /// in Hz
             std::string fTimestamp;
             std::string fDescription;
-            RunType fRunType;
-            RunSourceType fRunSource;
-            FormatModeType fFormatMode;
+            monarch::RunType fRunType;
+            monarch::RunSourceType fRunSource;
+            monarch::FormatModeType fFormatMode;
+            unsigned fDataTypeSize; /// in bytes
 
     };
 
@@ -177,40 +181,49 @@ namespace Katydid
         return fDescription;
     }
 
-    inline void KTEggHeader::SetRunType( RunType aRunType )
+    inline void KTEggHeader::SetRunType( monarch::RunType aRunType )
     {
         fRunType = aRunType;
         return;
     }
 
-    inline RunType KTEggHeader::GetRunType() const
+    inline monarch::RunType KTEggHeader::GetRunType() const
     {
         return fRunType;
     }
 
-    inline void KTEggHeader::SetRunSource( RunSourceType aRunSource )
+    inline void KTEggHeader::SetRunSource( monarch::RunSourceType aRunSource )
     {
         fRunSource = aRunSource;
         return;
     }
 
-    inline RunSourceType KTEggHeader::GetRunSource() const
+    inline monarch::RunSourceType KTEggHeader::GetRunSource() const
     {
         return fRunSource;
     }
 
-    inline void KTEggHeader::SetFormatMode( FormatModeType aFormatMode )
+    inline void KTEggHeader::SetFormatMode( monarch::FormatModeType aFormatMode )
     {
         fFormatMode = aFormatMode;
         return;
     }
 
-    inline FormatModeType KTEggHeader::GetFormatMode() const
+    inline monarch::FormatModeType KTEggHeader::GetFormatMode() const
     {
         return fFormatMode;
     }
 
+    inline void KTEggHeader::SetDataTypeSize(unsigned aSize)
+    {
+        fDataTypeSize = aSize;
+        return;
+    }
 
+    inline unsigned KTEggHeader::GetDataTypeSize() const
+    {
+        return fDataTypeSize;
+    }
 
 } /* namespace Katydid */
 #endif /* KTEGGHEADER_HH_ */
