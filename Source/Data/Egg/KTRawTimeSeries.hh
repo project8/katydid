@@ -15,7 +15,7 @@
 namespace Katydid
 {
 
-    class KTRawTimeSeries :public KTPhysicalArray< 1, uint16_t >
+    class KTRawTimeSeries :public KTPhysicalArray< 1, uint64_t >
     {
         public:
             KTRawTimeSeries();

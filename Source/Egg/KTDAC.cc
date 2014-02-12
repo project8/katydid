@@ -123,9 +123,9 @@ namespace Katydid
 
 
         fVoltages.resize(nVoltages);
-        for (unsigned level = 0; level < nVoltages; ++level)
+        for (uint64_t level = 0; level < nVoltages; ++level)
         {
-            fVoltages[level] = dd2a((data_type)level / levelDivisor, &params);
+            fVoltages[level] = dd2a(level / levelDivisor, &params);
         }
 
         fShouldRunInitialize = false;

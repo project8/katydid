@@ -36,7 +36,7 @@ namespace Katydid
     class KTEggReaderMonarch : public KTEggReader
     {
         protected:
-            typedef const monarch::MonarchRecord* (monarch::Monarch::*GetRecordFunction)() const;
+            typedef const monarch::MonarchRecordBytes* (monarch::Monarch::*GetRecordFunction)() const;
             typedef double (KTEggReaderMonarch::*GetTIRFunction)() const;
 
             typedef std::map< unsigned, int > AcquisitionModeMap;

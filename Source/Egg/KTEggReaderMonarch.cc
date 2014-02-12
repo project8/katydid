@@ -19,6 +19,8 @@
 using monarch::Monarch;
 using monarch::MonarchHeader;
 using monarch::MonarchException;
+using monarch::MonarchRecordBytes;
+using monarch::MonarchRecordDataInterface;
 
 using std::map;
 using std::string;
@@ -111,19 +113,9 @@ namespace Katydid
         CopyHeaderInformation(fMonarch->GetHeader());
         fHeader.SetSliceSize(fSliceSize);
 
-        KTDEBUG(eggreadlog, "Parsed header:\n"
-             << "\tFilename: " << fHeader.GetFilename() << '\n'
-             << "\tAcquisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
-             << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'
-             << "\tSlice Size: " << fHeader.GetSliceSize() << '\n'
-             << "\tRecord Size: " << fHeader.GetRecordSize() << '\n'
-             << "\tRun Duration: " << fHeader.GetRunDuration() << " ms" << '\n'
-             << "\tAcquisition Rate: " << fHeader.GetAcquisitionRate() << " Hz \n"
-             << "\tTimestamp: " << fHeader.GetTimestamp() << '\n'
-             << "\tDescription: " << fHeader.GetDescription() << '\n'
-             << "\tRun Type: " << fHeader.GetRunType() << '\n'
-             << "\tRun Source: " << fHeader.GetRunSource() << '\n'
-             << "\tFormat Mode: " << fHeader.GetFormatMode());
+        stringstream headerBuff;
+        headerBuff << fHeader;
+        KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
 
 
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
@@ -135,7 +127,7 @@ namespace Katydid
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
         // force monarch to use Separate interface
-        fMonarch->SetInterface(sInterfaceSeparate);
+        fMonarch->SetInterface(monarch::sInterfaceSeparate);
 
         fSliceNumber = 0;
 
@@ -254,7 +246,8 @@ namespace Katydid
 
         // Setup pointers to monarch and new katydid records
         unsigned nChannels = fHeader.GetNChannels();
-        vector< const MonarchRecord* > monarchRecords(nChannels);
+        vector< const MonarchRecordBytes* > monarchRecords(nChannels);
+        vector< const MonarchRecordDataInterface< uint64_t >* > monarchRecordData(nChannels);
         vector< KTRawTimeSeries* > newRecords(nChannels);
         for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
@@ -262,6 +255,7 @@ namespace Katydid
             sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
             sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
             sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTime, iChannel);
+            monarchRecordData[iChannel] = new MonarchRecordDataInterface< uint64_t >(monarchRecords[iChannel]->fData, fHeader.GetDataTypeSize());
 
             //tsData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
             newRecords[iChannel] = new KTRawTimeSeries(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
@@ -401,6 +395,7 @@ namespace Katydid
         fHeader.SetRunType(monarchHeader->GetRunType());
         fHeader.SetRunSource(monarchHeader->GetRunSource());
         fHeader.SetFormatMode(monarchHeader->GetFormatMode());
+        fHeader.SetDataTypeSize(monarchHeader->GetDataTypeSize());
         return;
     }
 

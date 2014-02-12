@@ -219,8 +219,8 @@ namespace Katydid
         // timestamp
         // description
         // run type
-        eggHeader->SetRunSource(sSourceMantis);
-        eggHeader->SetFormatMode(sFormatSingle);
+        eggHeader->SetRunSource(monarch::sSourceMantis);
+        eggHeader->SetFormatMode(monarch::sFormatSingle);
 
         return eggHeader;
     }
