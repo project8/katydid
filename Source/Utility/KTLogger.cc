@@ -15,7 +15,6 @@
 
 #include "KTLogger.hh"
 
-#include "log4cxx/KTLevel.hh"
 
 
 #include <cstdlib>
@@ -34,6 +33,7 @@ static const string skOtherColor = COLOR_PREFIX COLOR_BRIGHT COLOR_SEPARATOR COL
 
 
 #if defined(LOG4CXX_FOUND)
+#include "log4cxx/KTLevel.hh"
 
 /*
  * Default implementation for systems with the 'log4cxx' library installed.
