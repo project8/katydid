@@ -44,8 +44,7 @@ namespace Katydid
             fTSDistFinishedSignal("ts-dist-finished", this),
             fFSPolarFinishedSignal("fs-polar-finished", this),
             fFSFFTWFinishedSignal("fs-fftw-finished", this),
-            fSignalMap(),
-            fFinishAccumulationSlot("finish", this, &KTDataAccumulator::CallAllSlots)
+            fSignalMap()
     {
         RegisterSlot("ts", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesData >);
         RegisterSlot("ts-dist", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesDistData >);
@@ -351,19 +350,5 @@ namespace Katydid
 
         return true;
     }
-
-    void KTDataAccumulator::CallAllSlots()
-    {
-        for (AccumulatorMapIt accIt = fDataMap.begin(); accIt != fDataMap.end(); ++accIt)
-        {
-            SignalMapIt sigIt = fSignalMap.find(accIt->first);
-            if (sigIt != fSignalMap.end())
-            {
-                (*sigIt->second.fFinishedSignal)(accIt->second.fData);
-            }
-        }
-        return;
-    }
-
 
 } /* namespace Katydid */

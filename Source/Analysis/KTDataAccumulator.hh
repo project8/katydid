@@ -50,7 +50,6 @@ namespace Katydid
      - "ts-dist": void (KTDataPtr) -- add to the ts-dist sum; Requires KTTimeSeriesDistData; Emits signal "ts-dist"
      - "fs-polar": void (KTDataPtr) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
      - "fs-fftw": void (KTDataPtr) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
-     - "finish": void () -- call all slots for which data has accumulated
 
      Signals:
      - "ts": void (KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
@@ -178,12 +177,8 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotNoArg< void () > fFinishAccumulationSlot;
-
             template< class XDataType >
-            void SlotFunction(boost::shared_ptr< KTData > data);
-
-            void CallAllSlots();
+            void SlotFunction(KTDataPtr data);
 
     };
 
@@ -235,7 +230,7 @@ namespace Katydid
     }
 
     template< class XDataType >
-    void KTDataAccumulator::SlotFunction(boost::shared_ptr< KTData > data)
+    void KTDataAccumulator::SlotFunction(KTDataPtr data)
     {
         // Standard data slot pattern:
         // Check to ensure that the required data type is present
@@ -260,6 +255,10 @@ namespace Katydid
             {
                 (*sigIt->second.fAccumulatingSignal)(fLastAccumulatorPtr->fData);
                 sigIt->second.fSignalCount = 0;
+            }
+            if (data->fLastData)
+            {
+                (*sigIt->second.fFinishedSignal)(fLastAccumulatorPtr->fData);
             }
         }
         return;
