@@ -110,7 +110,7 @@ namespace Katydid
             KTTimeSeries* ConvertToFFTWOversampled(KTRawTimeSeries* ts);
             KTTimeSeries* ConvertToRealOversampled(KTRawTimeSeries* ts);
 
-            double Convert(uint16_t level);
+            double Convert(uint64_t level);
 
         private:
             bool fShouldRunInitialize;
@@ -186,7 +186,7 @@ namespace Katydid
         return fEmulatedNBits;
     }
 
-    inline double KTDAC::Convert(uint16_t level)
+    inline double KTDAC::Convert(uint64_t level)
     {
         return fVoltages[level];
     }
