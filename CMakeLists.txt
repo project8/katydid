@@ -187,7 +187,7 @@ else (Katydid_USE_MONARCH)
     add_subdirectory(Source/Egg/Monarch EXCLUDE_FROM_ALL)
     remove_definitions(-DUSE_MONARCH)
 endif (Katydid_USE_MONARCH)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Include)
+include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Source)
 include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
 include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
 

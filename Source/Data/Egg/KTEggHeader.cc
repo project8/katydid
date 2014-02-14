@@ -24,9 +24,13 @@ namespace Katydid
             fAcquisitionRate(0),
             fTimestamp(),
             fDescription(),
-            fRunType(sRunTypeOther),
-            fRunSource(sSourceMantis),
-            fFormatMode(sFormatSingle)
+            fRunType(monarch::sRunTypeOther),
+            fRunSource(monarch::sSourceMantis),
+            fFormatMode(monarch::sFormatSingle),
+            fDataTypeSize(1),
+            fBitDepth(8),
+            fVoltageMin(-0.25),
+            fVoltageRange(0.5)
     {
     }
 
@@ -42,7 +46,11 @@ namespace Katydid
             fDescription(orig.fDescription),
             fRunType(orig.fRunType),
             fRunSource(orig.fRunSource),
-            fFormatMode(orig.fFormatMode)
+            fFormatMode(orig.fFormatMode),
+            fDataTypeSize(orig.fDataTypeSize),
+            fBitDepth(orig.fBitDepth),
+            fVoltageMin(orig.fVoltageMin),
+            fVoltageRange(orig.fVoltageRange)
     {
     }
 
@@ -64,6 +72,10 @@ namespace Katydid
         fRunType = rhs.fRunType;
         fRunSource = rhs.fRunSource;
         fFormatMode = rhs.fFormatMode;
+        fDataTypeSize = rhs.fDataTypeSize;
+        fBitDepth = rhs.fBitDepth;
+        fVoltageMin = rhs.fVoltageMin;
+        fVoltageRange = rhs.fVoltageRange;
         return *this;
     }
 
@@ -76,12 +88,16 @@ namespace Katydid
                 << "\tSlice Size: " << header.GetSliceSize() << '\n'
                 << "\tRecord Size: " << header.GetRecordSize() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " s\n"
-                << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz \n"
+                << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz\n"
                 << "\tTimestamp: " << header.GetTimestamp() << '\n'
                 << "\tDescription: " << header.GetDescription() << '\n'
                 << "\tRun Type: " << header.GetRunType() << '\n'
                 << "\tRun Source: " << header.GetRunSource() << '\n'
-                << "\tFormat Mode: " << header.GetFormatMode();
+                << "\tFormat Mode: " << header.GetFormatMode() << '\n'
+                << "\tData Type Size: " << header.GetDataTypeSize() << " Byte(s)\n"
+                << "\tBit Depth: " << header.GetBitDepth() << " bits\n"
+                << "\tVoltage Min: " << header.GetVoltageMin() << " V\n"
+                << "\tVoltage Range: " << header.GetVoltageRange() << " V";
         return out;
     }
 

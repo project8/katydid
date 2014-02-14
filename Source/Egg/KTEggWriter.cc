@@ -21,6 +21,10 @@
 
 #include <cmath>
 
+using monarch::Monarch;
+using monarch::MonarchException;
+using monarch::MonarchHeader;
+
 using std::string;
 
 namespace Katydid
@@ -34,7 +38,7 @@ namespace Katydid
     KTEggWriter::KTEggWriter(const std::string& name) :
             KTWriter(name),
             fFilename("output.egg"),
-            fFormatMode(sFormatMultiInterleaved),
+            fFormatMode(monarch::sFormatMultiInterleaved),
             fDigitizerFullscale(1.),
             fFileStatus(kClosed),
             fExpectedNChannels(2),
@@ -164,7 +168,7 @@ namespace Katydid
         monarchHeader->SetRunSource(header->GetRunSource());
         if (fExpectedNChannels == 1)
         {
-            monarchHeader->SetFormatMode(sFormatSingle);
+            monarchHeader->SetFormatMode(monarch::sFormatSingle);
         }
         else
         {
@@ -213,7 +217,7 @@ namespace Katydid
             return false;
         }
 
-        fMonarch->SetInterface(sInterfaceSeparate);
+        fMonarch->SetInterface(monarch::sInterfaceSeparate);
 
         CopyATimeSeries(0, slHeader, tsData, fMonarch->GetRecordSeparateOne());
 

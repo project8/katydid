@@ -157,7 +157,7 @@ namespace Katydid
         newHeader->SetAcquisitionRate(1. / fBinWidth);
         //newHeader->SetDescription();
         //newHeader->SetRunType();
-        newHeader->SetRunSource(sSourceSimulation);
+        newHeader->SetRunSource(monarch::sSourceSimulation);
         //newHeader->SetFormatMode();
 
         newHeader->SetTimestamp(get_absolute_time_string());
@@ -188,7 +188,7 @@ namespace Katydid
 
         for (unsigned iComponent = 0; iComponent < fNChannels; ++iComponent)
         {
-            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetTimeStamp((monarch::TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
             sliceHeader.SetRecordID(0);
         }

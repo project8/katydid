@@ -19,8 +19,6 @@
 
 #include <string>
 
-#include <time.h>
-
 
 namespace Katydid
 {
@@ -100,11 +98,6 @@ namespace Katydid
             timespec fTimeEnd;
 
             unsigned fNDataProcessed;
-
-//#ifdef __MACH__
-            double fMacTimebase;
-            uint64_t fMacTimestart;
-//#endif
 
     };
 
