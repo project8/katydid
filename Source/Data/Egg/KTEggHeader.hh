@@ -63,6 +63,15 @@ namespace Katydid
             void SetDataTypeSize(unsigned aSize);
             unsigned GetDataTypeSize() const;
 
+            void SetBitDepth(unsigned aBD);
+            unsigned GetBitDepth() const;
+
+            void SetVoltageMin(double aVoltage);
+            double GetVoltageMin() const;
+
+            void SetVoltageRange(double aVoltage);
+            double GetVoltageRange() const;
+
         protected:
             std::string fFilename;
             unsigned fAcquisitionMode;
@@ -77,6 +86,9 @@ namespace Katydid
             monarch::RunSourceType fRunSource;
             monarch::FormatModeType fFormatMode;
             unsigned fDataTypeSize; /// in bytes
+            unsigned fBitDepth; /// in bits
+            double fVoltageMin; /// in V
+            double fVoltageRange; /// in V
 
     };
 
@@ -224,6 +236,40 @@ namespace Katydid
     {
         return fDataTypeSize;
     }
+
+    inline void KTEggHeader::SetBitDepth(unsigned aBD)
+    {
+        fBitDepth = aBD;
+        return;
+    }
+
+    inline unsigned KTEggHeader::GetBitDepth() const
+    {
+        return fBitDepth;
+    }
+
+    inline void KTEggHeader::SetVoltageMin(double aVoltage)
+    {
+        fVoltageMin = aVoltage;
+        return;
+    }
+
+    inline double KTEggHeader::GetVoltageMin() const
+    {
+        return fVoltageMin;
+    }
+
+    inline void KTEggHeader::SetVoltageRange(double aVoltage)
+    {
+        fVoltageRange = aVoltage;
+        return;
+    }
+
+    inline double KTEggHeader::GetVoltageRange() const
+    {
+        return fVoltageRange;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTEGGHEADER_HH_ */

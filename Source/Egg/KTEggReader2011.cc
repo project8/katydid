@@ -221,6 +221,10 @@ namespace Katydid
         // run type
         eggHeader->SetRunSource(monarch::sSourceMantis);
         eggHeader->SetFormatMode(monarch::sFormatSingle);
+        eggHeader->SetDataTypeSize(1);
+        eggHeader->SetBitDepth(8);
+        eggHeader->SetVoltageMin(-0.25);
+        eggHeader->SetVoltageRange(0.5);
 
         return eggHeader;
     }
