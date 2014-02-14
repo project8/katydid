@@ -156,6 +156,12 @@ namespace Katydid
             return false;
         }
 
+        // pass the digitizer parameters from the egg header to the DAC
+        fDAC->SetNBits(header->GetBitDepth());
+        fDAC->SetMinVoltage(header->GetVoltageMin());
+        fDAC->SetVoltageRange(header->GetVoltageRange());
+        fDAC->Initialize();
+
         fHeaderSignal(header);
 
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");

@@ -145,6 +145,7 @@ namespace Katydid
     inline void KTDAC::SetNBits(unsigned nBits)
     {
         fNBits = nBits;
+        fShouldRunInitialize = true;
         return;
     }
 
@@ -155,6 +156,7 @@ namespace Katydid
     inline void KTDAC::SetMinVoltage(double volts)
     {
         fMinVoltage = volts;
+        fShouldRunInitialize = true;
         return;
     }
 
@@ -165,6 +167,7 @@ namespace Katydid
     inline void KTDAC::SetVoltageRange(double volts)
     {
         fVoltageRange = volts;
+        fShouldRunInitialize = true;
         return;
     }
 
