@@ -47,13 +47,13 @@ namespace Katydid
 
             bool GetLinearityFlag() const;
             void SetLinearityFlag(bool flat);
-            double GetFracMaxDiff(unsigned component = 0) const;
-            double GetChiSquared(unsigned component = 0) const;
-            size_t GetFitStart(unsigned componenet = 0) const;
-            size_t GetFitEnd(unsigned component = 0) const;
-            double GetRegSlope(unsigned component = 0) const;
-            double GetRegIntercept(unsigned component = 0) const;
-            void SetLinearityData(double fracMaxDiff, double chiSquared, size_t fitStart, size_t fitEnd, double regSlope, double regIntercept, unsigned component = 0);
+            double GetMaxDiffAvg(unsigned component = 0) const;
+            double GetMaxDiffStdev(unsigned component = 0) const;
+            double GetAvgLinRegSlope(unsigned componenet = 0) const;
+            double GetMaxDiffAvgD(unsigned component = 0) const;
+            double GetMaxDiffStdevD(unsigned component = 0) const;
+            double GetAvgLinRegSlopeD(unsigned componenet = 0) const;
+            void SetLinearityData(double maxDiffAvg, double maxDiffStdev, double avgLinRegSlope,double maxDiffAvgD, double maxDiffStdevD, double avgLinRegSlopeD, unsigned component = 0);
 
 
         private:
@@ -85,12 +85,12 @@ namespace Katydid
 
             struct LinearityData
 	    {
-	         double fFracMaxDiff;
-	         double fChiSquared;
-	         size_t fFitStart;
-	         size_t fFitEnd;
-	         double fRegSlope;
-	         double fRegIntercept;
+	         double fMaxDiffAvg;
+	         double fMaxDiffStdev;
+	         double fAvgLinRegSlope;
+	         double fMaxDiffAvgD;
+	         double fMaxDiffStdevD;
+	         double fAvgLinRegSlopeD;
 	    };
 
             bool fLinearityFlag;
@@ -168,31 +168,30 @@ namespace Katydid
         fLinearityFlag = flag;
         return;
     }
-    inline double KTDigitizerTestData::GetFracMaxDiff(unsigned component) const
+    inline double KTDigitizerTestData::GetMaxDiffAvg(unsigned component) const
     {
-        return fLinearityData[component].fFracMaxDiff;
+        return fLinearityData[component].fMaxDiffAvg;
     }
-    inline double KTDigitizerTestData::GetChiSquared(unsigned component) const
+    inline double KTDigitizerTestData::GetMaxDiffStdev(unsigned component) const
     {
-        return fLinearityData[component].fChiSquared;
+        return fLinearityData[component].fMaxDiffStdev;
     }
-    inline size_t  KTDigitizerTestData::GetFitStart(unsigned component) const
+    inline double  KTDigitizerTestData::GetAvgLinRegSlope(unsigned component) const
     {
-        return fLinearityData[component].fFitStart;
+        return fLinearityData[component].fAvgLinRegSlope;
     }
-    inline size_t KTDigitizerTestData::GetFitEnd(unsigned component) const
+    inline double KTDigitizerTestData::GetMaxDiffAvgD(unsigned component) const
     {
-        return fLinearityData[component].fFitEnd;
+        return fLinearityData[component].fMaxDiffAvgD;
     }
-    inline double KTDigitizerTestData::GetRegSlope(unsigned component) const
+    inline double KTDigitizerTestData::GetMaxDiffStdevD(unsigned component) const
     {
-        return fLinearityData[component].fRegSlope;
+        return fLinearityData[component].fMaxDiffStdevD;
     }
-    inline double KTDigitizerTestData::GetRegIntercept(unsigned component) const
+    inline double  KTDigitizerTestData::GetAvgLinRegSlopeD(unsigned component) const
     {
-        return fLinearityData[component].fRegIntercept;
+        return fLinearityData[component].fAvgLinRegSlopeD;
     }
-
 
 } /* namespace Katydid */
 #endif /* KTDIGITIZERTESTDATA_HH_ */
