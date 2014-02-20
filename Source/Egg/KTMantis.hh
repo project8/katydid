@@ -9,18 +9,23 @@
 #ifndef KTMANTIS_HH_
 #define KTMANTIS_HH_
 
-#include "KTProcessor.hh"
+#include "KTDataQueueProcessor.hh"
 
 #include "KTSlot.hh"
 
+#include "mt_atomic.hh"
+#include "mt_callable.hh"
 #include "mt_param.hh"
+
 
 namespace mantis
 {
+    class run_context_dist;
 }
 
 namespace Katydid
 {
+    class KTMantisClientWriting;
     class KTEggHeader;
     class KTPStoreNode;
 
@@ -43,28 +48,42 @@ namespace Katydid
      Configuration name: "mantis-client"
 
      Available configuration values:
-     - "some-name": [type] -- [what it does]
+     - "slice-size": unsigned -- Specify the size of the time series (required)
+     - "stride": unsigned -- Specify how many bins to advance between slices; must be equal to or larger than the slice size
+                             Leave unset to make stride == slice-size; i.e. no overlap or skipping between slices
+     - "client": object -- Mantis client configuration values (see Mantis documentation for more information)
 
      Slots:
 
      Signals:
      - "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
      - "raw-ts" void (KTDataPtr) -- emitted when a new raw time series is produced; guarantees KTRawTimeSeriesData
-     - "ts": void (KTDataPtr) -- emitted when the new calibrated time series is produced; Guarantees KTTimeSeriesData
-     - "egg-done": void () --  emitted when a file is finished.
-     - "summary": void (const KTProcSummary*) -- emitted when a file is finished (after "egg-done")
+     - "mantis-done": void () --  emitted when a file is finished.
     */
 
-    class KTMantis : public KTProcessor
+    class KTMantis : public KTDataQueueProcessorTemplate< KTMantis >
     {
+        private:
+            friend class KTMantisWriterToTS;
+
         public:
             KTMantis(const std::string& name = "mantis-client");
             virtual ~KTMantis();
 
-            bool Configure(const KTPStoreNode* node);
+            bool ConfigureSubClass(const KTPStoreNode* node);
+
+        public:
+            unsigned GetSliceSize() const;
+            void SetSliceSize(unsigned size);
+
+            unsigned GetStride() const;
+            void SetStride(unsigned stride);
 
         private:
             mantis::param_node fConfig;
+
+            unsigned fSliceSize;
+            unsigned fStride;
 
         public:
             bool Run();
@@ -73,6 +92,10 @@ namespace Katydid
 
 
         private:
+            void EmitHeaderSignal(const KTEggHeader* header);
+            void EmitSliceSignal(KTDataPtr data);
+            void EmitMantisDoneSignal();
+
 
 
             //***************
@@ -80,42 +103,71 @@ namespace Katydid
             //***************
 
         private:
-            //KTSignalData f[SomeName]Signal;
+            KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
+            KTSignalData fSliceSignal;
+            KTSignalOneArg< void > fMantisDoneSignal;
 
             //***************
             // Slots
             //***************
 
         private:
-            //KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
-            //KTSlotDataOneType< [Input Data Type] > f[SomeName]Slot;
 
     };
+
+    inline unsigned KTMantis::GetSliceSize() const
+    {
+        return fSliceSize;
+    }
+
+    inline void KTMantis::SetSliceSize(unsigned size)
+    {
+        fSliceSize = size;
+        return;
+    }
+
+    inline unsigned KTMantis::GetStride() const
+    {
+        return fStride;
+    }
+
+    inline void KTMantis::SetStride(unsigned stride)
+    {
+        fStride = stride;
+        return;
+    }
 
     inline bool KTMantis::Run()
     {
         return RunClient();
     }
-} /* namespace Katydid */
+
+    inline void KTMantis::EmitHeaderSignal(const KTEggHeader* header)
+    {
+        fHeaderSignal(header);
+        return;
+    }
+
+    inline void KTMantis::EmitSliceSignal(KTDataPtr data)
+    {
+        fSliceSignal(data);
+        return;
+    }
+
+
+    inline void KTMantis::EmitMantisDoneSignal()
+    {
+        fMantisDoneSignal();
+        return;
+    }
 
 
 
-
-#include "mt_atomic.hh"
-#include "mt_callable.hh"
-
-
-
-namespace mantis
-{
-        class run_context_dist;
-        class client_file_writing;
-
-    class setup_loop : public callable
+    class KTSetupLoop : public mantis::callable
     {
         public:
-            setup_loop( run_context_dist* a_run_context );
-            virtual ~setup_loop();
+            KTSetupLoop( mantis::run_context_dist* a_run_context );
+            virtual ~KTSetupLoop();
 
             void execute();
             void cancel();
@@ -123,16 +175,16 @@ namespace mantis
             int get_return();
 
         private:
-            run_context_dist* f_run_context;
-            atomic_bool f_canceled;
+            mantis::run_context_dist* f_run_context;
+            mantis::atomic_bool f_canceled;
             int f_return;
     };
 
-    class run_loop : public callable
+    class KTRunLoop : public mantis::callable
     {
         public:
-            run_loop( ::mantis::run_context_dist* a_run_context, ::mantis::client_file_writing* a_file_writing = NULL );
-            virtual ~run_loop();
+            KTRunLoop( ::mantis::run_context_dist* a_run_context, KTMantisClientWriting* a_file_writing = NULL );
+            virtual ~KTRunLoop();
 
             void execute();
             void cancel();
@@ -140,9 +192,9 @@ namespace mantis
             int get_return();
 
         private:
-            run_context_dist* f_run_context;
-            client_file_writing* f_file_writing;
-            atomic_bool f_canceled;
+            mantis::run_context_dist* f_run_context;
+            KTMantisClientWriting* f_writing;
+            mantis::atomic_bool f_canceled;
             int f_return;
     };
 

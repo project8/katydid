@@ -9,16 +9,15 @@
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
+#include "KTMantisClientWriting.hh"
 #include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 
 #include "mt_configurator.hh"
 #include "mt_client_config.hh"
-#include "mt_client_file_writing.hh"
 #include "mt_client_worker.hh"
 #include "mt_client.hh"
 #include "mt_exception.hh"
-#include "mt_logger.hh"
 #include "mt_run_context_dist.hh"
 #include "mt_signal_handler.hh"
 #include "mt_thread.hh"
@@ -72,8 +71,14 @@ namespace Katydid
 
 
     KTMantis::KTMantis(const std::string& name) :
-            KTProcessor(name),
-            fConfig()
+            KTDataQueueProcessorTemplate< KTMantis >(name),
+            fConfig(),
+            fSliceSize(1024),
+            fStride(0),
+            fHeaderSignal("header", this),
+            fSliceSignal("raw-ts", this),
+            fMantisDoneSignal("mantis-done", this)
+
     {
         KTMantisClientConfig defaultConfig;
         fConfig.merge(&defaultConfig);
@@ -83,11 +88,23 @@ namespace Katydid
     {
     }
 
-    bool KTMantis::Configure(const KTPStoreNode* node)
+    bool KTMantis::ConfigureSubClass(const KTPStoreNode* node)
     {
         if (node == NULL) return false;
 
-        // fill in fConfig
+        SetSliceSize(node->GetData< unsigned >("slice-size", fSliceSize));
+        SetStride(node->GetData< unsigned >("stride", fStride));
+
+        const KTPStoreNode clientNode = node->GetChild("run-queue");
+        if (clientNode.IsValid())
+        {
+            // fill in fConfig
+            mantis::param_value newValue;
+            for (KTPStoreNode::const_iterator it = clientNode.Begin(); it != clientNode.End(); ++it)
+            {
+                fConfig.add(it->first, newValue << it->second.data());
+            }
+        }
 
         return true;
     }
@@ -184,7 +201,7 @@ namespace Katydid
         }
 
 
-        mantis::setup_loop t_setup_loop( &t_run_context );
+        KTSetupLoop t_setup_loop( &t_run_context );
         mantis::thread t_setup_loop_thread( &t_setup_loop );
         t_sig_hand.push_thread( & t_setup_loop_thread );
         t_setup_loop_thread.start();
@@ -220,14 +237,14 @@ namespace Katydid
         /****************************************************************/
         /*********************** file writing ***************************/
         /****************************************************************/
-        mantis::client_file_writing* t_file_writing = NULL;
+        KTMantisClientWriting* t_writing = NULL;
         if( t_client_writes_file )
         {
             KTINFO( mtlog, "creating file-writing objects..." );
 
             try
             {
-                t_file_writing = new mantis::client_file_writing( &fConfig, &t_run_context, t_write_port );
+                t_writing = new KTMantisClientWriting( this, &fConfig, &t_run_context, t_write_port );
             }
             catch( mantis::exception& e )
             {
@@ -253,14 +270,14 @@ namespace Katydid
         if( ! t_push_result )
         {
             KTERROR( mtlog, "error sending client status" );
-            delete t_file_writing;
+            delete t_writing;
             t_run_context.cancel();
             t_comm_thread.cancel();
             delete t_request_client;
             return RETURN_ERROR;
         }
 
-        mantis::run_loop t_run_loop( &t_run_context, t_file_writing );
+        KTRunLoop t_run_loop( &t_run_context, t_writing );
         mantis::thread t_run_loop_thread( &t_run_loop );
         t_sig_hand.push_thread( & t_run_loop_thread );
         t_run_loop_thread.start();
@@ -286,17 +303,17 @@ namespace Katydid
         {
             if( t_run_success < 0 )
             {
-                t_file_writing->cancel();
+                t_writing->cancel();
             }
 
             KTINFO( mtlog, "waiting for record reception to end..." );
 
-            t_file_writing->wait_for_finish();
+            t_writing->wait_for_finish();
 
             KTINFO( mtlog, "shutting down record receiver" );
 
-            delete t_file_writing;
-            t_file_writing = NULL;
+            delete t_writing;
+            t_writing = NULL;
         }
         /****************************************************************/
         /****************************************************************/
@@ -350,49 +367,43 @@ namespace Katydid
         return t_run_success == RETURN_SUCCESS;
     }
 
-} /* namespace Katydid */
 
-
-namespace mantis
-{
-    MTLOGGER(mtlog, "KTMantis");
-
-    setup_loop::setup_loop( run_context_dist* a_run_context ) :
+    KTSetupLoop::KTSetupLoop( mantis::run_context_dist* a_run_context ) :
             f_run_context( a_run_context ),
             f_canceled( false ),
             f_return( 0 )
     {}
-    setup_loop::~setup_loop()
+    KTSetupLoop::~KTSetupLoop()
     {}
 
-    void setup_loop::execute()
+    void KTSetupLoop::execute()
     {
         while( ! f_canceled.load() )
         {
-            status_state_t t_state = f_run_context->lock_status_in()->state();
+            mantis::status_state_t t_state = f_run_context->lock_status_in()->state();
             f_run_context->unlock_inbound();
 
-            if( t_state == status_state_t_acknowledged )
+            if( t_state == mantis::status_state_t_acknowledged )
             {
-                MTINFO( mtlog, "run request acknowledged...\n" );
+                KTINFO( mtlog, "run request acknowledged...\n" );
                 f_return = RETURN_SUCCESS;
                 break;
             }
-            else if( t_state == status_state_t_error )
+            else if( t_state == mantis::status_state_t_error )
             {
-                MTERROR( mtlog, "error reported; run was not acknowledged\n" );
+                KTERROR( mtlog, "error reported; run was not acknowledged\n" );
                 f_return = RETURN_ERROR;
                 break;
             }
-            else if( t_state == status_state_t_revoked )
+            else if( t_state == mantis::status_state_t_revoked )
             {
-                MTINFO( mtlog, "request revoked; run did not take place\n" );
+                KTINFO( mtlog, "request revoked; run did not take place\n" );
                 f_return = RETURN_ERROR;
                 break;
             }
-            else if( t_state != status_state_t_created )
+            else if( t_state != mantis::status_state_t_created )
             {
-                MTERROR( mtlog, "server reported unusual status: " << t_state );
+                KTERROR( mtlog, "server reported unusual status: " << t_state );
                 f_return = RETURN_ERROR;
                 break;
             }
@@ -400,83 +411,83 @@ namespace mantis
             if( f_run_context->wait_for_status() )
                 continue;
 
-            MTERROR( mtlog, "(setup loop) unable to communicate with server" );
+            KTERROR( mtlog, "(setup loop) unable to communicate with server" );
             f_return = RETURN_ERROR;
             break;
         }
         return;
     }
 
-    void setup_loop::cancel()
+    void KTSetupLoop::cancel()
     {
         f_canceled.store( true );
         return;
     }
 
-    int setup_loop::get_return()
+    int KTSetupLoop::get_return()
     {
         return f_return;
     }
 
 
-    run_loop::run_loop( run_context_dist* a_run_context, client_file_writing* a_file_writing ) :
+    KTRunLoop::KTRunLoop( mantis::run_context_dist* a_run_context, KTMantisClientWriting* a_writing ) :
             f_run_context( a_run_context ),
-            f_file_writing( a_file_writing ),
+            f_writing( a_writing ),
             f_canceled( false ),
             f_return( 0 )
     {}
-    run_loop::~run_loop()
+    KTRunLoop::~KTRunLoop()
     {}
 
-    void run_loop::execute()
+    void KTRunLoop::execute()
     {
         while( ! f_canceled.load() )
         {
-            status_state_t t_state = f_run_context->lock_status_in()->state();
+            mantis::status_state_t t_state = f_run_context->lock_status_in()->state();
             f_run_context->unlock_inbound();
 
-            if( t_state == status_state_t_waiting )
+            if( t_state == mantis::status_state_t_waiting )
             {
-                MTINFO( mtlog, "waiting for run...\n" );
+                KTINFO( mtlog, "waiting for run...\n" );
                 //continue;
             }
-            else if( t_state == status_state_t_started )
+            else if( t_state == mantis::status_state_t_started )
             {
-                MTINFO( mtlog, "run has started...\n" );
+                KTINFO( mtlog, "run has started...\n" );
                 //continue;
             }
-            else if( t_state == status_state_t_running )
+            else if( t_state == mantis::status_state_t_running )
             {
-                MTINFO( mtlog, "run is in progress...\n" );
+                KTINFO( mtlog, "run is in progress...\n" );
                 //continue;
             }
-            else if( t_state == status_state_t_stopped )
+            else if( t_state == mantis::status_state_t_stopped )
             {
-                MTINFO( mtlog, "run status: stopped; data acquisition has finished\n" );
+                KTINFO( mtlog, "run status: stopped; data acquisition has finished\n" );
                 f_return = RETURN_SUCCESS;
                 break;
             }
-            else if( t_state == status_state_t_error )
+            else if( t_state == mantis::status_state_t_error )
             {
-                MTINFO( mtlog, "error reported; run did not complete\n" );
+                KTINFO( mtlog, "error reported; run did not complete\n" );
                 f_return = RETURN_ERROR;
                 break;
             }
-            else if( t_state == status_state_t_canceled )
+            else if( t_state == mantis::status_state_t_canceled )
             {
-                MTINFO( mtlog, "cancellation reported; some data may have been written\n" );
+                KTINFO( mtlog, "cancellation reported; some data may have been written\n" );
                 f_return = RETURN_CANCELED;
                 break;
             }
-            else if( t_state == status_state_t_revoked )
+            else if( t_state == mantis::status_state_t_revoked )
             {
-                MTINFO( mtlog, "request revoked; run did not take place\n" );
+                KTINFO( mtlog, "request revoked; run did not take place\n" );
                 f_return = RETURN_REVOKED;
                 break;
             }
-            else if( f_file_writing != NULL && f_file_writing->is_done() )
+            else if( f_writing != NULL && f_writing->is_done() )
             {
-                MTINFO( mtlog, "file writing is done, but run status still does not indicate run is complete"
+                KTINFO( mtlog, "file writing is done, but run status still does not indicate run is complete"
                         << "                exiting run now!" );
                 f_return = RETURN_CANCELED;
                 break;
@@ -485,18 +496,18 @@ namespace mantis
             if( f_run_context->wait_for_status() )
                 continue;
 
-            MTERROR( mtlog, "(run loop) unable to communicate with server" );
+            KTERROR( mtlog, "(run loop) unable to communicate with server" );
             f_return = RETURN_ERROR;
             break;
         }
     }
 
-    void run_loop::cancel()
+    void KTRunLoop::cancel()
     {
         f_canceled.store( true );
         return;
     }
-    int run_loop::get_return()
+    int KTRunLoop::get_return()
     {
         return f_return;
     }
