@@ -21,7 +21,7 @@ namespace Katydid
 {
     KTLOGGER( mtlog, "katydid.egg" );
 
-    static mantis::registrar< mantis::writer, Katydid::KTMantisWriterToTS > s_mantis_writer_registrar( "file" );
+    static mantis::registrar< mantis::writer, Katydid::KTMantisWriterToTS > s_mantis_writer_registrar( "katydid" );
 
     KTMantisWriterToTS::KTMantisWriterToTS() :
                     mantis::writer(),
