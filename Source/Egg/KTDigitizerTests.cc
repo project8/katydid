@@ -213,11 +213,12 @@ namespace Katydid
 	//find localMax and localMin
 	for (size_t iBin = 1; iBin < nBins; ++iBin)
 	  {
-	    if ((*ts)(iBin) > localMax)
+	    // KTDEBUG(dtlog, "*tsiBin:"<<(*ts)(iBin)<<", localMax:"<<localMax)
+	    if ((int)((*ts)(iBin)) > localMax)
 	      {
 		localMax = (*ts)(iBin);
 	      }
-	    if ((*ts)(iBin) < localMin)
+	    if ((int)((*ts)(iBin)) < localMin)
 	      {
 		localMin = (*ts)(iBin);
 	      }
@@ -251,50 +252,77 @@ namespace Katydid
 	///////////////////////////
 	/////////UPSLOPES//////////
 	///////////////////////////
+	// Upslope end/start shift
+	int shiftStart = 0;
+	int shiftEnd = 0;
+	if (localMinEnds[0]<localMaxStarts[0] & localMinEnds[1]>localMaxStarts[0]) 
+	  {
+	    shiftStart = 0;
+	    shiftEnd = 0;
+	  }
+	else if (localMinEnds[0]>localMaxStarts[0])
+	  {
+	    ++shiftEnd;
+	    for(size_t i=0; localMinEnds[i]<localMaxStarts[0]; ++i)
+	      {
+		++shiftEnd;
+	      }
+	   }
+	else if (localMinEnds[1]<localMaxStarts[0])
+	   {
+	     ++shiftStart;
+	     for(size_t i=0; localMinEnds[1]>localMaxStarts[i]; ++i)
+	       {
+	         ++shiftStart;
+	       }
+	   }
+	else
+	   {
+	     KTDEBUG(dtlog, "There is a shifting error.")
+	   }
         //Linear Regression
 	double fitStart = localMinEnds[0]; 
 	double fitEnd = localMaxStarts[0];
-        double sumXY = 0;
-        double sumX = 0;
-        double sumY = 0;
-        double sumX2 = 0;
+	double sumXY = 0;
+	double sumX = 0;
+	double sumY = 0;
+	double sumX2 = 0;
 	double avgLinRegSlope = 0;
 	double avgLinRegIntercept = 0;
  	std::vector<double> linRegIntercepts;
-	//find the average slope
-	  for (int k = 0; k<localMinEnds.size(); ++k)
-	  {
-	    fitStart = localMinEnds[k];
-	    fitEnd = localMaxStarts[k];
-	    sumXY = 0;
-	    sumX = 0;
-	    sumY = 0;
-	    sumX2 = 0;
-	
-	    for (size_t iBin = fitStart; iBin <= fitEnd; ++iBin)
-	      {
-		sumXY += (double)iBin * (double)((*ts)(iBin));
-		sumX += (double)iBin;
-		sumY += (double)((*ts)(iBin));
-		sumX2 += (double)iBin * iBin;
-	      }
-	    double N = fitEnd-fitStart+1;
-	    double linRegSlope =  ((N * sumXY) - (sumX * sumY)) / ((N * sumX2) - (sumX * sumX));
-	    double linRegIntercept = (sumY - (linRegSlope * sumX)) / (N);
-	    linRegIntercepts.push_back(linRegIntercept);
-            avgLinRegSlope = avgLinRegSlope + linRegSlope;
-	    avgLinRegIntercept = avgLinRegIntercept + linRegIntercept;
-	  }
-
+	for (int k = 0; k<localMinEnds.size()-shiftStart-shiftEnd; ++k)
+	{
+          fitStart = localMinEnds[k+shiftStart];
+          fitEnd = localMaxStarts[k+shiftEnd];
+          sumXY = 0;
+          sumX = 0;
+	  sumY = 0;
+	  sumX2 = 0;
+	  for (size_t iBin = fitStart; iBin <= fitEnd; ++iBin)
+	    {
+	      sumXY += (double)iBin * (double)((*ts)(iBin));
+	      sumX += (double)iBin;
+	      sumY += (double)((*ts)(iBin));
+	      sumX2 += (double)iBin * iBin;
+	    }
+	  double N = fitEnd-fitStart+1;
+	  double linRegSlope =  ((N * sumXY) - (sumX * sumY)) / ((N * sumX2) - (sumX * sumX));
+	  double linRegIntercept = (sumY - (linRegSlope * sumX)) / (N);
+	  linRegIntercepts.push_back(linRegIntercept);
+          avgLinRegSlope = avgLinRegSlope + linRegSlope;
+	  avgLinRegIntercept = avgLinRegIntercept + linRegIntercept;
+	}
 	  avgLinRegSlope = avgLinRegSlope/localMinEnds.size();
 	  avgLinRegIntercept = avgLinRegIntercept/localMinEnds.size();	 
-  	   std::vector<double> maxDiff;
-	   for (int k = 0; k<localMinEnds.size(); ++k)
+  	  std::vector<double> maxDiff;
+	  //compare distance
+	  for (int k = 0; k<localMinEnds.size()-shiftStart-shiftEnd; ++k)
 	  {
-	    fitStart = localMinEnds[k];
-	    fitEnd = localMaxStarts[k];
+	    fitStart = localMinEnds[k+shiftStart];
+	    fitEnd = localMaxStarts[k+shiftEnd];
+ 
  	    double regBigDist = 0;
-	    for (size_t iBin = fitStart; iBin <= fitEnd; ++iBin)
+	    for (size_t iBin = fitStart; (double)iBin <= fitEnd; ++iBin)
 	      {
 		double regYDist = abs((*ts)(iBin) -  avgLinRegSlope*(iBin-fitStart));
 		if (regYDist > regBigDist)
@@ -310,30 +338,56 @@ namespace Katydid
 	  double maxDiffSquareSum = std::inner_product(maxDiff.begin(), maxDiff.end(), maxDiff.begin(), 0.0);
 	  double maxDiffStdev = std::sqrt(maxDiffSquareSum / maxDiff.size() - maxDiffAvg * maxDiffAvg);
  
-	///////////////////////////
-	////////DOWNSLOPES/////////
-	///////////////////////////
-        //Linear Regression
-	double fitStartD = localMaxEnds[0]; 
-	double fitEndD = localMinStarts[0];
-        double sumXYD = 0;
-        double sumXD = 0;
-        double sumYD = 0;
-        double sumX2D = 0;
-	double avgLinRegSlopeD = 0;
-	double avgLinRegInterceptD = 0;
- 	std::vector<double> linRegInterceptsD;
-	//find the average slope
-	  for (int k = 0; k<localMaxEnds.size()-1; ++k)
+	  ///////////////////////////
+	  ////////DOWNSLOPES/////////
+	  ///////////////////////////
+	  // Downslope start/end shift
+	  int shiftStartD = 0;
+	  int shiftEndD = 0;
+	  if (localMaxEnds[0]<localMinStarts[0] & localMaxEnds[1]>localMinStarts[0]) 
+	    {
+	      shiftStartD = 0;
+	      shiftEndD = 0;
+	    }
+	  else if (localMaxEnds[0]>localMinStarts[0])
+	    {
+	      ++shiftEndD;
+	      for(size_t i=0; localMaxEnds[i]<localMinStarts[0]; ++i)
+	        {
+	          ++shiftEndD;
+	        }
+	    }
+	  else if (localMaxEnds[1]<localMinStarts[0])
+	    {
+	      ++shiftStartD;
+	      for(size_t i=0; localMaxEnds[1]>localMinStarts[i]; ++i)
+	        {
+	          ++shiftStartD;
+	        }
+            }
+          else
+            {
+              KTDEBUG(dtlog, "There is a shifting error.")
+            }
+          //Linear Regression
+	  double fitStartD = localMaxEnds[0]; 
+	  double fitEndD = localMinStarts[0];
+	  double sumXYD = 0;
+	  double sumXD = 0;
+	  double sumYD = 0;
+	  double sumX2D = 0;
+	  double avgLinRegSlopeD = 0;
+	  double avgLinRegInterceptD = 0;
+ 	  std::vector<double> linRegInterceptsD;
+	  for (int k = 0; k<localMaxEnds.size()-shiftStartD-shiftEndD; ++k)
 	  {
-	    fitStartD = localMaxEnds[k+1];
-	    fitEndD = localMinStarts[k];
+	    fitStartD = localMaxEnds[k+shiftStartD];
+	    fitEndD = localMinStarts[k+shiftEndD];
 	    sumXYD = 0;
 	    sumXD = 0;
 	    sumYD = 0;
 	    sumX2D = 0;
-	
-	    for (size_t iBin = fitStartD; iBin <= fitEndD; ++iBin)
+	    for (size_t iBin = fitStartD; (double)iBin <= fitEndD; ++iBin)
 	      {
 		sumXYD += (double)iBin * (double)((*ts)(iBin));
 		sumXD += (double)iBin;
@@ -351,14 +405,15 @@ namespace Katydid
 	  avgLinRegSlopeD = avgLinRegSlopeD/localMaxEnds.size();
 	  avgLinRegInterceptD = avgLinRegInterceptD/localMaxEnds.size();	 
   	   std::vector<double> maxDiffD;
-	   for (int k = 0; k<localMaxEnds.size()-1; ++k)
+	   //Compare distance
+	   for (int k = 0; k<localMaxEnds.size()-shiftEndD-shiftStartD; ++k)
 	  {
-	    fitStartD = localMaxEnds[k+1];
-	    fitEndD = localMinStarts[k];
+	    fitStartD = localMaxEnds[k+shiftStartD];
+	    fitEndD = localMinStarts[k+shiftEndD];
  	    double regBigDist = 0;
 	    for (size_t iBin = fitStartD; iBin <= fitEndD; ++iBin)
 	      {
-		double regYDist = abs((*ts)(iBin) - ( avgLinRegSlopeD*(iBin-fitStartD)+255));
+		double regYDist = abs((*ts)(iBin) - ( avgLinRegSlopeD*(iBin-fitStartD)+localMax));
 		if (regYDist > regBigDist)
 		  {
 		    regBigDist = regYDist;
