@@ -19,10 +19,10 @@
 #include "KTTimeSeriesData.hh"
 
 #include <cmath>
-#include <vector>
 #include <numeric>
 
 using boost::shared_ptr;
+using std::vector;
 
 namespace Katydid
 {
@@ -72,7 +72,12 @@ namespace Katydid
 
         SetTestLinearity(node->GetData< bool >("test-linearity", fTestLinearity));
 
-        KTWARN(dtlog, "fTestLinearity is " << fTestLinearity);
+	if (node->HasData("disable-component")) 
+	  {
+	    fDisableComponents.push_back(node->GetData< unsigned >("disable-component"));
+	    KTWARN(dtlog, "dc now has " << fDisableComponents.size()  << " components");
+	    KTWARN(dtlog, fDisableComponents[0]);
+	  }
 
         return true;
     }
@@ -84,6 +89,20 @@ namespace Katydid
         KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)
         {
+	  bool skipComponent = false;
+	  for (vector<unsigned>::const_iterator dcIt = fDisableComponents.begin(); dcIt != fDisableComponents.end(); ++dcIt)
+	    {
+	      KTWARN(dtlog, "checking " << *dcIt);
+	      if (*dcIt == component)
+		{
+		  KTWARN(dtlog, "skipping " << component );
+		  skipComponent = true;
+		  break;
+		}
+	    }
+	  if (skipComponent) continue;
+	  KTWARN(dtlog, "analyzing " << component);
+
             const KTRawTimeSeries* ts = static_cast< const KTRawTimeSeries* >(data.GetTimeSeries(component));
             for (TestFuncs::const_iterator func_it = fRawTestFuncs.begin(); func_it != fRawTestFuncs.end(); ++func_it)
             {
@@ -213,7 +232,6 @@ namespace Katydid
 	//find localMax and localMin
 	for (size_t iBin = 1; iBin < nBins; ++iBin)
 	  {
-	    // KTDEBUG(dtlog, "*tsiBin:"<<(*ts)(iBin)<<", localMax:"<<localMax)
 	    if ((int)((*ts)(iBin)) > localMax)
 	      {
 		localMax = (*ts)(iBin);
@@ -278,8 +296,14 @@ namespace Katydid
 	   }
 	else
 	   {
-	     KTDEBUG(dtlog, "There is a shifting error.")
+	     KTERROR(dtlog, "There is a shifting error.")
 	   }
+	  if (localMinEnds.size() != localMaxStarts.size())
+	    {
+	      KTERROR(dtlog, "Number of max and mins not equal.");
+	      testData.SetLinearityData(0,0,0,0,0,0, component);
+	      return true;
+	    }
         //Linear Regression
 	double fitStart = localMinEnds[0]; 
 	double fitEnd = localMaxStarts[0];
@@ -332,12 +356,12 @@ namespace Katydid
 	      }
 	     maxDiff.push_back(regBigDist/255);
 	  }
+
 	  double maxDiffSum = std::accumulate(maxDiff.begin(), maxDiff.end(), 0.0);
 	  double maxDiffAvg = maxDiffSum / maxDiff.size();
 
 	  double maxDiffSquareSum = std::inner_product(maxDiff.begin(), maxDiff.end(), maxDiff.begin(), 0.0);
 	  double maxDiffStdev = std::sqrt(maxDiffSquareSum / maxDiff.size() - maxDiffAvg * maxDiffAvg);
- 
 	  ///////////////////////////
 	  ////////DOWNSLOPES/////////
 	  ///////////////////////////
@@ -367,7 +391,7 @@ namespace Katydid
             }
           else
             {
-              KTDEBUG(dtlog, "There is a shifting error.")
+              KTERROR(dtlog, "There is a shifting error.")
             }
           //Linear Regression
 	  double fitStartD = localMaxEnds[0]; 
@@ -379,6 +403,13 @@ namespace Katydid
 	  double avgLinRegSlopeD = 0;
 	  double avgLinRegInterceptD = 0;
  	  std::vector<double> linRegInterceptsD;
+	  KTDEBUG(dtlog, "localMaxEnds.size()= "<<localMaxEnds.size()<<", localMinStarts.size()="<<localMinStarts.size());
+	  if (localMaxEnds.size() != localMinStarts.size())
+	    {
+	      KTERROR(dtlog, "Number of max and mins not equal.");
+	      testData.SetLinearityData(0,0,0,0,0,0, component);
+	      return true;
+	    }
 	  for (int k = 0; k<localMaxEnds.size()-shiftStartD-shiftEndD; ++k)
 	  {
 	    fitStartD = localMaxEnds[k+shiftStartD];
@@ -401,7 +432,6 @@ namespace Katydid
             avgLinRegSlopeD = avgLinRegSlopeD + linRegSlope;
 	    avgLinRegInterceptD = avgLinRegInterceptD + linRegIntercept;
 	  }
-
 	  avgLinRegSlopeD = avgLinRegSlopeD/localMaxEnds.size();
 	  avgLinRegInterceptD = avgLinRegInterceptD/localMaxEnds.size();	 
   	   std::vector<double> maxDiffD;
@@ -421,6 +451,7 @@ namespace Katydid
 	      }
 	     maxDiffD.push_back(regBigDist/255);
 	  }
+
 	  double maxDiffSumD = std::accumulate(maxDiffD.begin(), maxDiffD.end(), 0.0);
 	  double maxDiffAvgD = maxDiffSumD / maxDiffD.size();
 
