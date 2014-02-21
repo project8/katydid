@@ -29,7 +29,7 @@ using namespace Katydid;
 
 
 
-KTLOGGER(eggscan, "katydid.applications.main");
+KTLOGGER(eggscan, "EggScanner");
 
 static KTCommandLineOption< unsigned > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
 static KTCommandLineOption< bool > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');

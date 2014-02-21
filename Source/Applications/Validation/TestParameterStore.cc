@@ -18,7 +18,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testparamlog, "katydid.applications.validation");
+KTLOGGER(testparamlog, "TestParameterStore");
 
 int main(int argc, char** argv)
 {

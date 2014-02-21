@@ -25,7 +25,7 @@ namespace Katydid
 {
     static KTNORegistrar< KTProcessor, KTCompareCandidates > sCompCandRegistrar("compare-candidates");
 
-    KTLOGGER(cclog, "katydid.evaluate");
+    KTLOGGER(cclog, "KTCompareCandidates");
 
     KTCompareCandidates::KTCompareCandidates(const string& name) :
             KTProcessor(name),

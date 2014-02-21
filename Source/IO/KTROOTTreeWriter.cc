@@ -20,7 +20,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "KTROOTTreeWriter");
 
 
     static KTNORegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");

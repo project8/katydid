@@ -19,7 +19,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testapplog, "katydid.applications.validation");
+KTLOGGER(testapplog, "TestApplication");
 
 // Add an application-specific command-line option
 static KTCommandLineOption< string > sTestAppOption("TestApplication", "Application-specific command-line option", "test-app-opt", 'a');

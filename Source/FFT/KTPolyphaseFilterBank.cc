@@ -22,7 +22,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(pfblog, "katydid.fft");
+    KTLOGGER(pfblog, "KTPolyphaseFilterBank");
 
     static KTNORegistrar< KTProcessor, KTPolyphaseFilterBank > sPFBRegistrar("polyphase-filter-bank");
 

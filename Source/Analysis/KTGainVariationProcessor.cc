@@ -29,7 +29,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(gvlog, "katydid.analysis");
+    KTLOGGER(gvlog, "KTGainVariationProcessor");
 
     static KTNORegistrar< KTProcessor, KTGainVariationProcessor > sGainVarRegistrar("gain-variation");
 

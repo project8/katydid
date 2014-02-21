@@ -27,7 +27,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "KTMultiSliceROOTTypeWriterEgg");
 
     static KTTIRegistrar< KTMultiSliceROOTTypeWriter, KTMultiSliceROOTTypeWriterEgg > sMERTWERegistrar;
 

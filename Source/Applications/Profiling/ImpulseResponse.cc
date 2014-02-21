@@ -27,7 +27,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(irlog, "katydid.applications.profiling");
+KTLOGGER(irlog, "ImpulseResponse");
 
 //*********************************
 // Definition of KTSineGenerator

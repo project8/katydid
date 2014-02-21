@@ -29,7 +29,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(htlog, "katydid.analysis");
+    KTLOGGER(htlog, "KTHoughTransform");
 
     static KTNORegistrar< KTProcessor, KTHoughTransform > sHTRegistrar("hough-transform");
 

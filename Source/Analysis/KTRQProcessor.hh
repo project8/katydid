@@ -28,7 +28,7 @@
 
 namespace Katydid {
 
-  KTLOGGER(nrq_log, "katydid.nrq");
+  KTLOGGER(nrq_log, "KTRQProcessor");
 
   class KTRQProcessor : public KTProcessor {
 

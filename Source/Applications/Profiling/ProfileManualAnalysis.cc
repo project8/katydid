@@ -48,7 +48,7 @@ using namespace std;
 using std::string;
 //
 
-KTLOGGER(proflog, "katydid.applications.profiling");
+KTLOGGER(proflog, "ProfileManualAnalysis");
 
 int main()
 {

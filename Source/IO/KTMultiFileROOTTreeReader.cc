@@ -28,7 +28,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(inlog, "katydid.input");
+    KTLOGGER(inlog, "KTMultiFileROOTTreeReader");
 
     static KTNORegistrar< KTReader, KTMultiFileROOTTreeReader > sMFRTReaderRegistrar("mf-root-tree-reader");
     static KTNORegistrar< KTProcessor, KTMultiFileROOTTreeReader > sMFRTRProcRegistrar("mf-root-tree-reader");

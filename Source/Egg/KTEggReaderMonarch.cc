@@ -28,7 +28,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "katydid.egg");
+    KTLOGGER(eggreadlog, "KTEggReaderMonarch");
 
     unsigned KTEggReaderMonarch::GetMaxChannels()
     {

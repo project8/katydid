@@ -9,7 +9,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(logger, "test_logger")
+KTLOGGER(logger, "TestLogger")
 
 int main()
 {

@@ -20,7 +20,7 @@ namespace Katydid
 {
     static KTNORegistrar< KTWindowFunction, KTHannWindow > sWFHannRegistrar("hann");
 
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTHannWindow");
 
     KTHannWindow::KTHannWindow(const string& name) :
             KTWindowFunction(name)

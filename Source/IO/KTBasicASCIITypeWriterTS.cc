@@ -9,7 +9,7 @@
 namespace Katydid 
 {
 
-    KTLOGGER(ats_log, "katydid.output.ascii.tw.ts");
+    KTLOGGER(ats_log, "KTBasicASCIITypeWriterTS");
 
     static KTTIRegistrar< KTBasicASCIITypeWriter, KTBasicASCIITypeWriterTS > sBATWReg;
 

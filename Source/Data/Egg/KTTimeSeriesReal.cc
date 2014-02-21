@@ -19,7 +19,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(tslog, "katydid.egg");
+    KTLOGGER(tslog, "KTTimeSeriesReal");
 
     KTTimeSeriesReal::KTTimeSeriesReal() :
             KTTimeSeries(),

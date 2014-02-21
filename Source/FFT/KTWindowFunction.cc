@@ -29,7 +29,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(fftlog, "katydid.fft");
+    KTLOGGER(fftlog, "KTWindowFunction");
 
     KTWindowFunction::KTWindowFunction(const string& name) :
             KTConfigurable(name),

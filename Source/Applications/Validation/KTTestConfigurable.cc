@@ -16,7 +16,7 @@ namespace Katydid
 {
     static KTCommandLineOption< int > sTestConfigStringCLO("Test Configurable", "Command-line option for testing", "int-data", 'i');
 
-    KTLOGGER(testparamlog, "katydid.applications.validation");
+    KTLOGGER(testparamlog, "KTTestConfigurable");
 
     KTTestConfigurable::KTTestConfigurable(const std::string& name) :
             KTConfigurable(name),
