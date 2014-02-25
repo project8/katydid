@@ -34,6 +34,7 @@ else (Katydid_SINGLETHREADED)
 endif(Katydid_SINGLETHREADED)
 
 #optional build switches
+set (Katydid_USE_MANTIS FALSE CACHE BOOL "Flag to optionally use Mantis (external dependency)")
 set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
@@ -76,6 +77,18 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     pbuilder_add_ext_libraries (rt)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+# Mantis
+if (Katydid_USE_MANTIS)
+    list (APPEND Mantis_LIBRARY_DIRS /Users/nsoblath/My_Documents/Project_8/DataAnalysis/mantis/build-templatedMantis/lib)
+    list (APPEND Mantis_INCLUDE_DIRS /Users/nsoblath/My_Documents/Project_8/DataAnalysis/mantis/build-templatedMantis/include)
+    list (APPEND Mantis_LIBRARIES MantisClient MantisServer)
+    include_directories (${Mantis_INCLUDE_DIRS})
+    link_directories (${Mantis_LIBRARY_DIRS})
+    pbuilder_add_ext_libraries (${Mantis_LIBRARIES})
+    add_definitions (-DUSE_MANTIS)
+    set (Mantis_FOUND TRUE)
+endif (Katydid_USE_MANTIS)
 
 # Boost (1.46 required for filesystem version 3)
 find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)

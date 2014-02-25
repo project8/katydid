@@ -1,0 +1,49 @@
+{
+    "katydid":
+    {
+        "processor-toolbox":
+        {
+            "processor":
+            {
+                "type": "mantis-client",
+                "name": "mantis"
+            },
+            "processor":
+            {
+                "type": "basic-root-writer",
+                "name": "writer"
+            },
+            
+            "connection":
+            {
+                "signal-processor": "mantis",
+                "signal-name": "raw-ts",
+                "slot-processor": "writer",
+                "slot-name": "raw-ts"
+            },
+            
+            "run-queue":
+            {
+                "processor": "mantis"
+            }
+        },
+        
+
+        "mantis":
+        {
+            "slice-size": 4194304,
+            "client":
+            {
+                "rate": 200.0,
+                "buffer-size": 100
+            }
+        },
+        
+        
+        "writer":
+        {
+            "output-file": "ts-plot.root",
+            "file-flag": "recreate"
+        }
+    }
+}
