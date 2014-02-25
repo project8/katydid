@@ -25,7 +25,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(proflog, "katydid.egg");
+    KTLOGGER(proflog, "KTThroughputProfiler");
 
     static KTNORegistrar< KTProcessor, KTThroughputProfiler > sTProfRegistrar("throughput-profiler");
 

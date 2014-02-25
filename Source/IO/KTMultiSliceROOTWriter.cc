@@ -15,7 +15,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "KTMultiSliceROOTWriter");
 
 
     static KTNORegistrar< KTWriter, KTMultiSliceROOTWriter > sMSRWriterRegistrar("multislice-root-writer");

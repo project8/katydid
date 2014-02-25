@@ -24,7 +24,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(fslog, "katydid.fft");
+    KTLOGGER(fslog, "KTFrequencySpectrumPolar");
 
     KTFrequencySpectrumPolar::KTFrequencySpectrumPolar() :
             KTPhysicalArray< 1, complexpolar< double > >(),

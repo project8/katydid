@@ -30,7 +30,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(wvlog, "katydid.analysis");
+    KTLOGGER(wvlog, "KTWignerVille");
 
     class KTAnalyticAssociateData;
     class KTComplexFFTW;

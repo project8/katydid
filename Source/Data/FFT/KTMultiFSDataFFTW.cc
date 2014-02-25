@@ -15,7 +15,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(datalog, "katydid.data");
+    KTLOGGER(datalog, "KTMultiFSDataFFTW");
 
     KTMultiFSDataFFTWCore::KTMultiFSDataFFTWCore() :
             fSpectra(1)

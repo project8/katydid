@@ -21,7 +21,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(applog, "katydid.core");
+    KTLOGGER(applog, "KTApplication");
 
     KTApplication::KTApplication(bool makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),

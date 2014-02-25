@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(eqplog, "katydid.core");
+    KTLOGGER(eqplog, "KTDataQueueProcessor");
 
     //***********************************
     // Data Queue Processor Template

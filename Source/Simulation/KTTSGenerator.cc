@@ -26,7 +26,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "katydid.simulation");
+    KTLOGGER(genlog, "KTTSGenerator");
 
     KTTSGenerator::KTTSGenerator(const string& name) :
             KTPrimaryProcessor(name),

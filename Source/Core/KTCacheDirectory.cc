@@ -15,7 +15,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(dirlog, "katydid.core");
+    KTLOGGER(dirlog, "KTCacheDirectory");
 
     KTCacheDirectory::KTCacheDirectory(const std::string& name) :
             KTDirectory(),

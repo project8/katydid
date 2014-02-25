@@ -11,7 +11,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(datalog, "katydid.data");
+    KTLOGGER(datalog, "KTAmplitudeDistribution");
 
     KTAmplitudeDistribution::KTAmplitudeDistribution() :
             KTExtensibleData< KTAmplitudeDistribution >(),

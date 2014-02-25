@@ -23,7 +23,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(swlog, "katydid.analysis");
+    KTLOGGER(swlog, "KTSwitchFFTWPolar");
 
     static KTNORegistrar< KTProcessor, KTSwitchFFTWPolar > sSwitchFFTWPolarRegistrar("switch-fftw-polar");
 

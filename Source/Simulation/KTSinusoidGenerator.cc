@@ -20,7 +20,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "katydid.simulation");
+    KTLOGGER(genlog, "KTSinusoidGenerator");
 
     static KTNORegistrar< KTProcessor, KTSinusoidGenerator > sSinusoidGenRegistrar("sinusoid-generator");
 

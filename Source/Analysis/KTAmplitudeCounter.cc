@@ -19,7 +19,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    KTLOGGER(avlog, "katydid.analysis");
+    KTLOGGER(avlog, "KTAmplitudeCounter");
 
     static KTNORegistrar< KTProcessor, KTAmplitudeCounter > sProcTempRegistrar("amp-counter");
 

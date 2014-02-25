@@ -23,7 +23,7 @@ namespace po = boost::program_options;
 
 namespace Katydid
 {
-    KTLOGGER(utillog_clh, "katydid.utility");
+    KTLOGGER(utillog_clh, "KTCommandLineHandler.hh");
 
     class CommandLineHandlerException : public std::logic_error
     {

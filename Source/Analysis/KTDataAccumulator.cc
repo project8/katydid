@@ -26,7 +26,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(avlog, "katydid.analysis");
+    KTLOGGER(avlog, "KTDataAccumulator");
     static KTNORegistrar< KTProcessor, KTDataAccumulator > sDataAccumulator("data-accumulator");
 
     KTDataAccumulator::KTDataAccumulator(const std::string& name) :

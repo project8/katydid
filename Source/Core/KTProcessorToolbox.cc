@@ -24,7 +24,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(proclog, "katydid.core");
+    KTLOGGER(proclog, "KTProcessorToolbox");
 
     KTProcessorToolbox::KTProcessorToolbox(const std::string& name) :
             KTConfigurable(name),

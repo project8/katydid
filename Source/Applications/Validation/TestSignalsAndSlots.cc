@@ -11,7 +11,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testsiglog, "katydid.verification.testsig")
+KTLOGGER(testsiglog, "TestSignalsAndSlots")
 
 int main()
 {

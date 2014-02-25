@@ -25,7 +25,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(aalog, "katydid.analysis");
+    KTLOGGER(aalog, "KTAnalyticAssociator");
 
     static KTNORegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
 

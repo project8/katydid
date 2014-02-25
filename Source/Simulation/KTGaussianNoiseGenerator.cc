@@ -20,7 +20,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "katydid.simulation");
+    KTLOGGER(genlog, "KTGaussianNoiseGenerator");
 
     static KTNORegistrar< KTProcessor, KTGaussianNoiseGenerator > sGaussNoiseGenRegistrar("gaussian-noise-generator");
 

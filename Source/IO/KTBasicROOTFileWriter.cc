@@ -15,7 +15,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "KTBasicROOTFileWriter");
 
 
     static KTNORegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root-writer");

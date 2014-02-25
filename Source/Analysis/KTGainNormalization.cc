@@ -29,7 +29,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(gnlog, "katydid.analysis");
+    KTLOGGER(gnlog, "KTGainNormalization");
 
     static KTNORegistrar< KTProcessor, KTGainNormalization > sGainNormRegistrar("gain-normalization");
 

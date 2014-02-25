@@ -17,7 +17,7 @@ using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(proclog, "katydid.core");
+    //KTLOGGER(proclog, "KTProcessor");
 
     ProcessorException::ProcessorException (std::string const& why)
       : std::logic_error(why)

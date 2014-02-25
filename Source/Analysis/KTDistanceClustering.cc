@@ -27,7 +27,7 @@ using std::set;
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "katydid.analysis");
+    KTLOGGER(sdlog, "KTDistanceClustering");
 
     static KTNORegistrar< KTProcessor, KTDistanceClustering > sDistClustRegistrar("distance-clustering");
 

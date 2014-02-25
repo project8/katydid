@@ -24,7 +24,7 @@ using namespace std;
 using namespace Katydid;
 
 
-KTLOGGER(testegg, "katydid.validation.egghatch");
+KTLOGGER(testegg, "TEstEggHatching");
 
 
 int main(int argc, char** argv)

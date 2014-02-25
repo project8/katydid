@@ -19,7 +19,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(utillog_pstore, "katydid.utility");
+    KTLOGGER(utillog_pstore, "KTParameterStore");
 
     // protected
     KTParameterStore::KTParameterStore() :

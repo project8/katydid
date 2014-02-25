@@ -26,7 +26,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(dblog, "katydid.conversion");
+    KTLOGGER(dblog, "KT2ROOT");
 
     KT2ROOT::KT2ROOT()
     {

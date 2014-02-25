@@ -23,7 +23,7 @@ using boost::shared_ptr;
 
 namespace Katydid
 {
-    KTLOGGER(dtlog, "katydid.egg");
+    KTLOGGER(dtlog, "KTDigitizerTests");
 
     static KTNORegistrar< KTProcessor, KTDigitizerTests > sDigTestRegistrar("digitizer-tests");
 

@@ -4,7 +4,7 @@
 
 namespace Katydid {
 
-  KTLOGGER(asciilog, "katydid.output.ascii");
+  KTLOGGER(asciilog, "KTBasicAsciiWriter");
   
   static KTNORegistrar< KTWriter, KTBasicASCIIWriter > 
   sAWR("basic-ascii-writer");

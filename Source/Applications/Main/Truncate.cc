@@ -34,7 +34,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(tclog, "katydid.truncate");
+KTLOGGER(tclog, "Truncate");
 
 int main(int argc, char** argv)
 {
