@@ -22,7 +22,7 @@
 
 namespace Katydid
 {
-    KTLOGGER( mtlog, "katydid.egg" );
+    KTLOGGER( mtlog, "KTMantisClientWriting" );
 
     KTMantisClientWriting::KTMantisClientWriting( KTMantis* a_client, const mantis::param_node* a_config, mantis::run_context_dist* a_run_context, int a_write_port ) :
             f_config( a_config ),
@@ -55,6 +55,7 @@ namespace Katydid
         f_receiver = new mantis::record_receiver( f_server );
         f_receiver->set_data_chunk_size( t_status->data_chunk_size() );
         f_receiver->set_data_type_size( t_status->data_type_size() );
+        f_receiver->allocate( f_buffer, f_buffer_condition );
 
         a_run_context->unlock_inbound();
 

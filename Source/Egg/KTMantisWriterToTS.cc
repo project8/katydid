@@ -19,7 +19,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER( mtlog, "katydid.egg" );
+    KTLOGGER( mtlog, "KTMantisWriterToTS" );
 
     static mantis::registrar< mantis::writer, Katydid::KTMantisWriterToTS > s_mantis_writer_registrar( "katydid" );
 
@@ -77,6 +77,7 @@ namespace Katydid
 
     bool KTMantisWriterToTS::initialize_derived( mantis::request* a_request )
     {
+        KTDEBUG( mtlog, "Initializing writer-to-ts" );
         f_slice_size = f_client->GetSliceSize();
         f_stride = f_client->GetStride();
         if( f_stride == 0 )
@@ -129,13 +130,14 @@ namespace Katydid
         f_read_state.fReadPtrRecordOffset = 0;
         f_read_state.fSliceStartPtrOffset = 0;
         f_read_state.fAbsoluteRecordOffset = 0;
-        f_read_state.fStatus = MonarchReadState::kAtStartOfRecord;
+        f_read_state.fStatus = MonarchReadState::kAtStartOfRun;
 
         f_write_state.fSliceNumber = 0;
         f_write_state.fWriteBin = 0;
-        f_write_state.fStatus = WriteState::kAtStartOfSlice;
+        f_write_state.fStatus = WriteState::kAtStartOfRun;
 
         // initialize monarch records
+        KTDEBUG( mtlog, "Allocating record arrays for " << f_header.GetNChannels() << " channels" );
         unsigned n_bytes = sizeof(monarch::AcquisitionIdType) + sizeof(monarch::RecordIdType) + sizeof(monarch::TimeType) + f_header.GetRecordSize() * f_header.GetDataTypeSize();
         for( unsigned iChannel = 0; iChannel < f_header.GetNChannels(); ++iChannel )
         {
@@ -156,7 +158,8 @@ namespace Katydid
         while( ! f_bytes.empty() )
         {
             delete f_records.back();
-            delete [] f_bytes.back();
+            // i was getting a deallocation error when i used the next line
+            //delete [] f_bytes.back();
             f_records.pop_back();
             f_bytes.pop_back();
 
