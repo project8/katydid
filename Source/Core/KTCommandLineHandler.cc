@@ -23,7 +23,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(utillog, "katydid.utility");
+    KTLOGGER(utillog, "KTCommandLineHandler");
 
     CommandLineHandlerException::CommandLineHandlerException (std::string const& why)
       : std::logic_error(why)

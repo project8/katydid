@@ -13,7 +13,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(htlog, "katydid.analysis");
+    KTLOGGER(htlog, "KTHoughData");
 
     KTHoughData::KTHoughData() :
             KTExtensibleData< KTHoughData >(),

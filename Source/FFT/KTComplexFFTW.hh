@@ -23,7 +23,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_comp, "katydid.fft");
+    KTLOGGER(fftlog_comp, "KTComplexFFTW");
 
     class KTAnalyticAssociateData;
     class KTEggHeader;
@@ -54,7 +54,7 @@ namespace Katydid
      Currently only the following "rigor" flags are available:
      - ESTIMATE -- "A simple heuristic is used to pick a (probably sub-optimal) plan quickly."
      - MEASURE --  "Find[s] an optimized plan by actually computing several FFTs and measuring their execution time. Depending on your machine, this can take some time (often a few seconds)." This is the default option.
-     - PATIENT -- "Considers a wider range of algorithms and often produces a “more optimal” plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
+     - PATIENT -- "Considers a wider range of algorithms and often produces a more optimal plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
      - EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 

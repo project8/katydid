@@ -15,7 +15,7 @@ using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(publog, "katydid.output");
+    //KTLOGGER(publog, "KTJSONTypeWriterEgg");
 
     static KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEgg > sJSONTWERegistrar;
 

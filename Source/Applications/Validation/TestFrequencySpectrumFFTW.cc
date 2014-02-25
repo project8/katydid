@@ -14,7 +14,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "applications.validation");
+KTLOGGER(testlog, "TestFrequencySpectrumFFTW");
 
 int main()
 {

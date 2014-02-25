@@ -31,7 +31,7 @@ using namespace std;
 using namespace Katydid;
 
 
-KTLOGGER(testsw, "katydid.validation");
+KTLOGGER(testsw, "TestSlidingWindowFFT");
 
 
 int main(int argc, char** argv)

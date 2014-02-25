@@ -7,18 +7,28 @@
 
 #include "KTLogger.hh"
 
-using namespace Katydid;
+#include "MonarchLogger.hpp"
 
-KTLOGGER(logger, "test_logger")
+using namespace Katydid;
+using namespace monarch;
+
+KTLOGGER(logger, "TestLogger(katydid)")
+MLOGGER(mlog, "TestLogger(monarch)");
 
 int main()
 {
-    KTDEBUG(logger, "This is a DEBUG message");
-    KTINFO(logger, "This is an INFO message");
-    KTPROG(logger, "This is a PROG message");
-    KTWARN(logger, "This is a WARN message");
-    KTERROR(logger, "This is an ERROR message");
-    KTFATAL(logger, "This is a FATAL message");
+    KTDEBUG(logger, "This is a DEBUG message from Katydid");
+    KTINFO(logger, "This is an INFO message from Katydid");
+    KTPROG(logger, "This is a PROG message from Katydid");
+    KTWARN(logger, "This is a WARN message from Katydid");
+    KTERROR(logger, "This is an ERROR message from Katydid");
+    KTFATAL(logger, "This is a FATAL message from Katydid");
+
+    MDEBUG(mlog, "This is a DEBUG message from Monarch");
+    MINFO(mlog, "This is an INFO message from Monarch");
+    MWARN(mlog, "This is a WARN message from Monarch");
+    MERROR(mlog, "This is an ERROR message from Monarch");
+    MFATAL(mlog, "This is a FATAL message from Monarch");
 
     return 0;
 }

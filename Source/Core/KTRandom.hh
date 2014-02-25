@@ -27,7 +27,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(rnglog, "katydid.core");
+    KTLOGGER(rnglog, "KTRandom");
 
     //**************************************
     // Definition of the RNG engine class

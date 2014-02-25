@@ -17,7 +17,7 @@ using boost::filesystem::path;
 
 namespace Katydid
 {
-    KTLOGGER(dirlog, "katydid.core");
+    KTLOGGER(dirlog, "KTDirectory");
 
     KTDirectory::KTDirectory() :
             fPath(""),

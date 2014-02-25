@@ -23,7 +23,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(corrlog, "katydid.analysis");
+    KTLOGGER(corrlog, "KTCorrelator");
 
     static KTNORegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
 

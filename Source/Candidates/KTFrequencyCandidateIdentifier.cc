@@ -25,7 +25,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(fcilog, "katydid.analysis");
+    KTLOGGER(fcilog, "TestFrequencyCandidateIdentifier");
 
     static KTNORegistrar< KTProcessor, KTFrequencyCandidateIdentifier > sFCIRegistrar("frequency-candidate-identifier");
 

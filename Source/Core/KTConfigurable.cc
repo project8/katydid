@@ -17,7 +17,7 @@ using std::string;
 namespace Katydid
 {
 
-    KTLOGGER(conflog, "katydid.core");
+    KTLOGGER(conflog, "KTConfigurable");
 
     //******************
     // KTConfigurable

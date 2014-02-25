@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(utillog_getnbins, "katydid.utility");
+    KTLOGGER(utillog_getnbins, "KTAxisProperties_GetNBins");
 
     template< size_t NDims >
     class KTNBinsFunctor

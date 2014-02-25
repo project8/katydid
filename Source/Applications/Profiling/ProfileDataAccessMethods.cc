@@ -23,7 +23,7 @@ using namespace std;
 
 using boost::unordered_map;
 
-KTLOGGER(proflog, "katydid.applications.profiling");
+KTLOGGER(proflog, "ProfileDataAccessMethods");
 
 struct Data
 {

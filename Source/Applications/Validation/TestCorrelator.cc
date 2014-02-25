@@ -14,7 +14,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(corrtestlog, "katydid.applications.validation");
+KTLOGGER(corrtestlog, "TestCorrelator");
 
 int main()
 {

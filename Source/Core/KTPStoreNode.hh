@@ -33,7 +33,7 @@ using boost::phoenix::ref;
 
 namespace Katydid
 {
-    KTLOGGER(utillog_psnode, "katydid.utility");
+    KTLOGGER(utillog_psnode, "KTPStoreNode");
 
     typedef std::pair< unsigned, unsigned > UIntPair;
     typedef std::pair< unsigned, double > UIntDoublePair;

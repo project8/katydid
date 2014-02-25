@@ -28,7 +28,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "katydid.egg");
+    KTLOGGER(eggreadlog, "KTEggReaderMonarch");
 
     unsigned KTEggReaderMonarch::GetMaxChannels()
     {
@@ -198,22 +198,19 @@ namespace Katydid
             // Calculate whether we need to move the read pointer to a different record by subtracing the number
             // of records read in the last slice (fReadPtrRecordOffset)
             // If this is 0, it doesn't need to be moved
-            // If it's > 0, then it needs to be reduced by 1 because of how the offset number in Monarch::ReadRecord is used (offset=0 will advance to the next record)
+            // If it's != 0, then it needs to be reduced by 1 because of how the offset number in Monarch::ReadRecord is used (offset=0 will advance to the next record; offset=-1 will read the same record)
             int readPtrRecordOffsetShift = int(sliceStartRecordOffset) - int(fReadState.fReadPtrRecordOffset);
             if (readPtrRecordOffsetShift != 0)
             {
                 // change the absolute record offset first because it should be done before the adjustment to Monarch::ReadRecord offset counting is made
                 fReadState.fAbsoluteRecordOffset += readPtrRecordOffsetShift;
-                if (readPtrRecordOffsetShift != 0)
+                --readPtrRecordOffsetShift;
+                KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
+                // move the read pointer to the slice start pointer (first move monarch to the correct record)
+                if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
                 {
-                    --readPtrRecordOffsetShift;
-                    KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
-                    // move the read pointer to the slice start pointer (first move monarch to the correct record)
-                    if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
-                    {
-                        KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                        return KTDataPtr();
-                    }
+                    KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
+                    return KTDataPtr();
                 }
             }
             // Move the read pointer to the slice start pointer within the record

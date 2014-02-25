@@ -29,7 +29,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(eggwritelog, "katydid.output");
+    KTLOGGER(eggwritelog, "KTEggWriter");
 
     static KTNORegistrar< KTWriter, KTEggWriter > sEWriterRegistrar("egg-writer");
     static KTNORegistrar< KTProcessor, KTEggWriter > sEWProcRegistrar("egg-writer");

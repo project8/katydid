@@ -21,7 +21,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(avlog_hh, "katydid.analysis");
+    KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
 
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;

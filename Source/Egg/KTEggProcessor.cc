@@ -32,7 +32,7 @@ namespace Katydid
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
     static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
-    KTLOGGER(egglog, "katydid.egg");
+    KTLOGGER(egglog, "KTEggProcessor");
 
     static KTNORegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
 

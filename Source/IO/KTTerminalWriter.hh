@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(termlog, "katydid.output");
+    KTLOGGER(termlog, "KTTerminalWriter");
 
     class KTTerminalWriter;
 

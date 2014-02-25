@@ -17,7 +17,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "RectangularWindow");
 
     static KTNORegistrar< KTWindowFunction, KTRectangularWindow > sWFRectRegistrar("rectangular");
 

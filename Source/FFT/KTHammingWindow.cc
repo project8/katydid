@@ -18,7 +18,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTHammingWindow");
 
     static KTNORegistrar< KTWindowFunction, KTHammingWindow > sWFHammRegistrar("hamming");
 

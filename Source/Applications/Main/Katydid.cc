@@ -18,7 +18,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(katydidlog, "katydid.applications.main");
+KTLOGGER(katydidlog, "Katydid");
 
 
 int main(int argc, char** argv)
