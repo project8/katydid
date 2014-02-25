@@ -19,6 +19,9 @@
 
 // UTILITY MACROS
 
+#ifndef LOGGER_UTILITY_MACROS_
+#define LOGGER_UTILITY_MACROS_
+
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define __FILE_LINE__      __FILE__ "(" TOSTRING(__LINE__) ")"
@@ -44,18 +47,20 @@
 #define macro_dispatcher_(func, nargs) macro_dispatcher__(func, nargs)
 #define macro_dispatcher__(func, nargs) func ## nargs
 
+#endif  /* LOGGER_UTILITY_MACROS_ */
+
 // COLOR DEFINITIONS
-#define COLOR_NORMAL "0"
-#define COLOR_BRIGHT "1"
-#define COLOR_FOREGROUND_RED "31"
-#define COLOR_FOREGROUND_GREEN "32"
-#define COLOR_FOREGROUND_YELLOW "33"
-#define COLOR_FOREGROUND_BLUE "34"
-#define COLOR_FOREGROUND_CYAN "36"
-#define COLOR_FOREGROUND_WHITE "37"
-#define COLOR_PREFIX "\033["
-#define COLOR_SUFFIX "m"
-#define COLOR_SEPARATOR ";"
+#define KTCOLOR_NORMAL "0"
+#define KTCOLOR_BRIGHT "1"
+#define KTCOLOR_FOREGROUND_RED "31"
+#define KTCOLOR_FOREGROUND_GREEN "32"
+#define KTCOLOR_FOREGROUND_YELLOW "33"
+#define KTCOLOR_FOREGROUND_BLUE "34"
+#define KTCOLOR_FOREGROUND_CYAN "36"
+#define KTCOLOR_FOREGROUND_WHITE "37"
+#define KTCOLOR_PREFIX "\033["
+#define KTCOLOR_SUFFIX "m"
+#define KTCOLOR_SEPARATOR ";"
 
 // INCLUDES
 
@@ -68,7 +73,8 @@
 /**
  * The standard Katydid namespace.
  */
-namespace Katydid {
+namespace Katydid
+{
 
     /**
      * The Katydid logger.

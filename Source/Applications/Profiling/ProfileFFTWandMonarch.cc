@@ -21,7 +21,7 @@ using namespace std;
 using namespace Katydid;
 using namespace monarch;
 
-KTLOGGER(proflog, "katydid.applications.profiling");
+KTLOGGER(proflog, "ProfileFFTWandMonarch");
 
 int main(const int argc, const char** argv)
 {

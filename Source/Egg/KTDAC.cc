@@ -22,7 +22,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(egglog, "katydid.egg");
+    KTLOGGER(egglog, "KTDAC");
 
     static KTNORegistrar< KTProcessor, KTDAC > sDACRegistrar("dac");
 

@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(slotlog, "katydid.core");
+    KTLOGGER(slotlog, "KTSlot");
 
     template< typename Signature>
     class KTSlotNoArg

@@ -19,7 +19,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_comp, "katydid.fft");
+    KTLOGGER(fftlog_comp, "KTPolyphaseFilterBank.hh");
 
     class KTEggHeader;
     class KTPStoreNode;

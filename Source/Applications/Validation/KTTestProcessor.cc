@@ -11,7 +11,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(testsiglog, "katydid.verification.testsig")
+    KTLOGGER(testsiglog, "KTTestProcessor")
 
     KTTestProcessorA::KTTestProcessorA() :
             fTheSignal()

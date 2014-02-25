@@ -29,7 +29,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "katydid.applications.validation");
+KTLOGGER(testlog, "TestWignerVille");
 
 int main()
 {

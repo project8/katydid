@@ -34,7 +34,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "katydid.analysis");
+    KTLOGGER(sdlog, "KTVariableSpectrumDiscriminator");
 
     static KTNORegistrar< KTProcessor, KTVariableSpectrumDiscriminator > sSpectDiscRegistrar("variable-spectrum-discriminator");
 

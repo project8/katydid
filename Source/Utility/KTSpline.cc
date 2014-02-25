@@ -65,7 +65,7 @@ namespace Katydid
 
 #else
 
-    KTLOGGER(splinelog, "katydid.utility");
+    KTLOGGER(splinelog, "KTSpline");
 
     KTSpline::KTSpline() :
             fXMin(0.),

@@ -27,7 +27,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(processorlog, "katydid.core");
+    KTLOGGER(processorlog, "KTProcessor.hh");
 
     class ProcessorException : public std::logic_error
     {

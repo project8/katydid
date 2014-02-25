@@ -21,7 +21,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTWindower");
 
     static KTNORegistrar< KTProcessor, KTWindower > sWindowerRegistrar("windower");
 

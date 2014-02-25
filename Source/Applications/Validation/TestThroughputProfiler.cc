@@ -10,7 +10,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "katydid.applications.validation");
+KTLOGGER(testlog, "TestThroughputProfiler");
 
 int main()
 {

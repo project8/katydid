@@ -18,7 +18,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "KTOfficialCandidatesWriter");
 
     static KTNORegistrar< KTWriter, KTOfficialCandidatesWriter > sOCWriterRegistrar("official-candidates-writer");
     static KTNORegistrar< KTProcessor, KTOfficialCandidatesWriter > sOCWProcRegistrar("official-candidates-writer");

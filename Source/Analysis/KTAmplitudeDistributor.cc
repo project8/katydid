@@ -25,7 +25,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(adlog, "katydid.analysis");
+    KTLOGGER(adlog, "KTAmplitudeDistributor");
 
     static KTNORegistrar< KTProcessor, KTAmplitudeDistributor > sADRegistrar("amplitude-distributor");
 

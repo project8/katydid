@@ -28,7 +28,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(sclog, "katydid.analysis");
+    KTLOGGER(sclog, "KTMultiSliceClustering");
 
     //class KTCorrelationData;
     class KTFrequencySpectrum;

@@ -18,7 +18,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(utillog_ti_factory, "katydid.utility");
+    KTLOGGER(utillog_ti_factory, "KTTIFactory");
 
     template< class XBaseType >
     class KTTIFactory;
@@ -119,7 +119,7 @@ namespace Katydid
     void KTTIFactory< XBaseType >::Register(const KTTIRegistrarBase< XBaseType >* registrar)
     {
         // A local (static) logger is created inside this function to avoid static initialization order problems
-        KTLOGGER(utillog_ti_factory_reg, "katydid.utility");
+        KTLOGGER(utillog_ti_factory_reg, "KTTIFactory-Register");
 
         FactoryCIt it = fMap->find(&typeid(XDerivedType));
         if (it != fMap->end())

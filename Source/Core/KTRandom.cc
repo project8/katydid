@@ -14,7 +14,7 @@ using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(rnglog, "katydid.core");
+    //KTLOGGER(rnglog, "KTRandom");
 
     KTRNGEngine::KTRNGEngine(const string& name) :
             KTSelfConfigurable(name),

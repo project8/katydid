@@ -17,7 +17,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(testlog, "katydid.applications.validation");
+KTLOGGER(testlog, "TestCacheDirectory");
 
 int main()
 {

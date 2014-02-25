@@ -28,7 +28,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "katydid.egg");
+    KTLOGGER(eggreadlog, "KTEggReader2011");
 
     const ifstream::pos_type KTEggReader2011::sPreludeSize = 9;
 
