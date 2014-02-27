@@ -12,7 +12,7 @@
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesDistData.hh"
 #include "KTNOFactory.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 
 using boost::shared_ptr;
@@ -37,13 +37,13 @@ namespace Katydid
     {
     }
 
-    bool KTAmplitudeCounter::Configure(const KTPStoreNode* node)
+    bool KTAmplitudeCounter::Configure(const KTParamNode* node)
     {
         if (node != NULL)
         {
-            SetNumberOfBins(node->GetData< unsigned >("num-bins", fNumberOfBins));
-            SetRangeMin(node->GetData< double >("range-min", fRangeMin));
-            SetRangeMax(node->GetData< double >("range-max", fRangeMax));
+            SetNumberOfBins(node->GetValue< unsigned >("num-bins", fNumberOfBins));
+            SetRangeMin(node->GetValue< double >("range-min", fRangeMin));
+            SetRangeMax(node->GetValue< double >("range-max", fRangeMax));
             return true;
         }
         return false;

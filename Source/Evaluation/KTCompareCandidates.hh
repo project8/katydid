@@ -16,7 +16,7 @@
 
 namespace Katydid
 {
-    class KTPStoreNode;
+    class KTParamNode;
 
     /*!
      @class KTCompareCandidates
@@ -60,7 +60,7 @@ namespace Katydid
             KTCompareCandidates(const std::string& name = "compare-candidates");
             virtual ~KTCompareCandidates();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             bool GetAssumeSparseCandidates() const;
             void SetAssumeSparseCandidates(bool flag);

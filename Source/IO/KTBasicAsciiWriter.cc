@@ -1,6 +1,6 @@
 #include "KTBasicAsciiWriter.hh"
 #include "KTNOFactory.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 namespace Katydid {
 
@@ -25,7 +25,7 @@ namespace Katydid {
   }
 
   // Configuration method
-  bool KTBasicASCIIWriter::Configure(const KTPStoreNode* n) {
+  bool KTBasicASCIIWriter::Configure(const KTParamNode* n) {
     if (n != NULL) {
       fOutputFilename = n->GetData<std::string>("output-file",fOutputFilename);
       if( this->OpenFile() == false ) {

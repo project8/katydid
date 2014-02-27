@@ -78,7 +78,7 @@ namespace Katydid
             KTAmplitudeDistributor(const std::string& name = "amplitude-distributor");
             virtual ~KTAmplitudeDistributor();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);

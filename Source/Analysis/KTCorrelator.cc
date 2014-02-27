@@ -42,14 +42,22 @@ namespace Katydid
     {
     }
 
-    bool KTCorrelator::Configure(const KTPStoreNode* node)
+    bool KTCorrelator::Configure(const KTParamNode* node)
     {
-        KTPStoreNode::csi_pair itPair = node->EqualRange("corr-pair");
-        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; ++citer)
+        const KTParamArray* corrPairs = node->ArrayAt("corr-pairs");
+        if (corrPairs != NULL)
         {
-            UIntPair pair = ParsePairUInt(citer->second.get_value< string >());
-            KTINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
-            this->AddPair(pair);
+            for (KTParamArray::const_iterator pairIt = corrPairs->Begin(); pairIt != corrPairs->End(); ++pairIt)
+            {
+                if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
+                {
+                    KTERROR(wvlog, "Invalid pair: " << (*pairIt)->ToString());
+                    return false;
+                }
+                UIntPair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< unsigned >(1));
+                KTINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
+                this->AddPair(pair);
+            }
         }
 
         return true;

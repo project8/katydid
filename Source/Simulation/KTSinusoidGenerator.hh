@@ -51,7 +51,7 @@ namespace Katydid
             KTSinusoidGenerator(const std::string& name = "sinusoid-generator");
             virtual ~KTSinusoidGenerator();
 
-            virtual bool ConfigureDerivedGenerator(const KTPStoreNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTParamNode* node);
 
             double GetFrequency() const;
             void SetFrequency(double freq);

@@ -23,7 +23,7 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTGainVariationData;
-    class KTPStoreNode;
+    class KTParamNode;
     //class KTSpline;
 
     /*!
@@ -60,7 +60,7 @@ namespace Katydid
             KTGainVariationProcessor(const std::string& name = "gain-variation");
             virtual ~KTGainVariationProcessor();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             bool GetNormalize() const;
             void SetNormalize(bool flag);

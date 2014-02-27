@@ -67,7 +67,7 @@ namespace Katydid
             KTBasicROOTFileWriter(const std::string& name = "basic-root-writer");
             virtual ~KTBasicROOTFileWriter();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);

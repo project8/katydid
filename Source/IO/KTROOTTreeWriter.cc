@@ -10,7 +10,7 @@
 #include "KTCommandLineOption.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include "TFile.h"
 #include "TTree.h"
@@ -47,13 +47,13 @@ namespace Katydid
         delete fFile;
     }
 
-    bool KTROOTTreeWriter::Configure(const KTPStoreNode* node)
+    bool KTROOTTreeWriter::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetData<string>("output-file", fFilename));
-            SetFileFlag(node->GetData<string>("file-flag", fFileFlag));
+            SetFilename(node->GetValue("output-file", fFilename));
+            SetFileFlag(node->GetValue("file-flag", fFileFlag));
         }
 
         // Command-line settings

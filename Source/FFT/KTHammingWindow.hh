@@ -36,7 +36,7 @@ namespace Katydid
             KTHammingWindow(const std::string& name = "hamming");
             virtual ~KTHammingWindow();
 
-            virtual bool ConfigureWFSubclass(const KTPStoreNode* node);
+            virtual bool ConfigureWFSubclass(const KTParamNode* node);
 
             virtual double GetWeight(double time) const;
 

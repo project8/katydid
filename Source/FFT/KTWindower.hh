@@ -19,7 +19,7 @@
 namespace Katydid
 {
     class KTEggHeader;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
@@ -57,7 +57,7 @@ namespace Katydid
             KTWindower(const std::string& name = "windower");
             virtual ~KTWindower();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             KTWindowFunction* GetWindowFunction() const;
             void SetWindowFunction(KTWindowFunction* wf);

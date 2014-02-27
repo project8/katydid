@@ -8,6 +8,8 @@
 #ifndef KTCONFIGURATOR_HH_
 #define KTCONFIGURATOR_HH_
 
+#include "KTSingleton.hh"
+
 #include "KTParam.hh"
 
 #include "KTException.hh"
@@ -17,12 +19,16 @@
 namespace Katydid
 {
 
-    class KTConfigurator
+    class KTConfigurator : public KTSingleton< KTConfigurator >
     {
-        public:
+        private:
+            friend class KTSingleton< KTConfigurator >;
+            friend class KTDestroyer< KTConfigurator >;
+
             KTConfigurator();
             virtual ~KTConfigurator();
 
+        public:
             void Merge(const KTParamNode& aNode);
 
             KTParamNode* Config();

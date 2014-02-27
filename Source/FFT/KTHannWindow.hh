@@ -42,7 +42,7 @@ namespace Katydid
             KTHannWindow(const std::string& name = "hann");
             virtual ~KTHannWindow();
 
-            virtual bool ConfigureWFSubclass(const KTPStoreNode* node);
+            virtual bool ConfigureWFSubclass(const KTParamNode* node);
 
             virtual double GetWeight(double time) const;
 

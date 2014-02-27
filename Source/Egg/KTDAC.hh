@@ -17,7 +17,7 @@
 
 namespace Katydid
 {
-    class KTPStoreNode;
+    class KTParamNode;
     class KTRawTimeSeries;
     class KTRawTimeSeriesData;
     class KTTimeSeries;
@@ -69,7 +69,7 @@ namespace Katydid
             KTDAC(const std::string& name = "dac");
             virtual ~KTDAC();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetNBits() const;
             void SetNBits(unsigned nBits);

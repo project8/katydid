@@ -9,7 +9,7 @@
 
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
@@ -34,13 +34,13 @@ namespace Katydid
     {
     }
 
-    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
+    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
         typedef KTRNGGaussian<>::input_type input_type;
-        input_type mean = node->GetData< input_type >("mean", fRNG.mean());
-        input_type sigma = node->GetData< input_type >("sigma", fRNG.sigma());
+        input_type mean = node->GetValue< input_type >("mean", fRNG.mean());
+        input_type sigma = node->GetValue< input_type >("sigma", fRNG.sigma());
         fRNG.param(KTRNGGaussian<>::param_type(mean, sigma));
 
         return true;

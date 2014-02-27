@@ -10,8 +10,7 @@
 #define KTAPPLICATION_HH_
 
 #include "KTCommandLineHandler.hh"
-//#include "KTParameterStore.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #ifdef ROOT_FOUND
 #include "TApplication.h"
@@ -57,29 +56,8 @@ namespace Katydid
             KTApplication(int argC, char** argV, bool makeTApp=false, bool requireArgs=true, KTParamNode* defaultConfig=NULL);
             virtual ~KTApplication();
 
-            /// Parse the config file and store the results (performed by KTParameterStore)
-            //bool ReadConfigFile();
-
-            /// Parse any unparsed parts of command line and store the results (performed by KTCommandLineHandler)
-            /// This is called from ReadConfigFile
-            //bool FinishProcessingCommandLine();
-
-            /// Configure a KTConfigurable object
-            /// If baseAddress is given, the KTConfigurable's config name will be appended before attempting to get the parameter store node.
-            /// If no baseAddress is given, no parameter store node will be used.
-            /// Use baseAddress="" if the parameter store node to be used is a top-level node.
-            bool Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress);
-
-            /// Get a node from the parameter store tree
-            KTPStoreNode GetNode(const std::string& address) const;
-
-        //protected:
-            //void AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const std::string& addressOfTree="");
-            //void ApplyCLOptionsToParamStore(const po::parsed_options* parsedOpts);
-
         public:
             KTCommandLineHandler* GetCommandLineHandler() const;
-            //KTParameterStore* GetParameterStore() const;
             const KTConfigurator* GetConfigurator() const;
 
             const std::string& GetConfigFilename() const;
@@ -87,7 +65,6 @@ namespace Katydid
         protected:
             KTCommandLineHandler* fCLHandler;
             KTConfigurator* fConfigurator;
-            //KTParameterStore* fParamStore;
 
             std::string fConfigFilename;
 
@@ -100,13 +77,6 @@ namespace Katydid
 #endif
     };
 
-    /*
-    inline KTPStoreNode KTApplication::GetNode(const std::string& address) const
-    {
-        return fParamStore->GetNode(address);
-    }
-    */
-
     inline KTCommandLineHandler* KTApplication::GetCommandLineHandler() const
     {
         return fCLHandler;
@@ -116,13 +86,6 @@ namespace Katydid
     {
         return fConfigurator;
     }
-
-    /*
-    inline KTParameterStore* KTApplication::GetParameterStore() const
-    {
-        return fParamStore;
-    }
-    */
 
     inline const std::string& KTApplication::GetConfigFilename() const
     {

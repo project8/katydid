@@ -10,7 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
@@ -56,15 +56,15 @@ namespace Katydid
         delete fMonarch;
     }
 
-    bool KTEggWriter::Configure(const KTPStoreNode* node)
+    bool KTEggWriter::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetFilename(node->GetData<string>("output-file", fFilename));
+        SetFilename(node->GetValue("output-file", fFilename));
 
-        if (node->HasData("format-mode"))
+        if (node->Has("format-mode"))
         {
-            string modeStr(node->GetData<string>("format-mode"));
+            string modeStr(node->GetValue("format-mode"));
             if (modeStr == "separate")
             {
                 SetFormatMode(sFormatMultiSeparate);
@@ -80,7 +80,7 @@ namespace Katydid
             }
         }
 
-        SetDigitizerFullscale(node->GetData<double>("digitizer-fullscale", fDigitizerFullscale));
+        SetDigitizerFullscale(node->GetValue<double>("digitizer-fullscale", fDigitizerFullscale));
 
         return true;
     }

@@ -10,7 +10,7 @@
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -31,7 +31,7 @@ namespace Katydid
     {
     }
 
-    bool KTHammingWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTHammingWindow::ConfigureWFSubclass(const KTParamNode*)
     {
         KTDEBUG(windowlog, "Hamming WF configured");
         return true;

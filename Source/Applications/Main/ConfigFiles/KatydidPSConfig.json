@@ -23,7 +23,6 @@
 	            "order": 1
 	        },
 	        
-	        "comment": "do the analysis!",
 	        {
 	            "signal": "egg:ts",
 	            "slot": "profiler:data",
@@ -39,7 +38,6 @@
 	            "slot": "writer:fs-polar"
 	        },
 	        
-	        "comment": "stop the profiler",
 	        {
 	            "signal": "egg:egg-done",
 	            "slot": "profiler:stop"

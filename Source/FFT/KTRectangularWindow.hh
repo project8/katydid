@@ -33,7 +33,7 @@ namespace Katydid
             KTRectangularWindow(const std::string& name = "rectangular");
             virtual ~KTRectangularWindow();
 
-            virtual bool ConfigureWFSubclass(const KTPStoreNode* node);
+            virtual bool ConfigureWFSubclass(const KTParamNode* node);
 
             virtual double GetWeight(double time) const;
 

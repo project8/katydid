@@ -9,7 +9,7 @@
 
 #include "KTLogger.hh"
 #include "KTNOFactory.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesData.hh"
@@ -48,15 +48,15 @@ namespace Katydid
     {
     }
 
-    bool KTDAC::Configure(const KTPStoreNode* node)
+    bool KTDAC::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetNBits(node->GetData< unsigned >("n-bits", fNBits));
-        SetMinVoltage(node->GetData< double >("min-voltage", fMinVoltage));
-        SetVoltageRange(node->GetData< double >("voltage-range", fVoltageRange));
+        SetNBits(node->GetValue< unsigned >("n-bits", fNBits));
+        SetMinVoltage(node->GetValue< double >("min-voltage", fMinVoltage));
+        SetVoltageRange(node->GetValue< double >("voltage-range", fVoltageRange));
 
-        string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
+        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
         if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else
@@ -65,9 +65,9 @@ namespace Katydid
             return false;
         }
 
-        if (node->HasData("n-bits-emulated"))
+        if (node->Has("n-bits-emulated"))
         {
-            SetEmulatedNBits(node->GetData< unsigned >("n-bits-emulated", fEmulatedNBits));
+            SetEmulatedNBits(node->GetValue< unsigned >("n-bits-emulated", fEmulatedNBits));
         }
 
         Initialize();

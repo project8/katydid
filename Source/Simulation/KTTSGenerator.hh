@@ -61,8 +61,8 @@ namespace Katydid
             KTTSGenerator(const std::string& name = "default-ts-generator");
             virtual ~KTTSGenerator();
 
-            virtual bool Configure(const KTPStoreNode* node);
-            virtual bool ConfigureDerivedGenerator(const KTPStoreNode* node) = 0;
+            virtual bool Configure(const KTParamNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTParamNode* node) = 0;
 
             unsigned GetNSlices() const;
             void SetNSlices(unsigned slices);

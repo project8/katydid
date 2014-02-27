@@ -69,32 +69,36 @@ namespace Katydid
         }
     }
 
-    bool KTWignerVille::Configure(const KTPStoreNode* node)
+    bool KTWignerVille::Configure(const KTParamNode* node)
     {
-        const KTPStoreNode fftNode = node->GetChild("complex-fftw");
-        if (fftNode.IsValid())
-        {
-            fFFT->Configure(&fftNode);
-        }
+        fFFT->Configure(node->NodeAt("complex-fftw"));
 
-        const KTPStoreNode windowerNode = node->GetChild("windower");
-        if (windowerNode.IsValid())
+        const KTParamNode* windowerNode = node->NodeAt("windower");
+        if (windowerNode != NULL)
         {
             fUseWindowFunction = true;
-            fWindower->Configure(&windowerNode);
+            fWindower->Configure(windowerNode);
         }
 
-        KTPStoreNode::csi_pair itPair = node->EqualRange("wv-pair");
-        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
+        const KTParamArray* wvPairs = node->ArrayAt("wv-pairs");
+        if (wvPairs != NULL)
         {
-            UIntPair pair = ParsePairUInt(citer->second.get_value< string >());
-            KTINFO(wvlog, "Adding WV pair " << pair.first << ", " << pair.second);
-            this->AddPair(pair);
+            for (KTParamArray::const_iterator pairIt = wvPairs->Begin(); pairIt != wvPairs->End(); ++pairIt)
+            {
+                if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
+                {
+                    KTERROR(wvlog, "Invalid pair: " << (*pairIt)->ToString());
+                    return false;
+                }
+                UIntPair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< unsigned >(1));
+                KTINFO(wvlog, "Adding WV pair " << pair.first << ", " << pair.second);
+                this->AddPair(pair);
+            }
         }
 
-        SetWindowSize(node->GetData< unsigned >("window-size", fWindowSize));
-        SetWindowStride(node->GetData< unsigned >("window-stride", fWindowStride));
-        SetNWindowsToAverage(node->GetData< unsigned >("n-windows-to-average", fNWindowsToAverage));
+        SetWindowSize(node->GetValue< unsigned >("window-size", fWindowSize));
+        SetWindowStride(node->GetValue< unsigned >("window-stride", fWindowStride));
+        SetNWindowsToAverage(node->GetValue< unsigned >("n-windows-to-average", fNWindowsToAverage));
 
         return true;
     }

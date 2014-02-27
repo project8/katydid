@@ -22,7 +22,7 @@ namespace Katydid {
 
     // Configuration
   public:
-    bool Configure(const KTPStoreNode* node);
+    bool Configure(const KTParamNode* node);
   protected:
     std::ofstream* fOutputStream;
     std::string fOutputFilename;

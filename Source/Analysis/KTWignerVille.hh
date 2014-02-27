@@ -15,7 +15,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSlot.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -60,7 +60,8 @@ namespace Katydid
 
      Available configuration values:
      - "complex-fftw": object -- configure the fftw
-     - "wv-pair": bool -- channel pair to be used in the Wigner-Ville transform: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
+     - "wv-pairs": array of arrays -- channel pairs to be used in the Wigner-Ville transform:
+                                      e.g.: "corr-pairs": [ [0, 1], [1, 0], [1, 1] ]
      - "window-size": unsigned -- number of bins to use for the WV window
      - "window-stride": unsigned -- number of bins to skip between WV windows
      - "n-windows-to-average": unsigned -- number of windows to average together into a single WV window
@@ -77,6 +78,7 @@ namespace Katydid
     class KTWignerVille : public KTProcessor
     {
         public:
+            typedef std::pair< unsigned, unsigned > UIntPair;
             typedef std::vector< UIntPair > PairVector;
 
             typedef std::complex< double > Complex;
@@ -86,7 +88,7 @@ namespace Katydid
             KTWignerVille(const std::string& name = "wigner-ville");
             virtual ~KTWignerVille();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);

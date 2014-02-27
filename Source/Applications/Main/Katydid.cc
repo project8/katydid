@@ -53,28 +53,23 @@ int main(int argc, char** argv)
             "                                    $=                                          \n" <<
             "                                    =                                           \n");
 
+    KTApplication* app = NULL;
     try
     {
-        KTApplication app(argc, argv);
+        app = new KTApplication(argc, argv);
     }
     catch( std::exception& e )
     {
         KTERROR( katydidlog, "Something went wrong while processing the command line:\n" << e.what() );
         return -1;
     }
-    //if (! app.ReadConfigFile())
-    //{
-    //    KTERROR(katydidlog, "Unable to read config file. Aborting.");
-    //    return -1;
-    //}
 
-    const KTParamNode* parentConfigNode = app.GetConfigurator();
+    const KTParamNode* parentConfigNode = app->GetConfigurator()->Config();
 
     // Create and configure the processor toolbox.
     // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
-    //string appConfigName("katydid");
     KTProcessorToolbox procTB;
-    ;
+
     if ( ! procTB.Configure( parentConfigNode->NodeAt( procTB.GetConfigName() ) ) )
     {
         KTERROR(katydidlog, "Unable to configure processor toolbox. Aborting.");
@@ -82,12 +77,6 @@ int main(int argc, char** argv)
     }
 
     // Configure the processors
-    //KTPStoreNode node = app.GetNode(appConfigName);
-    //if (! node.IsValid())
-    //{
-    //    KTERROR(katydidlog, "Configuration node <" << appConfigName << "> was not found. Aborting");
-    //    return -3;
-    //}
     if ( ! procTB.ConfigureProcessors( parentConfigNode ) )
     {
         KTERROR(katydidlog, "Unable to configure processors. Aborting.");
@@ -96,6 +85,8 @@ int main(int argc, char** argv)
 
     // Execute the run queue!
     bool success = procTB.Run();
+
+    delete app;
 
     KTPROG(katydidlog, "That's all, folks!");
 

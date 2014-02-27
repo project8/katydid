@@ -10,7 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -41,7 +41,7 @@ namespace Katydid
     {
     }
 
-    bool KTPolyphaseFilterBank::Configure(const KTPStoreNode* node)
+    bool KTPolyphaseFilterBank::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node == NULL)
@@ -49,13 +49,13 @@ namespace Katydid
             return false;
         }
 
-        if (node->HasData("n-subsets"))
+        if (node->Has("n-subsets"))
         {
-            SetNSubsets(node->GetData("n-subsets", fNSubsets));
+            SetNSubsets(node->GetValue("n-subsets", fNSubsets));
         }
-        if (node->HasData("subset-size"))
+        if (node->Has("subset-size"))
         {
-            SetSubsetSize(node->GetData("subset-size", fSubsetSize));
+            SetSubsetSize(node->GetValue("subset-size", fSubsetSize));
         }
 
         return true;

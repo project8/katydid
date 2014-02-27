@@ -10,7 +10,7 @@
 #include "KTDigitizerTestData.hh"
 #include "KTLogger.hh"
 #include "KTNOFactory.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -57,17 +57,17 @@ namespace Katydid
     {
     }
 
-    bool KTDigitizerTests::Configure(const KTPStoreNode* node)
+    bool KTDigitizerTests::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        fNDigitizerBits = node->GetData< unsigned >("n-digitizer-bits", fNDigitizerBits);
+        fNDigitizerBits = node->GetValue< unsigned >("n-digitizer-bits", fNDigitizerBits);
 
-        SetTestBitOccupancy(node->GetData< bool >("test-bit-occupancy", fTestBitOccupancy));
+        SetTestBitOccupancy(node->GetValue< bool >("test-bit-occupancy", fTestBitOccupancy));
 
-        SetTestClipping(node->GetData< bool >("test-clipping", fTestClipping));
+        SetTestClipping(node->GetValue< bool >("test-clipping", fTestClipping));
 
-        SetTestLinearity(node->GetData< bool >("test-linearity", fTestLinearity));
+        SetTestLinearity(node->GetValue< bool >("test-linearity", fTestLinearity));
 
         KTWARN(dtlog, "fTestLinearity is " << fTestLinearity);
 

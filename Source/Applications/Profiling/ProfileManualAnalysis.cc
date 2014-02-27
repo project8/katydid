@@ -79,7 +79,7 @@ int main()
 #endif
 
     KTCorrelator corr;
-    corr.AddPair(UIntPair(0, 1));
+    corr.AddPair(KTCorrelator::UIntPair(0, 1));
 
     KTSpectrumDiscriminator spectDisc;
     spectDisc.SetMinFrequency(minAnalysisFreq);

@@ -14,7 +14,7 @@
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 #include <map>
@@ -45,18 +45,18 @@ namespace Katydid
     {
     }
 
-    bool KTDistanceClustering::Configure(const KTPStoreNode* node)
+    bool KTDistanceClustering::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        if (node->HasData("max-frequency-distance"))
+        if (node->Has("max-frequency-distance"))
         {
-            SetMaxFrequencyDistance(node->GetData< double >("max-frequency-distance"));
+            SetMaxFrequencyDistance(node->GetValue< double >("max-frequency-distance"));
         }
 
-        if (node->HasData("max-bin-distance"))
+        if (node->Has("max-bin-distance"))
         {
-            SetMaxBinDistance(node->GetData< unsigned >("max-bin-distance"));
+            SetMaxBinDistance(node->GetValue< unsigned >("max-bin-distance"));
         }
 
         return true;

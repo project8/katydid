@@ -52,7 +52,7 @@ namespace Katydid
             KTGaussianNoiseGenerator(const std::string& name = "gaussian-noise-generator");
             virtual ~KTGaussianNoiseGenerator();
 
-            virtual bool ConfigureDerivedGenerator(const KTPStoreNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTParamNode* node);
 
             double GetMean() const;
             void SetMean(double mean);

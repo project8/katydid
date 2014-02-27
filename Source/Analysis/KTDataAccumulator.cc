@@ -13,7 +13,7 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
 //#include "KTTimeSeriesDistData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -61,12 +61,12 @@ namespace Katydid
     {
     }
 
-    bool KTDataAccumulator::Configure(const KTPStoreNode* node)
+    bool KTDataAccumulator::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetAccumulatorSize(node->GetData<unsigned>("number-to-average", fAccumulatorSize));
-        SetSignalInterval(node->GetData<unsigned>("signal-interval", fSignalInterval));
+        SetAccumulatorSize(node->GetValue<unsigned>("number-to-average", fAccumulatorSize));
+        SetSignalInterval(node->GetValue<unsigned>("signal-interval", fSignalInterval));
 
         return true;
     }

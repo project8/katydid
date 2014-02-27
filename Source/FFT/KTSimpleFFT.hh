@@ -31,7 +31,7 @@ namespace Katydid
     class KTCorrelationTSData;
     class KTEggHeader;
     class KTFrequencySpectrumDataPolar;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
     class KTFrequencySpectrumDataPolar;
@@ -82,7 +82,7 @@ namespace Katydid
             KTSimpleFFT(const std::string& name = "simple-fft");
             virtual ~KTSimpleFFT();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void InitializeFFT();
             void InitializeWithHeader(const KTEggHeader* header);

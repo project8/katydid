@@ -16,7 +16,7 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 using std::string;
 
@@ -44,7 +44,7 @@ namespace Katydid
     {
     }
 
-    bool KTFrequencyCandidateIdentifier::Configure(const KTPStoreNode*)
+    bool KTFrequencyCandidateIdentifier::Configure(const KTParamNode*)
     {
         return true;
     }
