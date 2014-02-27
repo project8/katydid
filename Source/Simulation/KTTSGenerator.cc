@@ -67,7 +67,7 @@ namespace Katydid
         fBinWidth = node->GetValue< double >("bin-width", fBinWidth);
 
         // type of time series
-        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
+        string timeSeriesTypeString = node->GetValue< string >("time-series-type", "real");
         if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else

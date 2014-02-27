@@ -5,7 +5,7 @@ if (Katydid_ENABLE_TESTING)
 
     # Config files
     set (VALIDATION_CONFIGFILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/TestParameterStoreConfig.json
+        ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/TestConfigurator.json
     )
     
     pbuilder_install_config (${VALIDATION_CONFIGFILES})

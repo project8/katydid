@@ -30,7 +30,7 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        return SetPath(node->GetValue("path", fPath.string()));
+        return SetPath(node->GetValue< string >("path", fPath.string()));
     }
 
 } /* namespace Katydid */

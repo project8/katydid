@@ -243,7 +243,7 @@ namespace Katydid
         fContents.resize( a_size );
         return;
     }
-
+    /*
     const std::string& KTParamArray::GetValue( unsigned aIndex ) const
     {
         const KTParamValue* value = ValueAt( aIndex );
@@ -257,7 +257,7 @@ namespace Katydid
         if( value == NULL ) return aDefault;
         return value->Get();
     }
-
+    */
     const KTParam* KTParamArray::At( unsigned aIndex ) const
     {
         if( aIndex >= fContents.size() ) return NULL;
@@ -517,7 +517,7 @@ namespace Katydid
     {
         return fContents.count( aName );
     }
-
+    /*
     const std::string& KTParamNode::GetValue( const std::string& aName ) const
     {
         const KTParamValue* value = ValueAt( aName );
@@ -531,7 +531,7 @@ namespace Katydid
         if( value == NULL ) return aDefault;
         return value->Get();
     }
-
+    */
     const KTParam* KTParamNode::At( const std::string& aName ) const
     {
         const_iterator it = fContents.find( aName );
@@ -584,28 +584,28 @@ namespace Katydid
     {
         const_iterator it = fContents.find( aName );
         if( it == fContents.end() ) return NULL;
-        return dynamic_cast< KTParamValue* >( it->second );
+        return dynamic_cast< KTParamArray* >( it->second );
     }
 
     KTParamArray* KTParamNode::ArrayAt( const std::string& aName )
     {
         iterator it = fContents.find( aName );
         if( it == fContents.end() ) return NULL;
-        return dynamic_cast< KTParamValue* >( it->second );
+        return dynamic_cast< KTParamArray* >( it->second );
     }
 
     const KTParamArray* KTParamNode::ArrayAtFast( const std::string& aName ) const
     {
         const_iterator it = fContents.find( aName );
         if( it == fContents.end() ) return NULL;
-        return static_cast< KTParamValue* >( it->second );
+        return static_cast< KTParamArray* >( it->second );
     }
 
     KTParamArray* KTParamNode::ArrayAtFast( const std::string& aName )
     {
         iterator it = fContents.find( aName );
         if( it == fContents.end() ) return NULL;
-        return static_cast< KTParamValue* >( it->second );
+        return static_cast< KTParamArray* >( it->second );
     }
 
     const KTParamNode* KTParamNode::NodeAt( const std::string& aName ) const

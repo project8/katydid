@@ -51,7 +51,7 @@ namespace Katydid
             {
                 if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
                 {
-                    KTERROR(wvlog, "Invalid pair: " << (*pairIt)->ToString());
+                    KTERROR(corrlog, "Invalid pair: " << (*pairIt)->ToString());
                     return false;
                 }
                 UIntPair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< unsigned >(1));

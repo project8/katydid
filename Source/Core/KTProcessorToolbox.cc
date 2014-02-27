@@ -64,7 +64,7 @@ namespace Katydid
                     KTERROR(proclog, "Unable to create processor: no processor type given");
                     return false;
                 }
-                string procType = procNode->GetValue("type");
+                string procType = procNode->GetValue< string >("type");
 
                 string procName;
                 if (! procNode->Has("name"))
@@ -74,7 +74,7 @@ namespace Katydid
                 }
                 else
                 {
-                    procName = procNode->GetValue("name");
+                    procName = procNode->GetValue< string >("name");
                 }
                 KTProcessor* newProc = fProcFactory->CreateNamed(procType);
                 if (newProc == NULL)
@@ -115,7 +115,7 @@ namespace Katydid
                     KTERROR(proclog, "Signal/Slot connection information is incomplete!");
                     if (connNode->Has("signal"))
                     {
-                        KTWARN(proclog, "signal = " << connNode->GetValue("signal"));
+                        KTWARN(proclog, "signal = " << connNode->GetValue< string >("signal"));
                     }
                     else
                     {
@@ -124,7 +124,7 @@ namespace Katydid
 
                     if (connNode->Has("slot"))
                     {
-                        KTWARN(proclog, "slot = " << connNode->GetValue("slot"));
+                        KTWARN(proclog, "slot = " << connNode->GetValue< string >("slot"));
                     }
                     else
                     {
@@ -134,16 +134,16 @@ namespace Katydid
                 }
 
                 string signalProcName, signalName;
-                if (! ParseSignalSlotName(connNode->GetValue("signal"), signalProcName, signalName))
+                if (! ParseSignalSlotName(connNode->GetValue< string >("signal"), signalProcName, signalName))
                 {
-                    KTERROR(proclog, "Unable to parse signal name: <" << connNode->GetValue("signal") << ">");
+                    KTERROR(proclog, "Unable to parse signal name: <" << connNode->GetValue< string >("signal") << ">");
                     return false;
                 }
 
                 string slotProcName, slotName;
-                if (! ParseSignalSlotName(connNode->GetValue("slot"), slotProcName, slotName))
+                if (! ParseSignalSlotName(connNode->GetValue< string >("slot"), slotProcName, slotName))
                 {
-                    KTERROR(proclog, "Unable to parse slot name: <" << connNode->GetValue("slot") << ">");
+                    KTERROR(proclog, "Unable to parse slot name: <" << connNode->GetValue< string >("slot") << ">");
                     return false;
                 }
 

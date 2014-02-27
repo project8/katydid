@@ -7,11 +7,7 @@
 
 #include "KTApplication.hh"
 
-#include "KTConfigurable.hh"
-#include "KTConfigurator.hh"
 #include "KTLogger.hh"
-
-#include <boost/foreach.hpp>
 
 #include <vector>
 using std::vector;

@@ -68,7 +68,7 @@ namespace Katydid
         {
             for (KTParamArray::const_iterator dtIt = dataTypeArray->Begin(); dtIt != dataTypeArray->End(); ++dtIt)
             {
-                AddDataType((*dtIt)->AsArray().GetValue(0), (*dtIt)->AsArray().GetValue(1));
+                AddDataType((*dtIt)->AsArray().GetValue< string >(0), (*dtIt)->AsArray().GetValue< string >(1));
                 KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">, tree name <" << fDataTypes.back().fTreeName << ">");
             }
         }

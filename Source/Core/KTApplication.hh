@@ -10,6 +10,7 @@
 #define KTAPPLICATION_HH_
 
 #include "KTCommandLineHandler.hh"
+#include "KTConfigurator.hh"
 #include "KTParam.hh"
 
 #ifdef ROOT_FOUND
@@ -20,14 +21,12 @@
 
 namespace Katydid
 {
-    class KTConfigurable;
-    class KTConfigurator;
 
     /*!
      @class KTApplication
      @author N. S. Oblath
 
-     @brief Interface for the command-line handler and the parameter store.
+     @brief Interface for the command-line handler and the configurator.
 
      @details
      The interface implemented here is meant to simplify the use of the command line and parameter store.

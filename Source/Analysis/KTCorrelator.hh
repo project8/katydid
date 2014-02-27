@@ -52,7 +52,7 @@ namespace Katydid
     */
     class KTCorrelator : public KTProcessor
     {
-        protected:
+        public:
             typedef std::pair< unsigned, unsigned > UIntPair;
             typedef std::vector< UIntPair > PairVector;
 
@@ -67,7 +67,7 @@ namespace Katydid
             const PairVector& GetPairVector() const;
             void ClearPairs();
 
-        protected:
+        private:
             PairVector fPairs;
 
         public:
@@ -77,7 +77,7 @@ namespace Katydid
             bool Correlate(KTNormalizedFSDataPolar& data);
             bool Correlate(KTNormalizedFSDataFFTW& data);
 
-        protected:
+        private:
             bool CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData);
             bool CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData);
 

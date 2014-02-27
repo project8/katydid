@@ -51,13 +51,13 @@ namespace Katydid
         if (node != NULL)
         {
             SetUseTFile(node->GetValue<bool>("use-tfile", fUseTFile));
-            SetTFilename(node->GetValue("output-tfile", fTFilename));
-            SetTFileFlag(node->GetValue("tfile-flag", fTFileFlag));
+            SetTFilename(node->GetValue< string >("output-tfile", fTFilename));
+            SetTFileFlag(node->GetValue< string >("tfile-flag", fTFileFlag));
 
             SetUseGraphics(node->GetValue<bool>("use-graphics", fUseGraphics));
-            SetGraphicsFilePath(node->GetValue("graphics-file-path", fGraphicsFilePath));
-            SetGraphicsFilenameBase(node->GetValue("graphics-filename-base", fGraphicsFilenameBase));
-            SetGraphicsFileType(node->GetValue("graphics-file-type", fGraphicsFileType));
+            SetGraphicsFilePath(node->GetValue< string >("graphics-file-path", fGraphicsFilePath));
+            SetGraphicsFilenameBase(node->GetValue< string >("graphics-filename-base", fGraphicsFilenameBase));
+            SetGraphicsFileType(node->GetValue< string >("graphics-file-type", fGraphicsFileType));
         }
 
         return true;

@@ -55,8 +55,8 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetValue("output-file", fFilename));
-            SetFileMode(node->GetValue("file-mode", fFileMode));
+            SetFilename(node->GetValue< string >("output-file", fFilename));
+            SetFileMode(node->GetValue< string >("file-mode", fFileMode));
             SetPrettyJSONFlag(node->GetValue<bool>("pretty-json", fPrettyJSONFlag));
         }
 

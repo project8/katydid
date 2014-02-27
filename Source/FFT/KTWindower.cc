@@ -45,7 +45,7 @@ namespace Katydid
         // Config-file settings
         if (node == NULL) return true;
 
-        string windowType = node->GetValue("window-function-type", "rectangular");
+        string windowType = node->GetValue< string >("window-function-type", "rectangular");
         if (! SelectWindowFunction(windowType))
         {
             return false;
