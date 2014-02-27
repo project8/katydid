@@ -68,9 +68,16 @@ namespace Katydid
         fArgV = argV;
         fArgumentsTaken = true;
 
-        InitialCommandLineProcessing();
+        ProcessCommandLine();
 
         return true;
+    }
+
+    bool KTCommandLineHandler::ProcessCommandLine()
+    {
+        InitialCommandLineProcessing();
+
+        return DelayedCommandLineProcessing();
     }
 
     //**************

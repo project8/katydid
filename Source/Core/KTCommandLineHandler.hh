@@ -78,7 +78,7 @@ namespace Katydid
             const std::string& GetExecutableName() const;
             const std::string& GetPackageString() const;
 
-        protected:
+        private:
             std::string fExecutableName; // from argv[0], if provided
             std::string fPackageString; // Package name and version
 
@@ -92,10 +92,12 @@ namespace Katydid
             int GetNArgs();
             char** GetArgV();
 
-        protected:
+        private:
             int fNArgs;
             char** fArgV;
             bool fArgumentsTaken;
+
+            bool ProcessCommandLine();
 
             //**************
             // Option-adding interface

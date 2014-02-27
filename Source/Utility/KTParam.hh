@@ -178,26 +178,45 @@ namespace Katydid
             /// Returns NULL if aName is not present.
             KTParam* At( unsigned aIndex );
 
-            /// Returns a pointer to the KTParamValue (static-ly cast) corresponding to aName.
-            /// Returns NULL if aName is not present.
+            /// Returns a pointer to the KTParamValue (dynamic-ly cast) corresponding to aName.
+            /// Returns NULL if aName is not present or type is wrong.
             const KTParamValue* ValueAt( unsigned aIndex ) const;
+            /// Returns a pointer to the KTParamValue (dynamic-ly cast) corresponding to aName.
+            /// Returns NULL if aName is not present or type is wrong.
+            KTParamValue* ValueAt( unsigned aIndex );
             /// Returns a pointer to the KTParamValue (static-ly cast) corresponding to aName.
             /// Returns NULL if aName is not present.
-            KTParamValue* ValueAt( unsigned aIndex );
-
-            /// Returns a pointer to the KTParamArray (static-ly cast) corresponding to aName.
+            const KTParamValue* ValueAtFast( unsigned aIndex ) const;
+            /// Returns a pointer to the KTParamValue (static-ly cast) corresponding to aName.
             /// Returns NULL if aName is not present.
+            KTParamValue* ValueAtFast( unsigned aIndex );
+
+
+            /// Returns a pointer to the KTParamArray (dynamic-ly cast) corresponding to aName.
+            /// Returns NULL if aName is not present or type is wrong.
             const KTParamArray* ArrayAt( unsigned aIndex ) const;
+            /// Returns a pointer to the KTParamArray (dynamic-ly cast) corresponding to aName.
+            /// Returns NULL if aName is not present or type is wrong.
+            KTParamArray* ArrayAt( unsigned aIndex );
             /// Returns a pointer to the KTParamArray (static-ly cast) corresponding to aName.
             /// Returns NULL if aName is not present.
-            KTParamArray* ArrayAt( unsigned aIndex );
+            const KTParamArray* ArrayAtFast( unsigned aIndex ) const;
+            /// Returns a pointer to the KTParamArray (static-ly cast) corresponding to aName.
+            /// Returns NULL if aName is not present.
+            KTParamArray* ArrayAtFast( unsigned aIndex );
 
-            /// Returns a pointer to the KTParamNode (static-ly cast) corresponding to aName.
-            /// Returns NULL if aName is not present.
+            /// Returns a pointer to the KTParamNode (dynamic-ly cast) corresponding to aName.
+            /// Returns NULL if aName is not present or type is wrong.
             const KTParamNode* NodeAt( unsigned aIndex ) const;
+            /// Returns a pointer to the KTParamNode (dynamic-ly cast) corresponding to aName.
+            /// Returns NULL if aName is not present or type is wrong.
+            KTParamNode* NodeAt( unsigned aIndex );
             /// Returns a pointer to the KTParamNode (static-ly cast) corresponding to aName.
             /// Returns NULL if aName is not present.
-            KTParamNode* NodeAt( unsigned aIndex );
+            const KTParamNode* NodeAtFast( unsigned aIndex ) const;
+            /// Returns a pointer to the KTParamNode (static-ly cast) corresponding to aName.
+            /// Returns NULL if aName is not present.
+            KTParamNode* NodeAtFast( unsigned aIndex );
 
             /// Returns a reference to the KTParam At aIndex.
             /// Behavior is undefined if aIndex is out-of-range.
@@ -307,12 +326,18 @@ namespace Katydid
 
             const KTParamValue* ValueAt( const std::string& aName ) const;
             KTParamValue* ValueAt( const std::string& aName );
+            const KTParamValue* ValueAtFast( const std::string& aName ) const;
+            KTParamValue* ValueAtFast( const std::string& aName );
 
             const KTParamArray* ArrayAt( const std::string& aName ) const;
             KTParamArray* ArrayAt( const std::string& aName );
+            const KTParamArray* ArrayAtFast( const std::string& aName ) const;
+            KTParamArray* ArrayAtFast( const std::string& aName );
 
             const KTParamNode* NodeAt( const std::string& aName ) const;
             KTParamNode* NodeAt( const std::string& aName );
+            const KTParamNode* NodeAtFast( const std::string& aName ) const;
+            KTParamNode* NodeAtFast( const std::string& aName );
 
             /// Returns a reference to the KTParam corresponding to aName.
             /// Throws an KTException if aName is not present.

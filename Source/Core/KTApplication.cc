@@ -8,6 +8,7 @@
 #include "KTApplication.hh"
 
 #include "KTConfigurable.hh"
+#include "KTConfigurator.hh"
 #include "KTLogger.hh"
 
 #include <boost/foreach.hpp>
@@ -25,7 +26,8 @@ namespace Katydid
 
     KTApplication::KTApplication(bool makeTApp) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
-            fParamStore(KTParameterStore::GetInstance()),
+            fConfigurator( new KTConfigurator() ),
+            //fParamStore(KTParameterStore::GetInstance()),
             fConfigFilename()
     {
 
@@ -43,9 +45,11 @@ namespace Katydid
 #endif
     }
 
-    KTApplication::KTApplication(int argC, char** argV, bool makeTApp, bool requireArgs, KTParamNode* defaultConfig=NULL) :
+    KTApplication::KTApplication(int argC, char** argV, bool makeTApp, bool requireArgs, KTParamNode* defaultConfig) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
-            fParamStore(KTParameterStore::GetInstance())
+            fConfigurator( new KTConfigurator() ),
+            fConfigFilename()
+            //fParamStore(KTParameterStore::GetInstance())
     {
 #ifdef ROOT_FOUND
         fTApp = NULL;
@@ -60,8 +64,10 @@ namespace Katydid
         }
 #endif
 
+        // process command-line arguments
         fCLHandler->TakeArguments(argC, argV);
 
+        // if requested, print help or version messages, and exit
         if (fCLHandler->GetPrintHelpMessageFlag() || (requireArgs && fCLHandler->GetNArgs() == 1))
         {
             fCLHandler->PrintHelpMessage();
@@ -73,15 +79,18 @@ namespace Katydid
             exit(0);
         }
 
+        // get configuration information from the CLHandler
         fConfigFilename = fCLHandler->GetConfigFilename();
         string clJSON = fCLHandler->GetCommandLineJSON();
         const KTParamNode* clConfigOverride = fCLHandler->GetConfigOverride();
 
-        KTConfigurator* fConfigurator = new KTConfigurator();
+        // Default configuration
         if (defaultConfig != NULL)
         {
             fConfigurator->Merge(*defaultConfig);
         }
+
+        // JSON file configuration
         if (! fConfigFilename.empty())
         {
             KTParamNode* t_config_from_file = KTParamInputJSON::ReadFile( fConfigFilename );
@@ -92,12 +101,16 @@ namespace Katydid
             fConfigurator->Merge( *t_config_from_file );
             delete t_config_from_file;
         }
+
+        // Command-line JSON configuration
         if (! clJSON.empty())
         {
             KTParamNode* t_config_from_json = KTParamInputJSON::ReadString( clJSON );
             fConfigurator->Merge( *t_config_from_json );
             delete t_config_from_json;
         }
+
+        // Command-line overrides
         if (clConfigOverride != NULL)
         {
             fConfigurator->Merge( *clConfigOverride );
@@ -108,11 +121,13 @@ namespace Katydid
 
     KTApplication::~KTApplication()
     {
+        delete fConfigurator;
 #ifdef ROOT_FOUND
         delete fTApp;
 #endif
     }
 
+    /*
     void KTApplication::AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const string& addressOfTree)
     {
         BOOST_FOREACH( const KTParameterStore::PStoreTree::value_type& treeNode, tree->get_child("") )
@@ -177,6 +192,7 @@ namespace Katydid
         ApplyCLOptionsToParamStore(fCLHandler->GetParsedOptions());
         return true;
     }
+    */
 
     bool KTApplication::Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress)
     {

@@ -53,31 +53,42 @@ int main(int argc, char** argv)
             "                                    $=                                          \n" <<
             "                                    =                                           \n");
 
-    KTApplication app(argc, argv);
-    if (! app.ReadConfigFile())
+    try
     {
-        KTERROR(katydidlog, "Unable to read config file. Aborting.");
+        KTApplication app(argc, argv);
+    }
+    catch( std::exception& e )
+    {
+        KTERROR( katydidlog, "Something went wrong while processing the command line:\n" << e.what() );
         return -1;
     }
+    //if (! app.ReadConfigFile())
+    //{
+    //    KTERROR(katydidlog, "Unable to read config file. Aborting.");
+    //    return -1;
+    //}
+
+    const KTParamNode* parentConfigNode = app.GetConfigurator();
 
     // Create and configure the processor toolbox.
     // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
-    string appConfigName("katydid");
+    //string appConfigName("katydid");
     KTProcessorToolbox procTB;
-    if (! app.Configure(&procTB, appConfigName))
+    ;
+    if ( ! procTB.Configure( parentConfigNode->NodeAt( procTB.GetConfigName() ) ) )
     {
         KTERROR(katydidlog, "Unable to configure processor toolbox. Aborting.");
         return -2;
     }
 
     // Configure the processors
-    KTPStoreNode node = app.GetNode(appConfigName);
-    if (! node.IsValid())
-    {
-        KTERROR(katydidlog, "Configuration node <" << appConfigName << "> was not found. Aborting");
-        return -3;
-    }
-    if (! procTB.ConfigureProcessors(&node))
+    //KTPStoreNode node = app.GetNode(appConfigName);
+    //if (! node.IsValid())
+    //{
+    //    KTERROR(katydidlog, "Configuration node <" << appConfigName << "> was not found. Aborting");
+    //    return -3;
+    //}
+    if ( ! procTB.ConfigureProcessors( parentConfigNode ) )
     {
         KTERROR(katydidlog, "Unable to configure processors. Aborting.");
         return -4;
