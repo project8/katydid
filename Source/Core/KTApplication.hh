@@ -52,8 +52,8 @@ namespace Katydid
     {
         public:
             KTApplication(bool makeTApp=false);
-            /// Constructor to use with command-line optiosn; includes parsing of the command line by KTCommandLineHandler (except for config-file-dependent options)
-            KTApplication(int argC, char** argV, bool makeTApp=false);
+            /// Constructor to use with command-line options; includes parsing of the command line by KTCommandLineHandler (except for config-file-dependent options)
+            KTApplication(int argC, char** argV, bool makeTApp=false, bool requireArgs=true, KTParamNode* defaultConfig=NULL);
             virtual ~KTApplication();
 
             /// Parse the config file and store the results (performed by KTParameterStore)

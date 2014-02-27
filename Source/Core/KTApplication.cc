@@ -43,7 +43,7 @@ namespace Katydid
 #endif
     }
 
-    KTApplication::KTApplication(int argC, char** argV, bool makeTApp) :
+    KTApplication::KTApplication(int argC, char** argV, bool makeTApp, bool requireArgs, KTParamNode* defaultConfig=NULL) :
             fCLHandler(KTCommandLineHandler::GetInstance()),
             fParamStore(KTParameterStore::GetInstance())
     {
@@ -59,8 +59,51 @@ namespace Katydid
             KTWARN(applog, "TApplication requested, but Katydid has been built without ROOT dependence.");
         }
 #endif
+
         fCLHandler->TakeArguments(argC, argV);
+
+        if (fCLHandler->GetPrintHelpMessageFlag() || (requireArgs && fCLHandler->GetNArgs() == 1))
+        {
+            fCLHandler->PrintHelpMessage();
+            exit(0);
+        }
+        if (fCLHandler->GetPrintVersionMessage())
+        {
+            fCLHandler->PrintVersionMessage();
+            exit(0);
+        }
+
         fConfigFilename = fCLHandler->GetConfigFilename();
+        string clJSON = fCLHandler->GetCommandLineJSON();
+        const KTParamNode* clConfigOverride = fCLHandler->GetConfigOverride();
+
+        KTConfigurator* fConfigurator = new KTConfigurator();
+        if (defaultConfig != NULL)
+        {
+            fConfigurator->Merge(*defaultConfig);
+        }
+        if (! fConfigFilename.empty())
+        {
+            KTParamNode* t_config_from_file = KTParamInputJSON::ReadFile( fConfigFilename );
+            if( t_config_from_file == NULL )
+            {
+                throw KTException() << "error parsing config file <" << fConfigFilename << ">";
+            }
+            fConfigurator->Merge( *t_config_from_file );
+            delete t_config_from_file;
+        }
+        if (! clJSON.empty())
+        {
+            KTParamNode* t_config_from_json = KTParamInputJSON::ReadString( clJSON );
+            fConfigurator->Merge( *t_config_from_json );
+            delete t_config_from_json;
+        }
+        if (clConfigOverride != NULL)
+        {
+            fConfigurator->Merge( *clConfigOverride );
+        }
+
+        KTINFO( applog, "Final configuration:\n" << *(fConfigurator->Config()) );
     }
 
     KTApplication::~KTApplication()

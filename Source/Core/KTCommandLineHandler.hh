@@ -10,6 +10,7 @@
 #define KTCOMMANDLINEHANDLER_H_
 
 #include "KTLogger.hh"
+#include "KTParam.hh"
 #include "KTSingleton.hh"
 
 #include <boost/program_options.hpp>
@@ -147,7 +148,7 @@ namespace Katydid
             /// Parses the general options and stores the remaining options available for later parsing
             void InitialCommandLineProcessing();
 
-        protected:
+        private:
             std::vector< std::string > fCommandLineParseLater;
 
             //**************
@@ -166,28 +167,44 @@ namespace Katydid
             template< class XReturnType >
             XReturnType GetCommandLineValue(const std::string& aCLOption, XReturnType defaultValue);
 
+            bool GetPrintHelpMessageFlag() const;
+            bool GetPrintHelpMessageAfterConfigFlag() const;
+            bool GetPrintVersionMessage() const;
+
             /// Return the file name provided by the user on the command line for the config file
             const std::string& GetConfigFilename() const;
+
+            /// Return the string of json provided by the user on the command line
+            const std::string& GetCommandLineJSON() const;
 
             const po::parsed_options* GetParsedOptions() const;
             const po::variables_map* GetVariablesMap() const;
 
-        protected:
+            const KTParamNode* GetConfigOverride() const;
+
+        private:
             po::parsed_options fParsedOptions;
             po::variables_map fCommandLineVarMap;
 
+            KTParamNode fConfigOverrideValues;
+            static const char fDash = '-';
+            static const char fSeparator = '=';
+            static const char fNodeSeparator = '.';
+
+            bool fPrintHelpMessage;
             bool fPrintHelpMessageAfterConfig;
+            bool fPrintVersionMessage;
+
             std::string fConfigFilename;
+            std::string fCommandLineJSON;
 
             //**************
             // Print useful information
             //**************
 
         public:
-            bool GetPrintHelpMessageAfterConfigFlag();
-
-            virtual void PrintHelpMessageAndExit();
-            virtual void PrintVersionMessageAndExit();
+            virtual void PrintHelpMessage();
+            virtual void PrintVersionMessage();
     };
 
     inline const std::string& KTCommandLineHandler::GetExecutableName() const
@@ -288,7 +305,22 @@ namespace Katydid
         return fConfigFilename;
     }
 
-    inline bool KTCommandLineHandler::GetPrintHelpMessageAfterConfigFlag()
+    inline const std::string& KTCommandLineHandler::GetCommandLineJSON() const
+    {
+        return fCommandLineJSON;
+    }
+
+    inline bool KTCommandLineHandler::GetPrintVersionMessage() const
+    {
+        return fPrintVersionMessage;
+    }
+
+    inline bool KTCommandLineHandler::GetPrintHelpMessageFlag() const
+    {
+        return fPrintHelpMessage;
+    }
+
+    inline bool KTCommandLineHandler::GetPrintHelpMessageAfterConfigFlag() const
     {
         return fPrintHelpMessageAfterConfig;
     }
@@ -301,6 +333,11 @@ namespace Katydid
     inline const po::variables_map* KTCommandLineHandler::GetVariablesMap() const
     {
         return &fCommandLineVarMap;
+    }
+
+    inline const KTParamNode* KTCommandLineHandler::GetConfigOverride() const
+    {
+        return &fConfigOverrideValues;
     }
 
 } /* namespace Katydid */
