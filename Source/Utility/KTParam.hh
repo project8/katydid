@@ -9,7 +9,6 @@
 #define KTPARAM_HH_
 
 #include "KTException.hh"
-#include "KTLogger.hh"
 
 #include "document.h"
 
@@ -20,8 +19,6 @@
 
 namespace Katydid
 {
-    KTLOGGER(plog_h, "KTParam.hh");
-
     class KTParamValue;
     class KTParamArray;
     class KTParamNode;
