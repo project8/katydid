@@ -243,7 +243,7 @@ namespace Katydid
         fContents.resize( a_size );
         return;
     }
-    /*
+
     const std::string& KTParamArray::GetValue( unsigned aIndex ) const
     {
         const KTParamValue* value = ValueAt( aIndex );
@@ -257,7 +257,12 @@ namespace Katydid
         if( value == NULL ) return aDefault;
         return value->Get();
     }
-    */
+
+    const std::string& KTParamArray::GetValue( unsigned aIndex, const char* aDefault ) const
+    {
+        return GetValue( aIndex, string( aDefault ) );
+    }
+
     const KTParam* KTParamArray::At( unsigned aIndex ) const
     {
         if( aIndex >= fContents.size() ) return NULL;
@@ -460,7 +465,7 @@ namespace Katydid
             out << indentation << "    " << **it << '\n';
         }
         KTParam::sIndentLevel--;
-        out << indentation << "]\n";
+        out << indentation << "]";
         return out.str();
     }
 
@@ -517,7 +522,7 @@ namespace Katydid
     {
         return fContents.count( aName );
     }
-    /*
+
     const std::string& KTParamNode::GetValue( const std::string& aName ) const
     {
         const KTParamValue* value = ValueAt( aName );
@@ -531,7 +536,12 @@ namespace Katydid
         if( value == NULL ) return aDefault;
         return value->Get();
     }
-    */
+
+    const std::string& KTParamNode::GetValue( const std::string& aName, const char* aDefault ) const
+    {
+        return GetValue( aName, string( aDefault ) );
+    }
+
     const KTParam* KTParamNode::At( const std::string& aName ) const
     {
         const_iterator it = fContents.find( aName );
@@ -767,7 +777,7 @@ namespace Katydid
             out << indentation << "    " << it->first << " : " << *(it->second) << '\n';
         }
         KTParam::sIndentLevel--;
-        out << indentation << "}\n";
+        out << indentation << "}";
         return out.str();
     }
 

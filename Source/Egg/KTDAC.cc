@@ -56,7 +56,7 @@ namespace Katydid
         SetMinVoltage(node->GetValue< double >("min-voltage", fMinVoltage));
         SetVoltageRange(node->GetValue< double >("voltage-range", fVoltageRange));
 
-        string timeSeriesTypeString = node->GetValue< string >("time-series-type", "real");
+        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
         if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else

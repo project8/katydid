@@ -64,7 +64,7 @@ namespace Katydid
             }
         }
 
-        SetFileMode(node->GetValue< string >("file-mode", fFileMode));
+        SetFileMode(node->GetValue("file-mode", fFileMode));
 
         const KTParamArray* dataTypeArray = node->ArrayAt("data-types");
         if (inputFileArray != NULL)

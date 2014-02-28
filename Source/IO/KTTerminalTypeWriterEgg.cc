@@ -74,7 +74,7 @@ namespace Katydid
                 unsigned nBins = spectrum->GetNTimeBins();
                 for (unsigned iBin = 0; iBin < nBins; ++iBin)
                 {
-                    //toTerm << to_char((data_type)spectrum->GetValue< string >(iBin));
+                    //toTerm << to_char((data_type)spectrum->GetValue(iBin));
                 }
                 KTPROG(termlog, toTerm.str());
             }

@@ -51,11 +51,11 @@ namespace Katydid
 
         if (node->Has("n-subsets"))
         {
-            SetNSubsets(node->GetValue< string >("n-subsets", fNSubsets));
+            SetNSubsets(node->GetValue("n-subsets", fNSubsets));
         }
         if (node->Has("subset-size"))
         {
-            SetSubsetSize(node->GetValue< string >("subset-size", fSubsetSize));
+            SetSubsetSize(node->GetValue("subset-size", fSubsetSize));
         }
 
         return true;

@@ -50,7 +50,7 @@ namespace Katydid
     bool KTThroughputProfiler::Configure(const KTParamNode* node)
     {
         SetOutputFileFlag(node->GetValue< bool >("output-file-flag", fOutputFileFlag));
-        SetOutputFilename(node->GetValue< string >("output-filename-base", fOutputFilename));
+        SetOutputFilename(node->GetValue("output-filename-base", fOutputFilename));
 
         return true;
     }

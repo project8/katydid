@@ -65,7 +65,7 @@ namespace Katydid
         // config file setting
         if (node != NULL)
         {
-            string eggReaderTypeString = node->GetValue< string >("egg-reader", "monarch");
+            string eggReaderTypeString = node->GetValue("egg-reader", "monarch");
             if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
             else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
             else
@@ -95,7 +95,7 @@ namespace Katydid
         {
             SetNSlices(node->GetValue< unsigned >("number-of-slices", fNSlices));
             SetProgressReportInterval(node->GetValue< unsigned >("progress-report-interval", fProgressReportInterval));
-            SetFilename(node->GetValue< string >("filename", fFilename));
+            SetFilename(node->GetValue("filename", fFilename));
 
             // specify the length of the time series
             fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);

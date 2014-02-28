@@ -20,11 +20,11 @@
             "multi-data":
             [ 345, 567, 789 ]
         }
-    }
+    },
     
     "nested-data-2":
     {
-        "single-data-2": "212121,
+        "single-data-2": 212121,
         "single-data-3": "this replaced an integer",
         
         "sub-data":

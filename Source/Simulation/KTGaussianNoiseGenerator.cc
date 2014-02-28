@@ -68,7 +68,7 @@ namespace Katydid
             {
                 timeSeries->SetValue(iBin, fRNG() + timeSeries->GetValue(iBin));
                 //binCenter += binWidth;
-                //KTDEBUG(genlog, iBin << "  " << timeSeries->GetValue< string >(iBin));
+                //KTDEBUG(genlog, iBin << "  " << timeSeries->GetValue(iBin));
             }
         }
 

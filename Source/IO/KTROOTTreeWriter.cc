@@ -52,8 +52,8 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetValue< string >("output-file", fFilename));
-            SetFileFlag(node->GetValue< string >("file-flag", fFileFlag));
+            SetFilename(node->GetValue("output-file", fFilename));
+            SetFileFlag(node->GetValue("file-flag", fFileFlag));
         }
 
         // Command-line settings

@@ -66,10 +66,10 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetTransformFlag(node->GetValue< string >("transform-flag", fTransformFlag));
+            SetTransformFlag(node->GetValue("transform-flag", fTransformFlag));
 
             SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
-            SetWisdomFilename(node->GetValue< string >("wisdom-filename", fWisdomFilename));
+            SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
         }
 
         if (fUseWisdom)

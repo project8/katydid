@@ -37,6 +37,9 @@ int main(int argc, char** argv)
         KTERROR(conflog, "Unable to parse the config file <" << configFilename << ">");
         return -2;
     }
+
+    KTINFO(conflog, "As parsed from file <" << configFilename << ">:\n" << *t_config_from_file);
+
     configurator->Merge( *t_config_from_file );
     delete t_config_from_file;
 
@@ -85,12 +88,12 @@ int main(int argc, char** argv)
         return -5;
     }
 
-    KTINFO(conflog, "Before merge:\n" << *nestedNode << "\n" << *nestedNode2);
+    KTINFO(conflog, "Before merge:\n" << "Nested data:\n" << *nestedNode << "\n" << "Nested data 2:\n" << *nestedNode2);
 
     KTParamNode copyOfNestedNode(*nestedNode);
     copyOfNestedNode.Merge(*nestedNode2);
 
-    KTINFO(conflog, "AFter merge:\n" << copyOfNestedNode);
+    KTINFO(conflog, "After merge:\n" << copyOfNestedNode);
 
     return 0;
 }

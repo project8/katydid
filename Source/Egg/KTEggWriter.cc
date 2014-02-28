@@ -60,11 +60,11 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        SetFilename(node->GetValue< string >("output-file", fFilename));
+        SetFilename(node->GetValue("output-file", fFilename));
 
         if (node->Has("format-mode"))
         {
-            string modeStr(node->GetValue< string >("format-mode"));
+            string modeStr(node->GetValue("format-mode"));
             if (modeStr == "separate")
             {
                 SetFormatMode(sFormatMultiSeparate);
@@ -255,7 +255,7 @@ namespace Katydid
         double scale = 255. / fDigitizerFullscale;
         for (unsigned iBin = 0; iBin < fExpectedRecordSize; iBin++)
         {
-            value = ts->GetValue< string >(iBin) * scale;
+            value = ts->GetValue(iBin) * scale;
             if (value >= 256) value = 255.;
             if (value < 0.) value = 0.;
             record->fData[iBin] = DataType(floor(value));
