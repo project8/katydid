@@ -7,8 +7,6 @@
 
 #include "KTDAC.hh"
 
-#include "KTLogger.hh"
-#include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
@@ -24,7 +22,7 @@ namespace Katydid
 {
     KTLOGGER(egglog, "KTDAC");
 
-    static KTNORegistrar< KTProcessor, KTDAC > sDACRegistrar("dac");
+    KT_REGISTER_PROCESSOR(KTDAC, "dac");
 
     KTDAC::KTDAC(const std::string& name) :
             KTProcessor(name),

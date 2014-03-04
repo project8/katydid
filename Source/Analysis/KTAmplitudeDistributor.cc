@@ -9,12 +9,10 @@
 
 #include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 #include "KTWignerVilleData.hh"
@@ -27,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(adlog, "KTAmplitudeDistributor");
 
-    static KTNORegistrar< KTProcessor, KTAmplitudeDistributor > sADRegistrar("amplitude-distributor");
+    KT_REGISTER_PROCESSOR(KTAmplitudeDistributor, "amplitude-distributor");
 
     KTAmplitudeDistributor::KTAmplitudeDistributor(const string& name) :
             KTProcessor(name),

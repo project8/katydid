@@ -7,8 +7,6 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 using std::string;
@@ -18,8 +16,8 @@ namespace Katydid
     KTLOGGER(publog, "KTBasicROOTFileWriter");
 
 
-    static KTNORegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root-writer");
-    static KTNORegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root-writer");
+    KT_REGISTER_WRITER(KTBasicROOTFileWriter, "basic-root-writer");
+    KT_REGISTER_PROCESSOR(KTBasicROOTFileWriter, "basic-root-writer");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter(const std::string& name) :
             KTWriterWithTypists< KTBasicROOTFileWriter >(name),

@@ -7,8 +7,6 @@
 
 #include "KTMultiSliceROOTWriter.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 using std::string;
@@ -18,8 +16,8 @@ namespace Katydid
     KTLOGGER(publog, "KTMultiSliceROOTWriter");
 
 
-    static KTNORegistrar< KTWriter, KTMultiSliceROOTWriter > sMSRWriterRegistrar("multislice-root-writer");
-    static KTNORegistrar< KTProcessor, KTMultiSliceROOTWriter > sMSRWProcRegistrar("multislice-root-writer");
+    KT_REGISTER_WRITER(KTMultiSliceROOTWriter, "multislice-root-writer");
+    KT_REGISTER_PROCESSOR(KTMultiSliceROOTWriter, "multislice-root-writer");
 
     KTMultiSliceROOTWriter::KTMultiSliceROOTWriter(const std::string& name) :
             KTWriterWithTypists< KTMultiSliceROOTWriter >(name),

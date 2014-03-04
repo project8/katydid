@@ -8,8 +8,6 @@
 #include "KTEggWriter.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
@@ -31,8 +29,8 @@ namespace Katydid
 {
     KTLOGGER(eggwritelog, "KTEggWriter");
 
-    static KTNORegistrar< KTWriter, KTEggWriter > sEWriterRegistrar("egg-writer");
-    static KTNORegistrar< KTProcessor, KTEggWriter > sEWProcRegistrar("egg-writer");
+    KT_REGISTER_WRITER(KTEggWriter, "egg-writer");
+    KT_REGISTER_PROCESSOR(KTEggWriter, "egg-writer");
 
 
     KTEggWriter::KTEggWriter(const std::string& name) :

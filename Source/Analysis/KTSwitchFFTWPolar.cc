@@ -7,13 +7,11 @@
 
 #include "KTSwitchFFTWPolar.hh"
 
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 #include "KTWignerVilleData.hh"
@@ -25,7 +23,7 @@ namespace Katydid
 {
     KTLOGGER(swlog, "KTSwitchFFTWPolar");
 
-    static KTNORegistrar< KTProcessor, KTSwitchFFTWPolar > sSwitchFFTWPolarRegistrar("switch-fftw-polar");
+    KT_REGISTER_PROCESSOR(KTSwitchFFTWPolar, "switch-fftw-polar");
 
     KTSwitchFFTWPolar::KTSwitchFFTWPolar(const std::string& name) :
             KTProcessor(name),

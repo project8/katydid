@@ -11,8 +11,6 @@
 //#include "KTCluster2DData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 //#include "KTDiscriminatedPoints2DData.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
 
@@ -29,7 +27,7 @@ namespace Katydid
 {
     KTLOGGER(sdlog, "KTDistanceClustering");
 
-    static KTNORegistrar< KTProcessor, KTDistanceClustering > sDistClustRegistrar("distance-clustering");
+    KT_REGISTER_PROCESSOR(KTDistanceClustering, "distance-clustering");
 
     KTDistanceClustering::KTDistanceClustering(const std::string& name) :
             KTProcessor(name),

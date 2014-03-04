@@ -7,14 +7,12 @@
 
 #include "KTGainNormalization.hh"
 
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTGainVariationData.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 //#include "KTSlidingWindowFSData.hh"
@@ -31,7 +29,7 @@ namespace Katydid
 {
     KTLOGGER(gnlog, "KTGainNormalization");
 
-    static KTNORegistrar< KTProcessor, KTGainNormalization > sGainNormRegistrar("gain-normalization");
+    KT_REGISTER_PROCESSOR(KTGainNormalization, "gain-normalization");
 
     KTGainNormalization::KTGainNormalization(const std::string& name) :
             KTProcessor(name),

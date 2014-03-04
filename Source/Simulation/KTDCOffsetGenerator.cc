@@ -7,8 +7,6 @@
 
 #include "KTDCOffsetGenerator.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
@@ -21,6 +19,7 @@ namespace Katydid
 {
     KTLOGGER(genlog, "KTDCOffsetGenerator");
 
+    KT_REGISTER_PROCESSOR(KTDCOffsetGenerator, "dc-offset-generator");
     static KTNORegistrar< KTProcessor, KTDCOffsetGenerator > sDCOffGenRegistrar("dc-offset-generator");
 
     KTDCOffsetGenerator::KTDCOffsetGenerator(const string& name) :

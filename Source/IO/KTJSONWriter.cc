@@ -7,8 +7,6 @@
 
 #include "KTJSONWriter.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 using std::string;
@@ -17,8 +15,8 @@ namespace Katydid
 {
     KTLOGGER(publog, "KTJSONWriter");
 
-    static KTNORegistrar< KTWriter, KTJSONWriter > sJSONWriterRegistrar("json-writer");
-    static KTNORegistrar< KTProcessor, KTJSONWriter > sJSONWProcRegistrar("json-writer");
+    KT_REGISTER_WRITER(KTJSONWriter, "json-writer");
+    KT_REGISTER_PROCESSOR(KTJSONWriter, "json-writer");
 
     KTJSONWriter::KTJSONWriter(const std::string& name) :
             KTWriterWithTypists< KTJSONWriter >(name),

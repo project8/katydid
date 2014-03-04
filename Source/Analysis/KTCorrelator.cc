@@ -8,12 +8,10 @@
 #include "KTCorrelator.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 
 using std::string;
@@ -25,7 +23,7 @@ namespace Katydid
 {
     KTLOGGER(corrlog, "KTCorrelator");
 
-    static KTNORegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
+    KT_REGISTER_PROCESSOR(KTCorrelator, "correlator");
 
     KTCorrelator::KTCorrelator(const std::string& name) :
             KTProcessor(name),

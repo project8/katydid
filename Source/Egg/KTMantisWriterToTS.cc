@@ -17,11 +17,14 @@
 #include <cstring> // for memcpy()
 using std::stringstream;
 
+namespace mantis
+{
+    MT_REGISTER_WRITER_NS( Katydid, KTMantisWriterToTS, "katydid" );
+}
+
 namespace Katydid
 {
     KTLOGGER( mtlog, "KTMantisWriterToTS" );
-
-    static mantis::registrar< mantis::writer, Katydid::KTMantisWriterToTS > s_mantis_writer_registrar( "katydid" );
 
     KTMantisWriterToTS::KTMantisWriterToTS() :
                     mantis::writer(),

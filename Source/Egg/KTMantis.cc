@@ -8,9 +8,7 @@
 #include "KTMantis.hh"
 
 #include "KTEggHeader.hh"
-#include "KTLogger.hh"
 #include "KTMantisClientWriting.hh"
-#include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 
 #include "mt_configurator.hh"
@@ -39,7 +37,7 @@ namespace Katydid
 {
     KTLOGGER(mtlog, "KTMantis");
 
-    static KTNORegistrar< KTProcessor, KTMantis > sProcTempRegistrar("mantis-client");
+    KT_REGISTER_PROCESSOR(KTMantis, "mantis-client");
 
 
     KTMantisClientConfig::KTMantisClientConfig()

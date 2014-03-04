@@ -7,7 +7,6 @@
 
 #include "KTSincWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
@@ -20,7 +19,7 @@ namespace Katydid
 {
     KTLOGGER(windowlog, "KTSincWindow");
 
-    static KTNORegistrar< KTWindowFunction, KTSincWindow > sWFSincRegistrar("sinc");
+    KT_REGISTER_WINDOWFUNCTION(KTSincWindow, "sinc")
 
     KTSincWindow::KTSincWindow(const string& name) :
             KTWindowFunction(name)

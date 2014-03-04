@@ -8,8 +8,6 @@
 #include "KTThroughputProfiler.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 #include "MonarchTypes.hpp"
@@ -27,7 +25,7 @@ namespace Katydid
 {
     KTLOGGER(proflog, "KTThroughputProfiler");
 
-    static KTNORegistrar< KTProcessor, KTThroughputProfiler > sTProfRegistrar("throughput-profiler");
+    KT_REGISTER_PROCESSOR(KTThroughputProfiler, "throughput-profiler");
 
     KTThroughputProfiler::KTThroughputProfiler(const std::string& name) :
             KTProcessor(name),

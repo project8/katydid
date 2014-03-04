@@ -11,8 +11,6 @@
 #include "KTCCResults.hh"
 #include "KTFilenameParsers.hh"
 #include "KTMCTruthEvents.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 #include "filestream.h"
@@ -26,8 +24,8 @@ namespace Katydid
 {
     KTLOGGER(inlog, "KTMultiFileJSONReader");
 
-    static KTNORegistrar< KTReader, KTMultiFileJSONReader > sMFJSONReaderRegistrar("multifile-json-reader");
-    static KTNORegistrar< KTProcessor, KTMultiFileJSONReader > sMFJSONRProcRegistrar("multifile-json-reader");
+    KT_REGISTER_READER(KTMultiFileJSONReader, "multifile-json-reader");
+    KT_REGISTER_PROCESSOR(KTMultiFileJSONReader, "multifile-json-reader");
 
     KTMultiFileJSONReader::KTMultiFileJSONReader(const std::string& name) :
             KTReader(name),

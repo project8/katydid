@@ -7,16 +7,14 @@
 
 #include "KTTerminalWriter.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 using std::string;
 
 namespace Katydid
 {
-    static KTNORegistrar< KTWriter, KTTerminalWriter > sTermWriterRegistrar("terminal-writer");
-    static KTNORegistrar< KTProcessor, KTTerminalWriter > sTermWProcRegistrar("terminal-writer");
+    KT_REGISTER_WRITER(KTTerminalWriter, "terminal-writer");
+    KT_REGISTER_PROCESSOR(KTTerminalWriter, "terminal-writer");
 
     KTTerminalWriter::KTTerminalWriter(const std::string& name) :
             KTWriterWithTypists< KTTerminalWriter >(name)

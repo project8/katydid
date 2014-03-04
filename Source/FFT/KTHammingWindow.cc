@@ -7,7 +7,6 @@
 
 #include "KTHammingWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
@@ -20,7 +19,7 @@ namespace Katydid
 {
     KTLOGGER(windowlog, "KTHammingWindow");
 
-    static KTNORegistrar< KTWindowFunction, KTHammingWindow > sWFHammRegistrar("hamming");
+    KT_REGISTER_WINDOWFUNCTION(KTHammingWindow, "hamming");
 
     KTHammingWindow::KTHammingWindow(const string& name) :
             KTWindowFunction(name)

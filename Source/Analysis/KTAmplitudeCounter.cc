@@ -8,10 +8,8 @@
 #include "KTAmplitudeCounter.hh"
 
 #include "KTEggHeader.hh"
-#include "KTLogger.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesDistData.hh"
-#include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 
 
@@ -21,7 +19,7 @@ namespace Katydid
 {
     KTLOGGER(avlog, "KTAmplitudeCounter");
 
-    static KTNORegistrar< KTProcessor, KTAmplitudeCounter > sProcTempRegistrar("amp-counter");
+    KT_REGISTER_PROCESSOR(KTAmplitudeCounter, "amp-counter");
 
     KTAmplitudeCounter::KTAmplitudeCounter(const std::string& name) :
             KTProcessor(name),

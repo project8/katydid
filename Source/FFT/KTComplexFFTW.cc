@@ -10,7 +10,6 @@
 #include "KTAnalyticAssociateData.hh"
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -26,7 +25,7 @@ using std::vector;
 namespace Katydid
 {
 
-    static KTNORegistrar< KTProcessor, KTComplexFFTW > sComplexFFTWRegistrar("complex-fftw");
+    KT_REGISTER_PROCESSOR(KTComplexFFTW, "complex-fftw");
 
     KTComplexFFTW::KTComplexFFTW(const std::string& name) :
             KTFFTW(),

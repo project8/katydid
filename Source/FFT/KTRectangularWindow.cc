@@ -7,7 +7,6 @@
 
 #include "KTRectangularWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
@@ -19,7 +18,7 @@ namespace Katydid
 {
     KTLOGGER(windowlog, "RectangularWindow");
 
-    static KTNORegistrar< KTWindowFunction, KTRectangularWindow > sWFRectRegistrar("rectangular");
+    KT_REGISTER_WINDOWFUNCTION(KTRectangularWindow, "rectangular")
 
     KTRectangularWindow::KTRectangularWindow(const string& name) :
             KTWindowFunction(name),

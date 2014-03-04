@@ -11,7 +11,6 @@
 #include "KTCorrelationData.hh"
 #include "KTCorrelationTSData.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
@@ -28,7 +27,7 @@ using std::vector;
 namespace Katydid
 {
 
-    static KTNORegistrar< KTProcessor, KTSimpleFFT > sSimpleFFTRegistrar("simple-fft");
+    KT_REGISTER_PROCESSOR(KTSimpleFFT, "simple-fft");
 
     KTSimpleFFT::KTSimpleFFT(const std::string& name) :
             KTFFT(),

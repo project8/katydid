@@ -7,8 +7,6 @@
 
 #include "KTGaussianNoiseGenerator.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
@@ -22,7 +20,7 @@ namespace Katydid
 {
     KTLOGGER(genlog, "KTGaussianNoiseGenerator");
 
-    static KTNORegistrar< KTProcessor, KTGaussianNoiseGenerator > sGaussNoiseGenRegistrar("gaussian-noise-generator");
+    KT_REGISTER_PROCESSOR(KTGaussianNoiseGenerator, "gaussian-noise-generator");
 
     KTGaussianNoiseGenerator::KTGaussianNoiseGenerator(const string& name) :
             KTTSGenerator(name),

@@ -8,8 +8,6 @@
 #include "KTROOTTreeWriter.hh"
 
 #include "KTCommandLineOption.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 
 #include "TFile.h"
@@ -23,8 +21,8 @@ namespace Katydid
     KTLOGGER(publog, "KTROOTTreeWriter");
 
 
-    static KTNORegistrar< KTWriter, KTROOTTreeWriter > sRTWriterRegistrar("root-tree-writer");
-    static KTNORegistrar< KTProcessor, KTROOTTreeWriter > sRTWProcRegistrar("root-tree-writer");
+    KT_REGISTER_WRITER(KTROOTTreeWriter, "root-tree-writer");
+    KT_REGISTER_PROCESSOR(KTROOTTreeWriter, "root-tree-writer");
 
     static KTCommandLineOption< string > sRTWFilenameCLO("ROOT Tree Writer", "ROOT Tree writer filename", "rtw-file");
 

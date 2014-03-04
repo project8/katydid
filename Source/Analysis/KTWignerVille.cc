@@ -9,7 +9,6 @@
 
 #include "KTAnalyticAssociateData.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 //#include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
@@ -25,7 +24,7 @@ using std::vector;
 namespace Katydid
 {
 
-    static KTNORegistrar< KTProcessor, KTWignerVille > sWVRegistrar("wigner-ville");
+    KT_REGISTER_PROCESSOR(KTWignerVille, "wigner-ville");
 
     KTWignerVille::KTWignerVille(const std::string& name) :
             KTProcessor(name),

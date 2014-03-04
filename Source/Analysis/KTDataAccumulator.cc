@@ -7,12 +7,10 @@
 
 #include "KTDataAccumulator.hh"
 
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTLogger.hh"
 #include "KTPStoreNode.hh"
 #include "KTTimeSeriesData.hh"
 //#include "KTTimeSeriesDistData.hh"
@@ -27,7 +25,8 @@ using std::string;
 namespace Katydid
 {
     KTLOGGER(avlog, "KTDataAccumulator");
-    static KTNORegistrar< KTProcessor, KTDataAccumulator > sDataAccumulator("data-accumulator");
+
+    KT_REGISTER_PROCESSOR(KTDataAccumulator, "data-accumulator");
 
     KTDataAccumulator::KTDataAccumulator(const std::string& name) :
             KTProcessor(name),

@@ -9,12 +9,10 @@
 
 #include "KTCorrelationData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTPStoreNode.hh"
 #include "KTWignerVilleData.hh"
@@ -34,7 +32,7 @@ namespace Katydid
 {
     KTLOGGER(sdlog, "KTSpectrumDiscriminator");
 
-    static KTNORegistrar< KTProcessor, KTSpectrumDiscriminator > sSpectDiscRegistrar("spectrum-discriminator");
+    KT_REGISTER_PROCESSOR(KTSpectrumDiscriminator, "spectrum-discriminator");
 
     KTSpectrumDiscriminator::KTSpectrumDiscriminator(const std::string& name) :
             KTProcessor(name),

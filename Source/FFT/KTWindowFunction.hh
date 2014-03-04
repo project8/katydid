@@ -11,6 +11,8 @@
 
 #include "KTConfigurable.hh"
 
+#include "KTNOFactory.hh"
+
 #include <string>
 #include <vector>
 
@@ -122,6 +124,8 @@ namespace Katydid
        return fBinWidth;
    }
 
+#define KT_REGISTER_WINDOWFUNCTION(window_class, window_name) \
+        static KTNORegistrar< KTWindowFunction, window_class > sWF##window_class##Registrar(window_name);
 
 } /* namespace Katydid */
 #endif /* KTWINDOWFUNCTION_HH_ */

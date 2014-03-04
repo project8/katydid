@@ -7,7 +7,6 @@
 
 #include "KTHannWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTPStoreNode.hh"
@@ -18,7 +17,7 @@ using std::string;
 
 namespace Katydid
 {
-    static KTNORegistrar< KTWindowFunction, KTHannWindow > sWFHannRegistrar("hann");
+    KT_REGISTER_WINDOWFUNCTION(KTHannWindow, "hann")
 
     KTLOGGER(windowlog, "KTHannWindow");
 

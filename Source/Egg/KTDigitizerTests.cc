@@ -8,8 +8,6 @@
 #include "KTDigitizerTests.hh"
 
 #include "KTDigitizerTestData.hh"
-#include "KTLogger.hh"
-#include "KTNOFactory.hh"
 #include "KTPStoreNode.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
@@ -25,7 +23,7 @@ namespace Katydid
 {
     KTLOGGER(dtlog, "KTDigitizerTests");
 
-    static KTNORegistrar< KTProcessor, KTDigitizerTests > sDigTestRegistrar("digitizer-tests");
+    KT_REGISTER_PROCESSOR(KTDigitizerTests, "digitizer-tests");
 
     KTDigitizerTests::KTDigitizerTests(const std::string& name) :
             KTProcessor(name),

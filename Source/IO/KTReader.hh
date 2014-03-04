@@ -20,5 +20,8 @@ namespace Katydid
 
     };
 
+#define KT_REGISTER_READER(reader_class, reader_name) \
+        static KTNORegistrar< KTReader, reader_class > s##reader_class##ReaderRegistrar(reader_name);
+
 } /* namespace Katydid */
 #endif /* KTREADER_HH_ */
