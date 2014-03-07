@@ -269,7 +269,7 @@ namespace Katydid
             // the name should have 2 dashes before it, and there should be a separator
             if( t_name_pos == 2 && t_val_pos != string::npos )
             {
-                string t_full_name(argument.substr( t_name_pos, t_val_pos ));
+                string t_full_name(argument.substr( t_name_pos, t_val_pos-2 ));
 
                 size_t t_node_start_pos = 0;
                 size_t t_node_sep_pos = t_full_name.find_first_of( fNodeSeparator );
