@@ -10,12 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesDistData.hh"
-<<<<<<< HEAD
-#include "KTPStoreNode.hh"
-=======
-#include "KTNOFactory.hh"
 #include "KTParam.hh"
->>>>>>> refs/heads/Param
 
 
 using boost::shared_ptr;

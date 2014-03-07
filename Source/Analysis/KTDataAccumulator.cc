@@ -11,12 +11,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
-<<<<<<< HEAD
-#include "KTPStoreNode.hh"
-=======
-#include "KTLogger.hh"
 #include "KTParam.hh"
->>>>>>> refs/heads/Param
 #include "KTTimeSeriesData.hh"
 //#include "KTTimeSeriesDistData.hh"
 #include "KTTimeSeriesFFTW.hh"

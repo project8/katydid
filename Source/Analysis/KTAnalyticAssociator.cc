@@ -18,9 +18,6 @@
 
 using std::string;
 
-
-
-
 namespace Katydid
 {
     KTLOGGER(aalog, "KTAnalyticAssociator");

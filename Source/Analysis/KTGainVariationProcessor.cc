@@ -11,12 +11,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
-<<<<<<< HEAD
-#include "KTPStoreNode.hh"
-=======
-#include "KTLogger.hh"
 #include "KTParam.hh"
->>>>>>> refs/heads/Param
 #include "KTSpline.hh"
 
 #include <cmath>
