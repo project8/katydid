@@ -21,7 +21,7 @@
 namespace Katydid
 {
     class KTEggHeader;
-    class KTPStoreNode;
+    class KTParamNode;
 
     /*!
      @class KTAmplitudeCounter
@@ -52,7 +52,7 @@ namespace Katydid
             KTAmplitudeCounter(const std::string& name = "amp-counter");
             virtual ~KTAmplitudeCounter();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetNumberOfBins() const;
             void SetNumberOfBins(unsigned nbins);

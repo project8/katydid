@@ -11,6 +11,7 @@
 #include "KTTSGenerator.hh"
 
 #include <vector>
+#include <utility>
 
 namespace Katydid
 {
@@ -50,10 +51,12 @@ namespace Katydid
     class KTDCOffsetGenerator : public KTTSGenerator
     {
         public:
+            typedef std::pair< unsigned, double > UIntDoublePair;
+        public:
             KTDCOffsetGenerator(const std::string& name = "dc-offset-generator");
             virtual ~KTDCOffsetGenerator();
 
-            virtual bool ConfigureDerivedGenerator(const KTPStoreNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTParamNode* node);
 
             const std::vector< double >& GetOffsets() const;
             void SetOffset(unsigned component, double freq);

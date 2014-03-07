@@ -14,7 +14,7 @@
 #include "KTNormalizedFSData.hh"
 #include "KTGainVariationData.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 //#include "KTSlidingWindowFSData.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"
 
@@ -50,26 +50,26 @@ namespace Katydid
     {
     }
 
-    bool KTGainNormalization::Configure(const KTPStoreNode* node)
+    bool KTGainNormalization::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        if (node->HasData("min-frequency"))
+        if (node->Has("min-frequency"))
         {
-            SetMinFrequency(node->GetData< double >("min-frequency"));
+            SetMinFrequency(node->GetValue< double >("min-frequency"));
         }
-        if (node->HasData("max-frequency"))
+        if (node->Has("max-frequency"))
         {
-            SetMaxFrequency(node->GetData< double >("max-frequency"));
+            SetMaxFrequency(node->GetValue< double >("max-frequency"));
         }
 
-        if (node->HasData("min-bin"))
+        if (node->Has("min-bin"))
         {
-            SetMinBin(node->GetData< unsigned >("min-bin"));
+            SetMinBin(node->GetValue< unsigned >("min-bin"));
         }
-        if (node->HasData("max-bin"))
+        if (node->Has("max-bin"))
         {
-            SetMaxBin(node->GetData< unsigned >("max-bin"));
+            SetMaxBin(node->GetValue< unsigned >("max-bin"));
         }
 
         return true;

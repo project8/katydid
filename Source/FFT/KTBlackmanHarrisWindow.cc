@@ -9,7 +9,7 @@
 
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -30,7 +30,7 @@ namespace Katydid
     {
     }
 
-    bool KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTParamNode*)
     {
         KTDEBUG(windowlog, "Blackman-Harris WF configured");
         return true;

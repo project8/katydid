@@ -18,7 +18,7 @@
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
 #include "KTProcSummary.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
 
 using std::string;
@@ -57,13 +57,13 @@ namespace Katydid
         delete fDAC;
     }
 
-    bool KTEggProcessor::Configure(const KTPStoreNode* node)
+    bool KTEggProcessor::Configure(const KTParamNode* node)
     {
         // First determine the egg reader type
         // config file setting
         if (node != NULL)
         {
-            string eggReaderTypeString = node->GetData< string >("egg-reader", "monarch");
+            string eggReaderTypeString = node->GetValue("egg-reader", "monarch");
             if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
             else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
             else
@@ -91,14 +91,14 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNSlices(node->GetData< unsigned >("number-of-slices", fNSlices));
-            SetProgressReportInterval(node->GetData< unsigned >("progress-report-interval", fProgressReportInterval));
-            SetFilename(node->GetData< string >("filename", fFilename));
+            SetNSlices(node->GetValue< unsigned >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->GetValue< unsigned >("progress-report-interval", fProgressReportInterval));
+            SetFilename(node->GetValue("filename", fFilename));
 
             // specify the length of the time series
-            fSliceSize = node->GetData< unsigned >("slice-size", fSliceSize);
+            fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);
             // specify the stride (leave unset to make stride == slice size)
-            fStride = node->GetData< unsigned >("stride", fSliceSize);
+            fStride = node->GetValue< unsigned >("stride", fSliceSize);
 
             if (fSliceSize == 0)
             {
@@ -106,14 +106,14 @@ namespace Katydid
                 return false;
             }
 
-            const KTPStoreNode dacNode = node->GetChild("dac");
-            if (dacNode.IsValid())
+            const KTParamNode* dacNode = node->NodeAt("dac");
+            if (dacNode != NULL)
             {
-                fDAC->Configure(&dacNode);
+                fDAC->Configure(dacNode);
             }
 
             // whether or not to normalize voltage values, and what the normalization is
-            SetNormalizeVoltages(node->GetData< bool >("normalize-voltages", fNormalizeVoltages));
+            SetNormalizeVoltages(node->GetValue< bool >("normalize-voltages", fNormalizeVoltages));
         }
 
         // Command-line settings

@@ -26,11 +26,11 @@ namespace Katydid
     {
     }
 
-    bool KTRNGEngine::Configure(const KTPStoreNode* node)
+    bool KTRNGEngine::Configure(const KTParamNode* node)
     {
-        if (node->HasData("seed"))
+        if (node->Has("seed"))
         {
-            SetSeed(node->GetData< unsigned >("seed"));
+            SetSeed(node->GetValue< unsigned >("seed"));
         }
         else
         {

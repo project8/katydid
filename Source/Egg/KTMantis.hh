@@ -27,7 +27,7 @@ namespace Katydid
 {
     class KTMantisClientWriting;
     class KTEggHeader;
-    class KTPStoreNode;
+    class KTParamNode;
 
     class KTMantisClientConfig : public mantis::param_node
     {
@@ -70,7 +70,7 @@ namespace Katydid
             KTMantis(const std::string& name = "mantis-client");
             virtual ~KTMantis();
 
-            bool ConfigureSubClass(const KTPStoreNode* node);
+            bool ConfigureSubClass(const KTParamNode* node);
 
         public:
             unsigned GetSliceSize() const;

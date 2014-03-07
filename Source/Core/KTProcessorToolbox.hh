@@ -76,12 +76,15 @@ namespace Katydid
 
         public:
             /// Configure the toolbox: create the processors; connnect signals and slots; and setup the run queue.
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             /// Configure processors (only those specified in the toolbox)
-            bool ConfigureProcessors(const KTPStoreNode* node);
+            bool ConfigureProcessors(const KTParamNode* node);
 
         protected:
+            bool ParseSignalSlotName(const std::string& toParse, std::string& nameOfProc, std::string& nameOfSigSlot) const;
+            static const char fSigSlotNameSep = ':';
+
             typedef std::set< KTPrimaryProcessor* > ThreadGroup;
             typedef std::deque< ThreadGroup > RunQueue;
 

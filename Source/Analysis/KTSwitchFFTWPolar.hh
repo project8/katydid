@@ -18,7 +18,7 @@ namespace Katydid
 {
     class KTFrequencySpectrumDataFFTW;
     class KTNormalizedFSDataFFTW;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTWignerVilleData;
  
 
@@ -48,7 +48,7 @@ namespace Katydid
             KTSwitchFFTWPolar(const std::string& name = "switch-fftw-polar");
             virtual ~KTSwitchFFTWPolar();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             bool GetUseNegFreqs() const;
             void SetUseNegFreqs(bool flag);

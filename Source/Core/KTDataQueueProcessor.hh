@@ -13,7 +13,7 @@
 #include "KTConcurrentQueue.hh"
 #include "KTData.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSlot.hh"
 
 namespace Katydid
@@ -68,8 +68,8 @@ namespace Katydid
             KTDataQueueProcessorTemplate(const std::string& name = "default-data-queue-proc-template-name");
             virtual ~KTDataQueueProcessorTemplate();
 
-            bool Configure(const KTPStoreNode* node);
-            virtual bool ConfigureSubClass(const KTPStoreNode* node) = 0;
+            bool Configure(const KTParamNode* node);
+            virtual bool ConfigureSubClass(const KTParamNode* node) = 0;
 
             Status GetStatus() const;
             void SetStatus(KTDataQueueProcessorTemplate< XProcessorType >::Status);
@@ -164,7 +164,7 @@ namespace Katydid
             KTDataQueueProcessor(const std::string& name = "data-queue");
             virtual ~KTDataQueueProcessor();
 
-            bool ConfigureSubClass(const KTPStoreNode* node);
+            bool ConfigureSubClass(const KTParamNode* node);
 
         public:
             void EmitDataSignal(KTDataPtr data);
@@ -217,9 +217,9 @@ namespace Katydid
     }
 
     template< class XProcessorType >
-    bool KTDataQueueProcessorTemplate< XProcessorType >::Configure(const KTPStoreNode* node)
+    bool KTDataQueueProcessorTemplate< XProcessorType >::Configure(const KTParamNode* node)
     {
-        fQueue.set_timeout(node->GetData< unsigned >("timeout", fQueue.get_timeout()));
+        fQueue.set_timeout(node->GetValue< unsigned >("timeout", fQueue.get_timeout()));
 
         if (! ConfigureSubClass(node)) return false;
         return true;

@@ -10,7 +10,7 @@
 #define KTCORRELATOR_HH_
 
 #include "KTFrequencySpectrumDataPolar.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTProcessor.hh"
 
 #include "KTSlot.hh"
@@ -38,7 +38,8 @@ namespace Katydid
      Configuration name: "correlator"
 
      Available configuration values:
-     - "corr-pair": string -- channel pair to be correlated: "[first channel], [second channel]"; e.g. "0, 0" or "0, 1"
+     - "corr-pairs": array of arrays -- channel pairs to be correlated
+                                        e.g.: "corr-pairs": [ [0, 1], [1, 0], [1, 1] ]
 
       Slots:
      - "fs-polar": void (KTDataPtr) -- Performs correlations between frequency spectrum components; Requires KTFrequencySpectrumDataPolar; Adds KTCorrelationData
@@ -51,21 +52,22 @@ namespace Katydid
     */
     class KTCorrelator : public KTProcessor
     {
-        protected:
+        public:
+            typedef std::pair< unsigned, unsigned > UIntPair;
             typedef std::vector< UIntPair > PairVector;
 
         public:
             KTCorrelator(const std::string& name = "correlator");
             virtual ~KTCorrelator();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void AddPair(const UIntPair& pair);
             void SetPairVector(const PairVector& pairs);
             const PairVector& GetPairVector() const;
             void ClearPairs();
 
-        protected:
+        private:
             PairVector fPairs;
 
         public:
@@ -75,7 +77,7 @@ namespace Katydid
             bool Correlate(KTNormalizedFSDataPolar& data);
             bool Correlate(KTNormalizedFSDataFFTW& data);
 
-        protected:
+        private:
             bool CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData);
             bool CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData);
 

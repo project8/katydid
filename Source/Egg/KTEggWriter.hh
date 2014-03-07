@@ -67,7 +67,7 @@ namespace Katydid
             KTEggWriter(const std::string& name = "egg-writer");
             virtual ~KTEggWriter();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);

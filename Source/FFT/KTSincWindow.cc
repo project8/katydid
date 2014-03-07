@@ -9,7 +9,7 @@
 
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -30,7 +30,7 @@ namespace Katydid
     {
     }
 
-    bool KTSincWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTSincWindow::ConfigureWFSubclass(const KTParamNode*)
     {
         KTDEBUG(windowlog, "Sinc WF configured");
         return true;

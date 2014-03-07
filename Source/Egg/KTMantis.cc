@@ -9,7 +9,7 @@
 
 #include "KTEggHeader.hh"
 #include "KTMantisClientWriting.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include "mt_configurator.hh"
 #include "mt_client_config.hh"
@@ -86,21 +86,21 @@ namespace Katydid
     {
     }
 
-    bool KTMantis::ConfigureSubClass(const KTPStoreNode* node)
+    bool KTMantis::ConfigureSubClass(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetSliceSize(node->GetData< unsigned >("slice-size", fSliceSize));
-        SetStride(node->GetData< unsigned >("stride", fStride));
+        SetSliceSize(node->GetValue< unsigned >("slice-size", fSliceSize));
+        SetStride(node->GetValue< unsigned >("stride", fStride));
 
-        const KTPStoreNode clientNode = node->GetChild("run-queue");
-        if (clientNode.IsValid())
+        const KTParamNode* clientNode = node->NodeAt("run-queue");
+        if (clientNode != NULL)
         {
             // fill in fConfig
             mantis::param_value newValue;
-            for (KTPStoreNode::const_iterator it = clientNode.Begin(); it != clientNode.End(); ++it)
+            for (KTParamNode::const_iterator it = clientNode->Begin(); it != clientNode->End(); ++it)
             {
-                fConfig.add(it->first, newValue << it->second.data());
+                fConfig.add(it->first, newValue << it->second->AsValue().Get());
             }
         }
 

@@ -27,7 +27,7 @@ namespace Katydid
 
     class KTAnalyticAssociateData;
     class KTEggHeader;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesFFTW;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumFFTW;
@@ -80,7 +80,7 @@ namespace Katydid
             KTComplexFFTW(const std::string& name = "complex-fftw");
             virtual ~KTComplexFFTW();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void InitializeFFT();
             void InitializeWithHeader(const KTEggHeader* header);

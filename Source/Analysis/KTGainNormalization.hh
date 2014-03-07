@@ -20,7 +20,7 @@ namespace Katydid
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
     class KTGainVariationData;
-    class KTPStoreNode;
+    class KTParamNode;
     //class KTSlidingWindowFSData;
     //class KTSlidingWindowFSDataFFTW;
     class KTSpline;
@@ -57,7 +57,7 @@ namespace Katydid
             KTGainNormalization(const std::string& name = "gain-normalization");
             virtual ~KTGainNormalization();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             double GetMinFrequency() const;
             void SetMinFrequency(double freq);

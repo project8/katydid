@@ -61,7 +61,7 @@ namespace Katydid
             KTHoughTransform(const std::string& name = "hough-transform");
             virtual ~KTHoughTransform();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetNThetaPoints() const;
             void SetNThetaPoints(unsigned nPoints);

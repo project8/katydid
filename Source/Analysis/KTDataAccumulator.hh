@@ -27,7 +27,7 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesData;
 
     /*!
@@ -115,7 +115,7 @@ namespace Katydid
             KTDataAccumulator(const std::string& name = "data-accumulator");
             virtual ~KTDataAccumulator();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetAccumulatorSize() const;
             double GetAveragingFrac() const;

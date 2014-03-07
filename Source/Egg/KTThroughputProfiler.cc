@@ -8,7 +8,7 @@
 #include "KTThroughputProfiler.hh"
 
 #include "KTEggHeader.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include "MonarchTypes.hpp"
 
@@ -45,10 +45,10 @@ namespace Katydid
     {
     };
 
-    bool KTThroughputProfiler::Configure(const KTPStoreNode* node)
+    bool KTThroughputProfiler::Configure(const KTParamNode* node)
     {
-        SetOutputFileFlag(node->GetData< bool >("output-file-flag", fOutputFileFlag));
-        SetOutputFilename(node->GetData< string >("output-filename-base", fOutputFilename));
+        SetOutputFileFlag(node->GetValue< bool >("output-file-flag", fOutputFileFlag));
+        SetOutputFilename(node->GetValue("output-filename-base", fOutputFilename));
 
         return true;
     }

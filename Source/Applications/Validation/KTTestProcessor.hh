@@ -22,7 +22,7 @@ namespace Katydid
             KTTestProcessorA();
             virtual ~KTTestProcessorA();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void EmitSignals(int);
 
@@ -37,7 +37,7 @@ namespace Katydid
             KTTestProcessorB();
             virtual ~KTTestProcessorB();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void Slot1(int);
             void Slot2(int);

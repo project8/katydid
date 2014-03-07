@@ -6,7 +6,7 @@
  */
 
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTestConfigurable.hh"
 #include "KTCommandLineOption.hh"
 
@@ -30,22 +30,22 @@ namespace Katydid
     {
     }
 
-    bool KTTestConfigurable::Configure(const KTPStoreNode* node)
+    bool KTTestConfigurable::Configure(const KTParamNode* node)
     {
         // Config-file options
         if (node != NULL)
         {
             // option: check for data before getting it from the node
-            if (node->HasData("int-data"))
+            if (node->Has("int-data"))
             {
-                fIntData = node->GetData< int >("int-data", fIntData);
+                fIntData = node->GetValue< int >("int-data", fIntData);
                 KTINFO(testparamlog, "Configured integer (= existing value if not provided): " << fIntData);
             }
 
             // option: don't check for data before getting it from the node; rely on the default if it's not there.
-            fDoubleData = node->GetData< double >("double-data", fDoubleData);
+            fDoubleData = node->GetValue< double >("double-data", fDoubleData);
             KTINFO(testparamlog, "Configured double (= existing value if not provided): " << fDoubleData);
-            fStringData = node->GetData< string >("string-data", fStringData);
+            fStringData = node->GetValue("string-data", fStringData);
             KTINFO(testparamlog, "Configured string (= existing value if not provided): " << fStringData);
         }
 
@@ -55,5 +55,15 @@ namespace Katydid
 
         return true;
     }
+
+    void KTTestConfigurable::PrintConfig() const
+    {
+        KTINFO(testparamlog, "Final configuration of KTTestConfigurable:\n" <<
+                "\tInt data: " << fIntData << "\n" <<
+                "\tDouble data: " << fDoubleData << "\n" <<
+                "\tString data: " << fStringData);
+        return;
+    }
+
 
 } /* namespace Katydid */

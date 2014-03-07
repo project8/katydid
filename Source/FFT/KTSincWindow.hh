@@ -33,7 +33,7 @@ namespace Katydid
             KTSincWindow(const std::string& name = "sinc");
             virtual ~KTSincWindow();
 
-            virtual bool ConfigureWFSubclass(const KTPStoreNode* node);
+            virtual bool ConfigureWFSubclass(const KTParamNode* node);
 
             virtual double GetWeight(double time) const;
 

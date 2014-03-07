@@ -45,7 +45,7 @@ namespace Katydid
             KTImpulseAnalysis(const std::string& name = "impulse-analysis");
             virtual ~KTImpulseAnalysis();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             bool Analyze(KTFrequencySpectrumDataPolar& fsData);
             //bool Analyze(KTFrequencySpectrumDataFFTW& fsData);
@@ -66,38 +66,39 @@ namespace Katydid
 
 int main(int argc, char** argv)
 {
-    KTApplication app(argc, argv);
-    if (! app.ReadConfigFile())
+    KTApplication* app = NULL;
+    try
     {
-        KTERROR(irlog, "Unable to read config file");
+        app = new KTApplication(argc, argv);
+    }
+    catch( std::exception& e )
+    {
+        KTERROR( irlog, "Something went wrong while processing the command line:\n" << e.what() );
         return -1;
     }
+
+    const KTParamNode* parentConfigNode = app->GetConfigurator()->Config();
 
     // Create and configure the processor toolbox.
     // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
-    string appConfigName("impulse-response");
     KTProcessorToolbox procTB;
-    if (! app.Configure(&procTB, appConfigName))
+    if ( ! procTB.Configure( parentConfigNode->NodeAt( procTB.GetConfigName() ) ) )
     {
         KTERROR(irlog, "Unable to configure processor toolbox. Aborting.");
-        return -1;
+        return -2;
     }
 
     // Configure the processors
-    KTPStoreNode node = app.GetNode(appConfigName);
-    if (! node.IsValid())
-    {
-        KTERROR(irlog, "Unable to find config node at <" << appConfigName << ">. Aborting.");
-        return -2;
-    }
-    if (! procTB.ConfigureProcessors(&node))
+    if ( ! procTB.ConfigureProcessors( parentConfigNode ) )
     {
         KTERROR(irlog, "Unable to configure processors. Aborting.");
-        return -3;
+        return -4;
     }
 
     // Execute the run queue!
     bool success = procTB.Run();
+
+    delete app;
 
     if (! success) return -4;
     return 0;
@@ -120,7 +121,7 @@ KTImpulseAnalysis::~KTImpulseAnalysis()
 {
 }
 
-bool KTImpulseAnalysis::Configure(const KTPStoreNode*)
+bool KTImpulseAnalysis::Configure(const KTParamNode*)
 {
     return true;
 }

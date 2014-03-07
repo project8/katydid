@@ -20,7 +20,7 @@ namespace Katydid
 {
     class KTDAC;
     class KTProcSummary;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesData;
 
     /*!
@@ -69,7 +69,7 @@ namespace Katydid
             KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetNSlices() const;
             void SetNSlices(unsigned nSlices);

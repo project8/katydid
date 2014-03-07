@@ -9,7 +9,7 @@
 
 #include "KTData.hh"
 #include "KTCCResults.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <sstream>
 #include <vector>
@@ -38,11 +38,11 @@ namespace Katydid
     {
     }
 
-    bool KTCompareCandidates::Configure(const KTPStoreNode* node)
+    bool KTCompareCandidates::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetAssumeSparseCandidates(node->GetData<bool>("assume-sparse-candidates", fAssumeSparseCandidates));
+        SetAssumeSparseCandidates(node->GetValue<bool>("assume-sparse-candidates", fAssumeSparseCandidates));
 
         return true;
     }

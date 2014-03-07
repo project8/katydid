@@ -13,7 +13,7 @@
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTWignerVilleData.hh"
 
 using std::string;
@@ -40,11 +40,11 @@ namespace Katydid
     {
     }
 
-    bool KTSwitchFFTWPolar::Configure(const KTPStoreNode* node)
+    bool KTSwitchFFTWPolar::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetUseNegFreqs(node->GetData< bool >("use-neg-freqs", fUseNegFreqs));
+        SetUseNegFreqs(node->GetValue< bool >("use-neg-freqs", fUseNegFreqs));
 
         return true;
     }

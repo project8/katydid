@@ -21,7 +21,7 @@
 namespace Katydid
 {
     //class KTDigitizerTestData;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTRawTimeSeriesData;
     class KTRawTimeSeries;
     class KTTimeSeriesData;
@@ -71,7 +71,7 @@ namespace Katydid
             KTDigitizerTests(const std::string& name = "digitizer-tests");
             virtual ~KTDigitizerTests();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetNDigitizerBits() const;
             unsigned GetNDigitizerLevels() const;

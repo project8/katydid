@@ -1,250 +1,158 @@
 {
-    "katydid":
+    "processor-toolbox":
     {
-        "processor-toolbox":
-        {
-            "processor":
-            {
-                "type": "egg-processor",
-                "name": "egg"
-            },
-            "processor":
-            {
-                "type": "simple-fft",
-                "name": "fft"
-            },
-            "processor":
-            {
-                "type": "gain-variation",
-                "name": "gainvar"
-            },
-            "processor":
-            {
-                "type": "gain-normalization",
-                "name": "gainnorm"
-            },
-            "processor":
-            {
-                "type": "spectrum-discriminator",
-                "name": "discrim"
-            },
-            "processor":
-            {
-                "type": "distance-clustering",
-                "name": "clustering"
-            },
-            "processor":
-            {
-                "type": "frequency-candidate-identifier",
-                "name": "fcident"
-            },
+        "processors":
+        [
+	        { "type": "egg-processor",                  "name": "egg" },
+	        { "type": "simple-fft",                     "name": "fft" },
+	        { "type": "gain-variation",                 "name": "gainvar" },
+	        { "type": "gain-normalization",             "name": "gainnorm" },
+	        { "type": "spectrum-discriminator",         "name": "discrim" },
+	        { "type": "distance-clustering",            "name": "clustering" },
+	        { "type": "frequency-candidate-identifier", "name": "fcident" },
+	        { "type": "basic-root-writer",              "name": "rootwriter" },
+	        { "type": "basic-root-writer",              "name": "rootwriter-prenorm" },
+	        { "type": "json-writer",                    "name": "jsonwriter" },
+	        { "type": "throughput-profiler",            "name": "profiler" }
+        ],
+        
+        
+        "connections":
+        [
+	        {
+	            "signal": "egg:header",
+	            "slot": "fft:header",
+	            "group": 0
+	        },
+	        {
+	            "signal": "egg:header",
+	            "slot": "profiler:start",
+	            "group": 2
+	        },
+	        {
+	            "signal": "egg:ts",
+	            "slot": "profiler:data",
+	            "group": 0
+	        },
+	        {
+	            "signal": "egg:ts",
+	            "slot": "fft:ts",
+	            "group": 1
+	        },
+	        {
+	            "signal": "fft:fft",
+	            "slot": "gainvar:fs-fftw"
+	        },
+	        {
+	            "signal": "egg:ts",
+	            "slot": "gainnorm:fs-fftw",
+	            "group": 2
+	        },
+	        {
+	            "signal": "gainnorm:norm-fs-fftw",
+	            "slot": "discrim:norm-fs-fftw",
+	            "group": 1
+	        },
+	        {
+	            "signal": "discrim:disc-1d",
+	            "slot": "clustering:disc-1d"
+	        },
+	        {
+	            "signal": "egg:ts",
+	            "slot": "fcident:norm-fs-fftw",
+	            "group": 3
+	        },
+	        {
+	            "signal": "gainvar:gain-var",
+	            "slot": "rootwriter:gain-var"
+	        },
+	        {
+	            "signal": "gainnorm:gain-norm-fs",
+	            "slot": "rootwriter:fs",
+	            "group": 0
+	        },
+	        {
+	            "signal": "fft:fft",
+	            "slot": "rootwriter-prenorm:fs"
+	        },
+	        {
+	            "signal": "egg:header",
+	            "slot": "jsonwriter:header",
+	            "group": 1
+	        },
+	        {
+	            "signal": "fcident:frequency-candidates",
+	            "slot": "jsonwriter:frequency-candidates"
+	        },
+	        {
+	            "signal": "egg:egg-done",
+	            "slot": "profiler:stop"
+	        }
+        ],
+        
+        "run-queue":
+        [
+            "egg"
+        ]
+    },
+    
 
-            "processor":
-            {
-                "type": "basic-root-writer",
-                "name": "rootwriter"
-            },
-            "processor":
-            {
-                "type": "basic-root-writer",
-                "name": "rootwriter-prenorm"
-            },
-            "processor":
-            {
-                "type": "json-writer",
-                "name": "jsonwriter"
-            },
-            
-            "processor":
-            {
-                "type": "throughput-profiler",
-                "name": "profiler"
-            },
-            
-            
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "header",
-                "slot-processor": "fft",
-                "slot-name": "header",
-                "group-order": 0
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "header",
-                "slot-processor": "profiler",
-                "slot-name": "start",
-                "group-order": 2
-            },
-            
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "ts",
-                "slot-processor": "profiler",
-                "slot-name": "data",
-                "group-order": 0
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "ts",
-                "slot-processor": "fft",
-                "slot-name": "ts",
-                "group-order": 1
-            },
-            "connection":
-            {
-                "signal-processor": "fft",
-                "signal-name": "fft",
-                "slot-processor": "gainvar",
-                "slot-name": "fs-fftw"
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "ts",
-                "slot-processor": "gainnorm",
-                "slot-name": "fs-fftw",
-                "group-order": 2
-            },
-            "connection":
-            {
-                "signal-processor": "gainnorm",
-                "signal-name": "norm-fs-fftw",
-                "slot-processor": "discrim",
-                "slot-name": "norm-fs-fftw",
-                "group-order": 1
-            },
-            "connection":
-            {
-                "signal-processor": "discrim",
-                "signal-name": "disc-1d",
-                "slot-processor": "clustering",
-                "slot-name": "disc-1d"
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "ts",
-                "slot-processor": "fcident",
-                "slot-name": "norm-fs-fftw",
-                "group-order": 3
-            },
-            
-            "connection":
-            {
-                "signal-processor": "gainvar",
-                "signal-name": "gain-var",
-                "slot-processor": "rootwriter",
-                "slot-name": "gain-var"
-            },
-            "connection":
-            {
-                "signal-processor": "gainnorm",
-                "signal-name": "gain-norm-fs",
-                "slot-processor": "rootwriter",
-                "slot-name": "fs",
-                "group-order": 0
-            },
-            "connection":
-            {
-                "signal-processor": "fft",
-                "signal-name": "fft",
-                "slot-processor": "rootwriter-prenorm",
-                "slot-name": "fs"
-            },
-            
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "header",
-                "slot-processor": "jsonwriter",
-                "slot-name": "header",
-                "group-order": 1
-            },
-            "connection":
-            {
-                "signal-processor": "fcident",
-                "signal-name": "frequency-candidates",
-                "slot-processor": "jsonwriter",
-                "slot-name": "frequency-candidates"
-            },
-            
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "egg-done",
-                "slot-processor": "profiler",
-                "slot-name": "stop"
-            },
-            
-            "run-queue":
-            {
-                "processor": "egg"
-            }
-        },
-        
-
-        "egg":
-        {
-            "filename": "path/to/egg/file.egg",
-            "slice-size": 16384,
-            "number-of-slices": 1
-        },
-        
-        "fft":
-        {
-            "transform-flag": "ESTIMATE"
-        },
-        
-        "gainvar":
-        {
-            "min-frequency": 6e6,
-            "max-frequency": 95e6,
-            "fit-points": 20
-        },
-        
-        "gainnorm":
-        {
-            "min-frequency": 6e6,
-            "max-frequency": 95e6
-        },
-        
-        "discrim":
-        {
-            "min-frequency": 6e6,
-            "max-frequency": 95e6,
-            "snr-threshold": 20.0
-        },
-        
-        "clustering":
-        {
-            "max-frequency-distance": 2000.0
-        },
-        
-        "fcident":
-        {
-        },
-        
-        "rootwriter":
-        {
-            "output-file": "norm_ps.root",
-            "file-flag": "recreate"
-        },
-        "rootwriter-prenorm":
-        {
-            "output-file": "prenorm_ps.root",
-            "file-flag": "recreate"
-        },
-        
-        "jsonwriter":
-        {
-            "output-file": "candidates.json",
-            "file-mode": "w+",
-            "pretty-json": true
-        }
+    "egg":
+    {
+        "filename": "path/to/egg/file.egg",
+        "slice-size": 16384,
+        "number-of-slices": 1
+    },
+    
+    "fft":
+    {
+        "transform-flag": "ESTIMATE"
+    },
+    
+    "gainvar":
+    {
+        "min-frequency": 6e6,
+        "max-frequency": 95e6,
+        "fit-points": 20
+    },
+    
+    "gainnorm":
+    {
+        "min-frequency": 6e6,
+        "max-frequency": 95e6
+    },
+    
+    "discrim":
+    {
+        "min-frequency": 6e6,
+        "max-frequency": 95e6,
+        "snr-threshold": 20.0
+    },
+    
+    "clustering":
+    {
+        "max-frequency-distance": 2000.0
+    },
+    
+    "fcident":
+    {
+    },
+    
+    "rootwriter":
+    {
+        "output-file": "norm_ps.root",
+        "file-flag": "recreate"
+    },
+    "rootwriter-prenorm":
+    {
+        "output-file": "prenorm_ps.root",
+        "file-flag": "recreate"
+    },
+    
+    "jsonwriter":
+    {
+        "output-file": "candidates.json",
+        "file-mode": "w+",
+        "pretty-json": true
     }
 }

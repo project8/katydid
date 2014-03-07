@@ -36,7 +36,7 @@ namespace Katydid
             KTMultiSliceROOTWriter(const std::string& name = "multislice-root-writer");
             virtual ~KTMultiSliceROOTWriter();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
         public:
             TFile* OpenFile(const std::string& filename, const std::string& flag);

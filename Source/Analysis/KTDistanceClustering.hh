@@ -47,7 +47,7 @@ namespace Katydid
             KTDistanceClustering(const std::string& name = "distance-clustering");
             virtual ~KTDistanceClustering();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             double GetMaxFrequencyDistance() const;
             void SetMaxFrequencyDistance(double freq);

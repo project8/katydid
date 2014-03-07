@@ -7,7 +7,7 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 using std::string;
 
@@ -32,13 +32,13 @@ namespace Katydid
         CloseFile();
     }
 
-    bool KTBasicROOTFileWriter::Configure(const KTPStoreNode* node)
+    bool KTBasicROOTFileWriter::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetData<string>("output-file", fFilename));
-            SetFileFlag(node->GetData<string>("file-flag", fFileFlag));
+            SetFilename(node->GetValue("output-file", fFilename));
+            SetFileFlag(node->GetValue("file-flag", fFileFlag));
         }
 
         return true;

@@ -13,7 +13,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesFFTW.hh"
 
 using std::string;
@@ -43,16 +43,15 @@ namespace Katydid
     {
     }
 
-    bool KTAnalyticAssociator::Configure(const KTPStoreNode* node)
+    bool KTAnalyticAssociator::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetSaveFrequencySpectrum(node->GetData< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
+        SetSaveFrequencySpectrum(node->GetValue< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
 
-        const KTPStoreNode fftNode = node->GetChild("complex-fftw");
-        if (fftNode.IsValid())
+        if (! fFullFFT.Configure(node->NodeAt("complex-fftw")))
         {
-            if (! fFullFFT.Configure(&fftNode)) return false;
+            return false;
         }
 
         return true;

@@ -19,12 +19,14 @@ namespace Katydid
             virtual ~KTTestConfigurable();
 
         public:
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
         public:
             int GetIntData() const;
             double GetDoubleData() const;
             const std::string& GetStringData() const;
+
+            void PrintConfig() const;
 
         private:
             int fIntData;

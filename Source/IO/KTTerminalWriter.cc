@@ -7,7 +7,7 @@
 
 #include "KTTerminalWriter.hh"
 
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 using std::string;
 
@@ -25,7 +25,7 @@ namespace Katydid
     {
     }
 
-    bool KTTerminalWriter::Configure(const KTPStoreNode* node)
+    bool KTTerminalWriter::Configure(const KTParamNode* node)
     {
         return true;
     }

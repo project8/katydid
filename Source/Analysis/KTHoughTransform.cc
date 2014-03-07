@@ -11,7 +11,7 @@
 #include "KTHoughData.hh"
 #include "KTMath.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"
 
 #include <cmath>
@@ -44,10 +44,10 @@ namespace Katydid
     {
     }
 
-    bool KTHoughTransform::Configure(const KTPStoreNode* node)
+    bool KTHoughTransform::Configure(const KTParamNode* node)
     {
-        SetNThetaPoints(node->GetData< unsigned >("n-theta-points", fNThetaPoints));
-        SetNRPoints(node->GetData< unsigned >("n-r-points", fNRPoints));
+        SetNThetaPoints(node->GetValue< unsigned >("n-theta-points", fNThetaPoints));
+        SetNRPoints(node->GetValue< unsigned >("n-r-points", fNRPoints));
 
         return true;
     }

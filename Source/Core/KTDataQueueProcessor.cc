@@ -7,10 +7,6 @@
 
 #include "KTDataQueueProcessor.hh"
 
-#include "KTPStoreNode.hh"
-
-
-
 //using std::list;
 
 namespace Katydid
@@ -30,7 +26,7 @@ namespace Katydid
 
     }
 
-    bool KTDataQueueProcessor::ConfigureSubClass(const KTPStoreNode*)
+    bool KTDataQueueProcessor::ConfigureSubClass(const KTParamNode*)
     {
         return true;
     }
