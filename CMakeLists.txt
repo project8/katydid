@@ -238,10 +238,6 @@ add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Profiling)
 add_subdirectory (Source/Applications/Validation)
 
-if (NOT ROOT_FOUND)
-    add_subdirectory (External/ROOT)
-endif (NOT ROOT_FOUND)
-
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
 add_subdirectory (Documentation/ReferenceGuide)
