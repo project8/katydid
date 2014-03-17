@@ -155,7 +155,7 @@ namespace Katydid
                     return false;
                 }
 
-                KTProcessor* slotProc = GetProcessor(slotName);
+                KTProcessor* slotProc = GetProcessor(slotProcName);
                 if (slotProc == NULL)
                 {
                     KTERROR(proclog, "Processor named <" << slotProcName << "> was not found!");
