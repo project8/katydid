@@ -6,7 +6,7 @@
  */
 
 #ifndef KTFILENAMEPARSERS_HH_
-#define KTFILENAMEPARSES_HH_
+#define KTFILENAMEPARSERS_HH_
 
 #include <string>
 
