@@ -227,11 +227,26 @@ namespace Katydid
  */
 
 #include <iomanip>
+#include <sys/time.h>
+#include <time.h>
 
 namespace Katydid
 {
     struct KTLogger::Private
     {
+            static char sDateTimeFormat[16];
+            static time_t sRawTime;
+            static tm* sProcessedTime;
+            static char sTimeBuff[512];
+            static size_t getTimeAbsoluteStr()
+            {
+                time(&KTLogger::Private::sRawTime);
+                sProcessedTime = gmtime(&KTLogger::Private::sRawTime);
+                return strftime(KTLogger::Private::sTimeBuff, 512,
+                        KTLogger::Private::sDateTimeFormat,
+                        KTLogger::Private::sProcessedTime);
+            }
+
             const char* fLogger;
             bool fColored;
 
@@ -260,7 +275,7 @@ namespace Katydid
                     case eProg  : return skKTProgColor; break;
                     case eWarn  : return skKTWarnColor; break;
                     case eError : return skKTErrorColor; break;
-                    case eFatal : return skKTErrorColor; break;
+                    case eFatal : return skKTFatalColor; break;
                     default     : return skKTOtherColor;
                 }
             }
@@ -268,20 +283,27 @@ namespace Katydid
 
             void logCout(const char* level, const string& message, const Location& /*loc*/, const string& color = skKTOtherColor)
             {
+                getTimeAbsoluteStr();
                 if (fColored)
-                    cout << color << __DATE__ " " __TIME__ " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << skKTEndColor << endl;
+                    cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << skKTEndColor << endl;
                 else
-                    cout << __DATE__ " " __TIME__ " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
+                    cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
             }
 
             void logCerr(const char* level, const string& message, const Location& /*loc*/, const string& color = skKTOtherColor)
             {
+                getTimeAbsoluteStr();
                 if (fColored)
-                    cerr << color << __DATE__ " " __TIME__ " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << skKTEndColor << endl;
+                    cerr << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << skKTEndColor << endl;
                 else
-                    cerr << __DATE__ " " __TIME__ " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
+                    cerr << KTLogger::Private::sTimeBuff <<  " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
             }
     };
+
+    char KTLogger::Private::sDateTimeFormat[16];
+    time_t KTLogger::Private::sRawTime;
+    tm* KTLogger::Private::sProcessedTime;
+    char KTLogger::Private::sTimeBuff[512];
 
     KTLogger::KTLogger(const char* name) : fPrivate(new Private())
     {
@@ -295,12 +317,14 @@ namespace Katydid
             fPrivate->fLogger = logName;
         }
         fPrivate->fColored = true;
+        sprintf(KTLogger::Private::sDateTimeFormat,  "%%FT%%TZ");
     }
 
     KTLogger::KTLogger(const std::string& name) : fPrivate(new Private())
     {
         fPrivate->fLogger = name.c_str();
         fPrivate->fColored = true;
+        sprintf(KTLogger::Private::sDateTimeFormat,  "%%FT%%TZ");
     }
 
     KTLogger::~KTLogger()
