@@ -256,12 +256,12 @@ namespace Katydid
             if (subNode == NULL)
             {
                 string configName = iter->second.fProc->GetConfigName();
-                KTWARN(proclog, "Did not find a PSToreNode <" << procName << ">\n"
+                KTWARN(proclog, "Did not find a parameter node <" << procName << ">\n"
                         "\tWill check using the generic name of the processor, <" << configName << ">.");
                 subNode = node->NodeAt(configName);
                 if (subNode == NULL)
                 {
-                    KTWARN(proclog, "Did not find a PStoreNode <" << configName << ">\n"
+                    KTWARN(proclog, "Did not find a parameter node <" << configName << ">\n"
                             "\tProcessor <" << iter->first << "> was not configured.");
                     continue;
                 }
@@ -273,7 +273,7 @@ namespace Katydid
             }
             if (! iter->second.fProc->Configure(subNode))
             {
-                KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << nameUsed << ">");
+                KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with parameter node <" << nameUsed << ">");
                 return false;
             }
         }
