@@ -154,7 +154,7 @@ namespace Katydid
 
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Throws a KTException if aName is not present or is not of type ParamValue
-            const std::string& GetValue( unsigned aIndex ) const;
+            std::string GetValue( unsigned aIndex ) const;
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Throws a KTException if aName is not present or is not of type ParamValue
             template< typename XValType >
@@ -162,8 +162,8 @@ namespace Katydid
 
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Returns aDefault if aName is not present or is not of type ParamValue
-            const std::string& GetValue( unsigned aIndex, const std::string& aDefault ) const;
-            const std::string& GetValue( unsigned aIndex, const char* aDefault ) const;
+            std::string GetValue( unsigned aIndex, const std::string& aDefault ) const;
+            std::string GetValue( unsigned aIndex, const char* aDefault ) const;
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Returns aDefault if aName is not present or is not of type ParamValue
             template< typename XValType >
@@ -301,7 +301,7 @@ namespace Katydid
 
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Throws a KTException if aName is not present or is not of type ParamValue
-            const std::string& GetValue( const std::string& aName ) const;
+            std::string GetValue( const std::string& aName ) const;
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Throws a KTException if aName is not present or is not of type ParamValue
             template< typename XValType >
@@ -309,8 +309,8 @@ namespace Katydid
 
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Returns a_default if aName is not present or is not of type ParamValue
-            const std::string& GetValue( const std::string& aName, const std::string& aDefault ) const;
-            const std::string& GetValue( const std::string& aName, const char* aDefault ) const;
+            std::string GetValue( const std::string& aName, const std::string& aDefault ) const;
+            std::string GetValue( const std::string& aName, const char* aDefault ) const;
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Returns a_default if aName is not present or is not of type ParamValue
             template< typename XValType >

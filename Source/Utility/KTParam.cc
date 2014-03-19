@@ -244,21 +244,21 @@ namespace Katydid
         return;
     }
 
-    const std::string& KTParamArray::GetValue( unsigned aIndex ) const
+    std::string KTParamArray::GetValue( unsigned aIndex ) const
     {
         const KTParamValue* value = ValueAt( aIndex );
         if( value == NULL ) throw KTException() << "No value at <" << aIndex << "> is present at this node";
         return value->Get();
     }
 
-    const std::string& KTParamArray::GetValue( unsigned aIndex, const std::string& aDefault ) const
+    std::string KTParamArray::GetValue( unsigned aIndex, const std::string& aDefault ) const
     {
         const KTParamValue* value = ValueAt( aIndex );
         if( value == NULL ) return aDefault;
         return value->Get();
     }
 
-    const std::string& KTParamArray::GetValue( unsigned aIndex, const char* aDefault ) const
+    std::string KTParamArray::GetValue( unsigned aIndex, const char* aDefault ) const
     {
         return GetValue( aIndex, string( aDefault ) );
     }
@@ -523,21 +523,21 @@ namespace Katydid
         return fContents.count( aName );
     }
 
-    const std::string& KTParamNode::GetValue( const std::string& aName ) const
+    std::string KTParamNode::GetValue( const std::string& aName ) const
     {
         const KTParamValue* value = ValueAt( aName );
         if( value == NULL ) throw KTException() << "No value with name <" << aName << "> is present at this node";
         return value->Get();
     }
 
-    const std::string& KTParamNode::GetValue( const std::string& aName, const std::string& aDefault ) const
+    std::string KTParamNode::GetValue( const std::string& aName, const std::string& aDefault ) const
     {
         const KTParamValue* value = ValueAt( aName );
         if( value == NULL ) return aDefault;
         return value->Get();
     }
 
-    const std::string& KTParamNode::GetValue( const std::string& aName, const char* aDefault ) const
+    std::string KTParamNode::GetValue( const std::string& aName, const char* aDefault ) const
     {
         return GetValue( aName, string( aDefault ) );
     }
