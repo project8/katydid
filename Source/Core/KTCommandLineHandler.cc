@@ -195,8 +195,8 @@ namespace Katydid
                 return false;
             }
             delete tIter->second;
-            fProposedGroups.erase(tIter);
         }
+        fProposedGroups.clear();
 
         return true;
     }
@@ -234,6 +234,7 @@ namespace Katydid
     {
         if (! fProposedGroups.empty())
         {
+            KTWARN(utillog, "Proposed groups is not empty in dclp: " << fProposedGroups.size())
             if (! this->FinalizeNewOptionGroups())
             {
                 KTERROR(utillog, "An error occurred while adding the proposed option groups\n" <<
