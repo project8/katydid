@@ -80,21 +80,18 @@ namespace Katydid
             fVoltages.clear();
         }
 
-        unsigned nVoltages = 1 << fNBits;
         unsigned levelDivisor = 1;
 
         dig_calib_params params;
         if (fBitDepthMode == kReducing)
         {
-            params.levels = 1 << fEmulatedNBits;
+            get_calib_params(fEmulatedNBits, sizeof(uint64_t), fMinVoltage, fVoltageRange, &params);
             levelDivisor = 1 << (fNBits - fEmulatedNBits);
         }
         else
         {
-            params.levels = nVoltages;
+            get_calib_params(fNBits, sizeof(uint64_t), fMinVoltage, fVoltageRange, &params);
         }
-        params.v_range = fVoltageRange;
-        params.v_min = fMinVoltage;
 
         if (fBitDepthMode == kIncreasing)
         {
@@ -110,7 +107,7 @@ namespace Katydid
 
         KTDEBUG(egglog, "Assigning voltages with:\n" <<
                 "\tDigitizer bits: " << fNBits << '\n' <<
-                "\tVoltage levels: " << nVoltages << '\n' <<
+                "\tVoltage levels: " << 1 << fNBits << '\n' <<
                 "\tEmulated bits: " << fEmulatedNBits << '\n' <<
                 "\tLevel divisor: " << levelDivisor << '\n' <<
                 "\tReduced levels: " << params.levels << '\n' <<
@@ -120,10 +117,11 @@ namespace Katydid
                 "\tOversampling scale factor: " << fOversamplingScaleFactor << '\n');
 
 
-        fVoltages.resize(nVoltages);
-        for (uint64_t level = 0; level < nVoltages; ++level)
+        fVoltages.resize(params.levels);
+        for (uint64_t level = 0; level < params.levels; ++level)
         {
             fVoltages[level] = dd2a(level / levelDivisor, &params);
+            KTWARN(egglog, "level " << level << ", voltage " << fVoltages[level]);
         }
 
         fShouldRunInitialize = false;
