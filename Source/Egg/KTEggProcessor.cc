@@ -63,9 +63,15 @@ namespace Katydid
         // config file setting
         if (node != NULL)
         {
-            string eggReaderTypeString = node->GetValue("egg-reader", "monarch");
-            if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
-            else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
+            string eggReaderTypeString( node->GetValue("egg-reader", "monarch") );
+            if (eggReaderTypeString == "monarch")
+            {
+                 SetEggReaderType(kMonarchEggReader);
+            }
+            else if (eggReaderTypeString == string("2011"))
+            {
+                SetEggReaderType(k2011EggReader);
+            }
             else
             {
                 KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
