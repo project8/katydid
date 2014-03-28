@@ -66,6 +66,10 @@ namespace Katydid
         public:
             typedef void (signature)(void);
             typedef boost::signals2::signal< signature > boost_signal;
+            // the following line is, technically, not valid C++03 code because the 'typename' keyword
+            // is appearing outside of a template (since the template here is fully specified, this counts).
+            // It should compiler with most new-ish compilers, even when compiling under C++03 mode.
+            // It has been tested successfully with GCC 4.6 and Clang 3.1
             typedef typename boost::signals2::signal< signature >::slot_type slot_type;
 
         public:
