@@ -98,16 +98,16 @@ namespace Katydid
         return;
     }
 
-  void KTDigitizerTestData::SetLinearityData(double fracMaxDiff, double chiSquared, size_t fitStart, size_t fitEnd, double regSlope, double regIntercept, unsigned component)
+  void KTDigitizerTestData::SetLinearityData(double maxDiffAvg, double maxDiffStdev, double avgLinRegSlope,double maxDiffAvgD, double maxDiffStdevD, double avgLinRegSlopeD, unsigned component)
   {
            if (component >= fLinearityData.size())
             SetNComponents(component + 1); 
-    fLinearityData[component].fFracMaxDiff = fracMaxDiff;
-    fLinearityData[component].fChiSquared = chiSquared;
-    fLinearityData[component].fFitStart = fitStart;
-    fLinearityData[component].fFitEnd = fitEnd;
-    fLinearityData[component].fRegSlope = regSlope;
-    fLinearityData[component].fRegIntercept = regIntercept;
+    fLinearityData[component].fMaxDiffAvg = maxDiffAvg;
+    fLinearityData[component].fMaxDiffStdev = maxDiffStdev;
+    fLinearityData[component].fAvgLinRegSlope = avgLinRegSlope;
+    fLinearityData[component].fMaxDiffAvgD = maxDiffAvgD;
+    fLinearityData[component].fMaxDiffStdevD = maxDiffStdevD;
+    fLinearityData[component].fAvgLinRegSlopeD = avgLinRegSlopeD;
   }
 
 

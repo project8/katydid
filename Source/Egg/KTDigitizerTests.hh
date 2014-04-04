@@ -17,6 +17,7 @@
 #include <cmath>
 #include <map>
 #include <typeinfo>
+#include <vector>
 
 namespace Katydid
 {
@@ -92,6 +93,7 @@ namespace Katydid
         private:
             unsigned fNDigitizerBits;
             unsigned fNDigitizerLevels;
+            std::vector<unsigned> fDisableComponents;
 
             bool fTestBitOccupancy;
 
