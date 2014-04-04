@@ -10,7 +10,7 @@
 
 #include "KTLogger.hh"
 #include "KTParameterStore.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTestConfigurable.hh"
 
 #include <string>
@@ -18,7 +18,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testparamlog, "katydid.applications.validation");
+KTLOGGER(testparamlog, "TestParameterStore");
 
 int main(int argc, char** argv)
 {

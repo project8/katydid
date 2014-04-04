@@ -13,7 +13,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(mfsdlog, "katydid.data");
+    KTLOGGER(mfsdlog, "KTMultiFSDataPolar");
 
     KTMultiFSDataPolarCore::KTMultiFSDataPolarCore() :
             fSpectra(1)

@@ -8,12 +8,10 @@
 #include "KTGainVariationProcessor.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSpline.hh"
 
 #include <cmath>
@@ -29,9 +27,9 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(gvlog, "katydid.analysis");
+    KTLOGGER(gvlog, "KTGainVariationProcessor");
 
-    static KTNORegistrar< KTProcessor, KTGainVariationProcessor > sGainVarRegistrar("gain-variation");
+    KT_REGISTER_PROCESSOR(KTGainVariationProcessor, "gain-variation");
 
     KTGainVariationProcessor::KTGainVariationProcessor(const std::string& name) :
             KTProcessor(name),
@@ -54,31 +52,31 @@ namespace Katydid
     {
     }
 
-    bool KTGainVariationProcessor::Configure(const KTPStoreNode* node)
+    bool KTGainVariationProcessor::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetNormalize(node->GetData< bool >("normalize", fNormalize));
+        SetNormalize(node->GetValue< bool >("normalize", fNormalize));
 
-        if (node->HasData("min-frequency"))
+        if (node->Has("min-frequency"))
         {
-            SetMinFrequency(node->GetData< double >("min-frequency"));
+            SetMinFrequency(node->GetValue< double >("min-frequency"));
         }
-        if (node->HasData("max-frequency"))
+        if (node->Has("max-frequency"))
         {
-            SetMaxFrequency(node->GetData< double >("max-frequency"));
-        }
-
-        if (node->HasData("min-bin"))
-        {
-            SetMinBin(node->GetData< unsigned >("min-bin"));
-        }
-        if (node->HasData("max-bin"))
-        {
-            SetMaxBin(node->GetData< unsigned >("max-bin"));
+            SetMaxFrequency(node->GetValue< double >("max-frequency"));
         }
 
-        SetNFitPoints(node->GetData< unsigned >("fit-points", fNFitPoints));
+        if (node->Has("min-bin"))
+        {
+            SetMinBin(node->GetValue< unsigned >("min-bin"));
+        }
+        if (node->Has("max-bin"))
+        {
+            SetMaxBin(node->GetValue< unsigned >("max-bin"));
+        }
+
+        SetNFitPoints(node->GetValue< unsigned >("fit-points", fNFitPoints));
 
         return true;
     }

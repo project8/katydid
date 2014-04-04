@@ -15,7 +15,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "katydid.applications.validation")
+KTLOGGER(vallog, "TestSimpleClustering")
 
 int main()
 {

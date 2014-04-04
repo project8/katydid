@@ -9,15 +9,18 @@
 
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
-#include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesFFTW.hh"
-#include "KTTimeSeriesReal.hh"
+#include "KTRawTimeSeriesData.hh"
+#include "KTRawTimeSeries.hh"
 
 #include "Monarch.hpp"
 #include "MonarchException.hpp"
 #include "MonarchHeader.hpp"
 
-
+using monarch::Monarch;
+using monarch::MonarchHeader;
+using monarch::MonarchException;
+using monarch::MonarchRecordBytes;
+using monarch::MonarchRecordDataInterface;
 
 using std::map;
 using std::string;
@@ -25,7 +28,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "katydid.egg");
+    KTLOGGER(eggreadlog, "KTEggReaderMonarch");
 
     unsigned KTEggReaderMonarch::GetMaxChannels()
     {
@@ -35,7 +38,6 @@ namespace Katydid
 
     KTEggReaderMonarch::KTEggReaderMonarch() :
             KTEggReader(),
-            fTimeSeriesType(kRealTimeSeries),
             fSliceSize(1024),
             fStride(0),
             fMonarch(NULL),
@@ -111,19 +113,9 @@ namespace Katydid
         CopyHeaderInformation(fMonarch->GetHeader());
         fHeader.SetSliceSize(fSliceSize);
 
-        KTDEBUG(eggreadlog, "Parsed header:\n"
-             << "\tFilename: " << fHeader.GetFilename() << '\n'
-             << "\tAcquisition Mode: " << fHeader.GetAcquisitionMode() << '\n'
-             << "\tNumber of Channels: " << fHeader.GetNChannels() << '\n'
-             << "\tSlice Size: " << fHeader.GetSliceSize() << '\n'
-             << "\tRecord Size: " << fHeader.GetRecordSize() << '\n'
-             << "\tRun Duration: " << fHeader.GetRunDuration() << " ms" << '\n'
-             << "\tAcquisition Rate: " << fHeader.GetAcquisitionRate() << " Hz \n"
-             << "\tTimestamp: " << fHeader.GetTimestamp() << '\n'
-             << "\tDescription: " << fHeader.GetDescription() << '\n'
-             << "\tRun Type: " << fHeader.GetRunType() << '\n'
-             << "\tRun Source: " << fHeader.GetRunSource() << '\n'
-             << "\tFormat Mode: " << fHeader.GetFormatMode());
+        stringstream headerBuff;
+        headerBuff << fHeader;
+        KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
 
 
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
@@ -135,7 +127,7 @@ namespace Katydid
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
         // force monarch to use Separate interface
-        fMonarch->SetInterface(sInterfaceSeparate);
+        fMonarch->SetInterface(monarch::sInterfaceSeparate);
 
         fSliceNumber = 0;
 
@@ -206,22 +198,19 @@ namespace Katydid
             // Calculate whether we need to move the read pointer to a different record by subtracing the number
             // of records read in the last slice (fReadPtrRecordOffset)
             // If this is 0, it doesn't need to be moved
-            // If it's > 0, then it needs to be reduced by 1 because of how the offset number in Monarch::ReadRecord is used (offset=0 will advance to the next record)
+            // If it's != 0, then it needs to be reduced by 1 because of how the offset number in Monarch::ReadRecord is used (offset=0 will advance to the next record; offset=-1 will read the same record)
             int readPtrRecordOffsetShift = int(sliceStartRecordOffset) - int(fReadState.fReadPtrRecordOffset);
             if (readPtrRecordOffsetShift != 0)
             {
                 // change the absolute record offset first because it should be done before the adjustment to Monarch::ReadRecord offset counting is made
                 fReadState.fAbsoluteRecordOffset += readPtrRecordOffsetShift;
-                if (readPtrRecordOffsetShift != 0)
+                --readPtrRecordOffsetShift;
+                KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
+                // move the read pointer to the slice start pointer (first move monarch to the correct record)
+                if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
                 {
-                    --readPtrRecordOffsetShift;
-                    KTDEBUG(eggreadlog, "Reading new record with offset " << readPtrRecordOffsetShift);
-                    // move the read pointer to the slice start pointer (first move monarch to the correct record)
-                    if (! fMonarch->ReadRecord(readPtrRecordOffsetShift))
-                    {
-                        KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
-                        return KTDataPtr();
-                    }
+                    KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
+                    return KTDataPtr();
                 }
             }
             // Move the read pointer to the slice start pointer within the record
@@ -254,26 +243,20 @@ namespace Katydid
 
         // Setup pointers to monarch and new katydid records
         unsigned nChannels = fHeader.GetNChannels();
-        vector< const MonarchRecord* > monarchRecords(nChannels);
-        vector< KTTimeSeries* > newRecords(nChannels);
+        vector< const MonarchRecordBytes* > monarchRecords(nChannels);
+        // the elements of monarchRecordData will need to be deleted
+        vector< const MonarchRecordDataInterface< uint64_t >* > monarchRecordData(nChannels);
+        vector< KTRawTimeSeries* > newRecords(nChannels);
         for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
             monarchRecords[iChannel] = (fMonarch->*fMonarchGetRecord[iChannel])();
             sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
             sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
             sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTime, iChannel);
+            monarchRecordData[iChannel] = new MonarchRecordDataInterface< uint64_t >(monarchRecords[iChannel]->fData, fHeader.GetDataTypeSize());
 
             //tsData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
-            KTTimeSeries* newRecord;
-            if (fTimeSeriesType == kRealTimeSeries)
-            {
-                newRecord = new KTTimeSeriesReal(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
-            }
-            else
-            {
-                newRecord = new KTTimeSeriesFFTW(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
-            }
-            newRecords[iChannel] = newRecord;
+            newRecords[iChannel] = new KTRawTimeSeries(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
         }
 
         KTDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
@@ -353,7 +336,7 @@ namespace Katydid
             for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
             {
                 // set the data
-                newRecords[iChannel]->SetValue(iBin, double(monarchRecords[iChannel]->fData[fReadState.fReadPtrOffset]));
+                (*newRecords[iChannel])(iBin) = monarchRecordData[iChannel]->at(fReadState.fReadPtrOffset);
             }
 
             // advance the pointer for the next bin
@@ -370,9 +353,15 @@ namespace Katydid
         sliceHeader.SetEndRecordNumber(fReadState.fAbsoluteRecordOffset);
         sliceHeader.SetEndSampleNumber(fReadState.fReadPtrOffset - 1);
 
+        // delete the monarchRecordData objects
+        while(! monarchRecordData.empty())
+        {
+            delete monarchRecordData.back();
+            monarchRecordData.pop_back();
+        }
 
         // finally, set the records in the new data object
-        KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nChannels);
+        KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(nChannels);
         for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
             tsData.SetTimeSeries(newRecords[iChannel], iChannel);
@@ -410,6 +399,10 @@ namespace Katydid
         fHeader.SetRunType(monarchHeader->GetRunType());
         fHeader.SetRunSource(monarchHeader->GetRunSource());
         fHeader.SetFormatMode(monarchHeader->GetFormatMode());
+        fHeader.SetDataTypeSize(monarchHeader->GetDataTypeSize());
+        fHeader.SetBitDepth(monarchHeader->GetBitDepth());
+        fHeader.SetVoltageMin(monarchHeader->GetVoltageMin());
+        fHeader.SetVoltageRange(monarchHeader->GetVoltageRange());
         return;
     }
 

@@ -51,7 +51,7 @@ namespace Katydid
             KTJSONWriter(const std::string& name = "json-writer");
             virtual ~KTJSONWriter();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
         public:
             bool OpenFile();

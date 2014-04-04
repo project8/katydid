@@ -5,7 +5,7 @@ if (Katydid_ENABLE_TESTING)
 
     # Config files
     set (VALIDATION_CONFIGFILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/TestParameterStoreConfig.json
+        ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFiles/TestConfigurator.json
     )
     
     pbuilder_install_config (${VALIDATION_CONFIGFILES})
@@ -34,6 +34,10 @@ if (Katydid_ENABLE_TESTING)
     
     add_executable (TestComplexPolar ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexPolar.cc)
     target_link_libraries (TestComplexPolar KatydidUtility ${EXTERNAL_LIBRARIES})
+    
+    add_executable (TestConfigurator ${CMAKE_CURRENT_SOURCE_DIR}/TestConfigurator.cc
+                                       ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
+    target_link_libraries (TestConfigurator KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
     add_executable (TestCorrelator ${CMAKE_CURRENT_SOURCE_DIR}/TestCorrelator.cc)
     target_link_libraries (TestCorrelator KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
@@ -72,10 +76,6 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestMultiFileJSONReader ${CMAKE_CURRENT_SOURCE_DIR}/TestMultiFileJSONReader.cc)
     target_link_libraries (TestMultiFileJSONReader KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
-    add_executable (TestParameterStore ${CMAKE_CURRENT_SOURCE_DIR}/TestParameterStore.cc
-                                       ${CMAKE_CURRENT_SOURCE_DIR}/KTTestConfigurable.cc)
-    target_link_libraries (TestParameterStore KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
-    
     add_executable (TestRandom ${CMAKE_CURRENT_SOURCE_DIR}/TestRandom.cc)
     target_link_libraries (TestRandom KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
@@ -111,6 +111,7 @@ if (Katydid_ENABLE_TESTING)
                      TestAxisProperties
                      TestCacheDirectory
                      TestComplexPolar
+                     TestConfigurator
                      TestCorrelator
                      TestCutIterator
                      TestCutableArray
@@ -123,7 +124,6 @@ if (Katydid_ENABLE_TESTING)
                      TestLogger
                      TestMultiSliceClustering
                      TestMultiFileJSONReader
-                     TestParameterStore
                      TestRandom
                      TestSignalsAndSlots
                      #TestSimpleClustering
@@ -140,6 +140,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_CacheDirectory TestCacheDirectory)
     add_test (Test_ComplexPolar TestComplexPolar)
+    add_test (Test_Configurator TestConfigurator)
     add_test (Test_Correlator TestCorrelator)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)

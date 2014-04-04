@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    class KTPStoreNode;
+    class KTParamNode;
 
     class KTCacheDirectory : public KTDirectory, public KTSingleton< KTCacheDirectory >, public KTSelfConfigurable
     {
@@ -27,7 +27,7 @@ namespace Katydid
         public:
             using KTSelfConfigurable::Configure;
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             bool IsReady() const;
 

@@ -9,15 +9,13 @@
 
 #include "KTCorrelationData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTGainVariationData.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSpline.hh"
 #include "KTWignerVilleData.hh"
 
@@ -34,9 +32,9 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "katydid.analysis");
+    KTLOGGER(sdlog, "KTVariableSpectrumDiscriminator");
 
-    static KTNORegistrar< KTProcessor, KTVariableSpectrumDiscriminator > sSpectDiscRegistrar("variable-spectrum-discriminator");
+    KT_REGISTER_PROCESSOR(KTVariableSpectrumDiscriminator, "variable-spectrum-discriminator");
 
     KTVariableSpectrumDiscriminator::KTVariableSpectrumDiscriminator(const std::string& name) :
             KTProcessor(name),
@@ -64,39 +62,39 @@ namespace Katydid
     {
     }
 
-    bool KTVariableSpectrumDiscriminator::Configure(const KTPStoreNode* node)
+    bool KTVariableSpectrumDiscriminator::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        if (node->HasData("snr-threshold-amplitude"))
+        if (node->Has("snr-threshold-amplitude"))
         {
-            SetSNRAmplitudeThreshold(node->GetData< double >("snr-threshold-amplitude"));
+            SetSNRAmplitudeThreshold(node->GetValue< double >("snr-threshold-amplitude"));
         }
-        if (node->HasData("snr-threshold-power"))
+        if (node->Has("snr-threshold-power"))
         {
-            SetSNRPowerThreshold(node->GetData< double >("snr-threshold-power"));
+            SetSNRPowerThreshold(node->GetValue< double >("snr-threshold-power"));
         }
-        if (node->HasData("sigma-threshold"))
+        if (node->Has("sigma-threshold"))
         {
-            SetSigmaThreshold(node->GetData< double >("sigma-threshold"));
-        }
-
-        if (node->HasData("min-frequency"))
-        {
-            SetMinFrequency(node->GetData< double >("min-frequency"));
-        }
-        if (node->HasData("max-frequency"))
-        {
-            SetMaxFrequency(node->GetData< double >("max-frequency"));
+            SetSigmaThreshold(node->GetValue< double >("sigma-threshold"));
         }
 
-        if (node->HasData("min-bin"))
+        if (node->Has("min-frequency"))
         {
-            SetMinBin(node->GetData< unsigned >("min-bin"));
+            SetMinFrequency(node->GetValue< double >("min-frequency"));
         }
-        if (node->HasData("max-bin"))
+        if (node->Has("max-frequency"))
         {
-            SetMaxBin(node->GetData< unsigned >("max-bin"));
+            SetMaxFrequency(node->GetValue< double >("max-frequency"));
+        }
+
+        if (node->Has("min-bin"))
+        {
+            SetMinBin(node->GetValue< unsigned >("min-bin"));
+        }
+        if (node->Has("max-bin"))
+        {
+            SetMaxBin(node->GetValue< unsigned >("max-bin"));
         }
 
         return true;

@@ -10,7 +10,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(vallog, "katydid.applications.validation");
+KTLOGGER(vallog, "TestRandom");
 
 int main()
 {

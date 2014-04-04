@@ -32,9 +32,8 @@ Installation:
         > git clone git@github.com:project8/katydid.git
   2. Enter the top-level directory
         > cd katydid
-  3. Download the Monarch submodule
-        > git submodule init
-        > git submodule update
+  3. Download all submodules
+        > git submodule update --init --recursive
   4. Create and enter the build directory
         > mkdir cbuild
         > cd cbuild

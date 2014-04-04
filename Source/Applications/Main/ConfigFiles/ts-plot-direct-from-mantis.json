@@ -1,0 +1,39 @@
+{
+    "processor-toolbox":
+    {
+        "processors":
+        [
+            { "type": "mantis-client", "name": "mantis" },
+            { "type": "basic-root-writer", "name": "writer" }
+        ],
+        
+        "connection":
+        {
+            "signal": "mantis:raw-ts",
+            "slot": "writer:raw-ts"
+        },
+        
+        "run-queue":
+        [
+            "mantis"
+        ]
+    },
+    
+
+    "mantis":
+    {
+        "slice-size": 4194304,
+        "client":
+        {
+            "rate": 200.0,
+            "buffer-size": 100
+        }
+    },
+    
+    
+    "writer":
+    {
+        "output-file": "ts-plot.root",
+        "file-flag": "recreate"
+    }
+}

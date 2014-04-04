@@ -16,7 +16,7 @@
 #include <boost/accumulators/statistics/moment.hpp>
 using namespace boost::accumulators;
 
-namespace katydid {
+namespace Katydid {
 
   template <typename T>
   class KTECDF {

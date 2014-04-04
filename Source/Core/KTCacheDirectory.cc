@@ -8,14 +8,13 @@
 #include "KTCacheDirectory.hh"
 
 #include "KTLogger.hh"
-#include "KTParameterStore.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(dirlog, "katydid.core");
+    KTLOGGER(dirlog, "KTCacheDirectory");
 
     KTCacheDirectory::KTCacheDirectory(const std::string& name) :
             KTDirectory(),
@@ -27,11 +26,11 @@ namespace Katydid
     {
     }
 
-    bool KTCacheDirectory::Configure(const KTPStoreNode* node)
+    bool KTCacheDirectory::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        return SetPath(node->GetData<string>("path", fPath.string()));
+        return SetPath(node->GetValue("path", fPath.string()));
     }
 
 } /* namespace Katydid */

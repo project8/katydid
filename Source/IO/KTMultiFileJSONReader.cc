@@ -11,9 +11,7 @@
 #include "KTCCResults.hh"
 #include "KTFilenameParsers.hh"
 #include "KTMCTruthEvents.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include "filestream.h"
 
@@ -24,10 +22,10 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(inlog, "katydid.input");
+    KTLOGGER(inlog, "KTMultiFileJSONReader");
 
-    static KTNORegistrar< KTReader, KTMultiFileJSONReader > sMFJSONReaderRegistrar("multifile-json-reader");
-    static KTNORegistrar< KTProcessor, KTMultiFileJSONReader > sMFJSONRProcRegistrar("multifile-json-reader");
+    KT_REGISTER_READER(KTMultiFileJSONReader, "multifile-json-reader");
+    KT_REGISTER_PROCESSOR(KTMultiFileJSONReader, "multifile-json-reader");
 
     KTMultiFileJSONReader::KTMultiFileJSONReader(const std::string& name) :
             KTReader(name),
@@ -49,25 +47,31 @@ namespace Katydid
     {
     }
 
-    bool KTMultiFileJSONReader::Configure(const KTPStoreNode* node)
+    bool KTMultiFileJSONReader::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node == NULL) return false;
 
-        KTPStoreNode::csi_pair itPair = node->EqualRange("input-file");
-        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        const KTParamArray* inputFileArray = node->ArrayAt("input-files");
+        if (inputFileArray != NULL)
         {
-            AddFilename(it->second.get_value<string>());
-            KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
+            for (KTParamArray::const_iterator ifIt = inputFileArray->Begin(); ifIt != inputFileArray->End(); ++ifIt)
+            {
+                AddFilename((*ifIt)->AsValue().Get());
+                KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
+            }
         }
 
-        SetFileMode(node->GetData<string>("file-mode", fFileMode));
+        SetFileMode(node->GetValue("file-mode", fFileMode));
 
-        itPair = node->EqualRange("data-type");
-        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        const KTParamArray* dataTypeArray = node->ArrayAt("data-types");
+        if (inputFileArray != NULL)
         {
-            AddDataType(it->second.get_value<string>());
-            KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
+            for (KTParamArray::const_iterator dtIt = dataTypeArray->Begin(); dtIt != dataTypeArray->End(); ++dtIt)
+            {
+                AddDataType((*dtIt)->AsValue().Get());
+                KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">");
+            }
         }
 
         return true;

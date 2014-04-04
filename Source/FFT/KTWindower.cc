@@ -8,9 +8,7 @@
 #include "KTWindower.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
@@ -21,9 +19,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTWindower");
 
-    static KTNORegistrar< KTProcessor, KTWindower > sWindowerRegistrar("windower");
+    KT_REGISTER_PROCESSOR(KTWindower, "windower");
 
     KTWindower::KTWindower(const std::string& name) :
             KTProcessor(name),
@@ -40,30 +38,20 @@ namespace Katydid
         delete fWindowFunction;
     }
 
-    bool KTWindower::Configure(const KTPStoreNode* node)
+    bool KTWindower::Configure(const KTParamNode* node)
     {
         // Config-file settings
-        if (node != NULL)
-        {
-            string windowType = node->GetData< string >("window-function-type", "rectangular");
-            if (! SelectWindowFunction(windowType))
-            {
-                return false;
-            }
+        if (node == NULL) return true;
 
-            KTPStoreNode wfNode = node->GetChild("window-function");
-            if (! wfNode.IsValid())
-            {
-                KTWARN(windowlog, "No PStoreNode found for the window function");
-            }
-            else
-            {
-                if (! fWindowFunction->Configure(&wfNode))
-                {
-                    KTERROR(windowlog, "Problems occurred while configuring the window function");
-                    return false;
-                }
-            }
+        string windowType = node->GetValue("window-function-type", "rectangular");
+        if (! SelectWindowFunction(windowType))
+        {
+            return false;
+        }
+
+        if (! fWindowFunction->Configure(node->NodeAt("window-function")))
+        {
+            return false;
         }
 
         return true;

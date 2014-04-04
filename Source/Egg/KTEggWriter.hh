@@ -14,8 +14,11 @@
 
 #include "MonarchTypes.hpp"
 
-class Monarch;
-struct MonarchRecord;
+namespace monarch
+{
+    class Monarch;
+    struct MonarchRecord;
+}
 
 namespace Katydid
 {
@@ -64,13 +67,13 @@ namespace Katydid
             KTEggWriter(const std::string& name = "egg-writer");
             virtual ~KTEggWriter();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
 
-            FormatModeType GetFormatMode() const;
-            void SetFormatMode(FormatModeType mode);
+            monarch::FormatModeType GetFormatMode() const;
+            void SetFormatMode(monarch::FormatModeType mode);
 
             double GetDigitizerFullscale() const;
             void SetDigitizerFullscale(double scale);
@@ -78,7 +81,7 @@ namespace Katydid
         private:
             std::string fFilename;
 
-            FormatModeType fFormatMode;
+            monarch::FormatModeType fFormatMode;
 
             double fDigitizerFullscale;
 
@@ -99,7 +102,7 @@ namespace Katydid
             unsigned fExpectedNChannels;
             unsigned fExpectedRecordSize;
 
-            Monarch* fMonarch;
+            monarch::Monarch* fMonarch;
 
             //**************
             // Slots
@@ -120,12 +123,12 @@ namespace Katydid
         return;
     }
 
-    inline FormatModeType KTEggWriter::GetFormatMode() const
+    inline monarch::FormatModeType KTEggWriter::GetFormatMode() const
     {
         return fFormatMode;
     }
 
-    inline void KTEggWriter::SetFormatMode(FormatModeType mode)
+    inline void KTEggWriter::SetFormatMode(monarch::FormatModeType mode)
     {
         fFormatMode = mode;
         return;

@@ -28,7 +28,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(fnplog, "katydid.core");
+    KTLOGGER(fnplog, "KTFilenameParsers");
 
 
     KTLocustMCFilename::KTLocustMCFilename(const string& filename)

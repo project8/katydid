@@ -7,9 +7,8 @@
 
 #include "KTRectangularWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -17,9 +16,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "RectangularWindow");
 
-    static KTNORegistrar< KTWindowFunction, KTRectangularWindow > sWFRectRegistrar("rectangular");
+    KT_REGISTER_WINDOWFUNCTION(KTRectangularWindow, "rectangular")
 
     KTRectangularWindow::KTRectangularWindow(const string& name) :
             KTWindowFunction(name),
@@ -31,9 +30,9 @@ namespace Katydid
     {
     }
 
-    bool KTRectangularWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    bool KTRectangularWindow::ConfigureWFSubclass(const KTParamNode* node)
     {
-        SetBoxcarSize(node->GetData< unsigned >("boxcar-size", fBoxcarSize));
+        SetBoxcarSize(node->GetValue< unsigned >("boxcar-size", fBoxcarSize));
 
         KTDEBUG(windowlog, "Rectangular WF configured: boxcar size = " << fBoxcarSize);
         return true;

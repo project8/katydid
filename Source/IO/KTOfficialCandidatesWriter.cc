@@ -8,20 +8,18 @@
 #include "KTOfficialCandidatesWriter.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTProcSummary.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTWaterfallCandidateData.hh"
 
 using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "KTOfficialCandidatesWriter");
 
-    static KTNORegistrar< KTWriter, KTOfficialCandidatesWriter > sOCWriterRegistrar("official-candidates-writer");
-    static KTNORegistrar< KTProcessor, KTOfficialCandidatesWriter > sOCWProcRegistrar("official-candidates-writer");
+    KT_REGISTER_WRITER(KTOfficialCandidatesWriter, "official-candidates-writer");
+    KT_REGISTER_PROCESSOR(KTOfficialCandidatesWriter, "official-candidates-writer");
 
     KTOfficialCandidatesWriter::KTOfficialCandidatesWriter(const std::string& name) :
             KTWriter(name),
@@ -50,14 +48,14 @@ namespace Katydid
         delete fSummaryCopy;
     }
 
-    bool KTOfficialCandidatesWriter::Configure(const KTPStoreNode* node)
+    bool KTOfficialCandidatesWriter::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetData<string>("output-file", fFilename));
-            SetFileMode(node->GetData<string>("file-mode", fFileMode));
-            SetPrettyJSONFlag(node->GetData<bool>("pretty-json", fPrettyJSONFlag));
+            SetFilename(node->GetValue("output-file", fFilename));
+            SetFileMode(node->GetValue("file-mode", fFileMode));
+            SetPrettyJSONFlag(node->GetValue<bool>("pretty-json", fPrettyJSONFlag));
         }
 
         return true;

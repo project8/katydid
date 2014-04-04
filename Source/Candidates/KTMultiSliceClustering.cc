@@ -12,7 +12,7 @@
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeFrequencyPolar.hh"
 #include "KTWaterfallCandidateData.hh"
@@ -74,32 +74,32 @@ namespace Katydid
     {
     }
 
-    bool KTMultiSliceClustering::ConfigureSubClass(const KTPStoreNode* node)
+    bool KTMultiSliceClustering::ConfigureSubClass(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        if (node->HasData("max-frequency-sep"))
+        if (node->Has("max-frequency-sep"))
         {
-            SetMaxFrequencySeparation(node->GetData< double >("max-frequency-sep"));
+            SetMaxFrequencySeparation(node->GetValue< double >("max-frequency-sep"));
         }
-        if (node->HasData("max-time-sep"))
+        if (node->Has("max-time-sep"))
         {
-            SetMaxTimeSeparation(node->GetData< double >("max-time-sep"));
-        }
-
-        if (node->HasData("max-frequency-sep-bins"))
-        {
-            SetMaxFrequencySeparationBins(node->GetData< unsigned >("max-frequency-sep-bins"));
-        }
-        if (node->HasData("max-time-sep-bins"))
-        {
-            SetMaxTimeSeparationBins(node->GetData< unsigned >("max-time-sep-bins"));
+            SetMaxTimeSeparation(node->GetValue< double >("max-time-sep"));
         }
 
-        SetMinTimeBins(node->GetData< unsigned >("min-time-bins", fMinTimeBins));
+        if (node->Has("max-frequency-sep-bins"))
+        {
+            SetMaxFrequencySeparationBins(node->GetValue< unsigned >("max-frequency-sep-bins"));
+        }
+        if (node->Has("max-time-sep-bins"))
+        {
+            SetMaxTimeSeparationBins(node->GetValue< unsigned >("max-time-sep-bins"));
+        }
 
-        SetNFramingTimeBins(node->GetData< unsigned >("n-framing-time-bins", fNFramingTimeBins));
-        SetNFramingFreqBins(node->GetData< unsigned >("n-framing-freq-bins", fNFramingFreqBins));
+        SetMinTimeBins(node->GetValue< unsigned >("min-time-bins", fMinTimeBins));
+
+        SetNFramingTimeBins(node->GetValue< unsigned >("n-framing-time-bins", fNFramingTimeBins));
+        SetNFramingFreqBins(node->GetValue< unsigned >("n-framing-freq-bins", fNFramingFreqBins));
 
         return true;
     }

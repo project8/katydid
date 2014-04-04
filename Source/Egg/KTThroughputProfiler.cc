@@ -8,21 +8,13 @@
 #include "KTThroughputProfiler.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include "MonarchTypes.hpp"
 
+#include "thorax.hh"
+
 #include <sstream>
-
-#ifdef __MACH__
-#include <mach/mach_time.h>
-
-#define MACNANO (+1.0E-9)
-#define MACGIGA UINT64_C(1000000000)
-#endif
-
 
 
 using std::string;
@@ -31,9 +23,9 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(proflog, "katydid.egg");
+    KTLOGGER(proflog, "KTThroughputProfiler");
 
-    static KTNORegistrar< KTProcessor, KTThroughputProfiler > sTProfRegistrar("throughput-profiler");
+    KT_REGISTER_PROCESSOR(KTThroughputProfiler, "throughput-profiler");
 
     KTThroughputProfiler::KTThroughputProfiler(const std::string& name) :
             KTProcessor(name),
@@ -42,9 +34,7 @@ namespace Katydid
             fEggHeader(),
             fTimeStart(),
             fTimeEnd(),
-            fNDataProcessed(0),
-            fMacTimebase(0.0),
-            fMacTimestart(0)
+            fNDataProcessed(0)
     {
         RegisterSlot("start", this, &KTThroughputProfiler::ProcessHeader);
         RegisterSlot("data", this, &KTThroughputProfiler::ProcessData);
@@ -55,10 +45,10 @@ namespace Katydid
     {
     };
 
-    bool KTThroughputProfiler::Configure(const KTPStoreNode* node)
+    bool KTThroughputProfiler::Configure(const KTParamNode* node)
     {
-        SetOutputFileFlag(node->GetData< bool >("output-file-flag", fOutputFileFlag));
-        SetOutputFilename(node->GetData< string >("output-filename-base", fOutputFilename));
+        SetOutputFileFlag(node->GetValue< bool >("output-file-flag", fOutputFileFlag));
+        SetOutputFilename(node->GetValue("output-filename-base", fOutputFilename));
 
         return true;
     }
@@ -104,16 +94,16 @@ namespace Katydid
         KTINFO(proflog, "Profiling stopped");
         timespec diffTime = Elapsed();
         KTPROG(proflog, fNDataProcessed << " slices processed");
-        double totalSeconds = double(diffTime.tv_sec) + double(diffTime.tv_nsec) * 1.e-9;
+        double totalSeconds = time_to_sec(diffTime);
         KTPROG(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
 
         // Data production rate in bytes per second
-        double dataProductionRate = double(fEggHeader.GetNChannels()) * fEggHeader.GetAcquisitionRate() * double(sizeof(DataType));
+        double dataProductionRate = double(fEggHeader.GetNChannels()) * fEggHeader.GetAcquisitionRate() * double(fEggHeader.GetDataTypeSize());
 
         // Data throughput rate in bytes per second
         double dataThroughputRate = 0.;
         if (totalSeconds != 0)
-            dataThroughputRate = double(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNDataProcessed * sizeof(DataType)) / totalSeconds;
+            dataThroughputRate = double(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNDataProcessed * fEggHeader.GetDataTypeSize()) / totalSeconds;
 
         KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
         KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");
@@ -125,36 +115,15 @@ namespace Katydid
     timespec KTThroughputProfiler::CurrentTime()
     {
         timespec ts;
-#ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
-        if (!fMacTimestart) {
-            mach_timebase_info_data_t tb = { .numer = 0, .denom = 1 };
-            mach_timebase_info(&tb);
-            fMacTimebase = tb.numer;
-            fMacTimebase /= tb.denom;
-            fMacTimestart = mach_absolute_time();
-        }
-        double diff = (mach_absolute_time() - fMacTimestart) * fMacTimebase;
-        ts.tv_sec = diff * MACNANO;
-        ts.tv_nsec = diff - (ts.tv_sec * MACGIGA);
-#else
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
-#endif
+        get_time_current(&ts);
         return ts;
     }
 
     timespec KTThroughputProfiler::Diff(timespec start, timespec end) const
     {
-        timespec temp;
-        if ((end.tv_nsec - start.tv_nsec < 0)){
-            temp.tv_sec = end.tv_sec - start.tv_sec - 1;
-            temp.tv_nsec = 1000000000 + end.tv_nsec - start.tv_nsec;
-        }
-        else
-        {
-            temp.tv_sec = end.tv_sec - start.tv_sec;
-            temp.tv_nsec = end.tv_nsec - start.tv_nsec;
-        }
-        return temp;
+        timespec diff;
+        time_diff(start, end, &diff);
+        return diff;
     }
 
 } /* namespace Katydid */

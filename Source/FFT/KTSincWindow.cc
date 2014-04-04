@@ -7,10 +7,9 @@
 
 #include "KTSincWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -18,9 +17,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTSincWindow");
 
-    static KTNORegistrar< KTWindowFunction, KTSincWindow > sWFSincRegistrar("sinc");
+    KT_REGISTER_WINDOWFUNCTION(KTSincWindow, "sinc")
 
     KTSincWindow::KTSincWindow(const string& name) :
             KTWindowFunction(name)
@@ -31,7 +30,7 @@ namespace Katydid
     {
     }
 
-    bool KTSincWindow::ConfigureWFSubclass(const KTPStoreNode*)
+    bool KTSincWindow::ConfigureWFSubclass(const KTParamNode*)
     {
         KTDEBUG(windowlog, "Sinc WF configured");
         return true;

@@ -19,10 +19,10 @@
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_comp, "katydid.fft");
+    KTLOGGER(fftlog_comp, "KTPolyphaseFilterBank.hh");
 
     class KTEggHeader;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTSliceHeader;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
@@ -61,7 +61,7 @@ namespace Katydid
             KTPolyphaseFilterBank(const std::string& name = "polyphase-filter-bank");
             virtual ~KTPolyphaseFilterBank();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetNSubsets() const;
             void SetNSubsets(unsigned subsets);

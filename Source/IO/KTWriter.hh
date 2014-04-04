@@ -129,6 +129,8 @@ namespace Katydid
     }
 
 
+#define KT_REGISTER_WRITER(writer_class, writer_name) \
+        static KTNORegistrar< KTWriter, writer_class > s##writer_class##ReaderRegistrar(writer_name);
 
 } /* namespace Katydid */
 #endif /* KTWRITER_HH_ */

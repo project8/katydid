@@ -9,7 +9,7 @@
 
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
@@ -20,9 +20,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "katydid.simulation");
+    KTLOGGER(genlog, "KTSinusoidGenerator");
 
-    static KTNORegistrar< KTProcessor, KTSinusoidGenerator > sSinusoidGenRegistrar("sinusoid-generator");
+    KT_REGISTER_PROCESSOR(KTSinusoidGenerator, "sinusoid-generator");
 
     KTSinusoidGenerator::KTSinusoidGenerator(const string& name) :
             KTTSGenerator(name),
@@ -36,13 +36,13 @@ namespace Katydid
     {
     }
 
-    bool KTSinusoidGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
+    bool KTSinusoidGenerator::ConfigureDerivedGenerator(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        fFrequency = node->GetData< double >("frequency", fFrequency);
-        fPhase = node->GetData< double >("phase", fPhase);
-        fAmplitude = node->GetData< double >("amplitude", fAmplitude);
+        fFrequency = node->GetValue< double >("frequency", fFrequency);
+        fPhase = node->GetValue< double >("phase", fPhase);
+        fAmplitude = node->GetValue< double >("amplitude", fAmplitude);
 
         return true;
     }

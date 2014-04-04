@@ -24,7 +24,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(utillog_physarr, "katydid.utility");
+    KTLOGGER(utillog_physarr, "KTPhysicalArray");
 
     //*******************************
     // general, dummy, implementation

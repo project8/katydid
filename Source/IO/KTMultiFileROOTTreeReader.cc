@@ -10,7 +10,7 @@
 #include "KTAmplitudeDistribution.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTROOTTreeTypeWriterAnalysis.hh"
 
 #include "TAxis.h"
@@ -28,7 +28,7 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(inlog, "katydid.input");
+    KTLOGGER(inlog, "KTMultiFileROOTTreeReader");
 
     static KTNORegistrar< KTReader, KTMultiFileROOTTreeReader > sMFRTReaderRegistrar("mf-root-tree-reader");
     static KTNORegistrar< KTProcessor, KTMultiFileROOTTreeReader > sMFRTRProcRegistrar("mf-root-tree-reader");
@@ -48,24 +48,29 @@ namespace Katydid
     {
     }
 
-    bool KTMultiFileROOTTreeReader::Configure(const KTPStoreNode* node)
+    bool KTMultiFileROOTTreeReader::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node == NULL) return false;
 
-        KTPStoreNode::csi_pair itPair = node->EqualRange("input-file");
-        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        const KTParamArray* inputFileArray = node->ArrayAt("input-files");
+        if (inputFileArray != NULL)
         {
-            AddFilename(it->second.get_value<string>());
-            KTDEBUG(inlog, "Added file <" <<fFilenames.back() << ">");
+            for (KTParamArray::const_iterator ifIt = inputFileArray->Begin(); ifIt != inputFileArray->End(); ++ifIt)
+            {
+                AddFilename((*ifIt)->AsValue().Get());
+                KTDEBUG(inlog, "Added filename <" << fFilenames.back() << ">");
+            }
         }
 
-        itPair = node->EqualRange("data-type");
-        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        const KTParamArray* dataTypeArray = node->ArrayAt("data-types");
+        if (inputFileArray != NULL)
         {
-            KTPStoreNode subnode(&(it->second));
-            AddDataType(subnode.GetData("name"), subnode.GetData("tree-name"));
-            KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">, tree name <" << fDataTypes.back().fTreeName << ">");
+            for (KTParamArray::const_iterator dtIt = dataTypeArray->Begin(); dtIt != dataTypeArray->End(); ++dtIt)
+            {
+                AddDataType((*dtIt)->AsArray().GetValue(0), (*dtIt)->AsArray().GetValue(1));
+                KTDEBUG(inlog, "Added data type <" << fDataTypes.back().fName << ">, tree name <" << fDataTypes.back().fTreeName << ">");
+            }
         }
 
         return true;

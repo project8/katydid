@@ -7,9 +7,7 @@
 
 #include "KTDCOffsetGenerator.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
 
@@ -19,8 +17,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "katydid.simulation");
+    KTLOGGER(genlog, "KTDCOffsetGenerator");
 
+    KT_REGISTER_PROCESSOR(KTDCOffsetGenerator, "dc-offset-generator");
     static KTNORegistrar< KTProcessor, KTDCOffsetGenerator > sDCOffGenRegistrar("dc-offset-generator");
 
     KTDCOffsetGenerator::KTDCOffsetGenerator(const string& name) :
@@ -33,16 +32,24 @@ namespace Katydid
     {
     }
 
-    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
+    bool KTDCOffsetGenerator::ConfigureDerivedGenerator(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        KTPStoreNode::csi_pair itPair = node->EqualRange("offset");
-        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; ++citer)
+        const KTParamArray* offsetPairs = node->ArrayAt("offsets");
+        if (offsetPairs != NULL)
         {
-            UIntDoublePair pair = ParsePairUIntDouble(citer->second.get_value< string >());
-            if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1);
-            fOffsets[pair.first] = pair.second;
+            for (KTParamArray::const_iterator pairIt = offsetPairs->Begin(); pairIt != offsetPairs->End(); ++pairIt)
+            {
+                if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
+                {
+                    KTERROR(genlog, "Invalid pair: " << (*pairIt)->ToString());
+                    return false;
+                }
+                UIntDoublePair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< double >(1));
+                if (fOffsets.size() <= pair.first) fOffsets.resize(pair.first + 1);
+                fOffsets[pair.first] = pair.second;
+            }
         }
 
         return true;

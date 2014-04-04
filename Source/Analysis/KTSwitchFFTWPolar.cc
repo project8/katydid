@@ -7,15 +7,13 @@
 
 #include "KTSwitchFFTWPolar.hh"
 
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTWignerVilleData.hh"
 
 using std::string;
@@ -23,9 +21,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(swlog, "katydid.analysis");
+    KTLOGGER(swlog, "KTSwitchFFTWPolar");
 
-    static KTNORegistrar< KTProcessor, KTSwitchFFTWPolar > sSwitchFFTWPolarRegistrar("switch-fftw-polar");
+    KT_REGISTER_PROCESSOR(KTSwitchFFTWPolar, "switch-fftw-polar");
 
     KTSwitchFFTWPolar::KTSwitchFFTWPolar(const std::string& name) :
             KTProcessor(name),
@@ -42,11 +40,11 @@ namespace Katydid
     {
     }
 
-    bool KTSwitchFFTWPolar::Configure(const KTPStoreNode* node)
+    bool KTSwitchFFTWPolar::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetUseNegFreqs(node->GetData< bool >("use-neg-freqs", fUseNegFreqs));
+        SetUseNegFreqs(node->GetValue< bool >("use-neg-freqs", fUseNegFreqs));
 
         return true;
     }

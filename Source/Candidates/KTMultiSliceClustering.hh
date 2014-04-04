@@ -28,7 +28,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(sclog, "katydid.analysis");
+    KTLOGGER(sclog, "KTMultiSliceClustering");
 
     //class KTCorrelationData;
     class KTFrequencySpectrum;
@@ -138,7 +138,7 @@ namespace Katydid
             KTMultiSliceClustering(const std::string& name = "multi-slice-clustering");
             virtual ~KTMultiSliceClustering();
 
-            bool ConfigureSubClass(const KTPStoreNode* node);
+            bool ConfigureSubClass(const KTParamNode* node);
 
             double GetMaxFrequencySeparation() const;
             void SetMaxFrequencySeparation(double freqSep);

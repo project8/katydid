@@ -1,7 +1,7 @@
 #include "KTRQProcessor.hh"
 
 namespace Katydid {
-  static KTNORegistrar<KTProcessor, KTRQProcessor> sRQProcessor("rayleigh-quotient");
+    KT_REGISTER_PROCESSOR(KTRQProcessor, "rayleigh-quotient");
 
   KTRQProcessor::KTRQProcessor(const std::string& name) :
     KTProcessor(name),
@@ -23,14 +23,14 @@ namespace Katydid {
     if(fNoiseACM != NULL) delete fNoiseACM;
   }
 
-  bool KTRQProcessor::Configure(const KTPStoreNode* node) 
+  bool KTRQProcessor::Configure(const KTParamNode* node) 
   {
     bool result = true;
     // Get settings out of config file
     if (node != NULL) {
 
       // set the chunk size
-      this->SetChunkSize(node->GetData<unsigned>("chunk-size", fChunkSize));
+      this->SetChunkSize(node->GetValue<unsigned>("chunk-size", fChunkSize));
 
       // if the noise ACM is already built, warn but do nothing.  otherwise, 
       // initialize the new matrix.
@@ -43,8 +43,8 @@ namespace Katydid {
       }
 
       // grab the noise and candidate data names.
-      this->SetNoiseDataName(node->GetData<std::string>("noise-data-name", fNoiseName));
-      this->SetCandidateDataName(node->GetData<std::string>("candidate-data-name", fCandidateName));
+      this->SetNoiseDataName(node->GetValue<std::string>("noise-data-name", fNoiseName));
+      this->SetCandidateDataName(node->GetValue<std::string>("candidate-data-name", fCandidateName));
     }
     else {
       KTWARN(nrq_log, "NULL config node passed to Configure!");

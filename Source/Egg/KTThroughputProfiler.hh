@@ -19,12 +19,10 @@
 
 #include <string>
 
-#include <time.h>
-
 
 namespace Katydid
 {
-    class KTPStoreNode;
+    class KTParamNode;
 
     /*!
      @class KTThroughputProfiler
@@ -68,7 +66,7 @@ namespace Katydid
             KTThroughputProfiler(const std::string& name = "throughput-profiler");
             virtual ~KTThroughputProfiler();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void Start();
             void Stop();
@@ -100,11 +98,6 @@ namespace Katydid
             timespec fTimeEnd;
 
             unsigned fNDataProcessed;
-
-//#ifdef __MACH__
-            double fMacTimebase;
-            uint64_t fMacTimestart;
-//#endif
 
     };
 

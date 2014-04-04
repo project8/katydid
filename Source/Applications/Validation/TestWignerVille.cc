@@ -29,7 +29,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testlog, "katydid.applications.validation");
+KTLOGGER(testlog, "TestWignerVille");
 
 int main()
 {
@@ -69,7 +69,7 @@ int main()
     wvTransform.GetFFT()->SetTransformFlag("ESTIMATE");
     wvTransform.GetFFT()->SetSize(/*2 */ wvSize);
     wvTransform.GetFFT()->InitializeFFT();
-    wvTransform.AddPair(UIntPair(0, 1));
+    wvTransform.AddPair(KTWignerVille::UIntPair(0, 1));
 
     unsigned nWindows = nTimeBins / wvSize;
 

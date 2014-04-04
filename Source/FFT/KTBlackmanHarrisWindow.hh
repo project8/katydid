@@ -35,7 +35,7 @@ namespace Katydid
             KTBlackmanHarrisWindow(const std::string& name = "blackman-harris");
             virtual ~KTBlackmanHarrisWindow();
 
-            virtual bool ConfigureWFSubclass(const KTPStoreNode* node);
+            virtual bool ConfigureWFSubclass(const KTParamNode* node);
 
             virtual double GetWeight(double time) const;
 

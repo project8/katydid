@@ -7,19 +7,17 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "KTBasicROOTFileWriter");
 
 
-    static KTNORegistrar< KTWriter, KTBasicROOTFileWriter > sBRFWriterRegistrar("basic-root-writer");
-    static KTNORegistrar< KTProcessor, KTBasicROOTFileWriter > sBRFWProcRegistrar("basic-root-writer");
+    KT_REGISTER_WRITER(KTBasicROOTFileWriter, "basic-root-writer");
+    KT_REGISTER_PROCESSOR(KTBasicROOTFileWriter, "basic-root-writer");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter(const std::string& name) :
             KTWriterWithTypists< KTBasicROOTFileWriter >(name),
@@ -34,13 +32,13 @@ namespace Katydid
         CloseFile();
     }
 
-    bool KTBasicROOTFileWriter::Configure(const KTPStoreNode* node)
+    bool KTBasicROOTFileWriter::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetData<string>("output-file", fFilename));
-            SetFileFlag(node->GetData<string>("file-flag", fFileFlag));
+            SetFilename(node->GetValue("output-file", fFilename));
+            SetFileFlag(node->GetValue("file-flag", fFileFlag));
         }
 
         return true;

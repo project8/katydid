@@ -10,7 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTProcSummary.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -26,7 +26,7 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "katydid.simulation");
+    KTLOGGER(genlog, "KTTSGenerator");
 
     KTTSGenerator::KTTSGenerator(const string& name) :
             KTPrimaryProcessor(name),
@@ -49,25 +49,25 @@ namespace Katydid
     {
     }
 
-    bool KTTSGenerator::Configure(const KTPStoreNode* node)
+    bool KTTSGenerator::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
         // set the number of slices to create
-        fNSlices = node->GetData< unsigned >("number-of-slices", fNSlices);
+        fNSlices = node->GetValue< unsigned >("number-of-slices", fNSlices);
 
         // number of slices
-        fNChannels = node->GetData< unsigned >("n-channels", fNChannels);
+        fNChannels = node->GetValue< unsigned >("n-channels", fNChannels);
 
         // specify the length of the time series
-        fSliceSize = node->GetData< unsigned >("slice-size", fSliceSize);
+        fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);
         // record size, after slice size
-        fRecordSize = node->GetData< unsigned >("record-size", fSliceSize);
+        fRecordSize = node->GetValue< unsigned >("record-size", fSliceSize);
 
-        fBinWidth = node->GetData< double >("bin-width", fBinWidth);
+        fBinWidth = node->GetValue< double >("bin-width", fBinWidth);
 
         // type of time series
-        string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
+        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
         if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else
@@ -157,7 +157,7 @@ namespace Katydid
         newHeader->SetAcquisitionRate(1. / fBinWidth);
         //newHeader->SetDescription();
         //newHeader->SetRunType();
-        newHeader->SetRunSource(sSourceSimulation);
+        newHeader->SetRunSource(monarch::sSourceSimulation);
         //newHeader->SetFormatMode();
 
         newHeader->SetTimestamp(get_absolute_time_string());
@@ -188,7 +188,7 @@ namespace Katydid
 
         for (unsigned iComponent = 0; iComponent < fNChannels; ++iComponent)
         {
-            sliceHeader.SetTimeStamp((TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetTimeStamp((monarch::TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
             sliceHeader.SetRecordID(0);
         }

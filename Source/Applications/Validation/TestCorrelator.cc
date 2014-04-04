@@ -14,7 +14,7 @@
 
 using namespace Katydid;
 
-KTLOGGER(corrtestlog, "katydid.applications.validation");
+KTLOGGER(corrtestlog, "TestCorrelator");
 
 int main()
 {
@@ -108,8 +108,8 @@ int main()
 
     // Do the correlations
     KTCorrelator* correlator = new KTCorrelator();
-    correlator->AddPair(UIntPair(0, 0));
-    correlator->AddPair(UIntPair(0, 1));
+    correlator->AddPair(KTCorrelator::UIntPair(0, 0));
+    correlator->AddPair(KTCorrelator::UIntPair(0, 1));
     KTINFO(corrtestlog, "The correlator has " << correlator->GetPairVector().size() << " correlation pairs");
 
     if (! correlator->Correlate(*dataInput))

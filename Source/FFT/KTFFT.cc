@@ -15,7 +15,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(fftlog, "katydid.fft");
+    KTLOGGER(fftlog, "KTFFT");
 
     KTFFT::KTFFT()
     {

@@ -8,9 +8,7 @@
 #include "KTEggWriter.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
@@ -21,20 +19,24 @@
 
 #include <cmath>
 
+using monarch::Monarch;
+using monarch::MonarchException;
+using monarch::MonarchHeader;
+
 using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(eggwritelog, "katydid.output");
+    KTLOGGER(eggwritelog, "KTEggWriter");
 
-    static KTNORegistrar< KTWriter, KTEggWriter > sEWriterRegistrar("egg-writer");
-    static KTNORegistrar< KTProcessor, KTEggWriter > sEWProcRegistrar("egg-writer");
+    KT_REGISTER_WRITER(KTEggWriter, "egg-writer");
+    KT_REGISTER_PROCESSOR(KTEggWriter, "egg-writer");
 
 
     KTEggWriter::KTEggWriter(const std::string& name) :
             KTWriter(name),
             fFilename("output.egg"),
-            fFormatMode(sFormatMultiInterleaved),
+            fFormatMode(monarch::sFormatMultiInterleaved),
             fDigitizerFullscale(1.),
             fFileStatus(kClosed),
             fExpectedNChannels(2),
@@ -52,15 +54,15 @@ namespace Katydid
         delete fMonarch;
     }
 
-    bool KTEggWriter::Configure(const KTPStoreNode* node)
+    bool KTEggWriter::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetFilename(node->GetData<string>("output-file", fFilename));
+        SetFilename(node->GetValue("output-file", fFilename));
 
-        if (node->HasData("format-mode"))
+        if (node->Has("format-mode"))
         {
-            string modeStr(node->GetData<string>("format-mode"));
+            string modeStr(node->GetValue("format-mode"));
             if (modeStr == "separate")
             {
                 SetFormatMode(sFormatMultiSeparate);
@@ -76,7 +78,7 @@ namespace Katydid
             }
         }
 
-        SetDigitizerFullscale(node->GetData<double>("digitizer-fullscale", fDigitizerFullscale));
+        SetDigitizerFullscale(node->GetValue<double>("digitizer-fullscale", fDigitizerFullscale));
 
         return true;
     }
@@ -164,7 +166,7 @@ namespace Katydid
         monarchHeader->SetRunSource(header->GetRunSource());
         if (fExpectedNChannels == 1)
         {
-            monarchHeader->SetFormatMode(sFormatSingle);
+            monarchHeader->SetFormatMode(monarch::sFormatSingle);
         }
         else
         {
@@ -213,7 +215,7 @@ namespace Katydid
             return false;
         }
 
-        fMonarch->SetInterface(sInterfaceSeparate);
+        fMonarch->SetInterface(monarch::sInterfaceSeparate);
 
         CopyATimeSeries(0, slHeader, tsData, fMonarch->GetRecordSeparateOne());
 

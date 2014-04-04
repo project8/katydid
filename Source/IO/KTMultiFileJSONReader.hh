@@ -76,7 +76,7 @@ namespace Katydid
             KTMultiFileJSONReader(const std::string& name = "multifile-json-reader");
             virtual ~KTMultiFileJSONReader();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             const std::deque< std::string >& GetFilenames() const;
             void AddFilename(const std::string& filename);

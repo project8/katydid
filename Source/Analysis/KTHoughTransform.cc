@@ -7,13 +7,11 @@
 
 #include "KTHoughTransform.hh"
 
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTHoughData.hh"
-#include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTFrequencySpectrumPolar.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"
 
 #include <cmath>
@@ -29,9 +27,9 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(htlog, "katydid.analysis");
+    KTLOGGER(htlog, "KTHoughTransform");
 
-    static KTNORegistrar< KTProcessor, KTHoughTransform > sHTRegistrar("hough-transform");
+    KT_REGISTER_PROCESSOR(KTHoughTransform, "hough-transform");
 
     KTHoughTransform::KTHoughTransform(const std::string& name) :
             KTProcessor(name),
@@ -46,10 +44,10 @@ namespace Katydid
     {
     }
 
-    bool KTHoughTransform::Configure(const KTPStoreNode* node)
+    bool KTHoughTransform::Configure(const KTParamNode* node)
     {
-        SetNThetaPoints(node->GetData< unsigned >("n-theta-points", fNThetaPoints));
-        SetNRPoints(node->GetData< unsigned >("n-r-points", fNRPoints));
+        SetNThetaPoints(node->GetValue< unsigned >("n-theta-points", fNThetaPoints));
+        SetNRPoints(node->GetValue< unsigned >("n-r-points", fNRPoints));
 
         return true;
     }

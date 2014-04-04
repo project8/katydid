@@ -7,16 +7,11 @@
 
 #include "KTDataQueueProcessor.hh"
 
-#include "KTNOFactory.hh"
-#include "KTPStoreNode.hh"
-
-
-
 //using std::list;
 
 namespace Katydid
 {
-    static KTNORegistrar< KTProcessor, KTDataQueueProcessor > sDQProcRegistrar("data-queue");
+    KT_REGISTER_PROCESSOR(KTDataQueueProcessor, "data-queue");
 
     KTDataQueueProcessor::KTDataQueueProcessor(const std::string& name) :
         KTDataQueueProcessorTemplate< KTDataQueueProcessor >(name),
@@ -31,7 +26,7 @@ namespace Katydid
 
     }
 
-    bool KTDataQueueProcessor::ConfigureSubClass(const KTPStoreNode*)
+    bool KTDataQueueProcessor::ConfigureSubClass(const KTParamNode*)
     {
         return true;
     }

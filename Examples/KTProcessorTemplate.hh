@@ -83,6 +83,6 @@ namespace Katydid
             KTSlotDataOneType< [Input Data Type] > f[SomeName]Slot;
 
     };
-
+}
  /* namespace Katydid */
 #endif /* KTCOMPLEXFFTW_HH_ */

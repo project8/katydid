@@ -76,7 +76,7 @@ namespace Katydid
             KTOfficialCandidatesWriter(const std::string& name = "official-candidate-writer");
             virtual ~KTOfficialCandidatesWriter();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
         public:
             bool OpenFile();

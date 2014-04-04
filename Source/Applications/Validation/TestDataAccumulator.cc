@@ -18,7 +18,7 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "katydid.applications.validation");
+KTLOGGER(vallog, "TestDataAccumulator");
 
 int main()
 {
@@ -56,7 +56,7 @@ int main()
     }
 
     const KTDataAccumulator::Accumulator tsAcc = accumulator.GetAccumulator< KTTimeSeriesData >();
-    KTINFO(vallog, "The TS accumulator has added " << tsAcc.fCount << " time series");
+    KTINFO(vallog, "The TS accumulator has added " << tsAcc.GetSliceNumber() << " time series");
 
 #ifdef ROOT_FOUND
     TFile* output = new TFile("test_data_accumulator.root", "recreate");

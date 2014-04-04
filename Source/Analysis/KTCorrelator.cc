@@ -8,12 +8,10 @@
 #include "KTCorrelator.hh"
 
 #include "KTCorrelationData.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
 
 using std::string;
@@ -23,9 +21,9 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(corrlog, "katydid.analysis");
+    KTLOGGER(corrlog, "KTCorrelator");
 
-    static KTNORegistrar< KTProcessor, KTCorrelator > sCorrelatorRegistrar("correlator");
+    KT_REGISTER_PROCESSOR(KTCorrelator, "correlator");
 
     KTCorrelator::KTCorrelator(const std::string& name) :
             KTProcessor(name),
@@ -42,14 +40,22 @@ namespace Katydid
     {
     }
 
-    bool KTCorrelator::Configure(const KTPStoreNode* node)
+    bool KTCorrelator::Configure(const KTParamNode* node)
     {
-        KTPStoreNode::csi_pair itPair = node->EqualRange("corr-pair");
-        for (KTPStoreNode::const_sorted_iterator citer = itPair.first; citer != itPair.second; citer++)
+        const KTParamArray* corrPairs = node->ArrayAt("corr-pairs");
+        if (corrPairs != NULL)
         {
-            UIntPair pair = ParsePairUInt(citer->second.get_value< string >());
-            KTINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
-            this->AddPair(pair);
+            for (KTParamArray::const_iterator pairIt = corrPairs->Begin(); pairIt != corrPairs->End(); ++pairIt)
+            {
+                if (! ((*pairIt)->IsArray() && (*pairIt)->AsArray().Size() == 2))
+                {
+                    KTERROR(corrlog, "Invalid pair: " << (*pairIt)->ToString());
+                    return false;
+                }
+                UIntPair pair((*pairIt)->AsArray().GetValue< unsigned >(0), (*pairIt)->AsArray().GetValue< unsigned >(1));
+                KTINFO(corrlog, "Adding correlation pair " << pair.first << ", " << pair.second);
+                this->AddPair(pair);
+            }
         }
 
         return true;
@@ -82,7 +88,7 @@ namespace Katydid
     bool KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataPolarCore& data, KTCorrelationData& newData)
     {
         unsigned iPair = 0;
-        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
+        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); ++iter)
         {
             unsigned firstChannel = (*iter).first;
             unsigned secondChannel = (*iter).second;
@@ -106,7 +112,7 @@ namespace Katydid
     bool KTCorrelator::CoreCorrelate(KTFrequencySpectrumDataFFTWCore& data, KTCorrelationData& newData)
     {
         unsigned iPair = 0;
-        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); iter++)
+        for (PairVector::const_iterator iter = fPairs.begin(); iter != fPairs.end(); ++iter)
         {
             unsigned firstChannel = (*iter).first;
             unsigned secondChannel = (*iter).second;

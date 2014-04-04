@@ -71,7 +71,7 @@ namespace Katydid
             KTSpectrumDiscriminator(const std::string& name = "spectrum-discriminator");
             virtual ~KTSpectrumDiscriminator();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             double GetSNRThreshold() const;
             void SetSNRAmplitudeThreshold(double thresh);

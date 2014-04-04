@@ -10,6 +10,8 @@ set (IO_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONWriter.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileJSONReader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTOfficialCandidatesWriter.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTerminalTypeWriterEgg.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTerminalWriter.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWriter.hh
 )
@@ -59,6 +61,8 @@ set (IO_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONWriter.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileJSONReader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTOfficialCandidatesWriter.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTerminalTypeWriterEgg.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTTerminalWriter.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTWriter.cc
 )

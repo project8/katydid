@@ -17,7 +17,7 @@ using std::vector;
 
 namespace Katydid
 {
-    //KTLOGGER(publog, "katydid.output");
+    //KTLOGGER(publog, "KTJSONTypeWriterEvaluation");
 
     static KTTIRegistrar< KTJSONTypeWriter, KTJSONTypeWriterEvaluation > sJSONTWERegistrar;
 

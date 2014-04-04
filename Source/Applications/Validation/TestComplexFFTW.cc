@@ -31,7 +31,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(vallog, "katydid.applications.validation");
+KTLOGGER(vallog, "TestComplexFFTW");
 
 int main()
 {

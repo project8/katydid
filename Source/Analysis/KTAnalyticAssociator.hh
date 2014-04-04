@@ -53,7 +53,7 @@ namespace Katydid
             KTAnalyticAssociator(const std::string& name = "analytic-associator");
             virtual ~KTAnalyticAssociator();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void InitializeWithHeader(const KTEggHeader* header);
 

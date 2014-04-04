@@ -5,12 +5,16 @@
  *      Author: nsoblath
  */
 
+#include "stdint.h"
+
 #ifndef KTWATERFALLCANDIDATEDATA_HH_
 #define KTWATERFALLCANDIDATEDATA_HH_
 
 #include "KTData.hh"
 
 #include "KTTimeFrequency.hh"
+
+#include <inttypes.h>
 
 namespace Katydid
 {

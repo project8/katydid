@@ -40,6 +40,8 @@ namespace Katydid
             void SetTimeInRun(double time);
             uint64_t GetSliceNumber() const;
             void SetSliceNumber(uint64_t slice);
+            unsigned GetNSlicesIncluded() const;
+            void SetNSlicesIncluded(unsigned nSlices);
 
             unsigned GetSliceSize() const;
             void SetSliceSize(unsigned size);
@@ -83,27 +85,28 @@ namespace Katydid
 
             // Per-Component Information
 
-            TimeType GetTimeStamp(unsigned component = 0) const;
-            void SetTimeStamp(TimeType timeStamp, unsigned component = 0);
+            monarch::TimeType GetTimeStamp(unsigned component = 0) const;
+            void SetTimeStamp(monarch::TimeType timeStamp, unsigned component = 0);
 
-            AcquisitionIdType GetAcquisitionID(unsigned component = 0) const;
-            void SetAcquisitionID(AcquisitionIdType acqId, unsigned component = 0);
+            monarch::AcquisitionIdType GetAcquisitionID(unsigned component = 0) const;
+            void SetAcquisitionID(monarch::AcquisitionIdType acqId, unsigned component = 0);
 
-            RecordIdType GetRecordID(unsigned component = 0) const;
-            void SetRecordID(RecordIdType recId, unsigned component = 0);
+            monarch::RecordIdType GetRecordID(unsigned component = 0) const;
+            void SetRecordID(monarch::RecordIdType recId, unsigned component = 0);
 
-            TimeType GetTimeStampAtSample(unsigned sample, unsigned component = 0);
+            monarch::TimeType GetTimeStampAtSample(unsigned sample, unsigned component = 0);
 
         private:
             struct PerComponentData
             {
-                TimeType fTimeStamp; // in nsec
-                AcquisitionIdType fAcquisitionID;
-                RecordIdType fRecordID;
+                monarch::TimeType fTimeStamp; // in nsec
+                monarch::AcquisitionIdType fAcquisitionID;
+                monarch::RecordIdType fRecordID;
             };
 
             double fTimeInRun; // in sec
             uint64_t fSliceNumber;
+            unsigned fNSlicesIncluded; // for meta-slices
             bool fIsNewAcquisition;
 
             unsigned fSliceSize; // number of bins
@@ -170,6 +173,16 @@ namespace Katydid
     inline void KTSliceHeader::SetSliceNumber(uint64_t slice)
     {
         fSliceNumber = slice;
+        return;
+    }
+
+    inline unsigned KTSliceHeader::GetNSlicesIncluded() const
+    {
+        return fNSlicesIncluded;
+    }
+    inline void KTSliceHeader::SetNSlicesIncluded(unsigned nSlices)
+    {
+        fNSlicesIncluded = nSlices;
         return;
     }
 
@@ -323,45 +336,45 @@ namespace Katydid
         return std::make_pair (fTemp2, fTemp3);
     }
 
-    inline TimeType KTSliceHeader::GetTimeStamp(unsigned component) const
+    inline monarch::TimeType KTSliceHeader::GetTimeStamp(unsigned component) const
     {
         return fComponentData[component].fTimeStamp;
     }
 
-    inline void KTSliceHeader::SetTimeStamp(TimeType timeStamp, unsigned component)
+    inline void KTSliceHeader::SetTimeStamp(monarch::TimeType timeStamp, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fTimeStamp = timeStamp;
         return;
     }
 
-    inline AcquisitionIdType KTSliceHeader::GetAcquisitionID(unsigned component) const
+    inline monarch::AcquisitionIdType KTSliceHeader::GetAcquisitionID(unsigned component) const
     {
         return fComponentData[component].fAcquisitionID;
     }
 
-    inline void KTSliceHeader::SetAcquisitionID(AcquisitionIdType acqId, unsigned component)
+    inline void KTSliceHeader::SetAcquisitionID(monarch::AcquisitionIdType acqId, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fAcquisitionID = acqId;
         return;
     }
 
-    inline RecordIdType KTSliceHeader::GetRecordID(unsigned component) const
+    inline monarch::RecordIdType KTSliceHeader::GetRecordID(unsigned component) const
     {
         return fComponentData[component].fRecordID;
     }
 
-    inline void KTSliceHeader::SetRecordID(RecordIdType recId, unsigned component)
+    inline void KTSliceHeader::SetRecordID(monarch::RecordIdType recId, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fRecordID = recId;
         return;
     }
 
-    inline TimeType KTSliceHeader::GetTimeStampAtSample(unsigned sample, unsigned component)
+    inline monarch::TimeType KTSliceHeader::GetTimeStampAtSample(unsigned sample, unsigned component)
     {
-        return fComponentData[component].fTimeStamp + (TimeType)sample * (TimeType)(fBinWidth * 1.e9); // have to convert bin width to ns
+        return fComponentData[component].fTimeStamp + (monarch::TimeType)sample * (monarch::TimeType)(fBinWidth * 1.e9); // have to convert bin width to ns
     }
 
 

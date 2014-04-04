@@ -10,24 +10,19 @@
 #include "KTAnalyticAssociateData.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesFFTW.hh"
 
 using std::string;
 
-
-
-
 namespace Katydid
 {
-    KTLOGGER(aalog, "katydid.analysis");
+    KTLOGGER(aalog, "KTAnalyticAssociator");
 
-    static KTNORegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
+    KT_REGISTER_PROCESSOR(KTAnalyticAssociator, "analytic-associator");
 
     KTAnalyticAssociator::KTAnalyticAssociator(const std::string& name) :
             KTProcessor(name),
@@ -45,16 +40,15 @@ namespace Katydid
     {
     }
 
-    bool KTAnalyticAssociator::Configure(const KTPStoreNode* node)
+    bool KTAnalyticAssociator::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetSaveFrequencySpectrum(node->GetData< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
+        SetSaveFrequencySpectrum(node->GetValue< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
 
-        const KTPStoreNode fftNode = node->GetChild("complex-fftw");
-        if (fftNode.IsValid())
+        if (! fFullFFT.Configure(node->NodeAt("complex-fftw")))
         {
-            if (! fFullFFT.Configure(&fftNode)) return false;
+            return false;
         }
 
         return true;

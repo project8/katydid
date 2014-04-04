@@ -11,6 +11,8 @@
 
 #include "KTConfigurable.hh"
 
+#include "KTNOFactory.hh"
+
 #include <string>
 #include <vector>
 
@@ -18,7 +20,7 @@ class TH1D;
 
 namespace Katydid
 {
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesData;
 
     /*!
@@ -46,8 +48,8 @@ namespace Katydid
             KTWindowFunction(const std::string& name = "generic-window-function");
             virtual ~KTWindowFunction();
 
-            virtual bool Configure(const KTPStoreNode* node);
-            virtual bool ConfigureWFSubclass(const KTPStoreNode* node) = 0;
+            virtual bool Configure(const KTParamNode* node);
+            virtual bool ConfigureWFSubclass(const KTParamNode* node) = 0;
 
             /// Sets fBinWidth to bundle->GetBinWidth(), and adapts the length to be the integral number of bins closest to the current fLength.
             /// Returns the adapted length.
@@ -122,6 +124,8 @@ namespace Katydid
        return fBinWidth;
    }
 
+#define KT_REGISTER_WINDOWFUNCTION(window_class, window_name) \
+        static KTNORegistrar< KTWindowFunction, window_class > sWF##window_class##Registrar(window_name);
 
 } /* namespace Katydid */
 #endif /* KTWINDOWFUNCTION_HH_ */

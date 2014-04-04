@@ -7,18 +7,16 @@
 
 #include "KTJSONWriter.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(publog, "katydid.output");
+    KTLOGGER(publog, "KTJSONWriter");
 
-    static KTNORegistrar< KTWriter, KTJSONWriter > sJSONWriterRegistrar("json-writer");
-    static KTNORegistrar< KTProcessor, KTJSONWriter > sJSONWProcRegistrar("json-writer");
+    KT_REGISTER_WRITER(KTJSONWriter, "json-writer");
+    KT_REGISTER_PROCESSOR(KTJSONWriter, "json-writer");
 
     KTJSONWriter::KTJSONWriter(const std::string& name) :
             KTWriterWithTypists< KTJSONWriter >(name),
@@ -36,14 +34,14 @@ namespace Katydid
         CloseFile();
     }
 
-    bool KTJSONWriter::Configure(const KTPStoreNode* node)
+    bool KTJSONWriter::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetFilename(node->GetData<string>("output-file", fFilename));
-            SetFileMode(node->GetData<string>("file-mode", fFileMode));
-            SetPrettyJSONFlag(node->GetData<bool>("pretty-json", fPrettyJSONFlag));
+            SetFilename(node->GetValue("output-file", fFilename));
+            SetFileMode(node->GetValue("file-mode", fFileMode));
+            SetPrettyJSONFlag(node->GetValue<bool>("pretty-json", fPrettyJSONFlag));
         }
 
         return true;

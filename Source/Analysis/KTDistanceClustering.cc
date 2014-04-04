@@ -11,10 +11,8 @@
 //#include "KTCluster2DData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 //#include "KTDiscriminatedPoints2DData.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 #include <map>
@@ -27,9 +25,9 @@ using std::set;
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "katydid.analysis");
+    KTLOGGER(sdlog, "KTDistanceClustering");
 
-    static KTNORegistrar< KTProcessor, KTDistanceClustering > sDistClustRegistrar("distance-clustering");
+    KT_REGISTER_PROCESSOR(KTDistanceClustering, "distance-clustering");
 
     KTDistanceClustering::KTDistanceClustering(const std::string& name) :
             KTProcessor(name),
@@ -45,18 +43,18 @@ namespace Katydid
     {
     }
 
-    bool KTDistanceClustering::Configure(const KTPStoreNode* node)
+    bool KTDistanceClustering::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        if (node->HasData("max-frequency-distance"))
+        if (node->Has("max-frequency-distance"))
         {
-            SetMaxFrequencyDistance(node->GetData< double >("max-frequency-distance"));
+            SetMaxFrequencyDistance(node->GetValue< double >("max-frequency-distance"));
         }
 
-        if (node->HasData("max-bin-distance"))
+        if (node->Has("max-bin-distance"))
         {
-            SetMaxBinDistance(node->GetData< unsigned >("max-bin-distance"));
+            SetMaxBinDistance(node->GetValue< unsigned >("max-bin-distance"));
         }
 
         return true;

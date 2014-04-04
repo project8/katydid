@@ -11,18 +11,23 @@
 #include "KTProcessor.hh"
 
 #include "KTData.hh"
+#include "KTLogger.hh"
 #include "KTSlot.hh"
+#include "KTSliceHeader.hh"
+#include "KTTimeSeriesDistData.hh"
 
 #include <map>
 #include <typeinfo>
 
 namespace Katydid
 {
+    KTLOGGER(avlog_hh, "KTDataAccumulator.hh");
+
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesData;
 
     /*!
@@ -34,21 +39,27 @@ namespace Katydid
      @details
 
 
-     Configuration name: "data-averager"
+     Configuration name: "data-accumulator"
 
      Available configuration options:
      - "number-to-average": unsigned -- Number of slices to average
-     - "signal-interval": unsigned -- (not currently in use) Number of slices between signaling
+     - "signal-interval": unsigned -- Number of slices between signaling; set to 0 to stop slice signals
 
      Slots:
      - "ts": void (KTDataPtr) -- add to the ts sum; Requires KTTimeSeriesData; Emits signal "ts"
+     - "ts-dist": void (KTDataPtr) -- add to the ts-dist sum; Requires KTTimeSeriesDistData; Emits signal "ts-dist"
      - "fs-polar": void (KTDataPtr) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
      - "fs-fftw": void (KTDataPtr) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
 
      Signals:
      - "ts": void (KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
+     - "ts-dist": void (KTDataPtr) -- emitted when the ts-dist sum is updated; guarantees KTTimeSeriesDistData
      - "fs-polar": void (KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw": void (KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
+     - "ts-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
+     - "ts-dist-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesDistData
+     - "fs-polar-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTFrequencySpectrumDataPolar
+     - "fs-fftw-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTFrequencySpectrumDataFFTW
     */
 
     class KTDataAccumulator : public KTProcessor
@@ -64,21 +75,47 @@ namespace Katydid
 
             struct Accumulator
             {
-                unsigned fCount;
-                unsigned fSignalCount;
                 KTDataPtr fData;
-                Accumulator() : fCount(0), fSignalCount(0), fData(new KTData())
-                {}
+                KTSliceHeader& fSliceHeader;
+
+                void IncrementSlice();
+                Accumulator() : fData(new KTData()), fSliceHeader(fData->Of<KTSliceHeader>())
+                {
+                }
+                unsigned GetSliceNumber() const
+                {
+                    return fSliceHeader.GetSliceNumber();
+                }
+                void BumpSliceNumber()
+                {
+                    fSliceHeader.SetSliceNumber(fSliceHeader.GetSliceNumber() + 1);
+                    return;
+                }
             };
 
             typedef std::map< const std::type_info*, Accumulator > AccumulatorMap;
             typedef AccumulatorMap::iterator AccumulatorMapIt;
 
+            struct SignalSet
+            {
+                    unsigned fSignalCount;
+                    KTSignalData* fAccumulatingSignal;
+                    KTSignalData* fFinishedSignal;
+                    SignalSet(KTSignalData* accSig, KTSignalData* finishedSig) :
+                        fSignalCount(0),
+                        fAccumulatingSignal(accSig),
+                        fFinishedSignal(finishedSig)
+                    {}
+            };
+            typedef std::map< const std::type_info*, SignalSet > SignalMap;
+            typedef SignalMap::iterator SignalMapIt;
+            typedef SignalMap::value_type SignalMapValue;
+
         public:
-            KTDataAccumulator(const std::string& name = "data-averager");
+            KTDataAccumulator(const std::string& name = "data-accumulator");
             virtual ~KTDataAccumulator();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetAccumulatorSize() const;
             double GetAveragingFrac() const;
@@ -94,6 +131,7 @@ namespace Katydid
 
         public:
             bool AddData(KTTimeSeriesData& data);
+            bool AddData(KTTimeSeriesDistData& data);
             bool AddData(KTFrequencySpectrumDataPolar& data);
             bool AddData(KTFrequencySpectrumDataFFTW& data);
 
@@ -108,10 +146,13 @@ namespace Katydid
             bool CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
             bool CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
 
+            bool CoreAddData(KTTimeSeriesDistData& data, Accumulator& avDataStruct, KTTimeSeriesDistData& avData);
+
             bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataPolarCore& avData);
             bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataFFTWCore& avData);
 
             AccumulatorMap fDataMap;
+            mutable Accumulator* fLastAccumulatorPtr;
 
 
             //***************
@@ -120,17 +161,25 @@ namespace Katydid
 
         private:
             KTSignalData fTSSignal;
+            KTSignalData fTSDistSignal;
             KTSignalData fFSPolarSignal;
             KTSignalData fFSFFTWSignal;
+
+            KTSignalData fTSFinishedSignal;
+            KTSignalData fTSDistFinishedSignal;
+            KTSignalData fFSPolarFinishedSignal;
+            KTSignalData fFSFFTWFinishedSignal;
+
+            SignalMap fSignalMap;
 
             //***************
             // Slots
             //***************
 
         private:
-            KTSlotDataOneType< KTTimeSeriesData > fTSSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            template< class XDataType >
+            void SlotFunction(KTDataPtr data);
+
     };
 
     inline unsigned KTDataAccumulator::GetAccumulatorSize() const
@@ -169,14 +218,52 @@ namespace Katydid
     template< class XDataType >
     const KTDataAccumulator::Accumulator& KTDataAccumulator::GetAccumulator() const
     {
-        return fDataMap.at(&typeid(XDataType));
+        fLastAccumulatorPtr = const_cast< Accumulator* >(&fDataMap.at(&typeid(XDataType)));
+        return *fLastAccumulatorPtr;
     }
 
     template< class XDataType >
     KTDataAccumulator::Accumulator& KTDataAccumulator::GetOrCreateAccumulator()
     {
-        return fDataMap[&typeid(XDataType)];
+        fLastAccumulatorPtr = &fDataMap[&typeid(XDataType)];
+        return *fLastAccumulatorPtr;
     }
+
+    template< class XDataType >
+    void KTDataAccumulator::SlotFunction(KTDataPtr data)
+    {
+        // Standard data slot pattern:
+        // Check to ensure that the required data type is present
+        if (! data->Has< XDataType >())
+        {
+            KTERROR(avlog_hh, "Data not found with type <" << typeid(XDataType).name() << ">");
+            return;
+        }
+        // Call the function
+        if (! AddData(data->Of< XDataType >()))
+        {
+            KTERROR(avlog_hh, "Something went wrong while analyzing data with type <" << typeid(XDataType).name() << ">");
+            return;
+        }
+        // If there's a signal pointer, emit the signal
+        SignalMapIt sigIt = fSignalMap.find(&typeid(XDataType));
+        if (sigIt != fSignalMap.end())
+        {
+            sigIt->second.fSignalCount++;
+            unsigned sigCount = sigIt->second.fSignalCount;
+            if (sigCount == fSignalInterval)
+            {
+                (*sigIt->second.fAccumulatingSignal)(fLastAccumulatorPtr->fData);
+                sigIt->second.fSignalCount = 0;
+            }
+            if (data->fLastData)
+            {
+                (*sigIt->second.fFinishedSignal)(fLastAccumulatorPtr->fData);
+            }
+        }
+        return;
+    }
+
 
 
 } /* namespace Katydid */

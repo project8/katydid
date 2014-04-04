@@ -14,7 +14,7 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
@@ -29,7 +29,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(fftlog, "katydid.fft");
+    KTLOGGER(fftlog, "KTWindowFunction");
 
     KTWindowFunction::KTWindowFunction(const string& name) :
             KTConfigurable(name),
@@ -45,7 +45,7 @@ namespace Katydid
     {
     }
 
-    bool KTWindowFunction::Configure(const KTPStoreNode* node)
+    bool KTWindowFunction::Configure(const KTParamNode* node)
     {
         return ConfigureWFSubclass(node);
     }

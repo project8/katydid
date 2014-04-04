@@ -13,14 +13,13 @@
 #endif
 
 #include "KTCommandLineOption.hh"
+#include "KTDAC.hh"
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTProcSummary.hh"
-#include "KTPStoreNode.hh"
-#include "KTTimeSeriesData.hh"
+#include "KTParam.hh"
+#include "KTRawTimeSeriesData.hh"
 
 using std::string;
 
@@ -31,9 +30,9 @@ namespace Katydid
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
     static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
 
-    KTLOGGER(egglog, "katydid.egg");
+    KTLOGGER(egglog, "KTEggProcessor");
 
-    static KTNORegistrar< KTProcessor, KTEggProcessor > sEggProcRegistrar("egg-processor");
+    KT_REGISTER_PROCESSOR(KTEggProcessor, "egg-processor");
 
     KTEggProcessor::KTEggProcessor(const std::string& name) :
             KTPrimaryProcessor(name),
@@ -43,14 +42,11 @@ namespace Katydid
             fEggReaderType(kMonarchEggReader),
             fSliceSize(1024),
             fStride(1024),
+            fDAC(new KTDAC()),
             fNormalizeVoltages(true),
-            fFullVoltageScale(0.5),
-            fNADCLevels(256),
-            fNormalization(1.),
-            fCalculateNormalization(true),
-            fTimeSeriesType(kRealTimeSeries),
             fHeaderSignal("header", this),
-            fDataSignal("slice", this),
+            fRawDataSignal("raw-ts", this),
+            fDataSignal("ts", this),
             fEggDoneSignal("egg-done", this),
             fSummarySignal("summary", this)
     {
@@ -58,17 +54,24 @@ namespace Katydid
 
     KTEggProcessor::~KTEggProcessor()
     {
+        delete fDAC;
     }
 
-    bool KTEggProcessor::Configure(const KTPStoreNode* node)
+    bool KTEggProcessor::Configure(const KTParamNode* node)
     {
         // First determine the egg reader type
         // config file setting
         if (node != NULL)
         {
-            string eggReaderTypeString = node->GetData< string >("egg-reader", "monarch");
-            if (eggReaderTypeString == "monarch") SetEggReaderType(kMonarchEggReader);
-            else if (eggReaderTypeString == "2011") SetEggReaderType(k2011EggReader);
+            string eggReaderTypeString( node->GetValue("egg-reader", "monarch") );
+            if (eggReaderTypeString == "monarch")
+            {
+                 SetEggReaderType(kMonarchEggReader);
+            }
+            else if (eggReaderTypeString == string("2011"))
+            {
+                SetEggReaderType(k2011EggReader);
+            }
             else
             {
                 KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
@@ -94,14 +97,14 @@ namespace Katydid
         // Config-file settings
         if (node != NULL)
         {
-            SetNSlices(node->GetData< unsigned >("number-of-slices", fNSlices));
-            SetProgressReportInterval(node->GetData< unsigned >("progress-report-interval", fProgressReportInterval));
-            SetFilename(node->GetData< string >("filename", fFilename));
+            SetNSlices(node->GetValue< unsigned >("number-of-slices", fNSlices));
+            SetProgressReportInterval(node->GetValue< unsigned >("progress-report-interval", fProgressReportInterval));
+            SetFilename(node->GetValue("filename", fFilename));
 
             // specify the length of the time series
-            fSliceSize = node->GetData< unsigned >("slice-size", fSliceSize);
+            fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);
             // specify the stride (leave unset to make stride == slice size)
-            fStride = node->GetData< unsigned >("stride", fSliceSize);
+            fStride = node->GetValue< unsigned >("stride", fSliceSize);
 
             if (fSliceSize == 0)
             {
@@ -109,24 +112,14 @@ namespace Katydid
                 return false;
             }
 
-            // type of time series
-            string timeSeriesTypeString = node->GetData< string >("time-series-type", "real");
-            if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
-            else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
-            else
+            const KTParamNode* dacNode = node->NodeAt("dac");
+            if (dacNode != NULL)
             {
-                KTERROR(egglog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
-                return false;
+                fDAC->Configure(dacNode);
             }
 
             // whether or not to normalize voltage values, and what the normalization is
-            SetNormalizeVoltages(node->GetData< bool >("normalize-voltages", fNormalizeVoltages));
-            if (node->HasData("full-voltage-scale"))
-                SetFullVoltageScale(node->GetData< double >("full-voltage-scale", fFullVoltageScale));
-            if (node->HasData("n-adc-levels"))
-                SetNADCLevels(node->GetData< unsigned >("n-adc-levels", fNADCLevels));
-            if (node->HasData("normalization"))
-                SetNormalization(node->GetData< double >("normalization", fNormalization));
+            SetNormalizeVoltages(node->GetValue< bool >("normalize-voltages", fNormalizeVoltages));
         }
 
         // Command-line settings
@@ -148,10 +141,6 @@ namespace Katydid
             KTEggReaderMonarch* eggReaderMonarch = new KTEggReaderMonarch();
             eggReaderMonarch->SetSliceSize(fSliceSize);
             eggReaderMonarch->SetStride(fStride);
-            if (fTimeSeriesType == kRealTimeSeries)
-                eggReaderMonarch->SetTimeSeriesType(KTEggReaderMonarch::kRealTimeSeries);
-            else if (fTimeSeriesType == kFFTWTimeSeries)
-                eggReaderMonarch->SetTimeSeriesType(KTEggReaderMonarch::kFFTWTimeSeries);
             reader = eggReaderMonarch;
 #else
             KTERROR(egglog, "Monarch is not enabled; please select another egg reader type");
@@ -171,12 +160,16 @@ namespace Katydid
             return false;
         }
 
+        // pass the digitizer parameters from the egg header to the DAC
+        fDAC->SetNBits(header->GetBitDepth());
+        fDAC->SetMinVoltage(header->GetVoltageMin());
+        fDAC->SetVoltageRange(header->GetVoltageRange());
+        fDAC->Initialize();
+
         fHeaderSignal(header);
 
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
-
-        if (fCalculateNormalization) CalculateNormalization();
 
         if (fNSlices == 0) UnlimitedLoop(reader);
         else LimitedLoop(reader);
@@ -208,11 +201,11 @@ namespace Katydid
             // Hatch the slice
             if (! HatchNextSlice(reader, data)) break;
 
-            if (data->Has< KTTimeSeriesData >())
+            if (data->Has< KTRawTimeSeriesData >())
             {
                 KTDEBUG(egglog, "Time series data is present.");
+                fRawDataSignal(data);
                 NormalizeData(data);
-                fDataSignal(data);
             }
             else
             {
@@ -250,11 +243,11 @@ namespace Katydid
 
             if (iSlice == fNSlices - 1) data->Of< KTData >().fLastData = true;
 
-            if (data->Has< KTTimeSeriesData >())
+            if (data->Has< KTRawTimeSeriesData >())
             {
                 KTDEBUG(egglog, "Time series data is present.");
+                fRawDataSignal(data);
                 NormalizeData(data);
-                fDataSignal(data);
             }
             else
             {
@@ -273,16 +266,12 @@ namespace Katydid
         return;
     }
 
-    void KTEggProcessor::NormalizeData(KTDataPtr& data) const
+    void KTEggProcessor::NormalizeData(KTDataPtr& data)
     {
         if (fNormalizeVoltages)
         {
-            KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
-            unsigned nComponents = tsData.GetNComponents();
-            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
-            {
-                tsData.GetTimeSeries(iComponent)->Scale(fNormalization);
-            }
+            fDAC->ConvertData(data->Of< KTRawTimeSeriesData >());
+            fDataSignal(data);
         }
         return;
     }

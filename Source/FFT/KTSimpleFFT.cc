@@ -11,11 +11,10 @@
 #include "KTCorrelationData.hh"
 #include "KTCorrelationTSData.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <algorithm>
 #include <cmath>
@@ -28,7 +27,7 @@ using std::vector;
 namespace Katydid
 {
 
-    static KTNORegistrar< KTProcessor, KTSimpleFFT > sSimpleFFTRegistrar("simple-fft");
+    KT_REGISTER_PROCESSOR(KTSimpleFFT, "simple-fft");
 
     KTSimpleFFT::KTSimpleFFT(const std::string& name) :
             KTFFT(),
@@ -61,15 +60,15 @@ namespace Katydid
         fftw_destroy_plan(fReversePlan);
     }
 
-    bool KTSimpleFFT::Configure(const KTPStoreNode* node)
+    bool KTSimpleFFT::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
+            SetTransformFlag(node->GetValue("transform-flag", fTransformFlag));
 
-            SetUseWisdom(node->GetData<bool>("use-wisdom", fUseWisdom));
-            SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
+            SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
+            SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
         }
 
         if (fUseWisdom)

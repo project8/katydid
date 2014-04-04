@@ -9,16 +9,15 @@ set (CORE_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCommandLineHandler.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCommandLineOption.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurable.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurator.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTConnection.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTData.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataQueueProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFilenameParsers.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTParameterStore.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessorToolbox.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPStoreNode.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTRandom.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignal.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalWrapper.hh
@@ -33,15 +32,14 @@ set (CORE_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCacheDirectory.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTCommandLineHandler.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurable.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurator.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTData.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDataQueueProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTParameterStore.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTFilenameParsers.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessorToolbox.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPStoreNode.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTRandom.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignal.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalWrapper.cc
