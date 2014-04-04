@@ -198,11 +198,13 @@ namespace Katydid
 	    for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
 	      {
 		toTermLinearity << "Component " << iComponent << '\n';
-		toTermLinearity << '\t' << "Fractional Max Difference: "<<digData.GetFracMaxDiff(iComponent)<<'\n';
-		toTermLinearity << '\t' << "Chi Squared: "<<digData.GetChiSquared(iComponent)<<'\n';
-		toTermLinearity << '\t' << "Fit Range: Bins "<<digData.GetFitStart(iComponent)<<"-"<<digData.GetFitEnd(iComponent)<<'\n';
-		toTermLinearity << '\t' << "LinReg Slope: "<<digData.GetRegSlope(iComponent)<<'\n';
-		toTermLinearity << '\t' << "LinReg Intercept: "<<digData.GetRegIntercept(iComponent)<<'\n';
+		toTermLinearity << "Upslope: "<<'\n';
+		toTermLinearity << '\t' << "Average Fractional Max Difference: " << digData.GetMaxDiffAvg(iComponent) << " +/- " <<digData.GetMaxDiffStdev(iComponent)<< '\n';
+		toTermLinearity << '\t' << "Average LinReg Slope: "<<digData.GetAvgLinRegSlope(iComponent)<<'\n'<<'\n';
+		toTermLinearity << "Downslope: "<<'\n';
+		toTermLinearity << '\t' << "Average Fractional Max Difference: " << digData.GetMaxDiffAvgD(iComponent) << " +/- " <<digData.GetMaxDiffStdevD(iComponent)<< '\n';
+		toTermLinearity << '\t' << "Average LinReg Slope: "<<digData.GetAvgLinRegSlopeD(iComponent)<<'\n';
+		
 		  }
 	    KTPROG(termlog, toTermLinearity.str());
 	  }

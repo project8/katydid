@@ -1,3 +1,4 @@
+
 /*
  * KTDigitizerTests.cc
  *
@@ -16,8 +17,10 @@
 #include "KTTimeSeriesData.hh"
 
 #include <cmath>
+#include <numeric>
 
 using boost::shared_ptr;
+using std::vector;
 
 namespace Katydid
 {
@@ -67,7 +70,12 @@ namespace Katydid
 
         SetTestLinearity(node->GetValue< bool >("test-linearity", fTestLinearity));
 
-        KTWARN(dtlog, "fTestLinearity is " << fTestLinearity);
+	if (node->HasData("disable-component")) 
+	  {
+	    fDisableComponents.push_back(node->GetData< unsigned >("disable-component"));
+	    KTWARN(dtlog, "dc now has " << fDisableComponents.size()  << " components");
+	    KTWARN(dtlog, fDisableComponents[0]);
+	  }
 
         return true;
     }
@@ -79,6 +87,20 @@ namespace Katydid
         KTDigitizerTestData& dtData = data.Of< KTDigitizerTestData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)
         {
+	  bool skipComponent = false;
+	  for (vector<unsigned>::const_iterator dcIt = fDisableComponents.begin(); dcIt != fDisableComponents.end(); ++dcIt)
+	    {
+	      KTWARN(dtlog, "checking " << *dcIt);
+	      if (*dcIt == component)
+		{
+		  KTWARN(dtlog, "skipping " << component );
+		  skipComponent = true;
+		  break;
+		}
+	    }
+	  if (skipComponent) continue;
+	  KTWARN(dtlog, "analyzing " << component);
+
             const KTRawTimeSeries* ts = static_cast< const KTRawTimeSeries* >(data.GetTimeSeries(component));
             for (TestFuncs::const_iterator func_it = fRawTestFuncs.begin(); func_it != fRawTestFuncs.end(); ++func_it)
             {
@@ -147,7 +169,8 @@ namespace Katydid
         }
 
         /*
-		///hello i'm finding pairs now//
+		/// If you want to find pairs of sequential clips, ///
+		/// and comment out the above section.             ///
 	    for (size_t iBin = 1; iBin < nBins-2; ++iBin) //Find all sequential max/min pairs except last and first
         {
 	        if ((*ts)(iBin) >= fNDigitizerLevels-1 && (*ts)(iBin+1) >= fNDigitizerLevels-1 && (*ts)(iBin+2) < fNDigitizerLevels-1 && (*ts)(iBin-1) < fNDigitizerLevels-1)
@@ -183,7 +206,6 @@ namespace Katydid
 	    {
 	        ++nMultClipBottom;
 	    }
-		///okay i have found pairs now///
          */
         testData.SetClippingData(nClipTop, nClipBottom, nMultClipTop, nMultClipBottom, (double)nClipTop / (double)ts->size(), (double)nClipBottom / (double)ts->size(), (double)nMultClipTop/(double)nClipTop, (double)nMultClipBottom/(double)nClipBottom, component);
         return true;
@@ -194,94 +216,250 @@ namespace Katydid
         KTDEBUG(dtlog, "Running Linearity test");
         testData.SetLinearityFlag(true);
         size_t nBins = ts->size();
-        int fitStart = -1;
-        int fitEnd = -1;
-        //find fitStart
-        for (size_t iBin = 1; iBin < nBins; ++iBin)
-        {
-            if ((*ts)(iBin) != 0)
-            {
-                fitStart = iBin - 1;
-                break;
-            }
-        }
-        //error finding fitStart
-        if (fitStart == -1)
-        {
-            KTERROR(dtlog, "Unable to find fit start");
-            return false;
-        }
+        int localMax = -1;
+        int localMin = 300;
+	int lastMax = -1;
+	int lastMin = -1;
+	int lastMaxEnd = -1;
+	int lastMinEnd = -1;
+	std::vector<int> localMaxStarts;
+	std::vector<int> localMinStarts;
+	std::vector<int> localMaxEnds;
+	std::vector<int> localMinEnds;
 
-        //find fitEnd
-        double* whereHigh = new double[fBinsPerAverage];
-        double oldAverage = 0;
-        /*
-        for (size_t iBin = fitStart+1; iBin < nBins; ++iBin) //testing
-        {
-            if ((*ts)(iBin) == 185)
-            {
-                break;
-            }
-        }
-        */
-        for (size_t iBin = fitStart+1; iBin < nBins; ++iBin)
-        {
-            whereHigh[iBin % fBinsPerAverage] = (*ts)(iBin);
-            double total = 0;
-            for (int i=0; i < fBinsPerAverage; ++i)
-            {
-                total = total + whereHigh[i];
-            }
-            double average = total / fBinsPerAverage;
-
-            if (average < oldAverage)
-            {
-                fitEnd = iBin - fBinsPerAverage;
-                break;
-            }
-            oldAverage = average;
-        }
-        //error finding fitEnd
-        if (fitEnd == -1)
-        {
-            fitEnd = nBins-1;
-        }
-
-        delete [] whereHigh;
-
-        double slope = double((*ts)(fitEnd) - (*ts)(fitStart)) / double(fitEnd - fitStart);
-
+	//find localMax and localMin
+	for (size_t iBin = 1; iBin < nBins; ++iBin)
+	  {
+	    if ((int)((*ts)(iBin)) > localMax)
+	      {
+		localMax = (*ts)(iBin);
+	      }
+	    if ((int)((*ts)(iBin)) < localMin)
+	      {
+		localMin = (*ts)(iBin);
+	      }
+	  }
+	//find where the maxes and mins are
+	int countermax = 0;
+	int countermin = 0;
+	for (size_t iBin = 1; iBin < nBins; ++iBin) //find max and min starts
+	  {
+	    if ((*ts)(iBin) == localMax)	  
+	      {
+		//KTDEBUG(dtlog, iBin)
+		if (lastMax < iBin-20)
+		  {
+		    localMaxStarts.push_back(iBin);
+		    localMaxEnds.push_back(lastMax);
+		  }
+		lastMax = iBin;
+	      }
+	    if ((*ts)(iBin) == localMin)	 
+	      {
+		if (lastMin < iBin-20)
+		  {
+		    localMinStarts.push_back(iBin);
+		    localMinEnds.push_back(lastMin);
+		  }
+		lastMin = iBin;
+	      }  
+	  }
+	KTDEBUG(dtlog, "Max:"<<localMax<<", Min:"<<localMin);
+	///////////////////////////
+	/////////UPSLOPES//////////
+	///////////////////////////
+	// Upslope end/start shift
+	int shiftStart = 0;
+	int shiftEnd = 0;
+	if (localMinEnds[0]<localMaxStarts[0] & localMinEnds[1]>localMaxStarts[0]) 
+	  {
+	    shiftStart = 0;
+	    shiftEnd = 0;
+	  }
+	else if (localMinEnds[0]>localMaxStarts[0])
+	  {
+	    ++shiftEnd;
+	    for(size_t i=0; localMinEnds[i]<localMaxStarts[0]; ++i)
+	      {
+		++shiftEnd;
+	      }
+	   }
+	else if (localMinEnds[1]<localMaxStarts[0])
+	   {
+	     ++shiftStart;
+	     for(size_t i=0; localMinEnds[1]>localMaxStarts[i]; ++i)
+	       {
+	         ++shiftStart;
+	       }
+	   }
+	else
+	   {
+	     KTERROR(dtlog, "There is a shifting error.")
+	   }
+	  if (localMinEnds.size() != localMaxStarts.size())
+	    {
+	      KTERROR(dtlog, "Number of max and mins not equal.");
+	      testData.SetLinearityData(0,0,0,0,0,0, component);
+	      return true;
+	    }
         //Linear Regression
-        double sumXY = 0;
-        double sumX = 0;
-        double sumY = 0;
-        double sumX2 = 0;
-        for (size_t iBin = fitStart; iBin < fitEnd; ++iBin)
-        {
-            sumXY += (double)iBin * (double)((*ts)(iBin));
-            sumX += iBin;
-            sumY += (double)((*ts)(iBin));
-            sumX2 += iBin * iBin;
-        }
+	double fitStart = localMinEnds[0]; 
+	double fitEnd = localMaxStarts[0];
+	double sumXY = 0;
+	double sumX = 0;
+	double sumY = 0;
+	double sumX2 = 0;
+	double avgLinRegSlope = 0;
+	double avgLinRegIntercept = 0;
+ 	std::vector<double> linRegIntercepts;
+	for (int k = 0; k<localMinEnds.size()-shiftStart-shiftEnd; ++k)
+	{
+          fitStart = localMinEnds[k+shiftStart];
+          fitEnd = localMaxStarts[k+shiftEnd];
+          sumXY = 0;
+          sumX = 0;
+	  sumY = 0;
+	  sumX2 = 0;
+	  for (size_t iBin = fitStart; iBin <= fitEnd; ++iBin)
+	    {
+	      sumXY += (double)iBin * (double)((*ts)(iBin));
+	      sumX += (double)iBin;
+	      sumY += (double)((*ts)(iBin));
+	      sumX2 += (double)iBin * iBin;
+	    }
+	  double N = fitEnd-fitStart+1;
+	  double linRegSlope =  ((N * sumXY) - (sumX * sumY)) / ((N * sumX2) - (sumX * sumX));
+	  double linRegIntercept = (sumY - (linRegSlope * sumX)) / (N);
+	  linRegIntercepts.push_back(linRegIntercept);
+          avgLinRegSlope = avgLinRegSlope + linRegSlope;
+	  avgLinRegIntercept = avgLinRegIntercept + linRegIntercept;
+	}
+	  avgLinRegSlope = avgLinRegSlope/localMinEnds.size();
+	  avgLinRegIntercept = avgLinRegIntercept/localMinEnds.size();	 
+  	  std::vector<double> maxDiff;
+	  //compare distance
+	  for (int k = 0; k<localMinEnds.size()-shiftStart-shiftEnd; ++k)
+	  {
+	    fitStart = localMinEnds[k+shiftStart];
+	    fitEnd = localMaxStarts[k+shiftEnd];
+ 
+ 	    double regBigDist = 0;
+	    for (size_t iBin = fitStart; (double)iBin <= fitEnd; ++iBin)
+	      {
+		double regYDist = abs((*ts)(iBin) -  avgLinRegSlope*(iBin-fitStart));
+		if (regYDist > regBigDist)
+		  {
+		    regBigDist = regYDist;
+		  }
+	      }
+	     maxDiff.push_back(regBigDist/255);
+	  }
 
-        double linRegSlope = ((fitEnd - fitStart+1) * sumXY - sumX * sumY) / ((fitEnd - fitStart+1) * sumX2 - sumX * sumX);
-        double linRegIntercept = (sumY - linRegSlope * sumX) / (fitEnd - fitStart + 1);
+	  double maxDiffSum = std::accumulate(maxDiff.begin(), maxDiff.end(), 0.0);
+	  double maxDiffAvg = maxDiffSum / maxDiff.size();
 
-        // Max difference from linreg line and chisquared
-        double regBigDist = 0;
-        double totalSqDist = 0;
-        for (size_t iBin = fitStart; iBin < fitEnd; ++iBin)
-        {
-            double regYDist = (*ts)(iBin) - ((iBin-fitStart) * linRegSlope + linRegIntercept);
-            totalSqDist = totalSqDist + regYDist*regYDist;
-            if (regYDist > regBigDist)
-            {
-                regBigDist = regYDist;
+	  double maxDiffSquareSum = std::inner_product(maxDiff.begin(), maxDiff.end(), maxDiff.begin(), 0.0);
+	  double maxDiffStdev = std::sqrt(maxDiffSquareSum / maxDiff.size() - maxDiffAvg * maxDiffAvg);
+	  ///////////////////////////
+	  ////////DOWNSLOPES/////////
+	  ///////////////////////////
+	  // Downslope start/end shift
+	  int shiftStartD = 0;
+	  int shiftEndD = 0;
+	  if (localMaxEnds[0]<localMinStarts[0] & localMaxEnds[1]>localMinStarts[0]) 
+	    {
+	      shiftStartD = 0;
+	      shiftEndD = 0;
+	    }
+	  else if (localMaxEnds[0]>localMinStarts[0])
+	    {
+	      ++shiftEndD;
+	      for(size_t i=0; localMaxEnds[i]<localMinStarts[0]; ++i)
+	        {
+	          ++shiftEndD;
+	        }
+	    }
+	  else if (localMaxEnds[1]<localMinStarts[0])
+	    {
+	      ++shiftStartD;
+	      for(size_t i=0; localMaxEnds[1]>localMinStarts[i]; ++i)
+	        {
+	          ++shiftStartD;
+	        }
             }
-        }
-        double avgSqDist = totalSqDist / (fitEnd - fitStart + 1);
+          else
+            {
+              KTERROR(dtlog, "There is a shifting error.")
+            }
+          //Linear Regression
+	  double fitStartD = localMaxEnds[0]; 
+	  double fitEndD = localMinStarts[0];
+	  double sumXYD = 0;
+	  double sumXD = 0;
+	  double sumYD = 0;
+	  double sumX2D = 0;
+	  double avgLinRegSlopeD = 0;
+	  double avgLinRegInterceptD = 0;
+ 	  std::vector<double> linRegInterceptsD;
+	  KTDEBUG(dtlog, "localMaxEnds.size()= "<<localMaxEnds.size()<<", localMinStarts.size()="<<localMinStarts.size());
+	  if (localMaxEnds.size() != localMinStarts.size())
+	    {
+	      KTERROR(dtlog, "Number of max and mins not equal.");
+	      testData.SetLinearityData(0,0,0,0,0,0, component);
+	      return true;
+	    }
+	  for (int k = 0; k<localMaxEnds.size()-shiftStartD-shiftEndD; ++k)
+	  {
+	    fitStartD = localMaxEnds[k+shiftStartD];
+	    fitEndD = localMinStarts[k+shiftEndD];
+	    sumXYD = 0;
+	    sumXD = 0;
+	    sumYD = 0;
+	    sumX2D = 0;
+	    for (size_t iBin = fitStartD; (double)iBin <= fitEndD; ++iBin)
+	      {
+		sumXYD += (double)iBin * (double)((*ts)(iBin));
+		sumXD += (double)iBin;
+		sumYD += (double)((*ts)(iBin));
+		sumX2D += (double)iBin * iBin;
+	      }
+	    double N = fitEndD-fitStartD+1;
+	    double linRegSlope =  ((N * sumXYD) - (sumXD * sumYD)) / ((N * sumX2D) - (sumXD * sumXD));
+	    double linRegIntercept = (sumYD - (linRegSlope * sumXD)) / (N);
+	    linRegInterceptsD.push_back(linRegIntercept);
+            avgLinRegSlopeD = avgLinRegSlopeD + linRegSlope;
+	    avgLinRegInterceptD = avgLinRegInterceptD + linRegIntercept;
+	  }
+	  avgLinRegSlopeD = avgLinRegSlopeD/localMaxEnds.size();
+	  avgLinRegInterceptD = avgLinRegInterceptD/localMaxEnds.size();	 
+  	   std::vector<double> maxDiffD;
+	   //Compare distance
+	   for (int k = 0; k<localMaxEnds.size()-shiftEndD-shiftStartD; ++k)
+	  {
+	    fitStartD = localMaxEnds[k+shiftStartD];
+	    fitEndD = localMinStarts[k+shiftEndD];
+ 	    double regBigDist = 0;
+	    for (size_t iBin = fitStartD; iBin <= fitEndD; ++iBin)
+	      {
+		double regYDist = abs((*ts)(iBin) - ( avgLinRegSlopeD*(iBin-fitStartD)+localMax));
+		if (regYDist > regBigDist)
+		  {
+		    regBigDist = regYDist;
+		  }
+	      }
+	     maxDiffD.push_back(regBigDist/255);
+	  }
 
-        testData.SetLinearityData(regBigDist/256, avgSqDist, fitStart, fitEnd, linRegSlope, linRegIntercept, component);
+	  double maxDiffSumD = std::accumulate(maxDiffD.begin(), maxDiffD.end(), 0.0);
+	  double maxDiffAvgD = maxDiffSumD / maxDiffD.size();
+
+	  double maxDiffSquareSumD = std::inner_product(maxDiffD.begin(), maxDiffD.end(), maxDiffD.begin(), 0.0);
+	  double maxDiffStdevD = std::sqrt(maxDiffSquareSumD / maxDiffD.size() - maxDiffAvgD * maxDiffAvgD);
+ 
+	 
+
+        testData.SetLinearityData(maxDiffAvg, maxDiffStdev, avgLinRegSlope, maxDiffAvgD, maxDiffStdevD, avgLinRegSlopeD, component);
+
         return true;
     }
 
