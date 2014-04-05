@@ -70,9 +70,9 @@ namespace Katydid
 
         SetTestLinearity(node->GetValue< bool >("test-linearity", fTestLinearity));
 
-	if (node->HasData("disable-component")) 
+	if (node->Has("disable-component"))
 	  {
-	    fDisableComponents.push_back(node->GetData< unsigned >("disable-component"));
+	    fDisableComponents.push_back(node->GetValue< unsigned >("disable-component"));
 	    KTWARN(dtlog, "dc now has " << fDisableComponents.size()  << " components");
 	    KTWARN(dtlog, fDisableComponents[0]);
 	  }
