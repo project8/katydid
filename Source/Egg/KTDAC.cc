@@ -7,9 +7,11 @@
 
 #include "KTDAC.hh"
 
+#include "KTEggHeader.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
+#include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
@@ -37,7 +39,9 @@ namespace Katydid
             fConvertTSFunc(&KTDAC::ConvertToReal),
             fOversamplingBins(1),
             fOversamplingScaleFactor(1.),
+            fHeaderSignal("header", this),
             fTimeSeriesSignal("ts", this),
+            fHeaderSlot("header", this, &KTDAC::UpdateEggHeader),
             fRawTSSlot("raw-ts", this, &KTDAC::ConvertData, &fTimeSeriesSignal)
     {
     }
@@ -107,7 +111,7 @@ namespace Katydid
 
         KTDEBUG(egglog, "Assigning voltages with:\n" <<
                 "\tDigitizer bits: " << fNBits << '\n' <<
-                "\tVoltage levels: " << 1 << fNBits << '\n' <<
+                "\tVoltage levels: " << (1 << fNBits) << '\n' <<
                 "\tEmulated bits: " << fEmulatedNBits << '\n' <<
                 "\tLevel divisor: " << levelDivisor << '\n' <<
                 "\tReduced levels: " << params.levels << '\n' <<
@@ -121,15 +125,33 @@ namespace Katydid
         for (uint64_t level = 0; level < params.levels; ++level)
         {
             fVoltages[level] = dd2a(level / levelDivisor, &params);
-            KTWARN(egglog, "level " << level << ", voltage " << fVoltages[level]);
+            //KTWARN(egglog, "level " << level << ", voltage " << fVoltages[level]);
         }
 
         fShouldRunInitialize = false;
         return;
     }
 
-    bool KTDAC::ConvertData(KTRawTimeSeriesData& rawData)
+    void KTDAC::UpdateEggHeader(KTEggHeader* header)
     {
+        if (fBitDepthMode == kIncreasing)
+        {
+            header->SetSliceSize(header->GetRawSliceSize() / fOversamplingBins);
+        }
+        if (fBitDepthMode != kNoChange)
+        {
+            header->SetBitDepth(fEmulatedNBits);
+        }
+        fHeaderSignal(header);
+        return;
+    }
+
+    bool KTDAC::ConvertData(KTSliceHeader& header, KTRawTimeSeriesData& rawData)
+    {
+        if (fBitDepthMode == kIncreasing)
+        {
+            header.SetSliceSize(fOversamplingBins);
+        }
         unsigned nComponents = rawData.GetNComponents();
         KTTimeSeriesData& newData = rawData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)

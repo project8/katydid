@@ -20,6 +20,7 @@
 #include "KTProcSummary.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
+#include "KTSliceHeader.hh"
 
 using std::string;
 
@@ -166,6 +167,8 @@ namespace Katydid
         fDAC->SetVoltageRange(header->GetVoltageRange());
         fDAC->Initialize();
 
+        fDAC->UpdateEggHeader(header);
+
         fHeaderSignal(header);
 
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
@@ -270,7 +273,7 @@ namespace Katydid
     {
         if (fNormalizeVoltages)
         {
-            fDAC->ConvertData(data->Of< KTRawTimeSeriesData >());
+            fDAC->ConvertData(data->Of< KTSliceHeader >(), data->Of< KTRawTimeSeriesData >());
             fDataSignal(data);
         }
         return;
