@@ -23,31 +23,31 @@ set (EGG_SOURCEFILES
 )
 
 if (Katydid_USE_MONARCH)
-set (EGG_NODICT_HEADERFILES
-    ${EGG_NODICT_HEADERFILES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.hh
-    #${CMAKE_CURRENT_SOURCE_DIR}/KTEggWriter.hh
-)
-set (EGG_SOURCEFILES
-    ${EGG_SOURCEFILES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.cc
-    #${CMAKE_CURRENT_SOURCE_DIR}/KTEggWriter.cc
-)
+    set (EGG_NODICT_HEADERFILES
+        ${EGG_NODICT_HEADERFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.hh
+        #${CMAKE_CURRENT_SOURCE_DIR}/KTEggWriter.hh
+    )
+    set (EGG_SOURCEFILES
+        ${EGG_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReaderMonarch.cc
+        #${CMAKE_CURRENT_SOURCE_DIR}/KTEggWriter.cc
+    )
 endif (Katydid_USE_MONARCH)
 
 if (Katydid_USE_MANTIS)
-set (EGG_NODICT_HEADERFILES
-    ${EGG_NODICT_HEADERFILES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMantis.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMantisClientWriting.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMantisWriterToTS.hh
-)
-set (EGG_SOURCEFILES
-    ${EGG_SOURCEFILES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMantis.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMantisClientWriting.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMantisWriterToTS.cc
-)
+    set (EGG_NODICT_HEADERFILES
+        ${EGG_NODICT_HEADERFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMantis.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMantisClientWriting.hh
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMantisWriterToTS.hh
+    )
+    set (EGG_SOURCEFILES
+        ${EGG_SOURCEFILES}
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMantis.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMantisClientWriting.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/KTMantisWriterToTS.cc
+    )
 endif (Katydid_USE_MANTIS)
 
 
