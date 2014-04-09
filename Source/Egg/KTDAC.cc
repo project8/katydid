@@ -72,8 +72,6 @@ namespace Katydid
             SetEmulatedNBits(node->GetValue< unsigned >("n-bits-emulated", fEmulatedNBits));
         }
 
-        Initialize();
-
         return true;
     }
 
