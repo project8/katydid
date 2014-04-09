@@ -17,6 +17,7 @@ namespace Katydid
             fSliceNumber(0),
             fNSlicesIncluded(1),
             fIsNewAcquisition(true),
+            fRawSliceSize(1),
             fSliceSize(1),
             fSliceLength(0.),
             fNonOverlapFrac(0.),
@@ -38,6 +39,7 @@ namespace Katydid
             fSliceNumber(orig.fSliceNumber),
             fNSlicesIncluded(orig.fNSlicesIncluded),
             fIsNewAcquisition(orig.fIsNewAcquisition),
+            fRawSliceSize(orig.fRawSliceSize),
             fSliceSize(orig.fSliceSize),
             fSliceLength(orig.fSliceLength),
             fNonOverlapFrac(orig.fNonOverlapFrac),
@@ -70,6 +72,7 @@ namespace Katydid
         fTimeInRun = rhs.fTimeInRun;
         fSliceNumber = rhs.fSliceNumber;
         fNSlicesIncluded = rhs.fNSlicesIncluded;
+        fRawSliceSize = rhs.fRawSliceSize;
         fSliceSize = rhs.fSliceSize;
         fSliceLength = rhs.fSliceLength;
         fNonOverlapFrac = rhs.fNonOverlapFrac;
@@ -90,6 +93,7 @@ namespace Katydid
         out << "Slice Header Contents:\n" <<
                 "\tSlice number: " << hdr.GetSliceNumber() << '\n' <<
                 "\tIncludes " << hdr.GetNSlicesIncluded() << " slices\n" <<
+                "\tRaw slice size: " << hdr.GetRawSliceSize() << '\n' <<
                 "\tSlice size: " << hdr.GetSliceSize() << '\n' <<
                 "\tSlice Length: " << hdr.GetSliceLength() << " s\n" <<
                 "\tNon-Overlap Fraction: " << hdr.GetNonOverlapFrac() << '\n' <<
