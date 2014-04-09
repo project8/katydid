@@ -111,6 +111,7 @@ namespace Katydid
             return NULL;
         }
         CopyHeaderInformation(fMonarch->GetHeader());
+        fHeader.SetRawSliceSize(fSliceSize);
         fHeader.SetSliceSize(fSliceSize);
 
         stringstream headerBuff;
@@ -231,6 +232,7 @@ namespace Katydid
             sliceHeader.SetIsNewAcquisition(false);
         }
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
+        sliceHeader.SetRawSliceSize(fSliceSize);
         sliceHeader.SetSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
         sliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);

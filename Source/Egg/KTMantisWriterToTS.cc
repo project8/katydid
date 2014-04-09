@@ -337,6 +337,7 @@ namespace Katydid
             KTSliceHeader& sliceHeader = f_data_ptr->Of< KTSliceHeader >().SetNComponents(f_header.GetNChannels());
             sliceHeader.SetIsNewAcquisition(f_read_state.fIsNewAcquisition);
             sliceHeader.SetSampleRate(f_header.GetAcquisitionRate());
+            sliceHeader.SetRawSliceSize(f_slice_size);
             sliceHeader.SetSliceSize(f_slice_size);
             sliceHeader.CalculateBinWidthAndSliceLength();
             sliceHeader.SetNonOverlapFrac((double)f_stride / (double)f_slice_size);
