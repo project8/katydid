@@ -165,13 +165,14 @@ if (Katydid_ENABLE_TESTING)
     
     # executables that DO require FFTW
     if (FFTW_FOUND)
-        include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-        ROOT_GENERATE_DICTIONARY ("guiviewer.h" "guiviewerLinkDef.h" "guiviewerLinkDef.cxx" "${CMAKE_INCLUDE_PATH}")
+        #include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+        #ROOT_GENERATE_DICTIONARY ("guiviewer.h" "guiviewerLinkDef.h" "guiviewerLinkDef.cxx" "${CMAKE_INCLUDE_PATH}")
         #add_library (viewer guiviewer.cxx guiviewerLinkDef.cxx)
-        add_executable (guiviewer guiviewer.cxx guiviewerLinkDef.cxx)
-        target_link_libraries (guiviewer ${EXTERNAL_LIBRARIES})
+        #add_executable (guiviewer guiviewer.cxx guiviewerLinkDef.cxx)
+        #target_link_libraries (guiviewer ${EXTERNAL_LIBRARIES})
         #pbuilder_install_libraries (viewer)
-        pbuilder_install_headers (guiviewer.h guiviewerLinkDef.h)
+        #pbuilder_install_headers (guiviewer.h guiviewerLinkDef.h)
+        #pbuilder_install_executables (guiviewer)
     
         add_executable (TestComplexFFTW ${CMAKE_CURRENT_SOURCE_DIR}/TestComplexFFTW.cc)
         target_link_libraries (TestComplexFFTW KatydidUtility KatydidCore KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
@@ -183,7 +184,6 @@ if (Katydid_ENABLE_TESTING)
         target_link_libraries (TestWignerVille KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
         pbuilder_install_executables (
-                         guiviewer
                          TestComplexFFTW
                          TestSimpleFFT
                          TestWignerVille

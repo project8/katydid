@@ -9,15 +9,15 @@
 
 #include "KTLogger.hh"
 #include "KTNOFactory.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 namespace Katydid
 {
     KTLOGGER(publog, "katydid.output");
 
 
-    static KTNORegistrar< KTWriter, KTDataDisplay > sDDWriterRegistrar("data-display");
-    static KTNORegistrar< KTProcessor, KTDataDisplay > sDDProcRegistrar("data-display");
+    KT_REGISTER_WRITER(KTDataDisplay, "data-display");
+    KT_REGISTER_PROCESSOR(KTDataDisplay, "data-display");
 
     KTDataDisplay::KTDataDisplay(const std::string& name) :
             KTWriterWithTypists< KTDataDisplay >(name),
@@ -32,12 +32,12 @@ namespace Katydid
     {
     }
 
-    Bool_t KTDataDisplay::Configure(const KTPStoreNode* node)
+    bool KTDataDisplay::Configure(const KTParamNode* node)
     {
         if (node == NULL) return true;
 
-        fHeight = node->GetData< UInt_t >("window-height", fHeight);
-        fWidth = node->GetData< UInt_t >("window-width", fWidth);
+        fHeight = node->GetValue< unsigned >("window-height", fHeight);
+        fWidth = node->GetValue< unsigned >("window-width", fWidth);
 
         return true;
     }
@@ -51,7 +51,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTDataDisplay::OpenWindow()
+    bool KTDataDisplay::OpenWindow()
     {
         if (fDisplayWindow == NULL)
         {

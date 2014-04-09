@@ -65,17 +65,17 @@ namespace Katydid
             KTDataDisplay(const std::string& name = "data-display");
             virtual ~KTDataDisplay();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            Bool_t Configure(const KTParamNode* node);
 
-            UInt_t GetWidth() const;
-            void SetWidth(UInt_t width);
+            unsigned GetWidth() const;
+            void SetWidth(unsigned width);
 
-            UInt_t GetHeight() const;
-            void SetHeight(UInt_t height);
+            unsigned GetHeight() const;
+            void SetHeight(unsigned height);
 
         private:
-            UInt_t fWidth;
-            UInt_t fHeight;
+            unsigned fWidth;
+            unsigned fHeight;
 
         public:
             void Initialize();
@@ -96,21 +96,21 @@ namespace Katydid
 
     };
 
-    inline UInt_t KTDataDisplay::GetWidth() const
+    inline unsigned KTDataDisplay::GetWidth() const
     {
         return fWidth;
     }
-    inline void KTDataDisplay::SetWidth(UInt_t width)
+    inline void KTDataDisplay::SetWidth(unsigned width)
     {
         fWidth = width;
         return;
     }
 
-    inline UInt_t KTDataDisplay::GetHeight() const
+    inline unsigned KTDataDisplay::GetHeight() const
     {
         return fHeight;
     }
-    inline void KTDataDisplay::SetHeight(UInt_t height)
+    inline void KTDataDisplay::SetHeight(unsigned height)
     {
         fHeight = height;
         return;

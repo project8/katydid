@@ -25,10 +25,10 @@ if (ROOT_FOUND)
         
         set (IO_NODICT_HEADERFILES
             ${IO_NODICT_HEADERFILES}
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataDisplay.hh
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayAnalysis.hh
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayEgg.hh
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayFFT.hh
+            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataDisplay.hh
+            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayAnalysis.hh
+            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayEgg.hh
+            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayFFT.hh
         )
     endif (NOT Katydid_SINGLETHREADED)
     
@@ -89,10 +89,10 @@ if (ROOT_FOUND)
         set (IO_SOURCEFILES
             ${IO_SOURCEFILES}
             ${CMAKE_CURRENT_SOURCE_DIR}/KTDisplayWindow.cc
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayAnalysis.cc
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayEgg.cc
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayFFT.cc
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDataDisplay.cc
+            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayAnalysis.cc
+            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayEgg.cc
+            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayFFT.cc
+            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataDisplay.cc
         )
     endif (NOT Katydid_SINGLETHREADED)
 endif (ROOT_FOUND)
