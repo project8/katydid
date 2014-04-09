@@ -23,7 +23,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteEggHeader(const KTEggHeader* header);
+            void WriteEggHeader(KTEggHeader* header);
 
     };
 

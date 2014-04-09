@@ -49,7 +49,7 @@ namespace Katydid
      - "file-mode": string -- cstdio FILE mode: w, a, r+, w+ (default) or a+
 
      Slots:
-     - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; not valid if candidate writing has started
+     - "header": void (KTEggHeader*) -- writes the header information to the candidates file; not valid if candidate writing has started
      - "waterfall-candidate": void (KTDataPtr) -- writes candidate information; starts candidate writing mode if it hasn't started yet
      - "summary": void (const KTProcSummary*) -- stops writing candidates, writes the summary information and closes the file
      - "stop": void () -- stops writing candidates and closes the file
@@ -115,7 +115,7 @@ namespace Katydid
             mutable boost::recursive_mutex fMutex;
 
         public:
-            void WriteHeaderInformation(const KTEggHeader* header);
+            void WriteHeaderInformation(KTEggHeader* header);
 
             bool WriteWaterfallCandidate(KTWaterfallCandidateData& wcData);
 
@@ -132,7 +132,7 @@ namespace Katydid
             // Slots
             //**************
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTWaterfallCandidateData > fWaterfallCandidateSlot;
             KTSlotNoArg< void () > fStopWritingSlot;
             KTSlotOneArg< void (const KTProcSummary*) > fSummarySlot;

@@ -48,7 +48,7 @@ namespace Katydid
      - "digitizer-fullscale": double -- full-scale range of the digitizer
 
      Slots:
-     - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; opens the file first if it hasn't been opened
+     - "header": void (KTEggHeader*) -- writes the header information to the candidates file; opens the file first if it hasn't been opened
      - "ts": void (KTDataPtr) -- writes a record from a time series;
      - "done": void () -- closes the file
     */
@@ -89,7 +89,7 @@ namespace Katydid
             bool OpenFile();
             void CloseFile();
 
-            void WriteHeader(const KTEggHeader* header);
+            void WriteHeader(KTEggHeader* header);
 
             bool WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData);
 
@@ -108,7 +108,7 @@ namespace Katydid
             // Slots
             //**************
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataTwoTypes< KTSliceHeader, KTTimeSeriesData > fTimeSeriesSlot;
             KTSlotNoArg< void () > fDoneSlot;
     };

@@ -201,7 +201,7 @@ namespace Katydid
         return;
     }
 
-    void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
+    void KTWignerVille::InitializeWithHeader(KTEggHeader* header)
     {
         return Initialize(header->GetAcquisitionRate(), header->GetNChannels(), header->GetSliceSize());
     }

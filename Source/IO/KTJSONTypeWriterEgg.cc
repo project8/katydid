@@ -41,7 +41,7 @@ namespace Katydid
     // Egg Header
     //***********
 
-    void KTJSONTypeWriterEgg::WriteEggHeader(const KTEggHeader* header)
+    void KTJSONTypeWriterEgg::WriteEggHeader(KTEggHeader* header)
     {
         using rapidjson::SizeType;
 

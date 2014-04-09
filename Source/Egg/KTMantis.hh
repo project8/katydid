@@ -56,7 +56,7 @@ namespace Katydid
      Slots:
 
      Signals:
-     - "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
+     - "header": void (KTEggHeader*) -- emitted when the file header is parsed.
      - "raw-ts" void (KTDataPtr) -- emitted when a new raw time series is produced; guarantees KTRawTimeSeriesData
      - "mantis-done": void () --  emitted when a file is finished.
     */
@@ -92,7 +92,7 @@ namespace Katydid
 
 
         private:
-            void EmitHeaderSignal(const KTEggHeader* header);
+            void EmitHeaderSignal(KTEggHeader* header);
             void EmitSliceSignal(KTDataPtr data);
             void EmitMantisDoneSignal();
 
@@ -103,7 +103,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
+            KTSignalOneArg< KTEggHeader* > fHeaderSignal;
             KTSignalData fSliceSignal;
             KTSignalOneArg< void > fMantisDoneSignal;
 
@@ -142,7 +142,7 @@ namespace Katydid
         return RunClient();
     }
 
-    inline void KTMantis::EmitHeaderSignal(const KTEggHeader* header)
+    inline void KTMantis::EmitHeaderSignal(KTEggHeader* header)
     {
         fHeaderSignal(header);
         return;

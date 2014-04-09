@@ -39,7 +39,7 @@ namespace Katydid
      - "complex-fftw": nested config: -- See KTComplexFFTW
 
      Slots:
-     - "header": void (const KTEggHeader*) -- Initializes the FFT
+     - "header": void (KTEggHeader*) -- Initializes the FFT
      - "ts": void (KTDataPtr) -- Calculates an analytic associate of the time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
      - "fs-fftw": void (KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTAnalyticAssociateData
      - "norm-fs-fftw": void (KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTNormalizedFSDataFFTW; Adds KTAnalyticAssociateData
@@ -55,7 +55,7 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
-            void InitializeWithHeader(const KTEggHeader* header);
+            void InitializeWithHeader(KTEggHeader* header);
 
             KTComplexFFTW* GetFullFFT();
 
@@ -88,7 +88,7 @@ namespace Katydid
              //***************
 
          private:
-             KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+             KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
              KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
              KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
              KTSlotDataOneType< KTNormalizedFSDataFFTW > fNormFSFFTWSlot;

@@ -139,7 +139,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::InitializeWithHeader(const KTEggHeader* header)
+    void KTSimpleFFT::InitializeWithHeader(KTEggHeader* header)
     {
         KTDEBUG(fftlog_simp, "Initializing via KTEggHeader");
         SetTimeSize(header->GetSliceSize());
@@ -355,7 +355,7 @@ namespace Katydid
 
 
 /*
-    void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
+    void KTSimpleFFT::ProcessHeader(KTEggHeader* header)
     {
         SetTimeSize(header->GetSliceSize());
         InitializeFFT();

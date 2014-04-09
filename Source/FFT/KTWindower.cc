@@ -77,7 +77,7 @@ namespace Katydid
         return true;
     }
 
-    void KTWindower::InitializeWithHeader(const KTEggHeader* header)
+    void KTWindower::InitializeWithHeader(KTEggHeader* header)
     {
         if (! InitializeWindow(1. / header->GetAcquisitionRate(), header->GetSliceSize()))
         {

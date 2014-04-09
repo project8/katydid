@@ -54,7 +54,7 @@ namespace Katydid
         return true;
     }
 
-    void KTAnalyticAssociator::InitializeWithHeader(const KTEggHeader* header)
+    void KTAnalyticAssociator::InitializeWithHeader(KTEggHeader* header)
     {
         fFullFFT.InitializeWithHeader(header);
         return;

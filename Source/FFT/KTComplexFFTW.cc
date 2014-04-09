@@ -138,7 +138,7 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::InitializeWithHeader(const KTEggHeader* header)
+    void KTComplexFFTW::InitializeWithHeader(KTEggHeader* header)
     {
         SetSize(header->GetSliceSize());
         InitializeFFT();
