@@ -7,10 +7,8 @@
 
 #include "KTDisplayWindow.hh"
 
-#include "TCanvas.h"
 #include "TGButton.h"
 #include "TGFrame.h"
-#include "TRootEmbeddedCanvas.h"
 
 
 ClassImp(Katydid::KTDisplayWindow);

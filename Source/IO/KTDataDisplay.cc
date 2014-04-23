@@ -31,6 +31,7 @@ namespace Katydid
     KTDataDisplay::~KTDataDisplay()
     {
         delete fEventLoop;
+        delete fDisplayWindow;
     }
 
     bool KTDataDisplay::Configure(const KTParamNode* node)
@@ -54,6 +55,16 @@ namespace Katydid
         fDisplayWindow->Connect("Continue()", "Katydid::KTRootGuiLoop", fEventLoop, "PauseLoop()");
 
         return;
+    }
+
+    bool KTDataDisplay::OpenWindow()
+    {
+        if (! IsReady())
+        {
+            Initialize();
+            return IsReady();
+        }
+        return true;
     }
 
     bool KTDataDisplay::IsReady()

@@ -68,7 +68,7 @@ namespace Katydid
             KTDataDisplay(const std::string& name = "data-display");
             virtual ~KTDataDisplay();
 
-            Bool_t Configure(const KTParamNode* node);
+            bool Configure(const KTParamNode* node);
 
             unsigned GetWidth() const;
             void SetWidth(unsigned width);
@@ -82,6 +82,7 @@ namespace Katydid
 
         public:
             void Initialize();
+            bool OpenWindow();
 
             bool IsReady();
 

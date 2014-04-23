@@ -31,7 +31,7 @@ if (ROOT_FOUND)
         KTDataDisplay.hh
         #KTDataTypeDisplayAnalysis.hh
         #KTDataTypeDisplayEgg.hh
-        #KTDataTypeDisplayFFT.hh
+        KTDataTypeDisplayFFT.hh
         KTMultiFileROOTTreeReader.hh
         KTMultiSliceROOTTypeWriterAnalysis.hh
         KTMultiSliceROOTTypeWriterEgg.hh
@@ -71,7 +71,7 @@ if (ROOT_FOUND)
         KTDisplayWindow.cc
         #KTDataTypeDisplayAnalysis.cc
         #KTDataTypeDisplayEgg.cc
-        #KTDataTypeDisplayFFT.cc
+        KTDataTypeDisplayFFT.cc
         KTDataDisplay.cc
         KTMultiFileROOTTreeReader.cc
         KTMultiSliceROOTTypeWriterAnalysis.cc

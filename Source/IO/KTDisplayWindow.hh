@@ -10,8 +10,10 @@
 
 #include "TGFrame.h"
 
+#include "TCanvas.h"
+#include "TRootEmbeddedCanvas.h"
+
 class TCanvas;
-class TRootEmbeddedCanvas;
 
 namespace Katydid
 {
@@ -20,6 +22,9 @@ namespace Katydid
         public:
             KTDisplayWindow(unsigned width = 200, unsigned height = 200);
             virtual ~KTDisplayWindow();
+
+            template< class XDrawable >
+            void Draw(XDrawable* drawable);
 
             TCanvas* GetCanvas() const;
 
@@ -35,6 +40,15 @@ namespace Katydid
 
             ClassDef(KTDisplayWindow, 0);
     };
+
+    template< class XDrawable >
+    void KTDisplayWindow::Draw(XDrawable* drawable)
+    {
+        fEmbeddedCanvas->GetCanvas()->cd();
+        drawable->Draw();
+        return;
+    }
+
 
 } /* namespace Katydid */
 
