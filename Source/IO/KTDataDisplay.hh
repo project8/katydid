@@ -12,6 +12,9 @@
 #include "KTWriter.hh"
 
 #include "KTDisplayWindow.hh"
+#include "KTRootGuiLoop.hh"
+
+#include "TCanvas.h"
 
 namespace Katydid
 {
@@ -80,19 +83,15 @@ namespace Katydid
         public:
             void Initialize();
 
-            Bool_t OpenWindow();
+            bool IsReady();
 
             template< typename XDrawable >
             void Draw(XDrawable* drawable);
 
         private:
-            static void* ThreadSetupAndExecute( void* voidthread );
-            static void ThreadCleanup( void* /*voidthread*/ );
-
             KTDisplayWindow* fDisplayWindow;
 
-            pthread_t fThreadID;
-
+            KTRootGuiLoop* fEventLoop;
 
     };
 
@@ -119,7 +118,16 @@ namespace Katydid
     template< typename XDrawable >
     void KTDataDisplay::Draw(XDrawable* drawable)
     {
+        if (! IsReady()) Initialize();
+
+        if (! fEventLoop->IsActive()) return;
+
         fDisplayWindow->Draw(drawable);
+        fDisplayWindow->GetCanvas()->Update();
+        // this will allow the user to interact with the window
+        // the thread will otherwise be "blocked" until the loop is exited (e.g. with the Continue or Cancel buttons)
+        fEventLoop->DoLoop();
+
         return;
     }
 

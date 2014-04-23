@@ -24,12 +24,13 @@ namespace Katydid
             fHeight(500),
             fWidth(700),
             fDisplayWindow(NULL),
-            fThreadID(0)
+            fEventLoop(NULL)
     {
     }
 
     KTDataDisplay::~KTDataDisplay()
     {
+        delete fEventLoop;
     }
 
     bool KTDataDisplay::Configure(const KTParamNode* node)
@@ -44,37 +45,22 @@ namespace Katydid
 
     void KTDataDisplay::Initialize()
     {
-        // start thread
+        delete fEventLoop;
+        fEventLoop = new KTRootGuiLoop();
+
+        delete fDisplayWindow;
         fDisplayWindow = new KTDisplayWindow(fWidth, fHeight);
-        pthread_create( &fThreadID, 0, &KTDataDisplay::ThreadSetupAndExecute, fDisplayWindow );
+        fDisplayWindow->Connect("Cancel()", "Katydid::KTRootGuiLoop", fEventLoop, "StopLoop()");
+        fDisplayWindow->Connect("Continue()", "Katydid::KTRootGuiLoop", fEventLoop, "PauseLoop()");
 
         return;
     }
 
-    bool KTDataDisplay::OpenWindow()
+    bool KTDataDisplay::IsReady()
     {
-        if (fDisplayWindow == NULL)
-        {
-            Initialize();
-        }
+        if (fEventLoop == NULL || fDisplayWindow == NULL) return false;
 
         return true;
     }
-
-    void* KTDataDisplay::ThreadSetupAndExecute(void* voidthread)
-    {
-        pthread_cleanup_push(&KTDataDisplay::ThreadCleanup, voidthread);
-        KTDisplayWindow* window = (KTDisplayWindow*) (voidthread);
-        window->Run();
-        pthread_cleanup_pop(0);
-        pthread_exit(0);
-    }
-
-    void KTDataDisplay::ThreadCleanup(void* /*voidthread*/)
-    {
-        return;
-    }
-
-
 
 } /* namespace Katydid */
