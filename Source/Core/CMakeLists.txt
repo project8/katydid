@@ -1,55 +1,67 @@
 # CMakeLists for Katydid/Source/Core
 # Author: N. Oblath
 
-set (CORE_DICT_HEADER_FILES)
+set (CORE_DICT_HEADERFILES
+    KTEventLoop.hh
+    KTRootGuiLoop.hh
+)
 
 set (CORE_NODICT_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTApplication.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCacheDirectory.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCommandLineHandler.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCommandLineOption.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurable.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurator.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTConnection.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTData.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTDataQueueProcessor.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFilenameParsers.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessorToolbox.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTRandom.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignal.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalWrapper.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlot.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlotWrapper.hh
+    KTApplication.hh
+    KTCacheDirectory.hh
+    KTCommandLineHandler.hh
+    KTCommandLineOption.hh
+    KTConfigurable.hh
+    KTConfigurator.hh
+    KTConnection.hh
+    KTData.hh
+    KTDataQueueProcessor.hh
+    KTDirectory.hh
+    KTFilenameParsers.hh
+    KTPrimaryProcessor.hh
+    KTProcessor.hh
+    KTProcessorToolbox.hh
+    KTRandom.hh
+    KTSignal.hh
+    KTSignalWrapper.hh
+    KTSlot.hh
+    KTSlotWrapper.hh
 )
 
 set (CORE_HEADERFILES ${CORE_DICT_HEADERFILES} ${CORE_NODICT_HEADERFILES})
 
 set (CORE_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTApplication.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCacheDirectory.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCommandLineHandler.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurable.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTConfigurator.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTData.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTDataQueueProcessor.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTDirectory.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFilenameParsers.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPrimaryProcessor.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessor.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTProcessorToolbox.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTRandom.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignal.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSignalWrapper.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSlotWrapper.cc
+    KTApplication.cc
+    KTCacheDirectory.cc
+    KTCommandLineHandler.cc
+    KTConfigurable.cc
+    KTConfigurator.cc
+    KTData.cc
+    KTDataQueueProcessor.cc
+    KTDirectory.cc
+    KTEventLoop.cc
+    KTFilenameParsers.cc
+    KTPrimaryProcessor.cc
+    KTProcessor.cc
+    KTProcessorToolbox.cc
+    KTRandom.cc
+    KTSignal.cc
+    KTSignalWrapper.cc
+    KTSlotWrapper.cc
 )
 
-#if (ROOT_FOUND)
-#    set (CORE_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/CoreLinkDef.hh)
-#    set (CORE_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CoreDict.cxx)
-#endif (ROOT_FOUND)
+if (ROOT_FOUND)
+    set (CORE_SOURCEFILES
+        ${CORE_SOURCEFILES}
+        KTRootGuiLoop.cc
+    )
+endif (ROOT_FOUND)
+
+
+if (ROOT_FOUND)
+    set (CORE_LINKDEF_HEADERFILE LinkDef/CoreLinkDef.hh)
+    set (CORE_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CoreDict.cxx)
+endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
     KatydidUtility
@@ -57,11 +69,12 @@ set (KATYDID_LIBS
 
 ##################################################
 
-#if (ROOT_FOUND)
-#    ROOT_GENERATE_DICTIONARY ("${CORE_DICT_HEADERFILES}" "${CORE_LINKDEF_HEADERFILE}" "${CORE_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
-#endif (ROOT_FOUND)
+if (ROOT_FOUND)
+    ROOT_GENERATE_DICTIONARY ("${CORE_DICT_HEADERFILES}" "${CORE_LINKDEF_HEADERFILE}" "${CORE_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+endif (ROOT_FOUND)
 
-add_library (KatydidCore ${CORE_SOURCEFILES})
+add_library (KatydidCore ${CORE_SOURCEFILES} ${CORE_DICT_OUTFILE})
+#add_library (KatydidCore ${CORE_SOURCEFILES})
 target_link_libraries (KatydidCore ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${CORE_HEADERFILES})

@@ -7,11 +7,10 @@
 
 #include "KTApplication.hh"
 
+#include "KTEventLoop.hh"
 #include "KTLogger.hh"
 
-#include <vector>
-using std::vector;
-
+using std::set;
 using std::string;
 
 #include <iostream>
@@ -49,7 +48,7 @@ namespace Katydid
         fTApp = NULL;
         if (makeTApp)
         {
-            fTApp = new TApplication("", 0, 0);
+            StartTApplication();
         }
 #else
         if (makeTApp)
@@ -115,9 +114,42 @@ namespace Katydid
 
     KTApplication::~KTApplication()
     {
+        for (set< KTEventLoop* >::iterator loopIt = fEventLoops.begin(); loopIt != fEventLoops.end(); ++loopIt)
+        {
+            // does NOT delete event loops
+            (*loopIt)->StopLoop();
+        }
 #ifdef ROOT_FOUND
         delete fTApp;
 #endif
     }
+
+    void KTApplication::AddEventLoop(KTEventLoop* loop)
+    {
+        fEventLoops.insert(loop);
+        return;
+    }
+
+    void KTApplication::RemoveEventLoop(KTEventLoop* loop)
+    {
+        fEventLoops.erase(loop);
+        return;
+    }
+
+#ifdef ROOT_FOUND
+    bool KTApplication::StartTApplication()
+    {
+        if (fTApp != NULL)
+            return true;
+
+        fTApp = new TApplication("", 0, 0);
+
+        if (fTApp != NULL)
+        {
+            return true;
+        }
+        return false;
+    }
+#endif
 
 } /* namespace Katydid */

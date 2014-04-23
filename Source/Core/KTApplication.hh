@@ -17,10 +17,13 @@
 #include "TApplication.h"
 #endif
 
+#include <set>
 #include <string>
 
 namespace Katydid
 {
+
+    class KTEventLoop;
 
     /*!
      @class KTApplication
@@ -46,6 +49,12 @@ namespace Katydid
      2. Call KTApplication::ReadConfigFile() to read the config file and store the values in the parameter store.
      3. Use KTAppilcation::GetNode(address) to get parameter-store nodes.
 
+     Event Loops:
+     KTApplication can oversee the running of event loops.  It takes a very light-handed approach to that oversight.
+     In the event that the KTApplication object is deleted, all loops it knows about will be stopped.
+     Event loops are not deleted.
+     If an event loop is going out of scope before the KTApplication object, the user should make sure to remove it from
+     KTApplication's oversight.
     */
     class KTApplication
     {
@@ -61,14 +70,20 @@ namespace Katydid
 
             const std::string& GetConfigFilename() const;
 
+            void AddEventLoop(KTEventLoop* loop); /// Adds loop to the set of event loops overseen by KTApplication.  Does NOT assume ownership of an event loop
+            void RemoveEventLoop(KTEventLoop* loop); /// Removes loop from the set of event loops overseen by KTApplication. Does not stop the loop.
+
         protected:
             KTCommandLineHandler* fCLHandler;
             KTConfigurator* fConfigurator;
 
             std::string fConfigFilename;
 
+            std::set< KTEventLoop* > fEventLoops;
+
 #ifdef ROOT_FOUND
         public:
+            bool StartTApplication();
             TApplication* GetTApplication() const;
 
         protected:
