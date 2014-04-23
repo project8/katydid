@@ -119,6 +119,7 @@ namespace Katydid
 
     KTDisplayWindow::~KTDisplayWindow()
     {
+        Cleanup();
         // these three lines will get rid of the window upon deletion, but they'll kill the program.
         //DestroySubwindows();
         //DestroyWindow();

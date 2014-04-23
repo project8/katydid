@@ -53,49 +53,46 @@ int main(int argc, char** argv)
             "                                    $=                                          \n" <<
             "                                    =                                           \n");
 
-    KTApplication* app = NULL;
     try
     {
-        app = new KTApplication(argc, argv);
+        KTApplication app(argc, argv);
+
+        const KTParamNode* parentConfigNode = app.GetConfigurator()->Config();
+
+        if (! app.Configure(parentConfigNode->NodeAt(app.GetConfigName())))
+        {
+            KTERROR(katydidlog, "Unable to configure the application. Aborting.");
+            return -2;
+        }
+
+        // Create and configure the processor toolbox.
+        // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
+        KTProcessorToolbox procTB;
+
+        if ( ! procTB.Configure( parentConfigNode->NodeAt( procTB.GetConfigName() ) ) )
+        {
+            KTERROR(katydidlog, "Unable to configure processor toolbox. Aborting.");
+            return -3;
+        }
+
+        // Configure the processors
+        if ( ! procTB.ConfigureProcessors( parentConfigNode ) )
+        {
+            KTERROR(katydidlog, "Unable to configure processors. Aborting.");
+            return -4;
+        }
+
+        // Execute the run queue!
+        bool success = procTB.Run();
+
+        KTPROG(katydidlog, "That's all, folks!");
+
+        if (! success) return -5;
+        return 0;
     }
     catch( std::exception& e )
     {
-        KTERROR( katydidlog, "Something went wrong while processing the command line:\n" << e.what() );
+        KTERROR( katydidlog, "Exception caught:\n" << e.what() );
         return -1;
     }
-
-    const KTParamNode* parentConfigNode = app->GetConfigurator()->Config();
-
-    if (! app->Configure(parentConfigNode->NodeAt(app->GetConfigName())))
-    {
-        KTERROR(katydidlog, "Unable to configure the application. Aborting.");
-        return -2;
-    }
-
-    // Create and configure the processor toolbox.
-    // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
-    KTProcessorToolbox procTB;
-
-    if ( ! procTB.Configure( parentConfigNode->NodeAt( procTB.GetConfigName() ) ) )
-    {
-        KTERROR(katydidlog, "Unable to configure processor toolbox. Aborting.");
-        return -3;
-    }
-
-    // Configure the processors
-    if ( ! procTB.ConfigureProcessors( parentConfigNode ) )
-    {
-        KTERROR(katydidlog, "Unable to configure processors. Aborting.");
-        return -4;
-    }
-
-    // Execute the run queue!
-    bool success = procTB.Run();
-
-    delete app;
-
-    KTPROG(katydidlog, "That's all, folks!");
-
-    if (! success) return -5;
-    return 0;
 }
