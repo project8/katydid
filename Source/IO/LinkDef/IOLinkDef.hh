@@ -7,11 +7,8 @@
 #pragma link C++ nestedclasses;
 #pragma link C++ nestedtypedefs;
 
-//#pragma link C++ namespace Katydid;
+#pragma link C++ namespace Katydid;
 
-//#pragma link C++ class Katydid::KTDisplayWindow+;
-#pragma link C++ class KTDisplayWindow+;
-
-//#pragma link C++ class Katydid::KTRootGuiLoop+;
+#pragma link C++ class Katydid::KTDisplayWindow+;
 
 #endif

@@ -13,18 +13,17 @@
 #include "TRootEmbeddedCanvas.h"
 
 
-//ClassImp(Katydid::KTDisplayWindow);
-ClassImp(KTDisplayWindow);
+ClassImp(Katydid::KTDisplayWindow);
 
-//namespace Katydid
-//{
+namespace Katydid
+{
     KTDisplayWindow::KTDisplayWindow(unsigned width, unsigned height) :
             TGMainFrame(gClient->GetRoot(), width, height),
             fEmbeddedCanvas(new TRootEmbeddedCanvas("canvas", this, width, height-50)),
             fCanceled(false)
     {
         SetCleanup(kDeepCleanup);
-        Connect("CloseWindow()", "KTDisplayWindow", this, "Cancel()");
+        Connect("CloseWindow()", "Katydid::KTDisplayWindow", this, "Cancel()");
 
         // Setup the GUI
 
@@ -35,11 +34,11 @@ ClassImp(KTDisplayWindow);
         TGHorizontalFrame *hframe = new TGHorizontalFrame(this, width, 40);
 
         TGTextButton* draw = new TGTextButton(hframe, "&Continue");
-        draw->Connect("Clicked()", "KTDisplayWindow", this, "Continue()");
+        draw->Connect("Clicked()", "Katydid::KTDisplayWindow", this, "Continue()");
         hframe->AddFrame(draw, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
 
         TGTextButton* cancel = new TGTextButton(hframe, "C&ancel");
-        cancel->Connect("Clicked()", "KTDisplayWindow", this, "Cancel()");
+        cancel->Connect("Clicked()", "Katydid::KTDisplayWindow", this, "Cancel()");
         hframe->AddFrame(cancel, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
 
         AddFrame(hframe, new TGLayoutHints(kLHintsRight, 2, 50, 2, 2));
@@ -90,5 +89,4 @@ ClassImp(KTDisplayWindow);
         return fEmbeddedCanvas->GetCanvas();
     }
 
-
-//}
+}

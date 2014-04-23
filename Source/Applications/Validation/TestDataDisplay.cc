@@ -64,7 +64,7 @@ int main()
         delete loop;
     }
 
-
+/*
     cout << "Test of KTDisplayWindow complete" << endl;
     char resp = ' ';
     while (resp != 'y' && resp != 'n')
@@ -109,7 +109,7 @@ int main()
         // Publish the data
         display.GetTypeWriter< KTDataTypeDisplayFFT >()->DrawFrequencySpectrumDataPolar(data);
     }
-
+*/
 
     cout << "Test complete" << endl;
 
