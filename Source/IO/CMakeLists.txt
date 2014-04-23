@@ -2,97 +2,99 @@
 # Author: N. Oblath
 
 set (IO_NODICT_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicAsciiWriter.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEgg.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEvaluation.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONWriter.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileJSONReader.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTOfficialCandidatesWriter.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTerminalTypeWriterEgg.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTerminalWriter.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWriter.hh
+    KTBasicASCIITypeWriterTS.hh
+    KTBasicAsciiWriter.hh
+    KTJSONTypeWriterEgg.hh
+    KTJSONTypeWriterEvaluation.hh
+    KTJSONTypeWriterCandidates.hh
+    KTJSONWriter.hh
+    KTMultiFileJSONReader.hh
+    KTOfficialCandidatesWriter.hh
+    KTTerminalTypeWriterEgg.hh
+    KTTerminalWriter.hh
+    KTReader.hh
+    KTWriter.hh
 )
 
 if (ROOT_FOUND)
     if (NOT Katydid_SINGLETHREADED)
         set (IO_DICT_HEADERFILES
             ${IO_DICT_HEADERFILES}
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDisplayWindow.hh
+            KTDisplayWindow.hh
+            #${CMAKE_CURRENT_SOURCE_DIR}/../Core/KTRootGuiLoop.hh
         )
         
         set (IO_NODICT_HEADERFILES
             ${IO_NODICT_HEADERFILES}
-            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataDisplay.hh
-            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayAnalysis.hh
-            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayEgg.hh
-            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayFFT.hh
+            #KTDataDisplay.hh
+            #KTDataTypeDisplayAnalysis.hh
+            #KTDataTypeDisplayEgg.hh
+            #KTDataTypeDisplayFFT.hh
         )
     endif (NOT Katydid_SINGLETHREADED)
     
     set (IO_NODICT_HEADERFILES
         ${IO_NODICT_HEADERFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterAnalysis.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterEgg.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileROOTTreeReader.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterAnalysis.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterEgg.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterFFT.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTWriter.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterAnalysis.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterEvaluation.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeWriter.hh
+        KTBasicROOTFileWriter.hh
+        KTBasicROOTTypeWriterAnalysis.hh
+        KTBasicROOTTypeWriterEgg.hh
+        KTBasicROOTTypeWriterFFT.hh
+        KTMultiFileROOTTreeReader.hh
+        KTMultiSliceROOTTypeWriterAnalysis.hh
+        KTMultiSliceROOTTypeWriterEgg.hh
+        KTMultiSliceROOTTypeWriterFFT.hh
+        KTMultiSliceROOTWriter.hh
+        KTROOTTreeTypeWriterAnalysis.hh
+        KTROOTTreeTypeWriterCandidates.hh
+        KTROOTTreeTypeWriterEvaluation.hh
+        KTROOTTreeWriter.hh
     )
 endif (ROOT_FOUND)
 
 set (IO_HEADERFILES ${IO_DICT_HEADERFILES} ${IO_NODICT_HEADERFILES})
 
 set (IO_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicASCIITypeWriterTS.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicAsciiWriter.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEgg.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterEvaluation.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONTypeWriterCandidates.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTJSONWriter.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileJSONReader.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTOfficialCandidatesWriter.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTerminalTypeWriterEgg.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTerminalWriter.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTReader.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWriter.cc
+    KTBasicASCIITypeWriterTS.cc
+    KTBasicAsciiWriter.cc
+    KTJSONTypeWriterEgg.cc
+    KTJSONTypeWriterEvaluation.cc
+    KTJSONTypeWriterCandidates.hh
+    KTJSONWriter.cc
+    KTMultiFileJSONReader.cc
+    KTOfficialCandidatesWriter.cc
+    KTTerminalTypeWriterEgg.cc
+    KTTerminalWriter.cc
+    KTReader.cc
+    KTWriter.cc
 )
 
 if (ROOT_FOUND)
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterAnalysis.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterEgg.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTTypeWriterFFT.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTBasicROOTFileWriter.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiFileROOTTreeReader.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterAnalysis.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterEgg.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTTypeWriterFFT.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceROOTWriter.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterAnalysis.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterCandidates.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeTypeWriterEvaluation.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTROOTTreeWriter.cc
+        KTBasicROOTTypeWriterAnalysis.cc
+        KTBasicROOTTypeWriterEgg.cc
+        KTBasicROOTTypeWriterFFT.cc
+        KTBasicROOTFileWriter.cc
+        KTMultiFileROOTTreeReader.cc
+        KTMultiSliceROOTTypeWriterAnalysis.cc
+        KTMultiSliceROOTTypeWriterEgg.cc
+        KTMultiSliceROOTTypeWriterFFT.cc
+        KTMultiSliceROOTWriter.cc
+        KTROOTTreeTypeWriterAnalysis.cc
+        KTROOTTreeTypeWriterCandidates.cc
+        KTROOTTreeTypeWriterEvaluation.cc
+        KTROOTTreeWriter.cc
     )
     
     if (NOT Katydid_SINGLETHREADED)
         set (IO_SOURCEFILES
             ${IO_SOURCEFILES}
-            ${CMAKE_CURRENT_SOURCE_DIR}/KTDisplayWindow.cc
-            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayAnalysis.cc
-            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayEgg.cc
-            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataTypeDisplayFFT.cc
-            #${CMAKE_CURRENT_SOURCE_DIR}/KTDataDisplay.cc
+            KTDisplayWindow.cc
+            #${CMAKE_CURRENT_SOURCE_DIR}/../Core/KTRootGuiLoop.cc
+            #KTDataTypeDisplayAnalysis.cc
+            #KTDataTypeDisplayEgg.cc
+            #KTDataTypeDisplayFFT.cc
+            #KTDataDisplay.cc
         )
     endif (NOT Katydid_SINGLETHREADED)
 endif (ROOT_FOUND)
@@ -100,7 +102,7 @@ endif (ROOT_FOUND)
 
 if (NOT Katydid_SINGLETHREADED)
     if (ROOT_FOUND)
-        set (IO_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/IOLinkDef.hh)
+        set (IO_LINKDEF_HEADERFILE LinkDef/IOLinkDef.hh)
         set (IO_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/IODict.cxx)
     endif (ROOT_FOUND)
 endif (NOT Katydid_SINGLETHREADED)

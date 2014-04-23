@@ -1,154 +1,70 @@
 /*
- * TestBasicROOTFileWriter.cc
+ * TestDataDisplay.cc
  *
  *  Created on: Aug 24, 2012
  *      Author: nsoblath
  */
 
-#include "KTDataDisplay.hh"
-#include "KTDataTypeDisplayFFT.hh"
+#include "KTApplication.hh"
+//#include "KTDataDisplay.hh"
+//#include "KTDataTypeDisplayFFT.hh"
 #include "KTData.hh"
 #include "KTDisplayWindow.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
+#include "KTRootGuiLoop.hh"
 #include "KTSliceHeader.hh"
 #include "complexpolar.hh"
 
-#include "TApplication.h"
 #include "TCanvas.h"
 #include "TH1.h"
-#include "TRootCanvas.h"
 
 #include <iostream>
 
-#include <pthread.h>
 
 
 using namespace Katydid;
 using namespace std;
 
 
-void ThreadCleanup(void* voidthread)
-{
-    return;
-}
-
-void* ThreadSetupAndExecute(void* voidthread)
-{
-    pthread_cleanup_push(&ThreadCleanup, voidthread);
-    KTDisplayWindow** windowPtr = (KTDisplayWindow**)voidthread;
-    *windowPtr = new KTDisplayWindow(gClient->GetRoot(), 700, 500);
-    pthread_cleanup_pop(0);
-    pthread_exit(0);
-}
-
-
-#include "KTSingleton.hh"
-
-class TApplicationRunner : public Katydid::KTSingleton< TApplicationRunner >
-{
-    public:
-        void Run(bool rtrn = false)
-        {
-            if (! IsRunning())
-            {
-                std::cout << "starting run" << std::endl;
-                fApp->Run(rtrn);
-                std::cout << "returning from run" << std::endl;
-            }
-            return;
-        }
-
-        void Stop()
-        {
-            fApp->Terminate();
-            return;
-        }
-
-        bool IsRunning() const
-        {
-            return fApp->IsRunning();
-        }
-
-        TApplication& App()
-        {
-            return *fApp;
-        }
-
-    protected:
-        friend class Katydid::KTSingleton< TApplicationRunner >;
-        friend class Katydid::KTDestroyer< TApplicationRunner >;
-        TApplicationRunner() :
-            fApp(new TApplication("Katydid", 0, 0))
-        {
-            fApp->SetReturnFromRun(true);
-            //pthread_t threadID;
-            //pthread_create(&threadID, 0, &ThreadSetupAndExecute, fApp);
-            //usleep(500);
-        }
-        ~TApplicationRunner()
-        {
-            if(IsRunning())
-            {
-                fApp->Terminate();
-            }
-            delete fApp;
-        }
-
-    private:
-        TApplication* fApp;
-};
-
-
-
 int main()
 {
+    KTApplication fApp(true);
+
     cout << "Testing KTDisplayWindow" << endl;
     {
-        /**/
-        TApplicationRunner* appRunner = TApplicationRunner::GetInstance();
-        //TApplication fApp("DisplayWindow", 0, 0);
-        //TCanvas* canv = new TCanvas("c1", "c1");
-        //KTDisplayWindow disp(gClient->GetRoot(), 700, 500);
-        //appRunner->Run(true);
-        //fApp.Run();
-        /**/
-        //TRootCanvas* rootCanvas = new TRootCanvas(canv);
-        //rootCanvas->Show();
+        KTRootGuiLoop* loop = new KTRootGuiLoop();
+        fApp.AddEventLoop(loop);
 
-        /**/
-        KTDisplayWindow* window = new KTDisplayWindow(gClient->GetRoot(), 700, 500);
-        //KTDisplayWindow* window = NULL;
-        while (window == NULL)
-        {
-            usleep(500);
-            std::cout << "waiting for window" << std::endl;
-        }
+        KTDisplayWindow* window = new KTDisplayWindow(700, 500);
+        window->Connect("Cancel()", "Katydid::KTRootGuiLoop", loop, "StopLoop()");
+        window->Connect("Continue()", "Katydid::KTRootGuiLoop", loop, "PauseLoop()");
 
-        window->Run();
-        /**/
-        /**/
+        TCanvas* canv = window->GetCanvas();
+
         TH1D* hist1 = new TH1D("hist1", "Histogram Test 1", 5, 0., 10.);
         double offset = 0.;
-        while(window->IsActive())
+        //while(window->IsActive())
+        for (unsigned hcount = 0; hcount < 2 && loop->IsActive(); ++hcount)
         {
-            for (UInt_t iBin = 1; iBin <= 5; ++iBin)
+            for (unsigned iBin = 1; iBin <= 5; ++iBin)
             {
-                hist1->SetBinContent(iBin, (Double_t)iBin + offset);
+                hist1->SetBinContent(iBin, (double)iBin + offset);
             }
             offset += 2;
-            //hist1->Draw();
-            //canv->WaitPrimitive();
-            /**/
-            window->Draw(hist1);
+            hist1->Draw();
+            canv->Update();
+
+            loop->DoLoop();
         }
-        //window->Stop();
+
         delete window;
 
-        appRunner->Stop();
+        fApp.RemoveEventLoop(loop);
+        delete loop;
     }
 
-    /*
+
     cout << "Test of KTDisplayWindow complete" << endl;
     char resp = ' ';
     while (resp != 'y' && resp != 'n')
@@ -157,6 +73,7 @@ int main()
         cin >> resp;
     }
     if (resp == 'n') return 0;
+
 
     cout << "\nTesting KTDataDisplay" << endl;
     {
@@ -192,7 +109,7 @@ int main()
         // Publish the data
         display.GetTypeWriter< KTDataTypeDisplayFFT >()->DrawFrequencySpectrumDataPolar(data);
     }
-    */
+
 
     cout << "Test complete" << endl;
 

@@ -9,6 +9,9 @@
 
 //#pragma link C++ namespace Katydid;
 
+//#pragma link C++ class Katydid::KTDisplayWindow+;
 #pragma link C++ class KTDisplayWindow+;
+
+//#pragma link C++ class Katydid::KTRootGuiLoop+;
 
 #endif
