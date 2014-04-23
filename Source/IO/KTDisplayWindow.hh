@@ -14,6 +14,11 @@
 #include "TRootEmbeddedCanvas.h"
 
 class TCanvas;
+class TGPopupMenu;
+class TGLayoutHints;
+class TGMenuBar;
+class TGHorizontalFrame;
+class TGTextButton;
 
 namespace Katydid
 {
@@ -33,8 +38,21 @@ namespace Katydid
             void Cancel(); // *SIGNAL*
             bool IsCanceled() const;
 
+            // process messages from user interactions; overridden from TGMainFrame
+            Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
+
         private:
+            TGPopupMenu* fFileMenu;
+            TGPopupMenu* fEditMenu;
+            TGLayoutHints* fMenuBarLayout;
+            TGLayoutHints* fMenuBarItemLayout;
+            TGMenuBar* fMenuBar;
+
             TRootEmbeddedCanvas* fEmbeddedCanvas;
+
+            TGHorizontalFrame *fButtonFrame;
+            TGTextButton* fContinueButton;
+            TGTextButton* fCancelButton;
 
             bool fCanceled;
 

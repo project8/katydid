@@ -127,7 +127,7 @@ namespace Katydid
         fDisplayWindow->GetCanvas()->Update();
         // this will allow the user to interact with the window
         // the thread will otherwise be "blocked" until the loop is exited (e.g. with the Continue or Cancel buttons)
-        fEventLoop->DoLoop();
+        fEventLoop->Go();
 
         return;
     }

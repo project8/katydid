@@ -51,8 +51,8 @@ namespace Katydid
 
         delete fDisplayWindow;
         fDisplayWindow = new KTDisplayWindow(fWidth, fHeight);
-        fDisplayWindow->Connect("Cancel()", "Katydid::KTRootGuiLoop", fEventLoop, "StopLoop()");
-        fDisplayWindow->Connect("Continue()", "Katydid::KTRootGuiLoop", fEventLoop, "PauseLoop()");
+        fDisplayWindow->Connect("Cancel()", "Katydid::KTRootGuiLoop", fEventLoop, "Stop()");
+        fDisplayWindow->Connect("Continue()", "Katydid::KTRootGuiLoop", fEventLoop, "Pause()");
 
         return;
     }
