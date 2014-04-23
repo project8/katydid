@@ -66,6 +66,12 @@ int main(int argc, char** argv)
 
     const KTParamNode* parentConfigNode = app->GetConfigurator()->Config();
 
+    if (! app->Configure(parentConfigNode->NodeAt(app->GetConfigName())))
+    {
+        KTERROR(katydidlog, "Unable to configure the application. Aborting.");
+        return -2;
+    }
+
     // Create and configure the processor toolbox.
     // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
     KTProcessorToolbox procTB;
@@ -73,7 +79,7 @@ int main(int argc, char** argv)
     if ( ! procTB.Configure( parentConfigNode->NodeAt( procTB.GetConfigName() ) ) )
     {
         KTERROR(katydidlog, "Unable to configure processor toolbox. Aborting.");
-        return -2;
+        return -3;
     }
 
     // Configure the processors

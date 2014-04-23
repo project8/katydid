@@ -10,6 +10,7 @@
 #define KTAPPLICATION_HH_
 
 #include "KTCommandLineHandler.hh"
+#include "KTConfigurable.hh"
 #include "KTConfigurator.hh"
 #include "KTParam.hh"
 
@@ -22,8 +23,8 @@
 
 namespace Katydid
 {
-
     class KTEventLoop;
+    class KTParamNode;
 
     /*!
      @class KTApplication
@@ -56,13 +57,16 @@ namespace Katydid
      If an event loop is going out of scope before the KTApplication object, the user should make sure to remove it from
      KTApplication's oversight.
     */
-    class KTApplication
+    class KTApplication : public KTConfigurable
     {
         public:
             KTApplication(bool makeTApp=false);
             /// Constructor to use with command-line options; includes parsing of the command line by KTCommandLineHandler (except for config-file-dependent options)
             KTApplication(int argC, char** argV, bool makeTApp=false, bool requireArgs=true, KTParamNode* defaultConfig=NULL);
             virtual ~KTApplication();
+
+        public:
+            bool Configure(const KTParamNode* node);
 
         public:
             KTCommandLineHandler* GetCommandLineHandler() const;

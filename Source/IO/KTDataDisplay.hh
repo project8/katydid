@@ -81,7 +81,7 @@ namespace Katydid
             unsigned fHeight;
 
         public:
-            void Initialize();
+            bool Initialize();
             bool OpenWindow();
 
             bool IsReady();

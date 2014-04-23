@@ -44,8 +44,14 @@ namespace Katydid
         return true;
     }
 
-    void KTDataDisplay::Initialize()
+    bool KTDataDisplay::Initialize()
     {
+        if (gClient == NULL)
+        {
+            KTERROR(publog, "Unable to find the ROOT gClient; Did you start a TApplication? (either manually or via KTApplication)");
+            return false;
+        }
+
         delete fEventLoop;
         fEventLoop = new KTRootGuiLoop();
 
@@ -54,7 +60,7 @@ namespace Katydid
         fDisplayWindow->Connect("Cancel()", "Katydid::KTRootGuiLoop", fEventLoop, "Stop()");
         fDisplayWindow->Connect("Continue()", "Katydid::KTRootGuiLoop", fEventLoop, "Pause()");
 
-        return;
+        return true;
     }
 
     bool KTDataDisplay::OpenWindow()

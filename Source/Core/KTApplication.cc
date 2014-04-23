@@ -20,6 +20,7 @@ namespace Katydid
     KTLOGGER(applog, "KTApplication");
 
     KTApplication::KTApplication(bool makeTApp) :
+            KTConfigurable("app"),
             fCLHandler(KTCommandLineHandler::GetInstance()),
             fConfigurator( KTConfigurator::GetInstance() ),
             fConfigFilename()
@@ -40,6 +41,7 @@ namespace Katydid
     }
 
     KTApplication::KTApplication(int argC, char** argV, bool makeTApp, bool requireArgs, KTParamNode* defaultConfig) :
+            KTConfigurable("app"),
             fCLHandler(KTCommandLineHandler::GetInstance()),
             fConfigurator( KTConfigurator::GetInstance() ),
             fConfigFilename()
@@ -122,6 +124,21 @@ namespace Katydid
 #ifdef ROOT_FOUND
         delete fTApp;
 #endif
+    }
+
+    bool KTApplication::Configure(const KTParamNode* node)
+    {
+        if (node == NULL) return true;
+
+        if (node->GetValue("root-app", false))
+        {
+#ifdef ROOT_FOUND
+            StartTApplication();
+#else
+            KTWARN(applog, "TApplication requested, but Katydid has been built without ROOT dependence.");
+#endif
+        }
+        return true;
     }
 
     void KTApplication::AddEventLoop(KTEventLoop* loop)
