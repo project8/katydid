@@ -25,9 +25,9 @@ namespace Katydid
             KTEventLoop();
             virtual ~KTEventLoop();
 
-            virtual void DoLoop() = 0;
+            virtual void Go() = 0;
 
-            virtual void StopLoop() = 0;
+            virtual void Stop() = 0;
 
     };
 

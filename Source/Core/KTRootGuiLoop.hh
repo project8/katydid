@@ -41,19 +41,19 @@ namespace Katydid
                 kPreRun = 0,
                 kRunning = 10,
                 kPaused = 20,
-                kStopped = 100,
-                kComplete = 200
+                kStopped = 100//,
+                //kComplete = 200
             };
 
         public:
             KTRootGuiLoop();
             virtual ~KTRootGuiLoop();
 
-            void DoLoop();
+            void Go();
 
-            void PauseLoop();
-            void StopLoop();
-            void FinishLoop();
+            void Pause();
+            void Stop();
+            //void Finish();
             void Reset();
 
             bool IsActive() const;

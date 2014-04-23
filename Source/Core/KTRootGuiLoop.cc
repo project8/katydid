@@ -27,19 +27,20 @@ namespace Katydid
     {
         if (IsActive())
         {
-            StopLoop();
+            Stop();
         }
     }
 
-    void KTRootGuiLoop::DoLoop()
+    void KTRootGuiLoop::Go()
     {
         if (fStatus >= kStopped || fStatus == kRunning) return;
 
         fStatus = kRunning;
-        //while (true)
-        for (unsigned count = 0; count < 100 && fStatus == kRunning; ++count)
+        KTDEBUG(evlog, "Starting event loop");
+        while (fStatus == kRunning)
+        //for (unsigned count = 0; count < 100 && fStatus == kRunning; ++count)
         {
-            KTDEBUG(evlog, "count is " << count);
+            //KTDEBUG(evlog, "count is " << count);
             usleep(fSleepTime);
             gSystem->ProcessEvents();
         }
@@ -47,29 +48,29 @@ namespace Katydid
         return;
     }
 
-    void KTRootGuiLoop::PauseLoop()
+    void KTRootGuiLoop::Pause()
     {
         if (fStatus != kRunning) return;
         fStatus = kPaused;
         KTDEBUG(evlog, "Pausing event loop");
     }
 
-    void KTRootGuiLoop::StopLoop()
+    void KTRootGuiLoop::Stop()
     {
         if (! IsActive()) return;
         fStatus = kStopped;
         KTDEBUG(evlog, "Stopping event loop");
         return;
     }
-
-    void KTRootGuiLoop::FinishLoop()
+/*
+    void KTRootGuiLoop::Finish()
     {
         if (! IsActive()) return;
         fStatus = kComplete;
         KTDEBUG(evlog, "loop complete");
         return;
     }
-
+*/
     void KTRootGuiLoop::Reset()
     {
         fStatus = kPreRun;

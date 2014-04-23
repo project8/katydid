@@ -117,7 +117,7 @@ namespace Katydid
         for (set< KTEventLoop* >::iterator loopIt = fEventLoops.begin(); loopIt != fEventLoops.end(); ++loopIt)
         {
             // does NOT delete event loops
-            (*loopIt)->StopLoop();
+            (*loopIt)->Stop();
         }
 #ifdef ROOT_FOUND
         delete fTApp;

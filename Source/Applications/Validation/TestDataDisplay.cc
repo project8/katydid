@@ -37,8 +37,8 @@ int main()
         fApp.AddEventLoop(loop);
 
         KTDisplayWindow* window = new KTDisplayWindow(700, 500);
-        window->Connect("Cancel()", "Katydid::KTRootGuiLoop", loop, "StopLoop()");
-        window->Connect("Continue()", "Katydid::KTRootGuiLoop", loop, "PauseLoop()");
+        window->Connect("Cancel()", "Katydid::KTRootGuiLoop", loop, "Stop()");
+        window->Connect("Continue()", "Katydid::KTRootGuiLoop", loop, "Pause()");
 
         TCanvas* canv = window->GetCanvas();
 
@@ -55,7 +55,7 @@ int main()
             hist1->Draw();
             canv->Update();
 
-            loop->DoLoop();
+            loop->Go();
         }
 
         delete window;
