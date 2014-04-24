@@ -10,6 +10,7 @@ set (VALIDATION_CONFIGFILES
     ConfigFiles/KatydidPSComplexConfig.json
     ConfigFiles/KatydidPSConfig.json
     ConfigFiles/KatydidWVConfig.json
+    ConfigFiles/ThroughputProfiler.json
     ConfigFiles/ts-plot-direct-from-mantis.json
 )
 
