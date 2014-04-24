@@ -7,6 +7,7 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
+#include "KTCommandLineOption.hh"
 #include "KTParam.hh"
 
 using std::string;
