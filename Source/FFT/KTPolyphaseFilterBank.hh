@@ -47,7 +47,7 @@ namespace Katydid
      - "subset-size": unsigned int -- sets the size of the subsets to be used in the filter bank (use is mutually exclusive with n-subsets)
 
      Slots:
-     - "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
+     - "header": void (KTEggHeader*) -- Initialize the window function from an Egg header
      - "ts-real": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
      - "ts-fftw": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
@@ -75,7 +75,7 @@ namespace Katydid
 
         public:
             bool InitializeWindow();
-            void InitializeWithHeader(const KTEggHeader* header);
+            void InitializeWithHeader(KTEggHeader* header);
 
             /// Apply the PFB to the data object's time series (real-type)
             bool ProcessDataReal(const KTTimeSeriesData& tsData);
@@ -107,7 +107,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesFFTWSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesRealSlot;
 

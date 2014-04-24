@@ -105,7 +105,7 @@ namespace Katydid
     }
 
 
-    void KTMultiSliceROOTTypeWriterEgg::StartByHeader(const KTEggHeader*)
+    void KTMultiSliceROOTTypeWriterEgg::StartByHeader(KTEggHeader*)
     {
         fWriter->Start();
         return;

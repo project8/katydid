@@ -9,9 +9,6 @@ namespace Katydid {
 
     KT_REGISTER_PROCESSOR(KTBasicASCIIWriter, "basic-ascii-writer");
 
-    static KTNORegistrar< KTProcessor, KTBasicASCIIWriter >
-    sAPR("basic-ascii-writer");
-
     KTBasicASCIIWriter::KTBasicASCIIWriter(const std::string& name) :
             KTWriterWithTypists<KTBasicASCIIWriter>(name),
             fOutputStream(NULL),

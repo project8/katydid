@@ -17,9 +17,11 @@
 
 namespace Katydid
 {
+    class KTEggHeader;
     class KTParamNode;
     class KTRawTimeSeries;
     class KTRawTimeSeriesData;
+    class KTSliceHeader;
     class KTTimeSeries;
     class KTTimeSeriesData;
 
@@ -43,9 +45,11 @@ namespace Katydid
      - "n-bits-emulated": unsigned -- Set the number of bits to emulate
 
      Slots:
+     - "header": void (KTEggHeader*) -- Update the contents of the egg header if the bit depths is being changed; Emits signal "header"
      - "raw-ts": void (KTDataPtr) -- Performs the DAC process on a single slice; Requires KTRawTimeSeriesData; Adds KTTimeSeriesData; Emits signal "ts"
 
      Signals:
+     - "header": void (KTEggHeader*) -- Emitted upon update of an egg header.
      - "ts": void (KTDataPtr) -- Emitted upon DAC completion for a single slice; Guarantees KTTimeSeriesData.
     */
 
@@ -102,7 +106,9 @@ namespace Katydid
             void Initialize();
             bool GetShouldRunInitialize();
 
-            bool ConvertData(KTRawTimeSeriesData& rawData);
+            void UpdateEggHeader(KTEggHeader* header);
+
+            bool ConvertData(KTSliceHeader& header, KTRawTimeSeriesData& rawData);
 
             KTTimeSeries* ConvertToFFTW(KTRawTimeSeries* ts);
             KTTimeSeries* ConvertToReal(KTRawTimeSeries* ts);
@@ -127,6 +133,7 @@ namespace Katydid
             //***************
 
         private:
+            KTSignalOneArg< KTEggHeader* > fHeaderSignal;
             KTSignalData fTimeSeriesSignal;
 
             //***************
@@ -134,7 +141,8 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotDataOneType< KTRawTimeSeriesData > fRawTSSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            KTSlotDataTwoTypes< KTSliceHeader, KTRawTimeSeriesData > fRawTSSlot;
 
     };
 

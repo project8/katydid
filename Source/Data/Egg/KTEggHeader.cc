@@ -18,6 +18,7 @@ namespace Katydid
             fFilename(),
             fAcquisitionMode(1),
             fNChannels(1),
+            fRawSliceSize(0),
             fSliceSize(0),
             fRecordSize(0),
             fRunDuration(0),
@@ -38,6 +39,7 @@ namespace Katydid
             fFilename(orig.fFilename),
             fAcquisitionMode(orig.fAcquisitionMode),
             fNChannels(orig.fNChannels),
+            fRawSliceSize(orig.fRawSliceSize),
             fSliceSize(orig.fSliceSize),
             fRecordSize(orig.fRecordSize),
             fRunDuration(orig.fRunDuration),
@@ -63,6 +65,7 @@ namespace Katydid
         fFilename = rhs.fFilename;
         fAcquisitionMode = rhs.fAcquisitionMode;
         fNChannels = rhs.fNChannels;
+        fRawSliceSize = rhs.fRawSliceSize;
         fSliceSize = rhs.fSliceSize;
         fRecordSize = rhs.fRecordSize;
         fRunDuration = rhs.fRunDuration;
@@ -85,6 +88,7 @@ namespace Katydid
                 << "\tFilename: " << header.GetFilename() << '\n'
                 << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
+                << "\tRaw Slice Size: " << header.GetRawSliceSize() << '\n'
                 << "\tSlice Size: " << header.GetSliceSize() << '\n'
                 << "\tRecord Size: " << header.GetRecordSize() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " s\n"

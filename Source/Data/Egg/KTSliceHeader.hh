@@ -43,6 +43,8 @@ namespace Katydid
             unsigned GetNSlicesIncluded() const;
             void SetNSlicesIncluded(unsigned nSlices);
 
+            unsigned GetRawSliceSize() const;
+            void SetRawSliceSize(unsigned size);
             unsigned GetSliceSize() const;
             void SetSliceSize(unsigned size);
             double GetSliceLength() const;
@@ -109,6 +111,7 @@ namespace Katydid
             unsigned fNSlicesIncluded; // for meta-slices
             bool fIsNewAcquisition;
 
+            unsigned fRawSliceSize; // number of bins before any modification
             unsigned fSliceSize; // number of bins
             double fSliceLength; // in sec
             double fNonOverlapFrac; // fraction of the slice for which there is no overlap with another slice
@@ -183,6 +186,17 @@ namespace Katydid
     inline void KTSliceHeader::SetNSlicesIncluded(unsigned nSlices)
     {
         fNSlicesIncluded = nSlices;
+        return;
+    }
+
+    inline unsigned KTSliceHeader::GetRawSliceSize() const
+    {
+        return fRawSliceSize;
+    }
+
+    inline void KTSliceHeader::SetRawSliceSize(unsigned size)
+    {
+        fRawSliceSize = size;
         return;
     }
 

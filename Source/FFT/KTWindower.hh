@@ -43,7 +43,7 @@ namespace Katydid
      - "window-function": subtree -- parent node for the window function configuration
 
      Slots:
-     - "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
+     - "header": void (KTEggHeader*) -- Initialize the window function from an Egg header
      - "ts-real": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
      - "ts-fftw": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
@@ -68,7 +68,7 @@ namespace Katydid
 
         public:
             bool InitializeWindow(double binWidth, double size);
-            void InitializeWithHeader(const KTEggHeader* header);
+            void InitializeWithHeader(KTEggHeader* header);
 
             /// Window the data object's time series (real-type)
             bool WindowDataReal(KTTimeSeriesData& tsData);
@@ -92,7 +92,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesFFTWSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesRealSlot;
 

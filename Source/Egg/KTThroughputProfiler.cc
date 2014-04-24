@@ -72,7 +72,7 @@ namespace Katydid
         return Diff(fTimeStart, fTimeEnd);
     }
 
-    void KTThroughputProfiler::ProcessHeader(const KTEggHeader* header)
+    void KTThroughputProfiler::ProcessHeader(KTEggHeader* header)
     {
         fEggHeader = *header;
         KTINFO(proflog, "Profiling started");

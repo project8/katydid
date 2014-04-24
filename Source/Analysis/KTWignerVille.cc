@@ -171,6 +171,7 @@ namespace Katydid
         fOutputSHData = &(fOutputData->Of< KTSliceHeader >().SetNComponents(nPairs));
         fOutputSHData->SetSampleRate(acqRate);
         fOutputSHData->SetSliceSize(fWindowSize + (fNWindowsToAverage - 1) * fWindowStride); // this includes the fact that windows might be averaged together
+        fOutputSHData->SetRawSliceSize(fOutputSHData->GetSliceSize());
         fOutputSHData->CalculateBinWidthAndSliceLength();
         fOutputSHData->SetNonOverlapFrac((double)(fNWindowsToAverage * fWindowStride) / (double)fOutputSHData->GetSliceSize()); // this includes the fact that windows might be averaged together
 
@@ -201,7 +202,7 @@ namespace Katydid
         return;
     }
 
-    void KTWignerVille::InitializeWithHeader(const KTEggHeader* header)
+    void KTWignerVille::InitializeWithHeader(KTEggHeader* header)
     {
         return Initialize(header->GetAcquisitionRate(), header->GetNChannels(), header->GetSliceSize());
     }

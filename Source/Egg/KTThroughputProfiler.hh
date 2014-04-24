@@ -54,7 +54,7 @@ namespace Katydid
      Available configuration values:
 
      Slots:
-     - "start": void (const KTEggHeader*) -- Start the timer
+     - "start": void (KTEggHeader*) -- Start the timer
      - "data": void (KTDataPtr) -- Increment the counter on the number of data slices
      - "stop": void () -- Stop the timer
 
@@ -71,7 +71,7 @@ namespace Katydid
             void Start();
             void Stop();
 
-            void ProcessHeader(const KTEggHeader* header);
+            void ProcessHeader(KTEggHeader* header);
 
             void ProcessData(KTDataPtr data);
 

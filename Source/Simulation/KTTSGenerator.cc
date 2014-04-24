@@ -182,6 +182,7 @@ namespace Katydid
         KTSliceHeader& sliceHeader = data.Of< KTSliceHeader >().SetNComponents(1);
         sliceHeader.SetSampleRate(1. / fBinWidth);
         sliceHeader.SetSliceSize(fSliceSize);
+        sliceHeader.SetRawSliceSize(fSliceSize);
         sliceHeader.CalculateBinWidthAndSliceLength();
         sliceHeader.SetTimeInRun(double(fSliceCounter * fSliceSize) * fBinWidth);
         sliceHeader.SetSliceNumber(fSliceCounter);

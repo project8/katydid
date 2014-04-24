@@ -149,7 +149,7 @@ namespace Katydid
         return true;
     }
 
-    void KTOfficialCandidatesWriter::WriteHeaderInformation(const KTEggHeader* header)
+    void KTOfficialCandidatesWriter::WriteHeaderInformation(KTEggHeader* header)
     {
         using rapidjson::SizeType;
 

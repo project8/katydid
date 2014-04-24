@@ -44,7 +44,7 @@ namespace Katydid
      - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
 
      Signals: (inherited from KTTSGenerator)
-     - "header": void (const KTEggHeader*) -- emitted when the egg header is created.
+     - "header": void (KTEggHeader*) -- emitted when the egg header is created.
      - "slice": void (KTDataPtr) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
     */

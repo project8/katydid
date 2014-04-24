@@ -130,7 +130,7 @@ namespace Katydid
         return;
     }
 
-    void KTEggWriter::WriteHeader(const KTEggHeader* header)
+    void KTEggWriter::WriteHeader(KTEggHeader* header)
     {
         if (fFileStatus == kClosed)
         {

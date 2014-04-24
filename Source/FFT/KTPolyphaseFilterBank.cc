@@ -159,6 +159,7 @@ namespace Katydid
         newHeader.SetNComponents(oldHeader.GetNComponents());
         newHeader.SetSampleRate(oldHeader.GetSampleRate());
         newHeader.SetSliceSize(fSubsetSize);
+        newHeader.SetRawSliceSize(fSubsetSize);
         newHeader.CalculateBinWidthAndSliceLength();
         newHeader.SetTimeInRun(GetNewTimeInRun(oldHeader));
         newHeader.SetSliceNumber(GetNewSliceNumber(oldHeader));

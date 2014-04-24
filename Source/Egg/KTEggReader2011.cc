@@ -212,6 +212,7 @@ namespace Katydid
         KTEggHeader* eggHeader = new KTEggHeader();
         eggHeader->SetFilename(filename);
         eggHeader->SetAcquisitionMode(1);
+        eggHeader->SetRawSliceSize(fHeaderInfo.fRecordSize);
         eggHeader->SetSliceSize(fHeaderInfo.fRecordSize);
         eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
         eggHeader->SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
@@ -301,6 +302,7 @@ namespace Katydid
         // Other information
         sliceHeader.SetSampleRate(double(fHeaderInfo.fSampleRate));
         sliceHeader.SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
+        sliceHeader.SetRawSliceSize(fHeaderInfo.fRecordSize);
         sliceHeader.SetSliceSize(fHeaderInfo.fRecordSize);
         sliceHeader.SetSliceLength(double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
         sliceHeader.SetTimeInRun(GetTimeInRun());
