@@ -5,23 +5,42 @@
         [
 	        { "type": "egg-processor",       "name": "egg" },
 	        { "type": "simple-fft",          "name": "fft" },
-	        { "type": "basic-root-writer",   "name": "writer" }
+	        { "type": "basic-root-writer",   "name": "writer" },
+	        { "type": "throughput-profiler", "name": "profiler" }
         ],
         
+        "comment": "configure the fft with the egg header, and start the profiler",
         "connections":
         [
 	        {
 	            "signal": "egg:header",
-	            "slot": "fft:header"
+	            "slot": "fft:header",
+	            "order": 0
+	        },
+	        {
+	            "signal": "egg:header",
+	            "slot": "profiler:start",
+	            "order": 1
 	        },
 	        
 	        {
 	            "signal": "egg:ts",
-	            "slot": "fft:ts"
+	            "slot": "profiler:data",
+	            "order": 0
+	        },
+	        {
+	            "signal": "egg:ts",
+	            "slot": "fft:ts",
+	            "order": 1
 	        },
 	        {
 	            "signal": "fft:fft-forward",
 	            "slot": "writer:fs-polar"
+	        },
+	        
+	        {
+	            "signal": "egg:egg-done",
+	            "slot": "profiler:stop"
 	        }
         ],
         
