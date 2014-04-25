@@ -155,7 +155,7 @@ namespace Katydid
         for (unsigned component = 0; component < nComponents; ++component)
         {
             KTTimeSeries* newTS = (this->*fConvertTSFunc)(rawData.GetTimeSeries(component));
-            newData.SetTimeSeries(newTS);
+            newData.SetTimeSeries(newTS, component);
         }
         return true;
     }
