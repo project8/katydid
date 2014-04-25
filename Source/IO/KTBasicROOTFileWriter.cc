@@ -7,6 +7,7 @@
 
 #include "KTBasicROOTFileWriter.hh"
 
+#include "KTCommandLineOption.hh"
 #include "KTParam.hh"
 
 using std::string;
@@ -18,6 +19,8 @@ namespace Katydid
 
     KT_REGISTER_WRITER(KTBasicROOTFileWriter, "basic-root-writer");
     KT_REGISTER_PROCESSOR(KTBasicROOTFileWriter, "basic-root-writer");
+
+    static KTCommandLineOption< string > sBRWFilenameCLO("Basic ROOT File Writer", "Basic ROOT file writer filename", "brw-file");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter(const std::string& name) :
             KTWriterWithTypists< KTBasicROOTFileWriter >(name),
@@ -40,6 +43,9 @@ namespace Katydid
             SetFilename(node->GetValue("output-file", fFilename));
             SetFileFlag(node->GetValue("file-flag", fFileFlag));
         }
+
+        // Command-line settings
+        SetFilename(fCLHandler->GetCommandLineValue< string >("brw-file", fFilename));
 
         return true;
     }
