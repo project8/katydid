@@ -70,7 +70,7 @@ namespace Katydid
         unsigned nBins = size();
         KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
         double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance();
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetTimeSize();
 #pragma omp parallel for private(value)
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
@@ -125,7 +125,7 @@ namespace Katydid
         unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, GetRangeMin(), GetRangeMax());
         double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance();
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetTimeSize();
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
@@ -165,7 +165,7 @@ namespace Katydid
         double tMinMag = 1.e9;
         unsigned nBins = size();
         double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance();
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetTimeSize();
         // Skip the DC bin: start at bin 1
         for (unsigned iBin=1; iBin<nBins; iBin++)
         {
