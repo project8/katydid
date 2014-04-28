@@ -24,6 +24,11 @@ namespace Katydid
             KTFrequencySpectrum();
             virtual ~KTFrequencySpectrum();
 
+            /// Get the size of the time-domain array from which this spectrum was created
+            virtual unsigned GetNTimeBins() const = 0;
+            /// Set the size of the time-domain array from which this spectrum was created
+            virtual void SetNTimeBins(unsigned bins) = 0;
+
             /// Get the size of the array using the KTFrequencySpectrum interface
             virtual unsigned GetNFrequencyBins() const = 0;
 

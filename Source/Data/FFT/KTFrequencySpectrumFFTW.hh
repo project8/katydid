@@ -62,6 +62,9 @@ namespace Katydid
             virtual unsigned GetNFrequencyBins() const;
             virtual double GetFrequencyBinWidth() const;
 
+            virtual unsigned GetNTimeBins() const;
+            virtual void SetNTimeBins(unsigned bins);
+
             /// Returns the size of the positive-frequency part of the array
             //size_t size() const;
             /// Returns the isze of the positive-frequency part of the array
@@ -86,6 +89,9 @@ namespace Katydid
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
+
+        private:
+            unsigned fNTimeBins;
 
 #ifdef ROOT_FOUND
         public:
@@ -177,6 +183,16 @@ namespace Katydid
         return GetBinWidth();
     }
 
+    inline unsigned KTFrequencySpectrumFFTW::GetNTimeBins() const
+    {
+        return fNTimeBins;
+    }
+
+    inline void KTFrequencySpectrumFFTW::SetNTimeBins(unsigned bins)
+    {
+        fNTimeBins = bins;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYSPECTRUMFFTW_HH_ */

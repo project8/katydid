@@ -46,11 +46,17 @@ namespace Katydid
             virtual unsigned GetNFrequencyBins() const;
             virtual double GetFrequencyBinWidth() const;
 
+            virtual unsigned GetNTimeBins() const;
+            virtual void SetNTimeBins(unsigned bins);
+
             virtual KTFrequencySpectrumPolar& CConjugate();
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
+
+        private:
+            unsigned fNTimeBins;
 
 #ifdef ROOT_FOUND
         public:
@@ -106,7 +112,16 @@ namespace Katydid
         return GetBinWidth();
     }
 
+    inline unsigned KTFrequencySpectrumPolar::GetNTimeBins() const
+    {
+        return fNTimeBins;
+    }
 
+    inline void KTFrequencySpectrumPolar::SetNTimeBins(unsigned bins)
+    {
+        fNTimeBins = bins;
+        return;
+    }
 
 } /* namespace Katydid */
 #endif /* KTFREQUENCYSPECTRUMPOLAR_HH_ */

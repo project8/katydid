@@ -28,18 +28,21 @@ namespace Katydid
 
     KTFrequencySpectrumPolar::KTFrequencySpectrumPolar() :
             KTPhysicalArray< 1, complexpolar< double > >(),
-            KTFrequencySpectrum()
+            KTFrequencySpectrum(),
+            fNTimeBins(0)
     {
     }
 
     KTFrequencySpectrumPolar::KTFrequencySpectrumPolar(size_t nBins, double rangeMin, double rangeMax) :
             KTPhysicalArray< 1, complexpolar< double > >(nBins, rangeMin, rangeMax),
-            KTFrequencySpectrum()
+            KTFrequencySpectrum(),
+            fNTimeBins(0)
     {
     }
     KTFrequencySpectrumPolar::KTFrequencySpectrumPolar(const KTFrequencySpectrumPolar& orig) :
             KTPhysicalArray< 1, complexpolar< double > >(orig),
-            KTFrequencySpectrum()
+            KTFrequencySpectrum(),
+            fNTimeBins(orig.fNTimeBins)
     {
     }
 
@@ -50,6 +53,7 @@ namespace Katydid
     KTFrequencySpectrumPolar& KTFrequencySpectrumPolar::operator=(const KTFrequencySpectrumPolar& rhs)
     {
         KTPhysicalArray< 1, complexpolar< double > >::operator=(rhs);
+        fNTimeBins = rhs.fNTimeBins;
         return *this;
     }
 
@@ -70,7 +74,7 @@ namespace Katydid
         unsigned nBins = size();
         KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
         double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetTimeSize();
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 #pragma omp parallel for private(value)
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
@@ -125,7 +129,7 @@ namespace Katydid
         unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, GetRangeMin(), GetRangeMax());
         double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetTimeSize();
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
         for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
@@ -165,7 +169,7 @@ namespace Katydid
         double tMinMag = 1.e9;
         unsigned nBins = size();
         double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetTimeSize();
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
         // Skip the DC bin: start at bin 1
         for (unsigned iBin=1; iBin<nBins; iBin++)
         {
