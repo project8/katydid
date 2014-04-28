@@ -285,7 +285,9 @@ namespace Katydid
 
         fftw_execute(fForwardPlan);
 
-        return ExtractForwardTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
+        KTFrequencySpectrumPolar* newSpect = ExtractForwardTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
+        newSpect->SetNTimeBins(nTimeBins);
+        return newSpect;
     }
 
     KTTimeSeriesReal* KTSimpleFFT::Transform(const KTFrequencySpectrumPolar* data) const

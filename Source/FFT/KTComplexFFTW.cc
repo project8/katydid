@@ -295,6 +295,8 @@ namespace Katydid
         DoTransform(ts, newFS);
         //fftw_execute_dft(fForwardPlan, ts->GetData(), newSpectrum->GetData());
 
+        newFS->SetNTimeBins(nBins);
+
         return newFS;
     }
 

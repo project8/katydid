@@ -156,6 +156,7 @@ namespace Katydid
 
         KTDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTFrequencySpectrumPolar* newSpectrum = new KTFrequencySpectrumPolar(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
+        newSpectrum->SetNTimeBins(frequencySpectrum->GetNTimeBins());
 
         // First directly copy data that's outside the scaling range
         unsigned iBin;
@@ -202,6 +203,7 @@ namespace Katydid
 
         KTDEBUG(gnlog, "Creating new FS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
+        newSpectrum->SetNTimeBins(frequencySpectrum->GetNTimeBins());
 
         //KTDEBUG(gnlog, "array range: 0 - " << frequencySpectrum->size());
         //KTDEBUG(gnlog, "new array range: 0 - " << newSpectrum->size());

@@ -267,6 +267,7 @@ namespace Katydid
             {
                 KTFrequencySpectrumPolar* dataFS = data.GetSpectrumPolar(iComponent);
                 KTFrequencySpectrumPolar* newFS = new KTFrequencySpectrumPolar(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
+                newFS->SetNTimeBins(dataFS->GetNTimeBins());
                 newFS->operator*=(double(0.));
                 accData.SetSpectrum(newFS, iComponent);
             }
@@ -315,6 +316,7 @@ namespace Katydid
             {
                 KTFrequencySpectrumFFTW* dataFS = data.GetSpectrumFFTW(iComponent);
                 KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(dataFS->size(), dataFS->GetRangeMin(), dataFS->GetRangeMax());
+                newFS->SetNTimeBins(dataFS->GetNTimeBins());
                 newFS->operator*=(double(0.));
                 accData.SetSpectrum(newFS, iComponent);
             }
