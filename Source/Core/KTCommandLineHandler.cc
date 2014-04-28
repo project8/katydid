@@ -446,7 +446,7 @@ namespace Katydid
     void KTCommandLineHandler::PrintVersionMessage()
     {
         std::stringstream printStream;
-        printStream << fExecutableName << " -- Version INformation\n";
+        printStream << fExecutableName << " -- Version Information\n";
         printStream << "Built with: " << fPackageString;
         KTINFO(utillog, printStream.str());
         return;
