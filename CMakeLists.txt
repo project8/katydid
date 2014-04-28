@@ -14,7 +14,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 include (PackageBuilder)
 
 # Set the version and associated variables
-pbuilder_prepare_project (1 9 0)
+pbuilder_prepare_project (1 9 3)
 
 # Add a "Standard" build type
 #set (CMAKE_BUILD_TYPE standard)
@@ -139,7 +139,7 @@ if (ROOT_FOUND)
         list (APPEND ROOT_LIBRARIES ${lib})
     endforeach (lib)
     pbuilder_add_ext_libraries (${ROOT_LIBRARIES})
-    message(STATUS "${ROOT_LIBRARIES}")
+    #message(STATUS "${ROOT_LIBRARIES}")
 else (ROOT_FOUND)
     message(STATUS "Building without ROOT")
     remove_definitions(-DROOT_FOUND)
