@@ -36,6 +36,7 @@
 #include "KTJSONTypeWriterCandidates.hh"
 #endif
 
+#include "KTSliceHeader.hh"
 #include "KTSpectrumDiscriminator.hh"
 #include "KTThroughputProfiler.hh"
 #include "KTTimeSeriesData.hh"
@@ -116,7 +117,7 @@ int main()
     KTDAC* dac = new KTDAC();
     dac->SetTimeSeriesType(tsType);
 
-    const KTEggHeader* header = eggReader->BreakEgg(filename);
+    KTEggHeader* header = eggReader->BreakEgg(filename);
     if (header == NULL)
     {
         KTERROR(proflog, "Egg did not break");
@@ -148,7 +149,7 @@ int main()
 
         if (iSlice == nSlices - 1) data->fLastData = true;
 
-        dac->ConvertData(data->Of< KTRawTimeSeriesData >());
+        dac->ConvertData(data->Of< KTSliceHeader >(), data->Of< KTRawTimeSeriesData >());
 
         if (! data->Has< KTTimeSeriesData >())
         {
