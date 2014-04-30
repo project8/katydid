@@ -12,14 +12,12 @@
 
 #include "KTProcessor.hh"
 
+#include "KTData.hh"
 #include "KTSlot.hh"
-
-#include <boost/shared_ptr.hpp>
 
 
 namespace Katydid
 {
-    class KTData;
     class KTDiscriminatedPoints1DData;
     //class KTDiscriminatedPoints2DData;
 
@@ -38,10 +36,10 @@ namespace Katydid
      - "max-bin-distance": unsigned int -- Set maximum separation within a cluster by bin
 
       Slots:
-     - "disc-1d": void (shared_ptr< KTData >) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
+     - "disc-1d": void (KTDataPtr) -- Cluster 1D discriminated points; Requires KTDiscriminatedPoints1DData; Adds KTCluster1DData
 
      Signals:
-     - "cluster-1d": void (shared_ptr< KTData >) -- Emitted after forming clusters; Guarantees KTCluster1DData
+     - "cluster-1d": void (KTDataPtr) -- Emitted after forming clusters; Guarantees KTCluster1DData
     */
     class KTDistanceClustering : public KTProcessor
     {
@@ -49,22 +47,22 @@ namespace Katydid
             KTDistanceClustering(const std::string& name = "distance-clustering");
             virtual ~KTDistanceClustering();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
-            Double_t GetMaxFrequencyDistance() const;
-            void SetMaxFrequencyDistance(Double_t freq);
+            double GetMaxFrequencyDistance() const;
+            void SetMaxFrequencyDistance(double freq);
 
-            UInt_t GetMaxBinDistance() const;
-            void SetMaxBinDistance(UInt_t bin);
+            unsigned GetMaxBinDistance() const;
+            void SetMaxBinDistance(unsigned bin);
 
         private:
 
-            Double_t fMaxFrequencyDistance;
-            UInt_t fMaxBinDistance;
-            Bool_t fCalculateMaxBinDistance;
+            double fMaxFrequencyDistance;
+            unsigned fMaxBinDistance;
+            bool fCalculateMaxBinDistance;
 
         public:
-            Bool_t FindClusters(KTDiscriminatedPoints1DData& data);
+            bool FindClusters(KTDiscriminatedPoints1DData& data);
             //KTCluster2DData* FindClusters(const KTDiscriminatedPoints2DData* data);
 
             //***************
@@ -80,7 +78,7 @@ namespace Katydid
             //***************
 
         public:
-            void Process1DData(boost::shared_ptr< KTData > data);
+            void Process1DData(KTDataPtr data);
             //void Process2DData(const KTDiscriminatedPoints2DData* data);
 
         private:
@@ -89,24 +87,24 @@ namespace Katydid
 
     };
 
-    inline Double_t KTDistanceClustering::GetMaxFrequencyDistance() const
+    inline double KTDistanceClustering::GetMaxFrequencyDistance() const
     {
         return fMaxFrequencyDistance;
     }
 
-    inline void KTDistanceClustering::SetMaxFrequencyDistance(Double_t freq)
+    inline void KTDistanceClustering::SetMaxFrequencyDistance(double freq)
     {
         fMaxFrequencyDistance = freq;
         fCalculateMaxBinDistance = true;
         return;
     }
 
-    inline UInt_t KTDistanceClustering::GetMaxBinDistance() const
+    inline unsigned KTDistanceClustering::GetMaxBinDistance() const
     {
         return fMaxBinDistance;
     }
 
-    inline void KTDistanceClustering::SetMaxBinDistance(UInt_t bin)
+    inline void KTDistanceClustering::SetMaxBinDistance(unsigned bin)
     {
         fMaxBinDistance = bin;
         fCalculateMaxBinDistance = false;

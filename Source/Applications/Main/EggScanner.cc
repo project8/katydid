@@ -19,7 +19,6 @@
 #include "KTSliceHeader.hh"
 
 #include <boost/filesystem.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 #include <string>
@@ -28,12 +27,12 @@
 using namespace std;
 using namespace Katydid;
 
-using boost::shared_ptr;
 
-KTLOGGER(eggscan, "katydid.applications.main");
 
-static KTCommandLineOption< UInt_t > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
-static KTCommandLineOption< Bool_t > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
+KTLOGGER(eggscan, "EggScanner");
+
+static KTCommandLineOption< unsigned > sCLNBins("Egg Scanner", "Size of the slice", "slice-size", 's');
+static KTCommandLineOption< bool > sScanRecords("Egg Scanner", "Scan records", "scan-records", 'r');
 
 int main(int argc, char** argv)
 {
@@ -52,7 +51,7 @@ int main(int argc, char** argv)
     }
     string filename(clOpts->GetCommandLineValue< string >("egg-file"));
 
-    UInt_t sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
+    unsigned sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
 
     KTEggReader* reader;
     if (clOpts->IsCommandLineOptSet("use-2011-egg-reader"))
@@ -68,13 +67,13 @@ int main(int argc, char** argv)
         reader = readerMonarch;
     }
 
-    Bool_t scanRecords = clOpts->IsCommandLineOptSet("scan-records");
+    bool scanRecords = clOpts->IsCommandLineOptSet("scan-records");
 
     //**************************
     // Doing-something phase
     //**************************
 
-    ULong64_t fileSize = boost::filesystem::file_size(filename); // in bytes
+    uint64_t fileSize = boost::filesystem::file_size(filename); // in bytes
 
     const KTEggHeader* header = reader->BreakEgg(filename);
     if (header == NULL)
@@ -85,16 +84,16 @@ int main(int argc, char** argv)
 
     KTPROG(eggscan, *header);
 
-    ULong64_t recordMemorySize = header->GetSliceSize(); // each time bin is represented by 1 byte
-    ULong64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
-    ULong64_t slicesInFile = recordsInFile * ULong64_t(header->GetRecordSize() / header->GetSliceSize()); // upper limit, assuming continuous acquisition
+    uint64_t recordMemorySize = header->GetSliceSize(); // each time bin is represented by 1 byte
+    uint64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
+    uint64_t slicesInFile = recordsInFile * uint64_t(header->GetRecordSize() / header->GetSliceSize()); // upper limit, assuming continuous acquisition
 
-    UInt_t fsSizeFFTW = header->GetSliceSize();
-    UInt_t fsSizePolar = fsSizeFFTW / 2 + 1;
-    Double_t timeBinWidth = 1. / header->GetAcquisitionRate();
-    Double_t freqBinWidth = 1. / (timeBinWidth * Double_t(fsSizeFFTW));
-    Double_t sliceLength = timeBinWidth * Double_t(header->GetSliceSize());
-    Double_t fsMaxFreq = freqBinWidth * (Double_t(fsSizePolar) - 0.5);
+    unsigned fsSizeFFTW = header->GetSliceSize();
+    unsigned fsSizePolar = fsSizeFFTW / 2 + 1;
+    double timeBinWidth = 1. / header->GetAcquisitionRate();
+    double freqBinWidth = 1. / (timeBinWidth * double(fsSizeFFTW));
+    double sliceLength = timeBinWidth * double(header->GetSliceSize());
+    double fsMaxFreq = freqBinWidth * (double(fsSizePolar) - 0.5);
 
     KTPROG(eggscan, "Additional information:\n"
            << "\tFile size: " << fileSize/1000000 << " MB\n"
@@ -109,13 +108,13 @@ int main(int argc, char** argv)
 
     if (scanRecords)
     {
-        UInt_t iSlice = 0;
-        while (kTRUE)
+        unsigned iSlice = 0;
+        while (true)
         {
             KTINFO(eggscan, "Hatching slice " << iSlice);
 
             // Hatch the slice
-            shared_ptr<KTData> data = reader->HatchNextSlice();
+            KTDataPtr data = reader->HatchNextSlice();
             if (data.get() == NULL) break;
 
             KTPROG(eggscan, data->Of< KTSliceHeader >());

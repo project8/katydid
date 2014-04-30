@@ -13,9 +13,11 @@ namespace Katydid
 {
     KTSliceHeader::KTSliceHeader() :
             KTExtensibleData< KTSliceHeader >(),
-            fIsNewAcquisition(true),
             fTimeInRun(0.),
             fSliceNumber(0),
+            fNSlicesIncluded(1),
+            fIsNewAcquisition(true),
+            fRawSliceSize(1),
             fSliceSize(1),
             fSliceLength(0.),
             fNonOverlapFrac(0.),
@@ -33,9 +35,11 @@ namespace Katydid
 
     KTSliceHeader::KTSliceHeader(const KTSliceHeader& orig) :
             KTExtensibleData< KTSliceHeader >(orig),
-            fIsNewAcquisition(orig.fIsNewAcquisition),
             fTimeInRun(orig.fTimeInRun),
             fSliceNumber(orig.fSliceNumber),
+            fNSlicesIncluded(orig.fNSlicesIncluded),
+            fIsNewAcquisition(orig.fIsNewAcquisition),
+            fRawSliceSize(orig.fRawSliceSize),
             fSliceSize(orig.fSliceSize),
             fSliceLength(orig.fSliceLength),
             fNonOverlapFrac(orig.fNonOverlapFrac),
@@ -67,6 +71,8 @@ namespace Katydid
         fIsNewAcquisition = rhs.fIsNewAcquisition;
         fTimeInRun = rhs.fTimeInRun;
         fSliceNumber = rhs.fSliceNumber;
+        fNSlicesIncluded = rhs.fNSlicesIncluded;
+        fRawSliceSize = rhs.fRawSliceSize;
         fSliceSize = rhs.fSliceSize;
         fSliceLength = rhs.fSliceLength;
         fNonOverlapFrac = rhs.fNonOverlapFrac;
@@ -86,6 +92,8 @@ namespace Katydid
     {
         out << "Slice Header Contents:\n" <<
                 "\tSlice number: " << hdr.GetSliceNumber() << '\n' <<
+                "\tIncludes " << hdr.GetNSlicesIncluded() << " slices\n" <<
+                "\tRaw slice size: " << hdr.GetRawSliceSize() << '\n' <<
                 "\tSlice size: " << hdr.GetSliceSize() << '\n' <<
                 "\tSlice Length: " << hdr.GetSliceLength() << " s\n" <<
                 "\tNon-Overlap Fraction: " << hdr.GetNonOverlapFrac() << '\n' <<
@@ -99,7 +107,7 @@ namespace Katydid
                 "\tEnd Sample: " << hdr.GetEndSampleNumber() << '\n' <<
                 "\tRecord Size: " << hdr.GetRecordSize() << '\n' <<
                 "\t# of Components: " << hdr.GetNComponents();
-        for (UInt_t iComponent = 0; iComponent < hdr.GetNComponents(); iComponent++)
+        for (unsigned iComponent = 0; iComponent < hdr.GetNComponents(); iComponent++)
         {
             out << "\n\tComponent " << iComponent << '\n' <<
                     "\t\tTimestamp: " << hdr.GetTimeStamp(iComponent) << " ns\n" <<

@@ -14,17 +14,12 @@
 #include "KTLogger.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <string>
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_comp, "katydid.fft");
-
-    class KTData;
     class KTEggHeader;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
@@ -48,12 +43,12 @@ namespace Katydid
      - "window-function": subtree -- parent node for the window function configuration
 
      Slots:
-     - "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
-     - "ts-real": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
-     - "ts-fftw": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
+     - "header": void (KTEggHeader*) -- Initialize the window function from an Egg header
+     - "ts-real": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
+     - "ts-fftw": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
      Signals:
-     - "windowed": void (shared_ptr<KTData>) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
+     - "windowed": void (KTDataPtr) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
     */
 
     class KTWindower : public KTProcessor
@@ -62,27 +57,28 @@ namespace Katydid
             KTWindower(const std::string& name = "windower");
             virtual ~KTWindower();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             KTWindowFunction* GetWindowFunction() const;
             void SetWindowFunction(KTWindowFunction* wf);
+            bool SelectWindowFunction(const std::string& windowType);
 
         private:
             KTWindowFunction* fWindowFunction;
 
         public:
-            Bool_t InitializeWindow();
-            void InitializeWithHeader(const KTEggHeader* header);
+            bool InitializeWindow(double binWidth, double size);
+            void InitializeWithHeader(KTEggHeader* header);
 
             /// Window the data object's time series (real-type)
-            Bool_t WindowDataReal(KTTimeSeriesData& tsData);
+            bool WindowDataReal(KTTimeSeriesData& tsData);
             /// Window the data object's time series (fftw-type)
-            Bool_t WindowDataFFTW(KTTimeSeriesData& tsData);
+            bool WindowDataFFTW(KTTimeSeriesData& tsData);
 
             /// Window a single time series (real-type)
-            Bool_t ApplyWindow(KTTimeSeriesReal* data) const;
+            bool ApplyWindow(KTTimeSeriesReal* ts) const;
             /// Window a single time series (fftw-type)
-            Bool_t ApplyWindow(KTTimeSeriesFFTW* data) const;
+            bool ApplyWindow(KTTimeSeriesFFTW* ts) const;
 
             //***************
             // Signals
@@ -96,7 +92,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesFFTWSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesRealSlot;
 

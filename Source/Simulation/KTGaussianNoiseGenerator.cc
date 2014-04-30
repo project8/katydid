@@ -7,9 +7,7 @@
 
 #include "KTGaussianNoiseGenerator.hh"
 
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
@@ -20,9 +18,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "katydid.simulation");
+    KTLOGGER(genlog, "KTGaussianNoiseGenerator");
 
-    static KTDerivedNORegistrar< KTProcessor, KTGaussianNoiseGenerator > sGaussNoiseGenRegistrar("gaussian-noise-generator");
+    KT_REGISTER_PROCESSOR(KTGaussianNoiseGenerator, "gaussian-noise-generator");
 
     KTGaussianNoiseGenerator::KTGaussianNoiseGenerator(const string& name) :
             KTTSGenerator(name),
@@ -34,26 +32,26 @@ namespace Katydid
     {
     }
 
-    Bool_t KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
+    bool KTGaussianNoiseGenerator::ConfigureDerivedGenerator(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
         typedef KTRNGGaussian<>::input_type input_type;
-        input_type mean = node->GetData< input_type >("mean", fRNG.mean());
-        input_type sigma = node->GetData< input_type >("sigma", fRNG.sigma());
+        input_type mean = node->GetValue< input_type >("mean", fRNG.mean());
+        input_type sigma = node->GetValue< input_type >("sigma", fRNG.sigma());
         fRNG.param(KTRNGGaussian<>::param_type(mean, sigma));
 
         return true;
     }
 
-    Bool_t KTGaussianNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
+    bool KTGaussianNoiseGenerator::GenerateTS(KTTimeSeriesData& data)
     {
-        const Double_t binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
-        const UInt_t sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
+        //const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
+        const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             KTTimeSeries* timeSeries = data.GetTimeSeries(iComponent);
 
@@ -63,8 +61,8 @@ namespace Katydid
                 continue;
             }
 
-            //Double_t binCenter = 0.5 * binWidth;
-            for (UInt_t iBin = 0; iBin < sliceSize; iBin++)
+            //double binCenter = 0.5 * binWidth;
+            for (unsigned iBin = 0; iBin < sliceSize; iBin++)
             {
                 timeSeries->SetValue(iBin, fRNG() + timeSeries->GetValue(iBin));
                 //binCenter += binWidth;

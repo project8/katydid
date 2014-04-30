@@ -11,6 +11,7 @@
 #include "KTTSGenerator.hh"
 
 #include <vector>
+#include <utility>
 
 namespace Katydid
 {
@@ -30,48 +31,50 @@ namespace Katydid
 
      Available configuration options:
      - Inherited from KTTSGenerator
-       - "n-slices": UInt_t -- Number of slices to create (used only if creating new slices)
-       - "n-channels": UInt_t -- Number of channels per slice to create (used only if creating new slices)
-       - "time-series-size": UInt_t -- Specify the size of the time series (used only if creating new slices)
-       - "bin-width": Double_t -- Specify the bin width
+       - "number-of-slices": unsigned -- Number of slices to create (used only if creating new slices)
+       - "n-channels": unsigned -- Number of channels per slice to create (used only if creating new slices)
+       - "slice-size": unsigned -- Specify the size of the time series (used only if creating new slices)
+       - "bin-width": double -- Specify the bin width
        - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
-       - "record-size": UInt_t -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
+       - "record-size": unsigned -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
      - From KTDCOffsetGenerator
        - "offset": string -- (channel, offset) pair; may be repeated
 
      Slots: (inherited from KTTSGenerator)
-     - "slice": void (boost::shared_ptr<KTData>) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
+     - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
 
      Signals: (inherited from KTTSGenerator)
-     - "header": void (const KTEggHeader*) -- emitted when the egg header is created.
-     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced or processed.
+     - "header": void (KTEggHeader*) -- emitted when the egg header is created.
+     - "slice": void (KTDataPtr) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
     */
     class KTDCOffsetGenerator : public KTTSGenerator
     {
         public:
-            KTDCOffsetGenerator(const std::string& name = "sinusoid-generator");
+            typedef std::pair< unsigned, double > UIntDoublePair;
+        public:
+            KTDCOffsetGenerator(const std::string& name = "dc-offset-generator");
             virtual ~KTDCOffsetGenerator();
 
-            virtual Bool_t ConfigureDerivedGenerator(const KTPStoreNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTParamNode* node);
 
-            const std::vector< Double_t >& GetOffsets() const;
-            void SetOffset(UInt_t component, Double_t freq);
+            const std::vector< double >& GetOffsets() const;
+            void SetOffset(unsigned component, double freq);
 
         private:
-            std::vector< Double_t > fOffsets;
+            std::vector< double > fOffsets;
 
         public:
-            virtual Bool_t GenerateTS(KTTimeSeriesData& data);
+            virtual bool GenerateTS(KTTimeSeriesData& data);
 
     };
 
-    inline const std::vector< Double_t >& KTDCOffsetGenerator::GetOffsets() const
+    inline const std::vector< double >& KTDCOffsetGenerator::GetOffsets() const
     {
         return fOffsets;
     }
 
-    inline void KTDCOffsetGenerator::SetOffset(UInt_t component, Double_t offset)
+    inline void KTDCOffsetGenerator::SetOffset(unsigned component, double offset)
     {
         fOffsets[component] = offset;
         return;

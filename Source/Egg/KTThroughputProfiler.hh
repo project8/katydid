@@ -17,16 +17,12 @@
 #include "KTEggHeader.hh"
 #include "KTData.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <string>
-
-#include <time.h>
 
 
 namespace Katydid
 {
-    class KTPStoreNode;
+    class KTParamNode;
 
     /*!
      @class KTThroughputProfiler
@@ -58,8 +54,8 @@ namespace Katydid
      Available configuration values:
 
      Slots:
-     - "start": void (const KTEggHeader*) -- Start the timer
-     - "data": void (shared_ptr< KTData >) -- Increment the counter on the number of data slices
+     - "start": void (KTEggHeader*) -- Start the timer
+     - "data": void (KTDataPtr) -- Increment the counter on the number of data slices
      - "stop": void () -- Stop the timer
 
     */
@@ -70,21 +66,21 @@ namespace Katydid
             KTThroughputProfiler(const std::string& name = "throughput-profiler");
             virtual ~KTThroughputProfiler();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void Start();
             void Stop();
 
-            void ProcessHeader(const KTEggHeader* header);
+            void ProcessHeader(KTEggHeader* header);
 
-            void ProcessData(boost::shared_ptr<KTData> data);
+            void ProcessData(KTDataPtr data);
 
             void Finish();
 
             timespec Elapsed();
 
-            const Bool_t GetOutputFileFlag() const;
-            void SetOutputFileFlag(Bool_t flag);
+            bool GetOutputFileFlag() const;
+            void SetOutputFileFlag(bool flag);
 
             const std::string& GetOutputFilename() const;
             void SetOutputFilename(const std::string& fname);
@@ -93,7 +89,7 @@ namespace Katydid
             timespec CurrentTime();
             timespec Diff(timespec start, timespec end) const;
 
-            Bool_t fOutputFileFlag;
+            bool fOutputFileFlag;
             std::string fOutputFilename;
 
             KTEggHeader fEggHeader;
@@ -101,21 +97,16 @@ namespace Katydid
             timespec fTimeStart;
             timespec fTimeEnd;
 
-            UInt_t fNDataProcessed;
-
-//#ifdef __MACH__
-            double fMacTimebase;
-            uint64_t fMacTimestart;
-//#endif
+            unsigned fNDataProcessed;
 
     };
 
-    inline const Bool_t KTThroughputProfiler::GetOutputFileFlag() const
+    inline bool KTThroughputProfiler::GetOutputFileFlag() const
     {
         return fOutputFileFlag;
     }
 
-    inline void KTThroughputProfiler::SetOutputFileFlag(Bool_t flag)
+    inline void KTThroughputProfiler::SetOutputFileFlag(bool flag)
     {
         fOutputFileFlag = flag;
         return;

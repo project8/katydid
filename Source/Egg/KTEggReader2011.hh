@@ -32,10 +32,10 @@ namespace Katydid
                 double fSecondsPerRunLengthUnit;
 
                 HeaderInfo() :
-                    fTimeStampSize(0),
+                    fSliceSize(0),
                     fFrameIDSize(0),
                     fRecordSize(0),
-                    fSliceSize(0),
+                    fTimeStampSize(0),
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),
@@ -49,15 +49,15 @@ namespace Katydid
 
         public:
             virtual KTEggHeader* BreakEgg(const std::string& filename);
-            virtual boost::shared_ptr< KTData > HatchNextSlice();
+            virtual KTDataPtr HatchNextSlice();
             virtual bool CloseEgg();
 
             /// Returns the time since the run started in seconds
-            Double_t GetTimeInRun() const;
-            virtual Double_t GetIntegratedTime() const;
+            double GetTimeInRun() const;
+            virtual double GetIntegratedTime() const;
 
-            virtual UInt_t GetNSlicesProcessed() const ;
-            virtual UInt_t GetNRecordsProcessed() const;
+            virtual unsigned GetNSlicesProcessed() const ;
+            virtual unsigned GetNRecordsProcessed() const;
 
         private:
             template< typename XReturnType, typename XArrayType >
@@ -71,9 +71,9 @@ namespace Katydid
 
             HeaderInfo fHeaderInfo;
 
-            UInt_t fRecordsRead;
+            unsigned fRecordsRead;
 
-            UInt_t fLastFrameID;
+            unsigned fLastFrameID;
 
             static const std::ifstream::pos_type sPreludeSize;  // the prelude size is currently restricted to eight bytes
 
@@ -89,22 +89,22 @@ namespace Katydid
         return converted;
     }
 
-    inline Double_t KTEggReader2011::GetTimeInRun() const
+    inline double KTEggReader2011::GetTimeInRun() const
     {
-        return Double_t(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
+        return double(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
     }
 
-    inline Double_t KTEggReader2011::GetIntegratedTime() const
+    inline double KTEggReader2011::GetIntegratedTime() const
     {
         return GetTimeInRun();
     }
 
-    inline UInt_t KTEggReader2011::GetNSlicesProcessed() const
+    inline unsigned KTEggReader2011::GetNSlicesProcessed() const
     {
         return fRecordsRead;
     }
 
-    inline UInt_t KTEggReader2011::GetNRecordsProcessed() const
+    inline unsigned KTEggReader2011::GetNRecordsProcessed() const
     {
         return fRecordsRead;
     }

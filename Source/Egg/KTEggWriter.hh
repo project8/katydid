@@ -14,12 +14,14 @@
 
 #include "MonarchTypes.hpp"
 
-class Monarch;
-class MonarchRecord;
+namespace monarch
+{
+    class Monarch;
+    struct MonarchRecord;
+}
 
 namespace Katydid
 {
-    class KTData;
     class KTEggHeader;
     class KTSliceHeader;
     class KTTimeSeriesData;
@@ -46,8 +48,8 @@ namespace Katydid
      - "digitizer-fullscale": double -- full-scale range of the digitizer
 
      Slots:
-     - "header": void (const KTEggHeader*) -- writes the header information to the candidates file; opens the file first if it hasn't been opened
-     - "ts": void (boost::shared_ptr<KTData>) -- writes a record from a time series;
+     - "header": void (KTEggHeader*) -- writes the header information to the candidates file; opens the file first if it hasn't been opened
+     - "ts": void (KTDataPtr) -- writes a record from a time series;
      - "done": void () -- closes the file
     */
     class KTEggWriter : public KTWriter
@@ -65,48 +67,48 @@ namespace Katydid
             KTEggWriter(const std::string& name = "egg-writer");
             virtual ~KTEggWriter();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             const std::string& GetFilename() const;
             void SetFilename(const std::string& filename);
 
-            FormatModeType GetFormatMode() const;
-            void SetFormatMode(FormatModeType mode);
+            monarch::FormatModeType GetFormatMode() const;
+            void SetFormatMode(monarch::FormatModeType mode);
 
-            Double_t GetDigitizerFullscale() const;
-            void SetDigitizerFullscale(Double_t scale);
+            double GetDigitizerFullscale() const;
+            void SetDigitizerFullscale(double scale);
 
         private:
             std::string fFilename;
 
-            FormatModeType fFormatMode;
+            monarch::FormatModeType fFormatMode;
 
-            Double_t fDigitizerFullscale;
+            double fDigitizerFullscale;
 
         public:
-            Bool_t OpenFile();
+            bool OpenFile();
             void CloseFile();
 
-            void WriteHeader(const KTEggHeader* header);
+            void WriteHeader(KTEggHeader* header);
 
-            Bool_t WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData);
+            bool WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData);
 
             FileStatus GetFileStatus() const;
 
         private:
-            Bool_t CopyATimeSeries(UInt_t component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record);
+            bool CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record);
 
             FileStatus fFileStatus;
-            UInt_t fExpectedNChannels;
-            UInt_t fExpectedRecordSize;
+            unsigned fExpectedNChannels;
+            unsigned fExpectedRecordSize;
 
-            Monarch* fMonarch;
+            monarch::Monarch* fMonarch;
 
             //**************
             // Slots
             //**************
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataTwoTypes< KTSliceHeader, KTTimeSeriesData > fTimeSeriesSlot;
             KTSlotNoArg< void () > fDoneSlot;
     };
@@ -121,12 +123,12 @@ namespace Katydid
         return;
     }
 
-    inline FormatModeType KTEggWriter::GetFormatMode() const
+    inline monarch::FormatModeType KTEggWriter::GetFormatMode() const
     {
         return fFormatMode;
     }
 
-    inline void KTEggWriter::SetFormatMode(FormatModeType mode)
+    inline void KTEggWriter::SetFormatMode(monarch::FormatModeType mode)
     {
         fFormatMode = mode;
         return;
@@ -137,12 +139,12 @@ namespace Katydid
         return fFileStatus;
     }
 
-    inline Double_t KTEggWriter::GetDigitizerFullscale() const
+    inline double KTEggWriter::GetDigitizerFullscale() const
     {
         return fDigitizerFullscale;
     }
 
-    inline void KTEggWriter::SetDigitizerFullscale(Double_t scale)
+    inline void KTEggWriter::SetDigitizerFullscale(double scale)
     {
         fDigitizerFullscale = scale;
         return;

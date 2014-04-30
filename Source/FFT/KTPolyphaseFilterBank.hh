@@ -11,20 +11,18 @@
 
 #include "KTProcessor.hh"
 
+#include "KTData.hh"
 #include "KTLogger.hh"
 #include "KTSlot.hh"
-
-#include <boost/shared_ptr.hpp>
 
 #include <string>
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_comp, "katydid.fft");
+    KTLOGGER(fftlog_comp, "KTPolyphaseFilterBank.hh");
 
-    class KTData;
     class KTEggHeader;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTSliceHeader;
     class KTTimeSeriesData;
     class KTTimeSeriesFFTW;
@@ -49,12 +47,12 @@ namespace Katydid
      - "subset-size": unsigned int -- sets the size of the subsets to be used in the filter bank (use is mutually exclusive with n-subsets)
 
      Slots:
-     - "header": void (const KTEggHeader* header) -- Initialize the window function from an Egg header
-     - "ts-real": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
-     - "ts-fftw": void (shared_ptr<KTData>) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
+     - "header": void (KTEggHeader*) -- Initialize the window function from an Egg header
+     - "ts-real": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesReal; Does not add data; Emits signal "windowed"
+     - "ts-fftw": void (KTDataPtr) -- Window the time series; Requires KTTimeSeriesData containing KTTimeSeriesFFTW; Does not add data; Emits signal "windowed"
 
      Signals:
-     - "windowed": void (shared_ptr<KTData>) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
+     - "windowed": void (KTDataPtr) -- Emitted upon performance of a windowing; Guarantees KTTimeSeriesData.
     */
 
     class KTPolyphaseFilterBank : public KTProcessor
@@ -63,31 +61,31 @@ namespace Katydid
             KTPolyphaseFilterBank(const std::string& name = "polyphase-filter-bank");
             virtual ~KTPolyphaseFilterBank();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
-            UInt_t GetNSubsets() const;
-            void SetNSubsets(UInt_t subsets);
+            unsigned GetNSubsets() const;
+            void SetNSubsets(unsigned subsets);
 
-            UInt_t GetSubsetSize() const;
-            void SetSubsetSize(UInt_t size);
+            unsigned GetSubsetSize() const;
+            void SetSubsetSize(unsigned size);
 
         private:
-            UInt_t fNSubsets;
-            UInt_t fSubsetSize;
+            unsigned fNSubsets;
+            unsigned fSubsetSize;
 
         public:
-            Bool_t InitializeWindow();
-            void InitializeWithHeader(const KTEggHeader* header);
+            bool InitializeWindow();
+            void InitializeWithHeader(KTEggHeader* header);
 
             /// Apply the PFB to the data object's time series (real-type)
-            Bool_t ProcessDataReal(const KTTimeSeriesData& tsData);
+            bool ProcessDataReal(const KTTimeSeriesData& tsData);
             /// Apply the PFB to the data object's time series (fftw-type)
-            Bool_t ProcessDataFFTW(const KTTimeSeriesData& tsData);
+            bool ProcessDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Create a new data object for the filtered time series (real-type)
-            boost::shared_ptr< KTData > CreateFilteredDataReal(const KTTimeSeriesData& tsData);
+            KTDataPtr CreateFilteredDataReal(const KTTimeSeriesData& tsData);
             /// Create a new data object for the filtered time series (fftw-type)
-            boost::shared_ptr< KTData > CreateFilteredDataFFTW(const KTTimeSeriesData& tsData);
+            KTDataPtr CreateFilteredDataFFTW(const KTTimeSeriesData& tsData);
 
             /// Apply PFB to a single time series (real-type); a new time series is produced
             KTTimeSeriesReal* ApplyPFB(const KTTimeSeriesReal* data) const;
@@ -95,7 +93,7 @@ namespace Katydid
             KTTimeSeriesFFTW* ApplyPFB(const KTTimeSeriesFFTW* data) const;
 
         private:
-            Bool_t TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader);
+            bool TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader);
 
             //***************
             // Signals
@@ -109,30 +107,30 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesFFTWSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesRealSlot;
 
     };
 
 
-    inline UInt_t KTPolyphaseFilterBank::GetNSubsets() const
+    inline unsigned KTPolyphaseFilterBank::GetNSubsets() const
     {
         return fNSubsets;
     }
 
-    inline void KTPolyphaseFilterBank::SetNSubsets(UInt_t subsets)
+    inline void KTPolyphaseFilterBank::SetNSubsets(unsigned subsets)
     {
         fNSubsets = subsets;
         return;
     }
 
-    inline UInt_t KTPolyphaseFilterBank::GetSubsetSize() const
+    inline unsigned KTPolyphaseFilterBank::GetSubsetSize() const
     {
         return fSubsetSize;
     }
 
-    inline void KTPolyphaseFilterBank::SetSubsetSize(UInt_t size)
+    inline void KTPolyphaseFilterBank::SetSubsetSize(unsigned size)
     {
         fNSubsets = size;
         return;

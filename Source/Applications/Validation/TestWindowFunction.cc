@@ -22,9 +22,9 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "katydid.applications.validation");
+KTLOGGER(vallog, "TestWindowFunction");
 
-int main(int argc, char** argv)
+int main()
 {
     //KTRectangularWindow wf;
     //wf.SetBoxcarSize(10000);
@@ -35,8 +35,8 @@ int main(int argc, char** argv)
 
     KTSincWindow wf;
 
-    UInt_t size = 16384;
-    Double_t bw = 5.e-9;
+    unsigned size = 16384;
+    double bw = 5.e-9;
 
     wf.SetBinWidth(bw);
     wf.SetSize(size);
@@ -46,12 +46,13 @@ int main(int argc, char** argv)
 
     TH1D* wfHist = wf.CreateHistogram();
     wfHist->SetDirectory(&file);
+    wfHist->Write();
 
+#ifdef FFTW_FOUND
     TH1D* wfFRHist = wf.CreateFrequencyResponseHistogram();
     wfFRHist->SetDirectory(&file);
-
-    wfHist->Write();
     wfFRHist->Write();
+#endif
 
     file.Close();
 #endif

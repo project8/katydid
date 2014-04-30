@@ -24,21 +24,21 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(fslog, "katydid.fft");
+    KTLOGGER(fslog, "KTTimeFrequencyPolar");
 
     KTTimeFrequencyPolar::KTTimeFrequencyPolar() :
-            KTPhysicalArray< 2, complexpolar< Double_t > >(),
+            KTPhysicalArray< 2, complexpolar< double > >(),
             KTTimeFrequency()
     {
     }
 
-    KTTimeFrequencyPolar::KTTimeFrequencyPolar(size_t nTimeBins, Double_t timeRangeMin, Double_t timeRangeMax, size_t nFreqBins, Double_t freqRangeMin, Double_t freqRangeMax) :
-            KTPhysicalArray< 2, complexpolar< Double_t > >(nTimeBins, timeRangeMin, timeRangeMax, nFreqBins, freqRangeMin, freqRangeMax),
+    KTTimeFrequencyPolar::KTTimeFrequencyPolar(size_t nTimeBins, double timeRangeMin, double timeRangeMax, size_t nFreqBins, double freqRangeMin, double freqRangeMax) :
+            KTPhysicalArray< 2, complexpolar< double > >(nTimeBins, timeRangeMin, timeRangeMax, nFreqBins, freqRangeMin, freqRangeMax),
             KTTimeFrequency()
     {
     }
     KTTimeFrequencyPolar::KTTimeFrequencyPolar(const KTTimeFrequencyPolar& orig) :
-            KTPhysicalArray< 2, complexpolar< Double_t > >(orig),
+            KTPhysicalArray< 2, complexpolar< double > >(orig),
             KTTimeFrequency()
     {
     }
@@ -49,18 +49,18 @@ namespace Katydid
 
     KTTimeFrequencyPolar& KTTimeFrequencyPolar::operator=(const KTTimeFrequencyPolar& rhs)
     {
-        KTPhysicalArray< 2, complexpolar< Double_t > >::operator=(rhs);
+        KTPhysicalArray< 2, complexpolar< double > >::operator=(rhs);
         return *this;
     }
 
     KTTimeFrequencyPolar& KTTimeFrequencyPolar::CConjugate()
     {
-        UInt_t nTimeBins = size(1);
-        UInt_t nFreqBins = size(2);
+        unsigned nTimeBins = size(1);
+        unsigned nFreqBins = size(2);
 #pragma omp parallel for
-        for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
+        for (unsigned iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
+            for (unsigned iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
             {
                 (*this)(iTimeBin, iFreqBin).conj();
             }
@@ -71,12 +71,12 @@ namespace Katydid
 /*
     KTPowerSpectrum* KTTimeFrequencyPolar::CreatePowerSpectrum() const
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
         KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
-        Double_t value;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance();
 #pragma omp parallel for private(value)
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
            value = (*this)(iBin).abs();
            (*newPS)(iBin) = value * value * scaling;
@@ -100,15 +100,15 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH2D* KTTimeFrequencyPolar::CreateMagnitudeHistogram(const std::string& name) const
     {
-        UInt_t nTimeBins = size(1);
-        UInt_t nFreqBins = size(2);
-        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Magnitude", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
-        Double_t value;
-        for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
+        unsigned nTimeBins = size(1);
+        unsigned nFreqBins = size(2);
+        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Magnitude", (int)nTimeBins, GetRangeMin(1), GetRangeMax(1), (int)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        //double value;
+        for (unsigned iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
+            for (unsigned iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
             {
-                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).abs());
+                hist->SetBinContent((int)iTimeBin + 1, (int)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).abs());
             }
         }
         hist->SetXTitle("Time (s)");
@@ -118,15 +118,15 @@ namespace Katydid
     }
     TH2D* KTTimeFrequencyPolar::CreatePhaseHistogram(const std::string& name) const
     {
-        UInt_t nTimeBins = size(1);
-        UInt_t nFreqBins = size(2);
-        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Phase", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
-        Double_t value;
-        for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
+        unsigned nTimeBins = size(1);
+        unsigned nFreqBins = size(2);
+        TH2D* hist = new TH2D(name.c_str(), "Frequency vs. Time: Phase", (int)nTimeBins, GetRangeMin(1), GetRangeMax(1), (int)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        //double value;
+        for (unsigned iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
+            for (unsigned iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
             {
-                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).arg());
+                hist->SetBinContent((int)iTimeBin + 1, (int)iFreqBin + 1, (*this)(iTimeBin, iFreqBin).arg());
             }
         }
         hist->SetXTitle("Time (s)");
@@ -136,17 +136,17 @@ namespace Katydid
     }
     TH2D* KTTimeFrequencyPolar::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nTimeBins = size(1);
-        UInt_t nFreqBins = size(2);
-        TH2D* hist = new TH2D(name.c_str(), "Power Spectrum", (Int_t)nTimeBins, GetRangeMin(1), GetRangeMax(1), (Int_t)nFreqBins, GetRangeMin(2), GetRangeMax(2));
-        Double_t value;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
+        unsigned nTimeBins = size(1);
+        unsigned nFreqBins = size(2);
+        TH2D* hist = new TH2D(name.c_str(), "Power Spectrum", (int)nTimeBins, GetRangeMin(1), GetRangeMax(1), (int)nFreqBins, GetRangeMin(2), GetRangeMax(2));
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance();
+        for (unsigned iTimeBin=0; iTimeBin<nTimeBins; iTimeBin++)
         {
-            for (UInt_t iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
+            for (unsigned iFreqBin=0; iFreqBin<nFreqBins; iFreqBin++)
             {
                 value = (*this)(iTimeBin, iFreqBin).abs();
-                hist->SetBinContent((Int_t)iTimeBin + 1, (Int_t)iFreqBin + 1, value * value * scaling);
+                hist->SetBinContent((int)iTimeBin + 1, (int)iFreqBin + 1, value * value * scaling);
             }
         }
         hist->SetXTitle("Time (s)");
@@ -157,12 +157,12 @@ namespace Katydid
     /*
     TH1D* KTTimeFrequencyPolar::CreatePowerDistributionHistogram(const std::string& name) const
     {
-        Double_t tMaxMag = -1.;
-        Double_t tMinMag = 1.e9;
-        UInt_t nBins = size();
-        Double_t value;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        unsigned nBins = size();
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance();
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
             value *= value * scaling;
@@ -171,7 +171,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
             hist->Fill(value * value * scaling);

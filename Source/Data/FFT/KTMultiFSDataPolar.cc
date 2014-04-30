@@ -13,7 +13,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(mfsdlog, "katydid.data");
+    KTLOGGER(mfsdlog, "KTMultiFSDataPolar");
 
     KTMultiFSDataPolarCore::KTMultiFSDataPolarCore() :
             fSpectra(1)
@@ -37,7 +37,7 @@ namespace Katydid
     }
 
 #ifdef ROOT_FOUND
-    TH2D* KTMultiFSDataPolarCore::CreateMagnitudeHistogram(UInt_t component, const std::string& name) const
+    TH2D* KTMultiFSDataPolarCore::CreateMagnitudeHistogram(unsigned component, const std::string& name) const
     {
         if (component >= fSpectra.size()) return NULL;
         if (fSpectra[component]->empty()) return NULL;
@@ -49,10 +49,10 @@ namespace Katydid
         KTINFO(mfsdlog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(mfsdlog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumPolar* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1).abs());
             }
@@ -63,7 +63,7 @@ namespace Katydid
         return hist;
     }
 
-    TH2D* KTMultiFSDataPolarCore::CreatePhaseHistogram(UInt_t component, const std::string& name) const
+    TH2D* KTMultiFSDataPolarCore::CreatePhaseHistogram(unsigned component, const std::string& name) const
     {
         if (component >= fSpectra.size()) return NULL;
         if (fSpectra[component]->empty()) return NULL;
@@ -75,10 +75,10 @@ namespace Katydid
         KTINFO(mfsdlog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(mfsdlog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumPolar* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 hist->SetBinContent(iBinX, iBinY, (*fs)(iBinY-1).arg());
             }
@@ -89,7 +89,7 @@ namespace Katydid
         return hist;
     }
 
-    TH2D* KTMultiFSDataPolarCore::CreatePowerHistogram(UInt_t component, const std::string& name) const
+    TH2D* KTMultiFSDataPolarCore::CreatePowerHistogram(unsigned component, const std::string& name) const
     {
         if (component >= fSpectra.size()) return NULL;
         if (fSpectra[component]->empty()) return NULL;
@@ -101,11 +101,11 @@ namespace Katydid
         KTINFO(mfsdlog, "Frequency axis: " << (*fSpectra[component])(0)->size() << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax() << " Hz");
         KTINFO(mfsdlog, "Time axis: " << fSpectra[component]->size() << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax() << " s");
 
-        Double_t value;
-        for (Int_t iBinX=1; iBinX<=(Int_t)fSpectra[component]->size(); iBinX++)
+        double value;
+        for (int iBinX=1; iBinX<=(int)fSpectra[component]->size(); iBinX++)
         {
             KTFrequencySpectrumPolar* fs = (*fSpectra[component])(iBinX-1);
-            for (Int_t iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
                 value =(*fs)(iBinY-1).abs();
                 hist->SetBinContent(iBinX, iBinY, value*value);
@@ -130,17 +130,17 @@ namespace Katydid
     }
 
 
-    KTMultiFSDataPolar& KTMultiFSDataPolar::SetNComponents(UInt_t components)
+    KTMultiFSDataPolar& KTMultiFSDataPolar::SetNComponents(unsigned components)
     {
-        UInt_t oldSize = fSpectra.size();
+        unsigned oldSize = fSpectra.size();
         // if components < oldSize
-        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
         {
             DeleteSpectra(iComponent);
         }
         fSpectra.resize(components);
         // if components > oldSize
-        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
         {
             fSpectra[iComponent] = NULL;
         }

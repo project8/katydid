@@ -11,12 +11,10 @@
 #include "KTPrimaryProcessor.hh"
 
 #include "KTSlot.hh"
-
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
 
 namespace Katydid
 {
-    class KTData;
     class KTEggHeader;
     class KTProcSummary;
     class KTTimeSeriesData;
@@ -34,19 +32,19 @@ namespace Katydid
      Derived classes are responsible for adding actual values to the time series.
 
      Available configuration options:
-       - "n-slices": UInt_t -- Number of slices to create (used only if creating new slices)
-       - "n-channels": UInt_t -- Number of channels per slice to create (used only if creating new slices)
-       - "time-series-size": UInt_t -- Specify the size of the time series (used only if creating new slices)
-       - "bin-width": Double_t -- Specify the bin width
+       - "number-of-slices": unsigned -- Number of slices to create (used only if creating new slices)
+       - "n-channels": unsigned -- Number of channels per slice to create (used only if creating new slices)
+       - "slice-size": unsigned -- Specify the size of the time series (used only if creating new slices)
+       - "bin-width": double -- Specify the bin width
        - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
-       - "record-size": UInt_t -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
+       - "record-size": unsigned -- Size of the imaginary record that this slice came from (only used to fill in the egg header; does not affect the simulation at all)
 
      Slots:
-     - "slice": void (boost::shared_ptr<KTData>) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
+     - "slice": void (KTDataPtr) -- Add a signal to an existing time series; Requires KTTimeSeriesData; Emits signal "slice" when done.
 
      Signals:
-     - "header": void (const KTEggHeader*) -- emitted when the egg header is created.
-     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced or processed.
+     - "header": void (KTEggHeader*) -- emitted when the egg header is created.
+     - "slice": void (KTDataPtr) -- emitted when the new time series is produced or processed.
      - "done": void () --  emitted when the job is complete.
      - "summary": void (const KTProcSummary*) -- emitted when the job is complete, after "done"
     */
@@ -63,55 +61,55 @@ namespace Katydid
             KTTSGenerator(const std::string& name = "default-ts-generator");
             virtual ~KTTSGenerator();
 
-            virtual Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t ConfigureDerivedGenerator(const KTPStoreNode* node) = 0;
+            virtual bool Configure(const KTParamNode* node);
+            virtual bool ConfigureDerivedGenerator(const KTParamNode* node) = 0;
 
-            UInt_t GetNSlices() const;
-            void SetNSlices(UInt_t slices);
+            unsigned GetNSlices() const;
+            void SetNSlices(unsigned slices);
 
-            UInt_t GetNChannels() const;
-            void SetNChannels(UInt_t channels);
+            unsigned GetNChannels() const;
+            void SetNChannels(unsigned channels);
 
-            UInt_t GetSliceSize() const;
-            void SetSliceSize(UInt_t size);
+            unsigned GetSliceSize() const;
+            void SetSliceSize(unsigned size);
 
-            Double_t GetBinWidth() const;
-            void SetBinWidth(Double_t bw);
+            double GetBinWidth() const;
+            void SetBinWidth(double bw);
 
-            UInt_t GetRecordSize() const;
-            void SetRecordSize(UInt_t rec);
+            unsigned GetRecordSize() const;
+            void SetRecordSize(unsigned rec);
 
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
 
         private:
-            UInt_t fNSlices;
+            unsigned fNSlices;
 
-            UInt_t fNChannels;
-            UInt_t fSliceSize;
-            Double_t fBinWidth;
-            UInt_t fRecordSize;
+            unsigned fNChannels;
+            unsigned fSliceSize;
+            double fBinWidth;
+            unsigned fRecordSize;
 
             TimeSeriesType fTimeSeriesType;
 
         public:
-            Bool_t Run();
+            bool Run();
 
             KTEggHeader* CreateEggHeader() const;
 
-            boost::shared_ptr< KTData > CreateNewData() const;
+            KTDataPtr CreateNewData() const;
 
-            Bool_t AddSliceHeader(KTData& data) const;
+            bool AddSliceHeader(KTData& data) const;
 
-            Bool_t AddEmptySlice(KTData& data) const;
+            bool AddEmptySlice(KTData& data) const;
 
-            virtual Bool_t GenerateTS(KTTimeSeriesData& data) = 0;
+            virtual bool GenerateTS(KTTimeSeriesData& data) = 0;
 
-            UInt_t GetSliceCounter() const;
-            void SetSliceCounter(UInt_t slices);
+            unsigned GetSliceCounter() const;
+            void SetSliceCounter(unsigned slices);
 
         private:
-            UInt_t fSliceCounter;
+            unsigned fSliceCounter;
 
 
             //***************
@@ -124,51 +122,51 @@ namespace Katydid
             // Signals
             //***************
         private:
-            KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
+            KTSignalOneArg< KTEggHeader* > fHeaderSignal;
             KTSignalData fDataSignal;
             KTSignalOneArg< void > fDoneSignal;
             KTSignalOneArg< const KTProcSummary* > fSummarySignal;
     };
 
-    inline UInt_t KTTSGenerator::GetNSlices() const
+    inline unsigned KTTSGenerator::GetNSlices() const
     {
         return fNSlices;
     }
 
-    inline void KTTSGenerator::SetNSlices(UInt_t slices)
+    inline void KTTSGenerator::SetNSlices(unsigned slices)
     {
         fNSlices = slices;
         return;
     }
 
-    inline UInt_t KTTSGenerator::GetNChannels() const
+    inline unsigned KTTSGenerator::GetNChannels() const
     {
         return fNChannels;
     }
 
-    inline void KTTSGenerator::SetNChannels(UInt_t channels)
+    inline void KTTSGenerator::SetNChannels(unsigned channels)
     {
         fNChannels = channels;
         return;
     }
 
-    inline UInt_t KTTSGenerator::GetSliceSize() const
+    inline unsigned KTTSGenerator::GetSliceSize() const
     {
         return fSliceSize;
     }
 
-    inline void KTTSGenerator::SetSliceSize(UInt_t size)
+    inline void KTTSGenerator::SetSliceSize(unsigned size)
     {
         fSliceSize = size;
         return;
     }
 
-    inline Double_t KTTSGenerator::GetBinWidth() const
+    inline double KTTSGenerator::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline void KTTSGenerator::SetBinWidth(Double_t bw)
+    inline void KTTSGenerator::SetBinWidth(double bw)
     {
         fBinWidth = bw;
         return;
@@ -185,23 +183,23 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTTSGenerator::GetRecordSize() const
+    inline unsigned KTTSGenerator::GetRecordSize() const
     {
         return fRecordSize;
     }
 
-    inline void KTTSGenerator::SetRecordSize(UInt_t rec)
+    inline void KTTSGenerator::SetRecordSize(unsigned rec)
     {
         fRecordSize = rec;
         return;
     }
 
-    inline UInt_t KTTSGenerator::GetSliceCounter() const
+    inline unsigned KTTSGenerator::GetSliceCounter() const
     {
         return fSliceCounter;
     }
 
-    inline void KTTSGenerator::SetSliceCounter(UInt_t slices)
+    inline void KTTSGenerator::SetSliceCounter(unsigned slices)
     {
         fSliceCounter = slices;
         return;

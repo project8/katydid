@@ -10,24 +10,19 @@
 #include "KTAnalyticAssociateData.hh"
 #include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
-#include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesFFTW.hh"
 
 using std::string;
 
-using boost::shared_ptr;
-
-
 namespace Katydid
 {
-    KTLOGGER(aalog, "katydid.analysis");
+    KTLOGGER(aalog, "KTAnalyticAssociator");
 
-    static KTDerivedNORegistrar< KTProcessor, KTAnalyticAssociator > sAARegistrar("analytic-associator");
+    KT_REGISTER_PROCESSOR(KTAnalyticAssociator, "analytic-associator");
 
     KTAnalyticAssociator::KTAnalyticAssociator(const std::string& name) :
             KTProcessor(name),
@@ -45,28 +40,27 @@ namespace Katydid
     {
     }
 
-    Bool_t KTAnalyticAssociator::Configure(const KTPStoreNode* node)
+    bool KTAnalyticAssociator::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetSaveFrequencySpectrum(node->GetData< Bool_t >("save-frequency-spectrum", fSaveFrequencySpectrum));
+        SetSaveFrequencySpectrum(node->GetValue< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
 
-        const KTPStoreNode fftNode = node->GetChild("complex-fftw");
-        if (fftNode.IsValid())
+        if (! fFullFFT.Configure(node->NodeAt("complex-fftw")))
         {
-            if (! fFullFFT.Configure(&fftNode)) return false;
+            return false;
         }
 
         return true;
     }
 
-    void KTAnalyticAssociator::InitializeWithHeader(const KTEggHeader* header)
+    void KTAnalyticAssociator::InitializeWithHeader(KTEggHeader* header)
     {
         fFullFFT.InitializeWithHeader(header);
         return;
     }
 
-    Bool_t KTAnalyticAssociator::CreateAssociateData(KTTimeSeriesData& tsData)
+    bool KTAnalyticAssociator::CreateAssociateData(KTTimeSeriesData& tsData)
     {
         if (! fFullFFT.GetIsInitialized())
         {
@@ -78,7 +72,7 @@ namespace Katydid
             }
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         KTFrequencySpectrumDataFFTW* fsData = NULL;
         if (fSaveFrequencySpectrum)
@@ -90,7 +84,7 @@ namespace Katydid
         KTAnalyticAssociateData& aaTSData = tsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
 
         // Calculate the analytic associates
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -124,7 +118,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAnalyticAssociator::CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData)
+    bool KTAnalyticAssociator::CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData)
     {
         if (! fFullFFT.GetIsInitialized())
         {
@@ -136,13 +130,13 @@ namespace Katydid
             }
         }
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         // New data to hold the time series of the analytic associate
         KTAnalyticAssociateData& aaTSData = fsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
 
         // Calculate the analytic associates
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
 
@@ -161,7 +155,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTAnalyticAssociator::CreateAssociateData(KTNormalizedFSDataFFTW& fsData)
+    bool KTAnalyticAssociator::CreateAssociateData(KTNormalizedFSDataFFTW& fsData)
     {
         if (! fFullFFT.GetIsInitialized())
         {
@@ -173,13 +167,13 @@ namespace Katydid
             }
         }
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         // New data to hold the time series of the analytic associate
         KTAnalyticAssociateData& aaTSData = fsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
 
         // Calculate the analytic associates
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
 

@@ -28,12 +28,12 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(fnplog, "katydid.core");
+    KTLOGGER(fnplog, "KTFilenameParsers");
 
 
     KTLocustMCFilename::KTLocustMCFilename(const string& filename)
     {
-        Bool_t parsed = phrase_parse(filename.begin(), filename.end(),
+        bool parsed = phrase_parse(filename.begin(), filename.end(),
                 (int_[ref(fNEvents)=boost::spirit::qi::_1] >> "events_" >>
                  double_[ref(fEventLength) = boost::spirit::qi::_1] >> "dur_" >>
                  double_[ref(fdfdt) = boost::spirit::qi::_1] >> "dfdt_" >>

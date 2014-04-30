@@ -10,26 +10,27 @@
 #define KTAPPLICATION_HH_
 
 #include "KTCommandLineHandler.hh"
-#include "KTParameterStore.hh"
-#include "KTPStoreNode.hh"
+#include "KTConfigurable.hh"
+#include "KTConfigurator.hh"
+#include "KTParam.hh"
 
 #ifdef ROOT_FOUND
 #include "TApplication.h"
 #endif
 
-#include "Rtypes.h"
-
+#include <set>
 #include <string>
 
 namespace Katydid
 {
-    class KTConfigurable;
+    class KTEventLoop;
+    class KTParamNode;
 
     /*!
      @class KTApplication
      @author N. S. Oblath
 
-     @brief Interface for the command-line handler and the parameter store.
+     @brief Interface for the command-line handler and the configurator.
 
      @details
      The interface implemented here is meant to simplify the use of the command line and parameter store.
@@ -49,49 +50,44 @@ namespace Katydid
      2. Call KTApplication::ReadConfigFile() to read the config file and store the values in the parameter store.
      3. Use KTAppilcation::GetNode(address) to get parameter-store nodes.
 
+     Event Loops:
+     KTApplication can oversee the running of event loops.  It takes a very light-handed approach to that oversight.
+     In the event that the KTApplication object is deleted, all loops it knows about will be stopped.
+     Event loops are not deleted.
+     If an event loop is going out of scope before the KTApplication object, the user should make sure to remove it from
+     KTApplication's oversight.
     */
-    class KTApplication
+    class KTApplication : public KTConfigurable
     {
         public:
-            KTApplication(Bool_t makeTApp=false);
-            /// Constructor to use with command-line optiosn; includes parsing of the command line by KTCommandLineHandler (except for config-file-dependent options)
-            KTApplication(int argC, char** argV, Bool_t makeTApp=false);
+            KTApplication(bool makeTApp=false);
+            /// Constructor to use with command-line options; includes parsing of the command line by KTCommandLineHandler (except for config-file-dependent options)
+            KTApplication(int argC, char** argV, bool makeTApp=false, bool requireArgs=true, KTParamNode* defaultConfig=NULL);
             virtual ~KTApplication();
 
-            /// Parse the config file and store the results (performed by KTParameterStore)
-            Bool_t ReadConfigFile();
-
-            /// Parse any unparsed parts of command line and store the results (performed by KTCommandLineHandler)
-            /// This is called from ReadConfigFile
-            Bool_t FinishProcessingCommandLine();
-
-            /// Configure a KTConfigurable object
-            /// If baseAddress is given, the KTConfigurable's config name will be appended before attempting to get the parameter store node.
-            /// If no baseAddress is given, no parameter store node will be used.
-            /// Use baseAddress="" if the parameter store node to be used is a top-level node.
-            Bool_t Configure(KTConfigurable* toBeConfigured, const std::string& baseAddress);
-
-            /// Get a node from the parameter store tree
-            KTPStoreNode GetNode(const std::string& address) const;
-
-        protected:
-            void AddConfigOptionsToCLHandler(const KTParameterStore::PStoreTree* tree, const std::string& addressOfTree="");
-            void ApplyCLOptionsToParamStore(const po::parsed_options* parsedOpts);
+        public:
+            bool Configure(const KTParamNode* node);
 
         public:
             KTCommandLineHandler* GetCommandLineHandler() const;
-            KTParameterStore* GetParameterStore() const;
+            const KTConfigurator* GetConfigurator() const;
 
             const std::string& GetConfigFilename() const;
 
+            void AddEventLoop(KTEventLoop* loop); /// Adds loop to the set of event loops overseen by KTApplication.  Does NOT assume ownership of an event loop
+            void RemoveEventLoop(KTEventLoop* loop); /// Removes loop from the set of event loops overseen by KTApplication. Does not stop the loop.
+
         protected:
             KTCommandLineHandler* fCLHandler;
-            KTParameterStore* fParamStore;
+            KTConfigurator* fConfigurator;
 
             std::string fConfigFilename;
 
+            std::set< KTEventLoop* > fEventLoops;
+
 #ifdef ROOT_FOUND
         public:
+            bool StartTApplication();
             TApplication* GetTApplication() const;
 
         protected:
@@ -99,19 +95,14 @@ namespace Katydid
 #endif
     };
 
-    inline KTPStoreNode KTApplication::GetNode(const std::string& address) const
-    {
-        return fParamStore->GetNode(address);
-    }
-
     inline KTCommandLineHandler* KTApplication::GetCommandLineHandler() const
     {
         return fCLHandler;
     }
 
-    inline KTParameterStore* KTApplication::GetParameterStore() const
+    inline const KTConfigurator* KTApplication::GetConfigurator() const
     {
-        return fParamStore;
+        return fConfigurator;
     }
 
     inline const std::string& KTApplication::GetConfigFilename() const

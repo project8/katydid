@@ -9,15 +9,15 @@
 
 #include "KTCommandLineHandler.hh"
 #include "KTLogger.hh"
-#include "KTParameterStore.hh"
-#include "KTPStoreNode.hh"
+#include "KTConfigurator.hh"
+#include "KTParam.hh"
 
 using std::string;
 
 namespace Katydid
 {
 
-    KTLOGGER(conflog, "katydid.core");
+    KTLOGGER(conflog, "KTConfigurable");
 
     //******************
     // KTConfigurable
@@ -49,20 +49,17 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSelfConfigurable::Configure()
+    bool KTSelfConfigurable::Configure()
     {
         if (fIsConfigured) return true;
 
-        KTPStoreNode node = KTParameterStore::GetInstance()->GetNode(fConfigName);
-        if (node.IsValid())
+        KTParamNode* node = KTConfigurator::GetInstance()->Config();
+        if (! this->Configure(node))
         {
-            if (! this->Configure(&node))
-            {
-                KTERROR(conflog, "An error occurred while configuring <" << fConfigName << ">");
-                return false;
-            }
-            fIsConfigured = IsReady();
+            KTERROR(conflog, "An error occurred while configuring <" << fConfigName << ">");
+            return false;
         }
+        fIsConfigured = IsReady();
         return fIsConfigured;
     }
 

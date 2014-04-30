@@ -11,9 +11,9 @@
 
 using namespace Katydid;
 
-KTLOGGER(testsiglog, "katydid.verification.testsig")
+KTLOGGER(testsiglog, "TestSignalsAndSlots")
 
-int main(int argc, char** argv)
+int main()
 {
 
     KTTestProcessorA tpA;

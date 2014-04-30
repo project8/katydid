@@ -10,8 +10,6 @@
 
 #include "MonarchTypes.hpp"
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid
@@ -29,23 +27,26 @@ namespace Katydid
             void SetFilename(const std::string& fname);
             const std::string& GetFilename() const;
 
-            void SetAcquisitionMode(UInt_t mode);
-            UInt_t GetAcquisitionMode() const;
+            void SetAcquisitionMode(unsigned mode);
+            unsigned GetAcquisitionMode() const;
 
-            void SetNChannels(UInt_t channels);
-            UInt_t GetNChannels() const;
+            void SetNChannels(unsigned channels);
+            unsigned GetNChannels() const;
 
-            void SetSliceSize(std::size_t recsize);
+            void SetRawSliceSize(std::size_t size);
+            std::size_t GetRawSliceSize() const;
+
+            void SetSliceSize(std::size_t size);
             std::size_t GetSliceSize() const;
 
-            void SetRecordSize(std::size_t mrecsize);
+            void SetRecordSize(std::size_t recsize);
             std::size_t GetRecordSize() const;
 
-            void SetRunDuration(UInt_t acqt);
-            UInt_t GetRunDuration() const;
+            void SetRunDuration(unsigned acqt);
+            unsigned GetRunDuration() const;
 
-            void SetAcquisitionRate(Double_t acqr);
-            Double_t GetAcquisitionRate() const;
+            void SetAcquisitionRate(double acqr);
+            double GetAcquisitionRate() const;
 
             void SetTimestamp( const std::string& aTimestamp );
             const std::string& GetTimestamp() const;
@@ -53,28 +54,45 @@ namespace Katydid
             void SetDescription( const std::string& aDescription );
             const std::string& GetDescription() const;
 
-            void SetRunType( RunType aRunType );
-            RunType GetRunType() const;
+            void SetRunType( monarch::RunType aRunType );
+            monarch::RunType GetRunType() const;
 
-            void SetRunSource( RunSourceType aRunSource );
-            RunSourceType GetRunSource() const;
+            void SetRunSource( monarch::RunSourceType aRunSource );
+            monarch::RunSourceType GetRunSource() const;
 
-            void SetFormatMode( FormatModeType aFormatMode );
-            FormatModeType GetFormatMode() const;
+            void SetFormatMode( monarch::FormatModeType aFormatMode );
+            monarch::FormatModeType GetFormatMode() const;
+
+            void SetDataTypeSize(unsigned aSize);
+            unsigned GetDataTypeSize() const;
+
+            void SetBitDepth(unsigned aBD);
+            unsigned GetBitDepth() const;
+
+            void SetVoltageMin(double aVoltage);
+            double GetVoltageMin() const;
+
+            void SetVoltageRange(double aVoltage);
+            double GetVoltageRange() const;
 
         protected:
             std::string fFilename;
-            UInt_t fAcquisitionMode;
-            UInt_t fNChannels;
-            std::size_t fSliceSize; /// Number of bins per record-written-to-disk
-            std::size_t fRecordSize; /// Number of bins per Katydid record
-            UInt_t fRunDuration;
-            Double_t fAcquisitionRate; /// in Hz
+            unsigned fAcquisitionMode;
+            unsigned fNChannels;
+            std::size_t fRawSliceSize; /// Number of bins per slice before any modification
+            std::size_t fSliceSize; /// Number of bins per slice after any initial modification (e.g. by the DAC)
+            std::size_t fRecordSize; /// Number of bins per Monarch record
+            unsigned fRunDuration;
+            double fAcquisitionRate; /// in Hz
             std::string fTimestamp;
             std::string fDescription;
-            RunType fRunType;
-            RunSourceType fRunSource;
-            FormatModeType fFormatMode;
+            monarch::RunType fRunType;
+            monarch::RunSourceType fRunSource;
+            monarch::FormatModeType fFormatMode;
+            unsigned fDataTypeSize; /// in bytes
+            unsigned fBitDepth; /// in bits
+            double fVoltageMin; /// in V
+            double fVoltageRange; /// in V
 
     };
 
@@ -91,26 +109,37 @@ namespace Katydid
         return fFilename;
     }
 
-    inline void KTEggHeader::SetAcquisitionMode(UInt_t mode)
+    inline void KTEggHeader::SetAcquisitionMode(unsigned mode)
     {
         fAcquisitionMode = mode;
         return;
     }
 
-    inline UInt_t KTEggHeader::GetAcquisitionMode() const
+    inline unsigned KTEggHeader::GetAcquisitionMode() const
     {
         return fAcquisitionMode;
     }
 
-    inline void KTEggHeader::SetNChannels(UInt_t channels)
+    inline void KTEggHeader::SetNChannels(unsigned channels)
     {
         fNChannels = channels;
         return;
     }
 
-    inline UInt_t KTEggHeader::GetNChannels() const
+    inline unsigned KTEggHeader::GetNChannels() const
     {
         return fNChannels;
+    }
+
+    inline void KTEggHeader::SetRawSliceSize(std::size_t slicesize)
+    {
+        fRawSliceSize = slicesize;
+        return;
+    }
+
+    inline std::size_t KTEggHeader::GetRawSliceSize() const
+    {
+        return fRawSliceSize;
     }
 
     inline void KTEggHeader::SetSliceSize(std::size_t slicesize)
@@ -135,24 +164,24 @@ namespace Katydid
         return fRecordSize;
     }
 
-    inline void KTEggHeader::SetRunDuration(UInt_t acqt)
+    inline void KTEggHeader::SetRunDuration(unsigned acqt)
     {
         fRunDuration = acqt;
         return;
     }
 
-    inline UInt_t KTEggHeader::GetRunDuration() const
+    inline unsigned KTEggHeader::GetRunDuration() const
     {
         return fRunDuration;
     }
 
-    inline void KTEggHeader::SetAcquisitionRate(Double_t acqr)
+    inline void KTEggHeader::SetAcquisitionRate(double acqr)
     {
         fAcquisitionRate = acqr;
         return;
     }
 
-    inline Double_t KTEggHeader::GetAcquisitionRate() const
+    inline double KTEggHeader::GetAcquisitionRate() const
     {
         return fAcquisitionRate;
     }
@@ -179,39 +208,82 @@ namespace Katydid
         return fDescription;
     }
 
-    inline void KTEggHeader::SetRunType( RunType aRunType )
+    inline void KTEggHeader::SetRunType( monarch::RunType aRunType )
     {
         fRunType = aRunType;
         return;
     }
 
-    inline RunType KTEggHeader::GetRunType() const
+    inline monarch::RunType KTEggHeader::GetRunType() const
     {
         return fRunType;
     }
 
-    inline void KTEggHeader::SetRunSource( RunSourceType aRunSource )
+    inline void KTEggHeader::SetRunSource( monarch::RunSourceType aRunSource )
     {
         fRunSource = aRunSource;
         return;
     }
 
-    inline RunSourceType KTEggHeader::GetRunSource() const
+    inline monarch::RunSourceType KTEggHeader::GetRunSource() const
     {
         return fRunSource;
     }
 
-    inline void KTEggHeader::SetFormatMode( FormatModeType aFormatMode )
+    inline void KTEggHeader::SetFormatMode( monarch::FormatModeType aFormatMode )
     {
         fFormatMode = aFormatMode;
         return;
     }
 
-    inline FormatModeType KTEggHeader::GetFormatMode() const
+    inline monarch::FormatModeType KTEggHeader::GetFormatMode() const
     {
         return fFormatMode;
     }
 
+    inline void KTEggHeader::SetDataTypeSize(unsigned aSize)
+    {
+        fDataTypeSize = aSize;
+        return;
+    }
+
+    inline unsigned KTEggHeader::GetDataTypeSize() const
+    {
+        return fDataTypeSize;
+    }
+
+    inline void KTEggHeader::SetBitDepth(unsigned aBD)
+    {
+        fBitDepth = aBD;
+        return;
+    }
+
+    inline unsigned KTEggHeader::GetBitDepth() const
+    {
+        return fBitDepth;
+    }
+
+    inline void KTEggHeader::SetVoltageMin(double aVoltage)
+    {
+        fVoltageMin = aVoltage;
+        return;
+    }
+
+    inline double KTEggHeader::GetVoltageMin() const
+    {
+        return fVoltageMin;
+    }
+
+    inline void KTEggHeader::SetVoltageRange(double aVoltage)
+    {
+        fVoltageRange = aVoltage;
+        return;
+    }
+
+    inline double KTEggHeader::GetVoltageRange() const
+    {
+        return fVoltageRange;
+    }
 
 
 } /* namespace Katydid */

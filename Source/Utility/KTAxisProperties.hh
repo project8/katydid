@@ -11,8 +11,6 @@
 
 #include "KTAxisProperties_GetNBins.hh"
 
-#include "Rtypes.h"
-
 #include <cmath>
 
 namespace Katydid
@@ -56,35 +54,35 @@ namespace Katydid
             size_t GetNBins(size_t dim) const;
             void SetNBinsFunc(const KTNBinsFunctor< NDims >* getNBinsFunc);
 
-            Double_t GetBinWidth(size_t dim) const;
+            double GetBinWidth(size_t dim) const;
 
-            Double_t GetRangeMin(size_t dim) const;
-            Double_t GetRangeMax(size_t dim) const;
-            void GetRange(size_t dim, Double_t& min, Double_t& max) const;
+            double GetRangeMin(size_t dim) const;
+            double GetRangeMax(size_t dim) const;
+            void GetRange(size_t dim, double& min, double& max) const;
 
-            void SetRangeMin(size_t dim, Double_t min);
-            void SetRangeMin(const Double_t* mins);
+            void SetRangeMin(size_t dim, double min);
+            void SetRangeMin(const double* mins);
 
-            void SetRangeMax(size_t dim, Double_t max);
-            void SetRangeMax(const Double_t* maxes);
+            void SetRangeMax(size_t dim, double max);
+            void SetRangeMax(const double* maxes);
 
-            void SetRange(size_t dim, Double_t min, Double_t max);
-            void SetRange(const Double_t* mins, const Double_t* maxes);
+            void SetRange(size_t dim, double min, double max);
+            void SetRange(const double* mins, const double* maxes);
 
         protected:
             const KTNBinsFunctor< NDims >* fGetNBinsFunc;
-            Double_t fBinWidths[NDims];
-            Double_t fRangeMin[NDims];
-            Double_t fRangeMax[NDims];
+            double fBinWidths[NDims];
+            double fRangeMin[NDims];
+            double fRangeMax[NDims];
 
             // bin characteristics
         public:
-            Double_t GetBinLowEdge(size_t dim, size_t bin) const;
-            Double_t GetBinCenter(size_t dim, size_t bin) const;
+            double GetBinLowEdge(size_t dim, size_t bin) const;
+            double GetBinCenter(size_t dim, size_t bin) const;
 
             // from physical value to bin number
         public:
-            size_t FindBin(size_t dim, Double_t pos) const;
+            size_t FindBin(size_t dim, double pos) const;
 
             // axis labels
         public:
@@ -203,25 +201,25 @@ namespace Katydid
     }
 
     template< size_t NDims >
-    Double_t KTAxisProperties< NDims >::GetBinWidth(size_t dim) const
+    double KTAxisProperties< NDims >::GetBinWidth(size_t dim) const
     {
         return fBinWidths[dim-1];
     }
 
     template< size_t NDims >
-    Double_t KTAxisProperties< NDims >::GetRangeMin(size_t dim) const
+    double KTAxisProperties< NDims >::GetRangeMin(size_t dim) const
     {
         return fRangeMin[dim-1];
     }
 
     template< size_t NDims >
-    Double_t KTAxisProperties< NDims >::GetRangeMax(size_t dim) const
+    double KTAxisProperties< NDims >::GetRangeMax(size_t dim) const
     {
         return fRangeMax[dim-1];
     }
 
     template< size_t NDims >
-    void KTAxisProperties< NDims >::GetRange(size_t dim, Double_t& min, Double_t& max) const
+    void KTAxisProperties< NDims >::GetRange(size_t dim, double& min, double& max) const
     {
         min = GetRangeMin(dim);
         max = GetRangeMax(dim);
@@ -229,78 +227,78 @@ namespace Katydid
     }
 
     template< size_t NDims >
-    void KTAxisProperties< NDims >::SetRangeMin(size_t dim, Double_t min)
+    void KTAxisProperties< NDims >::SetRangeMin(size_t dim, double min)
     {
         size_t arrPos = dim - 1;
         fRangeMin[arrPos] = min;
-        fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (Double_t)((*fGetNBinsFunc)(dim));
+        fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (double)((*fGetNBinsFunc)(dim));
         return;
     }
 
     template< size_t NDims >
-    void KTAxisProperties< NDims >::SetRangeMin(const Double_t* mins)
+    void KTAxisProperties< NDims >::SetRangeMin(const double* mins)
     {
-        for (Int_t arrPos=0; arrPos<NDims; arrPos++)
+        for (unsigned arrPos=0; arrPos<NDims; arrPos++)
         {
             fRangeMin[arrPos] = mins[arrPos];
-            fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (Double_t)((*fGetNBinsFunc)(arrPos+1));
+            fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (double)((*fGetNBinsFunc)(arrPos+1));
         }
     }
 
     template< size_t NDims >
-    void KTAxisProperties< NDims >::SetRangeMax(size_t dim, Double_t max)
+    void KTAxisProperties< NDims >::SetRangeMax(size_t dim, double max)
     {
         size_t arrPos = dim - 1;
         fRangeMax[arrPos] = max;
-        fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (Double_t)((*fGetNBinsFunc)(dim));
+        fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (double)((*fGetNBinsFunc)(dim));
         return;
     }
 
     template< size_t NDims >
-    void KTAxisProperties< NDims >::SetRangeMax(const Double_t* maxes)
+    void KTAxisProperties< NDims >::SetRangeMax(const double* maxes)
     {
-        for (Int_t arrPos=0; arrPos<NDims; arrPos++)
+        for (unsigned arrPos=0; arrPos<NDims; arrPos++)
         {
             fRangeMax[arrPos] = maxes[arrPos];
-            fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (Double_t)((*fGetNBinsFunc)(arrPos+1));
+            fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (double)((*fGetNBinsFunc)(arrPos+1));
         }
     }
 
     template< size_t NDims >
-    void KTAxisProperties< NDims >::SetRange(size_t dim, Double_t min, Double_t max)
+    void KTAxisProperties< NDims >::SetRange(size_t dim, double min, double max)
     {
         size_t arrPos = dim - 1;
         fRangeMin[arrPos] = min;
         fRangeMax[arrPos] = max;
-        fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (Double_t)((*fGetNBinsFunc)(dim));
+        fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (double)((*fGetNBinsFunc)(dim));
         return;
     }
 
     template< size_t NDims >
-    void KTAxisProperties< NDims >::SetRange(const Double_t* mins, const Double_t* maxes)
+    void KTAxisProperties< NDims >::SetRange(const double* mins, const double* maxes)
     {
-        for (Int_t arrPos=0; arrPos<NDims; arrPos++)
+        for (int arrPos=0; arrPos<NDims; arrPos++)
         {
             fRangeMin[arrPos] = mins[arrPos];
             fRangeMax[arrPos] = maxes[arrPos];
-            fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (Double_t)((*fGetNBinsFunc)(arrPos+1));
+            fBinWidths[arrPos] = (fRangeMax[arrPos] - fRangeMin[arrPos]) / (double)((*fGetNBinsFunc)(arrPos+1));
         }
     }
 
     template< size_t NDims >
-    Double_t KTAxisProperties< NDims >::GetBinLowEdge(size_t dim, size_t bin) const
+    double KTAxisProperties< NDims >::GetBinLowEdge(size_t dim, size_t bin) const
     {
-        return fRangeMin[dim-1] + fBinWidths[dim-1] * (Double_t)bin;
+        return fRangeMin[dim-1] + fBinWidths[dim-1] * (double)bin;
     }
 
     template< size_t NDims >
-    Double_t KTAxisProperties< NDims >::GetBinCenter(size_t dim, size_t bin) const
+    double KTAxisProperties< NDims >::GetBinCenter(size_t dim, size_t bin) const
     {
-        return fRangeMin[dim-1] + fBinWidths[dim-1] * ((Double_t)bin + 0.5);
+        return fRangeMin[dim-1] + fBinWidths[dim-1] * ((double)bin + 0.5);
     }
 
     template< size_t NDims >
-    size_t KTAxisProperties< NDims >::FindBin(size_t dim, Double_t pos) const
+    size_t KTAxisProperties< NDims >::FindBin(size_t dim, double pos) const
     {
         return (size_t)(floor((pos - fRangeMin[dim-1]) / fBinWidths[dim-1]));
     }
@@ -344,7 +342,7 @@ namespace Katydid
     {
         public:
             KTAxisProperties();
-            KTAxisProperties(Double_t rangeMin, Double_t rangeMax, KTNBinsFunctor< 1 >* getNBinsFunc=NULL);
+            KTAxisProperties(double rangeMin, double rangeMax, KTNBinsFunctor< 1 >* getNBinsFunc=NULL);
             KTAxisProperties(const KTAxisProperties< 1 >& orig);
             virtual ~KTAxisProperties();
 
@@ -362,29 +360,29 @@ namespace Katydid
             size_t GetNBins() const;
             void SetNBinsFunc(KTNBinsFunctor< 1 >* getNBinsFunc);
 
-            Double_t GetBinWidth() const;
+            double GetBinWidth() const;
 
-            Double_t GetRangeMin() const;
-            Double_t GetRangeMax() const;
-            void GetRange(Double_t& min, Double_t& max) const;
-            void SetRangeMin(Double_t min);
-            void SetRangeMax(Double_t max);
-            void SetRange(Double_t min, Double_t max);
+            double GetRangeMin() const;
+            double GetRangeMax() const;
+            void GetRange(double& min, double& max) const;
+            void SetRangeMin(double min);
+            void SetRangeMax(double max);
+            void SetRange(double min, double max);
 
         protected:
             KTNBinsFunctor< 1 >* fGetNBinsFunc;
-            Double_t fBinWidth;
-            Double_t fRangeMin;
-            Double_t fRangeMax;
+            double fBinWidth;
+            double fRangeMin;
+            double fRangeMax;
 
             // bin characteristics
         public:
-            Double_t GetBinLowEdge(size_t bin) const;
-            Double_t GetBinCenter(size_t bin) const;
+            double GetBinLowEdge(size_t bin) const;
+            double GetBinCenter(size_t bin) const;
 
             // from physical value to bin number
         public:
-            size_t FindBin(Double_t pos) const;
+            size_t FindBin(double pos) const;
 
             // axis label
         public:

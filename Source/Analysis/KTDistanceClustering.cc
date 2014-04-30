@@ -11,10 +11,8 @@
 //#include "KTCluster2DData.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 //#include "KTDiscriminatedPoints2DData.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 #include <map>
@@ -23,13 +21,13 @@
 using std::string;
 using std::map;
 using std::set;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
-    KTLOGGER(sdlog, "katydid.analysis");
+    KTLOGGER(sdlog, "KTDistanceClustering");
 
-    static KTDerivedNORegistrar< KTProcessor, KTDistanceClustering > sDistClustRegistrar("distance-clustering");
+    KT_REGISTER_PROCESSOR(KTDistanceClustering, "distance-clustering");
 
     KTDistanceClustering::KTDistanceClustering(const std::string& name) :
             KTProcessor(name),
@@ -45,37 +43,37 @@ namespace Katydid
     {
     }
 
-    Bool_t KTDistanceClustering::Configure(const KTPStoreNode* node)
+    bool KTDistanceClustering::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        if (node->HasData("max-frequency-distance"))
+        if (node->Has("max-frequency-distance"))
         {
-            SetMaxFrequencyDistance(node->GetData< Double_t >("max-frequency-distance"));
+            SetMaxFrequencyDistance(node->GetValue< double >("max-frequency-distance"));
         }
 
-        if (node->HasData("max-bin-distance"))
+        if (node->Has("max-bin-distance"))
         {
-            SetMaxBinDistance(node->GetData< UInt_t >("max-bin-distance"));
+            SetMaxBinDistance(node->GetValue< unsigned >("max-bin-distance"));
         }
 
         return true;
     }
 
-    Bool_t KTDistanceClustering::FindClusters(KTDiscriminatedPoints1DData& data)
+    bool KTDistanceClustering::FindClusters(KTDiscriminatedPoints1DData& data)
     {
         typedef KTDiscriminatedPoints1DData::SetOfPoints OriginalPoints;
-        typedef set< UInt_t > Cluster;
+        typedef set< unsigned > Cluster;
 
         if (fCalculateMaxBinDistance) SetMaxBinDistance(KTMath::Nint(fMaxFrequencyDistance / data.GetBinWidth()));
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
         KTCluster1DData& newData = data.Of< KTCluster1DData >().SetNComponents(nComponents);
         newData.SetNBins(data.GetNBins());
         newData.SetBinWidth(data.GetBinWidth());
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
             newData.SetThreshold(data.GetThreshold(iComponent), iComponent);
 
@@ -84,10 +82,10 @@ namespace Katydid
             if (! points.empty())
             {
                 OriginalPoints::const_iterator pIt = points.begin();
-                UInt_t thisPoint = pIt->first;
+                unsigned thisPoint = pIt->first;
                 Cluster activeCluster;
                 activeCluster.insert(thisPoint);
-                UInt_t lastPointInActiveCluster = thisPoint;
+                unsigned lastPointInActiveCluster = thisPoint;
 
                 for (pIt++; pIt != points.end(); pIt++)
                 {
@@ -111,7 +109,7 @@ namespace Katydid
         return true;
     }
 
-    void KTDistanceClustering::Process1DData(shared_ptr< KTData > data)
+    void KTDistanceClustering::Process1DData(KTDataPtr data)
     {
         if (! data->Has< KTDiscriminatedPoints1DData >())
         {

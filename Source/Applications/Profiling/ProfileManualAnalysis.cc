@@ -7,6 +7,7 @@
 
 #include "KTCorrelator.hh"
 #include "KTCorrelationData.hh"
+#include "KTDAC.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDistanceClustering.hh"
 #include "KTCluster1DData.hh"
@@ -22,8 +23,10 @@
 #include "KTGainNormalization.hh"
 #endif
 
+#include "KTData.hh"
 #include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
+#include "KTRawTimeSeriesData.hh"
 
 #ifdef ROOT_FOUND
 #include "KTROOTTreeWriter.hh"
@@ -33,35 +36,34 @@
 #include "KTJSONTypeWriterCandidates.hh"
 #endif
 
+#include "KTSliceHeader.hh"
 #include "KTSpectrumDiscriminator.hh"
 #include "KTThroughputProfiler.hh"
 #include "KTTimeSeriesData.hh"
 
-
-#include <boost/shared_ptr.hpp>
 
 
 using namespace Katydid;
 using namespace std;
 
 using std::string;
-//using boost::shared_ptr;
+//
 
-KTLOGGER(proflog, "katydid.applications.profiling");
+KTLOGGER(proflog, "ProfileManualAnalysis");
 
 int main()
 {
-    Double_t minAnalysisFreq = 6.e6;
-    Double_t maxAnalysisFreq = 95.e6;
+    double minAnalysisFreq = 6.e6;
+    double maxAnalysisFreq = 95.e6;
 
     //***********************************
     // Create and configure processors
     //***********************************
 
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
-    UInt_t nSlices = 50;
-    UInt_t recordSize = 32768;
-    KTEggReaderMonarch::TimeSeriesType tsType = KTEggReaderMonarch::kFFTWTimeSeries;
+    unsigned nSlices = 50;
+    unsigned recordSize = 32768;
+    KTDAC::TimeSeriesType tsType = KTDAC::kFFTWTimeSeries;
 
     KTComplexFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
@@ -78,7 +80,7 @@ int main()
 #endif
 
     KTCorrelator corr;
-    corr.AddPair(UIntPair(0, 1));
+    corr.AddPair(KTCorrelator::UIntPair(0, 1));
 
     KTSpectrumDiscriminator spectDisc;
     spectDisc.SetMinFrequency(minAnalysisFreq);
@@ -111,9 +113,11 @@ int main()
     // Prepare the egg reader
     KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
     eggReader->SetSliceSize(recordSize);
-    eggReader->SetTimeSeriesType(tsType);
 
-    const KTEggHeader* header = eggReader->BreakEgg(filename);
+    KTDAC* dac = new KTDAC();
+    dac->SetTimeSeriesType(tsType);
+
+    KTEggHeader* header = eggReader->BreakEgg(filename);
     if (header == NULL)
     {
         KTERROR(proflog, "Egg did not break");
@@ -132,18 +136,20 @@ int main()
     // Do the processing work
     //**************************
 
-    UInt_t iSlice = 0;
-    while (kTRUE)
+    unsigned iSlice = 0;
+    while (true)
     {
         if (iSlice >= nSlices) break;
 
         KTINFO(proflog, "Slice " << iSlice);
 
         // Hatch the slice
-        boost::shared_ptr<KTData> data = eggReader->HatchNextSlice();
+        KTDataPtr data = eggReader->HatchNextSlice();
         if (data.get() == NULL) break;
 
         if (iSlice == nSlices - 1) data->fLastData = true;
+
+        dac->ConvertData(data->Of< KTSliceHeader >(), data->Of< KTRawTimeSeriesData >());
 
         if (! data->Has< KTTimeSeriesData >())
         {
@@ -215,7 +221,7 @@ int main()
             KTERROR(proflog, "A problem occurred while identifying candidates");
             continue;
         }
-        KTFrequencyCandidateData& freqCandData = data->Of< KTFrequencyCandidateData >();
+        //KTFrequencyCandidateData& freqCandData = data->Of< KTFrequencyCandidateData >();
 
         // Write out the candidates
         typeWriter->WriteFrequencyCandidates(data);
@@ -232,6 +238,7 @@ int main()
 
     eggReader->CloseEgg();
     delete eggReader;
+    delete dac;
     delete header;
 
     return 0;

@@ -11,7 +11,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(testsiglog, "katydid.verification.testsig")
+    KTLOGGER(testsiglog, "KTTestProcessor")
 
     KTTestProcessorA::KTTestProcessorA() :
             fTheSignal()
@@ -23,7 +23,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTTestProcessorA::Configure(const KTPStoreNode* node)
+    bool KTTestProcessorA::Configure(const KTParamNode*)
     {
         return true;
     }
@@ -47,7 +47,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTTestProcessorB::Configure(const KTPStoreNode* node)
+    bool KTTestProcessorB::Configure(const KTParamNode*)
     {
         return true;
     }

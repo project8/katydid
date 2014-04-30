@@ -10,7 +10,11 @@
 
 #include "KTPhysicalArray.hh"
 
+#ifdef FFTW_FOUND
 #include <fftw3.h>
+#else
+#include "FFTWStandIn.hh"
+#endif
 
 namespace Katydid
 {
@@ -35,7 +39,7 @@ namespace Katydid
 
         public:
             KTPhysicalArray();
-            KTPhysicalArray(size_t nBins, Double_t rangeMin=0., Double_t rangeMax=1.);
+            explicit KTPhysicalArray(size_t nBins, double rangeMin=0., double rangeMax=1.);
             KTPhysicalArray(const KTPhysicalArray< 1, fftw_complex >& orig);
             virtual ~KTPhysicalArray();
 

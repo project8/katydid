@@ -10,8 +10,6 @@
 
 #include "KTCommandLineHandler.hh"
 
-#include "Rtypes.h"
-
 #include <string>
 
 namespace Katydid
@@ -23,7 +21,7 @@ namespace Katydid
     {
         public:
             KTCommandLineOption();
-            KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, Char_t shortOpt='#');
+            KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, char shortOpt='#');
             virtual ~KTCommandLineOption();
 
         protected:
@@ -38,7 +36,7 @@ namespace Katydid
     }
 
     template< typename XInputType >
-    KTCommandLineOption< XInputType >::KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, Char_t shortOpt) :
+    KTCommandLineOption< XInputType >::KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, char shortOpt) :
             fCLHandler(KTCommandLineHandler::GetInstance())
     {
         if (shortOpt == '#')
@@ -65,7 +63,7 @@ namespace Katydid
                 fCLHandler(KTCommandLineHandler::GetInstance())
             {
             }
-            KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, Char_t shortOpt='#') :
+            KTCommandLineOption(const std::string& group, const std::string& helpMsg, const std::string& longOpt, char shortOpt='#') :
                 fCLHandler(KTCommandLineHandler::GetInstance())
             {
                 if (shortOpt == '#')

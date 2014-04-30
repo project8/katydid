@@ -11,11 +11,10 @@
 #include "KTCorrelationData.hh"
 #include "KTCorrelationTSData.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesReal.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <algorithm>
 #include <cmath>
@@ -23,12 +22,12 @@
 using std::copy;
 using std::string;
 using std::vector;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
 
-    static KTDerivedNORegistrar< KTProcessor, KTSimpleFFT > sSimpleFFTRegistrar("simple-fft");
+    KT_REGISTER_PROCESSOR(KTSimpleFFT, "simple-fft");
 
     KTSimpleFFT::KTSimpleFFT(const std::string& name) :
             KTFFT(),
@@ -61,15 +60,15 @@ namespace Katydid
         fftw_destroy_plan(fReversePlan);
     }
 
-    Bool_t KTSimpleFFT::Configure(const KTPStoreNode* node)
+    bool KTSimpleFFT::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
+            SetTransformFlag(node->GetValue("transform-flag", fTransformFlag));
 
-            SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
-            SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
+            SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
+            SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
         }
 
         if (fUseWisdom)
@@ -92,7 +91,7 @@ namespace Katydid
         // fTransformFlag is guaranteed to be valid in the Set method.
         KTDEBUG(fftlog_simp, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
-        Int_t transformFlag = iter->second;
+        int transformFlag = iter->second;
 
         if (fUseWisdom)
         {
@@ -140,7 +139,7 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::InitializeWithHeader(const KTEggHeader* header)
+    void KTSimpleFFT::InitializeWithHeader(KTEggHeader* header)
     {
         KTDEBUG(fftlog_simp, "Initializing via KTEggHeader");
         SetTimeSize(header->GetSliceSize());
@@ -148,7 +147,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTSimpleFFT::TransformData(KTTimeSeriesData& tsData)
+    bool KTSimpleFFT::TransformData(KTTimeSeriesData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
@@ -163,10 +162,10 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
         KTFrequencySpectrumDataPolar& newData = tsData.Of< KTFrequencySpectrumDataPolar >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -188,7 +187,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSimpleFFT::TransformData(KTFrequencySpectrumDataPolar& fsData)
+    bool KTSimpleFFT::TransformData(KTFrequencySpectrumDataPolar& fsData)
     {
         if (fsData.GetSpectrumPolar(0)->GetNFrequencyBins() != GetFrequencySize())
         {
@@ -204,10 +203,10 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
         KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* nextInput = fsData.GetSpectrumPolar(iComponent);
             if (nextInput == NULL)
@@ -229,7 +228,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTSimpleFFT::TransformData(KTCorrelationData& fsData)
+    bool KTSimpleFFT::TransformData(KTCorrelationData& fsData)
     {
         if (fsData.GetSpectrumPolar(0)->GetNFrequencyBins() != GetFrequencySize())
         {
@@ -245,10 +244,10 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
         KTCorrelationTSData& newData = fsData.Of< KTCorrelationTSData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumPolar* nextInput = fsData.GetSpectrumPolar(iComponent);
             if (nextInput == NULL)
@@ -272,7 +271,7 @@ namespace Katydid
 
     KTFrequencySpectrumPolar* KTSimpleFFT::Transform(const KTTimeSeriesReal* data) const
     {
-        UInt_t nTimeBins = (UInt_t)data->size();
+        unsigned nTimeBins = (unsigned)data->size();
         if (nTimeBins != fTimeSize)
         {
             KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -280,20 +279,22 @@ namespace Katydid
             return NULL;
         }
 
-        Double_t timeBinWidth = data->GetTimeBinWidth();
+        double timeBinWidth = data->GetTimeBinWidth();
 
         copy(data->begin(), data->end(), fTSArray);
 
         fftw_execute(fForwardPlan);
 
-        return ExtractForwardTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
+        KTFrequencySpectrumPolar* newSpect = ExtractForwardTransformResult(GetMinFrequency(timeBinWidth), GetMaxFrequency(timeBinWidth));
+        newSpect->SetNTimeBins(nTimeBins);
+        return newSpect;
     }
 
     KTTimeSeriesReal* KTSimpleFFT::Transform(const KTFrequencySpectrumPolar* data) const
     {
-        UInt_t nBins = (UInt_t)data->size();
-        UInt_t freqSize = GetFrequencySize();
-        UInt_t timeSize = GetTimeSize();
+        unsigned nBins = (unsigned)data->size();
+        unsigned freqSize = GetFrequencySize();
+        unsigned timeSize = GetTimeSize();
         if (nBins != freqSize)
         {
             KTWARN(fftlog_simp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -301,7 +302,7 @@ namespace Katydid
             return NULL;
         }
 
-        for (UInt_t iPoint = 0; iPoint < freqSize; iPoint++)
+        for (unsigned iPoint = 0; iPoint < freqSize; iPoint++)
         {
             fFSArray[iPoint][0] = real((*data)(iPoint));
             fFSArray[iPoint][1] = imag((*data)(iPoint));
@@ -315,14 +316,14 @@ namespace Katydid
         return newTS;
     }
 
-    KTFrequencySpectrumPolar* KTSimpleFFT::ExtractForwardTransformResult(Double_t freqMin, Double_t freqMax) const
+    KTFrequencySpectrumPolar* KTSimpleFFT::ExtractForwardTransformResult(double freqMin, double freqMax) const
     {
-        UInt_t freqSize = GetFrequencySize();
-        Double_t normalization = sqrt(2. / (Double_t)GetTimeSize());
+        unsigned freqSize = GetFrequencySize();
+        double normalization = sqrt(2. / (double)GetTimeSize());
 
-        Double_t tempReal, tempImag;
+        //double tempReal, tempImag;
         KTFrequencySpectrumPolar* newSpect = new KTFrequencySpectrumPolar(freqSize, freqMin, freqMax);
-        for (UInt_t iPoint = 0; iPoint<freqSize; iPoint++)
+        for (unsigned iPoint = 0; iPoint<freqSize; iPoint++)
         {
             (*newSpect)(iPoint).set_rect(fFSArray[iPoint][0], fFSArray[iPoint][1]);
             (*newSpect)(iPoint) *= normalization;
@@ -331,7 +332,7 @@ namespace Katydid
         return newSpect;
     }
 
-    void KTSimpleFFT::SetTimeSize(UInt_t nBins)
+    void KTSimpleFFT::SetTimeSize(unsigned nBins)
     {
         fTimeSize = nBins;
         if (fTSArray != NULL) fftw_free(fTSArray);
@@ -356,14 +357,14 @@ namespace Katydid
 
 
 /*
-    void KTSimpleFFT::ProcessHeader(const KTEggHeader* header)
+    void KTSimpleFFT::ProcessHeader(KTEggHeader* header)
     {
         SetTimeSize(header->GetSliceSize());
         InitializeFFT();
         return;
     }
 
-    void KTSimpleFFT::ProcessTimeSeriesData(shared_ptr<KTData> data)
+    void KTSimpleFFT::ProcessTimeSeriesData(KTDataPtr data)
     {
         if (! data->Has< KTTimeSeriesData >())
         {

@@ -1,72 +1,59 @@
 {
-    "katydid":
+    "processor-toolbox":
     {
-        "processor-toolbox":
-        {
-            "processor":
+        "processors":
+        [
+            { "type": "egg-processor",     "name": "egg" },
+            { "type": "complex-fftw",      "name": "fft" },
+            { "type": "basic-root-writer", "name": "writer" }
+        ],
+        
+        "connections":
+        [
             {
-                "type": "egg-processor",
-                "name": "egg"
-            },
-            "processor":
-            {
-                "type": "complex-fftw",
-                "name": "fft"
-            },
-            "processor":
-            {
-                "type": "basic-root-writer",
-                "name": "writer"
-            },
-            
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "header",
-                "slot-processor": "fft",
-                "slot-name": "header"
+                "signal": "egg:header",
+                "slot": "fft:header"
             },
 
             "connection":
             {
-                "signal-processor": "egg",
-                "signal-name": "slice",
-                "slot-processor": "fft",
-                "slot-name": "ts"
+                "signal": "egg:ts",
+                "slot": "fft:ts"
             },
             
             "connection":
             {
-                "signal-processor": "fft",
-                "signal-name": "fft-forward",
-                "slot-processor": "writer",
-                "slot-name": "fs-fftw"
-            },
-            
-            "run-queue":
-            {
-                "processor": "egg"
+                "signal": "fftfft-forward",
+                "slot": "writer:fs-fftw"
             }
-        },
+        ],
         
+        "run-queue":
+        [
+            "egg"
+        ]
+    },
+    
 
-        "egg":
+    "egg":
+    {
+        "filename": "/path/to/file.egg",
+        "slice-size": 16384,
+        "number-of-slices": 1,
+        "dac":
         {
-            "filename": "/path/to/file.egg",
-            "slice-size": 16384,
-            "number-of-slices": 1,
             "time-series-type": "fftw"
-        },
-        
-        "fft":
-        {
-            "transform-flag": "ESTIMATE"
-        },
-        
-        "writer":
-        {
-            "output-file": "/path/to/file.root",
-            "file-flag": "recreate"
         }
+    },
+    
+    "fft":
+    {
+        "transform-flag": "ESTIMATE"
+    },
+    
+    "writer":
+    {
+        "output-file": "/path/to/file.root",
+        "file-flag": "recreate"
     }
 }

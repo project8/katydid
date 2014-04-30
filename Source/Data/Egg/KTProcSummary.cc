@@ -11,15 +11,15 @@ namespace Katydid
 {
 
     KTProcSummary::KTProcSummary() :
-            fNRecordsProcessed(0),
             fNSlicesProcessed(0),
+            fNRecordsProcessed(0),
             fIntegratedTime(0.)
     {
     }
 
     KTProcSummary::KTProcSummary(const KTProcSummary& orig) :
-            fNRecordsProcessed(orig.fNRecordsProcessed),
             fNSlicesProcessed(orig.fNSlicesProcessed),
+            fNRecordsProcessed(orig.fNRecordsProcessed),
             fIntegratedTime(orig.fIntegratedTime)
     {
     }

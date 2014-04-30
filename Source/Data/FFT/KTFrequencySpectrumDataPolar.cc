@@ -35,17 +35,17 @@ namespace Katydid
     {
     }
 
-    KTFrequencySpectrumDataPolar& KTFrequencySpectrumDataPolar::SetNComponents(UInt_t components)
+    KTFrequencySpectrumDataPolar& KTFrequencySpectrumDataPolar::SetNComponents(unsigned components)
     {
-        UInt_t oldSize = fSpectra.size();
+        unsigned oldSize = fSpectra.size();
         // if components < oldSize
-        for (UInt_t iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
         {
             delete fSpectra[iComponent];
         }
         fSpectra.resize(components);
         // if components > oldSize
-        for (UInt_t iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
         {
             fSpectra[iComponent] = NULL;
         }

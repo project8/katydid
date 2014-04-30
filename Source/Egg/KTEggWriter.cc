@@ -8,9 +8,7 @@
 #include "KTEggWriter.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 
@@ -21,20 +19,24 @@
 
 #include <cmath>
 
+using monarch::Monarch;
+using monarch::MonarchException;
+using monarch::MonarchHeader;
+
 using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(eggwritelog, "katydid.output");
+    KTLOGGER(eggwritelog, "KTEggWriter");
 
-    static KTDerivedNORegistrar< KTWriter, KTEggWriter > sEWriterRegistrar("egg-writer");
-    static KTDerivedNORegistrar< KTProcessor, KTEggWriter > sEWProcRegistrar("egg-writer");
+    KT_REGISTER_WRITER(KTEggWriter, "egg-writer");
+    KT_REGISTER_PROCESSOR(KTEggWriter, "egg-writer");
 
 
     KTEggWriter::KTEggWriter(const std::string& name) :
             KTWriter(name),
             fFilename("output.egg"),
-            fFormatMode(sFormatMultiInterleaved),
+            fFormatMode(monarch::sFormatMultiInterleaved),
             fDigitizerFullscale(1.),
             fFileStatus(kClosed),
             fExpectedNChannels(2),
@@ -52,15 +54,15 @@ namespace Katydid
         delete fMonarch;
     }
 
-    Bool_t KTEggWriter::Configure(const KTPStoreNode* node)
+    bool KTEggWriter::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        SetFilename(node->GetData<string>("output-file", fFilename));
+        SetFilename(node->GetValue("output-file", fFilename));
 
-        if (node->HasData("format-mode"))
+        if (node->Has("format-mode"))
         {
-            string modeStr(node->GetData<string>("format-mode"));
+            string modeStr(node->GetValue("format-mode"));
             if (modeStr == "separate")
             {
                 SetFormatMode(sFormatMultiSeparate);
@@ -76,12 +78,12 @@ namespace Katydid
             }
         }
 
-        SetDigitizerFullscale(node->GetData<Double_t>("digitizer-fullscale", fDigitizerFullscale));
+        SetDigitizerFullscale(node->GetValue<double>("digitizer-fullscale", fDigitizerFullscale));
 
         return true;
     }
 
-    Bool_t KTEggWriter::OpenFile()
+    bool KTEggWriter::OpenFile()
     {
         if (fFileStatus != kClosed)
         {
@@ -128,7 +130,7 @@ namespace Katydid
         return;
     }
 
-    void KTEggWriter::WriteHeader(const KTEggHeader* header)
+    void KTEggWriter::WriteHeader(KTEggHeader* header)
     {
         if (fFileStatus == kClosed)
         {
@@ -164,7 +166,7 @@ namespace Katydid
         monarchHeader->SetRunSource(header->GetRunSource());
         if (fExpectedNChannels == 1)
         {
-            monarchHeader->SetFormatMode(sFormatSingle);
+            monarchHeader->SetFormatMode(monarch::sFormatSingle);
         }
         else
         {
@@ -186,7 +188,7 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTEggWriter::WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData)
+    bool KTEggWriter::WriteTSData(KTSliceHeader& slHeader, KTTimeSeriesData& tsData)
     {
         if (fFileStatus == kClosed)
         {
@@ -200,7 +202,7 @@ namespace Katydid
         }
         fFileStatus = kWritingRecords;
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
         if (nComponents != fExpectedNChannels)
         {
             KTERROR(eggwritelog, "Received data contains " << nComponents << " channels of data; " << fExpectedNChannels << " were expected");
@@ -213,7 +215,7 @@ namespace Katydid
             return false;
         }
 
-        fMonarch->SetInterface(sInterfaceSeparate);
+        fMonarch->SetInterface(monarch::sInterfaceSeparate);
 
         CopyATimeSeries(0, slHeader, tsData, fMonarch->GetRecordSeparateOne());
 
@@ -234,7 +236,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTEggWriter::CopyATimeSeries(UInt_t component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
+    bool KTEggWriter::CopyATimeSeries(unsigned component, const KTSliceHeader& slHeader, const KTTimeSeriesData& tsData, MonarchRecord* record)
     {
         const KTTimeSeries* ts = tsData.GetTimeSeries(component);
         if (ts->GetNTimeBins() != fExpectedRecordSize)
@@ -247,9 +249,9 @@ namespace Katydid
         record->fRecordId = slHeader.GetRecordID(component);
         record->fTime = slHeader.GetTimeStamp(component);
 
-        Double_t value;
-        Double_t scale = 255. / fDigitizerFullscale;
-        for (UInt_t iBin = 0; iBin < fExpectedRecordSize; iBin++)
+        double value;
+        double scale = 255. / fDigitizerFullscale;
+        for (unsigned iBin = 0; iBin < fExpectedRecordSize; iBin++)
         {
             value = ts->GetValue(iBin) * scale;
             if (value >= 256) value = 255.;

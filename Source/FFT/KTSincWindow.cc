@@ -7,10 +7,9 @@
 
 #include "KTSincWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -18,9 +17,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTSincWindow");
 
-    static KTDerivedNORegistrar< KTWindowFunction, KTSincWindow > sWFSincRegistrar("sinc");
+    KT_REGISTER_WINDOWFUNCTION(KTSincWindow, "sinc")
 
     KTSincWindow::KTSincWindow(const string& name) :
             KTWindowFunction(name)
@@ -31,13 +30,13 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSincWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    bool KTSincWindow::ConfigureWFSubclass(const KTParamNode*)
     {
         KTDEBUG(windowlog, "Sinc WF configured");
         return true;
     }
 
-    Double_t KTSincWindow::GetWeight(Double_t time) const
+    double KTSincWindow::GetWeight(double time) const
     {
         return GetWeight(KTMath::Nint(time / fBinWidth));
     }
@@ -45,12 +44,12 @@ namespace Katydid
     void KTSincWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t xVal = 0.;
-        Int_t halfSize = Int_t(fSize / 2);
-        Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(halfSize - 1);
-        for (Int_t iBin=0; iBin < Int_t(fSize); iBin++)
+        double xVal = 0.;
+        int halfSize = int(fSize / 2);
+        double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(halfSize - 1);
+        for (unsigned iBin=0; iBin < fSize; iBin++)
         {
-            xVal = twoPiOverNBinsMinus1 * Double_t(iBin-halfSize);
+            xVal = twoPiOverNBinsMinus1 * double(iBin-halfSize);
             fWindowFunction[iBin] = xVal == 0. ? 1. : sin(xVal) / xVal;
         }
         return;

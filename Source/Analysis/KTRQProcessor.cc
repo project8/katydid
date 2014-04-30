@@ -1,17 +1,20 @@
 #include "KTRQProcessor.hh"
 
 namespace Katydid {
-  static KTDerivedNORegistrar<KTProcessor, KTRQProcessor> sRQProcessor("rayleigh-quotient");
+    KT_REGISTER_PROCESSOR(KTRQProcessor, "rayleigh-quotient");
 
   KTRQProcessor::KTRQProcessor(const std::string& name) :
     KTProcessor(name),
+    fNoiseSlot("noise-ts", this, &KTRQProcessor::ProcessNoiseData, &fRQSignal),
+    fCandidateSlot("candidate-ts", this, &KTRQProcessor::ProcessCandidateData, &fRQSignal),
     fRQSignal("rq", this),
     fChunkSize(512),
     fNACMDidConverge(false),
     fNoiseACM(NULL),
     fDataMap(NULL),
-    fNoiseSlot("noise-ts", this, &KTRQProcessor::ProcessNoiseData, &fRQSignal),
-    fCandidateSlot("candidate-ts", this, &KTRQProcessor::ProcessCandidateData, &fRQSignal)
+    fNoiseName(),
+    fCandidateName(),
+    fOutputDataName()
   {
   }
 
@@ -20,14 +23,14 @@ namespace Katydid {
     if(fNoiseACM != NULL) delete fNoiseACM;
   }
 
-  Bool_t KTRQProcessor::Configure(const KTPStoreNode* node) 
+  bool KTRQProcessor::Configure(const KTParamNode* node) 
   {
-    Bool_t result = true;
+    bool result = true;
     // Get settings out of config file
     if (node != NULL) {
 
       // set the chunk size
-      this->SetChunkSize(node->GetData<unsigned>("chunk-size", fChunkSize));
+      this->SetChunkSize(node->GetValue<unsigned>("chunk-size", fChunkSize));
 
       // if the noise ACM is already built, warn but do nothing.  otherwise, 
       // initialize the new matrix.
@@ -40,8 +43,8 @@ namespace Katydid {
       }
 
       // grab the noise and candidate data names.
-      this->SetNoiseDataName(node->GetData<std::string>("noise-data-name", fNoiseName));
-      this->SetCandidateDataName(node->GetData<std::string>("candidate-data-name", fCandidateName));
+      this->SetNoiseDataName(node->GetValue<std::string>("noise-data-name", fNoiseName));
+      this->SetCandidateDataName(node->GetValue<std::string>("candidate-data-name", fCandidateName));
     }
     else {
       KTWARN(nrq_log, "NULL config node passed to Configure!");
@@ -81,17 +84,17 @@ namespace Katydid {
     return fCandidateName;
   }
 
-  void KTRQProcessor::SetNACMConverged(Bool_t newval)
+  void KTRQProcessor::SetNACMConverged(bool newval)
   {
     this->fNACMDidConverge = newval;
   }
   
-  Bool_t KTRQProcessor::GetNACMConverged()
+  bool KTRQProcessor::GetNACMConverged()
   {
     return this->fNACMDidConverge;
   }
   
-  Bool_t KTRQProcessor::ProcessNoiseData(KTTimeSeriesData& noise)
+  bool KTRQProcessor::ProcessNoiseData(KTTimeSeriesData& noise)
   {
     if( !(this->fNACMDidConverge) ) {
       // Grab the first channel of data out to use. 
@@ -100,7 +103,7 @@ namespace Katydid {
       // We need to iterate over the chunks in the time series and produce our 
       // own time series.  First things first, get the pointer to the raw data
       // held in the time series.
-      unsigned nElem = (noiseDt->GetData()).data().size();
+      //(unused) unsigned nElem = (noiseDt->GetData()).data().size();
       const double* rawPtr = (noiseDt->GetData()).data().begin();
 
       // Now we point the data map at the first fChunkSize piece of data and process it. 
@@ -166,7 +169,7 @@ namespace Katydid {
     return (tsptr->normalized())*(*(this->fNoiseACM))*(tsptr->adjoint());
   }
 
-  Bool_t KTRQProcessor::ProcessCandidateData(KTTimeSeriesData& c)
+  bool KTRQProcessor::ProcessCandidateData(KTTimeSeriesData& c)
   {
     if( this->fNACMDidConverge ) {
       // grab data from the bundle.

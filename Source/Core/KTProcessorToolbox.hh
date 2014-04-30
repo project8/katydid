@@ -76,19 +76,22 @@ namespace Katydid
 
         public:
             /// Configure the toolbox: create the processors; connnect signals and slots; and setup the run queue.
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             /// Configure processors (only those specified in the toolbox)
-            Bool_t ConfigureProcessors(const KTPStoreNode* node);
+            bool ConfigureProcessors(const KTParamNode* node);
 
         protected:
+            bool ParseSignalSlotName(const std::string& toParse, std::string& nameOfProc, std::string& nameOfSigSlot) const;
+            static const char fSigSlotNameSep = ':';
+
             typedef std::set< KTPrimaryProcessor* > ThreadGroup;
             typedef std::deque< ThreadGroup > RunQueue;
 
         public:
             /// Process the run queue.
             /// This will call Run() on all of the processors in the queue.
-            Bool_t Run();
+            bool Run();
 
         protected:
             RunQueue fRunQueue;
@@ -106,8 +109,8 @@ namespace Katydid
         public:
             KTProcessor* GetProcessor(const std::string& procName);
             const KTProcessor* GetProcessor(const std::string& procName) const;
-            Bool_t AddProcessor(const std::string& procName, KTProcessor* proc);
-            Bool_t RemoveProcessor(const std::string& procName);
+            bool AddProcessor(const std::string& procName, KTProcessor* proc);
+            bool RemoveProcessor(const std::string& procName);
             KTProcessor* ReleaseProcessor(const std::string& procName);
             void ClearProcessors();
 

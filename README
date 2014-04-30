@@ -6,11 +6,12 @@ Requirements:
   Boost -- headers, plus the following libraries: date_time, filesystem, program_options, system, thread
   FFTW3 -- version 3.3 or newer
   Eigen -- optional, though some functionality will not be available without it
+  Mantis -- optional, version 2.6.0 or newer
   ROOT -- optional, though some functionality will not be available without it
   log4cxx -- optional
   
   If building from source:
-  CMake (tested with 2.8)
+  CMake (version 2.8 or newer)
 
 Directory contents:
   cmake - Files that CMake uses to build Katydid.
@@ -33,9 +34,8 @@ Installation:
         > git clone git@github.com:project8/katydid.git
   2. Enter the top-level directory
         > cd katydid
-  3. Download the Monarch submodule
-        > git submodule init
-        > git submodule update
+  3. Download all submodules
+        > git submodule update --init --recursive
   4. Create and enter the build directory
         > mkdir cbuild
         > cd cbuild

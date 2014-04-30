@@ -16,8 +16,6 @@
 #include "KTLogger.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <complex> // add this before including fftw3.h to use std::complex as FFTW's complex type
 #include <fftw3.h>
 
@@ -27,14 +25,13 @@
 
 namespace Katydid
 {
-    KTLOGGER(fftlog_simp, "katydid.fft");
+    KTLOGGER(fftlog_simp, "KTSimpleFFT");
 
     class KTCorrelationData;
     class KTCorrelationTSData;
-    class KTData;
     class KTEggHeader;
     class KTFrequencySpectrumDataPolar;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
     class KTFrequencySpectrumDataPolar;
@@ -46,7 +43,8 @@ namespace Katydid
      @brief A one-dimensional real-to-complex FFT class.
 
      @details
-     KTSimpleFFT performs a real-to-complex FFT on a one-dimensional array of doubles.
+     KTSimpleFFT performs a real-to-complex forward FFT on a one-dimensional array of doubles,
+     or a complex-to-real reverse FFT on a one-dimensional array of complexpolar pairs.
 
      The FFT is implemented using FFTW.
 
@@ -61,38 +59,40 @@ namespace Katydid
      Currently only the following "rigor" flags are available:
      - ESTIMATE -- "A simple heuristic is used to pick a (probably sub-optimal) plan quickly."
      - MEASURE --  "Find[s] an optimized plan by actually computing several FFTs and measuring their execution time. Depending on your machine, this can take some time (often a few seconds)." This is the default option.
-     - PATIENT -- "Considers a wider range of algorithms and often produces a “more optimal” plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
+     - PATIENT -- "Considers a wider range of algorithms and often produces a more optimal plan (especially for large transforms), but at the expense of several times longer planning time (especially for large transforms)."
      - EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      Slots:
-     - "header": void (const KTEggHeader*) -- Initialize the FFT from an Egg file header
-     - "ts": void (shared_ptr<KTData>) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft"
+     - "header": void (KTEggHeader*) -- Initialize the FFT from an Egg file header
+     - "ts": void (KTDataPtr) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft-forward"
+     - "fs-polar": void (KTDataPtr) -- Perform a reverse FFT; Requires KTFrequencySpectrumDataPolar; Emits signal signal "fft-reverse"
 
      Signals:
-     - "fft": void (shared_ptr<KTData>) -- Emitted upon successful performance of an FFT; Guarantees KTFrequencySpectrumDataPolar
+     - "fft-forward": void (KTDataPtr) -- Emitted upon successful performance of a forward FFT; Guarantees KTFrequencySpectrumDataPolar
+     - "fft-reverse": void (KTDataPtr) -- Emitted upon successful performance of a reverse FFT; Guarantees KTFrequencySpectrumDataPolar
     */
 
     class KTSimpleFFT : public KTFFT, public KTProcessor
     {
         protected:
-            typedef std::map< std::string, UInt_t > TransformFlagMap;
+            typedef std::map< std::string, unsigned > TransformFlagMap;
 
         public:
             KTSimpleFFT(const std::string& name = "simple-fft");
             virtual ~KTSimpleFFT();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             void InitializeFFT();
-            void InitializeWithHeader(const KTEggHeader* header);
+            void InitializeWithHeader(KTEggHeader* header);
 
             /// Forward FFT
-            Bool_t TransformData(KTTimeSeriesData& tsData);
+            bool TransformData(KTTimeSeriesData& tsData);
 
             /// Reverse FFT
-            Bool_t TransformData(KTFrequencySpectrumDataPolar& fsData);
-            Bool_t TransformData(KTCorrelationData& corrData);
+            bool TransformData(KTFrequencySpectrumDataPolar& fsData);
+            bool TransformData(KTCorrelationData& corrData);
 
             /// Forward FFT
             KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
@@ -100,41 +100,41 @@ namespace Katydid
             /// Reverse FFT
             KTTimeSeriesReal* Transform(const KTFrequencySpectrumPolar* data) const;
 
-            virtual UInt_t GetTimeSize() const;
-            virtual UInt_t GetFrequencySize() const;
-            virtual Double_t GetMinFrequency(Double_t timeBinWidth) const;
-            virtual Double_t GetMaxFrequency(Double_t timeBinWidth) const;
+            virtual unsigned GetTimeSize() const;
+            virtual unsigned GetFrequencySize() const;
+            virtual double GetMinFrequency(double timeBinWidth) const;
+            virtual double GetMaxFrequency(double timeBinWidth) const;
 
             /// note: SetTimeSize creates a new fTransform.
-            ///       It also sets fIsInitialized to kFALSE.
-            void SetTimeSize(UInt_t nBins);
+            ///       It also sets fIsInitialized to false.
+            void SetTimeSize(unsigned nBins);
 
             const std::string& GetTransformFlag() const;
-            Bool_t GetIsInitialized() const;
-            Bool_t GetUseWisdom() const;
+            bool GetIsInitialized() const;
+            bool GetUseWisdom() const;
             const std::string& GetWisdomFilename() const;
 
             /// note: SetTransoformFlag sets fIsInitialized to false.
             void SetTransformFlag(const std::string& flag);
-            void SetUseWisdom(Bool_t flag);
+            void SetUseWisdom(bool flag);
             void SetWisdomFilename(const std::string& fname);
 
         protected:
-            UInt_t CalculateNFrequencyBins(UInt_t nTimeBins) const; // do not make this virtual (called from the constructor)
-            KTFrequencySpectrumPolar* ExtractForwardTransformResult(Double_t freqMin, Double_t freqMax) const;
+            unsigned CalculateNFrequencyBins(unsigned nTimeBins) const; // do not make this virtual (called from the constructor)
+            KTFrequencySpectrumPolar* ExtractForwardTransformResult(double freqMin, double freqMax) const;
             void SetupTransformFlagMap(); // do not make this virtual (called from the constructor)
 
             fftw_plan fForwardPlan;
             fftw_plan fReversePlan;
-            UInt_t fTimeSize;
-            Double_t* fTSArray;
+            unsigned fTimeSize;
+            double* fTSArray;
             fftw_complex* fFSArray;
 
             std::string fTransformFlag;
             TransformFlagMap fTransformFlagMap;
 
-            Bool_t fIsInitialized;
-            Bool_t fUseWisdom;
+            bool fIsInitialized;
+            bool fUseWisdom;
             std::string fWisdomFilename;
 
             //***************
@@ -151,31 +151,31 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
             KTSlotDataOneType< KTTimeSeriesData > fFSPolarSlot;
             KTSlotDataOneType< KTCorrelationData > fCorrSlot;
     };
 
 
-    inline UInt_t KTSimpleFFT::GetTimeSize() const
+    inline unsigned KTSimpleFFT::GetTimeSize() const
     {
         return fTimeSize;
     }
 
-    inline UInt_t KTSimpleFFT::GetFrequencySize() const
+    inline unsigned KTSimpleFFT::GetFrequencySize() const
     {
         return CalculateNFrequencyBins(fTimeSize);
     }
 
-    inline Double_t KTSimpleFFT::GetMinFrequency(Double_t timeBinWidth) const
+    inline double KTSimpleFFT::GetMinFrequency(double timeBinWidth) const
     {
         return -0.5 * GetFrequencyBinWidth(timeBinWidth);
     }
 
-    inline Double_t KTSimpleFFT::GetMaxFrequency(Double_t timeBinWidth) const
+    inline double KTSimpleFFT::GetMaxFrequency(double timeBinWidth) const
     {
-        return GetFrequencyBinWidth(timeBinWidth) * ((Double_t)GetFrequencySize() - 0.5);
+        return GetFrequencyBinWidth(timeBinWidth) * ((double)GetFrequencySize() - 0.5);
     }
 
     inline const std::string& KTSimpleFFT::GetTransformFlag() const
@@ -183,12 +183,12 @@ namespace Katydid
         return fTransformFlag;
     }
 
-    inline Bool_t KTSimpleFFT::GetIsInitialized() const
+    inline bool KTSimpleFFT::GetIsInitialized() const
     {
         return fIsInitialized;
     }
 
-    inline Bool_t KTSimpleFFT::GetUseWisdom() const
+    inline bool KTSimpleFFT::GetUseWisdom() const
     {
         return fUseWisdom;
     }
@@ -198,7 +198,7 @@ namespace Katydid
         return fWisdomFilename;
     }
 
-    inline void KTSimpleFFT::SetUseWisdom(Bool_t flag)
+    inline void KTSimpleFFT::SetUseWisdom(bool flag)
     {
         fUseWisdom = flag;
         return;
@@ -210,7 +210,7 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTSimpleFFT::CalculateNFrequencyBins(UInt_t nTimeBins) const
+    inline unsigned KTSimpleFFT::CalculateNFrequencyBins(unsigned nTimeBins) const
     {
         // Integer division is rounded down, per FFTW's instructions
         return nTimeBins / 2 + 1;

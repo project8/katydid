@@ -14,7 +14,7 @@ using std::string;
 
 namespace Katydid
 {
-    //KTLOGGER(rnglog, "katydid.core");
+    //KTLOGGER(rnglog, "KTRandom");
 
     KTRNGEngine::KTRNGEngine(const string& name) :
             KTSelfConfigurable(name),
@@ -26,11 +26,11 @@ namespace Katydid
     {
     }
 
-    Bool_t KTRNGEngine::Configure(const KTPStoreNode* node)
+    bool KTRNGEngine::Configure(const KTParamNode* node)
     {
-        if (node->HasData("seed"))
+        if (node->Has("seed"))
         {
-            SetSeed(node->GetData< UInt_t >("seed"));
+            SetSeed(node->GetValue< unsigned >("seed"));
         }
         else
         {

@@ -9,7 +9,7 @@
 
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeries.hh"
@@ -20,9 +20,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(genlog, "katydid.simulation");
+    KTLOGGER(genlog, "KTSinusoidGenerator");
 
-    static KTDerivedNORegistrar< KTProcessor, KTSinusoidGenerator > sSinusoidGenRegistrar("sinusoid-generator");
+    KT_REGISTER_PROCESSOR(KTSinusoidGenerator, "sinusoid-generator");
 
     KTSinusoidGenerator::KTSinusoidGenerator(const string& name) :
             KTTSGenerator(name),
@@ -36,26 +36,26 @@ namespace Katydid
     {
     }
 
-    Bool_t KTSinusoidGenerator::ConfigureDerivedGenerator(const KTPStoreNode* node)
+    bool KTSinusoidGenerator::ConfigureDerivedGenerator(const KTParamNode* node)
     {
         if (node == NULL) return false;
 
-        fFrequency = node->GetData< Double_t >("frequency", fFrequency);
-        fPhase = node->GetData< Double_t >("phase", fPhase);
-        fAmplitude = node->GetData< Double_t >("amplitude", fAmplitude);
+        fFrequency = node->GetValue< double >("frequency", fFrequency);
+        fPhase = node->GetValue< double >("phase", fPhase);
+        fAmplitude = node->GetValue< double >("amplitude", fAmplitude);
 
         return true;
     }
 
-    Bool_t KTSinusoidGenerator::GenerateTS(KTTimeSeriesData& data)
+    bool KTSinusoidGenerator::GenerateTS(KTTimeSeriesData& data)
     {
-        const Double_t mult = 2. * KTMath::Pi() * fFrequency;
-        const Double_t binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
-        const UInt_t sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
+        const double mult = 2. * KTMath::Pi() * fFrequency;
+        const double binWidth = data.GetTimeSeries(0)->GetTimeBinWidth();
+        const unsigned sliceSize = data.GetTimeSeries(0)->GetNTimeBins();
 
-        UInt_t nComponents = data.GetNComponents();
+        unsigned nComponents = data.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             KTTimeSeries* timeSeries = data.GetTimeSeries(iComponent);
 
@@ -65,8 +65,8 @@ namespace Katydid
                 continue;
             }
 
-            Double_t binCenter = 0.5 * binWidth;
-            for (UInt_t iBin = 0; iBin < sliceSize; iBin++)
+            double binCenter = 0.5 * binWidth;
+            for (unsigned iBin = 0; iBin < sliceSize; iBin++)
             {
                 timeSeries->SetValue(iBin, fAmplitude * sin(binCenter * mult + fPhase) + timeSeries->GetValue(iBin));
                 binCenter += binWidth;

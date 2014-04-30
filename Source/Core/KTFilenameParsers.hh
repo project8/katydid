@@ -6,9 +6,7 @@
  */
 
 #ifndef KTFILENAMEPARSERS_HH_
-#define KTFILENAMEPARSES_HH_
-
-#include "Rtypes.h"
+#define KTFILENAMEPARSERS_HH_
 
 #include <string>
 
@@ -16,10 +14,10 @@ namespace Katydid
 {
     struct KTLocustMCFilename
     {
-            UInt_t fNEvents;
-            Double_t fEventLength; // sec
-            Double_t fdfdt; // Hz/sec ?
-            Double_t fSignalPower; // Watts
+            unsigned fNEvents;
+            double fEventLength; // sec
+            double fdfdt; // Hz/sec ?
+            double fSignalPower; // Watts
             KTLocustMCFilename(const std::string& filename);
     };
 

@@ -21,170 +21,170 @@ namespace Katydid
             KTCCResults();
             virtual ~KTCCResults();
 
-            Double_t GetEventLength();
-            void SetEventLength(Double_t length);
+            double GetEventLength();
+            void SetEventLength(double length);
 
-            Double_t Getdfdt();
-            void Setdfdt(Double_t dfdt);
+            double Getdfdt();
+            void Setdfdt(double dfdt);
 
-            Double_t GetSignalPower();
-            void SetSignalPower(Double_t power);
+            double GetSignalPower();
+            void SetSignalPower(double power);
 
-            UInt_t GetNEvents() const;
-            void SetNEvents(UInt_t nEvents);
+            unsigned GetNEvents() const;
+            void SetNEvents(unsigned nEvents);
 
-            const std::vector< UInt_t >& GetNEventsWithXCandidateMatches() const;
-            void SetNEventsWithXCandidateMatches(UInt_t xCandMatches, UInt_t nEvents);
-            void IncrementNEventsWithXCandidateMatches(UInt_t xCandidateMathces);
-            void ResizeNEventsWithXCandidateMatches(UInt_t size);
+            const std::vector< unsigned >& GetNEventsWithXCandidateMatches() const;
+            void SetNEventsWithXCandidateMatches(unsigned xCandMatches, unsigned nEvents);
+            void IncrementNEventsWithXCandidateMatches(unsigned xCandidateMathces);
+            void ResizeNEventsWithXCandidateMatches(unsigned size);
 
-            UInt_t GetNCandidates() const;
-            void SetNCandidates(UInt_t nCand);
+            unsigned GetNCandidates() const;
+            void SetNCandidates(unsigned nCand);
 
-            const std::vector< UInt_t >& GetNCandidatesWithXEventMatches() const;
-            void SetNCandidatesWithXEventMatches(UInt_t xEventMatches, UInt_t nCand);
-            void IncrementNCandidatesWithXEventMatches(UInt_t xEventMatches);
-            void ResizeNCandidatesWithXEventMatches(UInt_t size);
+            const std::vector< unsigned >& GetNCandidatesWithXEventMatches() const;
+            void SetNCandidatesWithXEventMatches(unsigned xEventMatches, unsigned nCand);
+            void IncrementNCandidatesWithXEventMatches(unsigned xEventMatches);
+            void ResizeNCandidatesWithXEventMatches(unsigned size);
 
-            Double_t GetEfficiency() const;
-            void SetEfficiency(Double_t eff);
+            double GetEfficiency() const;
+            void SetEfficiency(double eff);
 
-            Double_t GetFalseRate() const;
-            void SetFalseRate(Double_t rate);
+            double GetFalseRate() const;
+            void SetFalseRate(double rate);
 
         private:
-            Double_t fEventLength;
-            Double_t fdfdt;
-            Double_t fSignalPower;
+            double fEventLength;
+            double fdfdt;
+            double fSignalPower;
 
-            UInt_t fNEvents;
-            std::vector< UInt_t > fNEventsWithXCandidateMatches;
+            unsigned fNEvents;
+            std::vector< unsigned > fNEventsWithXCandidateMatches;
 
-            UInt_t fNCandidates;
-            std::vector< UInt_t > fNCandidatesWithXEventMatches;
+            unsigned fNCandidates;
+            std::vector< unsigned > fNCandidatesWithXEventMatches;
 
-            Double_t fEfficiency;
-            Double_t fFalseRate;
+            double fEfficiency;
+            double fFalseRate;
     };
 
-    inline Double_t KTCCResults::GetEventLength()
+    inline double KTCCResults::GetEventLength()
     {
         return fEventLength;
     }
 
-    inline void KTCCResults::SetEventLength(Double_t length)
+    inline void KTCCResults::SetEventLength(double length)
     {
         fEventLength = length;
         return;
     }
 
-    inline Double_t KTCCResults::Getdfdt()
+    inline double KTCCResults::Getdfdt()
     {
         return fdfdt;
     }
 
-    inline void KTCCResults::Setdfdt(Double_t dfdt)
+    inline void KTCCResults::Setdfdt(double dfdt)
     {
         fdfdt = dfdt;
         return;
     }
 
-    inline Double_t KTCCResults::GetSignalPower()
+    inline double KTCCResults::GetSignalPower()
     {
         return fSignalPower;
     }
 
-    inline void KTCCResults::SetSignalPower(Double_t power)
+    inline void KTCCResults::SetSignalPower(double power)
     {
         fSignalPower = power;
         return;
     }
 
-    inline UInt_t KTCCResults::GetNEvents() const
+    inline unsigned KTCCResults::GetNEvents() const
     {
         return fNEvents;
     }
 
-    inline void KTCCResults::SetNEvents(UInt_t nEvents)
+    inline void KTCCResults::SetNEvents(unsigned nEvents)
     {
         fNEvents = nEvents;
         return;
     }
 
-    inline const std::vector< UInt_t >& KTCCResults::GetNEventsWithXCandidateMatches() const
+    inline const std::vector< unsigned >& KTCCResults::GetNEventsWithXCandidateMatches() const
     {
         return fNEventsWithXCandidateMatches;
     }
 
-    inline void KTCCResults::SetNEventsWithXCandidateMatches(UInt_t xCandMatches, UInt_t nEvents)
+    inline void KTCCResults::SetNEventsWithXCandidateMatches(unsigned xCandMatches, unsigned nEvents)
     {
         fNEventsWithXCandidateMatches[xCandMatches] = nEvents;
         return;
     }
 
-    inline void KTCCResults::IncrementNEventsWithXCandidateMatches(UInt_t xCandMatches)
+    inline void KTCCResults::IncrementNEventsWithXCandidateMatches(unsigned xCandMatches)
     {
         fNEventsWithXCandidateMatches[xCandMatches] = fNEventsWithXCandidateMatches[xCandMatches] + 1;
         return;
     }
 
-    inline void KTCCResults::ResizeNEventsWithXCandidateMatches(UInt_t size)
+    inline void KTCCResults::ResizeNEventsWithXCandidateMatches(unsigned size)
     {
         fNEventsWithXCandidateMatches.resize(size);
         return;
     }
 
-    inline UInt_t KTCCResults::GetNCandidates() const
+    inline unsigned KTCCResults::GetNCandidates() const
     {
         return fNCandidates;
     }
 
-    inline void KTCCResults::SetNCandidates(UInt_t nCand)
+    inline void KTCCResults::SetNCandidates(unsigned nCand)
     {
         fNCandidates = nCand;
         return;
     }
 
-    inline const std::vector< UInt_t >& KTCCResults::GetNCandidatesWithXEventMatches() const
+    inline const std::vector< unsigned >& KTCCResults::GetNCandidatesWithXEventMatches() const
     {
         return fNCandidatesWithXEventMatches;
     }
 
-    inline void KTCCResults::SetNCandidatesWithXEventMatches(UInt_t xEventMatches, UInt_t nCand)
+    inline void KTCCResults::SetNCandidatesWithXEventMatches(unsigned xEventMatches, unsigned nCand)
     {
         fNCandidatesWithXEventMatches[xEventMatches] = nCand;
         return;
     }
 
-    inline void KTCCResults::IncrementNCandidatesWithXEventMatches(UInt_t xEventMatches)
+    inline void KTCCResults::IncrementNCandidatesWithXEventMatches(unsigned xEventMatches)
     {
         fNCandidatesWithXEventMatches[xEventMatches] = fNCandidatesWithXEventMatches[xEventMatches] + 1;
         return;
     }
 
-    inline void KTCCResults::ResizeNCandidatesWithXEventMatches(UInt_t size)
+    inline void KTCCResults::ResizeNCandidatesWithXEventMatches(unsigned size)
     {
         fNCandidatesWithXEventMatches.resize(size);
         return;
     }
 
-    inline Double_t KTCCResults::GetEfficiency() const
+    inline double KTCCResults::GetEfficiency() const
     {
         return fEfficiency;
     }
 
-    inline void KTCCResults::SetEfficiency(Double_t eff)
+    inline void KTCCResults::SetEfficiency(double eff)
     {
         fEfficiency = eff;
         return;
     }
 
-    inline Double_t KTCCResults::GetFalseRate() const
+    inline double KTCCResults::GetFalseRate() const
     {
         return fFalseRate;
     }
 
-    inline void KTCCResults::SetFalseRate(Double_t rate)
+    inline void KTCCResults::SetFalseRate(double rate)
     {
         fFalseRate = rate;
         return;

@@ -10,23 +10,22 @@
 #include "KTAnalyticAssociateData.hh"
 #include "KTCacheDirectory.hh"
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <algorithm>
 #include <cmath>
 
 using std::string;
 using std::vector;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
 
-    static KTDerivedNORegistrar< KTProcessor, KTComplexFFTW > sComplexFFTWRegistrar("complex-fftw");
+    KT_REGISTER_PROCESSOR(KTComplexFFTW, "complex-fftw");
 
     KTComplexFFTW::KTComplexFFTW(const std::string& name) :
             KTFFTW(),
@@ -58,15 +57,15 @@ namespace Katydid
         fftw_destroy_plan(fReversePlan);
     }
 
-    Bool_t KTComplexFFTW::Configure(const KTPStoreNode* node)
+    bool KTComplexFFTW::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node != NULL)
         {
-            SetTransformFlag(node->GetData<string>("transform-flag", fTransformFlag));
+            SetTransformFlag(node->GetValue("transform-flag", fTransformFlag));
 
-            SetUseWisdom(node->GetData<Bool_t>("use-wisdom", fUseWisdom));
-            SetWisdomFilename(node->GetData<string>("wisdom-filename", fWisdomFilename));
+            SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
+            SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
         }
 
         if (fUseWisdom)
@@ -89,7 +88,7 @@ namespace Katydid
         // fTransformFlag is guaranteed to be valid in the Set method.
         KTDEBUG(fftlog_comp, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
-        UInt_t transformFlag = iter->second;
+        unsigned transformFlag = iter->second;
 
         // allocate the input and output arrays if they're not there already
         AllocateArrays();
@@ -139,14 +138,14 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::InitializeWithHeader(const KTEggHeader* header)
+    void KTComplexFFTW::InitializeWithHeader(KTEggHeader* header)
     {
         SetSize(header->GetSliceSize());
         InitializeFFT();
         return;
     }
 
-    Bool_t KTComplexFFTW::TransformData(KTTimeSeriesData& tsData)
+    bool KTComplexFFTW::TransformData(KTTimeSeriesData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetSize())
         {
@@ -158,14 +157,14 @@ namespace Katydid
         {
             KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
                     << "   Please first call InitializeFFT(), then perform the transform.");
-            return NULL;
+            return false;
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -190,7 +189,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTComplexFFTW::TransformData(KTAnalyticAssociateData& tsData)
+    bool KTComplexFFTW::TransformData(KTAnalyticAssociateData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetSize())
         {
@@ -202,14 +201,14 @@ namespace Katydid
         {
             KTERROR(fftlog_comp, "FFT must be initialized before the transform is performed\n"
                     << "   Please first call InitializeFFT(), then perform the transform.");
-            return NULL;
+            return false;
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
         KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -234,7 +233,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTComplexFFTW::TransformData(KTFrequencySpectrumDataFFTW& fsData)
+    bool KTComplexFFTW::TransformData(KTFrequencySpectrumDataFFTW& fsData)
     {
         if (fsData.GetSpectrumFFTW(0)->size() != GetSize())
         {
@@ -249,11 +248,11 @@ namespace Katydid
             return false;
         }
 
-        UInt_t nComponents = fsData.GetNComponents();
+        unsigned nComponents = fsData.GetNComponents();
 
         KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
             if (nextInput == NULL)
@@ -279,7 +278,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTComplexFFTW::Transform(const KTTimeSeriesFFTW* ts) const
     {
-        UInt_t nBins = ts->size();
+        unsigned nBins = ts->size();
         if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -287,14 +286,16 @@ namespace Katydid
             return NULL;
         }
 
-        Double_t timeBinWidth = ts->GetTimeBinWidth();
-        Double_t freqMin = GetMinFrequency(timeBinWidth);
-        Double_t freqMax = GetMaxFrequency(timeBinWidth);
+        double timeBinWidth = ts->GetTimeBinWidth();
+        double freqMin = GetMinFrequency(timeBinWidth);
+        double freqMax = GetMaxFrequency(timeBinWidth);
 
         KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
 
         DoTransform(ts, newFS);
         //fftw_execute_dft(fForwardPlan, ts->GetData(), newSpectrum->GetData());
+
+        newFS->SetNTimeBins(nBins);
 
         return newFS;
     }
@@ -308,7 +309,7 @@ namespace Katydid
 
     KTTimeSeriesFFTW* KTComplexFFTW::Transform(const KTFrequencySpectrumFFTW* fs) const
     {
-        UInt_t nBins = fs->size();
+        unsigned nBins = fs->size();
         if (nBins != fSize)
         {
             KTWARN(fftlog_comp, "Number of bins in the data provided does not match the number of bins set for this transform\n"
@@ -328,12 +329,12 @@ namespace Katydid
     void KTComplexFFTW::DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const
     {
         fftw_execute_dft(fReversePlan, fsIn->GetData(), tsOut->GetData());
-        (*tsOut) *= sqrt(1. / Double_t(fSize));
+        (*tsOut) *= sqrt(1. / double(fSize));
 
         return;
     }
 
-    void KTComplexFFTW::SetSize(UInt_t nBins)
+    void KTComplexFFTW::SetSize(unsigned nBins)
     {
         fSize = nBins;
         if (fInputArray != NULL)

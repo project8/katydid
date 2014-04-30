@@ -7,16 +7,11 @@
 
 #include "KTDataQueueProcessor.hh"
 
-#include "KTNOFactory.hh"
-#include "KTPStoreNode.hh"
-
-using boost::shared_ptr;
-
 //using std::list;
 
 namespace Katydid
 {
-    static KTDerivedNORegistrar< KTProcessor, KTDataQueueProcessor > sDQProcRegistrar("data-queue");
+    KT_REGISTER_PROCESSOR(KTDataQueueProcessor, "data-queue");
 
     KTDataQueueProcessor::KTDataQueueProcessor(const std::string& name) :
         KTDataQueueProcessorTemplate< KTDataQueueProcessor >(name),
@@ -31,23 +26,23 @@ namespace Katydid
 
     }
 
-    Bool_t KTDataQueueProcessor::ConfigureSubClass(const KTPStoreNode* node)
+    bool KTDataQueueProcessor::ConfigureSubClass(const KTParamNode*)
     {
         return true;
     }
 
-    void KTDataQueueProcessor::EmitDataSignal(boost::shared_ptr<KTData> data)
+    void KTDataQueueProcessor::EmitDataSignal(KTDataPtr data)
     {
         fDataSignal(data);
         return;
     }
 
-    void KTDataQueueProcessor::QueueData(shared_ptr< KTData>& data)
+    void KTDataQueueProcessor::QueueData(KTDataPtr& data)
     {
         return DoQueueData(data, &KTDataQueueProcessor::EmitDataSignal);
     }
 /*
-    void KTDataQueueProcessor::QueueDataList(list< shared_ptr< KTData > >* dataList)
+    void KTDataQueueProcessor::QueueDataList(list< KTDataPtr >* dataList)
     {
         return DoQueueDataList(dataList, &KTDataQueueProcessor::EmitDataSignal);
     }

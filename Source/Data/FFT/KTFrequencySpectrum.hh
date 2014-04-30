@@ -8,8 +8,6 @@
 #ifndef KTFREQUENCYSPECTRUM_HH_
 #define KTFREQUENCYSPECTRUM_HH_
 
-#include "Rtypes.h"
-
 #include <string>
 
 #ifdef ROOT_FOUND
@@ -26,21 +24,26 @@ namespace Katydid
             KTFrequencySpectrum();
             virtual ~KTFrequencySpectrum();
 
+            /// Get the size of the time-domain array from which this spectrum was created
+            virtual unsigned GetNTimeBins() const = 0;
+            /// Set the size of the time-domain array from which this spectrum was created
+            virtual void SetNTimeBins(unsigned bins) = 0;
+
             /// Get the size of the array using the KTFrequencySpectrum interface
-            virtual UInt_t GetNFrequencyBins() const = 0;
+            virtual unsigned GetNFrequencyBins() const = 0;
 
             /// Get the bin width of the array using the KTFrequencySpectrum interface
-            virtual Double_t GetFrequencyBinWidth() const = 0;
+            virtual double GetFrequencyBinWidth() const = 0;
 
-            virtual Double_t GetReal(UInt_t bin) const = 0;
-            virtual Double_t GetImag(UInt_t bin) const = 0;
+            virtual double GetReal(unsigned bin) const = 0;
+            virtual double GetImag(unsigned bin) const = 0;
 
-            virtual void SetRect(UInt_t bin, Double_t real, Double_t imag) = 0;
+            virtual void SetRect(unsigned bin, double real, double imag) = 0;
 
-            virtual Double_t GetAbs(UInt_t bin) const = 0;
-            virtual Double_t GetArg(UInt_t bin) const = 0;
+            virtual double GetAbs(unsigned bin) const = 0;
+            virtual double GetArg(unsigned bin) const = 0;
 
-            virtual void SetPolar(UInt_t bin, Double_t abs, Double_t arg) = 0;
+            virtual void SetPolar(unsigned bin, double abs, double arg) = 0;
 
             virtual KTFrequencySpectrum& CConjugate() = 0;
 

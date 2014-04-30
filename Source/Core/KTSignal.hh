@@ -10,15 +10,14 @@
 
 #include "KTProcessor.hh"
 
-#include <boost/shared_ptr.hpp>
+#include "KTData.hh"
+
 #include <boost/signals2.hpp>
 
 #include <string>
 
 namespace Katydid
 {
-    class KTData;
-
     /*!
      @class KTSignalOneArg
      @author N. S. Oblath
@@ -67,6 +66,10 @@ namespace Katydid
         public:
             typedef void (signature)(void);
             typedef boost::signals2::signal< signature > boost_signal;
+            // the following line is, technically, not valid C++03 code because the 'typename' keyword
+            // is appearing outside of a template (since the template here is fully specified, this counts).
+            // It should compiler with most new-ish compilers, even when compiling under C++03 mode.
+            // It has been tested successfully with GCC 4.6 and Clang 3.1
             typedef typename boost::signals2::signal< signature >::slot_type slot_type;
 
         public:
@@ -91,7 +94,7 @@ namespace Katydid
      @class KTSignalData
      @author N. S. Oblath
 
-     @brief Creates a signal that takes a boost::shared_ptr< KTData > object as its argument.
+     @brief Creates a signal that takes a KTDataPtr object as its argument.
 
      @details
      The purpose of the signal is for passing KTData pointers between Processors.
@@ -106,14 +109,14 @@ namespace Katydid
      That's it!
     */
 
-    class KTSignalData : public KTSignalOneArg< boost::shared_ptr< KTData > >
+    class KTSignalData : public KTSignalOneArg< KTDataPtr >
     {
         public:
-            typedef void (signature)(boost::shared_ptr< KTData >);
+            typedef void (signature)(KTDataPtr);
             typedef boost::signals2::signal< signature > boost_signal;
             typedef boost::signals2::signal< signature >::slot_type slot_type;
 
-            typedef void (ref_signature)(boost::shared_ptr< KTData >&);
+            typedef void (ref_signature)(KTDataPtr&);
             typedef boost::signals2::signal< ref_signature > ref_boost_signal;
             typedef boost::signals2::signal< ref_signature >::slot_type ref_slot_type;
 
@@ -126,7 +129,7 @@ namespace Katydid
             KTSignalData(const KTSignalData&);
 
         public:
-            void operator()(boost::shared_ptr< KTData > arg);
+            void operator()(KTDataPtr arg);
 
         protected:
             ref_boost_signal fRefSignal;
@@ -147,7 +150,7 @@ namespace Katydid
     {}
 
     template< class XSignalArgument >
-    KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const KTSignalOneArg& rhs) :
+    KTSignalOneArg< XSignalArgument >::KTSignalOneArg(const KTSignalOneArg&) :
             fSignal()
     {}
 
@@ -169,7 +172,7 @@ namespace Katydid
     }
 
 
-    inline void KTSignalData::operator()(boost::shared_ptr< KTData > arg)
+    inline void KTSignalData::operator()(KTDataPtr arg)
     {
         fSignal(arg);
         fRefSignal(arg);

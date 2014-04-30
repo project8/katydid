@@ -8,30 +8,28 @@
 #include "KTWindower.hh"
 
 #include "KTEggHeader.hh"
-#include "KTNOFactory.hh"
-#include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 #include "KTWindowFunction.hh"
 
 using std::string;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTWindower");
 
-    static KTDerivedNORegistrar< KTProcessor, KTWindower > sWindowerRegistrar("windower");
+    KT_REGISTER_PROCESSOR(KTWindower, "windower");
 
     KTWindower::KTWindower(const std::string& name) :
             KTProcessor(name),
             fWindowFunction(NULL),
             fWindowed("windowed", this),
             fHeaderSlot("header", this, &KTWindower::InitializeWithHeader),
-            fTimeSeriesRealSlot("ts-real", this, &KTWindower::WindowDataReal, &fWindowed),
-            fTimeSeriesFFTWSlot("ts-fftw", this, &KTWindower::WindowDataFFTW, &fWindowed)
+            fTimeSeriesFFTWSlot("ts-fftw", this, &KTWindower::WindowDataFFTW, &fWindowed),
+            fTimeSeriesRealSlot("ts-real", this, &KTWindower::WindowDataReal, &fWindowed)
     {
     }
 
@@ -40,49 +38,48 @@ namespace Katydid
         delete fWindowFunction;
     }
 
-    Bool_t KTWindower::Configure(const KTPStoreNode* node)
+    bool KTWindower::Configure(const KTParamNode* node)
     {
         // Config-file settings
-        if (node != NULL)
-        {
-            string windowType = node->GetData< string >("window-function-type", "rectangular");
-            KTWindowFunction* tempWF = KTNOFactory< KTWindowFunction >::GetInstance()->Create(windowType);
-            if (tempWF == NULL)
-            {
-                KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");
-                return false;
-            }
-            SetWindowFunction(tempWF);
+        if (node == NULL) return true;
 
-            KTPStoreNode wfNode = node->GetChild("window-function");
-            if (! wfNode.IsValid())
-            {
-                KTWARN(windowlog, "No PStoreNode found for the window function");
-            }
-            else
-            {
-                if (! tempWF->Configure(&wfNode))
-                {
-                    KTERROR(windowlog, "Problems occurred while configuring the window function");
-                    return false;
-                }
-            }
+        string windowType = node->GetValue("window-function-type", "rectangular");
+        if (! SelectWindowFunction(windowType))
+        {
+            return false;
+        }
+
+        if (! fWindowFunction->Configure(node->NodeAt("window-function")))
+        {
+            return false;
         }
 
         return true;
     }
 
-    Bool_t KTWindower::InitializeWindow()
+    bool KTWindower::SelectWindowFunction(const string& windowType)
     {
+        KTWindowFunction* tempWF = KTNOFactory< KTWindowFunction >::GetInstance()->Create(windowType);
+        if (tempWF == NULL)
+        {
+            KTERROR(windowlog, "Invalid window function type given: <" << windowType << ">.");
+            return false;
+        }
+        SetWindowFunction(tempWF);
+        return true;
+    }
+
+    bool KTWindower::InitializeWindow(double binWidth, double size)
+    {
+        fWindowFunction->SetBinWidth(binWidth);
+        fWindowFunction->SetSize(size);
         fWindowFunction->RebuildWindowFunction();
         return true;
     }
 
-    void KTWindower::InitializeWithHeader(const KTEggHeader* header)
+    void KTWindower::InitializeWithHeader(KTEggHeader* header)
     {
-        fWindowFunction->SetBinWidth(1. / header->GetAcquisitionRate());
-        fWindowFunction->SetSize(header->GetSliceSize());
-        if (! InitializeWindow())
+        if (! InitializeWindow(1. / header->GetAcquisitionRate(), header->GetSliceSize()))
         {
             KTERROR(windowlog, "Something went wrong while initializing the window function!");
             return;
@@ -91,16 +88,16 @@ namespace Katydid
         return;
     }
 
-    Bool_t KTWindower::WindowDataReal(KTTimeSeriesData& tsData)
+    bool KTWindower::WindowDataReal(KTTimeSeriesData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != fWindowFunction->GetSize())
         {
             fWindowFunction->AdaptTo(&tsData); // this call rebuilds the window, so that doesn't need to be done separately
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesReal* nextInput = dynamic_cast< KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -109,7 +106,7 @@ namespace Katydid
                 return false;
             }
 
-            Bool_t result = ApplyWindow(nextInput);
+            bool result = ApplyWindow(nextInput);
 
             if (! result)
             {
@@ -118,21 +115,21 @@ namespace Katydid
             }
         }
 
-        KTINFO(fftlog_comp, "Windowing complete");
+        KTINFO(windowlog, "Windowing complete");
 
         return true;
     }
 
-    Bool_t KTWindower::WindowDataFFTW(KTTimeSeriesData& tsData)
+    bool KTWindower::WindowDataFFTW(KTTimeSeriesData& tsData)
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != fWindowFunction->GetSize())
         {
             fWindowFunction->AdaptTo(&tsData); // this call rebuilds the window, so that doesn't need to be done separately
         }
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesFFTW* nextInput = dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -141,7 +138,7 @@ namespace Katydid
                 return false;
             }
 
-            Bool_t result = ApplyWindow(nextInput);
+            bool result = ApplyWindow(nextInput);
 
             if (! result)
             {
@@ -150,14 +147,14 @@ namespace Katydid
             }
         }
 
-        KTINFO(fftlog_comp, "Windowing complete");
+        KTINFO(windowlog, "Windowing complete");
 
         return true;
     }
 
-    Bool_t KTWindower::ApplyWindow(KTTimeSeriesReal* data) const
+    bool KTWindower::ApplyWindow(KTTimeSeriesReal* ts) const
     {
-        UInt_t nBins = data->size();
+        unsigned nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
         {
             KTWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
@@ -165,17 +162,17 @@ namespace Katydid
             return false;
         }
 
-        for (UInt_t iBin=0; iBin < nBins; iBin++)
+        for (unsigned iBin=0; iBin < nBins; ++iBin)
         {
-            (*data)(iBin) = (*data)(iBin) * fWindowFunction->GetWeight(iBin);
+            (*ts)(iBin) = (*ts)(iBin) * fWindowFunction->GetWeight(iBin);
         }
 
         return true;
     }
 
-    Bool_t KTWindower::ApplyWindow(KTTimeSeriesFFTW* data) const
+    bool KTWindower::ApplyWindow(KTTimeSeriesFFTW* ts) const
     {
-        UInt_t nBins = data->size();
+        unsigned nBins = ts->size();
         if (nBins != fWindowFunction->GetSize())
         {
             KTWARN(windowlog, "Number of bins in the data provided does not match the number of bins set for this window\n"
@@ -183,12 +180,12 @@ namespace Katydid
             return false;
         }
 
-        Double_t weight;
-        for (UInt_t iBin=0; iBin < nBins; iBin++)
+        double weight;
+        for (unsigned iBin=0; iBin < nBins; ++iBin)
         {
             weight = fWindowFunction->GetWeight(iBin);
-            (*data)(iBin)[0] = (*data)(iBin)[0] * weight;
-            (*data)(iBin)[1] = (*data)(iBin)[1] * weight;
+            (*ts)(iBin)[0] = (*ts)(iBin)[0] * weight;
+            (*ts)(iBin)[1] = (*ts)(iBin)[1] * weight;
         }
 
         return true;

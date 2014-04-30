@@ -13,14 +13,12 @@
 #include "KTConcurrentQueue.hh"
 #include "KTData.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSlot.hh"
-
-#include <boost/shared_ptr.hpp>
 
 namespace Katydid
 {
-    KTLOGGER(eqplog, "katydid.core");
+    KTLOGGER(eqplog, "KTDataQueueProcessor");
 
     //***********************************
     // Data Queue Processor Template
@@ -35,7 +33,7 @@ namespace Katydid
      @details
 
      Available configuration values:
-     - "timeout": UInt_t -- maximum time to wait for new data (integer number of milliseconds)
+     - "timeout": unsigned -- maximum time to wait for new data (integer number of milliseconds)
 
      Slots:
      - "use-timed-pop": void () -- Switch the queue-popping function to the TIMED version
@@ -51,8 +49,8 @@ namespace Katydid
         public:
             struct DataAndFunc
             {
-                boost::shared_ptr< KTData > fData;
-                void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>);
+                KTDataPtr fData;
+                void (XProcessorType::*fFuncPtr)(KTDataPtr);
             };
 
             typedef KTConcurrentQueue< DataAndFunc > Queue;
@@ -70,8 +68,8 @@ namespace Katydid
             KTDataQueueProcessorTemplate(const std::string& name = "default-data-queue-proc-template-name");
             virtual ~KTDataQueueProcessorTemplate();
 
-            Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t ConfigureSubClass(const KTPStoreNode* node) = 0;
+            bool Configure(const KTParamNode* node);
+            virtual bool ConfigureSubClass(const KTParamNode* node) = 0;
 
             Status GetStatus() const;
             void SetStatus(KTDataQueueProcessorTemplate< XProcessorType >::Status);
@@ -83,10 +81,10 @@ namespace Katydid
             // Derived Processor function pointer
             //**************************************
         public:
-            void SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTData>));
+            void SetFuncPtr(void (XProcessorType::*ptr)(KTDataPtr));
 
         protected:
-            void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>);
+            void (XProcessorType::*fFuncPtr)(KTDataPtr);
 
 
             //*********
@@ -94,13 +92,13 @@ namespace Katydid
             //*********
         public:
             /// Begins processing of queue (switches status from kStopped to kRunning)
-            Bool_t Run();
+            bool Run();
 
             /// Stops processing of queue (switches status to kStopped)
             void Stop();
 
             /// Begins processing of queue if status is already kRunning; otherwise does nothing.
-            Bool_t ProcessQueue();
+            bool ProcessQueue();
 
             void ClearQueue();
 
@@ -114,11 +112,11 @@ namespace Katydid
         protected:
             /// Queue an data object
             /// Assumes ownership of the data; original shared pointer will be nullified
-            void DoQueueData(boost::shared_ptr<KTData>& data, void (XProcessorType::*func)(boost::shared_ptr<KTData>));
+            void DoQueueData(KTDataPtr& data, void (XProcessorType::*func)(KTDataPtr));
 
             /// Queue a list of data objects
             /// Assumes ownership of all data objects and the list; original shared pointers will be nullified
-            //void DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*fFuncPtr)(boost::shared_ptr<KTData>));
+            //void DoQueueDataList(std::list< KTDataPtr& >* dataList, void (XProcessorType::*fFuncPtr)(KTDataPtr));
 
             //*********
             // Slots
@@ -154,10 +152,10 @@ namespace Katydid
      Available configuration values:
 
      Slots:
-     - "data": void (shared_ptr< KTData >) -- Queue a data object for asynchronous processing; use signal "data"
+     - "data": void (KTDataPtr) -- Queue a data object for asynchronous processing; use signal "data"
 
      Signals:
-     - "data": void (shared_ptr< KTData >) -- Emitted for each data object in the queue
+     - "data": void (KTDataPtr) -- Emitted for each data object in the queue
      - "queue-done": void () -- Emitted when queue is emptied (inherited from KTDataQueueProcessorTemplate)
     */
     class KTDataQueueProcessor : public KTDataQueueProcessorTemplate< KTDataQueueProcessor >
@@ -166,10 +164,10 @@ namespace Katydid
             KTDataQueueProcessor(const std::string& name = "data-queue");
             virtual ~KTDataQueueProcessor();
 
-            Bool_t ConfigureSubClass(const KTPStoreNode* node);
+            bool ConfigureSubClass(const KTParamNode* node);
 
         public:
-            void EmitDataSignal(boost::shared_ptr<KTData> data);
+            void EmitDataSignal(KTDataPtr data);
 
             //***************
             // Signals
@@ -184,11 +182,11 @@ namespace Katydid
         public:
             /// Queue an data object; will emit data signal
             /// Assumes ownership of the data; original shared pointer will be nullified
-            void QueueData(boost::shared_ptr<KTData>& data);
+            void QueueData(KTDataPtr& data);
 
             /// Queue a list of data objects; will emit data signal
             /// Assumes ownership of all data objects and the list; original shared pointers will be nullified
-            //void QueueDataList(std::list< boost::shared_ptr<KTData> >* dataList);
+            //void QueueDataList(std::list< KTDataPtr >* dataList);
 
     };
 
@@ -219,16 +217,16 @@ namespace Katydid
     }
 
     template< class XProcessorType >
-    Bool_t KTDataQueueProcessorTemplate< XProcessorType >::Configure(const KTPStoreNode* node)
+    bool KTDataQueueProcessorTemplate< XProcessorType >::Configure(const KTParamNode* node)
     {
-        fQueue.set_timeout(node->GetData< UInt_t >("timeout", fQueue.get_timeout()));
+        fQueue.set_timeout(node->GetValue< unsigned >("timeout", fQueue.get_timeout()));
 
         if (! ConfigureSubClass(node)) return false;
         return true;
     }
 
     template< class XProcessorType >
-    Bool_t KTDataQueueProcessorTemplate< XProcessorType >::Run()
+    bool KTDataQueueProcessorTemplate< XProcessorType >::Run()
     {
         fStatus = kRunning;
         KTINFO(eqplog, "Queue started");
@@ -245,7 +243,7 @@ namespace Katydid
     }
 
     template< class XProcessorType >
-    void KTDataQueueProcessorTemplate< XProcessorType >::SetFuncPtr(void (XProcessorType::*ptr)(boost::shared_ptr<KTData>))
+    void KTDataQueueProcessorTemplate< XProcessorType >::SetFuncPtr(void (XProcessorType::*ptr)(KTDataPtr))
     {
         fFuncPtr = ptr;
         return;
@@ -253,7 +251,7 @@ namespace Katydid
 
 
     template< class XProcessorType >
-    Bool_t KTDataQueueProcessorTemplate< XProcessorType >::ProcessQueue()
+    bool KTDataQueueProcessorTemplate< XProcessorType >::ProcessQueue()
     {
         KTINFO(eqplog, "Beginning to process queue");
         while (fStatus != kStopped)
@@ -297,7 +295,7 @@ namespace Katydid
 
 
     template< class XProcessorType >
-    void KTDataQueueProcessorTemplate< XProcessorType >::DoQueueData(boost::shared_ptr<KTData>& data, void (XProcessorType::*func)(boost::shared_ptr<KTData>))
+    void KTDataQueueProcessorTemplate< XProcessorType >::DoQueueData(KTDataPtr& data, void (XProcessorType::*func)(KTDataPtr))
     {
         KTDEBUG(eqplog, "Queueing data");
         DataAndFunc daf;
@@ -309,9 +307,9 @@ namespace Katydid
     }
 /*
     template< class XProcessorType >
-    void KTDataQueueProcessorTemplate< XProcessorType >::DoQueueDataList(std::list< boost::shared_ptr<KTData>& >* dataList, void (XProcessorType::*func)(boost::shared_ptr<KTData>))
+    void KTDataQueueProcessorTemplate< XProcessorType >::DoQueueDataList(std::list< KTDataPtr& >* dataList, void (XProcessorType::*func)(KTDataPtr))
     {
-        typedef std::list< boost::shared_ptr<KTData> > DataList;
+        typedef std::list< KTDataPtr > DataList;
 
         KTDEBUG(eqplog, "Queueing data objects");
         DataAndFunc daf;

@@ -27,33 +27,33 @@
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(vallog, "katydid.applications.validation");
+KTLOGGER(vallog, "TestGainVariation");
 
 struct Parameters
 {
     // y = fA * x^2 + fB * x + fC
-    Double_t fA;
-    Double_t fB;
-    Double_t fC;
+    double fA;
+    double fB;
+    double fC;
 };
 
-Double_t TestFunction(const Parameters& results, Double_t x);
+double TestFunction(const Parameters& results, double x);
 
 
 int main(int argc, char** argv)
 {
     KTINFO(vallog, "Commencing gain variation test");
 
-    UInt_t nBins = 1000000;
+    unsigned nBins = 1000000;
 
-    UInt_t nFitPoints = 3;
+    unsigned nFitPoints = 3;
 
     Parameters funcParams;
     funcParams.fA = 0.;
     funcParams.fB = 0.;
     funcParams.fC = 15.;
 
-    Double_t noiseSigma = 20.;
+    double noiseSigma = 20.;
 
     if (argc >= 2)
     {
@@ -99,9 +99,9 @@ int main(int argc, char** argv)
     KTWARN(vallog, "No noise is being added");
 #endif
 
-    Double_t value;
-    Double_t value0 = TestFunction(funcParams, spectrum->GetBinCenter(0));
-    for (UInt_t iBin=0; iBin < nBins; iBin++)
+    double value;
+    double value0 = TestFunction(funcParams, spectrum->GetBinCenter(0));
+    for (unsigned iBin=0; iBin < nBins; iBin++)
     {
 #ifdef ROOT_FOUND
         value = TestFunction(funcParams, spectrum->GetBinCenter(iBin));
@@ -182,7 +182,7 @@ int main(int argc, char** argv)
 }
 
 
-Double_t TestFunction(const Parameters& params, Double_t x)
+double TestFunction(const Parameters& params, double x)
 {
     return params.fA * x * x + params.fB * x + params.fC;
 }

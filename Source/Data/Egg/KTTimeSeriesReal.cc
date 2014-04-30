@@ -19,27 +19,27 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(tslog, "katydid.egg");
+    KTLOGGER(tslog, "KTTimeSeriesReal");
 
     KTTimeSeriesReal::KTTimeSeriesReal() :
             KTTimeSeries(),
-            KTPhysicalArray< 1, Double_t >()
+            KTPhysicalArray< 1, double >()
     {
         fData[0] = 0.;
     }
 
-    KTTimeSeriesReal::KTTimeSeriesReal(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
+    KTTimeSeriesReal::KTTimeSeriesReal(size_t nBins, double rangeMin, double rangeMax) :
             KTTimeSeries(),
-            KTPhysicalArray< 1, Double_t >(nBins, rangeMin, rangeMax)
+            KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax)
     {
-        for (UInt_t iBin = 0; iBin < nBins; iBin++)
+        for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            fData[0] = 0.;
+            fData[iBin] = 0.0;
         }
     }
     KTTimeSeriesReal::KTTimeSeriesReal(const KTTimeSeriesReal& orig) :
             KTTimeSeries(),
-            KTPhysicalArray< 1, Double_t >(orig)
+            KTPhysicalArray< 1, double >(orig)
     {
     }
 
@@ -49,14 +49,14 @@ namespace Katydid
 
     KTTimeSeriesReal& KTTimeSeriesReal::operator=(const KTTimeSeriesReal& rhs)
     {
-        KTPhysicalArray< 1, Double_t >::operator=(rhs);
+        KTPhysicalArray< 1, double >::operator=(rhs);
         return *this;
     }
 
-    void KTTimeSeriesReal::Print(UInt_t startPrint, UInt_t nToPrint) const
+    void KTTimeSeriesReal::Print(unsigned startPrint, unsigned nToPrint) const
     {
         stringstream printStream;
-        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; iBin++)
+        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; ++iBin)
         {
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
                     ";   y = " << (*this)(iBin) << "\n";
@@ -68,11 +68,11 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH1D* KTTimeSeriesReal::CreateHistogram(const std::string& name) const
     {
-        UInt_t nBins = GetNBins();
-        TH1D* hist = new TH1D(name.c_str(), "Time Series", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        unsigned nBins = GetNBins();
+        TH1D* hist = new TH1D(name.c_str(), "Time Series", (int)nBins, GetRangeMin(), GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin));
+            hist->SetBinContent((int)iBin+1, (*this)(iBin));
         }
         hist->SetXTitle("Time (s)");
         hist->SetYTitle("Voltage (V)");
@@ -81,11 +81,11 @@ namespace Katydid
 
     TH1D* KTTimeSeriesReal::CreateAmplitudeDistributionHistogram(const std::string& name) const
     {
-        Double_t tMaxMag = -1.;
-        Double_t tMinMag = 1.e9;
-        UInt_t nBins = GetNTimeBins();
-        Double_t value;
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        unsigned nBins = GetNTimeBins();
+        double value;
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             value = (*this)(iBin);
             //value *= value;
@@ -94,7 +94,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Voltage Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             //value = (*this)(iBin);
             //hist->Fill(value*value);

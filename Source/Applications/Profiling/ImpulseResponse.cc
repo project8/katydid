@@ -20,16 +20,14 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesData.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <string>
 
-using boost::shared_ptr;
+
 
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(irlog, "katydid.applications.profiling");
+KTLOGGER(irlog, "ImpulseResponse");
 
 //*********************************
 // Definition of KTSineGenerator
@@ -47,10 +45,10 @@ namespace Katydid
             KTImpulseAnalysis(const std::string& name = "impulse-analysis");
             virtual ~KTImpulseAnalysis();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
-            Bool_t Analyze(KTFrequencySpectrumDataPolar& fsData);
-            //Bool_t Analyze(KTFrequencySpectrumDataFFTW& fsData);
+            bool Analyze(KTFrequencySpectrumDataPolar& fsData);
+            //bool Analyze(KTFrequencySpectrumDataFFTW& fsData);
 
             //***************
             // Slots
@@ -68,38 +66,39 @@ namespace Katydid
 
 int main(int argc, char** argv)
 {
-    KTApplication app(argc, argv);
-    if (! app.ReadConfigFile())
+    KTApplication* app = NULL;
+    try
     {
-        KTERROR(irlog, "Unable to read config file");
+        app = new KTApplication(argc, argv);
+    }
+    catch( std::exception& e )
+    {
+        KTERROR( irlog, "Something went wrong while processing the command line:\n" << e.what() );
         return -1;
     }
+
+    const KTParamNode* parentConfigNode = app->GetConfigurator()->Config();
 
     // Create and configure the processor toolbox.
     // This will create all of the requested processors, connect their signals and slots, and fill the run queue.
-    string appConfigName("impulse-response");
     KTProcessorToolbox procTB;
-    if (! app.Configure(&procTB, appConfigName))
+    if ( ! procTB.Configure( parentConfigNode->NodeAt( procTB.GetConfigName() ) ) )
     {
         KTERROR(irlog, "Unable to configure processor toolbox. Aborting.");
-        return -1;
+        return -2;
     }
 
     // Configure the processors
-    KTPStoreNode node = app.GetNode(appConfigName);
-    if (! node.IsValid())
-    {
-        KTERROR(irlog, "Unable to find config node at <" << appConfigName << ">. Aborting.");
-        return -2;
-    }
-    if (! procTB.ConfigureProcessors(&node))
+    if ( ! procTB.ConfigureProcessors( parentConfigNode ) )
     {
         KTERROR(irlog, "Unable to configure processors. Aborting.");
-        return -3;
+        return -4;
     }
 
     // Execute the run queue!
-    Bool_t success = procTB.Run();
+    bool success = procTB.Run();
+
+    delete app;
 
     if (! success) return -4;
     return 0;
@@ -110,10 +109,10 @@ int main(int argc, char** argv)
 // Implementation of KTImpulseAnalysis
 //***************************************
 
-static KTDerivedNORegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
+static KTNORegistrar< KTProcessor, KTImpulseAnalysis > sImpAnalysisRegistrar("impulse-analysis");
 
 KTImpulseAnalysis::KTImpulseAnalysis(const std::string& name) :
-        KTProcessor(),
+        KTProcessor(name),
         fFSDataPolarSlot("fs-polar", this, &KTImpulseAnalysis::Analyze)
 {
 }
@@ -122,25 +121,25 @@ KTImpulseAnalysis::~KTImpulseAnalysis()
 {
 }
 
-Bool_t KTImpulseAnalysis::Configure(const KTPStoreNode* node)
+bool KTImpulseAnalysis::Configure(const KTParamNode*)
 {
     return true;
 }
 
-Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
+bool KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
 {
     KTFrequencySpectrumPolar* fs = fsData.GetSpectrumPolar(0);
-    UInt_t size = fs->size();
-    Double_t binWidth = fs->GetBinWidth();
+    unsigned size = fs->size();
+    double binWidth = fs->GetBinWidth();
 
     // Loop over all the bins in the FS
     // Calculate the sum and keep the peak bin information
-    UInt_t peakBin = 0, previousPeakBin = 0;
-    Double_t peakBinValue = -1.;
-    Double_t previousPeakValue = -1.;
-    Double_t sum = 0.; // sum of squares, since we want to calculate the power
-    Double_t value;
-    for (UInt_t iBin=0; iBin < size; iBin++)
+    unsigned peakBin = 0, previousPeakBin = 0;
+    double peakBinValue = -1.;
+    double previousPeakValue = -1.;
+    double sum = 0.; // sum of squares, since we want to calculate the power
+    double value;
+    for (unsigned iBin=0; iBin < size; iBin++)
     {
         value = (*fs)(iBin).abs();
         sum += value * value;
@@ -153,19 +152,19 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
         }
     }
 
-    Double_t peakFraction = peakBinValue * peakBinValue / sum;
-    Double_t leakagePeakBin = 1. - peakFraction;
-    Double_t peakThreeBinFraction = (peakBinValue*peakBinValue + (*fs)(peakBin-1).abs()*(*fs)(peakBin-1).abs() + (*fs)(peakBin+1).abs()*(*fs)(peakBin+1).abs()) / sum;
-    Double_t leakagePeakThreeBin = 1. - peakThreeBinFraction;
-    Double_t secondHighestBinRatio = previousPeakValue / peakBinValue;
+    double peakFraction = peakBinValue * peakBinValue / sum;
+    double leakagePeakBin = 1. - peakFraction;
+    double peakThreeBinFraction = (peakBinValue*peakBinValue + (*fs)(peakBin-1).abs()*(*fs)(peakBin-1).abs() + (*fs)(peakBin+1).abs()*(*fs)(peakBin+1).abs()) / sum;
+    double leakagePeakThreeBin = 1. - peakThreeBinFraction;
+    double secondHighestBinRatio = previousPeakValue / peakBinValue;
     //KTDEBUG(irlog, peakFraction << "  " << leakagePeakBin << "  " << peakThreeBinFraction << "  " << leakagePeakThreeBin << "  " << peakBinValue << "  " << peakThreeBinValue << "  " << sum);
 
     // Examine fractional peak width
-    Double_t fraction = 0.1;
-    UInt_t leftSideBin = peakBin, rightSideBin = peakBin;
+    double fraction = 0.1;
+    unsigned leftSideBin = peakBin, rightSideBin = peakBin;
     if (peakBinValue > 0.)
     {
-        Double_t fractionalPowerValue = sqrt(fraction) * peakBinValue;
+        double fractionalPowerValue = sqrt(fraction) * peakBinValue;
         while (leftSideBin > 0 && (*fs)(leftSideBin).abs() >= fractionalPowerValue)
         {
             leftSideBin--;
@@ -178,8 +177,8 @@ Bool_t KTImpulseAnalysis::Analyze(KTFrequencySpectrumDataPolar& fsData)
         if (rightSideBin != size-1 && (*fs)(rightSideBin).abs() < fractionalPowerValue) rightSideBin--; // if we didn't heit the right edge, we went one beyond the FWHM peak
     }
 
-    UInt_t fracWidthBins = rightSideBin - leftSideBin + 1;
-    Double_t fracWidth = Double_t(fracWidthBins) * binWidth;
+    unsigned fracWidthBins = rightSideBin - leftSideBin + 1;
+    double fracWidth = double(fracWidthBins) * binWidth;
 
     KTPROG(irlog, "Frequency of peak: " << fs->GetBinCenter(peakBin) << " Hz (bin # " << peakBin << ")");
     KTPROG(irlog, "Leakage fraction (1 bin): " << leakagePeakBin);

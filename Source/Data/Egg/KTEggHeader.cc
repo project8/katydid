@@ -18,15 +18,20 @@ namespace Katydid
             fFilename(),
             fAcquisitionMode(1),
             fNChannels(1),
+            fRawSliceSize(0),
             fSliceSize(0),
             fRecordSize(0),
             fRunDuration(0),
             fAcquisitionRate(0),
             fTimestamp(),
             fDescription(),
-            fRunType(sRunTypeOther),
-            fRunSource(sSourceMantis),
-            fFormatMode(sFormatSingle)
+            fRunType(monarch::sRunTypeOther),
+            fRunSource(monarch::sSourceMantis),
+            fFormatMode(monarch::sFormatSingle),
+            fDataTypeSize(1),
+            fBitDepth(8),
+            fVoltageMin(-0.25),
+            fVoltageRange(0.5)
     {
     }
 
@@ -34,6 +39,7 @@ namespace Katydid
             fFilename(orig.fFilename),
             fAcquisitionMode(orig.fAcquisitionMode),
             fNChannels(orig.fNChannels),
+            fRawSliceSize(orig.fRawSliceSize),
             fSliceSize(orig.fSliceSize),
             fRecordSize(orig.fRecordSize),
             fRunDuration(orig.fRunDuration),
@@ -42,7 +48,11 @@ namespace Katydid
             fDescription(orig.fDescription),
             fRunType(orig.fRunType),
             fRunSource(orig.fRunSource),
-            fFormatMode(orig.fFormatMode)
+            fFormatMode(orig.fFormatMode),
+            fDataTypeSize(orig.fDataTypeSize),
+            fBitDepth(orig.fBitDepth),
+            fVoltageMin(orig.fVoltageMin),
+            fVoltageRange(orig.fVoltageRange)
     {
     }
 
@@ -55,6 +65,7 @@ namespace Katydid
         fFilename = rhs.fFilename;
         fAcquisitionMode = rhs.fAcquisitionMode;
         fNChannels = rhs.fNChannels;
+        fRawSliceSize = rhs.fRawSliceSize;
         fSliceSize = rhs.fSliceSize;
         fRecordSize = rhs.fRecordSize;
         fRunDuration = rhs.fRunDuration;
@@ -64,6 +75,10 @@ namespace Katydid
         fRunType = rhs.fRunType;
         fRunSource = rhs.fRunSource;
         fFormatMode = rhs.fFormatMode;
+        fDataTypeSize = rhs.fDataTypeSize;
+        fBitDepth = rhs.fBitDepth;
+        fVoltageMin = rhs.fVoltageMin;
+        fVoltageRange = rhs.fVoltageRange;
         return *this;
     }
 
@@ -73,15 +88,20 @@ namespace Katydid
                 << "\tFilename: " << header.GetFilename() << '\n'
                 << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
+                << "\tRaw Slice Size: " << header.GetRawSliceSize() << '\n'
                 << "\tSlice Size: " << header.GetSliceSize() << '\n'
                 << "\tRecord Size: " << header.GetRecordSize() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " s\n"
-                << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz \n"
+                << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz\n"
                 << "\tTimestamp: " << header.GetTimestamp() << '\n'
                 << "\tDescription: " << header.GetDescription() << '\n'
                 << "\tRun Type: " << header.GetRunType() << '\n'
                 << "\tRun Source: " << header.GetRunSource() << '\n'
-                << "\tFormat Mode: " << header.GetFormatMode();
+                << "\tFormat Mode: " << header.GetFormatMode() << '\n'
+                << "\tData Type Size: " << header.GetDataTypeSize() << " Byte(s)\n"
+                << "\tBit Depth: " << header.GetBitDepth() << " bits\n"
+                << "\tVoltage Min: " << header.GetVoltageMin() << " V\n"
+                << "\tVoltage Range: " << header.GetVoltageRange() << " V";
         return out;
     }
 

@@ -14,12 +14,12 @@
 #include "KTTestConfigurable.hh"
 #include "KTApplication.hh"
 #include "KTCommandLineOption.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 using namespace Katydid;
 using namespace std;
 
-KTLOGGER(testapplog, "katydid.applications.validation");
+KTLOGGER(testapplog, "TestApplication");
 
 // Add an application-specific command-line option
 static KTCommandLineOption< string > sTestAppOption("TestApplication", "Application-specific command-line option", "test-app-opt", 'a');
@@ -41,16 +41,6 @@ int main(int argc, char** argv)
         KTERROR(testapplog, "Exception caught from KTApplication constructor:\n"
                 << '\t' << e.what());
         return 0;
-    }
-
-    //****************************
-    // Read the config file
-    //****************************
-
-    if (! app->ReadConfigFile())
-    {
-        KTERROR(testapplog, "Unable to read config file");
-        return -1;
     }
 
 
@@ -77,7 +67,7 @@ int main(int argc, char** argv)
 
     if (app->GetCommandLineHandler()->IsCommandLineOptSet("int-data"))
     {
-        KTINFO(testapplog, "Test option <int-data> is set to value <" << app->GetCommandLineHandler()->GetCommandLineValue< Int_t >("int-data") << ">");
+        KTINFO(testapplog, "Test option <int-data> is set to value <" << app->GetCommandLineHandler()->GetCommandLineValue< int >("int-data") << ">");
     }
     else
     {
@@ -91,13 +81,13 @@ int main(int argc, char** argv)
 
     KTTestConfigurable* testObj = new KTTestConfigurable();
 
-    KTPStoreNode topNode = app->GetNode(testObj->GetConfigName());
-    if (! topNode.IsValid())
+    const KTParamNode* topNode = app->GetConfigurator()->Config();
+    if (topNode == NULL)
     {
         KTWARN(testapplog, "Top-level node <" << testObj->GetConfigName() << "> was not found");
     }
 
-    if (testObj->Configure(&topNode))
+    if (testObj->Configure(topNode->NodeAt(testObj->GetConfigName())))
     {
         KTINFO(testapplog, "Configuration complete:\n"
                 << "\tInt data: " << testObj->GetIntData() << '\n'

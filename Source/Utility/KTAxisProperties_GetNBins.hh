@@ -14,7 +14,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(utillog_getnbins, "katydid.utility");
+    KTLOGGER(utillog_getnbins, "KTAxisProperties_GetNBins");
 
     template< size_t NDims >
     class KTNBinsFunctor
@@ -71,9 +71,9 @@ namespace Katydid
             KTNBinsInArray(XArrayType* ptrToArray, FuncGetNBinsByDim funcGetNBins) :
                     fPtrToArray(NULL),
                     fNBinsFuncPtr(NULL),
+                    fMode(kSingleFunc),
                     fDirectNBinsPtr(NULL),
-                    fArrayOfGetNBinsPtrs(NULL),
-                    fMode(kSingleFunc)
+                    fArrayOfGetNBinsPtrs(NULL)
             {
                 fPtrToArray = ptrToArray;
                 fNBinsFuncPtr = &KTNBinsInArray::GetNBinsByDimDirectly;
@@ -83,9 +83,9 @@ namespace Katydid
             KTNBinsInArray(XArrayType* ptrToArray, FuncGetNBinsOneDim* funcGetNBinsArray) :
                     fPtrToArray(NULL),
                     fNBinsFuncPtr(NULL),
+                    fMode(kMultipleFunc),
                     fDirectNBinsPtr(NULL),
-                    fArrayOfGetNBinsPtrs(NULL),
-                    fMode(kMultipleFunc)
+                    fArrayOfGetNBinsPtrs(NULL)
             {
                 //KTWARN(utillog_getnbins, "in constructor for funcgetnbinsonedim, " << NDims);
                 fPtrToArray = ptrToArray;
@@ -170,7 +170,7 @@ namespace Katydid
 
             virtual size_t operator()(size_t dim=1) const
             {
-                return 1;
+                return dim;
             }
 
             virtual KTNBinsFunctor< NDims >* Clone() const

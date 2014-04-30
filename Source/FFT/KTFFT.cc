@@ -9,12 +9,13 @@
 
 #include "KTLogger.hh"
 
+#ifdef FFTW_FOUND
 #include <fftw3.h>
-
+#endif
 
 namespace Katydid
 {
-    KTLOGGER(fftlog, "katydid.fft");
+    KTLOGGER(fftlog, "KTFFT");
 
     KTFFT::KTFFT()
     {
@@ -56,7 +57,7 @@ namespace Katydid
     }
 
 
-    UInt_t KTFFTW::sInstanceCount = 0;
-    Bool_t KTFFTW::sMultithreadedIsInitialized = false;
+    unsigned KTFFTW::sInstanceCount = 0;
+    bool KTFFTW::sMultithreadedIsInitialized = false;
 
 } /* namespace Katydid */

@@ -24,22 +24,25 @@ using std::stringstream;
 
 namespace Katydid
 {
-    KTLOGGER(fslog, "katydid.fft");
+    KTLOGGER(fslog, "KTFrequencySpectrumPolar");
 
     KTFrequencySpectrumPolar::KTFrequencySpectrumPolar() :
-            KTPhysicalArray< 1, complexpolar< Double_t > >(),
-            KTFrequencySpectrum()
+            KTPhysicalArray< 1, complexpolar< double > >(),
+            KTFrequencySpectrum(),
+            fNTimeBins(0)
     {
     }
 
-    KTFrequencySpectrumPolar::KTFrequencySpectrumPolar(size_t nBins, Double_t rangeMin, Double_t rangeMax) :
-            KTPhysicalArray< 1, complexpolar< Double_t > >(nBins, rangeMin, rangeMax),
-            KTFrequencySpectrum()
+    KTFrequencySpectrumPolar::KTFrequencySpectrumPolar(size_t nBins, double rangeMin, double rangeMax) :
+            KTPhysicalArray< 1, complexpolar< double > >(nBins, rangeMin, rangeMax),
+            KTFrequencySpectrum(),
+            fNTimeBins(0)
     {
     }
     KTFrequencySpectrumPolar::KTFrequencySpectrumPolar(const KTFrequencySpectrumPolar& orig) :
-            KTPhysicalArray< 1, complexpolar< Double_t > >(orig),
-            KTFrequencySpectrum()
+            KTPhysicalArray< 1, complexpolar< double > >(orig),
+            KTFrequencySpectrum(),
+            fNTimeBins(orig.fNTimeBins)
     {
     }
 
@@ -49,15 +52,16 @@ namespace Katydid
 
     KTFrequencySpectrumPolar& KTFrequencySpectrumPolar::operator=(const KTFrequencySpectrumPolar& rhs)
     {
-        KTPhysicalArray< 1, complexpolar< Double_t > >::operator=(rhs);
+        KTPhysicalArray< 1, complexpolar< double > >::operator=(rhs);
+        fNTimeBins = rhs.fNTimeBins;
         return *this;
     }
 
     KTFrequencySpectrumPolar& KTFrequencySpectrumPolar::CConjugate()
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
 #pragma omp parallel for
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             (*this)(iBin).conj();
         }
@@ -67,12 +71,12 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumPolar::CreatePowerSpectrum() const
     {
-        UInt_t nBins = size();
+        unsigned nBins = size();
         KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
-        Double_t value;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 #pragma omp parallel for private(value)
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
            value = (*this)(iBin).abs();
            (*newPS)(iBin) = value * value * scaling;
@@ -96,11 +100,11 @@ namespace Katydid
 #ifdef ROOT_FOUND
     TH1D* KTFrequencySpectrumPolar::CreateMagnitudeHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        unsigned nBins = size();
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int)nBins, GetRangeMin(), GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin).abs());
+            hist->SetBinContent((int)iBin+1, (*this)(iBin).abs());
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Voltage (V)");
@@ -109,11 +113,11 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumPolar::CreatePhaseHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        unsigned nBins = size();
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int)nBins, GetRangeMin(), GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
-            hist->SetBinContent((Int_t)iBin+1, (*this)(iBin).arg());
+            hist->SetBinContent((int)iBin+1, (*this)(iBin).arg());
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Phase");
@@ -122,14 +126,14 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumPolar::CreatePowerHistogram(const std::string& name) const
     {
-        UInt_t nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (Int_t)nBins, GetRangeMin(), GetRangeMax());
-        Double_t value;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        unsigned nBins = size();
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, GetRangeMin(), GetRangeMax());
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
-            hist->SetBinContent((Int_t)iBin + 1, value * value * scaling);
+            hist->SetBinContent((int)iBin + 1, value * value * scaling);
         }
         hist->SetXTitle("Frequency (Hz)");
         hist->SetYTitle("Power (W)");
@@ -138,12 +142,12 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumPolar::CreateMagnitudeDistributionHistogram(const std::string& name) const
     {
-        Double_t tMaxMag = -1.;
-        Double_t tMinMag = 1.e9;
-        UInt_t nBins = size();
-        Double_t value;
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        unsigned nBins = size();
+        double value;
         // Skip the DC bin: start at bin 1
-        for (UInt_t iBin=1; iBin<nBins; iBin++)
+        for (unsigned iBin=1; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
             if (value < tMinMag) tMinMag = value;
@@ -151,7 +155,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             hist->Fill((*this)(iBin).abs());
         }
@@ -161,13 +165,13 @@ namespace Katydid
 
     TH1D* KTFrequencySpectrumPolar::CreatePowerDistributionHistogram(const std::string& name) const
     {
-        Double_t tMaxMag = -1.;
-        Double_t tMinMag = 1.e9;
-        UInt_t nBins = size();
-        Double_t value;
-        Double_t scaling = 1. / KTPowerSpectrum::GetResistance();
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        unsigned nBins = size();
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
         // Skip the DC bin: start at bin 1
-        for (UInt_t iBin=1; iBin<nBins; iBin++)
+        for (unsigned iBin=1; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
             value *= value * scaling;
@@ -176,7 +180,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (UInt_t iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; iBin++)
         {
             value = (*this)(iBin).abs();
             hist->Fill(value * value * scaling);

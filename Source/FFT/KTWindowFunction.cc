@@ -7,11 +7,14 @@
 
 #include "KTWindowFunction.hh"
 
+#ifdef FFTW_FOUND
 #include "KTComplexFFTW.hh"
+#endif
+
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
@@ -26,7 +29,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(fftlog, "katydid.fft");
+    KTLOGGER(fftlog, "KTWindowFunction");
 
     KTWindowFunction::KTWindowFunction(const string& name) :
             KTConfigurable(name),
@@ -42,12 +45,12 @@ namespace Katydid
     {
     }
 
-    Bool_t KTWindowFunction::Configure(const KTPStoreNode* node)
+    bool KTWindowFunction::Configure(const KTParamNode* node)
     {
         return ConfigureWFSubclass(node);
     }
 
-    Double_t KTWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
+    double KTWindowFunction::AdaptTo(const KTTimeSeriesData* tsData)
     {
         SetBinWidth(tsData->GetTimeSeries(0)->GetTimeBinWidth());
         return SetSize(tsData->GetTimeSeries(0)->GetNTimeBins());
@@ -57,7 +60,7 @@ namespace Katydid
     TH1D* KTWindowFunction::CreateHistogram(const string& name) const
     {
         TH1D* hist = new TH1D(name.c_str(), "Window Function", fSize, 0, fLength);
-        for (UInt_t iHistBin=1; iHistBin<=fSize; iHistBin++)
+        for (unsigned iHistBin=1; iHistBin<=fSize; iHistBin++)
         {
             hist->SetBinContent(iHistBin, this->GetWeight(iHistBin-1));
         }
@@ -65,10 +68,11 @@ namespace Katydid
         return hist;
     }
 
+#ifdef FFTW_FOUND
     TH1D* KTWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
     {
-        KTTimeSeriesFFTW timeData(fSize, 0., Double_t(fSize) * fBinWidth);
-        for (UInt_t iBin=0; iBin<fSize+0; iBin++)
+        KTTimeSeriesFFTW timeData(fSize, 0., double(fSize) * fBinWidth);
+        for (unsigned iBin=0; iBin<fSize+0; iBin++)
         {
             timeData.SetValue(iBin, GetWeight(iBin));
         }
@@ -83,16 +87,17 @@ namespace Katydid
         return hist;
     }
 #endif
+#endif
 
-    Double_t KTWindowFunction::SetLength(Double_t length)
+    double KTWindowFunction::SetLength(double length)
     {
         fLength = fabs(length);
         if (fLastSetParameter == kBinWidth)
         {
             // Priority is to preserve the bin width, but it might not be an even divisor of the new length
-            Double_t prelimSize = fLength / fBinWidth;
-            fSize = (UInt_t)KTMath::Nint(prelimSize);
-            fBinWidth = fLength / (Double_t)fSize;
+            double prelimSize = fLength / fBinWidth;
+            fSize = (unsigned)KTMath::Nint(prelimSize);
+            fBinWidth = fLength / (double)fSize;
         }
         else if (fLastSetParameter == kSize || fLastSetParameter == kLength)
         {
@@ -103,7 +108,7 @@ namespace Katydid
         return fBinWidth;
     }
 
-    Double_t KTWindowFunction::SetBinWidth(Double_t bw)
+    double KTWindowFunction::SetBinWidth(double bw)
     {
         fBinWidth = fabs(bw);
         if (fLastSetParameter == kSize || fLastSetParameter == kBinWidth)
@@ -113,47 +118,47 @@ namespace Katydid
         else if (fLastSetParameter == kLength)
         {
             // Priority is to preserve the length, but it might not be an even multiple of the new bin width
-            Double_t prelimNBins = fLength / fBinWidth;
-            fSize = (UInt_t)KTMath::Nint(prelimNBins);
-            fLength = (Double_t)fSize * fBinWidth;
+            double prelimNBins = fLength / fBinWidth;
+            fSize = (unsigned)KTMath::Nint(prelimNBins);
+            fLength = (double)fSize * fBinWidth;
         }
         RebuildWindowFunction();
         fLastSetParameter = kBinWidth;
         return fLength;
     }
 
-    Double_t KTWindowFunction::SetBinWidthAndLength(Double_t bw, Double_t length)
+    double KTWindowFunction::SetBinWidthAndLength(double bw, double length)
     {
         fBinWidth = fabs(bw);
-        Double_t prelimNBins = fabs(length) / fBinWidth;
-        fSize = (UInt_t)KTMath::Nint(prelimNBins);
-        fLength = (Double_t)fSize * fBinWidth;
+        double prelimNBins = fabs(length) / fBinWidth;
+        fSize = (unsigned)KTMath::Nint(prelimNBins);
+        fLength = (double)fSize * fBinWidth;
         RebuildWindowFunction();
         fLastSetParameter = kBinWidth;
         return fLength;
     }
 
-    Double_t KTWindowFunction::SetLengthAndBinWidth(Double_t length, Double_t bw)
+    double KTWindowFunction::SetLengthAndBinWidth(double length, double bw)
     {
         fLength = fabs(length);
-        Double_t prelimNBins = fLength / fabs(bw);
-        fSize = (UInt_t)KTMath::Nint(prelimNBins);
-        fBinWidth = fLength / (Double_t)fSize;
+        double prelimNBins = fLength / fabs(bw);
+        fSize = (unsigned)KTMath::Nint(prelimNBins);
+        fBinWidth = fLength / (double)fSize;
         RebuildWindowFunction();
         fLastSetParameter = kLength;
         return fBinWidth;
     }
 
-    Double_t KTWindowFunction::SetSize(UInt_t wib)
+    double KTWindowFunction::SetSize(unsigned wib)
     {
         fSize = wib;
         if (fLastSetParameter == kBinWidth || fLastSetParameter == kSize)
         {
-            fLength = (Double_t)fSize * fBinWidth;
+            fLength = (double)fSize * fBinWidth;
         }
         else if (fLastSetParameter == kLength)
         {
-            fBinWidth = fLength / (Double_t)fSize;
+            fBinWidth = fLength / (double)fSize;
         }
         RebuildWindowFunction();
         fLastSetParameter = kSize;

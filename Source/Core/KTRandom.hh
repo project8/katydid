@@ -12,7 +12,7 @@
 #include "KTSingleton.hh"
 
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 // the generator that will be used
 #include <boost/random/mersenne_twister.hpp>
@@ -27,7 +27,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(rnglog, "katydid.core");
+    KTLOGGER(rnglog, "KTRandom");
 
     //**************************************
     // Definition of the RNG engine class
@@ -45,10 +45,10 @@ namespace Katydid
         public:
             using KTSelfConfigurable::Configure;
 
-            virtual Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t IsReady() const;
+            virtual bool Configure(const KTParamNode* node);
+            virtual bool IsReady() const;
 
-            virtual void SetSeed(UInt_t seed);
+            virtual void SetSeed(unsigned seed);
 
             generator_type& GetGenerator();
 
@@ -56,12 +56,12 @@ namespace Katydid
             generator_type fGenerator;
     };
 
-    inline Bool_t KTRNGEngine::IsReady() const
+    inline bool KTRNGEngine::IsReady() const
     {
         return true;
     }
 
-    inline void KTRNGEngine::SetSeed(UInt_t seed)
+    inline void KTRNGEngine::SetSeed(unsigned seed)
     {
         fGenerator.seed(seed);
         return;
@@ -112,8 +112,8 @@ namespace Katydid
             Engine* fEngine;
 
         public:
-            virtual Bool_t Configure(const KTPStoreNode* node);
-            virtual Bool_t ConfigureDistribution(const KTPStoreNode* node) = 0;
+            virtual bool Configure(const KTParamNode* node);
+            virtual bool ConfigureDistribution(const KTParamNode* node) = 0;
 
     };
 
@@ -131,7 +131,7 @@ namespace Katydid
     }
 
     template< class Engine >
-    inline Bool_t KTRNGDistribution< Engine >::Configure(const KTPStoreNode* node)
+    inline bool KTRNGDistribution< Engine >::Configure(const KTParamNode* node)
     {
         return this->ConfigureDistribution(node);
     }
@@ -154,7 +154,7 @@ namespace Katydid
      Available configuration options:
        N/A
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGUniform01 : KTRNGDistribution< Engine >, boost::random::uniform_01<RealType>
     {
         typedef boost::random::uniform_01<RealType> dist_type;
@@ -167,7 +167,7 @@ namespace Katydid
 
         inline result_type operator()() {return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator());}
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTParamNode*)
         {
             return true;
         }
@@ -183,10 +183,10 @@ namespace Katydid
      Returns a floating point value distributed in the range [min, max)
 
      Available configuration options:
-       - "min": Double_t -- Minimum for the uniform distribution range (inclusive)
-       - "max": Double_t -- Maximum for the uniform distribution range (exclusive)
+       - "min": double -- Minimum for the uniform distribution range (inclusive)
+       - "max": double -- Maximum for the uniform distribution range (exclusive)
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGUniform : KTRNGDistribution< Engine >, boost::random::uniform_real_distribution<RealType>
     {
         typedef boost::random::uniform_real_distribution<RealType> dist_type;
@@ -212,10 +212,10 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(min, max));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTParamNode* node)
         {
-            input_type min = node->GetData< input_type >("min", this->a());
-            input_type max = node->GetData< input_type >("max", this->b());
+            input_type min = node->GetValue< input_type >("min", this->a());
+            input_type max = node->GetValue< input_type >("max", this->b());
             this->param(param_type(min, max));
             return true;
         }
@@ -233,10 +233,10 @@ namespace Katydid
      The PDF for the distribution is: \f$ p(x) = \frac{1}{\sqrt{2\pi\sigma}} \exp{-\frac{(x-\mu)^2}{2\sigma^2}} \f$
 
      Available configuration options:
-       - "mean": Double_t -- Mean of the Gaussian distribution
-       - "sigma": Double_t -- Standard deviation of the Gaussian distribution
+       - "mean": double -- Mean of the Gaussian distribution
+       - "sigma": double -- Standard deviation of the Gaussian distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGGaussian : KTRNGDistribution< Engine >, boost::random::normal_distribution<RealType>
     {
         typedef boost::random::normal_distribution<RealType> dist_type;
@@ -262,10 +262,10 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean, sigma));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTParamNode* node)
         {
-            input_type mean = node->GetData< input_type >("mean", this->mean());
-            input_type sigma = node->GetData< input_type >("sigma", this->sigma());
+            input_type mean = node->GetValue< input_type >("mean", this->mean());
+            input_type sigma = node->GetValue< input_type >("sigma", this->sigma());
             this->param(param_type(mean, sigma));
             return true;
         }
@@ -283,9 +283,9 @@ namespace Katydid
      The PDF for the distribution is: \f$ p(i) = \frac{exp{-\lambda}\lambda^i}{i!} \f$
 
      Available configuration options:
-       - "mean": Double_t -- Mean of the Poisson distribution
+       - "mean": double -- Mean of the Poisson distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename IntType = Int_t, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename IntType = int, typename RealType = double >
     struct KTRNGPoisson : KTRNGDistribution< Engine >, boost::random::poisson_distribution<IntType, RealType>
     {
         typedef boost::random::poisson_distribution<IntType, RealType> dist_type;
@@ -311,9 +311,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(mean));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTParamNode* node)
         {
-            input_type mean = node->GetData< input_type >("mean", this->mean());
+            input_type mean = node->GetValue< input_type >("mean", this->mean());
             this->param(param_type(mean));
             return true;
         }
@@ -331,9 +331,9 @@ namespace Katydid
      The PDF for the distribution is: \f$ p(x) = \lambda\exp{-\lambda{}x} \f$
 
      Available configuration options:
-       - "lambda": Double_t -- rate parameter of the exponential distribution
+       - "lambda": double -- rate parameter of the exponential distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGExponential : KTRNGDistribution< Engine >, boost::random::exponential_distribution<RealType>
     {
         typedef boost::random::exponential_distribution<RealType> dist_type;
@@ -359,9 +359,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(lambda));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTParamNode* node)
         {
-            input_type lambda = node->GetData< input_type >("lambda", this->lambda());
+            input_type lambda = node->GetValue< input_type >("lambda", this->lambda());
             this->param(param_type(lambda));
             return true;
         }
@@ -379,9 +379,9 @@ namespace Katydid
      The PDF for the distribution is: \f$ p(x) = \frac{x^{n/2-1}\exp{-x/2}}{\Gamma(n/2)2^{n/2}} \f$
 
      Available configuration options:
-       - "lambda": Double_t -- rate parameter of the exponential distribution
+       - "lambda": double -- rate parameter of the exponential distribution
     */
-    template< typename Engine = KTGlobalRNGEngine, typename RealType = Double_t >
+    template< typename Engine = KTGlobalRNGEngine, typename RealType = double >
     struct KTRNGChiSquared : KTRNGDistribution< Engine >, boost::random::chi_squared_distribution<RealType>
     {
         typedef boost::random::chi_squared_distribution<RealType> dist_type;
@@ -407,9 +407,9 @@ namespace Katydid
             return dist_type::operator()(KTRNGDistribution< Engine >::fEngine->GetGenerator(), param_type(n));
         }
 
-        inline virtual Bool_t ConfigureDistribution(const KTPStoreNode* node)
+        inline virtual bool ConfigureDistribution(const KTParamNode* node)
         {
-            input_type n = node->GetData< input_type >("n", this->n());
+            input_type n = node->GetValue< input_type >("n", this->n());
             this->param(param_type(n));
             return true;
         }

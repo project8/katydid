@@ -5,6 +5,7 @@
  *      Author: nsoblath
  */
 
+#include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTThroughputProfiler.hh"
@@ -14,14 +15,13 @@
 
 #include <fftw3.h>
 
-#include <boost/shared_ptr.hpp>
-
 #include <cstdlib>
 
 using namespace std;
 using namespace Katydid;
+using namespace monarch;
 
-KTLOGGER(proflog, "katydid.applications.profiling");
+KTLOGGER(proflog, "ProfileFFTWandMonarch");
 
 int main(const int argc, const char** argv)
 {
@@ -69,7 +69,7 @@ int main(const int argc, const char** argv)
     KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
     // Dummy data pointer
-    boost::shared_ptr<KTData> dataPtr(new KTData());
+    KTDataPtr dataPtr(new KTData());
 
     // Create FFT
     KTINFO(proflog, "Setting up the FFT");
@@ -86,8 +86,11 @@ int main(const int argc, const char** argv)
     KTINFO(proflog, "Starting profiling");
     profiler.ProcessHeader(&tEggHeader);
 
-    const MonarchRecord* tRecord1 = tReadTest->GetRecordSeparateOne();
-    const MonarchRecord* tRecord2 = tReadTest->GetRecordSeparateTwo();
+    const MonarchRecordBytes* tRecord1 = tReadTest->GetRecordSeparateOne();
+    const MonarchRecordBytes* tRecord2 = tReadTest->GetRecordSeparateTwo();
+    const MonarchRecordDataInterface< uint64_t > tData1( tRecord1->fData, tEggHeader.GetDataTypeSize() );
+    const MonarchRecordDataInterface< uint64_t > tData2( tRecord2->fData, tEggHeader.GetDataTypeSize() );
+
     for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
     {
         KTINFO(proflog, "Slice " << iSlice);
@@ -101,7 +104,7 @@ int main(const int argc, const char** argv)
         // copy the data
         for (unsigned index=0; index < tReadHeader->GetRecordSize(); index++)
         {
-            tInputArray[index][0] = double((unsigned char)(tRecord1->fData[index]));
+            tInputArray[index][0] = double(tData1.at(index));
         }
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
@@ -110,7 +113,7 @@ int main(const int argc, const char** argv)
         // copy the data
         for (unsigned index=0; index < tReadHeader->GetRecordSize(); index++)
         {
-            tInputArray[index][0] = double((unsigned char)(tRecord2->fData[index]));
+            tInputArray[index][0] = double(tData2.at(index));
         }
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);

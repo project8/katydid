@@ -11,15 +11,16 @@
 
 #include "KTPrimaryProcessor.hh"
 
+#include "KTData.hh"
 #include "KTEggReader.hh"
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
 
 namespace Katydid
 {
+    class KTDAC;
     class KTProcSummary;
-    class KTPStoreNode;
+    class KTParamNode;
     class KTTimeSeriesData;
 
     /*!
@@ -34,13 +35,14 @@ namespace Katydid
      Configuration name: "egg-processor"
 
      Available configuration options:
-     - "number-of-slices": UInt_t -- Number of slices to process
-     - "progress-report-interval": UInt_t -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
+     - "number-of-slices": unsigned -- Number of slices to process
+     - "progress-report-interval": unsigned -- Interval (# of slices) between reporting progress (mainly relevant for RELEASE builds); turn off by setting to 0
      - "filename": string -- Egg filename to use
      - "egg-reader": string -- Egg reader to use (options: monarch [default], 2011)
-     - "slice-size": UInt_t -- Specify the size of the time series (required)
-     - "stride": UInt_t -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
-     - "time-series-type": string -- Type of time series to produce (options: real [default], fftw [not available with the 2011 egg reader])
+     - "slice-size": unsigned -- Specify the size of the time series (required)
+     - "stride": unsigned -- Specify how many bins to advance between slices (leave unset to make stride == slice-size; i.e. no overlap or skipping between slices)
+     - "normalize-voltages": bool -- Flag to toggle the normalization of ADC values from the egg file (default: true)
+     - "dac": object -- configure the DAC
 
      Command-line options defined
      - -n (n-slices): Number of slices to process
@@ -48,8 +50,9 @@ namespace Katydid
      - -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
-     - "header": void (const KTEggHeader*) -- emitted when the file header is parsed.
-     - "slice": void (boost::shared_ptr<KTData>) -- emitted when the new time series is produced; Guarantees KTTimeSeriesData
+     - "header": void (KTEggHeader*) -- emitted when the file header is parsed.
+     - "raw-ts" void (KTDataPtr) -- emitted when a new raw time series is produced; guarantees KTRawTimeSeriesData
+     - "ts": void (KTDataPtr) -- emitted when the new calibrated time series is produced; Guarantees KTTimeSeriesData
      - "egg-done": void () --  emitted when a file is finished.
      - "summary": void (const KTProcSummary*) -- emitted when a file is finished (after "egg-done")
     */
@@ -62,88 +65,103 @@ namespace Katydid
                 kMonarchEggReader
             };
 
-            enum TimeSeriesType
-            {
-                kRealTimeSeries,
-                kFFTWTimeSeries
-            };
-
         public:
             KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
-            Bool_t Run();
+            unsigned GetNSlices() const;
+            void SetNSlices(unsigned nSlices);
 
-            Bool_t ProcessEgg();
+            unsigned GetProgressReportInterval() const;
+            void SetProgressReportInterval(unsigned nSlices);
 
-            UInt_t GetNSlices() const;
-            UInt_t GetProgressReportInterval() const;
             const std::string& GetFilename() const;
-            EggReaderType GetEggReaderType() const;
-            UInt_t GetSliceSize() const;
-            UInt_t GetStride() const;
-            TimeSeriesType GetTimeSeriesType() const;
-
-            void SetNSlices(UInt_t nSlices);
-            void SetProgressReportInterval(UInt_t nSlices);
             void SetFilename(const std::string& filename);
+
+            EggReaderType GetEggReaderType() const;
             void SetEggReaderType(EggReaderType type);
-            void SetSliceSize(UInt_t size);
-            void SetStride(UInt_t stride);
-            void SetTimeSeriesType(TimeSeriesType type);
+
+            unsigned GetSliceSize() const;
+            void SetSliceSize(unsigned size);
+
+            unsigned GetStride() const;
+            void SetStride(unsigned stride);
+
+            bool GetNormalizeVoltages() const;
+            void SetNormalizeVoltages(bool flag);
 
         private:
-            void UnlimitedLoop(KTEggReader* reader);
-            void LimitedLoop(KTEggReader* reader);
-
-            UInt_t fNSlices;
-            UInt_t fProgressReportInterval;
+            unsigned fNSlices;
+            unsigned fProgressReportInterval;
 
             std::string fFilename;
 
             EggReaderType fEggReaderType;
 
-            UInt_t fSliceSize;
-            UInt_t fStride;
+            unsigned fSliceSize;
+            unsigned fStride;
 
-            TimeSeriesType fTimeSeriesType;
+            KTDAC* fDAC;
+
+            bool fNormalizeVoltages;
+
+        public:
+            bool Run();
+
+            bool ProcessEgg();
+
+            bool HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const;
+            void NormalizeData(KTDataPtr& data);
+
+        private:
+            void UnlimitedLoop(KTEggReader* reader);
+            void LimitedLoop(KTEggReader* reader);
+
 
             //***************
             // Signals
             //***************
 
         private:
-            KTSignalOneArg< const KTEggHeader* > fHeaderSignal;
+            KTSignalOneArg< KTEggHeader* > fHeaderSignal;
+            KTSignalData fRawDataSignal;
             KTSignalData fDataSignal;
             KTSignalOneArg< void > fEggDoneSignal;
             KTSignalOneArg< const KTProcSummary* > fSummarySignal;
 
     };
 
-    inline Bool_t KTEggProcessor::Run()
+    inline bool KTEggProcessor::Run()
     {
         return ProcessEgg();
     }
 
-    inline UInt_t KTEggProcessor::GetNSlices() const
+    inline bool KTEggProcessor::HatchNextSlice(KTEggReader* reader, KTDataPtr& data) const
+    {
+        data = reader->HatchNextSlice();
+        if (data) return true;
+        return false;
+    }
+
+    inline unsigned KTEggProcessor::GetNSlices() const
     {
         return fNSlices;
     }
 
-    inline UInt_t KTEggProcessor::GetProgressReportInterval() const
+    inline unsigned KTEggProcessor::GetProgressReportInterval() const
     {
         return fProgressReportInterval;
     }
 
-    inline void KTEggProcessor::SetNSlices(UInt_t nSlices)
+    inline void KTEggProcessor::SetNSlices(unsigned nSlices)
     {
         fNSlices = nSlices;
         return;
     }
 
-    inline void KTEggProcessor::SetProgressReportInterval(UInt_t nSlices)
+    inline void KTEggProcessor::SetProgressReportInterval(unsigned nSlices)
     {
         fProgressReportInterval = nSlices;
         return;
@@ -171,36 +189,36 @@ namespace Katydid
         return;
     }
 
-    inline UInt_t KTEggProcessor::GetSliceSize() const
+    inline unsigned KTEggProcessor::GetSliceSize() const
     {
         return fSliceSize;
     }
 
-    inline void KTEggProcessor::SetSliceSize(UInt_t size)
+    inline void KTEggProcessor::SetSliceSize(unsigned size)
     {
         fSliceSize = size;
         return;
     }
 
-    inline UInt_t KTEggProcessor::GetStride() const
+    inline unsigned KTEggProcessor::GetStride() const
     {
         return fStride;
     }
 
-    inline void KTEggProcessor::SetStride(UInt_t stride)
+    inline void KTEggProcessor::SetStride(unsigned stride)
     {
         fStride = stride;
         return;
     }
 
-    inline KTEggProcessor::TimeSeriesType KTEggProcessor::GetTimeSeriesType() const
+    inline bool KTEggProcessor::GetNormalizeVoltages() const
     {
-        return fTimeSeriesType;
+        return fNormalizeVoltages;
     }
 
-    inline void KTEggProcessor::SetTimeSeriesType(TimeSeriesType type)
+    inline void KTEggProcessor::SetNormalizeVoltages(bool flag)
     {
-        fTimeSeriesType = type;
+        fNormalizeVoltages = flag;
         return;
     }
 

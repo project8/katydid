@@ -27,48 +27,48 @@ namespace Katydid
             KTMultiFSDataPolarCore();
             virtual ~KTMultiFSDataPolarCore();
 
-            const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(UInt_t component = 0) const;
-            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(UInt_t component = 0);
-            UInt_t GetNComponents() const;
+            const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(unsigned component = 0) const;
+            KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* GetSpectra(unsigned component = 0);
+            unsigned GetNComponents() const;
 
-            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, UInt_t component = 0);
-            void SetSpectrum(KTFrequencySpectrumPolar* spectrum, UInt_t iSpect, UInt_t component = 0);
+            void SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, unsigned component = 0);
+            void SetSpectrum(KTFrequencySpectrumPolar* spectrum, unsigned iSpect, unsigned component = 0);
 
-            void SetNSpectra(UInt_t nSpectra);
-            virtual KTMultiFSDataPolarCore& SetNComponents(UInt_t components) = 0;
+            void SetNSpectra(unsigned nSpectra);
+            virtual KTMultiFSDataPolarCore& SetNComponents(unsigned components) = 0;
 
         protected:
-            void DeleteSpectra(UInt_t component = 0);
+            void DeleteSpectra(unsigned component = 0);
 
             std::vector< KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* > fSpectra;
 
 #ifdef ROOT_FOUND
         public:
-            virtual TH2D* CreateMagnitudeHistogram(UInt_t component = 0, const std::string& name = "hMultiFSMag") const;
-            virtual TH2D* CreatePhaseHistogram(UInt_t component = 0, const std::string& name = "hMultiFSPhase") const;
+            virtual TH2D* CreateMagnitudeHistogram(unsigned component = 0, const std::string& name = "hMultiFSMag") const;
+            virtual TH2D* CreatePhaseHistogram(unsigned component = 0, const std::string& name = "hMultiFSPhase") const;
 
-            virtual TH2D* CreatePowerHistogram(UInt_t component = 0, const std::string& name = "hMultiFSPower") const;
+            virtual TH2D* CreatePowerHistogram(unsigned component = 0, const std::string& name = "hMultiFSPower") const;
 #endif
 
 
     };
 
-    inline const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTMultiFSDataPolarCore::GetSpectra(UInt_t component) const
+    inline const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTMultiFSDataPolarCore::GetSpectra(unsigned component) const
     {
         return fSpectra[component];
     }
 
-    inline KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTMultiFSDataPolarCore::GetSpectra(UInt_t component)
+    inline KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* KTMultiFSDataPolarCore::GetSpectra(unsigned component)
     {
         return fSpectra[component];
     }
 
-    inline UInt_t KTMultiFSDataPolarCore::GetNComponents() const
+    inline unsigned KTMultiFSDataPolarCore::GetNComponents() const
     {
-        return UInt_t(fSpectra.size());
+        return unsigned(fSpectra.size());
     }
 
-    inline void KTMultiFSDataPolarCore::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, UInt_t component)
+    inline void KTMultiFSDataPolarCore::SetSpectra(KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* spectra, unsigned component)
     {
         if (component >= fSpectra.size())
             SetNComponents(component+1);
@@ -77,7 +77,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTMultiFSDataPolarCore::SetSpectrum(KTFrequencySpectrumPolar* spectrum, UInt_t iSpect, UInt_t component)
+    inline void KTMultiFSDataPolarCore::SetSpectrum(KTFrequencySpectrumPolar* spectrum, unsigned iSpect, unsigned component)
     {
         if (component >= fSpectra.size())
             SetNComponents(component+1);
@@ -87,7 +87,7 @@ namespace Katydid
         return;
     }
 
-    inline void KTMultiFSDataPolarCore::DeleteSpectra(UInt_t component)
+    inline void KTMultiFSDataPolarCore::DeleteSpectra(unsigned component)
     {
         if (component >= fSpectra.size())
             return;
@@ -109,7 +109,7 @@ namespace Katydid
             KTMultiFSDataPolar();
             virtual ~KTMultiFSDataPolar();
 
-            KTMultiFSDataPolar& SetNComponents(UInt_t component);
+            KTMultiFSDataPolar& SetNComponents(unsigned component);
     };
 
 } /* namespace Katydid */

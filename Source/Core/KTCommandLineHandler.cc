@@ -20,10 +20,11 @@
 #define STRINGIFY_2(x) STRINGIFY_1(x)
 
 using std::string;
+using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(utillog, "katydid.utility");
+    KTLOGGER(utillog, "KTCommandLineHandler");
 
     CommandLineHandlerException::CommandLineHandlerException (std::string const& why)
       : std::logic_error(why)
@@ -40,8 +41,12 @@ namespace Katydid
             fCommandLineParseLater(),
             fParsedOptions(NULL),
             fCommandLineVarMap(),
+            fConfigOverrideValues(),
+            fPrintHelpMessage(false),
+            fPrintVersionMessage(false),
             fPrintHelpMessageAfterConfig(false),
-            fConfigFilename()
+            fConfigFilename(),
+            fCommandLineJSON()
     {
     }
 
@@ -55,7 +60,7 @@ namespace Katydid
         }
     }
 
-    Bool_t KTCommandLineHandler::TakeArguments(Int_t argC, Char_t**argV)
+    bool KTCommandLineHandler::TakeArguments(int argC, char** argV)
     {
         if (fArgumentsTaken) return false;
 
@@ -63,24 +68,31 @@ namespace Katydid
         fArgV = argV;
         fArgumentsTaken = true;
 
-        InitialCommandLineProcessing();
+        ProcessCommandLine();
 
         return true;
     }
 
+    bool KTCommandLineHandler::ProcessCommandLine()
+    {
+        InitialCommandLineProcessing();
+
+        return DelayedCommandLineProcessing();
+    }
+
     //**************
 
-    Bool_t KTCommandLineHandler::GetArgumentsTaken()
+    bool KTCommandLineHandler::GetArgumentsTaken()
     {
         return fArgumentsTaken;
     }
 
-    Int_t KTCommandLineHandler::GetNArgs()
+    int KTCommandLineHandler::GetNArgs()
     {
         return fNArgs;
     }
 
-    Char_t** KTCommandLineHandler::GetArgV()
+    char** KTCommandLineHandler::GetArgV()
     {
         return fArgV;
     }
@@ -90,7 +102,7 @@ namespace Katydid
     KTCommandLineHandler::OptDescMapIt KTCommandLineHandler::CreateNewOptionGroup(const string& aTitle)
     {
         po::options_description* tNewOpts = new po::options_description(aTitle);
-        std::pair< OptDescMapIt, Bool_t > result = fProposedGroups.insert(OptDescMap::value_type(aTitle, tNewOpts));
+        std::pair< OptDescMapIt, bool > result = fProposedGroups.insert(OptDescMap::value_type(aTitle, tNewOpts));
         if (! result.second)
         {
             KTWARN(utillog, "There is already an option group with title <" << aTitle << ">");
@@ -100,7 +112,7 @@ namespace Katydid
         return result.first;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate)
+    bool KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
@@ -138,7 +150,7 @@ namespace Katydid
         return true;
     }
 
-    Bool_t KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, Bool_t aWarnOnDuplicate)
+    bool KTCommandLineHandler::AddOption(const string& aTitle, const string& aHelpMsg, const string& aLongOpt, bool aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
@@ -174,7 +186,7 @@ namespace Katydid
 
     //**************
 
-   Bool_t KTCommandLineHandler::FinalizeNewOptionGroups()
+   bool KTCommandLineHandler::FinalizeNewOptionGroups()
     {
         for (OptDescMapIt tIter = fProposedGroups.begin(); tIter != fProposedGroups.end(); tIter++)
         {
@@ -183,13 +195,13 @@ namespace Katydid
                 return false;
             }
             delete tIter->second;
-            fProposedGroups.erase(tIter);
         }
+        fProposedGroups.clear();
 
         return true;
     }
 
-    Bool_t KTCommandLineHandler::AddCommandLineOptions(const po::options_description& aSetOfOpts)
+    bool KTCommandLineHandler::AddCommandLineOptions(const po::options_description& aSetOfOpts)
     {
         try
         {
@@ -211,17 +223,18 @@ namespace Katydid
 
     //**************
 
-    Bool_t KTCommandLineHandler::IsCommandLineOptSet(const string& aCLOption)
+    bool KTCommandLineHandler::IsCommandLineOptSet(const string& aCLOption)
     {
         return fCommandLineVarMap.count(aCLOption) != 0;
     }
 
     //**************
 
-    Bool_t KTCommandLineHandler::DelayedCommandLineProcessing()
+    bool KTCommandLineHandler::DelayedCommandLineProcessing()
     {
         if (! fProposedGroups.empty())
         {
+            KTWARN(utillog, "Proposed groups is not empty in dclp: " << fProposedGroups.size())
             if (! this->FinalizeNewOptionGroups())
             {
                 KTERROR(utillog, "An error occurred while adding the proposed option groups\n" <<
@@ -233,16 +246,67 @@ namespace Katydid
         // Parse the command line options that remain after the initial parsing
         try
         {
-            fParsedOptions = po::command_line_parser(fCommandLineParseLater).options(fCommandLineOptions).run();
+            fParsedOptions = po::command_line_parser(fCommandLineParseLater).options(fCommandLineOptions).allow_unregistered().run();
         }
         catch (std::exception& e)
         {
             KTERROR(utillog, "An error occurred while boost was parsing the command line options:\n" << e.what());
             return false;
         }
+
+        // these will be the unregistered items, which are assumed to be intended to edit the config file
+        vector< string > tRemainingToParse = po::collect_unrecognized(fParsedOptions.options, po::include_positional);
+
         // Create the variable map from the parse options
         po::store(fParsedOptions, fCommandLineVarMap);
         po::notify(fCommandLineVarMap);
+
+        // now parse the remaining items into the config override param node
+        for (vector< string >::const_iterator tokenIt = tRemainingToParse.begin(); tokenIt != tRemainingToParse.end(); ++tokenIt)
+        {
+            string argument(*tokenIt);
+            size_t t_name_pos = argument.find_first_not_of( fDash );
+            size_t t_val_pos = argument.find_first_of( fSeparator );
+            // the name should have 2 dashes before it, and there should be a separator
+            if( t_name_pos == 2 && t_val_pos != string::npos )
+            {
+                string t_full_name(argument.substr( t_name_pos, t_val_pos-2 ));
+
+                size_t t_node_start_pos = 0;
+                size_t t_node_sep_pos = t_full_name.find_first_of( fNodeSeparator );
+                KTParamNode* parentNode = &fConfigOverrideValues;
+                while (t_node_sep_pos != string::npos)
+                {
+                    string nodeName(t_full_name.substr(t_node_start_pos, t_node_sep_pos));
+                    if (parentNode->Has(nodeName))
+                    {
+                        parentNode = parentNode->NodeAt(nodeName);
+                    }
+                    else
+                    {
+                        KTParamNode* newChildNode = new KTParamNode();
+                        parentNode->Add(nodeName, newChildNode);
+                        parentNode = newChildNode;
+                    }
+                    t_node_start_pos = t_node_sep_pos + 1;
+                    t_node_sep_pos = t_full_name.find_first_of(fNodeSeparator, t_node_start_pos);
+                }
+
+                string valueName(t_full_name.substr(t_node_start_pos, t_val_pos));
+
+                KTParamValue* new_value = new KTParamValue();
+                *new_value << argument.substr( t_val_pos + 1 );
+
+                //std::cout << "(parser) adding < " << t_name << "<" << t_type << "> > = <" << new_value.value() << ">" << std::endl;
+
+                parentNode->Replace( valueName, new_value );
+
+                continue;
+            }
+
+            KTERROR(utillog, "Argument <" << argument << "> does not match --<name>=<value> pattern");
+            return false;
+        }
 
         return true;
     }
@@ -259,14 +323,15 @@ namespace Katydid
         // Get the executable name
         if (fNArgs >= 1) fExecutableName = string(fArgV[0]);
 
-        // If no arguments were given, print the help message and exit
-        if (fNArgs == 1) PrintHelpMessageAndExit();
+        // If no arguments were given, just return now
+        if (fNArgs == 1) return;
 
         // Define general options, and add them to the complete option list
         po::options_description tGeneralOpts("General options");
         tGeneralOpts.add_options()("help,h", "Print help message")("help-config", "Print help message after reading config file")("version,v", "Print version information");
         /* WHEN NOT USING POSITIONAL CONFIG FILE ARGUMENT */
-        tGeneralOpts.add_options()("config-file,c", po::value< string >(), "Configuration file");
+        tGeneralOpts.add_options()("config,c", po::value< string >(), "Configuration file");
+        tGeneralOpts.add_options()("json,j", po::value< string >(), "Command-Line JSON");
         /**/
         // We want to have the general options printed if --help is used
         fPrintHelpOptions.add(tGeneralOpts);
@@ -331,7 +396,7 @@ namespace Katydid
         fCommandLineParseLater = po::collect_unrecognized(tParsedOpts.options, po::include_positional);
         /* some debugging couts
         std::cout << "there are " << fCommandLineParseLater.size() << " tokens to parse later." << std::endl;
-        for (UInt_t i = 0; i < fCommandLineParseLater.size(); i++)
+        for (unsigned i = 0; i < fCommandLineParseLater.size(); i++)
         {
             std::cout << "   " << fCommandLineParseLater[i] << std::endl;
         }
@@ -345,7 +410,7 @@ namespace Katydid
         // Use the general options information
         if (tGeneralOptsVarMap.count("help"))
         {
-            PrintHelpMessageAndExit();
+            fPrintHelpMessage = true;
         }
         if (tGeneralOptsVarMap.count("help-config"))
         {
@@ -353,11 +418,15 @@ namespace Katydid
         }
         if (tGeneralOptsVarMap.count("version"))
         {
-            PrintVersionMessageAndExit();
+            fPrintVersionMessage = true;
         }
-        if (tGeneralOptsVarMap.count("config-file"))
+        if (tGeneralOptsVarMap.count("config"))
         {
-            fConfigFilename = tGeneralOptsVarMap["config-file"].as< string >();
+            fConfigFilename = tGeneralOptsVarMap["config"].as< string >();
+        }
+        if (tGeneralOptsVarMap.count("json"))
+        {
+            fCommandLineJSON = tGeneralOptsVarMap["json"].as< string >();
         }
 
         return;
@@ -365,23 +434,22 @@ namespace Katydid
 
     //**************
 
-    void KTCommandLineHandler::PrintHelpMessageAndExit()
+    void KTCommandLineHandler::PrintHelpMessage()
     {
         KTINFO(utillog, "\nUsage: " << fExecutableName << " [options]\n\n" <<
                "  If using a config file, it should be specified as:  -c config_file.json\n" <<
                "  Config file options can be modified using:  --address.of.option=\"value\"\n" <<
                fPrintHelpOptions);
-
-        exit(0);
+        return;
     }
 
-    void KTCommandLineHandler::PrintVersionMessageAndExit()
+    void KTCommandLineHandler::PrintVersionMessage()
     {
         std::stringstream printStream;
-        printStream << fExecutableName << " -- Version INformation\n";
+        printStream << fExecutableName << " -- Version Information\n";
         printStream << "Built with: " << fPackageString;
         KTINFO(utillog, printStream.str());
-        exit(0);
+        return;
     }
 
 

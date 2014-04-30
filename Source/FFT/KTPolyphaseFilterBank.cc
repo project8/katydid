@@ -10,7 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -18,13 +18,13 @@
 #include "KTWindowFunction.hh"
 
 using std::string;
-using boost::shared_ptr;
+
 
 namespace Katydid
 {
-    KTLOGGER(pfblog, "katydid.fft");
+    KTLOGGER(pfblog, "KTPolyphaseFilterBank");
 
-    static KTDerivedNORegistrar< KTProcessor, KTPolyphaseFilterBank > sPFBRegistrar("polyphase-filter-bank");
+    KT_REGISTER_PROCESSOR(KTPolyphaseFilterBank, "polyphase-filter-bank");
 
     KTPolyphaseFilterBank::KTPolyphaseFilterBank(const std::string& name) :
             KTProcessor(name),
@@ -41,7 +41,7 @@ namespace Katydid
     {
     }
 
-    Bool_t KTPolyphaseFilterBank::Configure(const KTPStoreNode* node)
+    bool KTPolyphaseFilterBank::Configure(const KTParamNode* node)
     {
         // Config-file settings
         if (node == NULL)
@@ -49,19 +49,19 @@ namespace Katydid
             return false;
         }
 
-        if (node->HasData("n-subsets"))
+        if (node->Has("n-subsets"))
         {
-            SetNSubsets(node->GetData("n-subsets", fNSubsets));
+            SetNSubsets(node->GetValue("n-subsets", fNSubsets));
         }
-        if (node->HasData("subset-size"))
+        if (node->Has("subset-size"))
         {
-            SetSubsetSize(node->GetData("subset-size", fSubsetSize));
+            SetSubsetSize(node->GetValue("subset-size", fSubsetSize));
         }
 
         return true;
     }
 
-    Bool_t KTPolyphaseFilterBank::ProcessDataReal(const KTTimeSeriesData& tsData)
+    bool KTPolyphaseFilterBank::ProcessDataReal(const KTTimeSeriesData& tsData)
     {
         if (dynamic_cast< KTTimeSeriesReal* >(tsData.GetTimeSeries(0)) == NULL)
         {
@@ -78,7 +78,7 @@ namespace Katydid
         return false;
     }
 
-    Bool_t KTPolyphaseFilterBank::ProcessDataFFTW(const KTTimeSeriesData& tsData)
+    bool KTPolyphaseFilterBank::ProcessDataFFTW(const KTTimeSeriesData& tsData)
     {
         if (dynamic_cast< KTTimeSeriesFFTW* >(tsData.GetTimeSeries(0)) == NULL)
         {
@@ -95,18 +95,18 @@ namespace Katydid
         return false;
     }
 
-    boost::shared_ptr< KTData > KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
+    KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataReal(const KTTimeSeriesData& tsData)
     {
         KTSliceHeader& oldSliceHeader = tsData.Of< KTSliceHeader >();
 
-        boost::shared_ptr< KTData > newData(new KTData());
+        KTDataPtr newData(new KTData());
 
         // Fill out slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
         if (! TransferHeaderInformation(oldSliceHeader, sliceHeader))
         {
             KTERROR(pfblog, "Header information was not transferred");
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
         KTDEBUG(pfblog, "Filled out slice header:\n"
                 << "\tSample rate: " << sliceHeader.GetSampleRate() << " Hz\n"
@@ -117,16 +117,16 @@ namespace Katydid
                 << "\tSlice number: " << sliceHeader.GetSliceNumber());
 
 
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             KTTimeSeries* newTS = ApplyPFB(static_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent)));
             if (newTS == NULL)
             {
                 KTERROR(pfblog, "Time series for component " << iComponent << " was not created!");
-                return boost::shared_ptr< KTData >();
+                return KTDataPtr();
             }
             tsData.SetTimeSeries(newTS, iComponent);
         }
@@ -134,11 +134,11 @@ namespace Katydid
         return newData;
     }
 
-    boost::shared_ptr< KTData > KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
+    KTDataPtr KTPolyphaseFilterBank::CreateFilteredDataFFTW(const KTTimeSeriesData& tsData)
     {
-        UInt_t nComponents = tsData.GetNComponents();
+        unsigned nComponents = tsData.GetNComponents();
 
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             KTTimeSeriesFFTW* newTS = ApplyPFB(static_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent)));
         }
@@ -154,17 +154,18 @@ namespace Katydid
 
     }
 
-    Bool_t KTPolyphaseFilterBank::TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader)
+    bool KTPolyphaseFilterBank::TransferHeaderInformation(const KTSliceHeader& oldHeader, KTSliceHeader& newHeader)
     {
         newHeader.SetNComponents(oldHeader.GetNComponents());
         newHeader.SetSampleRate(oldHeader.GetSampleRate());
         newHeader.SetSliceSize(fSubsetSize);
+        newHeader.SetRawSliceSize(fSubsetSize);
         newHeader.CalculateBinWidthAndSliceLength();
         newHeader.SetTimeInRun(GetNewTimeInRun(oldHeader));
         newHeader.SetSliceNumber(GetNewSliceNumber(oldHeader));
 
-        UInt_t nComponents = newHeader.GetNComponents();
-        for (UInt_t iComponent = 0; iComponent < nComponents; iComponent++)
+        unsigned nComponents = newHeader.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
         {
             newHeader.SetAcquisitionID(oldHeader.GetAcquisitionID(iComponent), iComponent);
             newHeader.SetRecordID(oldHeader.GetRecordID(iComponent), iComponent);

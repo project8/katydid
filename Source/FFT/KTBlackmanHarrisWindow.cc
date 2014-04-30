@@ -7,10 +7,9 @@
 
 #include "KTBlackmanHarrisWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -18,9 +17,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTBlackmanHarrisWindow");
 
-    static KTDerivedNORegistrar< KTWindowFunction, KTBlackmanHarrisWindow > sWFBHRegistrar("blackman-harris");
+    KT_REGISTER_WINDOWFUNCTION(KTBlackmanHarrisWindow, "blackman-harris")
 
     KTBlackmanHarrisWindow::KTBlackmanHarrisWindow(const string& name) :
             KTWindowFunction(name)
@@ -31,13 +30,13 @@ namespace Katydid
     {
     }
 
-    Bool_t KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    bool KTBlackmanHarrisWindow::ConfigureWFSubclass(const KTParamNode*)
     {
         KTDEBUG(windowlog, "Blackman-Harris WF configured");
         return true;
     }
 
-    Double_t KTBlackmanHarrisWindow::GetWeight(Double_t time) const
+    double KTBlackmanHarrisWindow::GetWeight(double time) const
     {
         return GetWeight(KTMath::Nint(time / fBinWidth));
     }
@@ -45,11 +44,11 @@ namespace Katydid
     void KTBlackmanHarrisWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(fSize - 1);
-        for (Int_t iBin=0; iBin<fSize; iBin++)
+        double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(fSize - 1);
+        for (unsigned iBin=0; iBin<fSize; iBin++)
         {
-            fWindowFunction[iBin] = 0.35875 - 0.48829 * cos(Double_t(iBin) * twoPiOverNBinsMinus1) +
-                    0.14128 * cos(Double_t(2 * iBin) * twoPiOverNBinsMinus1) - 0.01168 * cos(Double_t(3 * iBin) * twoPiOverNBinsMinus1);
+            fWindowFunction[iBin] = 0.35875 - 0.48829 * cos(double(iBin) * twoPiOverNBinsMinus1) +
+                    0.14128 * cos(double(2 * iBin) * twoPiOverNBinsMinus1) - 0.01168 * cos(double(3 * iBin) * twoPiOverNBinsMinus1);
         }
         return;
     }

@@ -10,8 +10,8 @@
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
-#include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesReal.hh"
+#include "KTRawTimeSeriesData.hh"
+#include "KTRawTimeSeries.hh"
 
 #include "rapidxml.hpp"
 //#include "rapidxml_print.hpp"
@@ -28,7 +28,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "katydid.egg");
+    KTLOGGER(eggreadlog, "KTEggReader2011");
 
     const ifstream::pos_type KTEggReader2011::sPreludeSize = 9;
 
@@ -212,6 +212,7 @@ namespace Katydid
         KTEggHeader* eggHeader = new KTEggHeader();
         eggHeader->SetFilename(filename);
         eggHeader->SetAcquisitionMode(1);
+        eggHeader->SetRawSliceSize(fHeaderInfo.fRecordSize);
         eggHeader->SetSliceSize(fHeaderInfo.fRecordSize);
         eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
         eggHeader->SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
@@ -219,17 +220,21 @@ namespace Katydid
         // timestamp
         // description
         // run type
-        eggHeader->SetRunSource(sSourceMantis);
-        eggHeader->SetFormatMode(sFormatSingle);
+        eggHeader->SetRunSource(monarch::sSourceMantis);
+        eggHeader->SetFormatMode(monarch::sFormatSingle);
+        eggHeader->SetDataTypeSize(1);
+        eggHeader->SetBitDepth(8);
+        eggHeader->SetVoltageMin(-0.25);
+        eggHeader->SetVoltageRange(0.5);
 
         return eggHeader;
     }
 
-    boost::shared_ptr< KTData > KTEggReader2011::HatchNextSlice()
+    KTDataPtr KTEggReader2011::HatchNextSlice()
     {
-        if (! fEggStream.good()) return boost::shared_ptr< KTData >();
+        if (! fEggStream.good()) return KTDataPtr();
 
-        boost::shared_ptr< KTData > newData(new KTData());
+        KTDataPtr newData(new KTData());
 
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(1);
 
@@ -259,7 +264,7 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading time stamp size");
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
 
         // read the frame size
@@ -291,16 +296,17 @@ namespace Katydid
         if (! fEggStream.good())
         {
             KTERROR(eggreadlog, "Reached end of file after reading frame size");
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
 
         // Other information
         sliceHeader.SetSampleRate(double(fHeaderInfo.fSampleRate));
         sliceHeader.SetBinWidth(1. / double(fHeaderInfo.fSampleRate));
+        sliceHeader.SetRawSliceSize(fHeaderInfo.fRecordSize);
         sliceHeader.SetSliceSize(fHeaderInfo.fRecordSize);
         sliceHeader.SetSliceLength(double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
         sliceHeader.SetTimeInRun(GetTimeInRun());
-        sliceHeader.SetSliceNumber((ULong64_t)fRecordsRead);
+        sliceHeader.SetSliceNumber((uint64_t)fRecordsRead);
         sliceHeader.SetStartRecordNumber(fRecordsRead);
         sliceHeader.SetStartSampleNumber(0);
         sliceHeader.SetEndRecordNumber(fRecordsRead);
@@ -316,19 +322,18 @@ namespace Katydid
                     << "\tExpected: :" << fHeaderInfo.fRecordSize << '\n'
                     << "\tRead: " << fEggStream.gcount());
             delete [] readBuffer;
-            return boost::shared_ptr< KTData >();
+            return KTDataPtr();
         }
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTTimeSeries* newRecord = new KTTimeSeriesReal(fHeaderInfo.fRecordSize, 0., Double_t(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
-            for (unsigned iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
+            KTRawTimeSeries* newRecord = new KTRawTimeSeries(fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
+            for (int iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
-                //(*newRecord)(iBin) = Double_t(readBuffer[iBin]);
-                newRecord->SetValue(iBin, Double_t(readBuffer[iBin]));
+                (*newRecord)(iBin) = readBuffer[iBin];
             }
             delete [] readBuffer;
-            KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(1);
+            KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(1);
             tsData.SetTimeSeries(newRecord);
             fRecordsRead++;
         }

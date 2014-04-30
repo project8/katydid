@@ -13,15 +13,12 @@
 
 #include "KTSlot.hh"
 
-#include <boost/shared_ptr.hpp>
-
 #include <vector>
 
 
 namespace Katydid
 {
     class KTCorrelationData;
-    class KTData;
     class KTDiscriminatedPoints1DData;
     class KTFrequencySpectrumDataFFTW;
     class KTFrequencySpectrumDataFFTWCore;
@@ -62,15 +59,15 @@ namespace Katydid
      - "max-bin": unsigned -- maximum frequency by bin
 
      Slots:
-     - "fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
-     - "fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
-     - "norm-fs-polar": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
-     - "norm-fs-fftw": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
-     - "corr": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
-     - "wv": void (shared_ptr< KTData >) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
+     - "fs-polar": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     - "fs-fftw": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataFFTW; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-polar": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTFrequencySpectrumDataPolar; Adds KTDiscrimiantedPoints1DData
+     - "norm-fs-fftw": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTNormalizedFSDataFFTW; Adds KTDiscrimiantedPoints1DData
+     - "corr": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTCorrelationData; Adds KTDiscrimiantedPoints1DData
+     - "wv": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData; Adds KTDistributedPoints1DData
 
      Signals:
-     - "disc-1d": void (shared_ptr< KTData >) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData
+     - "disc-1d": void (KTDataPtr) Emitted upon performance of a discrimination; Guarantees KTDiscriminatedPoints1DData
     */
     class KTVariableSpectrumDiscriminator : public KTProcessor
     {
@@ -86,56 +83,56 @@ namespace Katydid
             KTVariableSpectrumDiscriminator(const std::string& name = "variable-spectrum-discriminator");
             virtual ~KTVariableSpectrumDiscriminator();
 
-            Bool_t Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
-            Double_t GetSNRThreshold() const;
-            void SetSNRAmplitudeThreshold(Double_t thresh);
-            void SetSNRPowerThreshold(Double_t thresh);
+            double GetSNRThreshold() const;
+            void SetSNRAmplitudeThreshold(double thresh);
+            void SetSNRPowerThreshold(double thresh);
 
-            Double_t GetSigmaThreshold() const;
-            void SetSigmaThreshold(Double_t thresh);
+            double GetSigmaThreshold() const;
+            void SetSigmaThreshold(double thresh);
 
-            Double_t GetMinFrequency() const;
-            void SetMinFrequency(Double_t freq);
+            double GetMinFrequency() const;
+            void SetMinFrequency(double freq);
 
-            Double_t GetMaxFrequency() const;
-            void SetMaxFrequency(Double_t freq);
+            double GetMaxFrequency() const;
+            void SetMaxFrequency(double freq);
 
-            UInt_t GetMinBin() const;
-            void SetMinBin(UInt_t bin);
+            unsigned GetMinBin() const;
+            void SetMinBin(unsigned bin);
 
-            UInt_t GetMaxBin() const;
-            void SetMaxBin(UInt_t bin);
+            unsigned GetMaxBin() const;
+            void SetMaxBin(unsigned bin);
 
         private:
 
-            Double_t fSNRThreshold;
-            Double_t fSigmaThreshold;
+            double fSNRThreshold;
+            double fSigmaThreshold;
             ThresholdMode fThresholdMode;
 
-            Double_t fMinFrequency;
-            Double_t fMaxFrequency;
-            UInt_t fMinBin;
-            UInt_t fMaxBin;
-            Bool_t fCalculateMinBin;
-            Bool_t fCalculateMaxBin;
+            double fMinFrequency;
+            double fMaxFrequency;
+            unsigned fMinBin;
+            unsigned fMaxBin;
+            bool fCalculateMinBin;
+            bool fCalculateMaxBin;
 
         public:
-            Bool_t Discriminate(KTFrequencySpectrumDataPolar& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTFrequencySpectrumDataFFTW& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTNormalizedFSDataPolar& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTNormalizedFSDataFFTW& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTCorrelationData& data, KTGainVariationData& gvData);
-            Bool_t Discriminate(KTWignerVilleData& data, KTGainVariationData& gvData);
+            bool Discriminate(KTFrequencySpectrumDataPolar& data, KTGainVariationData& gvData);
+            bool Discriminate(KTFrequencySpectrumDataFFTW& data, KTGainVariationData& gvData);
+            bool Discriminate(KTNormalizedFSDataPolar& data, KTGainVariationData& gvData);
+            bool Discriminate(KTNormalizedFSDataFFTW& data, KTGainVariationData& gvData);
+            bool Discriminate(KTCorrelationData& data, KTGainVariationData& gvData);
+            bool Discriminate(KTWignerVilleData& data, KTGainVariationData& gvData);
 
-            Bool_t DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, UInt_t component=0);
-            Bool_t DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, UInt_t component=0);
+            bool DiscriminateSpectrum(const KTFrequencySpectrumPolar* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component=0);
+            bool DiscriminateSpectrum(const KTFrequencySpectrumFFTW* spectrum, const KTSpline* spline, KTDiscriminatedPoints1DData&newData, unsigned component=0);
 
         private:
-            Bool_t CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
-            Bool_t CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
+            bool CoreDiscriminate(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
+            bool CoreDiscriminate(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& gvData, KTDiscriminatedPoints1DData& newData);
 
-            std::vector< Double_t > fMagnitudeCache;
+            std::vector< double > fMagnitudeCache;
 
             //***************
             // Signals
@@ -158,79 +155,79 @@ namespace Katydid
 
     };
 
-    inline Double_t KTVariableSpectrumDiscriminator::GetSNRThreshold() const
+    inline double KTVariableSpectrumDiscriminator::GetSNRThreshold() const
     {
         return fSNRThreshold;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetSNRAmplitudeThreshold(Double_t thresh)
+    inline void KTVariableSpectrumDiscriminator::SetSNRAmplitudeThreshold(double thresh)
     {
         fSNRThreshold = thresh;
         fThresholdMode = eSNR_Amplitude;
         return;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetSNRPowerThreshold(Double_t thresh)
+    inline void KTVariableSpectrumDiscriminator::SetSNRPowerThreshold(double thresh)
     {
         fSNRThreshold = thresh;
         fThresholdMode = eSNR_Power;
         return;
     }
 
-    inline Double_t KTVariableSpectrumDiscriminator::GetSigmaThreshold() const
+    inline double KTVariableSpectrumDiscriminator::GetSigmaThreshold() const
     {
         return fSigmaThreshold;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetSigmaThreshold(Double_t thresh)
+    inline void KTVariableSpectrumDiscriminator::SetSigmaThreshold(double thresh)
     {
         fSigmaThreshold = thresh;
         fThresholdMode = eSigma;
         return;
     }
 
-    inline Double_t KTVariableSpectrumDiscriminator::GetMinFrequency() const
+    inline double KTVariableSpectrumDiscriminator::GetMinFrequency() const
     {
         return fMinFrequency;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMinFrequency(Double_t freq)
+    inline void KTVariableSpectrumDiscriminator::SetMinFrequency(double freq)
     {
         fMinFrequency = freq;
         fCalculateMinBin = true;
         return;
     }
 
-    inline Double_t KTVariableSpectrumDiscriminator::GetMaxFrequency() const
+    inline double KTVariableSpectrumDiscriminator::GetMaxFrequency() const
     {
         return fMaxFrequency;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMaxFrequency(Double_t freq)
+    inline void KTVariableSpectrumDiscriminator::SetMaxFrequency(double freq)
     {
         fMaxFrequency = freq;
         fCalculateMaxBin = true;
         return;
     }
 
-    inline UInt_t KTVariableSpectrumDiscriminator::GetMinBin() const
+    inline unsigned KTVariableSpectrumDiscriminator::GetMinBin() const
     {
         return fMinBin;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMinBin(UInt_t bin)
+    inline void KTVariableSpectrumDiscriminator::SetMinBin(unsigned bin)
     {
         fMinBin = bin;
         fCalculateMinBin = false;
         return;
     }
 
-    inline UInt_t KTVariableSpectrumDiscriminator::GetMaxBin() const
+    inline unsigned KTVariableSpectrumDiscriminator::GetMaxBin() const
     {
         return fMaxBin;
     }
 
-    inline void KTVariableSpectrumDiscriminator::SetMaxBin(UInt_t bin)
+    inline void KTVariableSpectrumDiscriminator::SetMaxBin(unsigned bin)
     {
         fMaxBin = bin;
         fCalculateMaxBin = false;

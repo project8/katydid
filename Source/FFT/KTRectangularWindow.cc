@@ -7,9 +7,8 @@
 
 #include "KTRectangularWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -17,9 +16,9 @@ using std::string;
 
 namespace Katydid
 {
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "RectangularWindow");
 
-    static KTDerivedNORegistrar< KTWindowFunction, KTRectangularWindow > sWFRectRegistrar("rectangular");
+    KT_REGISTER_WINDOWFUNCTION(KTRectangularWindow, "rectangular")
 
     KTRectangularWindow::KTRectangularWindow(const string& name) :
             KTWindowFunction(name),
@@ -31,27 +30,27 @@ namespace Katydid
     {
     }
 
-    Bool_t KTRectangularWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    bool KTRectangularWindow::ConfigureWFSubclass(const KTParamNode* node)
     {
-        SetBoxcarSize(node->GetData< UInt_t >("boxcar-size", fBoxcarSize));
+        SetBoxcarSize(node->GetValue< unsigned >("boxcar-size", fBoxcarSize));
 
         KTDEBUG(windowlog, "Rectangular WF configured: boxcar size = " << fBoxcarSize);
         return true;
     }
 
-    Double_t KTRectangularWindow::GetWeight(Double_t time) const
+    double KTRectangularWindow::GetWeight(double time) const
     {
-        if (fabs(time - 0.5 * fLength) <= 0.5 * Double_t(fBoxcarSize) * fBinWidth) return 1.;
+        if (fabs(time - 0.5 * fLength) <= 0.5 * double(fBoxcarSize) * fBinWidth) return 1.;
         return 0.;
     }
 
     void KTRectangularWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t halfBW = 0.5 * fBinWidth;
-        for (UInt_t iBin=0; iBin < fSize; iBin++)
+        double halfBW = 0.5 * fBinWidth;
+        for (unsigned iBin=0; iBin < fSize; iBin++)
         {
-            fWindowFunction[iBin] = GetWeight(Double_t(iBin) * fBinWidth + halfBW);
+            fWindowFunction[iBin] = GetWeight(double(iBin) * fBinWidth + halfBW);
         }
         return;
     }

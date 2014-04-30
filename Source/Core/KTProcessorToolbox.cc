@@ -9,7 +9,7 @@
 
 #include "KTLogger.hh"
 #include "KTPrimaryProcessor.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #ifndef SINGLETHREADED
 #include <boost/thread.hpp>
@@ -24,7 +24,7 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(proclog, "katydid.core");
+    KTLOGGER(proclog, "KTProcessorToolbox");
 
     KTProcessorToolbox::KTProcessorToolbox(const std::string& name) :
             KTConfigurable(name),
@@ -39,153 +39,175 @@ namespace Katydid
         ClearProcessors();
     }
 
-    Bool_t KTProcessorToolbox::Configure(const KTPStoreNode* node)
+    bool KTProcessorToolbox::Configure(const KTParamNode* node)
     {
         KTPROG(proclog, "Configuring . . .");
         // Deal with "processor" blocks first
-        KTPStoreNode::csi_pair itPair = node->EqualRange("processor");
-        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+        const KTParamArray* procArray = node->ArrayAt( "processors" );
+        if (procArray == NULL)
         {
-            KTPStoreNode subNode = KTPStoreNode(&(it->second));
-            if (! subNode.HasData("type"))
+            KTWARN(proclog, "No processors were specified");
+        }
+        else
+        {
+            for( KTParamArray::const_iterator procIt = procArray->Begin(); procIt != procArray->End(); ++procIt )
             {
-                KTERROR(proclog, "Unable to create processor: no processor type given");
-                return false;
-            }
-            string procType = subNode.GetData("type");
+                if( ! (*procIt)->IsNode() )
+                {
+                    KTERROR( proclog, "Invalid processor entry: not a node" );
+                    return false;
+                }
+                const KTParamNode* procNode = &( (*procIt)->AsNode() );
 
-            string procName;
-            if (! subNode.HasData("name"))
-            {
-                KTINFO(proclog, "No name given for processor of type <" << procType << ">; using type as name.");
-                procName = procType;
-            }
-            else
-            {
-                procName = subNode.GetData("name");
-            }
-            KTProcessor* newProc = fProcFactory->CreateNamed(procType);
-            if (newProc == NULL)
-            {
-                KTERROR(proclog, "Unable to create processor of type <" << procType << ">");
-                return false;
-            }
+                if (! procNode->Has("type"))
+                {
+                    KTERROR(proclog, "Unable to create processor: no processor type given");
+                    return false;
+                }
+                string procType = procNode->GetValue("type");
 
-            Bool_t isTopLevel = false;
-            if (subNode.HasData("is-top-level"))
-            {
-                isTopLevel = subNode.GetData< Bool_t >("is-top-level");
-            }
+                string procName;
+                if (! procNode->Has("name"))
+                {
+                    KTINFO(proclog, "No name given for processor of type <" << procType << ">; using type as name.");
+                    procName = procType;
+                }
+                else
+                {
+                    procName = procNode->GetValue("name");
+                }
+                KTProcessor* newProc = fProcFactory->CreateNamed(procType);
+                if (newProc == NULL)
+                {
+                    KTERROR(proclog, "Unable to create processor of type <" << procType << ">");
+                    return false;
+                }
 
-            if (! AddProcessor(procName, newProc))
-            {
-                KTERROR(proclog, "Unable to add processor <" << procName << ">");
-                delete newProc;
-                return false;
+                if (! AddProcessor(procName, newProc))
+                {
+                    KTERROR(proclog, "Unable to add processor <" << procName << ">");
+                    delete newProc;
+                    return false;
+                }
             }
         }
 
-        // Then deal with "connection blocks"
-        itPair = node->EqualRange("connection");
-        for (KTPStoreNode::const_sorted_iterator it = itPair.first; it != itPair.second; it++)
+
+        // Then deal with connections"
+        const KTParamArray* connArray = node->ArrayAt( "connections" );
+        if (connArray == NULL)
         {
-            KTPStoreNode subNode = KTPStoreNode(&(it->second));
-            if (! subNode.HasData("signal-processor") || ! subNode.HasData("signal-name") ||
-                    ! subNode.HasData("slot-processor") || ! subNode.HasData("slot-name"))
+            KTWARN(proclog, "No connections were specified");
+        }
+        else
+        {
+            for( KTParamArray::const_iterator connIt = connArray->Begin(); connIt != connArray->End(); ++connIt )
             {
-                KTERROR(proclog, "Signal/Slot connection information is incomplete!");
-                if (subNode.HasData("signal-processor"))
+                if( ! (*connIt)->IsNode() )
                 {
-                    KTWARN(proclog, "signal-processor = " << subNode.GetData<string>("signal-processor"));
+                    KTERROR( proclog, "Invalid connection entry: not a node" );
+                    return false;
                 }
-                else
-                {
-                    KTERROR(proclog, "signal-processor = MISSING");
-                }
-                if (subNode.HasData("signal-name"))
-                {
-                    KTWARN(proclog, "signal-name = " << subNode.GetData<string>("signal-name"));
-                }
-                else
-                {
-                    KTERROR(proclog, "signal-name = MISSING");
-                }
-                if (subNode.HasData("slot-processor"))
-                {
-                    KTWARN(proclog, "slot-processor = " << subNode.GetData<string>("slot-processor"));
-                }
-                else
-                {
-                    KTERROR(proclog, "slot-processor = MISSING");
-                }
-                if (subNode.HasData("slot-name"))
-                {
-                    KTWARN(proclog, "slot-name = " << subNode.GetData<string>("slot-name"));
-                }
-                else
-                {
-                    KTERROR(proclog, "slot-namer = MISSING");
-                }
-                return false;
-            }
+                const KTParamNode* connNode = &( (*connIt)->AsNode() );
 
-            KTProcessor* signalProc = GetProcessor(subNode.GetData("signal-processor"));
-            KTProcessor* slotProc = GetProcessor(subNode.GetData("slot-processor"));
-
-            if (signalProc == NULL)
-            {
-                KTERROR(proclog, "Processor named <" << subNode.GetData("signal-processor") << "> was not found!");
-                return false;
-            }
-            if (slotProc == NULL)
-            {
-                KTERROR(proclog, "Processor named <" << subNode.GetData("slot-processor") << "> was not found!");
-                return false;
-            }
-
-            string signalName = subNode.GetData("signal-name");
-            string slotName = subNode.GetData("slot-name");
-
-            Bool_t useGroupOrdering = false;
-            Int_t groupOrder = 0;
-            if (subNode.HasData("group-order"))
-            {
-                useGroupOrdering = true;
-                groupOrder = subNode.GetData< Int_t >("group-order");
-            }
-
-            try
-            {
-                if (useGroupOrdering)
+                if ( ! connNode->Has("signal") || ! connNode->Has("slot") )
                 {
-                    signalProc->ConnectASlot(signalName, slotProc, slotName, groupOrder);
+                    KTERROR(proclog, "Signal/Slot connection information is incomplete!");
+                    if (connNode->Has("signal"))
+                    {
+                        KTWARN(proclog, "signal = " << connNode->GetValue("signal"));
+                    }
+                    else
+                    {
+                        KTERROR(proclog, "signal = MISSING");
+                    }
+
+                    if (connNode->Has("slot"))
+                    {
+                        KTWARN(proclog, "slot = " << connNode->GetValue("slot"));
+                    }
+                    else
+                    {
+                        KTERROR(proclog, "slot = MISSING");
+                    }
+                    return false;
                 }
-                else
+
+                string signalProcName, signalName;
+                if (! ParseSignalSlotName(connNode->GetValue("signal"), signalProcName, signalName))
                 {
-                    signalProc->ConnectASlot(signalName, slotProc, slotName);
+                    KTERROR(proclog, "Unable to parse signal name: <" << connNode->GetValue("signal") << ">");
+                    return false;
                 }
-            }
-            catch (std::exception& e)
-            {
-                KTERROR(proclog, "An error occurred while connecting signals and slots:\n"
-                        << "\tSignal " << signalName << " from processor " << subNode.GetData("signal-processor") << " (a.k.a. " << signalProc->GetConfigName() << ")" << '\n'
-                        << "\tSlot " << slotName << " from processor " << subNode.GetData("slot-processor") << " (a.k.a. " << slotProc->GetConfigName() << ")" << '\n'
-                        << '\t' << e.what());
-                return false;
+
+                string slotProcName, slotName;
+                if (! ParseSignalSlotName(connNode->GetValue("slot"), slotProcName, slotName))
+                {
+                    KTERROR(proclog, "Unable to parse slot name: <" << connNode->GetValue("slot") << ">");
+                    return false;
+                }
+
+
+                KTProcessor* signalProc = GetProcessor(signalProcName);
+                if (signalProc == NULL)
+                {
+                    KTERROR(proclog, "Processor named <" << signalProcName << "> was not found!");
+                    return false;
+                }
+
+                KTProcessor* slotProc = GetProcessor(slotProcName);
+                if (slotProc == NULL)
+                {
+                    KTERROR(proclog, "Processor named <" << slotProcName << "> was not found!");
+                    return false;
+                }
+
+                try
+                {
+                    if (connNode->Has("order"))
+                    {
+                        signalProc->ConnectASlot(signalName, slotProc, slotName, connNode->GetValue< int >("order"));
+                    }
+                    else
+                    {
+                        signalProc->ConnectASlot(signalName, slotProc, slotName);
+                    }
+                }
+                catch (std::exception& e)
+                {
+                    KTERROR(proclog, "An error occurred while connecting signals and slots:\n"
+                            << "\tSignal " << signalName << " from processor " << signalProcName << " (a.k.a. " << signalProc->GetConfigName() << ")" << '\n'
+                            << "\tSlot " << slotName << " from processor " << slotProcName << " (a.k.a. " << slotProc->GetConfigName() << ")" << '\n'
+                            << '\t' << e.what());
+                    return false;
+                }
+                KTINFO(proclog, "Signal <" << signalProcName << ":" << signalName << "> connected to slot <" << slotProcName << ":" << signalName << ">");
+
             }
         }
+
 
         // Finally, deal with processor-run specifications
         // In the current implementation there is only one ThreadGroup, and all processors specified will be run in separate threads in parallel.
         // In single threaded mode all threads will be run sequentially in the order they were specified.
-        const KTPStoreNode subNode = node->GetChild("run-queue");
-        if (subNode.IsValid())
+        const KTParamArray* rqArray = node->ArrayAt( "run-queue" );
+        if (rqArray == NULL)
+        {
+            KTWARN(proclog, "Run queue was not specified");
+        }
+        else
         {
             ThreadGroup threadGroup;
-            for (KTPStoreNode::const_iterator iter = subNode.Begin(); iter != subNode.End(); iter++)
+            for( KTParamArray::const_iterator rqIt = rqArray->Begin(); rqIt != rqArray->End(); ++rqIt )
             {
-                KTPStoreNode subSubNode = KTPStoreNode(&(iter->second));
-                string procName = subSubNode.GetValue< string >();
+                if( ! (*rqIt)->IsValue() )
+                {
+                    KTERROR( proclog, "Invalid connection entry: not a value" );
+                    return false;
+                }
+                const KTParamValue* rqValue = &( (*rqIt)->AsValue() );
+
+                string procName = rqValue->Get();
                 KTProcessor* procForRunQueue = GetProcessor(procName);
                 KTDEBUG(proclog, "Adding processor of type " << procName << " to the run queue");
                 if (procForRunQueue == NULL)
@@ -205,31 +227,41 @@ namespace Katydid
             }
             fRunQueue.push_back(threadGroup);
         }
-        else
-        {
-            KTWARN(proclog, "No run queue was specified during configuration.");
-        }
 
         return true;
     }
 
-    Bool_t KTProcessorToolbox::ConfigureProcessors(const KTPStoreNode* node)
+    bool KTProcessorToolbox::ParseSignalSlotName(const std::string& toParse, std::string& nameOfProc, std::string& nameOfSigSlot) const
+    {
+        size_t sepPos = toParse.find_first_of(fSigSlotNameSep);
+        if (sepPos == string::npos)
+        {
+            KTERROR(proclog, "Unable to find separator between processor and signal/slot name in <" << toParse << ">");
+            return false;
+        }
+        nameOfProc = toParse.substr(0, sepPos);
+        nameOfSigSlot = toParse.substr(sepPos + 1);
+        return true;
+    }
+
+
+    bool KTProcessorToolbox::ConfigureProcessors(const KTParamNode* node)
     {
         for (ProcMapIt iter = fProcMap.begin(); iter != fProcMap.end(); iter++)
         {
             KTDEBUG(proclog, "Attempting to configure processor <" << iter->first << ">");
             string procName = iter->first;
             string nameUsed;
-            const KTPStoreNode subNode = node->GetChild(procName);
-            if (! subNode.IsValid())
+            const KTParamNode* subNode = node->NodeAt(procName);
+            if (subNode == NULL)
             {
                 string configName = iter->second.fProc->GetConfigName();
-                KTWARN(proclog, "Did not find a PSToreNode <" << procName << ">\n"
+                KTWARN(proclog, "Did not find a parameter node <" << procName << ">\n"
                         "\tWill check using the generic name of the processor, <" << configName << ">.");
-                const KTPStoreNode subNode2 = node->GetChild(configName);
-                if (! subNode2.IsValid())
+                subNode = node->NodeAt(configName);
+                if (subNode == NULL)
                 {
-                    KTWARN(proclog, "Did not find a PStoreNode <" << configName << ">\n"
+                    KTWARN(proclog, "Did not find a parameter node <" << configName << ">\n"
                             "\tProcessor <" << iter->first << "> was not configured.");
                     continue;
                 }
@@ -239,19 +271,21 @@ namespace Katydid
             {
                 nameUsed = procName;
             }
-            if (! iter->second.fProc->Configure(&subNode))
+            if (! iter->second.fProc->Configure(subNode))
             {
-                KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with PStoreNode <" << nameUsed << ">");
+                KTERROR(proclog, "An error occurred while configuring processor <" << iter->first << "> with parameter node <" << nameUsed << ">");
                 return false;
             }
         }
         return true;
     }
 
-    Bool_t KTProcessorToolbox::Run()
+    bool KTProcessorToolbox::Run()
     {
         KTPROG(proclog, "Beginning processing . . .");
-        UInt_t iGroup = 0;
+#ifndef SINGLETHREADED
+        unsigned iGroup = 0;
+#endif
         for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); rqIter++)
         {
 #ifdef SINGLETHREADED
@@ -265,7 +299,7 @@ namespace Katydid
 #else
             KTDEBUG(proclog, "Starting thread group " << iGroup);
             boost::thread_group parallelThreads;
-            UInt_t iThread = 0;
+            unsigned iThread = 0;
             for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); tgIter++)
             {
                 // create a boost::thread object to launch the thread
@@ -305,7 +339,7 @@ namespace Katydid
         return it->second.fProc;
     }
 
-    Bool_t KTProcessorToolbox::AddProcessor(const std::string& procName, KTProcessor* proc)
+    bool KTProcessorToolbox::AddProcessor(const std::string& procName, KTProcessor* proc)
     {
         ProcMapIt it = fProcMap.find(procName);
         if (it == fProcMap.end())
@@ -320,7 +354,7 @@ namespace Katydid
         return false;
     }
 
-    Bool_t KTProcessorToolbox::RemoveProcessor(const std::string& procName)
+    bool KTProcessorToolbox::RemoveProcessor(const std::string& procName)
     {
         KTProcessor* procToRemove = ReleaseProcessor(procName);
         if (procToRemove == NULL)

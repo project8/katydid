@@ -1,75 +1,91 @@
 /*
- * KTLogger.cxx
+ * KTLogger.cc
  *
- *  Created on: 18.11.2011 (KLogger from KATRIN's Kasper package)
- *      Author: Marco Haag <marco.haag@kit.edu> and Sebastian Voecking
+ *  Created on: Jan 21, 2014
+ *      Author: nsoblath
+ */
+
+/*
+ * KTLogger.cc
+ * based on KLogger.cxx from KATRIN's Kasper
  *
- *  Ported to Katydid on: 01.05.2012
- *      By: Noah Oblath
+ *  Created on: 18.11.2011
+ *      Author: Marco Haag <marco.haag@kit.edu>
  */
 
 #include "KTLogger.hh"
 
-#ifdef LOG4CXX_FOUND
+
 
 #include <cstdlib>
+#include <cstring>
 
-#include <log4cxx/helpers/synchronized.h>
+using namespace std;
+
+static const string skKTEndColor =   KTCOLOR_PREFIX KTCOLOR_NORMAL KTCOLOR_SUFFIX;
+static const string skKTFatalColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX;
+static const string skKTErrorColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX;
+static const string skKTWarnColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_YELLOW KTCOLOR_SUFFIX;
+static const string skKTProgColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_BLUE   KTCOLOR_SUFFIX;
+static const string skKTInfoColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_GREEN  KTCOLOR_SUFFIX;
+static const string skKTDebugColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX;
+static const string skKTOtherColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_WHITE  KTCOLOR_SUFFIX;
+
+
+#if defined(LOG4CXX_FOUND)
+#include "log4cxx/KTLevel.hh"
+
+/*
+ * Default implementation for systems with the 'log4cxx' library installed.
+ */
+
 #include <log4cxx/logstring.h>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/propertyconfigurator.h>
 #include <log4cxx/patternlayout.h>
+#include <log4cxx/level.h>
 #include <log4cxx/consoleappender.h>
 #include <log4cxx/logmanager.h>
 #include <log4cxx/logger.h>
 
-#include <boost/algorithm/string.hpp>
-
-using namespace std;
 using namespace log4cxx;
 
+#ifndef KT_LOG4CXX_COLORED_PATTERN_LAYOUT_H
+#define KT_LOG4CXX_COLORED_PATTERN_LAYOUT_H
+
+namespace log4cxx {
+
+    class LOG4CXX_EXPORT KTColoredPatternLayout : public PatternLayout
+    {
+        public:
+            DECLARE_LOG4CXX_OBJECT(KTColoredPatternLayout)
+            BEGIN_LOG4CXX_CAST_MAP()
+            LOG4CXX_CAST_ENTRY(KTColoredPatternLayout)
+            LOG4CXX_CAST_ENTRY_CHAIN(Layout)
+            END_LOG4CXX_CAST_MAP()
+
+        KTColoredPatternLayout() : PatternLayout() {}
+            KTColoredPatternLayout(const LogString& pattern) : PatternLayout(pattern) {};
+            virtual ~KTColoredPatternLayout() {}
+
+        protected:
+            virtual void format(LogString& output, const spi::LoggingEventPtr& event, helpers::Pool& pool) const;
+            virtual std::string getColor(const LevelPtr& level) const;
+
+    };
+
+    LOG4CXX_PTR_DEF(KTColoredPatternLayout);
+
+}
+
+#endif /* KT_LOG4CXX_COLORED_PATTERN_LAYOUT_H */
+
 IMPLEMENT_LOG4CXX_OBJECT(KTColoredPatternLayout)
-
-const string KTColoredPatternLayout::fNormal = COLOR_NORMAL;
-const string KTColoredPatternLayout::fBright = COLOR_BRIGHT;
-const string KTColoredPatternLayout::fForegroundRed = COLOR_FOREGROUND_RED;
-const string KTColoredPatternLayout::fForegroundGreen = COLOR_FOREGROUND_GREEN;
-const string KTColoredPatternLayout::fForegroundYellow = COLOR_FOREGROUND_YELLOW;
-const string KTColoredPatternLayout::fForegroundBlue = COLOR_FOREGROUND_BLUE;
-const string KTColoredPatternLayout::fForegroundCyan = COLOR_FOREGROUND_CYAN;
-const string KTColoredPatternLayout::fForegroundWhite = COLOR_FOREGROUND_WHITE;
-const string KTColoredPatternLayout::fPrefix = COLOR_PREFIX;
-const string KTColoredPatternLayout::fSuffix = COLOR_SUFFIX;
-const string KTColoredPatternLayout::fSeparator = COLOR_SEPARATOR;
-
-const string KTColoredPatternLayout::fEndColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fNormal + KTColoredPatternLayout::fSuffix;
-const string KTColoredPatternLayout::fFatalColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundRed + fSuffix;
-const string KTColoredPatternLayout::fErrorColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundRed + fSuffix;
-const string KTColoredPatternLayout::fWarnColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundYellow + fSuffix;
-const string KTColoredPatternLayout::fProgColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundBlue + fSuffix;
-const string KTColoredPatternLayout::fInfoColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundGreen + fSuffix;
-const string KTColoredPatternLayout::fDebugColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundCyan + fSuffix;
-const string KTColoredPatternLayout::fOtherColor = KTColoredPatternLayout::fPrefix + KTColoredPatternLayout::fBright + KTColoredPatternLayout::fSeparator + KTColoredPatternLayout::fForegroundWhite + fSuffix;
-
-
-KTColoredPatternLayout::KTColoredPatternLayout() :
-        PatternLayout()
-{
-}
-
-KTColoredPatternLayout::KTColoredPatternLayout(const LogString& pattern) :
-        PatternLayout(pattern)
-{
-}
-
-KTColoredPatternLayout::~KTColoredPatternLayout()
-{
-}
 
 void KTColoredPatternLayout::format(LogString& output, const spi::LoggingEventPtr& event, helpers::Pool& pool) const
 {
     PatternLayout::format(output, event, pool);
-    output = getColor(event->getLevel()) + output + fEndColor;
+    output = getColor(event->getLevel()) + output + skKTEndColor;
     return;
 }
 
@@ -78,44 +94,52 @@ string KTColoredPatternLayout::getColor(const LevelPtr& level) const
     switch(level->toInt())
     {
         case Level::FATAL_INT:
-            return fFatalColor;
+            return skKTFatalColor;
             break;
         case Level::ERROR_INT:
-            return fErrorColor;
+            return skKTErrorColor;
             break;
         case Level::WARN_INT:
-            return fWarnColor;
+            return skKTWarnColor;
             break;
         case KTLevel::PROG_INT:
-            return fProgColor;
+            return skKTProgColor;
             break;
         case Level::INFO_INT:
-            return fInfoColor;
+            return skKTInfoColor;
             break;
         case Level::DEBUG_INT:
-            return fDebugColor;
+            return skKTDebugColor;
+            break;
+        case Level::TRACE_INT:
+            return skKTDebugColor;
             break;
         default:
-            return fOtherColor;
+            return skKTOtherColor;
     }
 }
 
+namespace Katydid
+{
 
-namespace {
-
-    struct StaticInitializer {
-            StaticInitializer() {
-
-                if (LogManager::getLoggerRepository()->isConfigured())
-                    return;
+    struct KTStaticInitializer
+    {
+            KTStaticInitializer()
+            {
+                // the check of whether the logger repository is configured was removed to allow nested use of the log4cxx-based logger.
+                // otherwise the logger from the parent package isn't able to override the settings of the child.
+                ///if (LogManager::getLoggerRepository()->isConfigured())
+                ///    return;
                 //        AppenderList appenders = Logger::getRootLogger()->getAllAppenders();
 
                 char* envLoggerConfig;
                 envLoggerConfig = getenv("LOGGER_CONFIGURATION");
-                if (envLoggerConfig != NULL) {
+                if (envLoggerConfig != 0)
+                {
                     PropertyConfigurator::configure(envLoggerConfig);
                 }
-                else {
+                else
+                {
 #ifdef LOGGER_CONFIGURATION
                     PropertyConfigurator::configure(LOGGER_CONFIGURATION);
 #else
@@ -125,6 +149,7 @@ namespace {
                     Logger::getRootLogger()->setLevel(Level::getInfo());
 #endif
                     static const LogString TTCC_CONVERSION_PATTERN(LOG4CXX_STR("%r [%-5p] %16c: %m%n"));
+                    //LayoutPtr layout(new PatternLayout(TTCC_CONVERSION_PATTERN));
                     LayoutPtr layout(new KTColoredPatternLayout(TTCC_CONVERSION_PATTERN));
                     AppenderPtr appender(new ConsoleAppender(layout));
                     root->addAppender(appender);
@@ -132,7 +157,7 @@ namespace {
                 }
 
             }
-    } static sLoggerInitializer;
+    } static sKTLoggerInitializer;
 
 }
 
@@ -140,291 +165,201 @@ namespace Katydid
 {
     struct KTLogger::Private
     {
-            LoggerPtr fLogger;
-            void log(const LevelPtr& level, const string& message, const Location& loc) {
+            void log(const LevelPtr& level, const string& message, const Location& loc)
+            {
                 fLogger->forcedLog(level, message, ::log4cxx::spi::LocationInfo(loc.fFileName, loc.fFunctionName, loc.fLineNumber));
             }
+
+            static LevelPtr level2Ptr(ELevel level)
+            {
+                switch(level)
+                {
+                    case eTrace : return KTLevel::getTrace();
+                    case eDebug : return KTLevel::getDebug();
+                    case eInfo  : return KTLevel::getInfo();
+                    case eProg  : return KTLevel::getProg();
+                    case eWarn  : return KTLevel::getWarn();
+                    case eError : return KTLevel::getError();
+                    case eFatal : return KTLevel::getFatal();
+                    default     : return KTLevel::getOff();
+                }
+            }
+
+            LoggerPtr fLogger;
     };
 
-    KTLogger::KTLogger(const char *name) : fPrivate(new Private)
+    KTLogger::KTLogger(const char* name) : fPrivate(new Private())
     {
-        //    const char* logName = strrchr(name, '/') ? strrchr(name, '/') + 1 : name;
+        fPrivate->fLogger = (name == 0) ? Logger::getRootLogger() : Logger::getLogger(name);
+    }
+
+    KTLogger::KTLogger(const std::string& name) : fPrivate(new Private())
+    {
         fPrivate->fLogger = Logger::getLogger(name);
     }
 
-    KTLogger::KTLogger(const string& name) : fPrivate(new Private)
+    KTLogger::~KTLogger()
     {
-        fPrivate->fLogger = Logger::getLogger(name);
+        delete fPrivate;
     }
 
-    bool KTLogger::IsLevelEnabled(const string& level) const
+    bool KTLogger::IsLevelEnabled(ELevel level) const
     {
-#ifdef STANDARD
-        if (boost::icontains(level, "debug"))
-            return false;
-        else
-            return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
-#else // STANDARD
-#ifdef NDEBUG
-        if (boost::icontains(level, "debug") || boost::icontains(level, "info"))
-            return false;
-        else
-            return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
-#else // NDEBUG
-        return fPrivate->fLogger->isEnabledFor(Level::toLevel(level));
-#endif // NDEBUG
-#endif // STANDARD
+        return fPrivate->fLogger->isEnabledFor( Private::level2Ptr(level) );
     }
 
-    bool KTLogger::IsDebugEnabled() const
+    void KTLogger::SetLevel(ELevel level) const
     {
-#ifdef NDEBUG
-        return false;
-#else
-        return fPrivate->fLogger->isDebugEnabled();
-#endif
+        fPrivate->fLogger->setLevel( Private::level2Ptr(level) );
     }
 
-    bool KTLogger::IsInfoEnabled() const
+    void KTLogger::Log(ELevel level, const string& message, const Location& loc)
     {
-#ifdef STANDARD
-        return fPrivate->fLogger->isInfoEnabled();
-#else // STANDARD
-#ifdef NDEBUG
-        return false;
-#else // NDEBUG
-        return fPrivate->fLogger->isInfoEnabled();
-#endif // NDEBUG
-#endif // STANDARD
-    }
-
-    bool KTLogger::IsProgEnabled() const
-    {
-        /*
-        if(fPrivate->fLogger->repository == 0 || fPrivate->fLogger->repository->isDisabled(KTLevel::PROG_INT))
-        {
-            return false;
-        }
-        */
-        return fPrivate->fLogger->getEffectiveLevel()->toInt() <= KTLevel::PROG_INT;
-    }
-
-    bool KTLogger::IsWarnEnabled() const
-    {
-        return fPrivate->fLogger->isWarnEnabled();
-    }
-
-    bool KTLogger::IsErrorEnabled() const
-    {
-        return fPrivate->fLogger->isErrorEnabled();
-    }
-
-    bool KTLogger::IsFatalEnabled() const
-    {
-        return fPrivate->fLogger->isFatalEnabled();
-    }
-
-    void KTLogger::logLevel(const string& level, const string& message, const Location& loc)
-    {
-        fPrivate->log(Level::toLevel(level), message, loc);
-    }
-
-    void KTLogger::logDebug (const string &message, const Location& loc)
-    {
-        fPrivate->log(Level::getDebug(), message, loc);
-    }
-
-    void KTLogger::logInfo (const string &message, const Location& loc)
-    {
-        fPrivate->log(Level::getInfo(), message, loc);
-    }
-
-    void KTLogger::logProg (const string &message, const Location& loc)
-    {
-        fPrivate->log(KTLevel::getProg(), message, loc);
-    }
-
-    void KTLogger::logWarn (const string &message, const Location& loc)
-    {
-        fPrivate->log(Level::getWarn(), message, loc);
-    }
-
-    void KTLogger::logError (const string &message, const Location& loc)
-    {
-        fPrivate->log(Level::getError(), message, loc);
-    }
-
-    void KTLogger::logFatal (const string &message, const Location& loc)
-    {
-        fPrivate->log(Level::getFatal(), message, loc);
+        fPrivate->log(Private::level2Ptr(level), message, loc);
     }
 }
 
 
 #else
 
-#include <boost/algorithm/string.hpp>
-#include <iomanip>
+/**
+ * Fallback solution for systems without log4cxx.
+ */
 
-using namespace std;
+#include <cstdio>
+#include <iomanip>
+#include <sys/time.h>
+#include <time.h>
 
 namespace Katydid
 {
     struct KTLogger::Private
     {
+            static char sDateTimeFormat[16];
+            static time_t sRawTime;
+            static tm* sProcessedTime;
+            static char sTimeBuff[512];
+            static size_t getTimeAbsoluteStr()
+            {
+                time(&KTLogger::Private::sRawTime);
+                sProcessedTime = gmtime(&KTLogger::Private::sRawTime);
+                return strftime(KTLogger::Private::sTimeBuff, 512,
+                        KTLogger::Private::sDateTimeFormat,
+                        KTLogger::Private::sProcessedTime);
+            }
+
             const char* fLogger;
-            void logCout(const string& level, const string& message, const Location& /*loc*/, const string& color=fOtherColor) {
-                cout << color << __DATE__ " " __TIME__ " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << fEndColor << endl;
+            bool fColored;
+
+            static const char* level2Str(ELevel level)
+            {
+                switch(level)
+                {
+                    case eTrace : return "TRACE"; break;
+                    case eDebug : return "DEBUG"; break;
+                    case eInfo  : return "INFO"; break;
+                    case eProg  : return "PROG"; break;
+                    case eWarn  : return "WARN"; break;
+                    case eError : return "ERROR"; break;
+                    case eFatal : return "FATAL"; break;
+                    default     : return "XXX";
+                }
             }
-            void logCerr(const string& level, const string& message, const Location& /*loc*/, const string& color=fOtherColor) {
-                cerr << color << __DATE__ " " __TIME__ " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << fEndColor << endl;
+
+            static string level2Color(ELevel level)
+            {
+                switch(level)
+                {
+                    case eTrace : return skKTDebugColor; break;
+                    case eDebug : return skKTDebugColor; break;
+                    case eInfo  : return skKTInfoColor; break;
+                    case eProg  : return skKTProgColor; break;
+                    case eWarn  : return skKTWarnColor; break;
+                    case eError : return skKTErrorColor; break;
+                    case eFatal : return skKTFatalColor; break;
+                    default     : return skKTOtherColor;
+                }
             }
-            const static string fNormal;
-            const static string fBright;
-            const static string fForegroundRed;
-            const static string fForegroundGreen;
-            const static string fForegroundYellow;
-            const static string fForegroundBlue;
-            const static string fForegroundCyan;
-            const static string fForegroundWhite;
 
-            const static string fPrefix;
-            const static string fSuffix;
-            const static string fSeparator;
 
-            const static string fEndColor;
-            const static string fFatalColor;
-            const static string fErrorColor;
-            const static string fWarnColor;
-            const static string fProgColor;
-            const static string fInfoColor;
-            const static string fDebugColor;
-            const static string fOtherColor;
+            void logCout(const char* level, const string& message, const Location& /*loc*/, const string& color = skKTOtherColor)
+            {
+                getTimeAbsoluteStr();
+                if (fColored)
+                    cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << skKTEndColor << endl;
+                else
+                    cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
+            }
 
+            void logCerr(const char* level, const string& message, const Location& /*loc*/, const string& color = skKTOtherColor)
+            {
+                getTimeAbsoluteStr();
+                if (fColored)
+                    cerr << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << skKTEndColor << endl;
+                else
+                    cerr << KTLogger::Private::sTimeBuff <<  " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
+            }
     };
 
-    const string KTLogger::Private::fNormal = COLOR_NORMAL;
-    const string KTLogger::Private::fBright = COLOR_BRIGHT;
-    const string KTLogger::Private::fForegroundRed = COLOR_FOREGROUND_RED;
-    const string KTLogger::Private::fForegroundGreen = COLOR_FOREGROUND_GREEN;
-    const string KTLogger::Private::fForegroundYellow = COLOR_FOREGROUND_YELLOW;
-    const string KTLogger::Private::fForegroundBlue = COLOR_FOREGROUND_BLUE;
-    const string KTLogger::Private::fForegroundCyan = COLOR_FOREGROUND_CYAN;
-    const string KTLogger::Private::fForegroundWhite = COLOR_FOREGROUND_WHITE;
-    const string KTLogger::Private::fPrefix = COLOR_PREFIX;
-    const string KTLogger::Private::fSuffix = COLOR_SUFFIX;
-    const string KTLogger::Private::fSeparator = COLOR_SEPARATOR;
+    char KTLogger::Private::sDateTimeFormat[16];
+    time_t KTLogger::Private::sRawTime;
+    tm* KTLogger::Private::sProcessedTime;
+    char KTLogger::Private::sTimeBuff[512];
 
-    const string KTLogger::Private::fEndColor = fPrefix + fNormal + fSuffix;
-    const string KTLogger::Private::fFatalColor = fPrefix + fBright + fSeparator + fForegroundRed + fSuffix;
-    const string KTLogger::Private::fErrorColor = fPrefix + fBright + fSeparator + fForegroundRed + fSuffix;
-    const string KTLogger::Private::fWarnColor = fPrefix + fBright + fSeparator + fForegroundYellow + fSuffix;
-    const string KTLogger::Private::fProgColor = fPrefix + fBright + fSeparator + fForegroundBlue + fSuffix;
-    const string KTLogger::Private::fInfoColor = fPrefix + fBright + fSeparator + fForegroundGreen + fSuffix;
-    const string KTLogger::Private::fDebugColor = fPrefix + fBright + fSeparator + fForegroundCyan + fSuffix;
-    const string KTLogger::Private::fOtherColor = fPrefix + fBright + fSeparator + fForegroundWhite + fSuffix;
-
-
-    KTLogger::KTLogger(const char *name) : fPrivate(new Private)
+    KTLogger::KTLogger(const char* name) : fPrivate(new Private())
     {
-        const char* logName = strrchr(name, '/') ? strrchr(name, '/') + 1 : name;
-        fPrivate->fLogger = logName;
+        if (name == 0)
+        {
+            fPrivate->fLogger = "root";
+        }
+        else
+        {
+            const char* logName = strrchr(name, '/') ? strrchr(name, '/') + 1 : name;
+            fPrivate->fLogger = logName;
+        }
+        fPrivate->fColored = true;
+        sprintf(KTLogger::Private::sDateTimeFormat,  "%%FT%%TZ");
     }
 
-    bool KTLogger::IsLevelEnabled(const string& level) const
+    KTLogger::KTLogger(const std::string& name) : fPrivate(new Private())
     {
-#ifdef STANDARD
-        return !boost::icontains(level, "debug");
-#else // STANDARD
-#ifdef NDEBUG
-        return !boost::icontains(level, "debug") && !boost::icontains(level, "info");
-#else // NDEBUG
-        (void) level;
-        return true;
-#endif // NDEBUG
-#endif // STANDARD
+        fPrivate->fLogger = name.c_str();
+        fPrivate->fColored = true;
+        sprintf(KTLogger::Private::sDateTimeFormat,  "%%FT%%TZ");
     }
 
-    bool KTLogger::IsDebugEnabled() const
+    KTLogger::~KTLogger()
+    {
+        delete fPrivate;
+    }
+
+    bool KTLogger::IsLevelEnabled(ELevel level) const
     {
 #ifdef NDEBUG
-        return false;
+        return level > eDebug;
 #else
+        (void) level;
         return true;
 #endif
     }
 
-    bool KTLogger::IsInfoEnabled() const
+    void KTLogger::SetLevel(ELevel /*level*/) const
     {
-#ifdef STANDARD
-        return true;
-#else // STANDARD
-#ifdef NDEBUG
-        return false;
-#else // NDEBUG
-        return true;
-#endif // NDEBUG
-#endif // STANDARD
+        // TODO: implement levels for fallback KTLogger
     }
 
-    bool KTLogger::IsProgEnabled() const
+    void KTLogger::Log(ELevel level, const string& message, const Location& loc)
     {
-        return true;
-    }
+        const char* levelStr = Private::level2Str(level);
 
-    bool KTLogger::IsWarnEnabled() const
-    {
-        return true;
-    }
-
-    bool KTLogger::IsErrorEnabled() const
-    {
-        return true;
-    }
-
-    bool KTLogger::IsFatalEnabled() const
-    {
-        return true;
-    }
-
-    void KTLogger::logLevel(const string& level, const string& message, const Location& loc)
-    {
-        if (boost::icontains(level, "error") || boost::icontains(level, "fatal")) {
-            fPrivate->logCerr(level, message, loc);
+        if (level >= eFatal)
+        {
+            fPrivate->logCerr(levelStr, message, loc, Private::level2Color(level));
         }
-        else {
-            fPrivate->logCout(level, message, loc);
+        else
+        {
+            fPrivate->logCout(levelStr, message, loc, Private::level2Color(level));
         }
-    }
-
-    void KTLogger::logDebug (const string &message, const Location& loc)
-    {
-        fPrivate->logCout("DEBUG", message, loc, KTLogger::Private::fDebugColor);
-    }
-
-    void KTLogger::logInfo (const string &message, const Location& loc)
-    {
-        fPrivate->logCout("INFO", message, loc, KTLogger::Private::fInfoColor);
-    }
-
-    void KTLogger::logProg (const string &message, const Location& loc)
-    {
-        fPrivate->logCout("PROG", message, loc, KTLogger::Private::fProgColor);
-    }
-
-    void KTLogger::logWarn (const string &message, const Location& loc)
-    {
-        fPrivate->logCout("WARN", message, loc, KTLogger::Private::fWarnColor);
-    }
-
-    void KTLogger::logError (const string &message, const Location& loc)
-    {
-        fPrivate->logCerr("ERROR", message, loc, KTLogger::Private::fErrorColor);
-    }
-
-    void KTLogger::logFatal (const string &message, const Location& loc)
-    {
-        fPrivate->logCerr("FATAL", message, loc, KTLogger::Private::fFatalColor);
     }
 }
 

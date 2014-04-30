@@ -10,9 +10,8 @@
 #define KTCOMMANDLINEHANDLER_H_
 
 #include "KTLogger.hh"
+#include "KTParam.hh"
 #include "KTSingleton.hh"
-
-#include "Rtypes.h"
 
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
@@ -25,7 +24,7 @@ namespace po = boost::program_options;
 
 namespace Katydid
 {
-    KTLOGGER(utillog_clh, "katydid.utility");
+    KTLOGGER(utillog_clh, "KTCommandLineHandler.hh");
 
     class CommandLineHandlerException : public std::logic_error
     {
@@ -79,7 +78,7 @@ namespace Katydid
             const std::string& GetExecutableName() const;
             const std::string& GetPackageString() const;
 
-        protected:
+        private:
             std::string fExecutableName; // from argv[0], if provided
             std::string fPackageString; // Package name and version
 
@@ -88,15 +87,17 @@ namespace Katydid
             //**************
 
         public:
-            Bool_t TakeArguments(Int_t argC, Char_t** argV);
-            Bool_t GetArgumentsTaken();
-            Int_t GetNArgs();
-            Char_t** GetArgV();
+            bool TakeArguments(int argC, char** argV);
+            bool GetArgumentsTaken();
+            int GetNArgs();
+            char** GetArgV();
 
-        protected:
-            Int_t fNArgs;
-            Char_t** fArgV;
-            Bool_t fArgumentsTaken;
+        private:
+            int fNArgs;
+            char** fArgV;
+            bool fArgumentsTaken;
+
+            bool ProcessCommandLine();
 
             //**************
             // Option-adding interface
@@ -107,35 +108,35 @@ namespace Katydid
             OptDescMapIt CreateNewOptionGroup(const std::string& aTitle);
 
             /// Simple option adding function, with short option (flag only; no values allowed)
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate=true);
+            bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate=true);
             /// Simple option adding function, without short option (flag only; no values allowed)
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Bool_t aWarnOnDuplicate=true);
+            bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, bool aWarnOnDuplicate=true);
 
             /// Option-with-value adding function with short option
             template< class XValueType >
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate=true);
+            bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate=true);
             /// Option-with-value adding function without short option
             template< class XValueType >
-            Bool_t AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Bool_t aWarnOnDuplicate=true);
+            bool AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, bool aWarnOnDuplicate=true);
 
             /// Request access to the options description object for more freedom (and responsibility!) in adding options
             po::options_description* GetOptionsDescription(const std::string& aKey);
 
             /// Adds the groups of options to the set of usable options groups (note: this must be called to make the options in the groups usable)
-            Bool_t FinalizeNewOptionGroups();
+            bool FinalizeNewOptionGroups();
 
         protected:
             OptDescMap fProposedGroups;
             std::set< std::string > fAllGroupKeys;
             std::set< std::string > fAllOptionsLong;
-            std::set< Char_t > fAllOptionsShort;
+            std::set< char > fAllOptionsShort;
 
             po::options_description fCommandLineOptions;
             po::options_description fPrintHelpOptions;
 
         protected:
             /// Adds a set of command line options
-            Bool_t AddCommandLineOptions(const po::options_description& aSetOfOpts);
+            bool AddCommandLineOptions(const po::options_description& aSetOfOpts);
 
             //**************
             // Parsing
@@ -143,13 +144,13 @@ namespace Katydid
 
         public:
             /// Parses the remaining command line options (those that weren't parsed during the InitialCommandLineProcessing
-            Bool_t DelayedCommandLineProcessing();
+            bool DelayedCommandLineProcessing();
 
         private:
             /// Parses the general options and stores the remaining options available for later parsing
             void InitialCommandLineProcessing();
 
-        protected:
+        private:
             std::vector< std::string > fCommandLineParseLater;
 
             //**************
@@ -158,7 +159,7 @@ namespace Katydid
 
         public:
             /// Check if a command line option was set
-            Bool_t IsCommandLineOptSet(const std::string& aCLOption);
+            bool IsCommandLineOptSet(const std::string& aCLOption);
 
             /// Return the value of a command line option; throws an exception if the value was not set
             template< class XReturnType >
@@ -168,28 +169,44 @@ namespace Katydid
             template< class XReturnType >
             XReturnType GetCommandLineValue(const std::string& aCLOption, XReturnType defaultValue);
 
+            bool GetPrintHelpMessageFlag() const;
+            bool GetPrintHelpMessageAfterConfigFlag() const;
+            bool GetPrintVersionMessage() const;
+
             /// Return the file name provided by the user on the command line for the config file
             const std::string& GetConfigFilename() const;
+
+            /// Return the string of json provided by the user on the command line
+            const std::string& GetCommandLineJSON() const;
 
             const po::parsed_options* GetParsedOptions() const;
             const po::variables_map* GetVariablesMap() const;
 
-        protected:
+            const KTParamNode* GetConfigOverride() const;
+
+        private:
             po::parsed_options fParsedOptions;
             po::variables_map fCommandLineVarMap;
 
-            Bool_t fPrintHelpMessageAfterConfig;
+            KTParamNode fConfigOverrideValues;
+            static const char fDash = '-';
+            static const char fSeparator = '=';
+            static const char fNodeSeparator = '.';
+
+            bool fPrintHelpMessage;
+            bool fPrintHelpMessageAfterConfig;
+            bool fPrintVersionMessage;
+
             std::string fConfigFilename;
+            std::string fCommandLineJSON;
 
             //**************
             // Print useful information
             //**************
 
         public:
-            Bool_t GetPrintHelpMessageAfterConfigFlag();
-
-            virtual void PrintHelpMessageAndExit();
-            virtual void PrintVersionMessageAndExit();
+            virtual void PrintHelpMessage();
+            virtual void PrintVersionMessage();
     };
 
     inline const std::string& KTCommandLineHandler::GetExecutableName() const
@@ -202,7 +219,7 @@ namespace Katydid
     }
 
     template< class XValueType >
-    Bool_t KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Char_t aShortOpt, Bool_t aWarnOnDuplicate)
+    bool KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, char aShortOpt, bool aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
@@ -237,7 +254,7 @@ namespace Katydid
     }
 
     template< class XValueType >
-    Bool_t KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, Bool_t aWarnOnDuplicate)
+    bool KTCommandLineHandler::AddOption(const std::string& aTitle, const std::string& aHelpMsg, const std::string& aLongOpt, bool aWarnOnDuplicate)
     {
         if (fAllOptionsLong.find(aLongOpt) != fAllOptionsLong.end())
         {
@@ -290,7 +307,22 @@ namespace Katydid
         return fConfigFilename;
     }
 
-    inline Bool_t KTCommandLineHandler::GetPrintHelpMessageAfterConfigFlag()
+    inline const std::string& KTCommandLineHandler::GetCommandLineJSON() const
+    {
+        return fCommandLineJSON;
+    }
+
+    inline bool KTCommandLineHandler::GetPrintVersionMessage() const
+    {
+        return fPrintVersionMessage;
+    }
+
+    inline bool KTCommandLineHandler::GetPrintHelpMessageFlag() const
+    {
+        return fPrintHelpMessage;
+    }
+
+    inline bool KTCommandLineHandler::GetPrintHelpMessageAfterConfigFlag() const
     {
         return fPrintHelpMessageAfterConfig;
     }
@@ -303,6 +335,11 @@ namespace Katydid
     inline const po::variables_map* KTCommandLineHandler::GetVariablesMap() const
     {
         return &fCommandLineVarMap;
+    }
+
+    inline const KTParamNode* KTCommandLineHandler::GetConfigOverride() const
+    {
+        return &fConfigOverrideValues;
     }
 
 } /* namespace Katydid */

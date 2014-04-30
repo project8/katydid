@@ -7,10 +7,9 @@
 
 #include "KTHannWindow.hh"
 
-#include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTPStoreNode.hh"
+#include "KTParam.hh"
 
 #include <cmath>
 
@@ -18,9 +17,9 @@ using std::string;
 
 namespace Katydid
 {
-    static KTDerivedNORegistrar< KTWindowFunction, KTHannWindow > sWFHannRegistrar("hann");
+    KT_REGISTER_WINDOWFUNCTION(KTHannWindow, "hann")
 
-    KTLOGGER(windowlog, "katydid.fft");
+    KTLOGGER(windowlog, "KTHannWindow");
 
     KTHannWindow::KTHannWindow(const string& name) :
             KTWindowFunction(name)
@@ -31,13 +30,13 @@ namespace Katydid
     {
     }
 
-    Bool_t KTHannWindow::ConfigureWFSubclass(const KTPStoreNode* node)
+    bool KTHannWindow::ConfigureWFSubclass(const KTParamNode*)
     {
         KTDEBUG(windowlog, "Hann WF configured");
         return true;
     }
 
-    Double_t KTHannWindow::GetWeight(Double_t time) const
+    double KTHannWindow::GetWeight(double time) const
     {
         return GetWeight(KTMath::Nint(time / fBinWidth));
     }
@@ -45,10 +44,10 @@ namespace Katydid
     void KTHannWindow::RebuildWindowFunction()
     {
         fWindowFunction.resize(fSize);
-        Double_t twoPiOverNBinsMinus1 = KTMath::TwoPi() / (Double_t)(fSize - 1);
-        for (Int_t iBin=0; iBin<fSize; iBin++)
+        double twoPiOverNBinsMinus1 = KTMath::TwoPi() / (double)(fSize - 1);
+        for (unsigned iBin=0; iBin<fSize; iBin++)
         {
-            fWindowFunction[iBin] = 0.5 * (1. - cos((Double_t)iBin * twoPiOverNBinsMinus1));
+            fWindowFunction[iBin] = 0.5 * (1. - cos((double)iBin * twoPiOverNBinsMinus1));
         }
         return;
     }

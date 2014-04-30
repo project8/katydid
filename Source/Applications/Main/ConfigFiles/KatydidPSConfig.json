@@ -1,104 +1,52 @@
 {
-    "katydid":
+    "processor-toolbox":
     {
-        "processor-toolbox":
-        {
-            "processor":
-            {
-                "type": "egg-processor",
-                "name": "egg"
-            },
-            "processor":
-            {
-                "type": "simple-fft",
-                "name": "fft"
-            },
-            "processor":
-            {
-                "type": "basic-root-writer",
-                "name": "writer"
-            },
-            "processor":
-            {
-                "type": "throughput-profiler",
-                "name": "profiler"
-            },
-            
-            "comment": "configure the fft with the egg header, and start the profiler",
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "header",
-                "slot-processor": "fft",
-                "slot-name": "header",
-                "group-order": 0
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "header",
-                "slot-processor": "profiler",
-                "slot-name": "start",
-                "group-order": 1
-            },
-            
-            "comment": "do the analysis!",
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "slice",
-                "slot-processor": "profiler",
-                "slot-name": "data",
-                "group-order": 0
-            },
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "slice",
-                "slot-processor": "fft",
-                "slot-name": "ts",
-                "group-order": 1
-            },
-            "connection":
-            {
-                "signal-processor": "fft",
-                "signal-name": "fft",
-                "slot-processor": "writer",
-                "slot-name": "fs-polar"
-            },
-            
-            "comment": "stop the profiler",
-            "connection":
-            {
-                "signal-processor": "egg",
-                "signal-name": "egg-done",
-                "slot-processor": "profiler",
-                "slot-name": "stop"
-            },
-            
-            "run-queue":
-            {
-                "processor": "egg"
-            }
-        },
+        "processors":
+        [
+	        { "type": "egg-processor",       "name": "egg" },
+	        { "type": "simple-fft",          "name": "fft" },
+	        { "type": "basic-root-writer",   "name": "writer" }
+        ],
         
+        "connections":
+        [
+	        {
+	            "signal": "egg:header",
+	            "slot": "fft:header"
+	        },
+	        
+	        {
+	            "signal": "egg:ts",
+	            "slot": "fft:ts"
+	        },
+	        {
+	            "signal": "fft:fft-forward",
+	            "slot": "writer:fs-polar"
+	        }
+        ],
+        
+        "run-queue":
+        [
+            "egg"
+        ]
+    },
+    
 
-        "egg":
-        {
-            "filename": "/path/to/file.egg",
-            "slice-size": 16384,
-            "number-of-slices": 1
-        },
-        
-        "fft":
-        {
-            "transform-flag": "ESTIMATE"
-        },
-        
-        "writer":
-        {
-            "output-file": "/path/to/file.root",
-            "file-flag": "recreate"
-        }
+    "egg":
+    {
+        "filename": "/path/to/file.egg",
+        "slice-size": 16384,
+        "number-of-slices": 1
+    },
+    
+    "fft":
+    {
+        "transform-flag": "ESTIMATE"
+    },
+    
+    "writer":
+    {
+        "output-file": "/path/to/file.root",
+        "file-flag": "recreate"
     }
 }
