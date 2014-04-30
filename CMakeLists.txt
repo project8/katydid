@@ -14,7 +14,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 include (PackageBuilder)
 
 # Set the version and associated variables
-pbuilder_prepare_project (1 9 3)
+pbuilder_prepare_project (1 9 4)
 
 # Add a "Standard" build type
 #set (CMAKE_BUILD_TYPE standard)
@@ -184,8 +184,8 @@ endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 
 
 # External packages distributed with Katydid
-include_directories ("${PROJECT_SOURCE_DIR}/External/RapidJSON")
-include_directories ("${PROJECT_SOURCE_DIR}/External/RapidXML")
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidJSON)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidXML)
 
 # add an option to build the validation tests
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
@@ -212,13 +212,13 @@ else (Katydid_USE_MONARCH)
     add_subdirectory(Source/Egg/Monarch EXCLUDE_FROM_ALL)
     remove_definitions(-DUSE_MONARCH)
 endif (Katydid_USE_MONARCH)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Source)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
-include_directories (${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Source)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
 
 
 # Subdirectories
-include_directories (
+include_directories (BEFORE 
     ${PROJECT_SOURCE_DIR}/Source/Utility
     ${PROJECT_SOURCE_DIR}/Source/Core
     ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
