@@ -45,6 +45,7 @@ namespace Katydid
             fReadState(),
             fNumberOfChannels(),
             fGetTimeInRun(&KTEggReaderMonarch::GetTimeInRunFirstCall),
+            fT0Offset(0),
             fSampleRateUnitsInHz(1.e6),
             fRecordSize(0),
             fBinWidth(0.),
@@ -410,7 +411,9 @@ namespace Katydid
 
     double KTEggReaderMonarch::GetTimeInRunFirstCall() const
     {
-        if ((fMonarch->*fMonarchGetRecord[0])()->fTime == 0)
+        fT0Offset = (fMonarch->*fMonarchGetRecord[0])()->fTime;
+        KTDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
+        if (fT0Offset == 0)
         {
             KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is 0; switching GetTIR function to manual");
             fGetTimeInRun = &KTEggReaderMonarch::GetTimeInRunManually;

@@ -124,6 +124,7 @@ namespace Katydid
             double GetTimeInRunFirstCall() const;
             double GetTimeInRunFromMonarch() const;
             double GetTimeInRunManually() const;
+            mutable monarch::TimeType fT0Offset; /// Time of the first record
 
             double fSampleRateUnitsInHz;
 
@@ -131,7 +132,6 @@ namespace Katydid
             double fBinWidth;
 
             uint64_t fSliceNumber;
-
     };
 
     inline unsigned KTEggReaderMonarch::GetSliceSize() const
@@ -177,7 +177,7 @@ namespace Katydid
 
     inline double KTEggReaderMonarch::GetTimeInRunFromMonarch() const
     {
-        return double((fMonarch->*fMonarchGetRecord[0])()->fTime) * SEC_PER_NSEC + fBinWidth * double(fReadState.fReadPtrOffset);
+        return double((fMonarch->*fMonarchGetRecord[0])()->fTime - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fReadPtrOffset);
     }
 
     inline double KTEggReaderMonarch::GetTimeInRunManually() const
