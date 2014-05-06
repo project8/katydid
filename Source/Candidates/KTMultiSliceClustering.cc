@@ -22,7 +22,7 @@
 #include <boost/weak_ptr.hpp>
 
 #include <set>
-
+#include <sstream>
 
 using boost::weak_ptr;
 
@@ -580,7 +580,12 @@ namespace Katydid
 
     KTDataPtr KTMultiSliceClustering::CreateDataFromCluster(const Cluster& cluster)
     {
-        KTDEBUG(sclog, "Creating data object # " << fDataCount);
+#ifndef NDEBUG
+        // if in debug mode, put together a string to print
+        std::stringstream printStream;
+        printStream << "Creating data object # " << fDataCount << '\n';
+#endif
+
         ++fDataCount;
 
         KTDataPtr data(new KTData());
@@ -599,7 +604,9 @@ namespace Katydid
         int firstTimeBinWithFrame = (int)firstTimeBin - (int)fNFramingTimeBins;
         int lastTimeBinWithFrame = (int)lastTimeBin + (int)fNFramingTimeBins;
 
-        KTDEBUG(sclog, "final time range: " << firstTimeBin << " - " << lastTimeBin << "; with frame: " << firstTimeBinWithFrame << " - " << lastTimeBinWithFrame);
+#ifndef NDEBUG
+        printStream << "\tTime bin range: " << firstTimeBin << " - " << lastTimeBin << "; with frame: " << firstTimeBinWithFrame << " - " << lastTimeBinWithFrame << '\n';
+#endif
 
         double ftbSumOfWeights = 0., ftbWeightedSum = 0.;
         double ltbSumOfWeights = 0., ltbWeightedSum = 0.;
@@ -635,10 +642,14 @@ namespace Katydid
                 ltbWeightedSum += it->fSpectrumPtr->GetBinCenter(it->fFreqBin) * it->fAmplitude;
             }
         }
-        KTDEBUG(sclog, "final freq range: " << firstFreqBin << " - " << lastFreqBin);
 
         int firstFreqBinWithFrame = (int)firstFreqBin - (int)fNFramingFreqBins;
         int lastFreqBinWithFrame =(int) lastFreqBin + (int)fNFramingFreqBins;
+
+#ifndef NDEBUG
+        printStream << "\tFreq bin range: " << firstFreqBin << " - " << lastFreqBin << "; with frame: " << firstFreqBinWithFrame << " - " << lastFreqBinWithFrame << '\n';
+#endif
+
         unsigned firstFreqBinToUse = firstFreqBinWithFrame >= 0 ? (unsigned)firstFreqBinWithFrame : 0;
         unsigned lastFreqBinToUse = lastFreqBinWithFrame < (int)(cluster.fPoints.begin()->fSpectrumPtr->size()) ? (unsigned)lastFreqBinWithFrame : cluster.fPoints.begin()->fSpectrumPtr->size() - 1;
         unsigned freqBinOffset = unsigned((int)firstFreqBinToUse - firstFreqBinWithFrame);
@@ -652,6 +663,12 @@ namespace Katydid
 
         unsigned nTimeBinsWithFrame = nTimeBins + 2 * fNFramingTimeBins;
         unsigned nFreqBinsWithFrame = nFreqBins + 2 * fNFramingFreqBins;
+
+#ifndef NDEBUG
+        printStream << "\tDimensions with frame: " << nTimeBinsWithFrame << " time bins and " << nFreqBinsWithFrame << " freq bins;  cluster dimensions are " << nTimeBins << " by " << nFreqBins << '\n';
+        printStream << "\tTime bin width: " << timeBinWidthWithOverlap << " s (raw) --- " << timeBinWidth << " s (accounting for overlap)\n";
+        printStream << "\tFreq bin width: " << freqBinWidth << " Hz\n";
+#endif
 
         //KTWARN(sclog, "loading spectrum pointers; expecting " << nTimeBinsWithFrame << " spectra");
         // Create a vector of pointers to spectra, where each component is for a single time bin
@@ -688,11 +705,21 @@ namespace Katydid
 
         wfcData.SetTimeInRun(cluster.fPoints.begin()->fHeaderPtr->GetTimeInRun());
         wfcData.SetFirstSliceNumber(cluster.fPoints.begin()->fHeaderPtr->GetSliceNumber());
-        wfcData.SetLastSliceNumber(cluster.fPoints.begin()->fHeaderPtr->GetSliceNumber());
+        wfcData.SetLastSliceNumber(cluster.fPoints.rbegin()->fHeaderPtr->GetSliceNumber());
         wfcData.SetTimeLength(timeBinWidth * double(nTimeBins) + 2. * endTimeBinShift);
         wfcData.SetMeanStartFrequency(ftbWeightedSum / ftbSumOfWeights);
         wfcData.SetMeanEndFrequency(ltbWeightedSum / ltbSumOfWeights);
         wfcData.SetFrequencyWidth(freqBinWidth * double(nFreqBins));
+
+#ifndef NDEBUG
+        printStream << "\tTime in run: " << wfcData.GetTimeInRun() << " s\n";
+        printStream << "\tTime length: " << wfcData.GetTimeLength() << " s\n";
+        printStream << "\tFirst slice number: " << wfcData.GetFirstSliceNumber() << '\n';
+        printStream << "\tLast slice number: " << wfcData.GetLastSliceNumber() << '\n';
+        printStream << "\tMean start freq: " << wfcData.GetMeanStartFrequency() << " Hz\n";
+        printStream << "\tMean end freq: " << wfcData.GetMeanEndFrequency() << " Hz\n";
+        printStream << "\tFreq width: " << wfcData.GetFrequencyWidth() << " Hz\n";
+#endif
 
         unsigned i = 0;
         for (; ! spectra[i]; ++i);
@@ -702,9 +729,8 @@ namespace Katydid
             wfcData.SetMaximumFrequency(spectra[i]->GetBinLowEdge(lastFreqBin) + freqBinWidth);
         }
 
-        KTDEBUG(sclog, "Creating KTTimeFrequency with " << nTimeBinsWithFrame << " time bins and " << nFreqBinsWithFrame << " freq bins;  cluster dimensions are " << nTimeBins << " by " << nFreqBins);
         double tfStartTime = wfcData.GetTimeInRun() + endTimeBinShift - double(fNFramingTimeBins) * timeBinWidth;
-        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, tfStartTime, tfStartTime + double(nTimeBinsWithFrame)*timeBinWidth, nFreqBinsWithFrame, freqBinWidth * double(firstFreqBinWithFrame), freqBinWidth * double(firstFreqBinWithFrame + (int)nFreqBins));
+        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, tfStartTime, tfStartTime + double(nTimeBinsWithFrame)*timeBinWidth, nFreqBinsWithFrame, freqBinWidth * double(firstFreqBinWithFrame), freqBinWidth * double(firstFreqBinWithFrame + (int)nFreqBinsWithFrame));
         for (int iTBin=firstTimeBinWithFrame; iTBin <= lastTimeBinWithFrame; ++iTBin)
         {
             int spectrumNum = iTBin - firstTimeBinWithFrame;
@@ -725,6 +751,10 @@ namespace Katydid
             */
         }
         wfcData.SetCandidate(tf);
+
+#ifndef NDEBUG
+        KTDEBUG(sclog, printStream.str());
+#endif
 
         return data;
     }
