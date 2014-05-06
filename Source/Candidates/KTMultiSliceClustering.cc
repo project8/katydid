@@ -40,7 +40,7 @@ namespace Katydid
             KTDataQueueProcessorTemplate< KTMultiSliceClustering >(name),
             fMaxFreqSep(1.),
             fMaxTimeSep(1.),
-            fMaxFreqSepBins(0),
+            fMaxFreqSepBins(1),
             fMaxTimeSepBins(1),
             fCalculateMaxFreqSepBins(false),
             fCalculateMaxTimeSepBins(false),
@@ -399,6 +399,7 @@ namespace Katydid
                 //KTDEBUG(sclog, "    comparing to active cluster " << iCluster);
 
                 // check for overlap
+                // if sep = 1, neighboring bins are allowed; if sep = 2, there can be a space of 1 bin between them
                 // y1 <= x2+sep  && x1 <= y2+sep
                 // x1 = fbIt->fFirstPoint; x2 = fbIt->fLastPoint
                 // y1 = acIt->EndMinFreqPoint(); y2 = acIt->EndMaxFreqPoint()
@@ -510,7 +511,7 @@ namespace Katydid
             else
             {
                 ++(acIt->fTimeBinSkipCounter);
-                if (acIt->fTimeBinSkipCounter > fMaxTimeSepBins) // cluster is no longer active
+                if (acIt->fTimeBinSkipCounter >= fMaxTimeSepBins) // cluster is no longer active
                 {
                     if (acIt->LastTimeBin() - acIt->FirstTimeBin() + 1 >= fMinTimeBins)
                     {
