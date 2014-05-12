@@ -45,6 +45,7 @@ set (DATA_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequency.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.hh
+    ${CMAKE_CURRENT_SOURCE_DIR}/Matlab/KTRSAMatProcessor.hh
 )
 
 set (DATA_SOURCEFILES
@@ -91,6 +92,7 @@ set (DATA_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequency.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyDataPolar.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/FFT/KTTimeFrequencyPolar.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Matlab/KTRSAMatProcessor.cc
 )
 
 if (ROOT_FOUND)
