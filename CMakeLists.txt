@@ -227,7 +227,6 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/Data/Egg
     ${PROJECT_SOURCE_DIR}/Source/Data/FFT
     ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
-    ${PROJECT_SOURCE_DIR}/Source/Data/Matlab
     ${PROJECT_SOURCE_DIR}/Source/IO
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/Simulation

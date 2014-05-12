@@ -62,7 +62,8 @@ namespace Katydid
             enum EggReaderType
             {
                 k2011EggReader,
-                kMonarchEggReader
+                kMonarchEggReader,
+                kRSAMATReader
             };
 
         public:

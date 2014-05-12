@@ -73,6 +73,11 @@ namespace Katydid
             {
                 SetEggReaderType(k2011EggReader);
             }
+            else if (eggReaderTypeString == string("rsamat"))
+            {
+                KTERROR(egglog, "New egg reader type: <" << eggReaderTypeString << ">");
+                SetEggReaderType(kRSAMATReader);
+            }
             else
             {
                 KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
@@ -148,11 +153,19 @@ namespace Katydid
             return false;
 #endif
         }
-        else
+        else if (fEggReaderType == k2011EggReader)
         {
             KTEggReader2011* eggReader2011 = new KTEggReader2011();
             reader = eggReader2011;
         }
+        else if (fEggReaderType == kRSAMATReader)
+        {
+            printf("Using KTRSAMatReader\n");
+            std::cout << "Processing " << fFilename << "\n";
+            // Do nothing;
+            return true;
+        }
+
 
         KTEggHeader* header = reader->BreakEgg(fFilename);
         if (header == NULL)
