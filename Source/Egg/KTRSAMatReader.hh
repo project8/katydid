@@ -43,11 +43,12 @@ namespace Katydid
         private:
             KTEggHeader fHeader;
             static const unsigned fMaxChannels = 2;
-            unsigned fRecordsRead;
             double fSampleRateUnitsInHz;
             unsigned fRecordSize;
             double fBinWidth;
             uint64_t fSliceNumber;
+            unsigned fRecordsRead;
+            unsigned fSamplesRead;
             mxArray *ts_array_mat;
             MATFile *matfilep;
 
@@ -127,7 +128,7 @@ namespace Katydid
     }
     inline double KTRSAMatReader::GetTimeInRun() const
     {
-        return 0;
+        return (double) fSamplesRead * fBinWidth;
     }
     inline unsigned KTRSAMatReader::GetNSlicesProcessed() const
     {

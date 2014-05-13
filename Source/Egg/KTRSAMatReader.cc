@@ -31,7 +31,9 @@ namespace Katydid
             fHeader(),
             fSampleRateUnitsInHz(1.e6),
             fBinWidth(0.),
-            fSliceNumber(0)
+            fSliceNumber(0),
+            fSamplesRead(0),
+            fRecordsRead(0)
     {
     }
 
@@ -78,8 +80,9 @@ namespace Katydid
         rapidxml::xml_node<> * curr_node;
         data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
         curr_node = data_node->first_node("SamplingFrequency");
-        cout << "Name of my current node is: " << curr_node->name() << "\n";
-        printf("Sampling Frequency: %s\n", curr_node->value());
+        // For debugging:
+        //cout << "Name of my current node is: " << curr_node->name() << "\n";
+        //printf("Sampling Frequency: %s\n", curr_node->value());
 
         // Write configuration from XML into fHeader variable
         fHeader.SetFilename(filename);
@@ -96,6 +99,7 @@ namespace Katydid
         if (strcmp(curr_node->value() , "Int32") == 0) {
             fHeader.SetDataTypeSize(sizeof(int32_t));
         }
+        // The variables below could not be obtained from the XML configuration:
         //fHeader.SetDescription(monarchHeader->GetDescription());
         //fHeader.SetRunType(monarchHeader->GetRunType());
         //fHeader.SetRunSource(monarchHeader->GetRunSource());
@@ -117,12 +121,70 @@ namespace Katydid
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
         fSliceNumber = 0;
+        fRecordsRead = 0;
+        fSamplesRead = 0;
+
 
         return new KTEggHeader(fHeader);
     }
     KTDataPtr KTRSAMatReader::HatchNextSlice()
     {
+
+        // IMPORTANT:
+        // KTRSAMatReader::HatchNextSlice is currently only capable of reading MAT files containing a single acquisitiona, a single record and a single channel
+
+        unsigned recordSize = fHeader.GetRecordSize();
         KTDataPtr newData(new KTData());
+
+        // ********************************** //
+        // Fill out slice header information  //
+        // ********************************** //
+        KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(fHeader.GetNChannels());
+        if (fSliceNumber==0)
+        {
+            sliceHeader.SetIsNewAcquisition(true);
+        }
+        else
+        {
+            sliceHeader.SetIsNewAcquisition(false);
+        }
+        ++fSliceNumber;
+
+        // Slice Header Variables
+        sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
+        sliceHeader.SetRawSliceSize(fSliceSize);
+        sliceHeader.SetSliceSize(fSliceSize);
+        sliceHeader.CalculateBinWidthAndSliceLength();
+        sliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
+        sliceHeader.SetTimeInRun(GetTimeInRun());
+        sliceHeader.SetSliceNumber(fSliceNumber);
+        sliceHeader.SetStartRecordNumber(fRecordsRead);
+        sliceHeader.SetStartSampleNumber(0);
+        sliceHeader.SetRecordSize(fHeader.GetRecordSize());
+        // Slice Header Variables that depend on channel number
+        unsigned iChannel = 0;
+        sliceHeader.SetAcquisitionID(0, iChannel);
+        sliceHeader.SetRecordID(fRecordsRead, iChannel);
+        sliceHeader.SetTimeStamp(sliceHeader.GetTimeInRun() / SEC_PER_NSEC, iChannel);
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
+
+        // ********************************** //
+        // Read data                          //
+        // ********************************** //
+
+
+        // KTTimeSeries* newSlice = new KTTimeSeries(fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
+        // for (int iBin=0; iBin<fSliceSize; iBin++)
+        // {
+        //     (*newSlice)(iBin) = readBuffer[iBin];
+        // }
+        // delete [] readBuffer;
+        // KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(1);
+        // tsData.SetTimeSeries(newSlice);
+        // fRecordsRead++;
+
+
+
         return newData;
 
     }
