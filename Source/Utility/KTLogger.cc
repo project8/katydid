@@ -31,8 +31,235 @@ static const string skKTInfoColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPAR
 static const string skKTDebugColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX;
 static const string skKTOtherColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_WHITE  KTCOLOR_SUFFIX;
 
+const string& EndColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_NORMAL KTCOLOR_SUFFIX); return *color;}
+const string& FatalColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX); return *color;}
+const string& ErrorColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX); return *color;}
+const string& WarnColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_YELLOW KTCOLOR_SUFFIX); return *color;}
+const string& ProgColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_BLUE   KTCOLOR_SUFFIX); return *color;}
+const string& InfoColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_GREEN  KTCOLOR_SUFFIX); return *color;}
+const string& DebugColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX); return *color;}
+const string& OtherColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_WHITE  KTCOLOR_SUFFIX); return *color;}
 
-#if defined(LOG4CXX_FOUND)
+#if 0
+//#if defined(BOOST_LOG_FOUND)
+
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/format.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sources/severity_feature.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/support/date_time.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/manipulators/to_log.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/formatter_parser.hpp>
+#include <boost/move/utility.hpp>
+
+//#include <vector>
+
+
+/*
+namespace Katydid
+{
+    struct SeverityLevels
+    {
+        struct LevelAttributes
+        {
+                std::string fTag;
+                std::string fColor;
+                //LevelAttributes(const char* tag, const string& color) :
+                //    fTag(tag),
+                //    fColor(color)
+                //{}
+        };
+        std::vector< LevelAttributes > fLevelAttributes;
+        SeverityLevels() :
+            fLevelAttributes(7)
+        {
+            fLevelAttributes[0].fTag = string("TRACE"); fLevelAttributes[0].fColor = string(DebugColor());
+            fLevelAttributes[1].fTag = string("DEBUG"); fLevelAttributes[1].fColor = DebugColor();
+            fLevelAttributes[2].fTag = string("INFO"); fLevelAttributes[2].fColor = InfoColor();
+            fLevelAttributes[3].fTag = string("PROG"); fLevelAttributes[3].fColor = ProgColor();
+            fLevelAttributes[4].fTag = string("WARN"); fLevelAttributes[4].fColor = WarnColor();
+            fLevelAttributes[5].fTag = string("ERROR"); fLevelAttributes[5].fColor = ErrorColor();
+            fLevelAttributes[6].fTag = string("FATAL"); fLevelAttributes[6].fColor = FatalColor();
+            //fLevelAttributes.push_back(LevelAttributes("TRACE", skKTDebugColor));
+            //fLevelAttributes.push_back(LevelAttributes("DEBUG", skKTDebugColor));
+            //fLevelAttributes.push_back(LevelAttributes("INFO", skKTInfoColor));
+            //fLevelAttributes.push_back(LevelAttributes("PROG", skKTProgColor));
+            //fLevelAttributes.push_back(LevelAttributes("WARN", skKTWarnColor));
+            //fLevelAttributes.push_back(LevelAttributes("ERROR", skKTErrorColor));
+            //fLevelAttributes.push_back(LevelAttributes("FATAL", skKTFatalColor));
+            std::cout << "attributes for trace: " << fLevelAttributes.begin()->fTag << "  " << fLevelAttributes.begin()->fColor << std::endl;
+        }
+
+    };
+    //std::vector< SeverityLevels::LevelAttributes > SeverityLevels::fLevelAttributes;
+    SeverityLevels& GetLevels()
+    {
+        static SeverityLevels* levels = new SeverityLevels();
+        return *levels;
+    }
+}
+*/
+
+struct severity_tag;
+boost::log::formatting_ostream& operator<<(
+        boost::log::formatting_ostream& strm,
+        boost::log::to_log_manip< Katydid::KTLogger::ELevel, severity_tag > const& manip)
+{
+    static const char* strings[] =
+    {
+            "TRACE",
+            "DEBUG",
+            "INFO",
+            "PROD",
+            "WARN",
+            "ERROR",
+            "FATAL"
+    };
+    static std::size_t levels = 7;
+    Katydid::KTLogger::ELevel level = manip.get();
+    if (static_cast< std::size_t >(level) < levels)
+        strm << strings[level];
+    else
+        strm << "XXXX";
+
+    return strm;
+}
+
+struct severity_color;
+boost::log::formatting_ostream& operator<<(
+        boost::log::formatting_ostream& strm,
+        boost::log::to_log_manip< Katydid::KTLogger::ELevel, severity_color > const& manip)
+{
+    static const char* strings[] =
+    {
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_GREEN  KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_BLUE   KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_YELLOW KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX
+    };
+    /*static const char* strings[] =
+    {
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_GREEN  KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_BLUE   KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_YELLOW KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX,
+            KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX
+    };*/
+    static std::size_t levels = 7;
+    Katydid::KTLogger::ELevel level = manip.get();
+    if (static_cast< std::size_t >(level) < levels)
+        strm << strings[level];
+    else
+        strm << skKTOtherColor;
+
+    return strm;
+}
+
+
+
+namespace Katydid
+{
+
+
+    struct KTLogger::Private
+    {
+            boost::log::sources::severity_logger< KTLogger::ELevel > fLogger;
+
+            void SetThreshold(ELevel thresh)
+            {
+                return;
+            }
+
+            ELevel fThreshold;
+    };
+
+    KTLogger::KTLogger(const char* name) : fPrivate(new Private())
+    {
+        //Katydid::GetLevels();
+        boost::shared_ptr< boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend > > sink =
+            boost::log::add_console_log(std::cout,
+                boost::log::keywords::format =
+                    (
+                        boost::log::expressions::stream
+                        << boost::log::expressions::attr< KTLogger::ELevel, severity_color >("Severity")
+                        //<< Private::level2Color(level)
+                        << boost::log::expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", "%H:%M:%S.")
+                        << boost::log::expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", "%f")
+                        << ": [" << boost::log::expressions::attr< KTLogger::ELevel, severity_tag >("Severity") << "] "
+                        << boost::log::expressions::smessage
+                        << EndColor()
+                    )
+        );
+        sink->locked_backend()->auto_flush(true);
+        boost::log::add_common_attributes();
+        SetLevel(eDebug);
+    }
+
+    KTLogger::KTLogger(const std::string& name) : fPrivate(new Private())
+    {
+        //boost::log::register_simple_formatter_factory< string, char >("Color");
+        //Katydid::GetLevels();
+
+        boost::shared_ptr< boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend > > sink =
+            boost::log::add_console_log(std::cout,
+                boost::log::keywords::format =
+                    (
+                            boost::log::expressions::stream
+                            << boost::log::expressions::attr< KTLogger::ELevel, severity_color >("Severity")
+                            //<< Private::level2Color(level)
+                            << boost::log::expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", "%H:%M:%S.%F")
+                            << ": [" << boost::log::expressions::attr< KTLogger::ELevel, severity_tag >("Severity") << "] "
+                            << boost::log::expressions::smessage
+                            << skKTEndColor
+                    )
+        );
+        sink->locked_backend()->auto_flush(true);
+        boost::log::add_common_attributes();
+        SetLevel(eDebug);
+    }
+
+    KTLogger::~KTLogger()
+    {
+        delete fPrivate;
+    }
+
+    bool KTLogger::IsLevelEnabled(ELevel level) const
+    {
+        return level >= fPrivate->fThreshold;
+    }
+
+    void KTLogger::SetLevel(ELevel level) const
+    {
+#if defined(NDEBUG) && defined(STANDARD)
+                fPrivate->fThreshold = level >= eInfo ? level : eInfo;
+#elif defined(NDEBUG)
+                fPrivate->fThreshold = level >= eProg ? level : eProg;
+#else
+                fPrivate->fThreshold = level;
+#endif
+    }
+
+    void KTLogger::Log(ELevel level, const string& message, const Location& loc)
+    {
+        std::cout << "in KTLogger::Log" << std::endl;
+        BOOST_LOG_SEV(fPrivate->fLogger, level) << boost::format(" %1%(%2%) ") % loc.fFileName % loc.fLineNumber << message;
+    }
+}
+
+
+//#elif defined(LOG4CXX_FOUND)
 #include "log4cxx/KTLevel.hh"
 
 /*
@@ -210,6 +437,7 @@ namespace Katydid
 
     void KTLogger::SetLevel(ELevel level) const
     {
+        cout << "### leven being set to: " << level << endl;
         fPrivate->fLogger->setLevel( Private::level2Ptr(level) );
     }
 
@@ -250,6 +478,7 @@ namespace Katydid
 
             const char* fLogger;
             bool fColored;
+            ELevel fThreshold;
 
             static const char* level2Str(ELevel level)
             {
@@ -282,22 +511,27 @@ namespace Katydid
             }
 
 
-            void logCout(const char* level, const string& message, const Location& /*loc*/, const string& color = skKTOtherColor)
+            void logCout(const char* level, const string& message, const Location& loc, const string& color = skKTOtherColor)
             {
                 getTimeAbsoluteStr();
                 if (fColored)
-                    cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << skKTEndColor << endl;
+                {
+                    cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << skKTEndColor << endl;
+                    //cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] ";
+                    //cout.width(16); cout << left << loc.fFileName << "(" << loc.fLineNumber  << "): ";
+                    //cout << message << skKTEndColor << endl;
+                }
                 else
-                    cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
+                    cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << endl;
             }
 
-            void logCerr(const char* level, const string& message, const Location& /*loc*/, const string& color = skKTOtherColor)
+            void logCerr(const char* level, const string& message, const Location& loc, const string& color = skKTOtherColor)
             {
                 getTimeAbsoluteStr();
                 if (fColored)
-                    cerr << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << skKTEndColor << endl;
+                    cerr << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << skKTEndColor << endl;
                 else
-                    cerr << KTLogger::Private::sTimeBuff <<  " [" << setw(5) << level << "] " << setw(16) << fLogger << ": " << message << endl;
+                    cerr << KTLogger::Private::sTimeBuff <<  " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << endl;
             }
     };
 
@@ -318,14 +552,16 @@ namespace Katydid
             fPrivate->fLogger = logName;
         }
         fPrivate->fColored = true;
-        sprintf(KTLogger::Private::sDateTimeFormat,  "%%FT%%TZ");
+        sprintf(KTLogger::Private::sDateTimeFormat,  "%%T");
+        SetLevel(eDebug);
     }
 
     KTLogger::KTLogger(const std::string& name) : fPrivate(new Private())
     {
         fPrivate->fLogger = name.c_str();
         fPrivate->fColored = true;
-        sprintf(KTLogger::Private::sDateTimeFormat,  "%%FT%%TZ");
+        sprintf(KTLogger::Private::sDateTimeFormat,  "%%T");
+        SetLevel(eDebug);
     }
 
     KTLogger::~KTLogger()
@@ -335,24 +571,25 @@ namespace Katydid
 
     bool KTLogger::IsLevelEnabled(ELevel level) const
     {
-#ifdef NDEBUG
-        return level > eDebug;
-#else
-        (void) level;
-        return true;
-#endif
+        return level >= fPrivate->fThreshold;
     }
 
-    void KTLogger::SetLevel(ELevel /*level*/) const
+    void KTLogger::SetLevel(ELevel level) const
     {
-        // TODO: implement levels for fallback KTLogger
+#if defined(NDEBUG) && defined(STANDARD)
+                fPrivate->fThreshold = level >= eInfo ? level : eInfo;
+#elif defined(NDEBUG)
+                fPrivate->fThreshold = level >= eProg ? level : eProg;
+#else
+                fPrivate->fThreshold = level;
+#endif
     }
 
     void KTLogger::Log(ELevel level, const string& message, const Location& loc)
     {
         const char* levelStr = Private::level2Str(level);
 
-        if (level >= eFatal)
+        if (level >= eWarn)
         {
             fPrivate->logCerr(levelStr, message, loc, Private::level2Color(level));
         }

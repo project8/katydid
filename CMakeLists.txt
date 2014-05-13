@@ -95,7 +95,13 @@ if (Katydid_USE_MANTIS)
 endif (Katydid_USE_MANTIS)
 
 # Boost (1.46 required for filesystem version 3)
+find_package (Boost 1.54.0 COMPONENTS log)
+if (Boost_LOG_FOUND)
+    add_definitions (-DBOOST_LOG_FOUND)
+endif (Boost_LOG_FOUND)
 find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
+# make sure dynamic linking is assumed for all boost libraries
+add_definitions (-DBOOST_ALL_DYN_LINK)
 include_directories (${Boost_INCLUDE_DIRS})
 pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 
