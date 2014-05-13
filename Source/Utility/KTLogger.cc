@@ -15,30 +15,28 @@
 
 #include "KTLogger.hh"
 
-#include <cstdlib>
-#include <cstring>
-
-using namespace std;
-
-const string& EndColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_NORMAL KTCOLOR_SUFFIX); return *color;}
-const string& FatalColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX); return *color;}
-const string& ErrorColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX); return *color;}
-const string& WarnColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_YELLOW KTCOLOR_SUFFIX); return *color;}
-const string& ProgColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_BLUE   KTCOLOR_SUFFIX); return *color;}
-const string& InfoColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_GREEN  KTCOLOR_SUFFIX); return *color;}
-const string& DebugColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX); return *color;}
-const string& OtherColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_WHITE  KTCOLOR_SUFFIX); return *color;}
-
-
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <iomanip>
 #include <iterator>
 #include <sys/time.h>
 #include <time.h>
 
+using namespace std;
+
 namespace Katydid
 {
+    const string& EndColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_NORMAL KTCOLOR_SUFFIX); return *color;}
+    const string& FatalColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX); return *color;}
+    const string& ErrorColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX); return *color;}
+    const string& WarnColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_YELLOW KTCOLOR_SUFFIX); return *color;}
+    const string& ProgColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_BLUE   KTCOLOR_SUFFIX); return *color;}
+    const string& InfoColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_GREEN  KTCOLOR_SUFFIX); return *color;}
+    const string& DebugColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX); return *color;}
+    const string& OtherColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_WHITE  KTCOLOR_SUFFIX); return *color;}
+
     struct KTLogger::Private
     {
         static char sDateTimeFormat[16];
