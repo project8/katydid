@@ -174,8 +174,8 @@ namespace Katydid
             printf("Using KTRSAMatReader\n");
         }
 
-
-
+        // ******************************************************************** //
+        // Call BreakEgg - this actually opens the file and loads its content
         KTEggHeader* header = reader->BreakEgg(fFilename);
         if (header == NULL)
         {
@@ -183,24 +183,26 @@ namespace Katydid
             return false;
         }
 
-        // Break the run if we are using the RSAMATReader - it's for debugging
-        if (fEggReaderType == kRSAMATReader)
-        {
-            return true;
-        }
 
         // pass the digitizer parameters from the egg header to the DAC
         fDAC->SetNBits(header->GetBitDepth());
         fDAC->SetMinVoltage(header->GetVoltageMin());
         fDAC->SetVoltageRange(header->GetVoltageRange());
         fDAC->Initialize();
-
         fDAC->UpdateEggHeader(header);
 
-        fHeaderSignal(header);
 
+        fHeaderSignal(header);
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
+
+
+        // ******************************************************************** //
+        // Break the run if we are using the RSAMATReader - it's for debugging
+        if (fEggReaderType == kRSAMATReader)
+        {
+            return true;
+        }
 
         if (fNSlices == 0) UnlimitedLoop(reader);
         else LimitedLoop(reader);
@@ -234,9 +236,14 @@ namespace Katydid
 
             if (data->Has< KTRawTimeSeriesData >())
             {
-                KTDEBUG(egglog, "Time series data is present.");
+                KTDEBUG(egglog, "Raw time series data is present.");
                 fRawDataSignal(data);
                 NormalizeData(data);
+            }
+            if (data->Has< KTTimeSeriesData >())
+            {
+                KTDEBUG(egglog, "Normalized time series data is present.");
+                fDataSignal(data);
             }
             else
             {
@@ -276,9 +283,14 @@ namespace Katydid
 
             if (data->Has< KTRawTimeSeriesData >())
             {
-                KTDEBUG(egglog, "Time series data is present.");
+                KTDEBUG(egglog, "Raw time series data is present.");
                 fRawDataSignal(data);
                 NormalizeData(data);
+            }
+            if (data->Has< KTTimeSeriesData >())
+            {
+                KTDEBUG(egglog, "Normalized time series data is present.");
+                fDataSignal(data);
             }
             else
             {
@@ -302,7 +314,6 @@ namespace Katydid
         if (fNormalizeVoltages)
         {
             fDAC->ConvertData(data->Of< KTSliceHeader >(), data->Of< KTRawTimeSeriesData >());
-            fDataSignal(data);
         }
         return;
     }
