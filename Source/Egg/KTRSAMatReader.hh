@@ -9,8 +9,11 @@
 #ifndef KTRSAMATREADER_HH_
 #define KTRSAMATREADER_HH_
 
-#include "KTEggReader.hh"
+#ifdef USE_MATLAB
+#include "mat.h" 
+#endif
 
+#include "KTEggReader.hh"
 #include "KTEggHeader.hh"
 
 #include <map>
@@ -38,7 +41,6 @@ namespace Katydid
             unsigned fStride;
 
         private:
-            void GetHeaderInformation(char *rsaxml_str);
             KTEggHeader fHeader;
             static const unsigned fMaxChannels = 2;
             unsigned fRecordsRead;
@@ -46,6 +48,9 @@ namespace Katydid
             unsigned fRecordSize;
             double fBinWidth;
             uint64_t fSliceNumber;
+            mxArray *ts_array_mat;
+            MATFile *matfilep;
+
 
         public:
             /// Opens the egg file and returns a new copy of the header information.
