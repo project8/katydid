@@ -43,8 +43,8 @@ set (Katydid_USE_LOG4CXX TRUE CACHE BOOL "Flag to optionally use log4cxx")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
 
 # Matlab-related flags
-set (MATLAB_INCLUDE_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/extern/include" CACHE STRING "Path to the Matlab Include Files")
-set (MATLAB_LIBRARY_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/bin/maci64" CACHE STRING "Path to the Matlab Lib and Bin Files")
+set (MATLAB_INCLUDE_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/extern/include" CACHE STRING "Path to the Matlab Compiler Runtime R2012b Include Files")
+set (MATLAB_LIBRARY_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/bin/maci64" CACHE STRING "Path to the Matlab Compiler Runtime R2012b Lib Files")
 mark_as_advanced(MATLAB_INCLUDE_DIR,MATLAB_LIBRARY_DIR)
 
 
