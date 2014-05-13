@@ -17,6 +17,7 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
+#include "KTRSAMatReader.hh"
 #include "KTProcSummary.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
@@ -75,7 +76,6 @@ namespace Katydid
             }
             else if (eggReaderTypeString == string("rsamat"))
             {
-                KTERROR(egglog, "New egg reader type: <" << eggReaderTypeString << ">");
                 SetEggReaderType(kRSAMATReader);
             }
             else
@@ -89,6 +89,15 @@ namespace Katydid
         {
             SetEggReaderType(k2011EggReader);
         }
+
+#ifndef USE_MATLAB
+        if (fEggReaderType == kRSAMATReader)
+        {
+            KTERROR(egglog, "Matlab is not enabled; please select another egg reader type");
+            return false;
+        }
+#endif
+
 
 #ifndef USE_MONARCH
         if (fEggReaderType == kMonarchEggReader)
@@ -160,11 +169,11 @@ namespace Katydid
         }
         else if (fEggReaderType == kRSAMATReader)
         {
+            KTRSAMatReader* matReader = new KTRSAMatReader();
+            reader = matReader;
             printf("Using KTRSAMatReader\n");
-            std::cout << "Processing " << fFilename << "\n";
-            // Do nothing;
-            return true;
         }
+
 
 
         KTEggHeader* header = reader->BreakEgg(fFilename);
@@ -172,6 +181,12 @@ namespace Katydid
         {
             KTERROR(egglog, "Egg did not break");
             return false;
+        }
+
+        // Break the run if we are using the RSAMATReader - it's for debugging
+        if (fEggReaderType == kRSAMATReader)
+        {
+            return true;
         }
 
         // pass the digitizer parameters from the egg header to the DAC
