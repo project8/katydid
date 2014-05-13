@@ -21,6 +21,7 @@
 #include "KTProcSummary.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
 
 using std::string;
