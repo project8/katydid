@@ -39,7 +39,6 @@ set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
-set (Katydid_USE_LOG4CXX TRUE CACHE BOOL "Flag to optionally use log4cxx")
 
 #optional compiler flags
 set (FLAG_WARNINGS "" CACHE STRING "Extra warning and error related flags")
