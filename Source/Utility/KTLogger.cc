@@ -22,14 +22,14 @@
 
 using namespace std;
 
-static const string skKTEndColor =   KTCOLOR_PREFIX KTCOLOR_NORMAL KTCOLOR_SUFFIX;
-static const string skKTFatalColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX;
-static const string skKTErrorColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX;
-static const string skKTWarnColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_YELLOW KTCOLOR_SUFFIX;
-static const string skKTProgColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_BLUE   KTCOLOR_SUFFIX;
-static const string skKTInfoColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_GREEN  KTCOLOR_SUFFIX;
-static const string skKTDebugColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX;
-static const string skKTOtherColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_WHITE  KTCOLOR_SUFFIX;
+//static const string skKTEndColor =   KTCOLOR_PREFIX KTCOLOR_NORMAL KTCOLOR_SUFFIX;
+//static const string skKTFatalColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX;
+//static const string skKTErrorColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX;
+//static const string skKTWarnColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_YELLOW KTCOLOR_SUFFIX;
+//static const string skKTProgColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_BLUE   KTCOLOR_SUFFIX;
+//static const string skKTInfoColor =  KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_GREEN  KTCOLOR_SUFFIX;
+//static const string skKTDebugColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_CYAN   KTCOLOR_SUFFIX;
+//static const string skKTOtherColor = KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_WHITE  KTCOLOR_SUFFIX;
 
 const string& EndColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_NORMAL KTCOLOR_SUFFIX); return *color;}
 const string& FatalColor() {static string* color = new string(KTCOLOR_PREFIX KTCOLOR_BRIGHT KTCOLOR_SEPARATOR KTCOLOR_FOREGROUND_RED    KTCOLOR_SUFFIX); return *color;}
@@ -454,8 +454,10 @@ namespace Katydid
  * Fallback solution for systems without log4cxx.
  */
 
+#include <algorithm>
 #include <cstdio>
 #include <iomanip>
+#include <iterator>
 #include <sys/time.h>
 #include <time.h>
 
@@ -499,39 +501,58 @@ namespace Katydid
             {
                 switch(level)
                 {
-                    case eTrace : return skKTDebugColor; break;
-                    case eDebug : return skKTDebugColor; break;
-                    case eInfo  : return skKTInfoColor; break;
-                    case eProg  : return skKTProgColor; break;
-                    case eWarn  : return skKTWarnColor; break;
-                    case eError : return skKTErrorColor; break;
-                    case eFatal : return skKTFatalColor; break;
-                    default     : return skKTOtherColor;
+                    case eTrace : return DebugColor(); break;
+                    case eDebug : return DebugColor(); break;
+                    case eInfo  : return InfoColor(); break;
+                    case eProg  : return ProgColor(); break;
+                    case eWarn  : return WarnColor(); break;
+                    case eError : return ErrorColor(); break;
+                    case eFatal : return FatalColor(); break;
+                    default     : return OtherColor();
                 }
             }
 
 
-            void logCout(const char* level, const string& message, const Location& loc, const string& color = skKTOtherColor)
+            void logCout(ELevel level, const string& message, const Location& loc)
             {
                 getTimeAbsoluteStr();
                 if (fColored)
                 {
-                    cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << skKTEndColor << endl;
-                    //cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] ";
-                    //cout.width(16); cout << left << loc.fFileName << "(" << loc.fLineNumber  << "): ";
-                    //cout << message << skKTEndColor << endl;
+                    //cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << skKTEndColor << endl;
+                    cout << Private::level2Color(level) << KTLogger::Private::sTimeBuff << " [" << setw(5) << Private::level2Str(level) << "] ";
+                    copy(loc.fFileName.end() - std::min< int >(loc.fFileName.size(), 16), loc.fFileName.end(), ostream_iterator<char>(cout));
+                    cout << "(" << loc.fLineNumber  << "): ";
+                    cout << message << EndColor() << endl;
                 }
                 else
-                    cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << endl;
+                {
+                    //cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << endl;
+                    cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] ";
+                    copy(loc.fFileName.end() - std::min< int >(loc.fFileName.size(), 16), loc.fFileName.end(), ostream_iterator<char>(cout));
+                    cout << "(" << loc.fLineNumber  << "): ";
+                    cout << message << endl;
+                }
             }
 
-            void logCerr(const char* level, const string& message, const Location& loc, const string& color = skKTOtherColor)
+            void logCerr(ELevel level, const string& message, const Location& loc)
             {
                 getTimeAbsoluteStr();
                 if (fColored)
-                    cerr << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << skKTEndColor << endl;
+                {
+                    //cout << color << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << skKTEndColor << endl;
+                    cout << Private::level2Color(level) << KTLogger::Private::sTimeBuff << " [" << setw(5) << Private::level2Str(level) << "] ";
+                    copy(loc.fFileName.end() - std::min< int >(loc.fFileName.size(), 16), loc.fFileName.end(), ostream_iterator<char>(cout));
+                    cout << "(" << loc.fLineNumber  << "): ";
+                    cout << message << EndColor() << endl;
+                }
                 else
-                    cerr << KTLogger::Private::sTimeBuff <<  " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << endl;
+                {
+                    //cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << level << "] " << setw(16) << left << loc.fFileName << "(" << loc.fLineNumber  << "): " << message << endl;
+                    cout << KTLogger::Private::sTimeBuff << " [" << setw(5) << Private::level2Str(level) << "] ";
+                    copy(loc.fFileName.end() - std::min< int >(loc.fFileName.size(), 16), loc.fFileName.end(), ostream_iterator<char>(cout));
+                    cout << "(" << loc.fLineNumber  << "): ";
+                    cout << message << endl;
+                }
             }
     };
 
@@ -587,15 +608,13 @@ namespace Katydid
 
     void KTLogger::Log(ELevel level, const string& message, const Location& loc)
     {
-        const char* levelStr = Private::level2Str(level);
-
         if (level >= eWarn)
         {
-            fPrivate->logCerr(levelStr, message, loc, Private::level2Color(level));
+            fPrivate->logCerr(level, message, loc);
         }
         else
         {
-            fPrivate->logCout(levelStr, message, loc, Private::level2Color(level));
+            fPrivate->logCout(level, message, loc);
         }
     }
 }
