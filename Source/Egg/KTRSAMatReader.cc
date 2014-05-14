@@ -198,7 +198,17 @@ namespace Katydid
 
     bool KTRSAMatReader::CloseEgg()
     {
-        //KTERROR(eggreadlog, "Something went wrong while closing the file: " << "e.what()");
+        /* clean matlab variable before exit */
+        mxDestroyArray(ts_array_mat);
+        mxDestroyArray(rsaxml_mat);
+
+        // Close matlab file
+        if (matClose(matfilep) != 0) {
+            KTERROR(eggreadlog, "Something went wrong while closing the file: " << filename);
+            return false;
+        }
+
+        
         return true;
     }
 
