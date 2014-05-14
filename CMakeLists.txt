@@ -39,7 +39,6 @@ set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
-set (Katydid_USE_LOG4CXX TRUE CACHE BOOL "Flag to optionally use log4cxx")
 
 #optional compiler flags
 set (FLAG_WARNINGS "" CACHE STRING "Extra warning and error related flags")
@@ -96,6 +95,8 @@ endif (Katydid_USE_MANTIS)
 
 # Boost (1.46 required for filesystem version 3)
 find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
+# make sure dynamic linking is assumed for all boost libraries
+add_definitions (-DBOOST_ALL_DYN_LINK)
 include_directories (${Boost_INCLUDE_DIRS})
 pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 
@@ -145,21 +146,6 @@ else (ROOT_FOUND)
     remove_definitions(-DROOT_FOUND)
 endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
-
-# log4cxx
-if (Katydid_USE_LOG4CXX)
-    find_package (Log4CXX)
-else (Katydid_USE_LOG4CXX)
-    set (LOG4CXX_FOUND FALSE)
-endif (Katydid_USE_LOG4CXX)
-if (LOG4CXX_FOUND)
-    message (STATUS "Log4cxx found")
-    pbuilder_add_ext_libraries (${LOG4CXX_LIBRARY})
-    include_directories (${LOG4CXX_INCLUDE_DIRS})
-    add_definitions(-DLOG4CXX_FOUND)
-else (LOG4CXX_FOUND)
-    remove_definitions(-DLOG4CXX_FOUND)
-endif (LOG4CXX_FOUND)
 
 # eigen
 if (Katydid_USE_EIGEN)
