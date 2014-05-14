@@ -11,6 +11,7 @@
 #include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
+#include "KTTimeSeriesReal.hh"
 #include "rapidxml.hpp"
 
 using namespace std;
@@ -176,20 +177,19 @@ namespace Katydid
         // ********************************** //
 
 
-        KTTimeSeries* newSlice = new KTTimeSeries(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
+        KTTimeSeriesReal* newSliceReal = new KTTimeSeriesReal(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
         
         real_data_ptr = (float *)mxGetData(ts_array_mat);
         for (unsigned iBin=0; iBin<fSliceSize; iBin++)
         {
-            (*newSlice)(iBin) = double(real_data_ptr[iBin + fSamplesRead]);
+            (*newSliceReal)(iBin) = double(real_data_ptr[iBin + fSamplesRead]);
         }
+        KTTimeSeries* newSlice = newSliceReal;
         fSamplesRead = fSamplesRead+fSliceSize;
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(1);
         tsData.SetTimeSeries(newSlice);
-
         sliceHeader.SetEndRecordNumber(fRecordsRead);
         sliceHeader.SetEndSampleNumber(fSamplesRead);
-
 
         return newData;
 
