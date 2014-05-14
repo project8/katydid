@@ -171,8 +171,9 @@ namespace Katydid
         else if (fEggReaderType == kRSAMATReader)
         {
             KTRSAMatReader* matReader = new KTRSAMatReader();
+            matReader->SetSliceSize(fSliceSize);
+            matReader->SetStride(fStride);
             reader = matReader;
-            printf("Using KTRSAMatReader\n");
         }
 
         // ******************************************************************** //
@@ -198,12 +199,6 @@ namespace Katydid
         KTPROG(egglog, "Proceeding with slice processing");
 
 
-        // ******************************************************************** //
-        // Break the run if we are using the RSAMATReader - it's for debugging
-        if (fEggReaderType == kRSAMATReader)
-        {
-            return true;
-        }
 
         if (fNSlices == 0) UnlimitedLoop(reader);
         else LimitedLoop(reader);
@@ -222,6 +217,8 @@ namespace Katydid
         delete summary;
 
         return true;
+
+
     }
 
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)

@@ -54,6 +54,9 @@ namespace Katydid
         int   buflen;
         int   status;
         rapidxml::xml_document<> doc;
+        fSliceSize = GetSliceSize();
+        fStride = GetStride();
+
 
         if (fStride == 0) fStride = fSliceSize;
 
@@ -143,6 +146,18 @@ namespace Katydid
         float *real_data_ptr;
         KTDataPtr newData(new KTData());
 
+        // ********************************************************* //
+        // Check whether we still have enough data to fill up slice  //
+        // ********************************************************* //
+        if (fSamplesRead+fSliceSize > fRecordSize) {
+                    KTWARN(eggreadlog, "End of mat file reached");
+                    KTDEBUG(eggreadlog,"fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize);
+
+                    // Return Empty Pointer
+                    return KTDataPtr();
+        }
+
+
         // ********************************** //
         // Fill out slice header information  //
         // ********************************** //
@@ -178,8 +193,6 @@ namespace Katydid
         // ********************************** //
         // Read data                          //
         // ********************************** //
-
-
         KTTimeSeriesReal* newSliceReal = new KTTimeSeriesReal(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
         
         real_data_ptr = (float *)mxGetData(ts_array_mat);
