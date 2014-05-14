@@ -109,16 +109,19 @@ namespace Katydid
         //fHeader.SetVoltageMin(monarchHeader->GetVoltageMin());
         //fHeader.SetVoltageRange(monarchHeader->GetVoltageRange());
 
+        // Close the XML variable
+        mxDestroyArray(rsaxml_mat);
 
         // Get configuration from JSON config file
         fHeader.SetRawSliceSize(fSliceSize);
         fHeader.SetSliceSize(fSliceSize);
 
-
+        // Log the contents of the header
         stringstream headerBuff;
         headerBuff << fHeader;
         KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
 
+        // A few last useful variables
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
         fSliceNumber = 0;
@@ -200,11 +203,10 @@ namespace Katydid
     {
         /* clean matlab variable before exit */
         mxDestroyArray(ts_array_mat);
-        mxDestroyArray(rsaxml_mat);
 
         // Close matlab file
         if (matClose(matfilep) != 0) {
-            KTERROR(eggreadlog, "Something went wrong while closing the file: " << filename);
+            KTERROR(eggreadlog, "Something went wrong while closing the mat file");
             return false;
         }
 
