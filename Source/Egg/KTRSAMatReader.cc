@@ -9,8 +9,8 @@
 #include "KTRSAMatReader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
-#include "KTRawTimeSeriesData.hh"
-#include "KTRawTimeSeries.hh"
+#include "KTTimeSeries.hh"
+#include "KTTimeSeriesData.hh"
 #include "rapidxml.hpp"
 
 using namespace std;
@@ -124,6 +124,8 @@ namespace Katydid
         fRecordsRead = 0;
         fSamplesRead = 0;
 
+        // Get the pointer to the data array
+        ts_array_mat = matGetVariable(matfilep, "Y");
 
         return new KTEggHeader(fHeader);
     }
@@ -134,6 +136,7 @@ namespace Katydid
         // KTRSAMatReader::HatchNextSlice is currently only capable of reading MAT files containing a single acquisitiona, a single record and a single channel
 
         unsigned recordSize = fHeader.GetRecordSize();
+        float *real_data_ptr;
         KTDataPtr newData(new KTData());
 
         // ********************************** //
@@ -159,7 +162,7 @@ namespace Katydid
         sliceHeader.SetTimeInRun(GetTimeInRun());
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fRecordsRead);
-        sliceHeader.SetStartSampleNumber(0);
+        sliceHeader.SetStartSampleNumber(fSamplesRead);
         sliceHeader.SetRecordSize(fHeader.GetRecordSize());
         // Slice Header Variables that depend on channel number
         unsigned iChannel = 0;
@@ -173,16 +176,19 @@ namespace Katydid
         // ********************************** //
 
 
-        // KTTimeSeries* newSlice = new KTTimeSeries(fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
-        // for (int iBin=0; iBin<fSliceSize; iBin++)
-        // {
-        //     (*newSlice)(iBin) = readBuffer[iBin];
-        // }
-        // delete [] readBuffer;
-        // KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(1);
-        // tsData.SetTimeSeries(newSlice);
-        // fRecordsRead++;
+        KTTimeSeries* newSlice = new KTTimeSeries(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
+        
+        real_data_ptr = (float *)mxGetData(ts_array_mat);
+        for (unsigned iBin=0; iBin<fSliceSize; iBin++)
+        {
+            (*newSlice)(iBin) = double(real_data_ptr[iBin + fSamplesRead]);
+        }
+        fSamplesRead = fSamplesRead+fSliceSize;
+        KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(1);
+        tsData.SetTimeSeries(newSlice);
 
+        sliceHeader.SetEndRecordNumber(fRecordsRead);
+        sliceHeader.SetEndSampleNumber(fSamplesRead);
 
 
         return newData;

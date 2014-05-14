@@ -128,7 +128,7 @@ namespace Katydid
     }
     inline double KTRSAMatReader::GetTimeInRun() const
     {
-        return (double) fSamplesRead * fBinWidth;
+        return double(fSamplesRead) * fBinWidth;
     }
     inline unsigned KTRSAMatReader::GetNSlicesProcessed() const
     {
