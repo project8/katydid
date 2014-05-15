@@ -17,9 +17,11 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
+#include "KTRSAMatReader.hh"
 #include "KTProcSummary.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
+#include "KTTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
 
 using std::string;
@@ -73,6 +75,10 @@ namespace Katydid
             {
                 SetEggReaderType(k2011EggReader);
             }
+            else if (eggReaderTypeString == string("rsamat"))
+            {
+                SetEggReaderType(kRSAMATReader);
+            }
             else
             {
                 KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
@@ -84,6 +90,15 @@ namespace Katydid
         {
             SetEggReaderType(k2011EggReader);
         }
+
+#ifndef USE_MATLAB
+        if (fEggReaderType == kRSAMATReader)
+        {
+            KTERROR(egglog, "Matlab is not enabled; please select another egg reader type");
+            return false;
+        }
+#endif
+
 
 #ifndef USE_MONARCH
         if (fEggReaderType == kMonarchEggReader)
@@ -148,12 +163,21 @@ namespace Katydid
             return false;
 #endif
         }
-        else
+        else if (fEggReaderType == k2011EggReader)
         {
             KTEggReader2011* eggReader2011 = new KTEggReader2011();
             reader = eggReader2011;
         }
+        else if (fEggReaderType == kRSAMATReader)
+        {
+            KTRSAMatReader* matReader = new KTRSAMatReader();
+            matReader->SetSliceSize(fSliceSize);
+            matReader->SetStride(fStride);
+            reader = matReader;
+        }
 
+        // ******************************************************************** //
+        // Call BreakEgg - this actually opens the file and loads its content
         KTEggHeader* header = reader->BreakEgg(fFilename);
         if (header == NULL)
         {
@@ -161,18 +185,20 @@ namespace Katydid
             return false;
         }
 
+
         // pass the digitizer parameters from the egg header to the DAC
         fDAC->SetNBits(header->GetBitDepth());
         fDAC->SetMinVoltage(header->GetVoltageMin());
         fDAC->SetVoltageRange(header->GetVoltageRange());
         fDAC->Initialize();
-
         fDAC->UpdateEggHeader(header);
 
-        fHeaderSignal(header);
 
+        fHeaderSignal(header);
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
+
+
 
         if (fNSlices == 0) UnlimitedLoop(reader);
         else LimitedLoop(reader);
@@ -191,6 +217,8 @@ namespace Katydid
         delete summary;
 
         return true;
+
+
     }
 
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
@@ -206,9 +234,14 @@ namespace Katydid
 
             if (data->Has< KTRawTimeSeriesData >())
             {
-                KTDEBUG(egglog, "Time series data is present.");
+                KTDEBUG(egglog, "Raw time series data is present.");
                 fRawDataSignal(data);
                 NormalizeData(data);
+            }
+            if (data->Has< KTTimeSeriesData >())
+            {
+                KTDEBUG(egglog, "Normalized time series data is present.");
+                fDataSignal(data);
             }
             else
             {
@@ -248,9 +281,14 @@ namespace Katydid
 
             if (data->Has< KTRawTimeSeriesData >())
             {
-                KTDEBUG(egglog, "Time series data is present.");
+                KTDEBUG(egglog, "Raw time series data is present.");
                 fRawDataSignal(data);
                 NormalizeData(data);
+            }
+            if (data->Has< KTTimeSeriesData >())
+            {
+                KTDEBUG(egglog, "Normalized time series data is present.");
+                fDataSignal(data);
             }
             else
             {
@@ -274,7 +312,6 @@ namespace Katydid
         if (fNormalizeVoltages)
         {
             fDAC->ConvertData(data->Of< KTSliceHeader >(), data->Of< KTRawTimeSeriesData >());
-            fDataSignal(data);
         }
         return;
     }

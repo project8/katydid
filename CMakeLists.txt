@@ -39,6 +39,12 @@ set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
+set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
+
+# Matlab-related flags
+set (MATLAB_INCLUDE_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/extern/include" CACHE STRING "Path to the Matlab Compiler Runtime R2012b Include Files")
+set (MATLAB_LIBRARY_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/bin/maci64" CACHE STRING "Path to the Matlab Compiler Runtime R2012b Lib Files")
+mark_as_advanced(MATLAB_INCLUDE_DIR,MATLAB_LIBRARY_DIR)
 
 #optional compiler flags
 set (FLAG_WARNINGS "" CACHE STRING "Extra warning and error related flags")
@@ -202,6 +208,10 @@ include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Source)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
 
+# Matlab
+if (Katydid_USE_MATLAB)
+    add_definitions(-DUSE_MATLAB)
+endif (Katydid_USE_MATLAB)
 
 # Subdirectories
 include_directories (BEFORE 
