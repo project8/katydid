@@ -11,7 +11,7 @@
 #include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesReal.hh"
+#include "KTTimeSeriesFFTW.hh"
 #include "rapidxml.hpp"
 
 using namespace std;
@@ -143,7 +143,6 @@ namespace Katydid
         // KTRSAMatReader::HatchNextSlice is currently only capable of reading MAT files containing a single acquisitiona, a single record and a single channel
 
         unsigned recordSize = fHeader.GetRecordSize();
-        float *real_data_ptr;
         KTDataPtr newData(new KTData());
 
         // ********************************************************* //
@@ -193,14 +192,18 @@ namespace Katydid
         // ********************************** //
         // Read data                          //
         // ********************************** //
-        KTTimeSeriesReal* newSliceReal = new KTTimeSeriesReal(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
-        
-        real_data_ptr = (float *)mxGetData(ts_array_mat);
+        KTTimeSeriesFFTW* newSliceComplex = new KTTimeSeriesFFTW(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
+        float *data_real_ptr;
+        float *data_imag_ptr;
+
+        data_real_ptr = (float *)mxGetData(ts_array_mat);
+        data_imag_ptr = (float *)mxGetImagData(ts_array_mat);
         for (unsigned iBin=0; iBin<fSliceSize; iBin++)
         {
-            (*newSliceReal)(iBin) = double(real_data_ptr[iBin + fSamplesRead]);
+            (*newSliceComplex)(iBin)[0] = double(data_real_ptr[iBin + fSamplesRead]);
+            (*newSliceComplex)(iBin)[1] = double(data_imag_ptr[iBin + fSamplesRead]);
         }
-        KTTimeSeries* newSlice = newSliceReal;
+        KTTimeSeries* newSlice = newSliceComplex;
         fSamplesRead = fSamplesRead+fSliceSize;
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(1);
         tsData.SetTimeSeries(newSlice);
