@@ -47,6 +47,8 @@ namespace Katydid
      @brief Clustering algorithm for sequential time slices
 
      @details
+     For separations used in clustering: if the bin separation required for clustering is 1, neighboring bins are allowed.
+     If the bin separation required for clustering is 2, high-power bins with 1 low-power bin in between are allowed, etc.
 
      Configuration name: "multi-slice-clustering"
 
@@ -277,8 +279,10 @@ namespace Katydid
 
     inline void KTMultiSliceClustering::SetMaxTimeSeparation(double timeSep)
     {
+        /* variable time seaparation is not currently in use
         fMaxTimeSep = timeSep;
         fCalculateMaxTimeSepBins = true;
+        */
         return;
     }
 
@@ -301,8 +305,10 @@ namespace Katydid
 
     inline void KTMultiSliceClustering::SetMaxTimeSeparationBins(unsigned bins)
     {
+        /* variable time separation is not currently in use
         fMaxTimeSepBins = bins;
         fCalculateMaxTimeSepBins = false;
+        */
         return;
     }
 

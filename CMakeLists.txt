@@ -14,7 +14,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 include (PackageBuilder)
 
 # Set the version and associated variables
-pbuilder_prepare_project (1 9 3)
+pbuilder_prepare_project (1 9 4)
 
 # Add a "Standard" build type
 #set (CMAKE_BUILD_TYPE standard)
@@ -39,7 +39,12 @@ set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
-set (Katydid_USE_LOG4CXX TRUE CACHE BOOL "Flag to optionally use log4cxx")
+set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
+
+# Matlab-related flags
+set (MATLAB_INCLUDE_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/extern/include" CACHE STRING "Path to the Matlab Compiler Runtime R2012b Include Files")
+set (MATLAB_LIBRARY_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/bin/maci64" CACHE STRING "Path to the Matlab Compiler Runtime R2012b Lib Files")
+mark_as_advanced(MATLAB_INCLUDE_DIR,MATLAB_LIBRARY_DIR)
 
 #optional compiler flags
 set (FLAG_WARNINGS "" CACHE STRING "Extra warning and error related flags")
@@ -96,6 +101,8 @@ endif (Katydid_USE_MANTIS)
 
 # Boost (1.46 required for filesystem version 3)
 find_package (Boost 1.46.0 REQUIRED COMPONENTS date_time filesystem program_options system thread)
+# make sure dynamic linking is assumed for all boost libraries
+add_definitions (-DBOOST_ALL_DYN_LINK)
 include_directories (${Boost_INCLUDE_DIRS})
 pbuilder_add_ext_libraries (${Boost_LIBRARIES})
 
@@ -145,21 +152,6 @@ else (ROOT_FOUND)
     remove_definitions(-DROOT_FOUND)
 endif (ROOT_FOUND)
 include_directories (${ROOT_INCLUDES})
-
-# log4cxx
-if (Katydid_USE_LOG4CXX)
-    find_package (Log4CXX)
-else (Katydid_USE_LOG4CXX)
-    set (LOG4CXX_FOUND FALSE)
-endif (Katydid_USE_LOG4CXX)
-if (LOG4CXX_FOUND)
-    message (STATUS "Log4cxx found")
-    pbuilder_add_ext_libraries (${LOG4CXX_LIBRARY})
-    include_directories (${LOG4CXX_INCLUDE_DIRS})
-    add_definitions(-DLOG4CXX_FOUND)
-else (LOG4CXX_FOUND)
-    remove_definitions(-DLOG4CXX_FOUND)
-endif (LOG4CXX_FOUND)
 
 # eigen
 if (Katydid_USE_EIGEN)
@@ -216,6 +208,10 @@ include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Source)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
 
+# Matlab
+if (Katydid_USE_MATLAB)
+    add_definitions(-DUSE_MATLAB)
+endif (Katydid_USE_MATLAB)
 
 # Subdirectories
 include_directories (BEFORE 
