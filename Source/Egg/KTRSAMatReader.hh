@@ -9,9 +9,7 @@
 #ifndef KTRSAMATREADER_HH_
 #define KTRSAMATREADER_HH_
 
-#ifdef USE_MATLAB
 #include "mat.h" 
-#endif
 
 #include "KTEggReader.hh"
 #include "KTEggHeader.hh"
