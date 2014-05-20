@@ -139,23 +139,6 @@ ELSE(WIN32)
     SET(LIBRARY_EXTENSION .dylib)
 
     # If this is a Mac and the attempts to find MATLAB_ROOT have so far failed, 
-    # we look in the applications folder for a Matlab installation
-    IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
-
-      # Search for a version of Matlab available, starting from the most modern one to older versions
-      FOREACH(MATVER "R2014b" "R2013b" "R2013a" "R2012b" "R2012a" "R2011b" "R2011a" "R2010b" "R2010a" "R2009b" "R2009a" "R2008b")
-        IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
-          #message(STATUS "checking for /Applications/MATLAB_${MATVER}.app")
-          IF(EXISTS /Applications/MATLAB_${MATVER}.app)
-            SET(MATLAB_ROOT /Applications/MATLAB_${MATVER}.app)
-    
-          ENDIF(EXISTS /Applications/MATLAB_${MATVER}.app)
-        ENDIF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
-      ENDFOREACH(MATVER)
-      
-    ENDIF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
-
-    # If this is a Mac and the attempts to find MATLAB_ROOT have so far failed, 
     # we look in the applications folder for a Matlab Compiler Runtime installation
     IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
       # Search for a version of Matlab Compiler Runtime available, starting from the most modern one to older versions
@@ -169,6 +152,23 @@ ELSE(WIN32)
         ENDIF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
       ENDFOREACH(MATVER)
 
+    ENDIF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
+
+    # If this is a Mac and the attempts to find MATLAB_ROOT have so far failed, 
+    # we look in the applications folder for a Matlab installation
+    IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
+
+      # Search for a version of Matlab available, starting from the most modern one to older versions
+      FOREACH(MATVER "R2014b" "R2014a" "R2013b" "R2013a" "R2012b" "R2012a" "R2011b" "R2011a" "R2010b" "R2010a" "R2009b" "R2009a" "R2008b")
+        IF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
+          #message(STATUS "checking for /Applications/MATLAB_${MATVER}.app")
+          IF(EXISTS /Applications/MATLAB_${MATVER}.app)
+            SET(MATLAB_ROOT /Applications/MATLAB_${MATVER}.app)
+    
+          ENDIF(EXISTS /Applications/MATLAB_${MATVER}.app)
+        ENDIF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
+      ENDFOREACH(MATVER)
+      
     ENDIF((NOT DEFINED MATLAB_ROOT) OR ("${MATLAB_ROOT}" STREQUAL ""))
 
     message(STATUS "matlab_root: ${MATLAB_ROOT}")
