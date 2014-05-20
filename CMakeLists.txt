@@ -42,8 +42,8 @@ set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
 
 # Matlab-related flags
-set (MATLAB_INCLUDE_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/extern/include" CACHE STRING "Path to the Matlab Compiler Runtime R2012b Include Files")
-set (MATLAB_LIBRARY_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v80/bin/maci64" CACHE STRING "Path to the Matlab Compiler Runtime R2012b Lib Files")
+set (MATLAB_INCLUDE_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v83/extern/include" CACHE STRING "Path to the Matlab Compiler Runtime R2014a Include Files")
+set (MATLAB_LIBRARY_DIR "/Applications/MATLAB/MATLAB_Compiler_Runtime/v83/bin/maci64" CACHE STRING "Path to the Matlab Compiler Runtime R2014a Lib Files")
 mark_as_advanced(MATLAB_INCLUDE_DIR,MATLAB_LIBRARY_DIR)
 
 #optional compiler flags
