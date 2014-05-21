@@ -179,7 +179,7 @@ ELSE(WIN32)
 
   # NO_DEFAULT_PATH is used because Matlab doesn't install in standard directories, 
   # and, at least in one case, libmx already existed on a system (mac os x 10.7), and was not a Matlab library.
-  SET(LIBRARY_PATHS PATHS
+  SET(MATLAB_LIBRARIES_DIR
     ${MATLAB_ROOT}/bin
     ${MATLAB_ROOT}/bin/maci64
     ${MATLAB_ROOT}/bin/glnxa64
@@ -189,21 +189,21 @@ ELSE(WIN32)
   # Get path to the MEX libraries
   FIND_LIBRARY(MATLAB_MEX_LIBRARY
     mex
-    ${LIBRARY_PATHS}
+    ${MATLAB_LIBRARIES_DIR}
   )
   FIND_LIBRARY(MATLAB_MX_LIBRARY
     mx
-    ${LIBRARY_PATHS}
+    ${MATLAB_LIBRARIES_DIR}
   )
   #message(STATUS "mx library: ${MATLAB_MX_LIBRARY}")
   FIND_LIBRARY(MATLAB_MAT_LIBRARY
     mat
-    ${LIBRARY_PATHS}
+    ${MATLAB_LIBRARIES_DIR}
   )
   #message(STATUS "mat library: ${MATLAB_MAT_LIBRARY}")
   FIND_LIBRARY(MATLAB_ENG_LIBRARY
     eng
-    ${LIBRARY_PATHS}
+    ${MATLAB_LIBRARIES_DIR}
   )
   
   # Get path to the include directory
