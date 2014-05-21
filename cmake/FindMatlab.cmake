@@ -182,6 +182,7 @@ ELSE(WIN32)
   SET(LIBRARY_PATHS PATHS
     ${MATLAB_ROOT}/bin
     ${MATLAB_ROOT}/bin/maci64
+    ${MATLAB_ROOT}/bin/glnxa64
     NO_DEFAULT_PATH
   )
 
