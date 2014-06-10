@@ -7,14 +7,12 @@
 
 #include "KTROOTTreeTypeWriterEgg.hh"
 
-#include "KTDiscriminatedPoints1DData.hh"
-#include "KTAmplitudeDistribution.hh"
+#include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 
 #include "TFile.h"
-#include "TH1.h"
 #include "TTree.h"
 
 #include <sstream>
@@ -67,23 +65,25 @@ namespace Katydid
             }
         }
 
-        fEggHeaderData.fFilename = header->fFilename;
-        fEggHeaderData.fAcquisitionMode = header->fAcquisitionMode;
-        fEggHeaderData.fNChannels = header->fNChannels;
-        fEggHeaderData.fRawSliceSize = header->fRawSliceSize;
-        fEggHeaderData.fSliceSize = header->fSliceSize;
-        fEggHeaderData.fRecordSize = header->fRecordSize;
-        fEggHeaderData.fRunDuration = header->fRunDuration;
-        fEggHeaderData.fAcquisitionRate = header->fAcquisitionRate;
-        fEggHeaderData.fTimestamp = header->fTimestamp;
-        fEggHeaderData.fDescription = header->fDescription;
-        fEggHeaderData.fRunType = header->fRunType;
-        fEggHeaderData.fRunSource = header->fRunSource;
-        fEggHeaderData.fFormatMode = header->fFormatMode;
-        fEggHeaderData.fDataTypeSize = header->fDataTypeSize;
-        fEggHeaderData.fBitDepth = header->fBitDepth;
-        fEggHeaderData.fVoltageMin = header->fVoltageMin;
-        fEggHeaderData.fVoltageRange = header->fVoltageRange;
+        fEggHeaderData.fFilename = header->GetFilename();
+        fEggHeaderData.fAcquisitionMode = header->GetAcquisitionMode();
+        fEggHeaderData.fNChannels = header->GetNChannels();
+        fEggHeaderData.fRawSliceSize = header->GetRawSliceSize();
+        fEggHeaderData.fSliceSize = header->GetSliceSize();
+        fEggHeaderData.fRecordSize = header->GetRecordSize();
+        fEggHeaderData.fRunDuration = header->GetRunDuration();
+        fEggHeaderData.fAcquisitionRate = header->GetAcquisitionRate();
+        fEggHeaderData.fTimestamp = header->GetTimestamp();
+        fEggHeaderData.fDescription = header->GetDescription();
+        fEggHeaderData.fRunType = header->GetRunType();
+        fEggHeaderData.fRunSource = header->GetRunSource();
+        fEggHeaderData.fFormatMode = header->GetFormatMode();
+        fEggHeaderData.fDataTypeSize = header->GetDataTypeSize();
+        fEggHeaderData.fBitDepth = header->GetBitDepth();
+        fEggHeaderData.fVoltageMin = header->GetVoltageMin();
+        fEggHeaderData.fVoltageRange = header->GetVoltageRange();
+
+        fEggHeaderTree->Fill();
 
         return;
     }

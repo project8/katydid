@@ -13,8 +13,8 @@
 #include "KTData.hh"
 
 #include "Rtypes.h"
+#include "TString.h"
 
-class TString;
 class TTree;
 
 namespace Katydid
@@ -39,6 +39,9 @@ namespace Katydid
         Double_t fVoltageMin; /// in V
         Double_t fVoltageRange; /// in V
     };
+
+
+    class KTEggHeader;
 
 
     class KTROOTTreeTypeWriterEgg : public KTROOTTreeTypeWriter//, public KTTypeWriterAnalysis
