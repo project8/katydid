@@ -234,7 +234,6 @@ namespace Katydid
     {
         if (! fProposedGroups.empty())
         {
-            KTWARN(utillog, "Proposed groups is not empty in dclp: " << fProposedGroups.size())
             if (! this->FinalizeNewOptionGroups())
             {
                 KTERROR(utillog, "An error occurred while adding the proposed option groups\n" <<
@@ -436,7 +435,7 @@ namespace Katydid
 
     void KTCommandLineHandler::PrintHelpMessage()
     {
-        KTINFO(utillog, "\nUsage: " << fExecutableName << " [options]\n\n" <<
+        KTPROG(utillog, "\nUsage: " << fExecutableName << " [options]\n\n" <<
                "  If using a config file, it should be specified as:  -c config_file.json\n" <<
                "  Config file options can be modified using:  --address.of.option=\"value\"\n" <<
                fPrintHelpOptions);
@@ -445,10 +444,7 @@ namespace Katydid
 
     void KTCommandLineHandler::PrintVersionMessage()
     {
-        std::stringstream printStream;
-        printStream << fExecutableName << " -- Version Information\n";
-        printStream << "Built with: " << fPackageString;
-        KTINFO(utillog, printStream.str());
+        KTPROG(utillog, fExecutableName << " -- Version Information\n" << "Built with: " << fPackageString);
         return;
     }
 

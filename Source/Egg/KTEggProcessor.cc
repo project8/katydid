@@ -17,12 +17,15 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
-#include "KTRSAMatReader.hh"
 #include "KTProcSummary.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
+
+#ifdef USE_MATLAB
+#include "KTRSAMatReader.hh"
+#endif
 
 using std::string;
 
@@ -170,10 +173,15 @@ namespace Katydid
         }
         else if (fEggReaderType == kRSAMATReader)
         {
+#ifdef USE_MATLAB
             KTRSAMatReader* matReader = new KTRSAMatReader();
             matReader->SetSliceSize(fSliceSize);
             matReader->SetStride(fStride);
             reader = matReader;
+#else
+            KTERROR(egglog, "Matlab is not enabled; please select another egg reader type");
+            return false;
+#endif
         }
 
         // ******************************************************************** //
