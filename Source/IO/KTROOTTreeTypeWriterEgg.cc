@@ -67,18 +67,23 @@ namespace Katydid
             }
         }
 
-        for (fDiscPoints1DData.fComponent = 0; fDiscPoints1DData.fComponent < fcData.GetNComponents(); fDiscPoints1DData.fComponent++)
-        {
-            fDiscPoints1DData.fThreshold = fcData.GetThreshold(fDiscPoints1DData.fComponent);
-            const KTDiscriminatedPoints1DData::SetOfPoints& points = fcData.GetSetOfPoints(fDiscPoints1DData.fComponent);
-            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); it++)
-            {
-                fDiscPoints1DData.fPoint = it->first;
-                fDiscPoints1DData.fValue = it->second;
-
-                fDiscPoints1DTree->Fill();
-           }
-        }
+        fEggHeaderData.fFilename = header->fFilename;
+        fEggHeaderData.fAcquisitionMode = header->fAcquisitionMode;
+        fEggHeaderData.fNChannels = header->fNChannels;
+        fEggHeaderData.fRawSliceSize = header->fRawSliceSize;
+        fEggHeaderData.fSliceSize = header->fSliceSize;
+        fEggHeaderData.fRecordSize = header->fRecordSize;
+        fEggHeaderData.fRunDuration = header->fRunDuration;
+        fEggHeaderData.fAcquisitionRate = header->fAcquisitionRate;
+        fEggHeaderData.fTimestamp = header->fTimestamp;
+        fEggHeaderData.fDescription = header->fDescription;
+        fEggHeaderData.fRunType = header->fRunType;
+        fEggHeaderData.fRunSource = header->fRunSource;
+        fEggHeaderData.fFormatMode = header->fFormatMode;
+        fEggHeaderData.fDataTypeSize = header->fDataTypeSize;
+        fEggHeaderData.fBitDepth = header->fBitDepth;
+        fEggHeaderData.fVoltageMin = header->fVoltageMin;
+        fEggHeaderData.fVoltageRange = header->fVoltageRange;
 
         return;
     }
@@ -93,13 +98,23 @@ namespace Katydid
         }
         fWriter->AddTree(fEggHeaderTree);
 
-        //fDiscPoints1DData = new TDiscriminatedPoints1DData();
-
-        fDiscPoints1DTree->Branch("Component", &fDiscPoints1DData.fComponent, "fComponent/s");
-        fDiscPoints1DTree->Branch("Point", &fDiscPoints1DData.fPoint, "fSlice/i");
-        fDiscPoints1DTree->Branch("Value", &fDiscPoints1DData.fValue, "fTimeInRun/d");
-        fDiscPoints1DTree->Branch("Threshold", &fDiscPoints1DData.fThreshold, "fThreshold/d");
-        //fDiscPoints1DTree->Branch("freqAnalysis", &fDiscPoints1DData.fComponent, "fComponent/s:fSlice/l:fTimeInRun/d:fThreshold/d:fFirstBin/i:fLastBin/i:fMeanFrequency/d:fPeakAmplitude/d");
+        fEggHeaderTree->Branch("Filename", &fEggHeaderData.fFilename, "fFilename/s");
+        fEggHeaderTree->Branch("AcquisitionMode", &fEggHeaderData.fAcquisitionMode, "fAcquisitionMode/i");
+        fEggHeaderTree->Branch("NChannels", &fEggHeaderData.fNChannels, "fNChannels/i");
+        fEggHeaderTree->Branch("RawSliceSize", &fEggHeaderData.fRawSliceSize, "fRawSliceSize/i");
+        fEggHeaderTree->Branch("SliceSize", &fEggHeaderData.fSliceSize, "fSliceSize/i");
+        fEggHeaderTree->Branch("RecordSize", &fEggHeaderData.fRecordSize, "fRecordSize/i");
+        fEggHeaderTree->Branch("RunDuration", &fEggHeaderData.fRunDuration, "fRunDuration/i");
+        fEggHeaderTree->Branch("AcquisitionRate", &fEggHeaderData.fAcquisitionRate, "fAcquisitionRate/d");
+        fEggHeaderTree->Branch("Timestamp", &fEggHeaderData.fTimestamp, "fTimestamp/s");
+        fEggHeaderTree->Branch("Description", &fEggHeaderData.fDescription, "fDescription/s");
+        fEggHeaderTree->Branch("RunType", &fEggHeaderData.fRunType, "fRunType/i");
+        fEggHeaderTree->Branch("RunSource", &fEggHeaderData.fRunSource, "fRunSource/i");
+        fEggHeaderTree->Branch("FormatMode", &fEggHeaderData.fFormatMode, "fFormatMode/i");
+        fEggHeaderTree->Branch("DataTypeSize", &fEggHeaderData.fDataTypeSize, "fDataTypeSize/i");
+        fEggHeaderTree->Branch("BitDepth", &fEggHeaderData.fBitDepth, "fBitDepth/i");
+        fEggHeaderTree->Branch("VoltageMin", &fEggHeaderData.fVoltageMin, "fVoltageMin/d");
+        fEggHeaderTree->Branch("VoltageRange", &fEggHeaderData.fVoltageRange, "fVoltageRange/d");
 
         return true;
     }

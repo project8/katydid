@@ -24,9 +24,9 @@ namespace Katydid
         TString fFilename;
         UInt_t fAcquisitionMode;
         UInt_t fNChannels;
-        TString fRawSliceSize; /// Number of bins per slice before any modification
-        TString fSliceSize; /// Number of bins per slice after any initial modification (e.g. by the DAC)
-        TString fRecordSize; /// Number of bins per Monarch record
+        UInt_t fRawSliceSize; /// Number of bins per slice before any modification
+        UInt_t fSliceSize; /// Number of bins per slice after any initial modification (e.g. by the DAC)
+        UInt_t fRecordSize; /// Number of bins per Monarch record
         UInt_t fRunDuration;
         Double_t fAcquisitionRate; /// in Hz
         TString fTimestamp;
