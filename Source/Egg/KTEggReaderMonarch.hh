@@ -70,9 +70,13 @@ namespace Katydid
             unsigned GetStride() const;
             void SetStride(unsigned stride);
 
+            double GetStartTime() const;
+            void SetStartTime(double time);
+
         protected:
             unsigned fSliceSize;
             unsigned fStride;
+            double fStartTime;
 
         public:
             /// Opens the egg file and returns a new copy of the header information.
@@ -153,6 +157,17 @@ namespace Katydid
     inline void KTEggReaderMonarch::SetStride(unsigned stride)
     {
         fStride = stride;
+        return;
+    }
+
+    inline double KTEggReaderMonarch::GetStartTime() const
+    {
+        return fStartTime;
+    }
+
+    inline void KTEggReaderMonarch::SetStartTime(double time)
+    {
+        fStartTime = time;
         return;
     }
 

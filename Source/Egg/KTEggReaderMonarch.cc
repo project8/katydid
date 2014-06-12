@@ -40,6 +40,7 @@ namespace Katydid
             KTEggReader(),
             fSliceSize(1024),
             fStride(0),
+            fStartTime(0.),
             fMonarch(NULL),
             fHeader(),
             fReadState(),
