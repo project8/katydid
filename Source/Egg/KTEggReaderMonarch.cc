@@ -118,13 +118,24 @@ namespace Katydid
 
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
+        fRecordSize = fHeader.GetRecordSize();
+        fBinWidth = 1. / fHeader.GetAcquisitionRate();
+
+        // by default, start the read state at the beginning of the run
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
         fReadState.fAcquisitionID = 0;
         fReadState.fReadPtrOffset = 0;
         fReadState.fAbsoluteRecordOffset = 0;
 
-        fRecordSize = fHeader.GetRecordSize();
-        fBinWidth = 1. / fHeader.GetAcquisitionRate();
+        // skip forward in the run if fStartTime is non-zero
+        if (fStartTime > 0.)
+        {
+            double recordLength = fRecordSize * fBinWidth; // seconds
+            unsigned recordSkips = (unsigned)(fStartTime / recordLength);
+            fReadState.fAbsoluteRecordOffset = recordSkips;
+            fReadState.fReadPtrOffset = (unsigned)((fStartTime - (double)recordSkips * recordLength) / fBinWidth);
+            fReadState.fSliceStartPtrOffset = fReadState.fReadPtrOffset;
+        }
 
         // force monarch to use Separate interface
         fMonarch->SetInterface(monarch::sInterfaceSeparate);
@@ -153,15 +164,11 @@ namespace Katydid
         {
             KTDEBUG(eggreadlog, "Reading first record");
             // if we're at the beginning of the run, load the first records
-            if (! fMonarch->ReadRecord())
+            if (! fMonarch->ReadRecord(fReadState.fAbsoluteRecordOffset))
             {
                 KTERROR(eggreadlog, "File appears to contain no slices.");
                 return KTDataPtr();
             }
-            fReadState.fReadPtrOffset = 0;
-            fReadState.fReadPtrRecordOffset = 0;
-            fReadState.fSliceStartPtrOffset = 0;
-            fReadState.fAbsoluteRecordOffset = 0;
             fSliceNumber = 0;
         }
         else
