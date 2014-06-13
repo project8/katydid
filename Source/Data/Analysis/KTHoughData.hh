@@ -27,17 +27,17 @@ namespace Katydid
             KTHoughData();
             virtual ~KTHoughData();
 
-            const KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* GetTransform(unsigned component = 0) const;
-            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* GetTransform(unsigned component = 0);
+            const KTPhysicalArray< 2, double >* GetTransform(unsigned component = 0) const;
+            KTPhysicalArray< 2, double >* GetTransform(unsigned component = 0);
 
             unsigned GetNComponents() const;
 
-            void SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* transform, unsigned component = 0);
+            void SetTransform(KTPhysicalArray< 2, double >* transform, unsigned component = 0);
 
             KTHoughData& SetNComponents(unsigned nTransforms);
 
         protected:
-            std::vector< KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* > fTransforms;
+            std::vector< KTPhysicalArray< 2, double >* > fTransforms;
 
 #ifdef ROOT_FOUND
         public:
@@ -47,12 +47,12 @@ namespace Katydid
 
     };
 
-    inline const KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughData::GetTransform(unsigned component) const
+    inline const KTPhysicalArray< 2, double >* KTHoughData::GetTransform(unsigned component) const
     {
         return fTransforms[component];
     }
 
-    inline KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* KTHoughData::GetTransform(unsigned component)
+    inline KTPhysicalArray< 2, double >* KTHoughData::GetTransform(unsigned component)
     {
         return fTransforms[component];
     }
@@ -62,7 +62,7 @@ namespace Katydid
         return unsigned(fTransforms.size());
     }
 
-    inline void KTHoughData::SetTransform(KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* transform, unsigned component)
+    inline void KTHoughData::SetTransform(KTPhysicalArray< 2, double >* transform, unsigned component)
     {
         if (component >= fTransforms.size()) SetNComponents(component+1);
         fTransforms[component] = transform;

@@ -15,15 +15,12 @@
 #include "KTDiscriminatedPoints2DData.hh"
 #include "KTPhysicalArray.hh"
 #include "KTSlot.hh"
+#include "KTWaterfallCandidateData.hh"
 
 
 
 namespace Katydid
 {
-    class KTFrequencySpectrumFFTW;
-    class KTFrequencySpectrumPolar;
-    //class KTSlidingWindowFSDataFFTW;
-
     /*!
      @class KTHoughTransform
      @author N. S. Oblath
@@ -42,8 +39,8 @@ namespace Katydid
      - "output-data-name": string -- name to give to the data produced by an FFT
 
      Slots:
-     <!--- "swfs-data": void (KTDataPtr)-->
-     - "disc-data": void (KTDataPtr) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
+     - "wf-cand": void (KTDataPtr) -- Performs a Hough Transform on waterfall candidate data; Requires KTWaterfallCandidateData; Adds KTHoughData
+     - "disc": void (KTDataPtr) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
 
      Signals:
      - "hough-transform": void (KTDataPtr) Emitted upon performance of a transform; Guarantees KTHoughData
@@ -75,11 +72,11 @@ namespace Katydid
             unsigned fNRPoints;
 
         public:
-            //bool TransformData(KTSlidingWindowFSDataFFTW& data);
-            //KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSpectrum(const KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* powerSpectrum);
+            bool TransformData(KTWaterfallCandidateData& data);
+            KTPhysicalArray< 2, double >* TransformSpectrum(const KTTimeFrequency* powerSpectrum);
 
             bool TransformData(KTDiscriminatedPoints2DData& data);
-            KTPhysicalArray< 1, KTPhysicalArray< 1, double >* >* TransformSetOfPoints(const SetOfPoints& points, unsigned nTimeBins, unsigned nFreqBins);
+            KTPhysicalArray< 2, double >* TransformSetOfPoints(const SetOfPoints& points, unsigned nTimeBins, unsigned nFreqBins);
 
 
         private:
@@ -97,8 +94,8 @@ namespace Katydid
              //***************
 
          private:
+             KTSlotDataOneType< KTWaterfallCandidateData > fWFCandSlot;
              KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPts2DSlot;
-             //KTSlotDataOneType< KTSlidingWindowFSDataFFTW > fSWFSFFTWSlot;
 
     };
 
