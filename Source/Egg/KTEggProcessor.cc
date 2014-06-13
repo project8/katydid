@@ -48,6 +48,7 @@ namespace Katydid
             fEggReaderType(kMonarchEggReader),
             fSliceSize(1024),
             fStride(1024),
+            fStartTime(0.),
             fDAC(new KTDAC()),
             fNormalizeVoltages(true),
             fHeaderSignal("header", this),
@@ -124,6 +125,8 @@ namespace Katydid
             fSliceSize = node->GetValue< unsigned >("slice-size", fSliceSize);
             // specify the stride (leave unset to make stride == slice size)
             fStride = node->GetValue< unsigned >("stride", fSliceSize);
+            // specify the time in the run to start
+            fStartTime = node->GetValue< double >("start-time", fStartTime);
 
             if (fSliceSize == 0)
             {
@@ -160,6 +163,7 @@ namespace Katydid
             KTEggReaderMonarch* eggReaderMonarch = new KTEggReaderMonarch();
             eggReaderMonarch->SetSliceSize(fSliceSize);
             eggReaderMonarch->SetStride(fStride);
+            eggReaderMonarch->SetStartTime(fStartTime);
             reader = eggReaderMonarch;
 #else
             KTERROR(egglog, "Monarch is not enabled; please select another egg reader type");

@@ -52,6 +52,7 @@ namespace Katydid
      - "stride": unsigned -- Specify how many bins to advance between slices
         (leave unset to make stride == slice-size; i.e. no overlap or skipping
          between slices)
+     - "start-time": double -- Specify how far into the file to start (in seconds)
      - "normalize-voltages": bool -- Flag to toggle the normalization of ADC
         values from the egg file (default: true)
      - "dac": object -- configure the DAC
@@ -125,6 +126,7 @@ namespace Katydid
 
             unsigned fSliceSize;
             unsigned fStride;
+            double fStartTime;
 
             KTDAC* fDAC;
 
