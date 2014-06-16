@@ -20,7 +20,13 @@ namespace Katydid
     class KTDiscriminatedPoints1DData : public KTExtensibleData< KTDiscriminatedPoints1DData >
     {
         public:
-            typedef std::map< unsigned, double > SetOfPoints;
+            struct Point
+            {
+                double fAbscissa;
+                double fOrdinate;
+                Point(double abscissa, double ordinate) : fAbscissa(abscissa), fOrdinate(ordinate) {}
+            };
+            typedef std::map< unsigned, Point > SetOfPoints;
 
         protected:
             struct PerComponentData
@@ -38,7 +44,7 @@ namespace Katydid
 
             unsigned GetNComponents() const;
 
-            void AddPoint(unsigned point, double value, unsigned component = 0);
+            void AddPoint(unsigned bin, const Point& point, unsigned component = 0);
             void SetThreshold(double threshold, unsigned component = 0);
 
             KTDiscriminatedPoints1DData& SetNComponents(unsigned channels);
@@ -72,10 +78,10 @@ namespace Katydid
         return unsigned(fComponentData.size());
     }
 
-    inline void KTDiscriminatedPoints1DData::AddPoint(unsigned point, double value, unsigned component)
+    inline void KTDiscriminatedPoints1DData::AddPoint(unsigned bin, const Point& point, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fPoints.insert(std::make_pair(point, value));
+        fComponentData[component].fPoints.insert(std::make_pair(bin, point));
     }
 
     inline void KTDiscriminatedPoints1DData::SetThreshold(double threshold, unsigned component)

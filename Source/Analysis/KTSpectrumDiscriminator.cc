@@ -149,7 +149,8 @@ namespace Katydid
         unsigned nComponents = data.GetNComponents();
 
         newData.SetNBins(data.GetSpectrumFFTW(0)->size());
-        newData.SetBinWidth(data.GetSpectrumFFTW(0)->GetBinWidth());
+        double binWidth = data.GetSpectrumFFTW(0)->GetBinWidth();
+        newData.SetBinWidth(binWidth);
 
         // Interval: [fMinBin, fMaxBin)
         unsigned nBins = fMaxBin - fMinBin + 1;
@@ -216,7 +217,7 @@ namespace Katydid
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = magnitude[iBin];
-                if (value >= threshold) newData.AddPoint(iBin, value, iComponent);
+                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value), iComponent);
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
 
@@ -242,7 +243,8 @@ namespace Katydid
         unsigned nComponents = data.GetNComponents();
 
         newData.SetNBins(data.GetSpectrumPolar(0)->size());
-        newData.SetBinWidth(data.GetSpectrumPolar(0)->GetBinWidth());
+        double binWidth = data.GetSpectrumPolar(0)->GetBinWidth();
+        newData.SetBinWidth(binWidth);
 
         // Interval: [fMinBin, fMaxBin)
         unsigned nBins = fMaxBin - fMinBin + 1;
@@ -309,7 +311,7 @@ namespace Katydid
                 if (value >= threshold)
                 {
                     //printer << "   " << iBin << " -- " << value;
-                    newData.AddPoint(iBin, value, iComponent);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value), iComponent);
                 }
             }
 
