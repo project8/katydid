@@ -21,9 +21,12 @@ namespace Katydid
 {
     struct TDiscriminatedPoints1DData
     {
+        UInt_t fSlice;
+        double fTimeInRun;
         UShort_t fComponent;
-        UInt_t fPoint;
-        double fValue;
+        UInt_t fBin;
+        double fAbscissa;
+        double fOrdinate;
         double fThreshold;
     };
 

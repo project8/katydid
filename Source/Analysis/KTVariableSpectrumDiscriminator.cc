@@ -209,6 +209,7 @@ namespace Katydid
         }
 
         unsigned nBins = fMaxBin - fMinBin + 1;
+        double binWidth = spectrum->GetBinWidth();
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
@@ -240,7 +241,7 @@ namespace Katydid
             {
                 value = (*spectrum)(iBin).abs();
                 if (value >= thresholdMult * (*splineImp)(iBin - fMinBin))
-                    newData.AddPoint(iBin, value, component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value), component);
             }
         }
         //**************
@@ -269,7 +270,7 @@ namespace Katydid
             {
                 value = (*spectrum)(iBin).abs();
                 if (value >= thresholdAdd + (*splineImp)(iBin - fMinBin))
-                    newData.AddPoint(iBin, value, component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value), component);
             }
         }
 
@@ -288,8 +289,9 @@ namespace Katydid
         }
 
         unsigned nBins = fMaxBin - fMinBin + 1;
+        double binWidth = spectrum->GetBinWidth();
         double freqMin = spectrum->GetBinLowEdge(fMinBin);
-        double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
+        double freqMax = spectrum->GetBinLowEdge(fMaxBin) + binWidth;
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
         //************
@@ -319,7 +321,7 @@ namespace Katydid
             {
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 if (value >= thresholdMult * (*splineImp)(iBin - fMinBin))
-                    newData.AddPoint(iBin, value, component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value), component);
             }
         }
         //**************
@@ -353,7 +355,7 @@ namespace Katydid
             {
                 value = fMagnitudeCache[iBin];
                 if (value >= thresholdAdd + (*splineImp)(iBin - fMinBin))
-                    newData.AddPoint(iBin, value, component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value), component);
             }
         }
 

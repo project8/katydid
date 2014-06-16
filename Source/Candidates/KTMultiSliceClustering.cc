@@ -443,7 +443,7 @@ namespace Katydid
                         {
                             newPoint.fTimeBin = this->fTimeBin;
                             newPoint.fFreqBin = fbPointsIt->first;
-                            newPoint.fAmplitude = fbPointsIt->second;
+                            newPoint.fAmplitude = fbPointsIt->second.fOrdinate;
                             acIt->fPoints.insert(newPoint);
                         }
                         //KTDEBUG(sclog, "        ac cluster updated; now contains " << acIt->fPoints.size() << " points");
@@ -547,7 +547,7 @@ namespace Katydid
                 {
                     newPoint.fTimeBin = this->fTimeBin;
                     newPoint.fFreqBin = fbPointsIt->first;
-                    newPoint.fAmplitude = fbPointsIt->second;
+                    newPoint.fAmplitude = fbPointsIt->second.fOrdinate;
                     newCluster.fPoints.insert(newPoint);
                 }
                 newCluster.fEndMinFreqPoint = fbIt->fFirstPoint;

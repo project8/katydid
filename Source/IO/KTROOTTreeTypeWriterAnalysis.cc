@@ -60,6 +60,7 @@ namespace Katydid
     void KTROOTTreeTypeWriterAnalysis::WriteDiscriminatedPoints1D(KTDataPtr data)
     {
         KTDiscriminatedPoints1DData& fcData = data->Of< KTDiscriminatedPoints1DData >();
+        KTSliceHeader& header = data->Of< KTSliceHeader >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -72,14 +73,18 @@ namespace Katydid
             }
         }
 
+        fDiscPoints1DData.fSlice = header.GetSliceNumber();
+        fDiscPoints1DData.fTimeInRun = header.GetTimeInRun();
+
         for (fDiscPoints1DData.fComponent = 0; fDiscPoints1DData.fComponent < fcData.GetNComponents(); fDiscPoints1DData.fComponent++)
         {
             fDiscPoints1DData.fThreshold = fcData.GetThreshold(fDiscPoints1DData.fComponent);
             const KTDiscriminatedPoints1DData::SetOfPoints& points = fcData.GetSetOfPoints(fDiscPoints1DData.fComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); it++)
             {
-                fDiscPoints1DData.fPoint = it->first;
-                fDiscPoints1DData.fValue = it->second;
+                fDiscPoints1DData.fBin = it->first;
+                fDiscPoints1DData.fAbscissa = it->second.fAbscissa;
+                fDiscPoints1DData.fOrdinate = it->second.fOrdinate;
 
                 fDiscPoints1DTree->Fill();
            }
@@ -100,9 +105,12 @@ namespace Katydid
 
         //fDiscPoints1DData = new TDiscriminatedPoints1DData();
 
+        fDiscPoints1DTree->Branch("Slice", &fDiscPoints1DData.fSlice, "fSlice/l");
+        fDiscPoints1DTree->Branch("TimeInRun", &fDiscPoints1DData.fTimeInRun, "fTimeInRun/d");
         fDiscPoints1DTree->Branch("Component", &fDiscPoints1DData.fComponent, "fComponent/s");
-        fDiscPoints1DTree->Branch("Point", &fDiscPoints1DData.fPoint, "fSlice/i");
-        fDiscPoints1DTree->Branch("Value", &fDiscPoints1DData.fValue, "fTimeInRun/d");
+        fDiscPoints1DTree->Branch("Bin", &fDiscPoints1DData.fBin, "fBin/i");
+        fDiscPoints1DTree->Branch("Abscissa", &fDiscPoints1DData.fAbscissa, "fAbscissa/d");
+        fDiscPoints1DTree->Branch("Ordinate", &fDiscPoints1DData.fOrdinate, "fOrdinate/d");
         fDiscPoints1DTree->Branch("Threshold", &fDiscPoints1DData.fThreshold, "fThreshold/d");
         //fDiscPoints1DTree->Branch("freqAnalysis", &fDiscPoints1DData.fComponent, "fComponent/s:fSlice/l:fTimeInRun/d:fThreshold/d:fFirstBin/i:fLastBin/i:fMeanFrequency/d:fPeakAmplitude/d");
 
