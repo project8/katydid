@@ -48,62 +48,62 @@ int main()
     KTDiscriminatedPoints1DData::SetOfPoints freqPoints;
     // assumed clustering rules: sequential time bins are clustered; frequency bin separation = 1; no threshold on the cluster size
     // time bin 0
-    freqPoints.insert(pair< unsigned, Point >(5, Point(2., 1.0)));  // this should be in a cluster by itself
+    freqPoints.insert(pair< unsigned, Point >(5, Point(2., 1.0, 0.5)));  // this should be in a cluster by itself
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 1
-    freqPoints.insert(pair< unsigned, Point >(8, Point(2., 1.0)));  // this point and the next should form a cluster
-    freqPoints.insert(pair< unsigned, Point >(9, Point(2., 1.0)));
-    freqPoints.insert(pair< unsigned, Point >(11, Point(2., 1.0))); // this point should be clustered with the first three in the next two time bins
+    freqPoints.insert(pair< unsigned, Point >(8, Point(2., 1.0, 0.5)));  // this point and the next should form a cluster
+    freqPoints.insert(pair< unsigned, Point >(9, Point(2., 1.0, 0.5)));
+    freqPoints.insert(pair< unsigned, Point >(11, Point(2., 1.0, 0.5))); // this point should be clustered with the first three in the next two time bins
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 2
-    freqPoints.insert(pair< unsigned, Point >(11, Point(2., 1.0))); // these three should be clustered with the last from the previous time bin,
-    freqPoints.insert(pair< unsigned, Point >(12, Point(2., 1.0))); // and the first three in the next time bin
-    freqPoints.insert(pair< unsigned, Point >(13, Point(2., 1.0)));
-    freqPoints.insert(pair< unsigned, Point >(5, Point(2., 1.0)));  // this should cluster with the last from the next time bin
+    freqPoints.insert(pair< unsigned, Point >(11, Point(2., 1.0, 0.5))); // these three should be clustered with the last from the previous time bin,
+    freqPoints.insert(pair< unsigned, Point >(12, Point(2., 1.0, 0.5))); // and the first three in the next time bin
+    freqPoints.insert(pair< unsigned, Point >(13, Point(2., 1.0, 0.5)));
+    freqPoints.insert(pair< unsigned, Point >(5, Point(2., 1.0, 0.5)));  // this should cluster with the last from the next time bin
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 3
-    freqPoints.insert(pair< unsigned, Point >(11, Point(2., 1.0))); // these three should cluster with the first three from the previous time bin
-    freqPoints.insert(pair< unsigned, Point >(12, Point(2., 1.0)));
-    freqPoints.insert(pair< unsigned, Point >(13, Point(2., 1.0)));
-    freqPoints.insert(pair< unsigned, Point >(6, Point(2., 1.0)));  // this should cluster with the last from the previous time bin
+    freqPoints.insert(pair< unsigned, Point >(11, Point(2., 1.0, 0.5))); // these three should cluster with the first three from the previous time bin
+    freqPoints.insert(pair< unsigned, Point >(12, Point(2., 1.0, 0.5)));
+    freqPoints.insert(pair< unsigned, Point >(13, Point(2., 1.0, 0.5)));
+    freqPoints.insert(pair< unsigned, Point >(6, Point(2., 1.0, 0.5)));  // this should cluster with the last from the previous time bin
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 4
-    freqPoints.insert(pair< unsigned, Point >(20, Point(2., 1.0))); // these two should cluster with the two in the next two time bins
-    freqPoints.insert(pair< unsigned, Point >(21, Point(2., 1.0)));
+    freqPoints.insert(pair< unsigned, Point >(20, Point(2., 1.0, 0.5))); // these two should cluster with the two in the next two time bins
+    freqPoints.insert(pair< unsigned, Point >(21, Point(2., 1.0, 0.5)));
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 5
-    freqPoints.insert(pair< unsigned, Point >(20, Point(2., 1.0))); // these two should cluster with the two in the previous and next time bins
-    freqPoints.insert(pair< unsigned, Point >(19, Point(2., 1.0)));
+    freqPoints.insert(pair< unsigned, Point >(20, Point(2., 1.0, 0.5))); // these two should cluster with the two in the previous and next time bins
+    freqPoints.insert(pair< unsigned, Point >(19, Point(2., 1.0, 0.5)));
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 6
-    freqPoints.insert(pair< unsigned, Point >(19, Point(2., 1.0))); // these two should cluster with the two in the previous two time bins
-    freqPoints.insert(pair< unsigned, Point >(18, Point(2., 1.0)));
+    freqPoints.insert(pair< unsigned, Point >(19, Point(2., 1.0, 0.5))); // these two should cluster with the two in the previous two time bins
+    freqPoints.insert(pair< unsigned, Point >(18, Point(2., 1.0, 0.5)));
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 7
-    freqPoints.insert(pair< unsigned, Point >(30, Point(2., 1.0))); // these two should not be clustered until the next time bin is read, at which point
-    freqPoints.insert(pair< unsigned, Point >(35, Point(2., 1.0))); // they should be merged together into one cluster
+    freqPoints.insert(pair< unsigned, Point >(30, Point(2., 1.0, 0.5))); // these two should not be clustered until the next time bin is read, at which point
+    freqPoints.insert(pair< unsigned, Point >(35, Point(2., 1.0, 0.5))); // they should be merged together into one cluster
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 8
-    freqPoints.insert(pair< unsigned, Point >(31, Point(2., 1.0))); // these four should cause the merged clustering of the two points in the previous time bin
-    freqPoints.insert(pair< unsigned, Point >(32, Point(2., 1.0)));
-    freqPoints.insert(pair< unsigned, Point >(34, Point(2., 1.0)));
-    freqPoints.insert(pair< unsigned, Point >(33, Point(2., 1.0)));
+    freqPoints.insert(pair< unsigned, Point >(31, Point(2., 1.0, 0.5))); // these four should cause the merged clustering of the two points in the previous time bin
+    freqPoints.insert(pair< unsigned, Point >(32, Point(2., 1.0, 0.5)));
+    freqPoints.insert(pair< unsigned, Point >(34, Point(2., 1.0, 0.5)));
+    freqPoints.insert(pair< unsigned, Point >(33, Point(2., 1.0, 0.5)));
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 9
-    freqPoints.insert(pair< unsigned, Point >(2, Point(2., 1.0))); // this point should be clustered with the point in the next time bin
+    freqPoints.insert(pair< unsigned, Point >(2, Point(2., 1.0, 0.5))); // this point should be clustered with the point in the next time bin
     allPoints.push_back(freqPoints);
     freqPoints.clear();
     // time bin 10
-    freqPoints.insert(pair< unsigned, Point >(2, Point(2., 1.0))); // this point should be clustered with the point in the previous time bin
+    freqPoints.insert(pair< unsigned, Point >(2, Point(2., 1.0, 0.5))); // this point should be clustered with the point in the previous time bin
     allPoints.push_back(freqPoints);
     // total number of "truth" clusters: 7
 
@@ -129,7 +129,6 @@ int main()
         KTDiscriminatedPoints1DData dpDataIn;
         dpDataIn.SetNComponents(1);
         dpDataIn.SetBinWidth(freqBW);
-        dpDataIn.SetThreshold(1., 0);
         KTFrequencySpectrumPolar* freqSpec = new KTFrequencySpectrumPolar(freqBins, -0.5*freqBW, (double(freqBins) - 0.5) * freqBW);
         KTFrequencySpectrumDataPolar fsDataIn;
         fsDataIn.SetNComponents(1);
@@ -138,7 +137,7 @@ int main()
         for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pointIt = setIt->begin(); pointIt != setIt->end(); pointIt++)
         {
             KTDEBUG(vallog, "    adding point at " << pointIt->first);
-            dpDataIn.AddPoint(pointIt->first, Point(pointIt->second.fAbscissa, 1.0), 0);
+            dpDataIn.AddPoint(pointIt->first, Point(pointIt->second.fAbscissa, 1.0, 1.0), 0);
             (*freqSpec)(pointIt->first).set_polar(pointIt->second.fAbscissa, 0.);
         }
         KTINFO(vallog, "Time bin created");

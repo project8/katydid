@@ -75,14 +75,14 @@ namespace Katydid
 
         for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
         {
-            newData.SetThreshold(data.GetThreshold(iComponent), iComponent);
-
             const OriginalPoints points = data.GetSetOfPoints(iComponent);
 
+            double threshold = 0.;
             if (! points.empty())
             {
                 OriginalPoints::const_iterator pIt = points.begin();
                 unsigned thisPoint = pIt->first;
+                threshold = pIt->second.fThreshold;
                 Cluster activeCluster;
                 activeCluster.insert(thisPoint);
                 unsigned lastPointInActiveCluster = thisPoint;
@@ -102,6 +102,7 @@ namespace Katydid
                 KTDEBUG(sdlog, "Adding cluster: (ch. " << iComponent << "): " << *(activeCluster.begin()) << "  " << *(activeCluster.rbegin()));
                 newData.AddCluster(*(activeCluster.begin()), *(activeCluster.rbegin()), iComponent);
             }
+            newData.SetThreshold(threshold, iComponent);
 
             KTINFO(sdlog, newData.GetSetOfClusters(iComponent).size() << " clusters added on channel " << iComponent);
         }
