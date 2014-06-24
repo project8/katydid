@@ -80,6 +80,8 @@ namespace Katydid
         private:
             std::vector< KTDBScan > fComponents;
 
+            std::vector< KTWaterfallCandidateData > fCandidates;
+
             //***************
             // Signals
             //***************

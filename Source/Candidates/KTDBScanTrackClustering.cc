@@ -12,6 +12,7 @@
 #include "KTNOFactory.hh"
 #include "KTParam.hh"
 #include "KTSliceHeader.hh"
+#include "KTTimeFrequencyPolar.hh"
 
 using std::vector;
 
@@ -97,14 +98,86 @@ namespace Katydid
     bool KTDBScanTrackClustering::DoClustering()
     {
         Distance< Cosine< KTDBScan::Point > > dist;
-        for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
+        for (unsigned iComponent = 0; iComponent < fComponents.size(); ++iComponent)
+        //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
-            compIt->ComputeSimilarity(dist);
-            if (! compIt->DoClustering() )
+            fComponents[iComponent].ComputeSimilarity(dist);
+            if (! fComponents[iComponent].DoClustering() )
             {
                 KTERROR(tclog, "An error occurred while clustering");
                 return false;
             }
+
+            const vector< KTDBScan::Cluster >& clusters = fComponents[iComponent].GetClusters();
+            for (vector< KTDBScan::Cluster >::const_iterator clustIt = clusters.begin(); clustIt != clusters.end(); ++clustIt)
+            {
+                if (clustIt->empty())
+                {
+                    continue;
+                }
+
+                fCandidates.push_back(KTWaterfallCandidateData());
+                KTWaterfallCandidateData& cand = fCandidates.back();
+
+                KTDBScan::Cluster::const_iterator pointIt = clustIt->begin();
+                double minFreq = (*pointIt)[1];
+                double maxFreq = minFreq;
+                double minTime = (*pointIt)[0];
+                double maxTime = minTime;
+
+                for (++pointIt; pointIt != clustIt->end(); ++pointIt)
+                {
+                    if ((*pointIt)[1] > maxFreq)
+                    {
+                        maxFreq = (*pointIt)[1];
+                    }
+                    else if ((*pointIt)[1] < minFreq)
+                    {
+                        minFreq = (*pointIt)[1];
+                    }
+
+                    if ((*pointIt)[0] > maxTime)
+                    {
+                        maxTime = (*pointIt)[0];
+                    }
+                    else if ((*pointIt)[0] < minTime)
+                    {
+                        minTime = (*pointIt)[0];
+                    }
+                }
+
+                KTTimeFrequencyPolar* tf = new KTTimeFrequencyPolar();
+
+                cand.SetComponent(iComponent);
+            }
+
+            /*
+            KTTimeFrequency* GetCandidate() const;
+
+            unsigned GetNTimeBins() const;
+            double GetTimeBinWidth() const;
+
+            unsigned GetNFreqBins() const;
+            double GetFreqBinWidth() const;
+
+            double GetTimeInRun() const;
+            double GetTimeLength() const;
+            uint64_t GetFirstSliceNumber() const;
+            uint64_t GetLastSliceNumber() const;
+            double GetMinimumFrequency() const;
+            double GetMaximumFrequency() const;
+            double GetMeanStartFrequency() const;
+            double GetMeanEndFrequency() const;
+            double GetFrequencyWidth() const;
+
+            unsigned GetStartRecordNumber() const;
+            unsigned GetStartSampleNumber() const;
+            unsigned GetEndRecordNumber() const;
+            unsigned GetEndSampleNumber() const;
+             *
+             */
+
+
         }
     }
 

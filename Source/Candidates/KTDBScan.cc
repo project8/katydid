@@ -57,6 +57,8 @@ namespace Katydid
     {
         PointId pid = 0;
         ClusterId cid = 0;
+        fClusters.clear();
+        fClusters.reserve(fPoints.size());
         BOOST_FOREACH(Point point, fPoints)
         {
             // create a new cluster for this current point
@@ -84,6 +86,11 @@ namespace Katydid
 
     bool KTDBScan::DoClustering()
     {
+        fVisited.clear();
+        fVisited.resize(fPoints.size(), false);
+        fNoise.clear();
+        fNoise.resize(fPoints.size(), false);
+
         ClusterId cid = 1;
         // foreach pid
         for (PointId pid = 0; pid < fPoints.size(); pid++)

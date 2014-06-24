@@ -89,6 +89,8 @@ namespace Katydid
 
             bool DoClustering();
 
+            const std::vector< Cluster >& GetClusters() const;
+
         private:
             // noise-point vector
             std::vector< bool > fNoise;
@@ -149,6 +151,11 @@ namespace Katydid
             //std::cout << std::endl;
         }
     };
+
+    const std::vector< KTDBScan::Cluster >& KTDBScan::GetClusters() const
+    {
+        return fClusters;
+    }
 
 
     //
