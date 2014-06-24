@@ -78,13 +78,13 @@ namespace Katydid
 
         for (fDiscPoints1DData.fComponent = 0; fDiscPoints1DData.fComponent < fcData.GetNComponents(); fDiscPoints1DData.fComponent++)
         {
-            fDiscPoints1DData.fThreshold = fcData.GetThreshold(fDiscPoints1DData.fComponent);
             const KTDiscriminatedPoints1DData::SetOfPoints& points = fcData.GetSetOfPoints(fDiscPoints1DData.fComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); it++)
             {
                 fDiscPoints1DData.fBin = it->first;
                 fDiscPoints1DData.fAbscissa = it->second.fAbscissa;
                 fDiscPoints1DData.fOrdinate = it->second.fOrdinate;
+                fDiscPoints1DData.fThreshold = it->second.fThreshold;
 
                 fDiscPoints1DTree->Fill();
            }

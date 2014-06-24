@@ -24,21 +24,20 @@ int main()
     discPoints.SetNComponents(1);
     discPoints.SetBinWidth(1.);
     discPoints.SetNBins(100);
-    discPoints.SetThreshold(0.1, 0);
 
-    discPoints.AddPoint(8, 0.7, 0);
-    discPoints.AddPoint(27, 0.9, 0);
-    discPoints.AddPoint(13, 0.4, 0);
-    discPoints.AddPoint(14, 0.88, 0);
-    discPoints.AddPoint(15, 0.3, 0);
-    discPoints.AddPoint(92, 0.2, 0);
-    discPoints.AddPoint(90, 0.9, 0);
-    discPoints.AddPoint(87, 0.5, 0);
+    discPoints.AddPoint(8, KTDiscriminatedPoints1DData::Point(0.7, 1.0, 0.1), 0);
+    discPoints.AddPoint(27, KTDiscriminatedPoints1DData::Point(0.9, 1.0, 0.1), 0);
+    discPoints.AddPoint(13, KTDiscriminatedPoints1DData::Point(0.4, 1.0, 0.1), 0);
+    discPoints.AddPoint(14, KTDiscriminatedPoints1DData::Point(0.88, 1.0, 0.1), 0);
+    discPoints.AddPoint(15, KTDiscriminatedPoints1DData::Point(0.3, 1.0, 0.1), 0);
+    discPoints.AddPoint(92, KTDiscriminatedPoints1DData::Point(0.2, 1.0, 0.1), 0);
+    discPoints.AddPoint(90, KTDiscriminatedPoints1DData::Point(0.9, 1.0, 0.1), 0);
+    discPoints.AddPoint(87, KTDiscriminatedPoints1DData::Point(0.5, 1.0, 0.1), 0);
 
     unsigned iPoint = 0;
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt=discPoints.GetSetOfPoints(0).begin(); pIt != discPoints.GetSetOfPoints(0).end(); pIt++)
     {
-        KTINFO(testlog, "Point #" << iPoint << ":  " << pIt->first << "  " << pIt->second);
+        KTINFO(testlog, "Point #" << iPoint << ":  " << pIt->first << "  " << pIt->second.fAbscissa);
         iPoint++;
     }
 

@@ -34,7 +34,7 @@ using std::vector;
 
 namespace Katydid
 {
-    static KTNORegistrar< KTProcessor, KTMultiSliceClustering > sMSClustRegistrar("multi-slice-clustering");
+    KT_REGISTER_PROCESSOR(KTMultiSliceClustering, "multi-slice-clustering");
 
     KTMultiSliceClustering::KTMultiSliceClustering(const std::string& name) :
             KTDataQueueProcessorTemplate< KTMultiSliceClustering >(name),

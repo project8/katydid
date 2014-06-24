@@ -209,15 +209,13 @@ namespace Katydid
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
             }
 
-            newData.SetThreshold(threshold, iComponent);
-
             // loop over bins, checking against the threshold
             double value;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = magnitude[iBin];
-                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value), iComponent);
+                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value, threshold), iComponent);
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
 
@@ -300,8 +298,6 @@ namespace Katydid
                 KTDEBUG(sdlog, "Discriminator threshold for channel " << iComponent << " set at <" << threshold << "> (Sigma mode)");
             }
 
-            newData.SetThreshold(threshold, iComponent);
-
             // loop over bins, checking against the threshold
             double value;
             //std::stringstream printer;
@@ -311,7 +307,7 @@ namespace Katydid
                 if (value >= threshold)
                 {
                     //printer << "   " << iBin << " -- " << value;
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value), iComponent);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value, threshold), iComponent);
                 }
             }
 

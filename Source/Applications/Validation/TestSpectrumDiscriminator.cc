@@ -97,7 +97,7 @@ int main()
     KTINFO(testlog, "Found " << setOfPoints.size() << " points above threshold");
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it=setOfPoints.begin(); it != setOfPoints.end(); it++)
     {
-        KTINFO(testlog, "Bin " << it->first << " = " << it->second);
+        KTINFO(testlog, "Bin " << it->first << " = " << it->second.fAbscissa);
     }
 
 #ifdef ROOT_FOUND
@@ -107,7 +107,7 @@ int main()
     histPoints->SetLineColor(2);
     for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it=setOfPoints.begin(); it != setOfPoints.end(); it++)
     {
-        histPoints->SetBinContent(it->first + 1, it->second);
+        histPoints->SetBinContent(it->first + 1, it->second.fAbscissa);
     }
     histPoints->Write();
 #endif

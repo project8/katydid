@@ -24,7 +24,8 @@ namespace Katydid
             {
                 double fAbscissa;
                 double fOrdinate;
-                Point(double abscissa, double ordinate) : fAbscissa(abscissa), fOrdinate(ordinate) {}
+                double fThreshold;
+                Point(double abscissa, double ordinate, double threshold) : fAbscissa(abscissa), fOrdinate(ordinate), fThreshold(threshold) {}
             };
             typedef std::map< unsigned, Point > SetOfPoints;
 
@@ -32,7 +33,6 @@ namespace Katydid
             struct PerComponentData
             {
                 SetOfPoints fPoints;
-                double fThreshold;
             };
 
         public:
@@ -40,12 +40,10 @@ namespace Katydid
             virtual ~KTDiscriminatedPoints1DData();
 
             const SetOfPoints& GetSetOfPoints(unsigned component = 0) const;
-            double GetThreshold(unsigned component = 0) const;
 
             unsigned GetNComponents() const;
 
             void AddPoint(unsigned bin, const Point& point, unsigned component = 0);
-            void SetThreshold(double threshold, unsigned component = 0);
 
             KTDiscriminatedPoints1DData& SetNComponents(unsigned channels);
 
@@ -68,11 +66,6 @@ namespace Katydid
         return fComponentData[component].fPoints;
     }
 
-    inline double KTDiscriminatedPoints1DData::GetThreshold(unsigned component) const
-    {
-        return fComponentData[component].fThreshold;
-    }
-
     inline unsigned KTDiscriminatedPoints1DData::GetNComponents() const
     {
         return unsigned(fComponentData.size());
@@ -82,12 +75,6 @@ namespace Katydid
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fPoints.insert(std::make_pair(bin, point));
-    }
-
-    inline void KTDiscriminatedPoints1DData::SetThreshold(double threshold, unsigned component)
-    {
-        if (component >= fComponentData.size()) fComponentData.resize(component+1);
-        fComponentData[component].fThreshold = threshold;
     }
 
     inline KTDiscriminatedPoints1DData& KTDiscriminatedPoints1DData::SetNComponents(unsigned channels)

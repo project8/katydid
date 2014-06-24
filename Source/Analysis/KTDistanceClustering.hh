@@ -28,6 +28,8 @@ namespace Katydid
      @brief Simple 1-D clustering based on distance between discriminated points from a frequency spectrum
 
      @details
+     NOTE: the output data class, KTCluster1DData, has a single threshold for all points (as of 6/23/14).
+     Therefore, this processor is only suitable for use with a flat threshold (e.g. KTSpectrumDiscriminator).
 
      Configuration name: "distance-clustering"
 
