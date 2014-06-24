@@ -6,11 +6,12 @@
  @date: [date]
  */
 
-#ifndef KTPROCESSORTEMPLATE_HH_
-#define KTPROCESSORTEMPLATE_HH_
+#ifndef KTDBSCANTRACKCLUSTERING_HH_
+#define KTDBSCANTRACKCLUSTERING_HH_
 
 #include "KTPrimaryProcessor.hh"
 
+#include "KTDBScan.hh"
 #include "KTSlot.hh"
 
 #include <vector>
@@ -18,7 +19,7 @@
 namespace Katydid
 {
     class KTSliceHeader;
-    class KTDiscirminatedPoints1DData;
+    class KTDiscriminatedPoints1DData;
     class KTPStoreNode;
 
     /*!
@@ -32,11 +33,12 @@ namespace Katydid
      Configuration name: "dbscan-track-clustering"
 
      Available configuration values:
-     - "some-name": [type] -- [what it does]
+     - "epsilon": double --
+     - "min-points": unsigned int --
 
      Slots:
      - "header": void (const KTEggHeader* header) -- [what it does]
-     - "[slot-name]": void (shared_ptr<KTData>) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
+     - "points": void (shared_ptr<KTData>) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
 
      Signals:
      - "[signal-name]": void (shared_ptr<KTData>) -- Emitted upon [whatever was done]; Guarantees [output data type].
@@ -45,23 +47,10 @@ namespace Katydid
     class KTDBScanTrackClustering : public KTPrimaryProcessor
     {
         public:
-            // a single point is made up of vector of doubles
-            typedef boost::numeric::ublas::vector< double > Point;
-            typedef std::vector< Point > Points;
-
-            typedef unsigned ClusterId;
-            typedef unsigned PointId;
-
-            // a cluster is a vector of pointid
-            typedef std::vector< PointId > Cluster;
-            // a set of Neighbors is a vector of pointid
-            typedef std::vector< PointId > Neighbors;
-
-        public:
             KTDBScanTrackClustering(const std::string& name = "dbscan-track-clustering");
             virtual ~KTDBScanTrackClustering();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             double GetEpsilon() const;
             void SetEpsilon(double eps);
@@ -70,6 +59,8 @@ namespace Katydid
             void SetMinPoints(unsigned pts);
 
         private:
+            void UpdateComponents();
+
             // eps radiuus
             // Two points are neighbors if the distance
             // between them does not exceed threshold value.
@@ -80,53 +71,14 @@ namespace Katydid
 
         public:
             // Store point information locally
-            bool TakePoint(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints);
-
-            bool TakePoints(const Points& points);
-            bool TakePoint(const Point& point);
-
-            void ResetPoints();
+            bool TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints);
 
             bool Run();
-
-            // assign each point to a new cluster
-            void UniformPartition();
-
-            // compute similarity
-            template < typename DistanceType >
-            void ComputeSimilarity(DistanceType& dist);
-
-            //
-            // findNeighbors(PointId pid, double threshold)
-            //
-            // this can be implemented with reduced complexity by using R+trees
-            //
-            Neighbors FindNeighbors(PointId pid, double threshold);
 
             bool DoClustering();
 
         private:
-            // noise-point vector
-            std::vector< bool > fNoise;
-
-            // visited-point vector
-            std::vector< bool > fVisited;
-
-            // the collection of points we are working on
-            Points fPoints;
-
-            // mapping point_id -> clusterId
-            std::vector< ClusterId > fPointIdToClusterId;
-
-            // the collection of clusters
-            std::vector< Cluster > fClusters;
-
-            // simarity_matrix
-            boost::numeric::ublas::matrix< double > fSim;
-
-            friend
-                std::ostream& operator << (std::ostream& o, const KTDBScanTrackClustering& c);
-
+            std::vector< KTDBScan > fComponents;
 
             //***************
             // Signals
@@ -151,6 +103,7 @@ namespace Katydid
     inline void KTDBScanTrackClustering::SetEpsilon(double eps)
     {
         fEpsilon = eps;
+        UpdateComponents();
         return;
     }
 
@@ -161,26 +114,10 @@ namespace Katydid
     inline void KTDBScanTrackClustering::SetMinPoints(unsigned pts)
     {
         fMinPoints = pts;
+        UpdateComponents();
         return;
     }
 
-    template < typename DistanceType >
-    void KTDBScanTrackClustering::ComputeSimilarity(DistanceType& dist)
-    {
-        unsigned size = fPoints.size();
-        fSim.resize(size, size, false);
-        for (unsigned i=0; i < size; ++i)
-        {
-            for (unsigned j=i+1; j < size; ++j)
-            {
-                fSim(j, i) = fSim(i, j) = dist.similarity(fPoints[i], fPoints[j]);
-                //std::cout << "(" << i << ", " << j << ")=" << _sim(i, j) << " ";
-            }
-            //std::cout << std::endl;
-        }
-    };
-
-
 }
  /* namespace Katydid */
-#endif /* KTCOMPLEXFFTW_HH_ */
+#endif /* KTDBSCANTRACKCLUSTERING_HH_ */
