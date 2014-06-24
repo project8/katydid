@@ -12,8 +12,10 @@
 #include "KTNOFactory.hh"
 #include "KTParam.hh"
 #include "KTSliceHeader.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 #include "KTTimeFrequencyPolar.hh"
 
+using std::set;
 using std::vector;
 
 namespace Katydid
@@ -26,7 +28,11 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fEpsilon(1.),
             fMinPoints(3),
+            fTimeBinWidth(0.),
+            fFreqBinWidth(0.),
             fComponents(1, KTDBScan(fEpsilon, fMinPoints)),
+            fCandidates(),
+            fDataCount(0),
             fTrackSignal("track", this),
             fTakePointSlot("points", this, &KTDBScanTrackClustering::TakePoints)
     {
@@ -69,6 +75,10 @@ namespace Katydid
             }
         }
 
+        // update time and frequency bin widths, though they probably don't actually need to be updated
+        fTimeBinWidth = slHeader.GetBinWidth();
+        fFreqBinWidth = discPoints.GetBinWidth();
+
         // verify that we have the right number of components
         if (slHeader.GetNComponents() > fComponents.size())
         {
@@ -101,6 +111,7 @@ namespace Katydid
         for (unsigned iComponent = 0; iComponent < fComponents.size(); ++iComponent)
         //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
+            // do the clustering!
             fComponents[iComponent].ComputeSimilarity(dist);
             if (! fComponents[iComponent].DoClustering() )
             {
@@ -108,7 +119,9 @@ namespace Katydid
                 return false;
             }
 
+            // loop over the clusters found, and create data objects for them
             const vector< KTDBScan::Cluster >& clusters = fComponents[iComponent].GetClusters();
+            const KTDBScan::Points& points = fComponents[iComponent].GetPoints();
             for (vector< KTDBScan::Cluster >::const_iterator clustIt = clusters.begin(); clustIt != clusters.end(); ++clustIt)
             {
                 if (clustIt->empty())
@@ -116,69 +129,62 @@ namespace Katydid
                     continue;
                 }
 
-                fCandidates.push_back(KTWaterfallCandidateData());
-                KTWaterfallCandidateData& cand = fCandidates.back();
+                ++fDataCount;
 
-                KTDBScan::Cluster::const_iterator pointIt = clustIt->begin();
-                double minFreq = (*pointIt)[1];
+                KTDataPtr data(new KTData());
+
+                KTSparseWaterfallCandidateData& cand = data->Of< KTSparseWaterfallCandidateData >();
+
+                KTDBScan::Cluster::const_iterator pointIdIt = clustIt->begin();
+                double minFreq = (points[*pointIdIt])[1];
                 double maxFreq = minFreq;
-                double minTime = (*pointIt)[0];
+                double minTime = (points[*pointIdIt])[0];
                 double maxTime = minTime;
 
-                for (++pointIt; pointIt != clustIt->end(); ++pointIt)
+                for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
                 {
-                    if ((*pointIt)[1] > maxFreq)
+                    cand.AddPoint(KTSparseWaterfallCandidateData::Point((points[*pointIdIt])[0], (points[*pointIdIt])[1], 1.));
+
+                    if ((points[*pointIdIt])[1] > maxFreq)
                     {
-                        maxFreq = (*pointIt)[1];
+                        maxFreq = (points[*pointIdIt])[1];
                     }
-                    else if ((*pointIt)[1] < minFreq)
+                    else if ((points[*pointIdIt])[1] < minFreq)
                     {
-                        minFreq = (*pointIt)[1];
+                        minFreq = (points[*pointIdIt])[1];
                     }
 
-                    if ((*pointIt)[0] > maxTime)
+                    if ((points[*pointIdIt])[0] > maxTime)
                     {
-                        maxTime = (*pointIt)[0];
+                        maxTime = (points[*pointIdIt])[0];
                     }
-                    else if ((*pointIt)[0] < minTime)
+                    else if ((points[*pointIdIt])[0] < minTime)
                     {
-                        minTime = (*pointIt)[0];
+                        minTime = (points[*pointIdIt])[0];
                     }
                 }
 
-                KTTimeFrequencyPolar* tf = new KTTimeFrequencyPolar();
-
                 cand.SetComponent(iComponent);
-            }
 
-            /*
-            KTTimeFrequency* GetCandidate() const;
+                cand.SetTimeBinWidth(fTimeBinWidth);
+                cand.SetFreqBinWidth(fFreqBinWidth);
 
-            unsigned GetNTimeBins() const;
-            double GetTimeBinWidth() const;
+                cand.SetTimeInRun(minTime);
+                cand.SetTimeLength(maxTime - minTime);
 
-            unsigned GetNFreqBins() const;
-            double GetFreqBinWidth() const;
+                cand.SetMinimumFrequency(minFreq);
+                cand.SetMaximumFrequency(maxFreq);
 
-            double GetTimeInRun() const;
-            double GetTimeLength() const;
-            uint64_t GetFirstSliceNumber() const;
-            uint64_t GetLastSliceNumber() const;
-            double GetMinimumFrequency() const;
-            double GetMaximumFrequency() const;
-            double GetMeanStartFrequency() const;
-            double GetMeanEndFrequency() const;
-            double GetFrequencyWidth() const;
+                cand.SetFrequencyWidth(maxFreq - minFreq);
 
-            unsigned GetStartRecordNumber() const;
-            unsigned GetStartSampleNumber() const;
-            unsigned GetEndRecordNumber() const;
-            unsigned GetEndSampleNumber() const;
-             *
-             */
+                fCandidates.insert(data);
+                fTrackSignal(data);
 
+            } // loop over clusters
 
-        }
+        } // loop over components
+
+        return true;
     }
 
 

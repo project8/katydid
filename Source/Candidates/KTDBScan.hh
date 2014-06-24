@@ -89,6 +89,7 @@ namespace Katydid
 
             bool DoClustering();
 
+            const Points& GetPoints() const;
             const std::vector< Cluster >& GetClusters() const;
 
         private:
@@ -152,7 +153,12 @@ namespace Katydid
         }
     };
 
-    const std::vector< KTDBScan::Cluster >& KTDBScan::GetClusters() const
+    inline const KTDBScan::Points& KTDBScan::GetPoints() const
+    {
+        return fPoints;
+    }
+
+    inline const std::vector< KTDBScan::Cluster >& KTDBScan::GetClusters() const
     {
         return fClusters;
     }

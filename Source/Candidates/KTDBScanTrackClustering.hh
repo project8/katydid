@@ -13,14 +13,16 @@
 
 #include "KTDBScan.hh"
 #include "KTSlot.hh"
+#include "KTData.hh"
 
+#include <set>
 #include <vector>
 
 namespace Katydid
 {
     class KTSliceHeader;
     class KTDiscriminatedPoints1DData;
-    class KTPStoreNode;
+    class KTParamNode;
 
     /*!
      @class KTDBScanTrackClustering
@@ -78,9 +80,13 @@ namespace Katydid
             bool DoClustering();
 
         private:
+            double fTimeBinWidth;
+            double fFreqBinWidth;
+
             std::vector< KTDBScan > fComponents;
 
-            std::vector< KTWaterfallCandidateData > fCandidates;
+            std::set< KTDataPtr > fCandidates;
+            unsigned fDataCount;
 
             //***************
             // Signals
