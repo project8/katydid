@@ -14,11 +14,57 @@
 
 #include <vector>
 
+
 namespace Katydid
 {
-    class KTSliceHeader;
-    class KTDiscirminatedPoints1DData;
-    class KTPStoreNode;
+    //
+    // Euclidean distance
+    template < typename VEC_T >
+    class Euclidean
+    {
+        protected:
+            typedef VEC_T vector_type;
+
+            // this must be not directly accessible
+            // since we want to provide a rich set of distances
+
+            double GetDistance(const VEC_T v1, const VEC_T v2)
+            {
+                return norm_2(v1-v2);
+            };
+    };
+
+    /*
+    template <typename VEC_T>
+    class Cosine
+    {
+        protected:
+            typedef VEC_T vector_type;
+
+            // this must be not directly accessible
+            // since we want to provide a rich set of distances
+
+            double GetDistance(const VEC_T v1, const VEC_T v2)
+            {
+                //std::cout << "dot=" << prec_inner_prod(v1, v2) << " norm_2=" << norm_2(v1) << "norm2=" << norm_2(v2) << std::endl;
+                return prec_inner_prod(v1, v2) / (norm_2(v1) * norm_2(v2));
+            };
+    };
+    */
+
+    template <typename Distance_Policy>   // this allows to provide a static mechanism for pseudo-like
+                                          // inheritance, which is optimal from a performance point of view.
+    class Distance : Distance_Policy
+    {
+        public:
+
+            double GetDistance(typename Distance_Policy::vector_type x, typename Distance_Policy::vector_type y)
+            {
+                return Distance_Policy::GetDistance(x, y);
+            };
+
+    };
+
 
     /*!
      @class KTDBScan
@@ -68,18 +114,23 @@ namespace Katydid
             unsigned fMinPoints;
 
         public:
-            bool TakePoints(const Points& points);
-            bool TakePoint(const Point& point);
+            template < typename DistanceType >
+            bool RunDBScan(const Points& points);
 
-            void ResetPoints();
+            void InitializeArrays(size_t nPoints);
 
             // assign each point to a new cluster
             void UniformPartition();
 
             // compute similarity
             template < typename DistanceType >
-            void ComputeSimilarity(DistanceType& dist);
+            void ComputeDistance(const Points& points);
 
+            bool DoClustering();
+
+            const std::vector< Cluster >& GetClusters() const;
+
+        private:
             //
             // findNeighbors(PointId pid, double threshold)
             //
@@ -87,20 +138,13 @@ namespace Katydid
             //
             Neighbors FindNeighbors(PointId pid, double threshold);
 
-            bool DoClustering();
+            unsigned fNPoints;
 
-            const Points& GetPoints() const;
-            const std::vector< Cluster >& GetClusters() const;
-
-        private:
             // noise-point vector
             std::vector< bool > fNoise;
 
             // visited-point vector
             std::vector< bool > fVisited;
-
-            // the collection of points we are working on
-            Points fPoints;
 
             // mapping point_id -> clusterId
             std::vector< ClusterId > fPointIdToClusterId;
@@ -108,14 +152,18 @@ namespace Katydid
             // the collection of clusters
             std::vector< Cluster > fClusters;
 
-            // simarity_matrix
-            boost::numeric::ublas::matrix< double > fSim;
+            // distance matrix
+            boost::numeric::ublas::matrix< double > fDist;
 
-            friend
-                std::ostream& operator << (std::ostream& o, const KTDBScan& c);
-
-
+            friend std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
+            friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
+            friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
     };
+
+    std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
+    std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
+    std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
+
 
     inline double KTDBScan::GetEpsilon() const
     {
@@ -138,25 +186,28 @@ namespace Katydid
     }
 
     template < typename DistanceType >
-    void KTDBScan::ComputeSimilarity(DistanceType& dist)
+    bool KTDBScan::RunDBScan(const Points& points)
     {
-        unsigned size = fPoints.size();
-        fSim.resize(size, size, false);
-        for (unsigned i=0; i < size; ++i)
+        InitializeArrays(points.size());
+        //UniformPartition();
+        ComputeDistance< DistanceType >(points);
+        return DoClustering();
+    }
+
+
+    template < typename DistanceType >
+    void KTDBScan::ComputeDistance(const Points& points)
+    {
+        Distance< DistanceType > dist;
+        for (unsigned i=0; i < fNPoints; ++i)
         {
-            for (unsigned j=i+1; j < size; ++j)
+            for (unsigned j=i+1; j < fNPoints; ++j)
             {
-                fSim(j, i) = fSim(i, j) = dist.GetSimilarity(fPoints[i], fPoints[j]);
-                //std::cout << "(" << i << ", " << j << ")=" << _sim(i, j) << " ";
+                fDist(j, i) = fDist(i, j) = dist.GetDistance(points[i], points[j]);
+                std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
             }
-            //std::cout << std::endl;
         }
     };
-
-    inline const KTDBScan::Points& KTDBScan::GetPoints() const
-    {
-        return fPoints;
-    }
 
     inline const std::vector< KTDBScan::Cluster >& KTDBScan::GetClusters() const
     {
@@ -164,61 +215,65 @@ namespace Katydid
     }
 
 
-    //
-    // Euclidean distance
-    template < typename VEC_T >
-    class Euclidean
+
+
+
+
+
+
+
+    /*
+    class DBSCAN
     {
-        protected:
-            typedef VEC_T vector_type;
+    public:
+        typedef boost::numeric::ublas::vector<double> FeaturesWeights;
+        typedef boost::numeric::ublas::matrix<double> ClusterData;
+        typedef boost::numeric::ublas::matrix<double> DistanceMatrix;
+        typedef std::vector<uint32_t> Neighbors;
+        typedef std::vector<int32_t> Labels;
 
-            // this must be not directly accessible
-            // since we want to provide a rich set of distances
+        static ClusterData gen_cluster_data( size_t features_num, size_t elements_num );
+        static FeaturesWeights std_weights( size_t s );
 
-            double GetDistance(const VEC_T v1, const VEC_T v2)
-            {
-                return norm_2(v1-v2);
-            };
+        DBSCAN(double eps, size_t min_elems, int num_threads=1);
+        DBSCAN();
+        ~DBSCAN();
+
+        void init(double eps, size_t min_elems, int num_threads=1);
+        void fit( const ClusterData & C );
+        void fit_precomputed( const DistanceMatrix & D );
+        void wfit( const ClusterData & C, const FeaturesWeights & W );
+        void reset();
+
+        const Labels & get_labels() const;
+
+    private:
+
+        void prepare_labels( size_t s );
+        const DistanceMatrix calc_dist_matrix( const ClusterData & C, const FeaturesWeights & W );
+        Neighbors find_neighbors(const DistanceMatrix & D, uint32_t pid);
+        void dbscan( const DistanceMatrix & dm );
+
+        double m_eps;
+        size_t m_min_elems;
+        int m_num_threads;
+        double m_dmin;
+        double m_dmax;
+
+        Labels m_labels;
     };
 
-    template <typename VEC_T>
-    class Cosine
-    {
-        protected:
-            typedef VEC_T vector_type;
+    std::ostream& operator<<(std::ostream& o, DBSCAN & d);
 
-            // this must be not directly accessible
-            // since we want to provide a rich set of distances
-
-            double GetDistance(const VEC_T v1, const VEC_T v2)
-            {
-                return 1.0 - (inner_prod(v1, v2) / (norm_2(v1) * norm_2(v2)));
-            };
-
-            double GetSimilarity(const VEC_T v1, const VEC_T v2)
-            {
-                //std::cout << "dot=" << prec_inner_prod(v1, v2) << " norm_2=" << norm_2(v1) << "norm2=" << norm_2(v2) << std::endl;
-                return prec_inner_prod(v1, v2) / (norm_2(v1) * norm_2(v2));
-            };
-    };
+    */
 
 
-    template <typename Distance_Policy>   // this allows to provide a static mechanism for pseudo-like
-                                          // inheritance, which is optimal from a performance point of view.
-    class Distance : Distance_Policy
-    {
-        public:
-            double GetDistance(typename Distance_Policy::vector_type x, typename Distance_Policy::vector_type y)
-            {
-                return Distance_Policy::GetDistance(x, y);
-            };
 
-            double GetSimilarity(typename Distance_Policy::vector_type x, typename Distance_Policy::vector_type y)
-            {
-                return Distance_Policy::GetSimilarity(x, y);
-            };
 
-    };
-}
- /* namespace Katydid */
+
+
+
+
+
+} /* namespace Katydid */
 #endif /* KTDBSCAN_HH_ */
