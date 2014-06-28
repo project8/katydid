@@ -37,6 +37,7 @@ namespace Katydid
      Available configuration values:
      - "epsilon": double --
      - "min-points": unsigned int --
+     - "weights": array<double> --
 
      Slots:
      - "header": void (const KTEggHeader* header) -- [what it does]
@@ -49,6 +50,11 @@ namespace Katydid
     class KTDBScanTrackClustering : public KTPrimaryProcessor
     {
         public:
+            typedef KTDBScan::Point DBScanPoint;
+            typedef KTDBScan::Points DBScanPoints;
+            typedef KTDBScan::Weights DBScanWeights;
+
+        public:
             KTDBScanTrackClustering(const std::string& name = "dbscan-track-clustering");
             virtual ~KTDBScanTrackClustering();
 
@@ -60,7 +66,19 @@ namespace Katydid
             unsigned GetMinPoints() const;
             void SetMinPoints(unsigned pts);
 
+            const DBScanWeights& GetWeights() const;
+            void SetWeights(const DBScanWeights& weights);
+            void SetUniformWeights();
+            bool GetWeightsAreUniform() const;
+
         private:
+            KTDBScan fDBScan;
+
+            // dimension weighting
+            DBScanWeights fWeights;
+            bool fWeightsAreUniform;
+
+            /*
             void UpdateComponents();
 
             // eps radiuus
@@ -70,7 +88,7 @@ namespace Katydid
 
             //minimum number of points
             unsigned fMinPoints;
-
+            */
         public:
             // Store point information locally
             bool TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints);
@@ -83,7 +101,7 @@ namespace Katydid
             double fTimeBinWidth;
             double fFreqBinWidth;
 
-            std::vector< KTDBScan > fComponents;
+            std::vector< DBScanPoints > fCompPoints; // points vectors for each component
 
             std::set< KTDataPtr > fCandidates;
             unsigned fDataCount;
@@ -106,24 +124,37 @@ namespace Katydid
 
     inline double KTDBScanTrackClustering::GetEpsilon() const
     {
-        return fEpsilon;
+        return fDBScan.GetEpsilon();//fEpsilon;
     }
     inline void KTDBScanTrackClustering::SetEpsilon(double eps)
     {
-        fEpsilon = eps;
-        UpdateComponents();
+        fDBScan.SetEpsilon(eps);
+        //fEpsilon = eps;
+        //UpdateComponents();
         return;
     }
 
     inline unsigned KTDBScanTrackClustering::GetMinPoints() const
     {
-        return fMinPoints;
+        return fDBScan.GetMinPoints();
+        //return fMinPoints;
     }
     inline void KTDBScanTrackClustering::SetMinPoints(unsigned pts)
     {
-        fMinPoints = pts;
-        UpdateComponents();
+        fDBScan.SetMinPoints(pts);
+        //fMinPoints = pts;
+        //UpdateComponents();
         return;
+    }
+
+    inline const KTDBScanTrackClustering::DBScanWeights& KTDBScanTrackClustering::GetWeights() const
+    {
+        return fWeights;
+    }
+
+    inline bool KTDBScanTrackClustering::GetWeightsAreUniform() const
+    {
+        return fWeightsAreUniform;
     }
 
 }

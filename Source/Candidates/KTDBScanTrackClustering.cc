@@ -26,11 +26,15 @@ namespace Katydid
 
     KTDBScanTrackClustering::KTDBScanTrackClustering(const std::string& name) :
             KTPrimaryProcessor(name),
-            fEpsilon(1.),
-            fMinPoints(3),
-            fTimeBinWidth(0.),
-            fFreqBinWidth(0.),
-            fComponents(1, KTDBScan(fEpsilon, fMinPoints)),
+            fDBScan(),
+            fWeights(),
+            fWeightsAreUniform(true),
+            //fEpsilon(1.),
+            //fMinPoints(3),
+            fTimeBinWidth(1),
+            fFreqBinWidth(1.),
+            fCompPoints(1, DBScanPoints()),
+            //fComponents(1, KTDBScan(fEpsilon, fMinPoints)),
             fCandidates(),
             fDataCount(0),
             fTrackSignal("track", this),
@@ -46,12 +50,33 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        SetEpsilon(node->GetValue("epsilon", fEpsilon));
-        SetMinPoints(node->GetValue("min-points", fMinPoints));
+        SetEpsilon(node->GetValue("epsilon", GetEpsilon()));
+        SetMinPoints(node->GetValue("min-points", GetMinPoints()));
 
         return true;
     }
 
+    void KTDBScanTrackClustering::SetWeights(const DBScanWeights& weights)
+    {
+        fWeights = weights;
+        fWeightsAreUniform = true;
+        for (DBScanWeights::const_iterator it = fWeights.begin(); it != fWeights.end() && fWeightsAreUniform; ++it)
+        {
+            fWeightsAreUniform = (*it == 1);
+        }
+        return;
+    }
+
+    void KTDBScanTrackClustering::SetUniformWeights()
+    {
+        for (DBScanWeights::iterator it = fWeights.begin(); it != fWeights.end(); ++it)
+        {
+            *it = 1.;
+        }
+        return;
+    }
+
+/*
     void KTDBScanTrackClustering::UpdateComponents()
     {
         // update the DBScan components
@@ -62,7 +87,7 @@ namespace Katydid
         }
         return;
     }
-
+*/
     bool KTDBScanTrackClustering::TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
     {
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
@@ -80,20 +105,22 @@ namespace Katydid
         fFreqBinWidth = discPoints.GetBinWidth();
 
         // verify that we have the right number of components
-        if (slHeader.GetNComponents() > fComponents.size())
+        if (slHeader.GetNComponents() > fCompPoints.size())
         {
-            fComponents.resize(slHeader.GetNComponents(), KTDBScan(fEpsilon, fMinPoints));
+            fCompPoints.resize(slHeader.GetNComponents(), DBScanPoints());
         }
 
         KTDBScan::Point newPoint(2);
         newPoint[0] = slHeader.GetTimeInRun();
-        for (unsigned iComponent = 0; iComponent != fComponents.size(); ++iComponent)
+        for (unsigned iComponent = 0; iComponent != fCompPoints.size(); ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
-            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin(); pIt != incomingPts.end(); ++pIt)
+            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
+                    pIt != incomingPts.end(); ++pIt)
             {
                 newPoint[1] = pIt->second.fAbscissa;
-                fComponents[iComponent].TakePoint(newPoint);
+                fCompPoints[iComponent].push_back(newPoint);
+                //fComponents[iComponent].TakePoint(newPoint);
             }
         }
 
@@ -107,21 +134,19 @@ namespace Katydid
 
     bool KTDBScanTrackClustering::DoClustering()
     {
-        Distance< Cosine< KTDBScan::Point > > dist;
-        for (unsigned iComponent = 0; iComponent < fComponents.size(); ++iComponent)
+        for (unsigned iComponent = 0; iComponent < fCompPoints.size(); ++iComponent)
         //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
             // do the clustering!
-            fComponents[iComponent].ComputeSimilarity(dist);
-            if (! fComponents[iComponent].DoClustering() )
+            if (! fDBScan.RunDBScan< Euclidean< KTDBScan::Point > >(fCompPoints[iComponent]))
             {
                 KTERROR(tclog, "An error occurred while clustering");
                 return false;
             }
+            fCompPoints[iComponent].clear();
 
             // loop over the clusters found, and create data objects for them
-            const vector< KTDBScan::Cluster >& clusters = fComponents[iComponent].GetClusters();
-            const KTDBScan::Points& points = fComponents[iComponent].GetPoints();
+            const vector< KTDBScan::Cluster >& clusters = fDBScan.GetClusters();
             for (vector< KTDBScan::Cluster >::const_iterator clustIt = clusters.begin(); clustIt != clusters.end(); ++clustIt)
             {
                 if (clustIt->empty())
@@ -136,31 +161,31 @@ namespace Katydid
                 KTSparseWaterfallCandidateData& cand = data->Of< KTSparseWaterfallCandidateData >();
 
                 KTDBScan::Cluster::const_iterator pointIdIt = clustIt->begin();
-                double minFreq = (points[*pointIdIt])[1];
+                double minFreq = (fCompPoints[iComponent][*pointIdIt])[1];
                 double maxFreq = minFreq;
-                double minTime = (points[*pointIdIt])[0];
+                double minTime = (fCompPoints[iComponent][*pointIdIt])[0];
                 double maxTime = minTime;
 
                 for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
                 {
-                    cand.AddPoint(KTSparseWaterfallCandidateData::Point((points[*pointIdIt])[0], (points[*pointIdIt])[1], 1.));
+                    cand.AddPoint(KTSparseWaterfallCandidateData::Point((fCompPoints[iComponent][*pointIdIt])[0], (fCompPoints[iComponent][*pointIdIt])[1], 1.));
 
-                    if ((points[*pointIdIt])[1] > maxFreq)
+                    if ((fCompPoints[iComponent][*pointIdIt])[1] > maxFreq)
                     {
-                        maxFreq = (points[*pointIdIt])[1];
+                        maxFreq = (fCompPoints[iComponent][*pointIdIt])[1];
                     }
-                    else if ((points[*pointIdIt])[1] < minFreq)
+                    else if ((fCompPoints[iComponent][*pointIdIt])[1] < minFreq)
                     {
-                        minFreq = (points[*pointIdIt])[1];
+                        minFreq = (fCompPoints[iComponent][*pointIdIt])[1];
                     }
 
-                    if ((points[*pointIdIt])[0] > maxTime)
+                    if ((fCompPoints[iComponent][*pointIdIt])[0] > maxTime)
                     {
-                        maxTime = (points[*pointIdIt])[0];
+                        maxTime = (fCompPoints[iComponent][*pointIdIt])[0];
                     }
-                    else if ((points[*pointIdIt])[0] < minTime)
+                    else if ((fCompPoints[iComponent][*pointIdIt])[0] < minTime)
                     {
-                        minTime = (points[*pointIdIt])[0];
+                        minTime = (fCompPoints[iComponent][*pointIdIt])[0];
                     }
                 }
 

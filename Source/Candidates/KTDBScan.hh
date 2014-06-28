@@ -32,6 +32,11 @@ namespace Katydid
             {
                 return norm_2(v1-v2);
             };
+
+            double GetDistance(const VEC_T v1, const VEC_T v2, const VEC_T w)
+            {
+                return norm_2(outer_prod(w,  (v1-v2)));
+            };
     };
 
     /*
@@ -58,11 +63,20 @@ namespace Katydid
     {
         public:
 
-            double GetDistance(typename Distance_Policy::vector_type x, typename Distance_Policy::vector_type y)
+            // distance function with equal weighting
+            double GetDistance(typename Distance_Policy::vector_type x,
+                               typename Distance_Policy::vector_type y)
             {
                 return Distance_Policy::GetDistance(x, y);
             };
 
+            // distance function with weighting
+            double GetDistance(typename Distance_Policy::vector_type x,
+                               typename Distance_Policy::vector_type y,
+                               typename Distance_Policy::vector_type w)
+            {
+                return Distance_Policy::GetDistance(x, y, w);
+            };
     };
 
 
@@ -85,6 +99,8 @@ namespace Katydid
             // a single point is made up of vector of doubles
             typedef boost::numeric::ublas::vector< double > Point;
             typedef std::vector< Point > Points;
+
+            typedef boost::numeric::ublas::vector< double > Weights;
 
             typedef unsigned ClusterId;
             typedef unsigned PointId;
@@ -117,14 +133,21 @@ namespace Katydid
             template < typename DistanceType >
             bool RunDBScan(const Points& points);
 
+            template < typename DistanceType >
+            bool RunDBScan(const Points& points, const Weights& weights);
+
             void InitializeArrays(size_t nPoints);
 
             // assign each point to a new cluster
             void UniformPartition();
 
-            // compute similarity
+            // compute distance
             template < typename DistanceType >
             void ComputeDistance(const Points& points);
+
+            // compute distance
+            template < typename DistanceType >
+            void ComputeDistance(const Points& points, const Weights& weights);
 
             bool DoClustering();
 
@@ -189,8 +212,15 @@ namespace Katydid
     bool KTDBScan::RunDBScan(const Points& points)
     {
         InitializeArrays(points.size());
-        //UniformPartition();
         ComputeDistance< DistanceType >(points);
+        return DoClustering();
+    }
+
+    template < typename DistanceType >
+    bool KTDBScan::RunDBScan(const Points& points, const Weights& weights)
+    {
+        InitializeArrays(points.size());
+        ComputeDistance< DistanceType >(points, weights);
         return DoClustering();
     }
 
@@ -204,76 +234,29 @@ namespace Katydid
             for (unsigned j=i+1; j < fNPoints; ++j)
             {
                 fDist(j, i) = fDist(i, j) = dist.GetDistance(points[i], points[j]);
-                std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
+                //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
             }
         }
-    };
+    }
+
+    template < typename DistanceType >
+    void KTDBScan::ComputeDistance(const Points& points, const Weights& weights)
+    {
+        Distance< DistanceType > dist;
+        for (unsigned i=0; i < fNPoints; ++i)
+        {
+            for (unsigned j=i+1; j < fNPoints; ++j)
+            {
+                fDist(j, i) = fDist(i, j) = dist.GetDistance(points[i], points[j], weights);
+                //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
+            }
+        }
+    }
 
     inline const std::vector< KTDBScan::Cluster >& KTDBScan::GetClusters() const
     {
         return fClusters;
     }
-
-
-
-
-
-
-
-
-
-    /*
-    class DBSCAN
-    {
-    public:
-        typedef boost::numeric::ublas::vector<double> FeaturesWeights;
-        typedef boost::numeric::ublas::matrix<double> ClusterData;
-        typedef boost::numeric::ublas::matrix<double> DistanceMatrix;
-        typedef std::vector<uint32_t> Neighbors;
-        typedef std::vector<int32_t> Labels;
-
-        static ClusterData gen_cluster_data( size_t features_num, size_t elements_num );
-        static FeaturesWeights std_weights( size_t s );
-
-        DBSCAN(double eps, size_t min_elems, int num_threads=1);
-        DBSCAN();
-        ~DBSCAN();
-
-        void init(double eps, size_t min_elems, int num_threads=1);
-        void fit( const ClusterData & C );
-        void fit_precomputed( const DistanceMatrix & D );
-        void wfit( const ClusterData & C, const FeaturesWeights & W );
-        void reset();
-
-        const Labels & get_labels() const;
-
-    private:
-
-        void prepare_labels( size_t s );
-        const DistanceMatrix calc_dist_matrix( const ClusterData & C, const FeaturesWeights & W );
-        Neighbors find_neighbors(const DistanceMatrix & D, uint32_t pid);
-        void dbscan( const DistanceMatrix & dm );
-
-        double m_eps;
-        size_t m_min_elems;
-        int m_num_threads;
-        double m_dmin;
-        double m_dmax;
-
-        Labels m_labels;
-    };
-
-    std::ostream& operator<<(std::ostream& o, DBSCAN & d);
-
-    */
-
-
-
-
-
-
-
-
 
 } /* namespace Katydid */
 #endif /* KTDBSCAN_HH_ */
