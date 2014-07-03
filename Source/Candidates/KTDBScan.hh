@@ -111,11 +111,11 @@ namespace Katydid
             typedef std::vector< PointId > Neighbors;
 
         public:
-            KTDBScan(double epsilon = 1., unsigned minPoints = 1);
+            KTDBScan(double radius = 1., unsigned minPoints = 1);
             virtual ~KTDBScan();
 
-            double GetEpsilon() const;
-            void SetEpsilon(double eps);
+            double GetRadius() const;
+            void SetRadius(double eps);
 
             unsigned GetMinPoints() const;
             void SetMinPoints(unsigned pts);
@@ -124,7 +124,7 @@ namespace Katydid
             // eps radiuus
             // Two points are neighbors if the distance
             // between them does not exceed threshold value.
-            double fEpsilon;
+            double fRadius;
 
             //minimum number of points
             unsigned fMinPoints;
@@ -188,13 +188,13 @@ namespace Katydid
     std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
 
 
-    inline double KTDBScan::GetEpsilon() const
+    inline double KTDBScan::GetRadius() const
     {
-        return fEpsilon;
+        return fRadius;
     }
-    inline void KTDBScan::SetEpsilon(double eps)
+    inline void KTDBScan::SetRadius(double eps)
     {
-        fEpsilon = eps;
+        fRadius = eps;
         return;
     }
 
@@ -228,6 +228,23 @@ namespace Katydid
     template < typename DistanceType >
     void KTDBScan::ComputeDistance(const Points& points)
     {
+        // calculate the min and max for each dimension
+        unsigned nDims = points[0].size();
+        double min, max, range;
+        for (unsigned dim = 0; dim < nDims; ++dim)
+        {
+            min = points[0](dim);
+            max = points[0](dim);
+            for (PointId pid = 0; pid < points.size(); ++pid)
+            {
+                if (points[pid](dim) < min) min = points[pid](dim);
+                else if (points[pid](dim) > max) max = points[pid](dim);
+            }
+            range = max - min;
+            if (range == 0.) range = 1.;
+
+        }
+
         Distance< DistanceType > dist;
         for (unsigned i=0; i < fNPoints; ++i)
         {

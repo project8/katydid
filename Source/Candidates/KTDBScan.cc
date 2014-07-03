@@ -23,8 +23,8 @@ namespace Katydid
 
 
 
-    KTDBScan::KTDBScan(double epsilon, unsigned minPoints) :
-            fEpsilon(epsilon),
+    KTDBScan::KTDBScan(double radius, unsigned minPoints) :
+            fRadius(radius),
             fMinPoints(minPoints),
             fNPoints(0),
             fNoise(),
@@ -101,7 +101,7 @@ namespace Katydid
                 fVisited[pid] = true;
 
                 // get the neighbors
-                Neighbors ne = FindNeighbors(pid, fEpsilon);
+                Neighbors ne = FindNeighbors(pid, fRadius);
 
                 // not enough support -> mark as noise
                 if (ne.size() < fMinPoints)
@@ -129,7 +129,7 @@ namespace Katydid
                             fVisited[nPid] = true;
 
                             // go to neighbors
-                            Neighbors ne1 = FindNeighbors(nPid, fEpsilon);
+                            Neighbors ne1 = FindNeighbors(nPid, fRadius);
 
                             // enough support
                             if (ne1.size() >= fMinPoints)
