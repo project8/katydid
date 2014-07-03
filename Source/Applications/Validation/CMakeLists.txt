@@ -57,6 +57,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestDBScan TestDBScan.cc)
     target_link_libraries (TestDBScan KatydidUtility KatydidCore KatydidData KatydidIO KatydidCandidates ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestDBScanTrackClustering TestDBScanTrackClustering.cc)
+    target_link_libraries (TestDBScanTrackClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidCandidates ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestDistanceClustering TestDistanceClustering.cc)
     target_link_libraries (TestDistanceClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
@@ -121,6 +124,7 @@ if (Katydid_ENABLE_TESTING)
                      TestDataAccumulator
                      TestDataDisplay
                      TestDBScan
+                     TestDBScanTrackClustering
                      TestDistanceClustering
                      TestFrequencySpectrumFFTW
                      #TestHoughTransform
@@ -151,6 +155,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_DataAccumulator TestDataAccumulator)
     add_test (Test_DataDisplay TestDataDisplay)
     add_test (Test_DBScan TestDBScan)
+    add_test (Test_DBScanTrackClustering TestDBScanTrackClustering)
     add_test (Test_DistanceClustering TestDistanceClustering)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)
     #add_test (Test_HoughTransform TestHoughTransform)
