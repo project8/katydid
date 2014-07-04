@@ -219,7 +219,6 @@ namespace Katydid
                 newPoint = element_prod(*pIt, scale);
                 KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
                 normPoints[iPoint++] = newPoint;
-                KTDEBUG(tclog, iPoint);
             }
 
             fDBScan.SetRadius(1.);
@@ -231,7 +230,6 @@ namespace Katydid
                 KTERROR(tclog, "An error occurred while clustering");
                 return false;
             }
-            fCompPoints[iComponent].clear();
 
             // loop over the clusters found, and create data objects for them
             const vector< KTDBScan::Cluster >& clusters = fDBScan.GetClusters();
@@ -301,6 +299,8 @@ namespace Katydid
                 fTrackSignal(data);
 
             } // loop over clusters
+            fCompPoints[iComponent].clear();
+
 
         } // loop over components
 
