@@ -182,10 +182,13 @@ int main()
     KTDBScanTrackClustering clustering;
 
     KTDBScan::Weights radii(KTDBScanTrackClustering::fNDimensions);
-    radii(0) = 0.0005;
-    radii(1) = 0.25e6;
+    radii(0) = 0.0005; // time
+    radii(1) = 0.1e6; // frequency
     clustering.SetRadii(radii);
 
+    clustering.SetMinPoints(5);
+
+    // set these manually, since it won't be read from the slice headers
     clustering.SetTimeBinWidth(0.04e6);
     clustering.SetFreqBinWidth(0.00004);
 

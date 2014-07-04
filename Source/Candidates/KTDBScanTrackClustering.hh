@@ -31,20 +31,25 @@ namespace Katydid
      @brief Clustering for finding tracks using the DBSCAN algorithm
 
      @details
+     Normalization of the axes:
+     The DBSCAN algorithm expects expects that all of the dimensions that describe a points will have the same scale,
+     such that a single radius parameter can describe a sphere in the parameter space that's used to cluster points together.
+     For track clustering, two radii are specified, one for the time dimension and one for the frequency dimension.
+     For clustering, a scaling factor is calculated for each axis such that the ellipse formed by the two radii is
+     scaled to a unit circle.  Those scaling factors are applied to every point before the data is passed to the
+     DBSCAN algorithm.
 
      Configuration name: "dbscan-track-clustering"
 
      Available configuration values:
-     - "radius": double --
-     - "min-points": unsigned int --
-     - "weights": array<double> --
+     - "radii": double[2] -- array used to describe the distances that will be used to cluster points together; [time, frequency]
+     - "min-points": unsigned int -- minimum number of points required to have a cluster
 
      Slots:
-     - "header": void (const KTEggHeader* header) -- [what it does]
-     - "points": void (shared_ptr<KTData>) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
+     - "points": void (shared_ptr<KTData>) -- If this is a new acquisition, triggers the clustering algorithm; Adds points to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
 
      Signals:
-     - "[signal-name]": void (shared_ptr<KTData>) -- Emitted upon [whatever was done]; Guarantees [output data type].
+     - "track": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KTSparseWaterfallCandidateData.
     */
 
     class KTDBScanTrackClustering : public KTPrimaryProcessor
@@ -74,15 +79,6 @@ namespace Katydid
             // dimension weighting
             DBScanWeights fRadii;
 
-            /*
-            void UpdateComponents();
-            */
-
-            // radius
-            // Two points are neighbors if the distance
-            // between them does not exceed threshold value.
-            //double fRadius;
-
             //minimum number of points
             unsigned fMinPoints;
 
@@ -108,8 +104,6 @@ namespace Katydid
             double fFreqBinWidth;
 
             std::vector< DBScanPoints > fCompPoints; // points vectors for each component
-            //std::vector< DBScanPoint > fMaxes;
-            //std::vector< DBScanPoint > fMins;
 
             std::set< KTDataPtr > fCandidates;
             unsigned fDataCount;
@@ -129,30 +123,14 @@ namespace Katydid
             KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fTakePointSlot;
 
     };
-    /*
-    inline double KTDBScanTrackClustering::GetRadius() const
-    {
-        //return fDBScan.GetRadius();
-        return fRadius;
-    }
-    inline void KTDBScanTrackClustering::SetRadius(double radius)
-    {
-        //fDBScan.SetRadius(radius);
-        fRadius = radius;
-        //UpdateComponents();
-        return;
-    }
-    */
+
     inline unsigned KTDBScanTrackClustering::GetMinPoints() const
     {
-        //return fDBScan.GetMinPoints();
         return fMinPoints;
     }
     inline void KTDBScanTrackClustering::SetMinPoints(unsigned pts)
     {
-        //fDBScan.SetMinPoints(pts);
         fMinPoints = pts;
-        //UpdateComponents();
         return;
     }
 

@@ -31,13 +31,10 @@ namespace Katydid
             KTPrimaryProcessor(name),
             fDBScan(),
             fRadii(fNDimensions),
-            //fWeightsAreUniform(true),
-            //fRadius(1.),
             fMinPoints(3),
             fTimeBinWidth(1),
             fFreqBinWidth(1.),
             fCompPoints(1, DBScanPoints()),
-            //fComponents(1, KTDBScan(fRadius, fMinPoints)),
             fCandidates(),
             fDataCount(0),
             fTrackSignal("track", this),
@@ -55,10 +52,19 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        //SetRadius(node->GetValue("radius", GetRadius()));
         SetMinPoints(node->GetValue("min-points", GetMinPoints()));
 
-        // TODO: radii
+        if (node->Has("radii"))
+        {
+            const KTParamArray* radii = node->ArrayAt("radii");
+            if (radii->Size() != fNDimensions)
+            {
+                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->Size() << "> instead of <" << fNDimensions << ">");
+                return false;
+            }
+            fRadii(0) = radii->GetValue< double >(0);
+            fRadii(1) = radii->GetValue< double >(1);
+        }
 
         return true;
     }
@@ -74,18 +80,6 @@ namespace Katydid
         return;
     }
 
-/*
-    void KTDBScanTrackClustering::UpdateComponents()
-    {
-        // update the DBScan components
-        for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
-        {
-            compIt->SetRadius(fRadius);
-            compIt->SetMinPoints(fMinPoints);
-        }
-        return;
-    }
-*/
     bool KTDBScanTrackClustering::TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
     {
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
@@ -113,37 +107,11 @@ namespace Katydid
         for (unsigned iComponent = 0; iComponent != fCompPoints.size(); ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
-            //if (fCompPoints[iComponent].empty() && ! incomingPts.empty())
-            //{
-            //    fMaxes[iComponent](0) = newPoint(0);
-            //    fMaxes[iComponent](1) = (incomingPts.begin())->second.fAbscissa;
-            //    fMins[iComponent](0) = fMaxes[iComponent](0);
-            //    fMins[iComponent](1) = fMaxes[iComponent](1);
-            //}
-            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
+           for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
                     pIt != incomingPts.end(); ++pIt)
             {
                 newPoint(1) = pIt->second.fAbscissa;
-                /*
-                if (newPoint(0) > fMaxes[iComponent](0))
-                {
-                    fMaxes[iComponent](0) = newPoint(0);
-                }
-                else if (newPoint(0) < fMins[iComponent](0))
-                {
-                    fMins[iComponent](0) = newPoint(0);
-                }
-                if (newPoint(1) > fMaxes[iComponent](1))
-                {
-                    fMaxes[iComponent](1) = newPoint(1);
-                }
-                else if (newPoint(1) < fMins[iComponent](1))
-                {
-                    fMins[iComponent](1) = newPoint(1);
-                }
-                */
                 fCompPoints[iComponent].push_back(newPoint);
-                //fComponents[iComponent].TakePoint(newPoint);
                 KTDEBUG(tclog, "Point " << fCompPoints[iComponent].size()-1 << " is now " << fCompPoints[iComponent].back());
             }
         }
@@ -190,20 +158,7 @@ namespace Katydid
             {
                 *dIt = 1. / (*dIt * KTMath::Sqrt2());
             }
-            /*
-            DBScanPoint scale = fMaxes[iComponent] - fMins[iComponent];
-            for (DBScanPoint::iterator dIt = scale.begin(); dIt != scale.end(); ++dIt)
-            {
-                if (*dIt == 0.)
-                {
-                    *dIt = 1.;
-                }
-                else
-                {
-                    *dIt = 1. / *dIt;
-                }
-            }
-            */
+
             // new array for normalized points
             DBScanPoints normPoints(fCompPoints[iComponent].size());
             DBScanPoint newPoint;
@@ -301,7 +256,6 @@ namespace Katydid
             } // loop over clusters
             fCompPoints[iComponent].clear();
 
-
         } // loop over components
 
         return true;
@@ -310,8 +264,6 @@ namespace Katydid
     void KTDBScanTrackClustering::SetNComponents(unsigned nComps)
     {
         fCompPoints.resize(nComps, DBScanPoints());
-        //fMaxes.resize(nComps);
-        //fMins.resize(nComps);
         return;
     }
 
