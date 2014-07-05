@@ -15,9 +15,10 @@
 #include "KTDiscriminatedPoints2DData.hh"
 #include "KTPhysicalArray.hh"
 #include "KTSlot.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 #include "KTWaterfallCandidateData.hh"
 
-
+#include <vector>
 
 namespace Katydid
 {
@@ -28,17 +29,19 @@ namespace Katydid
      @brief 
 
      @details
+     See http://en.wikipedia.org/wiki/Hough_transform for details on the Hough Transform.
+
+     Given the (r, theta) parameterization, the slope-intercept equation can be written as:
+     y = (-cos(theta)/sin(theta)) * x + r / sin(theta)
 
      Configuration name: "hough-transform"
 
      Available configuration values:
-     - "transform_flag": string -- flag that determines how much planning is done prior to any transforms
-     - "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
-     - "wisdom-filename": string -- filename for loading/saving FFTW wisdom
-     - "input-data-name": string -- name of the data to find when processing an event
-     - "output-data-name": string -- name to give to the data produced by an FFT
+     - "n-theta-points": unsigned int -- number of points used to divide up the theta axis
+     - "n-r-points: unsigned int -- number of points used to divide up the radius axis
 
      Slots:
+     - "swf-cand": void (KTDataPtr) -- Performs a Hough Transform on sparse waterfall candidate data; Requires KTSparseWaterfallCandidateData; Adds KTHoughData
      - "wf-cand": void (KTDataPtr) -- Performs a Hough Transform on waterfall candidate data; Requires KTWaterfallCandidateData; Adds KTHoughData
      - "disc": void (KTDataPtr) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
 
@@ -50,9 +53,7 @@ namespace Katydid
     {
         public:
             typedef KTDiscriminatedPoints2DData::SetOfPoints SetOfPoints;
-
-        protected:
-            typedef KTSignalConcept< void (KTDataPtr) >::signal HTSignal;
+            typedef KTSparseWaterfallCandidateData::Points SWFPoints;
 
         public:
             KTHoughTransform(const std::string& name = "hough-transform");
@@ -72,6 +73,9 @@ namespace Katydid
             unsigned fNRPoints;
 
         public:
+            bool TransformData(KTSparseWaterfallCandidateData& data);
+            KTPhysicalArray< 2, double >* TransformPoints(const SWFPoints& points, double minTime, double timeLength, double minFreq, double freqWidth);
+
             bool TransformData(KTWaterfallCandidateData& data);
             KTPhysicalArray< 2, double >* TransformSpectrum(const KTTimeFrequency* powerSpectrum);
 
@@ -81,6 +85,9 @@ namespace Katydid
 
         private:
             //KTPhysicalArray< 1, KTFrequencySpectrumPolar* >* RemoveNegativeFrequencies(const KTPhysicalArray< 1, KTFrequencySpectrumFFTW* >* inputSpectrum);
+
+            std::vector< double > fCosTheta;
+            std::vector< double > fSinTheta;
 
             //***************
              // Signals
@@ -94,6 +101,7 @@ namespace Katydid
              //***************
 
          private:
+             KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFCandSlot;
              KTSlotDataOneType< KTWaterfallCandidateData > fWFCandSlot;
              KTSlotDataOneType< KTDiscriminatedPoints2DData > fDiscPts2DSlot;
 

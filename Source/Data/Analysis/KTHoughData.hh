@@ -30,14 +30,26 @@ namespace Katydid
             const KTPhysicalArray< 2, double >* GetTransform(unsigned component = 0) const;
             KTPhysicalArray< 2, double >* GetTransform(unsigned component = 0);
 
+            double GetXOffset(unsigned component = 0) const;
+            double GetXScale(unsigned component = 0) const;
+
+            double GetYOffset(unsigned component = 0) const;
+            double GetYScale(unsigned component = 0) const;
+
             unsigned GetNComponents() const;
 
-            void SetTransform(KTPhysicalArray< 2, double >* transform, unsigned component = 0);
+            void SetTransform(KTPhysicalArray< 2, double >* transform, double xOffset = 0., double xScale = 1., double yOffset = 0., double yScale = 1., unsigned component = 0);
 
             KTHoughData& SetNComponents(unsigned nTransforms);
 
         protected:
-            std::vector< KTPhysicalArray< 2, double >* > fTransforms;
+            struct PerComponentData
+            {
+                KTPhysicalArray< 2, double >* fTransform;
+                double fXOffset, fXScale;
+                double fYOffset, fYScale;
+            };
+            std::vector< PerComponentData > fTransforms;
 
 #ifdef ROOT_FOUND
         public:
@@ -49,12 +61,30 @@ namespace Katydid
 
     inline const KTPhysicalArray< 2, double >* KTHoughData::GetTransform(unsigned component) const
     {
-        return fTransforms[component];
+        return fTransforms[component].fTransform;
     }
 
     inline KTPhysicalArray< 2, double >* KTHoughData::GetTransform(unsigned component)
     {
-        return fTransforms[component];
+        return fTransforms[component].fTransform;
+    }
+
+    inline double KTHoughData::GetXOffset(unsigned component) const
+    {
+        return fTransforms[component].fXOffset;
+    }
+    inline double KTHoughData::GetXScale(unsigned component) const
+    {
+        return fTransforms[component].fXScale;
+    }
+
+    inline double KTHoughData::GetYOffset(unsigned component) const
+    {
+        return fTransforms[component].fYOffset;
+    }
+    inline double KTHoughData::GetYScale(unsigned component) const
+    {
+        return fTransforms[component].fYScale;
     }
 
     inline unsigned KTHoughData::GetNComponents() const
@@ -62,10 +92,14 @@ namespace Katydid
         return unsigned(fTransforms.size());
     }
 
-    inline void KTHoughData::SetTransform(KTPhysicalArray< 2, double >* transform, unsigned component)
+    inline void KTHoughData::SetTransform(KTPhysicalArray< 2, double >* transform, double xOffset, double xScale, double yOffset, double yScale, unsigned component)
     {
         if (component >= fTransforms.size()) SetNComponents(component+1);
-        fTransforms[component] = transform;
+        fTransforms[component].fTransform = transform;
+        fTransforms[component].fXOffset = xOffset;
+        fTransforms[component].fXScale = xScale;
+        fTransforms[component].fYOffset = yOffset;
+        fTransforms[component].fYScale = yScale;
     }
 
 } /* namespace Katydid */
