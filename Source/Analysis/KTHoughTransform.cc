@@ -37,7 +37,7 @@ namespace Katydid
             fNRPoints(1),
             fCosTheta(0),
             fSinTheta(0),
-            fHTSignal("hough-transform", this),
+            fHTSignal("hough", this),
             fSWFCandSlot("swf-cand", this, &KTHoughTransform::TransformData, &fHTSignal),
             fWFCandSlot("wf-cand", this, &KTHoughTransform::TransformData, &fHTSignal),
             fDiscPts2DSlot("disc", this, &KTHoughTransform::TransformData, &fHTSignal)

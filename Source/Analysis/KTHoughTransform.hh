@@ -46,7 +46,7 @@ namespace Katydid
      - "disc": void (KTDataPtr) -- Performs a Hough Transform on discriminated (2D) points; Requires KTDiscriminatedPoints2DData; Adds KTHoughData
 
      Signals:
-     - "hough-transform": void (KTDataPtr) Emitted upon performance of a transform; Guarantees KTHoughData
+     - "hough": void (KTDataPtr) Emitted upon performance of a transform; Guarantees KTHoughData
     */
 
     class KTHoughTransform : public KTProcessor
