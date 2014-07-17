@@ -91,6 +91,8 @@ namespace Katydid
             void SetTimeBinWidth(double bw);
             void SetFreqBinWidth(double bw);
 
+            void TriggerClustering();
+
             bool Run();
 
             bool DoClustering();
@@ -114,6 +116,7 @@ namespace Katydid
 
         private:
             KTSignalData fTrackSignal;
+            KTSignalOneArg< void > fClusterDoneSignal;
 
             //***************
             // Slots
@@ -121,6 +124,7 @@ namespace Katydid
 
         private:
             KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fTakePointSlot;
+            //KTSlotDataOneType< KTInternalSignalWrapper > fDoClusterSlot;
 
     };
 

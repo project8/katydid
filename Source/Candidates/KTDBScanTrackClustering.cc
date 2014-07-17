@@ -38,8 +38,11 @@ namespace Katydid
             fCandidates(),
             fDataCount(0),
             fTrackSignal("track", this),
+            fClusterDoneSignal("cluster-done", this),
             fTakePointSlot("points", this, &KTDBScanTrackClustering::TakePoints)
+//            fDoClusterSlot("do-cluster-trigger", this, &KTDBScanTrackClustering::Run)
     {
+        RegisterSlot("do-cluster-trigger", this, &KTDBScanTrackClustering::TriggerClustering);
         fRadii(0) = 1. / sqrt(fNDimensions);
         fRadii(1) = 1. / sqrt(fNDimensions);
     }
@@ -136,6 +139,13 @@ namespace Katydid
         return true;
     }
 
+    void KTDBScanTrackClustering::TriggerClustering()
+    {
+        if (! Run()) {
+            KTERROR(tclog, __LINE__ << " in " << __FILE__ );
+        }
+        return;
+    }
 
     bool KTDBScanTrackClustering::Run()
     {
@@ -144,6 +154,7 @@ namespace Katydid
 
     bool KTDBScanTrackClustering::DoClustering()
     {
+        KTDEBUG(tclog, "Starting to do clustering");
         for (unsigned iComponent = 0; iComponent < fCompPoints.size(); ++iComponent)
         //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
@@ -178,12 +189,15 @@ namespace Katydid
 
             fDBScan.SetRadius(1.);
             fDBScan.SetMinPoints(fMinPoints);
+            KTDEBUG(tclog, "DBScan configured");
 
             // do the clustering!
             if (! fDBScan.RunDBScan< Euclidean< KTDBScan::Point > >(normPoints))
             {
                 KTERROR(tclog, "An error occurred while clustering");
                 return false;
+            } else {
+                KTDEBUG(tclog, "clustering complete");
             }
 
             // loop over the clusters found, and create data objects for them
@@ -257,6 +271,9 @@ namespace Katydid
             fCompPoints[iComponent].clear();
 
         } // loop over components
+
+        KTDEBUG(tclog, "sending cluster-done, I think...");
+        fClusterDoneSignal();
 
         return true;
     }

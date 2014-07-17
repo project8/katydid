@@ -14,9 +14,11 @@
 
 #include <vector>
 
+#include "KTLogger.hh"
 
 namespace Katydid
 {
+    KTLOGGER(tclog2, "katydid.fft2");
     //
     // Euclidean distance
     template < typename VEC_T >
@@ -211,8 +213,11 @@ namespace Katydid
     template < typename DistanceType >
     bool KTDBScan::RunDBScan(const Points& points)
     {
+        KTDEBUG(tclog2, "Starting to run DBScan");
         InitializeArrays(points.size());
+        KTDEBUG(tclog2, "Computing DBScan distances");
         ComputeDistance< DistanceType >(points);
+        KTDEBUG(tclog2, "Distances computed");
         return DoClustering();
     }
 
@@ -231,6 +236,7 @@ namespace Katydid
         // calculate the min and max for each dimension
         unsigned nDims = points[0].size();
         double min, max, range;
+        KTDEBUG(tclog2, "find min and max per dim...");
         for (unsigned dim = 0; dim < nDims; ++dim)
         {
             min = points[0](dim);
@@ -244,10 +250,12 @@ namespace Katydid
             if (range == 0.) range = 1.;
 
         }
+        KTDEBUG(tclog2, "... found");
 
         Distance< DistanceType > dist;
         for (unsigned i=0; i < fNPoints; ++i)
         {
+            KTDEBUG(tclog2, "doing distance " << i << " of " << fNPoints);
             for (unsigned j=i+1; j < fNPoints; ++j)
             {
                 fDist(j, i) = fDist(i, j) = dist.GetDistance(points[i], points[j]);
