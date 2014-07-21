@@ -48,35 +48,5 @@ namespace Katydid
     }
 
 
-#ifdef ROOT_FOUND
-
-    TH2D* KTHoughData::CreateHistogram(unsigned component, const std::string& name) const
-    {
-        if (component >= fTransforms.size()) return NULL;
-        if (fTransforms[component].fTransform->empty()) return NULL;
-
-        TH2D* hist = new TH2D(name.c_str(), "Hough Space",
-                fTransforms[component].fTransform->size(0), fTransforms[component].fTransform->GetRangeMin(0), fTransforms[component].fTransform->GetRangeMax(0),
-                fTransforms[component].fTransform->size(1), fTransforms[component].fTransform->GetRangeMin(1), fTransforms[component].fTransform->GetRangeMax(1));
-
-        KTINFO(htlog, "Radius axis: " << fTransforms[component].fTransform->size(1) << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
-        KTINFO(htlog, "Angle axis: " << fTransforms[component].fTransform->size(0) << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
-
-        for (int iBinX=1; iBinX<=(int)fTransforms[component].fTransform->size(0); iBinX++)
-        {
-            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
-            {
-                hist->SetBinContent(iBinX, iBinY, (*fTransforms[component].fTransform)(iBinX-1, iBinY-1));
-            }
-        }
-
-        hist->SetXTitle("Angle");
-        hist->SetYTitle("Radius");
-        return hist;
-    }
-
- #endif
-
-
 } /* namespace Katydid */
 

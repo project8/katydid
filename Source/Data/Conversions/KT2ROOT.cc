@@ -8,12 +8,15 @@
 #include "KT2ROOT.hh"
 
 #include "KTLogger.hh"
+
+#include "KTHoughData.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
 #include "TH1.h"
+#include "TH2.h"
 
 #include <cfloat>
 #include "stdint.h"
@@ -166,4 +169,26 @@ namespace Katydid
     }
 */
 
+    TH2D* KT2ROOT::CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName)
+    {
+        TH2D* hist = new TH2D(histName.c_str(), "Hough Space",
+                ht->size(1), ht->GetRangeMin(1), ht->GetRangeMax(1),
+                ht->size(2), ht->GetRangeMin(2), ht->GetRangeMax(2));
+
+        KTINFO(dblog, "Radius axis: " << ht->size(2) << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
+        KTINFO(dblog, "Angle axis: " << ht->size(1) << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
+
+        for (int iBinX=1; iBinX<=(int)ht->size(1); iBinX++)
+        {
+            for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
+            {
+                hist->SetBinContent(iBinX, iBinY, (*ht)(iBinX-1, iBinY-1));
+            }
+        }
+
+        hist->SetXTitle("Angle");
+        hist->SetYTitle("Radius");
+        return hist;
+
+    }
 } /* namespace Katydid */

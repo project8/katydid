@@ -114,7 +114,7 @@ namespace Katydid
             {
                 radius = timeVal * fCosTheta[iTheta] + freqVal * fSinTheta[iTheta];
 
-                iRadius = newTransform->FindBin(1, radius);
+                iRadius = newTransform->FindBin(2, radius);
 
                 (*newTransform)(iTheta, iRadius) = (*newTransform)(iTheta, iRadius) + value;
             }
@@ -188,7 +188,7 @@ namespace Katydid
                 {
                     radius = timeVal * fCosTheta[iTheta] + freqVal * fSinTheta[iTheta];
 
-                    iRadius = newTransform->FindBin(1, radius);
+                    iRadius = newTransform->FindBin(2, radius);
 
                     (*newTransform)(iTheta, iRadius) = (*newTransform)(iTheta, iRadius) + value;
                 }
@@ -260,7 +260,7 @@ namespace Katydid
             {
                 radius = timeVal * fCosTheta[iTheta] + freqVal * fSinTheta[iTheta];
 
-                iRadius = newTransform->FindBin(1, radius);
+                iRadius = newTransform->FindBin(2, radius);
 
                 (*newTransform)(iTheta, iRadius) = (*newTransform)(iTheta, iRadius) + value;
             }

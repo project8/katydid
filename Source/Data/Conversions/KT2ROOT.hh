@@ -10,8 +10,11 @@
 
 #include <string>
 
+#include "KTPhysicalArray.hh"
+
 class TH1I;
 class TH1D;
+class TH2D;
 
 namespace Katydid
 {
@@ -35,6 +38,8 @@ namespace Katydid
 
             static TH1D* CreateHistogram(const KTTimeSeriesReal* ts, const std::string& histName = "hTimeSeries");
             //static TH1D* CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName = "hTimeSeriesDist");
+
+            static TH2D* CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName = "hHoughData");
     };
 
 } /* namespace Katydid */

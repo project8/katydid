@@ -12,10 +12,6 @@
 
 #include "KTPhysicalArray.hh"
 
-#ifdef ROOT_FOUND
-#include "TH2.h"
-#endif
-
 #include <vector>
 
 namespace Katydid
@@ -50,12 +46,6 @@ namespace Katydid
                 double fYOffset, fYScale;
             };
             std::vector< PerComponentData > fTransforms;
-
-#ifdef ROOT_FOUND
-        public:
-            virtual TH2D* CreateHistogram(unsigned component = 0, const std::string& name = "hHoughSpace") const;
-#endif
-
 
     };
 
