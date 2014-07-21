@@ -56,13 +56,13 @@ namespace Katydid
         if (fTransforms[component].fTransform->empty()) return NULL;
 
         TH2D* hist = new TH2D(name.c_str(), "Hough Space",
-                fTransforms[component].fTransform->size(0), fTransforms[component].fTransform->GetRangeMin(0), fTransforms[component].fTransform->GetRangeMax(0),
-                fTransforms[component].fTransform->size(1), fTransforms[component].fTransform->GetRangeMin(1), fTransforms[component].fTransform->GetRangeMax(1));
+                fTransforms[component].fTransform->size(1), fTransforms[component].fTransform->GetRangeMin(1), fTransforms[component].fTransform->GetRangeMax(1),
+                fTransforms[component].fTransform->size(2), fTransforms[component].fTransform->GetRangeMin(2), fTransforms[component].fTransform->GetRangeMax(2));
 
-        KTINFO(htlog, "Radius axis: " << fTransforms[component].fTransform->size(1) << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
-        KTINFO(htlog, "Angle axis: " << fTransforms[component].fTransform->size(0) << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
+        KTINFO(htlog, "Radius axis: " << fTransforms[component].fTransform->size(2) << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
+        KTINFO(htlog, "Angle axis: " << fTransforms[component].fTransform->size(1) << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
 
-        for (int iBinX=1; iBinX<=(int)fTransforms[component].fTransform->size(0); iBinX++)
+        for (int iBinX=1; iBinX<=(int)fTransforms[component].fTransform->size(1); iBinX++)
         {
             for (int iBinY=1; iBinY<=hist->GetNbinsY(); iBinY++)
             {
