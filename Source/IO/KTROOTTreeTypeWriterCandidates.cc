@@ -42,7 +42,8 @@ namespace Katydid
             fWaterfallCandidateTree(NULL),
             fSparseWaterfallCandidateTree(NULL),
             fFreqCandidateData(),
-            fWaterfallCandidateData()
+            fWaterfallCandidateData(),
+            fSparseWaterfallCandidateData()
     {
     }
 
