@@ -142,7 +142,11 @@ namespace Katydid
         KTDEBUG(publog, "Attempting to write to waterfall candidate root tree");
         KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
 
-        if (! fWriter->OpenAndVerifyFile()) return;
+        if (! fWriter->OpenAndVerifyFile())
+        {
+            KTDEBUG(publog, "unable to verify file");
+            return;
+        }
 
         if (fWaterfallCandidateTree == NULL)
         {
@@ -150,6 +154,8 @@ namespace Katydid
             {
                 KTERROR(publog, "Something went wrong while setting up the waterfall candidate tree! Nothing was written.");
                 return;
+            } else {
+                KTDEBUG(publog, "waterfall candidate tree created");
             }
         }
 
@@ -165,13 +171,23 @@ namespace Katydid
         fWaterfallCandidateData.fMeanStartFrequency = wcData.GetMeanStartFrequency();
         fWaterfallCandidateData.fMeanEndFrequency = wcData.GetMeanEndFrequency();
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
-        fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
-        fWaterfallCandidateData.fCandidate->SetDirectory(NULL);
-        KTDEBUG(publog, "Candidate info:\n"
-                << "\tTime axis: " << fWaterfallCandidateData.fCandidate->GetNbinsX() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetBinWidth(1) << " s;  range: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmax() << " s\n"
-                << "\tFreq axis: " << fWaterfallCandidateData.fCandidate->GetNbinsY() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetBinWidth(1) << " Hz;  range: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmax() << " Hz");
+        KTTimeFrequency* cand = wcData.GetCandidate();
+        if (!cand) {
+            KTDEBUG("GetCandidate() returned NULL");
+        } else {
+            KTDEBUG("a cand");
+        }
+        KTDEBUG(publog, __LINE__ << " in " << __FILE__);
+        //fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
+        //fWaterfallCandidateData.fCandidate = wcData.GetCandidate();
+        KTDEBUG(publog, "set all candidate values");
+        //fWaterfallCandidateData.fCandidate->SetDirectory(NULL);
+//        KTDEBUG(publog, "Candidate info:\n"
+//                << "\tTime axis: " << fWaterfallCandidateData.fCandidate->GetNbinsX() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetBinWidth(1) << " s;  range: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmax() << " s\n"
+//                << "\tFreq axis: " << fWaterfallCandidateData.fCandidate->GetNbinsY() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetBinWidth(1) << " Hz;  range: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmax() << " Hz");
 
         fWaterfallCandidateTree->Fill();
+        KTDEBUG("filled");
 
         return;
     }
