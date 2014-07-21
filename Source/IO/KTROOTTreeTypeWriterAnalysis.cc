@@ -209,11 +209,14 @@ namespace Katydid
         for (fHoughData.fComponent = 0; fHoughData.fComponent < htData.GetNComponents(); fHoughData.fComponent++)
         {
             fHoughData.fTransform = KT2ROOT::CreateHistogram(htData.GetTransform(fHoughData.fComponent));
+            fHoughData.fTransform->SetDirectory(NULL);
             fHoughData.fXOffset = htData.GetXOffset(fHoughData.fComponent);
             fHoughData.fXScale = htData.GetXScale(fHoughData.fComponent);
             fHoughData.fYOffset = htData.GetYOffset(fHoughData.fComponent);
             fHoughData.fYScale = htData.GetYScale(fHoughData.fComponent);
         }
+
+        fHoughTree->Fill();
 
         return;
     }
