@@ -177,13 +177,13 @@ namespace Katydid
             KTDEBUG("a cand");
         }
         KTDEBUG(publog, __LINE__ << " in " << __FILE__);
-        //fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
+        fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
         //fWaterfallCandidateData.fCandidate = wcData.GetCandidate();
         KTDEBUG(publog, "set all candidate values");
-        //fWaterfallCandidateData.fCandidate->SetDirectory(NULL);
-//        KTDEBUG(publog, "Candidate info:\n"
-//                << "\tTime axis: " << fWaterfallCandidateData.fCandidate->GetNbinsX() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetBinWidth(1) << " s;  range: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmax() << " s\n"
-//                << "\tFreq axis: " << fWaterfallCandidateData.fCandidate->GetNbinsY() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetBinWidth(1) << " Hz;  range: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmax() << " Hz");
+        fWaterfallCandidateData.fCandidate->SetDirectory(NULL);
+        KTDEBUG(publog, "Candidate info:\n"
+                << "\tTime axis: " << fWaterfallCandidateData.fCandidate->GetNbinsX() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetBinWidth(1) << " s;  range: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmax() << " s\n"
+                << "\tFreq axis: " << fWaterfallCandidateData.fCandidate->GetNbinsY() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetBinWidth(1) << " Hz;  range: " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetYaxis()->GetXmax() << " Hz");
 
         fWaterfallCandidateTree->Fill();
         KTDEBUG("filled");
