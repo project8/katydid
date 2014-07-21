@@ -171,16 +171,7 @@ namespace Katydid
         fWaterfallCandidateData.fMeanStartFrequency = wcData.GetMeanStartFrequency();
         fWaterfallCandidateData.fMeanEndFrequency = wcData.GetMeanEndFrequency();
         fWaterfallCandidateData.fFrequencyWidth = wcData.GetFrequencyWidth();
-        KTTimeFrequency* cand = wcData.GetCandidate();
-        if (!cand) {
-            KTDEBUG("GetCandidate() returned NULL");
-        } else {
-            KTDEBUG("a cand");
-        }
-        KTDEBUG(publog, __LINE__ << " in " << __FILE__);
         fWaterfallCandidateData.fCandidate = wcData.GetCandidate()->CreatePowerHistogram();
-        //fWaterfallCandidateData.fCandidate = wcData.GetCandidate();
-        KTDEBUG(publog, "set all candidate values");
         fWaterfallCandidateData.fCandidate->SetDirectory(NULL);
         KTDEBUG(publog, "Candidate info:\n"
                 << "\tTime axis: " << fWaterfallCandidateData.fCandidate->GetNbinsX() << " bins;  bin width: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetBinWidth(1) << " s;  range: " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmin() << " - " << fWaterfallCandidateData.fCandidate->GetXaxis()->GetXmax() << " s\n"
