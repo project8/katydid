@@ -7,6 +7,7 @@
 
 #include "KTROOTTreeTypeWriterAnalysis.hh"
 
+#include "KT2ROOT.hh"
 #include "KTAmplitudeDistribution.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTHoughData.hh"
@@ -190,6 +191,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterAnalysis::WriteHoughData(KTDataPtr data)
     {
+        KTDEBUG(publog, "Attempting to write to hough data root tree");
         KTHoughData& htData = data->Of< KTHoughData >();
         //KTSliceHeader& header = data->Of< KTSliceHeader >();
 
@@ -206,7 +208,7 @@ namespace Katydid
 
         for (fHoughData.fComponent = 0; fHoughData.fComponent < htData.GetNComponents(); fHoughData.fComponent++)
         {
-            fHoughData.fTransform = htData.CreateHistogram(fHoughData.fComponent);
+            fHoughData.fTransform = KT2ROOT::CreateHistogram(htData.GetTransform(fHoughData.fComponent));
             fHoughData.fXOffset = htData.GetXOffset(fHoughData.fComponent);
             fHoughData.fXScale = htData.GetXScale(fHoughData.fComponent);
             fHoughData.fYOffset = htData.GetYOffset(fHoughData.fComponent);

@@ -7,6 +7,7 @@
 
 #include "KTBasicROOTTypeWriterAnalysis.hh"
 
+#include "KT2ROOT.hh"
 #include "KTAnalyticAssociateData.hh"
 #include "KTCorrelationData.hh"
 #include "KTCorrelationTSData.hh"
@@ -470,7 +471,7 @@ namespace Katydid
             conv << "histHT_" << sliceNumber << "_" << iPlot;
             string histName;
             conv >> histName;
-            TH2D* swHist = houghData.CreateHistogram(iPlot, histName);
+            TH2D* swHist = KT2ROOT::CreateHistogram(houghData.GetTransform(iPlot), histName);
             swHist->SetDirectory(fWriter->GetFile());
             swHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");

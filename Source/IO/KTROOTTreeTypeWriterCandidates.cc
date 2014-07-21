@@ -139,7 +139,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate(KTDataPtr data)
     {
-        KTDEBUG(publog, "attempting to write to root tree");
+        KTDEBUG(publog, "Attempting to write to waterfall candidate root tree");
         KTWaterfallCandidateData& wcData = data->Of< KTWaterfallCandidateData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
@@ -207,7 +207,7 @@ namespace Katydid
 
     void KTROOTTreeTypeWriterCandidates::WriteSparseWaterfallCandidate(KTDataPtr data)
     {
-        KTDEBUG(publog, "attempting to write to root tree");
+        KTDEBUG(publog, "Attempting to write to sparse waterfall candidate root tree");
         KTSparseWaterfallCandidateData& swcData = data->Of< KTSparseWaterfallCandidateData >();
 
         if (! fWriter->OpenAndVerifyFile()) return;
