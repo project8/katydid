@@ -10,7 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTNOFactory.hh"
-#include "KTPStoreNode.hh"
+#include "KTParamNode.hh"
 
 using boost::shared_ptr;
 
@@ -36,7 +36,7 @@ namespace Katydid
     {
     }
 
-    bool KTProcessorTemplate::Configure(const KTPStoreNode* node)
+    bool KTProcessorTemplate::Configure(const KTParmaNode* node)
     {
         if (node == NULL) return false;
 
