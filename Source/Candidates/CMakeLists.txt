@@ -9,6 +9,7 @@ set (CANDIDATES_HEADERFILES
     KTDBScanTrackClustering.hh
     KTFrequencyCandidateIdentifier.hh
     KTMultiSliceClustering.hh
+    KTTrackProcessing.hh
 )
 
 set (CANDIDATES_SOURCEFILES
@@ -16,6 +17,7 @@ set (CANDIDATES_SOURCEFILES
     KTDBScanTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc
     KTMultiSliceClustering.cc
+    KTTrackProcessing.cc
 )
 
 set (KATYDID_LIBS
