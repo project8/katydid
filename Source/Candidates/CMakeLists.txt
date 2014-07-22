@@ -5,6 +5,8 @@
 #set (CANDIDATES_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CandidatesDict.cxx)
 
 set (CANDIDATES_HEADERFILES
+    KTCandidateCleaner.hh
+    KTCandidateTrackFinder.hh
     KTDBScan.hh
     KTDBScanTrackClustering.hh
     KTFrequencyCandidateIdentifier.hh
@@ -13,6 +15,8 @@ set (CANDIDATES_HEADERFILES
 )
 
 set (CANDIDATES_SOURCEFILES
+    KTCandidateCleaner.cc
+    KTCandidateTrackFinder.cc
     KTDBScan.cc
     KTDBScanTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc

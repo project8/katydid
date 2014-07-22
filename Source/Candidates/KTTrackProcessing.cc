@@ -25,7 +25,7 @@ namespace Katydid
     KTTrackProcessing::KTTrackProcessing(const std::string& name) :
             KTProcessor(name),
             fTrackSignal("track", this),
-            fSWFAndHoughSlot("swf-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal)
+            fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal)
     {
     }
 

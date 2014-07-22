@@ -35,7 +35,7 @@ namespace Katydid
      - "some-name": [type] -- [what it does]
 
      Slots:
-     - "swf-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds [output data type]; Emits signal "[signal-name]"
+     - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds [output data type]; Emits signal "[signal-name]"
 
      Signals:
      - "track": void (KTDataPtr) -- Emitted when a track has been processed; Guarantees [output data type].
