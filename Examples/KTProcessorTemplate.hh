@@ -39,10 +39,10 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader* header) -- [what it does]
-     - "[slot-name]": void (shared_ptr<KTData>) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
+     - "[slot-name]": void (KTDataPtr) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
 
      Signals:
-     - "[signal-name]": void (shared_ptr<KTData>) -- Emitted upon [whatever was done]; Guarantees [output data type].
+     - "[signal-name]": void (KTDataPtr) -- Emitted upon [whatever was done]; Guarantees [output data type].
     */
 
     class KTProcessorTemplate : public KTProcessor
