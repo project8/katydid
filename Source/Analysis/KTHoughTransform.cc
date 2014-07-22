@@ -85,6 +85,13 @@ namespace Katydid
         double freqScaling = 1. / freqWidth;
 
         KTPhysicalArray< 2, double >* newTransform = new KTPhysicalArray< 2, double >(fNThetaPoints, 0., KTMath::Pi(), fNRPoints, -maxR, maxR);
+        for (unsigned iTheta = 0; iTheta < fNThetaPoints; ++iTheta)
+        {
+            for (unsigned iRadius = 0; iRadius < fNRPoints; ++iRadius)
+            {
+                (*newTransform)(iTheta, iRadius) = 0.;
+            }
+        }
 
         double deltaTheta = KTMath::Pi() / (double)fNThetaPoints;
 
@@ -154,6 +161,13 @@ namespace Katydid
         double maxR = sqrt(double(nTimeBins*nTimeBins + nFreqBins*nFreqBins));
 
         KTPhysicalArray< 2, double >* newTransform = new KTPhysicalArray< 2, double >(fNThetaPoints, 0., KTMath::Pi(), fNRPoints, -maxR, maxR);
+        for (unsigned iTheta = 0; iTheta < fNThetaPoints; ++iTheta)
+        {
+            for (unsigned iRadius = 0; iRadius < fNRPoints; ++iRadius)
+            {
+                (*newTransform)(iTheta, iRadius) = 0.;
+            }
+        }
 
         double deltaTheta = KTMath::Pi() / (double)fNThetaPoints;
 
@@ -231,6 +245,13 @@ namespace Katydid
         double maxR = sqrt(double(nTimeBins*nTimeBins + nFreqBins*nFreqBins));
 
         KTPhysicalArray< 2, double >* newTransform = new KTPhysicalArray< 2, double >(fNThetaPoints, 0., KTMath::Pi(), fNRPoints, -maxR, maxR);
+        for (unsigned iTheta = 0; iTheta < fNThetaPoints; ++iTheta)
+        {
+            for (unsigned iRadius = 0; iRadius < fNRPoints; ++iRadius)
+            {
+                (*newTransform)(iTheta, iRadius) = 0.;
+            }
+        }
 
         double deltaTheta = KTMath::Pi() / (double)fNThetaPoints;
 

@@ -262,7 +262,8 @@ namespace Katydid
         {
             KTDEBUG(tclog2, "doing distance " << i << " of " << fNPoints);
             unsigned j = i + 1;
-            for (; j < fNPoints && fabs(points[j](0) - points[i](0)) < fRadius; ++j)
+            // points are time-ordered, so point j should be equal to or after point i in time
+            for (; j < fNPoints && points[j](0) - points[i](0) < fRadius; ++j)
             {
                 fDist(i, j) = dist.GetDistance(points[i], points[j]);
                 //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
