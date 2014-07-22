@@ -76,7 +76,7 @@ namespace Katydid
     {
         Neighbors neighbors;
 
-        for (unsigned j = 0; j < fDist.size1(); ++j)
+        for (unsigned j = 0; j < fNPoints; ++j)
         {
             if ((pid != j) && (fDist(pid, j)) < threshold)
             {

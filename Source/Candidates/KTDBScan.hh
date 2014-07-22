@@ -9,7 +9,7 @@
 #ifndef KTDBSCAN_HH_
 #define KTDBSCAN_HH_
 
-#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/symmetric.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 
 #include <vector>
@@ -37,7 +37,7 @@ namespace Katydid
 
             double GetDistance(const VEC_T v1, const VEC_T v2, const VEC_T w)
             {
-                return norm_2(outer_prod(w,  (v1-v2)));
+                return norm_2(element_prod(w,  (v1-v2)));
             };
     };
 
@@ -178,7 +178,7 @@ namespace Katydid
             std::vector< Cluster > fClusters;
 
             // distance matrix
-            boost::numeric::ublas::matrix< double > fDist;
+            boost::numeric::ublas::symmetric_matrix< double, boost::numeric::ublas::upper > fDist;
 
             friend std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
             friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
@@ -258,7 +258,7 @@ namespace Katydid
             KTDEBUG(tclog2, "doing distance " << i << " of " << fNPoints);
             for (unsigned j=i+1; j < fNPoints; ++j)
             {
-                fDist(j, i) = fDist(i, j) = dist.GetDistance(points[i], points[j]);
+                fDist(i, j) = dist.GetDistance(points[i], points[j]);
                 //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
             }
         }
@@ -272,7 +272,7 @@ namespace Katydid
         {
             for (unsigned j=i+1; j < fNPoints; ++j)
             {
-                fDist(j, i) = fDist(i, j) = dist.GetDistance(points[i], points[j], weights);
+                fDist(i, j) = dist.GetDistance(points[i], points[j], weights);
                 //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
             }
         }
