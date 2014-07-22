@@ -72,13 +72,13 @@ namespace Katydid
         }
     }
 
-    KTDBScan::Neighbors KTDBScan::FindNeighbors(PointId pid, double threshold)
+    KTDBScan::Neighbors KTDBScan::FindNeighbors(PointId pid/*, double threshold*/)
     {
         Neighbors neighbors;
 
         for (unsigned j = 0; j < fNPoints; ++j)
         {
-            if ((pid != j) && (fDist(pid, j)) < threshold)
+            if ((pid != j) && (fDist(pid, j)) < fRadius/*threshold*/)
             {
                 neighbors.push_back(j);
                 //std::cout << "sim(" << pid  << "," << j << ") = " << fSim(pid, j) << ">" << threshold << std::endl;
@@ -101,7 +101,7 @@ namespace Katydid
                 fVisited[pid] = true;
 
                 // get the neighbors
-                Neighbors ne = FindNeighbors(pid, fRadius);
+                Neighbors ne = FindNeighbors(pid/*, fRadius*/);
 
                 // not enough support -> mark as noise
                 if (ne.size() < fMinPoints)
@@ -129,7 +129,7 @@ namespace Katydid
                             fVisited[nPid] = true;
 
                             // go to neighbors
-                            Neighbors ne1 = FindNeighbors(nPid, fRadius);
+                            Neighbors ne1 = FindNeighbors(nPid/*, fRadius*/);
 
                             // enough support
                             if (ne1.size() >= fMinPoints)
@@ -147,16 +147,16 @@ namespace Katydid
                         }
 
                         // not already assigned to a cluster
-                        if (!fPointIdToClusterId[nPid])
+                        if (! fPointIdToClusterId[nPid])
                         {
                             //std::cout << "\tadding pid=" << nPid << std::endl;
                             cluster.push_back(nPid);
-                            fPointIdToClusterId[nPid]=cid;
+                            fPointIdToClusterId[nPid] = cid;
                         }
                     }
 
                     fClusters.push_back(cluster);
-                    cid++;
+                    ++cid;
                 }
             } // if (!visited)
         } // for

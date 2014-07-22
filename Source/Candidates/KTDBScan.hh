@@ -12,6 +12,8 @@
 #include <boost/numeric/ublas/symmetric.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 
+#include <cfloat>
+#include <cmath>
 #include <vector>
 
 #include "KTLogger.hh"
@@ -161,7 +163,8 @@ namespace Katydid
             //
             // this can be implemented with reduced complexity by using R+trees
             //
-            Neighbors FindNeighbors(PointId pid, double threshold);
+            //Neighbors FindNeighbors(PointId pid, double threshold);
+            Neighbors FindNeighbors(PointId pid); // this assumes threshold = fRadius
 
             unsigned fNPoints;
 
@@ -233,6 +236,7 @@ namespace Katydid
     template < typename DistanceType >
     void KTDBScan::ComputeDistance(const Points& points)
     {
+        /*  Noah: why is this still here? (7/22)
         // calculate the min and max for each dimension
         unsigned nDims = points[0].size();
         double min, max, range;
@@ -251,15 +255,21 @@ namespace Katydid
 
         }
         KTDEBUG(tclog2, "... found");
+        */
 
         Distance< DistanceType > dist;
         for (unsigned i=0; i < fNPoints; ++i)
         {
             KTDEBUG(tclog2, "doing distance " << i << " of " << fNPoints);
-            for (unsigned j=i+1; j < fNPoints; ++j)
+            unsigned j = i + 1;
+            for (; j < fNPoints && fabs(points[j](0) - points[i](0)) < fRadius; ++j)
             {
                 fDist(i, j) = dist.GetDistance(points[i], points[j]);
                 //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
+            }
+            for (; j < fNPoints; ++j)
+            {
+                fDist(i, j) = DBL_MAX;
             }
         }
     }
@@ -268,9 +278,9 @@ namespace Katydid
     void KTDBScan::ComputeDistance(const Points& points, const Weights& weights)
     {
         Distance< DistanceType > dist;
-        for (unsigned i=0; i < fNPoints; ++i)
+        for (unsigned i = 0; i < fNPoints; ++i)
         {
-            for (unsigned j=i+1; j < fNPoints; ++j)
+            for (unsigned j = i + 1; j < fNPoints; ++j)
             {
                 fDist(i, j) = dist.GetDistance(points[i], points[j], weights);
                 //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
