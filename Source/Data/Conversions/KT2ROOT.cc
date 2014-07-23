@@ -171,12 +171,9 @@ namespace Katydid
 
     TH2D* KT2ROOT::CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName)
     {
-        TH2D* hist = new TH2D(histName.c_str(), "Hough Space",
+        TH2D* hist = new TH2D(histName.c_str(), histName.c_str(),
                 ht->size(1), ht->GetRangeMin(1), ht->GetRangeMax(1),
                 ht->size(2), ht->GetRangeMin(2), ht->GetRangeMax(2));
-
-        KTINFO(dblog, "Radius axis: " << ht->size(2) << " bins; range: " << hist->GetYaxis()->GetXmin() << " - " << hist->GetYaxis()->GetXmax());
-        KTINFO(dblog, "Angle axis: " << ht->size(1) << " bins; range: " << hist->GetXaxis()->GetXmin() << " - " << hist->GetXaxis()->GetXmax());
 
         for (int iBinX=1; iBinX<=(int)ht->size(1); iBinX++)
         {
@@ -186,8 +183,6 @@ namespace Katydid
             }
         }
 
-        hist->SetXTitle("Angle");
-        hist->SetYTitle("Radius");
         return hist;
 
     }

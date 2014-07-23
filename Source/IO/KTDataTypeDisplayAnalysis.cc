@@ -448,6 +448,10 @@ namespace Katydid
             string histName;
             conv >> histName;
             TH2D* swHist = KT2ROOT::CreateHistogram(houghData.GetTransform(iPlot), histName);
+            swHist->SetDirectory(NULL);
+            swHist->SetTitle("Hough Space");
+            swHist->SetXTitle("Angle");
+            swHist->SetYTitle("Radius");
             fWriter->Draw(swHist);
         }
         return;

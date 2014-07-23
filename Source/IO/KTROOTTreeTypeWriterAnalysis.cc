@@ -210,6 +210,12 @@ namespace Katydid
         {
             fHoughData.fTransform = KT2ROOT::CreateHistogram(htData.GetTransform(fHoughData.fComponent));
             fHoughData.fTransform->SetDirectory(NULL);
+            fHoughData.fTransform->SetTitle("Hough Space");
+            fHoughData.fTransform->SetXTitle("Angle");
+            fHoughData.fTransform->SetYTitle("Radius");
+            KTINFO(publog, "Angle axis: " << fHoughData.fTransform->GetNbinsX() << " bins; range: " << fHoughData.fTransform->GetXaxis()->GetXmin() << " - " << fHoughData.fTransform->GetXaxis()->GetXmax());
+            KTINFO(publog, "Radius axis: " << fHoughData.fTransform->GetNbinsY() << " bins; range: " << fHoughData.fTransform->GetYaxis()->GetXmin() << " - " << fHoughData.fTransform->GetYaxis()->GetXmax());
+
             fHoughData.fXOffset = htData.GetXOffset(fHoughData.fComponent);
             fHoughData.fXScale = htData.GetXScale(fHoughData.fComponent);
             fHoughData.fYOffset = htData.GetYOffset(fHoughData.fComponent);
