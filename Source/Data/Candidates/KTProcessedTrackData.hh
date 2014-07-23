@@ -26,6 +26,7 @@ namespace Katydid
             double GetMaximumFrequency() const;
             double GetFrequencyWidth() const;
             double GetSlope() const;
+            double GetIntercept() const;
 
             double GetTimeInRunSigma() const;
             double GetTimeLengthSigma() const;
@@ -33,6 +34,7 @@ namespace Katydid
             double GetMaximumFrequencySigma() const;
             double GetFrequencyWidthSigma() const;
             double GetSlopeSigma() const;
+            double GetInterceptSigma() const;
 
             void SetComponent(unsigned component);
 
@@ -42,6 +44,7 @@ namespace Katydid
             void SetMaximumFrequency(double freq);
             void SetFrequencyWidth(double width);
             void SetSlope(double slope);
+            void SetIntercept(double intercept);
 
             void SetTimeInRunSigma(double sigma);
             void SetTimeLengthSigma(double sigma);
@@ -49,6 +52,7 @@ namespace Katydid
             void SetMaximumFrequencySigma(double sigma);
             void SetFrequencyWidthSigma(double sigma);
             void SetSlopeSigma(double sigma);
+            void SetInterceptSigma(double sigma);
 
         protected:
             unsigned fComponent;
@@ -59,6 +63,7 @@ namespace Katydid
             double fMaxFrequency;
             double fFrequencyWidth;
             double fSlope;
+            double fIntercept;
 
             double fTimeInRunSigma;
             double fTimeLengthSigma;
@@ -66,6 +71,7 @@ namespace Katydid
             double fMaxFrequencySigma;
             double fFrequencyWidthSigma;
             double fSlopeSigma;
+            double fInterceptSigma;
     };
 
     inline unsigned KTProcessedTrackData::GetComponent() const
@@ -103,6 +109,11 @@ namespace Katydid
         return fSlope;
     }
 
+    inline double KTProcessedTrackData::GetIntercept() const
+    {
+        return fIntercept;
+    }
+
     inline double KTProcessedTrackData::GetTimeInRunSigma() const
     {
         return fTimeInRunSigma;
@@ -131,6 +142,11 @@ namespace Katydid
     inline double KTProcessedTrackData::GetSlopeSigma() const
     {
         return fSlopeSigma;
+    }
+
+    inline double KTProcessedTrackData::GetInterceptSigma() const
+    {
+        return fInterceptSigma;
     }
 
     inline void KTProcessedTrackData::SetComponent(unsigned component)
@@ -175,6 +191,12 @@ namespace Katydid
         return;
     }
 
+    inline void KTProcessedTrackData::SetIntercept(double intercept)
+    {
+        fIntercept = intercept;
+        return;
+    }
+
     inline void KTProcessedTrackData::SetTimeInRunSigma(double sigma)
     {
         fTimeInRunSigma = sigma;
@@ -208,6 +230,12 @@ namespace Katydid
     inline void KTProcessedTrackData::SetSlopeSigma(double sigma)
     {
         fSlopeSigma = sigma;
+        return;
+    }
+
+    inline void KTProcessedTrackData::SetInterceptSigma(double sigma)
+    {
+        fInterceptSigma = sigma;
         return;
     }
 

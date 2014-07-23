@@ -18,12 +18,14 @@ namespace Katydid
             fMaxFrequency(0.),
             fFrequencyWidth(0.),
             fSlope(0.),
+            fIntercept(0.),
             fTimeInRunSigma(0.),
             fTimeLengthSigma(0.),
             fMinFrequencySigma(0.),
             fMaxFrequencySigma(0.),
             fFrequencyWidthSigma(0.),
-            fSlopeSigma(0.)
+            fSlopeSigma(0.),
+            fInterceptSigma(0.)
     {
     }
 
