@@ -223,6 +223,7 @@ include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/c
 include_directories (BEFORE 
     ${PROJECT_SOURCE_DIR}/Source/Utility
     ${PROJECT_SOURCE_DIR}/Source/Core
+    ${PROJECT_SOURCE_DIR}/Source/Data
     ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Data/Candidates
     ${PROJECT_SOURCE_DIR}/Source/Data/Conversions
