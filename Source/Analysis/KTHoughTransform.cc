@@ -69,7 +69,7 @@ namespace Katydid
         }
         else
         {
-            newData.SetTransform(newTransform, data.GetTimeInRun(), 1. / data.GetTimeLength(), data.GetMinimumFrequency(), 1. / data.GetFrequencyWidth(), 0);
+            newData.SetTransform(newTransform, data.GetTimeInRun(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth(), 0);
         }
         KTINFO(htlog, "Completed hough transform");
 
@@ -143,7 +143,7 @@ namespace Katydid
         }
         else
         {
-            newData.SetTransform(newTransform, 0., 1. / candidate->GetTimeBinWidth(), 0., 1. / candidate->GetFrequencyBinWidth(), 0);
+            newData.SetTransform(newTransform, 0., candidate->GetTimeBinWidth(), 0., candidate->GetFrequencyBinWidth(), 0);
         }
         KTINFO(htlog, "Completed hough transform");
 
