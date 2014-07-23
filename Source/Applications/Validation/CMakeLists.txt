@@ -89,6 +89,9 @@ if (Katydid_ENABLE_TESTING)
                                         KTTestProcessor.cc
     )
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
+    
+    add_executable (TestSmoothing TestSmoothing.cc)
+    target_link_libraries (TestSmoothing KatydidUtility KatydidData ${EXTERNAL_LIBRARIES})
 
     # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
     #add_executable (TestSimpleClustering TestSimpleClustering.cc)
@@ -136,6 +139,7 @@ if (Katydid_ENABLE_TESTING)
                      TestSignalsAndSlots
                      #TestSimpleClustering
                      #TestSlidingWindowFFT
+                     TestSmoothing
                      TestSpectrumDiscriminator
                      TestThroughputProfiler
                      TestVector
@@ -168,6 +172,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     #add_test (Test_SimpleClustering TestSimpleClustering)
     #add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
+    add_test (Test_Smoothing TestSmoothing)
     add_test (Test_SpectrumDiscriminator TestSpectrumDiscriminator)
     add_test (Test_ThroughputProfiler TestThroughputProfiler)
     add_test (Test_Vector TestVector)
