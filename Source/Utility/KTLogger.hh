@@ -281,8 +281,13 @@ namespace Katydid
 #define __KTLOG_TRACE_2(I,M)     __KTLOG_LOG_4(I,Trace,M,false)
 #define __KTLOG_TRACE_1(M)       __KTLOG_LOG_4(__KTDEFAULT_LOGGER,Trace,M,false)
 
+#ifndef NDEBUG
 #define __KTLOG_DEBUG_2(I,M)     __KTLOG_LOG_4(I,Debug,M,false)
 #define __KTLOG_DEBUG_1(M)       __KTLOG_LOG_4(__KTDEFAULT_LOGGER,Debug,M,false)
+#else
+#define __KTLOG_DEBUG_2(I,M)     __KTLOG_LOG_4(I,Debug,"",false)
+#define __KTLOG_DEBUG_1(M)       __KTLOG_LOG_4(__KTDEFAULT_LOGGER,Debug,"",false)
+#endif
 
 #define __KTLOG_INFO_2(I,M)      __KTLOG_LOG_4(I,Info,M,false)
 #define __KTLOG_INFO_1(M)        __KTLOG_LOG_4(__KTDEFAULT_LOGGER,Info,M,false)
