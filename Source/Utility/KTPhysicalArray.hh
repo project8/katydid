@@ -560,6 +560,9 @@ namespace Katydid
             reverse_iterator2 rbegin2();
             reverse_iterator1 rend1();
             reverse_iterator2 rend2();
+
+        public:
+            void GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const;
     };
 
     template< typename XDataType >
@@ -889,6 +892,30 @@ namespace Katydid
         return fData.rend2();
     }
 
+    template< typename XDataType >
+    void KTPhysicalArray< 2, XDataType >::GetMaximumBin(unsigned& maxXBin, unsigned& maxYBin) const
+    {
+        typename KTPhysicalArray< 2, XDataType >::const_iterator1 xBinIt = fData.begin1();
+        typename KTPhysicalArray< 2, XDataType >::const_iterator2 yBinIt = std::max_element(xBinIt.begin(), xBinIt.end());
+        maxXBin = 0;
+        maxYBin = yBinIt.index2();
+        double maxYValue = *yBinIt;
+        double value;
+        for (; xBinIt != fData.end1(); ++xBinIt)
+        {
+            yBinIt = std::max_element(xBinIt.begin(), xBinIt.end());
+            value = *yBinIt;
+            if (value > maxYValue)
+            {
+                maxXBin = xBinIt.index1();
+                maxYBin = yBinIt.index2();
+                maxYValue = value;
+            }
+        }
+    }
+
+
+
     //*************************
     // Operator implementations
     //*************************
@@ -994,7 +1021,6 @@ namespace Katydid
         ostr << rhs.GetData();
         return ostr;
     }
-
 
 } /* namespace Katydid */
 #endif /* KTPHYSICALARRAY_HH_ */

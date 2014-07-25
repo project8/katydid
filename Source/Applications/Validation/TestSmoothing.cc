@@ -3,6 +3,8 @@
  *
  *  Created on: Jul 23, 2014
  *      Author: nsoblath
+ *
+ *  Usage: > ./TestSmoothing
  */
 
 #include "KTLogger.hh"

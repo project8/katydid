@@ -76,6 +76,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestLogger TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestMinMaxBin TestMinMaxBin.cc)
+    target_link_libraries (TestMinMaxBin KatydidUtility ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestMultiSliceClustering TestMultiSliceClustering.cc)
     target_link_libraries (TestMultiSliceClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
     
@@ -133,6 +136,7 @@ if (Katydid_ENABLE_TESTING)
                      #TestHoughTransform
                      TestJSONWriter
                      TestLogger
+                     TestMinMaxBin
                      TestMultiSliceClustering
                      TestMultiFileJSONReader
                      TestRandom
@@ -165,6 +169,7 @@ if (Katydid_ENABLE_TESTING)
     #add_test (Test_HoughTransform TestHoughTransform)
     add_test (Test_JSONWriter TestJSONWriter)
     add_test (Test_Logger TestLogger)
+    add_test (Test_MinMaxBin TestMinMaxBin)
     add_test (Test_MultiSliceClustering TestMultiSliceClustering)
     add_test (Test_MultiFileJSONReader TestMultiFileJSONReader)
     add_test (Test_ParameterStore TestParameterStore)
