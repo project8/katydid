@@ -178,12 +178,12 @@ namespace Katydid
             unsigned iPoint = 0;
             for (DBScanPoints::iterator pIt = fCompPoints[iComponent].begin(); pIt != fCompPoints[iComponent].end(); ++pIt)
             {
-#ifndef NDEBUG
-                std::stringstream ptStr;
-                ptStr << "Point -- before: " << *pIt;
-#endif
+//#ifndef NDEBUG
+//                std::stringstream ptStr;
+//                ptStr << "Point -- before: " << *pIt;
+//#endif
                 newPoint = element_prod(*pIt, scale);
-                KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
+                //KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
                 normPoints[iPoint++] = newPoint;
             }
 
