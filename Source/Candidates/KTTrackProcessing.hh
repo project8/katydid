@@ -13,6 +13,7 @@
 
 #include "KTSlot.hh"
 
+#include <cmath>
 
 
 namespace Katydid
@@ -32,13 +33,14 @@ namespace Katydid
      Configuration name: "track-proc"
 
      Available configuration values:
-     - "some-name": [type] -- [what it does]
+     - "pl-dist-cut1": double -- Point-line distance cut 1; rough cut
+     - "pl-dist-cut2": double -- Point-line distance cut 2: fine cut
 
      Slots:
-     - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds [output data type]; Emits signal "[signal-name]"
+     - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds KTProcessedTrackData; Emits signal "track"
 
      Signals:
-     - "track": void (KTDataPtr) -- Emitted when a track has been processed; Guarantees [output data type].
+     - "track": void (KTDataPtr) -- Emitted when a track has been processed; Guarantees KTProcessedTrackData.
     */
 
     class KTTrackProcessing : public KTProcessor
@@ -49,12 +51,22 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
+            double GetPointLineDistCut1() const;
+            void SetPointLineDistCut1(double dist);
+
+            double GetPointLineDistCut2() const;
+            void SetPointLineDistCut2(double dist);
+
         private:
+            double fPointLineDistCut1;
+            double fPointLineDistCut2;
 
         public:
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
 
         private:
+            /// Point-to-line distance: point coordinates (x, y); line equation a*x + b*y + c = 0
+            double PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC);
 
             //***************
             // Signals
@@ -71,6 +83,31 @@ namespace Katydid
             KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTHoughData > fSWFAndHoughSlot;
 
     };
+
+    inline double KTTrackProcessing::GetPointLineDistCut1() const
+    {
+        return fPointLineDistCut1;
+    }
+    inline void KTTrackProcessing::SetPointLineDistCut1(double dist)
+    {
+        fPointLineDistCut1 = dist;
+        return;
+    }
+
+    inline double KTTrackProcessing::GetPointLineDistCut2() const
+    {
+        return fPointLineDistCut2;
+    }
+    inline void KTTrackProcessing::SetPointLineDistCut2(double dist)
+    {
+        fPointLineDistCut2 = dist;
+        return;
+    }
+
+    double KTTrackProcessing::PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC)
+    {
+        return fabs(lineA * pointX + lineB * pointY + lineC) / sqrt(lineA*lineA + lineB*lineB);
+    }
 }
  /* namespace Katydid */
 #endif /* KTTRACKPROCESSING_HH_ */
