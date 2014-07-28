@@ -74,6 +74,26 @@ namespace Katydid
 
     };
 
+    struct TProcessedTrackData
+    {
+            UInt_t fComponent;
+            Double_t fTimeInRun;
+            Double_t fTimeLength;
+            Double_t fMinFrequency;
+            Double_t fMaxFrequency;
+            Double_t fFrequencyWidth;
+            Double_t fSlope;
+            Double_t fIntercept;
+            Double_t fTimeInRunSigma;
+            Double_t fTimeLengthSigma;
+            Double_t fMinFrequencySigma;
+            Double_t fMaxFrequencySigma;
+            Double_t fFrequencyWidthSigma;
+            Double_t fSlopeSigma;
+            Double_t fInterceptSigma;
+
+    };
+
     class KTROOTTreeTypeWriterCandidates : public KTROOTTreeTypeWriter//, public KTTypeWriterCandidates
     {
         public:
@@ -87,25 +107,31 @@ namespace Katydid
 
             void WriteWaterfallCandidate(KTDataPtr data);
 
-            void WriteSparseWaterfallCandidate(KTDataPtr Data);
+            void WriteSparseWaterfallCandidate(KTDataPtr data);
+
+            void WriteProcessedTrack(KTDataPtr data);
 
         public:
             TTree* GetFrequencyCandidateTree() const;
             TTree* GetWaterfallCandidateTree() const;
             TTree* GetSparseWaterfallCandidateTree() const;
+            TTree* GetProcessedTrackTree() const;
 
         private:
             bool SetupFrequencyCandidateTree();
             bool SetupWaterfallCandidateTree();
             bool SetupSparseWaterfallCandidateTree();
+            bool SetupProcessedTrackTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
+            TTree* fProcessedTrackTree;
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
+            TProcessedTrackData fProcessedTrackData;
 
     };
 
@@ -122,6 +148,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterCandidates::GetSparseWaterfallCandidateTree() const
     {
         return fSparseWaterfallCandidateTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterCandidates::GetProcessedTrackTree() const
+    {
+        return fProcessedTrackTree;
     }
 
 

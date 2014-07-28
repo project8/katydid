@@ -11,6 +11,7 @@
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
+#include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTWaterfallCandidateData.hh"
@@ -41,9 +42,11 @@ namespace Katydid
             fFreqCandidateTree(NULL),
             fWaterfallCandidateTree(NULL),
             fSparseWaterfallCandidateTree(NULL),
+            fProcessedTrackTree(NULL),
             fFreqCandidateData(),
             fWaterfallCandidateData(),
-            fSparseWaterfallCandidateData()
+            fSparseWaterfallCandidateData(),
+            fProcessedTrackData()
     {
     }
 
@@ -59,6 +62,7 @@ namespace Katydid
         fWriter->RegisterSlot("frequency-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteFrequencyCandidates);
         fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate);
         fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteSparseWaterfallCandidate);
+        fWriter->RegisterSlot("processed-track", this, &KTROOTTreeTypeWriterCandidates::WriteProcessedTrack);
         return;
     }
 
@@ -276,6 +280,78 @@ namespace Katydid
         fSparseWaterfallCandidateTree->Branch("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency, "fMaxFrequency/d");
         fSparseWaterfallCandidateTree->Branch("FrequencyWidth", &fSparseWaterfallCandidateData.fFrequencyWidth, "fFrequencyWidth/d");
         fSparseWaterfallCandidateTree->Branch("Points", &fSparseWaterfallCandidateData.fPoints, 32000, 0);
+
+        return true;
+    }
+
+    //****************
+    // Processed Track
+    //****************
+
+    void KTROOTTreeTypeWriterCandidates::WriteProcessedTrack(KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to processed track root tree");
+        KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fProcessedTrackTree == NULL)
+        {
+            if (! SetupProcessedTrackTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the processed track tree! Nothing was written.");
+                return;
+            }
+        }
+
+        // Load() also clears any existing data
+        //fFreqCandidateData->Load(*data);
+        fProcessedTrackData.fComponent = ptData.GetComponent();
+        fProcessedTrackData.fTimeInRun = ptData.GetTimeInRun();
+        fProcessedTrackData.fTimeLength = ptData.GetTimeLength();
+        fProcessedTrackData.fMinFrequency = ptData.GetMinimumFrequency();
+        fProcessedTrackData.fMaxFrequency = ptData.GetMaximumFrequency();
+        fProcessedTrackData.fFrequencyWidth = ptData.GetFrequencyWidth();
+        fProcessedTrackData.fSlope = ptData.GetSlope();
+        fProcessedTrackData.fIntercept = ptData.GetIntercept();
+        fProcessedTrackData.fTimeInRunSigma = ptData.GetTimeInRunSigma();
+        fProcessedTrackData.fTimeLengthSigma = ptData.GetTimeLengthSigma();
+        fProcessedTrackData.fMinFrequencySigma = ptData.GetMinimumFrequencySigma();
+        fProcessedTrackData.fMaxFrequencySigma = ptData.GetMaximumFrequencySigma();
+        fProcessedTrackData.fFrequencyWidthSigma = ptData.GetFrequencyWidthSigma();
+        fProcessedTrackData.fSlopeSigma = ptData.GetSlopeSigma();
+        fProcessedTrackData.fInterceptSigma = ptData.GetInterceptSigma();
+
+        fProcessedTrackTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterCandidates::SetupProcessedTrackTree()
+    {
+        fProcessedTrackTree = new TTree("procTracks", "Processed Tracks");
+        if (fProcessedTrackTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fProcessedTrackTree);
+
+        fProcessedTrackTree->Branch("Component", &fProcessedTrackData.fComponent, "fComponent/s");
+        fProcessedTrackTree->Branch("TimeInRun", &fProcessedTrackData.fTimeInRun, "fTimeInRun/d");
+        fProcessedTrackTree->Branch("TimeLength", &fProcessedTrackData.fTimeLength, "fTimeLength/d");
+        fProcessedTrackTree->Branch("MaxFrequency", &fProcessedTrackData.fMaxFrequency, "fMinFrequency/d");
+        fProcessedTrackTree->Branch("MaxFrequency", &fProcessedTrackData.fMaxFrequency, "fMaxFrequency/d");
+        fProcessedTrackTree->Branch("FrequencyWidth", &fProcessedTrackData.fFrequencyWidth, "fFrequencyWidth/d");
+        fProcessedTrackTree->Branch("Slope", &fProcessedTrackData.fSlope, "fSlope/d");
+        fProcessedTrackTree->Branch("Intercept", &fProcessedTrackData.fIntercept, "fIntercept/d");
+        fProcessedTrackTree->Branch("TimeInRunSigma", &fProcessedTrackData.fTimeInRunSigma, "fTimeInRunSigma/d");
+        fProcessedTrackTree->Branch("TimeLengthSigma", &fProcessedTrackData.fTimeLengthSigma, "fTimeLengthSigma/d");
+        fProcessedTrackTree->Branch("MaxFrequencySigma", &fProcessedTrackData.fMaxFrequencySigma, "fMinFrequencySigma/d");
+        fProcessedTrackTree->Branch("MaxFrequencySigma", &fProcessedTrackData.fMaxFrequencySigma, "fMaxFrequencySigma/d");
+        fProcessedTrackTree->Branch("FrequencyWidthSigma", &fProcessedTrackData.fFrequencyWidthSigma, "fFrequencyWidthSigma/d");
+        fProcessedTrackTree->Branch("SlopeSigma", &fProcessedTrackData.fSlopeSigma, "fSlopeSigma/d");
+        fProcessedTrackTree->Branch("InterceptSigma", &fProcessedTrackData.fInterceptSigma, "fInterceptSigma/d");
 
         return true;
     }
