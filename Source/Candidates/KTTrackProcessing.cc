@@ -56,11 +56,13 @@ namespace Katydid
         unsigned component = swfData.GetComponent();
 
         typedef KTSparseWaterfallCandidateData::Points Points;
-        const Points& points = swfData.GetPoints();
+        // not const because points will be removed later
+        Points& points = swfData.GetPoints();
 
-        // NOTE: smoothes the actual data, not a copy
+        // not const because the HT will be smoothed in place
         KTPhysicalArray< 2, double >* houghTransform = htData.GetTransform(component);
 
+        // NOTE: smoothes the actual data, not a copy
         if (! KTSmooth::Smooth(houghTransform))
         {
             KTERROR(tlog, "Error while smoothing Hough Transform");
@@ -183,6 +185,20 @@ namespace Katydid
         }
         KTDEBUG(tlog, "Points removed with cut 2: " << nPointsCut2);
 
+        // Remove points
+        Points::iterator pItMaster = points.begin();
+        Points::iterator pItToDelete;
+        for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
+        {
+            pItToDelete = pItMaster;
+            ++pItMaster;
+            if (pointsCuts[iPoint] != 0)
+            {
+                points.erase(pItToDelete);
+            }
+        }
+        KTDEBUG(tlog, "Points present after cuts: " << points.size());
+
         // Add the new data
         KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
         procTrack.SetComponent(component);
@@ -193,6 +209,7 @@ namespace Katydid
         procTrack.SetFrequencyWidth(stopF - startF);
         procTrack.SetSlope(lsSlope);
         procTrack.SetIntercept(lsIntercept);
+        //TODO: Add calculation of uncertainties
 
         return true;
     }

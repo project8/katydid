@@ -40,6 +40,7 @@ namespace Katydid
             virtual ~KTSparseWaterfallCandidateData();
 
             const Points& GetPoints() const;
+            Points& GetPoints();
             unsigned GetComponent() const;
 
             //unsigned GetNTimeBins() const;
@@ -108,6 +109,11 @@ namespace Katydid
     };
 
     inline const KTSparseWaterfallCandidateData::Points& KTSparseWaterfallCandidateData::GetPoints() const
+    {
+        return fPoints;
+    }
+
+    inline KTSparseWaterfallCandidateData::Points& KTSparseWaterfallCandidateData::GetPoints()
     {
         return fPoints;
     }
