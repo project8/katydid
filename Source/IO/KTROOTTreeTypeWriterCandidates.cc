@@ -307,14 +307,17 @@ namespace Katydid
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
         fProcessedTrackData.fComponent = ptData.GetComponent();
-        fProcessedTrackData.fTimeInRun = ptData.GetTimeInRun();
+        fProcessedTrackData.fIsCut = ptData.GetIsCut();
+        fProcessedTrackData.fStartTimeInRun = ptData.GetStartTimeInRun();
+        fProcessedTrackData.fEndTimeInRun = ptData.GetEndTimeInRun();
         fProcessedTrackData.fTimeLength = ptData.GetTimeLength();
         fProcessedTrackData.fMinFrequency = ptData.GetMinimumFrequency();
         fProcessedTrackData.fMaxFrequency = ptData.GetMaximumFrequency();
         fProcessedTrackData.fFrequencyWidth = ptData.GetFrequencyWidth();
         fProcessedTrackData.fSlope = ptData.GetSlope();
         fProcessedTrackData.fIntercept = ptData.GetIntercept();
-        fProcessedTrackData.fTimeInRunSigma = ptData.GetTimeInRunSigma();
+        fProcessedTrackData.fStartTimeInRunSigma = ptData.GetStartTimeInRunSigma();
+        fProcessedTrackData.fEndTimeInRunSigma = ptData.GetEndTimeInRunSigma();
         fProcessedTrackData.fTimeLengthSigma = ptData.GetTimeLengthSigma();
         fProcessedTrackData.fMinFrequencySigma = ptData.GetMinimumFrequencySigma();
         fProcessedTrackData.fMaxFrequencySigma = ptData.GetMaximumFrequencySigma();
@@ -338,14 +341,17 @@ namespace Katydid
         fWriter->AddTree(fProcessedTrackTree);
 
         fProcessedTrackTree->Branch("Component", &fProcessedTrackData.fComponent, "fComponent/s");
-        fProcessedTrackTree->Branch("TimeInRun", &fProcessedTrackData.fTimeInRun, "fTimeInRun/d");
+        fProcessedTrackTree->Branch("IsCut", &fProcessedTrackData.fIsCut, "fIsCut/b");
+        fProcessedTrackTree->Branch("StartTimeInRun", &fProcessedTrackData.fStartTimeInRun, "fStartTimeInRun/d");
+        fProcessedTrackTree->Branch("EndTimeInRun", &fProcessedTrackData.fEndTimeInRun, "fEndTimeInRun/d");
         fProcessedTrackTree->Branch("TimeLength", &fProcessedTrackData.fTimeLength, "fTimeLength/d");
         fProcessedTrackTree->Branch("MaxFrequency", &fProcessedTrackData.fMaxFrequency, "fMinFrequency/d");
         fProcessedTrackTree->Branch("MaxFrequency", &fProcessedTrackData.fMaxFrequency, "fMaxFrequency/d");
         fProcessedTrackTree->Branch("FrequencyWidth", &fProcessedTrackData.fFrequencyWidth, "fFrequencyWidth/d");
         fProcessedTrackTree->Branch("Slope", &fProcessedTrackData.fSlope, "fSlope/d");
         fProcessedTrackTree->Branch("Intercept", &fProcessedTrackData.fIntercept, "fIntercept/d");
-        fProcessedTrackTree->Branch("TimeInRunSigma", &fProcessedTrackData.fTimeInRunSigma, "fTimeInRunSigma/d");
+        fProcessedTrackTree->Branch("StartTimeInRunSigma", &fProcessedTrackData.fStartTimeInRunSigma, "fStartTimeInRunSigma/d");
+        fProcessedTrackTree->Branch("EndTimeInRunSigma", &fProcessedTrackData.fEndTimeInRunSigma, "fEndTimeInRunSigma/d");
         fProcessedTrackTree->Branch("TimeLengthSigma", &fProcessedTrackData.fTimeLengthSigma, "fTimeLengthSigma/d");
         fProcessedTrackTree->Branch("MaxFrequencySigma", &fProcessedTrackData.fMaxFrequencySigma, "fMinFrequencySigma/d");
         fProcessedTrackTree->Branch("MaxFrequencySigma", &fProcessedTrackData.fMaxFrequencySigma, "fMaxFrequencySigma/d");

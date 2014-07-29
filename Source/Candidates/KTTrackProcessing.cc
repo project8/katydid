@@ -32,6 +32,8 @@ namespace Katydid
             KTProcessor(name),
             fPointLineDistCut1(0.1),
             fPointLineDistCut2(0.05),
+            fSlopeMinimum(-std::numeric_limits< double >::max()),
+            fProcTrackMinPoints(0),
             fTrackSignal("track", this),
             fSWFAndHoughSlot("swfc-and-hough", this, &KTTrackProcessing::ProcessTrack, &fTrackSignal)
     {
@@ -46,7 +48,11 @@ namespace Katydid
         if (node == NULL) return false;
 
         SetPointLineDistCut1(node->GetValue("pl-dist-cut1", GetPointLineDistCut1()));
-        SetPointLineDistCut2(node->GetValue("p2-dist-cut2", GetPointLineDistCut2()));
+        SetPointLineDistCut2(node->GetValue("pl-dist-cut2", GetPointLineDistCut2()));
+
+        SetSlopeMinimum(node->GetValue("slope-min", GetSlopeMinimum()));
+
+        SetProcTrackMinPoints(node->GetValue("min-points", GetProcTrackMinPoints()));
 
         return true;
     }
@@ -80,6 +86,9 @@ namespace Katydid
         double htSinAngle = sin(htAngle); // ht_b
 
         // scaling for Hough Transform, used throughout for line fits and modifications
+        // "scaled" means the axis has been scaled to 0-1, as was the case when the Hough Transform was calculated
+        // "unscaled" means the axis is in the original units
+        // unscaled = scaled * scale + offset
         double xScale = htData.GetXScale(component);
         double yScale = htData.GetYScale(component);
         double xOffset = htData.GetXOffset(component);
@@ -99,7 +108,7 @@ namespace Katydid
 
         unsigned nPoints = points.size();
         typedef vector< std::pair< double, double > > SimplePoints;
-        SimplePoints pointsScaled;
+        SimplePoints pointsScaled, pointsUnscaled;
         pointsScaled.reserve(nPoints);
         vector< unsigned > pointsCuts;
         pointsCuts.reserve(nPoints);
@@ -111,6 +120,7 @@ namespace Katydid
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             //cout << "calculating a distance..." << endl;
+            pointsUnscaled.push_back(SimplePoints::value_type(pIt->fTimeInRun, pIt->fFrequency));
             xScaled = (pIt->fTimeInRun - xOffset) / xScale;
             yScaled = (pIt->fFrequency - yOffset) / yScale;
             pointsScaled.push_back(SimplePoints::value_type(xScaled, yScaled));
@@ -141,39 +151,37 @@ namespace Katydid
         // Refine the line with a least-squares line calculation
         double xMean = sumX / (double)nPointsUsed;
         double yMean = sumY / (double)nPointsUsed;
-        double lsSlopeUnscaled = (sumXY - sumX * yMean) / (sumX2 - sumX * xMean);
-        double lsInterceptUnscaled = yMean - lsSlopeUnscaled * xMean;
-        // calculate a, b and c before we rescale
-        double lsSlope = lsSlopeUnscaled * yScale / xScale;
-        double lsIntercept = lsInterceptUnscaled * yScale + yOffset - lsSlope * xOffset;
+        double lsSlopeScaled = (sumXY - sumX * yMean) / (sumX2 - sumX * xMean);
+        double lsInterceptScaled = yMean - lsSlopeScaled * xMean;
+        double lsSlope = lsSlopeScaled * yScale / xScale;
+        double lsIntercept = lsInterceptScaled * yScale + yOffset - lsSlope * xOffset;
         KTDEBUG(tlog, "Lease-squares fit result\n"
             << "\tSlope: " << lsSlope << " Hz/s\n"
             << "\tIntercept: " << lsIntercept << " Hz");
 
         // second distance cut based on LS fit
-        double startT = std::numeric_limits< double >::max();
-        double stopT = 0.;
-        double startF = 0.;
-        double stopF = 0.;
+        double startTime = std::numeric_limits< double >::max();
+        double stopTime = -1.;
+        double startFreq, stopFreq;
         nPointsUsed = 0;
         unsigned nPointsCut2 = 0;
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
-            distance = PointLineDistance(pointsScaled[iPoint].first, pointsScaled[iPoint].second, lsSlopeUnscaled, -1., lsInterceptUnscaled);;
+            distance = PointLineDistance(pointsScaled[iPoint].first, pointsScaled[iPoint].second, lsSlopeScaled, -1., lsInterceptScaled);;
 
             if (pointsCuts[iPoint] == 0 && distance < fPointLineDistCut2)
             {
                 // point is not cut
                 ++nPointsUsed;
-                if (pointsScaled[iPoint].first < startT) //possibly update start time/frequency
+                if (pointsUnscaled[iPoint].first < startTime) //possibly update start time/frequency
                 {
-                    startT = pointsScaled[iPoint].first;
-                    startF = startT * lsSlope + lsIntercept;
+                    startTime = pointsUnscaled[iPoint].first;
+                    startFreq = startTime * lsSlope + lsIntercept;
                 }
-                if (pointsScaled[iPoint].first > stopT)
+                if (pointsUnscaled[iPoint].first > stopTime)
                 { //possibly update stop time/frequency
-                    stopT = pointsScaled[iPoint].first;
-                    stopF = stopT * lsSlope + lsIntercept;
+                    stopTime = pointsUnscaled[iPoint].first;
+                    stopFreq = stopTime * lsSlope + lsIntercept;
                 }
             }
             else if (pointsCuts[iPoint] == 0)
@@ -202,11 +210,18 @@ namespace Katydid
         // Add the new data
         KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
         procTrack.SetComponent(component);
-        procTrack.SetTimeInRun(startT);
-        procTrack.SetTimeLength(stopT - startT);
-        procTrack.SetMinimumFrequency(startF);
-        procTrack.SetMaximumFrequency(stopF);
-        procTrack.SetFrequencyWidth(stopF - startF);
+
+        if (lsSlope < fSlopeMinimum || points.size() < fProcTrackMinPoints)
+        {
+            procTrack.SetIsCut(true);
+        }
+
+        procTrack.SetStartTimeInRun(startTime);
+        procTrack.SetEndTimeInRun(stopTime);
+        procTrack.SetTimeLength(stopTime - startTime);
+        procTrack.SetMinimumFrequency(startFreq);
+        procTrack.SetMaximumFrequency(stopFreq);
+        procTrack.SetFrequencyWidth(stopFreq - startFreq);
         procTrack.SetSlope(lsSlope);
         procTrack.SetIntercept(lsIntercept);
         //TODO: Add calculation of uncertainties

@@ -35,6 +35,8 @@ namespace Katydid
      Available configuration values:
      - "pl-dist-cut1": double -- Point-line distance cut 1; rough cut
      - "pl-dist-cut2": double -- Point-line distance cut 2: fine cut
+     - "slope-min": double -- Minimum track slope to keep (Hz/s)
+     - "min-points": unsigned -- Minimum number of points required to keep a processed track
 
      Slots:
      - "swfc-and-hough": void (KTDataPr) -- [what it does]; Requires KTSparseWaterfallCandidateData and KTHoughData; Adds KTProcessedTrackData; Emits signal "track"
@@ -57,9 +59,19 @@ namespace Katydid
             double GetPointLineDistCut2() const;
             void SetPointLineDistCut2(double dist);
 
+            double GetSlopeMinimum() const;
+            void SetSlopeMinimum(double slope);
+
+            unsigned GetProcTrackMinPoints() const;
+            void SetProcTrackMinPoints(unsigned min);
+
         private:
             double fPointLineDistCut1;
             double fPointLineDistCut2;
+
+            double fSlopeMinimum;
+
+            unsigned fProcTrackMinPoints;
 
         public:
             bool ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData);
@@ -103,6 +115,27 @@ namespace Katydid
         fPointLineDistCut2 = dist;
         return;
     }
+
+    inline double KTTrackProcessing::GetSlopeMinimum() const
+    {
+        return fSlopeMinimum;
+    }
+    inline void KTTrackProcessing::SetSlopeMinimum(double slope)
+    {
+        fSlopeMinimum = slope;
+        return;
+    }
+
+    inline unsigned KTTrackProcessing::GetProcTrackMinPoints() const
+    {
+        return fProcTrackMinPoints;
+    }
+    inline void KTTrackProcessing::SetProcTrackMinPoints(unsigned min)
+    {
+        fProcTrackMinPoints = min;
+        return;
+    }
+
 
     double KTTrackProcessing::PointLineDistance(double pointX, double pointY, double lineA, double lineB, double lineC)
     {

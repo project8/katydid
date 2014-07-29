@@ -77,14 +77,17 @@ namespace Katydid
     struct TProcessedTrackData
     {
             UInt_t fComponent;
-            Double_t fTimeInRun;
+            Bool_t fIsCut;
+            Double_t fStartTimeInRun;
+            Double_t fEndTimeInRun;
             Double_t fTimeLength;
             Double_t fMinFrequency;
             Double_t fMaxFrequency;
             Double_t fFrequencyWidth;
             Double_t fSlope;
             Double_t fIntercept;
-            Double_t fTimeInRunSigma;
+            Double_t fStartTimeInRunSigma;
+            Double_t fEndTimeInRunSigma;
             Double_t fTimeLengthSigma;
             Double_t fMinFrequencySigma;
             Double_t fMaxFrequencySigma;
