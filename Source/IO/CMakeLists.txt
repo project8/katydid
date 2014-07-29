@@ -26,6 +26,7 @@ if (ROOT_FOUND)
         ${IO_NODICT_HEADERFILES}
         KTBasicROOTFileWriter.hh
         KTBasicROOTTypeWriterAnalysis.hh
+        KTBasicROOTTypeWriterCandidates.hh
         KTBasicROOTTypeWriterEgg.hh
         KTBasicROOTTypeWriterFFT.hh
         KTDataDisplay.hh
@@ -66,6 +67,7 @@ if (ROOT_FOUND)
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
         KTBasicROOTTypeWriterAnalysis.cc
+        KTBasicROOTTypeWriterCandidates.cc
         KTBasicROOTTypeWriterEgg.cc
         KTBasicROOTTypeWriterFFT.cc
         KTBasicROOTFileWriter.cc
