@@ -34,6 +34,7 @@ namespace Katydid
     class KTParamNode;
     class KTTimeSeriesReal;
     class KTTimeSeriesData;
+    class KTTimeSeriesFFTW;
     class KTFrequencySpectrumDataPolar;
 
     /*!
@@ -94,11 +95,18 @@ namespace Katydid
             bool TransformData(KTFrequencySpectrumDataPolar& fsData);
             bool TransformData(KTCorrelationData& corrData);
 
+            /// Forward FFT on a frequency spectrum
+            /// NOTE: will REPLACE existing time series in the data object with KTTimeSeriesFFTW
+            bool TransformDataAgain(KTFrequencySpectrumDataPolar& fsData, KTTimeSeriesData& tsData);
+
             /// Forward FFT
             KTFrequencySpectrumPolar* Transform(const KTTimeSeriesReal* data) const;
 
             /// Reverse FFT
             KTTimeSeriesReal* Transform(const KTFrequencySpectrumPolar* data) const;
+
+            /// Forward FFT on a frequency spectrum
+            KTTimeSeriesFFTW* TransformAgain(const KTFrequencySpectrumPolar* data) const;
 
             virtual unsigned GetTimeSize() const;
             virtual unsigned GetFrequencySize() const;
@@ -145,6 +153,7 @@ namespace Katydid
             KTSignalData fFFTForwardSignal;
             KTSignalData fFFTReverseSignal;
             KTSignalData fFFTReverseCorrSignal;
+            KTSignalData fFFTForwardAgainSignal;
 
             //***************
             // Slots
@@ -153,8 +162,9 @@ namespace Katydid
         private:
             KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fFSPolarSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
             KTSlotDataOneType< KTCorrelationData > fCorrSlot;
+            KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTTimeSeriesData > fFSPolarForwardSlot;
     };
 
 
