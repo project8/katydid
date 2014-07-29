@@ -20,7 +20,7 @@ namespace Katydid
     KTLOGGER(tlog, "katydid.fft");
 
     // Register the processor
-    KT_REGISTER_PROCESSOR(KTCandidateCleaner, "track-proc");
+    KT_REGISTER_PROCESSOR(KTCandidateCleaner, "candidate-cleaner");
 
     KTCandidateCleaner::KTCandidateCleaner(const std::string& name) :
             KTProcessor(name),
