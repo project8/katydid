@@ -20,7 +20,10 @@ namespace Katydid
 
             unsigned GetComponent() const;
 
-            double GetTimeInRun() const;
+            bool GetIsCut() const;
+
+            double GetStartTimeInRun() const;
+            double GetEndTimeInRun() const;
             double GetTimeLength() const;
             double GetMinimumFrequency() const;
             double GetMaximumFrequency() const;
@@ -28,7 +31,8 @@ namespace Katydid
             double GetSlope() const;
             double GetIntercept() const;
 
-            double GetTimeInRunSigma() const;
+            double GetStartTimeInRunSigma() const;
+            double GetEndTimeInRunSigma() const;
             double GetTimeLengthSigma() const;
             double GetMinimumFrequencySigma() const;
             double GetMaximumFrequencySigma() const;
@@ -38,7 +42,10 @@ namespace Katydid
 
             void SetComponent(unsigned component);
 
-            void SetTimeInRun(double tir);
+            void SetIsCut(bool isCut);
+
+            void SetStartTimeInRun(double tir);
+            void SetEndTimeInRun(double tir);
             void SetTimeLength(double length);
             void SetMinimumFrequency(double freq);
             void SetMaximumFrequency(double freq);
@@ -46,7 +53,8 @@ namespace Katydid
             void SetSlope(double slope);
             void SetIntercept(double intercept);
 
-            void SetTimeInRunSigma(double sigma);
+            void SetStartTimeInRunSigma(double sigma);
+            void SetEndTimeInRunSigma(double sigma);
             void SetTimeLengthSigma(double sigma);
             void SetMinimumFrequencySigma(double sigma);
             void SetMaximumFrequencySigma(double sigma);
@@ -57,7 +65,10 @@ namespace Katydid
         protected:
             unsigned fComponent;
 
-            double fTimeInRun;
+            bool fIsCut;
+
+            double fStartTimeInRun;
+            double fEndTimeInRun;
             double fTimeLength;
             double fMinFrequency;
             double fMaxFrequency;
@@ -65,7 +76,8 @@ namespace Katydid
             double fSlope;
             double fIntercept;
 
-            double fTimeInRunSigma;
+            double fStartTimeInRunSigma;
+            double fEndTimeInRunSigma;
             double fTimeLengthSigma;
             double fMinFrequencySigma;
             double fMaxFrequencySigma;
@@ -79,9 +91,19 @@ namespace Katydid
         return fComponent;
     }
 
-    inline double KTProcessedTrackData::GetTimeInRun() const
+    inline bool KTProcessedTrackData::GetIsCut() const
     {
-        return fTimeInRun;
+        return fIsCut;
+    }
+
+    inline double KTProcessedTrackData::GetStartTimeInRun() const
+    {
+        return fStartTimeInRun;
+    }
+
+    inline double KTProcessedTrackData::GetEndTimeInRun() const
+    {
+        return fEndTimeInRun;
     }
 
     inline double KTProcessedTrackData::GetTimeLength() const
@@ -114,9 +136,14 @@ namespace Katydid
         return fIntercept;
     }
 
-    inline double KTProcessedTrackData::GetTimeInRunSigma() const
+    inline double KTProcessedTrackData::GetStartTimeInRunSigma() const
     {
-        return fTimeInRunSigma;
+        return fStartTimeInRunSigma;
+    }
+
+    inline double KTProcessedTrackData::GetEndTimeInRunSigma() const
+    {
+        return fEndTimeInRunSigma;
     }
 
     inline double KTProcessedTrackData::GetTimeLengthSigma() const
@@ -155,9 +182,21 @@ namespace Katydid
         return;
     }
 
-    inline void KTProcessedTrackData::SetTimeInRun(double tir)
+    inline void KTProcessedTrackData::SetIsCut(bool isCut)
     {
-        fTimeInRun = tir;
+        fIsCut = isCut;
+        return;
+    }
+
+    inline void KTProcessedTrackData::SetStartTimeInRun(double tir)
+    {
+        fStartTimeInRun = tir;
+        return;
+    }
+
+    inline void KTProcessedTrackData::SetEndTimeInRun(double tir)
+    {
+        fEndTimeInRun = tir;
         return;
     }
 
@@ -197,9 +236,15 @@ namespace Katydid
         return;
     }
 
-    inline void KTProcessedTrackData::SetTimeInRunSigma(double sigma)
+    inline void KTProcessedTrackData::SetStartTimeInRunSigma(double sigma)
     {
-        fTimeInRunSigma = sigma;
+        fStartTimeInRunSigma = sigma;
+        return;
+    }
+
+    inline void KTProcessedTrackData::SetEndTimeInRunSigma(double sigma)
+    {
+        fEndTimeInRunSigma = sigma;
         return;
     }
 
