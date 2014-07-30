@@ -50,7 +50,7 @@ namespace Katydid
         SetPointLineDistCut1(node->GetValue("pl-dist-cut1", GetPointLineDistCut1()));
         SetPointLineDistCut2(node->GetValue("pl-dist-cut2", GetPointLineDistCut2()));
 
-        SetSlopeMinimum(node->GetValue("slope-min", GetSlopeMinimum()));
+        SetSlopeMinimum(node->GetValue("min-slope", GetSlopeMinimum()));
 
         SetProcTrackMinPoints(node->GetValue("min-points", GetProcTrackMinPoints()));
 
@@ -219,8 +219,8 @@ namespace Katydid
         procTrack.SetStartTimeInRun(startTime);
         procTrack.SetEndTimeInRun(stopTime);
         procTrack.SetTimeLength(stopTime - startTime);
-        procTrack.SetMinimumFrequency(startFreq);
-        procTrack.SetMaximumFrequency(stopFreq);
+        procTrack.SetStartFrequency(startFreq);
+        procTrack.SetEndFrequency(stopFreq);
         procTrack.SetFrequencyWidth(stopFreq - startFreq);
         procTrack.SetSlope(lsSlope);
         procTrack.SetIntercept(lsIntercept);

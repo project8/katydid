@@ -97,7 +97,7 @@ namespace Katydid
         grPoints->Draw("ap");
 
         // line for track
-        TLine* trackLine = new TLine(ptData.GetStartTimeInRun(), ptData.GetMinimumFrequency(), ptData.GetEndTimeInRun(), ptData.GetMaximumFrequency());
+        TLine* trackLine = new TLine(ptData.GetStartTimeInRun(), ptData.GetStartFrequency(), ptData.GetEndTimeInRun(), ptData.GetEndFrequency());
         trackLine->SetLineColor(1);
         trackLine->SetLineWidth(1);
         trackLine->Draw();

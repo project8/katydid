@@ -25,8 +25,8 @@ namespace Katydid
             double GetStartTimeInRun() const;
             double GetEndTimeInRun() const;
             double GetTimeLength() const;
-            double GetMinimumFrequency() const;
-            double GetMaximumFrequency() const;
+            double GetStartFrequency() const;
+            double GetEndFrequency() const;
             double GetFrequencyWidth() const;
             double GetSlope() const;
             double GetIntercept() const;
@@ -34,8 +34,8 @@ namespace Katydid
             double GetStartTimeInRunSigma() const;
             double GetEndTimeInRunSigma() const;
             double GetTimeLengthSigma() const;
-            double GetMinimumFrequencySigma() const;
-            double GetMaximumFrequencySigma() const;
+            double GetStartFrequencySigma() const;
+            double GetEndFrequencySigma() const;
             double GetFrequencyWidthSigma() const;
             double GetSlopeSigma() const;
             double GetInterceptSigma() const;
@@ -47,8 +47,8 @@ namespace Katydid
             void SetStartTimeInRun(double tir);
             void SetEndTimeInRun(double tir);
             void SetTimeLength(double length);
-            void SetMinimumFrequency(double freq);
-            void SetMaximumFrequency(double freq);
+            void SetStartFrequency(double freq);
+            void SetEndFrequency(double freq);
             void SetFrequencyWidth(double width);
             void SetSlope(double slope);
             void SetIntercept(double intercept);
@@ -56,8 +56,8 @@ namespace Katydid
             void SetStartTimeInRunSigma(double sigma);
             void SetEndTimeInRunSigma(double sigma);
             void SetTimeLengthSigma(double sigma);
-            void SetMinimumFrequencySigma(double sigma);
-            void SetMaximumFrequencySigma(double sigma);
+            void SetStartFrequencySigma(double sigma);
+            void SetEndFrequencySigma(double sigma);
             void SetFrequencyWidthSigma(double sigma);
             void SetSlopeSigma(double sigma);
             void SetInterceptSigma(double sigma);
@@ -70,8 +70,8 @@ namespace Katydid
             double fStartTimeInRun;
             double fEndTimeInRun;
             double fTimeLength;
-            double fMinFrequency;
-            double fMaxFrequency;
+            double fStartFrequency;
+            double fEndFrequency;
             double fFrequencyWidth;
             double fSlope;
             double fIntercept;
@@ -79,8 +79,8 @@ namespace Katydid
             double fStartTimeInRunSigma;
             double fEndTimeInRunSigma;
             double fTimeLengthSigma;
-            double fMinFrequencySigma;
-            double fMaxFrequencySigma;
+            double fStartFrequencySigma;
+            double fEndFrequencySigma;
             double fFrequencyWidthSigma;
             double fSlopeSigma;
             double fInterceptSigma;
@@ -111,14 +111,14 @@ namespace Katydid
         return fTimeLength;
     }
 
-    inline double KTProcessedTrackData::GetMinimumFrequency() const
+    inline double KTProcessedTrackData::GetStartFrequency() const
     {
-        return fMinFrequency;
+        return fStartFrequency;
     }
 
-    inline double KTProcessedTrackData::GetMaximumFrequency() const
+    inline double KTProcessedTrackData::GetEndFrequency() const
     {
-        return fMaxFrequency;
+        return fEndFrequency;
     }
 
     inline double KTProcessedTrackData::GetFrequencyWidth() const
@@ -151,14 +151,14 @@ namespace Katydid
         return fTimeLengthSigma;
     }
 
-    inline double KTProcessedTrackData::GetMinimumFrequencySigma() const
+    inline double KTProcessedTrackData::GetStartFrequencySigma() const
     {
-        return fMinFrequencySigma;
+        return fStartFrequencySigma;
     }
 
-    inline double KTProcessedTrackData::GetMaximumFrequencySigma() const
+    inline double KTProcessedTrackData::GetEndFrequencySigma() const
     {
-        return fMaxFrequencySigma;
+        return fEndFrequencySigma;
     }
 
     inline double KTProcessedTrackData::GetFrequencyWidthSigma() const
@@ -206,15 +206,15 @@ namespace Katydid
         return;
     }
 
-    inline void KTProcessedTrackData::SetMinimumFrequency(double freq)
+    inline void KTProcessedTrackData::SetStartFrequency(double freq)
     {
-        fMinFrequency = freq;
+        fStartFrequency = freq;
         return;
     }
 
-    inline void KTProcessedTrackData::SetMaximumFrequency(double freq)
+    inline void KTProcessedTrackData::SetEndFrequency(double freq)
     {
-        fMaxFrequency = freq;
+        fEndFrequency = freq;
         return;
     }
 
@@ -254,15 +254,15 @@ namespace Katydid
         return;
     }
 
-    inline void KTProcessedTrackData::SetMinimumFrequencySigma(double sigma)
+    inline void KTProcessedTrackData::SetStartFrequencySigma(double sigma)
     {
-        fMinFrequencySigma = sigma;
+        fStartFrequencySigma = sigma;
         return;
     }
 
-    inline void KTProcessedTrackData::SetMaximumFrequencySigma(double sigma)
+    inline void KTProcessedTrackData::SetEndFrequencySigma(double sigma)
     {
-        fMaxFrequencySigma = sigma;
+        fEndFrequencySigma = sigma;
         return;
     }
 
