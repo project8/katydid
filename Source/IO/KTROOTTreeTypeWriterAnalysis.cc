@@ -7,14 +7,17 @@
 
 #include "KTROOTTreeTypeWriterAnalysis.hh"
 
-#include "KTDiscriminatedPoints1DData.hh"
+#include "KT2ROOT.hh"
 #include "KTAmplitudeDistribution.hh"
-#include "KTTIFactory.hh"
+#include "KTDiscriminatedPoints1DData.hh"
+#include "KTHoughData.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
+#include "KTTIFactory.hh"
 
 #include "TFile.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "TTree.h"
 
 #include <sstream>
@@ -35,8 +38,10 @@ namespace Katydid
             //KTTypeWriterAnalysis()
             fDiscPoints1DTree(NULL),
             fAmpDistTree(NULL),
+            fHoughTree(NULL),
             fDiscPoints1DData(),
-            fAmpDistData()
+            fAmpDistData(),
+            fHoughData()
     {
     }
 
@@ -49,6 +54,7 @@ namespace Katydid
     {
         fWriter->RegisterSlot("disc-1d", this, &KTROOTTreeTypeWriterAnalysis::WriteDiscriminatedPoints1D);
         fWriter->RegisterSlot("amp-dist", this, &KTROOTTreeTypeWriterAnalysis::WriteAmplitudeDistributions);
+        fWriter->RegisterSlot("hough", this, &KTROOTTreeTypeWriterAnalysis::WriteHoughData);
         return;
     }
 
@@ -68,7 +74,7 @@ namespace Katydid
         {
             if (! SetupDiscriminatedPoints1DTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the frequency candidate tree! Nothing was written.");
+                KTERROR(publog, "Something went wrong while setting up the discriminated points 1D tree! Nothing was written.");
                 return;
             }
         }
@@ -132,7 +138,7 @@ namespace Katydid
         {
             if (! SetupAmplitudeDistributionTree())
             {
-                KTERROR(publog, "Something went wrong while setting up the frequency candidate tree! Nothing was written.");
+                KTERROR(publog, "Something went wrong while setting up the amplitude distribution tree! Nothing was written.");
                 return;
             }
         }
@@ -177,6 +183,65 @@ namespace Katydid
 
         return true;
     }
+
+
+    //*************************
+    // Hough Transform Data
+    //*************************
+
+    void KTROOTTreeTypeWriterAnalysis::WriteHoughData(KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to hough data root tree");
+        KTHoughData& htData = data->Of< KTHoughData >();
+        //KTSliceHeader& header = data->Of< KTSliceHeader >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fHoughTree == NULL)
+        {
+            if (! SetupHoughTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the Hough tree! Nothing was written.");
+                return;
+            }
+        }
+
+        for (fHoughData.fComponent = 0; fHoughData.fComponent < htData.GetNComponents(); fHoughData.fComponent++)
+        {
+            fHoughData.fTransform = KT2ROOT::CreateHistogram(htData.GetTransform(fHoughData.fComponent));
+            fHoughData.fTransform->SetDirectory(NULL);
+            fHoughData.fXOffset = htData.GetXOffset(fHoughData.fComponent);
+            fHoughData.fXScale = htData.GetXScale(fHoughData.fComponent);
+            fHoughData.fYOffset = htData.GetYOffset(fHoughData.fComponent);
+            fHoughData.fYScale = htData.GetYScale(fHoughData.fComponent);
+        }
+
+        fHoughTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterAnalysis::SetupHoughTree()
+    {
+        fHoughTree = new TTree("hough", "Hough Transform");
+        if (fHoughTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fHoughTree);
+
+        fHoughTree->Branch("Component", &fHoughData.fComponent, "fComponent/s");
+        fHoughTree->Branch("Transform", &fHoughData.fTransform, 32000, 0);
+        fHoughTree->Branch("XOffset", &fHoughData.fXOffset, "fXOffset/d");
+        fHoughTree->Branch("XScale", &fHoughData.fXScale, "fXScale/d");
+        fHoughTree->Branch("YOffset", &fHoughData.fYOffset, "fYOffset/d");
+        fHoughTree->Branch("YScale", &fHoughData.fYScale, "fYScale/d");
+
+        return true;
+    }
+
+
 
 } /* namespace Katydid */
 

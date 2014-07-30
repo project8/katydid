@@ -15,6 +15,7 @@
 #include "Rtypes.h"
 
 class TH1D;
+class TH2D;
 class TTree;
 
 namespace Katydid
@@ -37,6 +38,16 @@ namespace Katydid
         TH1D* fDistribution;
     };
 
+    struct THoughData
+    {
+            UShort_t fComponent;
+            TH2D* fTransform;
+            double fXOffset;
+            double fXScale;
+            double fYOffset;
+            double fYScale;
+    };
+
 
     class KTROOTTreeTypeWriterAnalysis : public KTROOTTreeTypeWriter//, public KTTypeWriterAnalysis
     {
@@ -49,20 +60,25 @@ namespace Katydid
         public:
             void WriteDiscriminatedPoints1D(KTDataPtr data);
             void WriteAmplitudeDistributions(KTDataPtr data);
+            void WriteHoughData(KTDataPtr data);
 
         public:
             TTree* GetDiscriminatedPoints1DTree() const;
             TTree* GetAmplitudeDistributionTree() const;
+            TTree* GetHoughTree() const;
 
         private:
             bool SetupDiscriminatedPoints1DTree();
             bool SetupAmplitudeDistributionTree();
+            bool SetupHoughTree();
 
             TTree* fDiscPoints1DTree;
             TTree* fAmpDistTree;
+            TTree* fHoughTree;
 
             TDiscriminatedPoints1DData fDiscPoints1DData;
             TAmplitudeDistributionData fAmpDistData;
+            THoughData fHoughData;
 
     };
 
@@ -74,6 +90,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterAnalysis::GetAmplitudeDistributionTree() const
     {
         return fAmpDistTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterAnalysis::GetHoughTree() const
+    {
+        return fHoughTree;
     }
 
 } /* namespace Katydid */

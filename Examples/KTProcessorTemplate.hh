@@ -21,7 +21,7 @@ namespace Katydid
     // input data type . . .
     // output data type . . .
     class KTEggHeader;
-    class KTPStoreNode;
+    class KTParamNode;
 
     /*!
      @class KTProcessorTemplate
@@ -39,10 +39,10 @@ namespace Katydid
 
      Slots:
      - "header": void (const KTEggHeader* header) -- [what it does]
-     - "[slot-name]": void (shared_ptr<KTData>) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
+     - "[slot-name]": void (KTDataPtr) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
 
      Signals:
-     - "[signal-name]": void (shared_ptr<KTData>) -- Emitted upon [whatever was done]; Guarantees [output data type].
+     - "[signal-name]": void (KTDataPtr) -- Emitted upon [whatever was done]; Guarantees [output data type].
     */
 
     class KTProcessorTemplate : public KTProcessor
@@ -51,7 +51,7 @@ namespace Katydid
             KTProcessorTemplate(const std::string& name = "[config-name]");
             virtual ~KTProcessorTemplate();
 
-            bool Configure(const KTPStoreNode* node);
+            bool Configure(const KTParamNode* node);
 
             // Getters and setters for configurable parameters go here
         private:
@@ -85,4 +85,4 @@ namespace Katydid
     };
 }
  /* namespace Katydid */
-#endif /* KTCOMPLEXFFTW_HH_ */
+#endif /* KTPROCESSORTEMPLATE_HH_ */

@@ -12,10 +12,10 @@
 #include "KTMath.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTParam.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"
 
 #include <cmath>
-#include <vector>
 
 //#include "TFile.h"
 //#include "TH2.h"
@@ -35,7 +35,10 @@ namespace Katydid
             KTProcessor(name),
             fNThetaPoints(1),
             fNRPoints(1),
-            fHTSignal("hough-transform", this),
+            fCosTheta(0),
+            fSinTheta(0),
+            fHTSignal("hough", this),
+            fSWFCandSlot("swf-cand", this, &KTHoughTransform::TransformData, &fHTSignal),
             fWFCandSlot("wf-cand", this, &KTHoughTransform::TransformData, &fHTSignal),
             fDiscPts2DSlot("disc", this, &KTHoughTransform::TransformData, &fHTSignal)
     {
@@ -53,6 +56,80 @@ namespace Katydid
         return true;
     }
 
+    bool KTHoughTransform::TransformData(KTSparseWaterfallCandidateData& data)
+    {
+        KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(1);
+
+        const KTSparseWaterfallCandidateData::Points& points = data.GetPoints();
+
+        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRun(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth());
+        if (newTransform == NULL)
+        {
+            KTERROR(htlog, "Something went wrong in the transform");
+        }
+        else
+        {
+            newData.SetTransform(newTransform, data.GetTimeInRun(), 1. / data.GetTimeLength(), data.GetMinimumFrequency(), 1. / data.GetFrequencyWidth(), 0);
+        }
+        KTINFO(htlog, "Completed hough transform");
+
+        return true;
+    }
+
+    KTPhysicalArray< 2, double >* KTHoughTransform::TransformPoints(const SWFPoints& points, double minTime, double timeLength, double minFreq, double freqWidth)
+    {
+        KTINFO(htlog, "Number of time/frequency points: " << points.size());
+
+        double maxR = KTMath::Sqrt2();
+        double timeScaling = 1. / timeLength;
+        double freqScaling = 1. / freqWidth;
+
+        KTPhysicalArray< 2, double >* newTransform = new KTPhysicalArray< 2, double >(fNThetaPoints, 0., KTMath::Pi(), fNRPoints, -maxR, maxR);
+        for (unsigned iTheta = 0; iTheta < fNThetaPoints; ++iTheta)
+        {
+            for (unsigned iRadius = 0; iRadius < fNRPoints; ++iRadius)
+            {
+                (*newTransform)(iTheta, iRadius) = 0.;
+            }
+        }
+
+        double deltaTheta = KTMath::Pi() / (double)fNThetaPoints;
+
+        // initial loop over theta bins to create the KTPhysicalArrays and to cache cosTheta and sinTheta values
+        if (fCosTheta.size() != fNThetaPoints || fSinTheta.size() != fNThetaPoints)
+        {
+            fCosTheta.resize(fNThetaPoints);
+            fSinTheta.resize(fNThetaPoints);
+            double theta = newTransform->GetBinCenter(0, 0);
+            for (unsigned iTheta = 0; iTheta < fNThetaPoints; ++iTheta)
+            {
+                fCosTheta[iTheta] = cos(theta);
+                fSinTheta[iTheta] = sin(theta);
+                theta += deltaTheta;
+            }
+        }
+
+        double timeVal, freqVal, value, radius;
+        unsigned iRadius;
+        for (SWFPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+        {
+            timeVal = (pIt->fTimeInRun - minTime) * timeScaling;
+            freqVal = (pIt->fFrequency - minFreq) * freqScaling;
+            value = pIt->fAmplitude;
+
+            for (unsigned iTheta = 0; iTheta < fNThetaPoints; ++iTheta)
+            {
+                radius = timeVal * fCosTheta[iTheta] + freqVal * fSinTheta[iTheta];
+
+                iRadius = newTransform->FindBin(2, radius);
+
+                (*newTransform)(iTheta, iRadius) = (*newTransform)(iTheta, iRadius) + value;
+            }
+        }
+
+        return newTransform;
+    }
+
     bool KTHoughTransform::TransformData(KTWaterfallCandidateData& data)
     {
         KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(1);
@@ -66,7 +143,7 @@ namespace Katydid
         }
         else
         {
-            newData.SetTransform(newTransform, 0);
+            newData.SetTransform(newTransform, 0., 1. / candidate->GetTimeBinWidth(), 0., 1. / candidate->GetFrequencyBinWidth(), 0);
         }
         KTINFO(htlog, "Completed hough transform");
 
@@ -84,18 +161,28 @@ namespace Katydid
         double maxR = sqrt(double(nTimeBins*nTimeBins + nFreqBins*nFreqBins));
 
         KTPhysicalArray< 2, double >* newTransform = new KTPhysicalArray< 2, double >(fNThetaPoints, 0., KTMath::Pi(), fNRPoints, -maxR, maxR);
+        for (unsigned iTheta = 0; iTheta < fNThetaPoints; ++iTheta)
+        {
+            for (unsigned iRadius = 0; iRadius < fNRPoints; ++iRadius)
+            {
+                (*newTransform)(iTheta, iRadius) = 0.;
+            }
+        }
 
         double deltaTheta = KTMath::Pi() / (double)fNThetaPoints;
 
         // initial loop over theta bins to create the KTPhysicalArrays and to cache cosTheta and sinTheta values
-        vector< double > cosTheta(fNThetaPoints);
-        vector< double > sinTheta(fNThetaPoints);
-        double theta = newTransform->GetBinCenter(0, 0);
-        for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+        if (fCosTheta.size() != fNThetaPoints || fSinTheta.size() != fNThetaPoints)
         {
-            cosTheta[iTheta] = cos(theta);
-            sinTheta[iTheta] = sin(theta);
-            theta += deltaTheta;
+            fCosTheta.resize(fNThetaPoints);
+            fSinTheta.resize(fNThetaPoints);
+            double theta = newTransform->GetBinCenter(0, 0);
+            for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+            {
+                fCosTheta[iTheta] = cos(theta);
+                fSinTheta[iTheta] = sin(theta);
+                theta += deltaTheta;
+            }
         }
 
         double timeVal, freqVal, value, radius;
@@ -113,9 +200,9 @@ namespace Katydid
 
                 for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
                 {
-                    radius = timeVal * cosTheta[iTheta] + freqVal * sinTheta[iTheta];
+                    radius = timeVal * fCosTheta[iTheta] + freqVal * fSinTheta[iTheta];
 
-                    iRadius = newTransform->FindBin(1, radius);
+                    iRadius = newTransform->FindBin(2, radius);
 
                     (*newTransform)(iTheta, iRadius) = (*newTransform)(iTheta, iRadius) + value;
                 }
@@ -143,7 +230,7 @@ namespace Katydid
             }
             else
             {
-                newData.SetTransform(newTransform, iComponent);
+                newData.SetTransform(newTransform, 0., 1., 0., 1., iComponent);
             }
         }
         KTINFO(htlog, "Completed hough transform for " << nComponents << " components");
@@ -158,18 +245,28 @@ namespace Katydid
         double maxR = sqrt(double(nTimeBins*nTimeBins + nFreqBins*nFreqBins));
 
         KTPhysicalArray< 2, double >* newTransform = new KTPhysicalArray< 2, double >(fNThetaPoints, 0., KTMath::Pi(), fNRPoints, -maxR, maxR);
+        for (unsigned iTheta = 0; iTheta < fNThetaPoints; ++iTheta)
+        {
+            for (unsigned iRadius = 0; iRadius < fNRPoints; ++iRadius)
+            {
+                (*newTransform)(iTheta, iRadius) = 0.;
+            }
+        }
 
         double deltaTheta = KTMath::Pi() / (double)fNThetaPoints;
 
         // initial loop over theta bins to create the KTPhysicalArrays and to cache cosTheta and sinTheta values
-        vector< double > cosTheta(fNThetaPoints);
-        vector< double > sinTheta(fNThetaPoints);
-        double theta = newTransform->GetBinCenter(0, 0);
-        for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+        if (fCosTheta.size() != fNThetaPoints || fSinTheta.size() != fNThetaPoints)
         {
-            cosTheta[iTheta] = cos(theta);
-            sinTheta[iTheta] = sin(theta);
-            theta += deltaTheta;
+            fCosTheta.resize(fNThetaPoints);
+            fSinTheta.resize(fNThetaPoints);
+            double theta = newTransform->GetBinCenter(0, 0);
+            for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
+            {
+                fCosTheta[iTheta] = cos(theta);
+                fSinTheta[iTheta] = sin(theta);
+                theta += deltaTheta;
+            }
         }
 
         double timeVal, freqVal, value, radius;
@@ -182,9 +279,9 @@ namespace Katydid
 
             for (unsigned iTheta = 0; iTheta < fNThetaPoints; iTheta++)
             {
-                radius = timeVal * cosTheta[iTheta] + freqVal * sinTheta[iTheta];
+                radius = timeVal * fCosTheta[iTheta] + freqVal * fSinTheta[iTheta];
 
-                iRadius = newTransform->FindBin(1, radius);
+                iRadius = newTransform->FindBin(2, radius);
 
                 (*newTransform)(iTheta, iRadius) = (*newTransform)(iTheta, iRadius) + value;
             }

@@ -5,13 +5,17 @@
 #set (CANDIDATES_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CandidatesDict.cxx)
 
 set (CANDIDATES_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceClustering.hh
+    KTDBScan.hh
+    KTDBScanTrackClustering.hh
+    KTFrequencyCandidateIdentifier.hh
+    KTMultiSliceClustering.hh
 )
 
 set (CANDIDATES_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFrequencyCandidateIdentifier.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMultiSliceClustering.cc
+    KTDBScan.cc
+    KTDBScanTrackClustering.cc
+    KTFrequencyCandidateIdentifier.cc
+    KTMultiSliceClustering.cc
 )
 
 set (KATYDID_LIBS

@@ -14,6 +14,7 @@
 
 #include "Rtypes.h"
 
+class TGraph2D;
 class TH2D;
 class TTree;
 
@@ -50,6 +51,29 @@ namespace Katydid
         TH2D* fCandidate;
     };
 
+    // commented-out fields match fields not yet implemented in KTSparseWaterfallCandidateData
+    struct TSparseWaterfallCandidateData
+    {
+            TGraph2D* fPoints;
+            UShort_t fComponent;
+            Double_t fTimeBinWidth;
+            Double_t fFreqBinWidth;
+            Double_t fTimeInRun;
+            Double_t fTimeLength;
+            //ULong64_t fFirstSliceNumber;
+            //ULong64_t fLastSliceNumber;
+            Double_t fMinFrequency;
+            Double_t fMaxFrequency;
+            //Double_t fMeanStartFrequency;
+            //Double_t fMeanEndFrequency;
+            Double_t fFrequencyWidth;
+            //UInt_t fStartRecordNumber;
+            //UInt_t fStartSampleNumber;
+            //UInt_t fEndRecordNumber;
+            //UInt_t fEndSampleNumber;
+
+    };
+
     class KTROOTTreeTypeWriterCandidates : public KTROOTTreeTypeWriter//, public KTTypeWriterCandidates
     {
         public:
@@ -63,19 +87,25 @@ namespace Katydid
 
             void WriteWaterfallCandidate(KTDataPtr data);
 
+            void WriteSparseWaterfallCandidate(KTDataPtr Data);
+
         public:
             TTree* GetFrequencyCandidateTree() const;
             TTree* GetWaterfallCandidateTree() const;
+            TTree* GetSparseWaterfallCandidateTree() const;
 
         private:
             bool SetupFrequencyCandidateTree();
             bool SetupWaterfallCandidateTree();
+            bool SetupSparseWaterfallCandidateTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
+            TTree* fSparseWaterfallCandidateTree;
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
+            TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
 
     };
 
@@ -87,6 +117,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterCandidates::GetWaterfallCandidateTree() const
     {
         return fWaterfallCandidateTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterCandidates::GetSparseWaterfallCandidateTree() const
+    {
+        return fSparseWaterfallCandidateTree;
     }
 
 
