@@ -86,6 +86,7 @@ namespace Katydid
             Double_t fFrequencyWidth;
             Double_t fSlope;
             Double_t fIntercept;
+            Double_t fTotalPower;
             Double_t fStartTimeInRunCSigma;
             Double_t fEndTimeInRunCSigma;
             Double_t fTimeLengthSigma;
@@ -94,6 +95,7 @@ namespace Katydid
             Double_t fFrequencyWidthSigma;
             Double_t fSlopeSigma;
             Double_t fInterceptSigma;
+            Double_t fTotalPowerSigma;
 
     };
 

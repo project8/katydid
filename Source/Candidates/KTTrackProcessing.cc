@@ -193,16 +193,21 @@ namespace Katydid
         }
         KTDEBUG(tlog, "Points removed with cut 2: " << nPointsCut2);
 
-        // Remove points
+        // Remove points and sum amplitudes
         Points::iterator pItMaster = points.begin();
-        Points::iterator pItToDelete;
+        Points::iterator pItCache;
+        double amplitudeSum = 0.;
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
-            pItToDelete = pItMaster;
+            pItCache = pItMaster;
             ++pItMaster;
-            if (pointsCuts[iPoint] != 0)
+            if (pointsCuts[iPoint] == 0)
             {
-                points.erase(pItToDelete);
+                amplitudeSum += pItCache->fAmplitude;
+            }
+            else
+            {
+                points.erase(pItCache);
             }
         }
         KTDEBUG(tlog, "Points present after cuts: " << points.size());
@@ -224,6 +229,7 @@ namespace Katydid
         procTrack.SetFrequencyWidth(stopFreq - startFreq);
         procTrack.SetSlope(lsSlope);
         procTrack.SetIntercept(lsIntercept);
+        procTrack.SetTotalPower(amplitudeSum);
         //TODO: Add calculation of uncertainties
 
         return true;

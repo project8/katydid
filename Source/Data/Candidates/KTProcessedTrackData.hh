@@ -30,6 +30,7 @@ namespace Katydid
             double GetFrequencyWidth() const;
             double GetSlope() const;
             double GetIntercept() const;
+            double GetTotalPower() const;
 
             double GetStartTimeInRunCSigma() const;
             double GetEndTimeInRunCSigma() const;
@@ -39,6 +40,7 @@ namespace Katydid
             double GetFrequencyWidthSigma() const;
             double GetSlopeSigma() const;
             double GetInterceptSigma() const;
+            double GetTotalPowerSigma() const;
 
             void SetComponent(unsigned component);
 
@@ -52,6 +54,7 @@ namespace Katydid
             void SetFrequencyWidth(double width);
             void SetSlope(double slope);
             void SetIntercept(double intercept);
+            void SetTotalPower(double power);
 
             void SetStartTimeInRunCSigma(double sigma);
             void SetEndTimeInRunCSigma(double sigma);
@@ -61,6 +64,7 @@ namespace Katydid
             void SetFrequencyWidthSigma(double sigma);
             void SetSlopeSigma(double sigma);
             void SetInterceptSigma(double sigma);
+            void SetTotalPowerSigma(double sigma);
 
         protected:
             unsigned fComponent;
@@ -75,6 +79,7 @@ namespace Katydid
             double fFrequencyWidth;
             double fSlope;
             double fIntercept;
+            double fTotalPower;
 
             double fStartTimeInRunCSigma;
             double fEndTimeInRunCSigma;
@@ -84,6 +89,7 @@ namespace Katydid
             double fFrequencyWidthSigma;
             double fSlopeSigma;
             double fInterceptSigma;
+            double fTotalPowerSigma;
     };
 
     inline unsigned KTProcessedTrackData::GetComponent() const
@@ -136,6 +142,11 @@ namespace Katydid
         return fIntercept;
     }
 
+    inline double KTProcessedTrackData::GetTotalPower() const
+    {
+        return fTotalPower;
+    }
+
     inline double KTProcessedTrackData::GetStartTimeInRunCSigma() const
     {
         return fStartTimeInRunCSigma;
@@ -174,6 +185,11 @@ namespace Katydid
     inline double KTProcessedTrackData::GetInterceptSigma() const
     {
         return fInterceptSigma;
+    }
+
+    inline double KTProcessedTrackData::GetTotalPowerSigma() const
+    {
+        return fTotalPowerSigma;
     }
 
     inline void KTProcessedTrackData::SetComponent(unsigned component)
@@ -236,6 +252,12 @@ namespace Katydid
         return;
     }
 
+    inline void KTProcessedTrackData::SetTotalPower(double power)
+    {
+        fTotalPower = power;
+        return;
+    }
+
     inline void KTProcessedTrackData::SetStartTimeInRunCSigma(double sigma)
     {
         fStartTimeInRunCSigma = sigma;
@@ -281,6 +303,12 @@ namespace Katydid
     inline void KTProcessedTrackData::SetInterceptSigma(double sigma)
     {
         fInterceptSigma = sigma;
+        return;
+    }
+
+    inline void KTProcessedTrackData::SetTotalPowerSigma(double sigma)
+    {
+        fTotalPowerSigma = sigma;
         return;
     }
 

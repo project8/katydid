@@ -21,6 +21,7 @@ namespace Katydid
             fFrequencyWidth(0.),
             fSlope(0.),
             fIntercept(0.),
+            fTotalPower(0.),
             fStartTimeInRunCSigma(0.),
             fEndTimeInRunCSigma(0.),
             fTimeLengthSigma(0.),
@@ -28,7 +29,8 @@ namespace Katydid
             fEndFrequencySigma(0.),
             fFrequencyWidthSigma(0.),
             fSlopeSigma(0.),
-            fInterceptSigma(0.)
+            fInterceptSigma(0.),
+            fTotalPowerSigma(0.)
     {
     }
 

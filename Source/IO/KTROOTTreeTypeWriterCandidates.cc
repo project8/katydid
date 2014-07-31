@@ -316,6 +316,7 @@ namespace Katydid
         fProcessedTrackData.fFrequencyWidth = ptData.GetFrequencyWidth();
         fProcessedTrackData.fSlope = ptData.GetSlope();
         fProcessedTrackData.fIntercept = ptData.GetIntercept();
+        fProcessedTrackData.fTotalPower = ptData.GetTotalPower();
         fProcessedTrackData.fStartTimeInRunCSigma = ptData.GetStartTimeInRunCSigma();
         fProcessedTrackData.fEndTimeInRunCSigma = ptData.GetEndTimeInRunCSigma();
         fProcessedTrackData.fTimeLengthSigma = ptData.GetTimeLengthSigma();
@@ -324,6 +325,7 @@ namespace Katydid
         fProcessedTrackData.fFrequencyWidthSigma = ptData.GetFrequencyWidthSigma();
         fProcessedTrackData.fSlopeSigma = ptData.GetSlopeSigma();
         fProcessedTrackData.fInterceptSigma = ptData.GetInterceptSigma();
+        fProcessedTrackData.fTotalPowerSigma = ptData.GetTotalPowerSigma();
 
         fProcessedTrackTree->Fill();
 
@@ -350,6 +352,7 @@ namespace Katydid
         fProcessedTrackTree->Branch("FrequencyWidth", &fProcessedTrackData.fFrequencyWidth, "fFrequencyWidth/d");
         fProcessedTrackTree->Branch("Slope", &fProcessedTrackData.fSlope, "fSlope/d");
         fProcessedTrackTree->Branch("Intercept", &fProcessedTrackData.fIntercept, "fIntercept/d");
+        fProcessedTrackTree->Branch("TotalPower", &fProcessedTrackData.fTotalPower, "fTotalPower/d");
         fProcessedTrackTree->Branch("StartTimeInRunCSigma", &fProcessedTrackData.fStartTimeInRunCSigma, "fStartTimeInRunCSigma/d");
         fProcessedTrackTree->Branch("EndTimeInRunCSigma", &fProcessedTrackData.fEndTimeInRunCSigma, "fEndTimeInRunCSigma/d");
         fProcessedTrackTree->Branch("TimeLengthSigma", &fProcessedTrackData.fTimeLengthSigma, "fTimeLengthSigma/d");
@@ -358,6 +361,7 @@ namespace Katydid
         fProcessedTrackTree->Branch("FrequencyWidthSigma", &fProcessedTrackData.fFrequencyWidthSigma, "fFrequencyWidthSigma/d");
         fProcessedTrackTree->Branch("SlopeSigma", &fProcessedTrackData.fSlopeSigma, "fSlopeSigma/d");
         fProcessedTrackTree->Branch("InterceptSigma", &fProcessedTrackData.fInterceptSigma, "fInterceptSigma/d");
+        fProcessedTrackTree->Branch("TotalPowerSigma", &fProcessedTrackData.fTotalPowerSigma, "fTotalPowerSigma/d");
 
         return true;
     }

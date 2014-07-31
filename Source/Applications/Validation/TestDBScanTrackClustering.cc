@@ -248,9 +248,9 @@ int main()
         pointsStr << "Points: ";
         for (Points::const_iterator pIt = candPoints.begin(); pIt != candPoints.end(); ++pIt)
         {
-            pointsStr << "(" << pIt->fTimeInRun << ", " << pIt->fFrequency << "), ";
+            pointsStr << "(" << pIt->fTimeInRunC << ", " << pIt->fFrequency << "), ";
 #ifdef ROOT_FOUND
-            clGraph->SetPoint(iPt, pIt->fTimeInRun, pIt->fFrequency);
+            clGraph->SetPoint(iPt, pIt->fTimeInRunC, pIt->fFrequency);
             ++iPt;
 #endif
         }
