@@ -241,7 +241,7 @@ namespace Katydid
                 value = (*spectrum)(iBin).abs();
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value, threshold), component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
             }
         }
         //**************
@@ -270,7 +270,7 @@ namespace Katydid
                 value = (*spectrum)(iBin).abs();
                 threshold = thresholdAdd + (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value, threshold), component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
             }
         }
 
@@ -321,7 +321,7 @@ namespace Katydid
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value, threshold), component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
             }
         }
         //**************
@@ -355,7 +355,7 @@ namespace Katydid
                 value = fMagnitudeCache[iBin];
                 threshold = thresholdAdd + (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value, threshold), component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
             }
         }
 

@@ -215,7 +215,7 @@ namespace Katydid
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
             {
                 value = magnitude[iBin];
-                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value, threshold), iComponent);
+                if (value >= threshold) newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
             }
             KTDEBUG(sdlog, "Component " << iComponent << " has " << newData.GetSetOfPoints(iComponent).size() << " points above threshold");
 
@@ -307,7 +307,7 @@ namespace Katydid
                 if (value >= threshold)
                 {
                     //printer << "   " << iBin << " -- " << value;
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * iBin, value, threshold), iComponent);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), iComponent);
                 }
             }
 

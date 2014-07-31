@@ -19,17 +19,17 @@ namespace Katydid
         public:
             struct Point
             {
-                double fTimeInRun;
+                double fTimeInRunC;
                 double fFrequency;
                 double fAmplitude;
-                Point(double tir, double freq, double amp) : fTimeInRun(tir), fFrequency(freq), fAmplitude(amp) {}
+                Point(double tirc, double freq, double amp) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp) {}
             };
 
             struct PointCompare
             {
                 bool operator() (const Point& lhs, const Point& rhs)
                 {
-                    return lhs.fTimeInRun < rhs.fTimeInRun || (lhs.fTimeInRun == rhs.fTimeInRun && lhs.fFrequency < rhs.fFrequency);
+                    return lhs.fTimeInRunC < rhs.fTimeInRunC || (lhs.fTimeInRunC == rhs.fTimeInRunC && lhs.fFrequency < rhs.fFrequency);
                 }
             };
 
@@ -49,7 +49,7 @@ namespace Katydid
             //unsigned GetNFreqBins() const;
             double GetFreqBinWidth() const;
 
-            double GetTimeInRun() const;
+            double GetTimeInRunC() const;
             double GetTimeLength() const;
             //uint64_t GetFirstSliceNumber() const;
             //uint64_t GetLastSliceNumber() const;
@@ -70,7 +70,7 @@ namespace Katydid
             void SetTimeBinWidth(double bw);
             void SetFreqBinWidth(double bw);
 
-            void SetTimeInRun(double tir);
+            void SetTimeInRunC(double tirc);
             void SetTimeLength(double length);
             //void SetFirstSliceNumber(uint64_t slice);
             //void SetLastSliceNumber(uint64_t slice);
@@ -92,7 +92,7 @@ namespace Katydid
             double fTimeBinWidth;
             double fFreqBinWidth;
 
-            double fTimeInRun;
+            double fTimeInRunC;
             double fTimeLength;
             //uint64_t fFirstSliceNumber;
             //uint64_t fLastSliceNumber;
@@ -143,9 +143,9 @@ namespace Katydid
         return fFreqBinWidth;
     }
 
-    inline double KTSparseWaterfallCandidateData::GetTimeInRun() const
+    inline double KTSparseWaterfallCandidateData::GetTimeInRunC() const
     {
-        return fTimeInRun;
+        return fTimeInRunC;
     }
 
     inline double KTSparseWaterfallCandidateData::GetTimeLength() const
@@ -226,9 +226,9 @@ namespace Katydid
         return;
     }
 
-    inline void KTSparseWaterfallCandidateData::SetTimeInRun(double tir)
+    inline void KTSparseWaterfallCandidateData::SetTimeInRunC(double tirc)
     {
-        fTimeInRun = tir;
+        fTimeInRunC = tirc;
         return;
     }
 

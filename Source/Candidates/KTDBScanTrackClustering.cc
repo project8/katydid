@@ -96,7 +96,7 @@ namespace Katydid
         }
 
         // update time and frequency bin widths, though they probably don't actually need to be updated
-        fTimeBinWidth = slHeader.GetBinWidth();
+        fTimeBinWidth = slHeader.GetSliceLength();
         fFreqBinWidth = discPoints.GetBinWidth();
 
         // verify that we have the right number of components
@@ -106,7 +106,7 @@ namespace Katydid
         }
 
         KTDBScan::Point newPoint(fNDimensions);
-        newPoint(0) = slHeader.GetTimeInRun();
+        newPoint(0) = slHeader.GetTimeInRun() + 0.5 * fTimeBinWidth;
         for (unsigned iComponent = 0; iComponent != fCompPoints.size(); ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
@@ -257,7 +257,7 @@ namespace Katydid
                 cand.SetTimeBinWidth(fTimeBinWidth);
                 cand.SetFreqBinWidth(fFreqBinWidth);
 
-                cand.SetTimeInRun(minTime);
+                cand.SetTimeInRunC(minTime);
                 cand.SetTimeLength(maxTime - minTime);
 
                 cand.SetMinimumFrequency(minFreq);

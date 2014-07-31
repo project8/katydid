@@ -41,6 +41,8 @@ namespace Katydid
 
      @details
      The threshold used for a given bin is calculated based on the input gain variation data.
+
+     Abscissa values in the output data are the bin centers on the frequency axis.
   
      Configuration name: "variable-spectrum-discriminator"
 

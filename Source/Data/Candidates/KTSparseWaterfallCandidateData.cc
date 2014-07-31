@@ -15,7 +15,7 @@ namespace Katydid
             fComponent(0),
             fTimeBinWidth(0.),
             fFreqBinWidth(0.),
-            fTimeInRun(0.),
+            fTimeInRunC(0.),
             fTimeLength(0.),
             //fFirstSliceNumber(0),
             //fLastSliceNumber(0),

@@ -62,14 +62,14 @@ namespace Katydid
 
         const KTSparseWaterfallCandidateData::Points& points = data.GetPoints();
 
-        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRun(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth());
+        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth());
         if (newTransform == NULL)
         {
             KTERROR(htlog, "Something went wrong in the transform");
         }
         else
         {
-            newData.SetTransform(newTransform, data.GetTimeInRun(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth(), 0);
+            newData.SetTransform(newTransform, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth(), 0);
         }
         KTINFO(htlog, "Completed hough transform");
 
@@ -113,7 +113,7 @@ namespace Katydid
         unsigned iRadius;
         for (SWFPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
-            timeVal = (pIt->fTimeInRun - minTime) * timeScaling;
+            timeVal = (pIt->fTimeInRunC - minTime) * timeScaling;
             freqVal = (pIt->fFrequency - minFreq) * freqScaling;
             value = pIt->fAmplitude;
 

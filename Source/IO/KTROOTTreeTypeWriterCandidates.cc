@@ -237,7 +237,7 @@ namespace Katydid
         fSparseWaterfallCandidateData.fComponent = swcData.GetComponent();
         fSparseWaterfallCandidateData.fTimeBinWidth = swcData.GetTimeBinWidth();
         fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
-        fSparseWaterfallCandidateData.fTimeInRun = swcData.GetTimeInRun();
+        fSparseWaterfallCandidateData.fTimeInRunC = swcData.GetTimeInRunC();
         fSparseWaterfallCandidateData.fTimeLength = swcData.GetTimeLength();
         fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinimumFrequency();
         fSparseWaterfallCandidateData.fMaxFrequency = swcData.GetMaximumFrequency();
@@ -247,7 +247,7 @@ namespace Katydid
         unsigned iPoint = 0;
         for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
-            fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRun, pIt->fFrequency, pIt->fAmplitude);
+            fSparseWaterfallCandidateData.fPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency, pIt->fAmplitude);
             ++iPoint;
         }
         fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
@@ -274,7 +274,7 @@ namespace Katydid
         fSparseWaterfallCandidateTree->Branch("Component", &fSparseWaterfallCandidateData.fComponent, "fComponent/s");
         fSparseWaterfallCandidateTree->Branch("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth, "fTimeBinWidth/d");
         fSparseWaterfallCandidateTree->Branch("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth, "fFreqBinWidth/d");
-        fSparseWaterfallCandidateTree->Branch("TimeInRun", &fSparseWaterfallCandidateData.fTimeInRun, "fTimeInRun/d");
+        fSparseWaterfallCandidateTree->Branch("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC, "fTimeInRunC/d");
         fSparseWaterfallCandidateTree->Branch("TimeLength", &fSparseWaterfallCandidateData.fTimeLength, "fTimeLength/d");
         fSparseWaterfallCandidateTree->Branch("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency, "fMinFrequency/d");
         fSparseWaterfallCandidateTree->Branch("MaxFrequency", &fSparseWaterfallCandidateData.fMaxFrequency, "fMaxFrequency/d");
@@ -308,16 +308,16 @@ namespace Katydid
         //fFreqCandidateData->Load(*data);
         fProcessedTrackData.fComponent = ptData.GetComponent();
         fProcessedTrackData.fIsCut = ptData.GetIsCut();
-        fProcessedTrackData.fStartTimeInRun = ptData.GetStartTimeInRun();
-        fProcessedTrackData.fEndTimeInRun = ptData.GetEndTimeInRun();
+        fProcessedTrackData.fStartTimeInRunC = ptData.GetStartTimeInRunC();
+        fProcessedTrackData.fEndTimeInRunC = ptData.GetEndTimeInRunC();
         fProcessedTrackData.fTimeLength = ptData.GetTimeLength();
         fProcessedTrackData.fStartFrequency = ptData.GetStartFrequency();
         fProcessedTrackData.fEndFrequency = ptData.GetEndFrequency();
         fProcessedTrackData.fFrequencyWidth = ptData.GetFrequencyWidth();
         fProcessedTrackData.fSlope = ptData.GetSlope();
         fProcessedTrackData.fIntercept = ptData.GetIntercept();
-        fProcessedTrackData.fStartTimeInRunSigma = ptData.GetStartTimeInRunSigma();
-        fProcessedTrackData.fEndTimeInRunSigma = ptData.GetEndTimeInRunSigma();
+        fProcessedTrackData.fStartTimeInRunCSigma = ptData.GetStartTimeInRunCSigma();
+        fProcessedTrackData.fEndTimeInRunCSigma = ptData.GetEndTimeInRunCSigma();
         fProcessedTrackData.fTimeLengthSigma = ptData.GetTimeLengthSigma();
         fProcessedTrackData.fStartFrequencySigma = ptData.GetStartFrequencySigma();
         fProcessedTrackData.fEndFrequencySigma = ptData.GetEndFrequencySigma();
@@ -342,16 +342,16 @@ namespace Katydid
 
         fProcessedTrackTree->Branch("Component", &fProcessedTrackData.fComponent, "fComponent/s");
         fProcessedTrackTree->Branch("IsCut", &fProcessedTrackData.fIsCut, "fIsCut/O");
-        fProcessedTrackTree->Branch("StartTimeInRun", &fProcessedTrackData.fStartTimeInRun, "fStartTimeInRun/d");
-        fProcessedTrackTree->Branch("EndTimeInRun", &fProcessedTrackData.fEndTimeInRun, "fEndTimeInRun/d");
+        fProcessedTrackTree->Branch("StartTimeInRunC", &fProcessedTrackData.fStartTimeInRunC, "fStartTimeInRunC/d");
+        fProcessedTrackTree->Branch("EndTimeInRunC", &fProcessedTrackData.fEndTimeInRunC, "fEndTimeInRunC/d");
         fProcessedTrackTree->Branch("TimeLength", &fProcessedTrackData.fTimeLength, "fTimeLength/d");
         fProcessedTrackTree->Branch("StartFrequency", &fProcessedTrackData.fStartFrequency, "fStartFrequency/d");
         fProcessedTrackTree->Branch("EndFrequency", &fProcessedTrackData.fEndFrequency, "fEndFrequency/d");
         fProcessedTrackTree->Branch("FrequencyWidth", &fProcessedTrackData.fFrequencyWidth, "fFrequencyWidth/d");
         fProcessedTrackTree->Branch("Slope", &fProcessedTrackData.fSlope, "fSlope/d");
         fProcessedTrackTree->Branch("Intercept", &fProcessedTrackData.fIntercept, "fIntercept/d");
-        fProcessedTrackTree->Branch("StartTimeInRunSigma", &fProcessedTrackData.fStartTimeInRunSigma, "fStartTimeInRunSigma/d");
-        fProcessedTrackTree->Branch("EndTimeInRunSigma", &fProcessedTrackData.fEndTimeInRunSigma, "fEndTimeInRunSigma/d");
+        fProcessedTrackTree->Branch("StartTimeInRunCSigma", &fProcessedTrackData.fStartTimeInRunCSigma, "fStartTimeInRunCSigma/d");
+        fProcessedTrackTree->Branch("EndTimeInRunCSigma", &fProcessedTrackData.fEndTimeInRunCSigma, "fEndTimeInRunCSigma/d");
         fProcessedTrackTree->Branch("TimeLengthSigma", &fProcessedTrackData.fTimeLengthSigma, "fTimeLengthSigma/d");
         fProcessedTrackTree->Branch("StartFrequencySigma", &fProcessedTrackData.fStartFrequencySigma, "fStartFrequencySigma/d");
         fProcessedTrackTree->Branch("EndFrequencySigma", &fProcessedTrackData.fEndFrequencySigma, "fEndFrequencySigma/d");

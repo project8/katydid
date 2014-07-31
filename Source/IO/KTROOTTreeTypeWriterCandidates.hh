@@ -58,7 +58,7 @@ namespace Katydid
             UShort_t fComponent;
             Double_t fTimeBinWidth;
             Double_t fFreqBinWidth;
-            Double_t fTimeInRun;
+            Double_t fTimeInRunC;
             Double_t fTimeLength;
             //ULong64_t fFirstSliceNumber;
             //ULong64_t fLastSliceNumber;
@@ -78,16 +78,16 @@ namespace Katydid
     {
             UInt_t fComponent;
             Bool_t fIsCut;
-            Double_t fStartTimeInRun;
-            Double_t fEndTimeInRun;
+            Double_t fStartTimeInRunC;
+            Double_t fEndTimeInRunC;
             Double_t fTimeLength;
             Double_t fStartFrequency;
             Double_t fEndFrequency;
             Double_t fFrequencyWidth;
             Double_t fSlope;
             Double_t fIntercept;
-            Double_t fStartTimeInRunSigma;
-            Double_t fEndTimeInRunSigma;
+            Double_t fStartTimeInRunCSigma;
+            Double_t fEndTimeInRunCSigma;
             Double_t fTimeLengthSigma;
             Double_t fStartFrequencySigma;
             Double_t fEndFrequencySigma;

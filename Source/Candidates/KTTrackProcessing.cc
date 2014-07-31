@@ -120,8 +120,8 @@ namespace Katydid
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             //cout << "calculating a distance..." << endl;
-            pointsUnscaled.push_back(SimplePoints::value_type(pIt->fTimeInRun, pIt->fFrequency));
-            xScaled = (pIt->fTimeInRun - xOffset) / xScale;
+            pointsUnscaled.push_back(SimplePoints::value_type(pIt->fTimeInRunC, pIt->fFrequency));
+            xScaled = (pIt->fTimeInRunC - xOffset) / xScale;
             yScaled = (pIt->fFrequency - yOffset) / yScale;
             pointsScaled.push_back(SimplePoints::value_type(xScaled, yScaled));
             //cout << "i: " << iPoint << "\t y_i: " << ys[iPoint] << "\t x_i: " << xs[iPoint] << endl;
@@ -216,8 +216,8 @@ namespace Katydid
             procTrack.SetIsCut(true);
         }
 
-        procTrack.SetStartTimeInRun(startTime);
-        procTrack.SetEndTimeInRun(stopTime);
+        procTrack.SetStartTimeInRunC(startTime);
+        procTrack.SetEndTimeInRunC(stopTime);
         procTrack.SetTimeLength(stopTime - startTime);
         procTrack.SetStartFrequency(startFreq);
         procTrack.SetEndFrequency(stopFreq);

@@ -14,6 +14,7 @@
 #include "KTSparseWaterfallCandidateData.hh"
 #include "KTTIFactory.hh"
 
+#include "TAxis.h"
 #include "TCanvas.h"
 #include "TGraph.h"
 #include "TLine.h"
@@ -90,14 +91,16 @@ namespace Katydid
         unsigned iPoint = 0;
         for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
-            grPoints->SetPoint(iPoint, pIt->fTimeInRun, pIt->fFrequency);
-            KTDEBUG(publog, "Point " << iPoint << ": (" << pIt->fTimeInRun << ", " << pIt->fFrequency << ")");
+            grPoints->SetPoint(iPoint, pIt->fTimeInRunC, pIt->fFrequency);
+            KTDEBUG(publog, "Point " << iPoint << ": (" << pIt->fTimeInRunC << ", " << pIt->fFrequency << ")");
             ++iPoint;
         }
         grPoints->Draw("ap");
+        grPoints->GetXaxis()->SetTitle("Time (s)");
+        grPoints->GetYaxis()->SetTitle("Frequency (Hz)");
 
         // line for track
-        TLine* trackLine = new TLine(ptData.GetStartTimeInRun(), ptData.GetStartFrequency(), ptData.GetEndTimeInRun(), ptData.GetEndFrequency());
+        TLine* trackLine = new TLine(ptData.GetStartTimeInRunC(), ptData.GetStartFrequency(), ptData.GetEndTimeInRunC(), ptData.GetEndFrequency());
         trackLine->SetLineColor(1);
         trackLine->SetLineWidth(1);
         trackLine->Draw();
