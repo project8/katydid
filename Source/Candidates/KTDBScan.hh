@@ -219,9 +219,9 @@ namespace Katydid
     {
         KTINFO(tclog2, "Starting to run DBSCAN");
         InitializeArrays(points.size());
-        KTINFO(tclog2, "Computing DBSCAN distances");
+        KTPROG(tclog2, "Computing DBSCAN distances");
         ComputeDistance< DistanceType >(points);
-        KTINFO(tclog2, "Performing clustering");
+        KTPROG(tclog2, "Performing clustering");
         return DoClustering();
     }
 

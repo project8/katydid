@@ -141,8 +141,9 @@ namespace Katydid
 
     void KTDBScanTrackClustering::TriggerClustering()
     {
-        if (! Run()) {
-            KTERROR(tclog, __LINE__ << " in " << __FILE__ );
+        if (! Run())
+        {
+            KTERROR(tclog, "An error occurred while running the clustering");
         }
         return;
     }
@@ -154,7 +155,7 @@ namespace Katydid
 
     bool KTDBScanTrackClustering::DoClustering()
     {
-        KTDEBUG(tclog, "Starting to do clustering");
+        KTPROG(tclog, "Starting DBSCAN track clustering");
         for (unsigned iComponent = 0; iComponent < fCompPoints.size(); ++iComponent)
         //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
@@ -189,7 +190,7 @@ namespace Katydid
 
             fDBScan.SetRadius(1.);
             fDBScan.SetMinPoints(fMinPoints);
-            KTDEBUG(tclog, "DBScan configured");
+            KTINFO(tclog, "DBScan configured");
 
             // do the clustering!
             if (! fDBScan.RunDBScan< Euclidean< KTDBScan::Point > >(normPoints))
