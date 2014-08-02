@@ -5,47 +5,49 @@ set (FFT_DICT_HEADERFILES
 )
 
 set (FFT_NODICT_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTBlackmanHarrisWindow.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFFT.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHammingWindow.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSincWindow.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindower.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.hh
+    KTBlackmanHarrisWindow.hh
+    KTConvertToPower.hh
+    KTFFT.hh
+    KTHammingWindow.hh
+    KTHannWindow.hh
+    KTRectangularWindow.hh
+    KTSincWindow.hh
+    KTWindower.hh
+    KTWindowFunction.hh
 )
 
 if (FFTW_FOUND)
     set (FFT_NODICT_HEADERFILES
         ${FFT_NODICT_HEADERFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTComplexFFTW.hh
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.hh
+        KTComplexFFTW.hh
+        KTSimpleFFT.hh
     )
 endif (FFTW_FOUND)        
 
 set (FFT_HEADERFILES ${FFT_DICT_HEADERFILES} ${FFT_NODICT_HEADERFILES})
 
 set (FFT_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTBlackmanHarrisWindow.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFFT.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHammingWindow.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTHannWindow.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTRectangularWindow.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSincWindow.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindower.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTWindowFunction.cc
+    KTBlackmanHarrisWindow.cc
+    KTConvertToPower.cc
+    KTFFT.cc
+    KTHammingWindow.cc
+    KTHannWindow.cc
+    KTRectangularWindow.cc
+    KTSincWindow.cc
+    KTWindower.cc
+    KTWindowFunction.cc
 )
 
 if (FFTW_FOUND)
     set (FFT_SOURCEFILES
         ${FFT_SOURCEFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTComplexFFTW.cc
-        ${CMAKE_CURRENT_SOURCE_DIR}/KTSimpleFFT.cc
+        KTComplexFFTW.cc
+        KTSimpleFFT.cc
     )
 endif (FFTW_FOUND)        
 
 #if (ROOT_FOUND)
-#    set (FFT_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/FFTLinkDef.hh)
+#    set (FFT_LINKDEF_HEADERFILE LinkDef/FFTLinkDef.hh)
 #    set (FFT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/FFTDict.cxx)
 #endif (ROOT_FOUND)
 
