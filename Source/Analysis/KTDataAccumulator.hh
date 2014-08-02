@@ -28,6 +28,7 @@ namespace Katydid
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumDataPolarCore;
     class KTParamNode;
+    class KTPowerSpectrumData;
     class KTTimeSeriesData;
 
     /*!
@@ -42,7 +43,7 @@ namespace Katydid
      Configuration name: "data-accumulator"
 
      Available configuration options:
-     - "number-to-average": unsigned -- Number of slices to average
+     - "number-to-average": unsigned -- Number of slices to average; 0 will sum all slices together, and average at the end
      - "signal-interval": unsigned -- Number of slices between signaling; set to 0 to stop slice signals
 
      Slots:
@@ -50,16 +51,19 @@ namespace Katydid
      - "ts-dist": void (KTDataPtr) -- add to the ts-dist sum; Requires KTTimeSeriesDistData; Emits signal "ts-dist"
      - "fs-polar": void (KTDataPtr) -- add to the fs-polar sum; Requires KTFrequencySpectrumPolar; Emits signal "fs-polar"
      - "fs-fftw": void (KTDataPtr) -- add to the fs-fftw sum; Requires KTFrequencySpectrumFFTW; Emits signal "fs-fftw"
+     - "ps": void (KTDataPtr) -- add to the ps sum (PS or PSD); Requires KTPowerSpectrumData; Emits signal "ps"
 
      Signals:
      - "ts": void (KTDataPtr) -- emitted when the ts sum is updated; guarantees KTTimeSeriesData
      - "ts-dist": void (KTDataPtr) -- emitted when the ts-dist sum is updated; guarantees KTTimeSeriesDistData
      - "fs-polar": void (KTDataPtr) -- emitted when the fs-polar sum is updated; guarantees KTFrequencySpectrumDataPolar
      - "fs-fftw": void (KTDataPtr) -- emitted when the fs-fftw sum is updated; guarantees KTFrequencySpectrumDataFFTW
+     - "ps": void (KTDataPtr) -- emitted when the ps sum is updated; guarantees KTPowerSpectrumData
      - "ts-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesData
-     - "ts-dist-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTTimeSeriesDistData
-     - "fs-polar-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTFrequencySpectrumDataPolar
-     - "fs-fftw-finished": void (KTDataPtr) -- emitted when the <finish> slot is called; guarantees KTFrequencySpectrumDataFFTW
+     - "ts-dist-finished": void (KTDataPtr) -- emitted when the last data is received; guarantees KTTimeSeriesDistData
+     - "fs-polar-finished": void (KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataPolar
+     - "fs-fftw-finished": void (KTDataPtr) -- emitted when the last data is received; guarantees KTFrequencySpectrumDataFFTW
+     - "ps-finished": void (KTDataPtr) -- emitted when the last data is received; guarantees KTPowerSpectrumData
     */
 
     class KTDataAccumulator : public KTProcessor
@@ -134,6 +138,7 @@ namespace Katydid
             bool AddData(KTTimeSeriesDistData& data);
             bool AddData(KTFrequencySpectrumDataPolar& data);
             bool AddData(KTFrequencySpectrumDataFFTW& data);
+            bool AddData(KTPowerSpectrumData& data);
 
             const AccumulatorMap& GetAccumulators() const;
             template< class XDataType >
@@ -143,13 +148,21 @@ namespace Katydid
             template< class XDataType >
             Accumulator& GetOrCreateAccumulator();
 
-            bool CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
-            bool CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& avDataStruct, KTTimeSeriesData& avData);
+            bool CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData);
+            bool CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData);
 
-            bool CoreAddData(KTTimeSeriesDistData& data, Accumulator& avDataStruct, KTTimeSeriesDistData& avData);
+            bool CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData);
 
-            bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataPolarCore& avData);
-            bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& avDataStruct, KTFrequencySpectrumDataFFTWCore& avData);
+            bool CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData);
+            bool CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData);
+
+            bool CoreAddData(KTPowerSpectrumData& data, Accumulator& accDataStruct, KTPowerSpectrumData& accData);
+
+            bool Scale(KTTimeSeriesData& data, KTSliceHeader& header);
+            bool Scale(KTTimeSeriesDistData& data, KTSliceHeader& header);
+            bool Scale(KTFrequencySpectrumDataPolar& data, KTSliceHeader& header);
+            bool Scale(KTFrequencySpectrumDataFFTW& data, KTSliceHeader& header);
+            bool Scale(KTPowerSpectrumData& data, KTSliceHeader& header);
 
             AccumulatorMap fDataMap;
             mutable Accumulator* fLastAccumulatorPtr;
@@ -164,11 +177,13 @@ namespace Katydid
             KTSignalData fTSDistSignal;
             KTSignalData fFSPolarSignal;
             KTSignalData fFSFFTWSignal;
+            KTSignalData fPSSignal;
 
             KTSignalData fTSFinishedSignal;
             KTSignalData fTSDistFinishedSignal;
             KTSignalData fFSPolarFinishedSignal;
             KTSignalData fFSFFTWFinishedSignal;
+            KTSignalData fPSFinishedSignal;
 
             SignalMap fSignalMap;
 
@@ -195,7 +210,14 @@ namespace Katydid
     inline void KTDataAccumulator::SetAccumulatorSize(unsigned size)
     {
         fAccumulatorSize = size;
-        fAveragingFrac = 1. / (double)fAccumulatorSize;
+        if (fAccumulatorSize == 0)
+        {
+            fAveragingFrac = 1.;
+        }
+        else
+        {
+            fAveragingFrac = 1. / (double)fAccumulatorSize;
+        }
         return;
     }
 
@@ -258,6 +280,11 @@ namespace Katydid
             }
             if (data->fLastData)
             {
+                KTDEBUG(avlog_hh, "Emitting last-data signal");
+                if (! Scale(fLastAccumulatorPtr->fData->Of< XDataType >(), fLastAccumulatorPtr->fSliceHeader))
+                {
+
+                }
                 (*sigIt->second.fFinishedSignal)(fLastAccumulatorPtr->fData);
             }
         }
