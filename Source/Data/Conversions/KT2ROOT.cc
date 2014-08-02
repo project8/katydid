@@ -10,6 +10,7 @@
 #include "KTLogger.hh"
 
 #include "KTHoughData.hh"
+#include "KTPowerSpectrum.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTTimeSeriesDist.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -168,6 +169,42 @@ namespace Katydid
         return hist;
     }
 */
+
+    TH1D* KT2ROOT::CreatePowerHistogram(const KTPowerSpectrum* ps, const std::string& name)
+    {
+        unsigned nBins = ps->size();
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, ps->GetRangeMin(), ps->GetRangeMax());
+        //double value;
+        for (unsigned int iBin=0; iBin<nBins; iBin++)
+        {
+            hist->SetBinContent((int)iBin+1, (*ps)(iBin));
+        }
+        hist->SetXTitle(ps->GetAxisLabel().c_str());
+        hist->SetYTitle(ps->GetDataLabel().c_str());
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreatePowerDistributionHistogram(const KTPowerSpectrum* ps, const std::string& name)
+    {
+        double value = (*ps)(0);
+        double tMaxMag = value;
+        double tMinMag = value;
+        unsigned nBins = ps->size();
+        for (unsigned iBin=1; iBin<nBins; iBin++)
+        {
+            value = (*ps)(iBin);
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (unsigned iBin=0; iBin<nBins; iBin++)
+        {
+            hist->Fill((*ps)(iBin));
+        }
+        hist->SetXTitle(ps->GetDataLabel().c_str());
+        return hist;
+    }
 
     TH2D* KT2ROOT::CreateHistogram(const KTPhysicalArray< 2, double >* ht, const std::string& histName)
     {
