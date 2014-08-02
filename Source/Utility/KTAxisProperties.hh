@@ -86,8 +86,8 @@ namespace Katydid
 
             // axis labels
         public:
-            const std::string& GetLabel(size_t dim) const;
-            void SetLabel(size_t dim, const std::string& label);
+            const std::string& GetAxisLabel(size_t dim) const;
+            void SetAxisLabel(size_t dim, const std::string& label);
 
         private:
             std::string fLabels[NDims];
@@ -137,7 +137,7 @@ namespace Katydid
             fBinWidths[arrPos] = orig.GetBinWidth(iDim);
             fRangeMin[arrPos] = orig.GetRangeMin(iDim);
             fRangeMax[arrPos] = orig.GetRangeMax(iDim);
-            fLabels[arrPos] = orig.GetLabel(iDim);
+            fLabels[arrPos] = orig.GetAxisLabel(iDim);
         }
     }
 
@@ -164,7 +164,7 @@ namespace Katydid
             fBinWidths[arrPos] = orig.GetBinWidth(iDim);
             fRangeMin[arrPos] = orig.GetRangeMin(iDim);
             fRangeMax[arrPos] = orig.GetRangeMax(iDim);
-            fLabels[arrPos] = orig.GetLabel(iDim);
+            fLabels[arrPos] = orig.GetAxisLabel(iDim);
         }
         return *this;
     }
@@ -304,13 +304,13 @@ namespace Katydid
     }
 
     template< size_t NDims >
-    const std::string& KTAxisProperties< NDims >::GetLabel(size_t dim) const
+    const std::string& KTAxisProperties< NDims >::GetAxisLabel(size_t dim) const
     {
         return fLabels[dim-1];
     }
 
     template< size_t NDims >
-    void KTAxisProperties< NDims >::SetLabel(size_t dim, const std::string& label)
+    void KTAxisProperties< NDims >::SetAxisLabel(size_t dim, const std::string& label)
     {
         fLabels[dim-1] = label;
         return;
@@ -386,8 +386,8 @@ namespace Katydid
 
             // axis label
         public:
-            const std::string& GetLabel() const;
-            void SetLabel(const std::string& label);
+            const std::string& GetAxisLabel() const;
+            void SetAxisLabel(const std::string& label);
 
         private:
             std::string fLabel;

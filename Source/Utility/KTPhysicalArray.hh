@@ -48,8 +48,12 @@ namespace Katydid
             const array_type& GetData() const;
             array_type& GetData();
 
+            const std::string& GetDataLabel() const;
+            void SetDataLabel(const std::string& label);
+
         protected:
             array_type fData;
+            std:: string fLabel;
 
         public:
             const value_type& operator()(unsigned i) const;
@@ -107,6 +111,19 @@ namespace Katydid
     inline typename KTPhysicalArray< NDims, XDataType >::array_type& KTPhysicalArray< NDims, XDataType >::GetData()
     {
         return fData;
+    }
+
+    template< size_t NDims, typename XDataType >
+    inline const std::string& KTPhysicalArray< NDims, XDataType >::GetDataLabel() const
+    {
+        return fLabel;
+    }
+
+    template< size_t NDims, typename XDataType >
+    inline void KTPhysicalArray< NDims, XDataType >::SetDataLabel(const std::string& label)
+    {
+        fLabel = label;
+        return;
     }
 
     template< size_t NDims, typename XDataType >
@@ -209,8 +226,12 @@ namespace Katydid
             const array_type& GetData() const;
             array_type& GetData();
 
+            const std::string& GetDataLabel() const;
+            void SetDataLabel(const std::string& label);
+
         protected:
             array_type fData;
+            std::string fLabel;
 
         public:
             const value_type& operator()(unsigned i) const;
@@ -250,7 +271,8 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >::KTPhysicalArray() :
             KTAxisProperties< 1 >(),
-            fData()
+            fData(),
+            fLabel()
     {
         SetNBinsFunc(new KTNBinsInArray< 1, array_type >(&fData, &array_type::size));
         //std::cout << "You have created a 1-D physical array" << std::endl;
@@ -259,7 +281,8 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >::KTPhysicalArray(size_t nBins, double rangeMin, double rangeMax) :
             KTAxisProperties< 1 >(rangeMin, rangeMax),
-            fData(nBins)
+            fData(nBins),
+            fLabel()
     {
         SetNewNBinsFunc();
         //SetNBinsFunc(KTNBinsInArray< 1, array_type >(this, &array_type::size));
@@ -270,7 +293,8 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >::KTPhysicalArray(const KTPhysicalArray< 1, value_type >& orig) :
             KTAxisProperties< 1 >(orig),
-            fData(orig.fData)
+            fData(orig.fData),
+            fLabel(orig.fLabel)
     {
         SetNewNBinsFunc();
     }
@@ -290,6 +314,19 @@ namespace Katydid
     inline typename KTPhysicalArray< 1, XDataType >::array_type& KTPhysicalArray< 1, XDataType >::GetData()
     {
         return fData;
+    }
+
+    template< typename XDataType >
+    inline const std::string& KTPhysicalArray< 1, XDataType >::GetDataLabel() const
+    {
+        return fLabel;
+    }
+
+    template< typename XDataType >
+    inline void KTPhysicalArray< 1, XDataType >::SetDataLabel(const std::string& label)
+    {
+        fLabel = label;
+        return;
     }
 
     template< typename XDataType >
@@ -333,6 +370,7 @@ namespace Katydid
     inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator=(const KTPhysicalArray< 1, value_type>& rhs)
     {
         fData = rhs.fData;
+        fLabel = rhs.fLabel;
         KTAxisProperties< 1 >::operator=(rhs);
         SetNewNBinsFunc();
         return *this;
@@ -519,8 +557,12 @@ namespace Katydid
             const matrix_type& GetData() const;
             matrix_type& GetData();
 
+            const std::string& GetDataLabel() const;
+            void SetDataLabel(const std::string& label);
+
         protected:
             matrix_type fData;
+            std::string fLabel;
 
         public:
             const value_type& operator()(unsigned i, unsigned j) const;
@@ -568,7 +610,8 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >::KTPhysicalArray() :
             KTAxisProperties< 2 >(),
-            fData()
+            fData(),
+            fLabel()
     {
         size_t (matrix_type::*sizeArray[2])() const = {&matrix_type::size1, &matrix_type::size2};
         SetNBinsFunc(new KTNBinsInArray< 2, matrix_type >(&fData, sizeArray));
@@ -578,7 +621,8 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >::KTPhysicalArray(size_t xNBins, double xRangeMin, double xRangeMax, size_t yNBins, double yRangeMin, double yRangeMax) :
             KTAxisProperties< 2 >(),
-            fData(xNBins, yNBins)
+            fData(xNBins, yNBins),
+            fLabel()
     {
         size_t (matrix_type::*sizeArray[2])() const = {&matrix_type::size1, &matrix_type::size2};
         SetNBinsFunc(new KTNBinsInArray< 2, matrix_type >(&fData, sizeArray));
@@ -593,7 +637,8 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >::KTPhysicalArray(const KTPhysicalArray< 2, value_type >& orig) :
             KTAxisProperties< 2 >(),
-            fData(orig.fData)
+            fData(orig.fData),
+            fLabel(orig.fLabel)
     {
         size_t (matrix_type::*sizeArray[2])() const = {&matrix_type::size1, &matrix_type::size2};
         SetNBinsFunc(new KTNBinsInArray< 2, matrix_type >(&fData, sizeArray));
@@ -618,6 +663,19 @@ namespace Katydid
     inline typename KTPhysicalArray< 2, XDataType >::matrix_type& KTPhysicalArray< 2, XDataType >::GetData()
     {
         return fData;
+    }
+
+    template< typename XDataType >
+    inline const std::string& KTPhysicalArray< 2, XDataType >::GetDataLabel() const
+    {
+        return fLabel;
+    }
+
+    template< typename XDataType >
+    inline void KTPhysicalArray< 2, XDataType >::SetDataLabel(const std::string& label)
+    {
+        fLabel = label;
+        return;
     }
 
     template< typename XDataType >
@@ -677,6 +735,7 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         fData = rhs.fData;
+        fLabel = rhs.fLabel;
         KTAxisProperties< 2 >::operator=(rhs);
         size_t (matrix_type::*sizeArray[2])() const = {&matrix_type::size1, &matrix_type::size2};
         SetNBinsFunc(new KTNBinsInArray< 2, matrix_type >((matrix_type*)this, sizeArray));
