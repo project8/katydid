@@ -24,6 +24,7 @@ namespace Katydid
     class KTFrequencySpectrumDataFFTWCore;
     class KTGainVariationData;
     class KTParamNode;
+    class KTPowerSpectrumData;
     //class KTSpline;
 
     /*!
@@ -49,6 +50,7 @@ namespace Katydid
      - "fs-polar": void (KTDataPtr) -- Calculates gain variation on a polar fs data object; Requires KTFrequencySpectrumDataPolar; Adds KTGainVariationData
      - "fs-fftw": void (KTDataPtr) -- Calculates gain variation on a fftw fs data object; Requires KTFrequencySpectrumDataFFTW; Adds KTGainVariationData
      - "corr": void (KTDataPtr) -- Calculates gain variation on a corrlation data object; Requires KTCorrlationData; Adds KTGainVariationData
+     - "ps": void (KTDataPtr) -- Calculates gain variation on a power power spectrum; Requires KTPowerSpectrumData; Adds KTGainVariationData
 
      Signals:
      - "gain-var": void (KTDataPtr) emitted upon performance of a fit; Guarantees KTGainVariationData
@@ -94,11 +96,13 @@ namespace Katydid
             bool CalculateGainVariation(KTFrequencySpectrumDataPolar& data);
             bool CalculateGainVariation(KTFrequencySpectrumDataFFTW& data);
             bool CalculateGainVariation(KTCorrelationData& data);
+            bool CalculateGainVariation(KTPowerSpectrumData& data);
 
         private:
             bool CoreGainVarCalc(KTFrequencySpectrumDataPolarCore& data, KTGainVariationData& newData);
             bool CoreGainVarCalc(KTFrequencySpectrumDataFFTWCore& data, KTGainVariationData& newData);
             //GainVariation* CreateGainVariation(KTSpline* spline, unsigned nBins, double rangeMin, double rangeMax) const;
+            bool CoreGainVarCalc(KTPowerSpectrumData& data, KTGainVariationData& newData);
 
             //***************
             // Signals
@@ -115,6 +119,7 @@ namespace Katydid
             KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
             KTSlotDataOneType< KTCorrelationData > fCorrSlot;
+            KTSlotDataOneType< KTPowerSpectrumData > fPSSlot;
 
     };
 
