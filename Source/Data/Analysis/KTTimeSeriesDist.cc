@@ -39,4 +39,10 @@ namespace Katydid
         return *this;
     }
 
+    KTTimeSeriesDist& KTTimeSeriesDist::Scale(double scale)
+    {
+        (*this) *= scale;
+        return *this;
+    }
+
 } /* namespace Katydid */

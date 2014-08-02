@@ -51,6 +51,8 @@ namespace Katydid
 
             virtual KTFrequencySpectrumPolar& CConjugate();
 
+            virtual KTFrequencySpectrumPolar& Scale(double scale);
+
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;

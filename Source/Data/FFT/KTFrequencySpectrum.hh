@@ -47,6 +47,8 @@ namespace Katydid
 
             virtual KTFrequencySpectrum& CConjugate() = 0;
 
+            virtual KTFrequencySpectrum& Scale(double scale) = 0;
+
             virtual KTPowerSpectrum* CreatePowerSpectrum() const= 0;
 
 #ifdef ROOT_FOUND

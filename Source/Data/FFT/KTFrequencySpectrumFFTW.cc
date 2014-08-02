@@ -80,7 +80,7 @@ namespace Katydid
     {
         unsigned nBins = size();
 #pragma omp parallel for
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             // order doesn't matter, so use fData[] to access values
             fData[iBin][1] = -fData[iBin][1];
@@ -112,6 +112,19 @@ namespace Katydid
         return *this;
     }
 
+    KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::Scale(double scale)
+    {
+        unsigned nBins = size();
+#pragma omp parallel for
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            // order doesn't matter, so use fData[] to access values
+            fData[iBin][0] = scale * fData[iBin][0];
+            fData[iBin][1] = scale * fData[iBin][1];
+        }
+        return *this;
+    }
+
 
     KTFrequencySpectrumPolar* KTFrequencySpectrumFFTW::CreateFrequencySpectrumPolar(bool addNegFreqs) const
     {
@@ -130,7 +143,7 @@ namespace Katydid
         /*
         unsigned iPosBin = fDCBin + 1;
         unsigned iNegBin = fDCBin - 1;
-        for (unsigned iBin=1; iBin<nBins-1; iBin++)
+        for (unsigned iBin=1; iBin<nBins-1; ++iBin)
         {
             //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
             // order matters, so use (*this)() to access values
@@ -146,7 +159,7 @@ namespace Katydid
         {
             double valueImag, valueReal;
 #pragma omp parallel for private(valueReal, valueImag)
-            for (unsigned iBin=1; iBin<nBins-1; iBin++)
+            for (unsigned iBin=1; iBin<nBins-1; ++iBin)
             {
                 valueReal = sqrt( ((*this)(fDCBin - iBin)[0]*(*this)(fDCBin - iBin)[0]) + ((*this)(fDCBin + iBin)[0]*(*this)(fDCBin + iBin)[0]) );
                 valueImag = sqrt( ((*this)(fDCBin - iBin)[1]*(*this)(fDCBin - iBin)[1]) + ((*this)(fDCBin + iBin)[1]*(*this)(fDCBin + iBin)[1]) );
@@ -168,7 +181,7 @@ namespace Katydid
         else
         {
 #pragma omp parallel for
-            for (unsigned iBin=1; iBin<nBins-1; iBin++)
+            for (unsigned iBin=1; iBin<nBins-1; ++iBin)
             {
                 (*newFS)(iBin).set_rect((*this)(fDCBin + iBin)[0], (*this)(fDCBin + iBin)[1]);
             }
@@ -193,28 +206,102 @@ namespace Katydid
         // The negative frequency values will be combined with the positive ones,
         // so the power spectrum will go from the DC bin to the max frequency
 
-        unsigned nBins = size();
-        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
-        double value, valueImag, valueReal;
+        // hmm, hardcoded for now
+        bool addNegFreqs = true;
+
+        unsigned nBins = fDCBin + 1;
+        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
+
+        double valueImag, valueReal;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 
+        // DC bin
+        valueReal = (*this)(fDCBin)[0];
+        valueImag = (*this)(fDCBin)[1];
+        (*newPS)(0) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+
+        // All bins besides the Nyquist and DC bins
+        unsigned totalBins = size();
         /*
         unsigned iPosBin = fDCBin + 1;
         unsigned iNegBin = fDCBin - 1;
-        for (unsigned iBin=1; iBin<nBins-1; iBin++)
+        for (unsigned iBin=1; iBin<nBins-1; ++iBin)
         {
             //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
             // order matters, so use (*this)() to access values
             valueReal = (*this)(iNegBin)[0] + (*this)(iPosBin)[0];
             valueImag = (*this)(iNegBin)[1] + (*this)(iPosBin)[1];
-            value = valueReal * valueReal + valueImag * valueImag;
-            (*newPS)(iBin) = value * scaling;
+            (*newFS)(iBin).set_rect(valueReal, valueImag);
             iPosBin++;
             iNegBin--;
         }
-        */
+         */
+        // the negative and positive frequencies must be added in quadrature
+        if (addNegFreqs)
+        {
 #pragma omp parallel for private(valueReal, valueImag)
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+            for (unsigned iBin=1; iBin<nBins-1; ++iBin)
+            {
+                valueReal = sqrt( ((*this)(fDCBin - iBin)[0]*(*this)(fDCBin - iBin)[0]) + ((*this)(fDCBin + iBin)[0]*(*this)(fDCBin + iBin)[0]) );
+                valueImag = sqrt( ((*this)(fDCBin - iBin)[1]*(*this)(fDCBin - iBin)[1]) + ((*this)(fDCBin + iBin)[1]*(*this)(fDCBin + iBin)[1]) );
+                (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+            }
+
+            // Nyquist bin
+            if (fIsSizeEven)
+            {
+                valueReal = (*this)(0)[0];
+                valueImag = (*this)(0)[1];
+                (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+            }
+            else
+            {
+                valueReal = sqrt( ((*this)(0)[0]*(*this)(0)[0]) + ((*this)(totalBins-1)[0]*(*this)(totalBins-1)[0]) );
+                valueImag = sqrt( ((*this)(0)[1]*(*this)(0)[1]) + ((*this)(totalBins-1)[1]*(*this)(totalBins-1)[1]) );
+                (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+            }
+        }
+        else
+        {
+#pragma omp parallel for private(valueReal, valueImag)
+            for (unsigned iBin=1; iBin<nBins-1; ++iBin)
+            {
+                valueReal = (*this)(fDCBin + iBin)[0];
+                valueImag = (*this)(fDCBin + iBin)[1];
+                (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+            }
+
+            // Nyquist bin
+            if (fIsSizeEven)
+            {
+                // in the event of even size, this is the only nyquist bin, so i have to use it, even though it's frequency is negative
+                valueReal = (*this)(0)[0];
+                valueImag = (*this)(0)[1];
+                (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+            }
+            else
+            {
+                valueReal = (*this)(totalBins-1)[0];
+                valueImag = (*this)(totalBins-1)[1];
+                (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+            }
+        }
+
+        return newPS;
+
+
+
+
+
+        // The version below does not add negative frequencies
+        /*
+        unsigned nBins = size();
+        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
+        double value, valueImag, valueReal;
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
+
+#pragma omp parallel for private(valueReal, valueImag)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             valueReal = (*this)(iBin)[0];
             valueImag = (*this)(iBin)[1];
@@ -222,14 +309,14 @@ namespace Katydid
             (*newPS)(iBin) = value * scaling;
         }
 
-
         return newPS;
+        */
     }
 
     void KTFrequencySpectrumFFTW::Print(unsigned startPrint, unsigned nToPrint) const
     {
         stringstream printStream;
-        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; iBin++)
+        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; ++iBin)
         {
             // order matters, so use (*this)() to access values
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
@@ -245,7 +332,7 @@ namespace Katydid
     {
         unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             // order matters, so use (*this)() to access values
             hist->SetBinContent((int)iBin+1, std::sqrt((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]));
@@ -259,7 +346,7 @@ namespace Katydid
     {
         unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             // order matters, so use (*this)() to access values
             hist->SetBinContent((int)iBin+1, std::atan2((*this)(iBin)[1], (*this)(iBin)[0]));
@@ -276,7 +363,7 @@ namespace Katydid
         double value, valueImag, valueReal;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             // order matters, so use (*this)() to access values
             hist->SetBinContent((int)iBin+1, scaling * ((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]));
@@ -294,7 +381,7 @@ namespace Katydid
         double tMinMag = 1.e9;
         double value;
         // skip the DC bin; start at iBin = 1
-        for (unsigned iBin=1; iBin<nBins; iBin++)
+        for (unsigned iBin=1; iBin<nBins; ++iBin)
         {
             // order doesn't matter, so use fData[iBin] to access values
             value = std::sqrt(fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]);
@@ -303,7 +390,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             // order matters, so use (*this)() to access values
             value = sqrt((*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1]);
@@ -321,7 +408,7 @@ namespace Katydid
         double value;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
         // skip the DC bin; start at iBin = 1
-        for (unsigned iBin=1; iBin<nBins; iBin++)
+        for (unsigned iBin=1; iBin<nBins; ++iBin)
         {
             // order doesn't matter, so use fData[iBin] to access values
             value = (fData[iBin][0] * fData[iBin][0] + fData[iBin][1] * fData[iBin][1]) * scaling;
@@ -330,7 +417,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             // order matters, so use (*this)() to access values
             value = (*this)(iBin)[0] * (*this)(iBin)[0] + (*this)(iBin)[1] * (*this)(iBin)[1];
