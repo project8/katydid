@@ -43,6 +43,7 @@ set (DATA_HEADERFILES
     FFT/KTFrequencySpectrumFFTW.hh
     FFT/KTFrequencySpectrumPolar.hh
     FFT/KTPowerSpectrum.hh
+    FFT/KTPowerSpectrumData.hh
     FFT/KTMultiFSDataFFTW.hh
     FFT/KTMultiFSDataPolar.hh
     FFT/KTTimeFrequency.hh
@@ -94,6 +95,7 @@ set (DATA_SOURCEFILES
     FFT/KTMultiFSDataFFTW.cc
     FFT/KTMultiFSDataPolar.cc
     FFT/KTPowerSpectrum.cc
+    FFT/KTPowerSpectrumData.cc
     FFT/KTTimeFrequency.cc
     FFT/KTTimeFrequencyDataPolar.cc
     FFT/KTTimeFrequencyPolar.cc
