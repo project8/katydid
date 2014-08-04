@@ -30,7 +30,10 @@ namespace Katydid
         public:
             KTSpline();
             KTSpline(double* xVals, double* yVals, unsigned nVals);
+            KTSpline(const KTSpline& orig);
             virtual ~KTSpline();
+
+            KTSpline& operator=(const KTSpline& rhs);
 
             double Evaluate(double xValue);
             double Evaluate(double xValue) const;
@@ -48,7 +51,6 @@ namespace Katydid
 #endif
 
         private:
-
 #ifdef ROOT_FOUND
             TSpline3 fSpline;
 #endif

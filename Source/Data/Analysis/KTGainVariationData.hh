@@ -36,7 +36,10 @@ namespace Katydid
 
         public:
             KTGainVariationData();
+            KTGainVariationData(const KTGainVariationData& orig);
             virtual ~KTGainVariationData();
+
+            KTGainVariationData& operator=(const KTGainVariationData& rhs);
 
             //const GainVariation* GetGainVariation(unsigned component = 0) const;
             //GainVariation* GetGainVariation(unsigned component = 0);
@@ -93,6 +96,7 @@ namespace Katydid
     inline void KTGainVariationData::SetSpline(KTSpline* spline, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        delete fComponentData[component].fSpline;
         fComponentData[component].fSpline = spline;
     }
 

@@ -34,9 +34,25 @@ namespace Katydid
     {
     }
 
+    KTSpline::KTSpline(const KTSpline& orig) :
+            fSpline(orig.fSpline),
+            fXMin(orig.fXMin),
+            fXMax(orig.fXMax),
+            fCache()
+    {}
+
     KTSpline::~KTSpline()
     {
         ClearCache();
+    }
+
+    KTSpline& KTSpline::operator=(const KTSpline& rhs)
+    {
+        fSpline = rhs.fSpline;
+        fXMin = rhs.fXMin;
+        fXMax = rhs.fXMax;
+        fCache.clear();
+        return *this;
     }
 
     double KTSpline::Evaluate(double xValue)
@@ -81,8 +97,21 @@ namespace Katydid
         KTERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
     }
 
+    KTSpline::KTSpline(const KTSpline& orig) :
+            fXMin(orig.fXMin),
+            fXMax(orig.fXMax)
+    {
+    }
+
     KTSpline::~KTSpline()
     {
+    }
+
+    KTSpline& KTSpline::operator=(const KTSpline& rhs)
+    {
+        fXMin = rhs.fXMin;
+        fXMax = rhs.fXMax;
+        return *this;
     }
 
     double KTSpline::Evaluate(double xValue)

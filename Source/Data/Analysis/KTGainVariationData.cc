@@ -17,6 +17,17 @@ namespace Katydid
         fComponentData[0].fSpline = NULL;
     }
 
+    KTGainVariationData::KTGainVariationData(const KTGainVariationData& orig) :
+            KTExtensibleData< KTGainVariationData >(orig),
+            fComponentData(orig.fComponentData.size())
+    {
+        unsigned nComponents = fComponentData.size();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            fComponentData[iComponent].fSpline = new KTSpline(*orig.fComponentData[iComponent].fSpline);
+        }
+    }
+
     KTGainVariationData::~KTGainVariationData()
     {
         while (! fComponentData.empty())
@@ -25,6 +36,18 @@ namespace Katydid
             delete fComponentData.back().fSpline;
             fComponentData.pop_back();
         }
+    }
+
+    KTGainVariationData& KTGainVariationData::operator=(const KTGainVariationData& rhs)
+    {
+        unsigned nComponents = rhs.GetNComponents();
+        SetNComponents(nComponents);
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            delete fComponentData[iComponent].fSpline;
+            fComponentData[iComponent].fSpline = new KTSpline(*rhs.fComponentData[iComponent].fSpline);
+        }
+        return *this;
     }
 
     KTGainVariationData& KTGainVariationData::SetNComponents(unsigned components)
