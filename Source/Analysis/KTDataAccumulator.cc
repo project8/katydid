@@ -407,6 +407,7 @@ namespace Katydid
         {
             KTPowerSpectrum* newSpect = data.GetSpectrum(iComponent);
             KTPowerSpectrum* avSpect = accData.GetSpectrum(iComponent);
+            avSpect->SetMode(newSpect->GetMode());
             for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 (*avSpect)(iBin) = (*avSpect)(iBin) * remainingFrac + (*newSpect)(iBin) * fAveragingFrac;
