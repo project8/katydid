@@ -11,6 +11,7 @@
 #include "KTROOTTreeWriter.hh"
 
 #include "KTData.hh"
+#include "KTROOTData.hh"
 
 #include "Rtypes.h"
 
@@ -74,30 +75,6 @@ namespace Katydid
 
     };
 
-    struct TProcessedTrackData
-    {
-            UInt_t fComponent;
-            Bool_t fIsCut;
-            Double_t fStartTimeInRunC;
-            Double_t fEndTimeInRunC;
-            Double_t fTimeLength;
-            Double_t fStartFrequency;
-            Double_t fEndFrequency;
-            Double_t fFrequencyWidth;
-            Double_t fSlope;
-            Double_t fIntercept;
-            Double_t fTotalPower;
-            Double_t fStartTimeInRunCSigma;
-            Double_t fEndTimeInRunCSigma;
-            Double_t fTimeLengthSigma;
-            Double_t fStartFrequencySigma;
-            Double_t fEndFrequencySigma;
-            Double_t fFrequencyWidthSigma;
-            Double_t fSlopeSigma;
-            Double_t fInterceptSigma;
-            Double_t fTotalPowerSigma;
-
-    };
 
     class KTROOTTreeTypeWriterCandidates : public KTROOTTreeTypeWriter//, public KTTypeWriterCandidates
     {

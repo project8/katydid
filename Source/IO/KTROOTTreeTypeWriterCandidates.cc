@@ -304,28 +304,7 @@ namespace Katydid
             }
         }
 
-        // Load() also clears any existing data
-        //fFreqCandidateData->Load(*data);
-        fProcessedTrackData.fComponent = ptData.GetComponent();
-        fProcessedTrackData.fIsCut = ptData.GetIsCut();
-        fProcessedTrackData.fStartTimeInRunC = ptData.GetStartTimeInRunC();
-        fProcessedTrackData.fEndTimeInRunC = ptData.GetEndTimeInRunC();
-        fProcessedTrackData.fTimeLength = ptData.GetTimeLength();
-        fProcessedTrackData.fStartFrequency = ptData.GetStartFrequency();
-        fProcessedTrackData.fEndFrequency = ptData.GetEndFrequency();
-        fProcessedTrackData.fFrequencyWidth = ptData.GetFrequencyWidth();
-        fProcessedTrackData.fSlope = ptData.GetSlope();
-        fProcessedTrackData.fIntercept = ptData.GetIntercept();
-        fProcessedTrackData.fTotalPower = ptData.GetTotalPower();
-        fProcessedTrackData.fStartTimeInRunCSigma = ptData.GetStartTimeInRunCSigma();
-        fProcessedTrackData.fEndTimeInRunCSigma = ptData.GetEndTimeInRunCSigma();
-        fProcessedTrackData.fTimeLengthSigma = ptData.GetTimeLengthSigma();
-        fProcessedTrackData.fStartFrequencySigma = ptData.GetStartFrequencySigma();
-        fProcessedTrackData.fEndFrequencySigma = ptData.GetEndFrequencySigma();
-        fProcessedTrackData.fFrequencyWidthSigma = ptData.GetFrequencyWidthSigma();
-        fProcessedTrackData.fSlopeSigma = ptData.GetSlopeSigma();
-        fProcessedTrackData.fInterceptSigma = ptData.GetInterceptSigma();
-        fProcessedTrackData.fTotalPowerSigma = ptData.GetTotalPowerSigma();
+        fProcessedTrackData.Load(ptData);
 
         fProcessedTrackTree->Fill();
 
@@ -342,26 +321,7 @@ namespace Katydid
         }
         fWriter->AddTree(fProcessedTrackTree);
 
-        fProcessedTrackTree->Branch("Component", &fProcessedTrackData.fComponent, "fComponent/s");
-        fProcessedTrackTree->Branch("IsCut", &fProcessedTrackData.fIsCut, "fIsCut/O");
-        fProcessedTrackTree->Branch("StartTimeInRunC", &fProcessedTrackData.fStartTimeInRunC, "fStartTimeInRunC/d");
-        fProcessedTrackTree->Branch("EndTimeInRunC", &fProcessedTrackData.fEndTimeInRunC, "fEndTimeInRunC/d");
-        fProcessedTrackTree->Branch("TimeLength", &fProcessedTrackData.fTimeLength, "fTimeLength/d");
-        fProcessedTrackTree->Branch("StartFrequency", &fProcessedTrackData.fStartFrequency, "fStartFrequency/d");
-        fProcessedTrackTree->Branch("EndFrequency", &fProcessedTrackData.fEndFrequency, "fEndFrequency/d");
-        fProcessedTrackTree->Branch("FrequencyWidth", &fProcessedTrackData.fFrequencyWidth, "fFrequencyWidth/d");
-        fProcessedTrackTree->Branch("Slope", &fProcessedTrackData.fSlope, "fSlope/d");
-        fProcessedTrackTree->Branch("Intercept", &fProcessedTrackData.fIntercept, "fIntercept/d");
-        fProcessedTrackTree->Branch("TotalPower", &fProcessedTrackData.fTotalPower, "fTotalPower/d");
-        fProcessedTrackTree->Branch("StartTimeInRunCSigma", &fProcessedTrackData.fStartTimeInRunCSigma, "fStartTimeInRunCSigma/d");
-        fProcessedTrackTree->Branch("EndTimeInRunCSigma", &fProcessedTrackData.fEndTimeInRunCSigma, "fEndTimeInRunCSigma/d");
-        fProcessedTrackTree->Branch("TimeLengthSigma", &fProcessedTrackData.fTimeLengthSigma, "fTimeLengthSigma/d");
-        fProcessedTrackTree->Branch("StartFrequencySigma", &fProcessedTrackData.fStartFrequencySigma, "fStartFrequencySigma/d");
-        fProcessedTrackTree->Branch("EndFrequencySigma", &fProcessedTrackData.fEndFrequencySigma, "fEndFrequencySigma/d");
-        fProcessedTrackTree->Branch("FrequencyWidthSigma", &fProcessedTrackData.fFrequencyWidthSigma, "fFrequencyWidthSigma/d");
-        fProcessedTrackTree->Branch("SlopeSigma", &fProcessedTrackData.fSlopeSigma, "fSlopeSigma/d");
-        fProcessedTrackTree->Branch("InterceptSigma", &fProcessedTrackData.fInterceptSigma, "fInterceptSigma/d");
-        fProcessedTrackTree->Branch("TotalPowerSigma", &fProcessedTrackData.fTotalPowerSigma, "fTotalPowerSigma/d");
+        fProcessedTrackTree->Branch("Track", "Track", &fProcessedTrackData, 16000, 2);
 
         return true;
     }
