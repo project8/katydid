@@ -8,6 +8,7 @@ set (CANDIDATES_HEADERFILES
     KTCandidateCleaner.hh
     KTCandidateTrackFinder.hh
     KTDBScan.hh
+    KTDBScanEventClustering.hh
     KTDBScanTrackClustering.hh
     KTFrequencyCandidateIdentifier.hh
     KTMultiSliceClustering.hh
@@ -18,6 +19,7 @@ set (CANDIDATES_SOURCEFILES
     KTCandidateCleaner.cc
     KTCandidateTrackFinder.cc
     KTDBScan.cc
+    KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc
     KTMultiSliceClustering.cc

@@ -19,6 +19,7 @@ set (DATA_HEADERFILES
     Analysis/KTWignerVilleData.hh
     Candidates/KTFrequencyCandidate.hh
     Candidates/KTFrequencyCandidateData.hh
+    Candidates/KTMultiTrackEvent.hh
     Candidates/KTProcessedTrackData.hh
     Candidates/KTSparseWaterfallCandidateData.hh
     Candidates/KTWaterfallCandidateData.hh
@@ -69,6 +70,7 @@ set (DATA_SOURCEFILES
     Analysis/KTWignerVilleData.cc
     Candidates/KTFrequencyCandidate.cc
     Candidates/KTFrequencyCandidateData.cc
+    Candidates/KTMultiTrackEvent.hh
     Candidates/KTProcessedTrackData.cc
     Candidates/KTSparseWaterfallCandidateData.cc
     Candidates/KTWaterfallCandidateData.cc
