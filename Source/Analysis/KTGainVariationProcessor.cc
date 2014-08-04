@@ -135,7 +135,7 @@ namespace Katydid
         unsigned nComponents = data.GetNComponents();
 
         //double sigmaNorm = 1. / double(nBinsPerFitPoint - 1);
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
 
@@ -223,7 +223,7 @@ namespace Katydid
         unsigned nComponents = data.GetNComponents();
 
         //double sigmaNorm = 1. / double(nBinsPerFitPoint - 1);
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
 
@@ -310,7 +310,7 @@ namespace Katydid
         unsigned nComponents = data.GetNComponents();
 
         //double sigmaNorm = 1. / double(nBinsPerFitPoint - 1);
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTPowerSpectrum* spectrum = data.GetSpectrum(iComponent);
 

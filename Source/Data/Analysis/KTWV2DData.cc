@@ -26,14 +26,14 @@ namespace Katydid
     {
         unsigned oldSize = fSpectra.size();
         // if components < oldSize
-        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; ++iComponent)
         {
             DeleteSpectra(iComponent);
         }
         fSpectra.resize(components);
         fWVComponentData.resize(components);
         // if components > oldSize
-        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; ++iComponent)
         {
             fSpectra[iComponent] = NULL;
         }

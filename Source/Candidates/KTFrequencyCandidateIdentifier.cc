@@ -185,7 +185,7 @@ namespace Katydid
         fcData.SetBinWidth(clusterData.GetBinWidth());
         fcData.SetNBins(clusterData.GetNBins());
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData.GetSetOfClusters(iComponent);
             const KTFrequencySpectrumPolar* freqSpec = fsData.GetSpectrumPolar(iComponent);
@@ -211,7 +211,7 @@ namespace Katydid
         fcData.SetBinWidth(clusterData.GetBinWidth());
         fcData.SetNBins(clusterData.GetNBins());
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTCluster1DData::SetOfClusters& clusters = clusterData.GetSetOfClusters(iComponent);
             const KTFrequencySpectrumFFTW* freqSpec = fsData.GetSpectrumFFTW(iComponent);

@@ -124,7 +124,7 @@ namespace Katydid
             for (unsigned iBuffer = 0; iBuffer < fBufferSize; iBuffer++)
             {
                 fBuffer[iBuffer].resize(nComponents);
-                for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+                for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
                 {
                     fBuffer[iBuffer][iComponent].resize(fNFreqBins);
                 }
@@ -210,7 +210,7 @@ namespace Katydid
         }
 
         unsigned nComponents = data.GetNComponents();
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
             if (spectrum == NULL)
@@ -256,7 +256,7 @@ namespace Katydid
         }
 
         unsigned nComponents = data.GetNComponents();
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
             if (spectrum == NULL)
@@ -378,7 +378,7 @@ namespace Katydid
 
         double distMin, distMax, value;
         //unsigned distBin;
-        for (unsigned iComponent = 0; iComponent < fNComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < fNComponents; ++iComponent)
         {
             for (unsigned iBin = fMinBin; iBin <= fMaxBin; iBin++)
             {

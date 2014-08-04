@@ -147,7 +147,7 @@ namespace Katydid
         // initialize the circular buffer
         fBuffer.resize(nComponents);
         fSliceBreak.resize(nComponents);
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             fBuffer[iComponent].clear();
             fBuffer[iComponent].set_capacity(inputSliceSize + fWindowSize);

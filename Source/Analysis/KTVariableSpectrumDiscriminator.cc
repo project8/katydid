@@ -171,7 +171,7 @@ namespace Katydid
         newData.SetNBins(data.GetSpectrum(0)->size());
         newData.SetBinWidth(data.GetSpectrum(0)->GetBinWidth());
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             if (! DiscriminateSpectrum(data.GetSpectrum(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
             {
@@ -203,7 +203,7 @@ namespace Katydid
         newData.SetNBins(data.GetSpectrumPolar(0)->size());
         newData.SetBinWidth(data.GetSpectrumPolar(0)->GetBinWidth());
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             if (! DiscriminateSpectrum(data.GetSpectrumPolar(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
             {
@@ -237,7 +237,7 @@ namespace Katydid
         newData.SetNBins(data.GetSpectrumFFTW(0)->size());
         newData.SetBinWidth(data.GetSpectrumFFTW(0)->GetBinWidth());
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             if (! DiscriminateSpectrum(data.GetSpectrumFFTW(iComponent), gvData.GetSpline(iComponent), newData, iComponent))
             {

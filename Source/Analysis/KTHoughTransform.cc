@@ -218,7 +218,7 @@ namespace Katydid
         unsigned nComponents = data.GetNComponents();
         KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(nComponents);
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTDiscriminatedPoints2DData::SetOfPoints inputPoints = data.GetSetOfPoints(iComponent);
 

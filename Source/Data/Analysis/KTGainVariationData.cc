@@ -31,13 +31,13 @@ namespace Katydid
     {
         unsigned oldSize = fComponentData.size();
         // if components < oldSize
-        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; ++iComponent)
         {
             delete fComponentData[iComponent].fSpline;
         }
         fComponentData.resize(components);
         // if components > oldSize
-        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; ++iComponent)
         {
             fComponentData[iComponent].fSpline = NULL;
         }

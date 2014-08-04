@@ -64,7 +64,7 @@ namespace Katydid
         KTPROG(termlog, "Slice " << sliceNumber << " (" << nComponents << " components)\n" <<
                         "-----");
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = digData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -112,7 +112,7 @@ namespace Katydid
             char* buffer = new char[bufferSize];
             stringstream toTermBitOcc;
             toTermBitOcc << "Bit Occupancy Test\n";
-            for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+            for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
             {
                 toTermBitOcc << "Component " << iComponent << '\n';
                 // histogram
@@ -179,7 +179,7 @@ namespace Katydid
         {
             stringstream toTermClipping;
             toTermClipping << "Clipping Test\n";
-            for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+            for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
             {
                 toTermClipping << "Component " << iComponent << '\n';
                 toTermClipping << "\t\tNumber\tFraction\n";
@@ -195,7 +195,7 @@ namespace Katydid
 	  {
 	    stringstream toTermLinearity;
 	    toTermLinearity << "Linearity Test\n";
-	    for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+	    for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
 	      {
 		toTermLinearity << "Component " << iComponent << '\n';
 		toTermLinearity << "Upslope: "<<'\n';

@@ -159,7 +159,7 @@ namespace Katydid
         // Temporary storage for magnitude values
         vector< double > magnitude(data.GetSpectrumFFTW(0)->size());
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTFrequencySpectrumFFTW* spectrum = data.GetSpectrumFFTW(iComponent);
             if (spectrum == NULL)
@@ -251,7 +251,7 @@ namespace Katydid
         // Temporary storage for magnitude values
         vector< double > magnitude(data.GetSpectrumPolar(0)->size());
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTFrequencySpectrumPolar* spectrum = data.GetSpectrumPolar(iComponent);
             if (spectrum == NULL)

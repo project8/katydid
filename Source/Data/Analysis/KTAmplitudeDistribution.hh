@@ -72,7 +72,7 @@ namespace Katydid
 
     inline bool KTAmplitudeDistribution::ClearDistributions()
     {
-        for (unsigned iComponent = 0; iComponent < fDistributions.size(); iComponent++)
+        for (unsigned iComponent = 0; iComponent < fDistributions.size(); ++iComponent)
         {
             for (unsigned iFreqBin = 0; iFreqBin < fDistributions[iComponent].size(); iFreqBin++)
             {
@@ -86,7 +86,7 @@ namespace Katydid
     {
         //fDistributions.resize(nComponents, ComponentDistributions(nFreqBins, NULL));
         fDistributions.resize(nComponents);
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             fDistributions[iComponent].resize(nFreqBins, NULL);
         }

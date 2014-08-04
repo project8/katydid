@@ -84,7 +84,7 @@ namespace Katydid
         KTAnalyticAssociateData& aaTSData = tsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
 
         // Calculate the analytic associates
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -136,7 +136,7 @@ namespace Katydid
         KTAnalyticAssociateData& aaTSData = fsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
 
         // Calculate the analytic associates
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
 
@@ -173,7 +173,7 @@ namespace Katydid
         KTAnalyticAssociateData& aaTSData = fsData.Of< KTAnalyticAssociateData >().SetNComponents(nComponents);
 
         // Calculate the analytic associates
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
 

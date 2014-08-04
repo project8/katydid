@@ -43,7 +43,7 @@ namespace Katydid
         fBitOccupancyData.resize(num);
         if (fNBits != 0)
         {
-            for (unsigned iComponent = 0; iComponent < num; iComponent++)
+            for (unsigned iComponent = 0; iComponent < num; ++iComponent)
             {
                 fBitOccupancyData[iComponent].fBitHistogram = new KTCountHistogram(fNBits, -0.5, (double)fNBits - 0.5);
             }

@@ -55,7 +55,7 @@ namespace Katydid
 
         unsigned nComponents = data.GetNComponents();
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeries* timeSeries = data.GetTimeSeries(iComponent);
 

@@ -383,7 +383,7 @@ namespace Katydid
 
         if (! fWriter->OpenWindow()) return;
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -410,7 +410,7 @@ namespace Katydid
 
         if (! fWriter->OpenWindow()) return;
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
