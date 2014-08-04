@@ -16,7 +16,10 @@ namespace Katydid
     {
         public:
             KTProcessedTrackData();
+            KTProcessedTrackData(const KTProcessedTrackData& orig);
             virtual ~KTProcessedTrackData();
+
+            KTProcessedTrackData& operator=(const KTProcessedTrackData& rhs);
 
             unsigned GetComponent() const;
 

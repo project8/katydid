@@ -156,6 +156,11 @@ namespace Katydid
     bool KTDBScanTrackClustering::DoClustering()
     {
         KTPROG(tclog, "Starting DBSCAN track clustering");
+
+        fDBScan.SetRadius(1.);
+        fDBScan.SetMinPoints(fMinPoints);
+        KTINFO(tclog, "DBScan configured");
+
         for (unsigned iComponent = 0; iComponent < fCompPoints.size(); ++iComponent)
         //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
@@ -188,18 +193,13 @@ namespace Katydid
                 normPoints[iPoint++] = newPoint;
             }
 
-            fDBScan.SetRadius(1.);
-            fDBScan.SetMinPoints(fMinPoints);
-            KTINFO(tclog, "DBScan configured");
-
             // do the clustering!
             if (! fDBScan.RunDBScan< Euclidean< KTDBScan::Point > >(normPoints))
             {
                 KTERROR(tclog, "An error occurred while clustering");
                 return false;
-            } else {
-                KTDEBUG(tclog, "clustering complete");
             }
+            KTDEBUG(tclog, "DBSCAN finished");
 
             // loop over the clusters found, and create data objects for them
             const vector< KTDBScan::Cluster >& clusters = fDBScan.GetClusters();
@@ -269,11 +269,12 @@ namespace Katydid
                 fTrackSignal(data);
 
             } // loop over clusters
+
             fCompPoints[iComponent].clear();
 
         } // loop over components
 
-        KTDEBUG(tclog, "sending cluster-done, I think...");
+        KTDEBUG(tclog, "Clustering complete");
         fClusterDoneSignal();
 
         return true;

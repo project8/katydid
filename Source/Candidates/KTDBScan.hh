@@ -21,7 +21,7 @@
 namespace Katydid
 {
     KTLOGGER(tclog2, "katydid.fft2");
-    //
+
     // Euclidean distance
     template < typename VEC_T >
     class Euclidean

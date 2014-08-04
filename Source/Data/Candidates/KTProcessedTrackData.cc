@@ -34,8 +34,58 @@ namespace Katydid
     {
     }
 
+    KTProcessedTrackData::KTProcessedTrackData(const KTProcessedTrackData& orig) :
+            KTExtensibleData< KTProcessedTrackData >(orig),
+            fComponent(orig.fComponent),
+            fIsCut(orig.fIsCut),
+            fStartTimeInRunC(orig.fStartTimeInRunC),
+            fEndTimeInRunC(orig.fEndTimeInRunC),
+            fTimeLength(orig.fTimeLength),
+            fStartFrequency(orig.fStartFrequency),
+            fEndFrequency(orig.fEndFrequency),
+            fFrequencyWidth(orig.fFrequencyWidth),
+            fSlope(orig.fSlope),
+            fIntercept(orig.fIntercept),
+            fTotalPower(orig.fTotalPower),
+            fStartTimeInRunCSigma(orig.fStartTimeInRunCSigma),
+            fEndTimeInRunCSigma(orig.fEndTimeInRunCSigma),
+            fTimeLengthSigma(orig.fTimeLengthSigma),
+            fStartFrequencySigma(orig.fStartFrequencySigma),
+            fEndFrequencySigma(orig.fEndFrequencySigma),
+            fFrequencyWidthSigma(orig.fFrequencyWidthSigma),
+            fSlopeSigma(orig.fSlopeSigma),
+            fInterceptSigma(orig.fInterceptSigma),
+            fTotalPowerSigma(orig.fTotalPowerSigma)
+    {
+    }
+
     KTProcessedTrackData::~KTProcessedTrackData()
     {
+    }
+
+    KTProcessedTrackData& KTProcessedTrackData::operator=(const KTProcessedTrackData& rhs)
+    {
+        fComponent = rhs.fComponent;
+        fIsCut = rhs.fIsCut;
+        fStartTimeInRunC = rhs.fStartTimeInRunC;
+        fEndTimeInRunC = rhs.fEndTimeInRunC;
+        fTimeLength = rhs.fTimeLength;
+        fStartFrequency = rhs.fStartFrequency;
+        fEndFrequency = rhs.fEndFrequency;
+        fFrequencyWidth = rhs.fFrequencyWidth;
+        fSlope = rhs.fSlope;
+        fIntercept = rhs.fIntercept;
+        fTotalPower = rhs.fTotalPower;
+        fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma;
+        fEndTimeInRunCSigma = rhs.fEndTimeInRunCSigma;
+        fTimeLengthSigma = rhs.fTimeLengthSigma;
+        fStartFrequencySigma = rhs.fStartFrequencySigma;
+        fEndFrequencySigma = rhs.fEndFrequencySigma;
+        fFrequencyWidthSigma = rhs.fFrequencyWidthSigma;
+        fSlopeSigma = rhs.fSlopeSigma;
+        fInterceptSigma = rhs.fInterceptSigma;
+        fTotalPowerSigma = rhs.fTotalPowerSigma;
+        return *this;
     }
 
 } /* namespace Katydid */
