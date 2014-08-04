@@ -188,7 +188,8 @@ namespace Katydid
 
 
         // Finally, deal with processor-run specifications
-        // In the current implementation there is only one ThreadGroup, and all processors specified will be run in separate threads in parallel.
+        // The run queue is an array of processor names, or groups of names, which will be run sequentially.
+        // If names are grouped (in another array), those in that group will be run in parallel.
         // In single threaded mode all threads will be run sequentially in the order they were specified.
         const KTParamArray* rqArray = node->ArrayAt( "run-queue" );
         if (rqArray == NULL)
@@ -197,35 +198,37 @@ namespace Katydid
         }
         else
         {
-            ThreadGroup threadGroup;
-            for( KTParamArray::const_iterator rqIt = rqArray->Begin(); rqIt != rqArray->End(); ++rqIt )
+            for (KTParamArray::const_iterator rqIt = rqArray->Begin(); rqIt != rqArray->End(); ++rqIt)
             {
-                if( ! (*rqIt)->IsValue() )
+                ThreadGroup threadGroup;
+                if ((*rqIt)->IsValue())
                 {
-                    KTERROR( proclog, "Invalid connection entry: not a value" );
+                    const KTParamValue* rqValue = &( (*rqIt)->AsValue() );
+
+                    if (! AddProcessorToThreadGroup(rqValue, threadGroup)) return false;
+                }
+                else if ((*rqIt)->IsNode())
+                {
+                    const KTParamArray* rqNode = &( (*rqIt)->AsArray() );
+
+                    for (KTParamArray::const_iterator rqArrayIt = rqNode->Begin(); rqArrayIt != rqNode->End(); ++rqArrayIt)
+                    {
+                        if (! (*rqArrayIt)->IsValue())
+                        {
+                            KTERROR(proclog, "Invalid run-queue array entry: not a value");
+                            return false;
+                        }
+                        const KTParamValue* rqValue = &( (*rqArrayIt)->AsValue() );
+                        if (! AddProcessorToThreadGroup(rqValue, threadGroup)) return false;
+                    }
+                }
+                else
+                {
+                    KTERROR(proclog, "Invalid run-queue entry: not a value or array");
                     return false;
                 }
-                const KTParamValue* rqValue = &( (*rqIt)->AsValue() );
-
-                string procName = rqValue->Get();
-                KTProcessor* procForRunQueue = GetProcessor(procName);
-                KTDEBUG(proclog, "Adding processor of type " << procName << " to the run queue");
-                if (procForRunQueue == NULL)
-                {
-                    KTERROR(proclog, "Unable to find processor <" << procName << "> requested for the run queue");
-                    return false;
-                }
-
-                KTPrimaryProcessor* primaryProc = dynamic_cast< KTPrimaryProcessor* >(procForRunQueue);
-                if (primaryProc == NULL)
-                {
-                    KTERROR(proclog, "Processor <" << procName << "> is not a primary processor.");
-                    return false;
-                }
-
-                threadGroup.insert(primaryProc);
+                fRunQueue.push_back(threadGroup);
             }
-            fRunQueue.push_back(threadGroup);
         }
 
         return true;
@@ -241,6 +244,28 @@ namespace Katydid
         }
         nameOfProc = toParse.substr(0, sepPos);
         nameOfSigSlot = toParse.substr(sepPos + 1);
+        return true;
+    }
+
+    bool KTProcessorToolbox::AddProcessorToThreadGroup(const KTParamValue* param, ThreadGroup& group)
+    {
+        string procName = param->Get();
+        KTProcessor* procForRunQueue = GetProcessor(procName);
+        KTDEBUG(proclog, "Adding processor of type " << procName << " to the run queue");
+        if (procForRunQueue == NULL)
+        {
+            KTERROR(proclog, "Unable to find processor <" << procName << "> requested for the run queue");
+            return false;
+        }
+
+        KTPrimaryProcessor* primaryProc = dynamic_cast< KTPrimaryProcessor* >(procForRunQueue);
+        if (primaryProc == NULL)
+        {
+            KTERROR(proclog, "Processor <" << procName << "> is not a primary processor.");
+            return false;
+        }
+        //group.insert(primaryProc);
+        group.insert(Thread(primaryProc, procName));
         return true;
     }
 
@@ -304,8 +329,9 @@ namespace Katydid
             {
                 // create a boost::thread object to launch the thread
                 // use boost::ref to avoid copying the processor
-                KTDEBUG(proclog, "Starting thread " << iThread);
-                parallelThreads.create_thread(boost::ref(**tgIter));
+                KTDEBUG(proclog, "Starting thread " << iThread << ": " << tgIter->fName);
+                parallelThreads.create_thread(boost::ref(*(tgIter->fProc)));
+                //parallelThreads.create_thread(boost::ref(**tgIter));
                 iThread++;
             }
             // wait for execution to complete
@@ -386,6 +412,7 @@ namespace Katydid
             delete it->second.fProc;
         }
         fProcMap.clear();
+        fRunQueue.clear();
         return;
     }
 
