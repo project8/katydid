@@ -1,22 +1,27 @@
 /*
- * KTMultiTrackEvent.cc
+ * KTMultiTrackEventData.cc
  *
  *  Created on: Aug 4, 2014
  *      Author: nsoblath
  */
 
-#include "KTMultiTrackEvent.hh"
+#include "KTMultiTrackEventData.hh"
+
+#include <cmath>
 
 namespace Katydid
 {
-    KTMultiTrackEvent::KTMultiTrackEvent() :
-            KTExtensibleData< KTMultiTrackEvent >(),
+    KTMultiTrackEventData::KTMultiTrackEventData() :
+            KTExtensibleData< KTMultiTrackEventData >(),
             fComponent(0),
+            fEventID(0),
             fStartTimeInRunC(0.),
             fEndTimeInRunC(0.),
             fTimeLength(0.),
             fStartFrequency(0.),
             fEndFrequency(0.),
+            fMinimumFrequency(0.),
+            fMaximumFrequency(0.),
             fFrequencyWidth(0.),
             fStartTimeInRunCSigma(0.),
             fEndTimeInRunCSigma(0.),
@@ -24,18 +29,26 @@ namespace Katydid
             fStartFrequencySigma(0.),
             fEndFrequencySigma(0.),
             fFrequencyWidthSigma(0.),
+            fFirstTrackTimeLength(0.),
+            fFirstTrackFrequencyWidth(0.),
+            fFirstTrackSlope(0.),
+            fFirstTrackIntercept(0.),
+            fFirstTrackTotalPower(0.),
             fTracks()
     {
     }
 
-    KTMultiTrackEvent::KTMultiTrackEvent(const KTMultiTrackEvent& orig) :
-            KTExtensibleData< KTMultiTrackEvent >(orig),
+    KTMultiTrackEventData::KTMultiTrackEventData(const KTMultiTrackEventData& orig) :
+            KTExtensibleData< KTMultiTrackEventData >(orig),
             fComponent(orig.fComponent),
+            fEventID(orig.fEventID),
             fStartTimeInRunC(orig.fStartTimeInRunC),
             fEndTimeInRunC(orig.fEndTimeInRunC),
             fTimeLength(orig.fTimeLength),
             fStartFrequency(orig.fStartFrequency),
             fEndFrequency(orig.fEndFrequency),
+            fMinimumFrequency(orig.fMinimumFrequency),
+            fMaximumFrequency(orig.fMaximumFrequency),
             fFrequencyWidth(orig.fFrequencyWidth),
             fStartTimeInRunCSigma(orig.fStartTimeInRunCSigma),
             fEndTimeInRunCSigma(orig.fEndTimeInRunCSigma),
@@ -43,19 +56,24 @@ namespace Katydid
             fStartFrequencySigma(orig.fStartFrequencySigma),
             fEndFrequencySigma(orig.fEndFrequencySigma),
             fFrequencyWidthSigma(orig.fFrequencyWidthSigma),
+            fFirstTrackTimeLength(orig.fFirstTrackTimeLength),
+            fFirstTrackFrequencyWidth(orig.fFirstTrackFrequencyWidth),
+            fFirstTrackSlope(orig.fFirstTrackSlope),
+            fFirstTrackIntercept(orig.fFirstTrackIntercept),
+            fFirstTrackTotalPower(orig.fFirstTrackTotalPower),
             fTracks()
     {
         for (TrackCIt trackIt = orig.GetTracksBegin(); trackIt != orig.GetTracksEnd(); ++trackIt)
         {
-            fTracks.push_back(*trackIt);
+            fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
         }
     }
 
-    KTMultiTrackEvent::~KTMultiTrackEvent()
+    KTMultiTrackEventData::~KTMultiTrackEventData()
     {
     }
 
-    KTMultiTrackEvent& KTMultiTrackEvent::operator=(const KTMultiTrackEvent& rhs)
+    KTMultiTrackEventData& KTMultiTrackEventData::operator=(const KTMultiTrackEventData& rhs)
     {
         ClearTracks();
 
@@ -77,15 +95,15 @@ namespace Katydid
 
         for (TrackCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
         {
-            fTracks.push_back(*trackIt);
+            fTracks.insert(Tracks::value_type(trackIt->first, trackIt->second));
         }
 
         return *this;
     }
 
-    void KTMultiTrackEvent::AddTrack(const KTProcessedTrackData& track)
+    void KTMultiTrackEventData::AddTrack(const KTProcessedTrackData& track)
     {
-        fTracks.push_back(track);
+        fTracks.insert(Tracks::value_type(track.GetTrackID(), track));
 
         bool updateTimeLength = false;
         if (track.GetStartTimeInRunC() < fStartTimeInRunC)
@@ -130,7 +148,7 @@ namespace Katydid
         return;
     }
 
-    void KTMultiTrackEvent::ClearTracks()
+    void KTMultiTrackEventData::ClearTracks()
     {
         fTracks.clear();
 
