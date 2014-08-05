@@ -7,6 +7,7 @@
 
 #include "KTMultiTrackEventData.hh"
 
+#include <algorithm>
 #include <cmath>
 
 namespace Katydid
@@ -29,6 +30,7 @@ namespace Katydid
             fStartFrequencySigma(0.),
             fEndFrequencySigma(0.),
             fFrequencyWidthSigma(0.),
+            fFirstTrackID(0),
             fFirstTrackTimeLength(0.),
             fFirstTrackFrequencyWidth(0.),
             fFirstTrackSlope(0.),
@@ -56,6 +58,7 @@ namespace Katydid
             fStartFrequencySigma(orig.fStartFrequencySigma),
             fEndFrequencySigma(orig.fEndFrequencySigma),
             fFrequencyWidthSigma(orig.fFrequencyWidthSigma),
+            fFirstTrackID(orig.fFirstTrackID),
             fFirstTrackTimeLength(orig.fFirstTrackTimeLength),
             fFirstTrackFrequencyWidth(orig.fFirstTrackFrequencyWidth),
             fFirstTrackSlope(orig.fFirstTrackSlope),
@@ -84,6 +87,8 @@ namespace Katydid
         fTimeLength = rhs.fTimeLength;
         fStartFrequency = rhs.fStartFrequency;
         fEndFrequency = rhs.fEndFrequency;
+        fMinimumFrequency = rhs.fMinimumFrequency;
+        fMaximumFrequency = rhs.fMaximumFrequency;
         fFrequencyWidth = rhs.fFrequencyWidth;
 
         fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma;
@@ -92,6 +97,13 @@ namespace Katydid
         fStartFrequencySigma = rhs.fStartFrequencySigma;
         fEndFrequencySigma = rhs.fEndFrequencySigma;
         fFrequencyWidthSigma = rhs.fFrequencyWidthSigma;
+
+        fFirstTrackID = rhs.fFirstTrackID;
+        fFirstTrackTimeLength = rhs.fFirstTrackTimeLength;
+        fFirstTrackFrequencyWidth = rhs.fFirstTrackFrequencyWidth;
+        fFirstTrackSlope = rhs.fFirstTrackSlope;
+        fFirstTrackIntercept = rhs.fFirstTrackIntercept;
+        fFirstTrackTotalPower = rhs.fFirstTrackTotalPower;
 
         for (TrackCIt trackIt = rhs.GetTracksBegin(); trackIt != rhs.GetTracksEnd(); ++trackIt)
         {
@@ -105,45 +117,72 @@ namespace Katydid
     {
         fTracks.insert(Tracks::value_type(track.GetTrackID(), track));
 
-        bool updateTimeLength = false;
-        if (track.GetStartTimeInRunC() < fStartTimeInRunC)
+        return;
+    }
+
+    void KTMultiTrackEventData::ProcessTracks()
+    {
+        TrackCIt trackIt = fTracks.begin();
+
+        fStartTimeInRunC = trackIt->second.GetStartTimeInRunC();
+        fEndTimeInRunC = trackIt->second.GetEndTimeInRunC();
+        fTimeLength = trackIt->second.GetTimeLength();
+        fStartFrequency = trackIt->second.GetStartFrequency();
+        fEndFrequency = trackIt->second.GetEndFrequency();
+        fMinimumFrequency = std::min(fStartFrequency, fEndFrequency);
+        fMaximumFrequency = std::max(fStartFrequency, fEndFrequency);
+        fFrequencyWidth = trackIt->second.GetFrequencyWidth();
+
+        fStartTimeInRunCSigma = trackIt->second.GetStartTimeInRunCSigma();
+        fEndTimeInRunCSigma = trackIt->second.GetEndTimeInRunCSigma();
+        fTimeLengthSigma = trackIt->second.GetTimeLengthSigma();
+        fStartFrequencySigma = trackIt->second.GetStartFrequencySigma();
+        fEndFrequencySigma = trackIt->second.GetEndFrequencySigma();
+        fFrequencyWidthSigma = trackIt->second.GetFrequencyWidthSigma();
+
+        double minStartTime = fStartTimeInRunC;
+
+        for (++trackIt; trackIt != fTracks.end(); ++trackIt)
         {
-            fStartTimeInRunC = track.GetStartTimeInRunC();
-            fStartTimeInRunCSigma = track.GetStartTimeInRunCSigma();
-            updateTimeLength = true;
-        }
-        if (track.GetEndTimeInRunC() > fEndTimeInRunC)
-        {
-            fEndTimeInRunC = track.GetEndTimeInRunC();
-            fEndTimeInRunCSigma = track.GetEndTimeInRunCSigma();
-            updateTimeLength = true;
+            if (trackIt->second.GetStartTimeInRunC() < fStartTimeInRunC)
+            {
+                fStartTimeInRunC = trackIt->second.GetStartTimeInRunC();
+                fStartTimeInRunCSigma = trackIt->second.GetStartTimeInRunCSigma();
+            }
+            if (trackIt->second.GetEndTimeInRunC() > fEndTimeInRunC)
+            {
+                fEndTimeInRunC = trackIt->second.GetEndTimeInRunC();
+                fEndTimeInRunCSigma = trackIt->second.GetEndTimeInRunCSigma();
+            }
+
+            if (trackIt->second.GetStartFrequency() < fStartFrequency)
+            {
+                fStartFrequency = trackIt->second.GetStartFrequency();
+                fStartFrequencySigma = trackIt->second.GetStartFrequencySigma();
+            }
+            if (trackIt->second.GetEndTimeInRunC() > fEndFrequency)
+            {
+                fEndFrequency = trackIt->second.GetEndFrequency();
+                fEndFrequencySigma = trackIt->second.GetEndFrequencySigma();
+            }
+
+            if (trackIt->second.GetStartTimeInRunC() < minStartTime)
+            {
+                fFirstTrackID = trackIt->first;
+                fFirstTrackTimeLength = trackIt->second.GetTimeLength();
+                fFirstTrackFrequencyWidth = trackIt->second.GetFrequencyWidth();
+                fFirstTrackSlope = trackIt->second.GetSlope();
+                fFirstTrackIntercept = trackIt->second.GetIntercept();
+                fFirstTrackTotalPower = trackIt->second.GetTotalPower();
+            }
+
         }
 
-        if (updateTimeLength)
-        {
-            fTimeLength = fEndTimeInRunC - fStartTimeInRunC;
-            fTimeLengthSigma = sqrt(fEndTimeInRunC * fEndTimeInRunC + fStartTimeInRunC * fStartTimeInRunC);
-        }
+        fTimeLength = fEndTimeInRunC - fStartTimeInRunC;
+        fTimeLengthSigma = sqrt(fEndTimeInRunC * fEndTimeInRunC + fStartTimeInRunC * fStartTimeInRunC);
 
-        bool updateFreqWidth = false;
-        if (track.GetStartFrequency() < fStartFrequency)
-        {
-            fStartFrequency = track.GetStartFrequency();
-            fStartFrequencySigma = track.GetStartFrequencySigma();
-            updateFreqWidth = true;
-        }
-        if (track.GetEndTimeInRunC() > fEndFrequency)
-        {
-            fEndFrequency = track.GetEndFrequency();
-            fEndFrequencySigma = track.GetEndFrequencySigma();
-            updateFreqWidth = true;
-        }
-
-        if (updateFreqWidth)
-        {
-            fFrequencyWidth = fEndFrequency - fStartFrequency;
-            fFrequencyWidthSigma = sqrt(fEndFrequency * fEndFrequency + fStartFrequency * fStartFrequency);
-        }
+        fFrequencyWidth = fEndFrequency - fStartFrequency;
+        fFrequencyWidthSigma = sqrt(fEndFrequency * fEndFrequency + fStartFrequency * fStartFrequency);
 
         return;
     }
@@ -157,6 +196,8 @@ namespace Katydid
         fTimeLength = 0.;
         fStartFrequency = 0.;
         fEndFrequency = 0.;
+        fMinimumFrequency = 0.;
+        fMaximumFrequency = 0.;
         fFrequencyWidth = 0.;
         fStartTimeInRunCSigma = 0.;
         fEndTimeInRunCSigma = 0.;
@@ -164,6 +205,11 @@ namespace Katydid
         fStartFrequencySigma = 0.;
         fEndFrequencySigma = 0.;
         fFrequencyWidthSigma = 0.;
+        fFirstTrackTimeLength = 0.;
+        fFirstTrackFrequencyWidth = 0.;
+        fFirstTrackSlope = 0.;
+        fFirstTrackIntercept = 0.;
+        fFirstTrackTotalPower = 0.;
 
         return;
     }

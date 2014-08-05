@@ -53,6 +53,7 @@ namespace Katydid
             MEMBERVARIABLE(double, FrequencyWidthSigma);
 
             // this group of member variables is set by ProcessTracks()
+            MEMBERVARIABLE(unsigned, FirstTrackID);
             MEMBERVARIABLE(double, FirstTrackTimeLength);
             MEMBERVARIABLE(double, FirstTrackFrequencyWidth);
             MEMBERVARIABLE(double, FirstTrackSlope);
@@ -65,17 +66,18 @@ namespace Katydid
             const KTProcessedTrackData& GetTrack(unsigned id) const;
             KTProcessedTrackData& GetTrack(unsigned id);
 
+            void AddTrack(const KTProcessedTrackData& track);
+            /// Evaluates all of the tracks to fill in information about the event and first track
+            void ProcessTracks();
+
+            /// Removes all track data, as well as collective time and frequency info
+            void ClearTracks();
+
             TrackCIt GetTracksBegin() const;
             TrackIt GetTracksBegin();
 
             TrackCIt GetTracksEnd() const;
             TrackIt GetTracksEnd();
-
-            void AddTrack(const KTProcessedTrackData& track);
-            void ProcessTracks();
-
-            /// Removes all track data, as well as collective time and frequency info
-            void ClearTracks();
 
         private:
             Tracks fTracks;
