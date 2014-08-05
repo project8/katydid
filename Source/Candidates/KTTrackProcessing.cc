@@ -60,6 +60,7 @@ namespace Katydid
     bool KTTrackProcessing::ProcessTrack(KTSparseWaterfallCandidateData& swfData, KTHoughData& htData)
     {
         unsigned component = swfData.GetComponent();
+        unsigned trackID = swfData.GetCandidateID();
 
         typedef KTSparseWaterfallCandidateData::Points Points;
         // not const because points will be removed later
@@ -215,6 +216,7 @@ namespace Katydid
         // Add the new data
         KTProcessedTrackData& procTrack = htData.Of< KTProcessedTrackData >();
         procTrack.SetComponent(component);
+        procTrack.SetTrackID(trackID);
 
         if (lsSlope < fSlopeMinimum || points.size() < fProcTrackMinPoints)
         {

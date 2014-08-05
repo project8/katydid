@@ -208,7 +208,7 @@ namespace Katydid
             {
                 if (clustIt->empty())
                 {
-                    KTWARN(tclog, "Empty candidate");
+                    KTWARN(tclog, "Empty cluster");
                     continue;
                 }
 
@@ -253,6 +253,7 @@ namespace Katydid
                 }
 
                 cand.SetComponent(iComponent);
+                cand.SetCandidateID(fDataCount);
 
                 cand.SetTimeBinWidth(fTimeBinWidth);
                 cand.SetFreqBinWidth(fFreqBinWidth);

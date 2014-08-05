@@ -26,7 +26,7 @@ namespace Katydid
 
     struct TFrequencyCandidateData
     {
-        UShort_t fComponent;
+        UInt_t fComponent;
         ULong64_t fSlice;
         Double_t fTimeInRun;
         Double_t fThreshold;
@@ -39,7 +39,7 @@ namespace Katydid
 
     struct TWaterfallCandidateData
     {
-        UShort_t fComponent;
+        UInt_t fComponent;
         Double_t fTimeInRun;
         Double_t fTimeLength;
         ULong64_t fFirstSliceNumber;
@@ -56,7 +56,8 @@ namespace Katydid
     struct TSparseWaterfallCandidateData
     {
             TGraph2D* fPoints;
-            UShort_t fComponent;
+            UInt_t fComponent;
+            UInt_t fCandidateID;
             Double_t fTimeBinWidth;
             Double_t fFreqBinWidth;
             Double_t fTimeInRunC;
