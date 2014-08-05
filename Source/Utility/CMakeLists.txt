@@ -16,6 +16,7 @@ set (UTILITY_HEADERFILES
     KTLogger.hh
     KTMaskedArray.hh
     KTMath.hh
+    KTMemberVariable.hh
     KTNOFactory.hh
     KTParam.hh
     KTPhysicalArray.hh
