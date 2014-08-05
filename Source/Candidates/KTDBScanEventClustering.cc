@@ -9,6 +9,7 @@
 
 #include "KTLogger.hh"
 #include "KTMath.hh"
+#include "KTMultiTrackEventData.hh"
 #include "KTNOFactory.hh"
 #include "KTParam.hh"
 #include "KTProcessedTrackData.hh"
@@ -40,7 +41,7 @@ namespace Katydid
             fEventSignal("event", this),
             fClusterDoneSignal("cluster-done", this),
             fTakeTrackSlot("track", this, &KTDBScanEventClustering::TakeTrack)
-//            fDoClusterSlot("do-cluster-trigger", this, &KTDBScanEventClustering::Run)
+    //        fDoClusterSlot("do-cluster-trigger", this, &KTDBScanEventClustering::Run)
     {
         RegisterSlot("do-cluster-trigger", this, &KTDBScanEventClustering::TriggerClustering);
         fRadii(0) = 1. / sqrt(fNDimensions);
@@ -141,7 +142,6 @@ namespace Katydid
         KTINFO(tclog, "DBScan configured");
 
         for (unsigned iComponent = 0; iComponent < fCompTracks.size(); ++iComponent)
-        //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
             KTDEBUG(tclog, "Clustering component " << iComponent);
 
@@ -185,75 +185,37 @@ namespace Katydid
             }
             KTDEBUG(tclog, "DBSCAN finished");
 
-            /*
             // loop over the clusters found, and create data objects for them
             const vector< KTDBScan::Cluster >& clusters = fDBScan.GetClusters();
-            KTDEBUG(tclog, "Found " << clusters.size() << " clusters; creating candidates");
+            KTDEBUG(tclog, "Found " << clusters.size() << " clusters; creating candidate events");
             for (vector< KTDBScan::Cluster >::const_iterator clustIt = clusters.begin(); clustIt != clusters.end(); ++clustIt)
             {
                 if (clustIt->empty())
                 {
-                    KTWARN(tclog, "Empty candidate");
+                    KTWARN(tclog, "Empty cluster");
                     continue;
                 }
 
-                KTDEBUG(tclog, "Creating candidate " << fDataCount << "; includes " << clustIt->size() << " points");
+                KTDEBUG(tclog, "Creating event " << fDataCount << "; includes " << clustIt->size() << " points");
 
                 ++fDataCount;
 
                 KTDataPtr data(new KTData());
 
-                KTSparseWaterfallCandidateData& cand = data->Of< KTSparseWaterfallCandidateData >();
+                KTMultiTrackEventData& eventData = data->Of< KTMultiTrackEventData >();
+                eventData.SetComponent(iComponent);
+                eventData.SetEventID(fDataCount);
 
-                KTDBScan::Cluster::const_iterator pointIdIt = clustIt->begin();
-                double minFreq = (fCompPoints[iComponent][*pointIdIt])(1);
-                double maxFreq = minFreq;
-                double minTime = (fCompPoints[iComponent][*pointIdIt])(0);
-                double maxTime = minTime;
-                cand.AddPoint(KTSparseWaterfallCandidateData::Point((fCompPoints[iComponent][*pointIdIt])(0), (fCompPoints[iComponent][*pointIdIt])(1), 1.));
-                KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << fCompPoints[iComponent][*pointIdIt])
-
-                for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
+                for (KTDBScan::Cluster::const_iterator pointIdIt = clustIt->begin(); pointIdIt != clustIt->end(); ++pointIdIt)
                 {
-                    cand.AddPoint(KTSparseWaterfallCandidateData::Point((fCompPoints[iComponent][*pointIdIt])(0), (fCompPoints[iComponent][*pointIdIt])(1), 1.));
-                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << fCompPoints[iComponent][*pointIdIt])
-
-                    if ((fCompPoints[iComponent][*pointIdIt])(1) > maxFreq)
-                    {
-                        maxFreq = (fCompPoints[iComponent][*pointIdIt])(1);
-                    }
-                    else if ((fCompPoints[iComponent][*pointIdIt])(1) < minFreq)
-                    {
-                        minFreq = (fCompPoints[iComponent][*pointIdIt])(1);
-                    }
-
-                    if ((fCompPoints[iComponent][*pointIdIt])(0) > maxTime)
-                    {
-                        maxTime = (fCompPoints[iComponent][*pointIdIt])(0);
-                    }
-                    else if ((fCompPoints[iComponent][*pointIdIt])(0) < minTime)
-                    {
-                        minTime = (fCompPoints[iComponent][*pointIdIt])(0);
-                    }
+                    eventData.AddTrack(fCompTracks[iComponent][*pointIdIt]);
                 }
 
-                cand.SetComponent(iComponent);
-
-                cand.SetTimeBinWidth(fTimeBinWidth);
-                cand.SetFreqBinWidth(fFreqBinWidth);
-
-                cand.SetTimeInRunC(minTime);
-                cand.SetTimeLength(maxTime - minTime);
-
-                cand.SetMinimumFrequency(minFreq);
-                cand.SetMaximumFrequency(maxFreq);
-
-                cand.SetFrequencyWidth(maxFreq - minFreq);
+                eventData.ProcessTracks();
 
                 fCandidates.insert(data);
                 fEventSignal(data);
             } // loop over clusters
-                */
 
             fCompTracks[iComponent].clear();
 
