@@ -11,6 +11,7 @@
 #include "KTFrequencyCandidateData.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
+#include "KTMultiTrackEventData.hh"
 #include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -43,10 +44,12 @@ namespace Katydid
             fWaterfallCandidateTree(NULL),
             fSparseWaterfallCandidateTree(NULL),
             fProcessedTrackTree(NULL),
+            fMultiTrackEventTree(NULL),
             fFreqCandidateData(),
             fWaterfallCandidateData(),
             fSparseWaterfallCandidateData(),
-            fProcessedTrackData()
+            fProcessedTrackData(),
+            fMultiTrackEventData()
     {
     }
 
@@ -63,6 +66,7 @@ namespace Katydid
         fWriter->RegisterSlot("waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteWaterfallCandidate);
         fWriter->RegisterSlot("sparse-waterfall-candidates", this, &KTROOTTreeTypeWriterCandidates::WriteSparseWaterfallCandidate);
         fWriter->RegisterSlot("processed-track", this, &KTROOTTreeTypeWriterCandidates::WriteProcessedTrack);
+        fWriter->RegisterSlot("multi-track-event", this, &KTROOTTreeTypeWriterCandidates::WriteMultiTrackEvent);
         return;
     }
 
@@ -322,6 +326,48 @@ namespace Katydid
         fWriter->AddTree(fProcessedTrackTree);
 
         fProcessedTrackTree->Branch("Track", "Track", &fProcessedTrackData, 16000, 2);
+
+        return true;
+    }
+
+    //******************
+    // Multi-Track Event
+    //******************
+
+    void KTROOTTreeTypeWriterCandidates::WriteMultiTrackEvent(KTDataPtr data)
+    {
+        KTDEBUG(publog, "Attempting to write to multi-track event root tree");
+        KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fMultiTrackEventTree == NULL)
+        {
+            if (! SetupMultiTrackEventTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the multi-track event tree! Nothing was written.");
+                return;
+            }
+        }
+
+        fMultiTrackEventData.Load(mteData);
+
+        fMultiTrackEventTree->Fill();
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterCandidates::SetupMultiTrackEventTree()
+    {
+        fMultiTrackEventTree = new TTree("multiTrackEvents", "Multi-Track Events");
+        if (fMultiTrackEventTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fMultiTrackEventTree);
+
+        fMultiTrackEventTree->Branch("Event", "Event", &fMultiTrackEventData, 16000, 2);
 
         return true;
     }

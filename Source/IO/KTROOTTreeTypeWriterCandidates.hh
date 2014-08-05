@@ -93,27 +93,33 @@ namespace Katydid
 
             void WriteProcessedTrack(KTDataPtr data);
 
+            void WriteMultiTrackEvent(KTDataPtr data);
+
         public:
             TTree* GetFrequencyCandidateTree() const;
             TTree* GetWaterfallCandidateTree() const;
             TTree* GetSparseWaterfallCandidateTree() const;
             TTree* GetProcessedTrackTree() const;
+            TTree* GetMultiTrackEventTree() const;
 
         private:
             bool SetupFrequencyCandidateTree();
             bool SetupWaterfallCandidateTree();
             bool SetupSparseWaterfallCandidateTree();
             bool SetupProcessedTrackTree();
+            bool SetupMultiTrackEventTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
             TTree* fProcessedTrackTree;
+            TTree* fMultiTrackEventTree;
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
             TProcessedTrackData fProcessedTrackData;
+            TMultiTrackEventData fMultiTrackEventData;
 
     };
 
@@ -135,6 +141,11 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterCandidates::GetProcessedTrackTree() const
     {
         return fProcessedTrackTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterCandidates::GetMultiTrackEventTree() const
+    {
+        return fMultiTrackEventTree;
     }
 
 
