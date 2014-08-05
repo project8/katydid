@@ -8,35 +8,44 @@
 #ifndef KTROOTDATA_HH_
 #define KTROOTDATA_HH_
 
+#include "KTMemberVariable.hh"
+
 #include "TObject.h"
 
 namespace Katydid
 {
+    //***********************
+    // TProcessedTrackData
+    //***********************
+
     class KTProcessedTrackData;
 
     class TProcessedTrackData : public TObject
     {
-        private:
-            UInt_t fComponent;
-            Bool_t fIsCut;
-            Double_t fStartTimeInRunC;
-            Double_t fEndTimeInRunC;
-            Double_t fTimeLength;
-            Double_t fStartFrequency;
-            Double_t fEndFrequency;
-            Double_t fFrequencyWidth;
-            Double_t fSlope;
-            Double_t fIntercept;
-            Double_t fTotalPower;
-            Double_t fStartTimeInRunCSigma;
-            Double_t fEndTimeInRunCSigma;
-            Double_t fTimeLengthSigma;
-            Double_t fStartFrequencySigma;
-            Double_t fEndFrequencySigma;
-            Double_t fFrequencyWidthSigma;
-            Double_t fSlopeSigma;
-            Double_t fInterceptSigma;
-            Double_t fTotalPowerSigma;
+            MEMBERVARIABLE(UInt_t, Component);
+            MEMBERVARIABLE(UInt_t, TrackID);
+
+            MEMBERVARIABLE(Bool_t, IsCut);
+
+            MEMBERVARIABLE(Double_t, StartTimeInRunC);
+            MEMBERVARIABLE(Double_t, EndTimeInRunC);
+            MEMBERVARIABLE(Double_t, TimeLength);
+            MEMBERVARIABLE(Double_t, StartFrequency);
+            MEMBERVARIABLE(Double_t, EndFrequency);
+            MEMBERVARIABLE(Double_t, FrequencyWidth);
+            MEMBERVARIABLE(Double_t, Slope);
+            MEMBERVARIABLE(Double_t, Intercept);
+            MEMBERVARIABLE(Double_t, TotalPower);
+
+            MEMBERVARIABLE(Double_t, StartTimeInRunCSigma);
+            MEMBERVARIABLE(Double_t, EndTimeInRunCSigma);
+            MEMBERVARIABLE(Double_t, TimeLengthSigma);
+            MEMBERVARIABLE(Double_t, StartFrequencySigma);
+            MEMBERVARIABLE(Double_t, EndFrequencySigma);
+            MEMBERVARIABLE(Double_t, FrequencyWidthSigma);
+            MEMBERVARIABLE(Double_t, SlopeSigma);
+            MEMBERVARIABLE(Double_t, InterceptSigma);
+            MEMBERVARIABLE(Double_t, TotalPowerSigma);
 
         public:
             TProcessedTrackData();
@@ -50,6 +59,57 @@ namespace Katydid
 
             ClassDef(TProcessedTrackData, 1);
     };
+
+
+    //************************
+    // TMultiTrackEventData
+    //************************
+
+    class KTMultiTrackEventData;
+
+    class TMultiTrackEventData : public TObject
+    {
+        MEMBERVARIABLE(UInt_t, Component);
+        MEMBERVARIABLE(UInt_t, EventID);
+
+        // this group of member variables is set by ProcessTracks()
+        MEMBERVARIABLE(Double_t, StartTimeInRunC);
+        MEMBERVARIABLE(Double_t, EndTimeInRunC);
+        MEMBERVARIABLE(Double_t, TimeLength);
+        MEMBERVARIABLE(Double_t, StartFrequency);
+        MEMBERVARIABLE(Double_t, EndFrequency);
+        MEMBERVARIABLE(Double_t, MinimumFrequency);
+        MEMBERVARIABLE(Double_t, MaximumFrequency);
+        MEMBERVARIABLE(Double_t, FrequencyWidth);
+
+        // this group of member variables is set by ProcessTracks()
+        MEMBERVARIABLE(Double_t, StartTimeInRunCSigma);
+        MEMBERVARIABLE(Double_t, EndTimeInRunCSigma);
+        MEMBERVARIABLE(Double_t, TimeLengthSigma);
+        MEMBERVARIABLE(Double_t, StartFrequencySigma);
+        MEMBERVARIABLE(Double_t, EndFrequencySigma);
+        MEMBERVARIABLE(Double_t, FrequencyWidthSigma);
+
+        // this group of member variables is set by ProcessTracks()
+        MEMBERVARIABLE(Double_t, FirstTrackTimeLength);
+        MEMBERVARIABLE(Double_t, FirstTrackFrequencyWidth);
+        MEMBERVARIABLE(Double_t, FirstTrackSlope);
+        MEMBERVARIABLE(Double_t, FirstTrackIntercept);
+        MEMBERVARIABLE(Double_t, FirstTrackTotalPower);
+
+        public:
+            TMultiTrackEventData();
+            TMultiTrackEventData(const KTMultiTrackEventData& data);
+            TMultiTrackEventData(const TMultiTrackEventData& orig);
+            virtual ~TMultiTrackEventData();
+            TMultiTrackEventData& operator=(const TMultiTrackEventData& rhs);
+
+            void Load(const KTMultiTrackEventData& data);
+            void Unload(KTMultiTrackEventData& data) const;
+
+            ClassDef(TMultiTrackEventData, 1);
+    };
+
 
 }
 
