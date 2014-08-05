@@ -12,6 +12,8 @@
 
 #include "TObject.h"
 
+class TClonesArray;
+
 namespace Katydid
 {
     //***********************
@@ -72,7 +74,6 @@ namespace Katydid
         MEMBERVARIABLE(UInt_t, Component);
         MEMBERVARIABLE(UInt_t, EventID);
 
-        // this group of member variables is set by ProcessTracks()
         MEMBERVARIABLE(Double_t, StartTimeInRunC);
         MEMBERVARIABLE(Double_t, EndTimeInRunC);
         MEMBERVARIABLE(Double_t, TimeLength);
@@ -82,7 +83,6 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, MaximumFrequency);
         MEMBERVARIABLE(Double_t, FrequencyWidth);
 
-        // this group of member variables is set by ProcessTracks()
         MEMBERVARIABLE(Double_t, StartTimeInRunCSigma);
         MEMBERVARIABLE(Double_t, EndTimeInRunCSigma);
         MEMBERVARIABLE(Double_t, TimeLengthSigma);
@@ -90,12 +90,14 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, EndFrequencySigma);
         MEMBERVARIABLE(Double_t, FrequencyWidthSigma);
 
-        // this group of member variables is set by ProcessTracks()
         MEMBERVARIABLE(Double_t, FirstTrackTimeLength);
         MEMBERVARIABLE(Double_t, FirstTrackFrequencyWidth);
         MEMBERVARIABLE(Double_t, FirstTrackSlope);
         MEMBERVARIABLE(Double_t, FirstTrackIntercept);
         MEMBERVARIABLE(Double_t, FirstTrackTotalPower);
+
+        private:
+            TClonesArray* fTracks; //->
 
         public:
             TMultiTrackEventData();
