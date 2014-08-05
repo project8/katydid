@@ -373,6 +373,7 @@ namespace Katydid
         double remainingFrac = 1.;
         if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
+        KTDEBUG(avlog, "Accumulating a power spectrum; remainingFrac = " << remainingFrac << "   fAveragingFrac = " << fAveragingFrac);
 
         unsigned nComponents = data.GetNComponents();
 
@@ -420,6 +421,7 @@ namespace Katydid
     bool KTDataAccumulator::Scale(KTTimeSeriesData& data, KTSliceHeader& header)
     {
         double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling time series by " << scale);
         unsigned nComponents = data.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -432,6 +434,7 @@ namespace Katydid
     bool KTDataAccumulator::Scale(KTTimeSeriesDistData& data, KTSliceHeader& header)
     {
         double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling time series dist by " << scale);
         unsigned nComponents = data.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -444,6 +447,7 @@ namespace Katydid
     bool KTDataAccumulator::Scale(KTFrequencySpectrumDataPolar& data, KTSliceHeader& header)
     {
         double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling frequency-spectrum polar by " << scale);
         unsigned nComponents = data.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -456,6 +460,7 @@ namespace Katydid
     bool KTDataAccumulator::Scale(KTFrequencySpectrumDataFFTW& data, KTSliceHeader& header)
     {
         double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling frequency spectrum fftw by " << scale);
         unsigned nComponents = data.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -468,6 +473,7 @@ namespace Katydid
     bool KTDataAccumulator::Scale(KTPowerSpectrumData& data, KTSliceHeader& header)
     {
         double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling power spectrum by " << scale);
         unsigned nComponents = data.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {

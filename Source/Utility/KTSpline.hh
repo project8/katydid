@@ -61,7 +61,7 @@ namespace Katydid
         public:
             /// Adds a new spline implementation to the cache. If a matching implementation already exists in the cache, the older implementation is deleted.  Ownership of the new implementation is taken by the cache.
             void AddToCache(Implementation* imp) const;
-            /// Retrieves a matching implemtation from the cache; returns NULL if one does not exist. The matching implementation is removed from the cache and ownership is transferred to the caller.
+            /// Retrieves a matching implementation from the cache; returns NULL if one does not exist. The matching implementation is removed from the cache and ownership is transferred to the caller.
             Implementation* GetFromCache(unsigned nBins, double xMin, double xMax) const;
 
             void ClearCache() const;

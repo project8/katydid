@@ -7,11 +7,10 @@
 
 #include "KTSpline.hh"
 
+#include "KTLogger.hh"
 #include "KTPhysicalArray.hh"
 
-#ifndef ROOT_FOUND
-#include "KTLogger.hh"
-#endif
+KTLOGGER(splinelog, "KTSpline");
 
 namespace Katydid
 {
@@ -70,6 +69,7 @@ namespace Katydid
         Implementation* imp = GetFromCache(nBins, xMin, xMax);
         if (imp != NULL) return imp;
 
+        KTDEBUG(splinelog, "Creating new spline implementation for (" << nBins << ", " << xMin << ", " << xMax << ")");
         imp = new KTPhysicalArray< 1, double >(nBins, xMin, xMax);
         for (unsigned iBin=0; iBin < nBins; iBin++)
         {
@@ -80,8 +80,6 @@ namespace Katydid
 
 
 #else
-
-    KTLOGGER(splinelog, "KTSpline");
 
     KTSpline::KTSpline() :
             fXMin(0.),

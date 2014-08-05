@@ -287,7 +287,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double threshold, value;
 #pragma omp parallel for private(value)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*spectrum)(iBin).abs();
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
@@ -303,7 +303,7 @@ namespace Katydid
             double sigmaNorm = 1. / double(nBins - 1);
             double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 diff = (*spectrum)(iBin).abs() - (*splineImp)(iBin - fMinBin);
                 sigma += diff * diff;
@@ -316,7 +316,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value, threshold;
 #pragma omp parallel for private(value)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*spectrum)(iBin).abs();
                 threshold = thresholdAdd + (*splineImp)(iBin - fMinBin);
@@ -367,7 +367,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value, threshold;
 #pragma omp parallel for private(value)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
@@ -387,7 +387,7 @@ namespace Katydid
             double sigmaNorm = 1. / double(nBins - 1);
             double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 fMagnitudeCache[iBin] = sqrt((*spectrum)(iBin)[0] * (*spectrum)(iBin)[0] + (*spectrum)(iBin)[1] * (*spectrum)(iBin)[1]);
                 diff = fMagnitudeCache[iBin] - (*splineImp)(iBin - fMinBin);
@@ -401,7 +401,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value, threshold;
 #pragma omp parallel for private(value)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = fMagnitudeCache[iBin];
                 threshold = thresholdAdd + (*splineImp)(iBin - fMinBin);
@@ -451,7 +451,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double threshold, value;
 #pragma omp parallel for private(value)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*spectrum)(iBin);
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
@@ -468,7 +468,7 @@ namespace Katydid
             double sigmaNorm = 1. / double(nBins - 1);
             double sigma = 0., diff;
 #pragma omp parallel for private(diff) reduction(+:sigma)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 diff = (*spectrum)(iBin) - (*splineImp)(iBin - fMinBin);
                 sigma += diff * diff;
@@ -481,7 +481,7 @@ namespace Katydid
             // loop over bins, checking against the threshold
             double value, threshold;
 #pragma omp parallel for private(value)
-            for (unsigned iBin=fMinBin; iBin<=fMaxBin; iBin++)
+            for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*spectrum)(iBin);
                 threshold = thresholdAdd + (*splineImp)(iBin - fMinBin);
