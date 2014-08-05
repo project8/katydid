@@ -12,6 +12,7 @@ namespace Katydid
     KTProcessedTrackData::KTProcessedTrackData() :
             KTExtensibleData< KTProcessedTrackData >(),
             fComponent(0),
+            fTrackID(0),
             fIsCut(false),
             fStartTimeInRunC(0.),
             fEndTimeInRunC(0.),
@@ -37,6 +38,7 @@ namespace Katydid
     KTProcessedTrackData::KTProcessedTrackData(const KTProcessedTrackData& orig) :
             KTExtensibleData< KTProcessedTrackData >(orig),
             fComponent(orig.fComponent),
+            fTrackID(orig.fTrackID),
             fIsCut(orig.fIsCut),
             fStartTimeInRunC(orig.fStartTimeInRunC),
             fEndTimeInRunC(orig.fEndTimeInRunC),
@@ -66,6 +68,7 @@ namespace Katydid
     KTProcessedTrackData& KTProcessedTrackData::operator=(const KTProcessedTrackData& rhs)
     {
         fComponent = rhs.fComponent;
+        fTrackID = rhs.fTrackID;
         fIsCut = rhs.fIsCut;
         fStartTimeInRunC = rhs.fStartTimeInRunC;
         fEndTimeInRunC = rhs.fEndTimeInRunC;
