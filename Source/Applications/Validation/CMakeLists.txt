@@ -94,7 +94,7 @@ if (Katydid_ENABLE_TESTING)
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
     add_executable (TestSmoothing TestSmoothing.cc)
-    target_link_libraries (TestSmoothing KatydidUtility KatydidData ${EXTERNAL_LIBRARIES})
+    target_link_libraries (TestSmoothing KatydidUtility KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
     # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
     #add_executable (TestSimpleClustering TestSimpleClustering.cc)
@@ -223,12 +223,18 @@ if (Katydid_ENABLE_TESTING)
         add_executable (TestGainVariation TestGainVariation.cc)
         target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidAnalysis KatydidIO ${EXTERNAL_LIBRARIES})
     
+        add_executable (TestROOTDictionary TestROOTDictionary.cc)
+        target_link_libraries (TestROOTDictionary KatydidUtility KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
+        
         pbuilder_install_executables ( 
                     TestBasicROOTFileWriter
                     TestGainVariation
+                    TestROOTDictionary
         )
     
         add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)
+        add_test (Test_GainVariation TestGainVariation)
+        add_test (Test_ROOTDictionary TestROOTDictionary)        
     endif (ROOT_FOUND)
     
     # executables that DO require Monarch
