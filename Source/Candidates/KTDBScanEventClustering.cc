@@ -14,6 +14,10 @@
 #include "KTParam.hh"
 #include "KTProcessedTrackData.hh"
 
+#ifndef NDEBUG
+#include <sstream>
+#endif
+
 using std::set;
 using std::vector;
 
@@ -61,9 +65,9 @@ namespace Katydid
         if (node->Has("radii"))
         {
             const KTParamArray* radii = node->ArrayAt("radii");
-            if (radii->Size() != fNDimensions)
+            if (radii->Size() != fNDimensions / fNPointsPerTrack)
             {
-                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->Size() << "> instead of <" << fNDimensions << ">");
+                KTERROR(tclog, "Radii array does not have the right number of dimensions: <" << radii->Size() << "> instead of <" << fNDimensions/fNPointsPerTrack << ">");
                 return false;
             }
             fRadii(0) = radii->GetValue< double >(0);
@@ -86,6 +90,9 @@ namespace Katydid
 
     bool KTDBScanEventClustering::TakeTrack(KTProcessedTrackData& track)
     {
+        // ignore the track if it's been cut
+        if (track.GetIsCut()) return true;
+
         // verify that we have the right number of components
         if (track.GetComponent() >= fCompTracks.size())
         {
@@ -123,7 +130,7 @@ namespace Katydid
     {
         if (! Run())
         {
-            KTERROR(tclog, "An error occurred while running the clustering");
+            KTERROR(tclog, "An error occurred while running the event clustering");
         }
         return;
     }
@@ -157,23 +164,28 @@ namespace Katydid
 
             // new array for normalized points
             DBScanPoints normPoints(fCompTracks[iComponent].size());
-            DBScanPoint newPoint;
+            DBScanPoint newPoint(fNDimensions);
             // normalize points
             KTDEBUG(tclog, "Scale: " << scale);
             unsigned iPoint = 0;
             //for (DBScanPoints::iterator pIt = fCompPoints[iComponent].begin(); pIt != fCompPoints[iComponent].end(); ++pIt)
             for (vector< KTProcessedTrackData >::const_iterator pIt = fCompTracks[iComponent].begin(); pIt != fCompTracks[iComponent].end(); ++pIt)
             {
+                //std::cerr << "1" << std::endl;
                 newPoint(0) = pIt->GetStartTimeInRunC() * scale(0); // start time
+                //std::cerr << "2" << std::endl;
                 newPoint(1) = pIt->GetStartFrequency() * scale(1);  // start freq
+                //std::cerr << "3" << std::endl;
                 newPoint(2) = pIt->GetEndTimeInRunC() * scale(0);   // end time
+                //std::cerr << "4" << std::endl;
                 newPoint(3) = pIt->GetEndFrequency() * scale(1);    // end freq
+                //std::cerr << "5" << std::endl;
 
-//#ifndef NDEBUG
-//                std::stringstream ptStr;
-//                ptStr << "Point -- before: " << *pIt;
-//#endif
-                //KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
+#ifndef NDEBUG
+                std::stringstream ptStr;
+                ptStr << "Point -- before: (" << pIt->GetStartTimeInRunC() << ", " << pIt->GetStartFrequency() << ", " << pIt->GetEndTimeInRunC() << ", " << pIt->GetEndFrequency() << ")";
+#endif
+                KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
                 normPoints[iPoint++] = newPoint;
             }
 
@@ -196,7 +208,7 @@ namespace Katydid
                     continue;
                 }
 
-                KTDEBUG(tclog, "Creating event " << fDataCount << "; includes " << clustIt->size() << " points");
+                KTDEBUG(tclog, "Creating event " << fDataCount << "; includes " << clustIt->size() << " tracks");
 
                 ++fDataCount;
 
