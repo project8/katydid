@@ -39,11 +39,11 @@ namespace Katydid
             fCandidates(),
             fDataCount(0),
             fEventSignal("event", this),
-            fClusterDoneSignal("cluster-done", this),
+            fClusterDoneSignal("clustering-done", this),
             fTakeTrackSlot("track", this, &KTDBScanEventClustering::TakeTrack)
     //        fDoClusterSlot("do-cluster-trigger", this, &KTDBScanEventClustering::Run)
     {
-        RegisterSlot("do-cluster-trigger", this, &KTDBScanEventClustering::TriggerClustering);
+        RegisterSlot("do-clustering", this, &KTDBScanEventClustering::TriggerClustering);
         fRadii(0) = 1. / sqrt(fNDimensions);
         fRadii(1) = 1. / sqrt(fNDimensions);
     }

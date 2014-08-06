@@ -38,11 +38,11 @@ namespace Katydid
             fCandidates(),
             fDataCount(0),
             fTrackSignal("track", this),
-            fClusterDoneSignal("cluster-done", this),
+            fClusterDoneSignal("clustering-done", this),
             fTakePointSlot("points", this, &KTDBScanTrackClustering::TakePoints)
 //            fDoClusterSlot("do-cluster-trigger", this, &KTDBScanTrackClustering::Run)
     {
-        RegisterSlot("do-cluster-trigger", this, &KTDBScanTrackClustering::TriggerClustering);
+        RegisterSlot("do-clustering", this, &KTDBScanTrackClustering::TriggerClustering);
         fRadii(0) = 1. / sqrt(fNDimensions);
         fRadii(1) = 1. / sqrt(fNDimensions);
     }
@@ -143,7 +143,7 @@ namespace Katydid
     {
         if (! Run())
         {
-            KTERROR(tclog, "An error occurred while running the clustering");
+            KTERROR(tclog, "An error occurred while running the track clustering");
         }
         return;
     }

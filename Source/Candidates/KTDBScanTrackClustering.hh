@@ -47,9 +47,11 @@ namespace Katydid
 
      Slots:
      - "points": void (shared_ptr<KTData>) -- If this is a new acquisition, triggers the clustering algorithm; Adds points to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
+     - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
      - "track": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KTSparseWaterfallCandidateData.
+     - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
     class KTDBScanTrackClustering : public KTPrimaryProcessor

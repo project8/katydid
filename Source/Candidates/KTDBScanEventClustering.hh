@@ -91,10 +91,12 @@ namespace Katydid
      - "min-points": unsigned int -- minimum number of tracks required to have a cluster
 
      Slots:
-     - "track": void (shared_ptr<KTData>) -- If this is a new acquisition, triggers the clustering algorithm; Adds tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
+     - "track": void (shared_ptr<KTData>) -- If this is a new acquisition; Adds tracks to the internally-stored set of points; Requires KTSliceHeader and KTDiscriminatedPoints1DData.
+     - "do-clustering": void () -- Triggers clustering algorithm
 
      Signals:
      - "event": void (shared_ptr<KTData>) -- Emitted for each cluster found; Guarantees KT???Data.
+     - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
     class KTDBScanEventClustering : public KTPrimaryProcessor
