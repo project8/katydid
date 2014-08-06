@@ -12,6 +12,8 @@
 
 #include "TClonesArray.h"
 
+#include <iostream>
+
 ClassImp(Katydid::TProcessedTrackData);
 ClassImp(Katydid::TMultiTrackEventData);
 
@@ -22,16 +24,31 @@ namespace Katydid
     //***********************
 
     TProcessedTrackData::TProcessedTrackData() :
-            fComponent(), fTrackID(), fIsCut(),
-            fStartTimeInRunC(), fEndTimeInRunC(),fTimeLength(),
-            fStartFrequency(), fEndFrequency(), fFrequencyWidth(),
-            fSlope(), fIntercept(), fTotalPower(),
-            fStartTimeInRunCSigma(), fEndTimeInRunCSigma(), fTimeLengthSigma(),
-            fStartFrequencySigma(), fEndFrequencySigma(), fFrequencyWidthSigma(),
-            fSlopeSigma(), fInterceptSigma(), fTotalPowerSigma()
+            TObject(),
+            fComponent(0), fTrackID(0), fIsCut(false),
+            fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
+            fStartFrequency(0.), fEndFrequency(0.), fFrequencyWidth(0.),
+            fSlope(0.), fIntercept(0.), fTotalPower(0.),
+            fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
+            fStartFrequencySigma(0.), fEndFrequencySigma(0.), fFrequencyWidthSigma(0.),
+            fSlopeSigma(0.), fInterceptSigma(0.), fTotalPowerSigma(0.)
     {}
 
+    TProcessedTrackData::TProcessedTrackData(const KTProcessedTrackData& orig) :
+            TObject(),
+            fComponent(0), fTrackID(0), fIsCut(false),
+            fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
+            fStartFrequency(0.), fEndFrequency(0.), fFrequencyWidth(0.),
+            fSlope(0.), fIntercept(0.), fTotalPower(0.),
+            fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
+            fStartFrequencySigma(0.), fEndFrequencySigma(0.), fFrequencyWidthSigma(0.),
+            fSlopeSigma(0.), fInterceptSigma(0.), fTotalPowerSigma(0.)
+    {
+        Load(orig);
+    }
+
     TProcessedTrackData::TProcessedTrackData(const TProcessedTrackData& orig) :
+            TObject(orig),
             fComponent(orig.fComponent), fTrackID(orig.fTrackID), fIsCut(orig.fIsCut),
             fStartTimeInRunC(orig.fStartTimeInRunC), fEndTimeInRunC(orig.fEndTimeInRunC),fTimeLength(orig.fTimeLength),
             fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fFrequencyWidth(orig.fFrequencyWidth),
@@ -40,11 +57,6 @@ namespace Katydid
             fStartFrequencySigma(orig.fStartFrequencySigma), fEndFrequencySigma(orig.fEndFrequencySigma), fFrequencyWidthSigma(orig.fFrequencyWidthSigma),
             fSlopeSigma(orig.fSlopeSigma), fInterceptSigma(orig.fInterceptSigma), fTotalPowerSigma(orig.fTotalPowerSigma)
     {}
-
-    TProcessedTrackData::TProcessedTrackData(const KTProcessedTrackData& orig)
-    {
-        Load(orig);
-    }
 
     TProcessedTrackData::~TProcessedTrackData()
     {}
@@ -91,14 +103,16 @@ namespace Katydid
     //************************
 
     TMultiTrackEventData::TMultiTrackEventData() :
-            fComponent(), fEventID(),
-            fStartTimeInRunC(), fEndTimeInRunC(),fTimeLength(),
-            fStartFrequency(), fEndFrequency(), fMinimumFrequency(), fMaximumFrequency(), fFrequencyWidth(),
-            fStartTimeInRunCSigma(), fEndTimeInRunCSigma(), fTimeLengthSigma(),
-            fStartFrequencySigma(), fEndFrequencySigma(), fFrequencyWidthSigma(),
-            fFirstTrackTimeLength(), fFirstTrackFrequencyWidth(), fFirstTrackSlope(), fFirstTrackIntercept(), fFirstTrackTotalPower(),
-            fTracks(new TClonesArray())
-    {}
+            fComponent(0), fEventID(0),
+            fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
+            fStartFrequency(0.), fEndFrequency(0.), fMinimumFrequency(0.), fMaximumFrequency(0.), fFrequencyWidth(0.),
+            fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
+            fStartFrequencySigma(0.), fEndFrequencySigma(0.), fFrequencyWidthSigma(0.),
+            fFirstTrackTimeLength(0.), fFirstTrackFrequencyWidth(0.), fFirstTrackSlope(0.), fFirstTrackIntercept(0.), fFirstTrackTotalPower(0.)
+    {
+        // this cannot be initialized in the initializer list because ROOT
+        fTracks = new TClonesArray("Katydid::TProcessedTrackData", 20);
+    }
 
     TMultiTrackEventData::TMultiTrackEventData(const TMultiTrackEventData& orig) :
             fComponent(orig.fComponent), fEventID(orig.fEventID),
@@ -106,19 +120,29 @@ namespace Katydid
             fStartFrequency(orig.fStartFrequency), fEndFrequency(orig.fEndFrequency), fMinimumFrequency(orig.fMaximumFrequency), fMaximumFrequency(orig.fMinimumFrequency), fFrequencyWidth(orig.fFrequencyWidth),
             fStartTimeInRunCSigma(orig.fStartTimeInRunCSigma), fEndTimeInRunCSigma(orig.fEndTimeInRunCSigma), fTimeLengthSigma(orig.fTimeLengthSigma),
             fStartFrequencySigma(orig.fStartFrequencySigma), fEndFrequencySigma(orig.fEndFrequencySigma), fFrequencyWidthSigma(orig.fFrequencyWidthSigma),
-            fFirstTrackTimeLength(orig.fFirstTrackTimeLength), fFirstTrackFrequencyWidth(orig.fFirstTrackFrequencyWidth), fFirstTrackSlope(orig.fFirstTrackSlope), fFirstTrackIntercept(orig.fFirstTrackIntercept), fFirstTrackTotalPower(orig.fFirstTrackTotalPower),
-            fTracks(new TClonesArray(*orig.fTracks))
+            fFirstTrackTimeLength(orig.fFirstTrackTimeLength), fFirstTrackFrequencyWidth(orig.fFirstTrackFrequencyWidth), fFirstTrackSlope(orig.fFirstTrackSlope), fFirstTrackIntercept(orig.fFirstTrackIntercept), fFirstTrackTotalPower(orig.fFirstTrackTotalPower)
     {
-
+        // this cannot be initialized in the initializer list because ROOT
+        fTracks = new TClonesArray(*orig.fTracks);
     }
 
-    TMultiTrackEventData::TMultiTrackEventData(const KTMultiTrackEventData& orig)
+    TMultiTrackEventData::TMultiTrackEventData(const KTMultiTrackEventData& orig) :
+            fComponent(0), fEventID(0),
+            fStartTimeInRunC(0.), fEndTimeInRunC(0.),fTimeLength(0.),
+            fStartFrequency(0.), fEndFrequency(0.), fMinimumFrequency(0.), fMaximumFrequency(0.), fFrequencyWidth(0.),
+            fStartTimeInRunCSigma(0.), fEndTimeInRunCSigma(0.), fTimeLengthSigma(0.),
+            fStartFrequencySigma(0.), fEndFrequencySigma(0.), fFrequencyWidthSigma(0.),
+            fFirstTrackTimeLength(0.), fFirstTrackFrequencyWidth(0.), fFirstTrackSlope(0.), fFirstTrackIntercept(0.), fFirstTrackTotalPower(0.)
     {
+        // this cannot be initialized in the initializer list because ROOT
+        fTracks = new TClonesArray("Katydid::TProcessedTrackData", 20);
         Load(orig);
     }
 
     TMultiTrackEventData::~TMultiTrackEventData()
-    {}
+    {
+        fTracks->Clear();
+    }
 
     TMultiTrackEventData& TMultiTrackEventData::operator=(const TMultiTrackEventData& rhs)
     {
@@ -142,9 +166,11 @@ namespace Katydid
         fFirstTrackTimeLength = data.GetFirstTrackTimeLength(); fFirstTrackFrequencyWidth = data.GetFirstTrackFrequencyWidth(); fFirstTrackSlope = data.GetFirstTrackSlope(); fFirstTrackIntercept = data.GetFirstTrackIntercept(); fFirstTrackTotalPower = data.GetFirstTrackTotalPower();
         Int_t nTracks = (Int_t)data.GetNTracks();
         fTracks->Clear(); fTracks->Expand(nTracks);
-        for (Int_t iTrack = 0; iTrack < nTracks; ++iTrack)
+        Int_t iTrack = 0;
+        for (KTMultiTrackEventData::TrackCIt trIt = data.GetTracksBegin(); trIt != data.GetTracksEnd(); ++trIt)
         {
-            TProcessedTrackData* track = new((*fTracks)[iTrack]) TProcessedTrackData(data.GetTrack(iTrack));
+            TProcessedTrackData* track = new((*fTracks)[iTrack]) TProcessedTrackData(trIt->second);
+            ++iTrack;
         }
         return;
     }

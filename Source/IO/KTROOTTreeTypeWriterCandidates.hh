@@ -119,8 +119,8 @@ namespace Katydid
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
-            TProcessedTrackData fProcessedTrackData;
-            TMultiTrackEventData fMultiTrackEventData;
+            TProcessedTrackData* fProcessedTrackDataPtr;
+            TMultiTrackEventData* fMultiTrackEventDataPtr;
 
     };
 

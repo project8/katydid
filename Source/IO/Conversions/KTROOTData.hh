@@ -62,7 +62,6 @@ namespace Katydid
             ClassDef(TProcessedTrackData, 1);
     };
 
-
     //************************
     // TMultiTrackEventData
     //************************
@@ -95,6 +94,9 @@ namespace Katydid
         MEMBERVARIABLE(Double_t, FirstTrackSlope);
         MEMBERVARIABLE(Double_t, FirstTrackIntercept);
         MEMBERVARIABLE(Double_t, FirstTrackTotalPower);
+
+        public:
+            TClonesArray* GetTracks() {return fTracks;}
 
         private:
             TClonesArray* fTracks; //->

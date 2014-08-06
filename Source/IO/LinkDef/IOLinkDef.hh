@@ -10,5 +10,7 @@
 #pragma link C++ namespace Katydid;
 
 #pragma link C++ class Katydid::KTDisplayWindow+;
+#pragma link C++ class Katydid::TProcessedTrackData+;
+#pragma link C++ class Katydid::TMultiTrackEventData+;
 
 #endif

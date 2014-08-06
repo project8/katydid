@@ -48,15 +48,15 @@ namespace Katydid
             fFreqCandidateData(),
             fWaterfallCandidateData(),
             fSparseWaterfallCandidateData(),
-            fProcessedTrackData(),
-            fMultiTrackEventData()
+            fProcessedTrackDataPtr(NULL),
+            fMultiTrackEventDataPtr(NULL)
     {
     }
 
     KTROOTTreeTypeWriterCandidates::~KTROOTTreeTypeWriterCandidates()
     {
-        //delete fFreqCandidateTree;
-        //delete fFreqCandidateData;
+        delete fProcessedTrackDataPtr;
+        delete fMultiTrackEventDataPtr;
     }
 
 
@@ -309,7 +309,7 @@ namespace Katydid
             }
         }
 
-        fProcessedTrackData.Load(ptData);
+        fProcessedTrackDataPtr->Load(ptData);
 
         fProcessedTrackTree->Fill();
 
@@ -326,7 +326,9 @@ namespace Katydid
         }
         fWriter->AddTree(fProcessedTrackTree);
 
-        fProcessedTrackTree->Branch("Track", "Track", &fProcessedTrackData, 16000, 2);
+        fProcessedTrackDataPtr = new TProcessedTrackData();
+
+        fProcessedTrackTree->Branch("Track", "Katydid::TProcessedTrackData", &fProcessedTrackDataPtr);
 
         return true;
     }
@@ -351,7 +353,7 @@ namespace Katydid
             }
         }
 
-        fMultiTrackEventData.Load(mteData);
+        fMultiTrackEventDataPtr->Load(mteData);
 
         fMultiTrackEventTree->Fill();
 
@@ -368,7 +370,9 @@ namespace Katydid
         }
         fWriter->AddTree(fMultiTrackEventTree);
 
-        fMultiTrackEventTree->Branch("Event", "Event", &fMultiTrackEventData, 16000, 2);
+        fMultiTrackEventDataPtr = new TMultiTrackEventData();
+
+        fMultiTrackEventTree->Branch("Event", "Katydid::TMultiTrackEventData", &fMultiTrackEventDataPtr);
 
         return true;
     }
