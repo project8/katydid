@@ -1,7 +1,7 @@
 # CMakeLists for Katydid/Source/IO
 # Author: N. Oblath
 
-set (IO_NODICT_HEADERFILES
+set (IO_HEADERFILES
     KTBasicASCIITypeWriterTS.hh
     KTBasicAsciiWriter.hh
     KTJSONTypeWriterEgg.hh
@@ -16,14 +16,30 @@ set (IO_NODICT_HEADERFILES
     KTWriter.hh
 )
 
+set (IO_SOURCEFILES
+    KTBasicASCIITypeWriterTS.cc
+    KTBasicAsciiWriter.cc
+    KTJSONTypeWriterEgg.cc
+    KTJSONTypeWriterEvaluation.cc
+    KTJSONTypeWriterCandidates.hh
+    KTJSONWriter.cc
+    KTMultiFileJSONReader.cc
+    KTOfficialCandidatesWriter.cc
+    KTTerminalTypeWriterEgg.cc
+    KTTerminalWriter.cc
+    KTReader.cc
+    KTWriter.cc
+)
+
 if (ROOT_FOUND)
     set (IO_DICT_HEADERFILES
-        ${IO_DICT_HEADERFILES}
         KTDisplayWindow.hh
+        Conversions/KTROOTData.hh
     )
     
-    set (IO_NODICT_HEADERFILES
-        ${IO_NODICT_HEADERFILES}
+    set (IO_HEADERFILES
+        ${IO_HEADERFILES}
+        ${IO_DICT_HEADERFILES}
         KTBasicROOTFileWriter.hh
         KTBasicROOTTypeWriterAnalysis.hh
         KTBasicROOTTypeWriterCandidates.hh
@@ -43,27 +59,9 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterEgg.hh
         KTROOTTreeTypeWriterEvaluation.hh
         KTROOTTreeWriter.hh
+        Conversions/KT2ROOT.hh
     )
-endif (ROOT_FOUND)
 
-set (IO_HEADERFILES ${IO_DICT_HEADERFILES} ${IO_NODICT_HEADERFILES})
-
-set (IO_SOURCEFILES
-    KTBasicASCIITypeWriterTS.cc
-    KTBasicAsciiWriter.cc
-    KTJSONTypeWriterEgg.cc
-    KTJSONTypeWriterEvaluation.cc
-    KTJSONTypeWriterCandidates.hh
-    KTJSONWriter.cc
-    KTMultiFileJSONReader.cc
-    KTOfficialCandidatesWriter.cc
-    KTTerminalTypeWriterEgg.cc
-    KTTerminalWriter.cc
-    KTReader.cc
-    KTWriter.cc
-)
-
-if (ROOT_FOUND)
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
         KTBasicROOTTypeWriterAnalysis.cc
@@ -86,11 +84,10 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterEgg.cc
         KTROOTTreeTypeWriterEvaluation.cc
         KTROOTTreeWriter.cc
+        Conversions/KT2ROOT.cc
+        Conversions/KTROOTData.cc
     )
-endif (ROOT_FOUND)
 
-
-if (ROOT_FOUND)
     set (IO_LINKDEF_HEADERFILE LinkDef/IOLinkDef.hh)
     set (IO_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/IODict.cxx)
 endif (ROOT_FOUND)

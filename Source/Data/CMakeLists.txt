@@ -101,26 +101,6 @@ set (DATA_SOURCEFILES
     FFT/KTTimeFrequencyPolar.cc
 )
 
-if (ROOT_FOUND)
-    set (DATA_LINKDEF_HEADERFILE Conversions/LinkDef/ConversionsLinkDef.hh)
-    set (DATA_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/DataDict.cxx)
-
-    set (DATA_DICT_HEADERFILES
-        Conversions/KTROOTData.hh
-    )
-
-    set (DATA_HEADERFILES
-        ${DATA_HEADERFILES}
-        ${DATA_DICT_HEADERFILES}
-        Conversions/KT2ROOT.hh
-    )
-    set (DATA_SOURCEFILES
-        ${DATA_SOURCEFILES}
-        Conversions/KT2ROOT.cc
-        Conversions/KTROOTData.cc
-    )
-endif (ROOT_FOUND)
-
 if (NOT FFTW_FOUND)
     set (DATA_SOURCEFILES
         ${DATA_SOURCEFILES}
@@ -135,11 +115,7 @@ set (KATYDID_LIBS
 
 ##################################################
 
-if (ROOT_FOUND)
-    ROOT_GENERATE_DICTIONARY ("${DATA_DICT_HEADERFILES}" "${DATA_LINKDEF_HEADERFILE}" "${DATA_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
-endif (ROOT_FOUND)
-
-add_library (KatydidData ${DATA_SOURCEFILES} ${DATA_DICT_OUTFILE})
+add_library (KatydidData ${DATA_SOURCEFILES})
 target_link_libraries (KatydidData ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_libraries(KatydidData)

@@ -226,11 +226,11 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/Data
     ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Data/Candidates
-    ${PROJECT_SOURCE_DIR}/Source/Data/Conversions
     ${PROJECT_SOURCE_DIR}/Source/Data/Egg
     ${PROJECT_SOURCE_DIR}/Source/Data/FFT
     ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/IO
+    ${PROJECT_SOURCE_DIR}/Source/IO/Conversions
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/Simulation
     ${PROJECT_SOURCE_DIR}/Source/Evaluation
