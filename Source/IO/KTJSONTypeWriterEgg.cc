@@ -62,7 +62,16 @@ namespace Katydid
         jsonMaker->Uint(header->GetNChannels());
 
         jsonMaker->String("record-size");
+        jsonMaker->Uint((unsigned)header->GetRecordSize());
+
+        jsonMaker->String("raw-slice-size");
         jsonMaker->Uint((unsigned)header->GetSliceSize());
+
+        jsonMaker->String("slice-size");
+        jsonMaker->Uint((unsigned)header->GetSliceSize());
+
+        jsonMaker->String("slice-stride");
+        jsonMaker->Uint((unsigned)header->GetSliceStride());
 
         jsonMaker->String("monarch-record-size");
         jsonMaker->Uint((unsigned)header->GetRecordSize());
@@ -87,6 +96,18 @@ namespace Katydid
 
         jsonMaker->String("format-mode");
         jsonMaker->Uint(header->GetFormatMode());
+
+        jsonMaker->String("data-type-size");
+        jsonMaker->Uint(header->GetDataTypeSize());
+
+        jsonMaker->String("bit-depth");
+        jsonMaker->Uint(header->GetBitDepth());
+
+        jsonMaker->String("voltage-min");
+        jsonMaker->Double(header->GetVoltageMin());
+
+        jsonMaker->String("voltage-range");
+        jsonMaker->Double(header->GetVoltageRange());
 
         jsonMaker->EndObject();
 

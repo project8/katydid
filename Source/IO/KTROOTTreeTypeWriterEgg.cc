@@ -70,6 +70,7 @@ namespace Katydid
         fEggHeaderData.fNChannels = header->GetNChannels();
         fEggHeaderData.fRawSliceSize = header->GetRawSliceSize();
         fEggHeaderData.fSliceSize = header->GetSliceSize();
+        fEggHeaderData.fSliceStride = header->GetSliceStride();
         fEggHeaderData.fRecordSize = header->GetRecordSize();
         fEggHeaderData.fRunDuration = header->GetRunDuration();
         fEggHeaderData.fAcquisitionRate = header->GetAcquisitionRate();
@@ -103,6 +104,7 @@ namespace Katydid
         fEggHeaderTree->Branch("NChannels", &fEggHeaderData.fNChannels, "fNChannels/i");
         fEggHeaderTree->Branch("RawSliceSize", &fEggHeaderData.fRawSliceSize, "fRawSliceSize/i");
         fEggHeaderTree->Branch("SliceSize", &fEggHeaderData.fSliceSize, "fSliceSize/i");
+        fEggHeaderTree->Branch("SliceStride", &fEggHeaderData.fSliceStride, "fSliceStride/i");
         fEggHeaderTree->Branch("RecordSize", &fEggHeaderData.fRecordSize, "fRecordSize/i");
         fEggHeaderTree->Branch("RunDuration", &fEggHeaderData.fRunDuration, "fRunDuration/i");
         fEggHeaderTree->Branch("AcquisitionRate", &fEggHeaderData.fAcquisitionRate, "fAcquisitionRate/d");

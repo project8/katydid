@@ -214,6 +214,7 @@ namespace Katydid
         eggHeader->SetAcquisitionMode(1);
         eggHeader->SetRawSliceSize(fHeaderInfo.fRecordSize);
         eggHeader->SetSliceSize(fHeaderInfo.fRecordSize);
+        eggHeader->SetSliceStride(fHeaderInfo.fRecordSize);
         eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
         eggHeader->SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
         eggHeader->SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
