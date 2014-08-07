@@ -311,12 +311,12 @@ namespace Katydid
 #ifndef SINGLETHREADED
         unsigned iGroup = 0;
 #endif
-        for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); rqIter++)
+        for (RunQueue::const_iterator rqIter = fRunQueue.begin(); rqIter != fRunQueue.end(); ++rqIter)
         {
 #ifdef SINGLETHREADED
-            for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); tgIter++)
+            for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); ++tgIter)
             {
-                if (! (*tgIter)->Run())
+                if (! tgIter->fProc->Run())
                 {
                     return false;
                 }
@@ -325,7 +325,7 @@ namespace Katydid
             KTDEBUG(proclog, "Starting thread group " << iGroup);
             boost::thread_group parallelThreads;
             unsigned iThread = 0;
-            for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); tgIter++)
+            for (ThreadGroup::const_iterator tgIter = rqIter->begin(); tgIter != rqIter->end(); ++tgIter)
             {
                 // create a boost::thread object to launch the thread
                 // use boost::ref to avoid copying the processor
