@@ -21,7 +21,7 @@ namespace Katydid
 {
     struct TEggHeader
     {
-        TString fFilename;
+        char* fFilename;
         UInt_t fAcquisitionMode;
         UInt_t fNChannels;
         UInt_t fRawSliceSize; /// Number of bins per slice before any modification

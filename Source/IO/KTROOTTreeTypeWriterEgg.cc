@@ -15,6 +15,7 @@
 #include "TFile.h"
 #include "TTree.h"
 
+#include <cstring>
 #include <sstream>
 
 
@@ -34,10 +35,12 @@ namespace Katydid
             fEggHeaderTree(NULL),
             fEggHeaderData()
     {
+        fEggHeaderData.fFilename = NULL;
     }
 
     KTROOTTreeTypeWriterEgg::~KTROOTTreeTypeWriterEgg()
     {
+        delete [] fEggHeaderData.fFilename;
     }
 
 
@@ -65,7 +68,10 @@ namespace Katydid
             }
         }
 
-        fEggHeaderData.fFilename = header->GetFilename();
+        delete [] fEggHeaderData.fFilename;
+        fEggHeaderData.fFilename = new char[header->GetFilename().size()];
+        strcpy(fEggHeaderData.fFilename, header->GetFilename().c_str());
+        KTDEBUG(publog, "Writing egg header with filename <" << fEggHeaderData.fFilename << ">");
         fEggHeaderData.fAcquisitionMode = header->GetAcquisitionMode();
         fEggHeaderData.fNChannels = header->GetNChannels();
         fEggHeaderData.fRawSliceSize = header->GetRawSliceSize();
@@ -99,7 +105,7 @@ namespace Katydid
         }
         fWriter->AddTree(fEggHeaderTree);
 
-        fEggHeaderTree->Branch("Filename", &fEggHeaderData.fFilename, "fFilename/s");
+        fEggHeaderTree->Branch("Filename", &fEggHeaderData.fFilename, "fFilename/C");
         fEggHeaderTree->Branch("AcquisitionMode", &fEggHeaderData.fAcquisitionMode, "fAcquisitionMode/i");
         fEggHeaderTree->Branch("NChannels", &fEggHeaderData.fNChannels, "fNChannels/i");
         fEggHeaderTree->Branch("RawSliceSize", &fEggHeaderData.fRawSliceSize, "fRawSliceSize/i");

@@ -24,7 +24,7 @@ namespace Katydid
     {
         UInt_t fSlice;
         double fTimeInRunC; // bin center on the time axis
-        UShort_t fComponent;
+        UInt_t fComponent;
         UInt_t fBin;
         double fAbscissa;
         double fOrdinate;
@@ -33,19 +33,19 @@ namespace Katydid
 
     struct TAmplitudeDistributionData
     {
-        UShort_t fComponent;
+        UInt_t fComponent;
         UInt_t fFreqBin;
         TH1D* fDistribution;
     };
 
     struct THoughData
     {
-            UShort_t fComponent;
-            TH2D* fTransform;
-            double fXOffset;
-            double fXScale;
-            double fYOffset;
-            double fYScale;
+        UInt_t fComponent;
+        TH2D* fTransform;
+        double fXOffset;
+        double fXScale;
+        double fYOffset;
+        double fYScale;
     };
 
 
