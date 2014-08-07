@@ -111,9 +111,9 @@ namespace Katydid
 
         //fDiscPoints1DData = new TDiscriminatedPoints1DData();
 
-        fDiscPoints1DTree->Branch("Slice", &fDiscPoints1DData.fSlice, "fSlice/l");
+        fDiscPoints1DTree->Branch("Slice", &fDiscPoints1DData.fSlice, "fSlice/i");
         fDiscPoints1DTree->Branch("TimeInRunC", &fDiscPoints1DData.fTimeInRunC, "fTimeInRunC/d");
-        fDiscPoints1DTree->Branch("Component", &fDiscPoints1DData.fComponent, "fComponent/s");
+        fDiscPoints1DTree->Branch("Component", &fDiscPoints1DData.fComponent, "fComponent/i");
         fDiscPoints1DTree->Branch("Bin", &fDiscPoints1DData.fBin, "fBin/i");
         fDiscPoints1DTree->Branch("Abscissa", &fDiscPoints1DData.fAbscissa, "fAbscissa/d");
         fDiscPoints1DTree->Branch("Ordinate", &fDiscPoints1DData.fOrdinate, "fOrdinate/d");
@@ -177,8 +177,8 @@ namespace Katydid
         }
         fWriter->AddTree(fAmpDistTree);
 
-        fAmpDistTree->Branch("Component", &fAmpDistData.fComponent, "fComponent/s");
-        fAmpDistTree->Branch("FreqBin", &fAmpDistData.fFreqBin, "fFreqBin/l");
+        fAmpDistTree->Branch("Component", &fAmpDistData.fComponent, "fComponent/i");
+        fAmpDistTree->Branch("FreqBin", &fAmpDistData.fFreqBin, "fFreqBin/i");
         fAmpDistTree->Branch("Distribution", &fAmpDistData.fDistribution, 32000, 0);
 
         return true;
@@ -237,7 +237,7 @@ namespace Katydid
         }
         fWriter->AddTree(fHoughTree);
 
-        fHoughTree->Branch("Component", &fHoughData.fComponent, "fComponent/s");
+        fHoughTree->Branch("Component", &fHoughData.fComponent, "fComponent/i");
         fHoughTree->Branch("Transform", &fHoughData.fTransform, 32000, 0);
         fHoughTree->Branch("XOffset", &fHoughData.fXOffset, "fXOffset/d");
         fHoughTree->Branch("XScale", &fHoughData.fXScale, "fXScale/d");
