@@ -12,7 +12,7 @@
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTGainVariationData.hh"
 #include "KTParam.hh"
-#include "KTPowerspectrumData.hh"
+#include "KTPowerSpectrumData.hh"
 #include "KTSpline.hh"
 
 #include <cmath>
