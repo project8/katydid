@@ -62,14 +62,14 @@ namespace Katydid
 
         const KTSparseWaterfallCandidateData::Points& points = data.GetPoints();
 
-        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRun(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth());
+        KTPhysicalArray< 2, double >* newTransform = TransformPoints(points, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth());
         if (newTransform == NULL)
         {
             KTERROR(htlog, "Something went wrong in the transform");
         }
         else
         {
-            newData.SetTransform(newTransform, data.GetTimeInRun(), 1. / data.GetTimeLength(), data.GetMinimumFrequency(), 1. / data.GetFrequencyWidth(), 0);
+            newData.SetTransform(newTransform, data.GetTimeInRunC(), data.GetTimeLength(), data.GetMinimumFrequency(), data.GetFrequencyWidth(), 0);
         }
         KTINFO(htlog, "Completed hough transform");
 
@@ -113,7 +113,7 @@ namespace Katydid
         unsigned iRadius;
         for (SWFPoints::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
-            timeVal = (pIt->fTimeInRun - minTime) * timeScaling;
+            timeVal = (pIt->fTimeInRunC - minTime) * timeScaling;
             freqVal = (pIt->fFrequency - minFreq) * freqScaling;
             value = pIt->fAmplitude;
 
@@ -143,7 +143,7 @@ namespace Katydid
         }
         else
         {
-            newData.SetTransform(newTransform, 0., 1. / candidate->GetTimeBinWidth(), 0., 1. / candidate->GetFrequencyBinWidth(), 0);
+            newData.SetTransform(newTransform, 0., candidate->GetTimeBinWidth(), 0., candidate->GetFrequencyBinWidth(), 0);
         }
         KTINFO(htlog, "Completed hough transform");
 
@@ -218,7 +218,7 @@ namespace Katydid
         unsigned nComponents = data.GetNComponents();
         KTHoughData& newData = data.Of< KTHoughData >().SetNComponents(nComponents);
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTDiscriminatedPoints2DData::SetOfPoints inputPoints = data.GetSetOfPoints(iComponent);
 

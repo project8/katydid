@@ -38,11 +38,11 @@ namespace Katydid
             fCandidates(),
             fDataCount(0),
             fTrackSignal("track", this),
-            fClusterDoneSignal("cluster-done", this),
+            fClusterDoneSignal("clustering-done", this),
             fTakePointSlot("points", this, &KTDBScanTrackClustering::TakePoints)
 //            fDoClusterSlot("do-cluster-trigger", this, &KTDBScanTrackClustering::Run)
     {
-        RegisterSlot("do-cluster-trigger", this, &KTDBScanTrackClustering::TriggerClustering);
+        RegisterSlot("do-clustering", this, &KTDBScanTrackClustering::TriggerClustering);
         fRadii(0) = 1. / sqrt(fNDimensions);
         fRadii(1) = 1. / sqrt(fNDimensions);
     }
@@ -96,7 +96,7 @@ namespace Katydid
         }
 
         // update time and frequency bin widths, though they probably don't actually need to be updated
-        fTimeBinWidth = slHeader.GetBinWidth();
+        fTimeBinWidth = slHeader.GetSliceLength();
         fFreqBinWidth = discPoints.GetBinWidth();
 
         // verify that we have the right number of components
@@ -106,7 +106,7 @@ namespace Katydid
         }
 
         KTDBScan::Point newPoint(fNDimensions);
-        newPoint(0) = slHeader.GetTimeInRun();
+        newPoint(0) = slHeader.GetTimeInRun() + 0.5 * fTimeBinWidth;
         for (unsigned iComponent = 0; iComponent != fCompPoints.size(); ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
@@ -141,8 +141,9 @@ namespace Katydid
 
     void KTDBScanTrackClustering::TriggerClustering()
     {
-        if (! Run()) {
-            KTERROR(tclog, __LINE__ << " in " << __FILE__ );
+        if (! Run())
+        {
+            KTERROR(tclog, "An error occurred while running the track clustering");
         }
         return;
     }
@@ -154,7 +155,12 @@ namespace Katydid
 
     bool KTDBScanTrackClustering::DoClustering()
     {
-        KTDEBUG(tclog, "Starting to do clustering");
+        KTPROG(tclog, "Starting DBSCAN track clustering");
+
+        fDBScan.SetRadius(1.);
+        fDBScan.SetMinPoints(fMinPoints);
+        KTINFO(tclog, "DBScan configured");
+
         for (unsigned iComponent = 0; iComponent < fCompPoints.size(); ++iComponent)
         //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
@@ -178,27 +184,22 @@ namespace Katydid
             unsigned iPoint = 0;
             for (DBScanPoints::iterator pIt = fCompPoints[iComponent].begin(); pIt != fCompPoints[iComponent].end(); ++pIt)
             {
-#ifndef NDEBUG
-                std::stringstream ptStr;
-                ptStr << "Point -- before: " << *pIt;
-#endif
+//#ifndef NDEBUG
+//                std::stringstream ptStr;
+//                ptStr << "Point -- before: " << *pIt;
+//#endif
                 newPoint = element_prod(*pIt, scale);
-                KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
+                //KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
                 normPoints[iPoint++] = newPoint;
             }
-
-            fDBScan.SetRadius(1.);
-            fDBScan.SetMinPoints(fMinPoints);
-            KTDEBUG(tclog, "DBScan configured");
 
             // do the clustering!
             if (! fDBScan.RunDBScan< Euclidean< KTDBScan::Point > >(normPoints))
             {
                 KTERROR(tclog, "An error occurred while clustering");
                 return false;
-            } else {
-                KTDEBUG(tclog, "clustering complete");
             }
+            KTDEBUG(tclog, "DBSCAN finished");
 
             // loop over the clusters found, and create data objects for them
             const vector< KTDBScan::Cluster >& clusters = fDBScan.GetClusters();
@@ -207,7 +208,7 @@ namespace Katydid
             {
                 if (clustIt->empty())
                 {
-                    KTWARN(tclog, "Empty candidate");
+                    KTWARN(tclog, "Empty cluster");
                     continue;
                 }
 
@@ -252,11 +253,12 @@ namespace Katydid
                 }
 
                 cand.SetComponent(iComponent);
+                cand.SetCandidateID(fDataCount);
 
                 cand.SetTimeBinWidth(fTimeBinWidth);
                 cand.SetFreqBinWidth(fFreqBinWidth);
 
-                cand.SetTimeInRun(minTime);
+                cand.SetTimeInRunC(minTime);
                 cand.SetTimeLength(maxTime - minTime);
 
                 cand.SetMinimumFrequency(minFreq);
@@ -268,11 +270,12 @@ namespace Katydid
                 fTrackSignal(data);
 
             } // loop over clusters
+
             fCompPoints[iComponent].clear();
 
         } // loop over components
 
-        KTDEBUG(tclog, "sending cluster-done, I think...");
+        KTDEBUG(tclog, "Clustering complete");
         fClusterDoneSignal();
 
         return true;

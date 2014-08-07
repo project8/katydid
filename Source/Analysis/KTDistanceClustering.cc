@@ -73,7 +73,7 @@ namespace Katydid
         newData.SetNBins(data.GetNBins());
         newData.SetBinWidth(data.GetBinWidth());
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const OriginalPoints points = data.GetSetOfPoints(iComponent);
 

@@ -11,6 +11,7 @@
 #include "KTROOTTreeWriter.hh"
 
 #include "KTData.hh"
+#include "KTROOTData.hh"
 
 #include "Rtypes.h"
 
@@ -25,7 +26,7 @@ namespace Katydid
 
     struct TFrequencyCandidateData
     {
-        UShort_t fComponent;
+        UInt_t fComponent;
         ULong64_t fSlice;
         Double_t fTimeInRun;
         Double_t fThreshold;
@@ -38,7 +39,7 @@ namespace Katydid
 
     struct TWaterfallCandidateData
     {
-        UShort_t fComponent;
+        UInt_t fComponent;
         Double_t fTimeInRun;
         Double_t fTimeLength;
         ULong64_t fFirstSliceNumber;
@@ -55,10 +56,11 @@ namespace Katydid
     struct TSparseWaterfallCandidateData
     {
             TGraph2D* fPoints;
-            UShort_t fComponent;
+            UInt_t fComponent;
+            UInt_t fCandidateID;
             Double_t fTimeBinWidth;
             Double_t fFreqBinWidth;
-            Double_t fTimeInRun;
+            Double_t fTimeInRunC;
             Double_t fTimeLength;
             //ULong64_t fFirstSliceNumber;
             //ULong64_t fLastSliceNumber;
@@ -74,6 +76,7 @@ namespace Katydid
 
     };
 
+
     class KTROOTTreeTypeWriterCandidates : public KTROOTTreeTypeWriter//, public KTTypeWriterCandidates
     {
         public:
@@ -87,25 +90,37 @@ namespace Katydid
 
             void WriteWaterfallCandidate(KTDataPtr data);
 
-            void WriteSparseWaterfallCandidate(KTDataPtr Data);
+            void WriteSparseWaterfallCandidate(KTDataPtr data);
+
+            void WriteProcessedTrack(KTDataPtr data);
+
+            void WriteMultiTrackEvent(KTDataPtr data);
 
         public:
             TTree* GetFrequencyCandidateTree() const;
             TTree* GetWaterfallCandidateTree() const;
             TTree* GetSparseWaterfallCandidateTree() const;
+            TTree* GetProcessedTrackTree() const;
+            TTree* GetMultiTrackEventTree() const;
 
         private:
             bool SetupFrequencyCandidateTree();
             bool SetupWaterfallCandidateTree();
             bool SetupSparseWaterfallCandidateTree();
+            bool SetupProcessedTrackTree();
+            bool SetupMultiTrackEventTree();
 
             TTree* fFreqCandidateTree;
             TTree* fWaterfallCandidateTree;
             TTree* fSparseWaterfallCandidateTree;
+            TTree* fProcessedTrackTree;
+            TTree* fMultiTrackEventTree;
 
             TFrequencyCandidateData fFreqCandidateData;
             TWaterfallCandidateData fWaterfallCandidateData;
             TSparseWaterfallCandidateData fSparseWaterfallCandidateData;
+            TProcessedTrackData* fProcessedTrackDataPtr;
+            TMultiTrackEventData* fMultiTrackEventDataPtr;
 
     };
 
@@ -122,6 +137,16 @@ namespace Katydid
     inline TTree* KTROOTTreeTypeWriterCandidates::GetSparseWaterfallCandidateTree() const
     {
         return fSparseWaterfallCandidateTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterCandidates::GetProcessedTrackTree() const
+    {
+        return fProcessedTrackTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterCandidates::GetMultiTrackEventTree() const
+    {
+        return fMultiTrackEventTree;
     }
 
 

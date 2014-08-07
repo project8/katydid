@@ -16,6 +16,7 @@
 #include "KTTimeSeries.hh"
 
 #include <vector>
+#include <iostream>
 
 namespace Katydid
 {
@@ -59,6 +60,7 @@ namespace Katydid
     inline void KTTimeSeriesDataCore::SetTimeSeries(KTTimeSeries* record, unsigned component)
     {
         if (component >= fTimeSeries.size()) SetNComponents(component+1);
+        if (fTimeSeries[component] != NULL) delete fTimeSeries[component];
         fTimeSeries[component] = record;
         return;
     }

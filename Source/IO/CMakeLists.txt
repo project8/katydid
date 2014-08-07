@@ -1,7 +1,7 @@
 # CMakeLists for Katydid/Source/IO
 # Author: N. Oblath
 
-set (IO_NODICT_HEADERFILES
+set (IO_HEADERFILES
     KTBasicASCIITypeWriterTS.hh
     KTBasicAsciiWriter.hh
     KTJSONTypeWriterEgg.hh
@@ -15,37 +15,6 @@ set (IO_NODICT_HEADERFILES
     KTReader.hh
     KTWriter.hh
 )
-
-if (ROOT_FOUND)
-    set (IO_DICT_HEADERFILES
-        ${IO_DICT_HEADERFILES}
-        KTDisplayWindow.hh
-    )
-    
-    set (IO_NODICT_HEADERFILES
-        ${IO_NODICT_HEADERFILES}
-        KTBasicROOTFileWriter.hh
-        KTBasicROOTTypeWriterAnalysis.hh
-        KTBasicROOTTypeWriterEgg.hh
-        KTBasicROOTTypeWriterFFT.hh
-        KTDataDisplay.hh
-        KTDataTypeDisplayAnalysis.hh
-        KTDataTypeDisplayEgg.hh
-        KTDataTypeDisplayFFT.hh
-        KTMultiFileROOTTreeReader.hh
-        KTMultiSliceROOTTypeWriterAnalysis.hh
-        KTMultiSliceROOTTypeWriterEgg.hh
-        KTMultiSliceROOTTypeWriterFFT.hh
-        KTMultiSliceROOTWriter.hh
-        KTROOTTreeTypeWriterAnalysis.hh
-        KTROOTTreeTypeWriterCandidates.hh
-        KTROOTTreeTypeWriterEgg.hh
-        KTROOTTreeTypeWriterEvaluation.hh
-        KTROOTTreeWriter.hh
-    )
-endif (ROOT_FOUND)
-
-set (IO_HEADERFILES ${IO_DICT_HEADERFILES} ${IO_NODICT_HEADERFILES})
 
 set (IO_SOURCEFILES
     KTBasicASCIITypeWriterTS.cc
@@ -63,9 +32,40 @@ set (IO_SOURCEFILES
 )
 
 if (ROOT_FOUND)
+    set (IO_DICT_HEADERFILES
+        KTDisplayWindow.hh
+        Conversions/KTROOTData.hh
+    )
+    
+    set (IO_HEADERFILES
+        ${IO_HEADERFILES}
+        ${IO_DICT_HEADERFILES}
+        KTBasicROOTFileWriter.hh
+        KTBasicROOTTypeWriterAnalysis.hh
+        KTBasicROOTTypeWriterCandidates.hh
+        KTBasicROOTTypeWriterEgg.hh
+        KTBasicROOTTypeWriterFFT.hh
+        KTDataDisplay.hh
+        KTDataTypeDisplayAnalysis.hh
+        KTDataTypeDisplayEgg.hh
+        KTDataTypeDisplayFFT.hh
+        KTMultiFileROOTTreeReader.hh
+        KTMultiSliceROOTTypeWriterAnalysis.hh
+        KTMultiSliceROOTTypeWriterEgg.hh
+        KTMultiSliceROOTTypeWriterFFT.hh
+        KTMultiSliceROOTWriter.hh
+        KTROOTTreeTypeWriterAnalysis.hh
+        KTROOTTreeTypeWriterCandidates.hh
+        KTROOTTreeTypeWriterEgg.hh
+        KTROOTTreeTypeWriterEvaluation.hh
+        KTROOTTreeWriter.hh
+        Conversions/KT2ROOT.hh
+    )
+
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
         KTBasicROOTTypeWriterAnalysis.cc
+        KTBasicROOTTypeWriterCandidates.cc
         KTBasicROOTTypeWriterEgg.cc
         KTBasicROOTTypeWriterFFT.cc
         KTBasicROOTFileWriter.cc
@@ -84,11 +84,10 @@ if (ROOT_FOUND)
         KTROOTTreeTypeWriterEgg.cc
         KTROOTTreeTypeWriterEvaluation.cc
         KTROOTTreeWriter.cc
+        Conversions/KT2ROOT.cc
+        Conversions/KTROOTData.cc
     )
-endif (ROOT_FOUND)
 
-
-if (ROOT_FOUND)
     set (IO_LINKDEF_HEADERFILE LinkDef/IOLinkDef.hh)
     set (IO_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/IODict.cxx)
 endif (ROOT_FOUND)

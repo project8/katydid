@@ -164,7 +164,7 @@ namespace Katydid
 
         KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -208,7 +208,7 @@ namespace Katydid
 
         KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
@@ -252,7 +252,7 @@ namespace Katydid
 
         KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
             if (nextInput == NULL)

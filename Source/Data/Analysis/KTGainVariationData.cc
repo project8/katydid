@@ -17,6 +17,17 @@ namespace Katydid
         fComponentData[0].fSpline = NULL;
     }
 
+    KTGainVariationData::KTGainVariationData(const KTGainVariationData& orig) :
+            KTExtensibleData< KTGainVariationData >(orig),
+            fComponentData(orig.fComponentData.size())
+    {
+        unsigned nComponents = fComponentData.size();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            fComponentData[iComponent].fSpline = new KTSpline(*orig.fComponentData[iComponent].fSpline);
+        }
+    }
+
     KTGainVariationData::~KTGainVariationData()
     {
         while (! fComponentData.empty())
@@ -27,17 +38,29 @@ namespace Katydid
         }
     }
 
+    KTGainVariationData& KTGainVariationData::operator=(const KTGainVariationData& rhs)
+    {
+        unsigned nComponents = rhs.GetNComponents();
+        SetNComponents(nComponents);
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            delete fComponentData[iComponent].fSpline;
+            fComponentData[iComponent].fSpline = new KTSpline(*rhs.fComponentData[iComponent].fSpline);
+        }
+        return *this;
+    }
+
     KTGainVariationData& KTGainVariationData::SetNComponents(unsigned components)
     {
         unsigned oldSize = fComponentData.size();
         // if components < oldSize
-        for (unsigned iComponent = components; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = components; iComponent < oldSize; ++iComponent)
         {
             delete fComponentData[iComponent].fSpline;
         }
         fComponentData.resize(components);
         // if components > oldSize
-        for (unsigned iComponent = oldSize; iComponent < components; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < components; ++iComponent)
         {
             fComponentData[iComponent].fSpline = NULL;
         }

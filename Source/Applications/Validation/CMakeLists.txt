@@ -76,6 +76,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestLogger TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestMinMaxBin TestMinMaxBin.cc)
+    target_link_libraries (TestMinMaxBin KatydidUtility ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestMultiSliceClustering TestMultiSliceClustering.cc)
     target_link_libraries (TestMultiSliceClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
     
@@ -89,6 +92,9 @@ if (Katydid_ENABLE_TESTING)
                                         KTTestProcessor.cc
     )
     target_link_libraries (TestSignalsAndSlots KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
+    
+    add_executable (TestSmoothing TestSmoothing.cc)
+    target_link_libraries (TestSmoothing KatydidUtility KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
     # disabled because it's written for the old version of KTMultiSliceClustering; see TestMultiSliceClustering
     #add_executable (TestSimpleClustering TestSimpleClustering.cc)
@@ -130,12 +136,14 @@ if (Katydid_ENABLE_TESTING)
                      #TestHoughTransform
                      TestJSONWriter
                      TestLogger
+                     TestMinMaxBin
                      TestMultiSliceClustering
                      TestMultiFileJSONReader
                      TestRandom
                      TestSignalsAndSlots
                      #TestSimpleClustering
                      #TestSlidingWindowFFT
+                     TestSmoothing
                      TestSpectrumDiscriminator
                      TestThroughputProfiler
                      TestVector
@@ -161,6 +169,7 @@ if (Katydid_ENABLE_TESTING)
     #add_test (Test_HoughTransform TestHoughTransform)
     add_test (Test_JSONWriter TestJSONWriter)
     add_test (Test_Logger TestLogger)
+    add_test (Test_MinMaxBin TestMinMaxBin)
     add_test (Test_MultiSliceClustering TestMultiSliceClustering)
     add_test (Test_MultiFileJSONReader TestMultiFileJSONReader)
     add_test (Test_ParameterStore TestParameterStore)
@@ -168,6 +177,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)
     #add_test (Test_SimpleClustering TestSimpleClustering)
     #add_test (Test_SlidingWindowFFT TestSlidingWindowFFT)
+    add_test (Test_Smoothing TestSmoothing)
     add_test (Test_SpectrumDiscriminator TestSpectrumDiscriminator)
     add_test (Test_ThroughputProfiler TestThroughputProfiler)
     add_test (Test_Vector TestVector)
@@ -213,12 +223,18 @@ if (Katydid_ENABLE_TESTING)
         add_executable (TestGainVariation TestGainVariation.cc)
         target_link_libraries (TestGainVariation KatydidUtility KatydidCore KatydidAnalysis KatydidIO ${EXTERNAL_LIBRARIES})
     
+        add_executable (TestROOTDictionary TestROOTDictionary.cc)
+        target_link_libraries (TestROOTDictionary KatydidUtility KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
+        
         pbuilder_install_executables ( 
                     TestBasicROOTFileWriter
                     TestGainVariation
+                    TestROOTDictionary
         )
     
         add_test (Test_BasicROOTFileWriter TestBasicROOTFileWriter)
+        add_test (Test_GainVariation TestGainVariation)
+        add_test (Test_ROOTDictionary TestROOTDictionary)        
     endif (ROOT_FOUND)
     
     # executables that DO require Monarch

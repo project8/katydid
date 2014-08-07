@@ -2,6 +2,7 @@
 # Author: N. Oblath
 
 set (DATA_HEADERFILES
+    KTData.hh
     Analysis/KTAmplitudeDistribution.hh
     Analysis/KTAnalyticAssociateData.hh
     Analysis/KTCluster1DData.hh
@@ -18,9 +19,10 @@ set (DATA_HEADERFILES
     Analysis/KTWignerVilleData.hh
     Candidates/KTFrequencyCandidate.hh
     Candidates/KTFrequencyCandidateData.hh
+    Candidates/KTMultiTrackEventData.hh
+    Candidates/KTProcessedTrackData.hh
     Candidates/KTSparseWaterfallCandidateData.hh
     Candidates/KTWaterfallCandidateData.hh
-    Conversions/KT2ROOT.hh
     Egg/KTDigitizerTestData.hh
     Egg/KTEggHeader.hh
     Egg/KTPhysicalArrayFFTW.hh
@@ -41,6 +43,7 @@ set (DATA_HEADERFILES
     FFT/KTFrequencySpectrumFFTW.hh
     FFT/KTFrequencySpectrumPolar.hh
     FFT/KTPowerSpectrum.hh
+    FFT/KTPowerSpectrumData.hh
     FFT/KTMultiFSDataFFTW.hh
     FFT/KTMultiFSDataPolar.hh
     FFT/KTTimeFrequency.hh
@@ -49,6 +52,7 @@ set (DATA_HEADERFILES
 )
 
 set (DATA_SOURCEFILES
+    KTData.cc
     Analysis/KTAmplitudeDistribution.cc
     Analysis/KTAnalyticAssociateData.cc
     Analysis/KTCluster1DData.cc
@@ -65,9 +69,10 @@ set (DATA_SOURCEFILES
     Analysis/KTWignerVilleData.cc
     Candidates/KTFrequencyCandidate.cc
     Candidates/KTFrequencyCandidateData.cc
+    Candidates/KTMultiTrackEventData.cc
+    Candidates/KTProcessedTrackData.cc
     Candidates/KTSparseWaterfallCandidateData.cc
     Candidates/KTWaterfallCandidateData.cc
-    Conversions/KT2ROOT.cc
     Egg/KTDigitizerTestData.cc
     Egg/KTEggHeader.cc
     Egg/KTPhysicalArrayFFTW.cc
@@ -90,21 +95,11 @@ set (DATA_SOURCEFILES
     FFT/KTMultiFSDataFFTW.cc
     FFT/KTMultiFSDataPolar.cc
     FFT/KTPowerSpectrum.cc
+    FFT/KTPowerSpectrumData.cc
     FFT/KTTimeFrequency.cc
     FFT/KTTimeFrequencyDataPolar.cc
     FFT/KTTimeFrequencyPolar.cc
 )
-
-if (ROOT_FOUND)
-    set (DATA_HEADERFILES
-        ${DATA_HEADERFILES}
-        Conversions/KT2ROOT.hh
-    )
-    set (DATA_SOURCEFILES
-        ${DATA_SOURCEFILES}
-        Conversions/KT2ROOT.cc
-    )
-endif (ROOT_FOUND)
 
 if (NOT FFTW_FOUND)
     set (DATA_SOURCEFILES

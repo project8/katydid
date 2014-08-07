@@ -27,6 +27,8 @@ namespace Katydid
 
             KTTimeSeriesDist& operator=(const KTTimeSeriesDist& rhs);
 
+            KTTimeSeriesDist& Scale(double scale);
+
     };
 
 } /* namespace Katydid */

@@ -7,29 +7,66 @@
 
 #include "KTPowerSpectrum.hh"
 
-#ifdef ROOT_FOUND
-#include "TH1.h"
-#endif
+#include "KTLogger.hh"
 
 namespace Katydid
 {
 
-    KTPowerSpectrum::KTPowerSpectrum() :
-            KTPhysicalArray< 1, double >()
-    {
-    }
+    KTLOGGER(pslog, "KTPowerSpectrum");
 
     KTPowerSpectrum::KTPowerSpectrum(size_t nBins, double rangeMin, double rangeMax) :
-            KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax)
+            KTPhysicalArray< 1, double >(nBins, rangeMin, rangeMax),
+            fMode(kPower)
     {
+        SetAxisLabel("Frequency (Hz)");
+        SetDataLabel("Power (W)");
     }
     KTPowerSpectrum::KTPowerSpectrum(const KTPowerSpectrum& orig) :
-            KTPhysicalArray< 1, double >(orig)
+            KTPhysicalArray< 1, double >(orig),
+            fMode(orig.GetMode())
     {
     }
 
     KTPowerSpectrum::~KTPowerSpectrum()
     {
+    }
+
+    void KTPowerSpectrum::ConvertToPowerSpectrum()
+    {
+        if (fMode == kPower) return;
+
+        KTDEBUG(pslog, "Converting to Power Spectrum");
+        (*this) *= GetBinWidth();
+        fMode = kPower;
+        SetDataLabel("Power (W)");
+
+        return;
+    }
+
+    void KTPowerSpectrum::ConvertToPowerSpectralDensity()
+    {
+        if (fMode == kPSD) return;
+
+        KTDEBUG(pslog, "Converting to Power SpectralDensity");
+        (*this) *= 1. / GetBinWidth();
+        fMode = kPSD;
+        SetDataLabel("Power Spectral Density (W/Hz)");
+
+        return;
+    }
+
+
+    KTPowerSpectrum& KTPowerSpectrum::operator=(const KTPowerSpectrum& rhs)
+    {
+        KTPhysicalArray< 1, double >::operator=(rhs);
+        fMode = rhs.fMode;
+        return *this;
+    }
+
+    KTPowerSpectrum& KTPowerSpectrum::Scale(double scale)
+    {
+        (*this) *= scale;
+        return *this;
     }
 
     double KTPowerSpectrum::GetResistance()
@@ -38,45 +75,6 @@ namespace Katydid
     }
 
     const double KTPowerSpectrum::fResistance = 50.;
-
-#ifdef ROOT_FOUND
-     TH1D* KTPowerSpectrum::CreatePowerHistogram(const std::string& name) const
-    {
-        unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, GetRangeMin(), GetRangeMax());
-        //double value;
-        for (unsigned int iBin=0; iBin<nBins; iBin++)
-        {
-            hist->SetBinContent((int)iBin+1, (*this)(iBin));
-        }
-        hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Power (W)");
-        return hist;
-    }
-
-    TH1D* KTPowerSpectrum::CreatePowerDistributionHistogram(const std::string& name) const
-    {
-        double tMaxMag = -1.;
-        double tMinMag = 1.e9;
-        unsigned nBins = size();
-        double value;
-        for (unsigned iBin=0; iBin<nBins; iBin++)
-        {
-            value = (*this)(iBin);
-            if (value < tMinMag) tMinMag = value;
-            if (value > tMaxMag) tMaxMag = value;
-        }
-        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
-        TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; iBin++)
-        {
-            hist->Fill((*this)(iBin));
-        }
-        hist->SetXTitle("Power (W)");
-        return hist;
-    }
-
-#endif
 
 } /* namespace Katydid */
 

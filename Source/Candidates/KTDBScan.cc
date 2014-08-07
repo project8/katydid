@@ -9,9 +9,7 @@
 
 #include "KTLogger.hh"
 
-//#include <boost/numeric/ublas/matrix_proxy.hpp>
-//#include <boost/numeric/ublas/io.hpp>
-//#include <boost/algorithm/minmax_element.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/foreach.hpp>
 
 using namespace boost::numeric;
@@ -42,6 +40,8 @@ namespace Katydid
 
     void KTDBScan::InitializeArrays(size_t nPoints)
     {
+        KTINFO(dbslog, "Initializing DBSCAN arrays with " << nPoints << " points");
+
         fNPoints = nPoints;
 
         fDist.resize(fNPoints, fNPoints, false);
@@ -74,16 +74,22 @@ namespace Katydid
 
     KTDBScan::Neighbors KTDBScan::FindNeighbors(PointId pid/*, double threshold*/)
     {
+        typedef boost::numeric::ublas::matrix_row< boost::numeric::ublas::compressed_matrix< double > > dist_row;
+        dist_row pidRow(fDist, pid);
+
         Neighbors neighbors;
 
-        for (unsigned j = 0; j < fNPoints; ++j)
+        unsigned nonzerocols = 0;
+        for (dist_row::const_iterator colIt = pidRow.begin(); colIt != pidRow.end(); ++colIt)
         {
-            if ((pid != j) && (fDist(pid, j)) < fRadius/*threshold*/)
+            ++nonzerocols;
+            if (colIt.index() != pid && *colIt < fRadius) //threshold)
             {
-                neighbors.push_back(j);
-                //std::cout << "sim(" << pid  << "," << j << ") = " << fSim(pid, j) << ">" << threshold << std::endl;
+                neighbors.push_back(colIt.index());
             }
         }
+        //KTDEBUG(dbslog, "pid: " << pid << ";  columns actually checked: " << nonzerocols);
+
         return neighbors;
     }
 

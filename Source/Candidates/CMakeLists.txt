@@ -5,17 +5,25 @@
 #set (CANDIDATES_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CandidatesDict.cxx)
 
 set (CANDIDATES_HEADERFILES
+    KTCandidateCleaner.hh
+    KTCandidateTrackFinder.hh
     KTDBScan.hh
+    KTDBScanEventClustering.hh
     KTDBScanTrackClustering.hh
     KTFrequencyCandidateIdentifier.hh
     KTMultiSliceClustering.hh
+    KTTrackProcessing.hh
 )
 
 set (CANDIDATES_SOURCEFILES
+    KTCandidateCleaner.cc
+    KTCandidateTrackFinder.cc
     KTDBScan.cc
+    KTDBScanEventClustering.cc
     KTDBScanTrackClustering.cc
     KTFrequencyCandidateIdentifier.cc
     KTMultiSliceClustering.cc
+    KTTrackProcessing.cc
 )
 
 set (KATYDID_LIBS

@@ -14,7 +14,6 @@ set (CORE_NODICT_HEADERFILES
     KTConfigurable.hh
     KTConfigurator.hh
     KTConnection.hh
-    KTData.hh
     KTDataQueueProcessor.hh
     KTDirectory.hh
     KTFilenameParsers.hh
@@ -36,7 +35,6 @@ set (CORE_SOURCEFILES
     KTCommandLineHandler.cc
     KTConfigurable.cc
     KTConfigurator.cc
-    KTData.cc
     KTDataQueueProcessor.cc
     KTDirectory.cc
     KTEventLoop.cc

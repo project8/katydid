@@ -34,6 +34,7 @@ namespace Katydid
      @brief .
 
      @details
+     Abscissa values in the output are the bin centers of the frequency axis.
   
      Configuration name: "spectrum-discriminator"
 

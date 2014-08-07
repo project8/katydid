@@ -14,34 +14,68 @@
 
 #include <string>
 
-class TH1D;
-
 namespace Katydid
 {
 
     class KTPowerSpectrum : public KTPhysicalArray< 1, double >
     {
         public:
-            KTPowerSpectrum();
-            KTPowerSpectrum(size_t nBins, double rangeMin=0., double rangeMax=1.);
+            enum Mode
+            {
+                kPower,
+                kPSD
+            };
+
+        public:
+            KTPowerSpectrum(size_t nBins=1, double rangeMin=0., double rangeMax=1.);
             KTPowerSpectrum(const KTPowerSpectrum& orig);
             virtual ~KTPowerSpectrum();
 
+            void ConvertToPowerSpectrum();
+            void ConvertToPowerSpectralDensity();
+
+            bool IsPowerSpectrum() const;
+            bool IsPowerSpectralDensity() const;
+
         public:
+            KTPowerSpectrum& operator=(const KTPowerSpectrum& rhs);
+
+            KTPowerSpectrum& Scale(double scale);
+
+            Mode GetMode() const;
+            void SetMode(Mode mode);
+
             /// Returns the resistance used to calculate the power from the voltage in a frequency spectrum
             static double GetResistance();
 
         protected:
+            Mode fMode;
+
             const static double fResistance; // ohms
 
-#ifdef ROOT_FOUND
-        public:
-            virtual TH1D* CreatePowerHistogram(const std::string& name = "hPowerSpectrum") const;
-
-            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hPowerSpectrumPower") const;
-#endif
     };
 
+    inline bool KTPowerSpectrum::IsPowerSpectrum() const
+    {
+        return fMode == kPower;
+    }
+
+    inline bool KTPowerSpectrum::IsPowerSpectralDensity() const
+    {
+        return fMode == kPSD;
+    }
+
+    inline void KTPowerSpectrum::SetMode(KTPowerSpectrum::Mode mode)
+    {
+        if (mode == kPSD) ConvertToPowerSpectralDensity();
+        else ConvertToPowerSpectrum();
+        return;
+    }
+
+    inline KTPowerSpectrum::Mode KTPowerSpectrum::GetMode() const
+    {
+        return fMode;
+    }
 
     /*
     class KTPowerSpectrum : public KTComplexVector

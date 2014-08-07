@@ -119,6 +119,7 @@ namespace Katydid
         // Get configuration from JSON config file
         fHeader.SetRawSliceSize(fSliceSize);
         fHeader.SetSliceSize(fSliceSize);
+        fHeader.SetSliceStride(fStride);
 
         // Log the contents of the header
         stringstream headerBuff;

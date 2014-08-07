@@ -80,7 +80,7 @@ namespace Katydid
         }
 
         fDiscPoints1DData.fSlice = header.GetSliceNumber();
-        fDiscPoints1DData.fTimeInRun = header.GetTimeInRun();
+        fDiscPoints1DData.fTimeInRunC = header.GetTimeInRun() + 0.5 * header.GetSliceLength();
 
         for (fDiscPoints1DData.fComponent = 0; fDiscPoints1DData.fComponent < fcData.GetNComponents(); fDiscPoints1DData.fComponent++)
         {
@@ -112,7 +112,7 @@ namespace Katydid
         //fDiscPoints1DData = new TDiscriminatedPoints1DData();
 
         fDiscPoints1DTree->Branch("Slice", &fDiscPoints1DData.fSlice, "fSlice/l");
-        fDiscPoints1DTree->Branch("TimeInRun", &fDiscPoints1DData.fTimeInRun, "fTimeInRun/d");
+        fDiscPoints1DTree->Branch("TimeInRunC", &fDiscPoints1DData.fTimeInRunC, "fTimeInRunC/d");
         fDiscPoints1DTree->Branch("Component", &fDiscPoints1DData.fComponent, "fComponent/s");
         fDiscPoints1DTree->Branch("Bin", &fDiscPoints1DData.fBin, "fBin/i");
         fDiscPoints1DTree->Branch("Abscissa", &fDiscPoints1DData.fAbscissa, "fAbscissa/d");
@@ -210,6 +210,12 @@ namespace Katydid
         {
             fHoughData.fTransform = KT2ROOT::CreateHistogram(htData.GetTransform(fHoughData.fComponent));
             fHoughData.fTransform->SetDirectory(NULL);
+            fHoughData.fTransform->SetTitle("Hough Space");
+            fHoughData.fTransform->SetXTitle("Angle");
+            fHoughData.fTransform->SetYTitle("Radius");
+            KTINFO(publog, "Angle axis: " << fHoughData.fTransform->GetNbinsX() << " bins; range: " << fHoughData.fTransform->GetXaxis()->GetXmin() << " - " << fHoughData.fTransform->GetXaxis()->GetXmax());
+            KTINFO(publog, "Radius axis: " << fHoughData.fTransform->GetNbinsY() << " bins; range: " << fHoughData.fTransform->GetYaxis()->GetXmin() << " - " << fHoughData.fTransform->GetYaxis()->GetXmax());
+
             fHoughData.fXOffset = htData.GetXOffset(fHoughData.fComponent);
             fHoughData.fXScale = htData.GetXScale(fHoughData.fComponent);
             fHoughData.fYOffset = htData.GetYOffset(fHoughData.fComponent);

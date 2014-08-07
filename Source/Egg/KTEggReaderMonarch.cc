@@ -115,6 +115,7 @@ namespace Katydid
         CopyHeaderInformation(fMonarch->GetHeader());
         fHeader.SetRawSliceSize(fSliceSize);
         fHeader.SetSliceSize(fSliceSize);
+        fHeader.SetSliceStride(fStride);
 
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 

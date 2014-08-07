@@ -20,6 +20,7 @@ namespace Katydid
             fNChannels(1),
             fRawSliceSize(0),
             fSliceSize(0),
+            fSliceStride(0),
             fRecordSize(0),
             fRunDuration(0),
             fAcquisitionRate(0),
@@ -41,6 +42,7 @@ namespace Katydid
             fNChannels(orig.fNChannels),
             fRawSliceSize(orig.fRawSliceSize),
             fSliceSize(orig.fSliceSize),
+            fSliceStride(orig.fSliceStride),
             fRecordSize(orig.fRecordSize),
             fRunDuration(orig.fRunDuration),
             fAcquisitionRate(orig.fAcquisitionRate),
@@ -67,6 +69,7 @@ namespace Katydid
         fNChannels = rhs.fNChannels;
         fRawSliceSize = rhs.fRawSliceSize;
         fSliceSize = rhs.fSliceSize;
+        fSliceStride = rhs.fSliceStride;
         fRecordSize = rhs.fRecordSize;
         fRunDuration = rhs.fRunDuration;
         fAcquisitionRate = rhs.fAcquisitionRate;
@@ -90,6 +93,7 @@ namespace Katydid
                 << "\tNumber of Channels: " << header.GetNChannels() << '\n'
                 << "\tRaw Slice Size: " << header.GetRawSliceSize() << '\n'
                 << "\tSlice Size: " << header.GetSliceSize() << '\n'
+                << "\tSlice Stride: " << header.GetSliceStride() << '\n'
                 << "\tRecord Size: " << header.GetRecordSize() << '\n'
                 << "\tRun Duration: " << header.GetRunDuration() << " s\n"
                 << "\tAcquisition Rate: " << header.GetAcquisitionRate() << " Hz\n"

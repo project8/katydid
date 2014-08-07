@@ -17,6 +17,8 @@
 
 namespace Katydid
 {
+    class KTParamNode;
+    class KTParamValue;
     class KTPrimaryProcessor;
     class KTProcessor;
 
@@ -43,25 +45,27 @@ namespace Katydid
 
      Available (nested) configuration values:
      <ul>
-         <li>processor -- create a processor (multiple processor options are allowed)
+         <li>processors (array of objects) -- create a processor; each object in the array should consist of:
              <ul>
                  <li>type -- string specifying the processor type (matches the string given to the Registrar, which should be specified before the class implementation in each processor's .cc file).</li>
                  <li>name -- string giving the individual processor a name so that multiple processors of the same type can be created.</li>
              </ul>
          </li>
-         <li>connection -- connect a signal to a slot (multiple connection options are allowed)
+         <li>connection (array of objects) -- connect a signal to a slot; each object should consist of:
              <ul>
-                 <li>signal-processor -- <i>name</i> (i.e. the name described immediately above) of the processor that will emit the signal.</li>
-                 <li>signal-name -- name of the signal being emitted.</li>
-                 <li>slot-processor -- <i>name</li> of the processor with the slot that will receive the signal.</li>
-                 <li>slot-name -- name of the slot being used to receive the signal.</li>
+                 <li>signal -- <i>proc-name:signal-name</i>; name (i.e. the name given in the array of processors above) of the processor, and the signal that will be emitted.</li>
+                 <li>slot -- <i>proc-name:slot-name</li>; name of the processor with the slot that will receive the signal.</li>
                  <li>group-order -- (optional) integer specifying the order in which slots should be called.
              </ul>
          </li>
-         <li>run-queue -- define the queue of processors for which Run() will be called (this option should NOT be repeated)
+         <li>run-queue -- (array of strings and arrays of strings) define the queue of processors that will control the running of Katydid.
+         The elements of this array specify processors that are run sequentially.
+         If an element is itself an array, those processors listed in the sub-array will be run in parallel.
              <ul>
-                 <li>processor -- add a processor to the run queue. This option can be repeated, but please note: this is a FIFO queue, so processors will be called in the order they are specified here!</li>
+                 <li>processor name -- add a processor to the run queue, or </li>
+                 <li>array of processor names -- add a group of processors to the run queue.</li>
              </ul>
+             In single-threaded mode, all processors will be run sequentially, in the order specified.
          </li>
      </ul>
     */
@@ -71,7 +75,7 @@ namespace Katydid
             KTProcessorToolbox(const std::string& name = "processor-toolbox");
             virtual ~KTProcessorToolbox();
 
-        protected:
+        private:
             KTNOFactory< KTProcessor >* fProcFactory; // singleton; not owned by KTProcessorToolbox
 
         public:
@@ -81,22 +85,39 @@ namespace Katydid
             /// Configure processors (only those specified in the toolbox)
             bool ConfigureProcessors(const KTParamNode* node);
 
-        protected:
+        private:
             bool ParseSignalSlotName(const std::string& toParse, std::string& nameOfProc, std::string& nameOfSigSlot) const;
             static const char fSigSlotNameSep = ':';
 
-            typedef std::set< KTPrimaryProcessor* > ThreadGroup;
+
+            struct Thread
+            {
+                    KTPrimaryProcessor* fProc;
+                    std::string fName;
+                    Thread(KTPrimaryProcessor* proc, const std::string& name) : fProc(proc), fName(name)
+                    {}
+            };
+            //typedef std::set< KTPrimaryProcessor* > ThreadGroup;
+            struct CompareThread
+            {
+                bool operator() (const Thread& lhs, const Thread& rhs)
+                {
+                    return lhs.fName < rhs.fName;
+                }
+            };
+            typedef std::set< Thread, CompareThread > ThreadGroup;
             typedef std::deque< ThreadGroup > RunQueue;
+            bool AddProcessorToThreadGroup(const KTParamValue* param, ThreadGroup& group);
 
         public:
             /// Process the run queue.
             /// This will call Run() on all of the processors in the queue.
             bool Run();
 
-        protected:
+        private:
             RunQueue fRunQueue;
 
-        protected:
+        private:
             struct ProcessorInfo
             {
                 KTProcessor* fProc;
@@ -114,7 +135,7 @@ namespace Katydid
             KTProcessor* ReleaseProcessor(const std::string& procName);
             void ClearProcessors();
 
-        protected:
+        private:
             ProcessorMap fProcMap;
 
     };

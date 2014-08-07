@@ -21,13 +21,13 @@ namespace Katydid
     {
         unsigned oldSize = fTimeSeries.size();
         // if num < oldSize
-        for (unsigned iComponent = num; iComponent < oldSize; iComponent++)
+        for (unsigned iComponent = num; iComponent < oldSize; ++iComponent)
         {
             delete fTimeSeries[iComponent];
         }
         fTimeSeries.resize(num);
         // if num > oldSize
-        for (unsigned iComponent = oldSize; iComponent < num; iComponent++)
+        for (unsigned iComponent = oldSize; iComponent < num; ++iComponent)
         {
             fTimeSeries[iComponent] = NULL;
         }

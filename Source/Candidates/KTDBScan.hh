@@ -9,7 +9,7 @@
 #ifndef KTDBSCAN_HH_
 #define KTDBSCAN_HH_
 
-#include <boost/numeric/ublas/symmetric.hpp>
+#include <boost/numeric/ublas/matrix_sparse.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 
 #include <cfloat>
@@ -21,7 +21,7 @@
 namespace Katydid
 {
     KTLOGGER(tclog2, "katydid.fft2");
-    //
+
     // Euclidean distance
     template < typename VEC_T >
     class Euclidean
@@ -181,7 +181,8 @@ namespace Katydid
             std::vector< Cluster > fClusters;
 
             // distance matrix
-            boost::numeric::ublas::symmetric_matrix< double, boost::numeric::ublas::upper > fDist;
+            boost::numeric::ublas::compressed_matrix< double > fDist;
+            //boost::numeric::ublas::symmetric_matrix< double, boost::numeric::ublas::upper > fDist;
 
             friend std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
             friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
@@ -216,11 +217,11 @@ namespace Katydid
     template < typename DistanceType >
     bool KTDBScan::RunDBScan(const Points& points)
     {
-        KTDEBUG(tclog2, "Starting to run DBScan");
+        KTINFO(tclog2, "Starting to run DBSCAN");
         InitializeArrays(points.size());
-        KTDEBUG(tclog2, "Computing DBScan distances");
+        KTPROG(tclog2, "Computing DBSCAN distances");
         ComputeDistance< DistanceType >(points);
-        KTDEBUG(tclog2, "Distances computed");
+        KTPROG(tclog2, "Performing clustering");
         return DoClustering();
     }
 
@@ -236,41 +237,22 @@ namespace Katydid
     template < typename DistanceType >
     void KTDBScan::ComputeDistance(const Points& points)
     {
-        /*  Noah: why is this still here? (7/22)
-        // calculate the min and max for each dimension
-        unsigned nDims = points[0].size();
-        double min, max, range;
-        KTDEBUG(tclog2, "find min and max per dim...");
-        for (unsigned dim = 0; dim < nDims; ++dim)
-        {
-            min = points[0](dim);
-            max = points[0](dim);
-            for (PointId pid = 0; pid < points.size(); ++pid)
-            {
-                if (points[pid](dim) < min) min = points[pid](dim);
-                else if (points[pid](dim) > max) max = points[pid](dim);
-            }
-            range = max - min;
-            if (range == 0.) range = 1.;
-
-        }
-        KTDEBUG(tclog2, "... found");
-        */
-
         Distance< DistanceType > dist;
         for (unsigned i=0; i < fNPoints; ++i)
         {
-            KTDEBUG(tclog2, "doing distance " << i << " of " << fNPoints);
+#ifndef NDEBUG
+            if (i % 100 == 0)
+            {
+                KTDEBUG(tclog2, "doing distance " << i << " of " << fNPoints);
+            }
+#endif
             unsigned j = i + 1;
             // points are time-ordered, so point j should be equal to or after point i in time
             for (; j < fNPoints && points[j](0) - points[i](0) < fRadius; ++j)
             {
-                fDist(i, j) = dist.GetDistance(points[i], points[j]);
+                fDist.insert_element(i, j, dist.GetDistance(points[i], points[j]));
+                fDist.insert_element(j, i, fDist(i, j));
                 //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
-            }
-            for (; j < fNPoints; ++j)
-            {
-                fDist(i, j) = DBL_MAX;
             }
         }
     }

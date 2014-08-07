@@ -52,7 +52,7 @@ namespace Katydid
     {
         unsigned nComponents = tsData.GetNComponents();
         KTTimeSeriesDistData& newData =tsData.Of< KTTimeSeriesDistData >().SetNComponents(nComponents);
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             const KTRawTimeSeries* iTS = tsData.GetTimeSeries(iComponent);
             KTTimeSeriesDist* tsDist;

@@ -61,13 +61,18 @@ namespace Katydid
     {
         unsigned nBins = size();
 #pragma omp parallel for
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             (*this)(iBin).conj();
         }
         return *this;
     }
 
+    KTFrequencySpectrumPolar& KTFrequencySpectrumPolar::Scale(double scale)
+    {
+        (*this) *= scale;
+        return *this;
+    }
 
     KTPowerSpectrum* KTFrequencySpectrumPolar::CreatePowerSpectrum() const
     {
@@ -76,7 +81,7 @@ namespace Katydid
         double value;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 #pragma omp parallel for private(value)
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
            value = (*this)(iBin).abs();
            (*newPS)(iBin) = value * value * scaling;
@@ -87,7 +92,7 @@ namespace Katydid
     void KTFrequencySpectrumPolar::Print(unsigned startPrint, unsigned nToPrint) const
     {
         stringstream printStream;
-        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; iBin++)
+        for (unsigned iBin = startPrint; iBin < startPrint + nToPrint; ++iBin)
         {
             printStream << "Bin " << iBin << ";   x = " << GetBinCenter(iBin) <<
                     ";   y = " << (*this)(iBin) << "\n";
@@ -102,7 +107,7 @@ namespace Katydid
     {
         unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->SetBinContent((int)iBin+1, (*this)(iBin).abs());
         }
@@ -115,7 +120,7 @@ namespace Katydid
     {
         unsigned nBins = size();
         TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->SetBinContent((int)iBin+1, (*this)(iBin).arg());
         }
@@ -130,7 +135,7 @@ namespace Katydid
         TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, GetRangeMin(), GetRangeMax());
         double value;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             value = (*this)(iBin).abs();
             hist->SetBinContent((int)iBin + 1, value * value * scaling);
@@ -147,7 +152,7 @@ namespace Katydid
         unsigned nBins = size();
         double value;
         // Skip the DC bin: start at bin 1
-        for (unsigned iBin=1; iBin<nBins; iBin++)
+        for (unsigned iBin=1; iBin<nBins; ++iBin)
         {
             value = (*this)(iBin).abs();
             if (value < tMinMag) tMinMag = value;
@@ -155,7 +160,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->Fill((*this)(iBin).abs());
         }
@@ -171,7 +176,7 @@ namespace Katydid
         double value;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
         // Skip the DC bin: start at bin 1
-        for (unsigned iBin=1; iBin<nBins; iBin++)
+        for (unsigned iBin=1; iBin<nBins; ++iBin)
         {
             value = (*this)(iBin).abs();
             value *= value * scaling;
@@ -180,7 +185,7 @@ namespace Katydid
         }
         if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
         TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; iBin++)
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             value = (*this)(iBin).abs();
             hist->Fill(value * value * scaling);

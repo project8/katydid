@@ -26,6 +26,7 @@ namespace Katydid
         UInt_t fNChannels;
         UInt_t fRawSliceSize; /// Number of bins per slice before any modification
         UInt_t fSliceSize; /// Number of bins per slice after any initial modification (e.g. by the DAC)
+        UInt_t fSliceStride;
         UInt_t fRecordSize; /// Number of bins per Monarch record
         UInt_t fRunDuration;
         Double_t fAcquisitionRate; /// in Hz

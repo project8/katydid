@@ -7,11 +7,10 @@
 
 #include "KTSpline.hh"
 
+#include "KTLogger.hh"
 #include "KTPhysicalArray.hh"
 
-#ifndef ROOT_FOUND
-#include "KTLogger.hh"
-#endif
+KTLOGGER(splinelog, "KTSpline");
 
 namespace Katydid
 {
@@ -34,9 +33,25 @@ namespace Katydid
     {
     }
 
+    KTSpline::KTSpline(const KTSpline& orig) :
+            fSpline(orig.fSpline),
+            fXMin(orig.fXMin),
+            fXMax(orig.fXMax),
+            fCache()
+    {}
+
     KTSpline::~KTSpline()
     {
         ClearCache();
+    }
+
+    KTSpline& KTSpline::operator=(const KTSpline& rhs)
+    {
+        fSpline = rhs.fSpline;
+        fXMin = rhs.fXMin;
+        fXMax = rhs.fXMax;
+        fCache.clear();
+        return *this;
     }
 
     double KTSpline::Evaluate(double xValue)
@@ -54,6 +69,7 @@ namespace Katydid
         Implementation* imp = GetFromCache(nBins, xMin, xMax);
         if (imp != NULL) return imp;
 
+        KTDEBUG(splinelog, "Creating new spline implementation for (" << nBins << ", " << xMin << ", " << xMax << ")");
         imp = new KTPhysicalArray< 1, double >(nBins, xMin, xMax);
         for (unsigned iBin=0; iBin < nBins; iBin++)
         {
@@ -64,8 +80,6 @@ namespace Katydid
 
 
 #else
-
-    KTLOGGER(splinelog, "KTSpline");
 
     KTSpline::KTSpline() :
             fXMin(0.),
@@ -81,8 +95,21 @@ namespace Katydid
         KTERROR(splinelog, "Non-ROOT version of KTSpline is not fully functional. Stop now, or else!!!");
     }
 
+    KTSpline::KTSpline(const KTSpline& orig) :
+            fXMin(orig.fXMin),
+            fXMax(orig.fXMax)
+    {
+    }
+
     KTSpline::~KTSpline()
     {
+    }
+
+    KTSpline& KTSpline::operator=(const KTSpline& rhs)
+    {
+        fXMin = rhs.fXMin;
+        fXMax = rhs.fXMax;
+        return *this;
     }
 
     double KTSpline::Evaluate(double xValue)

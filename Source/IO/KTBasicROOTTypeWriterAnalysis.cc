@@ -403,7 +403,7 @@ namespace Katydid
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -432,7 +432,7 @@ namespace Katydid
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -473,6 +473,9 @@ namespace Katydid
             conv >> histName;
             TH2D* swHist = KT2ROOT::CreateHistogram(houghData.GetTransform(iPlot), histName);
             swHist->SetDirectory(fWriter->GetFile());
+            swHist->SetTitle("Hough Space");
+            swHist->SetXTitle("Angle");
+            swHist->SetYTitle("Radius");
             swHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }

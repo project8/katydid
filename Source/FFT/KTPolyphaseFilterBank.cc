@@ -120,7 +120,7 @@ namespace Katydid
         unsigned nComponents = tsData.GetNComponents();
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(nComponents);
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeries* newTS = ApplyPFB(static_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent)));
             if (newTS == NULL)
@@ -138,7 +138,7 @@ namespace Katydid
     {
         unsigned nComponents = tsData.GetNComponents();
 
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             KTTimeSeriesFFTW* newTS = ApplyPFB(static_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent)));
         }
@@ -165,7 +165,7 @@ namespace Katydid
         newHeader.SetSliceNumber(GetNewSliceNumber(oldHeader));
 
         unsigned nComponents = newHeader.GetNComponents();
-        for (unsigned iComponent = 0; iComponent < nComponents; iComponent++)
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
             newHeader.SetAcquisitionID(oldHeader.GetAcquisitionID(iComponent), iComponent);
             newHeader.SetRecordID(oldHeader.GetRecordID(iComponent), iComponent);

@@ -12,6 +12,8 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTParam.hh"
+#include "KTPowerSpectrum.hh"
+#include "KTPowerSpectrumData.hh"
 #include "KTTimeSeriesData.hh"
 //#include "KTTimeSeriesDistData.hh"
 #include "KTTimeSeriesFFTW.hh"
@@ -39,21 +41,28 @@ namespace Katydid
             fTSDistSignal("ts-dist", this),
             fFSPolarSignal("fs-polar", this),
             fFSFFTWSignal("fs-fftw", this),
+            fPSSignal("ps", this),
             fTSFinishedSignal("ts-finished", this),
             fTSDistFinishedSignal("ts-dist-finished", this),
             fFSPolarFinishedSignal("fs-polar-finished", this),
             fFSFFTWFinishedSignal("fs-fftw-finished", this),
+            fPSFinishedSignal("ps-finished", this),
             fSignalMap()
     {
         RegisterSlot("ts", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesData >);
-        RegisterSlot("ts-dist", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesDistData >);
-        RegisterSlot("fs-polar", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataPolar >);
-        RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
-
         fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesData), SignalSet(&fTSSignal, &fTSFinishedSignal)));
+
+        RegisterSlot("ts-dist", this, &KTDataAccumulator::SlotFunction< KTTimeSeriesDistData >);
         fSignalMap.insert(SignalMapValue(&typeid(KTTimeSeriesDistData), SignalSet(&fTSDistSignal, &fTSDistFinishedSignal)));
+
+        RegisterSlot("fs-polar", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataPolar >);
         fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataPolar), SignalSet(&fFSPolarSignal, &fFSPolarFinishedSignal)));
+
+        RegisterSlot("fs-fftw", this, &KTDataAccumulator::SlotFunction< KTFrequencySpectrumDataFFTW >);
         fSignalMap.insert(SignalMapValue(&typeid(KTFrequencySpectrumDataFFTW), SignalSet(&fFSFFTWSignal, &fFSFFTWFinishedSignal)));
+
+        RegisterSlot("ps", this, &KTDataAccumulator::SlotFunction< KTPowerSpectrumData >);
+        fSignalMap.insert(SignalMapValue(&typeid(KTPowerSpectrumData), SignalSet(&fPSSignal, &fPSFinishedSignal)));
     }
 
     KTDataAccumulator::~KTDataAccumulator()
@@ -105,10 +114,17 @@ namespace Katydid
         return CoreAddData(data, accDataStruct, accData);
     }
 
+    bool KTDataAccumulator::AddData(KTPowerSpectrumData& data)
+    {
+        Accumulator& accDataStruct = GetOrCreateAccumulator< KTPowerSpectrumData >();
+        KTPowerSpectrumData& accData = accDataStruct.fData->Of<KTPowerSpectrumData>();
+        return CoreAddData(data, accDataStruct, accData);
+    }
+
     bool KTDataAccumulator::CoreAddTSDataReal(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
+        if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
         //KTDEBUG(avlog, "averaging frac: " << fAveragingFrac << "    remaining frac: " << remainingFrac);
 
@@ -145,7 +161,7 @@ namespace Katydid
         {
             KTTimeSeriesReal* newTS = static_cast< KTTimeSeriesReal* >(data.GetTimeSeries(iComponent));
             KTTimeSeriesReal* avTS = static_cast< KTTimeSeriesReal* >(accData.GetTimeSeries(iComponent));
-            for (unsigned iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 //KTDEBUG(avlog, (*avTS)(iBin) << "  " << (*newTS)(iBin) << "  " << remainingFrac << "  " << fAveragingFrac);
                 (*avTS)(iBin) = (*avTS)(iBin) * remainingFrac + (*newTS)(iBin) * fAveragingFrac;
@@ -159,7 +175,7 @@ namespace Katydid
     bool KTDataAccumulator::CoreAddTSDataFFTW(KTTimeSeriesData& data, Accumulator& accDataStruct, KTTimeSeriesData& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
+        if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
         unsigned nComponents = data.GetNComponents();
@@ -195,7 +211,7 @@ namespace Katydid
         {
             KTTimeSeriesFFTW* newTS = static_cast< KTTimeSeriesFFTW* >(data.GetTimeSeries(iComponent));
             KTTimeSeriesFFTW* avTS = static_cast< KTTimeSeriesFFTW* >(accData.GetTimeSeries(iComponent));
-            for (unsigned iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 (*avTS)(iBin)[0] = (*avTS)(iBin)[0] * remainingFrac + (*newTS)(iBin)[0] * fAveragingFrac;
                 (*avTS)(iBin)[1] = (*avTS)(iBin)[1] * remainingFrac + (*newTS)(iBin)[1] * fAveragingFrac;
@@ -208,7 +224,7 @@ namespace Katydid
     bool KTDataAccumulator::CoreAddData(KTTimeSeriesDistData& data, Accumulator& accDataStruct, KTTimeSeriesDistData& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
+        if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
         unsigned nComponents = data.GetNComponents();
@@ -243,7 +259,7 @@ namespace Katydid
         {
             KTTimeSeriesDist* newSpect = data.GetTimeSeriesDist(iComponent);
             KTTimeSeriesDist* avSpect = accData.GetTimeSeriesDist(iComponent);
-            for (unsigned iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 (*avSpect)(iBin) = (*avSpect)(iBin) * remainingFrac + (*newSpect)(iBin) * fAveragingFrac;
             }
@@ -255,7 +271,7 @@ namespace Katydid
     bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataPolarCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataPolarCore& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
+        if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
         unsigned nComponents = data.GetNComponents();
@@ -292,7 +308,7 @@ namespace Katydid
         {
             KTFrequencySpectrumPolar* newSpect = data.GetSpectrumPolar(iComponent);
             KTFrequencySpectrumPolar* avSpect = accData.GetSpectrumPolar(iComponent);
-            for (unsigned iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 (*avSpect)(iBin) = (*avSpect)(iBin) * remainingFrac + (*newSpect)(iBin) * fAveragingFrac;
             }
@@ -304,7 +320,7 @@ namespace Katydid
     bool KTDataAccumulator::CoreAddData(KTFrequencySpectrumDataFFTWCore& data, Accumulator& accDataStruct, KTFrequencySpectrumDataFFTWCore& accData)
     {
         double remainingFrac = 1.;
-        if (accDataStruct.GetSliceNumber() >= fAccumulatorSize)
+        if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
             remainingFrac -= fAveragingFrac;
 
         unsigned nComponents = data.GetNComponents();
@@ -342,13 +358,128 @@ namespace Katydid
         {
             KTFrequencySpectrumFFTW* newSpect = data.GetSpectrumFFTW(iComponent);
             KTFrequencySpectrumFFTW* avSpect = accData.GetSpectrumFFTW(iComponent);
-            for (unsigned iBin = 0; iBin < arraySize; iBin++)
+            for (unsigned iBin = 0; iBin < arraySize; ++iBin)
             {
                 (*avSpect)(iBin)[0] = (*avSpect)(iBin)[0] * remainingFrac + (*newSpect)(iBin)[0] * fAveragingFrac;
                 (*avSpect)(iBin)[1] = (*avSpect)(iBin)[1] * remainingFrac + (*newSpect)(iBin)[1] * fAveragingFrac;
             }
         }
 
+        return true;
+    }
+
+    bool KTDataAccumulator::CoreAddData(KTPowerSpectrumData& data, Accumulator& accDataStruct, KTPowerSpectrumData& accData)
+    {
+        double remainingFrac = 1.;
+        if (fAccumulatorSize != 0 && accDataStruct.GetSliceNumber() >= fAccumulatorSize)
+            remainingFrac -= fAveragingFrac;
+        KTDEBUG(avlog, "Accumulating a power spectrum; remainingFrac = " << remainingFrac << "   fAveragingFrac = " << fAveragingFrac);
+
+        unsigned nComponents = data.GetNComponents();
+
+        if (accDataStruct.GetSliceNumber() == 0)
+        {
+            accData.SetNComponents(nComponents);
+            for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+            {
+                KTPowerSpectrum* dataPS = data.GetSpectrum(iComponent);
+                KTPowerSpectrum* newPS = new KTPowerSpectrum(dataPS->size(), dataPS->GetRangeMin(), dataPS->GetRangeMax());
+                newPS->operator*=(double(0.));
+                accData.SetSpectrum(newPS, iComponent);
+            }
+        }
+
+        accDataStruct.BumpSliceNumber();
+
+        if (nComponents != accData.GetNComponents())
+        {
+            KTERROR(avlog, "Numbers of components in the average and in the new data do not match");
+            return false;
+        }
+
+        unsigned arraySize = data.GetSpectrum(0)->size();
+        if (arraySize != accData.GetSpectrum(0)->size())
+        {
+            KTERROR(avlog, "Sizes of arrays in the average and in the new data do not match");
+            return false;
+        }
+
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTPowerSpectrum* newSpect = data.GetSpectrum(iComponent);
+            KTPowerSpectrum* avSpect = accData.GetSpectrum(iComponent);
+            avSpect->SetMode(newSpect->GetMode());
+            for (unsigned iBin = 0; iBin < arraySize; ++iBin)
+            {
+                (*avSpect)(iBin) = (*avSpect)(iBin) * remainingFrac + (*newSpect)(iBin) * fAveragingFrac;
+            }
+        }
+
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTTimeSeriesData& data, KTSliceHeader& header)
+    {
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling time series by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTTimeSeries* avSpect = data.GetTimeSeries(iComponent);
+            avSpect->Scale(scale);
+        }
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTTimeSeriesDistData& data, KTSliceHeader& header)
+    {
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling time series dist by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTTimeSeriesDist* avSpect = data.GetTimeSeriesDist(iComponent);
+            avSpect->Scale(scale);
+        }
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTFrequencySpectrumDataPolar& data, KTSliceHeader& header)
+    {
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling frequency-spectrum polar by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTFrequencySpectrum* avSpect = data.GetSpectrum(iComponent);
+            avSpect->Scale(scale);
+        }
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTFrequencySpectrumDataFFTW& data, KTSliceHeader& header)
+    {
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling frequency spectrum fftw by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTFrequencySpectrum* avSpect = data.GetSpectrum(iComponent);
+            avSpect->Scale(scale);
+        }
+        return true;
+    }
+
+    bool KTDataAccumulator::Scale(KTPowerSpectrumData& data, KTSliceHeader& header)
+    {
+        double scale = 1. / (double)(header.GetSliceNumber());
+        KTDEBUG(avlog, "Scaling power spectrum by " << scale);
+        unsigned nComponents = data.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            KTPowerSpectrum* avSpect = data.GetSpectrum(iComponent);
+            avSpect->Scale(scale);
+        }
         return true;
     }
 
