@@ -28,7 +28,7 @@ namespace Katydid
             fDataPtr(new KTData()),
             fTreeData(fDataPtr->Of< KTKDTreeData >()),
             fKDTreeSignal("kd-tree", this),
-            fDiscPointsSlot("fs-fftw", this, &KTCreateKDTree::AddPoints)
+            fDiscPointsSlot("disc-1d", this, &KTCreateKDTree::AddPoints)
     {
     }
 
@@ -41,6 +41,22 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
+        if (node->Has("distance-method"))
+        {
+            string distMethod = node->GetValue("distance-method");
+            if (distMethod == string("euclidean"))
+            {
+                SetDistanceMethod(KTKDTreeData::kEuclidean);
+            }
+            else if (distMethod == string("manhattan"))
+            {
+                SetDistanceMethod(KTKDTreeData::kManhattan);
+            }
+            else
+            {
+                KTERROR(kdlog, "Unknown distance method requested: " << distMethod);
+            }
+        }
         SetMaxLeafSize(node->GetValue("max-leaf-size", GetMaxLeafSize()));
 
         return true;

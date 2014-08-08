@@ -30,8 +30,11 @@ namespace Katydid
 
      @details
  
+     Configuration name: "create-kd-tree"
+
      Available configuration values:
-     - "use-neg-freqs": bool -- If true [default], corresponding negative and positive frequency bins are summed; if false, the negative frequency bins are dropped.
+     - "distance-method": string -- Method used to calculate distances between points; Available options are "manhattan" and "euclidean"
+     - "max-leaf-size": unsigned -- Maximum number of points to assign to each leaf node of the k-d tree. Typically should be 10-50. See https://github.com/jlblancoc/nanoflann#21-kdtreesingleindexadaptorparamsleaf_max_size for more details.
 
      Slots:
      - "disc-1d": void (KTDataPtr) -- Adds points to the KT-Tree; Requires KTDiscriminatedPoints1DData
