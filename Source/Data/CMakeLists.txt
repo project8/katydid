@@ -12,6 +12,8 @@ set (DATA_HEADERFILES
     Analysis/KTDiscriminatedPoints2DData.hh
     Analysis/KTGainVariationData.hh
     Analysis/KTHoughData.hh
+    Analysis/KTKDTree.hh
+    Analysis/KTKDTreeData.hh
     Analysis/KTNormalizedFSData.hh
     Analysis/KTTimeSeriesDist.hh
     Analysis/KTTimeSeriesDistData.hh
@@ -62,6 +64,7 @@ set (DATA_SOURCEFILES
     Analysis/KTDiscriminatedPoints2DData.cc
     Analysis/KTGainVariationData.cc
     Analysis/KTHoughData.cc
+    Analysis/KTKDTreeData.cc
     Analysis/KTNormalizedFSData.cc
     Analysis/KTTimeSeriesDist.cc
     Analysis/KTTimeSeriesDistData.cc
