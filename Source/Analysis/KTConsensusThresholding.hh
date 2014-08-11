@@ -51,12 +51,14 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
+            bool ConsensusVote(KTKDTreeData& kdTreeData);
+
             //MEMBERVARIABLE(KTKDTreeData::DistanceMethod, DistanceMethod);
             //MEMBERVARIABLE(unsigned, MaxLeafSize);
+            MEMBERVARIABLE(double, MembershipRadius);
 
         public:
 
-        private:
 
             //***************
             // Signals

@@ -4,6 +4,7 @@
 set (ANALYSIS_HEADERFILES
     KTAmplitudeCounter.hh
     KTAmplitudeDistributor.hh
+    KTConsensusThresholding.hh
     KTCorrelator.hh
     KTCreateKDTree.hh
     KTDataAccumulator.hh
@@ -18,6 +19,7 @@ set (ANALYSIS_HEADERFILES
 set (ANALYSIS_SOURCEFILES
     KTAmplitudeCounter.cc
     KTAmplitudeDistributor.cc
+    KTConsensusThresholding.cc
     KTCorrelator.cc
     KTCreateKDTree.cc
     KTDataAccumulator.cc

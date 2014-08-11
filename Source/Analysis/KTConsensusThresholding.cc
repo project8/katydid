@@ -23,21 +23,34 @@ namespace Katydid
 
     KTConsensusThresholding::KTConsensusThresholding(const std::string& name) :
             KTProcessor(name),
+            fMembershipRadius(1.0),
             fKDTreeSignal("kd-tree-out", this),
-            fKDTreeSlot("kd-tree-in", this, &KTConsensusThresholding::AddPoints)
+            fKDTreeSlot("kd-tree-in", this, &KTConsensusThresholding::ConsensusVote)
     {
     }
 
     KTConsensusThresholding::~KTConsensusThresholding()
     {
-        RegisterSlot("make-tree", this, &KTConsensusThresholding::MakeTreeSlot);
     }
 
     bool KTConsensusThresholding::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
+        if (node->Has("membership-radius"));
+        {
+            SetMembershipRadius(node->GetValue< double >("membership-radius"));
+        }
 
         return true;
+    }
+
+    bool KTConsensusThresholding::ConsensusVote(KTKDTreeData& kdTreeData)
+    {
+        int nPoints = 0;
+        int currentClusterID = 0;
+
+        int* votes[nPoints][nPoints];
+        int* membership[nPoints];
     }
 
 
