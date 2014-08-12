@@ -12,8 +12,10 @@
 #include "KTPrimaryProcessor.hh"
 
 #include "KTDBScan.hh"
+#include "KTDistanceMatrix.hh"
 #include "KTSlot.hh"
 #include "KTData.hh"
+#include "KTMemberVariable.hh"
 
 #include <algorithm>
 #include <set>
@@ -51,21 +53,6 @@ namespace Katydid
                 return sqrt(deltaT * deltaT + deltaF * deltaF);
             };
 
-            double GetDistance(const VEC_T v1, const VEC_T v2, const VEC_T w)
-            {
-                double deltaT, deltaF;
-                if (v1(0) < v2(0))
-                {
-                    deltaT = std::max(0., w(0)*v2(0) - w(2)*v1(2));
-                    deltaF = w(1)*v2(1) - w(3)*v1(3);
-                }
-                else
-                {
-                    deltaT = std::max(0., w(0)*v1(0) - w(2)*v2(2));
-                    deltaF = w(1)*v1(1) - w(3)*v2(3);
-                }
-                return sqrt(deltaT * deltaT + deltaF * deltaF);
-            };
     };
 
 
@@ -102,9 +89,9 @@ namespace Katydid
     class KTDBScanEventClustering : public KTPrimaryProcessor
     {
         public:
-            typedef KTDBScan::Point DBScanPoint;
-            typedef KTDBScan::Points DBScanPoints;
-            typedef KTDBScan::Weights DBScanWeights;
+            typedef KTSymmetricDistanceMatrix< double > DistanceMatrix;
+            typedef DistanceMatrix::Point Point;
+            typedef DistanceMatrix::Points Points;
 
             const static unsigned fNDimensions;
             const static unsigned fNPointsPerTrack;
@@ -115,20 +102,8 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
-            unsigned GetMinPoints() const;
-            void SetMinPoints(unsigned pts);
-
-            const DBScanWeights& GetRadii() const;
-            void SetRadii(const DBScanWeights& radii);
-
-        private:
-            KTDBScan fDBScan;
-
-            // dimension weighting
-            DBScanWeights fRadii;
-
-            //minimum number of points
-            unsigned fMinPoints;
+            MEMBERVARIABLE(unsigned, MinPoints);
+            MEMBERVARIABLEREF(Point, Radii);
 
         public:
             // Store point information locally
@@ -138,8 +113,6 @@ namespace Katydid
             void SetNComponents(unsigned nComps);
             void SetTimeBinWidth(double bw);
             void SetFreqBinWidth(double bw);
-
-            void TriggerClustering();
 
             bool Run();
 
@@ -174,22 +147,9 @@ namespace Katydid
             KTSlotDataOneType< KTProcessedTrackData > fTakeTrackSlot;
             //KTSlotDataOneType< KTInternalSignalWrapper > fDoClusterSlot;
 
+            void DoClusteringSlot();
+
     };
-
-    inline unsigned KTDBScanEventClustering::GetMinPoints() const
-    {
-        return fMinPoints;
-    }
-    inline void KTDBScanEventClustering::SetMinPoints(unsigned pts)
-    {
-        fMinPoints = pts;
-        return;
-    }
-
-    inline const KTDBScanEventClustering::DBScanWeights& KTDBScanEventClustering::GetRadii() const
-    {
-        return fRadii;
-    }
 
     inline void KTDBScanEventClustering::SetTimeBinWidth(double bw)
     {

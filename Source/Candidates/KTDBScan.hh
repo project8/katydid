@@ -9,7 +9,8 @@
 #ifndef KTDBSCAN_HH_
 #define KTDBSCAN_HH_
 
-#include <boost/numeric/ublas/matrix_sparse.hpp>
+#include <boost/foreach.hpp>
+#include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 
 #include <cfloat>
@@ -20,68 +21,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(tclog2, "katydid.fft2");
-
-    // Euclidean distance
-    template < typename VEC_T >
-    class Euclidean
-    {
-        protected:
-            typedef VEC_T vector_type;
-
-            // this must be not directly accessible
-            // since we want to provide a rich set of distances
-
-            double GetDistance(const VEC_T v1, const VEC_T v2)
-            {
-                return norm_2(v1-v2);
-            };
-
-            double GetDistance(const VEC_T v1, const VEC_T v2, const VEC_T w)
-            {
-                return norm_2(element_prod(w,  (v1-v2)));
-            };
-    };
-
-    /*
-    template <typename VEC_T>
-    class Cosine
-    {
-        protected:
-            typedef VEC_T vector_type;
-
-            // this must be not directly accessible
-            // since we want to provide a rich set of distances
-
-            double GetDistance(const VEC_T v1, const VEC_T v2)
-            {
-                //std::cout << "dot=" << prec_inner_prod(v1, v2) << " norm_2=" << norm_2(v1) << "norm2=" << norm_2(v2) << std::endl;
-                return prec_inner_prod(v1, v2) / (norm_2(v1) * norm_2(v2));
-            };
-    };
-    */
-
-    template <typename Distance_Policy>   // this allows to provide a static mechanism for pseudo-like
-                                          // inheritance, which is optimal from a performance point of view.
-    class Distance : Distance_Policy
-    {
-        public:
-
-            // distance function with equal weighting
-            double GetDistance(typename Distance_Policy::vector_type x,
-                               typename Distance_Policy::vector_type y)
-            {
-                return Distance_Policy::GetDistance(x, y);
-            };
-
-            // distance function with weighting
-            double GetDistance(typename Distance_Policy::vector_type x,
-                               typename Distance_Policy::vector_type y,
-                               typename Distance_Policy::vector_type w)
-            {
-                return Distance_Policy::GetDistance(x, y, w);
-            };
-    };
+    KTLOGGER(dbslog, "KTDBScan");
 
 
     /*!
@@ -95,24 +35,34 @@ namespace Katydid
      http://codingplayground.blogspot.com/2009/11/dbscan-clustering-algorithm.html
      Accessed on 6/5/2014.
      Code was provided without a license.
-    */
+     */
 
+    template< typename DistanceData >
     class KTDBScan
     {
         public:
-            // a single point is made up of vector of doubles
-            typedef boost::numeric::ublas::vector< double > Point;
-            typedef std::vector< Point > Points;
+            typedef int ClusterId;
 
-            typedef boost::numeric::ublas::vector< double > Weights;
+            //typedef unsigned PointId;
+            typedef typename DistanceData::PointId PointId;
 
-            typedef unsigned ClusterId;
-            typedef unsigned PointId;
-
-            // a cluster is a vector of pointid
+            // a cluster is a vector of PointId
             typedef std::vector< PointId > Cluster;
-            // a set of Neighbors is a vector of pointid
-            typedef std::vector< PointId > Neighbors;
+
+            // a set of Neighbors is a vector of PointId
+            typedef typename DistanceData::Neighbors Neighbors;
+
+            struct DBSResults
+            {
+                    // which points are noise
+                    std::vector< bool > fNoise;
+
+                    // mapping point_id -> clusterId
+                    std::vector< ClusterId > fPointIdToClusterId;
+
+                    // the collection of clusters
+                    std::vector< Cluster > fClusters;
+            };
 
         public:
             KTDBScan(double radius = 1., unsigned minPoints = 1);
@@ -125,155 +75,167 @@ namespace Katydid
             void SetMinPoints(unsigned pts);
 
         private:
-            // eps radiuus
             // Two points are neighbors if the distance
-            // between them does not exceed threshold value.
+            // between them does not exceed radius value.
             double fRadius;
 
             //minimum number of points
             unsigned fMinPoints;
 
         public:
-            template < typename DistanceType >
-            bool RunDBScan(const Points& points);
-
-            template < typename DistanceType >
-            bool RunDBScan(const Points& points, const Weights& weights);
-
-            void InitializeArrays(size_t nPoints);
-
-            // assign each point to a new cluster
-            void UniformPartition();
-
-            // compute distance
-            template < typename DistanceType >
-            void ComputeDistance(const Points& points);
-
-            // compute distance
-            template < typename DistanceType >
-            void ComputeDistance(const Points& points, const Weights& weights);
-
-            bool DoClustering();
-
-            const std::vector< Cluster >& GetClusters() const;
+            bool DoClustering(const DistanceData& dist, DBSResults& results);
 
         private:
-            //
-            // findNeighbors(PointId pid, double threshold)
-            //
-            // this can be implemented with reduced complexity by using R+trees
-            //
-            //Neighbors FindNeighbors(PointId pid, double threshold);
-            Neighbors FindNeighbors(PointId pid); // this assumes threshold = fRadius
-
-            unsigned fNPoints;
-
-            // noise-point vector
-            std::vector< bool > fNoise;
+            void InitializeArrays(size_t nPoints, DBSResults& results);
 
             // visited-point vector
             std::vector< bool > fVisited;
 
-            // mapping point_id -> clusterId
-            std::vector< ClusterId > fPointIdToClusterId;
-
-            // the collection of clusters
-            std::vector< Cluster > fClusters;
-
-            // distance matrix
-            boost::numeric::ublas::compressed_matrix< double > fDist;
-            //boost::numeric::ublas::symmetric_matrix< double, boost::numeric::ublas::upper > fDist;
-
-            friend std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
-            friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
-            friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
+            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
+            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
+            //friend std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
     };
 
-    std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
-    std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
-    std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
+    //std::ostream& operator<<(std::ostream& stream, const KTDBScan& cs);
+    //std::ostream& operator<<(std::ostream& stream, const KTDBScan::Cluster& cluster);
+    //std::ostream& operator<<(std::ostream& stream, const KTDBScan::Point& point);
 
+    template< typename DistanceData >
+    KTDBScan< DistanceData >::KTDBScan(double radius, unsigned minPoints) :
+            fRadius(radius),
+            fMinPoints(minPoints),
+            fVisited()
+    {
+    }
 
-    inline double KTDBScan::GetRadius() const
+    template< typename DistanceData >
+    KTDBScan< DistanceData >::~KTDBScan()
+    {
+    }
+
+    template< typename DistanceData >
+    inline double KTDBScan< DistanceData >::GetRadius() const
     {
         return fRadius;
     }
-    inline void KTDBScan::SetRadius(double eps)
+
+    template< typename DistanceData >
+    inline void KTDBScan< DistanceData >::SetRadius(double eps)
     {
         fRadius = eps;
         return;
     }
 
-    inline unsigned KTDBScan::GetMinPoints() const
+    template< typename DistanceData >
+    inline unsigned KTDBScan< DistanceData >::GetMinPoints() const
     {
         return fMinPoints;
     }
-    inline void KTDBScan::SetMinPoints(unsigned pts)
+
+    template< typename DistanceData >
+    inline void KTDBScan< DistanceData >::SetMinPoints(unsigned pts)
     {
         fMinPoints = pts;
         return;
     }
 
-    template < typename DistanceType >
-    bool KTDBScan::RunDBScan(const Points& points)
+
+    template< typename DistanceData >
+    void KTDBScan< DistanceData >::InitializeArrays(size_t nPoints, DBSResults& results)
     {
-        KTINFO(tclog2, "Starting to run DBSCAN");
-        InitializeArrays(points.size());
-        KTPROG(tclog2, "Computing DBSCAN distances");
-        ComputeDistance< DistanceType >(points);
-        KTPROG(tclog2, "Performing clustering");
-        return DoClustering();
+        KTINFO(dbslog, "Initializing DBSCAN arrays with " << nPoints << " points");
+
+        results.fClusters.clear();
+        results.fClusters.reserve(nPoints);
+
+        results.fNoise.resize(nPoints, false);
+
+        results.fPointIdToClusterId.resize(nPoints, 0);
+
+        fVisited.resize(nPoints, false);
+
+        return;
     }
 
-    template < typename DistanceType >
-    bool KTDBScan::RunDBScan(const Points& points, const Weights& weights)
+    template< typename DistanceData >
+    bool KTDBScan< DistanceData >::DoClustering(const DistanceData& dist, DBSResults& results)
     {
-        InitializeArrays(points.size());
-        ComputeDistance< DistanceType >(points, weights);
-        return DoClustering();
-    }
+        PointId nPoints = dist.size();
 
+        InitializeArrays(nPoints, results);
 
-    template < typename DistanceType >
-    void KTDBScan::ComputeDistance(const Points& points)
-    {
-        Distance< DistanceType > dist;
-        for (unsigned i=0; i < fNPoints; ++i)
+        ClusterId cid = 0;
+        // foreach pid
+        for (PointId pid = 0; pid < nPoints; ++pid)
         {
-#ifndef NDEBUG
-            if (i % 100 == 0)
+            // not already visited
+            if (! fVisited[pid])
             {
-                KTDEBUG(tclog2, "doing distance " << i << " of " << fNPoints);
-            }
-#endif
-            unsigned j = i + 1;
-            // points are time-ordered, so point j should be equal to or after point i in time
-            for (; j < fNPoints && points[j](0) - points[i](0) < fRadius; ++j)
-            {
-                fDist.insert_element(i, j, dist.GetDistance(points[i], points[j]));
-                fDist.insert_element(j, i, fDist(i, j));
-                //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
-            }
-        }
-    }
 
-    template < typename DistanceType >
-    void KTDBScan::ComputeDistance(const Points& points, const Weights& weights)
-    {
-        Distance< DistanceType > dist;
-        for (unsigned i = 0; i < fNPoints; ++i)
-        {
-            for (unsigned j = i + 1; j < fNPoints; ++j)
-            {
-                fDist(i, j) = dist.GetDistance(points[i], points[j], weights);
-                //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
-            }
-        }
-    }
+                fVisited[pid] = true;
 
-    inline const std::vector< KTDBScan::Cluster >& KTDBScan::GetClusters() const
-    {
-        return fClusters;
+                // get the neighbors
+                Neighbors ne = dist.FindNeighbors(pid, fRadius);
+
+                // not enough support -> mark as noise
+                if (ne.size() < fMinPoints)
+                {
+                    results.fNoise[pid] = true;
+                }
+                else
+                {
+                    //std::cout << "Point i=" << pid << " can be expanded " << std::endl;// = true;
+
+                    // Add p to current cluster
+
+                    Cluster cluster;              // a new cluster
+                    cluster.push_back(pid);       // assign pid to cluster
+                    results.fPointIdToClusterId[pid] = cid;
+
+                    // go to neighbors
+                    for (unsigned int i = 0; i < ne.size(); ++i)
+                    {
+                        PointId nPid = ne[i];
+
+                        // not already visited
+                        if (! fVisited[nPid])
+                        {
+                            fVisited[nPid] = true;
+
+                            // go to neighbors
+                            Neighbors ne1 = dist.FindNeighbors(nPid, fRadius);
+
+                            // enough support
+                            if (ne1.size() >= fMinPoints)
+                            {
+                                //std::cout << "\t Expanding to pid=" << nPid << std::endl;
+                                // join
+                                BOOST_FOREACH(typename DistanceData::Neighbors::value_type n1, ne1)
+                                {
+                                    // join neighbors
+                                    ne.push_back(n1);
+                                    //std::cerr << "\tPushback pid=" << n1 << std::endl;
+                                }
+                                //std::cout << std::endl;
+                            }
+                        }
+
+                        // not already assigned to a cluster
+                        if (! results.fPointIdToClusterId[nPid])
+                        {
+                            //std::cout << "\tadding pid=" << nPid << std::endl;
+                            cluster.push_back(nPid);
+                            results.fPointIdToClusterId[nPid] = cid;
+                        }
+                    }
+
+                    results.fClusters.push_back(cluster);
+                    ++cid;
+                }
+            } // if (!visited)
+        } // for
+
+        return true;
     }
 
 } /* namespace Katydid */

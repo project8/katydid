@@ -34,7 +34,6 @@ namespace Katydid
 
     KTDBScanEventClustering::KTDBScanEventClustering(const std::string& name) :
             KTPrimaryProcessor(name),
-            fDBScan(),
             fRadii(fNDimensions / fNPointsPerTrack),
             fMinPoints(3),
             fTimeBinWidth(1),
@@ -47,7 +46,7 @@ namespace Katydid
             fTakeTrackSlot("track", this, &KTDBScanEventClustering::TakeTrack)
     //        fDoClusterSlot("do-cluster-trigger", this, &KTDBScanEventClustering::Run)
     {
-        RegisterSlot("do-clustering", this, &KTDBScanEventClustering::TriggerClustering);
+        RegisterSlot("do-clustering", this, &KTDBScanEventClustering::DoClusteringSlot);
         fRadii(0) = 1. / sqrt(fNDimensions);
         fRadii(1) = 1. / sqrt(fNDimensions);
     }
@@ -75,17 +74,6 @@ namespace Katydid
         }
 
         return true;
-    }
-
-    void KTDBScanEventClustering::SetRadii(const DBScanWeights& radii)
-    {
-        if (radii.size() != fNDimensions)
-        {
-            KTERROR(tclog, "Weights vector has the wrong number of dimensions: " << radii.size() << " != " << fNDimensions);
-            return;
-        }
-        fRadii = radii;
-        return;
     }
 
     bool KTDBScanEventClustering::TakeTrack(KTProcessedTrackData& track)
@@ -126,7 +114,7 @@ namespace Katydid
     }
     */
 
-    void KTDBScanEventClustering::TriggerClustering()
+    void KTDBScanEventClustering::DoClusteringSlot()
     {
         if (! Run())
         {
@@ -144,8 +132,10 @@ namespace Katydid
     {
         KTPROG(tclog, "Starting DBSCAN event clustering");
 
-        fDBScan.SetRadius(1.);
-        fDBScan.SetMinPoints(fMinPoints);
+        KTDBScan< DistanceMatrix > dbScan;
+
+        dbScan.SetRadius(1.);
+        dbScan.SetMinPoints(fMinPoints);
         KTINFO(tclog, "DBScan configured");
 
         for (unsigned iComponent = 0; iComponent < fCompTracks.size(); ++iComponent)
@@ -156,19 +146,18 @@ namespace Katydid
                 continue;
 
             // calculate the scaling
-            DBScanWeights scale = fRadii;
-            for (DBScanPoint::iterator dIt = scale.begin(); dIt != scale.end(); ++dIt)
+            Point scale = fRadii;
+            for (Point::iterator dIt = scale.begin(); dIt != scale.end(); ++dIt)
             {
                 *dIt = 1. / (*dIt * KTMath::Sqrt2());
             }
 
             // new array for normalized points
-            DBScanPoints normPoints(fCompTracks[iComponent].size());
-            DBScanPoint newPoint(fNDimensions);
+            Points normPoints(fCompTracks[iComponent].size());
+            Point newPoint(fNDimensions);
             // normalize points
             KTDEBUG(tclog, "Scale: " << scale);
             unsigned iPoint = 0;
-            //for (DBScanPoints::iterator pIt = fCompPoints[iComponent].begin(); pIt != fCompPoints[iComponent].end(); ++pIt)
             for (vector< KTProcessedTrackData >::const_iterator pIt = fCompTracks[iComponent].begin(); pIt != fCompTracks[iComponent].end(); ++pIt)
             {
                 //std::cerr << "1" << std::endl;
@@ -189,8 +178,13 @@ namespace Katydid
                 normPoints[iPoint++] = newPoint;
             }
 
+            DistanceMatrix distMat;
+            distMat.ComputeDistances< TrackDistance< Point > >(normPoints);
+
             // do the clustering!
-            if (! fDBScan.RunDBScan< TrackDistance< KTDBScan::Point > >(normPoints))
+            KTINFO(tclog, "Starting DBSCAN");
+            KTDBScan< DistanceMatrix >::DBSResults results;
+            if (! dbScan.DoClustering(distMat, results))
             {
                 KTERROR(tclog, "An error occurred while clustering");
                 return false;
@@ -198,9 +192,8 @@ namespace Katydid
             KTDEBUG(tclog, "DBSCAN finished");
 
             // loop over the clusters found, and create data objects for them
-            const vector< KTDBScan::Cluster >& clusters = fDBScan.GetClusters();
-            KTDEBUG(tclog, "Found " << clusters.size() << " clusters; creating candidate events");
-            for (vector< KTDBScan::Cluster >::const_iterator clustIt = clusters.begin(); clustIt != clusters.end(); ++clustIt)
+            KTDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidate events");
+            for (vector< KTDBScan< DistanceMatrix >::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
             {
                 if (clustIt->empty())
                 {
@@ -218,7 +211,7 @@ namespace Katydid
                 eventData.SetComponent(iComponent);
                 eventData.SetEventID(fDataCount);
 
-                for (KTDBScan::Cluster::const_iterator pointIdIt = clustIt->begin(); pointIdIt != clustIt->end(); ++pointIdIt)
+                for (KTDBScan< DistanceMatrix >::Cluster::const_iterator pointIdIt = clustIt->begin(); pointIdIt != clustIt->end(); ++pointIdIt)
                 {
                     eventData.AddTrack(fCompTracks[iComponent][*pointIdIt]);
                 }
