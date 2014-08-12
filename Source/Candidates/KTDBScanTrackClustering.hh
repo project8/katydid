@@ -57,9 +57,9 @@ namespace Katydid
     class KTDBScanTrackClustering : public KTProcessor
     {
         public:
-            typedef KTSparseDistanceMatrix< double > DistanceMatrix;
-            typedef DistanceMatrix::Point Point;
-            typedef DistanceMatrix::Points Points;
+            //typedef KTSparseDistanceMatrix< double > DistanceMatrix;
+            //typedef DistanceMatrix::Point Point;
+            //typedef DistanceMatrix::Points Points;
 
             const static unsigned fNDimensions;
 
@@ -70,7 +70,7 @@ namespace Katydid
             bool Configure(const KTParamNode* node);
 
             MEMBERVARIABLE(unsigned, MinPoints);
-            MEMBERVARIABLEREF(Point, Radii);
+            //MEMBERVARIABLEREF(Point, Radii);
 
         public:
             bool DoClustering(KTKDTreeData& data);

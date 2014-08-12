@@ -239,8 +239,8 @@ namespace Katydid
         // Load() also clears any existing data
         //fFreqCandidateData->Load(*data);
         fSparseWaterfallCandidateData.fComponent = swcData.GetComponent();
-        fSparseWaterfallCandidateData.fTimeBinWidth = swcData.GetTimeBinWidth();
-        fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
+        //fSparseWaterfallCandidateData.fTimeBinWidth = swcData.GetTimeBinWidth();
+        //fSparseWaterfallCandidateData.fFreqBinWidth = swcData.GetFreqBinWidth();
         fSparseWaterfallCandidateData.fTimeInRunC = swcData.GetTimeInRunC();
         fSparseWaterfallCandidateData.fTimeLength = swcData.GetTimeLength();
         fSparseWaterfallCandidateData.fMinFrequency = swcData.GetMinimumFrequency();
@@ -256,9 +256,9 @@ namespace Katydid
         }
         fSparseWaterfallCandidateData.fPoints->SetDirectory(NULL);
         KTDEBUG(publog, "Candidate info:\n"
-                << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN() << "\n"
-                << "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
-                << "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
+                << "\tNumber of points: " << fSparseWaterfallCandidateData.fPoints->GetN());// << "\n"
+                //<< "\tTime axis: bin width: " << fSparseWaterfallCandidateData.fTimeBinWidth << " s\n"
+                //<< "\tFreq axis: bin width: " << fSparseWaterfallCandidateData.fFreqBinWidth << " Hz");
 
         fSparseWaterfallCandidateTree->Fill();
 
@@ -277,8 +277,8 @@ namespace Katydid
 
         fSparseWaterfallCandidateTree->Branch("Component", &fSparseWaterfallCandidateData.fComponent, "fComponent/i");
         fSparseWaterfallCandidateTree->Branch("CandidateID", &fSparseWaterfallCandidateData.fCandidateID, "fCandidateID/i");
-        fSparseWaterfallCandidateTree->Branch("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth, "fTimeBinWidth/d");
-        fSparseWaterfallCandidateTree->Branch("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth, "fFreqBinWidth/d");
+        //fSparseWaterfallCandidateTree->Branch("TimeBinWidth", &fSparseWaterfallCandidateData.fTimeBinWidth, "fTimeBinWidth/d");
+        //fSparseWaterfallCandidateTree->Branch("FreqBinWidth", &fSparseWaterfallCandidateData.fFreqBinWidth, "fFreqBinWidth/d");
         fSparseWaterfallCandidateTree->Branch("TimeInRunC", &fSparseWaterfallCandidateData.fTimeInRunC, "fTimeInRunC/d");
         fSparseWaterfallCandidateTree->Branch("TimeLength", &fSparseWaterfallCandidateData.fTimeLength, "fTimeLength/d");
         fSparseWaterfallCandidateTree->Branch("MinFrequency", &fSparseWaterfallCandidateData.fMinFrequency, "fMinFrequency/d");
