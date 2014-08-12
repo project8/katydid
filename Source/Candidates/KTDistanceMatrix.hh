@@ -25,7 +25,7 @@
 
 namespace Katydid
 {
-    KTLOGGER(dbslog, "KTDBScan");
+    KTLOGGER(dmlog, "KTDBScan");
 
     // Euclidean distance
     template < typename VEC_T >
@@ -100,7 +100,7 @@ namespace Katydid
 #ifndef NDEBUG
                 if (i % 100 == 0)
                 {
-                    KTDEBUG(dbslog, "doing distance " << i << " of " << nPoints);
+                    KTDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
                 }
 #endif
                 unsigned j = i + 1;
@@ -159,11 +159,11 @@ namespace Katydid
             Distance< DistanceType > dist;
             for (unsigned i=0; i < nPoints; ++i)
             {
-                //KTDEBUG(dbslog, "doing distance " << i << " of " << nPoints);
+                //KTDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
 #ifndef NDEBUG
                 if (i % 100 == 0)
                 {
-                    KTDEBUG(dbslog, "doing distance " << i << " of " << nPoints);
+                    KTDEBUG(dmlog, "doing distance " << i << " of " << nPoints);
                 }
 #endif
                 unsigned j = i + 1;
@@ -172,7 +172,7 @@ namespace Katydid
                 {
                     fDist.insert_element(i, j, dist.GetDistance(points[i], points[j]));
                     fDist.insert_element(j, i, fDist(i, j));
-                    /*if (i < 100 && j < 100)*/ //KTDEBUG(dbslog, "i = " << i << "  j = " << j << "  dist = " << fDist(i, j));
+                    /*if (i < 100 && j < 100)*/ //KTDEBUG(dmlog, "i = " << i << "  j = " << j << "  dist = " << fDist(i, j));
                     //std::cout << "dist(" << i << ", " << j << ") = dist( " << points[i] << ", " << points[j] << " ) = " << fDist(i, j) << std::endl;
                 }
             }
@@ -194,7 +194,7 @@ namespace Katydid
                      neighbors.push_back(colIt.index());
                 }
             }
-            //KTDEBUG(dbslog, "pid: " << pid << ";  columns actually checked: " << nonzerocols);
+            //KTDEBUG(dmlog, "pid: " << pid << ";  columns actually checked: " << nonzerocols);
 
             return neighbors;
         }

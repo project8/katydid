@@ -107,14 +107,14 @@ namespace Katydid
         }
 
         KTKDTreeData::Point newPoint;
-        newPoint.fX = xInvScaling * (slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength());
+        newPoint.fCoords[0] = xInvScaling * (slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength());
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
                     pIt != incomingPts.end(); ++pIt)
             {
-                newPoint.fY = yInvScaling * pIt->second.fAbscissa;
+                newPoint.fCoords[1] = yInvScaling * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
                 fTreeData.AddPoint(newPoint, iComponent);
             }

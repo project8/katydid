@@ -60,8 +60,8 @@ namespace Katydid
         // Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
         inline coord_t kdtree_distance(const coord_t *p1, const size_t idx_p2, size_t size) const
         {
-            const coord_t d0 = p1[0] - derived().fPoints[idx_p2][0];
-            const coord_t d1 = p1[1] - derived().fPoints[idx_p2][1];
+            const coord_t d0 = p1[0] - derived().fPoints[idx_p2].fCoords[0];
+            const coord_t d1 = p1[1] - derived().fPoints[idx_p2].fCoords[1];
             return d0*d0 + d1*d1;
         }
 
@@ -70,8 +70,8 @@ namespace Katydid
         //  "if/else's" are actually solved at compile time.
         inline coord_t kdtree_get_pt(const size_t idx, int dim) const
         {
-            if (dim == 0) return derived().fPoints[idx][1];
-            else return derived().fPoints[idx][2];
+            if (dim == 0) return derived().fPoints[idx].fCoords[1];
+            else return derived().fPoints[idx].fCoords[0];
         }
 
         // Optional bounding-box computation: return false to default to a standard bbox computation loop.
@@ -109,7 +109,8 @@ namespace Katydid
 
         virtual void FindNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, nanoflann::SearchParams& searchParams) const = 0;
         virtual void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const = 0;
-        virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
+        //virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
+        virtual std::vector< size_t > FindNeighbors(size_t pid, TYPE threshold) = 0;
     };
 
     template< typename TYPE, typename DatasetAdaptor >
@@ -118,7 +119,7 @@ namespace Katydid
         typedef std::vector< size_t > Neighbors;
 
         KTTreeIndexManhattan(const int dimensionality, const DatasetAdaptor& inputData, const nanoflann::KDTreeSingleIndexAdaptorParams& params = nanoflann::KDTreeSingleIndexAdaptorParams()) :
-            fData(inputData),
+            fData(inputData.derived()),
             fIndex(dimensionality, inputData, params)
         {}
         virtual ~KTTreeIndexManhattan() {}
@@ -145,8 +146,9 @@ namespace Katydid
         Neighbors FindNeighbors(size_t pid, TYPE threshold)
         {
             Neighbors neighbors;
-
-            return fIndex.radiusSearch(fData.fPoints[pid], threshold, IndicesDists, searchParams);
+            std::vector< std::pair< size_t, TYPE > > IndicesDists;
+            const nanoflann::SearchParams searchParams;
+            /*return*/ fIndex.radiusSearch(fData.fPoints[pid].fCoords, threshold, IndicesDists, searchParams);
             return neighbors;
         }
 
@@ -160,7 +162,7 @@ namespace Katydid
         typedef std::vector< size_t > Neighbors;
 
         KTTreeIndexEuclidean(const int dimensionality, const DatasetAdaptor& inputData, const nanoflann::KDTreeSingleIndexAdaptorParams& params = nanoflann::KDTreeSingleIndexAdaptorParams()) :
-            fData(inputData),
+            fData(inputData.derived()),
             fIndex(dimensionality, inputData, params)
         {}
         virtual ~KTTreeIndexEuclidean() {}
@@ -187,8 +189,9 @@ namespace Katydid
         Neighbors FindNeighbors(size_t pid, TYPE threshold)
         {
             Neighbors neighbors;
-
-            return fIndex.radiusSearch(fData.fPoints[pid], threshold, IndicesDists, searchParams);
+            std::vector< std::pair< size_t, TYPE > > IndicesDists;
+            const nanoflann::SearchParams searchParams;
+            /*return*/ fIndex.radiusSearch(fData.fPoints[pid].fCoords, threshold, IndicesDists, searchParams);
             return neighbors;
         }
 
