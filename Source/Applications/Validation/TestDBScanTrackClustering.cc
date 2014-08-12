@@ -5,6 +5,7 @@
 *     Author: nsoblath
 */
 
+#include "KTKDTreeData.hh"
 #include "KTDBScanTrackClustering.hh"
 #include "KTLogger.hh"
 #include "KTSparseWaterfallCandidateData.hh"
@@ -179,28 +180,28 @@ int main()
     times.push_back(0.0749119); freqs.push_back(56962411.); amplitudes.push_back(0.1797228);
     times.push_back(0.0749447); freqs.push_back(55375884.); amplitudes.push_back(0.1501580);
 
-    KTDBScanTrackClustering clustering;
+    double timeScale = 0.0005; //sec
+    double freqScale = 0.1e6; // Hz
 
-    KTDBScan::Weights radii(KTDBScanTrackClustering::fNDimensions);
-    radii(0) = 0.0005; // time
-    radii(1) = 0.1e6; // frequency
-    clustering.SetRadii(radii);
+    KTKDTreeData kdTreeData;
+    kdTreeData.SetXScaling(timeScale);
+    kdTreeData.SetYScaling(freqScale);
+
+    vector< double >::const_iterator fIt = freqs.begin();
+    vector< double >::const_iterator aIt = amplitudes.begin();
+    for (std::vector< double >::const_iterator tIt = times.begin(); tIt != times.end(); ++tIt)
+    {
+        KTDEBUG(testlog, "Adding point (" << *tIt << ", " << *fIt << ", " << *aIt << ") --> (" << (*tIt)/timeScale << ", " << (*fIt)/freqScale << ")");
+        kdTreeData.AddPoint(KTKDTreeData::Point((*tIt)/timeScale, (*fIt)/freqScale, *aIt));
+        ++fIt; ++aIt;
+    }
+    kdTreeData.CreateIndex(KTKDTreeData::kEuclidean);
+
+    KTDBScanTrackClustering clustering;
 
     clustering.SetMinPoints(5);
 
-    // set these manually, since it won't be read from the slice headers
-    clustering.SetTimeBinWidth(0.04e6);
-    clustering.SetFreqBinWidth(0.00004);
-
-    vector< double >::const_iterator fIt = freqs.begin();
-    //vector< double >::const_iterator aIt = amplitudes.begin();
-    for (std::vector< double >::const_iterator tIt = times.begin(); tIt != times.end(); ++tIt)
-    {
-        clustering.TakePoint(*tIt, *fIt);
-        ++fIt;
-    }
-
-    clustering.DoClustering();
+    clustering.DoClustering(kdTreeData);
 
     const std::set< KTDataPtr >& candidates = clustering.GetCandidates();
 

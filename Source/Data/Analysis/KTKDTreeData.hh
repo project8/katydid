@@ -27,6 +27,9 @@ namespace Katydid
             struct Point : KT2DPoint< double >
             {
                 typedef KT2DPoint< double >::coord_t coord_t;
+                Point() : fAmplitude(0.) {fCoords[0] = 0; fCoords[1] = 0;}
+                Point(double x, double y, double amp) : fAmplitude(amp)
+                    {fCoords[0] = x; fCoords[1] = y;}
                 double fAmplitude;
             };
 
