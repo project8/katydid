@@ -12,6 +12,8 @@
 
 #include "nanoflann.hpp"
 
+#include <utility>
+
 namespace Katydid
 {
 
@@ -115,6 +117,8 @@ namespace Katydid
 
                 inline bool empty() {return fIndicesAndDists.size() == 0;}
                 inline void clear() {fIndicesAndDists.clear();}
+
+                inline void push_back(PointId pid, TYPE dist=0.) {fIndicesAndDists.push_back(std::make_pair< PointId, TYPE >(pid, dist));}
 
                 inline IndicesAndDists& GetIndicesAndDists() {return fIndicesAndDists;}
                 inline const IndicesAndDists& GetIndicesAndDists() const {return fIndicesAndDists;}
