@@ -35,6 +35,7 @@ namespace Katydid
      Available configuration values:
      - "distance-method": string -- Method used to calculate distances between points; Available options are "manhattan" and "euclidean"
      - "max-leaf-size": unsigned -- Maximum number of points to assign to each leaf node of the k-d tree. Typically should be 10-50. See https://github.com/jlblancoc/nanoflann#21-kdtreesingleindexadaptorparamsleaf_max_size for more details.
+     - "coord-scalings:" array of doubles -- Scalings applied to the coordinates before loading the points into the tree. Scaled coordinate value = coordinate value / scaling
 
      Slots:
      - "disc-1d": void (KTDataPtr) -- Adds points to the KT-Tree; Requires KTDiscriminatedPoints1DData
@@ -54,6 +55,9 @@ namespace Katydid
 
             MEMBERVARIABLE(KTKDTreeData::DistanceMethod, DistanceMethod);
             MEMBERVARIABLE(unsigned, MaxLeafSize);
+            MEMBERVARIABLEREF(std::vector< double >, Scalings);
+
+            static const unsigned fNDimensions;
 
         public:
             bool AddPoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints);

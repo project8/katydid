@@ -11,6 +11,7 @@
 #include "KTData.hh"
 
 #include "KTKDTree.hh"
+#include "KTMemberVariable.hh"
 
 #include <map>
 #include <utility>
@@ -37,10 +38,10 @@ namespace Katydid
                 kEuclidean
             };
 
+            static const unsigned fNDimensions;
+
         private:
             typedef KT2DPointCloudAdaptor< KTPointCloud< Point > > PointCloudAdaptor;
-
-
 
             struct PerComponentData
             {
@@ -52,6 +53,9 @@ namespace Katydid
         public:
             KTKDTreeData();
             virtual ~KTKDTreeData();
+
+            MEMBERVARIABLE(double, XScaling);
+            MEMBERVARIABLE(double, YScaling);
 
             const std::vector< Point >& GetSetOfPoints(unsigned component = 0) const;
             TreeIndex* GetTreeIndex(unsigned component = 0) const;

@@ -13,7 +13,7 @@
 #include "KTSliceHeader.hh"
 
 using std::string;
-
+using std::vector;
 
 namespace Katydid
 {
@@ -21,10 +21,13 @@ namespace Katydid
 
     KT_REGISTER_PROCESSOR(KTCreateKDTree, "create-kd-tree");
 
+    const unsigned KTCreateKDTree::fNDimensions = 2;
+
     KTCreateKDTree::KTCreateKDTree(const std::string& name) :
             KTProcessor(name),
             fDistanceMethod(KTKDTreeData::kEuclidean),
             fMaxLeafSize(10),
+            fScalings(fNDimensions),
             fDataPtr(new KTData()),
             fTreeData(fDataPtr->Of< KTKDTreeData >()),
             fKDTreeSignal("kd-tree", this),
@@ -57,7 +60,21 @@ namespace Katydid
                 KTERROR(kdlog, "Unknown distance method requested: " << distMethod);
             }
         }
+
         SetMaxLeafSize(node->GetValue("max-leaf-size", GetMaxLeafSize()));
+
+        if (node->Has("coord-scalings"))
+        {
+            const KTParamArray* scalings = node->ArrayAt("coord-scalings");
+            if (scalings->Size() != fNDimensions)
+            {
+                KTERROR(kdlog, "Scalings array does not have the right number of dimensions: <" << scalings->Size() << "> instead of <" << fNDimensions << ">");
+                return false;
+            }
+            fScalings[0] = scalings->GetValue< double >(0);
+            fScalings[1] = scalings->GetValue< double >(1);
+        }
+
 
         return true;
     }
@@ -78,6 +95,10 @@ namespace Katydid
         //fTimeBinWidth = slHeader.GetSliceLength();
         //fFreqBinWidth = discPoints.GetBinWidth();
 
+        // invert the scalings to use multiplication later instead of division
+        double xInvScaling = 1. / fScalings[0];
+        double yInvScaling = 1. / fScalings[1];
+
         // verify that we have the right number of components
         unsigned nComponents = slHeader.GetNComponents();
         if (nComponents > fTreeData.GetNComponents())
@@ -86,14 +107,14 @@ namespace Katydid
         }
 
         KTKDTreeData::Point newPoint;
-        newPoint.fX = slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength();
+        newPoint.fX = xInvScaling * (slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength());
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
                     pIt != incomingPts.end(); ++pIt)
             {
-                newPoint.fY = pIt->second.fAbscissa;
+                newPoint.fY = yInvScaling * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
                 fTreeData.AddPoint(newPoint, iComponent);
             }
@@ -104,11 +125,15 @@ namespace Katydid
 
     bool KTCreateKDTree::MakeTree()
     {
+        fTreeData.SetXScaling(fScalings[0]);
+        fTreeData.SetYScaling(fScalings[1]);
+
         unsigned nComponents = fTreeData.GetNComponents();
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
         {
             fTreeData.CreateIndex(fDistanceMethod, fMaxLeafSize, iComponent);
         }
+
         return true;
     }
 

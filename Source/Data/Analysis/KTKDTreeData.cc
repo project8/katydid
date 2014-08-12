@@ -9,8 +9,12 @@
 
 namespace Katydid
 {
+    const unsigned KTKDTreeData::fNDimensions = 2;
+
     KTKDTreeData::KTKDTreeData() :
             KTExtensibleData< KTKDTreeData >(),
+            fXScaling(1.),
+            fYScaling(1.),
             fComponentData(1)
     {
     }
@@ -28,11 +32,11 @@ namespace Katydid
         delete fComponentData[component].fTreeIndex;
         if (dist == kManhattan)
         {
-            fComponentData[component].fTreeIndex = new KTTreeIndexManhattan< double, PointCloudAdaptor >(2, PointCloudAdaptor(fComponentData[component].fCloud), nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
+            fComponentData[component].fTreeIndex = new KTTreeIndexManhattan< double, PointCloudAdaptor >(fNDimensions, PointCloudAdaptor(fComponentData[component].fCloud), nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
         }
         else
         {
-            fComponentData[component].fTreeIndex = new KTTreeIndexEuclidean< double, PointCloudAdaptor >(2, PointCloudAdaptor(fComponentData[component].fCloud), nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
+            fComponentData[component].fTreeIndex = new KTTreeIndexEuclidean< double, PointCloudAdaptor >(fNDimensions, PointCloudAdaptor(fComponentData[component].fCloud), nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
         }
         return;
     }
