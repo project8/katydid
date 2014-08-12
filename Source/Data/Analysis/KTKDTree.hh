@@ -10,6 +10,8 @@
 #ifndef KTKDTREE_HH_
 #define KTKDTREE_HH_
 
+#include "KTKDTree.hh"
+
 #include "nanoflann.hpp"
 
 namespace Katydid
@@ -22,7 +24,7 @@ namespace Katydid
     struct KT2DPoint
     {
             typedef TYPE coord_t;
-            TYPE fX, fY;
+            TYPE fCoords[2];
     };
 
     // Generic point cloud, templated for the type of point
@@ -42,6 +44,7 @@ namespace Katydid
     struct KT2DPointCloudAdaptor
     {
         typedef typename Derived::coord_t coord_t;
+        typedef Derived dataset_type;
 
         const Derived &obj; //!< A const ref to the data set origin
 
@@ -57,8 +60,8 @@ namespace Katydid
         // Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
         inline coord_t kdtree_distance(const coord_t *p1, const size_t idx_p2, size_t size) const
         {
-            const coord_t d0 = p1[0] - derived().fPoints[idx_p2].fX;
-            const coord_t d1 = p1[1] - derived().fPoints[idx_p2].fY;
+            const coord_t d0 = p1[0] - derived().fPoints[idx_p2][0];
+            const coord_t d1 = p1[1] - derived().fPoints[idx_p2][1];
             return d0*d0 + d1*d1;
         }
 
@@ -67,8 +70,8 @@ namespace Katydid
         //  "if/else's" are actually solved at compile time.
         inline coord_t kdtree_get_pt(const size_t idx, int dim) const
         {
-            if (dim == 0) return derived().fPoints[idx].fY;
-            else return derived().fPoints[idx].fX;
+            if (dim == 0) return derived().fPoints[idx][1];
+            else return derived().fPoints[idx][2];
         }
 
         // Optional bounding-box computation: return false to default to a standard bbox computation loop.
@@ -93,35 +96,44 @@ namespace Katydid
     struct KTTreeIndex
     {
         virtual ~KTTreeIndex() {}
-        virtual void freeIndex() = 0;
-        virtual void buildIndex() = 0;
-        virtual size_t size() const = 0;
-        virtual size_t veclen() const = 0;
-        virtual size_t usedMemory() const = 0;
-        virtual void saveIndex(FILE* stream) = 0;
-        virtual void loadIndex(FILE* stream) = 0;
 
-        virtual void findNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, nanoflann::SearchParams& searchParams) const = 0;
+        virtual void FreeIndex() = 0;
+        virtual void BuildIndex() = 0;
+
+        virtual size_t size() const = 0;
+        virtual size_t Veclen() const = 0;
+        virtual size_t UsedMemory() const = 0;
+
+        virtual void SaveIndex(FILE* stream) = 0;
+        virtual void LoadIndex(FILE* stream) = 0;
+
+        virtual void FindNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, nanoflann::SearchParams& searchParams) const = 0;
         virtual void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const = 0;
-        virtual size_t radiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
+        virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
     };
 
     template< typename TYPE, typename DatasetAdaptor >
     struct KTTreeIndexManhattan : KTTreeIndex< TYPE >
     {
+        typedef std::vector< size_t > Neighbors;
+
         KTTreeIndexManhattan(const int dimensionality, const DatasetAdaptor& inputData, const nanoflann::KDTreeSingleIndexAdaptorParams& params = nanoflann::KDTreeSingleIndexAdaptorParams()) :
+            fData(inputData),
             fIndex(dimensionality, inputData, params)
         {}
         virtual ~KTTreeIndexManhattan() {}
-        void freeIndex() {fIndex.freeIndex();}
-        void buildIndex() {fIndex.buildIndex();}
-        size_t size() const {return fIndex.size();}
-        size_t veclen() const {return fIndex.veclen();}
-        size_t usedMemory() const {return fIndex.usedMemory();}
-        void saveIndex(FILE* stream) {fIndex.saveIndex(stream);}
-        void loadIndex(FILE* stream) {fIndex.loadIndex(stream);}
 
-        void findNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, nanoflann::SearchParams& searchParams) const
+        void FreeIndex() {fIndex.freeIndex();}
+        void BuildIndex() {fIndex.buildIndex();}
+
+        size_t size() const {return fIndex.size();}
+        size_t Veclen() const {return fIndex.veclen();}
+        size_t UsedMemory() const {return fIndex.usedMemory();}
+
+        void SaveIndex(FILE* stream) {fIndex.saveIndex(stream);}
+        void LoadIndex(FILE* stream) {fIndex.loadIndex(stream);}
+
+        void FindNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, nanoflann::SearchParams& searchParams) const
         {
             fIndex.findNeighbors(result, vec, searchParams);
         }
@@ -129,30 +141,41 @@ namespace Katydid
         {
             fIndex.knnSearch(query_point, num_closest, out_indices, out_distances_sq, nChecks_IGNORED);
         }
-        size_t radiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
+        //size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
+        Neighbors FindNeighbors(size_t pid, TYPE threshold)
         {
-            return fIndex.radiusSearch(query_point, radius, IndicesDists, searchParams);
+            Neighbors neighbors;
+
+            return fIndex.radiusSearch(fData.fPoints[pid], threshold, IndicesDists, searchParams);
+            return neighbors;
         }
 
+        const typename DatasetAdaptor::dataset_type& fData;
         nanoflann::KDTreeSingleIndexAdaptor< nanoflann::L1_Adaptor< TYPE, DatasetAdaptor >, DatasetAdaptor, 2 > fIndex;
     };
 
     template< typename TYPE, typename DatasetAdaptor >
     struct KTTreeIndexEuclidean : KTTreeIndex< TYPE >
     {
+        typedef std::vector< size_t > Neighbors;
+
         KTTreeIndexEuclidean(const int dimensionality, const DatasetAdaptor& inputData, const nanoflann::KDTreeSingleIndexAdaptorParams& params = nanoflann::KDTreeSingleIndexAdaptorParams()) :
+            fData(inputData),
             fIndex(dimensionality, inputData, params)
         {}
         virtual ~KTTreeIndexEuclidean() {}
-        void freeIndex() {fIndex.freeIndex();}
-        void buildIndex() {fIndex.buildIndex();}
-        size_t size() const {return fIndex.size();}
-        size_t veclen() const {return fIndex.veclen();}
-        size_t usedMemory() const {return fIndex.usedMemory();}
-        void saveIndex(FILE* stream) {fIndex.saveIndex(stream);}
-        void loadIndex(FILE* stream) {fIndex.loadIndex(stream);}
 
-        virtual void findNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, nanoflann::SearchParams& searchParams) const
+        void FreeIndex() {fIndex.freeIndex();}
+        void BuildIndex() {fIndex.buildIndex();}
+
+        size_t size() const {return fIndex.size();}
+        size_t Veclen() const {return fIndex.veclen();}
+        size_t UsedMemory() const {return fIndex.usedMemory();}
+
+        void SaveIndex(FILE* stream) {fIndex.saveIndex(stream);}
+        void LoadIndex(FILE* stream) {fIndex.loadIndex(stream);}
+
+        virtual void FindNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, nanoflann::SearchParams& searchParams) const
         {
             fIndex.findNeighbors(result, vec, searchParams);
         }
@@ -160,11 +183,16 @@ namespace Katydid
         {
             fIndex.knnSearch(query_point, num_closest, out_indices, out_distances_sq, nChecks_IGNORED);
         }
-        virtual size_t radiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
+        //virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
+        Neighbors FindNeighbors(size_t pid, TYPE threshold)
         {
-            return fIndex.radiusSearch(query_point, radius, IndicesDists, searchParams);
+            Neighbors neighbors;
+
+            return fIndex.radiusSearch(fData.fPoints[pid], threshold, IndicesDists, searchParams);
+            return neighbors;
         }
 
+        const typename DatasetAdaptor::dataset_type& fData;
         nanoflann::KDTreeSingleIndexAdaptor< nanoflann::L2_Simple_Adaptor< TYPE, DatasetAdaptor >, DatasetAdaptor, 2 > fIndex;
     };
 
