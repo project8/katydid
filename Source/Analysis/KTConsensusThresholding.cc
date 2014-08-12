@@ -63,8 +63,9 @@ namespace Katydid
         int* votes[nPoints][nPoints];
         int* membership[nPoints];
         
-        for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint) {
-            //something_to_querry the tree
+        for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
+        {
+            size_t nearestID = kdTree.knnSearch(iPoint, 2).GetIndicesAndDists()[1].second;
         }
     }
 
