@@ -7,7 +7,8 @@
 
 #include "KTConsensusThresholding.hh"
 
-#include "KTKDTreeData.hh"
+//#include "KTKDTreeData.hh"
+//#include "KTKDTree.hh"
 #include "KTLogger.hh"
 #include "KTParam.hh"
 #include "KTSliceHeader.hh"
@@ -46,12 +47,25 @@ namespace Katydid
 
     bool KTConsensusThresholding::ConsensusVote(KTKDTreeData& kdTreeData)
     {
-        int nPoints = 0;
+        unsigned nComponents = kdTreeData.GetNComponents();
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            const KTTreeIndex< double >* kdTree = kdTreeData.GetTreeIndex(iComponent);
+        }
+    }
+
+    bool KTConsensusThresholding::ConsensusVoteComponent(KTTreeIndex< double >& kdTree)
+    {   
+        int nPoints = 0;//this needs to come from the kdtree
+        //nPoints = kdTree->kdtree_get_point_count()
         int currentClusterID = 0;
 
         int* votes[nPoints][nPoints];
         int* membership[nPoints];
+        
+        for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint) {
+            //something_to_querry the tree
+        }
     }
-
 
 } /* namespace Katydid */
