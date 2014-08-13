@@ -138,7 +138,7 @@ namespace Katydid
         virtual Neighbors FindNeighbors(PointId pid, TYPE radius) const = 0;
         virtual Neighbors knnSearch(PointId pid, size_t N) const = 0;
 
-        virtual const double* GetPointCoordinates(PointId pid);
+        //virtual TYPE GetPointCoordinates(PointId pid) const = 0;// const = 0;
     };
 
     template< typename TYPE, typename DatasetAdaptor >
@@ -194,10 +194,11 @@ namespace Katydid
             return neighbors;
         }
 
-        const double* GetPointCoordinates(PointId pid)
+ /*       const TYPE GetPointCoordinates(PointId pid)
         {
             return fData.fPoints[pid].fCoords;
         }
+*/
 
         const typename DatasetAdaptor::dataset_type& fData;
         nanoflann::KDTreeSingleIndexAdaptor< nanoflann::L1_Adaptor< TYPE, DatasetAdaptor >, DatasetAdaptor, 2 > fIndex;
@@ -256,10 +257,12 @@ namespace Katydid
             return neighbors;
         }
 
-        const double* GetPointCoordinates(PointId pid)
+/*
+        const TYPE GetPointCoordinates(PointId pid)
         {
             return fData.fPoints[pid].fCoords;
         }
+        */
 
         const typename DatasetAdaptor::dataset_type& fData;
         nanoflann::KDTreeSingleIndexAdaptor< nanoflann::L2_Simple_Adaptor< TYPE, DatasetAdaptor >, DatasetAdaptor, 2 > fIndex;
