@@ -27,7 +27,6 @@ typedef KTPointCloud< Point > PointCloud;
 
 typedef KTTreeIndex< double > TreeIndex;
 
-typedef KT2DPointCloudAdaptor< PointCloud > PointCloudAdaptor;
 
 
 void generateRandomPointCloud(PointCloud &pc, const size_t N, const double max_range = 10)
@@ -55,9 +54,7 @@ void kdtree_demo(const size_t N)
 
     double query_pt[3] = { 0.5, 0.5, 0.5};
 
-    const PointCloudAdaptor  pc2kd(cloud); // The adaptor
-
-    KTTreeIndex< double >* index = new KTTreeIndexEuclidean< double, PointCloudAdaptor >(2, pc2kd, nanoflann::KDTreeSingleIndexAdaptorParams(10));
+    KTTreeIndex< double >* index = new KTTreeIndexEuclidean< double, PointCloud >(2, cloud, nanoflann::KDTreeSingleIndexAdaptorParams(10));
 
     index->BuildIndex();
 
@@ -86,12 +83,6 @@ void kdtree_demo(const size_t N)
     // Get worst (furthest) point, without sorting:
     std::pair<size_t,double> worst_pair = resultSetRadius.worst_item();
     cout << "Worst pair: idx=" << worst_pair.first << " dist=" << worst_pair.second << endl;
-
-
-    cout << "Radius search using RadiusSearch" << endl;
-    index->RadiusSearch(query_pt, radius, indices_dists, nanoflann::SearchParams());
-
-    cout << "n neighbors: " << indices_dists.size() << endl;
 
 }
 

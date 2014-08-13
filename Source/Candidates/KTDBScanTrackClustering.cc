@@ -160,20 +160,12 @@ namespace Katydid
         KTINFO(tclog, "DBScan configured");
 
         for (unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent)
-        //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
         {
             KTDEBUG(tclog, "Clustering component " << iComponent);
 
-            std::cout << "in KTDBScanTrackClustering::DoClustering 1 " << data.GetSetOfPoints(iComponent)[150].fCoords[0] << ", " << data.GetSetOfPoints(iComponent)[150].fCoords[1] << std::endl;
-            std::cout << "in KTDBScanTrackClustering::DoClustering 1.5 " << data.GetTreeIndex(iComponent)->GetCoord(0) << ", " << data.GetTreeIndex(iComponent)->GetCoord(1) << std::endl;
-
             // do the clustering!
             KTINFO(tclog, "Starting DBSCAN");
-            std::cout << "in KTDBScanTrackClustering::DoClustering 2 " << data.GetSetOfPoints(iComponent)[150].fCoords[0] << ", " << data.GetSetOfPoints(iComponent)[150].fCoords[1] << std::endl;
-            std::cout << "in KTDBScanTrackClustering::DoClustering 2.5 " << data.GetTreeIndex(iComponent)->GetCoord(0) << ", " << data.GetTreeIndex(iComponent)->GetCoord(1) << std::endl;
             DBSCAN::DBSResults results;
-            std::cout << "in KTDBScanTrackClustering::DoClustering 3 " << data.GetSetOfPoints(iComponent)[150].fCoords[0] << ", " << data.GetSetOfPoints(iComponent)[150].fCoords[1] << std::endl;
-            std::cout << "in KTDBScanTrackClustering::DoClustering 3.5 " << data.GetTreeIndex(iComponent)->GetCoord(0) << ", " << data.GetTreeIndex(iComponent)->GetCoord(1) << std::endl;
             if (! dbScan.DoClustering(*(data.GetTreeIndex(iComponent)), results))
             {
                 KTERROR(tclog, "An error occurred while clustering");
@@ -184,7 +176,6 @@ namespace Katydid
             std::vector< KTKDTreeData::Point > points = data.GetSetOfPoints(iComponent);
 
             // loop over the clusters found, and create data objects for them
-            //const vector< KTDBScan< DistanceMatrix >::Cluster >& clusters = dbScan.GetClusters();
             KTDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidates");
             for (vector< DBSCAN::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
             {
@@ -265,151 +256,3 @@ namespace Katydid
     }
 
 } /* namespace Katydid */
-
-#if 0
-    bool KTDBScanTrackClustering::DoClustering()
-    {
-        KTPROG(tclog, "Starting DBSCAN track clustering");
-
-        KTDBScan< DistanceMatrix > dbScan;
-
-        dbScan.SetRadius(1.);
-        dbScan.SetMinPoints(fMinPoints);
-        KTINFO(tclog, "DBScan configured");
-
-        for (unsigned iComponent = 0; iComponent < fCompPoints.size(); ++iComponent)
-        //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
-        {
-            KTDEBUG(tclog, "Clustering component " << iComponent);
-
-            if (fCompPoints[iComponent].empty() )
-                continue;
-
-            // calculate the scaling
-            Point scale = fRadii;
-            for (Point::iterator dIt = scale.begin(); dIt != scale.end(); ++dIt)
-            {
-                *dIt = 1. / (*dIt * KTMath::Sqrt2());
-            }
-
-            // new array for normalized points
-            Points normPoints(fCompPoints[iComponent].size());
-            Point newPoint(fNDimensions);
-            // normalize points
-            KTDEBUG(tclog, "Scale: " << scale);
-            unsigned iPoint = 0;
-            for (Points::iterator pIt = fCompPoints[iComponent].begin(); pIt != fCompPoints[iComponent].end(); ++pIt)
-            {
-/*#ifndef NDEBUG
-                std::stringstream ptStr;
-                if (iPoint < 100)
-                {
-                    ptStr << "Point " << iPoint << " -- before: " << *pIt;
-                }
-#endif*/
-                newPoint = element_prod(*pIt, scale);
-                //if (iPoint < 100) KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
-                normPoints[iPoint++] = newPoint;
-            }
-
-            DistanceMatrix distMat;
-            distMat.ComputeDistances< Euclidean< Point > >(normPoints);
-
-            // do the clustering!
-            KTINFO(tclog, "Starting DBSCAN");
-            KTDBScan< DistanceMatrix >::DBSResults results;
-            if (! dbScan.DoClustering(distMat, results))
-            {
-                KTERROR(tclog, "An error occurred while clustering");
-                return false;
-            }
-            KTDEBUG(tclog, "DBSCAN finished");
-
-            // loop over the clusters found, and create data objects for them
-            //const vector< KTDBScan< DistanceMatrix >::Cluster >& clusters = dbScan.GetClusters();
-            KTDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidates");
-            for (vector< KTDBScan< DistanceMatrix >::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
-            {
-                if (clustIt->empty())
-                {
-                    KTWARN(tclog, "Empty cluster");
-                    continue;
-                }
-
-                KTDEBUG(tclog, "Creating candidate " << fDataCount << "; includes " << clustIt->size() << " points");
-
-                ++fDataCount;
-
-                KTDataPtr data(new KTData());
-
-                KTSparseWaterfallCandidateData& cand = data->Of< KTSparseWaterfallCandidateData >();
-
-                KTDBScan< DistanceMatrix >::Cluster::const_iterator pointIdIt = clustIt->begin();
-                double minFreq = (fCompPoints[iComponent][*pointIdIt])(1);
-                double maxFreq = minFreq;
-                double minTime = (fCompPoints[iComponent][*pointIdIt])(0);
-                double maxTime = minTime;
-                cand.AddPoint(KTSparseWaterfallCandidateData::Point((fCompPoints[iComponent][*pointIdIt])(0), (fCompPoints[iComponent][*pointIdIt])(1), 1.));
-                KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << fCompPoints[iComponent][*pointIdIt])
-
-                for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
-                {
-                    cand.AddPoint(KTSparseWaterfallCandidateData::Point((fCompPoints[iComponent][*pointIdIt])(0), (fCompPoints[iComponent][*pointIdIt])(1), 1.));
-                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << fCompPoints[iComponent][*pointIdIt])
-
-                    if ((fCompPoints[iComponent][*pointIdIt])(1) > maxFreq)
-                    {
-                        maxFreq = (fCompPoints[iComponent][*pointIdIt])(1);
-                    }
-                    else if ((fCompPoints[iComponent][*pointIdIt])(1) < minFreq)
-                    {
-                        minFreq = (fCompPoints[iComponent][*pointIdIt])(1);
-                    }
-
-                    if ((fCompPoints[iComponent][*pointIdIt])(0) > maxTime)
-                    {
-                        maxTime = (fCompPoints[iComponent][*pointIdIt])(0);
-                    }
-                    else if ((fCompPoints[iComponent][*pointIdIt])(0) < minTime)
-                    {
-                        minTime = (fCompPoints[iComponent][*pointIdIt])(0);
-                    }
-                }
-
-                cand.SetComponent(iComponent);
-                cand.SetCandidateID(fDataCount);
-
-                cand.SetTimeBinWidth(fTimeBinWidth);
-                cand.SetFreqBinWidth(fFreqBinWidth);
-
-                cand.SetTimeInRunC(minTime);
-                cand.SetTimeLength(maxTime - minTime);
-
-                cand.SetMinimumFrequency(minFreq);
-                cand.SetMaximumFrequency(maxFreq);
-
-                cand.SetFrequencyWidth(maxFreq - minFreq);
-
-                fCandidates.insert(data);
-                fTrackSignal(data);
-
-            } // loop over clusters
-
-            fCompPoints[iComponent].clear();
-
-        } // loop over components
-
-        KTDEBUG(tclog, "Clustering complete");
-        fClusterDoneSignal();
-
-        return true;
-    }
-
-    void KTDBScanTrackClustering::SetNComponents(unsigned nComps)
-    {
-        fCompPoints.resize(nComps, Points());
-        return;
-    }
-
-} /* namespace Katydid */
-#endif

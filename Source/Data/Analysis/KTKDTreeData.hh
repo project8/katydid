@@ -44,8 +44,6 @@ namespace Katydid
             static const unsigned fNDimensions;
 
         private:
-            typedef KT2DPointCloudAdaptor< KTPointCloud< Point > > PointCloudAdaptor;
-
             struct PerComponentData
             {
                 KTPointCloud< Point > fCloud;
@@ -95,7 +93,7 @@ namespace Katydid
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fCloud.fPoints.push_back(point);
         unsigned pt = fComponentData[component].fCloud.fPoints.size()-1;
-        std::cout << "added point " << pt << "; (" << fComponentData[component].fCloud.fPoints[pt].fCoords[0] << ", " << fComponentData[component].fCloud.fPoints[pt].fCoords[1] << std::endl;
+        return;
     }
 
     inline KTKDTreeData& KTKDTreeData::SetNComponents(unsigned channels)

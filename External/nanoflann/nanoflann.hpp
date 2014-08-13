@@ -33,8 +33,6 @@
 #ifndef  NANOFLANN_HPP_
 #define  NANOFLANN_HPP_
 
-#include <iostream>
-
 #include <vector>
 #include <cassert>
 #include <algorithm>
@@ -259,7 +257,6 @@ namespace nanoflann
 
 		inline DistanceType operator()(const T* a, const size_t b_idx, size_t size, DistanceType worst_dist = -1) const
 		{
-            std::cout << "asking for distance (l1)" << std::endl;
 			DistanceType result = DistanceType();
 			const T* last = a + size;
 			const T* lastgroup = last - 3;
@@ -308,7 +305,6 @@ namespace nanoflann
 
 		inline DistanceType operator()(const T* a, const size_t b_idx, size_t size, DistanceType worst_dist = -1) const
 		{
-            std::cout << "asking for distance (l2)" << std::endl;
 			DistanceType result = DistanceType();
 			const T* last = a + size;
 			const T* lastgroup = last - 3;
@@ -357,7 +353,6 @@ namespace nanoflann
 		L2_Simple_Adaptor(const DataSource &_data_source) : data_source(_data_source) { }
 
 		inline DistanceType operator()(const T* a, const size_t b_idx, size_t size) const {
-		    std::cout << "asking for distance (l2_simple)" << std::endl;
 			return data_source.kdtree_distance(a,b_idx,size);
 		}
 
@@ -758,9 +753,8 @@ namespace nanoflann
 		/**
 		 * The dataset used by this index
 		 */
-	public:
 		const DatasetAdaptor &dataset; //!< The source of our data
-	protected:
+
 		const KDTreeSingleIndexAdaptorParams index_params;
 
 		size_t m_size;
@@ -870,8 +864,6 @@ namespace nanoflann
 
 			// Create a permutable array of indices to the input vectors.
 			init_vind();
-
-            //std::cout << "in constructor (" << this << ")  " << dataset.derived().fPoints[150].fCoords[0] << ", " << dataset.derived().fPoints[150].fCoords[1] << std::endl;
 		}
 
 		/**
@@ -979,7 +971,6 @@ namespace nanoflann
 		 */
 		size_t radiusSearch(const ElementType *query_point,const DistanceType radius, std::vector<std::pair<IndexType,DistanceType> >& IndicesDists, const SearchParams& searchParams) const
 		{
-		    //std::cout << "in radiusSearch (" << this << ")  " << dataset.derived().fPoints[150].fCoords[0] << ", " << dataset.derived().fPoints[150].fCoords[1] << std::endl;
 			RadiusResultSet<DistanceType,IndexType> resultSet(radius,IndicesDists);
 			this->findNeighbors(resultSet, query_point, searchParams);
 
@@ -1286,7 +1277,6 @@ namespace nanoflann
 				for (IndexType i=node->lr.left; i<node->lr.right; ++i) {
 					const IndexType index = vind[i];// reorder... : i;
 					DistanceType dist = distance(vec, index, (DIM>0 ? DIM : dim));
-					std::cout << "\t\tdist with " << index << " is " << dist << std::endl;
 					if (dist<worst_dist) {
 						result_set.addPoint(dist,vind[i]);
 					}

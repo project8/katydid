@@ -37,13 +37,13 @@ namespace Katydid
         if (dist == kManhattan)
         {
             KTDEBUG(kdtlog, "Creating index with Manhattan distance metric");
-            fComponentData[component].fTreeIndex = new KTTreeIndexManhattan< double, PointCloudAdaptor >(fNDimensions, PointCloudAdaptor(fComponentData[component].fCloud), nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
+            fComponentData[component].fTreeIndex = new KTTreeIndexManhattan< double, KTPointCloud< Point > >(fNDimensions, fComponentData[component].fCloud, nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
             fComponentData[component].fTreeIndex->BuildIndex();
         }
         else
         {
             KTDEBUG(kdtlog, "Creating index with Euclidean distance metric");
-            fComponentData[component].fTreeIndex = new KTTreeIndexEuclidean< double, PointCloudAdaptor >(fNDimensions, PointCloudAdaptor(fComponentData[component].fCloud), nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
+            fComponentData[component].fTreeIndex = new KTTreeIndexEuclidean< double, KTPointCloud< Point > >(fNDimensions, fComponentData[component].fCloud, nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
             fComponentData[component].fTreeIndex->BuildIndex();
         }
         return;

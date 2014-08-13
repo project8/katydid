@@ -161,10 +161,8 @@ namespace Katydid
     bool KTDBScan< DistanceData >::DoClustering(const DistanceData& dist, DBSResults& results)
     {
         PointId nPoints = dist.size();
-        std::cout << "in KTDBScan::DoClustering 1 " << dist.GetCoord(0) << ", " << dist.GetCoord(1) << std::endl;
 
         InitializeArrays(nPoints, results);
-        std::cout << "in KTDBScan::DoClustering 2 " << dist.GetCoord(0) << ", " << dist.GetCoord(1) << std::endl;
 
         ClusterId cid = 0;
         // foreach pid
@@ -178,11 +176,6 @@ namespace Katydid
 
                 // get the neighbors
                 Neighbors ne = dist.FindNeighbors(pid, fRadius);
-                std::cout << "Neighbors of " << pid << std::endl;
-                for (unsigned i = 0; i < ne.size(); ++i)
-                {
-                    std::cout << "\t" << ne[i] << " @ " << ne.dist(i) << std::endl;
-                }
 
                 // not enough support -> mark as noise
                 if (ne.size() < fMinPoints)
