@@ -58,29 +58,24 @@ namespace Katydid
         {
             const KTTreeIndex< double >* kdTree = kdTreeData.GetTreeIndex(iComponent);
             const std::vector< KTKDTreeData::Point >& setOfPoints = kdTreeData.GetSetOfPoints(iComponent);
-            if (! this->ConsensusVoteComponent(kdTree, setOfPoints))
-            {
-                ret_val = false;
-            }
+            std::vector< size_t > noisePoints = ConsensusVoteComponent(kdTree, setOfPoints);
+            kdTreeData.RemovePoint(noisePoints);
         }
         return ret_val;
     }
 
-    bool KTConsensusThresholding::ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const std::vector< KTKDTreeData::Point >& setOfPoints)
+    std::vector< size_t > KTConsensusThresholding::ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const std::vector< KTKDTreeData::Point >& setOfPoints)
     {   
-        int nPoints = 0;//this needs to come from the kdtree
-        nPoints = kdTree->size();
-        //int currentClusterID = 0;
+        int nPoints = kdTree->size();
+        std::vector< size_t > noiseIndices;
 
-        int* votes[nPoints][nPoints];
-        //int* membership[nPoints];
-        
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
             size_t nearestID = kdTree->knnSearch(iPoint, 2).GetIndicesAndDists()[1].second;
 
             double frequencyDelta = setOfPoints[nearestID].fCoords[1] - setOfPoints[iPoint].fCoords[1];
             double timeDelta = setOfPoints[nearestID].fCoords[0] - setOfPoints[iPoint].fCoords[0];
+            int voteCount = 0;
             if (! timeDelta == 0)
             {
                 double slope = frequencyDelta / timeDelta;
@@ -90,7 +85,6 @@ namespace Katydid
                 double* test_pt;
                 std::vector< std::pair< size_t, double > > indicesDist;
                 double k = 2.0;
-                //const nanoflann::SearchParams& searchParams;
                 while (close_enough)
                 {
                     test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
@@ -99,7 +93,7 @@ namespace Katydid
                     if (indicesDist.size() > 0)
                     {
                         k += 1.0;
-                        votes[iPoint][indicesDist[0].first] += 1;
+                        voteCount += 1;
                     } else {
                         close_enough = false;
                     }
@@ -114,43 +108,17 @@ namespace Katydid
                     if (indicesDist.size() > 0)
                     {
                         k -= 1.0;
-                        votes[iPoint][indicesDist[0].first] += 1;
+                        voteCount += 1;
                     } else {
                         close_enough = false;
                     }
                 }
             }
-        }
-        return true;
-    }
-
-/*
-    void KTConsensusThresholding::VoteCore(bool doPositive, size_t thisPID, size_t neighborPID, const std::vector< KTKDTreeData::Point >& setOfPoints, double slope, double intercept)
-    {
-        bool closeEnough = true;
-        double k = 2.0;
-        double deltak = 1.0;
-        if (! doPositive) {
-            k = -2.0;
-        }
-
-        / *double test_pt[2];
-        int looplim = 100000000;//unmotived "large" number of tries
-        int loopcount = 0;
-        while (closeEnough && (loopcount < looplim)) {
-            loopcount += 1;
-            test_pt[0] = setOfPoitns[thisPID].fCoords[0] + k * (setOfPoints[neighborPID].fCoords[0] - setOfPoints[thisPID].fCoords[0]);
-            test_pt[1] = setOfPoitns[thisPID].fCoords[1] + k * (setOfPoints[neighborPID].fCoords[1] - setOfPoints[thisPID].fCoords[1]);
-            
-            if (1.0 < fMembershipRadius) 
-            {
-                k += 1.0;
-            } else {
-                closeEnough = false;
+            if (voteCount < fMinNumberVotes) {
+                noiseIndices.push_back(iPoint);
             }
         }
-        * /
+        return noiseIndices;
     }
-*/
 
 } /* namespace Katydid */

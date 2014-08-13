@@ -31,9 +31,16 @@ namespace Katydid
         }
     }
 
+    void KTKDTreeData::CreateIndex(unsigned component)
+    {
+        this->CreateIndex(fComponentData[component].fDistanceMethod, fComponentData[component].fMaxLeafSize, component);
+    }
+
     void KTKDTreeData::CreateIndex(KTKDTreeData::DistanceMethod dist, unsigned maxLeafSize, unsigned component)
     {
         delete fComponentData[component].fTreeIndex;
+        fComponentData[component].fDistanceMethod = dist;
+        fComponentData[component].fMaxLeafSize = maxLeafSize;
         if (dist == kManhattan)
         {
             KTDEBUG(kdtlog, "Creating index with Manhattan distance metric");

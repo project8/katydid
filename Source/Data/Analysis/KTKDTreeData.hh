@@ -48,7 +48,13 @@ namespace Katydid
             {
                 KTPointCloud< Point > fCloud;
                 TreeIndex* fTreeIndex;
-                PerComponentData() : fTreeIndex(NULL) {}
+                unsigned fMaxLeafSize;
+                DistanceMethod fDistanceMethod;
+                PerComponentData() : fTreeIndex(NULL)
+                {
+                    fDistanceMethod = kEuclidean;
+                    fMaxLeafSize = 10;
+                }
             };
 
         public:
@@ -64,6 +70,9 @@ namespace Katydid
             unsigned GetNComponents() const;
 
             void AddPoint(const Point& point, unsigned component = 0);
+            void RemovePoint(unsigned pid, unsigned component = 0);
+            void RemovePoint(std::vector< size_t > points, unsigned component = 0);
+            void CreateIndex(unsigned component = 0);
             void CreateIndex(DistanceMethod, unsigned maxLeafSize = 10, unsigned component = 0);
 
             KTKDTreeData& SetNComponents(unsigned channels);
@@ -93,6 +102,27 @@ namespace Katydid
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fCloud.fPoints.push_back(point);
         unsigned pt = fComponentData[component].fCloud.fPoints.size()-1;
+        return;
+    }
+
+    inline void KTKDTreeData::RemovePoint(unsigned pid, unsigned component)
+    {
+        std::vector< size_t > points;
+        points.push_back(pid);
+        this->RemovePoint(points, component);
+        return;
+    }
+
+    inline void KTKDTreeData::RemovePoint(std::vector< size_t > points, unsigned component)
+    {
+        size_t index;
+        for (size_t iPoint=0; iPoint <= points.size(); ++iPoint)
+        {
+            index = points.back();
+            fComponentData[component].fCloud.fPoints.erase(fComponentData[component].fCloud.fPoints.begin() + index);
+            points.pop_back();
+        }
+        this->CreateIndex();
         return;
     }
 
