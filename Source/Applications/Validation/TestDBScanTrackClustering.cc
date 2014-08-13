@@ -8,6 +8,7 @@
 #include "KTKDTreeData.hh"
 #include "KTDBScanTrackClustering.hh"
 #include "KTLogger.hh"
+#include "KTMath.hh"
 #include "KTSparseWaterfallCandidateData.hh"
 
 #include <vector>
@@ -183,6 +184,10 @@ int main()
     double timeScale = 0.0005; //sec
     double freqScale = 0.1e6; // Hz
 
+    // scale by sqrt(2) so that the radius comes out to 1
+    timeScale *=  KTMath::Sqrt2();
+    freqScale *=  KTMath::Sqrt2();
+
     KTKDTreeData kdTreeData;
     kdTreeData.SetXScaling(timeScale);
     kdTreeData.SetYScaling(freqScale);
@@ -196,6 +201,30 @@ int main()
         ++fIt; ++aIt;
     }
     kdTreeData.CreateIndex(KTKDTreeData::kEuclidean);
+
+    double query_pt[3] = { 0.5, 0.5, 0.5};
+    // do a knn search
+    const size_t num_results = 1;
+    size_t ret_index;
+    double out_dist_sqr;
+    nanoflann::KNNResultSet< double > resultSet(num_results);
+    resultSet.init(&ret_index, &out_dist_sqr );
+    kdTreeData.GetTreeIndex()->FindNeighbors(resultSet, &query_pt[0], nanoflann::SearchParams(10));
+    //index.knnSearch(query, indices, dists, num_results, mrpt_flann::SearchParams(10));
+
+    std::cout << "knnSearch(nn="<<num_results<<"): \n";
+    std::cout << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << endl;
+
+    KTTreeIndex<double>::Neighbors ne = kdTreeData.GetTreeIndex()->FindNeighbors(150, 1.);
+    std::cout << "radius search around pid=150 (nn=" << ne.size() << "):\n";
+    for (unsigned i=0; i<ne.size(); ++i)
+    {
+        std::cout << "\t" << ne[i] << " @ " << ne.dist(i) << '\n';
+    }
+    std::cout << endl;
+
+    return 0;
+}/*
 
     KTDBScanTrackClustering clustering;
 
@@ -275,3 +304,4 @@ int main()
     return 0;
 }
 
+*/

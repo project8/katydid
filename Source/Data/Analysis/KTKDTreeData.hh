@@ -94,6 +94,8 @@ namespace Katydid
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fCloud.fPoints.push_back(point);
+        unsigned pt = fComponentData[component].fCloud.fPoints.size()-1;
+        std::cout << "added point " << pt << "; (" << fComponentData[component].fCloud.fPoints[pt].fCoords[0] << ", " << fComponentData[component].fCloud.fPoints[pt].fCoords[1] << std::endl;
     }
 
     inline KTKDTreeData& KTKDTreeData::SetNComponents(unsigned channels)

@@ -164,9 +164,16 @@ namespace Katydid
         {
             KTDEBUG(tclog, "Clustering component " << iComponent);
 
+            std::cout << "in KTDBScanTrackClustering::DoClustering 1 " << data.GetSetOfPoints(iComponent)[150].fCoords[0] << ", " << data.GetSetOfPoints(iComponent)[150].fCoords[1] << std::endl;
+            std::cout << "in KTDBScanTrackClustering::DoClustering 1.5 " << data.GetTreeIndex(iComponent)->GetCoord(0) << ", " << data.GetTreeIndex(iComponent)->GetCoord(1) << std::endl;
+
             // do the clustering!
             KTINFO(tclog, "Starting DBSCAN");
+            std::cout << "in KTDBScanTrackClustering::DoClustering 2 " << data.GetSetOfPoints(iComponent)[150].fCoords[0] << ", " << data.GetSetOfPoints(iComponent)[150].fCoords[1] << std::endl;
+            std::cout << "in KTDBScanTrackClustering::DoClustering 2.5 " << data.GetTreeIndex(iComponent)->GetCoord(0) << ", " << data.GetTreeIndex(iComponent)->GetCoord(1) << std::endl;
             DBSCAN::DBSResults results;
+            std::cout << "in KTDBScanTrackClustering::DoClustering 3 " << data.GetSetOfPoints(iComponent)[150].fCoords[0] << ", " << data.GetSetOfPoints(iComponent)[150].fCoords[1] << std::endl;
+            std::cout << "in KTDBScanTrackClustering::DoClustering 3.5 " << data.GetTreeIndex(iComponent)->GetCoord(0) << ", " << data.GetTreeIndex(iComponent)->GetCoord(1) << std::endl;
             if (! dbScan.DoClustering(*(data.GetTreeIndex(iComponent)), results))
             {
                 KTERROR(tclog, "An error occurred while clustering");
