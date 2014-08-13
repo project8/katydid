@@ -68,11 +68,11 @@ namespace Katydid
     bool KTConsensusThresholding::ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const std::vector< KTKDTreeData::Point >& setOfPoints)
     {   
         int nPoints = 0;//this needs to come from the kdtree
-        //nPoints = kdTree->kdtree_get_point_count()
-        int currentClusterID = 0;
+        nPoints = kdTree->size();
+        //int currentClusterID = 0;
 
         int* votes[nPoints][nPoints];
-        int* membership[nPoints];
+        //int* membership[nPoints];
         
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
@@ -80,15 +80,20 @@ namespace Katydid
 
             double frequencyDelta = setOfPoints[nearestID].fCoords[1] - setOfPoints[iPoint].fCoords[1];
             double timeDelta = setOfPoints[nearestID].fCoords[0] - setOfPoints[iPoint].fCoords[0];
-            if (! timeDelta == 0) {
+            if (! timeDelta == 0)
+            {
                 double slope = frequencyDelta / timeDelta;
                 double intercept = setOfPoints[iPoint].fCoords[1] - slope * setOfPoints[iPoint].fCoords[0];
 
                 //do the + vote, the - vote
-                currentClusterID += 1;
+                //currentClusterID += 1;
             }
             return true;
         }
+    }
+
+    void KTConsensusThresholding::VoteCore()//PointId pid, thisPoint, neighborPoint, double slope, double intercept)
+    {
     }
 
 } /* namespace Katydid */
