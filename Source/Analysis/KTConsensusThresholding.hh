@@ -53,7 +53,7 @@ namespace Katydid
 
             bool ConsensusVote(KTKDTreeData& kdTreeData);
             bool ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const std::vector< KTKDTreeData::Point >& setOfPoints);
-            void VoteCore();
+            void VoteCore(bool doPositive, size_t pid, double* thisPoint, double* neighborPoint, double slope, double intercept);
 
             //MEMBERVARIABLE(KTKDTreeData::DistanceMethod, DistanceMethod);
             //MEMBERVARIABLE(unsigned, MaxLeafSize);

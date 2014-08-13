@@ -85,15 +85,36 @@ namespace Katydid
                 double slope = frequencyDelta / timeDelta;
                 double intercept = setOfPoints[iPoint].fCoords[1] - slope * setOfPoints[iPoint].fCoords[0];
 
-                //do the + vote, the - vote
-                //currentClusterID += 1;
+                //this->VoteCore(); //the + one
+                //this->VoteCore(); //the - one
             }
             return true;
         }
     }
 
-    void KTConsensusThresholding::VoteCore()//PointId pid, thisPoint, neighborPoint, double slope, double intercept)
+    void KTConsensusThresholding::VoteCore(bool doPositive, size_t pid, double* thisPoint, double* neighborPoint, double slope, double intercept)
     {
+        bool closeEnough = true;
+        double k = 2.0;
+        double deltak = 1.0;
+        if (! doPositive) {
+            k = -2.0;
+        }
+
+        double test_pt[2];
+        int looplim = 100000000;//unmotived "large" number of tries
+        int loopcount = 0;
+        while (closeEnough && (loopcount < looplim)) {
+            loopcount += 1;
+            test_pt[0] = thisPoint[0] + k * (neighborPoint[0] - thisPoint[0]);
+            test_pt[1] = thisPoint[1] + k * (neighborPoint[1] - thisPoint[1]);
+            if (1.0 < fMembershipRadius) 
+            {
+                k += 1.0;
+            } else {
+                closeEnough = false;
+            }
+        }
     }
 
 } /* namespace Katydid */
