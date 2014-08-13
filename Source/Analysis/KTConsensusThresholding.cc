@@ -58,11 +58,12 @@ namespace Katydid
         {
             const KTTreeIndex< double >* kdTree = kdTreeData.GetTreeIndex(iComponent);
             const std::vector< KTKDTreeData::Point >& setOfPoints = kdTreeData.GetSetOfPoints(iComponent);
-           if (! this->ConsensusVoteComponent(kdTree, setOfPoints))
-           {
-            ret_val = false;
-           }
+            if (! this->ConsensusVoteComponent(kdTree, setOfPoints))
+            {
+                ret_val = false;
+            }
         }
+        return ret_val;
     }
 
     bool KTConsensusThresholding::ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const std::vector< KTKDTreeData::Point >& setOfPoints)
@@ -102,27 +103,25 @@ namespace Katydid
                     } else {
                         close_enough = false;
                     }
-                }/*
+                }
                 close_enough = true;
                 k = -2.0;
                 while (close_enough)
                 {
                     test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
                     test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
-                    kdTree->RadiusSearch(test_pt, fMembershipRadius, indicesDists, nanoflann::SearchParams(32, 0, true));
-                    if (indicesDist.size > 0)
+                    kdTree->RadiusSearch(test_pt, fMembershipRadius, indicesDist, nanoflann::SearchParams(32, 0, true));
+                    if (indicesDist.size() > 0)
                     {
                         k -= 1.0;
-                        votes[iPoint][indicesDists[0][0]] += 1;
+                        votes[iPoint][indicesDist[0].first] += 1;
                     } else {
                         close_enough = false;
                     }
-                }*/
-
-
+                }
             }
-            return true;
         }
+        return true;
     }
 
 /*
