@@ -144,6 +144,7 @@ namespace Katydid
         virtual void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const = 0;
         //virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
         virtual Neighbors FindNeighbors(PointId pid, TYPE radius) const = 0;
+        virtual Neighbors knnSearch(PointId pid, size_t N) const = 0;
     };
 
     template< typename TYPE, typename DatasetAdaptor >
@@ -183,6 +184,21 @@ namespace Katydid
         {
             Neighbors neighbors;
             fIndex.radiusSearch(fData.fPoints[pid].fCoords, radius, neighbors.GetIndicesAndDists(), nanoflann::SearchParams(32, 0, true));
+            return neighbors;
+        }
+
+        Neighbors knnSearch(PointId pid, size_t nPoints) const
+        {
+            size_t* out_indices;//[nPoints];
+            TYPE* out_distances_sq;//[nPoints];
+            const int nChecks_IGNORED=10;
+            fIndex.knnSearch(fData.fPoints[pid].fCoords, nPoints, out_indices, out_distances_sq, nChecks_IGNORED);
+
+            Neighbors neighbors;
+            for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
+            {
+                neighbors.GetIndicesAndDists().push_back(std::make_pair< size_t, TYPE > (out_indices[iPoint], out_distances_sq[iPoint]));
+            }
             return neighbors;
         }
 
@@ -228,6 +244,21 @@ namespace Katydid
             Neighbors neighbors;
             std::cout << "Checking pid = " << pid << ", at (" << fData.fPoints[pid].fCoords[0] << ", " << fData.fPoints[pid].fCoords[1] << ")" << std::endl;
             fIndex.radiusSearch(&(fData.fPoints[pid].fCoords[0]), radius, neighbors.GetIndicesAndDists(), nanoflann::SearchParams(32, 0, true));
+            return neighbors;
+        }
+
+        Neighbors knnSearch(PointId pid, size_t nPoints) const
+        {
+            size_t* out_indices;//[nPoints];
+            TYPE* out_distances_sq;//[nPoints];
+            const int nChecks_IGNORED=10;
+            fIndex.knnSearch(fData.fPoints[pid].fCoords, nPoints, out_indices, out_distances_sq, nChecks_IGNORED);
+
+            Neighbors neighbors;
+            for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
+            {
+                neighbors.GetIndicesAndDists().push_back(std::make_pair< size_t, TYPE > (out_indices[iPoint], out_distances_sq[iPoint]));
+            }
             return neighbors;
         }
 
