@@ -35,7 +35,8 @@ namespace Katydid
      Available configuration values:
      - "distance-method": string -- Method used to calculate distances between points; Available options are "manhattan" and "euclidean"
      - "max-leaf-size": unsigned -- Maximum number of points to assign to each leaf node of the k-d tree. Typically should be 10-50. See https://github.com/jlblancoc/nanoflann#21-kdtreesingleindexadaptorparamsleaf_max_size for more details.
-     - "coord-scalings:" array of doubles -- Scalings applied to the coordinates before loading the points into the tree. Scaled coordinate value = coordinate value / scaling
+     - "time-radius:" double -- Scaling applied to the time axis before adding the point to the tree. Scaled coordinate value = coordinate value / scaling
+     - "freq-radius:" double -- Scaling applied to the frequency axis before adding the point to the tree. Scaled coordinate value = coordinate value / scaling
 
      Slots:
      - "disc-1d": void (KTDataPtr) -- Adds points to the KT-Tree; Requires KTDiscriminatedPoints1DData
@@ -55,7 +56,11 @@ namespace Katydid
 
             MEMBERVARIABLE(KTKDTreeData::DistanceMethod, DistanceMethod);
             MEMBERVARIABLE(unsigned, MaxLeafSize);
-            MEMBERVARIABLEREF(std::vector< double >, Scalings);
+
+            MEMBERVARIABLE_NOSET(double, TimeRadius);
+            void SetTimeRadius(double radius);
+            MEMBERVARIABLE_NOSET(double, FreqRadius);
+            void SetFreqRadius(double radius);
 
             static const unsigned fNDimensions;
 
@@ -70,6 +75,9 @@ namespace Katydid
         private:
             KTDataPtr fDataPtr;
             KTKDTreeData& fTreeData;
+
+            MEMBERVARIABLE(double, InvScalingX);
+            MEMBERVARIABLE(double, InvScalingY);
 
             //***************
             // Signals
@@ -88,6 +96,20 @@ namespace Katydid
             void MakeTreeSlot();
 
     };
+
+    inline void KTCreateKDTree::SetTimeRadius(double radius)
+    {
+        fTimeRadius = radius;
+        fInvScalingX = 1. / fTimeRadius;
+        return;
+    }
+
+    inline void KTCreateKDTree::SetFreqRadius(double radius)
+    {
+        fFreqRadius = radius;
+        fInvScalingY = 1. / fFreqRadius;
+        return;
+    }
 
     inline KTDataPtr KTCreateKDTree::GetDataPtr() const
     {
