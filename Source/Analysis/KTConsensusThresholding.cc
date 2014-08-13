@@ -66,6 +66,8 @@ namespace Katydid
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
             size_t nearestID = kdTree.knnSearch(iPoint, 2).GetIndicesAndDists()[1].second;
+
+            KT2DPoint< double > foo;
         }
     }
 
