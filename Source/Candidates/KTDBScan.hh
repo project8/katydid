@@ -150,7 +150,7 @@ namespace Katydid
 
         results.fNoise.resize(nPoints, false);
 
-        results.fPointIdToClusterId.resize(nPoints, 0);
+        results.fPointIdToClusterId.resize(nPoints, -1);
 
         fVisited.resize(nPoints, false);
 
@@ -225,7 +225,7 @@ namespace Katydid
                         }
 
                         // not already assigned to a cluster
-                        if (! results.fPointIdToClusterId[nPid])
+                        if (results.fPointIdToClusterId[nPid] == -1)
                         {
                             //std::cout << "\tadding pid=" << nPid << std::endl;
                             cluster.push_back(nPid);

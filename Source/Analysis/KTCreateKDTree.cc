@@ -28,17 +28,17 @@ namespace Katydid
             KTProcessor(name),
             fDistanceMethod(KTKDTreeData::kEuclidean),
             fMaxLeafSize(10),
-            fScalings(fNDimensions),
+            fScalings(fNDimensions, 1.),
             fDataPtr(new KTData()),
             fTreeData(fDataPtr->Of< KTKDTreeData >()),
             fKDTreeSignal("kd-tree", this),
             fDiscPointsSlot("disc-1d", this, &KTCreateKDTree::AddPoints)
     {
+        RegisterSlot("make-tree", this, &KTCreateKDTree::MakeTreeSlot);
     }
 
     KTCreateKDTree::~KTCreateKDTree()
     {
-        RegisterSlot("make-tree", this, &KTCreateKDTree::MakeTreeSlot);
     }
 
     bool KTCreateKDTree::Configure(const KTParamNode* node)
@@ -143,7 +143,9 @@ namespace Katydid
         if (! MakeTree())
         {
             KTERROR(kdlog, "An error occurred while making the k-d tree");
+            return;
         }
+        fKDTreeSignal(fDataPtr);
         return;
     }
 

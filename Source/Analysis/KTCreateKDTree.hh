@@ -64,6 +64,9 @@ namespace Katydid
 
             bool MakeTree();
 
+            KTDataPtr GetDataPtr() const;
+            const KTKDTreeData& GetKDTreeData() const;
+
         private:
             KTDataPtr fDataPtr;
             KTKDTreeData& fTreeData;
@@ -85,6 +88,17 @@ namespace Katydid
             void MakeTreeSlot();
 
     };
+
+    inline KTDataPtr KTCreateKDTree::GetDataPtr() const
+    {
+        return fDataPtr;
+    }
+
+    inline const KTKDTreeData& KTCreateKDTree::GetKDTreeData() const
+    {
+        return fTreeData;
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTCREATEKDTREE_HH_ */
