@@ -1,32 +1,34 @@
 /*
-* TestDBSCanTrackClustering.cc
-*
-* Created on: Jun 29, 2014
-*     Author: nsoblath
-*/
+ * TestKDTree.cc
+ *
+ *  Created on: Aug 12, 2014
+ *      Author: nsoblath
+ */
 
 #include "KTKDTreeData.hh"
-#include "KTDBScanTrackClustering.hh"
-#include "KTLogger.hh"
 #include "KTMath.hh"
-#include "KTSparseWaterfallCandidateData.hh"
 
-#include <vector>
-
-#ifdef ROOT_FOUND
-#include "TCanvas.h"
-#include "TFile.h"
-#include "TGraph.h"
-#endif
-
+#include <iostream>
+#include <time.h>
 
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(testlog, "TestDBScanTrackClustering");
 
-int main()
+void generateRandomPointCloud(KTKDTreeData &data, const size_t N, const double max_range = 10)
 {
+    std::cout << "Generating "<< N << " point cloud...";
+    /*
+    //pc.fPoints.resize(N);
+    srand(time(NULL));
+    for (size_t i=0;i<N;i++)
+    {
+        data.AddPoint(KTKDTreeData::Point(max_range * (rand() % 1000) / double(1000), max_range * (rand() % 1000) / double(1000), 1.));
+        if (i == 150) std::cout << "point " << i << " " << data.GetSetOfPoints()[i].fCoords[0] << "  " << data.GetSetOfPoints()[i].fCoords[1] << std::endl;
+    }
+    */
+
+
     vector< double > times, freqs, amplitudes;
     times.push_back(0.0701605); freqs.push_back(54155479.); amplitudes.push_back(0.1539345);
     times.push_back(0.0701605); freqs.push_back(57206492.); amplitudes.push_back(0.1813601);
@@ -189,93 +191,63 @@ int main()
     freqScale *=  KTMath::Sqrt2();
 
     KTKDTreeData kdTreeData;
-    kdTreeData.SetXScaling(timeScale);
-    kdTreeData.SetYScaling(freqScale);
+    data.SetXScaling(timeScale);
+    data.SetYScaling(freqScale);
 
     vector< double >::const_iterator fIt = freqs.begin();
     vector< double >::const_iterator aIt = amplitudes.begin();
     for (std::vector< double >::const_iterator tIt = times.begin(); tIt != times.end(); ++tIt)
     {
-        KTDEBUG(testlog, "Adding point (" << *tIt << ", " << *fIt << ", " << *aIt << ") --> (" << (*tIt)/timeScale << ", " << (*fIt)/freqScale << ")");
-        kdTreeData.AddPoint(KTKDTreeData::Point((*tIt)/timeScale, (*fIt)/freqScale, *aIt));
+        //KTDEBUG(testlog, "Adding point (" << *tIt << ", " << *fIt << ", " << *aIt << ") --> (" << (*tIt)/timeScale << ", " << (*fIt)/freqScale << ")");
+        data.AddPoint(KTKDTreeData::Point((*tIt)/timeScale, (*fIt)/freqScale, *aIt));
         ++fIt; ++aIt;
     }
-    kdTreeData.CreateIndex(KTKDTreeData::kEuclidean);
 
-    KTDBScanTrackClustering clustering;
 
-    clustering.SetMinPoints(5);
+    std::cout << "done\n";
+}
 
-    clustering.DoClustering(kdTreeData);
 
-    const std::set< KTDataPtr >& candidates = clustering.GetCandidates();
+void kdtree_demo(const size_t N)
+{
+    KTKDTreeData data;
 
-    KTINFO(testlog, "Candidates found: " << candidates.size())
+    // Generate points:
+    generateRandomPointCloud(data, N);
 
-#ifdef ROOT_FOUND
-    TFile file("dbscantrackclustering_test.root", "recreate");
-    TCanvas* canv = new TCanvas("cCandidates", "Candidates");
+    double query_pt[3] = { 0.5, 0.5, 0.5};
 
-    TGraph* ptsGraph = new TGraph(times.size());
-    ptsGraph->SetMarkerStyle(1);
-    ptsGraph->SetMarkerColor(1);
-    vector< double >::const_iterator tIt = times.begin();
-    fIt = freqs.begin();
-    unsigned pid = 0;
-    for (std::vector< double >::const_iterator tIt = times.begin(); tIt != times.end(); ++tIt)
-    {
-        ptsGraph->SetPoint(pid, *tIt, *fIt);
-        ++pid;
-        ++fIt;
-    }
-    ptsGraph->Draw("ap");
-    ptsGraph->Write("Points");
+    data.CreateIndex(KTKDTreeData::kEuclidean);
 
-    unsigned firstClusterColor = 2;
-#endif
-    unsigned iCand = 0;
+    const double radius = 160000;
+    std::vector<std::pair<size_t,double> > indices_dists;
 
-    typedef KTSparseWaterfallCandidateData::Points Points;
+    // do a knn search
+    const size_t num_results = 1;
+    size_t ret_index;
+    double out_dist_sqr;
+    nanoflann::KNNResultSet< double > resultSet(num_results);
+    resultSet.init(&ret_index, &out_dist_sqr );
+    data.GetTreeIndex()->FindNeighbors(resultSet, query_pt, nanoflann::SearchParams(10));
+    //index.knnSearch(query, indices, dists, num_results, mrpt_flann::SearchParams(10));
 
-    for (std::set< KTDataPtr >::const_iterator cIt = candidates.begin(); cIt != candidates.end(); ++cIt)
-    {
-        KTINFO(testlog, "Candidate " << iCand);
-        KTSparseWaterfallCandidateData& swcData = (*cIt)->Of< KTSparseWaterfallCandidateData >();
-        const Points& candPoints = swcData.GetPoints();
+    std::cout << "knnSearch(nn="<<num_results<<"): \n";
+    std::cout << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << endl;
 
-#ifdef ROOT_FOUND
-        TGraph* clGraph = new TGraph(candPoints.size());
-        clGraph->SetMarkerStyle(4);
-        clGraph->SetMarkerColor(firstClusterColor + iCand);
-        unsigned iPt = 0;
-#endif
 
-        stringstream pointsStr;
-        pointsStr << "Points: ";
-        for (Points::const_iterator pIt = candPoints.begin(); pIt != candPoints.end(); ++pIt)
-        {
-            pointsStr << "(" << pIt->fTimeInRunC << ", " << pIt->fFrequency << "), ";
-#ifdef ROOT_FOUND
-            clGraph->SetPoint(iPt, pIt->fTimeInRunC, pIt->fFrequency);
-            ++iPt;
-#endif
-        }
+    std::cout << "Radius search using FindNeighbors" << std::endl;
+    nanoflann::RadiusResultSet<double,size_t> resultSetRadius(radius,indices_dists);
 
-#ifdef ROOT_FOUND
-        std::stringstream nameStream;
-        nameStream << "Candidate" << iCand;
-        clGraph->Draw("psame");
-        clGraph->Write(nameStream.str().c_str());
+    data.GetTreeIndex()->FindNeighbors(resultSetRadius, query_pt, nanoflann::SearchParams());
 
-        ++iCand;
-#endif
-    }
+    std::pair<size_t,double> worst_pair = resultSetRadius.worst_item();
+    cout << "Worst pair: idx=" << worst_pair.first << " dist=" << worst_pair.second << endl;
 
-#ifdef ROOT_FOUND
-    canv->Write();
+}
 
-    file.Close();
-#endif
+int main(int argc, char** argv)
+{
+    kdtree_demo(1000000);
 
     return 0;
 }

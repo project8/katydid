@@ -9,6 +9,7 @@
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTLogger.hh"
+#include "KTMath.hh"
 #include "KTParam.hh"
 #include "KTSliceHeader.hh"
 
@@ -96,8 +97,8 @@ namespace Katydid
         //fFreqBinWidth = discPoints.GetBinWidth();
 
         // invert the scalings to use multiplication later instead of division
-        double xInvScaling = 1. / fScalings[0];
-        double yInvScaling = 1. / fScalings[1];
+        double xInvScaling = 1. / (fScalings[0] * KTMath::Sqrt2());
+        double yInvScaling = 1. / (fScalings[1] * KTMath::Sqrt2());
 
         // verify that we have the right number of components
         unsigned nComponents = slHeader.GetNComponents();

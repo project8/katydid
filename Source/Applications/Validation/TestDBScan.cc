@@ -9,6 +9,7 @@
 
 
 #include "KTDBScan.hh"
+#include "KTDistanceMatrix.hh"
 #include "KTLogger.hh"
 
 #ifdef ROOT_FOUND
@@ -24,19 +25,10 @@ KTLOGGER(testlog, "TestDBScan");
 
 int main()
 {
-/*
-    DBSCAN::ClusterData cl_d = DBSCAN::gen_cluster_data( 2, 1000 );
+    typedef KTSymmetricDistanceMatrix< double >::Point Point;
+    typedef KTSymmetricDistanceMatrix< double >::Points Points;
 
-    DBSCAN dbs(0.1, 5, 1);
-
-    dbs.fit( cl_d );
-
-    std::cout << dbs << std::endl;
-*/
-
-
-
-    KTDBScan::Points ps;
+    Points ps;
 
     // a scatter of points between -1 and 1 in each dimension
     // random init points dataset (dims, points)
@@ -44,7 +36,7 @@ int main()
     unsigned numPoints = 100;
     for (unsigned iPoint = 0; iPoint < numPoints; ++iPoint)
     {
-        KTDBScan::Point p(dims);
+        Point p(dims);
         for (unsigned iDim = 0; iDim < dims; ++iDim)
         {
             p(iDim) = (-1.0 + rand() * (2.0) / RAND_MAX);
@@ -57,7 +49,7 @@ int main()
     // a tight cluster of points around -10 in each dimension
     for (unsigned iPoint = 0; iPoint < numPoints; ++iPoint)
     {
-        KTDBScan::Point p(dims);
+       Point p(dims);
         for (unsigned iDim = 0; iDim < dims; ++iDim)
         {
             p(iDim) = (-10.0 + rand() * (0.5) / RAND_MAX);
@@ -70,7 +62,7 @@ int main()
     // a tight cluster of points around 10 in each dimension
     for (unsigned iPoint = 0; iPoint < numPoints; ++iPoint)
     {
-        KTDBScan::Point p(dims);
+        Point p(dims);
         for (unsigned iDim = 0; iDim < dims; ++iDim)
         {
             p(iDim) = (10.0 + rand() * (0.5) / RAND_MAX);
@@ -80,12 +72,21 @@ int main()
         //std::cout << std::endl;
     }
 
+    KTINFO(testlog, "Calculating distances");
+
+    KTSymmetricDistanceMatrix< double > distMat;
+    distMat.ComputeDistances< Euclidean< Point > >(ps);
+
+
+    KTINFO(testlog, "Performing clustering");
 
     // init: sim threshold, minPts
-    KTDBScan clustering(0.1, 10);
-    clustering.RunDBScan< Euclidean< KTDBScan::Point > >(ps);
+    typedef KTDBScan< KTSymmetricDistanceMatrix< double > > DBSCAN;
+    DBSCAN clustering(0.1, 10);
+    DBSCAN::DBSResults results;
+    clustering.DoClustering(distMat, results);
 
-    KTINFO(testlog, clustering);
+    //KTINFO(testlog, results);
 
 #ifdef ROOT_FOUND
     if (dims == 2)
@@ -104,9 +105,8 @@ int main()
         ptsGraph->Write("Points");
 
         unsigned firstClusterColor = 2;
-        const std::vector< KTDBScan::Cluster >& clusters = clustering.GetClusters();
         unsigned iClust = 0;
-        for (std::vector< KTDBScan::Cluster >::const_iterator cIt = clusters.begin(); cIt != clusters.end(); ++cIt)
+        for (std::vector< DBSCAN::Cluster >::const_iterator cIt = results.fClusters.begin(); cIt != results.fClusters.end(); ++cIt)
         {
             TGraph* clGraph = new TGraph(cIt->size());
             clGraph->SetMarkerStyle(4);

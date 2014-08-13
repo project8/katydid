@@ -22,6 +22,9 @@ if (Katydid_ENABLE_TESTING)
     
     # Executables that do NOT require ROOT
     
+    add_executable (ObjectSize ObjectSize.cc)
+    target_link_libraries (ObjectSize KatydidUtility ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestApplication TestApplication.cc
                                     KTTestConfigurable.cc)
     target_link_libraries (TestApplication KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
@@ -54,8 +57,8 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestDataDisplay TestDataDisplay.cc)
     target_link_libraries (TestDataDisplay KatydidUtility KatydidCore KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
     
-    add_executable (TestDBScan TestDBScan.cc)
-    target_link_libraries (TestDBScan KatydidUtility KatydidCore KatydidData KatydidIO KatydidCandidates ${EXTERNAL_LIBRARIES})
+    #add_executable (TestDBScan TestDBScan.cc)
+    #target_link_libraries (TestDBScan KatydidUtility KatydidCore KatydidData KatydidIO KatydidCandidates ${EXTERNAL_LIBRARIES})
     
     add_executable (TestDBScanTrackClustering TestDBScanTrackClustering.cc)
     target_link_libraries (TestDBScanTrackClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidCandidates ${EXTERNAL_LIBRARIES})
@@ -73,6 +76,12 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestJSONWriter TestJSONWriter.cc)
     target_link_libraries (TestJSONWriter KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestKDTree TestKDTree.cc)
+    target_link_libraries (TestKDTree KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    
+    add_executable (TestKDTreeData TestKDTreeData.cc)
+    target_link_libraries (TestKDTreeData KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestLogger TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${EXTERNAL_LIBRARIES})
     
@@ -85,6 +94,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestMultiFileJSONReader TestMultiFileJSONReader.cc)
     target_link_libraries (TestMultiFileJSONReader KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
+    add_executable (TestNanoflann TestNanoflann.cc)
+    target_link_libraries (TestNanoflann KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestRandom TestRandom.cc)
     target_link_libraries (TestRandom KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
@@ -119,6 +131,7 @@ if (Katydid_ENABLE_TESTING)
     #target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
     pbuilder_install_executables (
+                     ObjectSize
                      TestApplication
                      TestAxisProperties
                      TestCacheDirectory
@@ -129,16 +142,19 @@ if (Katydid_ENABLE_TESTING)
                      TestCutableArray
                      TestDataAccumulator
                      TestDataDisplay
-                     TestDBScan
+                     #TestDBScan
                      TestDBScanTrackClustering
                      TestDistanceClustering
                      TestFrequencySpectrumFFTW
                      #TestHoughTransform
                      TestJSONWriter
+                     TestKDTree
+                     TestKDTreeData
                      TestLogger
                      TestMinMaxBin
                      TestMultiSliceClustering
                      TestMultiFileJSONReader
+                     TestNanoflann
                      TestRandom
                      TestSignalsAndSlots
                      #TestSimpleClustering
@@ -162,7 +178,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_DataAccumulator TestDataAccumulator)
     add_test (Test_DataDisplay TestDataDisplay)
-    add_test (Test_DBScan TestDBScan)
+    #add_test (Test_DBScan TestDBScan)
     add_test (Test_DBScanTrackClustering TestDBScanTrackClustering)
     add_test (Test_DistanceClustering TestDistanceClustering)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)

@@ -7,8 +7,12 @@
 
 #include "KTKDTreeData.hh"
 
+#include "KTLogger.hh"
+
 namespace Katydid
 {
+    KTLOGGER(kdtlog, "KTKDTreeData");
+
     const unsigned KTKDTreeData::fNDimensions = 2;
 
     KTKDTreeData::KTKDTreeData() :
@@ -32,11 +36,15 @@ namespace Katydid
         delete fComponentData[component].fTreeIndex;
         if (dist == kManhattan)
         {
-            fComponentData[component].fTreeIndex = new KTTreeIndexManhattan< double, PointCloudAdaptor >(fNDimensions, PointCloudAdaptor(fComponentData[component].fCloud), nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
+            KTDEBUG(kdtlog, "Creating index with Manhattan distance metric");
+            fComponentData[component].fTreeIndex = new KTTreeIndexManhattan< double, KTPointCloud< Point > >(fNDimensions, fComponentData[component].fCloud, nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
+            fComponentData[component].fTreeIndex->BuildIndex();
         }
         else
         {
-            fComponentData[component].fTreeIndex = new KTTreeIndexEuclidean< double, PointCloudAdaptor >(fNDimensions, PointCloudAdaptor(fComponentData[component].fCloud), nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
+            KTDEBUG(kdtlog, "Creating index with Euclidean distance metric");
+            fComponentData[component].fTreeIndex = new KTTreeIndexEuclidean< double, KTPointCloud< Point > >(fNDimensions, fComponentData[component].fCloud, nanoflann::KDTreeSingleIndexAdaptorParams(maxLeafSize));
+            fComponentData[component].fTreeIndex->BuildIndex();
         }
         return;
     }

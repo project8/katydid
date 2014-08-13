@@ -210,12 +210,16 @@ namespace Katydid
                             {
                                 //std::cout << "\t Expanding to pid=" << nPid << std::endl;
                                 // join
-                                BOOST_FOREACH(typename DistanceData::Neighbors::value_type n1, ne1)
+                                for (unsigned int j = 0; j < ne1.size(); ++j)
                                 {
-                                    // join neighbors
-                                    ne.push_back(n1);
-                                    //std::cerr << "\tPushback pid=" << n1 << std::endl;
+                                    ne.push_back(ne1[j]);
                                 }
+                                //BOOST_FOREACH(typename DistanceData::Neighbors::value_type n1, ne1)
+                                //{
+                                    // join neighbors
+                                //    ne.push_back(n1);
+                                    //std::cerr << "\tPushback pid=" << n1 << std::endl;
+                                //}
                                 //std::cout << std::endl;
                             }
                         }
