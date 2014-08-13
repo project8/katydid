@@ -193,8 +193,8 @@ namespace Katydid
                 KTSparseWaterfallCandidateData& cand = newData->Of< KTSparseWaterfallCandidateData >();
 
                 DBSCAN::Cluster::const_iterator pointIdIt = clustIt->begin();
-                double freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
                 double time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
+                double freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
                 double minFreq = freq;
                 double maxFreq = minFreq;
                 double minTime = time;
@@ -204,19 +204,10 @@ namespace Katydid
 
                 for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
                 {
-                    freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
                     time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
+                    freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
                     cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1.));
                     KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
-
-                    if (points[*pointIdIt].fCoords[1] * data.GetYScaling() > maxFreq)
-                    {
-                        maxFreq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
-                    }
-                    else if (points[*pointIdIt].fCoords[1] * data.GetYScaling() < minFreq)
-                    {
-                        minFreq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
-                    }
 
                     if (time > maxTime)
                     {
@@ -225,6 +216,15 @@ namespace Katydid
                     else if (time < minTime)
                     {
                         minTime = time;
+                    }
+
+                    if (freq > maxFreq)
+                    {
+                        maxFreq = freq;
+                    }
+                    else if (freq < minFreq)
+                    {
+                        minFreq = freq;
                     }
                 }
 

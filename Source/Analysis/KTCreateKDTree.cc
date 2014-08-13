@@ -9,7 +9,6 @@
 
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTLogger.hh"
-#include "KTMath.hh"
 #include "KTParam.hh"
 #include "KTSliceHeader.hh"
 
@@ -28,17 +27,20 @@ namespace Katydid
             KTProcessor(name),
             fDistanceMethod(KTKDTreeData::kEuclidean),
             fMaxLeafSize(10),
-            fScalings(fNDimensions),
+            fTimeRadius(1.),
+            fFreqRadius(1.),
             fDataPtr(new KTData()),
             fTreeData(fDataPtr->Of< KTKDTreeData >()),
+            fInvScalingX(1.),
+            fInvScalingY(1.),
             fKDTreeSignal("kd-tree", this),
             fDiscPointsSlot("disc-1d", this, &KTCreateKDTree::AddPoints)
     {
+        RegisterSlot("make-tree", this, &KTCreateKDTree::MakeTreeSlot);
     }
 
     KTCreateKDTree::~KTCreateKDTree()
     {
-        RegisterSlot("make-tree", this, &KTCreateKDTree::MakeTreeSlot);
     }
 
     bool KTCreateKDTree::Configure(const KTParamNode* node)
@@ -64,18 +66,8 @@ namespace Katydid
 
         SetMaxLeafSize(node->GetValue("max-leaf-size", GetMaxLeafSize()));
 
-        if (node->Has("coord-scalings"))
-        {
-            const KTParamArray* scalings = node->ArrayAt("coord-scalings");
-            if (scalings->Size() != fNDimensions)
-            {
-                KTERROR(kdlog, "Scalings array does not have the right number of dimensions: <" << scalings->Size() << "> instead of <" << fNDimensions << ">");
-                return false;
-            }
-            fScalings[0] = scalings->GetValue< double >(0);
-            fScalings[1] = scalings->GetValue< double >(1);
-        }
-
+        SetTimeRadius(node->GetValue("time-radius", GetTimeRadius()));
+        SetFreqRadius(node->GetValue("freq-radius", GetFreqRadius()));
 
         return true;
     }
@@ -96,10 +88,6 @@ namespace Katydid
         //fTimeBinWidth = slHeader.GetSliceLength();
         //fFreqBinWidth = discPoints.GetBinWidth();
 
-        // invert the scalings to use multiplication later instead of division
-        double xInvScaling = 1. / (fScalings[0] * KTMath::Sqrt2());
-        double yInvScaling = 1. / (fScalings[1] * KTMath::Sqrt2());
-
         // verify that we have the right number of components
         unsigned nComponents = slHeader.GetNComponents();
         if (nComponents > fTreeData.GetNComponents())
@@ -108,14 +96,14 @@ namespace Katydid
         }
 
         KTKDTreeData::Point newPoint;
-        newPoint.fCoords[0] = xInvScaling * (slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength());
+        newPoint.fCoords[0] = fInvScalingX * (slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength());
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
             for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
                     pIt != incomingPts.end(); ++pIt)
             {
-                newPoint.fCoords[1] = yInvScaling * pIt->second.fAbscissa;
+                newPoint.fCoords[1] = fInvScalingY * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
                 fTreeData.AddPoint(newPoint, iComponent);
             }
@@ -126,8 +114,11 @@ namespace Katydid
 
     bool KTCreateKDTree::MakeTree()
     {
-        fTreeData.SetXScaling(fScalings[0]);
-        fTreeData.SetYScaling(fScalings[1]);
+        KTINFO(kdlog, "Creating k-d tree");
+
+        fTreeData.SetXScaling(fTimeRadius);
+        fTreeData.SetYScaling(fFreqRadius);
+        KTINFO(kdlog, "Scalings for k-d tree points: (" << fTimeRadius << ", " << fFreqRadius << ")");
 
         unsigned nComponents = fTreeData.GetNComponents();
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
@@ -143,7 +134,9 @@ namespace Katydid
         if (! MakeTree())
         {
             KTERROR(kdlog, "An error occurred while making the k-d tree");
+            return;
         }
+        fKDTreeSignal(fDataPtr);
         return;
     }
 

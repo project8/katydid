@@ -12,6 +12,8 @@
 
 #include "nanoflann.hpp"
 
+//#include <iostream>
+
 #include <utility>
 
 namespace Katydid
@@ -47,6 +49,7 @@ namespace Katydid
         {
             const coord_t d0 = p1[0] - fPoints[idx_p2].fCoords[0];
             const coord_t d1 = p1[1] - fPoints[idx_p2].fCoords[1];
+            //std::cout << "distance between (" << p1[0] << ", " << p1[1] << ") and pid " << idx_p2 << "(" << fPoints[idx_p2].fCoords[0] << ", " << fPoints[idx_p2].fCoords[1] << ") = " << d0 << "^2 + " << d1 << "^2 = " << d0*d0+d1*d1 << std::endl;
             return d0*d0 + d1*d1;
         }
 

@@ -57,8 +57,8 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestDataDisplay TestDataDisplay.cc)
     target_link_libraries (TestDataDisplay KatydidUtility KatydidCore KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
     
-    #add_executable (TestDBScan TestDBScan.cc)
-    #target_link_libraries (TestDBScan KatydidUtility KatydidCore KatydidData KatydidIO KatydidCandidates ${EXTERNAL_LIBRARIES})
+    add_executable (TestDBScan TestDBScan.cc)
+    target_link_libraries (TestDBScan KatydidUtility KatydidCore KatydidData KatydidIO KatydidCandidates ${EXTERNAL_LIBRARIES})
     
     add_executable (TestDBScanTrackClustering TestDBScanTrackClustering.cc)
     target_link_libraries (TestDBScanTrackClustering KatydidUtility KatydidCore KatydidData KatydidIO KatydidCandidates ${EXTERNAL_LIBRARIES})
@@ -142,7 +142,7 @@ if (Katydid_ENABLE_TESTING)
                      TestCutableArray
                      TestDataAccumulator
                      TestDataDisplay
-                     #TestDBScan
+                     TestDBScan
                      TestDBScanTrackClustering
                      TestDistanceClustering
                      TestFrequencySpectrumFFTW
