@@ -871,7 +871,7 @@ namespace nanoflann
 			// Create a permutable array of indices to the input vectors.
 			init_vind();
 
-            std::cout << "in constructor (" << this << ")  " << dataset.derived().fPoints[150].fCoords[0] << ", " << dataset.derived().fPoints[150].fCoords[1] << std::endl;
+            //std::cout << "in constructor (" << this << ")  " << dataset.derived().fPoints[150].fCoords[0] << ", " << dataset.derived().fPoints[150].fCoords[1] << std::endl;
 		}
 
 		/**
@@ -979,7 +979,7 @@ namespace nanoflann
 		 */
 		size_t radiusSearch(const ElementType *query_point,const DistanceType radius, std::vector<std::pair<IndexType,DistanceType> >& IndicesDists, const SearchParams& searchParams) const
 		{
-		    std::cout << "in radiusSearch (" << this << ")  " << dataset.derived().fPoints[150].fCoords[0] << ", " << dataset.derived().fPoints[150].fCoords[1] << std::endl;
+		    //std::cout << "in radiusSearch (" << this << ")  " << dataset.derived().fPoints[150].fCoords[0] << ", " << dataset.derived().fPoints[150].fCoords[1] << std::endl;
 			RadiusResultSet<DistanceType,IndexType> resultSet(radius,IndicesDists);
 			this->findNeighbors(resultSet, query_point, searchParams);
 

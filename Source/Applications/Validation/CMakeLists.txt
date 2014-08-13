@@ -94,8 +94,8 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestMultiFileJSONReader TestMultiFileJSONReader.cc)
     target_link_libraries (TestMultiFileJSONReader KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
-    #add_executable (TestNanoflann TestNanoflann.cc)
-    #target_link_libraries (TestNanoflann KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    add_executable (TestNanoflann TestNanoflann.cc)
+    target_link_libraries (TestNanoflann KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
     
     add_executable (TestRandom TestRandom.cc)
     target_link_libraries (TestRandom KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
@@ -154,7 +154,7 @@ if (Katydid_ENABLE_TESTING)
                      TestMinMaxBin
                      TestMultiSliceClustering
                      TestMultiFileJSONReader
-                     #TestNanoflann
+                     TestNanoflann
                      TestRandom
                      TestSignalsAndSlots
                      #TestSimpleClustering

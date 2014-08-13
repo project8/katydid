@@ -219,23 +219,46 @@ void kdtree_demo(const size_t N)
 
     data.CreateIndex(KTKDTreeData::kEuclidean);
 
+    const double radius = 160000;
+    std::vector<std::pair<size_t,double> > indices_dists;
+
+    std::cout << "Radius search using FindNeighbors" << std::endl;
+    nanoflann::RadiusResultSet<double,size_t> resultSetRadius(radius,indices_dists);
+
+    data.GetTreeIndex()->FindNeighbors(resultSetRadius, query_pt, nanoflann::SearchParams());
+
+    std::pair<size_t,double> worst_pair = resultSetRadius.worst_item();
+    cout << "Worst pair: idx=" << worst_pair.first << " dist=" << worst_pair.second << endl;
+
+
+    std::cout << "Radius search using RadiusSearch" << std::endl;
+    data.GetTreeIndex()->RadiusSearch(query_pt, radius, indices_dists, nanoflann::SearchParams());
+
+    cout << "n neighbors: " << indices_dists.size() << endl;
+
+
     // do a knn search
     const size_t num_results = 1;
     size_t ret_index;
     double out_dist_sqr;
     nanoflann::KNNResultSet< double > resultSet(num_results);
     resultSet.init(&ret_index, &out_dist_sqr );
-    data.GetTreeIndex()->FindNeighbors(resultSet, &query_pt[0], nanoflann::SearchParams(10));
+    data.GetTreeIndex()->FindNeighbors(resultSet, query_pt, nanoflann::SearchParams(10));
     //index.knnSearch(query, indices, dists, num_results, mrpt_flann::SearchParams(10));
 
     std::cout << "knnSearch(nn="<<num_results<<"): \n";
     std::cout << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << endl;
 
-    KTTreeIndex<double>::Neighbors ne = data.GetTreeIndex()->FindNeighbors(150, 1.);
+
+
+
+    //KTTreeIndex<double>::Neighbors ne = data.GetTreeIndex()->FindNeighbors(150, 1.);
+    std::vector< std::pair< size_t, double > > ne;
+    data.GetTreeIndex()->RadiusSearch(&query_pt[0], 1., ne, nanoflann::SearchParams());
     std::cout << "radius search around pid=150 (nn=" << ne.size() << "):\n";
     for (unsigned i=0; i<ne.size(); ++i)
     {
-        std::cout << "\t" << ne[i] << " @ " << ne.dist(i) << '\n';
+        std::cout << "\t" << ne[i].first << " @ " << /*ne.dist(i)*/ ne[i].second << '\n';
     }
     std::cout << endl;
 

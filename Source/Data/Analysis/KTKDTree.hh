@@ -60,6 +60,7 @@ namespace Katydid
         // Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
         inline coord_t kdtree_distance(const coord_t *p1, const size_t idx_p2, size_t size) const
         {
+            std::cout << "kdtree_distance, size of points: " << derived().fPoints.size() << std::endl;
             const coord_t d0 = p1[0] - derived().fPoints[idx_p2].fCoords[0];
             const coord_t d1 = p1[1] - derived().fPoints[idx_p2].fCoords[1];
             std::cout << "distance between (" << p1[0] << ", " << p1[1] << ") and pid " << idx_p2 << "(" << obj.fPoints[idx_p2].fCoords[0] << ", " << obj.fPoints[idx_p2].fCoords[1] << ") = " << d0 << "^2 + " << d1 << "^2 = " << d0*d0+d1*d1 << std::endl;
@@ -141,8 +142,9 @@ namespace Katydid
         virtual void LoadIndex(FILE* stream) = 0;
 
         virtual void FindNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, const nanoflann::SearchParams& searchParams) const = 0;
+        virtual void FindNeighbors(nanoflann::RadiusResultSet< TYPE >& result, const TYPE* vec, const nanoflann::SearchParams& searchParams) const = 0;
         virtual void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const = 0;
-        //virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
+        virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
         virtual Neighbors FindNeighbors(PointId pid, TYPE radius) const = 0;
         virtual Neighbors knnSearch(PointId pid, size_t N) const = 0;
     };
@@ -175,11 +177,18 @@ namespace Katydid
         {
             fIndex.findNeighbors(result, vec, searchParams);
         }
+        virtual void FindNeighbors(nanoflann::RadiusResultSet< TYPE >& result, const TYPE* vec, const nanoflann::SearchParams& searchParams) const
+        {
+            fIndex.findNeighbors(result, vec, searchParams);
+        }
         void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const
         {
             fIndex.knnSearch(query_point, num_closest, out_indices, out_distances_sq, nChecks_IGNORED);
         }
-        //size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
+        size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
+        {
+            return fIndex.radiusSearch(query_point, radius, IndicesDists, searchParams);
+        }
         Neighbors FindNeighbors(PointId pid, TYPE radius) const
         {
             Neighbors neighbors;
@@ -234,11 +243,18 @@ namespace Katydid
         {
             fIndex.findNeighbors(result, vec, searchParams);
         }
+        virtual void FindNeighbors(nanoflann::RadiusResultSet< TYPE >& result, const TYPE* vec, const nanoflann::SearchParams& searchParams) const
+        {
+            fIndex.findNeighbors(result, vec, searchParams);
+        }
         virtual void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const
         {
             fIndex.knnSearch(query_point, num_closest, out_indices, out_distances_sq, nChecks_IGNORED);
         }
-        //virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
+        size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
+        {
+            return fIndex.radiusSearch(query_point, radius, IndicesDists, searchParams);
+        }
         Neighbors FindNeighbors(PointId pid, TYPE radius) const
         {
             Neighbors neighbors;

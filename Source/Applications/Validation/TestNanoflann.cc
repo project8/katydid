@@ -159,6 +159,20 @@ void kdtree_demo(const size_t N)
     std::cout << "knnSearch(nn="<<num_results<<"): \n";
     std::cout << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << endl;
 
+
+    // Unsorted radius search:
+    const num_t radius = 1;
+    std::vector<std::pair<size_t,num_t> > indices_dists;
+    //RadiusResultSet<num_t,size_t> resultSet(radius,indices_dists);
+
+    //index.findNeighbors(resultSet, query_pt, nanoflann::SearchParams());
+    index.radiusSearch(query_pt, radius, indices_dists, nanoflann::SearchParams());
+
+    // Get worst (furthest) point, without sorting:
+    //std::pair<size_t,num_t> worst_pair = resultSet.worst_item();
+    //cout << "Worst pair: idx=" << worst_pair.first << " dist=" << worst_pair.second << endl;
+    cout << "Radius search; n neighbors: " << indices_dists.size() << endl;
+
 }
 
 int main(int argc, char** argv)
