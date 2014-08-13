@@ -128,6 +128,7 @@ namespace Katydid
         virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
         virtual Neighbors FindNeighbors(PointId pid, TYPE radius) const = 0;
         virtual Neighbors knnSearch(PointId pid, size_t N) const = 0;
+
     };
 
     template< typename TYPE, typename DatasetAdaptor >
@@ -177,8 +178,8 @@ namespace Katydid
 
         Neighbors knnSearch(PointId pid, size_t nPoints) const
         {
-            size_t* out_indices;//[nPoints];
-            TYPE* out_distances_sq;//[nPoints];
+            size_t* out_indices;
+            TYPE* out_distances_sq;
             const int nChecks_IGNORED=10;
             NanoflannIndex::knnSearch(NanoflannIndex::dataset.fPoints[pid].fCoords, nPoints, out_indices, out_distances_sq, nChecks_IGNORED);
 
@@ -239,8 +240,8 @@ namespace Katydid
 
         Neighbors knnSearch(PointId pid, size_t nPoints) const
         {
-            size_t* out_indices;//[nPoints];
-            TYPE* out_distances_sq;//[nPoints];
+            size_t* out_indices;
+            TYPE* out_distances_sq;
             const int nChecks_IGNORED=10;
             NanoflannIndex::knnSearch(NanoflannIndex::dataset.fPoints[pid].fCoords, nPoints, out_indices, out_distances_sq, nChecks_IGNORED);
 
