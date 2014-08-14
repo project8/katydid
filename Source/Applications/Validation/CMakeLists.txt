@@ -42,6 +42,9 @@ if (Katydid_ENABLE_TESTING)
                                        KTTestConfigurable.cc)
     target_link_libraries (TestConfigurator KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestConsensusThresholding TestConsensusThresholding.cc)
+    target_link_libraries (TestConsensusThresholding KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
+        
     add_executable (TestCorrelator TestCorrelator.cc)
     target_link_libraries (TestCorrelator KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
@@ -137,6 +140,7 @@ if (Katydid_ENABLE_TESTING)
                      TestCacheDirectory
                      TestComplexPolar
                      TestConfigurator
+                     TestConsensusThresholding
                      TestCorrelator
                      TestCutIterator
                      TestCutableArray
