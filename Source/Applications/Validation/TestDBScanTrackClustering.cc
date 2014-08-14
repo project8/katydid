@@ -200,7 +200,7 @@ int main()
         kdTreeData.AddPoint(KTKDTreeData::Point((*tIt)/timeScale, (*fIt)/freqScale, *aIt));
         ++fIt; ++aIt;
     }
-    kdTreeData.CreateIndex(KTKDTreeData::kEuclidean);
+    kdTreeData.BuildIndex(KTKDTreeData::kEuclidean);
 
     KTDBScanTrackClustering clustering;
 

@@ -181,9 +181,9 @@ namespace Katydid
 
         Neighbors knnSearch(PointId pid, size_t nPoints) const
         {
-            size_t* out_indices;
-            TYPE* out_distances_sq;
-            const int nChecks_IGNORED=10;
+            size_t* out_indices = new size_t[nPoints];
+            TYPE* out_distances_sq = new TYPE[nPoints];
+            const int nChecks_IGNORED = 10;
             NanoflannIndex::knnSearch(NanoflannIndex::dataset.fPoints[pid].fCoords, nPoints, out_indices, out_distances_sq, nChecks_IGNORED);
 
             Neighbors neighbors;
@@ -191,6 +191,9 @@ namespace Katydid
             {
                 neighbors.GetIndicesAndDists().push_back(std::make_pair< size_t, TYPE > (out_indices[iPoint], out_distances_sq[iPoint]));
             }
+
+            delete [] out_indices;
+            delete [] out_distances_sq;
             return neighbors;
         }
     };
@@ -243,9 +246,9 @@ namespace Katydid
 
         Neighbors knnSearch(PointId pid, size_t nPoints) const
         {
-            size_t* out_indices;
-            TYPE* out_distances_sq;
-            const int nChecks_IGNORED=10;
+            size_t* out_indices = new size_t[nPoints];
+            TYPE* out_distances_sq = new TYPE[nPoints];
+            const int nChecks_IGNORED = 10;
             NanoflannIndex::knnSearch(NanoflannIndex::dataset.fPoints[pid].fCoords, nPoints, out_indices, out_distances_sq, nChecks_IGNORED);
 
             Neighbors neighbors;
@@ -253,6 +256,9 @@ namespace Katydid
             {
                 neighbors.GetIndicesAndDists().push_back(std::make_pair< size_t, TYPE > (out_indices[iPoint], out_distances_sq[iPoint]));
             }
+
+            delete [] out_indices;
+            delete [] out_distances_sq;
             return neighbors;
         }
     };

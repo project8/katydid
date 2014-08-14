@@ -71,9 +71,9 @@ namespace Katydid
 
             void AddPoint(const Point& point, unsigned component = 0);
             void RemovePoint(unsigned pid, unsigned component = 0);
-            void RemovePoint(std::vector< size_t > points, unsigned component = 0);
-            void CreateIndex(unsigned component = 0);
-            void CreateIndex(DistanceMethod, unsigned maxLeafSize = 10, unsigned component = 0);
+            void RemovePoint(const std::vector< size_t >& points, unsigned component = 0);
+            void BuildIndex(unsigned component = 0);
+            void BuildIndex(DistanceMethod, unsigned maxLeafSize = 10, unsigned component = 0);
 
             KTKDTreeData& SetNComponents(unsigned channels);
 
@@ -107,22 +107,7 @@ namespace Katydid
 
     inline void KTKDTreeData::RemovePoint(unsigned pid, unsigned component)
     {
-        std::vector< size_t > points;
-        points.push_back(pid);
-        this->RemovePoint(points, component);
-        return;
-    }
-
-    inline void KTKDTreeData::RemovePoint(std::vector< size_t > points, unsigned component)
-    {
-        size_t index;
-        for (size_t iPoint=0; iPoint <= points.size(); ++iPoint)
-        {
-            index = points.back();
-            fComponentData[component].fCloud.fPoints.erase(fComponentData[component].fCloud.fPoints.begin() + index);
-            points.pop_back();
-        }
-        this->CreateIndex();
+        this->RemovePoint(std::vector< size_t >(1, pid), component);
         return;
     }
 

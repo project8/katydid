@@ -217,7 +217,7 @@ void kdtree_demo(const size_t N)
 
     double query_pt[3] = { 0.5, 0.5, 0.5};
 
-    data.CreateIndex(KTKDTreeData::kEuclidean);
+    data.BuildIndex(KTKDTreeData::kEuclidean);
 
     const double radius = 160000;
     std::vector<std::pair<size_t,double> > indices_dists;

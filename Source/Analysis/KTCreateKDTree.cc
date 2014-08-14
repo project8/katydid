@@ -123,7 +123,7 @@ namespace Katydid
         unsigned nComponents = fTreeData.GetNComponents();
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
         {
-            fTreeData.CreateIndex(fDistanceMethod, fMaxLeafSize, iComponent);
+            fTreeData.BuildIndex(fDistanceMethod, fMaxLeafSize, iComponent);
         }
 
         return true;
