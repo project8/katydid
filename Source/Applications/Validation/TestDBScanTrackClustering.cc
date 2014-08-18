@@ -194,10 +194,14 @@ int main()
 
     vector< double >::const_iterator fIt = freqs.begin();
     vector< double >::const_iterator aIt = amplitudes.begin();
+    KTKDTreeData::Point point;
     for (std::vector< double >::const_iterator tIt = times.begin(); tIt != times.end(); ++tIt)
     {
         KTDEBUG(testlog, "Adding point (" << *tIt << ", " << *fIt << ", " << *aIt << ") --> (" << (*tIt)/timeScale << ", " << (*fIt)/freqScale << ")");
-        kdTreeData.AddPoint(KTKDTreeData::Point((*tIt)/timeScale, (*fIt)/freqScale, *aIt));
+        point.fCoords[0] = (*tIt)/timeScale;
+        point.fCoords[1] = (*fIt)/freqScale;
+        point.fAmplitude = *aIt;
+        kdTreeData.AddPoint(point);
         ++fIt; ++aIt;
     }
     kdTreeData.BuildIndex(KTKDTreeData::kEuclidean);

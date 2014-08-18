@@ -96,6 +96,7 @@ namespace Katydid
         }
 
         KTKDTreeData::Point newPoint;
+        newPoint.fSliceNumber = slHeader.GetSliceNumber();
         newPoint.fCoords[0] = fInvScalingX * (slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength());
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
         {

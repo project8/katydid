@@ -28,11 +28,14 @@ namespace Katydid
             struct Point : KT2DPoint< double >
             {
                 typedef KT2DPoint< double >::coord_t coord_t;
-                Point() : fAmplitude(0.), fNoiseFlag(false) {fCoords[0] = 0; fCoords[1] = 0;}
-                Point(double x, double y, double amp) : fAmplitude(amp), fNoiseFlag(false)
-                    {fCoords[0] = x; fCoords[1] = y;}
+                Point() : fAmplitude(0.), fNoiseFlag(false), fSliceNumber(0)
+                {
+                    fCoords[0] = 0;
+                    fCoords[1] = 0;
+                }
                 double fAmplitude;
                 bool fNoiseFlag;
+                uint64_t fSliceNumber;
             };
 
             typedef KTTreeIndex< double > TreeIndex;
