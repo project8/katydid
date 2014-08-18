@@ -7,11 +7,9 @@
 
 #include "KTConsensusThresholding.hh"
 
-//#include "KTKDTreeData.hh"
-//#include "KTKDTree.hh"
+#include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTParam.hh"
-#include "KTSliceHeader.hh"
 
 using std::string;
 
@@ -26,6 +24,7 @@ namespace Katydid
             KTProcessor(name),
             fMembershipRadius(1.0),
             fMinNumberVotes(1),
+            fRemovePointsFlag(false),
             fKDTreeSignal("kd-tree-out", this),
             fKDTreeSlot("kd-tree-in", this, &KTConsensusThresholding::ConsensusVote, &fKDTreeSignal)
     {
@@ -38,14 +37,10 @@ namespace Katydid
     bool KTConsensusThresholding::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
-        //if (node->Has("membership-radius"))
-        //{
-            SetMembershipRadius(node->GetValue("membership-radius", GetMembershipRadius()));
-        //}
-        //if (node->Has("min-number-votes"))
-        //{
-            SetMinNumberVotes(node->GetValue< unsigned >("min-number-votes", GetMinNumberVotes()));
-        //}
+
+        SetMembershipRadius(node->GetValue("membership-radius", GetMembershipRadius()));
+        SetMinNumberVotes(node->GetValue("min-number-votes", GetMinNumberVotes()));
+        SetRemovePointsFlag(node->GetValue("remove-points", GetRemovePointsFlag()));
 
         return true;
     }
@@ -64,7 +59,14 @@ namespace Katydid
                 return false;
             }
             KTDEBUG(ctlog, "Consensus thresholding is removing " << noisePoints.size() << " points");
-            kdTreeData.RemovePoint(noisePoints); // also rebuilds k-d tree index
+            if (fRemovePointsFlag)
+            {
+                kdTreeData.RemovePoints(noisePoints); // also rebuilds k-d tree index
+            }
+            else
+            {
+                kdTreeData.FlagPoints(noisePoints); // does NOT rebuild k-d tree index
+            }
         }
         return true;
     }

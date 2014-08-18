@@ -18,9 +18,8 @@
 
 namespace Katydid
 {
-    class KTDiscriminatedPoints1DData;
+    class KTKDTreeData;
     class KTParamNode;
-    class KTSliceHeader;
 
    /*!
      @class KTConsensusThresholding
@@ -33,14 +32,15 @@ namespace Katydid
      Configuration name: "consensus-thresholding"
 
      Available configuration values:
-     - "use-neg-freqs": bool -- If true [default], corresponding negative and positive frequency bins are summed; if false, the negative frequency bins are dropped.
+     - "membership-radius": double -- Defines the circle in which nearest neighbors are searched for
+     - "min-number-votes": unsigned -- Minimum number of votes to keep a point
+     - "remove-noise": bool -- Flag that determines whether noise points are removed (true) or flagged (false; default)
 
      Slots:
-     - "disc-1d": void (KTDataPtr) -- Adds points to the KT-Tree; Requires KTDiscriminatedPoints1DData
-     - "make-tree": void () -- Creates a tree with the existing set of points; Creates data with KTKDTreeData; Emits signal kd-tree
+     - "kd-tree-in": void (KTDataPtr) -- Performs the CT algorithm on the data in a k-d tree; Requires KTKDTreeData; existing data is modified
 
      Signals:
-     - "kd-tree": void (KTDataPtr) emitted upon completion of a KD-Tree; Guarantees KTKDTreeData
+     - "kd-tree-out": void (KTDataPtr) emitted upon completion of the CT algorithm
     */
 
     class KTConsensusThresholding : public KTProcessor
@@ -51,17 +51,17 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
-            bool ConsensusVote(KTKDTreeData& kdTreeData);
-            bool ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const std::vector< KTKDTreeData::Point >& setOfPoints, std::vector< size_t >& noisePoints);
-            void VoteCore(bool doPositive, size_t pid, double* thisPoint, double* neighborPoint, double slope, double intercept);
-
-            //MEMBERVARIABLE(KTKDTreeData::DistanceMethod, DistanceMethod);
-            //MEMBERVARIABLE(unsigned, MaxLeafSize);
             MEMBERVARIABLE(double, MembershipRadius);
             MEMBERVARIABLE(unsigned, MinNumberVotes);
+            MEMBERVARIABLE(bool, RemovePointsFlag);
 
         public:
+            bool ConsensusVote(KTKDTreeData& kdTreeData);
 
+            bool ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const std::vector< KTKDTreeData::Point >& setOfPoints, std::vector< size_t >& noisePoints);
+
+        private:
+            //void VoteCore(bool doPositive, size_t pid, double* thisPoint, double* neighborPoint, double slope, double intercept);
 
             //***************
             // Signals
