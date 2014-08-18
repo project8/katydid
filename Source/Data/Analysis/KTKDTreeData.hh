@@ -101,7 +101,7 @@ namespace Katydid
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fCloud.fPoints.push_back(point);
-        unsigned pt = fComponentData[component].fCloud.fPoints.size()-1;
+        //unsigned pt = fComponentData[component].fCloud.fPoints.size()-1;
         return;
     }
 
