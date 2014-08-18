@@ -61,6 +61,12 @@ namespace Katydid
     TProcessedTrackData::~TProcessedTrackData()
     {}
 
+    TObject* TProcessedTrackData::Clone(const char* newname)
+    {
+        TProcessedTrackData* newData = new TProcessedTrackData(*this);
+        return newData;
+    }
+
     TProcessedTrackData& TProcessedTrackData::operator=(const TProcessedTrackData& rhs)
     {
         fComponent = rhs.fComponent;fTrackID = rhs.fTrackID; fIsCut = rhs.fIsCut;
@@ -144,6 +150,12 @@ namespace Katydid
         fTracks->Clear();
     }
 
+    TObject* TMultiTrackEventData::Clone(const char* newname)
+    {
+        TMultiTrackEventData* newData = new TMultiTrackEventData(*this);
+        return newData;
+    }
+
     TMultiTrackEventData& TMultiTrackEventData::operator=(const TMultiTrackEventData& rhs)
     {
         fComponent = rhs.fComponent;fEventID = rhs.fEventID;
@@ -152,7 +164,7 @@ namespace Katydid
         fStartTimeInRunCSigma = rhs.fStartTimeInRunCSigma; fEndTimeInRunCSigma = rhs.fEndTimeInRunCSigma; fTimeLengthSigma = rhs.fTimeLengthSigma;
         fStartFrequencySigma = rhs.fStartFrequencySigma; fEndFrequencySigma = rhs.fEndFrequencySigma; fFrequencyWidthSigma = rhs.fFrequencyWidthSigma;
         fFirstTrackTimeLength = rhs.fFirstTrackTimeLength; fFirstTrackFrequencyWidth = rhs.fFirstTrackFrequencyWidth; fFirstTrackSlope = rhs.fFirstTrackSlope; fFirstTrackIntercept = rhs.fFirstTrackIntercept; fFirstTrackTotalPower = rhs.fFirstTrackTotalPower;
-        fTracks->Clear(); fTracks = rhs.fTracks;
+        fTracks->Clear(); (*fTracks) = *(rhs.fTracks);
         return *this;
     }
 
