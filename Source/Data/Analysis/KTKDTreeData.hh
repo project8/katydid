@@ -67,6 +67,7 @@ namespace Katydid
             KTKDTreeData();
             virtual ~KTKDTreeData();
 
+            MEMBERVARIABLE(bool, DataWillContinue);
             MEMBERVARIABLE(double, XScaling);
             MEMBERVARIABLE(double, YScaling);
 

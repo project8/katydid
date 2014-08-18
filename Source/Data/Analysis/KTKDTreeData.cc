@@ -17,6 +17,7 @@ namespace Katydid
 
     KTKDTreeData::KTKDTreeData() :
             KTExtensibleData< KTKDTreeData >(),
+            fDataWillContinue(false),
             fXScaling(1.),
             fYScaling(1.),
             fComponentData(1)

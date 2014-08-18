@@ -134,6 +134,7 @@ namespace Katydid
         KTINFO(kdlog, "Creating k-d tree");
         KTDEBUG(kdlog, "Tree will continue: " << willContinue);
 
+        fTreeData.SetDataWillContinue(willContinue);
         fTreeData.SetXScaling(fTimeRadius);
         fTreeData.SetYScaling(fFreqRadius);
         KTINFO(kdlog, "Scalings for k-d tree points: (" << fTimeRadius << ", " << fFreqRadius << ")");
