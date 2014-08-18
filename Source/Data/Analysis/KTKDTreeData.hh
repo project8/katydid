@@ -10,8 +10,9 @@
 
 #include "KTData.hh"
 
-#include "KTKDTree.hh"
+#include "KTPointCloud.hh"
 #include "KTMemberVariable.hh"
+#include "KTKDTree.hh"
 
 #include <map>
 #include <utility>
@@ -27,10 +28,11 @@ namespace Katydid
             struct Point : KT2DPoint< double >
             {
                 typedef KT2DPoint< double >::coord_t coord_t;
-                Point() : fAmplitude(0.) {fCoords[0] = 0; fCoords[1] = 0;}
-                Point(double x, double y, double amp) : fAmplitude(amp)
+                Point() : fAmplitude(0.), fNoiseFlag(false) {fCoords[0] = 0; fCoords[1] = 0;}
+                Point(double x, double y, double amp) : fAmplitude(amp), fNoiseFlag(false)
                     {fCoords[0] = x; fCoords[1] = y;}
                 double fAmplitude;
+                bool fNoiseFlag;
             };
 
             typedef KTTreeIndex< double > TreeIndex;
@@ -70,8 +72,13 @@ namespace Katydid
             unsigned GetNComponents() const;
 
             void AddPoint(const Point& point, unsigned component = 0);
+
             void RemovePoint(unsigned pid, unsigned component = 0);
-            void RemovePoint(const std::vector< size_t >& points, unsigned component = 0);
+            void RemovePoints(const std::vector< size_t >& points, unsigned component = 0);
+
+            void FlagPoint(unsigned, unsigned component = 0, bool flag = true);
+            void FlagPoints(const std::vector< size_t >& points, unsigned compoennt = 0, bool flag = true);
+
             void BuildIndex(unsigned component = 0);
             void BuildIndex(DistanceMethod, unsigned maxLeafSize = 10, unsigned component = 0);
 
@@ -107,7 +114,13 @@ namespace Katydid
 
     inline void KTKDTreeData::RemovePoint(unsigned pid, unsigned component)
     {
-        this->RemovePoint(std::vector< size_t >(1, pid), component);
+        this->RemovePoints(std::vector< size_t >(1, pid), component);
+        return;
+    }
+
+    inline void KTKDTreeData::FlagPoint(unsigned pid, unsigned component, bool flag)
+    {
+        fComponentData[component].fCloud.fPoints[pid].fNoiseFlag = flag;
         return;
     }
 

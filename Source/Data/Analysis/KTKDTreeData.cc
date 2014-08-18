@@ -56,7 +56,7 @@ namespace Katydid
         return;
     }
 
-    void KTKDTreeData::RemovePoint(const std::vector< size_t >& points, unsigned component)
+    void KTKDTreeData::RemovePoints(const std::vector< size_t >& points, unsigned component)
     {
         size_t index;
 #ifndef NDEBUG
@@ -74,6 +74,14 @@ namespace Katydid
         return;
     }
 
+    void KTKDTreeData::FlagPoints(const std::vector< size_t >& points, unsigned component, bool flag)
+    {
+        for (std::vector< size_t >::const_reverse_iterator pIt = points.rbegin(); pIt != points.rend(); ++pIt)
+        {
+            fComponentData[component].fCloud.fPoints[*pIt].fNoiseFlag = flag;
+        }
+        return;
+    }
 
 
 } /* namespace Katydid */

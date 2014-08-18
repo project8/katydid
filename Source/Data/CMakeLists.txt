@@ -15,6 +15,7 @@ set (DATA_HEADERFILES
     Analysis/KTKDTree.hh
     Analysis/KTKDTreeData.hh
     Analysis/KTNormalizedFSData.hh
+    Analysis/KTPointCloud.hh
     Analysis/KTTimeSeriesDist.hh
     Analysis/KTTimeSeriesDistData.hh
     Analysis/KTWV2DData.hh

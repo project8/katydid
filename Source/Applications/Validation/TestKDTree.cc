@@ -6,6 +6,7 @@
  */
 
 #include "KTKDTree.hh"
+#include "KTPointCloud.hh"
 
 #include <iostream>
 #include <time.h>
