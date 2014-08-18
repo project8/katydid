@@ -25,12 +25,15 @@ namespace Katydid
 
     KTCreateKDTree::KTCreateKDTree(const std::string& name) :
             KTProcessor(name),
+            fWindowSize(0),
+            fWindowOverlap(0),
             fDistanceMethod(KTKDTreeData::kEuclidean),
             fMaxLeafSize(10),
             fTimeRadius(1.),
             fFreqRadius(1.),
             fDataPtr(new KTData()),
             fTreeData(fDataPtr->Of< KTKDTreeData >()),
+            fSliceInWindowCount(0),
             fInvScalingX(1.),
             fInvScalingY(1.),
             fKDTreeSignal("kd-tree", this),
@@ -77,9 +80,9 @@ namespace Katydid
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
         if (slHeader.GetIsNewAcquisition())
         {
-            if (! MakeTree())
+            if (! MakeTree(false) || ! ClearTree(false))
             {
-                KTERROR(kdlog, "An error occurred while clustering from the previous acquisition");
+                KTERROR(kdlog, "An error occurred while clustering from the previous acquisition or clearing the tree");
                 return false;
             }
         }
@@ -110,12 +113,26 @@ namespace Katydid
             }
             KTDEBUG(kdlog, "Tree data (component " << iComponent << ") now has " << fTreeData.GetSetOfPoints(iComponent).size() << " points");
         }
+
+        ++fSliceInWindowCount;
+        // if fSliceInWindowCount == fWindowSize, then we need to move the window before taking the next slice
+        if (fWindowSize != 0 && fSliceInWindowCount == fWindowSize)
+        {
+            if (! MakeTree(true) || ! ClearTree(true, slHeader.GetSliceNumber() - fWindowOverlap + 1))
+            {
+                KTERROR(kdlog, "An error occurred while clustering or clearing the tree");
+                return false;
+            }
+            fSliceInWindowCount = 0;
+        }
+
         return true;
     }
 
-    bool KTCreateKDTree::MakeTree()
+    bool KTCreateKDTree::MakeTree(bool willContinue)
     {
         KTINFO(kdlog, "Creating k-d tree");
+        KTDEBUG(kdlog, "Tree will continue: " << willContinue);
 
         fTreeData.SetXScaling(fTimeRadius);
         fTreeData.SetYScaling(fFreqRadius);
@@ -130,14 +147,47 @@ namespace Katydid
         return true;
     }
 
+    bool KTCreateKDTree::ClearTree(bool willContinue, uint64_t firstSliceKept)
+    {
+        // firstSliceKept is only used if willContinue == true
+        if (willContinue)
+        {
+            // clear data up to the
+            unsigned nComponents = fTreeData.GetNComponents();
+            for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
+            {
+                fTreeData.ClearIndex(iComponent);
+                KTKDTreeData::SetOfPoints& points = fTreeData.GetSetOfPoints(iComponent);
+                KTKDTreeData::SetOfPoints::iterator startErase = points.begin();
+                KTKDTreeData::SetOfPoints::iterator endErase = startErase;
+                while (endErase != points.end() && endErase->fSliceNumber < firstSliceKept)
+                {
+                    ++endErase;
+                }
+                points.erase(startErase, endErase);
+            }
+        }
+        else
+        {
+            // clear all data from the tree, but leave the memory intact
+            unsigned nComponents = fTreeData.GetNComponents();
+            for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
+            {
+                fTreeData.ClearPoints(iComponent);
+            }
+        }
+        return true;
+    }
+
     void KTCreateKDTree::MakeTreeSlot()
     {
-        if (! MakeTree())
+        if (! MakeTree(false))
         {
             KTERROR(kdlog, "An error occurred while making the k-d tree");
             return;
         }
         fKDTreeSignal(fDataPtr);
+        ClearTree(false);
         return;
     }
 

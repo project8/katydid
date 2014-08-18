@@ -15,6 +15,7 @@
 #include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 
+#include <limits>
 
 namespace Katydid
 {
@@ -54,6 +55,9 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
+            MEMBERVARIABLE(unsigned, WindowSize);
+            MEMBERVARIABLE(unsigned, WindowOverlap);
+
             MEMBERVARIABLE(KTKDTreeData::DistanceMethod, DistanceMethod);
             MEMBERVARIABLE(unsigned, MaxLeafSize);
 
@@ -67,7 +71,9 @@ namespace Katydid
         public:
             bool AddPoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints);
 
-            bool MakeTree();
+            bool MakeTree(bool willContinue);
+
+            bool ClearTree(bool willContinue, uint64_t firstSliceKept = std::numeric_limits<uint64_t>::max());
 
             KTDataPtr GetDataPtr() const;
             const KTKDTreeData& GetKDTreeData() const;
@@ -75,6 +81,8 @@ namespace Katydid
         private:
             KTDataPtr fDataPtr;
             KTKDTreeData& fTreeData;
+
+            unsigned fSliceInWindowCount;
 
             MEMBERVARIABLE(double, InvScalingX);
             MEMBERVARIABLE(double, InvScalingY);

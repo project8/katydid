@@ -33,7 +33,7 @@ namespace Katydid
 
     void KTKDTreeData::BuildIndex(unsigned component)
     {
-        this->BuildIndex(fComponentData[component].fDistanceMethod, fComponentData[component].fMaxLeafSize, component);
+        BuildIndex(fComponentData[component].fDistanceMethod, fComponentData[component].fMaxLeafSize, component);
     }
 
     void KTKDTreeData::BuildIndex(KTKDTreeData::DistanceMethod dist, unsigned maxLeafSize, unsigned component)
@@ -58,7 +58,6 @@ namespace Katydid
 
     void KTKDTreeData::RemovePoints(const std::vector< size_t >& points, unsigned component)
     {
-        size_t index;
 #ifndef NDEBUG
         size_t origSize = fComponentData[component].fCloud.fPoints.size();
 #endif
@@ -70,7 +69,21 @@ namespace Katydid
             //points.pop_back();
         }
         KTDEBUG(kdtlog, "Removing " << points.size() << " points; original size: " << origSize << "; new size: " << fComponentData[component].fCloud.fPoints.size());
-        this->BuildIndex();
+        BuildIndex();
+        return;
+    }
+
+    void KTKDTreeData::ClearPoints(unsigned component)
+    {
+        ClearIndex(component);
+        fComponentData[component].fCloud.fPoints.clear();
+        return;
+    }
+
+    void KTKDTreeData::ClearIndex(unsigned component)
+    {
+        delete fComponentData[component].fTreeIndex;
+        fComponentData[component].fTreeIndex = NULL;
         return;
     }
 

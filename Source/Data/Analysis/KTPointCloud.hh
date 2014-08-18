@@ -35,7 +35,8 @@ namespace Katydid
     struct KTPointCloud
     {
         typedef typename POINT::coord_t coord_t;
-        std::vector< POINT > fPoints;
+        typedef std::vector< POINT > SetOfPoints;
+        SetOfPoints fPoints;
 
         // Must return the number of data points
         inline size_t kdtree_get_point_count() const

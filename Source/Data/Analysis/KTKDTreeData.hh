@@ -38,6 +38,7 @@ namespace Katydid
                 uint64_t fSliceNumber;
             };
 
+            typedef KTPointCloud< Point >::SetOfPoints SetOfPoints;
             typedef KTTreeIndex< double > TreeIndex;
 
             enum DistanceMethod
@@ -69,8 +70,10 @@ namespace Katydid
             MEMBERVARIABLE(double, XScaling);
             MEMBERVARIABLE(double, YScaling);
 
-            const std::vector< Point >& GetSetOfPoints(unsigned component = 0) const;
-            TreeIndex* GetTreeIndex(unsigned component = 0) const;
+            const SetOfPoints& GetSetOfPoints(unsigned component = 0) const;
+            SetOfPoints& GetSetOfPoints(unsigned component = 0);
+            const TreeIndex* GetTreeIndex(unsigned component = 0) const;
+            TreeIndex* GetTreeIndex(unsigned component = 0);
 
             unsigned GetNComponents() const;
 
@@ -78,6 +81,9 @@ namespace Katydid
 
             void RemovePoint(unsigned pid, unsigned component = 0);
             void RemovePoints(const std::vector< size_t >& points, unsigned component = 0);
+
+            void ClearPoints(unsigned component = 0);
+            void ClearIndex(unsigned component = 0);
 
             void FlagPoint(unsigned, unsigned component = 0, bool flag = true);
             void FlagPoints(const std::vector< size_t >& points, unsigned compoennt = 0, bool flag = true);
@@ -97,7 +103,17 @@ namespace Katydid
         return fComponentData[component].fCloud.fPoints;
     }
 
-    inline KTKDTreeData::TreeIndex* KTKDTreeData::GetTreeIndex(unsigned component) const
+    inline std::vector< KTKDTreeData::Point >& KTKDTreeData::GetSetOfPoints(unsigned component)
+    {
+        return fComponentData[component].fCloud.fPoints;
+    }
+
+    inline const KTKDTreeData::TreeIndex* KTKDTreeData::GetTreeIndex(unsigned component) const
+    {
+        return fComponentData[component].fTreeIndex;
+    }
+
+    inline KTKDTreeData::TreeIndex* KTKDTreeData::GetTreeIndex(unsigned component)
     {
         return fComponentData[component].fTreeIndex;
     }
@@ -111,7 +127,6 @@ namespace Katydid
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fCloud.fPoints.push_back(point);
-        //unsigned pt = fComponentData[component].fCloud.fPoints.size()-1;
         return;
     }
 
