@@ -88,6 +88,9 @@ namespace Katydid
 
     };
 
+    // convenience typedef for KTSignalDone
+    typedef KTSignalOneArg<void> KTSignalDone;
+
 
 
     /*!

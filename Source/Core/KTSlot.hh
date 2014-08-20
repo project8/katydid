@@ -217,11 +217,13 @@ namespace Katydid
      Your processor (or, optionally, a different object) must have a member function with the signature bool (DataType&).
      The slot function checks that the provided KTData object contains data of type DataType, and then calls the member function.
 
-     In your Processor's header add a member variable of type KTSlotOneArg< ProcessorType, DataType >.
+     In your Processor's header add a member variable of type KTSlotOneArg< DataType >.
      The variable may be private.
 
      Initialize the slot with the name of the slot, the address of the owner of the slot function, and the function pointer.
      Optionally, if the Processor is separate from the owner of the slot function, the Processor address is specified as the second argument to the constructor.
+
+     Also optionally, a signal to be emitted after the return of the member function can be specified as the last argument.
     */
     template< class XDataType >
     class KTSlotDataOneType
@@ -381,6 +383,85 @@ namespace Katydid
         }
         return;
     }
+
+
+    /*!
+     @class KTDoneSlot
+     @author N. S. Oblath
+
+     @brief Creates a slot to receive indication that upstream processing is complete and will emit a similar signal.
+
+     @details
+     Usage:
+     This slot type adds the slot function (signature void ().
+     Your processor (or, optionally, a different object) must have a member function with the signature bool ().
+     The slot calls the member function.
+
+     In your Processor's header add a member variable of type KTDoneSlot.
+     The variable may be private.
+
+     Initialize the slot with the name of the slot, the address of the owner of the slot function, and the function pointer.
+     Optionally, if the Processor is separate from the owner of the slot function, the Processor address is specified as the second argument to the constructor.
+
+     Also optionally, a signal to be emitted after the return of the member function can be specified as the last argument.
+    */
+    class KTSlotDone
+    {
+        public:
+            typedef boost::function< void () > function_signature;
+            typedef bool return_type;
+
+        public:
+            /// Constructor for the case where the processor has the function that will be called by the slot
+            template< class XFuncOwnerType >
+            KTSlotDone(const std::string& name, XFuncOwnerType* owner, void (XFuncOwnerType::*func)(), KTSignalDone* signalPtr=NULL);
+            /// Constructor for the case where the processor and the object with the function that will be called are different
+            template< class XFuncOwnerType >
+            KTSlotDone(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, void (XFuncOwnerType::*func)(), KTSignalDone* signalPtr=NULL);
+            virtual ~KTSlotDone();
+
+            void operator()();
+
+        protected:
+            boost::function< void () > fFunc;
+
+            KTSignalDone* fSignalPtr;
+    };
+
+    template< class XFuncOwnerType >
+    KTSlotDone::KTSlotDone(const std::string& name, XFuncOwnerType* owner, void (XFuncOwnerType::*func)(), KTSignalDone* signalPtr) :
+            fFunc(boost::bind(func, owner)),
+            fSignalPtr(signalPtr)
+    {
+        owner->RegisterSlot(name, this, &KTSlotDone::operator());
+    }
+
+    template< class XFuncOwnerType >
+    KTSlotDone::KTSlotDone(const std::string& name, KTProcessor* proc, XFuncOwnerType* owner, void (XFuncOwnerType::*func)(), KTSignalDone* signalPtr) :
+            fFunc(boost::bind(func, owner)),
+            fSignalPtr(signalPtr)
+    {
+        proc->RegisterSlot(name, this, &KTSlotDone::operator());
+    }
+
+    inline KTSlotDone::~KTSlotDone()
+    {
+    }
+
+    inline void KTSlotDone::operator()()
+    {
+        // Call the function
+        fFunc();
+
+        // If there's a signal pointer, emit the signal
+        if (fSignalPtr != NULL)
+        {
+            (*fSignalPtr)();
+        }
+        return;
+    }
+
+
 
 } /* namespace Katydid */
 #endif /* KTSLOT_HH_ */
