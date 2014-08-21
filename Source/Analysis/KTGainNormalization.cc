@@ -347,6 +347,7 @@ namespace Katydid
 
         KTDEBUG(gnlog, "Creating new PS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
         KTPowerSpectrum* newSpectrum = new KTPowerSpectrum(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
+        newSpectrum->OverrideMode(KTPowerSpectrum::kPower);
 
         // First directly copy data that's outside the scaling range
         unsigned iBin;

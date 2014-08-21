@@ -44,6 +44,7 @@ namespace Katydid
 
             Mode GetMode() const;
             void SetMode(Mode mode);
+            void OverrideMode(Mode mode);
 
             /// Returns the resistance used to calculate the power from the voltage in a frequency spectrum
             static double GetResistance();
@@ -69,6 +70,12 @@ namespace Katydid
     {
         if (mode == kPSD) ConvertToPowerSpectralDensity();
         else ConvertToPowerSpectrum();
+        return;
+    }
+
+    inline void KTPowerSpectrum::OverrideMode(KTPowerSpectrum::Mode mode)
+    {
+        fMode = mode;
         return;
     }
 
