@@ -22,6 +22,11 @@ namespace Katydid
 
             void RegisterSlots();
 
+            //************************
+            // SNR
+            //************************
+        public:
+            void WriteSNRPower(KTDataPtr data);
 
             //************************
             // Normalized Frequency Spectrum Data
