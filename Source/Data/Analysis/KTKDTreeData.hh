@@ -15,6 +15,7 @@
 #include "KTKDTree.hh"
 
 #include <map>
+#include <stdint.h>
 #include <utility>
 #include <vector>
 
