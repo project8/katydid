@@ -39,6 +39,8 @@ namespace Katydid
             void WriteNormalizedFSDataPolarPower(KTDataPtr data);
             void WriteNormalizedFSDataFFTWPower(KTDataPtr data);
 
+            void WriteNormalizedPSData(KTDataPtr data);
+
             //************************
             // Analytic Associate Data
             //************************
