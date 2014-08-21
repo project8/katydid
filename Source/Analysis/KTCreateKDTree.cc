@@ -37,7 +37,9 @@ namespace Katydid
             fInvScalingX(1.),
             fInvScalingY(1.),
             fKDTreeSignal("kd-tree", this),
-            fDiscPointsSlot("disc-1d", this, &KTCreateKDTree::AddPoints)
+            fDoneSignal("done", this),
+            fDiscPointsSlot("disc-1d", this, &KTCreateKDTree::AddPoints),
+            fDoneSlot("done", this, &KTCreateKDTree::MakeTreeSlot, &fDoneSignal)
     {
         RegisterSlot("make-tree", this, &KTCreateKDTree::MakeTreeSlot);
     }
@@ -49,6 +51,9 @@ namespace Katydid
     bool KTCreateKDTree::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
+
+        SetWindowSize(node->GetValue("window-size", GetWindowSize()));
+        SetWindowOverlap(node->GetValue("window-overlap", GetWindowOverlap()));
 
         if (node->Has("distance-method"))
         {
@@ -100,6 +105,7 @@ namespace Katydid
 
         KTKDTreeData::Point newPoint;
         newPoint.fSliceNumber = slHeader.GetSliceNumber();
+        if (newPoint.fSliceNumber > fTreeData.GetLastSlice()) fTreeData.SetLastSlice(newPoint.fSliceNumber);
         newPoint.fCoords[0] = fInvScalingX * (slHeader.GetTimeInRun() + 0.5 * slHeader.GetSliceLength());
         for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
         {
@@ -115,6 +121,7 @@ namespace Katydid
         }
 
         ++fSliceInWindowCount;
+        KTDEBUG(kdlog, "Slice-count-in-window is now " << fSliceInWindowCount << " (window size = " << fWindowSize << "; window overlap = " << fWindowOverlap << ")");
         // if fSliceInWindowCount == fWindowSize, then we need to move the window before taking the next slice
         if (fWindowSize != 0 && fSliceInWindowCount == fWindowSize)
         {
@@ -131,7 +138,7 @@ namespace Katydid
 
     bool KTCreateKDTree::MakeTree(bool willContinue)
     {
-        KTINFO(kdlog, "Creating k-d tree");
+        KTINFO(kdlog, "Creating k-d tree; last slice is " << fTreeData.GetLastSlice());
         KTDEBUG(kdlog, "Tree will continue: " << willContinue);
 
         fTreeData.SetDataWillContinue(willContinue);
@@ -144,6 +151,9 @@ namespace Katydid
         {
             fTreeData.BuildIndex(fDistanceMethod, fMaxLeafSize, iComponent);
         }
+
+        // yet another exception to the separation of normal function and signals/slots; sorry
+        fKDTreeSignal(fDataPtr);
 
         return true;
     }
@@ -187,7 +197,6 @@ namespace Katydid
             KTERROR(kdlog, "An error occurred while making the k-d tree");
             return;
         }
-        fKDTreeSignal(fDataPtr);
         ClearTree(false);
         return;
     }

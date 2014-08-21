@@ -68,6 +68,7 @@ namespace Katydid
             virtual ~KTKDTreeData();
 
             MEMBERVARIABLE(bool, DataWillContinue);
+            MEMBERVARIABLE(uint64_t, LastSlice);
             MEMBERVARIABLE(double, XScaling);
             MEMBERVARIABLE(double, YScaling);
 
@@ -75,6 +76,12 @@ namespace Katydid
             SetOfPoints& GetSetOfPoints(unsigned component = 0);
             const TreeIndex* GetTreeIndex(unsigned component = 0) const;
             TreeIndex* GetTreeIndex(unsigned component = 0);
+
+            unsigned GetMaxLeafSize(unsigned component = 0) const;
+            void SetMaxLeafSize(unsigned size, unsigned component = 0);
+
+            DistanceMethod GetDistanceMethod(unsigned component = 0) const;
+            void SetDistanceMethod(DistanceMethod dist, unsigned component = 0);
 
             unsigned GetNComponents() const;
 
@@ -117,6 +124,30 @@ namespace Katydid
     inline KTKDTreeData::TreeIndex* KTKDTreeData::GetTreeIndex(unsigned component)
     {
         return fComponentData[component].fTreeIndex;
+    }
+
+    inline unsigned KTKDTreeData::GetMaxLeafSize(unsigned component) const
+    {
+        return fComponentData[component].fMaxLeafSize;
+    }
+
+    inline void KTKDTreeData::SetMaxLeafSize(unsigned size, unsigned component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fMaxLeafSize = size;
+        return;
+    }
+
+    inline KTKDTreeData::DistanceMethod KTKDTreeData::GetDistanceMethod(unsigned component) const
+    {
+        return fComponentData[component].fDistanceMethod;
+    }
+
+    inline void KTKDTreeData::SetDistanceMethod(DistanceMethod dist, unsigned component)
+    {
+        if (component >= fComponentData.size()) fComponentData.resize(component+1);
+        fComponentData[component].fDistanceMethod = dist;
+        return;
     }
 
     inline unsigned KTKDTreeData::GetNComponents() const

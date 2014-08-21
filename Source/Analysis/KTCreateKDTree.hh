@@ -34,6 +34,8 @@ namespace Katydid
      Configuration name: "create-kd-tree"
 
      Available configuration values:
+     - "window-size": unsigned --
+     - "window-overlap": unsigned --
      - "distance-method": string -- Method used to calculate distances between points; Available options are "manhattan" and "euclidean"
      - "max-leaf-size": unsigned -- Maximum number of points to assign to each leaf node of the k-d tree. Typically should be 10-50. See https://github.com/jlblancoc/nanoflann#21-kdtreesingleindexadaptorparamsleaf_max_size for more details.
      - "time-radius:" double -- Scaling applied to the time axis before adding the point to the tree. Scaled coordinate value = coordinate value / scaling
@@ -42,9 +44,11 @@ namespace Katydid
      Slots:
      - "disc-1d": void (KTDataPtr) -- Adds points to the KT-Tree; Requires KTDiscriminatedPoints1DData
      - "make-tree": void () -- Creates a tree with the existing set of points; Creates data with KTKDTreeData; Emits signal kd-tree
+     - "done": void () -- same as "make-tree"; Emits signal kd-tree then signal done
 
      Signals:
      - "kd-tree": void (KTDataPtr) emitted upon completion of a KD-Tree; Guarantees KTKDTreeData
+     - "done": void (void) emitted when "done" slot is called to indicate that no more k-d trees will be produced
     */
 
     class KTCreateKDTree : public KTProcessor
@@ -93,6 +97,7 @@ namespace Katydid
 
         private:
             KTSignalData fKDTreeSignal;
+            KTSignalDone fDoneSignal;
 
             //***************
             // Slots
@@ -100,6 +105,7 @@ namespace Katydid
 
         private:
             KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fDiscPointsSlot;
+            KTSlotDone fDoneSlot;
 
             void MakeTreeSlot();
 
@@ -128,7 +134,6 @@ namespace Katydid
     {
         return fTreeData;
     }
-
 
 } /* namespace Katydid */
 #endif /* KTCREATEKDTREE_HH_ */

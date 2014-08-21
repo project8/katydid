@@ -47,6 +47,7 @@ namespace Katydid
 
     bool KTConsensusThresholding::ConsensusVote(KTKDTreeData& kdTreeData)
     {
+        KTINFO(ctlog, "Performing conensus thresholding on k-d tree data");
         unsigned nComponents = kdTreeData.GetNComponents();
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
@@ -71,9 +72,9 @@ namespace Katydid
         return true;
     }
 
-    bool KTConsensusThresholding::ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const std::vector< KTKDTreeData::Point >& setOfPoints, std::vector< size_t >& noiseIndices)
+    bool KTConsensusThresholding::ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, std::vector< size_t >& noiseIndices)
     {   
-        int nPoints = kdTree->size();
+        unsigned nPoints = kdTree->size();
         noiseIndices.clear();
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {

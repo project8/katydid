@@ -11,6 +11,7 @@ set (ANALYSIS_HEADERFILES
     KTDistanceClustering.hh
     KTGainVariationProcessor.hh
     KTHoughTransform.hh
+    KTMergeKDTree.hh
     KTSpectrumDiscriminator.hh
     KTSwitchFFTWPolar.hh
     #KTAutoCorrMatrix.hh
@@ -26,6 +27,7 @@ set (ANALYSIS_SOURCEFILES
     KTDistanceClustering.cc
     KTGainVariationProcessor.cc
     KTHoughTransform.cc
+    KTMergeKDTree.cc
     KTSpectrumDiscriminator.cc
     KTSwitchFFTWPolar.cc
     #KTAutoCorrMatrix.cc
