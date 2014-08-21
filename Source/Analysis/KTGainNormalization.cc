@@ -12,7 +12,6 @@
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTNormalizedFSData.hh"
-#include "KTGainVariationData.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTParam.hh"
 #include "KTPowerSpectrum.hh"
@@ -46,7 +45,9 @@ namespace Katydid
             fPSSignal("norm-ps", this),
             fFSPolarSlot("fs-polar", this, &KTGainNormalization::Normalize, &fFSPolarSignal),
             fFSFFTWSlot("fs-fftw", this, &KTGainNormalization::Normalize, &fFSFFTWSignal),
-            fPSSlot("ps", this, &KTGainNormalization::Normalize, &fPSSignal)
+            fPSSlot("ps", this, &KTGainNormalization::Normalize, &fPSSignal),
+            fPreCalcSlot("pre-calc", this, &KTGainNormalization::SetPreCalcGainVar),
+            fPSPreCalcSlot("ps-pre", this, &KTGainNormalization::Normalize, &fPSSignal)
     {
     }
 
@@ -79,6 +80,17 @@ namespace Katydid
         return true;
     }
 
+
+    bool KTGainNormalization::SetPreCalcGainVar(KTGainVariationData& gvData)
+    {
+        fGVData = gvData;
+        return true;
+    }
+
+    bool KTGainNormalization::Normalize(KTPowerSpectrumData& psData)
+    {
+        return Normalize(psData, fGVData);
+    }
 
     bool KTGainNormalization::Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData)
     {
