@@ -21,6 +21,8 @@ namespace Katydid
     class KTFrequencySpectrumPolar;
     class KTGainVariationData;
     class KTParamNode;
+    class KTPowerSpectrum;
+    class KTPowerSpectrumData;
     //class KTSlidingWindowFSData;
     //class KTSlidingWindowFSDataFFTW;
     class KTSpline;
@@ -82,12 +84,14 @@ namespace Katydid
         public:
             bool Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData);
             bool Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
+            bool Normalize(KTPowerSpectrumData& psData, KTGainVariationData& gvdata);
 
             //void Normalize(KTSlidingWindowFSData* swFSData, const KTGainVariationData* gvData);
             //void Normalize(KTSlidingWindowFSDataFFTW* swFSData, const KTGainVariationData* gvData);
 
             KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline);
             KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline);
+            KTPowerSpectrum* Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline);
 
             //***************
             // Signals
@@ -96,6 +100,7 @@ namespace Katydid
         private:
             KTSignalData fFSPolarSignal;
             KTSignalData fFSFFTWSignal;
+            KTSignalData fPSSignal;
             //KTSignalData fSWFSSignal;
             //KTSignalData fSWFSFFTWSignal;
 
@@ -106,6 +111,7 @@ namespace Katydid
         private:
             KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarSlot;
             KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWSlot;
+            KTSlotDataTwoTypes< KTPowerSpectrumData, KTGainVariationData > fPSSlot;
 
     };
 

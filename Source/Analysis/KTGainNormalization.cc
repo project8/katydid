@@ -15,6 +15,8 @@
 #include "KTGainVariationData.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTParam.hh"
+#include "KTPowerSpectrum.hh"
+#include "KTPowerSpectrumData.hh"
 //#include "KTSlidingWindowFSData.hh"
 //#include "KTSlidingWindowFSDataFFTW.hh"
 
@@ -41,8 +43,10 @@ namespace Katydid
             fCalculateMaxBin(true),
             fFSPolarSignal("norm-fs-polar", this),
             fFSFFTWSignal("norm-fs-fftw", this),
+            fPSSignal("norm-ps", this),
             fFSPolarSlot("fs-polar", this, &KTGainNormalization::Normalize, &fFSPolarSignal),
-            fFSFFTWSlot("fs-fftw", this, &KTGainNormalization::Normalize, &fFSFFTWSignal)
+            fFSFFTWSlot("fs-fftw", this, &KTGainNormalization::Normalize, &fFSFFTWSignal),
+            fPSSlot("ps", this, &KTGainNormalization::Normalize, &fPSSignal)
     {
     }
 
@@ -98,10 +102,7 @@ namespace Katydid
                 KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            else
-            {
-                KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
-            }
+            KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
             newData.SetSpectrum(newSpectrum, iComponent);
         }
         KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (polar)");
@@ -131,13 +132,40 @@ namespace Katydid
                 KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            else
-            {
-                KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
-            }
-            newData.SetSpectrum(newSpectrum, iComponent);
+            KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+             newData.SetSpectrum(newSpectrum, iComponent);
         }
         KTINFO(gnlog, "Completed gain normalization of " << nComponents << " frequency spectra (fftw)");
+
+        return true;
+    }
+
+    bool KTGainNormalization::Normalize(KTPowerSpectrumData& psData, KTGainVariationData& gvData)
+    {
+        if (fCalculateMinBin) SetMinBin(psData.GetSpectrum(0)->FindBin(fMinFrequency));
+        if (fCalculateMaxBin) SetMaxBin(psData.GetSpectrum(0)->FindBin(fMaxFrequency));
+
+        unsigned nComponents = psData.GetNComponents();
+        if (nComponents != gvData.GetNComponents())
+        {
+            KTERROR(gnlog, "Mismatch in the number of channels between the frequency spectrum data and the gain variation data! Aborting.");
+            return false;
+        }
+
+        KTNormalizedPSData& newData = psData.Of< KTNormalizedPSData >().SetNComponents(nComponents);
+
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            KTPowerSpectrum* newSpectrum = Normalize(psData.GetSpectrum(iComponent), gvData.GetSpline(iComponent));
+            if (newSpectrum == NULL)
+            {
+                KTERROR(gnlog, "Normalization of spectrum " << iComponent << " failed for some reason. Continuing processing.");
+                continue;
+            }
+            KTDEBUG(gnlog, "Computed normalization; size: " << newSpectrum->size() << "; range: " << newSpectrum->GetRangeMin() << " - " << newSpectrum->GetRangeMax());
+             newData.SetSpectrum(newSpectrum, iComponent);
+        }
+        KTINFO(gnlog, "Completed gain normalization of " << nComponents << " power spectra");
 
         return true;
     }
@@ -163,19 +191,19 @@ namespace Katydid
 #pragma omp parallel default(shared)
         {
 #pragma omp for private(iBin)
-            for (iBin=0; iBin < fMinBin; iBin++)
+            for (iBin=0; iBin < fMinBin; ++iBin)
             {
                 (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs(), (*frequencySpectrum)(iBin).arg());
             }
 #pragma omp for private(iBin)
-            for (iBin=fMaxBin+1; iBin < nSpectrumBins; iBin++)
+            for (iBin=fMaxBin+1; iBin < nSpectrumBins; ++iBin)
             {
                 (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs(), (*frequencySpectrum)(iBin).arg());
             }
 
             // Then scale the bins within the scaling range
 #pragma omp for private(iBin)
-            for (iBin=fMinBin; iBin < fMaxBin+1; iBin++)
+            for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
                 (*newSpectrum)(iBin).set_polar((*frequencySpectrum)(iBin).abs() / (*splineImp)(iBin - fMinBin), (*frequencySpectrum)(iBin).arg());
             }
@@ -238,7 +266,7 @@ namespace Katydid
 //#pragma omp master
             //KTDEBUG(gnlog, "loop: 1 - " << minOffsetBin-1);
 #pragma omp for
-            for (iOffsetBin=1; iOffsetBin < minOffsetBin; iOffsetBin++)
+            for (iOffsetBin=1; iOffsetBin < minOffsetBin; ++iOffsetBin)
             {
                 iBinPos = dcBin + iOffsetBin;
                 iBinNeg = dcBin - iOffsetBin;
@@ -251,11 +279,11 @@ namespace Katydid
 
 
             // Then scale the bins within the scaling range
-            //for (unsigned iBinPos=fMinBin, iBinNeg=dcBin - (fMinBin-dcBin), iBin=0; iBinPos < fMaxBin+1; iBinPos++, iBinNeg--, iBin++)
+            //for (unsigned iBinPos=fMinBin, iBinNeg=dcBin - (fMinBin-dcBin), iBin=0; iBinPos < fMaxBin+1; iBinPos++, iBinNeg--, ++iBin)
 //#pragma omp master
             //KTDEBUG(gnlog, "loop: " << minOffsetBin << " - " << maxOffsetBin);
 #pragma omp for
-            for (iOffsetBin=minOffsetBin; iOffsetBin <= maxOffsetBin; iOffsetBin++)
+            for (iOffsetBin=minOffsetBin; iOffsetBin <= maxOffsetBin; ++iOffsetBin)
             {
                 iBin = iOffsetBin - minOffsetBin;
                 iBinPos = dcBin + iOffsetBin;
@@ -275,7 +303,7 @@ namespace Katydid
 //#pragma omp master
             //KTDEBUG(gnlog, "loop: " << maxOffsetBin+1 << " - " << spectrumSizeOffset);
 #pragma omp for
-            for (iOffsetBin=maxOffsetBin + 1; iOffsetBin < spectrumSizeOffset; iOffsetBin++)
+            for (iOffsetBin=maxOffsetBin + 1; iOffsetBin < spectrumSizeOffset; ++iOffsetBin)
             {
                 iBinPos = dcBin + iOffsetBin;
                 iBinNeg = dcBin - iOffsetBin;
@@ -287,6 +315,49 @@ namespace Katydid
             }
 
         } // end OpenMP parallel block
+
+        spline->AddToCache(splineImp);
+
+        return newSpectrum;
+    }
+
+    KTPowerSpectrum* KTGainNormalization::Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline)
+    {
+        unsigned nBins = fMaxBin - fMinBin + 1;
+        double freqMin = powerSpectrum->GetBinLowEdge(fMinBin);
+        double freqMax = powerSpectrum->GetBinLowEdge(fMaxBin) + powerSpectrum->GetBinWidth();
+
+        KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
+
+        unsigned nSpectrumBins = powerSpectrum->size();
+        double freqSpectrumMin = powerSpectrum->GetRangeMin();
+        double freqSpectrumMax = powerSpectrum->GetRangeMax();
+
+        KTDEBUG(gnlog, "Creating new PS for normalized data: " << nSpectrumBins << ", " << freqSpectrumMin << ", " << freqSpectrumMax);
+        KTPowerSpectrum* newSpectrum = new KTPowerSpectrum(nSpectrumBins, freqSpectrumMin, freqSpectrumMax);
+
+        // First directly copy data that's outside the scaling range
+        unsigned iBin;
+#pragma omp parallel default(shared)
+        {
+#pragma omp for private(iBin)
+            for (iBin=0; iBin < fMinBin; ++iBin)
+            {
+                (*newSpectrum)(iBin) = (*powerSpectrum)(iBin);
+            }
+#pragma omp for private(iBin)
+            for (iBin=fMaxBin+1; iBin < nSpectrumBins; ++iBin)
+            {
+                (*newSpectrum)(iBin) = (*powerSpectrum)(iBin);
+            }
+
+            // Then scale the bins within the scaling range
+#pragma omp for private(iBin)
+            for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
+            {
+                (*newSpectrum)(iBin) = (*powerSpectrum)(iBin) / (*splineImp)(iBin - fMinBin);
+            }
+        }
 
         spline->AddToCache(splineImp);
 
