@@ -11,6 +11,7 @@
 
 #include "KTProcessor.hh"
 
+#include "KTGainVariationData.hh"
 #include "KTSlot.hh"
 
 namespace Katydid
@@ -19,7 +20,6 @@ namespace Katydid
     class KTFrequencySpectrumDataPolar;
     class KTFrequencySpectrumFFTW;
     class KTFrequencySpectrumPolar;
-    class KTGainVariationData;
     class KTParamNode;
     class KTPowerSpectrum;
     class KTPowerSpectrumData;
@@ -40,17 +40,21 @@ namespace Katydid
 
      Available configuration values:
      - "min-bin": unsigned -- Set the lower bound of the range that gets normalized by bin number.
-     - "max-bin": unsigned -- Set the upper bound of the range that gets nornalized by bin number.
+     - "max-bin": unsigned -- Set the upper bound of the range that gets normalized by bin number.
      - "min-frequency": double -- Set the lower bound of the range that gets normalized by frequency.
      - "max-frequency": double -- Set the upper bound of the range that gets normalized by frequency.
 
      Slots:
-     - "fs-polar": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar
-     - "fs-fftw": void (shared_data< KTData >) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW
+     - "fs-polar": void (KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataPolar and KTGainVariationData; Adds KTNormalizedFSDataPolar; Emits signal norm-fs-polar
+     - "fs-fftw": void (KTDataPtr) -- Normalize a frequency spectrum; Requires KTFrequencySpectrumDataFFTW and KTGainVariationData; Adds KTNormalizedFSDataFFTW; Emits signal norm-fs-fftw
+     - "ps": void (KTDataPtr) -- Normalizes a power spectrum; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTNormalizedPSData; Emits signal norm-ps
+     - "ps-pre": void (KTDataPtr) -- Normalizes a power spectrum based on the pre-calculated gain variation; Requires KTPowerSpectrumData; Adds KTNormalizedPSData; Emits signal norm-ps
+     - "gv": void (KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
 
      Signals:
-     - "norm-fs-polar": void (shared_data< KTData >) emitted upon performance of a normalization of a polar frequency spectrum data object; Guarantees KTNormalizedFSDataPolar
-     - "norm-fs-fftw": void (shared_data< KTData >) emitted upon performance normalization of an FFTW frequency spectrum data object; Guarantees KTNormalizedFSDataFFTW
+     - "norm-fs-polar": void (KTDataPtr) emitted upon performance of a normalization of a polar frequency spectrum data object; Guarantees KTNormalizedFSDataPolar
+     - "norm-fs-fftw": void (KTDataPtr) emitted upon performance of a normalization of an FFTW frequency spectrum data object; Guarantees KTNormalizedFSDataFFTW
+     - "norm-ps": void (KTDataPtr) emitted upon performance of a normalization of a power spectrum data object; Guarantees KTNormalizedPSData
     */
 
     class KTGainNormalization : public KTProcessor
@@ -82,6 +86,10 @@ namespace Katydid
             bool fCalculateMaxBin;
 
         public:
+            bool SetPreCalcGainVar(KTGainVariationData& gvData);
+
+            bool Normalize(KTPowerSpectrumData& psData);
+
             bool Normalize(KTFrequencySpectrumDataPolar& fsData, KTGainVariationData& gvData);
             bool Normalize(KTFrequencySpectrumDataFFTW& fsData, KTGainVariationData& gvData);
             bool Normalize(KTPowerSpectrumData& psData, KTGainVariationData& gvdata);
@@ -92,6 +100,10 @@ namespace Katydid
             KTFrequencySpectrumPolar* Normalize(const KTFrequencySpectrumPolar* frequencySpectrum, const KTSpline* spline);
             KTFrequencySpectrumFFTW* Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline);
             KTPowerSpectrum* Normalize(const KTPowerSpectrum* powerSpectrum, const KTSpline* spline);
+
+        private:
+            KTGainVariationData fGVData;
+            std::vector< double > fMagnitudeCache;
 
             //***************
             // Signals
@@ -112,6 +124,10 @@ namespace Katydid
             KTSlotDataTwoTypes< KTFrequencySpectrumDataPolar, KTGainVariationData > fFSPolarSlot;
             KTSlotDataTwoTypes< KTFrequencySpectrumDataFFTW, KTGainVariationData > fFSFFTWSlot;
             KTSlotDataTwoTypes< KTPowerSpectrumData, KTGainVariationData > fPSSlot;
+
+            KTSlotDataOneType< KTGainVariationData > fPreCalcSlot;
+
+            KTSlotDataOneType< KTPowerSpectrumData > fPSPreCalcSlot;
 
     };
 

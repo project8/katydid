@@ -75,7 +75,7 @@ namespace Katydid
      - "corr": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTCorrelationData and KTGainVariationData; Adds KTDiscrimiantedPoints1DData
      - "wv": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTWignerVilleData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
      - "ps": void (KTDataPtr) -- Discriminates points above a threshold; Requires KTPowerSpectrumData and KTGainVariationData; Adds KTDiscriminatedPoints1DData
-     - "gv": void (KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData; Adds KTDiscriminatedPoints1DData
+     - "gv": void (KTDataPtr) -- Sets the pre-calculated gain-variation data; Requires KTGainVariationData
      - "ps-pre": void (KTDataPtr) -- Discriminates points above the pre-calculated threshold; Requires KTPowerSpectrumData; Adds DiscriminatedPoints1DData
 
      Signals:
