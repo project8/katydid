@@ -59,6 +59,7 @@ namespace Katydid
         fWriter->RegisterSlot("norm-fs-fftw-phase", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTWPhase);
         fWriter->RegisterSlot("norm-fs-polar-power", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolarPower);
         fWriter->RegisterSlot("norm-fs-fftw-power", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTWPower);
+        fWriter->RegisterSlot("norm-ps", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedPSData);
         fWriter->RegisterSlot("aa", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData);
         fWriter->RegisterSlot("aa-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution);
         fWriter->RegisterSlot("corr", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationData);
@@ -287,6 +288,37 @@ namespace Katydid
         }
         return;
     }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedPSData(KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTNormalizedPSData& psData = data->Of<KTNormalizedPSData>();
+        unsigned nComponents = psData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTPowerSpectrum* spectrum = psData.GetSpectrum(iChannel);
+            if (spectrum != NULL)
+            {
+                spectrum->ConvertToPowerSpectrum();
+                stringstream conv;
+                conv << "histNPS_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
 
     //************************
     // Analytic Associate Data
