@@ -17,11 +17,11 @@
 namespace Katydid
 {
 
-    class KTPowerSpectrumData : public KTExtensibleData< KTPowerSpectrumData >
+    class KTPowerSpectrumDataCore
     {
         public:
-            KTPowerSpectrumData();
-            virtual ~KTPowerSpectrumData();
+            KTPowerSpectrumDataCore();
+            virtual ~KTPowerSpectrumDataCore();
 
             virtual unsigned GetNComponents() const;
 
@@ -30,34 +30,45 @@ namespace Katydid
 
             void SetSpectrum(KTPowerSpectrum* spectrum, unsigned component = 0);
 
-            KTPowerSpectrumData& SetNComponents(unsigned channels);
+            virtual KTPowerSpectrumDataCore& SetNComponents(unsigned channels) = 0;
 
-        private:
+        protected:
             std::vector< KTPowerSpectrum* > fSpectra;
     };
 
-    inline const KTPowerSpectrum* KTPowerSpectrumData::GetSpectrum(unsigned component) const
+    inline const KTPowerSpectrum* KTPowerSpectrumDataCore::GetSpectrum(unsigned component) const
     {
         return fSpectra[component];
     }
 
-    inline KTPowerSpectrum* KTPowerSpectrumData::GetSpectrum(unsigned component)
+    inline KTPowerSpectrum* KTPowerSpectrumDataCore::GetSpectrum(unsigned component)
     {
         return fSpectra[component];
     }
 
-    inline unsigned KTPowerSpectrumData::GetNComponents() const
+    inline unsigned KTPowerSpectrumDataCore::GetNComponents() const
     {
         return unsigned(fSpectra.size());
     }
 
-    inline void KTPowerSpectrumData::SetSpectrum(KTPowerSpectrum* spectrum, unsigned component)
+    inline void KTPowerSpectrumDataCore::SetSpectrum(KTPowerSpectrum* spectrum, unsigned component)
     {
         if (component >= fSpectra.size()) SetNComponents(component+1);
         else delete fSpectra[component];
         fSpectra[component] = spectrum;
         return;
     }
+
+    class KTPowerSpectrumData : public KTPowerSpectrumDataCore, public KTExtensibleData< KTPowerSpectrumData >
+    {
+        public:
+            KTPowerSpectrumData();
+            virtual ~KTPowerSpectrumData();
+
+            KTPowerSpectrumData& SetNComponents(unsigned channels);
+
+    };
+
 
 
 } /* namespace Katydid */
