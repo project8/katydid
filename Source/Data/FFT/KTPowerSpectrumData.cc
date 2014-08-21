@@ -10,18 +10,27 @@
 
 namespace Katydid
 {
-    KTPowerSpectrumData::KTPowerSpectrumData() :
-            KTExtensibleData()
+    KTPowerSpectrumDataCore::KTPowerSpectrumDataCore()
     {
     }
 
-    KTPowerSpectrumData::~KTPowerSpectrumData()
+    KTPowerSpectrumDataCore::~KTPowerSpectrumDataCore()
     {
         while (! fSpectra.empty())
         {
             delete fSpectra.back();
             fSpectra.pop_back();
         }
+    }
+
+    KTPowerSpectrumData::KTPowerSpectrumData() :
+            KTPowerSpectrumDataCore(),
+            KTExtensibleData()
+    {
+    }
+
+    KTPowerSpectrumData::~KTPowerSpectrumData()
+    {
     }
 
     KTPowerSpectrumData& KTPowerSpectrumData::SetNComponents(unsigned num)

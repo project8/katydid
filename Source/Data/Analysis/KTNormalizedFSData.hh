@@ -11,6 +11,7 @@
 
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
+#include "KTPowerSpectrumData.hh"
 
 namespace Katydid
 {
@@ -31,6 +32,15 @@ namespace Katydid
             virtual ~KTNormalizedFSDataFFTW();
 
             KTNormalizedFSDataFFTW& SetNComponents(unsigned components);
+    };
+
+    class KTNormalizedPSData : public KTPowerSpectrumDataCore, public KTExtensibleData< KTNormalizedPSData >
+    {
+        public:
+            KTNormalizedPSData();
+            virtual ~KTNormalizedPSData();
+
+            KTNormalizedPSData& SetNComponents(unsigned components);
     };
 
 } /* namespace Katydid */
