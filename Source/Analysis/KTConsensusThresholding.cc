@@ -88,13 +88,13 @@ namespace Katydid
             if (! timeDelta == 0)
             {
                 double slope = frequencyDelta / timeDelta;
-                double intercept = setOfPoints[iPoint].fCoords[1] - slope * setOfPoints[iPoint].fCoords[0];
+                //double intercept = setOfPoints[iPoint].fCoords[1] - slope * setOfPoints[iPoint].fCoords[0];
 
-                bool close_enough = true;
+                bool closeEnough = true;
                 double test_pt[2];
                 std::vector< std::pair< size_t, double > > indicesDist;
                 double k = 2.0;
-                while (close_enough)
+                while (closeEnough)
                 {
                     test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
                     test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
@@ -106,12 +106,12 @@ namespace Katydid
                     }
                     else
                     {
-                        close_enough = false;
+                        closeEnough = false;
                     }
                 }
-                close_enough = true;
+                closeEnough = true;
                 k = -2.0;
-                while (close_enough)
+                while (closeEnough)
                 {
                     test_pt[0] = setOfPoints[iPoint].fCoords[0] + k * timeDelta;
                     test_pt[1] = setOfPoints[iPoint].fCoords[1] + k * frequencyDelta;
@@ -123,7 +123,7 @@ namespace Katydid
                     }
                     else
                     {
-                        close_enough = false;
+                        closeEnough = false;
                     }
                 }
             }
