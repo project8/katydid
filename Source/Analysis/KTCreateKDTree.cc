@@ -10,7 +10,9 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTLogger.hh"
 #include "KTParam.hh"
+#include "KTProcessedTrackData.hh"
 #include "KTSliceHeader.hh"
+#include "KTSparseWaterfallCandidateData.hh"
 
 using std::string;
 using std::vector;
@@ -39,6 +41,8 @@ namespace Katydid
             fKDTreeSignal("kd-tree", this),
             fDoneSignal("done", this),
             fDiscPointsSlot("disc-1d", this, &KTCreateKDTree::AddPoints),
+            fSWFCAndPTSlot("swfc-and-track", this, &KTCreateKDTree::AddPoints),
+            fSWFCSlot("swfc", this, &KTCreateKDTree::AddPoints),
             fDoneSlot("done", this, &KTCreateKDTree::MakeTreeSlot, &fDoneSignal)
     {
         RegisterSlot("make-tree", this, &KTCreateKDTree::MakeTreeSlot);
@@ -132,6 +136,41 @@ namespace Katydid
             }
             fSliceInWindowCount = 0;
         }
+
+        return true;
+    }
+
+    bool KTCreateKDTree::AddPoints(KTSparseWaterfallCandidateData& swfcData, KTProcessedTrackData& ptData)
+    {
+        if (ptData.GetIsCut())
+        {
+            return true;
+        }
+        return AddPoints(swfcData);
+    }
+
+    bool KTCreateKDTree::AddPoints(KTSparseWaterfallCandidateData& swfcData)
+    {
+        // verify that we have the right number of components
+        unsigned component = swfcData.GetComponent();
+        if (component >= fTreeData.GetNComponents())
+        {
+            fTreeData.SetNComponents(component + 1);
+        }
+
+        KTKDTreeData::Point newPoint;
+        newPoint.fSliceNumber = 0; // slice number isn't available in KTSparseWaterfallCandidateData
+        if (newPoint.fSliceNumber > fTreeData.GetLastSlice()) fTreeData.SetLastSlice(newPoint.fSliceNumber);
+        const KTSparseWaterfallCandidateData::Points& incomingPts = swfcData.GetPoints();
+        for (KTSparseWaterfallCandidateData::Points::const_iterator pIt = incomingPts.begin();
+                pIt != incomingPts.end(); ++pIt)
+        {
+            newPoint.fCoords[0] = fInvScalingX * pIt->fTimeInRunC;
+            newPoint.fCoords[1] = fInvScalingY * pIt->fFrequency;
+            newPoint.fAmplitude = pIt->fAmplitude;
+            fTreeData.AddPoint(newPoint, component);
+        }
+        KTDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");
 
         return true;
     }

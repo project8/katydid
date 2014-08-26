@@ -21,7 +21,9 @@ namespace Katydid
 {
     class KTDiscriminatedPoints1DData;
     class KTParamNode;
+    class KTProcessedTrackData;
     class KTSliceHeader;
+    class KTSparseWaterfallCandidateData;
 
    /*!
      @class KTCreateKDTree
@@ -42,7 +44,9 @@ namespace Katydid
      - "freq-radius:" double -- Scaling applied to the frequency axis before adding the point to the tree. Scaled coordinate value = coordinate value / scaling
 
      Slots:
-     - "disc-1d": void (KTDataPtr) -- Adds points to the KT-Tree; Requires KTDiscriminatedPoints1DData
+     - "disc-1d": void (KTDataPtr) -- Adds points to the K-D Tree; Requires KTDiscriminatedPoints1DData and KTSliceHeader
+     - "swfc-and-track": void (KTDataPtr) -- Adds points to the K-D Tree only if the track is not cut; Requires KTSparseWaterfallCandidateData and KTProcessedTrackData
+     - "swfc": void (KTDataPtr) -- Adds points to the K-D Tree; Requires KTSparseWaterfallCandidateData
      - "make-tree": void () -- Creates a tree with the existing set of points; Creates data with KTKDTreeData; Emits signal kd-tree
      - "done": void () -- same as "make-tree"; Emits signal kd-tree then signal done
 
@@ -74,6 +78,8 @@ namespace Katydid
 
         public:
             bool AddPoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints);
+            bool AddPoints(KTSparseWaterfallCandidateData& swfcData, KTProcessedTrackData& ptData);
+            bool AddPoints(KTSparseWaterfallCandidateData& swfcData);
 
             bool MakeTree(bool willContinue);
 
@@ -105,6 +111,8 @@ namespace Katydid
 
         private:
             KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fDiscPointsSlot;
+            KTSlotDataTwoTypes< KTSparseWaterfallCandidateData, KTProcessedTrackData > fSWFCAndPTSlot;
+            KTSlotDataOneType< KTSparseWaterfallCandidateData > fSWFCSlot;
             KTSlotDone fDoneSlot;
 
             void MakeTreeSlot();
