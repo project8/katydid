@@ -62,6 +62,8 @@ namespace Katydid
             KTDataPtr GetDataPtr() const;
             const KTKDTreeData& GetKDTreeData() const;
 
+            MEMBERVARIABLE(bool, HaveNewData);
+
         private:
             KTDataPtr fDataPtr;
             KTKDTreeData& fMergedTreeData;

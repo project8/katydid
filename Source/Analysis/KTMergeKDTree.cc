@@ -24,6 +24,7 @@ namespace Katydid
             KTProcessor(name),
             fDataPtr(new KTData()),
             fMergedTreeData(fDataPtr->Of< KTKDTreeData >()),
+            fHaveNewData(false),
             fKDTreeSignal("kd-tree-out", this),
             fDoneSignal("done", this),
             fKDTreeSlot("kd-tree-in", this, &KTMergeKDTree::MergeTree),
@@ -65,9 +66,11 @@ namespace Katydid
         // change the last slice number for the merged tree _after_ merging points in all components
         if (kdTreeData.GetLastSlice() > fMergedTreeData.GetLastSlice()) fMergedTreeData.SetLastSlice(kdTreeData.GetLastSlice());
 
+        fHaveNewData = true;
+
         if (! kdTreeData.GetDataWillContinue())
         {
-            return FinishTree();
+            return FinishTree() && ClearTree();
         }
         return true;
     }
@@ -88,6 +91,8 @@ namespace Katydid
 
     bool KTMergeKDTree::FinishTree()
     {
+        if (! fHaveNewData) return true;
+
         KTINFO(mkdlog, "Creating merged k-d tree");
 
         unsigned nComponents = fMergedTreeData.GetNComponents();
@@ -99,6 +104,7 @@ namespace Katydid
         // yet another exception to the separation of regular functions and signals/slots; sorry
         fKDTreeSignal(fDataPtr);
 
+        fHaveNewData = false;
         return true;
     }
 
@@ -110,6 +116,7 @@ namespace Katydid
         {
             fMergedTreeData.ClearPoints(iComponent);
         }
+        fHaveNewData = false;
         return true;
     }
 

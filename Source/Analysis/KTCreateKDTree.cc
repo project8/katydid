@@ -38,6 +38,7 @@ namespace Katydid
             fSliceInWindowCount(0),
             fInvScalingX(1.),
             fInvScalingY(1.),
+            fHaveNewData(false),
             fKDTreeSignal("kd-tree", this),
             fDoneSignal("done", this),
             fDiscPointsSlot("disc-1d", this, &KTCreateKDTree::AddPoints),
@@ -87,7 +88,7 @@ namespace Katydid
     bool KTCreateKDTree::AddPoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
     {
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
-        if (slHeader.GetIsNewAcquisition())
+        if (fHaveNewData && slHeader.GetIsNewAcquisition())
         {
             if (! MakeTree(false) || ! ClearTree(false))
             {
@@ -137,6 +138,7 @@ namespace Katydid
             fSliceInWindowCount = 0;
         }
 
+        fHaveNewData = true;
         return true;
     }
 
@@ -172,11 +174,14 @@ namespace Katydid
         }
         KTDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");
 
+        fHaveNewData = true;
         return true;
     }
 
     bool KTCreateKDTree::MakeTree(bool willContinue)
     {
+        if (! fHaveNewData) return true;
+
         KTINFO(kdlog, "Creating k-d tree; last slice is " << fTreeData.GetLastSlice());
         KTDEBUG(kdlog, "Tree will continue: " << willContinue);
 
@@ -194,11 +199,14 @@ namespace Katydid
         // yet another exception to the separation of normal function and signals/slots; sorry
         fKDTreeSignal(fDataPtr);
 
+        fHaveNewData = false;
         return true;
     }
 
     bool KTCreateKDTree::ClearTree(bool willContinue, uint64_t firstSliceKept)
     {
+        if (! fHaveNewData) return true;
+
         // firstSliceKept is only used if willContinue == true
         if (willContinue)
         {
@@ -226,6 +234,8 @@ namespace Katydid
                 fTreeData.ClearPoints(iComponent);
             }
         }
+
+        fHaveNewData = false;
         return true;
     }
 

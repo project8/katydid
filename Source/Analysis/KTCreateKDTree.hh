@@ -97,6 +97,8 @@ namespace Katydid
             MEMBERVARIABLE(double, InvScalingX);
             MEMBERVARIABLE(double, InvScalingY);
 
+            MEMBERVARIABLE(bool, HaveNewData);
+
             //***************
             // Signals
             //***************

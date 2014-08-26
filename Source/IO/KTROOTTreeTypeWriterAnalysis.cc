@@ -166,6 +166,9 @@ namespace Katydid
                     fKDTreePointData.fNoiseFlag = it->fNoiseFlag;
                     KTKDTreeData::TreeIndex::Neighbors neighbors = index->knnSearch(pid, 2);
                     fKDTreePointData.fNNDistance = neighbors.dist(1);
+                    //KTWARN(publog, "ne to " << pid << ": " << neighbors[0] << " @ " << neighbors.dist(0) << "\t" << neighbors[1] << " @ " << neighbors.dist(1) << '\n'
+                    //       << '\t' << neighbors[0] << ": " << points[neighbors[0]].fCoords[0] << ", " << points[neighbors[0]].fCoords[1] << '\n'
+                    //       << '\t' << neighbors[1] << ": " << points[neighbors[1]].fCoords[0] << ", " << points[neighbors[1]].fCoords[1]);
 
                     fKDTreeTree->Fill();
                     ++pid;
