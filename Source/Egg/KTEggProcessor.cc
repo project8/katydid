@@ -236,13 +236,23 @@ namespace Katydid
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
     {
         unsigned iSlice = 0, iProgress = 0;
-        KTDataPtr data;
+        KTDataPtr data, nextData;
+        bool nextSliceIsValid = true;
+        if (! HatchNextSlice(reader, data))
+        {
+            KTERROR(egglog, "Unable to hatch first slice of data.");
+            return;
+        }
         while (true)
         {
             KTINFO(egglog, "Hatching slice " << iSlice);
 
             // Hatch the slice
-            if (! HatchNextSlice(reader, data)) break;
+            if (! HatchNextSlice(reader, nextData))
+            {
+                data->Of< KTData >().fLastData = true;
+                nextSliceIsValid = false;
+            }
 
             if (data->Has< KTRawTimeSeriesData >())
             {
@@ -268,6 +278,9 @@ namespace Katydid
                 iProgress = 0;
                 KTPROG(egglog, iSlice << " slices processed");
             }
+
+            if (! nextSliceIsValid) break;
+            data = nextData;
         }
         return;
     }
