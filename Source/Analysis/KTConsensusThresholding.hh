@@ -62,6 +62,8 @@ namespace Katydid
 
         private:
             //void VoteCore(bool doPositive, size_t pid, double* thisPoint, double* neighborPoint, double slope, double intercept);
+            void FindDeltasFirstNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq);
+            void FindDeltasNeighborsInRadius(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq);
 
             //***************
             // Signals

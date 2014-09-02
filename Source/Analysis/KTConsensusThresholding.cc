@@ -76,18 +76,16 @@ namespace Katydid
     {   
         unsigned nPoints = kdTree->size();
         noiseIndices.clear();
+        double timeDelta, frequencyDelta;
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
-            //size_t nearestID = kdTree->knnSearch(iPoint, 2).GetIndicesAndDists()[1].second;
-            KTTreeIndex< double >::Neighbors ne = kdTree->knnSearch(iPoint, 2);
-            size_t nearestID = ne[1];
+            //FindDeltasFirstNeighbor(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
+            FindDeltasNeighborsInRadius(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
 
-            double frequencyDelta = setOfPoints[nearestID].fCoords[1] - setOfPoints[iPoint].fCoords[1];
-            double timeDelta = setOfPoints[nearestID].fCoords[0] - setOfPoints[iPoint].fCoords[0];
             unsigned voteCount = 0;
             if (! timeDelta == 0)
             {
-                double slope = frequencyDelta / timeDelta;
+                //double slope = frequencyDelta / timeDelta;
                 //double intercept = setOfPoints[iPoint].fCoords[1] - slope * setOfPoints[iPoint].fCoords[0];
 
                 bool closeEnough = true;
@@ -134,5 +132,34 @@ namespace Katydid
         }
         return true;
     }
+
+    void KTConsensusThresholding::FindDeltasFirstNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
+    {
+        KTTreeIndex< double >::Neighbors ne = kdTree->knnSearch(pid, 2);
+        deltaTime = setOfPoints[ne[1]].fCoords[0] - setOfPoints[pid].fCoords[0];
+        deltaFreq = setOfPoints[ne[1]].fCoords[1] - setOfPoints[pid].fCoords[1];
+        return;
+    }
+
+    void KTConsensusThresholding::FindDeltasNeighborsInRadius(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
+    {
+        KTTreeIndex< double >::Neighbors ne = kdTree->FindNeighbors(pid, fMembershipRadius);
+        unsigned nNeighbors = ne.size();
+        double sumX, sumY, sumX2, sumXY;
+        for (unsigned iNe = 0; iNe < nNeighbors; ++iNe)
+        {
+            sumX += setOfPoints[ne[iNe]].fCoords[0];
+            sumY += setOfPoints[ne[iNe]].fCoords[1];
+            sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
+            sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
+        }
+        deltaTime = sumX / (double)nNeighbors; // a.k.a. xMean
+        //double yMean = sumY / (double)nNeighbors;
+        //double slope = (sumXY - sumX * yMean) / (sumX2 - sumX * xMean);
+        //double intercept = yMean - slope * xMean;
+        deltaFreq = deltaTime * (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * deltaTime); // a.k.a. deltaTime * slope
+        return;
+    }
+
 
 } /* namespace Katydid */
