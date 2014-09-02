@@ -283,7 +283,7 @@ namespace Katydid
                 KTDEBUG(avlog_hh, "Emitting last-data signal");
                 if (! Scale(fLastAccumulatorPtr->fData->Of< XDataType >(), fLastAccumulatorPtr->fSliceHeader))
                 {
-
+                    KTERROR(avlog_hh, "Something went wrong while scaling data with type <" << typeid(XDataType).name() << ">");
                 }
                 (*sigIt->second.fFinishedSignal)(fLastAccumulatorPtr->fData);
             }
