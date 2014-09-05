@@ -40,12 +40,12 @@ namespace Katydid
         Double_t fAmplitude;
         Bool_t fNoiseFlag;
         Double_t fNNDistance;
-        UInt_t fKNNWithin0p05;
-        UInt_t fKNNWithin0p1;
-        UInt_t fKNNWithin0p2;
-        UInt_t fKNNWithin0p5;
+        UInt_t fKNNWithin0p22;
+        UInt_t fKNNWithin0p32;
+        UInt_t fKNNWithin0p45;
+        UInt_t fKNNWithin0p7;
         UInt_t fKNNWithin1p0;
-        UInt_t fKNNWithin2p0;
+        UInt_t fKNNWithin1p4;
     };
 
     struct TAmplitudeDistributionData
