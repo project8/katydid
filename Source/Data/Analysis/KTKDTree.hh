@@ -181,12 +181,17 @@ namespace Katydid
         }
         size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const
         {
-            return NanoflannIndex::radiusSearch(query_point, radius, IndicesDists, searchParams);
+            // nanoflann uses radius^2 for euclidean distances
+            return NanoflannIndex::radiusSearch(query_point, radius*radius, IndicesDists, searchParams);
         }
         Neighbors FindNeighbors(PointId pid, TYPE radius) const
         {
             Neighbors neighbors;
-            NanoflannIndex::radiusSearch(NanoflannIndex::dataset.fPoints[pid].fCoords, radius, neighbors.GetIndicesAndDists(), nanoflann::SearchParams(32, 0, true));
+            NanoflannIndex::radiusSearch(NanoflannIndex::dataset.fPoints[pid].fCoords, radius*radius, neighbors.GetIndicesAndDists(), nanoflann::SearchParams(32, 0, true));
+            for (unsigned iPoint = 0; iPoint < neighbors.size(); ++iPoint)
+            {
+                neighbors.fIndicesAndDists[iPoint].second = sqrt(neighbors.fIndicesAndDists[iPoint].second);
+            }
             return neighbors;
         }
 
@@ -200,7 +205,7 @@ namespace Katydid
             Neighbors neighbors;
             for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
             {
-                neighbors.GetIndicesAndDists().push_back(std::make_pair< size_t, TYPE > (out_indices[iPoint], out_distances_sq[iPoint]));
+                neighbors.GetIndicesAndDists().push_back(std::make_pair< size_t, TYPE > (out_indices[iPoint], sqrt(out_distances_sq[iPoint])));
             }
 
             delete [] out_indices;
