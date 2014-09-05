@@ -24,7 +24,7 @@ namespace Katydid
             KTProcessor(name),
             fMembershipRadius(1.0),
             fMinNumberVotes(1),
-            fRemovePointsFlag(false),
+            fRemoveNoiseFlag(false),
             fKDTreeSignal("kd-tree-out", this),
             fKDTreeSlot("kd-tree-in", this, &KTConsensusThresholding::ConsensusVote, &fKDTreeSignal)
     {
@@ -40,7 +40,7 @@ namespace Katydid
 
         SetMembershipRadius(node->GetValue("membership-radius", GetMembershipRadius()));
         SetMinNumberVotes(node->GetValue("min-number-votes", GetMinNumberVotes()));
-        SetRemovePointsFlag(node->GetValue("remove-points", GetRemovePointsFlag()));
+        SetRemoveNoiseFlag(node->GetValue("remove-noise", GetRemoveNoiseFlag()));
 
         return true;
     }
@@ -60,7 +60,7 @@ namespace Katydid
                 return false;
             }
             KTDEBUG(ctlog, "Consensus thresholding is removing " << noisePoints.size() << " points");
-            if (fRemovePointsFlag)
+            if (fRemoveNoiseFlag)
             {
                 kdTreeData.RemovePoints(noisePoints); // also rebuilds k-d tree index
             }
@@ -153,11 +153,13 @@ namespace Katydid
             sumX2 += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[0];
             sumXY += setOfPoints[ne[iNe]].fCoords[0] * setOfPoints[ne[iNe]].fCoords[1];
         }
-        deltaTime = sumX / (double)nNeighbors; // a.k.a. xMean
+        //double xMean = sumX / (double)nNeighbors;
         //double yMean = sumY / (double)nNeighbors;
-        //double slope = (sumXY - sumX * yMean) / (sumX2 - sumX * xMean);
+        double slope = (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * sumX / (double)nNeighbors);
         //double intercept = yMean - slope * xMean;
-        deltaFreq = deltaTime * (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * deltaTime); // a.k.a. deltaTime * slope
+        deltaTime = sqrt(fMembershipRadius * fMembershipRadius / (1. + slope*slope));
+        deltaFreq = slope * deltaTime;
+        //deltaFreq = deltaTime * (sumXY - sumX * sumY / (double)nNeighbors) / (sumX2 - sumX * deltaTime); // a.k.a. deltaTime * slope
         return;
     }
 

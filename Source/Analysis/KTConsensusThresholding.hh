@@ -53,7 +53,7 @@ namespace Katydid
 
             MEMBERVARIABLE(double, MembershipRadius);
             MEMBERVARIABLE(unsigned, MinNumberVotes);
-            MEMBERVARIABLE(bool, RemovePointsFlag);
+            MEMBERVARIABLE(bool, RemoveNoiseFlag);
 
         public:
             bool ConsensusVote(KTKDTreeData& kdTreeData);
