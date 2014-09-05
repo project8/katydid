@@ -12,6 +12,7 @@ set (ANALYSIS_HEADERFILES
     KTGainVariationProcessor.hh
     KTHoughTransform.hh
     KTMergeKDTree.hh
+    KTNNFilter.hh
     KTSpectrumDiscriminator.hh
     KTSwitchFFTWPolar.hh
     #KTAutoCorrMatrix.hh
@@ -28,6 +29,7 @@ set (ANALYSIS_SOURCEFILES
     KTGainVariationProcessor.cc
     KTHoughTransform.cc
     KTMergeKDTree.cc
+    KTNNFilter.cc
     KTSpectrumDiscriminator.cc
     KTSwitchFFTWPolar.cc
     #KTAutoCorrMatrix.cc
