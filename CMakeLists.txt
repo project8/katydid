@@ -219,14 +219,6 @@ include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Source)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
 
-<<<<<<< HEAD
-# Matlab
-if (Katydid_USE_MATLAB)
-    add_definitions(-DUSE_MATLAB)
-endif (Katydid_USE_MATLAB)
-
-=======
->>>>>>> develop
 # Subdirectories
 include_directories (BEFORE 
     ${PROJECT_SOURCE_DIR}/Source/Utility
