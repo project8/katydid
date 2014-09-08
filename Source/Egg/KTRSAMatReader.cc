@@ -13,6 +13,10 @@
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "rapidxml.hpp"
+<<<<<<< HEAD
+=======
+#include <cstring>
+>>>>>>> develop
 
 using namespace std;
 

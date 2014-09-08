@@ -115,10 +115,7 @@ namespace Katydid
         fHeader.SetRawSliceSize(fSliceSize);
         fHeader.SetSliceSize(fSliceSize);
 
-        stringstream headerBuff;
-        headerBuff << fHeader;
-        KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
-
+        KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
         fReadState.fAcquisitionID = 0;

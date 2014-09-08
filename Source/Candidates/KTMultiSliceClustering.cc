@@ -712,6 +712,13 @@ namespace Katydid
         wfcData.SetMeanEndFrequency(ltbWeightedSum / ltbSumOfWeights);
         wfcData.SetFrequencyWidth(freqBinWidth * double(nFreqBins));
 
+        unsigned i = 0;
+        for (; ! spectra[i]; ++i); // get the first spectrum that is definitely there (since sometimes spectra are missing)
+        if (i != spectra.size())
+        {
+            wfcData.SetMinimumFrequency(spectra[i]->GetBinLowEdge(firstFreqBin));
+            wfcData.SetMaximumFrequency(spectra[i]->GetBinLowEdge(lastFreqBin) + freqBinWidth);
+        }
 #ifndef NDEBUG
         printStream << "\tTime in run: " << wfcData.GetTimeInRun() << " s\n";
         printStream << "\tTime length: " << wfcData.GetTimeLength() << " s\n";
@@ -720,18 +727,15 @@ namespace Katydid
         printStream << "\tMean start freq: " << wfcData.GetMeanStartFrequency() << " Hz\n";
         printStream << "\tMean end freq: " << wfcData.GetMeanEndFrequency() << " Hz\n";
         printStream << "\tFreq width: " << wfcData.GetFrequencyWidth() << " Hz\n";
+        printStream << "\tMinimum frequency: " << wfcData.GetMinimumFrequency() << " Hz\n";
+        printStream << "\tMaximum frequency: " << wfcData.GetMaximumFrequency() << " Hz\n";
 #endif
 
-        unsigned i = 0;
-        for (; ! spectra[i]; ++i);
-        if (i != spectra.size())
-        {
-            wfcData.SetMinimumFrequency(spectra[i]->GetBinLowEdge(firstFreqBin));
-            wfcData.SetMaximumFrequency(spectra[i]->GetBinLowEdge(lastFreqBin) + freqBinWidth);
-        }
 
         double tfStartTime = wfcData.GetTimeInRun() + endTimeBinShift - double(fNFramingTimeBins) * timeBinWidth;
-        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, tfStartTime, tfStartTime + double(nTimeBinsWithFrame)*timeBinWidth, nFreqBinsWithFrame, freqBinWidth * double(firstFreqBinWithFrame), freqBinWidth * double(firstFreqBinWithFrame + (int)nFreqBinsWithFrame));
+        double tfStartFreq = wfcData.GetMinimumFrequency() - double(fNFramingTimeBins) * freqBinWidth;
+        KTTimeFrequency* tf = new KTTimeFrequencyPolar(nTimeBinsWithFrame, tfStartTime, tfStartTime + double(nTimeBinsWithFrame)*timeBinWidth, nFreqBinsWithFrame, tfStartFreq, tfStartFreq + double(nFreqBinsWithFrame)*freqBinWidth);
+        //KTDEBUG(sclog, "tf freq dims: " << tfStartFreq << " - " << tfStartFreq + double(nFreqBinsWithFrame)*freqBinWidth);
         for (int iTBin=firstTimeBinWithFrame; iTBin <= lastTimeBinWithFrame; ++iTBin)
         {
             int spectrumNum = iTBin - firstTimeBinWithFrame;

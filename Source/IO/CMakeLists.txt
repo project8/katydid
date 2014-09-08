@@ -39,6 +39,7 @@ if (ROOT_FOUND)
         KTMultiSliceROOTWriter.hh
         KTROOTTreeTypeWriterAnalysis.hh
         KTROOTTreeTypeWriterCandidates.hh
+        KTROOTTreeTypeWriterEgg.hh
         KTROOTTreeTypeWriterEvaluation.hh
         KTROOTTreeWriter.hh
     )
@@ -80,6 +81,7 @@ if (ROOT_FOUND)
         KTMultiSliceROOTWriter.cc
         KTROOTTreeTypeWriterAnalysis.cc
         KTROOTTreeTypeWriterCandidates.cc
+        KTROOTTreeTypeWriterEgg.cc
         KTROOTTreeTypeWriterEvaluation.cc
         KTROOTTreeWriter.cc
     )
