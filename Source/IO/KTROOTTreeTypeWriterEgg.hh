@@ -21,7 +21,7 @@ namespace Katydid
 {
     struct TEggHeader
     {
-        char* fFilename;
+        TString* fFilename;
         UInt_t fAcquisitionMode;
         UInt_t fNChannels;
         UInt_t fRawSliceSize; /// Number of bins per slice before any modification
@@ -30,8 +30,8 @@ namespace Katydid
         UInt_t fRecordSize; /// Number of bins per Monarch record
         UInt_t fRunDuration;
         Double_t fAcquisitionRate; /// in Hz
-        TString fTimestamp;
-        TString fDescription;
+        TString* fTimestamp;
+        TString* fDescription;
         UInt_t fRunType;
         UInt_t fRunSource;
         UInt_t fFormatMode;
