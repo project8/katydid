@@ -92,6 +92,21 @@ if (ROOT_FOUND)
     set (IO_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/IODict.cxx)
 endif (ROOT_FOUND)
 
+if (HDF5_FOUND)
+    set (IO_HEADERFILES
+        ${IO_HEADERFILES}
+        KTHDF5TypeWriterEgg.hh
+        KTHDF5Writer.hh
+    )
+    
+    set (IO_SOURCEFILES
+        ${IO_SOURCEFILES}
+        KTHDF5TypeWriterEgg.cc
+        KTHDF5Writer.cc
+    )
+    
+endif (HDF5_FOUND)
+
 set (KATYDID_LIBS
     KatydidUtility
     KatydidCore
