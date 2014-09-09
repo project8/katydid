@@ -35,10 +35,16 @@ namespace Katydid
             fEggHeaderTree(NULL),
             fEggHeaderData()
     {
+        fEggHeaderData.fFilename = new TString();
+        fEggHeaderData.fTimestamp = new TString();
+        fEggHeaderData.fDescription = new TString();
     }
 
     KTROOTTreeTypeWriterEgg::~KTROOTTreeTypeWriterEgg()
     {
+        delete fEggHeaderData.fFilename;
+        delete fEggHeaderData.fTimestamp;
+        delete fEggHeaderData.fDescription;
     }
 
 
@@ -66,7 +72,7 @@ namespace Katydid
             }
         }
 
-        fEggHeaderData.fFilename = header->GetFilename();
+        *fEggHeaderData.fFilename = header->GetFilename();
         KTDEBUG(publog, "Writing egg header with filename <" << fEggHeaderData.fFilename << ">");
         fEggHeaderData.fAcquisitionMode = header->GetAcquisitionMode();
         fEggHeaderData.fNChannels = header->GetNChannels();
@@ -76,8 +82,8 @@ namespace Katydid
         fEggHeaderData.fRecordSize = header->GetRecordSize();
         fEggHeaderData.fRunDuration = header->GetRunDuration();
         fEggHeaderData.fAcquisitionRate = header->GetAcquisitionRate();
-        fEggHeaderData.fTimestamp = header->GetTimestamp();
-        fEggHeaderData.fDescription = header->GetDescription();
+        *fEggHeaderData.fTimestamp = header->GetTimestamp();
+        *fEggHeaderData.fDescription = header->GetDescription();
         fEggHeaderData.fRunType = header->GetRunType();
         fEggHeaderData.fRunSource = header->GetRunSource();
         fEggHeaderData.fFormatMode = header->GetFormatMode();
@@ -101,7 +107,7 @@ namespace Katydid
         }
         fWriter->AddTree(fEggHeaderTree);
 
-        fEggHeaderTree->Branch("Filename", &fEggHeaderData.fFilename, "fFilename/s");
+        fEggHeaderTree->Branch("Filename", "TString", &fEggHeaderData.fFilename);
         fEggHeaderTree->Branch("AcquisitionMode", &fEggHeaderData.fAcquisitionMode, "fAcquisitionMode/i");
         fEggHeaderTree->Branch("NChannels", &fEggHeaderData.fNChannels, "fNChannels/i");
         fEggHeaderTree->Branch("RawSliceSize", &fEggHeaderData.fRawSliceSize, "fRawSliceSize/i");
@@ -110,8 +116,8 @@ namespace Katydid
         fEggHeaderTree->Branch("RecordSize", &fEggHeaderData.fRecordSize, "fRecordSize/i");
         fEggHeaderTree->Branch("RunDuration", &fEggHeaderData.fRunDuration, "fRunDuration/i");
         fEggHeaderTree->Branch("AcquisitionRate", &fEggHeaderData.fAcquisitionRate, "fAcquisitionRate/d");
-        fEggHeaderTree->Branch("Timestamp", &fEggHeaderData.fTimestamp, "fTimestamp/s");
-        fEggHeaderTree->Branch("Description", &fEggHeaderData.fDescription, "fDescription/s");
+        fEggHeaderTree->Branch("Timestamp", "TString", &fEggHeaderData.fTimestamp);
+        fEggHeaderTree->Branch("Description", "TString", &fEggHeaderData.fDescription);
         fEggHeaderTree->Branch("RunType", &fEggHeaderData.fRunType, "fRunType/i");
         fEggHeaderTree->Branch("RunSource", &fEggHeaderData.fRunSource, "fRunSource/i");
         fEggHeaderTree->Branch("FormatMode", &fEggHeaderData.fFormatMode, "fFormatMode/i");
