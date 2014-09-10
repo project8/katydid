@@ -175,7 +175,7 @@ namespace Katydid
                 fVisited[pid] = true;
 
                 // get the neighbors
-                Neighbors ne = dist.FindNeighbors(pid, fRadius);
+                Neighbors ne = dist.NearestNeighborsByRadius(pid, fRadius);
 
                 // not enough support -> mark as noise
                 if (ne.size() < fMinPoints)
@@ -203,7 +203,7 @@ namespace Katydid
                             fVisited[nPid] = true;
 
                             // go to neighbors
-                            Neighbors ne1 = dist.FindNeighbors(nPid, fRadius);
+                            Neighbors ne1 = dist.NearestNeighborsByRadius(nPid, fRadius);
 
                             // enough support
                             if (ne1.size() >= fMinPoints)

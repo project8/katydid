@@ -135,7 +135,7 @@ namespace Katydid
 
     void KTConsensusThresholding::FindDeltasFirstNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
     {
-        KTTreeIndex< double >::Neighbors ne = kdTree->knnSearch(pid, 2);
+        KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByNumber(pid, 2);
         deltaTime = setOfPoints[ne[1]].fCoords[0] - setOfPoints[pid].fCoords[0];
         deltaFreq = setOfPoints[ne[1]].fCoords[1] - setOfPoints[pid].fCoords[1];
         return;
@@ -143,7 +143,7 @@ namespace Katydid
 
     void KTConsensusThresholding::FindDeltasNeighborsInRadius(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
     {
-        KTTreeIndex< double >::Neighbors ne = kdTree->FindNeighbors(pid, fMembershipRadius);
+        KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByRadius(pid, fMembershipRadius);
         unsigned nNeighbors = ne.size();
         double sumX, sumY, sumX2, sumXY;
         for (unsigned iNe = 0; iNe < nNeighbors; ++iNe)

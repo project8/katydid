@@ -117,7 +117,7 @@ namespace Katydid
             }
         }
 
-        Neighbors FindNeighbors(PointId pid, TYPE threshold) const
+        Neighbors NearestNeighborsByRadius(PointId pid, TYPE threshold) const
         {
             Neighbors neighbors;
 
@@ -178,7 +178,7 @@ namespace Katydid
             }
         }
 
-        Neighbors FindNeighbors(PointId pid, TYPE threshold) const
+        Neighbors NearestNeighborsByRadius(PointId pid, TYPE threshold) const
         {
             typedef boost::numeric::ublas::matrix_row< const matrix_type > dist_row;
             dist_row pidRow(fDist, pid);

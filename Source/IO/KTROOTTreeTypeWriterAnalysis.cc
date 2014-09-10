@@ -164,22 +164,22 @@ namespace Katydid
                     fKDTreePointData.fFrequency = it->fCoords[1];
                     fKDTreePointData.fAmplitude = it->fAmplitude;
                     fKDTreePointData.fNoiseFlag = it->fNoiseFlag;
-                    KTKDTreeData::TreeIndex::Neighbors neighbors = index->knnSearch(pid, 2);
+                    KTKDTreeData::TreeIndex::Neighbors neighbors = index->NearestNeighborsByNumber(pid, 2);
                     fKDTreePointData.fNNDistance = neighbors.dist(1);
                     //KTWARN(publog, "ne to " << pid << ": " << neighbors[0] << " @ " << neighbors.dist(0) << "\t" << neighbors[1] << " @ " << neighbors.dist(1) << '\n'
                     //       << '\t' << neighbors[0] << ": " << points[neighbors[0]].fCoords[0] << ", " << points[neighbors[0]].fCoords[1] << '\n'
                     //       << '\t' << neighbors[1] << ": " << points[neighbors[1]].fCoords[0] << ", " << points[neighbors[1]].fCoords[1]);
-                    KTKDTreeData::TreeIndex::Neighbors neighbors2 = index->FindNeighbors(pid, 0.22);
+                    KTKDTreeData::TreeIndex::Neighbors neighbors2 = index->NearestNeighborsByRadius(pid, 0.22);
                     fKDTreePointData.fKNNWithin0p22 = neighbors2.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors3 = index->FindNeighbors(pid, 0.32);
+                    KTKDTreeData::TreeIndex::Neighbors neighbors3 = index->NearestNeighborsByRadius(pid, 0.32);
                     fKDTreePointData.fKNNWithin0p32 = neighbors3.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors4 = index->FindNeighbors(pid, 0.45);
+                    KTKDTreeData::TreeIndex::Neighbors neighbors4 = index->NearestNeighborsByRadius(pid, 0.45);
                     fKDTreePointData.fKNNWithin0p45 = neighbors4.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors5 = index->FindNeighbors(pid, 0.7);
+                    KTKDTreeData::TreeIndex::Neighbors neighbors5 = index->NearestNeighborsByRadius(pid, 0.7);
                     fKDTreePointData.fKNNWithin0p7 = neighbors5.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors6 = index->FindNeighbors(pid, 1.);
+                    KTKDTreeData::TreeIndex::Neighbors neighbors6 = index->NearestNeighborsByRadius(pid, 1.);
                     fKDTreePointData.fKNNWithin1p0 = neighbors6.size();
-                    KTKDTreeData::TreeIndex::Neighbors neighbors7 = index->FindNeighbors(pid, 1.4);
+                    KTKDTreeData::TreeIndex::Neighbors neighbors7 = index->NearestNeighborsByRadius(pid, 1.4);
                     fKDTreePointData.fKNNWithin1p4 = neighbors7.size();
 
                     fKDTreeTree->Fill();

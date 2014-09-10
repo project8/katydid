@@ -73,10 +73,10 @@ namespace Katydid
 
         virtual void FindNeighbors(nanoflann::KNNResultSet< TYPE >& result, const TYPE* vec, const nanoflann::SearchParams& searchParams) const = 0;
         virtual void FindNeighbors(nanoflann::RadiusResultSet< TYPE >& result, const TYPE* vec, const nanoflann::SearchParams& searchParams) const = 0;
-        virtual void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const = 0;
+        virtual void KNNSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const = 0;
         virtual size_t RadiusSearch(const TYPE* query_point, const TYPE radius, std::vector< std::pair< size_t, TYPE > >& IndicesDists, const nanoflann::SearchParams& searchParams) const = 0;
-        virtual Neighbors FindNeighbors(PointId pid, TYPE radius) const = 0;
-        virtual Neighbors knnSearch(PointId pid, size_t N) const = 0;
+        virtual Neighbors NearestNeighborsByRadius(PointId pid, TYPE radius) const = 0;
+        virtual Neighbors NearestNeighborsByNumber(PointId pid, size_t N) const = 0;
 
     };
 
@@ -110,7 +110,7 @@ namespace Katydid
         {
             NanoflannIndex::findNeighbors(result, vec, searchParams);
         }
-        void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const
+        void KNNSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const
         {
             NanoflannIndex::knnSearch(query_point, num_closest, out_indices, out_distances_sq, nChecks_IGNORED);
         }
@@ -118,14 +118,14 @@ namespace Katydid
         {
             return NanoflannIndex::radiusSearch(query_point, radius, IndicesDists, searchParams);
         }
-        Neighbors FindNeighbors(PointId pid, TYPE radius) const
+        Neighbors NearestNeighborsByRadius(PointId pid, TYPE radius) const
         {
             Neighbors neighbors;
             NanoflannIndex::radiusSearch(NanoflannIndex::dataset.fPoints[pid].fCoords, radius, neighbors.GetIndicesAndDists(), nanoflann::SearchParams(32, 0, true));
             return neighbors;
         }
 
-        Neighbors knnSearch(PointId pid, size_t nPoints) const
+        Neighbors NearestNeighborsByNumber(PointId pid, size_t nPoints) const
         {
             size_t* out_indices = new size_t[nPoints];
             TYPE* out_distances_sq = new TYPE[nPoints];
@@ -175,7 +175,7 @@ namespace Katydid
         {
             NanoflannIndex::findNeighbors(result, vec, searchParams);
         }
-        virtual void knnSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const
+        virtual void KNNSearch(const TYPE* query_point, const size_t num_closest, size_t* out_indices, TYPE* out_distances_sq, const int nChecks_IGNORED=10) const
         {
             NanoflannIndex::knnSearch(query_point, num_closest, out_indices, out_distances_sq, nChecks_IGNORED);
         }
@@ -184,7 +184,7 @@ namespace Katydid
             // nanoflann uses radius^2 for euclidean distances
             return NanoflannIndex::radiusSearch(query_point, radius*radius, IndicesDists, searchParams);
         }
-        Neighbors FindNeighbors(PointId pid, TYPE radius) const
+        Neighbors NearestNeighborsByRadius(PointId pid, TYPE radius) const
         {
             Neighbors neighbors;
             NanoflannIndex::radiusSearch(NanoflannIndex::dataset.fPoints[pid].fCoords, radius*radius, neighbors.GetIndicesAndDists(), nanoflann::SearchParams(32, 0, true));
@@ -195,7 +195,7 @@ namespace Katydid
             return neighbors;
         }
 
-        Neighbors knnSearch(PointId pid, size_t nPoints) const
+        Neighbors NearestNeighborsByNumber(PointId pid, size_t nPoints) const
         {
             size_t* out_indices = new size_t[nPoints];
             TYPE* out_distances_sq = new TYPE[nPoints];

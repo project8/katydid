@@ -112,7 +112,7 @@ namespace Katydid
         double timeDelta, frequencyDelta;
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
-            KTTreeIndex< double >::Neighbors ne = kdTree->knnSearch(iPoint, 2);
+            KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByNumber(iPoint, 2);
             timeDelta = setOfPoints[ne[1]].fCoords[0] - setOfPoints[iPoint].fCoords[0];
             frequencyDelta = setOfPoints[ne[1]].fCoords[1] - setOfPoints[iPoint].fCoords[1];
             if (timeDelta*timeDelta + frequencyDelta*frequencyDelta > maxDistSq)
@@ -131,7 +131,7 @@ namespace Katydid
         unsigned nPtsInRadiusThreshold = fMinInRadius + 1; // since the neighbors returned by the k-d tree search function always includes the point itself
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
-            KTTreeIndex< double >::Neighbors ne = kdTree->FindNeighbors(iPoint, fRadius);
+            KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByRadius(iPoint, fRadius);
             if (ne.size() < nPtsInRadiusThreshold)
             {
                 noiseIndices.push_back(iPoint);

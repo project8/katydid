@@ -233,7 +233,7 @@ void kdtree_demo(const size_t N)
     nanoflann::KNNResultSet< double > resultSet(num_results);
     resultSet.init(&ret_index, &out_dist_sqr );
     data.GetTreeIndex()->FindNeighbors(resultSet, query_pt, nanoflann::SearchParams(10));
-    //index.knnSearch(query, indices, dists, num_results, mrpt_flann::SearchParams(10));
+    //index.KNNSearch(query, indices, dists, num_results, mrpt_flann::SearchParams(10));
 
     std::cout << "knnSearch(nn="<<num_results<<"): \n";
     std::cout << "ret_index=" << ret_index << " out_dist_sqr=" << out_dist_sqr << endl;
