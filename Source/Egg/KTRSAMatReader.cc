@@ -22,6 +22,7 @@ using std::map;
 using std::string;
 using std::vector;
 
+
 namespace Katydid
 {
     KTLOGGER(eggreadlog, "KTRSAMatReader");
@@ -63,8 +64,8 @@ namespace Katydid
         // Temporary variable to read time stamps
         double TimeFromFirstToLastRecord;
         char *RecordsTimeStampStr;
-        ptime ptime1temp;  // From Boost
-        time_duration tdur1temp;  // From Boost
+        boost::posix_time::ptime ptime1temp, ptime1temp_1st;  // From Boost
+        boost::posix_time::time_duration tdur1temp;  // From Boost
         
 
         if (fStride == 0) fStride = fSliceSize;
@@ -86,7 +87,7 @@ namespace Katydid
         //  -> If there more than one entry, then it's a concatenated file, and we have 1 fileinfo
         //     per original file
         fileinfostruct = matGetVariable(matfilep, "fileinfo");
-        if ( fileinfostruct != NULL & mxIsStruct(fileinfostruct) ) {
+        if (  ( fileinfostruct != NULL )  &  mxIsStruct(fileinfostruct)  ) {
             // If fileinfostruct exists, then this is a concatenated file
 
             // Get the number of records (that is, original mat files),
@@ -107,10 +108,9 @@ namespace Katydid
                 rapidxml::xml_node<> * curr_node;
                 data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
                 curr_node = data_node->first_node("DateTime");
-                fHeader.SetTimestamp();
-                strcpy(RecordsTimeStampStr, curr_node->value())
+                strcpy(RecordsTimeStampStr, curr_node->value());
                 // Convert from String to Epoch Seconds
-                ptime1temp = time_from_string(RecordsTimeStampStr);
+                ptime1temp = boost::posix_time::time_from_string(RecordsTimeStampStr);
                 if (ii==0) ptime1temp_1st = ptime1temp;
                 tdur1temp = ptime1temp-ptime1temp_1st;
                 RecordsTimeStampSeconds[ii] = ( (double) tdur1temp.total_nanoseconds() ) / 1e9;
