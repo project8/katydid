@@ -59,12 +59,6 @@ if (Katydid_USE_MATLAB)
         ${EGG_SOURCEFILES}
         ${CMAKE_CURRENT_SOURCE_DIR}/KTRSAMatReader.cc
     )
-<<<<<<< HEAD
-
-    include_directories (AFTER ${MATLAB_INCLUDE_DIR})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-=======
->>>>>>> develop
 endif (Katydid_USE_MATLAB)
 
 
@@ -86,9 +80,6 @@ set (KATYDID_LIBS
 
 add_library (KatydidEgg ${EGG_SOURCEFILES} ${EGG_DICT_OUTFILE})
 target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
-if (Katydid_USE_MATLAB)
-    target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES} "-L${MATLAB_LIBRARY_DIR}" "-lmx" "-lmat")
-endif (Katydid_USE_MATLAB)
 
 pbuilder_install_headers (${EGG_HEADERFILES})
 pbuilder_install_libraries (KatydidEgg)
