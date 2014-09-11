@@ -46,8 +46,39 @@ namespace Katydid
             */ 
             H5::Group* AddGroup(const std::string& groupname);
 
+            /*
+             Set component number.
+            */
+            void SetComponents(const unsigned n_channels);
+
+            /*
+             Set slice size and raw slice size.
+            */
+            unsigned GetSliceSize();
+            void SetSliceSize(const unsigned slice_size);
+            unsigned GetRawSliceSize();
+            void SetRawSliceSize(const unsigned raw_slice_size);
+
+            /*
+             Functions relevant to the creation and retrieval of the
+             dataspaces for slices.
+            */
+            void CreateDataspaces();
+            H5::DataSpace* GetRawTimeDataspace();
+            H5::DataSpace* GetTimeDataspace();
+
+            /*
+             Create datasets on demand for time series data.
+            */
+            H5::DataSet* CreateRawTimeSeriesDataSet(const std::string &name);
+
         protected:
             H5::H5File* fFile;
+            unsigned slice_size;
+            unsigned raw_slice_size;
+            unsigned n_channels;
+            H5::DataSpace* raw_time_slice_dspace;
+            H5::DataSpace* time_slice_dspace;
 
     };
 
