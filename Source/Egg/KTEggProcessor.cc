@@ -17,6 +17,7 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReader2011.hh"
+#include "KTRSAMatReader.hh"
 #include "KTProcSummary.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
