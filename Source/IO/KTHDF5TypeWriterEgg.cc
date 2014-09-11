@@ -67,7 +67,7 @@ namespace Katydid
     // Raw Time Series Data
     //*****************
 
-    void KTBasicROOTTypeWriterEgg::WriteRawTimeSeriesData(KTDataPtr data)
+    void KTHDF5TypeWriterEgg::WriteRawTimeSeriesData(KTDataPtr data)
     {
         if (! data) return;
 
@@ -93,7 +93,7 @@ namespace Katydid
     // Time Series Data
     //*****************
 
-    void KTBasicROOTTypeWriterEgg::WriteTimeSeriesData(KTDataPtr data)
+    void KTHDF5TypeWriterEgg::WriteTimeSeriesData(KTDataPtr data)
     {
         if (! data) return;
 
