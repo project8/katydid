@@ -28,17 +28,15 @@ namespace Katydid
 
     KTHDF5Writer::KTHDF5Writer(const std::string& name) :
             KTWriterWithTypists< KTHDF5Writer >(name),
-            fFilename("my_file.h5")
+            fFilename("my_file.h5"),
+            fFile(NULL)
     {
         RegisterSlot("close-file", this, &KTHDF5Writer::CloseFile);
     }
 
     KTHDF5Writer::~KTHDF5Writer()
     {
-        if (true /*obviously this should be replaced by a condition checking if the file is open*/)
-        {
             CloseFile();
-        }
     }
 
     bool KTHDF5Writer::Configure(const KTParamNode* node)
@@ -50,31 +48,50 @@ namespace Katydid
         }
 
         // Command-line settings
-        SetFilename(fCLHandler->GetCommandLineValue< string >("rtw-file", fFilename));
+        SetFilename(fCLHandler->GetCommandLineValue< string >("hdf5-file", fFilename));
 
         return true;
     }
 
     bool KTHDF5Writer::OpenAndVerifyFile()
     {
+        if (fFile == NULL) {
+            KTINFO(publog, "Opening HDF5 file");
+            fFile = new H5::H5File(fFilename.c_str(), H5F_ACC_TRUNC);
+        }
+        if (!fFile) {
+            delete fFile;
+            fFile = NULL;
+            KTERROR(publog, "Error opening HDF5 file!!");
+            return false;
+        }
         return true;
     }
 
-    bool KTHDF5Writer::OpenFile(const std::string& filename, const std::string& flag)
+    H5::H5File* KTHDF5Writer::OpenFile(const std::string& filename, const std::string& flag)
     {
         CloseFile();
-
-        return true;
+        this->fFile = new H5::H5File(filename.c_str(), H5F_ACC_TRUNC);
+        KTINFO(publog, "opened HDF5 file!");
+        return this->fFile;
     }
 
     void KTHDF5Writer::CloseFile()
     {
-        if (true)
-        {
-            KTINFO(publog, "HDF5 data written to file <" << "blah" << ">; closing file");
-
+        if (fFile != NULL) {
+            KTINFO(publog, 
+                    "HDF5 data written to file <" 
+                    << this->fFilename 
+                    << ">; closing file");
+            delete fFile;
+            fFile = NULL;
         }
         return;
+    }
+
+    H5::Group* KTHDF5Writer::AddGroup(const std::string& groupname) {
+        H5::Group* result = new H5::Group(fFile->createGroup(groupname));
+        return result;
     }
 
 } /* namespace Katydid */
