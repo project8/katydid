@@ -32,6 +32,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
+            void ProcessEggHeader(KTEggHeader* header);
             void WriteEggHeader(KTEggHeader* data);
 
             void WriteRawTimeSeriesData(KTDataPtr data);
