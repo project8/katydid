@@ -59,6 +59,8 @@ namespace Katydid
         int   buflen;
         int   status;
         rapidxml::xml_document<> doc;
+        rapidxml::xml_node<> * data_node;
+        rapidxml::xml_node<> * curr_node;
         fSliceSize = GetSliceSize();
         fStride = GetStride();
         // Temporary variable to read time stamps
@@ -71,10 +73,10 @@ namespace Katydid
         if (fStride == 0) fStride = fSliceSize;
 
         // open the file
-        KTINFO(eggreadlog, "Opening egg file <" << filename << ">");
+        KTINFO(eggreadlog, "Opening mat file <" << filename << ">");
         matfilep = matOpen(filename.c_str(), "r");
         if (matfilep == NULL) {
-            KTERROR(eggreadlog, "Unable to break egg: " << filename);
+            KTERROR(eggreadlog, "Unable to open mat file: " << filename);
             return NULL;
         }
 
@@ -87,61 +89,84 @@ namespace Katydid
         //  -> If there more than one entry, then it's a concatenated file, and we have 1 fileinfo
         //     per original file
         fileinfostruct = matGetVariable(matfilep, "fileinfo");
-        if (  ( fileinfostruct != NULL )  &  mxIsStruct(fileinfostruct)  ) {
+        if (fileinfostruct == NULL) {
+            KTINFO(eggreadlog, "No fileinfo variable in file - this is not a proper Concatenatd MAT file");
+        }
+
+        if ( fileinfostruct != NULL ) {
             // If fileinfostruct exists, then this is a concatenated file
 
             // Get the number of records (that is, original mat files),
             //  then create an array to save the timestamps
             fRecordsPerFile = mxGetNumberOfElements(fileinfostruct);
-            RecordsTimeStampSeconds = (double *) calloc(fRecordsPerFile, sizeof(RecordsTimeStampSeconds));
+            KTINFO(eggreadlog, "Number of Records in File: fRecordsPerFile = " << fRecordsPerFile << " ");
+            RecordsTimeStampSeconds = (double *) calloc(fRecordsPerFile, sizeof(double));
             // Read the timestamps into a string, then convert the string to Epoch seconds
             rsaxml_mat = mxGetField(fileinfostruct, 0, "rsaMetadata");
-            buflen = mxGetN(rsaxml_mat)+1;
-            rsaxml_str = (char*)malloc(buflen * sizeof(char));
+            if (rsaxml_mat == NULL) {
+                KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
+                return NULL;
+            }
             for (int ii=0; ii<fRecordsPerFile; ii++) {
                 // Read XML Configuration for this Record (original MAT file)
                 rsaxml_mat = mxGetField(fileinfostruct, ii, "rsaMetadata");
+                buflen = mxGetN(rsaxml_mat)+1;
+                rsaxml_str = (char*)calloc(buflen, sizeof(char));
                 status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
+                // For debugging // KTINFO(eggreadlog, "rsaxml_str: " << rsaxml_str << " \n ii = " << ii );
                 // Parse XML
                 doc.parse<0>(rsaxml_str);
-                rapidxml::xml_node<> * data_node;
-                rapidxml::xml_node<> * curr_node;
                 data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
                 curr_node = data_node->first_node("DateTime");
-                strcpy(RecordsTimeStampStr, curr_node->value());
+                RecordsTimeStampStr = (char*)calloc(curr_node->value_size(), sizeof(char));
+                strncpy(RecordsTimeStampStr, curr_node->value(),curr_node->value_size()-6);
+                strncpy(&RecordsTimeStampStr[10], " ",1);
+                // For Debugging: // cout << "DateTime: " << RecordsTimeStampStr << "\n";
                 // Convert from String to Epoch Seconds
                 ptime1temp = boost::posix_time::time_from_string(RecordsTimeStampStr);
                 if (ii==0) ptime1temp_1st = ptime1temp;
                 tdur1temp = ptime1temp-ptime1temp_1st;
                 RecordsTimeStampSeconds[ii] = ( (double) tdur1temp.total_nanoseconds() ) / 1e9;
+                // For Debugging: // RecordsTimeStampSeconds[ii] = 0;
             }
-
-
             TimeFromFirstToLastRecord = RecordsTimeStampSeconds[fRecordsPerFile-1]-RecordsTimeStampSeconds[0];
+            // For Debugging:
+            // fRecordsPerFile = 1;
+            // TimeFromFirstToLastRecord = 0;
+            // RecordsTimeStampSeconds = (double *) calloc(1, sizeof(RecordsTimeStampSeconds));
+            // RecordsTimeStampSeconds[0] = 0;
+
         } else {
             // If fileinfostruct doesn't exist or is not a structure, then it's an original MAT file
             fRecordsPerFile = 1;
             TimeFromFirstToLastRecord = 0;
+            RecordsTimeStampSeconds = (double *) calloc(1, sizeof(RecordsTimeStampSeconds));
             RecordsTimeStampSeconds[0] = 0;
         }
-        
 
-
+        if (1==0) {   // For Debugging
+            KTINFO(eggreadlog, "Number of Records in File: fRecordsPerFile = " << fRecordsPerFile << " ");
+            KTERROR(eggreadlog, "Done for now, we are debugging");
+            return NULL;
+        }
 
         // Read XML Configuration
         rsaxml_mat = matGetVariable(matfilep, "rsaMetadata");
+        if (rsaxml_mat == NULL) {
+            KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
+            return NULL;
+        }
         buflen = mxGetN(rsaxml_mat)+1;
-        rsaxml_str = (char*)malloc(buflen * sizeof(char));
+        rsaxml_str = (char*)calloc(buflen, sizeof(char));
         status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
         if(status != 0) {
             KTERROR(eggreadlog, "Unable to read XML Configuration string.");
             return NULL;
         }
+        KTINFO(eggreadlog, "Read XML Run Configuration");
 
         // Parse XML
         doc.parse<0>(rsaxml_str);
-        rapidxml::xml_node<> * data_node;
-        rapidxml::xml_node<> * curr_node;
         data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
         curr_node = data_node->first_node("SamplingFrequency");
         // For debugging:
@@ -226,35 +251,29 @@ namespace Katydid
                     // Return Empty Pointer
                     return KTDataPtr();
         }
+
+        // Create Slice Header
+        KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(fHeader.GetNChannels());
+        sliceHeader.SetIsNewAcquisition(false);
+
         // If this slice if going to cross over a record boundary, then 
         //  increment the record number, set slice to 0, move fSamplesRead
         //  to the start of the next record, and return empty data
         //  (you don't want a slice with data from 2 records...)
         if ( ( fSamplesRead - fRecordsRead*fRecordSize + fSliceSize ) > fRecordSize ) {
-                    KTWARN(eggreadlog, "End of mat file reached");
-                    KTDEBUG(eggreadlog,"fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize << "; fSamplesPerFile: " << fSamplesPerFile);
+                    KTINFO(eggreadlog, "End of Record reached");
+                    KTDEBUG(eggreadlog,"fRecordsRead: " << fRecordsRead << "; fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize << "; fSamplesPerFile: " << fSamplesPerFile);
 
                     ++fRecordsRead;
                     fSamplesRead = fRecordsRead*fRecordSize;
-                    fSliceNumber = 0;
-
-                    // Return Empty Pointer
-                    return KTDataPtr();
+                    sliceHeader.SetIsNewAcquisition(true);
         }
 
 
         // ********************************** //
         // Fill out slice header information  //
         // ********************************** //
-        KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >().SetNComponents(fHeader.GetNChannels());
-        if (fSliceNumber==0)
-        {
-            sliceHeader.SetIsNewAcquisition(true);
-        }
-        else
-        {
-            sliceHeader.SetIsNewAcquisition(false);
-        }
+        if (fSliceNumber==0) sliceHeader.SetIsNewAcquisition(true);
 
         // Slice Header Variables
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
