@@ -60,9 +60,6 @@ namespace Katydid
             uint64_t fSliceNumber;
             unsigned fRecordsRead;
             unsigned fSamplesRead;
-            unsigned fSamplesPerFile;
-            unsigned fRecordsPerFile;
-            double *RecordsTimeStampSeconds;
             mxArray *ts_array_mat;
             MATFile *matfilep;
 
@@ -142,11 +139,7 @@ namespace Katydid
     }
     inline double KTRSAMatReader::GetTimeInRun() const
     {
-        // Time to the record
-        // = RecordsTimeStampSeconds[fRecordsRead] 
-        // Number of Samples within the record
-        // = fSamplesRead - fRecordsRead*fRecordSize
-        return double(fSamplesRead - fRecordsRead*fRecordSize) * fBinWidth + RecordsTimeStampSeconds[fRecordsRead];
+        return double(fSamplesRead) * fBinWidth;
     }
     inline unsigned KTRSAMatReader::GetNSlicesProcessed() const
     {
