@@ -8,6 +8,7 @@
 #ifndef KTHDF5TYPEWRITEREGG_HH_
 #define KTHDF5TYPEWRITEREGG_HH_
 
+#include "KTHDF5Writer.hh"
 #include "KTROOTTreeWriter.hh"
 
 #include "KTData.hh"
@@ -22,7 +23,7 @@ namespace Katydid
     class KTEggHeader;
 
 
-    class KTHDF5TypeWriterEgg : public KTROOTTreeTypeWriter
+    class KTHDF5TypeWriterEgg : public KTHDF5TypeWriter
     {
         public:
             KTHDF5TypeWriterEgg();
