@@ -14,12 +14,14 @@
 #include "KTTimeSeriesFFTW.hh"
 #include "rapidxml.hpp"
 #include <cstring>
+#include "boost/date_time/posix_time/posix_time.hpp"
 
 using namespace std;
 
 using std::map;
 using std::string;
 using std::vector;
+
 
 namespace Katydid
 {
@@ -35,6 +37,8 @@ namespace Katydid
             fBinWidth(0.),
             fSliceNumber(0),
             fSamplesRead(0),
+            fSamplesPerFile(0),
+            fRecordsPerFile(1),
             fRecordsRead(0)
     {
     }
@@ -50,14 +54,19 @@ namespace Katydid
 
     KTEggHeader* KTRSAMatReader::BreakEgg(const string& filename)
     {
-        mxArray *dt_mat, *fc_mat, *bw_mat, *rsaxml_mat;
+        mxArray *dt_mat, *fc_mat, *bw_mat, *rsaxml_mat, *fileinfostruct;
         char *rsaxml_str;
         int   buflen;
         int   status;
         rapidxml::xml_document<> doc;
         fSliceSize = GetSliceSize();
         fStride = GetStride();
-
+        // Temporary variable to read time stamps
+        double TimeFromFirstToLastRecord;
+        char *RecordsTimeStampStr;
+        boost::posix_time::ptime ptime1temp, ptime1temp_1st;  // From Boost
+        boost::posix_time::time_duration tdur1temp;  // From Boost
+        
 
         if (fStride == 0) fStride = fSliceSize;
 
@@ -68,6 +77,56 @@ namespace Katydid
             KTERROR(eggreadlog, "Unable to break egg: " << filename);
             return NULL;
         }
+
+        // Get the pointer to the data array
+        ts_array_mat = matGetVariable(matfilep, "Y");
+
+
+        // Check if the file has the variable "fileinfo", and if it has more than 1 entry;
+        //  -> this variable contains the info on individual files when hey are concatenated;
+        //  -> If there more than one entry, then it's a concatenated file, and we have 1 fileinfo
+        //     per original file
+        fileinfostruct = matGetVariable(matfilep, "fileinfo");
+        if (  ( fileinfostruct != NULL )  &  mxIsStruct(fileinfostruct)  ) {
+            // If fileinfostruct exists, then this is a concatenated file
+
+            // Get the number of records (that is, original mat files),
+            //  then create an array to save the timestamps
+            fRecordsPerFile = mxGetNumberOfElements(fileinfostruct);
+            RecordsTimeStampSeconds = (double *) calloc(fRecordsPerFile, sizeof(RecordsTimeStampSeconds));
+            // Read the timestamps into a string, then convert the string to Epoch seconds
+            rsaxml_mat = mxGetField(fileinfostruct, 0, "rsaMetadata");
+            buflen = mxGetN(rsaxml_mat)+1;
+            rsaxml_str = (char*)malloc(buflen * sizeof(char));
+            for (int ii=0; ii<fRecordsPerFile; ii++) {
+                // Read XML Configuration for this Record (original MAT file)
+                rsaxml_mat = mxGetField(fileinfostruct, ii, "rsaMetadata");
+                status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
+                // Parse XML
+                doc.parse<0>(rsaxml_str);
+                rapidxml::xml_node<> * data_node;
+                rapidxml::xml_node<> * curr_node;
+                data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
+                curr_node = data_node->first_node("DateTime");
+                strcpy(RecordsTimeStampStr, curr_node->value());
+                // Convert from String to Epoch Seconds
+                ptime1temp = boost::posix_time::time_from_string(RecordsTimeStampStr);
+                if (ii==0) ptime1temp_1st = ptime1temp;
+                tdur1temp = ptime1temp-ptime1temp_1st;
+                RecordsTimeStampSeconds[ii] = ( (double) tdur1temp.total_nanoseconds() ) / 1e9;
+            }
+
+
+            TimeFromFirstToLastRecord = RecordsTimeStampSeconds[fRecordsPerFile-1]-RecordsTimeStampSeconds[0];
+        } else {
+            // If fileinfostruct doesn't exist or is not a structure, then it's an original MAT file
+            fRecordsPerFile = 1;
+            TimeFromFirstToLastRecord = 0;
+            RecordsTimeStampSeconds[0] = 0;
+        }
+        
+
+
 
         // Read XML Configuration
         rsaxml_mat = matGetVariable(matfilep, "rsaMetadata");
@@ -91,13 +150,12 @@ namespace Katydid
 
         // Write configuration from XML into fHeader variable
         fHeader.SetFilename(filename);
-        //fHeader.SetAcquisitionMode(monarchHeader->GetAcquisitionMode());
         fHeader.SetNChannels(1);
         curr_node = data_node->first_node("NumberSamples");
         fHeader.SetRecordSize((size_t) atoi(curr_node->value()));
         curr_node = data_node->first_node("SamplingFrequency");
         fHeader.SetAcquisitionRate(atof(curr_node->value()));
-        fHeader.SetRunDuration( (double) fHeader.GetRecordSize() / fHeader.GetAcquisitionRate());
+        fHeader.SetRunDuration(  TimeFromFirstToLastRecord + (double) fHeader.GetRecordSize() / fHeader.GetAcquisitionRate());
         curr_node = data_node->first_node("DateTime");
         fHeader.SetTimestamp(curr_node->value());
         curr_node = data_node->first_node("NumberFormat");
@@ -125,15 +183,15 @@ namespace Katydid
         headerBuff << fHeader;
         KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
 
+
         // A few last useful variables
+
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
-        fSliceNumber = 0;
-        fRecordsRead = 0;
-        fSamplesRead = 0;
-
-        // Get the pointer to the data array
-        ts_array_mat = matGetVariable(matfilep, "Y");
+        fSliceNumber = 0;  // Number of Slices saved
+        fRecordsRead = 0;  // Number of records read from file
+        fSamplesRead = 0;  // Number of samples read from file (not from record)
+        fSamplesPerFile = (unsigned) mxGetNumberOfElements(ts_array_mat);
 
         return new KTEggHeader(fHeader);
     }
@@ -141,17 +199,44 @@ namespace Katydid
     {
 
         // IMPORTANT:
-        // KTRSAMatReader::HatchNextSlice is currently only capable of reading MAT files containing a single acquisitiona, a single record and a single channel
+        // Updated: KTRSAMatReader::HatchNextSlice is currently capable of reading MAT files containing multiple records, *as long as they have
+        //          the same size* - that is, MAT files of identical sizes that were concatenated;
+        //          it still cannot read multiple channels
 
-        unsigned recordSize = fHeader.GetRecordSize();
+        // Initialize output
         KTDataPtr newData(new KTData());
+
 
         // ********************************************************* //
         // Check whether we still have enough data to fill up slice  //
         // ********************************************************* //
-        if (fSamplesRead+fSliceSize > fRecordSize) {
+        // fSamplesRead is used as a pointer to where we are in the file;
+        // It gets incremented by the fSliceSize at the end of reading a slice;
+        // So here we must:
+        // (1) test if there is still enough data in the file to fill the slice,
+        //     and if not, exit;
+        // (2) test if there is still enough data in the record to fill the slice,
+        //     and if not, increment it to the start of the next record.
+
+        // Check if you still have enough data in the file
+        if (fSamplesRead+fSliceSize > fSamplesPerFile ) {
                     KTWARN(eggreadlog, "End of mat file reached");
-                    KTDEBUG(eggreadlog,"fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize);
+                    KTDEBUG(eggreadlog,"fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize << "; fSamplesPerFile: " << fSamplesPerFile);
+
+                    // Return Empty Pointer
+                    return KTDataPtr();
+        }
+        // If this slice if going to cross over a record boundary, then 
+        //  increment the record number, set slice to 0, move fSamplesRead
+        //  to the start of the next record, and return empty data
+        //  (you don't want a slice with data from 2 records...)
+        if ( ( fSamplesRead - fRecordsRead*fRecordSize + fSliceSize ) > fRecordSize ) {
+                    KTWARN(eggreadlog, "End of mat file reached");
+                    KTDEBUG(eggreadlog,"fSamplesRead: " << fSamplesRead << "; fSliceSize: " << fSliceSize << "; fRecordSize: " << fRecordSize << "; fSamplesPerFile: " << fSamplesPerFile);
+
+                    ++fRecordsRead;
+                    fSamplesRead = fRecordsRead*fRecordSize;
+                    fSliceNumber = 0;
 
                     // Return Empty Pointer
                     return KTDataPtr();
@@ -170,7 +255,6 @@ namespace Katydid
         {
             sliceHeader.SetIsNewAcquisition(false);
         }
-        ++fSliceNumber;
 
         // Slice Header Variables
         sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
@@ -185,7 +269,7 @@ namespace Katydid
         sliceHeader.SetRecordSize(fHeader.GetRecordSize());
         // Slice Header Variables that depend on channel number
         unsigned iChannel = 0;
-        sliceHeader.SetAcquisitionID(0, iChannel);
+        sliceHeader.SetAcquisitionID(fRecordsRead, iChannel);
         sliceHeader.SetRecordID(fRecordsRead, iChannel);
         sliceHeader.SetTimeStamp(sliceHeader.GetTimeInRun() / SEC_PER_NSEC, iChannel);
         KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
@@ -206,6 +290,7 @@ namespace Katydid
         }
         KTTimeSeries* newSlice = newSliceComplex;
         fSamplesRead = fSamplesRead+fSliceSize;
+        ++fSliceNumber;
         KTTimeSeriesData& tsData = newData->Of< KTTimeSeriesData >().SetNComponents(1);
         tsData.SetTimeSeries(newSlice);
         sliceHeader.SetEndRecordNumber(fRecordsRead);
@@ -230,7 +315,6 @@ namespace Katydid
         
         return true;
     }
-
 
 
 } /* namespace Katydid */
