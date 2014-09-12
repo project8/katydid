@@ -124,13 +124,12 @@ namespace Katydid {
         return dset;
     }
 
-    //*****************
+    // *****************
     // Raw Time Series Data
-    //*****************
+    // *****************
 
-    void KTHDF5TypeWriterEgg::WriteRawTimeSeriesData(KTDataPtr data)
-    {
-        if (! data) return;
+    void KTHDF5TypeWriterEgg::WriteRawTimeSeriesData(KTDataPtr data) {
+        if ( !data) return;
 
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
@@ -143,15 +142,12 @@ namespace Katydid {
         KTRawTimeSeriesData& tsData = data->Of<KTRawTimeSeriesData>();
         unsigned nComponents = tsData.GetNComponents();
 
-        if (! fWriter->OpenAndVerifyFile()) return;
+        if ( !fWriter->OpenAndVerifyFile() ) return;
 
-        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
-        {
-           
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent) {
             const KTRawTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
-            if (spectrum != NULL)
-            {
-                for(int i=0; i < this->raw_slice_size; i++) {
+            if (spectrum != NULL) {
+                for (int i = 0; i < this->raw_slice_size; i++) {
                     // TODO(kofron): wat
                     this->raw_time_buffer[i] = spectrum[0](i);
                 }
@@ -161,37 +157,35 @@ namespace Katydid {
         return;
     }
 
-    //*****************
+    // *****************
     // Time Series Data
-    //*****************
+    // *****************
 
-    void KTHDF5TypeWriterEgg::WriteRealTimeSeriesData(KTDataPtr data)
-    {
-        if (! data) return;
+    void KTHDF5TypeWriterEgg::WriteRealTimeSeriesData(KTDataPtr data) {
+        if (!data) return;
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
         std::stringstream ss;
         ss << "slice_" << sliceNumber;
         std::string slice_name;
-        ss >> slice_name;        
+        ss >> slice_name;
         H5::DataSet* dset = this->CreateRealTSDSet(slice_name);
 
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
         unsigned nComponents = tsData.GetNComponents();
 
-        if (! fWriter->OpenAndVerifyFile()) return;
+        if ( !fWriter->OpenAndVerifyFile()) return;
 
-        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
-        {
-           
-            const KTTimeSeries* spectrum = static_cast<KTTimeSeriesReal*>(tsData.GetTimeSeries(iComponent));
-            if (spectrum != NULL)
-            {
-                for(int i=0; i < this->raw_slice_size; i++) {
+        for (unsigned iC=0; iC<nComponents; ++iC) {
+            const KTTimeSeries* spectrum = 
+                static_cast<KTTimeSeriesReal*>(tsData.GetTimeSeries(iC));
+            if (spectrum != NULL) {
+                for (int i = 0; i < this->raw_slice_size; i++) {
                     // TODO(kofron): wat
                     this->real_time_buffer[i] = spectrum->GetValue(i);
                 }
-                dset->write(this->real_time_buffer, H5::PredType::NATIVE_DOUBLE);
+                dset->write(this->real_time_buffer, 
+                            H5::PredType::NATIVE_DOUBLE);
             }
         }
         return;
