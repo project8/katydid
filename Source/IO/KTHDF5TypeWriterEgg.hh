@@ -29,7 +29,7 @@ namespace Katydid {
 
             void WriteRawTimeSeriesData(KTDataPtr data);
 
-            void WriteTimeSeriesData(KTDataPtr data);
+            void WriteRealTimeSeriesData(KTDataPtr data);
 
         private:
             H5::DataSpace* raw_time_slice_dspace;
@@ -40,7 +40,12 @@ namespace Katydid {
 
             void CreateDataspaces();
             H5::DataSet* CreateRawTSDSet(const std::string &name);
-            H5::Group* working_group;
+            H5::Group* raw_data_group;
+            H5::Group* real_data_group;
+
+
+            unsigned* raw_time_buffer;
+            double* time_buffer;
 
     };
 
