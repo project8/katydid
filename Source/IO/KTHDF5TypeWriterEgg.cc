@@ -125,7 +125,6 @@ namespace Katydid {
             const KTRawTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
             {
-                std::cout << spectrum[0](0) << std::endl;
                 for(int i=0; i < this->raw_slice_size; i++) {
                     // TODO(kofron): wat
                     buffer[i] = spectrum[0](i);
