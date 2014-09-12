@@ -22,6 +22,7 @@
 #include "KTTimeFrequencyDataPolar.hh"
 #include "KTTimeFrequencyPolar.hh"
 
+
 namespace Katydid {
     KTLOGGER(publog, "KTHDF5TypeWriterFFT");
 
@@ -34,7 +35,16 @@ namespace Katydid {
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
     {}
 
+    void KTHDF5TypeWriterFFT::ProcessEggHeader(KTEggHeader* header)
+    {   
+        if(header != NULL) {
+            this->n_components = (header->GetNChannels());
+            this->slice_size = (header->GetSliceSize());
+        }
+    }
+
     void KTHDF5TypeWriterFFT::RegisterSlots() {
+        fWriter->RegisterSlot("setup-from-header", this, &KTHDF5TypeWriterFFT::ProcessEggHeader);
         fWriter->RegisterSlot("fs-polar", this, &KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolar);
         fWriter->RegisterSlot("fs-fftw", this, &KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataFFTW);
         fWriter->RegisterSlot("fs-polar-phase", this, &KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolarPhase);
