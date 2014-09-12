@@ -16,6 +16,7 @@
 #include "KTRawTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTTimeSeriesData.hh"
 
 using std::stringstream;
@@ -30,10 +31,10 @@ namespace Katydid {
     KTHDF5TypeWriterEgg::KTHDF5TypeWriterEgg() :
             KTHDF5TypeWriter(),
             raw_time_slice_dspace(NULL),
-            time_slice_dspace(NULL),
+            real_time_slice_dspace(NULL),
             slice_size(0),
             raw_slice_size(0),
-            time_buffer(NULL),
+            real_time_buffer(NULL),
             raw_time_buffer(NULL)
              {}
 
@@ -48,6 +49,9 @@ namespace Katydid {
         fWriter->RegisterSlot("raw_ts", 
                               this, 
                               &KTHDF5TypeWriterEgg::WriteRawTimeSeriesData);
+        fWriter->RegisterSlot("real-ts", 
+                              this, 
+                              &KTHDF5TypeWriterEgg::WriteRealTimeSeriesData);
         return;
     }
 
@@ -70,7 +74,7 @@ namespace Katydid {
             this->raw_slice_size = (header->GetRawSliceSize());
             this->slice_size = (header->GetSliceSize());  
 
-            this->time_buffer = new double[slice_size];
+            this->real_time_buffer = new double[slice_size];
             this->raw_time_buffer = new unsigned[raw_slice_size];
 
             this->CreateDataspaces();
@@ -87,22 +91,35 @@ namespace Katydid {
         M is the size of a raw time slice, and N is the size of a time slice.
         */
         if(this->raw_time_slice_dspace == NULL
-            || this->time_slice_dspace == NULL) {
+            || this->real_time_slice_dspace == NULL) {
             hsize_t raw_dims[] = {this->n_components, this->raw_slice_size};
             hsize_t dims[] = {this->n_components, this->slice_size};
 
             this->raw_time_slice_dspace = new H5::DataSpace(2, raw_dims);
-            this->time_slice_dspace = new H5::DataSpace(2, dims);
+            this->real_time_slice_dspace = new H5::DataSpace(2, dims);
         }
     }
 
     H5::DataSet* KTHDF5TypeWriterEgg::CreateRawTSDSet(const std::string& name) {
         H5::Group* grp = this->raw_data_group;
         H5::DSetCreatPropList plist;
-        plist.setFillValue(H5::PredType::NATIVE_INT, 0);
+        unsigned default_value = 0;
+        plist.setFillValue(H5::PredType::NATIVE_UINT, &default_value);
         H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
                                                                H5::PredType::NATIVE_INT,
                                                                *(this->raw_time_slice_dspace),
+                                                               plist));
+        return dset;
+    }
+
+    H5::DataSet* KTHDF5TypeWriterEgg::CreateRealTSDSet(const std::string& name) {
+        H5::Group* grp = this->real_data_group;
+        H5::DSetCreatPropList plist;
+        double default_value = 0.0;
+        plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
+        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
+                                                               H5::PredType::NATIVE_DOUBLE,
+                                                               *(this->real_time_slice_dspace),
                                                                plist));
         return dset;
     }
@@ -153,6 +170,11 @@ namespace Katydid {
         if (! data) return;
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        std::stringstream ss;
+        ss << "slice_" << sliceNumber;
+        std::string slice_name;
+        ss >> slice_name;        
+        H5::DataSet* dset = this->CreateRealTSDSet(slice_name);
 
         KTTimeSeriesData& tsData = data->Of<KTTimeSeriesData>();
         unsigned nComponents = tsData.GetNComponents();
@@ -161,10 +183,15 @@ namespace Katydid {
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
-            const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
+           
+            const KTTimeSeries* spectrum = static_cast<KTTimeSeriesReal*>(tsData.GetTimeSeries(iComponent));
             if (spectrum != NULL)
             {
-                // write time series here
+                for(int i=0; i < this->raw_slice_size; i++) {
+                    // TODO(kofron): wat
+                    this->real_time_buffer[i] = spectrum->GetValue(i);
+                }
+                dset->write(this->real_time_buffer, H5::PredType::NATIVE_DOUBLE);
             }
         }
         return;
