@@ -33,19 +33,20 @@ namespace Katydid {
 
         private:
             H5::DataSpace* raw_time_slice_dspace;
-            H5::DataSpace* time_slice_dspace;
+            H5::DataSpace* real_time_slice_dspace;
             unsigned slice_size;
             unsigned raw_slice_size;
             unsigned n_components;
 
             void CreateDataspaces();
             H5::DataSet* CreateRawTSDSet(const std::string &name);
+            H5::DataSet* CreateRealTSDSet(const std::string &name);
             H5::Group* raw_data_group;
             H5::Group* real_data_group;
 
 
             unsigned* raw_time_buffer;
-            double* time_buffer;
+            double* real_time_buffer;
 
     };
 
