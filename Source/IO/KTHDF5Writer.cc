@@ -57,8 +57,9 @@ namespace Katydid
     bool KTHDF5Writer::OpenAndVerifyFile()
     {
         if (fFile == NULL) {
-            KTINFO(publog, "Opening HDF5 file");
+            KTDEBUG(publog, "Opening HDF5 file");
             fFile = new H5::H5File(fFilename.c_str(), H5F_ACC_TRUNC);
+            KTDEBUG(publog, "Done.");
         }
         if (!fFile) {
             delete fFile;
