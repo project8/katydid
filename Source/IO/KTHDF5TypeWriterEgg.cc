@@ -5,8 +5,10 @@
  *      Author: nsoblath
  */
 
-#include "KTHDF5TypeWriterEgg.hh"
+#include <cstring>
+#include <sstream>
 
+#include "KTHDF5TypeWriterEgg.hh"
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
@@ -16,32 +18,27 @@
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
 
-#include <cstring>
-#include <sstream>
-
-
-
 using std::stringstream;
 using std::string;
 
-namespace Katydid
-{
+namespace Katydid {
     KTLOGGER(publog, "KTHDF5TypeWriterEgg");
 
-    static KTTIRegistrar< KTHDF5TypeWriter, KTHDF5TypeWriterEgg > sHDF5TWEggRegistrar;
+    static KTTIRegistrar< KTHDF5TypeWriter, 
+                          KTHDF5TypeWriterEgg > sHDF5TWEggRegistrar;
 
     KTHDF5TypeWriterEgg::KTHDF5TypeWriterEgg() :
-            KTHDF5TypeWriter()
-    {
+            KTHDF5TypeWriter(),
+            raw_time_slice_dspace(NULL),
+            time_slice_dspace(NULL),
+            slice_size(0),
+            raw_slice_size(0) {}
+
+    KTHDF5TypeWriterEgg::~KTHDF5TypeWriterEgg() {
     }
 
-    KTHDF5TypeWriterEgg::~KTHDF5TypeWriterEgg()
-    {
-    }
 
-
-    void KTHDF5TypeWriterEgg::RegisterSlots()
-    {
+    void KTHDF5TypeWriterEgg::RegisterSlots() {
         fWriter->RegisterSlot("setup_from_header", this, &KTHDF5TypeWriterEgg::ProcessEggHeader);
         fWriter->RegisterSlot("raw_ts", this, &KTHDF5TypeWriterEgg::WriteRawTimeSeriesData);
         return;
@@ -62,13 +59,41 @@ namespace Katydid
         */
         if (!fWriter->OpenAndVerifyFile()) return;
         if(header != NULL) {
-            fWriter->SetComponents(header->GetNChannels());
-            fWriter->SetRawSliceSize(header->GetRawSliceSize());
-            fWriter->SetSliceSize(header->GetSliceSize());  
+            this->n_components = (header->GetNChannels());
+            this->raw_slice_size = (header->GetRawSliceSize());
+            this->slice_size = (header->GetSliceSize());  
 
-            fWriter->CreateDataspaces();
-            fWriter->AddGroup("/raw_data");
+            this->CreateDataspaces();
+            this->working_group = fWriter->AddGroup("/raw_data");
         }
+    }
+
+
+    void KTHDF5TypeWriterEgg::CreateDataspaces() {
+        /*
+        If the dataspaces have already been created, this is a no-op.  
+        Otherwise, we want to create two dataspaces - 1XM and 1XN, where
+        M is the size of a raw time slice, and N is the size of a time slice.
+        */
+        if(this->raw_time_slice_dspace == NULL 
+            || this->time_slice_dspace == NULL) {
+            hsize_t raw_dims[] = {this->n_components, this->raw_slice_size};
+            hsize_t dims[] = {this->n_components, this->slice_size};
+
+            this->raw_time_slice_dspace = new H5::DataSpace(2, raw_dims);
+            this->time_slice_dspace = new H5::DataSpace(2, dims);
+        }
+    }
+
+    H5::DataSet* KTHDF5TypeWriterEgg::CreateRawTSDSet(const std::string& name) {
+        H5::Group* grp = this->working_group;
+        H5::DSetCreatPropList plist;
+        plist.setFillValue(H5::PredType::NATIVE_INT, 0);
+        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
+                                                               H5::PredType::NATIVE_INT,
+                                                               *(this->raw_time_slice_dspace),
+                                                               plist));
+        return dset;
     }
 
     //*****************
@@ -80,14 +105,14 @@ namespace Katydid
         if (! data) return;
 
         // A buffer to work in.
-        unsigned buffer[fWriter->GetRawSliceSize()];
+        unsigned buffer[this->raw_slice_size];
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
         std::stringstream ss;
-        ss << "/raw_data/" << "slice_" << sliceNumber;
+        ss << "slice_" << sliceNumber;
         std::string slice_name;
         ss >> slice_name;        
-        H5::DataSet* dset = fWriter->CreateRawTimeSeriesDataSet(slice_name);
+        H5::DataSet* dset = this->CreateRawTSDSet(slice_name);
 
         KTRawTimeSeriesData& tsData = data->Of<KTRawTimeSeriesData>();
         unsigned nComponents = tsData.GetNComponents();
@@ -101,7 +126,7 @@ namespace Katydid
             if (spectrum != NULL)
             {
                 std::cout << spectrum[0](0) << std::endl;
-                for(int i=0; i < fWriter->GetRawSliceSize(); i++) {
+                for(int i=0; i < this->raw_slice_size; i++) {
                     // TODO(kofron): wat
                     buffer[i] = spectrum[0](i);
                 }
