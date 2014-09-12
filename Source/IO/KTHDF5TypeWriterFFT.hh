@@ -10,7 +10,10 @@
 #define __KTHDFTWFFT_HH
 
 #include "KTHDF5Writer.hh"
+#include "KTEggHeader.hh"
 #include "KTData.hh"
+
+#include "boost/multi_array.hpp"
 
 namespace Katydid {
 	class KTFrequencySpectrumDataPolar;
@@ -28,6 +31,12 @@ namespace Katydid {
     	virtual ~KTHDF5TypeWriterFFT();
 
     	void RegisterSlots();
+
+    /*
+     * Internal configuration
+     */
+    public:
+    	void ProcessEggHeader(KTEggHeader* header);
 
    	/*
    	 * Frequency Spectrum Data
@@ -69,6 +78,23 @@ namespace Katydid {
     public:
         void WriteMultiFSDataPolar(KTDataPtr data);
         void WriteMultiFSDataFFTW(KTDataPtr data);
+
+    /*
+     * Internal data members
+     */
+    private:
+    	H5::DataSet* CreatePolarFFTDSet(const std::string& name);
+
+    	void CreateDataspaces();
+
+    	unsigned n_components;
+    	unsigned slice_size;
+
+    	H5::Group* fft_group;
+
+    	unsigned polar_fft_size;
+    	boost::multi_array<double, 2>* polar_fft_buffer;
+    	H5::DataSpace* polar_fft_dspace;
     };
 }
 
