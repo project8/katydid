@@ -32,15 +32,22 @@ namespace Katydid {
             raw_time_slice_dspace(NULL),
             time_slice_dspace(NULL),
             slice_size(0),
-            raw_slice_size(0) {}
+            raw_slice_size(0),
+            time_buffer(NULL),
+            raw_time_buffer(NULL)
+             {}
 
     KTHDF5TypeWriterEgg::~KTHDF5TypeWriterEgg() {
     }
 
 
     void KTHDF5TypeWriterEgg::RegisterSlots() {
-        fWriter->RegisterSlot("setup_from_header", this, &KTHDF5TypeWriterEgg::ProcessEggHeader);
-        fWriter->RegisterSlot("raw_ts", this, &KTHDF5TypeWriterEgg::WriteRawTimeSeriesData);
+        fWriter->RegisterSlot("setup_from_header", 
+                              this, 
+                              &KTHDF5TypeWriterEgg::ProcessEggHeader);
+        fWriter->RegisterSlot("raw_ts", 
+                              this, 
+                              &KTHDF5TypeWriterEgg::WriteRawTimeSeriesData);
         return;
     }
 
@@ -63,8 +70,12 @@ namespace Katydid {
             this->raw_slice_size = (header->GetRawSliceSize());
             this->slice_size = (header->GetSliceSize());  
 
+            this->time_buffer = new double[slice_size];
+            this->raw_time_buffer = new unsigned[raw_slice_size];
+
             this->CreateDataspaces();
-            this->working_group = fWriter->AddGroup("/raw_data");
+            this->raw_data_group = fWriter->AddGroup("/raw_data");
+            this->real_data_group = fWriter->AddGroup("/real_data");
         }
     }
 
@@ -75,7 +86,7 @@ namespace Katydid {
         Otherwise, we want to create two dataspaces - 1XM and 1XN, where
         M is the size of a raw time slice, and N is the size of a time slice.
         */
-        if(this->raw_time_slice_dspace == NULL 
+        if(this->raw_time_slice_dspace == NULL
             || this->time_slice_dspace == NULL) {
             hsize_t raw_dims[] = {this->n_components, this->raw_slice_size};
             hsize_t dims[] = {this->n_components, this->slice_size};
@@ -86,7 +97,7 @@ namespace Katydid {
     }
 
     H5::DataSet* KTHDF5TypeWriterEgg::CreateRawTSDSet(const std::string& name) {
-        H5::Group* grp = this->working_group;
+        H5::Group* grp = this->raw_data_group;
         H5::DSetCreatPropList plist;
         plist.setFillValue(H5::PredType::NATIVE_INT, 0);
         H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
@@ -104,8 +115,6 @@ namespace Katydid {
     {
         if (! data) return;
 
-        // A buffer to work in.
-        unsigned buffer[this->raw_slice_size];
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
         std::stringstream ss;
@@ -127,9 +136,9 @@ namespace Katydid {
             {
                 for(int i=0; i < this->raw_slice_size; i++) {
                     // TODO(kofron): wat
-                    buffer[i] = spectrum[0](i);
+                    this->raw_time_buffer[i] = spectrum[0](i);
                 }
-                dset->write(buffer, H5::PredType::NATIVE_UINT);
+                dset->write(raw_time_buffer, H5::PredType::NATIVE_UINT);
             }
         }
         return;
@@ -139,7 +148,7 @@ namespace Katydid {
     // Time Series Data
     //*****************
 
-    void KTHDF5TypeWriterEgg::WriteTimeSeriesData(KTDataPtr data)
+    void KTHDF5TypeWriterEgg::WriteRealTimeSeriesData(KTDataPtr data)
     {
         if (! data) return;
 
