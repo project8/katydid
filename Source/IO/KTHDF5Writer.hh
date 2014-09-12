@@ -10,6 +10,7 @@
 
 #include <string>
 #include "KTWriter.hh"
+#include "KTEggHeader.hh"
 
 
 #include "KTMemberVariable.hh"
@@ -31,6 +32,7 @@ namespace Katydid
             virtual ~KTHDF5Writer();
 
             bool Configure(const KTParamNode* node);
+            void WriteEggHeader(KTEggHeader* header);
 
         public:
             H5::H5File* OpenFile(const std::string& filename, const std::string& flag);
