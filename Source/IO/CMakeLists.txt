@@ -95,12 +95,14 @@ endif (ROOT_FOUND)
 if (HDF5_FOUND)
     set (IO_HEADERFILES
         ${IO_HEADERFILES}
+        KTHDF5TypeWriterFFT.hh
         KTHDF5TypeWriterEgg.hh
         KTHDF5Writer.hh
     )
     
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
+        KTHDF5TypeWriterFFT.cc
         KTHDF5TypeWriterEgg.cc
         KTHDF5Writer.cc
     )
