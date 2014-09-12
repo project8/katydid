@@ -29,7 +29,9 @@ namespace Katydid {
     static KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterFFT> sH5TWFFTReg;
 
     KTHDF5TypeWriterFFT::KTHDF5TypeWriterFFT() :
-        KTHDF5TypeWriter()
+        KTHDF5TypeWriter(),
+        polar_fft_buffer(NULL),
+        polar_fft_dspace(NULL)
     {}
 
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
@@ -37,11 +39,58 @@ namespace Katydid {
 
     void KTHDF5TypeWriterFFT::ProcessEggHeader(KTEggHeader* header)
     {   
+
         if(header != NULL) {
+            KTDEBUG(publog, "Configuring from Egg header...");
             this->n_components = (header->GetNChannels());
             this->slice_size = (header->GetSliceSize());
+
+            /*
+             * Polar FFT preparation.  
+             * Each component gets two rows - one for abs, and one for arg.
+             * Each row is slice_size/2 + 1 long.  
+             * Our array is therefore 2N*(slice_size/2 + 1).
+             */
+            this->polar_fft_size = (this->slice_size >> 1) + 1;
+            this->polar_fft_buffer = new boost::multi_array<double,2>(boost::extents[2*n_components][this->polar_fft_size]);
+            KTDEBUG(publog, "Done.");
+            this->fft_group = fWriter->AddGroup("/frequency_spectra");
+        }
+
+        this->CreateDataspaces();
+    }
+
+    void KTHDF5TypeWriterFFT::CreateDataspaces() {
+        /*
+        If the dataspaces have already been created, this is a no-op.  
+        Create dataspaces for:
+            - Polar FFT data.  This is 2XN where N == slice_len/2 + 1
+        */
+        if(this->polar_fft_dspace == NULL) {
+            KTDEBUG(publog, "Creating H5::DataSpaces for Polar FFT");
+            hsize_t polar_fft_dims[] = {2*this->n_components, 
+                                        this->polar_fft_size};
+
+            this->polar_fft_dspace = new H5::DataSpace(2, polar_fft_dims);
+            KTDEBUG(publog, "Done.");
         }
     }
+
+     H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarFFTDSet(const std::string& name) {
+        H5::Group* grp = this->fft_group;
+        H5::DSetCreatPropList plist;
+        unsigned default_value = 0.0;
+        plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
+        KTDEBUG(publog, "Creating dataset.");
+        KTDEBUG(publog, grp);
+        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
+                                                               H5::PredType::NATIVE_DOUBLE,
+                                                               *(this->polar_fft_dspace),
+                                                               plist));
+        KTDEBUG("Done.");
+        return dset;
+    }
+
 
     void KTHDF5TypeWriterFFT::RegisterSlots() {
         fWriter->RegisterSlot("setup-from-header", this, &KTHDF5TypeWriterFFT::ProcessEggHeader);
@@ -69,6 +118,7 @@ namespace Katydid {
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolar(KTDataPtr data) {
         if (!data) return;
 
+        KTDEBUG(publog, "Creating spectrum and dataset...");
         std::string spectrum_name;
         std::stringstream name_builder;
 
@@ -76,17 +126,27 @@ namespace Katydid {
         name_builder << "FSpolar_" << sliceN;
         name_builder >> spectrum_name;
 
+        H5::DataSet* dset = this->CreatePolarFFTDSet(spectrum_name);
+        KTDEBUG(publog, "Done.");
+
         KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
         unsigned nComp = fsData.GetNComponents();
 
         if( !fWriter->OpenAndVerifyFile() ) return;
 
+        KTDEBUG(publog, "Writing Polar FFT data to HDF5 file.");
         for (unsigned iC = 0; iC < nComp; iC++) {
             const KTFrequencySpectrumPolar* spec = fsData.GetSpectrumPolar(iC);
             if (spec != NULL) {
-                KTINFO(publog, spec[0].GetAbs(0));
+                for(int f=0; f < spec[0].size(); f++) {
+                    (*this->polar_fft_buffer)[iC][f] = spec[0].GetAbs(f);
+                    (*this->polar_fft_buffer)[iC+1][f] = spec[0].GetArg(f);
+                }
+                
             }
         }
+        dset->write(this->polar_fft_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        KTDEBUG(publog, "Done.");
     }
   
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataFFTW(KTDataPtr data) {
