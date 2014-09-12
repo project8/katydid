@@ -5,6 +5,9 @@
  *      Author: J.N. Kofron
  */
 
+#include <string>
+#include <sstream>
+
 #include "KTHDF5TypeWriterFFT.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
@@ -54,7 +57,26 @@ namespace Katydid {
     }
 
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolar(KTDataPtr data) {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        if (!data) return;
+
+        std::string spectrum_name;
+        std::stringstream name_builder;
+
+        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
+        name_builder << "FSpolar_" << sliceN;
+        name_builder >> spectrum_name;
+
+        KTFrequencySpectrumDataPolar& fsData = data->Of<KTFrequencySpectrumDataPolar>();
+        unsigned nComp = fsData.GetNComponents();
+
+        if( !fWriter->OpenAndVerifyFile() ) return;
+
+        for (unsigned iC = 0; iC < nComp; iC++) {
+            const KTFrequencySpectrumPolar* spec = fsData.GetSpectrumPolar(iC);
+            if (spec != NULL) {
+                KTINFO(publog, spec[0].GetAbs(0));
+            }
+        }
     }
   
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataFFTW(KTDataPtr data) {
