@@ -9,7 +9,7 @@
 #ifndef __KTHDFTWFFT_HH
 #define __KTHDFTWFFT_HH
 
-#include "KTHDF5FileWriter.hh"
+#include "KTHDF5Writer.hh"
 #include "KTData.hh"
 
 namespace Katydid {
