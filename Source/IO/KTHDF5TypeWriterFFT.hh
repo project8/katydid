@@ -86,6 +86,7 @@ namespace Katydid {
     	typedef boost::multi_array<double, 2> fft_buffer;
     	H5::DataSet* CreatePolarFFTDSet(const std::string& name);
     	H5::DataSet* CreateComplexFFTDSet(const std::string& name);
+    	H5::DataSet* CreateDSet(const std::string& name, const H5::DataSpace& ds);
 
     	void CreateDataspaces();
 
