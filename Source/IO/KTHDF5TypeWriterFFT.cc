@@ -35,7 +35,9 @@ namespace Katydid {
         cmplx_fft_buffer(NULL),
         cmplx_fft_dspace(NULL),
         polar_pwr_buffer(NULL),
-        polar_pwr_dspace(NULL)
+        polar_pwr_dspace(NULL),
+        cmplx_pwr_buffer(NULL),
+        cmplx_pwr_dspace(NULL)
     {}
 
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
@@ -79,6 +81,15 @@ namespace Katydid {
               this->polar_pwr_size = this->polar_fft_size;
               this->polar_pwr_buffer = new fft_buffer(boost::extents[n_components][this->polar_pwr_size]);
 
+              /*
+               * Complex (FFTW) power spectrum preparation.
+               * Each component gets a single row as above.
+               * Power is calculated in positive and negative frequencies
+               * i.e. the buffer has the same shape as the complex fft buffer.
+               */
+               this->cmplx_pwr_size = this->cmplx_fft_size;
+               this->cmplx_pwr_buffer = new fft_buffer(boost::extents[n_components][this->cmplx_pwr_size]);
+
         }
         KTDEBUG(publog, "Done.");
         H5::Group* spectra_group = fWriter->AddGroup("/spectra");
@@ -116,6 +127,13 @@ namespace Katydid {
             this->polar_pwr_dspace = new H5::DataSpace(2, polar_pwr_dims);
             KTDEBUG(publog, "Done.");
         }
+        if(this->cmplx_pwr_dspace == NULL) {
+            KTDEBUG(publog, "Creating H5::DataSpace for Complex PS");
+            hsize_t cmplx_pwr_dims[] = {this->n_components,
+                                        this->cmplx_pwr_size};
+            this->cmplx_pwr_dspace = new H5::DataSpace(2, cmplx_pwr_dims);
+            KTDEBUG(publog, "Done.");
+        }
     }
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarFFTDSet(const std::string& name) {
@@ -137,6 +155,13 @@ namespace Katydid {
         H5::DataSet* dset = this->CreateDSet(name, 
                                              this->fft_group,
                                              *(this->cmplx_fft_dspace));
+        return dset;
+    }
+
+    H5::DataSet* KTHDF5TypeWriterFFT::CreateComplexPowerDSet(const std::string& name) {
+        H5::DataSet* dset = this->CreateDSet(name, 
+                                             this->power_group,
+                                             *(this->cmplx_pwr_dspace));
         return dset;
     }
 
@@ -287,7 +312,38 @@ namespace Katydid {
         KTDEBUG(publog, "Done.");
     }
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataFFTWPower(KTDataPtr data) {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+
+        if (!data) return;
+
+        KTDEBUG(publog, "Creating spectrum and dataset...");
+        std::string spectrum_name;
+        std::stringstream name_builder;
+
+        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
+        name_builder << "complexPS_" << sliceN;
+        name_builder >> spectrum_name;
+
+        H5::DataSet* dset = this->CreateComplexPowerDSet(spectrum_name);
+        KTDEBUG(publog, "Done.");
+
+        KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
+        unsigned nComp = fsData.GetNComponents();
+
+        if( !fWriter->OpenAndVerifyFile() ) return;
+
+        KTDEBUG(publog, "Writing Complex FFT data to HDF5 file.");
+        for (unsigned iC = 0; iC < nComp; iC++) {
+            const KTFrequencySpectrumFFTW* spec = fsData.GetSpectrumFFTW(iC);
+            if (spec != NULL) {
+                for(int f=0; f < spec[0].size(); f++) {
+                    double mag = sqrt(pow(spec[0].GetReal(f),2.0) + pow(spec[0].GetImag(f),2.0));
+                    (*this->cmplx_pwr_buffer)[iC][f] = mag;
+                }
+                
+            }
+        }
+        dset->write(this->cmplx_pwr_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        KTDEBUG(publog, "Done.");
     }
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");
