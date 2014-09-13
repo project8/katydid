@@ -69,7 +69,7 @@ namespace Katydid {
         }
         KTDEBUG(publog, "Done.");
         H5::Group* spectra_group = fWriter->AddGroup("/spectra");
-        this->fft_group = new H5::Group(spectra_group->createGroup("/frequency"));
+        this->fft_group = new H5::Group(spectra_group->createGroup("/spectra/frequency"));
         this->CreateDataspaces();
     }
 
@@ -98,22 +98,18 @@ namespace Katydid {
     }
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarFFTDSet(const std::string& name) {
-        H5::Group* grp = this->fft_group;
-        H5::DSetCreatPropList plist;
-        unsigned default_value = 0.0;
-        plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
-        KTDEBUG(publog, "Creating polar FFT dataset.");
-        KTDEBUG(publog, grp);
-        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
-                                                               H5::PredType::NATIVE_DOUBLE,
-                                                               *(this->polar_fft_dspace),
-                                                               plist));
-        KTDEBUG("Done.");
+        H5::DataSet* dset = this->CreateDSet(name, *(this->polar_fft_dspace));
         return dset;
     }
 
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreateComplexFFTDSet(const std::string& name) {
+        H5::DataSet* dset = this->CreateDSet(name, *(this->cmplx_fft_dspace));
+        return dset;
+    }
+
+    H5::DataSet* KTHDF5TypeWriterFFT::CreateDSet(const std::string& name, 
+                                                 const H5::DataSpace& ds) {
         H5::Group* grp = this->fft_group;
         H5::DSetCreatPropList plist;
         unsigned default_value = 0.0;
@@ -122,7 +118,7 @@ namespace Katydid {
         KTDEBUG(publog, grp);
         H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
                                                                H5::PredType::NATIVE_DOUBLE,
-                                                               *(this->cmplx_fft_dspace),
+                                                               ds,
                                                                plist));
         KTDEBUG("Done.");
         return dset;
