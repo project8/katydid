@@ -83,7 +83,9 @@ namespace Katydid {
      * Internal data members
      */
     private:
+    	typedef boost::multi_array<double, 2> fft_buffer;
     	H5::DataSet* CreatePolarFFTDSet(const std::string& name);
+    	H5::DataSet* CreateComplexFFTDSet(const std::string& name);
 
     	void CreateDataspaces();
 
@@ -93,8 +95,12 @@ namespace Katydid {
     	H5::Group* fft_group;
 
     	unsigned polar_fft_size;
-    	boost::multi_array<double, 2>* polar_fft_buffer;
+    	fft_buffer* polar_fft_buffer;
     	H5::DataSpace* polar_fft_dspace;
+
+    	unsigned cmplx_fft_size;
+    	fft_buffer* cmplx_fft_buffer;
+    	H5::DataSpace* cmplx_fft_dspace;
     };
 }
 
