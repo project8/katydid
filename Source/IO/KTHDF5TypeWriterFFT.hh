@@ -87,6 +87,7 @@ namespace Katydid {
     	H5::DataSet* CreatePolarFFTDSet(const std::string& name);
     	H5::DataSet* CreatePolarPowerDSet(const std::string& name);
     	H5::DataSet* CreateComplexFFTDSet(const std::string& name);
+    	H5::DataSet* CreateComplexPowerDSet(const std::string& name);
     	H5::DataSet* CreateDSet(const std::string& name, 
     							const H5::Group* grp,
     							const H5::DataSpace& ds);
@@ -99,17 +100,27 @@ namespace Katydid {
     	H5::Group* fft_group;
     	H5::Group* power_group;
 
+    	/*
+    	 * power FS and PS
+    	 */
     	unsigned polar_fft_size;
     	fft_buffer* polar_fft_buffer;
     	H5::DataSpace* polar_fft_dspace;
 
+    	unsigned polar_pwr_size;
+    	fft_buffer* polar_pwr_buffer;
+    	H5::DataSpace* polar_pwr_dspace;
+
+    	/* 
+    	 * complex (FFTW) FS and PS
+    	 */
     	unsigned cmplx_fft_size;
     	fft_buffer* cmplx_fft_buffer;
     	H5::DataSpace* cmplx_fft_dspace;
 
-    	unsigned polar_pwr_size;
-    	fft_buffer* polar_pwr_buffer;
-    	H5::DataSpace* polar_pwr_dspace;
+    	unsigned cmplx_pwr_size;
+    	fft_buffer* cmplx_pwr_buffer;
+    	H5::DataSpace* cmplx_pwr_dspace;
     };
 }
 
