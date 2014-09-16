@@ -11,8 +11,6 @@
 #include "KTHDF5Writer.hh"
 #include "KTData.hh"
 
-class TTree;
-
 namespace Katydid {
     class KTEggHeader;
 
