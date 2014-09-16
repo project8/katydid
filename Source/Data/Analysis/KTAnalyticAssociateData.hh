@@ -20,7 +20,10 @@ namespace Katydid
             virtual ~KTAnalyticAssociateData();
 
             virtual KTAnalyticAssociateData& SetNComponents(unsigned num);
-    };
+
+        private:
+            static const std::string sName;
+};
 
 } /* namespace Katydid */
 #endif /* KTANALYTICASSOCIATEDATA_HH_ */

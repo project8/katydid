@@ -9,11 +9,15 @@
 
 namespace Katydid
 {
+    const std::string KTData::sName("data");
 
     KTData::KTData() :
             fCounter(0),
             fLastData(false)
     {
     }
+
+    KTData::~KTData()
+    {}
 
 } /* namespace Katydid */

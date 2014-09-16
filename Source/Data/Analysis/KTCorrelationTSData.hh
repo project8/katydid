@@ -25,9 +25,11 @@ namespace Katydid
 
             virtual KTCorrelationTSData& SetNComponents(unsigned components);
 
-        protected:
+        private:
             std::vector< std::pair< unsigned, unsigned > > fComponentData;
-    };
+
+            static const std::string sName;
+};
 
     inline const std::pair< unsigned, unsigned >& KTCorrelationTSData::GetInputPair(unsigned component) const
     {

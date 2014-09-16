@@ -53,6 +53,7 @@ namespace Katydid
         protected:
             Distributions fDistributions;
 
+            static const std::string sName;
     };
 
     inline const KTAmplitudeDistribution::Distribution& KTAmplitudeDistribution::GetDistribution(unsigned freqBins, unsigned component) const

@@ -13,6 +13,8 @@ namespace Katydid
 {
     KTLOGGER(datalog, "KTAmplitudeDistribution");
 
+    const std::string KTAmplitudeDistribution::sName("amplitude-distribution");
+
     KTAmplitudeDistribution::KTAmplitudeDistribution() :
             KTExtensibleData< KTAmplitudeDistribution >(),
             fDistributions(1, ComponentDistributions(1, NULL))

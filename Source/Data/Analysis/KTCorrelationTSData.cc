@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTCorrelationTSData::sName("correlation-ts");
+
     KTCorrelationTSData::KTCorrelationTSData() :
             KTTimeSeriesDataCore(),
             KTExtensibleData< KTCorrelationTSData >(),

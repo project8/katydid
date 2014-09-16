@@ -10,6 +10,8 @@
 
 namespace Katydid
 {
+    const std::string KTWignerVilleData::sName("wigner-ville");
+
     KTWignerVilleData::KTWignerVilleData() :
             KTFrequencySpectrumDataFFTWCore(),
             KTExtensibleData< KTWignerVilleData >(),

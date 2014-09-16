@@ -15,6 +15,8 @@ namespace Katydid
 {
     KTLOGGER(htlog, "KTHoughData");
 
+    const std::string KTHoughData::sName("hough");
+
     KTHoughData::KTHoughData() :
             KTExtensibleData< KTHoughData >(),
             fTransforms()

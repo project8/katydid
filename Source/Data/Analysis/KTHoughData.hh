@@ -38,7 +38,7 @@ namespace Katydid
 
             KTHoughData& SetNComponents(unsigned nTransforms);
 
-        protected:
+        private:
             struct PerComponentData
             {
                 KTPhysicalArray< 2, double >* fTransform;
@@ -47,6 +47,7 @@ namespace Katydid
             };
             std::vector< PerComponentData > fTransforms;
 
+            static const std::string sName;
     };
 
     inline const KTPhysicalArray< 2, double >* KTHoughData::GetTransform(unsigned component) const

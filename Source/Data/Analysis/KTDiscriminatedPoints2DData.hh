@@ -60,7 +60,7 @@ namespace Katydid
             void SetBinWidthX(double binWidth);
             void SetBinWidthY(double binWidth);
 
-        protected:
+        private:
             std::vector< PerComponentData > fComponentData;
 
             unsigned fNBinsX;
@@ -68,6 +68,7 @@ namespace Katydid
             double fBinWidthX;
             double fBinWidthY;
 
+            static const std::string sName;
     };
 
     inline const KTDiscriminatedPoints2DData::SetOfPoints& KTDiscriminatedPoints2DData::GetSetOfPoints(unsigned component) const
