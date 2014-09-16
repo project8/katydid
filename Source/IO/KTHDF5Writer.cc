@@ -10,9 +10,6 @@
 #include "KTCommandLineOption.hh"
 #include "KTParam.hh"
 
-#include "TFile.h"
-#include "TTree.h"
-
 using std::set;
 using std::string;
 
