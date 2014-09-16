@@ -37,7 +37,11 @@ namespace Katydid {
         polar_pwr_buffer(NULL),
         polar_pwr_dspace(NULL),
         cmplx_pwr_buffer(NULL),
-        cmplx_pwr_dspace(NULL)
+        cmplx_pwr_dspace(NULL),
+        pwr_spec_dspace(NULL),
+        pwr_spec_buffer(NULL),
+        psd_dspace(NULL),
+        psd_buffer(NULL)
     {}
 
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
@@ -90,6 +94,18 @@ namespace Katydid {
                this->cmplx_pwr_size = this->cmplx_fft_size;
                this->cmplx_pwr_buffer = new fft_buffer(boost::extents[n_components][this->cmplx_pwr_size]);
 
+              /*
+               * PS and PSD spectrum preparation.  Each component gets a single 
+               * row.
+               * Power is only calculated for positive frequencies and DC.
+               * The buffer is therefore the same shape as the polar power 
+               * spectrum.
+               */
+               this->psd_size = this->polar_pwr_size;
+               this->pwr_spec_size = this->polar_pwr_size;
+               this->psd_buffer = new fft_buffer(boost::extents[n_components][this->psd_size]);
+               this->pwr_spec_buffer = new fft_buffer(boost::extents[n_components][this->psd_size]);
+
         }
         KTDEBUG(publog, "Done.");
         H5::Group* spectra_group = fWriter->AddGroup("/spectra");
@@ -134,6 +150,20 @@ namespace Katydid {
             this->cmplx_pwr_dspace = new H5::DataSpace(2, cmplx_pwr_dims);
             KTDEBUG(publog, "Done.");
         }
+        if(this->pwr_spec_dspace == NULL) {
+            KTDEBUG(publog, "Creating H5::DataSpace for Power Spectrum");
+            hsize_t pwr_spec_dims[] = {this->n_components,
+                                        this->pwr_spec_size};
+            this->pwr_spec_dspace = new H5::DataSpace(2, pwr_spec_dims);
+            KTDEBUG(publog, "Done.");
+        }
+        if(this->psd_dspace == NULL) {
+            KTDEBUG(publog, "Creating H5::DataSpace for PSD");
+            hsize_t psd_dims[] = {this->n_components,
+                                        this->psd_size};
+            this->psd_dspace = new H5::DataSpace(2, psd_dims);
+            KTDEBUG(publog, "Done.");
+        }
     }
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarFFTDSet(const std::string& name) {
@@ -162,6 +192,20 @@ namespace Katydid {
         H5::DataSet* dset = this->CreateDSet(name, 
                                              this->power_group,
                                              *(this->cmplx_pwr_dspace));
+        return dset;
+    }
+
+    H5::DataSet* KTHDF5TypeWriterFFT::CreatePowerSpecDSet(const std::string& name) {
+        H5::DataSet* dset = this->CreateDSet(name, 
+                                             this->power_group,
+                                             *(this->pwr_spec_dspace));
+        return dset;
+    }
+
+    H5::DataSet* KTHDF5TypeWriterFFT::CreatePSDDSet(const std::string& name) {
+        H5::DataSet* dset = this->CreateDSet(name, 
+                                             this->power_group,
+                                             *(this->psd_dspace));
         return dset;
     }
 
@@ -358,10 +402,72 @@ namespace Katydid {
         KTDEBUG(publog, "NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterFFT::WritePowerSpectrum(KTDataPtr data) {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        if (! data) return;
+
+        KTDEBUG(publog, "Creating spectrum and dataset...");
+        std::string spectrum_name;
+        std::stringstream name_builder;
+
+        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
+        name_builder << "PS_" << sliceN;
+        name_builder >> spectrum_name;
+
+        H5::DataSet* dset = this->CreatePowerSpecDSet(spectrum_name);
+
+        KTPowerSpectrumData& fsData = data->Of<KTPowerSpectrumData>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iC=0; iC<nComponents; iC++)
+        {
+            KTPowerSpectrum* spectrum = fsData.GetSpectrum(iC);
+            if (spectrum != NULL)
+            {
+                spectrum->ConvertToPowerSpectrum();
+                for(int i=0; i < this->pwr_spec_size; i++) {
+                    double val = (*spectrum)(i);
+                    (*this->pwr_spec_buffer)[iC][i] = val;
+                }
+            }
+        }
+        dset->write(this->pwr_spec_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        return;
     }
     void KTHDF5TypeWriterFFT::WritePowerSpectralDensity(KTDataPtr data) {
-        KTDEBUG(publog, "NOT IMPLEMENTED");
+        if (! data) return;
+
+        KTDEBUG(publog, "Creating spectrum and dataset...");
+        std::string spectrum_name;
+        std::stringstream name_builder;
+
+        uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
+        name_builder << "PSD_" << sliceN;
+        name_builder >> spectrum_name;
+
+        H5::DataSet* dset = this->CreatePSDDSet(spectrum_name);
+
+        KTPowerSpectrumData& fsData = data->Of<KTPowerSpectrumData>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iC=0; iC<nComponents; iC++)
+        {
+            KTPowerSpectrum* spectrum = fsData.GetSpectrum(iC);
+            if (spectrum != NULL)
+            {
+                spectrum->ConvertToPowerSpectralDensity();
+                for(int i=0; i < this->pwr_spec_size; i++) {
+                    double val = (*spectrum)(i);
+                    (*this->psd_buffer)[iC][i] = val;
+                }               
+            }
+        }
+        dset->write(this->psd_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        return;
+
+        
     }
     void KTHDF5TypeWriterFFT::WritePowerSpectrumDistribution(KTDataPtr data) {
         KTDEBUG(publog, "NOT IMPLEMENTED");

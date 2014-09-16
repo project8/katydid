@@ -88,6 +88,8 @@ namespace Katydid {
     	H5::DataSet* CreatePolarPowerDSet(const std::string& name);
     	H5::DataSet* CreateComplexFFTDSet(const std::string& name);
     	H5::DataSet* CreateComplexPowerDSet(const std::string& name);
+        H5::DataSet* CreatePowerSpecDSet(const std::string& name);
+        H5::DataSet* CreatePSDDSet(const std::string& name);
     	H5::DataSet* CreateDSet(const std::string& name, 
     							const H5::Group* grp,
     							const H5::DataSpace& ds);
@@ -121,6 +123,17 @@ namespace Katydid {
     	unsigned cmplx_pwr_size;
     	fft_buffer* cmplx_pwr_buffer;
     	H5::DataSpace* cmplx_pwr_dspace;
+
+        /*
+         * Power spectrum and Power spectral density
+         */
+        unsigned pwr_spec_size;
+        fft_buffer* pwr_spec_buffer;
+        H5::DataSpace* pwr_spec_dspace;
+
+        unsigned psd_size;
+        fft_buffer* psd_buffer;
+        H5::DataSpace* psd_dspace;
     };
 }
 
