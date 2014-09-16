@@ -147,7 +147,7 @@ int main()
         KTDataPtr data = eggReader->HatchNextSlice();
         if (data.get() == NULL) break;
 
-        if (iSlice == nSlices - 1) data->fLastData = true;
+        if (iSlice == nSlices - 1) data->SetLastData(true);
 
         dac->ConvertData(data->Of< KTSliceHeader >(), data->Of< KTRawTimeSeriesData >());
 

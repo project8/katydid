@@ -377,7 +377,7 @@ namespace Katydid
             return;
         }
 
-        fReceivedLastData = data->fLastData;
+        fReceivedLastData = data->GetLastData();
 
         // Call the function
         if (! TransformData(data->Of< KTTimeSeriesData >(), data->Of< KTSliceHeader >()))
@@ -408,7 +408,7 @@ namespace Katydid
             return;
         }
 
-        fReceivedLastData = data->fLastData;
+        fReceivedLastData = data->GetLastData();
 
         // Call the function
         if (! TransformData(data->Of< KTAnalyticAssociateData >(), data->Of< KTSliceHeader >()))

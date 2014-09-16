@@ -10,6 +10,8 @@
 
 #include "KTExtensibleStruct.hh"
 
+#include "KTMemberVariable.hh"
+
 #include <boost/shared_ptr.hpp>
 
 #include <string>
@@ -22,11 +24,16 @@ namespace Katydid
     struct KTExtensibleData : KTExtensibleStruct< XDerivedType, KTDataGroup >
     {};
 
-    struct KTData : public KTExtensibleData< KTData >
+    class KTData : public KTExtensibleData< KTData >
     {
+        public:
             KTData();
-            unsigned fCounter;
-            bool fLastData;
+            ~KTData();
+
+            MEMBERVARIABLE(unsigned, Counter);
+            MEMBERVARIABLE(bool, LastData);
+
+            static const std::string sName;
     };
 
     typedef boost::shared_ptr< KTData > KTDataPtr;

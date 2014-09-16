@@ -250,7 +250,7 @@ namespace Katydid
             // Hatch the slice
             if (! HatchNextSlice(reader, nextData))
             {
-                data->Of< KTData >().fLastData = true;
+                data->Of< KTData >().SetLastData(true);
                 nextSliceIsValid = false;
             }
 
@@ -302,7 +302,7 @@ namespace Katydid
             // Hatch the slice
             if (! HatchNextSlice(reader, data)) break;
 
-            if (iSlice == fNSlices - 1) data->Of< KTData >().fLastData = true;
+            if (iSlice == fNSlices - 1) data->Of< KTData >().SetLastData(true);
 
             if (data->Has< KTRawTimeSeriesData >())
             {

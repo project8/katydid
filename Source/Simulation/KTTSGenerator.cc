@@ -169,10 +169,10 @@ namespace Katydid
     {
         KTDataPtr newData(new KTData());
 
-        newData->fCounter = fSliceCounter;
+        newData->SetCounter(fSliceCounter);
 
         if (fSliceCounter == fNSlices - 1)
-            newData->fLastData = true;
+            newData->SetLastData(true);
 
         return newData;
     }

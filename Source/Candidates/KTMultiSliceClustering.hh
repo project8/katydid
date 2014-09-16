@@ -442,7 +442,7 @@ namespace Katydid
         fOneSliceDataSignal(data);
         DataList* clusteredData = FindClusters(data->Of< KTDiscriminatedPoints1DData >(), data->Of< XDataType >(), data->Of< KTSliceHeader >());
 
-        if (data->fLastData)
+        if (data->GetLastData())
         {
             KTINFO(sclog, "Last input data processed; Cleaning up remaining active clusters");
             KTMultiSliceClustering::DataList* lastData = CompleteAllClusters();

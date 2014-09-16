@@ -262,7 +262,7 @@ namespace Katydid
             {
                 KTDEBUG(eqplog, "Data acquired for processing");
                 (static_cast<XProcessorType*>(this)->*(daf.fFuncPtr))(daf.fData);
-                if (daf.fData->fLastData) fStatus = kStopped;
+                if (daf.fData->GetLastData()) fStatus = kStopped;
             }
             else
             {
