@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTWaterfallCandidateData::sName("waterfall-candidate");
+
     KTWaterfallCandidateData::KTWaterfallCandidateData() :
             KTExtensibleData< KTWaterfallCandidateData >(),
             fCandidate(NULL),

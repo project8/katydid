@@ -70,8 +70,11 @@ namespace Katydid
 
             void AddPoint(const Point& point);
 
-        protected:
+        private:
             Points fPoints;
+
+            static const std::string sName;
+
     };
 
     inline const KTSparseWaterfallCandidateData::Points& KTSparseWaterfallCandidateData::GetPoints() const

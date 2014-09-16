@@ -35,13 +35,13 @@ namespace Katydid
             double GetAmplitudeSum() const;
             void SetAmplitudeSum(double amp);
 
-        protected:
+        private:
             unsigned fFirstBin;
             unsigned fLastBin;
             double fMeanFrequency;
             double fPeakAmplitude;
             double fAmplitudeSum;
-    };
+};
 
     inline unsigned KTFrequencyCandidate::GetFirstBin() const
     {

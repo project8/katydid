@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTProcessedTrackData::sName("processed-track");
+
     KTProcessedTrackData::KTProcessedTrackData() :
             KTExtensibleData< KTProcessedTrackData >(),
             fComponent(0),

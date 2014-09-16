@@ -81,7 +81,9 @@ namespace Katydid
 
         private:
             Tracks fTracks;
-    };
+
+            static const std::string sName;
+};
 
     inline unsigned KTMultiTrackEventData::KTMultiTrackEventData::GetNTracks() const
     {
