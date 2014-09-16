@@ -130,6 +130,7 @@ namespace Katydid
             // Some temporary storage members to avoid allocating new variables
             unsigned fTemp1, fTemp2, fTemp3;
 
+            static const std::string sName;
     };
 
     std::ostream& operator<<(std::ostream& out, const KTSliceHeader& hdr);

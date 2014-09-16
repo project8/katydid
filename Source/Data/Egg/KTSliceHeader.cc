@@ -11,6 +11,8 @@
 
 namespace Katydid
 {
+    const std::string KTSliceHeader::sName("slice-header");
+
     KTSliceHeader::KTSliceHeader() :
             KTExtensibleData< KTSliceHeader >(),
             fTimeInRun(0.),
