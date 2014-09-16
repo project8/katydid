@@ -25,6 +25,8 @@ namespace Katydid
     }
 
 
+    const std::string KTTimeFrequencyDataPolar::sName("time-frequency-polar");
+
     KTTimeFrequencyDataPolar::KTTimeFrequencyDataPolar() :
             KTTimeFrequencyDataPolarCore(),
             KTExtensibleData< KTTimeFrequencyDataPolar >()

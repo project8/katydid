@@ -117,6 +117,10 @@ namespace Katydid
             virtual ~KTTimeFrequencyDataPolar();
 
             KTTimeFrequencyDataPolar& SetNComponents(unsigned component);
+
+        private:
+            static const std::string sName;
+
     };
 
 } /* namespace Katydid */

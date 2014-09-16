@@ -23,6 +23,9 @@ namespace Katydid
         }
     }
 
+
+    const std::string KTPowerSpectrumData::sName("power-spectrum");
+
     KTPowerSpectrumData::KTPowerSpectrumData() :
             KTPowerSpectrumDataCore(),
             KTExtensibleData()

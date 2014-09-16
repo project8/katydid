@@ -119,6 +119,9 @@ namespace Katydid
 
  #endif
 
+
+    const std::string KTMultiFSDataPolar::sName("multi-fs-polar");
+
     KTMultiFSDataPolar::KTMultiFSDataPolar() :
             KTMultiFSDataPolarCore(),
             KTExtensibleData< KTMultiFSDataPolar >()
