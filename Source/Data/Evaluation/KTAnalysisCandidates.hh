@@ -61,11 +61,13 @@ namespace Katydid
             unsigned GetNRecords() const;
             void SetNRecords(unsigned rec);
 
-        protected:
+        private:
             CandidateSet fCandidates;
 
             unsigned fRecordSize;
             unsigned fNRecords;
+
+            static const std::string sName;
     };
 
     inline const KTAnalysisCandidates::CandidateSet& KTAnalysisCandidates::GetCandidates() const

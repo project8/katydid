@@ -9,6 +9,7 @@
 
 namespace Katydid
 {
+    const std::string KTCCResults::sName("cc-results");
 
     KTCCResults::KTCCResults() :
             KTExtensibleData< KTCCResults >(),

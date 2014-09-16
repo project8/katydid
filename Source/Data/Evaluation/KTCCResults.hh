@@ -65,6 +65,8 @@ namespace Katydid
 
             double fEfficiency;
             double fFalseRate;
+
+            static const std::string sName;
     };
 
     inline double KTCCResults::GetEventLength()
