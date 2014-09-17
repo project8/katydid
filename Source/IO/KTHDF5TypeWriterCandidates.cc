@@ -23,7 +23,8 @@ namespace Katydid {
     static KTTIRegistrar<KTHDF5TypeWriter, KTHDF5TypeWriterCandidates> sH5CNDrg;
     KTHDF5TypeWriterCandidates::KTHDF5TypeWriterCandidates() :
         KTHDF5TypeWriter(),
-        fMTEDataBuffer() {
+        fMTEDataBuffer(),
+        fFlushIdx(0) {
             /*
              * First we build the appropriate compound datatype for MTE events
              */
@@ -106,8 +107,15 @@ namespace Katydid {
         H5::Group* candidatesGroup = fWriter->AddGroup("candidates");
 
         // OK, create the dataset and write it down.
-        H5::DataSet* dset = new H5::DataSet(candidatesGroup->createDataSet("cands",*(this->fMTEType),dspace));
+        std::stringstream namestream;
+        std::string dsetname;
+        namestream << "candidates_" << this->fFlushIdx;
+        namestream >> dsetname;
+        H5::DataSet* dset = new H5::DataSet(candidatesGroup->createDataSet(dsetname.c_str(),
+                                                                           *(this->fMTEType),
+                                                                           dspace));
         dset->write((this->fMTEDataBuffer).data(),*(this->fMTEType));
+        this->fFlushIdx++;
     }
 
 }  //  namespace Katydid

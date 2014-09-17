@@ -181,6 +181,8 @@ namespace Katydid {
     private:
         std::vector<MTEData> fMTEDataBuffer;
         H5::CompType* fMTEType;
+
+        unsigned fFlushIdx;
     };
 };
 
