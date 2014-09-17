@@ -104,7 +104,7 @@ namespace Katydid
             (this->*fFindDeltasPtr)(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
 
             unsigned voteCount = 0;
-            if (! timeDelta == 0)
+            if (! (timeDelta == 0))
             {
                 //double slope = frequencyDelta / timeDelta;
                 //double intercept = setOfPoints[iPoint].fCoords[1] - slope * setOfPoints[iPoint].fCoords[0];
