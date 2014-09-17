@@ -58,8 +58,8 @@ namespace Katydid
             TGraph2D* fPoints;
             UInt_t fComponent;
             UInt_t fCandidateID;
-            Double_t fTimeBinWidth;
-            Double_t fFreqBinWidth;
+            //Double_t fTimeBinWidth;
+            //Double_t fFreqBinWidth;
             Double_t fTimeInRunC;
             Double_t fTimeLength;
             //ULong64_t fFirstSliceNumber;

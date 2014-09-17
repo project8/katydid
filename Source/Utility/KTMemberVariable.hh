@@ -10,7 +10,8 @@
 
 
 /**
- * Creates a member variable with type TYPE name f[NAME], plus getters and setters.
+ * Creates a member variable with type TYPE name f[NAME], plus getter and setter.
+ * MEMBERVARIABLE_NOSET will provide the variable and getter, but no setter, allowing you to provide a custom setter.
  *
  * Usage example, in a class header file:
  *     MEMBERVARIABLE(double, MyVar)
@@ -30,15 +31,20 @@
  *             f[NAME] = var;
  *         }
  */
-#define MEMBERVARIABLE(TYPE, NAME) \
+#define MEMBERVARIABLE_NOSET(TYPE, NAME) \
         private: \
             TYPE f##NAME; \
         public: \
             inline TYPE Get##NAME() const {return f##NAME;} \
+
+#define MEMBERVARIABLE(TYPE, NAME) \
+        MEMBERVARIABLE_NOSET(TYPE, NAME) \
             inline void Set##NAME(TYPE var) {f##NAME = var; return;}
+
 
 /**
  * Creates a member variable with type TYPE name f[NAME], plus getters and setters.
+ * MEMBERVARIABLEREF_NOSET will provide the variable and getter, but no setter, allowing you to provide a custom setter.
  *
  * Usage example, in a class header file:
  *     MEMBERVARIABLEREF(std::string, MyVar)
@@ -58,11 +64,14 @@
  *             f[NAME] = var;
  *         }
  */
-#define MEMBERVARIABLEREF(TYPE, NAME) \
+#define MEMBERVARIABLEREF_NOSET(TYPE, NAME) \
         private: \
             TYPE f##NAME; \
         public: \
-            inline const TYPE& Get##NAME() const {return f##NAME;} \
+            inline const TYPE& Get##NAME() const {return f##NAME;}
+
+#define MEMBERVARIABLEREF(TYPE, NAME) \
+        MEMBERVARIABLEREF_NOSET(TYPE, NAME) \
             inline void Set##NAME(const TYPE& var) {f##NAME = var; return;}
 
 

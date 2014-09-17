@@ -9,9 +9,10 @@
 #ifndef KTDBSCANTRACKCLUSTERING_HH_
 #define KTDBSCANTRACKCLUSTERING_HH_
 
-#include "KTPrimaryProcessor.hh"
+#include "KTProcessor.hh"
 
 #include "KTDBScan.hh"
+#include "KTMemberVariable.hh"
 #include "KTSlot.hh"
 #include "KTData.hh"
 
@@ -20,8 +21,7 @@
 
 namespace Katydid
 {
-    class KTSliceHeader;
-    class KTDiscriminatedPoints1DData;
+    class KTKDTreeData;
     class KTParamNode;
 
     /*!
@@ -54,12 +54,12 @@ namespace Katydid
      - "clustering-done": void () -- Emitted when track clustering is complete
     */
 
-    class KTDBScanTrackClustering : public KTPrimaryProcessor
+    class KTDBScanTrackClustering : public KTProcessor
     {
         public:
-            typedef KTDBScan::Point DBScanPoint;
-            typedef KTDBScan::Points DBScanPoints;
-            typedef KTDBScan::Weights DBScanWeights;
+            //typedef KTSparseDistanceMatrix< double > DistanceMatrix;
+            //typedef DistanceMatrix::Point Point;
+            //typedef DistanceMatrix::Points Points;
 
             const static unsigned fNDimensions;
 
@@ -69,45 +69,35 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
-            unsigned GetMinPoints() const;
-            void SetMinPoints(unsigned pts);
-
-            const DBScanWeights& GetRadii() const;
-            void SetRadii(const DBScanWeights& radii);
-
-        private:
-            KTDBScan fDBScan;
-
-            // dimension weighting
-            DBScanWeights fRadii;
-
-            //minimum number of points
-            unsigned fMinPoints;
+            MEMBERVARIABLE(unsigned, MinPoints);
+            //MEMBERVARIABLEREF(Point, Radii);
 
         public:
+            bool DoClustering(KTKDTreeData& data);
+
             // Store point information locally
-            bool TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints);
-            bool TakePoint(double time, double frequency /*, double amplitude*/, unsigned component=0);
+            //bool TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints);
+            //bool TakePoint(double time, double frequency /*, double amplitude*/, unsigned component=0);
 
-            void SetNComponents(unsigned nComps);
-            void SetTimeBinWidth(double bw);
-            void SetFreqBinWidth(double bw);
 
-            void TriggerClustering();
 
-            bool Run();
+            //void SetNComponents(unsigned nComps);
+            //void SetTimeBinWidth(double bw);
+            //void SetFreqBinWidth(double bw);
 
-            bool DoClustering();
+            //bool Run();
+
+            //bool DoClustering();
 
             const std::set< KTDataPtr >& GetCandidates() const;
             unsigned GetDataCount() const;
 
         private:
 
-            double fTimeBinWidth;
-            double fFreqBinWidth;
+            //double fTimeBinWidth;
+            //double fFreqBinWidth;
 
-            std::vector< DBScanPoints > fCompPoints; // points vectors for each component
+            //std::vector< Points > fCompPoints; // points vectors for each component
 
             std::set< KTDataPtr > fCandidates;
             unsigned fDataCount;
@@ -125,26 +115,14 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fTakePointSlot;
+            KTSlotDataOneType< KTKDTreeData > fClusterKDTreeSlot;
+            //KTSlotDataTwoTypes< KTSliceHeader, KTDiscriminatedPoints1DData > fTakePointSlot;
             //KTSlotDataOneType< KTInternalSignalWrapper > fDoClusterSlot;
 
+            //void DoClusteringSlot();
+
     };
-
-    inline unsigned KTDBScanTrackClustering::GetMinPoints() const
-    {
-        return fMinPoints;
-    }
-    inline void KTDBScanTrackClustering::SetMinPoints(unsigned pts)
-    {
-        fMinPoints = pts;
-        return;
-    }
-
-    inline const KTDBScanTrackClustering::DBScanWeights& KTDBScanTrackClustering::GetRadii() const
-    {
-        return fRadii;
-    }
-
+/*
     inline void KTDBScanTrackClustering::SetTimeBinWidth(double bw)
     {
         fTimeBinWidth = bw;
@@ -155,7 +133,7 @@ namespace Katydid
         fFreqBinWidth = bw;
         return;
     }
-
+*/
     inline const std::set< KTDataPtr >& KTDBScanTrackClustering::GetCandidates() const
     {
         return fCandidates;

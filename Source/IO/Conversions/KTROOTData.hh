@@ -54,6 +54,7 @@ namespace Katydid
             TProcessedTrackData(const KTProcessedTrackData& data);
             TProcessedTrackData(const TProcessedTrackData& orig);
             virtual ~TProcessedTrackData();
+            TObject* Clone(const char* newname="");
             TProcessedTrackData& operator=(const TProcessedTrackData& rhs);
 
             void Load(const KTProcessedTrackData& data);
@@ -106,6 +107,7 @@ namespace Katydid
             TMultiTrackEventData(const KTMultiTrackEventData& data);
             TMultiTrackEventData(const TMultiTrackEventData& orig);
             virtual ~TMultiTrackEventData();
+            TObject* Clone(const char* newname="");
             TMultiTrackEventData& operator=(const TMultiTrackEventData& rhs);
 
             void Load(const KTMultiTrackEventData& data);

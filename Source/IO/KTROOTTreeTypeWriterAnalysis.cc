@@ -10,6 +10,7 @@
 #include "KT2ROOT.hh"
 #include "KTAmplitudeDistribution.hh"
 #include "KTDiscriminatedPoints1DData.hh"
+#include "KTKDTreeData.hh"
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
@@ -37,9 +38,11 @@ namespace Katydid
             KTROOTTreeTypeWriter(),
             //KTTypeWriterAnalysis()
             fDiscPoints1DTree(NULL),
+            fKDTreeTree(NULL),
             fAmpDistTree(NULL),
             fHoughTree(NULL),
             fDiscPoints1DData(),
+            fKDTreePointData(),
             fAmpDistData(),
             fHoughData()
     {
@@ -53,6 +56,7 @@ namespace Katydid
     void KTROOTTreeTypeWriterAnalysis::RegisterSlots()
     {
         fWriter->RegisterSlot("disc-1d", this, &KTROOTTreeTypeWriterAnalysis::WriteDiscriminatedPoints1D);
+        fWriter->RegisterSlot("kd-tree", this, &KTROOTTreeTypeWriterAnalysis::WriteKDTree);
         fWriter->RegisterSlot("amp-dist", this, &KTROOTTreeTypeWriterAnalysis::WriteAmplitudeDistributions);
         fWriter->RegisterSlot("hough", this, &KTROOTTreeTypeWriterAnalysis::WriteHoughData);
         return;
@@ -60,7 +64,7 @@ namespace Katydid
 
 
     //*********************
-    // Frequency Analysis
+    // Discriminated Points
     //*********************
 
     void KTROOTTreeTypeWriterAnalysis::WriteDiscriminatedPoints1D(KTDataPtr data)
@@ -85,7 +89,7 @@ namespace Katydid
         for (fDiscPoints1DData.fComponent = 0; fDiscPoints1DData.fComponent < fcData.GetNComponents(); fDiscPoints1DData.fComponent++)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints& points = fcData.GetSetOfPoints(fDiscPoints1DData.fComponent);
-            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); it++)
+            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
             {
                 fDiscPoints1DData.fBin = it->first;
                 fDiscPoints1DData.fAbscissa = it->second.fAbscissa;
@@ -119,6 +123,99 @@ namespace Katydid
         fDiscPoints1DTree->Branch("Ordinate", &fDiscPoints1DData.fOrdinate, "fOrdinate/d");
         fDiscPoints1DTree->Branch("Threshold", &fDiscPoints1DData.fThreshold, "fThreshold/d");
         //fDiscPoints1DTree->Branch("freqAnalysis", &fDiscPoints1DData.fComponent, "fComponent/s:fSlice/l:fTimeInRun/d:fThreshold/d:fFirstBin/i:fLastBin/i:fMeanFrequency/d:fPeakAmplitude/d");
+
+        return true;
+    }
+
+    //*********************
+    // K-D Tree
+    //*********************
+
+    void KTROOTTreeTypeWriterAnalysis::WriteKDTree(KTDataPtr data)
+    {
+        static Long64_t lastSlice = -1;
+
+        KTKDTreeData& kdtData = data->Of< KTKDTreeData >();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        if (fKDTreeTree == NULL)
+        {
+            if (! SetupKDTreeTree())
+            {
+                KTERROR(publog, "Something went wrong while setting up the k-d tree tree! Nothing was written.");
+                return;
+            }
+        }
+
+        Long64_t lastSliceThisData = lastSlice;
+        for (fKDTreePointData.fComponent = 0; fKDTreePointData.fComponent < kdtData.GetNComponents(); fKDTreePointData.fComponent++)
+        {
+            const KTKDTreeData::SetOfPoints& points = kdtData.GetSetOfPoints(fKDTreePointData.fComponent);
+            const KTKDTreeData::TreeIndex* index = kdtData.GetTreeIndex(fKDTreePointData.fComponent);
+            unsigned pid = 0;
+            for (KTKDTreeData::SetOfPoints::const_iterator it = points.begin(); it != points.end(); ++it)
+            {
+                if ((int64_t)it->fSliceNumber > lastSlice)
+                {
+                    if ((int64_t)it->fSliceNumber > lastSliceThisData) lastSliceThisData = (int64_t)it->fSliceNumber;
+                    fKDTreePointData.fSlice = it->fSliceNumber;
+                    fKDTreePointData.fTimeInRunC = it->fCoords[0];
+                    fKDTreePointData.fFrequency = it->fCoords[1];
+                    fKDTreePointData.fAmplitude = it->fAmplitude;
+                    fKDTreePointData.fNoiseFlag = it->fNoiseFlag;
+                    KTKDTreeData::TreeIndex::Neighbors neighbors = index->NearestNeighborsByNumber(pid, 2);
+                    fKDTreePointData.fNNDistance = neighbors.dist(1);
+                    //KTWARN(publog, "ne to " << pid << ": " << neighbors[0] << " @ " << neighbors.dist(0) << "\t" << neighbors[1] << " @ " << neighbors.dist(1) << '\n'
+                    //       << '\t' << neighbors[0] << ": " << points[neighbors[0]].fCoords[0] << ", " << points[neighbors[0]].fCoords[1] << '\n'
+                    //       << '\t' << neighbors[1] << ": " << points[neighbors[1]].fCoords[0] << ", " << points[neighbors[1]].fCoords[1]);
+                    KTKDTreeData::TreeIndex::Neighbors neighbors2 = index->NearestNeighborsByRadius(pid, 0.22);
+                    fKDTreePointData.fKNNWithin0p22 = neighbors2.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors3 = index->NearestNeighborsByRadius(pid, 0.32);
+                    fKDTreePointData.fKNNWithin0p32 = neighbors3.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors4 = index->NearestNeighborsByRadius(pid, 0.45);
+                    fKDTreePointData.fKNNWithin0p45 = neighbors4.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors5 = index->NearestNeighborsByRadius(pid, 0.7);
+                    fKDTreePointData.fKNNWithin0p7 = neighbors5.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors6 = index->NearestNeighborsByRadius(pid, 1.);
+                    fKDTreePointData.fKNNWithin1p0 = neighbors6.size();
+                    KTKDTreeData::TreeIndex::Neighbors neighbors7 = index->NearestNeighborsByRadius(pid, 1.4);
+                    fKDTreePointData.fKNNWithin1p4 = neighbors7.size();
+
+                    fKDTreeTree->Fill();
+                    ++pid;
+                }
+           }
+        }
+        lastSlice = lastSliceThisData;
+
+        return;
+    }
+
+    bool KTROOTTreeTypeWriterAnalysis::SetupKDTreeTree()
+    {
+        fKDTreeTree = new TTree("kdTree", "K-D Tree");
+        if (fKDTreeTree == NULL)
+        {
+            KTERROR(publog, "Tree was not created!");
+            return false;
+        }
+        fWriter->AddTree(fKDTreeTree);
+
+        //fDiscPoints1DData = new TDiscriminatedPoints1DData();
+
+        fKDTreeTree->Branch("Slice", &fKDTreePointData.fSlice, "fSlice/l");
+        fKDTreeTree->Branch("TimeInRunC", &fKDTreePointData.fTimeInRunC, "fTimeInRunC/d");
+        fKDTreeTree->Branch("Frequency", &fKDTreePointData.fFrequency, "fFrequency/d");
+        fKDTreeTree->Branch("Amplitude", &fKDTreePointData.fAmplitude, "fAmplitude/d");
+        fKDTreeTree->Branch("NoiseFlag", &fKDTreePointData.fNoiseFlag, "fNoiseFlag/d");
+        fKDTreeTree->Branch("NNDistance", &fKDTreePointData.fNNDistance, "fNNDistance/d");
+        fKDTreeTree->Branch("KNNWithin0p22", &fKDTreePointData.fKNNWithin0p22, "fKNNWithin0p22/i");
+        fKDTreeTree->Branch("KNNWithin0p32", &fKDTreePointData.fKNNWithin0p32, "fKNNWithin0p32/i");
+        fKDTreeTree->Branch("KNNWithin0p45", &fKDTreePointData.fKNNWithin0p45, "fKNNWithin0p45/i");
+        fKDTreeTree->Branch("KNNWithin0p7", &fKDTreePointData.fKNNWithin0p7, "fKNNWithin0p7/i");
+        fKDTreeTree->Branch("KNNWithin1p0", &fKDTreePointData.fKNNWithin1p0, "fKNNWithin1p0/i");
+        fKDTreeTree->Branch("KNNWithin1p4", &fKDTreePointData.fKNNWithin1p4, "fKNNWithin1p4/i");
 
         return true;
     }

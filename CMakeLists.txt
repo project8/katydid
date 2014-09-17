@@ -189,6 +189,7 @@ endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 # External packages distributed with Katydid
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidJSON)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidXML)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/nanoflann)
 
 # add an option to build the validation tests
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)
