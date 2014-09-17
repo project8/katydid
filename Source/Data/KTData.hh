@@ -27,8 +27,16 @@ namespace Katydid
             KTExtensibleData() {}
             ~KTExtensibleData() {}
 
-            const std::string& Name() const {return XDerivedType::sName;}
+            const std::string& Name() const;
+
+
     };
+
+    template< class XDerivedType >
+    inline const std::string& KTExtensibleData< XDerivedType >::Name() const
+    {
+        return XDerivedType::sName;
+    }
 
     class KTData : public KTExtensibleData< KTData >
     {
