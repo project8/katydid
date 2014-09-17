@@ -97,6 +97,7 @@ if (HDF5_FOUND)
         ${IO_HEADERFILES}
         KTHDF5TypeWriterFFT.hh
         KTHDF5TypeWriterEgg.hh
+        KTHDF5TypeWriterCandidates.hh
         KTHDF5Writer.hh
     )
     
@@ -104,6 +105,7 @@ if (HDF5_FOUND)
         ${IO_SOURCEFILES}
         KTHDF5TypeWriterFFT.cc
         KTHDF5TypeWriterEgg.cc
+        KTHDF5TypeWriterCandidates.cc
         KTHDF5Writer.cc
     )
     
