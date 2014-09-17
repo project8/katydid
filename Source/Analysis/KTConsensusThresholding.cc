@@ -25,6 +25,7 @@ namespace Katydid
             fMembershipRadius(1.0),
             fMinNumberVotes(1),
             fRemoveNoiseFlag(false),
+            fFindDeltasPtr(&KTConsensusThresholding::FindDeltasNeighborsInRadius),
             fKDTreeSignal("kd-tree-out", this),
             fKDTreeSlot("kd-tree-in", this, &KTConsensusThresholding::ConsensusVote, &fKDTreeSignal)
     {
@@ -41,6 +42,26 @@ namespace Katydid
         SetMembershipRadius(node->GetValue("membership-radius", GetMembershipRadius()));
         SetMinNumberVotes(node->GetValue("min-number-votes", GetMinNumberVotes()));
         SetRemoveNoiseFlag(node->GetValue("remove-noise", GetRemoveNoiseFlag()));
+
+        if (node->Has("slope-algorithm"))
+        {
+            string fdValue(node->GetValue("slope-algorithm"));
+            if (fdValue == "nearest-neighbor")
+            {
+                KTDEBUG(ctlog, "Setting slope function to \"nearest-neighbor\"");
+                fFindDeltasPtr = &KTConsensusThresholding::FindDeltasNearestNeighbor;
+            }
+            else if (fdValue == "radius")
+            {
+                KTDEBUG(ctlog, "Setting slope function to \"radius\"");
+                fFindDeltasPtr = &KTConsensusThresholding::FindDeltasNeighborsInRadius;
+            }
+            else
+            {
+                KTERROR(ctlog, "Invalid value for \"find-deltas\": <" << fdValue << ">");
+                return false;
+            }
+        }
 
         return true;
     }
@@ -80,7 +101,7 @@ namespace Katydid
         for (unsigned iPoint = 0; iPoint < nPoints; ++iPoint)
         {
             //FindDeltasFirstNeighbor(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
-            FindDeltasNeighborsInRadius(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
+            (this->*fFindDeltasPtr)(kdTree, setOfPoints, iPoint, timeDelta, frequencyDelta);
 
             unsigned voteCount = 0;
             if (! timeDelta == 0)
@@ -133,7 +154,7 @@ namespace Katydid
         return true;
     }
 
-    void KTConsensusThresholding::FindDeltasFirstNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
+    void KTConsensusThresholding::FindDeltasNearestNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq)
     {
         KTTreeIndex< double >::Neighbors ne = kdTree->NearestNeighborsByNumber(pid, 2);
         deltaTime = setOfPoints[ne[1]].fCoords[0] - setOfPoints[pid].fCoords[0];

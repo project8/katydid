@@ -35,6 +35,7 @@ namespace Katydid
      - "membership-radius": double -- Defines the circle in which nearest neighbors are searched for
      - "min-number-votes": unsigned -- Minimum number of votes to keep a point
      - "remove-noise": bool -- Flag that determines whether noise points are removed (true) or flagged (false; default)
+     - "slope-algorithm": string -- Method used to find the slope around each point: "nearest-neighbor" or "radius" (default)
 
      Slots:
      - "kd-tree-in": void (KTDataPtr) -- Performs the CT algorithm on the data in a k-d tree; Requires KTKDTreeData; existing data is modified
@@ -61,8 +62,10 @@ namespace Katydid
             bool ConsensusVoteComponent(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, std::vector< size_t >& noisePoints);
 
         private:
-            //void VoteCore(bool doPositive, size_t pid, double* thisPoint, double* neighborPoint, double slope, double intercept);
-            void FindDeltasFirstNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq);
+            typedef void (KTConsensusThresholding::*FindDeltasPtr)(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq);
+            FindDeltasPtr fFindDeltasPtr;
+
+            void FindDeltasNearestNeighbor(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq);
             void FindDeltasNeighborsInRadius(const KTTreeIndex< double >* kdTree, const KTKDTreeData::SetOfPoints& setOfPoints, unsigned pid, double& deltaTime, double& deltaFreq);
 
             //***************
