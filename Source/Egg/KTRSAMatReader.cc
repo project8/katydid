@@ -167,7 +167,7 @@ namespace Katydid
             return NULL;
         }
         buflen = mxGetN(rsaxml_mat) + 1;
-        rsaxml_str = (char*) calloc(buflen, sizeof(char));
+        rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
         status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
         if (status != 0)
         {
@@ -210,6 +210,7 @@ namespace Katydid
 
         // Close the XML variable
         mxDestroyArray(rsaxml_mat);
+        delete [] rsaxml_str;
 
         // Get configuration from JSON config file
         fHeader.SetRawSliceSize(fSliceSize);
