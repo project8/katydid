@@ -43,10 +43,12 @@ namespace Katydid {
              this is a no-op.
             */ 
             H5::Group* AddGroup(const std::string& groupname);
-         
 
         protected:
             H5::H5File* fFile;
+
+        private:
+            std::map<std::string, H5::Group*> fGroups;
     };
 
 

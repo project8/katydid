@@ -89,7 +89,15 @@ namespace Katydid
     }
 
     H5::Group* KTHDF5Writer::AddGroup(const std::string& groupname) {
-        H5::Group* result = new H5::Group(fFile->createGroup(groupname));
+        std::map<std::string, H5::Group*>::iterator it;
+        H5::Group* result;
+        if ( (it = this->fGroups.find(groupname)) == this->fGroups.end() ) {
+            result = new H5::Group(fFile->createGroup(groupname));
+            this->fGroups[groupname] = result;
+        }
+        else {
+            result = it->second;
+        }
         return result;
     }
 
