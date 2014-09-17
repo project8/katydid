@@ -190,7 +190,7 @@ namespace Katydid
         curr_node = data_node->first_node("NumberSamples");
         fHeader.SetRecordSize((size_t) atoi(curr_node->value()));
         //curr_node = data_node->first_node("AcquisitionBandwidth");
-	rapidxml::xml_node< >* prod_spec_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("ProductSpecific");
+        rapidxml::xml_node< >* prod_spec_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("ProductSpecific");
         curr_node = prod_spec_node->first_node("AcquisitionBandwidth");
         fHeader.SetAcquisitionRate(2. * atof(curr_node->value()));
         fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetRecordSize() / fHeader.GetAcquisitionRate());
