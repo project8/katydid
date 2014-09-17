@@ -41,7 +41,10 @@ namespace Katydid {
         pwr_spec_dspace(NULL),
         pwr_spec_buffer(NULL),
         psd_dspace(NULL),
-        psd_buffer(NULL)
+        psd_buffer(NULL),
+        spectra_group(NULL),
+        fft_group(NULL),
+        power_group(NULL)
     {}
 
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
@@ -108,9 +111,7 @@ namespace Katydid {
 
         }
         KTDEBUG(publog, "Done.");
-        H5::Group* spectra_group = fWriter->AddGroup("/spectra");
-        this->fft_group = new H5::Group(spectra_group->createGroup("/spectra/frequency"));
-        this->power_group = new H5::Group(spectra_group->createGroup("/spectra/power"));
+        this->spectra_group = fWriter->AddGroup("/spectra");
         this->CreateDataspaces();
     }
 
@@ -167,13 +168,19 @@ namespace Katydid {
     }
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarFFTDSet(const std::string& name) {
-        H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fft_group,
-                                             *(this->polar_fft_dspace));
+      if(this->fft_group == NULL) {
+        this->fft_group = new H5::Group(this->spectra_group->createGroup("/spectra/frequency"));
+      }
+      H5::DataSet* dset = this->CreateDSet(name, 
+                                           this->fft_group,
+                                           *(this->polar_fft_dspace));
         return dset;
     }
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarPowerDSet(const std::string& name) {
+      if(this->power_group == NULL) {
+        this->power_group = new H5::Group(this->spectra_group->createGroup("/spectra/power"));
+      }
         H5::DataSet* dset = this->CreateDSet(name, 
                                              this->power_group,
                                              *(this->polar_pwr_dspace));
@@ -182,6 +189,9 @@ namespace Katydid {
 
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreateComplexFFTDSet(const std::string& name) {
+      if(this->fft_group == NULL) {
+        this->fft_group = new H5::Group(this->spectra_group->createGroup("/spectra/frequency"));
+      }
         H5::DataSet* dset = this->CreateDSet(name, 
                                              this->fft_group,
                                              *(this->cmplx_fft_dspace));
@@ -189,6 +199,9 @@ namespace Katydid {
     }
 
     H5::DataSet* KTHDF5TypeWriterFFT::CreateComplexPowerDSet(const std::string& name) {
+      if(this->power_group == NULL) {
+        this->power_group = new H5::Group(this->spectra_group->createGroup("/spectra/power"));
+      }
         H5::DataSet* dset = this->CreateDSet(name, 
                                              this->power_group,
                                              *(this->cmplx_pwr_dspace));
@@ -196,6 +209,9 @@ namespace Katydid {
     }
 
     H5::DataSet* KTHDF5TypeWriterFFT::CreatePowerSpecDSet(const std::string& name) {
+      if(this->power_group == NULL) {
+        this->power_group = new H5::Group(this->spectra_group->createGroup("/spectra/power"));
+      }
         H5::DataSet* dset = this->CreateDSet(name, 
                                              this->power_group,
                                              *(this->pwr_spec_dspace));
@@ -203,6 +219,9 @@ namespace Katydid {
     }
 
     H5::DataSet* KTHDF5TypeWriterFFT::CreatePSDDSet(const std::string& name) {
+      if(this->power_group == NULL) {
+        this->power_group = new H5::Group(this->spectra_group->createGroup("/spectra/power"));
+      }
         H5::DataSet* dset = this->CreateDSet(name, 
                                              this->power_group,
                                              *(this->psd_dspace));

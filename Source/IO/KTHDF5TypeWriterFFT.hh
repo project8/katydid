@@ -134,6 +134,11 @@ namespace Katydid {
         unsigned psd_size;
         fft_buffer* psd_buffer;
         H5::DataSpace* psd_dspace;
+
+        /* 
+         * Group for spectral data
+         */
+        H5::Group* spectra_group;
     };
 }
 
