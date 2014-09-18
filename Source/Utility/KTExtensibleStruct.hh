@@ -16,8 +16,8 @@ namespace Katydid
     // *) operator= reallocates extended fields: to avoid this, use Pull().
 
 
-    template<class XGroupType=void>
-    struct KTExtensibleStructCore
+    template<class XGroupType>
+    struct KTExtensibleStructCore : public XGroupType
     {
         public:
             KTExtensibleStructCore(void);
@@ -37,7 +37,7 @@ namespace Katydid
 
 
 
-    template<class XInstanceType, class XGroupType=void>
+    template<class XInstanceType, class XGroupType>
     struct KTExtensibleStruct : KTExtensibleStructCore< XGroupType >
     {
         public:

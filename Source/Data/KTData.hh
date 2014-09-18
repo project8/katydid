@@ -18,18 +18,27 @@
 
 namespace Katydid
 {
-    struct KTDataGroup {};
+    class KTNamedData
+    {
+        public:
+            KTNamedData() {}
+            virtual ~KTNamedData() {}
+
+            virtual const std::string& Name() const = 0;
+
+            virtual KTNamedData* Next() const = 0;
+    };
 
     template< class XDerivedType >
-    class KTExtensibleData : public KTExtensibleStruct< XDerivedType, KTDataGroup >
+    class KTExtensibleData : public KTExtensibleStruct< XDerivedType, KTNamedData >
     {
         public:
             KTExtensibleData() {}
-            ~KTExtensibleData() {}
+            virtual ~KTExtensibleData() {}
 
             const std::string& Name() const;
 
-
+            KTNamedData* Next() const;
     };
 
     template< class XDerivedType >
@@ -37,6 +46,14 @@ namespace Katydid
     {
         return XDerivedType::sName;
     }
+
+    template< class XDerivedType >
+    inline KTNamedData* KTExtensibleData< XDerivedType >::Next() const
+    {
+        return KTExtensibleStructCore< KTNamedData >::fNext;
+    }
+
+
 
     class KTData : public KTExtensibleData< KTData >
     {
