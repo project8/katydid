@@ -56,19 +56,17 @@ namespace Katydid
 
     KTEggHeader* KTRSAMatReader::BreakEgg(const string& filename)
     {
-        mxArray *dt_mat, *fc_mat, *bw_mat, *rsaxml_mat, *fileInfoStruct;
-        char *rsaxml_str;
-        int buflen;
-        int status;
-        rapidxml::xml_document< > doc;
-        rapidxml::xml_node< > * data_node;
-        rapidxml::xml_node< > * curr_node;
+        mxArray* fileInfoStruct;
         // Temporary variable to read time stamps
-        double timeFromFirstToLastRecord;
         boost::posix_time::ptime ptime1temp, ptime1temp_1st; // From Boost
         boost::posix_time::time_duration tdur1temp; // From Boost
 
         if (fStride == 0) fStride = fSliceSize;
+        if (fStride != fSliceSize)
+        {
+            KTERROR(eggreadlog, "The RSA matlab reader requires the stride equal the slice size");
+            return NULL;
+        }
 
         // open the file
         KTINFO(eggreadlog, "Opening mat file <" << filename << ">");
@@ -92,6 +90,8 @@ namespace Katydid
             KTINFO(eggreadlog, "No fileinfo variable in file - this is not a proper Concatenated MAT file");
         }
 
+        double timeFromFirstToLastRecord;
+
         if (fileInfoStruct != NULL)
         {
             // If fileInfoStruct exists, then this is a concatenated file
@@ -103,7 +103,7 @@ namespace Katydid
             if (fRecordsTimeStampSeconds != NULL) delete [] fRecordsTimeStampSeconds;
             fRecordsTimeStampSeconds = new double[fRecordsPerFile]; //(double *) calloc(fRecordsPerFile, sizeof(double));
             // Read the timestamps into a string, then convert the string to Epoch seconds
-            rsaxml_mat = mxGetField(fileInfoStruct, 0, "rsaMetadata");
+            mxArray* rsaxml_mat = mxGetField(fileInfoStruct, 0, "rsaMetadata");
             if (rsaxml_mat == NULL)
             {
                 KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
@@ -113,14 +113,15 @@ namespace Katydid
             {
                 // Read XML Configuration for this Record (original MAT file)
                 rsaxml_mat = mxGetField(fileInfoStruct, ii, "rsaMetadata");
-                buflen = mxGetN(rsaxml_mat) + 1;
-                rsaxml_str = (char*) calloc(buflen, sizeof(char));
-                status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
+                int buflen = mxGetN(rsaxml_mat) + 1;
+                char* rsaxml_str = new char[buflen];
+                mxGetString(rsaxml_mat, rsaxml_str, buflen);
                 // For debugging // KTINFO(eggreadlog, "rsaxml_str: " << rsaxml_str << " \n ii = " << ii );
                 // Parse XML
+                rapidxml::xml_document< > doc;
                 doc.parse< 0 >(rsaxml_str);
-                data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
-                curr_node = data_node->first_node("DateTime");
+                rapidxml::xml_node< >* data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
+                rapidxml::xml_node< >* curr_node = data_node->first_node("DateTime");
                 char* recordsTimeStampStr = new char[curr_node->value_size()]; //(char*) calloc(curr_node->value_size(), sizeof(char));
                 strncpy(recordsTimeStampStr, curr_node->value(), curr_node->value_size() - 6);
                 strncpy(&recordsTimeStampStr[10], " ", 1);
@@ -132,6 +133,7 @@ namespace Katydid
                 fRecordsTimeStampSeconds[ii] = ((double) tdur1temp.total_nanoseconds()) * SEC_PER_NSEC;
                 // For Debugging: // fRecordsTimeStampSeconds[ii] = 0;
                 delete [] recordsTimeStampStr;
+                delete [] rsaxml_str;
             }
             timeFromFirstToLastRecord = fRecordsTimeStampSeconds[fRecordsPerFile - 1] - fRecordsTimeStampSeconds[0];
             // For Debugging:
@@ -139,7 +141,7 @@ namespace Katydid
             // timeFromFirstToLastRecord = 0;
             // fRecordsTimeStampSeconds = (double *) calloc(1, sizeof(fRecordsTimeStampSeconds));
             // fRecordsTimeStampSeconds[0] = 0;
-
+            mxDestroyArray(rsaxml_mat);
         }
         else
         {
@@ -160,15 +162,15 @@ namespace Katydid
 #endif
 
         // Read XML Configuration
-        rsaxml_mat = matGetVariable(fMatFilePtr, "rsaMetadata");
+        mxArray* rsaxml_mat = matGetVariable(fMatFilePtr, "rsaMetadata");
         if (rsaxml_mat == NULL)
         {
             KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
             return NULL;
         }
-        buflen = mxGetN(rsaxml_mat) + 1;
-        rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
-        status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
+        int buflen = mxGetN(rsaxml_mat) + 1;
+        char* rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
+        int status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
         if (status != 0)
         {
             KTERROR(eggreadlog, "Unable to read XML Configuration string.");
@@ -177,10 +179,12 @@ namespace Katydid
         KTINFO(eggreadlog, "Read XML Run Configuration");
 
         // Parse XML
+        rapidxml::xml_document< > doc;
         doc.parse< 0 >(rsaxml_str);
-        data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
-        curr_node = data_node->first_node("SamplingFrequency");
+        rapidxml::xml_node< >* data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
+        rapidxml::xml_node< >* curr_node;
         // For debugging:
+        //curr_node = data_node->first_node("SamplingFrequency");
         //cout << "Name of my current node is: " << curr_node->name() << "\n";
         //printf("Sampling Frequency: %s\n", curr_node->value());
 
