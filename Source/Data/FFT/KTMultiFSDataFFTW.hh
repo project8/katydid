@@ -99,7 +99,7 @@ namespace Katydid
 
             KTMultiFSDataFFTW& SetNComponents(unsigned component);
 
-        private:
+        public:
             static const std::string sName;
 
     };

@@ -47,6 +47,7 @@ namespace Katydid
             };
             std::vector< PerComponentData > fTransforms;
 
+        public:
             static const std::string sName;
     };
 

@@ -67,7 +67,7 @@ namespace Katydid
 
             KTPowerSpectrumData& SetNComponents(unsigned channels);
 
-        private:
+        public:
             static const std::string sName;
 
     };

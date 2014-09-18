@@ -48,7 +48,7 @@ namespace Katydid
             MEMBERVARIABLE(double, InterceptSigma);
             MEMBERVARIABLE(double, TotalPowerSigma);
 
-        private:
+        public:
             static const std::string sName;
 
     };

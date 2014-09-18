@@ -56,6 +56,7 @@ namespace Katydid
             unsigned fNBins;
             double fBinWidth;
 
+        public:
             static const std::string sName;
     };
 

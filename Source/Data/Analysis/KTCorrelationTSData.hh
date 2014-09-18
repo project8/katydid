@@ -28,6 +28,7 @@ namespace Katydid
         private:
             std::vector< std::pair< unsigned, unsigned > > fComponentData;
 
+        public:
             static const std::string sName;
 };
 

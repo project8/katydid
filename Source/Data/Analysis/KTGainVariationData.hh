@@ -56,6 +56,7 @@ namespace Katydid
         private:
             std::vector< PerComponentData > fComponentData;
 
+        public:
             static const std::string sName;
 
 #ifdef ROOT_FOUND

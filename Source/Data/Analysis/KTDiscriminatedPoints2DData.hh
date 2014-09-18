@@ -68,6 +68,7 @@ namespace Katydid
             double fBinWidthX;
             double fBinWidthY;
 
+        public:
             static const std::string sName;
     };
 

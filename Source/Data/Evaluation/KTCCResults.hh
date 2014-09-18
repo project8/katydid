@@ -66,6 +66,7 @@ namespace Katydid
             double fEfficiency;
             double fFalseRate;
 
+        public:
             static const std::string sName;
     };
 

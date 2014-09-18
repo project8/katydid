@@ -82,6 +82,7 @@ namespace Katydid
         private:
             Tracks fTracks;
 
+        public:
             static const std::string sName;
 };
 

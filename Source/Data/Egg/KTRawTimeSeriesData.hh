@@ -32,6 +32,7 @@ namespace Katydid
         private:
             std::vector< KTRawTimeSeries* > fTimeSeries;
 
+        public:
             static const std::string sName;
     };
 

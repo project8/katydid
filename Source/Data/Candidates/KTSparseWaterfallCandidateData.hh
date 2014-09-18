@@ -73,6 +73,7 @@ namespace Katydid
         private:
             Points fPoints;
 
+        public:
             static const std::string sName;
 
     };

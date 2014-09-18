@@ -33,6 +33,7 @@ namespace Katydid
         private:
             std::vector< KTTimeSeriesDist* > fTimeSeriesDist;
 
+        public:
             static const std::string sName;
     };
 

@@ -24,7 +24,7 @@ namespace Katydid
 
             KTNormalizedFSDataPolar& SetNComponents(unsigned components);
 
-        private:
+        public:
             static const std::string sName;
 
     };
@@ -37,7 +37,7 @@ namespace Katydid
 
             KTNormalizedFSDataFFTW& SetNComponents(unsigned components);
 
-        private:
+        public:
             static const std::string sName;
 
     };
@@ -50,7 +50,7 @@ namespace Katydid
 
             KTNormalizedPSData& SetNComponents(unsigned components);
 
-        private:
+        public:
             static const std::string sName;
 
     };

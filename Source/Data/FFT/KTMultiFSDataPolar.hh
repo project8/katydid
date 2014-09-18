@@ -111,7 +111,7 @@ namespace Katydid
 
             KTMultiFSDataPolar& SetNComponents(unsigned component);
 
-        private:
+        public:
             static const std::string sName;
 
     };

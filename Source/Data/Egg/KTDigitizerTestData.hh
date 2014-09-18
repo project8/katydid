@@ -56,9 +56,10 @@ namespace Katydid
             void SetLinearityData(double maxDiffAvg, double maxDiffStdev, double avgLinRegSlope,double maxDiffAvgD, double maxDiffStdevD, double avgLinRegSlopeD, unsigned component = 0);
 
 
-        private:
+        public:
             static const std::string sName;
 
+        private:
             unsigned fNBits;
 
             struct BitOccupancyData

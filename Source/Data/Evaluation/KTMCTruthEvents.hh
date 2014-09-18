@@ -80,6 +80,7 @@ namespace Katydid
             unsigned fRecordSize;
             unsigned fNRecords;
 
+        public:
             static const std::string sName;
     };
 

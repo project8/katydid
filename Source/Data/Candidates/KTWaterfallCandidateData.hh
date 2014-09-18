@@ -87,6 +87,7 @@ namespace Katydid
             unsigned fEndRecordNumber;
             unsigned fEndSampleNumber;
 
+        public:
             static const std::string sName;
 };
 
