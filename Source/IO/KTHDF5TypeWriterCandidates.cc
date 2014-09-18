@@ -115,6 +115,7 @@ namespace Katydid {
                                                                            *(this->fMTEType),
                                                                            dspace));
         dset->write((this->fMTEDataBuffer).data(),*(this->fMTEType));
+        this->fMTEDataBuffer.clear();
         this->fFlushIdx++;
     }
 
