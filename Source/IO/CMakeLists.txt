@@ -98,6 +98,7 @@ if (HDF5_FOUND)
         KTHDF5TypeWriterFFT.hh
         KTHDF5TypeWriterEgg.hh
         KTHDF5TypeWriterCandidates.hh
+        KTHDF5TypeWriterAnalysis.hh
         KTHDF5Writer.hh
     )
     
@@ -106,6 +107,7 @@ if (HDF5_FOUND)
         KTHDF5TypeWriterFFT.cc
         KTHDF5TypeWriterEgg.cc
         KTHDF5TypeWriterCandidates.cc
+        KTHDF5TypeWriterAnalysis.cc
         KTHDF5Writer.cc
     )
     
