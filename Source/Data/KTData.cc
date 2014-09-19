@@ -12,6 +12,7 @@ namespace Katydid
     const std::string KTData::sName("data");
 
     KTData::KTData() :
+            KTExtensibleData< KTData >(),
             fCounter(0),
             fLastData(false)
     {
