@@ -113,6 +113,11 @@ namespace Katydid
             {
                 // Read XML Configuration for this Record (original MAT file)
                 rsaxml_mat = mxGetField(fileInfoStruct, ii, "rsaMetadata");
+                if (rsaxml_mat == NULL)
+                {
+                    KTERROR(eggreadlog, "Unable to read RSA XML config from fileInfoStruct (ii=" << ii << ")");
+                    return NULL;
+                }
                 int buflen = mxGetN(rsaxml_mat) + 1;
                 char* rsaxml_str = new char[buflen];
                 mxGetString(rsaxml_mat, rsaxml_str, buflen);
