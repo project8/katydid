@@ -7,7 +7,7 @@
 
 #include "KTDBScanTrackClustering.hh"
 
-#include "KTDiscriminatedPoints1DData.hh"
+#include "KTKDTreeData.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTNOFactory.hh"
@@ -28,23 +28,23 @@ namespace Katydid
     const unsigned KTDBScanTrackClustering::fNDimensions = 2;
 
     KTDBScanTrackClustering::KTDBScanTrackClustering(const std::string& name) :
-            KTPrimaryProcessor(name),
-            fDBScan(),
-            fRadii(fNDimensions),
+            KTProcessor(name),
+            //fRadii(fNDimensions),
             fMinPoints(3),
-            fTimeBinWidth(1),
-            fFreqBinWidth(1.),
-            fCompPoints(1, DBScanPoints()),
+            //fTimeBinWidth(1),
+            //fFreqBinWidth(1.),
+            //fCompPoints(1, Points()),
             fCandidates(),
             fDataCount(0),
             fTrackSignal("track", this),
             fClusterDoneSignal("clustering-done", this),
-            fTakePointSlot("points", this, &KTDBScanTrackClustering::TakePoints)
+            fClusterKDTreeSlot("kd-tree", this, &KTDBScanTrackClustering::DoClustering)
+            //fTakePointSlot("points", this, &KTDBScanTrackClustering::TakePoints)
 //            fDoClusterSlot("do-cluster-trigger", this, &KTDBScanTrackClustering::Run)
     {
-        RegisterSlot("do-clustering", this, &KTDBScanTrackClustering::TriggerClustering);
-        fRadii(0) = 1. / sqrt(fNDimensions);
-        fRadii(1) = 1. / sqrt(fNDimensions);
+        //RegisterSlot("do-clustering", this, &KTDBScanTrackClustering::DoClusteringSlot);
+        //fRadii(0) = 1. / sqrt(fNDimensions);
+        //fRadii(1) = 1. / sqrt(fNDimensions);
     }
 
     KTDBScanTrackClustering::~KTDBScanTrackClustering()
@@ -57,6 +57,7 @@ namespace Katydid
 
         SetMinPoints(node->GetValue("min-points", GetMinPoints()));
 
+        /*
         if (node->Has("radii"))
         {
             const KTParamArray* radii = node->ArrayAt("radii");
@@ -68,21 +69,12 @@ namespace Katydid
             fRadii(0) = radii->GetValue< double >(0);
             fRadii(1) = radii->GetValue< double >(1);
         }
+        */
 
         return true;
     }
 
-    void KTDBScanTrackClustering::SetRadii(const DBScanWeights& radii)
-    {
-        if (radii.size() != fNDimensions)
-        {
-            KTERROR(tclog, "Weights vector has the wrong number of dimensions: " << radii.size() << " != " << fNDimensions);
-            return;
-        }
-        fRadii = radii;
-        return;
-    }
-
+    /*
     bool KTDBScanTrackClustering::TakePoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
     {
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
@@ -105,12 +97,12 @@ namespace Katydid
             SetNComponents(slHeader.GetNComponents());
         }
 
-        KTDBScan::Point newPoint(fNDimensions);
+        Point newPoint(fNDimensions);
         newPoint(0) = slHeader.GetTimeInRun() + 0.5 * fTimeBinWidth;
         for (unsigned iComponent = 0; iComponent != fCompPoints.size(); ++iComponent)
         {
             const KTDiscriminatedPoints1DData::SetOfPoints&  incomingPts = discPoints.GetSetOfPoints(iComponent);
-           for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
+            for (KTDiscriminatedPoints1DData::SetOfPoints::const_iterator pIt = incomingPts.begin();
                     pIt != incomingPts.end(); ++pIt)
             {
                 newPoint(1) = pIt->second.fAbscissa;
@@ -122,14 +114,14 @@ namespace Katydid
         return true;
     }
 
-    bool KTDBScanTrackClustering::TakePoint(double time, double frequency /*, double amplitude*/, unsigned component)
+    bool KTDBScanTrackClustering::TakePoint(double time, double frequency *//*, double amplitude*//*, unsigned component)
     {
         if (component >= fCompPoints.size())
         {
             SetNComponents(component + 1);
         }
 
-        KTDBScan::Point newPoint(fNDimensions);
+        Point newPoint(fNDimensions);
         newPoint(0) = time;
         newPoint(1) = frequency;
         fCompPoints[component].push_back(newPoint);
@@ -139,7 +131,7 @@ namespace Katydid
         return true;
     }
 
-    void KTDBScanTrackClustering::TriggerClustering()
+    void KTDBScanTrackClustering::DoClusteringSlot()
     {
         if (! Run())
         {
@@ -152,59 +144,40 @@ namespace Katydid
     {
         return DoClustering();
     }
+    */
 
-    bool KTDBScanTrackClustering::DoClustering()
+
+    bool KTDBScanTrackClustering::DoClustering(KTKDTreeData& data)
     {
         KTPROG(tclog, "Starting DBSCAN track clustering");
 
-        fDBScan.SetRadius(1.);
-        fDBScan.SetMinPoints(fMinPoints);
+        typedef KTDBScan< KTKDTreeData::TreeIndex > DBSCAN;
+
+        DBSCAN dbScan;
+
+        dbScan.SetRadius(1.);
+        dbScan.SetMinPoints(fMinPoints);
         KTINFO(tclog, "DBScan configured");
 
-        for (unsigned iComponent = 0; iComponent < fCompPoints.size(); ++iComponent)
-        //for (vector< KTDBScan >::iterator compIt = fComponents.begin(); compIt != fComponents.end(); ++compIt)
+        for (unsigned iComponent = 0; iComponent < data.GetNComponents(); ++iComponent)
         {
             KTDEBUG(tclog, "Clustering component " << iComponent);
 
-            if (fCompPoints[iComponent].empty() )
-                continue;
-
-            // calculate the scaling
-            DBScanWeights scale = fRadii;
-            for (DBScanPoint::iterator dIt = scale.begin(); dIt != scale.end(); ++dIt)
-            {
-                *dIt = 1. / (*dIt * KTMath::Sqrt2());
-            }
-
-            // new array for normalized points
-            DBScanPoints normPoints(fCompPoints[iComponent].size());
-            DBScanPoint newPoint;
-            // normalize points
-            KTDEBUG(tclog, "Scale: " << scale);
-            unsigned iPoint = 0;
-            for (DBScanPoints::iterator pIt = fCompPoints[iComponent].begin(); pIt != fCompPoints[iComponent].end(); ++pIt)
-            {
-//#ifndef NDEBUG
-//                std::stringstream ptStr;
-//                ptStr << "Point -- before: " << *pIt;
-//#endif
-                newPoint = element_prod(*pIt, scale);
-                //KTDEBUG(tclog, ptStr.str() << " -- after: " << newPoint);
-                normPoints[iPoint++] = newPoint;
-            }
-
             // do the clustering!
-            if (! fDBScan.RunDBScan< Euclidean< KTDBScan::Point > >(normPoints))
+            KTINFO(tclog, "Starting DBSCAN");
+            DBSCAN::DBSResults results;
+            if (! dbScan.DoClustering(*(data.GetTreeIndex(iComponent)), results))
             {
                 KTERROR(tclog, "An error occurred while clustering");
                 return false;
             }
             KTDEBUG(tclog, "DBSCAN finished");
 
+            std::vector< KTKDTreeData::Point > points = data.GetSetOfPoints(iComponent);
+
             // loop over the clusters found, and create data objects for them
-            const vector< KTDBScan::Cluster >& clusters = fDBScan.GetClusters();
-            KTDEBUG(tclog, "Found " << clusters.size() << " clusters; creating candidates");
-            for (vector< KTDBScan::Cluster >::const_iterator clustIt = clusters.begin(); clustIt != clusters.end(); ++clustIt)
+            KTDEBUG(tclog, "Found " << results.fClusters.size() << " clusters; creating candidates");
+            for (vector< DBSCAN::Cluster >::const_iterator clustIt = results.fClusters.begin(); clustIt != results.fClusters.end(); ++clustIt)
             {
                 if (clustIt->empty())
                 {
@@ -216,47 +189,50 @@ namespace Katydid
 
                 ++fDataCount;
 
-                KTDataPtr data(new KTData());
+                KTDataPtr newData(new KTData());
+                KTSparseWaterfallCandidateData& cand = newData->Of< KTSparseWaterfallCandidateData >();
 
-                KTSparseWaterfallCandidateData& cand = data->Of< KTSparseWaterfallCandidateData >();
-
-                KTDBScan::Cluster::const_iterator pointIdIt = clustIt->begin();
-                double minFreq = (fCompPoints[iComponent][*pointIdIt])(1);
+                DBSCAN::Cluster::const_iterator pointIdIt = clustIt->begin();
+                double time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
+                double freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
+                double minFreq = freq;
                 double maxFreq = minFreq;
-                double minTime = (fCompPoints[iComponent][*pointIdIt])(0);
+                double minTime = time;
                 double maxTime = minTime;
-                cand.AddPoint(KTSparseWaterfallCandidateData::Point((fCompPoints[iComponent][*pointIdIt])(0), (fCompPoints[iComponent][*pointIdIt])(1), 1.));
-                KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << fCompPoints[iComponent][*pointIdIt])
+                cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1.));
+                KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
                 for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
                 {
-                    cand.AddPoint(KTSparseWaterfallCandidateData::Point((fCompPoints[iComponent][*pointIdIt])(0), (fCompPoints[iComponent][*pointIdIt])(1), 1.));
-                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << fCompPoints[iComponent][*pointIdIt])
+                    time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
+                    freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
+                    cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1.));
+                    KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
-                    if ((fCompPoints[iComponent][*pointIdIt])(1) > maxFreq)
+                    if (time > maxTime)
                     {
-                        maxFreq = (fCompPoints[iComponent][*pointIdIt])(1);
+                        maxTime = time;
                     }
-                    else if ((fCompPoints[iComponent][*pointIdIt])(1) < minFreq)
+                    else if (time < minTime)
                     {
-                        minFreq = (fCompPoints[iComponent][*pointIdIt])(1);
+                        minTime = time;
                     }
 
-                    if ((fCompPoints[iComponent][*pointIdIt])(0) > maxTime)
+                    if (freq > maxFreq)
                     {
-                        maxTime = (fCompPoints[iComponent][*pointIdIt])(0);
+                        maxFreq = freq;
                     }
-                    else if ((fCompPoints[iComponent][*pointIdIt])(0) < minTime)
+                    else if (freq < minFreq)
                     {
-                        minTime = (fCompPoints[iComponent][*pointIdIt])(0);
+                        minFreq = freq;
                     }
                 }
 
                 cand.SetComponent(iComponent);
                 cand.SetCandidateID(fDataCount);
 
-                cand.SetTimeBinWidth(fTimeBinWidth);
-                cand.SetFreqBinWidth(fFreqBinWidth);
+                //cand.SetTimeBinWidth(fTimeBinWidth);
+                //cand.SetFreqBinWidth(fFreqBinWidth);
 
                 cand.SetTimeInRunC(minTime);
                 cand.SetTimeLength(maxTime - minTime);
@@ -266,12 +242,10 @@ namespace Katydid
 
                 cand.SetFrequencyWidth(maxFreq - minFreq);
 
-                fCandidates.insert(data);
-                fTrackSignal(data);
+                fCandidates.insert(newData);
+                fTrackSignal(newData);
 
             } // loop over clusters
-
-            fCompPoints[iComponent].clear();
 
         } // loop over components
 
@@ -279,12 +253,6 @@ namespace Katydid
         fClusterDoneSignal();
 
         return true;
-    }
-
-    void KTDBScanTrackClustering::SetNComponents(unsigned nComps)
-    {
-        fCompPoints.resize(nComps, DBScanPoints());
-        return;
     }
 
 } /* namespace Katydid */

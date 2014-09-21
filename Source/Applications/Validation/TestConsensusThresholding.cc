@@ -5,6 +5,7 @@
 *     Author: nsoblath
 */
 
+#include "KTConsensusThresholding.hh"
 #include "KTKDTreeData.hh"
 #include "KTDBScanTrackClustering.hh"
 #include "KTLogger.hh"
@@ -181,12 +182,12 @@ int main()
     times.push_back(0.0749119); freqs.push_back(56962411.); amplitudes.push_back(0.1797228);
     times.push_back(0.0749447); freqs.push_back(55375884.); amplitudes.push_back(0.1501580);
 
-    double timeScale = 0.0005; //sec
-    double freqScale = 0.1e6; // Hz
+    double timeScale = 0.0006; //sec
+    double freqScale = 0.15e6; // Hz
 
     // scale by sqrt(2) so that the radius comes out to 1
-    timeScale *=  KTMath::Sqrt2();
-    freqScale *=  KTMath::Sqrt2();
+    //timeScale *=  KTMath::Sqrt2();
+    //freqScale *=  KTMath::Sqrt2();
 
     KTKDTreeData kdTreeData;
     kdTreeData.SetXScaling(timeScale);
@@ -206,6 +207,17 @@ int main()
     }
     kdTreeData.BuildIndex(KTKDTreeData::kEuclidean);
 
+
+    KTConsensusThresholding ct;
+
+    ct.SetMembershipRadius(0.5);
+    ct.SetMinNumberVotes(6);
+
+    KTINFO(testlog, "Number of points before CT: " << kdTreeData.GetSetOfPoints().size());
+    ct.ConsensusVote(kdTreeData);
+    KTINFO(testlog, "Number of points after CT: " << kdTreeData.GetSetOfPoints().size());
+
+
     KTDBScanTrackClustering clustering;
 
     clustering.SetMinPoints(5);
@@ -217,13 +229,13 @@ int main()
     KTINFO(testlog, "Candidates found: " << candidates.size())
 
 #ifdef ROOT_FOUND
-    TFile file("dbscantrackclustering_test.root", "recreate");
-    TCanvas* canv = new TCanvas("cCandidates", "Candidates");
+    TFile file("consensusthresholding_test.root", "recreate");
+    TCanvas* canv = new TCanvas("cCTCandidates", "Candidates");
 
+    // all points
     TGraph* ptsGraph = new TGraph(times.size());
     ptsGraph->SetMarkerStyle(1);
     ptsGraph->SetMarkerColor(1);
-    vector< double >::const_iterator tIt = times.begin();
     fIt = freqs.begin();
     unsigned pid = 0;
     for (std::vector< double >::const_iterator tIt = times.begin(); tIt != times.end(); ++tIt)
@@ -233,8 +245,23 @@ int main()
         ++fIt;
     }
     ptsGraph->Draw("ap");
-    ptsGraph->Write("Points");
+    ptsGraph->Write("AllPoints");
 
+    // points not cut by CT
+    const vector< KTKDTreeData::Point >& points = kdTreeData.GetSetOfPoints();
+    TGraph* selPtsGraph = new TGraph(points.size());
+    selPtsGraph->SetMarkerStyle(6);
+    selPtsGraph->SetMarkerColor(1);
+    pid = 0;
+    for (vector< KTKDTreeData::Point >::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
+    {
+        selPtsGraph->SetPoint(pid, pIt->fCoords[0] * kdTreeData.GetXScaling(), pIt->fCoords[1] * kdTreeData.GetYScaling());
+        ++pid;
+    }
+    selPtsGraph->Draw("psame");
+    selPtsGraph->Write("SelectedPoints");
+
+    // clusters
     unsigned firstClusterColor = 2;
 #endif
     unsigned iCand = 0;

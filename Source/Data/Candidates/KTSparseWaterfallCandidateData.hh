@@ -48,10 +48,10 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, CandidateID);
 
             //MEMBERVARIABLE(unsigned, NTimeBins);
-            MEMBERVARIABLE(double, TimeBinWidth);
+            //MEMBERVARIABLE(double, TimeBinWidth);
 
             //MEMBERVARIABLE(unsigned, NFreqBins);
-            MEMBERVARIABLE(double, FreqBinWidth);
+            //MEMBERVARIABLE(double, FreqBinWidth);
 
             MEMBERVARIABLE(double, TimeInRunC);
             MEMBERVARIABLE(double, TimeLength);
