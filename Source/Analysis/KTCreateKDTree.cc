@@ -90,9 +90,14 @@ namespace Katydid
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
         if (fHaveNewData && slHeader.GetIsNewAcquisition())
         {
-            if (! MakeTree(false) || ! ClearTree(false))
+            if (! MakeTree(false))
             {
-                KTERROR(kdlog, "An error occurred while clustering from the previous acquisition or clearing the tree");
+                KTERROR(kdlog, "An error occurred while clustering from the previous acquisition");
+                return false;
+            }
+            if (! ClearTree(false))
+            {
+                KTERROR(kdlog, "An error occurred while clearing the tree");
                 return false;
             }
         }
@@ -246,7 +251,10 @@ namespace Katydid
             KTERROR(kdlog, "An error occurred while making the k-d tree");
             return;
         }
-        ClearTree(false);
+        if (! ClearTree(false))
+        {
+            KTERROR(kdlog, "An error occurred while clearing the tree");
+        }
         return;
     }
 
