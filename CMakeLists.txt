@@ -14,7 +14,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 include (PackageBuilder)
 
 # Set the version and associated variables
-pbuilder_prepare_project (1 10 4)
+pbuilder_prepare_project (1 10 6)
 
 # Add a "Standard" build type
 #set (CMAKE_BUILD_TYPE standard)
@@ -189,6 +189,7 @@ endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 # External packages distributed with Katydid
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidJSON)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidXML)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/nanoflann)
 
 # add an option to build the validation tests
 option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake testing" OFF)

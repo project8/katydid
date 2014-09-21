@@ -22,6 +22,9 @@ if (Katydid_ENABLE_TESTING)
     
     # Executables that do NOT require ROOT
     
+    add_executable (ObjectSize ObjectSize.cc)
+    target_link_libraries (ObjectSize KatydidUtility ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestApplication TestApplication.cc
                                     KTTestConfigurable.cc)
     target_link_libraries (TestApplication KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
@@ -39,6 +42,9 @@ if (Katydid_ENABLE_TESTING)
                                        KTTestConfigurable.cc)
     target_link_libraries (TestConfigurator KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestConsensusThresholding TestConsensusThresholding.cc)
+    target_link_libraries (TestConsensusThresholding KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis KatydidCandidates ${EXTERNAL_LIBRARIES})
+        
     add_executable (TestCorrelator TestCorrelator.cc)
     target_link_libraries (TestCorrelator KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
@@ -73,6 +79,12 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestJSONWriter TestJSONWriter.cc)
     target_link_libraries (TestJSONWriter KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestKDTree TestKDTree.cc)
+    target_link_libraries (TestKDTree KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    
+    add_executable (TestKDTreeData TestKDTreeData.cc)
+    target_link_libraries (TestKDTreeData KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestLogger TestLogger.cc)
     target_link_libraries (TestLogger KatydidUtility ${EXTERNAL_LIBRARIES})
     
@@ -85,6 +97,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestMultiFileJSONReader TestMultiFileJSONReader.cc)
     target_link_libraries (TestMultiFileJSONReader KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
+    add_executable (TestNanoflann TestNanoflann.cc)
+    target_link_libraries (TestNanoflann KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestRandom TestRandom.cc)
     target_link_libraries (TestRandom KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
@@ -119,11 +134,13 @@ if (Katydid_ENABLE_TESTING)
     #target_link_libraries (TestASCIIFileWriter KatydidEgg KatydidUtility KatydidCore KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
     pbuilder_install_executables (
+                     ObjectSize
                      TestApplication
                      TestAxisProperties
                      TestCacheDirectory
                      TestComplexPolar
                      TestConfigurator
+                     TestConsensusThresholding
                      TestCorrelator
                      TestCutIterator
                      TestCutableArray
@@ -135,10 +152,13 @@ if (Katydid_ENABLE_TESTING)
                      TestFrequencySpectrumFFTW
                      #TestHoughTransform
                      TestJSONWriter
+                     TestKDTree
+                     TestKDTreeData
                      TestLogger
                      TestMinMaxBin
                      TestMultiSliceClustering
                      TestMultiFileJSONReader
+                     TestNanoflann
                      TestRandom
                      TestSignalsAndSlots
                      #TestSimpleClustering
@@ -162,7 +182,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_DataAccumulator TestDataAccumulator)
     add_test (Test_DataDisplay TestDataDisplay)
-    add_test (Test_DBScan TestDBScan)
+    #add_test (Test_DBScan TestDBScan)
     add_test (Test_DBScanTrackClustering TestDBScanTrackClustering)
     add_test (Test_DistanceClustering TestDistanceClustering)
     add_test (Test_FrequencySpectrumFFTW TestFrequencySpectrumFFTW)

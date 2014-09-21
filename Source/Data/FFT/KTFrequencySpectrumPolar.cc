@@ -77,7 +77,7 @@ namespace Katydid
     KTPowerSpectrum* KTFrequencySpectrumPolar::CreatePowerSpectrum() const
     {
         unsigned nBins = size();
-        KTPowerSpectrum* newPS = new KTPowerSpectrum(GetBinWidth(), GetRangeMin(), GetRangeMax());
+        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
         double value;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
 #pragma omp parallel for private(value)
