@@ -64,17 +64,41 @@ namespace Katydid
         private:
             typedef boost::dynamic_bitset< > bitset_type;
 
+            class KTTopCut : public KTExtensibleCut< KTTopCut >
+            {
+                public:
+                    KTTopCut() {fState = false;}
+                    ~KTTopCut() {}
+            };
+
         public:
             KTMasterCut();
             ~KTMasterCut();
 
-            const boost::scoped_ptr< KTCutCore >& Cuts() const;
-            boost::scoped_ptr< KTCutCore >& Cuts();
+            const KTCutCore* Cuts() const;
 
             void UpdateSummary();
 
+            template< typename XCutType >
+            bool AddCut(bool state);
+            bool AddCut(const std::string& cutName, bool state);
+            template< typename XCutType >
+            bool AddCut(const XCutType& cut);
+
+            template< typename XCutType >
+            bool HasCut() const;
+            bool HasCut(const std::string& cutName) const;
+
+            template< typename XCutType >
+            bool GetCutState() const;
+            bool GetCutState(const std::string& cutName) const;
+
+            template< typename XCutType >
+            void RemoveCut();
+            void RemoveCut(const std::string& cutName);
+
         private:
-            boost::scoped_ptr< KTCutCore > fCuts;
+            boost::scoped_ptr< KTTopCut > fCuts;
 
             bitset_type fSummary;
 
@@ -86,15 +110,55 @@ namespace Katydid
 
     };
 
-    inline const boost::scoped_ptr< KTCutCore >& KTMasterCut::Cuts() const
+    inline const KTCutCore* KTMasterCut::Cuts() const
     {
-        return fCuts;
+        return fCuts.get()->Next();
     }
 
-    inline boost::scoped_ptr< KTCutCore >& KTMasterCut::Cuts()
+    template< typename XCutType >
+    bool KTMasterCut::AddCut(bool state)
     {
-        return fCuts;
+        if (! HasCut< XCutType >())
+        {
+            fCuts.get()->Of< XCutType >().SetState(state);
+            return true;
+        }
+        return false;
     }
+
+    template< typename XCutType >
+    bool KTMasterCut::AddCut(const XCutType& cut)
+    {
+        if (! HasCut< XCutType >())
+        {
+            fCuts.get()->Of< XCutType >() = cut;
+            return true;
+        }
+        return false;
+    }
+
+    template< typename XCutType >
+    inline bool KTMasterCut::HasCut() const
+    {
+        return fCuts.get()->Has< XCutType >();
+    }
+
+    template< typename XCutType >
+    bool KTMasterCut::GetCutState() const
+    {
+        if (HasCut< XCutType >())
+        {
+            return fCuts.get()->Of< XCutType >().GetState();
+        }
+        return false;
+    }
+
+    template< typename XCutType >
+    void KTMasterCut::RemoveCut()
+    {
+
+    }
+
 
     inline bool KTMasterCut::IsCut() const
     {

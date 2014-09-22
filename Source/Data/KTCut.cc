@@ -10,7 +10,7 @@
 namespace Katydid
 {
     KTMasterCut::KTMasterCut() :
-            fCuts(NULL),
+            fCuts(new KTTopCut()),
             fSummary()
     {
     }
@@ -20,7 +20,7 @@ namespace Katydid
 
     void KTMasterCut::UpdateSummary()
     {
-        KTCutCore* cut = fCuts.get();
+        KTCutCore* cut = fCuts.get()->Next(); // skip over KTTopCut
         if (cut == NULL)
         {
             fSummary.resize(1, false);
@@ -36,13 +36,33 @@ namespace Katydid
         }
         fSummary.resize(nCuts, false);
         // loop through again to set cuts
-        cut = fCuts.get();
+        cut = fCuts.get()->Next(); // skip over KTTopCut
         for (unsigned iCut = 0; iCut < nCuts; ++iCut)
         {
             fSummary[iCut] = cut->GetState();
             cut = cut->Next();
         }
         return;
+    }
+
+    bool KTMasterCut::AddCut(const std::string& cutName, bool state)
+    {
+
+    }
+
+    bool KTMasterCut::HasCut(const std::string& cutName) const
+    {
+
+    }
+
+    bool KTMasterCut::GetCutState(const std::string& cutName) const
+    {
+
+    }
+
+    void KTMasterCut::RemoveCut(const std::string& cutName)
+    {
+
     }
 
 
