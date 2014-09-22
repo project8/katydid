@@ -13,6 +13,8 @@ namespace Katydid
 {
     KTLOGGER(kdtlog, "KTKDTreeData");
 
+    const std::string KTKDTreeData::sName("kd-tree");
+
     const unsigned KTKDTreeData::fNDimensions = 2;
 
     KTKDTreeData::KTKDTreeData() :

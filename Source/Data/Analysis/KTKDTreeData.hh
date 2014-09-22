@@ -105,6 +105,8 @@ namespace Katydid
         private:
             std::vector< PerComponentData > fComponentData;
 
+        public:
+            static const std::string sName;
     };
 
     inline const std::vector< KTKDTreeData::Point >& KTKDTreeData::GetSetOfPoints(unsigned component) const
