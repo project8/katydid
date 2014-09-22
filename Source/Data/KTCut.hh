@@ -154,9 +154,9 @@ namespace Katydid
     }
 
     template< typename XCutType >
-    void KTMasterCut::RemoveCut()
+    inline void KTMasterCut::RemoveCut()
     {
-
+        delete fCuts.get()->Detatch< XCutType >();
     }
 
 
