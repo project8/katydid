@@ -30,21 +30,21 @@ namespace Katydid {
 
     KTHDF5TypeWriterFFT::KTHDF5TypeWriterFFT() :
         KTHDF5TypeWriter(),
-        polar_fft_buffer(NULL),
-        polar_fft_dspace(NULL),
-        cmplx_fft_buffer(NULL),
-        cmplx_fft_dspace(NULL),
-        polar_pwr_buffer(NULL),
-        polar_pwr_dspace(NULL),
-        cmplx_pwr_buffer(NULL),
-        cmplx_pwr_dspace(NULL),
-        pwr_spec_dspace(NULL),
-        pwr_spec_buffer(NULL),
-        psd_dspace(NULL),
-        psd_buffer(NULL),
-        spectra_group(NULL),
-        fft_group(NULL),
-        power_group(NULL)
+        fPolarFFTBuffer(NULL),
+        fPolarFFTDSpace(NULL),
+        fCmplxFFTBuffer(NULL),
+        fCmplxFFTDSpace(NULL),
+        fPolarPwrBuffer(NULL),
+        fPolarPwrDSpace(NULL),
+        fCmplxPwrBuffer(NULL),
+        fCmplxPwrDSpace(NULL),
+        fPwrSpecDSpace(NULL),
+        fPwrSpecBuffer(NULL),
+        fPSDDSpace(NULL),
+        fPSDBuffer(NULL),
+        fSpectraGroup(NULL),
+        fFFTGroup(NULL),
+        fPowerGroup(NULL)
     {}
 
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
@@ -55,38 +55,38 @@ namespace Katydid {
 
         if(header != NULL) {
             KTDEBUG(publog, "Configuring from Egg header...");
-            this->n_components = (header->GetNChannels());
-            this->slice_size = (header->GetSliceSize());
+            this->fNComponents = (header->GetNChannels());
+            this->fSliceSize = (header->GetSliceSize());
 
             /*
              * Polar FFT preparation.  
              * Each component gets two rows - one for abs, and one for arg.
-             * Each row is slice_size/2 + 1 long.  
-             * Our array is therefore 2N*(slice_size/2 + 1).
+             * Each row is fSliceSize/2 + 1 long.  
+             * Our array is therefore 2N*(fSliceSize/2 + 1).
              */
-            this->polar_fft_size = (this->slice_size >> 1) + 1;
-            this->polar_fft_buffer = new fft_buffer(boost::extents[2*n_components][this->polar_fft_size]);     
+            this->fPolarFFTSize = (this->fSliceSize >> 1) + 1;
+            this->fPolarFFTBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fPolarFFTSize]);     
 
             /*
              * Complex FFT preparation.
              * Each component gets two rows, one for real and one for imag.
              * Each row is 2*slice_len + 1 long - positive and negative
              * frequencies.
-             * Our array is therefore 2N*(2*slice_size + 1).
+             * Our array is therefore 2N*(2*fSliceSize + 1).
              */
-             this->cmplx_fft_size = (this->slice_size << 1) + 1;
-             this->cmplx_fft_buffer = new fft_buffer(boost::extents[2*n_components][this->cmplx_fft_size]);
+             this->fCmplxFFTSize = (this->fSliceSize << 1) + 1;
+             this->fCmplxFFTBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fCmplxFFTSize]);
 
              /*
               * Polar power spectrum preparation.
               * Each component gets a single row, as a power spectrum has only
               * magnitude by definition.
               * Power in only positive frequencies and DC is calculated i.e.
-              * the shape of the buffer is identical to the polar_fft_buffer
+              * the shape of the buffer is identical to the fPolarFFTBuffer
               * except there is only one component.
               */
-              this->polar_pwr_size = this->polar_fft_size;
-              this->polar_pwr_buffer = new fft_buffer(boost::extents[n_components][this->polar_pwr_size]);
+              this->fPolarPwrSize = this->fPolarFFTSize;
+              this->fPolarPwrBuffer = new fft_buffer(boost::extents[fNComponents][this->fPolarPwrSize]);
 
               /*
                * Complex (FFTW) power spectrum preparation.
@@ -94,8 +94,8 @@ namespace Katydid {
                * Power is calculated in positive and negative frequencies
                * i.e. the buffer has the same shape as the complex fft buffer.
                */
-               this->cmplx_pwr_size = this->cmplx_fft_size;
-               this->cmplx_pwr_buffer = new fft_buffer(boost::extents[n_components][this->cmplx_pwr_size]);
+               this->fCmplxPwrSize = this->fCmplxFFTSize;
+               this->fCmplxPwrBuffer = new fft_buffer(boost::extents[fNComponents][this->fCmplxPwrSize]);
 
               /*
                * PS and PSD spectrum preparation.  Each component gets a single 
@@ -104,14 +104,14 @@ namespace Katydid {
                * The buffer is therefore the same shape as the polar power 
                * spectrum.
                */
-               this->psd_size = this->polar_pwr_size;
-               this->pwr_spec_size = this->polar_pwr_size;
-               this->psd_buffer = new fft_buffer(boost::extents[n_components][this->psd_size]);
-               this->pwr_spec_buffer = new fft_buffer(boost::extents[n_components][this->psd_size]);
+               this->fPSDSize = this->fPolarPwrSize;
+               this->fPwrSpecSize = this->fPolarPwrSize;
+               this->fPSDBuffer = new fft_buffer(boost::extents[fNComponents][this->fPSDSize]);
+               this->fPwrSpecBuffer = new fft_buffer(boost::extents[fNComponents][this->fPSDSize]);
 
         }
         KTDEBUG(publog, "Done.");
-        this->spectra_group = fWriter->AddGroup("/spectra");
+        this->fSpectraGroup = fWriter->AddGroup("/spectra");
         this->CreateDataspaces();
     }
 
@@ -121,110 +121,110 @@ namespace Katydid {
         Create dataspaces for:
             - Polar FFT data.  This is 2XN where N == slice_len/2 + 1
         */
-        if(this->polar_fft_dspace == NULL) {
+        if(this->fPolarFFTDSpace == NULL) {
             KTDEBUG(publog, "Creating H5::DataSpaces for Polar FFT");
-            hsize_t polar_fft_dims[] = {2*this->n_components, 
-                                        this->polar_fft_size};
+            hsize_t polar_fft_dims[] = {2*this->fNComponents, 
+                                        this->fPolarFFTSize};
 
-            this->polar_fft_dspace = new H5::DataSpace(2, polar_fft_dims);
+            this->fPolarFFTDSpace = new H5::DataSpace(2, polar_fft_dims);
             KTDEBUG(publog, "Done.");
         }
-        if(this->cmplx_fft_dspace == NULL) {
+        if(this->fCmplxFFTDSpace == NULL) {
             KTDEBUG(publog, "Creating H5::DataSpaces for Complex FFT");
-            hsize_t cmplx_fft_dims[] = {2*this->n_components, 
-                                        this->cmplx_fft_size};
+            hsize_t cmplx_fft_dims[] = {2*this->fNComponents, 
+                                        this->fCmplxFFTSize};
 
-            this->cmplx_fft_dspace = new H5::DataSpace(2, cmplx_fft_dims);
+            this->fCmplxFFTDSpace = new H5::DataSpace(2, cmplx_fft_dims);
             KTDEBUG(publog, "Done.");
         }
-        if(this->polar_pwr_dspace == NULL) {
+        if(this->fPolarPwrDSpace == NULL) {
             KTDEBUG(publog, "Creating H5::DataSpace for Polar PS");
-            hsize_t polar_pwr_dims[] = {this->n_components,
-                                        this->polar_pwr_size};
-            this->polar_pwr_dspace = new H5::DataSpace(2, polar_pwr_dims);
+            hsize_t polar_pwr_dims[] = {this->fNComponents,
+                                        this->fPolarPwrSize};
+            this->fPolarPwrDSpace = new H5::DataSpace(2, polar_pwr_dims);
             KTDEBUG(publog, "Done.");
         }
-        if(this->cmplx_pwr_dspace == NULL) {
+        if(this->fCmplxPwrDSpace == NULL) {
             KTDEBUG(publog, "Creating H5::DataSpace for Complex PS");
-            hsize_t cmplx_pwr_dims[] = {this->n_components,
-                                        this->cmplx_pwr_size};
-            this->cmplx_pwr_dspace = new H5::DataSpace(2, cmplx_pwr_dims);
+            hsize_t cmplx_pwr_dims[] = {this->fNComponents,
+                                        this->fCmplxPwrSize};
+            this->fCmplxPwrDSpace = new H5::DataSpace(2, cmplx_pwr_dims);
             KTDEBUG(publog, "Done.");
         }
-        if(this->pwr_spec_dspace == NULL) {
+        if(this->fPwrSpecDSpace == NULL) {
             KTDEBUG(publog, "Creating H5::DataSpace for Power Spectrum");
-            hsize_t pwr_spec_dims[] = {this->n_components,
-                                        this->pwr_spec_size};
-            this->pwr_spec_dspace = new H5::DataSpace(2, pwr_spec_dims);
+            hsize_t pwr_spec_dims[] = {this->fNComponents,
+                                        this->fPwrSpecSize};
+            this->fPwrSpecDSpace = new H5::DataSpace(2, pwr_spec_dims);
             KTDEBUG(publog, "Done.");
         }
-        if(this->psd_dspace == NULL) {
+        if(this->fPSDDSpace == NULL) {
             KTDEBUG(publog, "Creating H5::DataSpace for PSD");
-            hsize_t psd_dims[] = {this->n_components,
-                                        this->psd_size};
-            this->psd_dspace = new H5::DataSpace(2, psd_dims);
+            hsize_t psd_dims[] = {this->fNComponents,
+                                        this->fPSDSize};
+            this->fPSDDSpace = new H5::DataSpace(2, psd_dims);
             KTDEBUG(publog, "Done.");
         }
     }
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarFFTDSet(const std::string& name) {
-      if(this->fft_group == NULL) {
-        this->fft_group = new H5::Group(this->spectra_group->createGroup("/spectra/frequency"));
+      if(this->fFFTGroup == NULL) {
+        this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/frequency"));
       }
       H5::DataSet* dset = this->CreateDSet(name, 
-                                           this->fft_group,
-                                           *(this->polar_fft_dspace));
+                                           this->fFFTGroup,
+                                           *(this->fPolarFFTDSpace));
         return dset;
     }
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarPowerDSet(const std::string& name) {
-      if(this->power_group == NULL) {
-        this->power_group = new H5::Group(this->spectra_group->createGroup("/spectra/power"));
+      if(this->fPowerGroup == NULL) {
+        this->fPowerGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
       }
         H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->power_group,
-                                             *(this->polar_pwr_dspace));
+                                             this->fPowerGroup,
+                                             *(this->fPolarPwrDSpace));
         return dset;
     }    
 
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreateComplexFFTDSet(const std::string& name) {
-      if(this->fft_group == NULL) {
-        this->fft_group = new H5::Group(this->spectra_group->createGroup("/spectra/frequency"));
+      if(this->fFFTGroup == NULL) {
+        this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/frequency"));
       }
         H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->fft_group,
-                                             *(this->cmplx_fft_dspace));
+                                             this->fFFTGroup,
+                                             *(this->fCmplxFFTDSpace));
         return dset;
     }
 
     H5::DataSet* KTHDF5TypeWriterFFT::CreateComplexPowerDSet(const std::string& name) {
-      if(this->power_group == NULL) {
-        this->power_group = new H5::Group(this->spectra_group->createGroup("/spectra/power"));
+      if(this->fPowerGroup == NULL) {
+        this->fPowerGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
       }
         H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->power_group,
-                                             *(this->cmplx_pwr_dspace));
+                                             this->fPowerGroup,
+                                             *(this->fCmplxPwrDSpace));
         return dset;
     }
 
     H5::DataSet* KTHDF5TypeWriterFFT::CreatePowerSpecDSet(const std::string& name) {
-      if(this->power_group == NULL) {
-        this->power_group = new H5::Group(this->spectra_group->createGroup("/spectra/power"));
+      if(this->fPowerGroup == NULL) {
+        this->fPowerGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
       }
         H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->power_group,
-                                             *(this->pwr_spec_dspace));
+                                             this->fPowerGroup,
+                                             *(this->fPwrSpecDSpace));
         return dset;
     }
 
     H5::DataSet* KTHDF5TypeWriterFFT::CreatePSDDSet(const std::string& name) {
-      if(this->power_group == NULL) {
-        this->power_group = new H5::Group(this->spectra_group->createGroup("/spectra/power"));
+      if(this->fPowerGroup == NULL) {
+        this->fPowerGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/power"));
       }
         H5::DataSet* dset = this->CreateDSet(name, 
-                                             this->power_group,
-                                             *(this->psd_dspace));
+                                             this->fPowerGroup,
+                                             *(this->fPSDDSpace));
         return dset;
     }
 
@@ -291,13 +291,13 @@ namespace Katydid {
             const KTFrequencySpectrumPolar* spec = fsData.GetSpectrumPolar(iC);
             if (spec != NULL) {
                 for(int f=0; f < spec[0].size(); f++) {
-                    (*this->polar_fft_buffer)[iC][f] = spec[0].GetAbs(f);
-                    (*this->polar_fft_buffer)[iC+1][f] = spec[0].GetArg(f);
+                    (*this->fPolarFFTBuffer)[iC][f] = spec[0].GetAbs(f);
+                    (*this->fPolarFFTBuffer)[iC+1][f] = spec[0].GetArg(f);
                 }
                 
             }
         }
-        dset->write(this->polar_fft_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        dset->write(this->fPolarFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE);
         KTDEBUG(publog, "Done.");
     }
   
@@ -325,13 +325,13 @@ namespace Katydid {
             const KTFrequencySpectrumFFTW* spec = fsData.GetSpectrumFFTW(iC);
             if (spec != NULL) {
                 for(int f=0; f < spec[0].size(); f++) {
-                    (*this->cmplx_fft_buffer)[iC][f] = spec[0].GetReal(f); 
-                    (*this->cmplx_fft_buffer)[iC+1][f] = spec[0].GetImag(f); 
+                    (*this->fCmplxFFTBuffer)[iC][f] = spec[0].GetReal(f); 
+                    (*this->fCmplxFFTBuffer)[iC+1][f] = spec[0].GetImag(f); 
                 }
                 
             }
         }
-        dset->write(this->cmplx_fft_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        dset->write(this->fCmplxFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE);
         KTDEBUG(publog, "Done.");
     }
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolarPhase(KTDataPtr data) {
@@ -366,12 +366,12 @@ namespace Katydid {
                 for(int f=0; f < spec[0].size(); f++) {
                     double mag = sqrt(pow(spec[0].GetAbs(f), 2.0) 
                                       + pow(spec[0].GetArg(f),2.0));
-                    (*this->polar_pwr_buffer)[iC][f] = mag; 
+                    (*this->fPolarPwrBuffer)[iC][f] = mag; 
                 }
                 
             }
         }
-        dset->write(this->polar_pwr_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        dset->write(this->fPolarPwrBuffer->data(), H5::PredType::NATIVE_DOUBLE);
         KTDEBUG(publog, "Done.");
     }
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataFFTWPower(KTDataPtr data) {
@@ -400,12 +400,12 @@ namespace Katydid {
             if (spec != NULL) {
                 for(int f=0; f < spec[0].size(); f++) {
                     double mag = sqrt(pow(spec[0].GetReal(f),2.0) + pow(spec[0].GetImag(f),2.0));
-                    (*this->cmplx_pwr_buffer)[iC][f] = mag;
+                    (*this->fCmplxPwrBuffer)[iC][f] = mag;
                 }
                 
             }
         }
-        dset->write(this->cmplx_pwr_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        dset->write(this->fCmplxPwrBuffer->data(), H5::PredType::NATIVE_DOUBLE);
         KTDEBUG(publog, "Done.");
     }
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data) {
@@ -444,13 +444,13 @@ namespace Katydid {
             if (spectrum != NULL)
             {
                 spectrum->ConvertToPowerSpectrum();
-                for(int i=0; i < this->pwr_spec_size; i++) {
+                for(int i=0; i < this->fPwrSpecSize; i++) {
                     double val = (*spectrum)(i);
-                    (*this->pwr_spec_buffer)[iC][i] = val;
+                    (*this->fPwrSpecBuffer)[iC][i] = val;
                 }
             }
         }
-        dset->write(this->pwr_spec_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        dset->write(this->fPwrSpecBuffer->data(), H5::PredType::NATIVE_DOUBLE);
         return;
     }
     void KTHDF5TypeWriterFFT::WritePowerSpectralDensity(KTDataPtr data) {
@@ -477,13 +477,13 @@ namespace Katydid {
             if (spectrum != NULL)
             {
                 spectrum->ConvertToPowerSpectralDensity();
-                for(int i=0; i < this->pwr_spec_size; i++) {
+                for(int i=0; i < this->fPwrSpecSize; i++) {
                     double val = (*spectrum)(i);
-                    (*this->psd_buffer)[iC][i] = val;
+                    (*this->fPSDBuffer)[iC][i] = val;
                 }               
             }
         }
-        dset->write(this->psd_buffer->data(), H5::PredType::NATIVE_DOUBLE);
+        dset->write(this->fPSDBuffer->data(), H5::PredType::NATIVE_DOUBLE);
         return;
 
         

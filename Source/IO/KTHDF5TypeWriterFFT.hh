@@ -96,49 +96,49 @@ namespace Katydid {
 
     	void CreateDataspaces();
 
-    	unsigned n_components;
-    	unsigned slice_size;
+    	unsigned fNComponents;
+    	unsigned fSliceSize;
 
-    	H5::Group* fft_group;
-    	H5::Group* power_group;
+    	H5::Group* fFFTGroup;
+    	H5::Group* fPowerGroup;
 
     	/*
     	 * power FS and PS
     	 */
-    	unsigned polar_fft_size;
-    	fft_buffer* polar_fft_buffer;
-    	H5::DataSpace* polar_fft_dspace;
+    	unsigned fPolarFFTSize;
+    	fft_buffer* fPolarFFTBuffer;
+    	H5::DataSpace* fPolarFFTDSpace;
 
-    	unsigned polar_pwr_size;
-    	fft_buffer* polar_pwr_buffer;
-    	H5::DataSpace* polar_pwr_dspace;
+    	unsigned fPolarPwrSize;
+    	fft_buffer* fPolarPwrBuffer;
+    	H5::DataSpace* fPolarPwrDSpace;
 
     	/* 
     	 * complex (FFTW) FS and PS
     	 */
-    	unsigned cmplx_fft_size;
-    	fft_buffer* cmplx_fft_buffer;
-    	H5::DataSpace* cmplx_fft_dspace;
+    	unsigned fCmplxFFTSize;
+    	fft_buffer* fCmplxFFTBuffer;
+    	H5::DataSpace* fCmplxFFTDSpace;
 
-    	unsigned cmplx_pwr_size;
-    	fft_buffer* cmplx_pwr_buffer;
-    	H5::DataSpace* cmplx_pwr_dspace;
+    	unsigned fCmplxPwrSize;
+    	fft_buffer* fCmplxFFTBuffer;
+    	H5::DataSpace* fCmplxPwrDSpace;
 
         /*
          * Power spectrum and Power spectral density
          */
-        unsigned pwr_spec_size;
-        fft_buffer* pwr_spec_buffer;
-        H5::DataSpace* pwr_spec_dspace;
+        unsigned fPwrSpecSize;
+        fft_buffer* fPwrSpecBuffer;
+        H5::DataSpace* fPwrSpecDSpace;
 
-        unsigned psd_size;
-        fft_buffer* psd_buffer;
-        H5::DataSpace* psd_dspace;
+        unsigned fPSDSize;
+        fft_buffer* fPSDBuffer;
+        H5::DataSpace* fPSDDSpace;
 
         /* 
          * Group for spectral data
          */
-        H5::Group* spectra_group;
+        H5::Group* fSpectraGroup;
     };
 }
 
