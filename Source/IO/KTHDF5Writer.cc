@@ -29,7 +29,7 @@ namespace Katydid
             fFile(NULL)
     {
         RegisterSlot("close-file", this, &KTHDF5Writer::CloseFile);
-        RegisterSlot("write_header", this, &KTHDF5Writer::WriteEggHeader);
+        RegisterSlot("write-header", this, &KTHDF5Writer::WriteEggHeader);
     }
 
     KTHDF5Writer::~KTHDF5Writer()
@@ -117,112 +117,36 @@ namespace Katydid
                                                         attr_space);
         attr.write(ts_type, string_attr.c_str());
 
-        // Write the description
-        string_attr = header->GetDescription();
-        H5::StrType desc_type(H5::PredType::C_S1, string_attr.length() + 1);
-        attr = header_grp->createAttribute("description",
-                                           desc_type,
-                                           attr_space);
-        attr.write(desc_type, string_attr.c_str());
-
-        // Write AcqusitionMode
-        attr = header_grp->createAttribute("acquisition_mode",
-                                           H5::PredType::NATIVE_UINT,
-                                           attr_space);
-        unsigned value = header->GetAcquisitionMode();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        // NChannels
-        attr = header_grp->createAttribute("n_channels",
-                                           H5::PredType::NATIVE_UINT,
-                                           attr_space);
-        value = header->GetNChannels();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        // Raw Slice Size, Slice Size, Slice Stride, and RecordSize
-        attr = header_grp->createAttribute("raw_slice_size",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetRawSliceSize();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        attr = header_grp->createAttribute("slice_size",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetSliceSize();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        attr = header_grp->createAttribute("slice_stride",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetSliceStride();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        attr = header_grp->createAttribute("record_size",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetRecordSize();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        // Run Duration and Acquisition Rate
-        attr = header_grp->createAttribute("run_duration",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetRunDuration();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        attr = header_grp->createAttribute("acquisition_rate",
-                                            H5::PredType::NATIVE_DOUBLE,
-                                            attr_space);
-        double fp_value = header->GetAcquisitionRate();
-        attr.write(H5::PredType::NATIVE_DOUBLE, &fp_value);
-
-
-        // RunType, RunSourceType, and FormatModeType
-        attr = header_grp->createAttribute("run_type",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetRunType();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-/*        attr = header_grp->createAttribute("run_source_type",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetRunSourceType();
-        attr.write(H5::PredType::NATIVE_UINT, &value);*/
-
-        attr = header_grp->createAttribute("format_mode",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetFormatMode();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        // ADC parameters
-        attr = header_grp->createAttribute("data_type_size",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetDataTypeSize();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        attr = header_grp->createAttribute("bit_depth",
-                                            H5::PredType::NATIVE_UINT,
-                                            attr_space);
-        value = header->GetBitDepth();
-        attr.write(H5::PredType::NATIVE_UINT, &value);
-
-        attr = header_grp->createAttribute("voltage_min",
-                                            H5::PredType::NATIVE_DOUBLE,
-                                            attr_space);
-        fp_value = header->GetVoltageMin();
-        attr.write(H5::PredType::NATIVE_DOUBLE, &fp_value);
-
-        attr = header_grp->createAttribute("voltage_range",
-                                            H5::PredType::NATIVE_DOUBLE,
-                                            attr_space);
-        fp_value = header->GetVoltageRange();
-        attr.write(H5::PredType::NATIVE_DOUBLE, &fp_value);
-
+        // Write the header.
+        // TODO: this should go in a separate group called 'header' under
+        //       metadata.
+        this->AddMetadata("description", header->GetDescription());
+        this->AddMetadata("acquisition_mode", header->GetAcquisitionMode());
+        this->AddMetadata("n_channels", header->GetNChannels());        
+        this->AddMetadata("raw_slice_size",header->GetRawSliceSize());
+        this->AddMetadata("slice_size",header->GetSliceSize());
+        this->AddMetadata("slice_stride",header->GetSliceStride());
+        this->AddMetadata("record_size",header->GetRecordSize());
+        this->AddMetadata("run_duration",header->GetRunDuration());
+        this->AddMetadata("acquisition_rate",header->GetAcquisitionRate());
+        this->AddMetadata("run_type",header->GetRunType());
+        this->AddMetadata("format_mode",header->GetFormatMode());
+        this->AddMetadata("data_type_size",header->GetDataTypeSize());
+        this->AddMetadata("bit_depth",header->GetBitDepth());
+        this->AddMetadata("voltage_min",header->GetVoltageMin());
+        this->AddMetadata("voltage_range",header->GetVoltageRange());
         return;
+    }
+
+    void KTHDF5Writer::WriteMetadata(std::string name, H5::DataType type, const void* value) {
+        H5::DataSpace dspace(H5S_SCALAR);
+        H5::Group* grp = this->AddGroup("/metadata");
+        H5::DSetCreatPropList plist;
+        H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
+                                                               type,
+                                                               dspace,
+                                                               plist));
+        dset->write(value, type);
     }
 
 } /* namespace Katydid */
