@@ -80,10 +80,10 @@ namespace Katydid
             void UpdateSummary();
 
             template< typename XCutType >
-            bool AddCut(bool state);
-            bool AddCut(const std::string& cutName, bool state);
+            bool AddCut(bool state, bool doUpdateSummary=true);
+            bool AddCut(const std::string& cutName, bool state, bool doUpdateSummary=true);
             template< typename XCutType >
-            bool AddCut(const XCutType& cut);
+            bool AddCut(const XCutType& cut, bool doUpdateSummary=true);
 
             template< typename XCutType >
             bool HasCut() const;
@@ -94,8 +94,21 @@ namespace Katydid
             bool GetCutState(const std::string& cutName) const;
 
             template< typename XCutType >
-            void RemoveCut();
-            void RemoveCut(const std::string& cutName);
+            const KTCutCore* GetCut() const;
+            const KTCutCore* GetCut(const std::string& cutName) const;
+
+            template< typename XCutType >
+            KTCutCore* GetCut();
+            KTCutCore* GetCut(const std::string& cutName);
+
+            template< typename XCutType >
+            bool SetCutState(bool state, bool doUpdateSummary=true);
+            bool SetCutState(const std::string& cutName, bool state, bool doUpdateSummary=true);
+
+            template< typename XCutType >
+            void RemoveCut(bool doUpdateSummary=true);
+            // cannot currently update by cut name
+            //void RemoveCut(const std::string& cutName, bool doUpdateSummary=true);
 
         private:
             boost::scoped_ptr< KTTopCut > fCuts;
