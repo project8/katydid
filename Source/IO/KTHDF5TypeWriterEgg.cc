@@ -43,7 +43,7 @@ namespace Katydid {
 
 
     void KTHDF5TypeWriterEgg::RegisterSlots() {
-        fWriter->RegisterSlot("setup-from-header", 
+        fWriter->RegisterSlot("egg-from-header", 
                               this, 
                               &KTHDF5TypeWriterEgg::ProcessEggHeader);
         fWriter->RegisterSlot("raw-ts", 
