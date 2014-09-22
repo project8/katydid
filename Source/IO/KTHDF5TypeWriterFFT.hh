@@ -121,7 +121,7 @@ namespace Katydid {
     	H5::DataSpace* fCmplxFFTDSpace;
 
     	unsigned fCmplxPwrSize;
-    	fft_buffer* fCmplxFFTBuffer;
+    	fft_buffer* fCmplxPwrBuffer;
     	H5::DataSpace* fCmplxPwrDSpace;
 
         /*
