@@ -30,12 +30,12 @@ namespace Katydid {
 
     KTHDF5TypeWriterEgg::KTHDF5TypeWriterEgg() :
             KTHDF5TypeWriter(),
-            raw_time_slice_dspace(NULL),
-            real_time_slice_dspace(NULL),
-            slice_size(0),
-            raw_slice_size(0),
-            real_time_buffer(NULL),
-            raw_time_buffer(NULL)
+            fRawTSliceDSpace(NULL),
+            fRealTSliceDSpace(NULL),
+            fSliceSize(0),
+            fRawSliceSize(0),
+            fRealTimeBuffer(NULL),
+            fRawTimeBuffer(NULL)
              {}
 
     KTHDF5TypeWriterEgg::~KTHDF5TypeWriterEgg() {
@@ -43,10 +43,10 @@ namespace Katydid {
 
 
     void KTHDF5TypeWriterEgg::RegisterSlots() {
-        fWriter->RegisterSlot("setup_from_header", 
+        fWriter->RegisterSlot("setup-from-header", 
                               this, 
                               &KTHDF5TypeWriterEgg::ProcessEggHeader);
-        fWriter->RegisterSlot("raw_ts", 
+        fWriter->RegisterSlot("raw-ts", 
                               this, 
                               &KTHDF5TypeWriterEgg::WriteRawTimeSeriesData);
         fWriter->RegisterSlot("real-ts", 
@@ -70,16 +70,16 @@ namespace Katydid {
         */
         if (!fWriter->OpenAndVerifyFile()) return;
         if(header != NULL) {
-            this->n_components = (header->GetNChannels());
-            this->raw_slice_size = (header->GetRawSliceSize());
-            this->slice_size = (header->GetSliceSize());  
+            this->fNComponents = (header->GetNChannels());
+            this->fRawSliceSize = (header->GetRawSliceSize());
+            this->fSliceSize = (header->GetSliceSize());  
 
-            this->real_time_buffer = new double[slice_size];
-            this->raw_time_buffer = new unsigned[raw_slice_size];
+            this->fRealTimeBuffer = new double[fSliceSize];
+            this->fRawTimeBuffer = new unsigned[fRawSliceSize];
 
             this->CreateDataspaces();
-            this->raw_data_group = fWriter->AddGroup("/raw_data");
-            this->real_data_group = fWriter->AddGroup("/real_data");
+            this->fRawDataGroup = fWriter->AddGroup("/raw_data");
+            this->fRealDataGroup = fWriter->AddGroup("/real_data");
         }
     }
 
@@ -90,36 +90,36 @@ namespace Katydid {
         Otherwise, we want to create two dataspaces - 1XM and 1XN, where
         M is the size of a raw time slice, and N is the size of a time slice.
         */
-        if(this->raw_time_slice_dspace == NULL
-            || this->real_time_slice_dspace == NULL) {
-            hsize_t raw_dims[] = {this->n_components, this->raw_slice_size};
-            hsize_t dims[] = {this->n_components, this->slice_size};
+        if(this->fRawTSliceDSpace == NULL
+            || this->fRealTSliceDSpace == NULL) {
+            hsize_t raw_dims[] = {this->fNComponents, this->fRawSliceSize};
+            hsize_t dims[] = {this->fNComponents, this->fSliceSize};
 
-            this->raw_time_slice_dspace = new H5::DataSpace(2, raw_dims);
-            this->real_time_slice_dspace = new H5::DataSpace(2, dims);
+            this->fRawTSliceDSpace = new H5::DataSpace(2, raw_dims);
+            this->fRealTSliceDSpace = new H5::DataSpace(2, dims);
         }
     }
 
     H5::DataSet* KTHDF5TypeWriterEgg::CreateRawTSDSet(const std::string& name) {
-        H5::Group* grp = this->raw_data_group;
+        H5::Group* grp = this->fRawDataGroup;
         H5::DSetCreatPropList plist;
         unsigned default_value = 0;
         plist.setFillValue(H5::PredType::NATIVE_UINT, &default_value);
         H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
                                                                H5::PredType::NATIVE_INT,
-                                                               *(this->raw_time_slice_dspace),
+                                                               *(this->fRawTSliceDSpace),
                                                                plist));
         return dset;
     }
 
     H5::DataSet* KTHDF5TypeWriterEgg::CreateRealTSDSet(const std::string& name) {
-        H5::Group* grp = this->real_data_group;
+        H5::Group* grp = this->fRealDataGroup;
         H5::DSetCreatPropList plist;
         double default_value = 0.0;
         plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
         H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
                                                                H5::PredType::NATIVE_DOUBLE,
-                                                               *(this->real_time_slice_dspace),
+                                                               *(this->fRealTSliceDSpace),
                                                                plist));
         return dset;
     }
@@ -147,11 +147,11 @@ namespace Katydid {
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent) {
             const KTRawTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL) {
-                for (int i = 0; i < this->raw_slice_size; i++) {
+                for (int i = 0; i < this->fRawSliceSize; i++) {
                     // TODO(kofron): wat
-                    this->raw_time_buffer[i] = spectrum[0](i);
+                    this->fRawTimeBuffer[i] = spectrum[0](i);
                 }
-                dset->write(raw_time_buffer, H5::PredType::NATIVE_UINT);
+                dset->write(fRawTimeBuffer, H5::PredType::NATIVE_UINT);
             }
         }
         return;
@@ -180,11 +180,11 @@ namespace Katydid {
             const KTTimeSeries* spectrum = 
                 static_cast<KTTimeSeriesReal*>(tsData.GetTimeSeries(iC));
             if (spectrum != NULL) {
-                for (int i = 0; i < this->raw_slice_size; i++) {
+                for (int i = 0; i < this->fRawSliceSize; i++) {
                     // TODO(kofron): wat
-                    this->real_time_buffer[i] = spectrum->GetValue(i);
+                    this->fRealTimeBuffer[i] = spectrum->GetValue(i);
                 }
-                dset->write(this->real_time_buffer, 
+                dset->write(this->fRealTimeBuffer, 
                             H5::PredType::NATIVE_DOUBLE);
             }
         }

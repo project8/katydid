@@ -30,9 +30,9 @@ namespace Katydid {
             void WriteRealTimeSeriesData(KTDataPtr data);
 
         private:
-            H5::DataSpace* raw_time_slice_dspace;
-            H5::DataSpace* real_time_slice_dspace;
-            unsigned slice_size;
+            H5::DataSpace* fRawTSliceDSpace; //raw_time_slice_dspace
+            H5::DataSpace* fRealTSliceDSpace; // real_time_slice_dspace
+            unsigned fSliceSize; // slice_size
             unsigned raw_slice_size;
             unsigned n_components;
 
