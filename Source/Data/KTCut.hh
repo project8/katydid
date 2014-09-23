@@ -19,23 +19,23 @@
 
 namespace Katydid
 {
-    class KTCutCore
+    class KTCutResult
     {
         public:
-            KTCutCore() :
+            KTCutResult() :
                     fState(false)
             {}
-            virtual ~KTCutCore() {}
+            virtual ~KTCutResult() {}
 
             virtual const std::string& Name() const = 0;
 
-            virtual KTCutCore* Next() const = 0;
+            virtual KTCutResult* Next() const = 0;
 
             MEMBERVARIABLE_PROTECTED(bool, State);
     };
 
     template< class XDerivedType >
-    class KTExtensibleCut : public KTExtensibleStruct< XDerivedType, KTCutCore >
+    class KTExtensibleCut : public KTExtensibleStruct< XDerivedType, KTCutResult >
     {
         public:
             KTExtensibleCut() {}
@@ -43,7 +43,7 @@ namespace Katydid
 
             const std::string& Name() const;
 
-            KTCutCore* Next() const;
+            KTCutResult* Next() const;
     };
 
     template< class XDerivedType >
@@ -53,69 +53,69 @@ namespace Katydid
     }
 
     template< class XDerivedType >
-    inline KTCutCore* KTExtensibleCut< XDerivedType >::Next() const
+    inline KTCutResult* KTExtensibleCut< XDerivedType >::Next() const
     {
-        return KTExtensibleStructCore< KTCutCore >::fNext;
+        return KTExtensibleStructCore< KTCutResult >::fNext;
     }
 
 
-    class KTMasterCut
+    class KTCutStatus
     {
         private:
             typedef boost::dynamic_bitset< > bitset_type;
 
-            // private class KTMasterCut::KTTopCut
+            // private class KTCutStatus::KTCutResultHandle
             // purposefully not registered with the cut factory
-            class KTTopCut : public KTExtensibleCut< KTTopCut >
+            class KTCutResultHandle : public KTExtensibleCut< KTCutResultHandle >
             {
                 public:
-                    KTTopCut();
-                    ~KTTopCut();
+                    KTCutResultHandle();
+                    ~KTCutResultHandle();
 
                     static const std::string sName;
             };
 
         public:
-            KTMasterCut();
-            ~KTMasterCut();
+            KTCutStatus();
+            ~KTCutStatus();
 
-            const KTCutCore* Cuts() const;
+            const KTCutResult* CutResults() const;
 
-            void UpdateSummary();
-
-            template< typename XCutType >
-            bool AddCut(bool state, bool doUpdateSummary=true);
-            bool AddCut(const std::string& cutName, bool state, bool doUpdateSummary=true);
-            template< typename XCutType >
-            bool AddCut(const XCutType& cut, bool doUpdateSummary=true);
+            void UpdateStatus();
 
             template< typename XCutType >
-            bool HasCut() const;
-            bool HasCut(const std::string& cutName) const;
+            bool AddCutResult(bool state, bool doUpdateStatus=true);
+            bool AddCutResult(const std::string& cutName, bool state, bool doUpdateStatus=true);
+            template< typename XCutType >
+            bool AddCutResult(const XCutType& cut, bool doUpdateStatus=true);
+
+            template< typename XCutType >
+            bool HasCutResult() const;
+            bool HasCutResult(const std::string& cutName) const;
 
             template< typename XCutType >
             bool GetCutState() const;
             bool GetCutState(const std::string& cutName) const;
 
             template< typename XCutType >
-            const KTCutCore* GetCut() const;
-            const KTCutCore* GetCut(const std::string& cutName) const;
+            const KTCutResult* GetCutResult() const;
+            const KTCutResult* GetCutResult(const std::string& cutName) const;
 
             template< typename XCutType >
-            KTCutCore* GetCut();
-            KTCutCore* GetCut(const std::string& cutName);
+            KTCutResult* GetCutResult();
+            KTCutResult* GetCutResult(const std::string& cutName);
 
             template< typename XCutType >
-            bool SetCutState(bool state, bool doUpdateSummary=true);
-            bool SetCutState(const std::string& cutName, bool state, bool doUpdateSummary=true);
+            bool SetCutState(bool state, bool doUpdateStatus=true);
+            bool SetCutState(const std::string& cutName, bool state, bool doUpdateStatus=true);
 
             template< typename XCutType >
-            void RemoveCut(bool doUpdateSummary=true);
+            void RemoveCutResult(bool doUpdateStatus=true);
             // cannot currently update by cut name
-            //void RemoveCut(const std::string& cutName, bool doUpdateSummary=true);
+            //void RemoveCutResult(const std::string& cutName, bool doUpdateStatus=true);
 
         private:
-            boost::scoped_ptr< KTTopCut > fCuts;
+            boost::scoped_ptr< KTCutResultHandle > fCutResults;
 
             bitset_type fSummary;
 
@@ -127,96 +127,96 @@ namespace Katydid
 
     };
 
-    inline const KTCutCore* KTMasterCut::Cuts() const
+    inline const KTCutResult* KTCutStatus::CutResults() const
     {
-        return fCuts.get()->Next();
+        return fCutResults.get()->Next();
     }
 
     template< typename XCutType >
-    bool KTMasterCut::AddCut(bool state, bool doUpdateSummary)
+    bool KTCutStatus::AddCutResult(bool state, bool doUpdateStatus)
     {
-        if (! HasCut< XCutType >())
+        if (! HasCutResult< XCutType >())
         {
-            fCuts.get()->Of< XCutType >().SetState(state);
-            if (doUpdateSummary) UpdateSummary();
+            fCutResults.get()->Of< XCutType >().SetState(state);
+            if (doUpdateStatus) UpdateStatus();
             return true;
         }
         return false;
     }
 
     template< typename XCutType >
-    bool KTMasterCut::AddCut(const XCutType& cut, bool doUpdateSummary)
+    bool KTCutStatus::AddCutResult(const XCutType& cut, bool doUpdateStatus)
     {
-        if (! HasCut< XCutType >())
+        if (! HasCutResult< XCutType >())
         {
-            fCuts.get()->Of< XCutType >() = cut;
-            if (doUpdateSummary) UpdateSummary();
+            fCutResults.get()->Of< XCutType >() = cut;
+            if (doUpdateStatus) UpdateStatus();
             return true;
         }
         return false;
     }
 
     template< typename XCutType >
-    inline bool KTMasterCut::HasCut() const
+    inline bool KTCutStatus::HasCutResult() const
     {
-        return fCuts.get()->Has< XCutType >();
+        return fCutResults.get()->Has< XCutType >();
     }
 
     template< typename XCutType >
-    bool KTMasterCut::GetCutState() const
+    bool KTCutStatus::GetCutState() const
     {
-        if (HasCut< XCutType >())
+        if (HasCutResult< XCutType >())
         {
-            return fCuts.get()->Of< XCutType >().GetState();
+            return fCutResults.get()->Of< XCutType >().GetState();
         }
         return false;
     }
 
     template< typename XCutType >
-    const KTCutCore* KTMasterCut::GetCut() const
+    const KTCutResult* KTCutStatus::GetCutResult() const
     {
-        if (HasCut< XCutType >())
+        if (HasCutResult< XCutType >())
         {
-            return &(fCuts.get()->Of< XCutType >());
+            return &(fCutResults.get()->Of< XCutType >());
         }
         return NULL;
     }
 
     template< typename XCutType >
-    KTCutCore* KTMasterCut::GetCut()
+    KTCutResult* KTCutStatus::GetCutResult()
     {
-        if (HasCut< XCutType >())
+        if (HasCutResult< XCutType >())
         {
-            return &(fCuts.get()->Of< XCutType >());
+            return &(fCutResults.get()->Of< XCutType >());
         }
         return NULL;
     }
 
     template< typename XCutType >
-    inline void KTMasterCut::RemoveCut(bool doUpdateSummary)
+    inline void KTCutStatus::RemoveCutResult(bool doUpdateStatus)
     {
-        delete fCuts.get()->Detatch< XCutType >();
-        if (doUpdateSummary) UpdateSummary();
+        delete fCutResults.get()->Detatch< XCutType >();
+        if (doUpdateStatus) UpdateStatus();
         return;
     }
 
 
-    inline bool KTMasterCut::IsCut() const
+    inline bool KTCutStatus::IsCut() const
     {
         return fSummary.any();
     }
 
-    inline bool KTMasterCut::IsCut(const bitset_type& mask) const
+    inline bool KTCutStatus::IsCut(const bitset_type& mask) const
     {
         return (fSummary | mask).any();
     }
 
-    inline bool KTMasterCut::IsCut(unsigned long long mask) const
+    inline bool KTCutStatus::IsCut(unsigned long long mask) const
     {
         return IsCut(bitset_type(mask));
     }
 
-    inline bool KTMasterCut::IsCut(const std::string& mask) const
+    inline bool KTCutStatus::IsCut(const std::string& mask) const
     {
         return IsCut(bitset_type(mask));
     }

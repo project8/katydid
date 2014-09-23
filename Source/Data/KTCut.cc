@@ -14,18 +14,18 @@ namespace Katydid
 {
     KTLOGGER(cutlog, "KTCut");
 
-    KTMasterCut::KTMasterCut() :
-            fCuts(new KTTopCut()),
+    KTCutStatus::KTCutStatus() :
+            fCutResults(new KTCutResultHandle()),
             fSummary()
     {
     }
 
-    KTMasterCut::~KTMasterCut()
+    KTCutStatus::~KTCutStatus()
     {}
 
-    void KTMasterCut::UpdateSummary()
+    void KTCutStatus::UpdateStatus()
     {
-        KTCutCore* cut = fCuts.get()->Next(); // skip over KTTopCut
+        KTCutResult* cut = fCutResults.get()->Next(); // skip over KTCutResultHandle
         if (cut == NULL)
         {
             fSummary.resize(1, false);
@@ -41,7 +41,7 @@ namespace Katydid
         }
         fSummary.resize(nCuts, false);
         // loop through again to set cuts
-        cut = fCuts.get()->Next(); // skip over KTTopCut
+        cut = fCutResults.get()->Next(); // skip over KTCutResultHandle
         for (unsigned iCut = 0; iCut < nCuts; ++iCut)
         {
             fSummary[iCut] = cut->GetState();
@@ -50,12 +50,12 @@ namespace Katydid
         return;
     }
 
-    bool KTMasterCut::AddCut(const std::string& cutName, bool state, bool doUpdateSummary)
+    bool KTCutStatus::AddCutResult(const std::string& cutName, bool state, bool doUpdateStatus)
     {
-        if (! HasCut(cutName))
+        if (! HasCutResult(cutName))
         {
-            KTExtensibleStructFactory< KTCutCore >* factory = KTExtensibleStructFactory< KTCutCore >::GetInstance();
-            KTExtensibleStructCore< KTCutCore >* newCut = factory->Create(cutName, fCuts.get());
+            KTExtensibleStructFactory< KTCutResult >* factory = KTExtensibleStructFactory< KTCutResult >::GetInstance();
+            KTExtensibleStructCore< KTCutResult >* newCut = factory->Create(cutName, fCutResults.get());
             if (newCut == NULL)
             {
                 KTERROR(cutlog, "Could not create cut of type <" << cutName << ">");
@@ -63,30 +63,30 @@ namespace Katydid
             }
             newCut->SetState(state);
 
-            if (doUpdateSummary) UpdateSummary();
+            if (doUpdateStatus) UpdateStatus();
             return true;
         }
         return false;
 
     }
 
-    bool KTMasterCut::HasCut(const std::string& cutName) const
+    bool KTCutStatus::HasCutResult(const std::string& cutName) const
     {
-        if (GetCut(cutName) == NULL) return false;
+        if (GetCutResult(cutName) == NULL) return false;
         return true;
 
     }
 
-    bool KTMasterCut::GetCutState(const std::string& cutName) const
+    bool KTCutStatus::GetCutState(const std::string& cutName) const
     {
-        const KTCutCore* cut = GetCut(cutName);
+        const KTCutResult* cut = GetCutResult(cutName);
         if (cut == NULL) return false;
         return cut->GetState();
     }
 
-    const KTCutCore* KTMasterCut::GetCut(const std::string& cutName) const
+    const KTCutResult* KTCutStatus::GetCutResult(const std::string& cutName) const
     {
-        const KTCutCore* cut = fCuts.get()->Next(); // skip over KTTopCut
+        const KTCutResult* cut = fCutResults.get()->Next(); // skip over KTCutResultHandle
         while (cut != NULL)
         {
             if (cut->Name() == cutName) return cut;
@@ -94,9 +94,9 @@ namespace Katydid
         return NULL;
     }
 
-    KTCutCore* KTMasterCut::GetCut(const std::string& cutName)
+    KTCutResult* KTCutStatus::GetCutResult(const std::string& cutName)
     {
-        KTCutCore* cut = fCuts.get()->Next(); // skip over KTTopCut
+        KTCutResult* cut = fCutResults.get()->Next(); // skip over KTCutResultHandle
         while (cut != NULL)
         {
             if (cut->Name() == cutName) return cut;
@@ -105,9 +105,9 @@ namespace Katydid
         return NULL;
     }
 
-    bool KTMasterCut::SetCutState(const std::string& cutName, bool state, bool doUpdateSummary)
+    bool KTCutStatus::SetCutState(const std::string& cutName, bool state, bool doUpdateStatus)
     {
-        KTCutCore* cut = GetCut(cutName);
+        KTCutResult* cut = GetCutResult(cutName);
         if (cut == NULL)
         {
             KTWARN(cutlog, "Cut <" << cutName << "> not found");
@@ -115,38 +115,38 @@ namespace Katydid
         }
         cut->SetState(state);
 
-        if (doUpdateSummary) UpdateSummary();
+        if (doUpdateStatus) UpdateStatus();
         return true;
     }
 
     /*
-    void KTMasterCut::RemoveCut(const std::string& cutName, bool doUpdateSummary)
+    void KTCutStatus::RemoveCutResult(const std::string& cutName, bool doUpdateStatus)
     {
-        KTCutCore* cut = fCuts.get(); // don't skip over KTTopCut
-        KTCutCore* nextCut = cut->Next();
+        KTCutResult* cut = fCutResults.get(); // don't skip over KTCutResultHandle
+        KTCutResult* nextCut = cut->Next();
         while (nextCut != NULL)
         {
             if (nextCut->Name() == cutName)
             {
                 // problem: can't pass nextCut->Next() to cut->Next()
-                if (doUpdateSummary) UpdateSummary();
+                if (doUpdateStatus) UpdateStatus();
             }
         }
         return;
     }
     */
 
-    // private class KTMasterCut::KTTopCut
+    // private class KTCutStatus::KTCutResultHandle
     // purposefully not registered with the cut factory
-    KTMasterCut::KTTopCut::KTTopCut() :
-            KTExtensibleCut< KTMasterCut::KTTopCut >()
+    KTCutStatus::KTCutResultHandle::KTCutResultHandle() :
+            KTExtensibleCut< KTCutStatus::KTCutResultHandle >()
     {
         fState = false;
     }
-    KTMasterCut::KTTopCut::~KTTopCut()
+    KTCutStatus::KTCutResultHandle::~KTCutResultHandle()
     {}
 
-    const std::string KTMasterCut::KTTopCut::sName("top");
+    const std::string KTCutStatus::KTCutResultHandle::sName("top");
 
 
 } /* namespace Katydid */
