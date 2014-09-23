@@ -58,7 +58,7 @@ namespace Katydid
     class KTExtensibleStructFactory : public KTSingleton< KTExtensibleStructFactory< XBaseType > >
     {
         public:
-            typedef std::map< std::string, const KTExtensibleStructBase< XBaseType >* > FactoryMap;
+            typedef std::map< std::string, const KTExtensibleStructRegistrarBase< XBaseType >* > FactoryMap;
             typedef typename FactoryMap::value_type FactoryEntry;
             typedef typename FactoryMap::iterator FactoryIt;
             typedef typename FactoryMap::const_iterator FactoryCIt;
@@ -98,7 +98,7 @@ namespace Katydid
         FactoryCIt it = fMap->find(className);
         if (it == fMap->end())
         {
-            KTERROR(utillog_factory, "Did not find factory for <" << className << ">.");
+            KTERROR(utillog_esfactory, "Did not find factory for <" << className << ">.");
             return NULL;
         }
 
@@ -117,7 +117,7 @@ namespace Katydid
         FactoryCIt it = fMap->find(className);
         if (it == fMap->end())
         {
-            KTERROR(utillog_factory, "Did not find factory for <" << className << ">.");
+            KTERROR(utillog_esfactory, "Did not find factory for <" << className << ">.");
             return NULL;
         }
 
@@ -133,11 +133,11 @@ namespace Katydid
         FactoryCIt it = fMap->find(className);
         if (it != fMap->end())
         {
-            KTERROR(utillog_factory_reg, "Already have factory registered for <" << className << ">.");
+            KTERROR(utillog_esfactory_reg, "Already have factory registered for <" << className << ">.");
             return;
         }
-        fMap->insert(std::pair< std::string, const KTRegistrarBase< XBaseType >* >(className, registrar));
-        KTDEBUG(utillog_factory_reg, "Registered a factory for class " << className << ", factory #" << fMap->size()-1);
+        fMap->insert(std::pair< std::string, const KTExtensibleStructRegistrarBase< XBaseType >* >(className, registrar));
+        KTDEBUG(utillog_esfactory_reg, "Registered a factory for class " << className << ", factory #" << fMap->size()-1);
     }
 
     template< class XBaseType >
@@ -167,33 +167,33 @@ namespace Katydid
 
 
     template< class XBaseType, class XDerivedType >
-    KTRegistrar< XBaseType, XDerivedType >::KTRegistrar(const std::string& className) :
-            KTRegistrarBase< XBaseType >()
+    KTExtensibleStructRegistrar< XBaseType, XDerivedType >::KTExtensibleStructRegistrar(const std::string& className) :
+            KTExtensibleStructRegistrarBase< XBaseType >()
     {
         Register(className);
     }
 
     template< class XBaseType, class XDerivedType >
-    KTRegistrar< XBaseType, XDerivedType >::~KTRegistrar()
+    KTExtensibleStructRegistrar< XBaseType, XDerivedType >::~KTExtensibleStructRegistrar()
     {}
 
     template< class XBaseType, class XDerivedType >
-    void KTRegistrar< XBaseType, XDerivedType >::Register(const std::string& className) const
+    void KTExtensibleStructRegistrar< XBaseType, XDerivedType >::Register(const std::string& className) const
     {
         KTExtensibleStructFactory< XBaseType >::GetInstance()->Register(className, this);
         return;
     }
 
     template< class XBaseType, class XDerivedType >
-    KTExtensibleStructCore< XBaseType >* KTRegistrar< XBaseType, XDerivedType >::Create() const
+    KTExtensibleStructCore< XBaseType >* KTExtensibleStructRegistrar< XBaseType, XDerivedType >::Create() const
     {
         return dynamic_cast< KTExtensibleStructCore< XBaseType >* >(new XDerivedType());
     }
 
     template< class XBaseType, class XDerivedType >
-    KTExtensibleStructCore< XBaseType >* KTRegistrar< XBaseType, XDerivedType >::Create(KTExtensibleStructCore< XBaseType >* object) const
+    KTExtensibleStructCore< XBaseType >* KTExtensibleStructRegistrar< XBaseType, XDerivedType >::Create(KTExtensibleStructCore< XBaseType >* object) const
     {
-        return dynamic_cast< KTExtensibleStructCore< XBaseType >* >(object->Of< XDerivedType >());
+        return dynamic_cast< KTExtensibleStructCore< XBaseType >* >(object->template Of< XDerivedType >());
     }
 
 } /* namespace Katydid */
