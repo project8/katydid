@@ -55,7 +55,7 @@ namespace Katydid
         if (! HasCut(cutName))
         {
             KTExtensibleStructFactory< KTCutCore >* factory = KTExtensibleStructFactory< KTCutCore >::GetInstance();
-            KTExtensibleStruct< KTCutCore >* newCut = factory->Create(cutName, fCuts.get());
+            KTExtensibleStructCore< KTCutCore >* newCut = factory->Create(cutName, fCuts.get());
             if (newCut == NULL)
             {
                 KTERROR(cutlog, "Could not create cut of type <" << cutName << ">");
@@ -91,7 +91,7 @@ namespace Katydid
         {
             if (cut->Name() == cutName) return cut;
         }
-        return false;
+        return NULL;
     }
 
     KTCutCore* KTMasterCut::GetCut(const std::string& cutName)
@@ -102,10 +102,10 @@ namespace Katydid
             if (cut->Name() == cutName) return cut;
             cut = cut->Next();
         }
-        return false;
+        return NULL;
     }
 
-    bool KTMasterCut::SetCutState(const std::string& cutName, bool state, bool doUpdateSummary=true)
+    bool KTMasterCut::SetCutState(const std::string& cutName, bool state, bool doUpdateSummary)
     {
         KTCutCore* cut = GetCut(cutName);
         if (cut == NULL)
@@ -135,5 +135,18 @@ namespace Katydid
         return;
     }
     */
+
+    // private class KTMasterCut::KTTopCut
+    // purposefully not registered with the cut factory
+    KTMasterCut::KTTopCut::KTTopCut() :
+            KTExtensibleCut< KTMasterCut::KTTopCut >()
+    {
+        fState = false;
+    }
+    KTMasterCut::KTTopCut::~KTTopCut()
+    {}
+
+    const std::string KTMasterCut::KTTopCut::sName("top");
+
 
 } /* namespace Katydid */

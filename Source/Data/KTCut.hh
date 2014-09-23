@@ -31,7 +31,7 @@ namespace Katydid
 
             virtual KTCutCore* Next() const = 0;
 
-            MEMBERVARIABLE(bool, State);
+            MEMBERVARIABLE_PROTECTED(bool, State);
     };
 
     template< class XDerivedType >
@@ -64,11 +64,15 @@ namespace Katydid
         private:
             typedef boost::dynamic_bitset< > bitset_type;
 
+            // private class KTMasterCut::KTTopCut
+            // purposefully not registered with the cut factory
             class KTTopCut : public KTExtensibleCut< KTTopCut >
             {
                 public:
-                    KTTopCut() {fState = false;}
-                    ~KTTopCut() {}
+                    KTTopCut();
+                    ~KTTopCut();
+
+                    static const std::string sName;
             };
 
         public:
@@ -129,22 +133,24 @@ namespace Katydid
     }
 
     template< typename XCutType >
-    bool KTMasterCut::AddCut(bool state)
+    bool KTMasterCut::AddCut(bool state, bool doUpdateSummary)
     {
         if (! HasCut< XCutType >())
         {
             fCuts.get()->Of< XCutType >().SetState(state);
+            if (doUpdateSummary) UpdateSummary();
             return true;
         }
         return false;
     }
 
     template< typename XCutType >
-    bool KTMasterCut::AddCut(const XCutType& cut)
+    bool KTMasterCut::AddCut(const XCutType& cut, bool doUpdateSummary)
     {
         if (! HasCut< XCutType >())
         {
             fCuts.get()->Of< XCutType >() = cut;
+            if (doUpdateSummary) UpdateSummary();
             return true;
         }
         return false;
@@ -167,9 +173,31 @@ namespace Katydid
     }
 
     template< typename XCutType >
-    inline void KTMasterCut::RemoveCut()
+    const KTCutCore* KTMasterCut::GetCut() const
+    {
+        if (HasCut< XCutType >())
+        {
+            return &(fCuts.get()->Of< XCutType >());
+        }
+        return NULL;
+    }
+
+    template< typename XCutType >
+    KTCutCore* KTMasterCut::GetCut()
+    {
+        if (HasCut< XCutType >())
+        {
+            return &(fCuts.get()->Of< XCutType >());
+        }
+        return NULL;
+    }
+
+    template< typename XCutType >
+    inline void KTMasterCut::RemoveCut(bool doUpdateSummary)
     {
         delete fCuts.get()->Detatch< XCutType >();
+        if (doUpdateSummary) UpdateSummary();
+        return;
     }
 
 
