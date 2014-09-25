@@ -14,7 +14,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 include (PackageBuilder)
 
 # Set the version and associated variables
-pbuilder_prepare_project (1 10 10)
+pbuilder_prepare_project (1 10 11)
 
 # Add a "Standard" build type
 #set (CMAKE_BUILD_TYPE standard)
