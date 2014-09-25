@@ -36,7 +36,7 @@ namespace Katydid {
      * Internal configuration
      */
     public:
-    	void ProcessEggHeader(KTEggHeader* header);
+    	void ProcessEggHeader();
 
    	/*
    	 * Frequency Spectrum Data

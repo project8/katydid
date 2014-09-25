@@ -50,9 +50,8 @@ namespace Katydid {
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
     {}
 
-    void KTHDF5TypeWriterFFT::ProcessEggHeader(KTEggHeader* header)
-    {   
-
+    void KTHDF5TypeWriterFFT::ProcessEggHeader() {   
+        KTEggHeader* header = fWriter->GetHeader();
         if(header != NULL) {
             KTDEBUG(publog, "Configuring from Egg header...");
             this->fNComponents = (header->GetNChannels());
@@ -245,7 +244,6 @@ namespace Katydid {
     }
 
     void KTHDF5TypeWriterFFT::RegisterSlots() {
-        fWriter->RegisterSlot("setup-from-header", this, &KTHDF5TypeWriterFFT::ProcessEggHeader);
         fWriter->RegisterSlot("fs-polar", this, &KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolar);
         fWriter->RegisterSlot("fs-fftw", this, &KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataFFTW);
         fWriter->RegisterSlot("fs-polar-phase", this, &KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolarPhase);
@@ -269,6 +267,13 @@ namespace Katydid {
 
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolar(KTDataPtr data) {
         if (!data) return;
+
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+        }
+        else {
+            return;
+        }
 
         KTDEBUG(publog, "Creating spectrum and dataset...");
         std::string spectrum_name;
@@ -303,6 +308,13 @@ namespace Katydid {
   
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataFFTW(KTDataPtr data) {
         if (!data) return;
+
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+        }
+        else {
+            return;
+        }
 
         KTDEBUG(publog, "Creating spectrum and dataset...");
         std::string spectrum_name;
@@ -343,6 +355,13 @@ namespace Katydid {
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataPolarPower(KTDataPtr data) {
         if (!data) return;
 
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+        }
+        else {
+            return;
+        }
+
         KTDEBUG(publog, "Creating polar power spectrum and dataset...");
         std::string spectrum_name;
         std::stringstream name_builder;
@@ -377,6 +396,13 @@ namespace Katydid {
     void KTHDF5TypeWriterFFT::WriteFrequencySpectrumDataFFTWPower(KTDataPtr data) {
 
         if (!data) return;
+
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+        }
+        else {
+            return;
+        }
 
         KTDEBUG(publog, "Creating spectrum and dataset...");
         std::string spectrum_name;
@@ -423,6 +449,13 @@ namespace Katydid {
     void KTHDF5TypeWriterFFT::WritePowerSpectrum(KTDataPtr data) {
         if (! data) return;
 
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+        }
+        else {
+            return;
+        }
+
         KTDEBUG(publog, "Creating spectrum and dataset...");
         std::string spectrum_name;
         std::stringstream name_builder;
@@ -455,6 +488,13 @@ namespace Katydid {
     }
     void KTHDF5TypeWriterFFT::WritePowerSpectralDensity(KTDataPtr data) {
         if (! data) return;
+
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+        }
+        else {
+            return;
+        }
 
         KTDEBUG(publog, "Creating spectrum and dataset...");
         std::string spectrum_name;
