@@ -250,14 +250,21 @@ namespace Katydid
 
         // Read center frequency, and derive minimum and maximum frequencies 
         // from the span.
-        mxArray* fCFArray;
-        double fMinFreq, fMaxFreq, fCenterFreq;
+        // Note: On second thought, you need to be very careful here.  The RSA
+        // tells you the center frequency __of the span__.  So the Minimum 
+        // frequency should be the center frequency - span/2, and maximum 
+        // frequency should be minimum frequency + fAcqBW.  
+        mxArray *fCFArray, *fSpanArray;
+        double fMinFreq, fMaxFreq, fSpanCenterFreq, fSpan;
         fCFArray = matGetVariable(fMatFilePtr, "InputCenter");
-        fCenterFreq = mxGetScalar(fCFArray);
-        fMinFreq = fCenterFreq - fAcqBW/2.0;
-        fMaxFreq = fCenterFreq + fAcqBW/2.0;
+        fSpanArray = matGetVariable(fMatFilePtr, "Span");
+        fSpanCenterFreq = mxGetScalar(fCFArray);
+        fSpan = mxGetScalar(fSpanArray);
 
-        fHeader.SetCenterFrequency(fCenterFreq);
+        fMinFreq = fSpanCenterFreq - fSpan/2.0;
+        fMaxFreq = fMinFreq + fAcqBW;
+
+        fHeader.SetCenterFrequency(fMinFreq + fAcqBW/2.0);
         fHeader.SetMinimumFrequency(fMinFreq);
         fHeader.SetMaximumFrequency(fMaxFreq);
 
