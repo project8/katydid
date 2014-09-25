@@ -122,6 +122,10 @@ namespace Katydid
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
+        fHeader.SetMinimumFrequency(0.0);
+        fHeader.SetMaximumFrequency(fHeader.GetAcquisitionRate()/2.0);
+        fHeader.SetCenterFrequency((fHeader.GetMaximumFrequency() - fHeader.GetMinimumFrequency())/2.0);
+
         // by default, start the read state at the beginning of the run
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
         fReadState.fAcquisitionID = 0;
