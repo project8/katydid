@@ -22,9 +22,6 @@ namespace Katydid {
 
             void RegisterSlots();
 
-        public:
-            void ProcessEggHeader(KTEggHeader* header);
-
             void WriteRawTimeSeriesData(KTDataPtr data);
 
             void WriteRealTimeSeriesData(KTDataPtr data);
@@ -45,6 +42,9 @@ namespace Katydid {
 
             unsigned* fRawTimeBuffer;
             double* fRealTimeBuffer;
+
+            void ProcessEggHeader();
+            bool fHeaderProcessed;
 
     };
 

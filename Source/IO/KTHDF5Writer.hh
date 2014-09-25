@@ -54,10 +54,16 @@ namespace Katydid {
             */
             template <typename T> void AddMetadata(std::string name, T value);
 
+            // Header related
+            bool DidParseHeader();
+            KTEggHeader* GetHeader();
+
         protected:
             H5::H5File* fFile;
 
         private:
+            KTEggHeader fHeader;
+            bool fHeaderParsed;
             std::map<std::string, H5::Group*> fGroups;
             void WriteMetadata(std::string name, H5::DataType type, const void* value);
     };

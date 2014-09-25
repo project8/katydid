@@ -35,7 +35,8 @@ namespace Katydid {
             fSliceSize(0),
             fRawSliceSize(0),
             fRealTimeBuffer(NULL),
-            fRawTimeBuffer(NULL)
+            fRawTimeBuffer(NULL),
+            fHeaderProcessed(false)
              {}
 
     KTHDF5TypeWriterEgg::~KTHDF5TypeWriterEgg() {
@@ -46,10 +47,10 @@ namespace Katydid {
         fWriter->RegisterSlot("egg-from-header", 
                               this, 
                               &KTHDF5TypeWriterEgg::ProcessEggHeader);
-        fWriter->RegisterSlot("raw-ts", 
+        fWriter->RegisterSlot("ts-raw", 
                               this, 
                               &KTHDF5TypeWriterEgg::WriteRawTimeSeriesData);
-        fWriter->RegisterSlot("real-ts", 
+        fWriter->RegisterSlot("ts-real", 
                               this, 
                               &KTHDF5TypeWriterEgg::WriteRealTimeSeriesData);
         return;
@@ -60,16 +61,9 @@ namespace Katydid {
     // Egg Header
     // *********************
 
-    void KTHDF5TypeWriterEgg::ProcessEggHeader(KTEggHeader* header)
-    {   
-        // TODO(kofron): this should probably belong to the writer.
-        // TODO(kofron): storage size should be set here too, not just 8 bit.
-        /*
-            Inform the writer about the slice size so it can set up
-            its buffers and so on.
-        */
-        if (!fWriter->OpenAndVerifyFile()) return;
-        if(header != NULL) {
+    void KTHDF5TypeWriterEgg::ProcessEggHeader() {   
+        if ( fWriter->OpenAndVerifyFile() && (fHeaderProcessed == false)) {
+            KTEggHeader* header = fWriter->GetHeader();
             this->fNComponents = (header->GetNChannels());
             this->fRawSliceSize = (header->GetRawSliceSize());
             this->fSliceSize = (header->GetSliceSize());  
@@ -79,8 +73,8 @@ namespace Katydid {
 
             this->CreateDataspaces();
             this->fRawDataGroup = fWriter->AddGroup("/raw_data");
-            this->fRealDataGroup = fWriter->AddGroup("/real_data");
-        }
+            this->fRealDataGroup = fWriter->AddGroup("/real_data"); 
+        } // if we haven't already processed the header
     }
 
 
@@ -129,31 +123,38 @@ namespace Katydid {
     // *****************
 
     void KTHDF5TypeWriterEgg::WriteRawTimeSeriesData(KTDataPtr data) {
-        if ( !data) return;
+        if ( !data ) return;
+
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+        }
+        else {
+            return;
+        }
 
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
         std::stringstream ss;
         ss << "slice_" << sliceNumber;
         std::string slice_name;
-        ss >> slice_name;        
+        ss >> slice_name;      
         H5::DataSet* dset = this->CreateRawTSDSet(slice_name);
 
         KTRawTimeSeriesData& tsData = data->Of<KTRawTimeSeriesData>();
         unsigned nComponents = tsData.GetNComponents();
 
-        if ( !fWriter->OpenAndVerifyFile() ) return;
-
-        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent) {
-            const KTRawTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
-            if (spectrum != NULL) {
-                for (int i = 0; i < this->fRawSliceSize; i++) {
-                    // TODO(kofron): wat
-                    this->fRawTimeBuffer[i] = spectrum[0](i);
-                }
-                dset->write(fRawTimeBuffer, H5::PredType::NATIVE_UINT);
-            }
-        }
+        if ( fWriter->OpenAndVerifyFile() ) {
+            for (unsigned iComponent=0; iComponent<nComponents; ++iComponent) {
+                const KTRawTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
+                if (spectrum != NULL) {
+                    for (int i = 0; i < this->fRawSliceSize; i++) {
+                        // TODO(kofron): wat
+                        this->fRawTimeBuffer[i] = spectrum[0](i);
+                    }
+                    dset->write(fRawTimeBuffer, H5::PredType::NATIVE_UINT);
+                } // if spectrum is not NULL
+            } // loop over components   
+        } // if fWriter is in a sane state
         return;
     }
 
@@ -163,6 +164,13 @@ namespace Katydid {
 
     void KTHDF5TypeWriterEgg::WriteRealTimeSeriesData(KTDataPtr data) {
         if (!data) return;
+
+        if ( fWriter->DidParseHeader() ) {
+            this->ProcessEggHeader();
+        }
+        else {
+            return;
+        }
 
         uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
         std::stringstream ss;

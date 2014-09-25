@@ -26,10 +26,11 @@ namespace Katydid
     KTHDF5Writer::KTHDF5Writer(const std::string& name) :
             KTWriterWithTypists< KTHDF5Writer >(name),
             fFilename("my_file.h5"),
-            fFile(NULL)
+            fFile(NULL),
+            fHeaderParsed(false)
     {
         RegisterSlot("close-file", this, &KTHDF5Writer::CloseFile);
-        RegisterSlot("write-header", this, &KTHDF5Writer::WriteEggHeader);
+        RegisterSlot("header", this, &KTHDF5Writer::WriteEggHeader);
     }
 
     KTHDF5Writer::~KTHDF5Writer()
@@ -106,25 +107,29 @@ namespace Katydid
         // TODO(kofron): H5T_VARIABLE length for strings?
         if (!this->OpenAndVerifyFile()) return;
 
+        // copy the egg header.
+        this->fHeader = *header;
+        this->fHeaderParsed = true;
+
         H5::Group* header_grp = this->AddGroup("/metadata");
        
         // Write the header.
-        this->AddMetadata("header/mantis_timestamp",header->GetTimestamp());
-        this->AddMetadata("header/description", header->GetDescription());
-        this->AddMetadata("header/acquisition_mode", header->GetAcquisitionMode());
-        this->AddMetadata("header/n_channels", header->GetNChannels());        
-        this->AddMetadata("header/raw_slice_size",header->GetRawSliceSize());
-        this->AddMetadata("header/slice_size",header->GetSliceSize());
-        this->AddMetadata("header/slice_stride",header->GetSliceStride());
-        this->AddMetadata("header/record_size",header->GetRecordSize());
-        this->AddMetadata("header/run_duration",header->GetRunDuration());
-        this->AddMetadata("header/acquisition_rate",header->GetAcquisitionRate());
-        this->AddMetadata("header/run_type",header->GetRunType());
-        this->AddMetadata("header/format_mode",header->GetFormatMode());
-        this->AddMetadata("header/data_type_size",header->GetDataTypeSize());
-        this->AddMetadata("header/bit_depth",header->GetBitDepth());
-        this->AddMetadata("header/voltage_min",header->GetVoltageMin());
-        this->AddMetadata("header/voltage_range",header->GetVoltageRange());
+        this->AddMetadata("header/mantis_timestamp",this->fHeader.GetTimestamp());
+        this->AddMetadata("header/description", this->fHeader.GetDescription());
+        this->AddMetadata("header/acquisition_mode", this->fHeader.GetAcquisitionMode());
+        this->AddMetadata("header/n_channels", this->fHeader.GetNChannels());        
+        this->AddMetadata("header/raw_slice_size",this->fHeader.GetRawSliceSize());
+        this->AddMetadata("header/slice_size",this->fHeader.GetSliceSize());
+        this->AddMetadata("header/slice_stride",this->fHeader.GetSliceStride());
+        this->AddMetadata("header/record_size",this->fHeader.GetRecordSize());
+        this->AddMetadata("header/run_duration",this->fHeader.GetRunDuration());
+        this->AddMetadata("header/acquisition_rate",this->fHeader.GetAcquisitionRate());
+        this->AddMetadata("header/run_type",this->fHeader.GetRunType());
+        this->AddMetadata("header/format_mode",this->fHeader.GetFormatMode());
+        this->AddMetadata("header/data_type_size",this->fHeader.GetDataTypeSize());
+        this->AddMetadata("header/bit_depth",this->fHeader.GetBitDepth());
+        this->AddMetadata("header/voltage_min",this->fHeader.GetVoltageMin());
+        this->AddMetadata("header/voltage_range",this->fHeader.GetVoltageRange());
         return;
     }
 
@@ -155,6 +160,14 @@ namespace Katydid
                                                                dspace,
                                                                plist));
         dset->write(value, type);
+    }
+
+    bool KTHDF5Writer::DidParseHeader() {
+        return this->fHeaderParsed;
+    }
+
+    KTEggHeader* KTHDF5Writer::GetHeader() {
+        return &(this->fHeader);
     }
 
 } /* namespace Katydid */
