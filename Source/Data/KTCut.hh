@@ -19,43 +19,53 @@
 
 namespace Katydid
 {
-    class KTCutResult
+    /*  // THIS IS JUST AN EXAMPLE; ALSO SEE TestCut.cc
+    class KTSomeData;
+    class KTExampleCut
     {
         public:
-            KTCutResult() :
+            struct Result : KTCutResult
+            {
+                static const std::string sName;
+            };
+
+        public:
+            KTExampleCut();
+            ~KTExampleCut();
+
+            bool Apply(KTSomeData& data);
+    };
+    */
+
+    class KTCutResultCore
+    {
+        public:
+            KTCutResultCore() :
                     fState(false)
             {}
-            virtual ~KTCutResult() {}
+            virtual ~KTCutResultCore() {}
 
             virtual const std::string& Name() const = 0;
-
-            virtual KTCutResult* Next() const = 0;
 
             MEMBERVARIABLE_PROTECTED(bool, State);
     };
 
+    typedef KTExtensibleStructCore< KTCutResultCore > KTCutResult;
+
     template< class XDerivedType >
-    class KTExtensibleCut : public KTExtensibleStruct< XDerivedType, KTCutResult >
+    class KTExtensibleCut : public KTExtensibleStruct< XDerivedType, KTCutResultCore >
     {
         public:
             KTExtensibleCut() {}
             virtual ~KTExtensibleCut() {}
 
             const std::string& Name() const;
-
-            KTCutResult* Next() const;
     };
 
     template< class XDerivedType >
     inline const std::string& KTExtensibleCut< XDerivedType >::Name() const
     {
         return XDerivedType::sName;
-    }
-
-    template< class XDerivedType >
-    inline KTCutResult* KTExtensibleCut< XDerivedType >::Next() const
-    {
-        return KTExtensibleStructCore< KTCutResult >::fNext;
     }
 
 
@@ -77,7 +87,10 @@ namespace Katydid
 
         public:
             KTCutStatus();
+            KTCutStatus(const KTCutStatus& orig);
             ~KTCutStatus();
+
+            KTCutStatus& operator=(const KTCutStatus& rhs);
 
             const KTCutResult* CutResults() const;
 

@@ -10,6 +10,7 @@
 
 #include "KTExtensibleStruct.hh"
 
+#include "KTCut.hh"
 #include "KTMemberVariable.hh"
 
 #include <boost/shared_ptr.hpp>
@@ -26,7 +27,8 @@ namespace Katydid
 
             virtual const std::string& Name() const = 0;
 
-            virtual KTDataCore* Next() const = 0;
+            virtual KTCutStatus* GetCuts() = 0;
+            virtual const KTCutStatus* GetCuts() const = 0;
     };
 
     template< class XDerivedType >
@@ -38,7 +40,8 @@ namespace Katydid
 
             const std::string& Name() const;
 
-            KTDataCore* Next() const;
+            KTCutStatus* GetCuts();
+            const KTCutStatus* GetCuts() const;
     };
 
     template< class XDerivedType >
@@ -47,27 +50,49 @@ namespace Katydid
         return XDerivedType::sName;
     }
 
-    template< class XDerivedType >
-    inline KTDataCore* KTExtensibleData< XDerivedType >::Next() const
-    {
-        return KTExtensibleStructCore< KTDataCore >::fNext;
-    }
-
+    // GetCuts() is implemented below
 
 
     class KTData : public KTExtensibleData< KTData >
     {
         public:
             KTData();
+            KTData(const KTData& orig);
             ~KTData();
 
             MEMBERVARIABLE(unsigned, Counter);
             MEMBERVARIABLE(bool, LastData);
 
+            MEMBERVARIABLEREF_NOSET(KTCutStatus, CutStatus);
+            // additional non-const get function
+            KTCutStatus& GetCutStatus();
+
+        public:
             static const std::string sName;
     };
 
+    inline KTCutStatus& KTData::GetCutStatus()
+    {
+        return fCutStatus;
+    }
+
     typedef boost::shared_ptr< KTData > KTDataPtr;
+
+    template< class XDerivedType >
+    inline const KTCutStatus* KTExtensibleData< XDerivedType >::GetCuts() const
+    {
+        const KTData* data = dynamic_cast< const KTData* >(this);
+        if (data != NULL) return &(data->GetCutStatus());
+        return NULL;
+    }
+
+    template< class XDerivedType >
+    inline KTCutStatus* KTExtensibleData< XDerivedType >::GetCuts()
+    {
+        KTData* data = dynamic_cast< KTData* >(this);
+        if (data != NULL) return &(data->GetCutStatus());
+        return NULL;
+    }
 
 } /* namespace Katydid */
 #endif /* KTDATA_HH_ */

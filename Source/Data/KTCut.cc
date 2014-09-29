@@ -14,14 +14,48 @@ namespace Katydid
 {
     KTLOGGER(cutlog, "KTCut");
 
+    /*  // THIS IS JUST AN EXAMPLE; ALSO SEE TestCut.cc
+    KTExampleCut::KTExampleCut()
+    {}
+
+    KTExampleCut::~KTExampleCut()
+    {}
+
+    bool KTExampleCut::Apply(KTSomeData& data)
+    {
+        bool isCut = false;
+        if (! data.IsAwesome())
+        {
+            isCut = true;
+        }
+        data.GetCuts()->AddCutResult< KTExampleCut::Result >(isCut);
+        return isCut;
+    }
+    */
+
+
     KTCutStatus::KTCutStatus() :
             fCutResults(new KTCutResultHandle()),
             fSummary()
     {
     }
 
+    KTCutStatus::KTCutStatus(const KTCutStatus& orig) :
+            fCutResults(dynamic_cast< KTCutResultHandle* >(orig.fCutResults->Clone())),
+            fSummary()
+    {
+        UpdateStatus();
+    }
+
     KTCutStatus::~KTCutStatus()
     {}
+
+    KTCutStatus& KTCutStatus::operator=(const KTCutStatus& rhs)
+    {
+        fCutResults.reset(dynamic_cast< KTCutResultHandle* >(rhs.fCutResults->Clone()));
+        UpdateStatus();
+        return *this;
+    }
 
     void KTCutStatus::UpdateStatus()
     {
@@ -54,8 +88,8 @@ namespace Katydid
     {
         if (! HasCutResult(cutName))
         {
-            KTExtensibleStructFactory< KTCutResult >* factory = KTExtensibleStructFactory< KTCutResult >::GetInstance();
-            KTExtensibleStructCore< KTCutResult >* newCut = factory->Create(cutName, fCutResults.get());
+            KTExtensibleStructFactory< KTCutResultCore >* factory = KTExtensibleStructFactory< KTCutResultCore >::GetInstance();
+            KTCutResult* newCut = factory->Create(cutName, fCutResults.get());
             if (newCut == NULL)
             {
                 KTERROR(cutlog, "Could not create cut of type <" << cutName << ">");

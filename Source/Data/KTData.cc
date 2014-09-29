@@ -14,9 +14,17 @@ namespace Katydid
     KTData::KTData() :
             KTExtensibleData< KTData >(),
             fCounter(0),
-            fLastData(false)
+            fLastData(false),
+            fCutStatus()
     {
     }
+
+    KTData::KTData(const KTData& orig) :
+            KTExtensibleData< KTData >(orig),
+            fCounter(orig.fCounter),
+            fLastData(orig.fLastData),
+            fCutStatus(orig.fCutStatus)
+    {}
 
     KTData::~KTData()
     {}

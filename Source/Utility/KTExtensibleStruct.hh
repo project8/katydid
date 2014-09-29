@@ -14,24 +14,47 @@ namespace Katydid
 
     // *) operator= reallocates extended fields: to avoid this, use Pull().
 
+    /**
+     *
+     */
 
     template< class XBaseType >
     struct KTExtensibleStructCore : public XBaseType
     {
         public:
+            /// Default constructor
             KTExtensibleStructCore(void);
+            /// Copy constructor; duplicates the extended object
             KTExtensibleStructCore(const KTExtensibleStructCore&);
             virtual ~KTExtensibleStructCore();
+            /// Duplicates the extended object
             KTExtensibleStructCore& operator=(const KTExtensibleStructCore&);
+            /// Removes extended fields
             virtual void Clear(void);
+            /// Returns a reference to the object of type XStructType; creates that object if it doesn't exist
             template< class XStructType > inline XStructType& Of(void);
+            /// Returns a const reference to the object of type XStructType; creates that object if it doesn't exist
             template< class XStructType > inline const XStructType& Of(void) const;
+            /// Returns true if XStructType is or is below this object
             template< class XStructType > inline bool Has(void) const;
+            /// Extracts object of type XStructType
             template< class XStructType > inline XStructType* Detatch(void);
+            /// Duplicates the extended object
             virtual KTExtensibleStructCore* Clone(void) const = 0;
+            /// Duplicates object only
             virtual void Pull(const KTExtensibleStructCore< XBaseType >& object) = 0;
+            /// Returns the pointer to the next field
+            KTExtensibleStructCore* Next() const;
+            /// Returns the pointer to the previous field
+            KTExtensibleStructCore* Prev() const;
+            /// Returns the pointer to the last field
+            KTExtensibleStructCore* Last() const;
+            /// Returns the pointer to the first field
+            KTExtensibleStructCore* First() const;
         protected:
+            void SetPrevPtrInNext();
             mutable KTExtensibleStructCore* fNext;
+            mutable KTExtensibleStructCore* fPrev;
     };
 
 
@@ -40,11 +63,16 @@ namespace Katydid
     struct KTExtensibleStruct : KTExtensibleStructCore< XBaseType >
     {
         public:
+            /// Default constructor
             KTExtensibleStruct(void);
+            /// Copy constructor; duplicates the extended object
             KTExtensibleStruct(const KTExtensibleStruct& object);
             virtual ~KTExtensibleStruct();
+            /// Duplicates the extended object
             KTExtensibleStruct& operator=(const KTExtensibleStruct& object);
+            /// Duplicates the extended object
             virtual KTExtensibleStructCore< XBaseType >* Clone(void) const;
+            /// Duplicates object only
             virtual void Pull(const KTExtensibleStructCore< XBaseType >& object);
             void SetIsCopyDisabled(bool flag);
         private:
@@ -56,12 +84,14 @@ namespace Katydid
     template<class XBaseType>
     KTExtensibleStructCore<XBaseType>::KTExtensibleStructCore(void)
     {
+        fPrev = 0;
         fNext = 0;
     }
 
     template<class XBaseType>
     KTExtensibleStructCore<XBaseType>::KTExtensibleStructCore(const KTExtensibleStructCore&)
     {
+        fPrev = 0;
         fNext = 0;
     }
 
@@ -82,8 +112,8 @@ namespace Katydid
     template<class XBaseType>
     void KTExtensibleStructCore<XBaseType>::Clear(void)
     {
-    delete fNext;
-    fNext = 0;
+        delete fNext;
+        fNext = 0;
     }
 
     template<class XBaseType>
@@ -99,6 +129,7 @@ namespace Katydid
         if (! fNext)
         {
             fNext = new XStructType();
+            fNext->fPrev = this;
         }
 
         return fNext->Of<XStructType>();
@@ -117,6 +148,7 @@ namespace Katydid
         if (fNext == 0)
         {
             fNext = new XStructType();
+            fNext->fPrev = const_cast< KTExtensibleStructCore< XBaseType >* >(this);
         }
 
         return fNext->Of<XStructType>();
@@ -156,11 +188,47 @@ namespace Katydid
             if (next->fNext)
             {
                 fNext = next->fNext;
+                fNext->fPrev = this;
                 next->fNext = 0;
             }
+            next->fPrev = 0;
             return next;
         }
         return fNext->Detatch<XStructType>();
+    }
+
+
+    template<class XBaseType>
+    inline KTExtensibleStructCore<XBaseType>* KTExtensibleStructCore<XBaseType>::Next() const
+    {
+        return fNext;
+    }
+
+    template<class XBaseType>
+    inline KTExtensibleStructCore<XBaseType>* KTExtensibleStructCore<XBaseType>::Prev() const
+    {
+        return fPrev;
+    }
+
+    template<class XBaseType>
+    inline KTExtensibleStructCore<XBaseType>* KTExtensibleStructCore<XBaseType>::Last() const
+    {
+        if (fNext == 0) return this;
+        return fNext->Last();
+    }
+
+    template<class XBaseType>
+    inline KTExtensibleStructCore<XBaseType>* KTExtensibleStructCore<XBaseType>::First() const
+    {
+        if (fPrev == 0) return this;
+        return fPrev->First();
+    }
+
+    template<class XBaseType>
+    inline void KTExtensibleStructCore<XBaseType>::SetPrevPtrInNext()
+    {
+        fNext->fPrev = this;
+        return;
     }
 
 
@@ -205,6 +273,8 @@ namespace Katydid
         if (object.fNext)
         {
             this->fNext = object.fNext->Clone();
+            this->KTExtensibleStructCore< XBaseType >::SetPrevPtrInNext();
+            //this->fNext->fPrev = this;
         }
 
         return *this;
@@ -219,6 +289,8 @@ namespace Katydid
         if (this->fNext)
         {
             instance->fNext = this->fNext->Clone();
+            instance->SetPrevPtrInNext();
+            //instance->fNext->fPrev = instance->fNext;
         }
         return instance;
     }
@@ -226,7 +298,8 @@ namespace Katydid
     template<class XInstanceType, class XBaseType>
     void KTExtensibleStruct<XInstanceType, XBaseType>::Pull(const KTExtensibleStructCore<XBaseType>& object)
     {
-        if (&object == this) {
+        if (&object == this)
+        {
             return;
         }
 

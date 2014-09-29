@@ -43,7 +43,7 @@ namespace Katydid
         printbuf << "Data Structure:\n";
         printbuf << "\t- " << dataPtr->Name() << '\n';
         KTDEBUG(datalog, "Found data type " << dataPtr->Name());
-        KTDataCore* nextData = dataPtr->Next();
+        KTExtensibleStructCore< KTDataCore >* nextData = dataPtr->Next();
         while (nextData != NULL)
         {
             printbuf << "\t- " << nextData->Name() << '\n';
