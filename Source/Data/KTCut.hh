@@ -99,6 +99,8 @@ namespace Katydid
             template< typename XCutType >
             bool AddCutResult(bool state, bool doUpdateStatus=true);
             bool AddCutResult(const std::string& cutName, bool state, bool doUpdateStatus=true);
+            // overload for const char* to avoid specializing the templated function below
+            bool AddCutResult(const char* cutName, bool state, bool doUpdateStatus=true);
             template< typename XCutType >
             bool AddCutResult(const XCutType& cut, bool doUpdateStatus=true);
 
@@ -155,6 +157,11 @@ namespace Katydid
             return true;
         }
         return false;
+    }
+
+    inline bool KTCutStatus::AddCutResult(const char* cutName, bool state, bool doUpdateStatus)
+    {
+        return AddCutResult(std::string(cutName), state, doUpdateStatus);
     }
 
     template< typename XCutType >
