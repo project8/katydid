@@ -59,9 +59,11 @@ namespace Katydid
 
     void KTCutStatus::UpdateStatus()
     {
+        KTDEBUG(cutlog, "Updating cut summary");
         KTCutResult* cut = fCutResults.get()->Next(); // skip over KTCutResultHandle
         if (cut == NULL)
         {
+            KTDEBUG(cutlog, "No cuts");
             fSummary.resize(1, false);
             return;
         }
@@ -73,6 +75,7 @@ namespace Katydid
             ++nCuts;
             cut = cut->Next();
         }
+        KTDEBUG(cutlog, nCuts << " cuts");
         fSummary.resize(nCuts, false);
         // loop through again to set cuts
         cut = fCutResults.get()->Next(); // skip over KTCutResultHandle
@@ -81,6 +84,7 @@ namespace Katydid
             fSummary[iCut] = cut->GetState();
             cut = cut->Next();
         }
+        KTDEBUG(cutlog, "Cut summary bitset: " << fSummary);
         return;
     }
 
@@ -124,6 +128,7 @@ namespace Katydid
         while (cut != NULL)
         {
             if (cut->Name() == cutName) return cut;
+            cut = cut->Next();
         }
         return NULL;
     }

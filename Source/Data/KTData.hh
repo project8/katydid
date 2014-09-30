@@ -27,8 +27,6 @@ namespace Katydid
 
             virtual const std::string& Name() const = 0;
 
-            virtual KTCutStatus* GetCuts() = 0;
-            virtual const KTCutStatus* GetCuts() const = 0;
     };
 
     template< class XDerivedType >
@@ -40,8 +38,6 @@ namespace Katydid
 
             const std::string& Name() const;
 
-            KTCutStatus* GetCuts();
-            const KTCutStatus* GetCuts() const;
     };
 
     template< class XDerivedType >
@@ -50,7 +46,6 @@ namespace Katydid
         return XDerivedType::sName;
     }
 
-    // GetCuts() is implemented below
 
 
     class KTData : public KTExtensibleData< KTData >
@@ -77,22 +72,6 @@ namespace Katydid
     }
 
     typedef boost::shared_ptr< KTData > KTDataPtr;
-
-    template< class XDerivedType >
-    inline const KTCutStatus* KTExtensibleData< XDerivedType >::GetCuts() const
-    {
-        const KTData* data = dynamic_cast< const KTData* >(this);
-        if (data != NULL) return &(data->GetCutStatus());
-        return NULL;
-    }
-
-    template< class XDerivedType >
-    inline KTCutStatus* KTExtensibleData< XDerivedType >::GetCuts()
-    {
-        KTData* data = dynamic_cast< KTData* >(this);
-        if (data != NULL) return &(data->GetCutStatus());
-        return NULL;
-    }
 
 } /* namespace Katydid */
 #endif /* KTDATA_HH_ */

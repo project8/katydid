@@ -221,12 +221,12 @@ namespace Katydid
 
     inline bool KTCutStatus::IsCut(const bitset_type& mask) const
     {
-        return (fSummary | mask).any();
+        return (fSummary & mask).any();
     }
 
     inline bool KTCutStatus::IsCut(unsigned long long mask) const
     {
-        return IsCut(bitset_type(mask));
+        return IsCut(bitset_type(fSummary.size(), mask));
     }
 
     inline bool KTCutStatus::IsCut(const std::string& mask) const
