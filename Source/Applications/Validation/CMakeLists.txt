@@ -48,6 +48,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestCorrelator TestCorrelator.cc)
     target_link_libraries (TestCorrelator KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
+    add_executable (TestCut TestCut.cc)
+    target_link_libraries (TestCut KatydidUtility KatydidData ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestCutIterator TestCutIterator.cc)
     target_link_libraries (TestCutIterator KatydidUtility ${EXTERNAL_LIBRARIES})
     
@@ -142,6 +145,7 @@ if (Katydid_ENABLE_TESTING)
                      TestConfigurator
                      TestConsensusThresholding
                      TestCorrelator
+                     TestCut
                      TestCutIterator
                      TestCutableArray
                      TestDataAccumulator
@@ -178,6 +182,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_ComplexPolar TestComplexPolar)
     add_test (Test_Configurator TestConfigurator)
     add_test (Test_Correlator TestCorrelator)
+    add_test (Test_Cut TestCut)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_DataAccumulator TestDataAccumulator)
