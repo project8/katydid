@@ -10,6 +10,8 @@
 
 #include "KTExtensibleStruct.hh"
 
+#include "KTExtensibleStructFactory.hh"
+#include "KTFactory.hh"
 #include "KTMemberVariable.hh"
 
 #include <boost/dynamic_bitset.hpp>
@@ -19,9 +21,12 @@
 
 namespace Katydid
 {
+    struct KTCut
+    {};
+
     /*  // THIS IS JUST AN EXAMPLE; ALSO SEE TestCut.cc
     class KTSomeData;
-    class KTExampleCut
+    class KTExampleCut : public KTCut
     {
         public:
             struct Result : KTCutResult
@@ -53,17 +58,17 @@ namespace Katydid
     typedef KTExtensibleStructCore< KTCutResultCore > KTCutResult;
 
     template< class XDerivedType >
-    class KTExtensibleCut : public KTExtensibleStruct< XDerivedType, KTCutResultCore >
+    class KTExtensibleCutResult : public KTExtensibleStruct< XDerivedType, KTCutResultCore >
     {
         public:
-            KTExtensibleCut() {}
-            virtual ~KTExtensibleCut() {}
+            KTExtensibleCutResult() {}
+            virtual ~KTExtensibleCutResult() {}
 
             const std::string& Name() const;
     };
 
     template< class XDerivedType >
-    inline const std::string& KTExtensibleCut< XDerivedType >::Name() const
+    inline const std::string& KTExtensibleCutResult< XDerivedType >::Name() const
     {
         return XDerivedType::sName;
     }
@@ -76,7 +81,7 @@ namespace Katydid
 
             // private class KTCutStatus::KTCutResultHandle
             // purposefully not registered with the cut factory
-            class KTCutResultHandle : public KTExtensibleCut< KTCutResultHandle >
+            class KTCutResultHandle : public KTExtensibleCutResult< KTCutResultHandle >
             {
                 public:
                     KTCutResultHandle();
@@ -240,6 +245,10 @@ namespace Katydid
     {
         return IsCut(bitset_type(mask));
     }
+
+#define KT_REGISTER_CUT(cut_class, cut_name) \
+        static KTRegistrar< KTCut, cut_class > sCut##cut_class##Registrar(cut_name); \
+        static KTExtensibleStructRegistrar< KTCutResultCore, cut_class::Result > sCut##cut_class##ResultRegistrar(cut_name);
 
 } /* namespace Katydid */
 

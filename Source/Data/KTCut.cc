@@ -7,7 +7,6 @@
 
 #include "KTCut.hh"
 
-#include "KTExtensibleStructFactory.hh"
 #include "KTLogger.hh"
 
 namespace Katydid
@@ -178,7 +177,7 @@ namespace Katydid
     // private class KTCutStatus::KTCutResultHandle
     // purposefully not registered with the cut factory
     KTCutStatus::KTCutResultHandle::KTCutResultHandle() :
-            KTExtensibleCut< KTCutStatus::KTCutResultHandle >()
+                KTExtensibleCutResult< KTCutStatus::KTCutResultHandle >()
     {
         fState = false;
     }

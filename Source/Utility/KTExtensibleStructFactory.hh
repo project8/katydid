@@ -5,8 +5,8 @@
  *      Author: nsoblath
  */
 
-#ifndef KTFACTORY_HH_
-#define KTFACTORY_HH_
+#ifndef KTEXTENSIBLESTRUCTFACTORY_HH_
+#define KTEXTENSIBLESTRUCTFACTORY_HH_
 
 #include "KTExtensibleStruct.hh"
 #include "KTSingleton.hh"
@@ -193,8 +193,8 @@ namespace Katydid
     template< class XBaseType, class XDerivedType >
     KTExtensibleStructCore< XBaseType >* KTExtensibleStructRegistrar< XBaseType, XDerivedType >::Create(KTExtensibleStructCore< XBaseType >* object) const
     {
-        return dynamic_cast< KTExtensibleStructCore< XBaseType >* >(object->template Of< XDerivedType >());
+        return dynamic_cast< KTExtensibleStructCore< XBaseType >* >(&object->template Of< XDerivedType >());
     }
 
 } /* namespace Katydid */
-#endif /* KTFACTORY_HH_ */
+#endif /* KTEXTENSIBLESTRUCTFACTORY_HH_ */

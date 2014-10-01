@@ -30,10 +30,10 @@ namespace Katydid
     };
 
     // Cuts data that is NOT awesome
-    class KTAwesomeCut
+    class KTAwesomeCut : public KTCut
     {
         public:
-            struct Result : KTExtensibleCut< Result >
+            struct Result : KTExtensibleCutResult< Result >
             {
                 static const std::string sName;
             };
@@ -53,10 +53,10 @@ namespace Katydid
     };
 
     // Cuts data that is IS awesome
-    class KTNotAwesomeCut
+    class KTNotAwesomeCut : public KTCut
     {
         public:
-            struct Result : KTExtensibleCut< Result >
+            struct Result : KTExtensibleCutResult< Result >
             {
                 static const std::string sName;
             };
@@ -70,7 +70,8 @@ namespace Katydid
                 bool isCut = testData.GetIsAwesome();
                 KTDEBUG(testlog, "Is data awesome? " << testData.GetIsAwesome());
                 KTDEBUG(testlog, "Is data cut? " << isCut);
-                data.GetCutStatus().AddCutResult< KTNotAwesomeCut::Result >(isCut);
+                // use the name-based AddCutResult
+                data.GetCutStatus().AddCutResult("not-awesome-cut", isCut);
                 return isCut;
             }
     };
@@ -80,6 +81,8 @@ namespace Katydid
 
     const std::string KTAwesomeCut::Result::sName = "awesome-cut";
     const std::string KTNotAwesomeCut::Result::sName = "not-awesome-cut";
+
+    KT_REGISTER_CUT(KTNotAwesomeCut, "not-awesome-cut");
 }
 
 
