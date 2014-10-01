@@ -10,8 +10,9 @@
 
 #include "KTExtensibleStruct.hh"
 
+#include "KTConfigurable.hh"
 #include "KTExtensibleStructFactory.hh"
-#include "KTFactory.hh"
+#include "KTNOFactory.hh"
 #include "KTMemberVariable.hh"
 
 #include <boost/dynamic_bitset.hpp>
@@ -21,8 +22,12 @@
 
 namespace Katydid
 {
-    struct KTCut
-    {};
+    class KTCut : public KTConfigurable
+    {
+        public:
+            KTCut(const std::string& name = "default-cut-name");
+            virtual ~KTCut();
+    };
 
     /*  // THIS IS JUST AN EXAMPLE; ALSO SEE TestCut.cc
     class KTSomeData;
@@ -35,10 +40,17 @@ namespace Katydid
             };
 
         public:
-            KTExampleCut();
+            KTExampleCut(const std::string& name = "default-example-cut");
             ~KTExampleCut();
 
-            bool Apply(KTSomeData& data);
+            bool Configure(const KTParamNode* node);
+
+            MEMBERVARIABLE(double, AwesomenessThreshold);
+
+        public:
+            bool Apply(KTData& data, KTSomeData& data);
+
+            void Apply(KTDataPtr dataPtr);
     };
     */
 
@@ -247,7 +259,7 @@ namespace Katydid
     }
 
 #define KT_REGISTER_CUT(cut_class, cut_name) \
-        static KTRegistrar< KTCut, cut_class > sCut##cut_class##Registrar(cut_name); \
+        static KTNORegistrar< KTCut, cut_class > sCut##cut_class##Registrar(cut_name); \
         static KTExtensibleStructRegistrar< KTCutResultCore, cut_class::Result > sCut##cut_class##ResultRegistrar(cut_name);
 
 } /* namespace Katydid */

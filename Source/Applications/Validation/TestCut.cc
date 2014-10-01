@@ -39,8 +39,13 @@ namespace Katydid
             };
 
         public:
-            KTAwesomeCut() {}
+            KTAwesomeCut(const std::string& name = "default-awesome-cut") :
+                KTCut(name)
+            {}
             ~KTAwesomeCut() {}
+
+            bool Configure(const KTParamNode* node)
+            {return true;}
 
             bool Apply(KTData& data, KTTestData& testData)
             {
@@ -62,8 +67,13 @@ namespace Katydid
             };
 
         public:
-            KTNotAwesomeCut() {}
+            KTNotAwesomeCut(const std::string& name = "default-not-awesome-cut") :
+                KTCut(name)
+            {}
             ~KTNotAwesomeCut() {}
+
+            bool Configure(const KTParamNode* node)
+            {return true;}
 
             bool Apply(KTData& data, KTTestData& testData)
             {
@@ -82,7 +92,8 @@ namespace Katydid
     const std::string KTAwesomeCut::Result::sName = "awesome-cut";
     const std::string KTNotAwesomeCut::Result::sName = "not-awesome-cut";
 
-    KT_REGISTER_CUT(KTNotAwesomeCut, "not-awesome-cut");
+    KT_REGISTER_CUT(KTAwesomeCut, KTAwesomeCut::Result::sName);
+    KT_REGISTER_CUT(KTNotAwesomeCut, KTNotAwesomeCut::Result::sName);
 }
 
 

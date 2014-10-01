@@ -14,23 +14,52 @@ namespace Katydid
     KTLOGGER(cutlog, "KTCut");
 
     /*  // THIS IS JUST AN EXAMPLE; ALSO SEE TestCut.cc
-    KTExampleCut::KTExampleCut()
+    const std::string KTExampleCut::Result::sName = "example-cut";
+
+    KT_REGISTER_CUT(KTExampleCut, KTExampleCut::Result::sName);
+
+    KTExampleCut::KTExampleCut(const std::string& name) :
+            KTCut(name),
+            fAwesomenessThreshold(1000000.)
     {}
 
     KTExampleCut::~KTExampleCut()
     {}
 
-    bool KTExampleCut::Apply(KTSomeData& data)
+    bool KTExampleCut::Configure(const KTParamNode* node)
     {
-        bool isCut = false;
-        if (! data.IsAwesome())
-        {
-            isCut = true;
-        }
-        data.GetCuts()->AddCutResult< KTExampleCut::Result >(isCut);
+        if (node == NULL) return true;
+        SetAwesomenessThreshold(node->GetValue("awesomeness", GetAwesomenessThreshold()));
+        return true;
+    }
+
+    bool KTExampleCut::Apply(KTData& data, KTSomeData& someData)
+    {
+        bool isCut = someData.Awesomeness() > fAwesomenessThreshold;
+        data.GetCutStatus().AddCutResult< KTExampleCut::Result >(isCut);
         return isCut;
     }
+
+    void Apply(KTDataPtr dataPtr)
+    {
+        if (! dataPtr->Has< KTSomeData >())
+        {
+            KTERROR(exlog, "Data type <KTSomeData> was not present");
+            return;
+        }
+        Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTSomeData >());
+        return;
+    }
     */
+
+    KTCut::KTCut(const std::string& name) :
+            KTConfigurable(name)
+    {
+    }
+
+    KTCut::~KTCut()
+    {
+    }
 
 
     KTCutStatus::KTCutStatus() :
