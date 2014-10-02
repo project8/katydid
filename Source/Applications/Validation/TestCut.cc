@@ -92,8 +92,8 @@ namespace Katydid
     const std::string KTAwesomeCut::Result::sName = "awesome-cut";
     const std::string KTNotAwesomeCut::Result::sName = "not-awesome-cut";
 
-    KT_REGISTER_CUT(KTAwesomeCut, KTAwesomeCut::Result::sName);
-    KT_REGISTER_CUT(KTNotAwesomeCut, KTNotAwesomeCut::Result::sName);
+    KT_REGISTER_CUT(KTAwesomeCut);
+    KT_REGISTER_CUT(KTNotAwesomeCut);
 }
 
 

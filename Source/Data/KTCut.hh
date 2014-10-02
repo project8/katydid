@@ -22,37 +22,101 @@
 
 namespace Katydid
 {
+    /*!
+     @class KTCut
+     @author N. S. Oblath
+
+     @brief Base class for applying a cut to data.
+
+     @details
+     A fully implemented cut MUST have the following:
+     - Public nested class called Result, inheriting from KTCutResult, and containing a public static std::string name sName.
+     - Cut registration using the macro KT_REGISTER_CUT([class name])
+     - Implementation of bool Configure(const KTParamNode*)
+     - Implementation of void Apply(KTDataPtr)
+
+     The existence of [class name]::Result and [class name]::Result::sName are enforces at compile time by the KT_REGISTER_CUT macro.
+
+     The functions bool Configure(const KTParamNode*) and void Apply(KTDataPtr) are abstract in KTCut, and therefore must be implemented.
+
+     --------------------------------------
+     ------- Example Cut Definition -------
+     --------------------------------------
+
+     class KTSomeData;
+     class KTExampleCut : public KTCut
+     {
+         public:
+             struct Result : KTCutResult
+             {
+                 static const std::string sName;
+             };
+
+         public:
+             KTExampleCut(const std::string& name = "default-example-cut");
+             ~KTExampleCut();
+
+             bool Configure(const KTParamNode* node);
+
+             MEMBERVARIABLE(double, AwesomenessThreshold);
+
+         public:
+             bool Apply(KTData& data, KTSomeData& data);
+
+             void Apply(KTDataPtr dataPtr);
+     };
+
+     --------------------------------------
+     ------- Example Implementation -------
+     --------------------------------------
+
+     const std::string KTExampleCut::Result::sName = "example-cut";
+
+     KT_REGISTER_CUT(KTExampleCut, KTExampleCut::Result::sName);
+
+     KTExampleCut::KTExampleCut(const std::string& name) :
+             KTCut(name),
+             fAwesomenessThreshold(1000000.)
+     {}
+
+     KTExampleCut::~KTExampleCut()
+     {}
+
+     bool KTExampleCut::Configure(const KTParamNode* node)
+     {
+         if (node == NULL) return true;
+         SetAwesomenessThreshold(node->GetValue("awesomeness", GetAwesomenessThreshold()));
+         return true;
+     }
+
+     bool KTExampleCut::Apply(KTData& data, KTSomeData& someData)
+     {
+         bool isCut = someData.Awesomeness() > fAwesomenessThreshold;
+         data.GetCutStatus().AddCutResult< KTExampleCut::Result >(isCut);
+         return isCut;
+     }
+
+     void Apply(KTDataPtr dataPtr)
+     {
+         if (! dataPtr->Has< KTSomeData >())
+         {
+             KTERROR(exlog, "Data type <KTSomeData> was not present");
+             return;
+         }
+         Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTSomeData >());
+         return;
+     }
+
+    */
+
     class KTCut : public KTConfigurable
     {
         public:
             KTCut(const std::string& name = "default-cut-name");
             virtual ~KTCut();
+
+            virtual void Apply(KTDataPtr) = 0;
     };
-
-    /*  // THIS IS JUST AN EXAMPLE; ALSO SEE TestCut.cc
-    class KTSomeData;
-    class KTExampleCut : public KTCut
-    {
-        public:
-            struct Result : KTCutResult
-            {
-                static const std::string sName;
-            };
-
-        public:
-            KTExampleCut(const std::string& name = "default-example-cut");
-            ~KTExampleCut();
-
-            bool Configure(const KTParamNode* node);
-
-            MEMBERVARIABLE(double, AwesomenessThreshold);
-
-        public:
-            bool Apply(KTData& data, KTSomeData& data);
-
-            void Apply(KTDataPtr dataPtr);
-    };
-    */
 
     class KTCutResultCore
     {
@@ -85,6 +149,39 @@ namespace Katydid
         return XDerivedType::sName;
     }
 
+
+    /*!
+     @class KTCutStatus
+     @author N. S. Oblath
+
+     @brief Provides easy access to cut information.
+
+     @details
+     KTCutStatus is typically used as a member variable of KTData, the top-level data object.
+
+     KTCutStatus owns the set of cut results that have been added to a data object.
+     It also owns a summary of those cuts (implemented with boost::dynamic_bitset).
+
+     You can check if the data has been cut with the IsCut functions.
+     - IsCut() returns true if any cut results are true;
+     - IsCut(const bitset_type& mask), IsCut(unsigned int mask), and IsCut(const std::string& mask) allow you to specify
+       a cut mask, and return true if any of the cut results specified by the mask are true.
+
+     When specifying a cut mask, bits set to true specify cuts that should be used:
+     - bitset_type is boost::dynamic_bitset;
+     - unsigned integer masks use the bits of the integer;
+     - std::string masks are strings with each character either a 0 or 1.
+
+     With KTCutStatus you can interact with individual cut results in the following ways:
+     - Add cut results to a data object with AddCutResult,
+     - Check to see if a particular cut result is present using HasCutResult,
+     - Get the value of a cut result with GetCutState,
+     - Set the value of a cut result with SetCutState,
+     - Directly access the cut result with GetCutResult, and
+     - Remove a cut result with RemoveCutResult.
+
+     For all except KTCutStatus::RemoveCutResult, the cut result can be identified by type or string name.
+     */
 
     class KTCutStatus
     {
@@ -258,9 +355,10 @@ namespace Katydid
         return IsCut(bitset_type(mask));
     }
 
-#define KT_REGISTER_CUT(cut_class, cut_name) \
-        static KTNORegistrar< KTCut, cut_class > sCut##cut_class##Registrar(cut_name); \
-        static KTExtensibleStructRegistrar< KTCutResultCore, cut_class::Result > sCut##cut_class##ResultRegistrar(cut_name);
+    // this macro enforces the existence of cut_class::Result and cut_class::Result::sName at compile time
+#define KT_REGISTER_CUT(cut_class) \
+        static KTNORegistrar< KTCut, cut_class > sCut##cut_class##Registrar(cut_class::Result::sName); \
+        static KTExtensibleStructRegistrar< KTCutResultCore, cut_class::Result > sCut##cut_class##ResultRegistrar(cut_class::Result::sName);
 
 } /* namespace Katydid */
 
