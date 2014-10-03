@@ -32,7 +32,10 @@ namespace Katydid
             fDataTypeSize(1),
             fBitDepth(8),
             fVoltageMin(-0.25),
-            fVoltageRange(0.5)
+            fVoltageRange(0.5),
+            fCenterFrequency(0.0),
+            fMinimumFrequency(0.0),
+            fMaximumFrequency(0.0)
     {
     }
 
@@ -54,7 +57,10 @@ namespace Katydid
             fDataTypeSize(orig.fDataTypeSize),
             fBitDepth(orig.fBitDepth),
             fVoltageMin(orig.fVoltageMin),
-            fVoltageRange(orig.fVoltageRange)
+            fVoltageRange(orig.fVoltageRange),
+            fCenterFrequency(orig.fCenterFrequency),
+            fMinimumFrequency(orig.fMinimumFrequency),
+            fMaximumFrequency(orig.fMaximumFrequency)
     {
     }
 
@@ -82,6 +88,9 @@ namespace Katydid
         fBitDepth = rhs.fBitDepth;
         fVoltageMin = rhs.fVoltageMin;
         fVoltageRange = rhs.fVoltageRange;
+        fCenterFrequency = rhs.fCenterFrequency;
+        fMinimumFrequency = rhs.fMinimumFrequency;
+        fMaximumFrequency = rhs.fMaximumFrequency;
         return *this;
     }
 
@@ -105,7 +114,9 @@ namespace Katydid
                 << "\tData Type Size: " << header.GetDataTypeSize() << " Byte(s)\n"
                 << "\tBit Depth: " << header.GetBitDepth() << " bits\n"
                 << "\tVoltage Min: " << header.GetVoltageMin() << " V\n"
-                << "\tVoltage Range: " << header.GetVoltageRange() << " V";
+                << "\tVoltage Range: " << header.GetVoltageRange() << " V\n"
+                << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
+                << "\tFrequency Span: " << header.GetMaximumFrequency()  - header.GetMinimumFrequency()<< " Hz\n";
         return out;
     }
 

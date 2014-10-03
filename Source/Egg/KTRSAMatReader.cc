@@ -166,6 +166,9 @@ namespace Katydid
         }
 #endif
 
+
+
+
         // Read XML Configuration
         mxArray* rsaxml_mat = matGetVariable(fMatFilePtr, "rsaMetadata");
         if (rsaxml_mat == NULL)
@@ -208,7 +211,8 @@ namespace Katydid
          * the last 10 MHz to be conservative, resulting in the quoted 40 MHz bandwidth.
          */
         curr_node = data_node->first_node("SamplingFrequency");
-        fHeader.SetAcquisitionRate(2. * atof(curr_node->value()));
+        double fAcqBW = atof(curr_node->value());
+        fHeader.SetAcquisitionRate(2. * fAcqBW);
         fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetRecordSize() / fHeader.GetAcquisitionRate());
         curr_node = data_node->first_node("DateTime");
         fHeader.SetTimestamp(curr_node->value());
@@ -235,11 +239,6 @@ namespace Katydid
         fHeader.SetSliceSize(fSliceSize);
         fHeader.SetSliceStride(fStride);
 
-        // Log the contents of the header
-        stringstream headerBuff;
-        headerBuff << fHeader;
-        KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
-
         // A few last useful variables
 
         fRecordSize = fHeader.GetRecordSize();
@@ -249,6 +248,30 @@ namespace Katydid
         fSamplesRead = 0; // Number of samples read from file (not from record)
         fSamplesPerFile = (unsigned) mxGetNumberOfElements(fTSArrayMat);
 
+        // Read center frequency, and derive minimum and maximum frequencies 
+        // from the span.
+        // Note: On second thought, you need to be very careful here.  The RSA
+        // tells you the center frequency __of the span__.  So the Minimum 
+        // frequency should be the center frequency - span/2, and maximum 
+        // frequency should be minimum frequency + fAcqBW.  
+        mxArray *fCFArray, *fSpanArray;
+        double fMinFreq, fMaxFreq, fSpanCenterFreq, fSpan;
+        fCFArray = matGetVariable(fMatFilePtr, "InputCenter");
+        fSpanArray = matGetVariable(fMatFilePtr, "Span");
+        fSpanCenterFreq = mxGetScalar(fCFArray);
+        fSpan = mxGetScalar(fSpanArray);
+
+        fMinFreq = fSpanCenterFreq - fSpan/2.0;
+        fMaxFreq = fMinFreq + fAcqBW;
+
+        fHeader.SetCenterFrequency(fMinFreq + fAcqBW/2.0);
+        fHeader.SetMinimumFrequency(fMinFreq);
+        fHeader.SetMaximumFrequency(fMaxFreq);
+
+        // Log the contents of the header
+        stringstream headerBuff;
+        headerBuff << fHeader;
+        KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
         return new KTEggHeader(fHeader);
     }
     KTDataPtr KTRSAMatReader::HatchNextSlice()

@@ -1,7 +1,7 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8.12)
 
 
 # Define the project
@@ -14,7 +14,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 include (PackageBuilder)
 
 # Set the version and associated variables
-pbuilder_prepare_project (1 10 6)
+pbuilder_prepare_project (1 10 11)
 
 # Add a "Standard" build type
 #set (CMAKE_BUILD_TYPE standard)
@@ -37,6 +37,7 @@ endif(Katydid_SINGLETHREADED)
 set (Katydid_USE_MANTIS FALSE CACHE BOOL "Flag to optionally use Mantis (external dependency)")
 set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
+set (Katydid_USE_HDF5 TRUE CACHE BOOL "Flag to optionally use HDF5")
 set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
@@ -125,6 +126,20 @@ else (FFTW_FOUND)
 endif (FFTW_FOUND)
 include_directories (${FFTW_INCLUDE_DIR})
 
+# HDF5
+if (Katydid_USE_HDF5)
+    find_package (HDF5 COMPONENTS CXX)
+else (Katydid_USE_HDF5)
+    set (HDF5_FOUND FALSE)
+endif (Katydid_USE_HDF5)
+if (HDF5_FOUND)
+    #add_definitions (-DHDF5_FOUND)
+    include_directories (${HDF5_INCLUDE_DIR})
+    pbuilder_add_ext_libraries (${HDF5_CXX_LIBRARIES})
+else (HDF5_FOUND)
+    #remove_definitions (-DHDF5_FOUND)
+    message (STATUS "Building without HDF5")
+endif (HDF5_FOUND)
 
 # ROOT
 if (Katydid_USE_ROOT)

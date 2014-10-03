@@ -26,6 +26,9 @@ namespace Katydid
             KTEggHeader& operator=(const KTEggHeader& rhs);
 
             MEMBERVARIABLEREF(std::string, Filename);
+            MEMBERVARIABLE(double, CenterFrequency);
+            MEMBERVARIABLE(double, MinimumFrequency);
+            MEMBERVARIABLE(double, MaximumFrequency);
             MEMBERVARIABLE(unsigned, AcquisitionMode);
             MEMBERVARIABLE(unsigned, NChannels);
             MEMBERVARIABLE(std::size_t, RawSliceSize); /// Number of bins per slice before any modification
