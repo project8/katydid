@@ -4,6 +4,8 @@
 set (DATA_HEADERFILES
     KTData.hh
     KTCut.hh
+    KTCutResult.hh
+    KTCutStatus.hh
     KTPrintDataStructure.hh
     Analysis/KTAmplitudeDistribution.hh
     Analysis/KTAnalyticAssociateData.hh
@@ -59,6 +61,7 @@ set (DATA_HEADERFILES
 set (DATA_SOURCEFILES
     KTData.cc
     KTCut.cc
+    KTCutStatus.cc
     KTPrintDataStructure.cc
     Analysis/KTAmplitudeDistribution.cc
     Analysis/KTAnalyticAssociateData.cc

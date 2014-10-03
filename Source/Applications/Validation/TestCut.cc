@@ -5,9 +5,10 @@
  *      Author: nsoblath
  */
 
-#include "KTData.hh"
+#include "KTCut.hh"
 #include "KTLogger.hh"
 #include "KTMemberVariable.hh"
+#include "KTParam.hh"
 
 namespace Katydid
 {
@@ -55,6 +56,17 @@ namespace Katydid
                 data.GetCutStatus().AddCutResult< KTAwesomeCut::Result >(isCut);
                 return isCut;
             }
+
+            void Apply(KTDataPtr dataPtr)
+            {
+                if (! dataPtr->Has< KTTestData >())
+                {
+                    KTERROR(testlog, "Data type <KTTestData> was not present");
+                    return;
+                }
+                Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTTestData >());
+                return;
+            }
     };
 
     // Cuts data that is IS awesome
@@ -83,6 +95,17 @@ namespace Katydid
                 // use the name-based AddCutResult
                 data.GetCutStatus().AddCutResult("not-awesome-cut", isCut);
                 return isCut;
+            }
+
+            void Apply(KTDataPtr dataPtr)
+            {
+                if (! dataPtr->Has< KTTestData >())
+                {
+                    KTERROR(testlog, "Data type <KTTestData> was not present");
+                    return;
+                }
+                Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTTestData >());
+                return;
             }
     };
 

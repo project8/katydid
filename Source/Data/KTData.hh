@@ -10,7 +10,7 @@
 
 #include "KTExtensibleStruct.hh"
 
-#include "KTCut.hh"
+#include "KTCutStatus.hh"
 #include "KTMemberVariable.hh"
 
 #include <boost/shared_ptr.hpp>
