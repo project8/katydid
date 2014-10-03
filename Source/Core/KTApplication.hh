@@ -12,7 +12,6 @@
 #include "KTCommandLineHandler.hh"
 #include "KTConfigurable.hh"
 #include "KTConfigurator.hh"
-#include "KTParam.hh"
 
 #ifdef ROOT_FOUND
 #include "TApplication.h"
