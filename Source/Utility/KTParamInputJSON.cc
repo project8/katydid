@@ -206,7 +206,6 @@ namespace Katydid
         const static std::string commentSymbol1( "comment" );
         const static std::string commentSymbol2( "#" );
 
-        KTDEBUG( plog, "comparing " << name.substr(0, commentSymbol1.size()) << " to " << commentSymbol1 << ", and " << name.substr(0, commentSymbol2.size()) << " to " << commentSymbol2);
         if( name.compare( 0, commentSymbol1.size(), commentSymbol1 ) == 0 ||
             name.compare( 0, commentSymbol2.size(), commentSymbol2 ) == 0 )
         {
