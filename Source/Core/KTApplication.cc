@@ -9,6 +9,7 @@
 
 #include "KTEventLoop.hh"
 #include "KTLogger.hh"
+#include "KTParamInputJSON.hh"
 
 using std::set;
 using std::string;

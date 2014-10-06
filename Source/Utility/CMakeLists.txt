@@ -20,6 +20,7 @@ set (UTILITY_HEADERFILES
     KTMemberVariable.hh
     KTNOFactory.hh
     KTParam.hh
+    KTParamInputJSON.hh
     KTPhysicalArray.hh
     KTSingleton.hh
     KTSmooth.hh
@@ -39,6 +40,7 @@ set (UTILITY_SOURCEFILES
     KTException.cc
     KTLogger.cc
     KTParam.cc
+    KTParamInputJSON.cc
     KTSmooth.cc
     KTSpline.cc
     KTECDF.cc
