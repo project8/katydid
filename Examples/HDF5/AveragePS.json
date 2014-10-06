@@ -1,0 +1,75 @@
+{
+    "processor-toolbox":
+    {
+        "processors":
+        [
+            { "type": "egg-processor",          "name": "egg" },
+            { "type": "complex-fftw",           "name": "fft" },
+            { "type": "convert-to-power",       "name": "to-ps" },
+            { "type": "data-accumulator",       "name": "acc" },
+            { "type": "hdf5-writer",      "name": "h5" }
+        ],
+        
+        "connections":
+        [
+            {
+                "signal": "egg:header",
+                "slot": "fft:header"
+            },
+
+            {
+                "signal": "egg:header",
+                "slot": "h5:header"
+            },
+            
+            {
+                "signal": "egg:ts",
+                "slot": "fft:ts"
+            },
+            {
+                "signal": "fft:fft-forward",
+                "slot": "to-ps:fs-fftw-to-psd"
+            },
+            {
+                "signal": "to-ps:psd",
+                "slot": "acc:ps"
+            },
+
+            {
+                "signal": "acc:ps-finished",
+                "slot": "h5:psd"
+            }
+        ],
+        
+        "run-queue":
+        [
+            "egg"
+        ]
+    },
+    
+
+    "egg":
+    {
+        "filename": "FILENAME",
+        "number-of-slices": 100,
+        "slice-size": 2048,
+        "stride": 2048,
+        "progress-report-interval": 1000
+    },
+    
+    "fft":
+    {
+        "transform-flag": "ESTIMATE"
+    },
+
+    "acc":
+    {
+        "number-to-average": 0,
+        "signal-interval": 0
+    },
+    
+    "h5":
+    {
+        "output-file": "hdf5_average_ps.h5"
+    }
+}
