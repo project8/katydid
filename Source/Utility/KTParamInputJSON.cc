@@ -96,13 +96,23 @@ namespace Katydid
                 jsonIt != aDoc.MemberEnd();
                 ++jsonIt)
         {
-            t_config->Replace( jsonIt->name.GetString(), KTParamInputJSON::ReadValue( jsonIt->value ) );
+            std::string name( jsonIt->name.GetString() );
+            if (! KTParamInputJSON::IsNameComment( name ) )
+            {
+                KTParam* newValue = KTParamInputJSON::ReadValue( jsonIt->value );
+                if( newValue != NULL ) t_config->Replace( name, newValue );
+            }
         }
         return t_config;
     }
 
     KTParam* KTParamInputJSON::ReadValue( const rapidjson::Value& aValue )
     {
+        // Only returns a NULL pointer in the following condition:
+        //   If the value is an empty array and it's empty because the entire contents were commented with "###"
+
+        const static std::string arrayCommentIndicator( "###" );
+
         if( aValue.IsNull() )
         {
             return new KTParam();
@@ -114,18 +124,34 @@ namespace Katydid
                     jsonIt != aValue.MemberEnd();
                     ++jsonIt)
             {
-                t_config_object->Replace( jsonIt->name.GetString(), KTParamInputJSON::ReadValue( jsonIt->value ) );
+                std::string name( jsonIt->name.GetString() );
+                if (! KTParamInputJSON::IsNameComment( name ) )
+                {
+                    KTParam* newValue = KTParamInputJSON::ReadValue( jsonIt->value );
+                    if( newValue != NULL ) t_config_object->Replace( name, newValue );
+                }
             }
             return t_config_object;
         }
         if( aValue.IsArray() )
         {
+            bool foundComment = false;
             KTParamArray* t_config_array = new KTParamArray();
             for( rapidjson::Value::ConstValueIterator jsonIt = aValue.Begin();
                     jsonIt != aValue.End();
                     ++jsonIt)
             {
-                t_config_array->PushBack( KTParamInputJSON::ReadValue( *jsonIt ) );
+                if( (*jsonIt).IsString() && std::string((*jsonIt).GetString()) == arrayCommentIndicator )
+                {
+                    foundComment = true;
+                    break;
+                }
+                KTParam* newValue = KTParamInputJSON::ReadValue( *jsonIt );
+                if( newValue != NULL ) t_config_array->PushBack( newValue );
+            }
+            if( foundComment && t_config_array->Size() == 0 )
+            {
+                return NULL;
             }
             return t_config_array;
         }
@@ -173,6 +199,20 @@ namespace Katydid
         }
         KTWARN( plog, "(config_reader_json) unknown type; returning null value" );
         return new KTParam();
+    }
+
+    bool KTParamInputJSON::IsNameComment( const std::string& name )
+    {
+        const static std::string commentSymbol1( "comment" );
+        const static std::string commentSymbol2( "#" );
+
+        KTDEBUG( plog, "comparing " << name.substr(0, commentSymbol1.size()) << " to " << commentSymbol1 << ", and " << name.substr(0, commentSymbol2.size()) << " to " << commentSymbol2);
+        if( name.compare( 0, commentSymbol1.size(), commentSymbol1 ) == 0 ||
+            name.compare( 0, commentSymbol2.size(), commentSymbol2 ) == 0 )
+        {
+            return true;
+        }
+        return false;
     }
 
 } /* namespace Katydid */

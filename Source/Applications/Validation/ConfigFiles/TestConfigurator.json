@@ -3,7 +3,12 @@
     {
         "int-data": 5,
         "double-data": 50,
-        "string-data": "It works!"
+        "string-data": "It works!",
+        "comment": "This should not show up in the as-parsed configuration",
+        "comment":
+        {
+            "neither": "should this"
+        }
         
     },
     
@@ -11,6 +16,7 @@
     {
         "single-data": 222,
         "single-data-2": -5000,
+        "#single-data-3": 1,
         "single-data-3": 10,
         
         "sub-data":
@@ -18,7 +24,7 @@
             "single-data":111,
             "single-data-2": 6789,
             "multi-data":
-            [ 345, 567, 789 ]
+            [ 345, 456, ["###", 567], 789 ]
         }
     },
     

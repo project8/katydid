@@ -27,6 +27,8 @@ namespace Katydid
             static KTParamNode* ReadString( const std::string& aJSONStr );
             static KTParamNode* ReadDocument( const rapidjson::Document& aDocument );
             static KTParam* ReadValue( const rapidjson::Value& aValue );
+
+            static bool IsNameComment( const std::string& name );
     };
 
 } /* namespace Katydid */
