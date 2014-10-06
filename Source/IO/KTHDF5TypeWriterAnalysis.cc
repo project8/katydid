@@ -42,7 +42,9 @@ namespace Katydid {
 			}
 		}
 
-	KTHDF5TypeWriterAnalysis::~KTHDF5TypeWriterAnalysis() {}
+	KTHDF5TypeWriterAnalysis::~KTHDF5TypeWriterAnalysis() {
+		if(fDiscPointType) delete fDiscPointType;
+	}
 
 	void KTHDF5TypeWriterAnalysis::RegisterSlots() {
 		fWriter->RegisterSlot("disc-1d", this, &KTHDF5TypeWriterAnalysis::WriteDiscriminatedPoints);
