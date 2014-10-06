@@ -40,6 +40,8 @@ namespace Katydid {
              {}
 
     KTHDF5TypeWriterEgg::~KTHDF5TypeWriterEgg() {
+            if(fRawTimeBuffer) delete fRawTimeBuffer;
+            if(fRealTimeBuffer) delete fRealTimeBuffer;
     }
 
 
