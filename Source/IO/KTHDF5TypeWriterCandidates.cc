@@ -38,7 +38,9 @@ namespace Katydid {
             }
         }
 
-    KTHDF5TypeWriterCandidates::~KTHDF5TypeWriterCandidates() {}
+    KTHDF5TypeWriterCandidates::~KTHDF5TypeWriterCandidates() {
+        if(fMTEType) delete fMTEType;
+    }
 
     void KTHDF5TypeWriterCandidates::RegisterSlots() {
         fWriter->RegisterSlot("frequency-candidates", this, &KTHDF5TypeWriterCandidates::WriteFrequencyCandidates);
