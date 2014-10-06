@@ -48,7 +48,20 @@ namespace Katydid {
     {}
 
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
-    {}
+    {
+      if(fPolarFFTBuffer) delete fPolarFFTBuffer;
+      if(fPolarFFTDSpace) delete fPolarFFTDSpace;
+      if(fPolarPwrBuffer) delete fPolarPwrBuffer;
+      if(fPolarPwrDSpace) delete fPolarPwrDSpace;
+      if(fCmplxFFTBuffer) delete fCmplxFFTBuffer;
+      if(fCmplxFFTDSpace) delete fCmplxFFTDSpace;
+      if(fCmplxPwrBuffer) delete fCmplxPwrBuffer;
+      if(fCmplxPwrDSpace) delete fCmplxPwrDSpace;
+      if(fPwrSpecBuffer) delete fPwrSpecBuffer;
+      if(fPwrSpecDSpace) delete fPwrSpecDSpace;
+      if(fPSDBuffer) delete fPSDBuffer;
+      if(fPSDDSpace) delete fPSDDSpace;
+    }
 
     void KTHDF5TypeWriterFFT::ProcessEggHeader() {   
         KTEggHeader* header = fWriter->GetHeader();
