@@ -10,8 +10,6 @@
 
 #include "KTException.hh"
 
-#include "document.h"
-
 #include <deque>
 #include <map>
 #include <sstream>
@@ -398,24 +396,6 @@ namespace Katydid
     std::ostream& operator<<(std::ostream& out, const KTParamValue& value);
     std::ostream& operator<<(std::ostream& out, const KTParamArray& value);
     std::ostream& operator<<(std::ostream& out, const KTParamNode& value);
-
-
-
-    //***************************************
-    //************** INPUT ******************
-    //***************************************
-
-    class KTParamInputJSON
-    {
-        public:
-            KTParamInputJSON();
-            virtual ~KTParamInputJSON();
-
-            static KTParamNode* ReadFile( const std::string& aFilename );
-            static KTParamNode* ReadString( const std::string& aJSONStr );
-            static KTParamNode* ReadDocument( const rapidjson::Document& aDocument );
-            static KTParam* ReadValue( const rapidjson::Value& aValue );
-    };
 
 } /* namespace Katydid */
 
