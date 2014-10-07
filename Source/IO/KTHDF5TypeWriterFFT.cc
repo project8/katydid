@@ -82,11 +82,10 @@ namespace Katydid {
             /*
              * Complex FFT preparation.
              * Each component gets two rows, one for real and one for imag.
-             * Each row is 2*slice_len + 1 long - positive and negative
-             * frequencies.
-             * Our array is therefore 2N*(2*fSliceSize + 1).
+             * Each row is slice_len long.
+             * Our array is therefore 2N*(fSliceSize).
              */
-             this->fCmplxFFTSize = (this->fSliceSize << 1) + 1;
+             this->fCmplxFFTSize = this->fSliceSize;
              this->fCmplxFFTBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fCmplxFFTSize]);
 
              /*
