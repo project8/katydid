@@ -68,7 +68,7 @@ namespace Katydid
             void SetEndRecordNumber(unsigned rec);
             void SetEndSampleNumber(unsigned sample);
 
-        protected:
+        private:
             KTTimeFrequency* fCandidate;
             unsigned fComponent;
 
@@ -86,7 +86,10 @@ namespace Katydid
             unsigned fStartSampleNumber;
             unsigned fEndRecordNumber;
             unsigned fEndSampleNumber;
-    };
+
+        public:
+            static const std::string sName;
+};
 
     inline KTTimeFrequency* KTWaterfallCandidateData::GetCandidate() const
     {

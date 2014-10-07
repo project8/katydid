@@ -50,9 +50,11 @@ namespace Katydid
             /// Initialize a single new distribution (only removes the specified distribution, if it already exists)
             bool InitializeADistribution(unsigned component, unsigned freqBin, unsigned distNBins, double distMin, double distMax);
 
-        protected:
+        private:
             Distributions fDistributions;
 
+        public:
+            static const std::string sName;
     };
 
     inline const KTAmplitudeDistribution::Distribution& KTAmplitudeDistribution::GetDistribution(unsigned freqBins, unsigned component) const

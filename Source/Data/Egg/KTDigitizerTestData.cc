@@ -11,6 +11,7 @@ using std::vector;
 
 namespace Katydid
 {
+    const std::string KTDigitizerTestData::sName("digitizer-test");
 
     KTDigitizerTestData::KTDigitizerTestData() :
             KTExtensibleData< KTDigitizerTestData >(),
@@ -19,8 +20,8 @@ namespace Katydid
             fBitOccupancyData(),
             fClippingFlag(false),
             fClippingData(),
-	    fLinearityFlag(false),
-	    fLinearityData()
+            fLinearityFlag(false),
+            fLinearityData()
     {
     }
 
@@ -49,7 +50,7 @@ namespace Katydid
             }
         }
         fClippingData.resize(num);
-	fLinearityData.resize(num);
+        fLinearityData.resize(num);
         return *this;
     }
 
@@ -83,32 +84,32 @@ namespace Katydid
         return;
     }
 
-  void KTDigitizerTestData::SetClippingData(unsigned nClipTop, unsigned nClipBottom, unsigned nMultClipTop, unsigned nMultClipBottom, double topClipFrac, double bottomClipFrac, double multTopClipFrac, double multBottomClipFrac, unsigned component)
+    void KTDigitizerTestData::SetClippingData(unsigned nClipTop, unsigned nClipBottom, unsigned nMultClipTop, unsigned nMultClipBottom, double topClipFrac, double bottomClipFrac, double multTopClipFrac, double multBottomClipFrac, unsigned component)
     {
         if (component >= fClippingData.size())
             SetNComponents(component + 1);
         fClippingData[component].fNClipTop = nClipTop;
         fClippingData[component].fNClipBottom = nClipBottom;
-	fClippingData[component].fNMultClipTop = nMultClipTop;
-	fClippingData[component].fNMultClipBottom = nMultClipBottom;
+        fClippingData[component].fNMultClipTop = nMultClipTop;
+        fClippingData[component].fNMultClipBottom = nMultClipBottom;
         fClippingData[component].fTopClipFrac = topClipFrac;
         fClippingData[component].fBottomClipFrac = bottomClipFrac;
-	fClippingData[component].fMultTopClipFrac = multTopClipFrac;
-	fClippingData[component].fMultBottomClipFrac = multBottomClipFrac;
+        fClippingData[component].fMultTopClipFrac = multTopClipFrac;
+        fClippingData[component].fMultBottomClipFrac = multBottomClipFrac;
         return;
     }
 
-  void KTDigitizerTestData::SetLinearityData(double maxDiffAvg, double maxDiffStdev, double avgLinRegSlope,double maxDiffAvgD, double maxDiffStdevD, double avgLinRegSlopeD, unsigned component)
-  {
-           if (component >= fLinearityData.size())
+    void KTDigitizerTestData::SetLinearityData(double maxDiffAvg, double maxDiffStdev, double avgLinRegSlope,double maxDiffAvgD, double maxDiffStdevD, double avgLinRegSlopeD, unsigned component)
+    {
+        if (component >= fLinearityData.size())
             SetNComponents(component + 1); 
-    fLinearityData[component].fMaxDiffAvg = maxDiffAvg;
-    fLinearityData[component].fMaxDiffStdev = maxDiffStdev;
-    fLinearityData[component].fAvgLinRegSlope = avgLinRegSlope;
-    fLinearityData[component].fMaxDiffAvgD = maxDiffAvgD;
-    fLinearityData[component].fMaxDiffStdevD = maxDiffStdevD;
-    fLinearityData[component].fAvgLinRegSlopeD = avgLinRegSlopeD;
-  }
+        fLinearityData[component].fMaxDiffAvg = maxDiffAvg;
+        fLinearityData[component].fMaxDiffStdev = maxDiffStdev;
+        fLinearityData[component].fAvgLinRegSlope = avgLinRegSlope;
+        fLinearityData[component].fMaxDiffAvgD = maxDiffAvgD;
+        fLinearityData[component].fMaxDiffStdevD = maxDiffStdevD;
+        fLinearityData[component].fAvgLinRegSlopeD = avgLinRegSlopeD;
+    }
 
 
 

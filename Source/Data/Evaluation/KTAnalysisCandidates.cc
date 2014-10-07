@@ -9,11 +9,13 @@
 
 namespace Katydid
 {
+    const std::string KTAnalysisCandidates::sName("analysis-candidates");
 
     KTAnalysisCandidates::KTAnalysisCandidates() :
                 KTExtensibleData< KTAnalysisCandidates >(),
                 fCandidates(),
-                fRecordSize(1)
+                fRecordSize(1),
+                fNRecords(0)
     {
     }
 

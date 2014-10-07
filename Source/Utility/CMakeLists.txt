@@ -12,6 +12,7 @@ set (UTILITY_HEADERFILES
     KTDestroyer.hh
     KTException.hh
     KTExtensibleStruct.hh
+    KTExtensibleStructFactory.hh
     KTFactory.hh
     KTLogger.hh
     KTMaskedArray.hh

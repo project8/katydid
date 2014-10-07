@@ -464,8 +464,8 @@ namespace Katydid
                     // if we want an average and not just a sum, this is where the division by the fNWindowsToAverage should go
 
                     // Finish filling in the output data
-                    fOutputData->fLastData = fReceivedLastData;
-                    fOutputData->fCounter = fDataOutCounter;
+                    fOutputData->SetLastData(fReceivedLastData);
+                    fOutputData->SetCounter(fDataOutCounter);
 
                     fOutputSHData->SetSliceNumber(fDataOutCounter);
                     // window ALWAYS ends in the second slice

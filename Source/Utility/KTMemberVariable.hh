@@ -41,6 +41,17 @@
         MEMBERVARIABLE_NOSET(TYPE, NAME) \
             inline void Set##NAME(TYPE var) {f##NAME = var; return;}
 
+#define MEMBERVARIABLE_PROTECTED_NOSET(TYPE, NAME) \
+        protected: \
+            TYPE f##NAME; \
+        public: \
+            inline TYPE Get##NAME() const {return f##NAME;} \
+
+#define MEMBERVARIABLE_PROTECTED(TYPE, NAME) \
+        MEMBERVARIABLE_PROTECTED_NOSET(TYPE, NAME) \
+            inline void Set##NAME(TYPE var) {f##NAME = var; return;}
+
+
 
 /**
  * Creates a member variable with type TYPE name f[NAME], plus getters and setters.
@@ -72,6 +83,16 @@
 
 #define MEMBERVARIABLEREF(TYPE, NAME) \
         MEMBERVARIABLEREF_NOSET(TYPE, NAME) \
+            inline void Set##NAME(const TYPE& var) {f##NAME = var; return;}
+
+#define MEMBERVARIABLEREF_PROTECTED_NOSET(TYPE, NAME) \
+        protected: \
+            TYPE f##NAME; \
+        public: \
+            inline const TYPE& Get##NAME() const {return f##NAME;}
+
+#define MEMBERVARIABLEREF_PROTECTED(TYPE, NAME) \
+        MEMBERVARIABLEREF_PROTECTED_NOSET(TYPE, NAME) \
             inline void Set##NAME(const TYPE& var) {f##NAME = var; return;}
 
 

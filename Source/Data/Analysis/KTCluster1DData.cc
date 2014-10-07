@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTCluster1DData::sName("cluster-1d");
+
     KTCluster1DData::KTCluster1DData() :
             KTExtensibleData< KTCluster1DData >(),
             fComponentData(),

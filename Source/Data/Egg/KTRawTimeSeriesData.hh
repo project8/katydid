@@ -29,9 +29,11 @@ namespace Katydid
             KTRawTimeSeries* GetTimeSeries(unsigned component = 0);
             void SetTimeSeries(KTRawTimeSeries* record, unsigned component = 0);
 
-        protected:
+        private:
             std::vector< KTRawTimeSeries* > fTimeSeries;
 
+        public:
+            static const std::string sName;
     };
 
     inline unsigned KTRawTimeSeriesData::GetNComponents() const

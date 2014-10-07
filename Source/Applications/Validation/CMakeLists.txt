@@ -29,6 +29,9 @@ if (Katydid_ENABLE_TESTING)
                                     KTTestConfigurable.cc)
     target_link_libraries (TestApplication KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
 
+    add_executable (TestApplyCut TestApplyCut.cc)
+    target_link_libraries (TestApplyCut KatydidUtility KatydidData ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestAxisProperties TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${EXTERNAL_LIBRARIES})
     
@@ -48,6 +51,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestCorrelator TestCorrelator.cc)
     target_link_libraries (TestCorrelator KatydidUtility KatydidIO KatydidData KatydidCore KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
+    add_executable (TestCut TestCut.cc)
+    target_link_libraries (TestCut KatydidUtility KatydidData ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestCutIterator TestCutIterator.cc)
     target_link_libraries (TestCutIterator KatydidUtility ${EXTERNAL_LIBRARIES})
     
@@ -100,6 +106,9 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestNanoflann TestNanoflann.cc)
     target_link_libraries (TestNanoflann KatydidUtility KatydidCore KatydidData KatydidAnalysis ${EXTERNAL_LIBRARIES})
     
+    add_executable (TestPrintData TestPrintData.cc)
+    target_link_libraries (TestPrintData KatydidUtility KatydidData ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestRandom TestRandom.cc)
     target_link_libraries (TestRandom KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
     
@@ -136,12 +145,14 @@ if (Katydid_ENABLE_TESTING)
     pbuilder_install_executables (
                      ObjectSize
                      TestApplication
+                     TestApplyCut
                      TestAxisProperties
                      TestCacheDirectory
                      TestComplexPolar
                      TestConfigurator
                      TestConsensusThresholding
                      TestCorrelator
+                     TestCut
                      TestCutIterator
                      TestCutableArray
                      TestDataAccumulator
@@ -159,6 +170,7 @@ if (Katydid_ENABLE_TESTING)
                      TestMultiSliceClustering
                      TestMultiFileJSONReader
                      TestNanoflann
+                     TestPrintData
                      TestRandom
                      TestSignalsAndSlots
                      #TestSimpleClustering
@@ -173,11 +185,13 @@ if (Katydid_ENABLE_TESTING)
              
     # this command won't run; ExtractBundles needs arguments; I still need to add a data file to the repository to use here.
     add_test (Test_Application TestApplication)
+    add_test (Test_ApplyCut TestApplyCut)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_CacheDirectory TestCacheDirectory)
     add_test (Test_ComplexPolar TestComplexPolar)
     add_test (Test_Configurator TestConfigurator)
     add_test (Test_Correlator TestCorrelator)
+    add_test (Test_Cut TestCut)
     add_test (Test_CutIterator TestCutIterator)
     add_test (Test_CutableArray TestCutableArray)
     add_test (Test_DataAccumulator TestDataAccumulator)
@@ -192,6 +206,7 @@ if (Katydid_ENABLE_TESTING)
     add_test (Test_MinMaxBin TestMinMaxBin)
     add_test (Test_MultiSliceClustering TestMultiSliceClustering)
     add_test (Test_MultiFileJSONReader TestMultiFileJSONReader)
+    add_test (Test_PrintData TestPrintData)
     add_test (Test_ParameterStore TestParameterStore)
     add_test (Test_Random TestRandom)
     add_test (Test_SignalsAndSlots TestSignalsAndSlots)

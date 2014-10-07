@@ -53,8 +53,11 @@ namespace Katydid
 
             KTGainVariationData& SetNComponents(unsigned components);
 
-        protected:
+        private:
             std::vector< PerComponentData > fComponentData;
+
+        public:
+            static const std::string sName;
 
 #ifdef ROOT_FOUND
         public:

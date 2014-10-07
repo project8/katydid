@@ -98,6 +98,10 @@ namespace Katydid
             virtual ~KTMultiFSDataFFTW();
 
             KTMultiFSDataFFTW& SetNComponents(unsigned component);
+
+        public:
+            static const std::string sName;
+
     };
 
 } /* namespace Katydid */

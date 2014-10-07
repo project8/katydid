@@ -12,41 +12,68 @@
 namespace Katydid
 {
 
-    // *) Grouping is optional. Give "void" to disable (default).
     // *) operator= reallocates extended fields: to avoid this, use Pull().
 
+    /**
+     *
+     */
 
-    template<class XGroupType=void>
-    struct KTExtensibleStructCore
+    template< class XBaseType >
+    struct KTExtensibleStructCore : public XBaseType
     {
         public:
+            /// Default constructor
             KTExtensibleStructCore(void);
+            /// Copy constructor; duplicates the extended object
             KTExtensibleStructCore(const KTExtensibleStructCore&);
             virtual ~KTExtensibleStructCore();
+            /// Duplicates the extended object
             KTExtensibleStructCore& operator=(const KTExtensibleStructCore&);
+            /// Removes extended fields
             virtual void Clear(void);
-            template<class XStructType> inline XStructType& Of(void);
-            template<class XStructType> inline const XStructType& Of(void) const;
-            template<class XStructType> inline bool Has(void) const;
-            template<class XStructType> inline XStructType* Detatch(void);
+            /// Returns a reference to the object of type XStructType; creates that object if it doesn't exist
+            template< class XStructType > inline XStructType& Of(void);
+            /// Returns a const reference to the object of type XStructType; creates that object if it doesn't exist
+            template< class XStructType > inline const XStructType& Of(void) const;
+            /// Returns true if XStructType is or is below this object
+            template< class XStructType > inline bool Has(void) const;
+            /// Extracts object of type XStructType
+            template< class XStructType > inline XStructType* Detatch(void);
+            /// Duplicates the extended object
             virtual KTExtensibleStructCore* Clone(void) const = 0;
-            virtual void Pull(const KTExtensibleStructCore<XGroupType>& object) = 0;
+            /// Duplicates object only
+            virtual void Pull(const KTExtensibleStructCore< XBaseType >& object) = 0;
+            /// Returns the pointer to the next field
+            KTExtensibleStructCore* Next() const;
+            /// Returns the pointer to the previous field
+            KTExtensibleStructCore* Prev() const;
+            /// Returns the pointer to the last field
+            KTExtensibleStructCore* Last() const;
+            /// Returns the pointer to the first field
+            KTExtensibleStructCore* First() const;
         protected:
+            void SetPrevPtrInNext();
             mutable KTExtensibleStructCore* fNext;
+            mutable KTExtensibleStructCore* fPrev;
     };
 
 
 
-    template<class XInstanceType, class XGroupType=void>
-    struct KTExtensibleStruct : KTExtensibleStructCore< XGroupType >
+    template< class XInstanceType, class XBaseType >
+    struct KTExtensibleStruct : KTExtensibleStructCore< XBaseType >
     {
         public:
+            /// Default constructor
             KTExtensibleStruct(void);
+            /// Copy constructor; duplicates the extended object
             KTExtensibleStruct(const KTExtensibleStruct& object);
             virtual ~KTExtensibleStruct();
+            /// Duplicates the extended object
             KTExtensibleStruct& operator=(const KTExtensibleStruct& object);
-            virtual KTExtensibleStructCore<XGroupType>* Clone(void) const;
-            virtual void Pull(const KTExtensibleStructCore<XGroupType>& object);
+            /// Duplicates the extended object
+            virtual KTExtensibleStructCore< XBaseType >* Clone(void) const;
+            /// Duplicates object only
+            virtual void Pull(const KTExtensibleStructCore< XBaseType >& object);
             void SetIsCopyDisabled(bool flag);
         private:
             bool fIsCopyDisabled;
@@ -54,42 +81,44 @@ namespace Katydid
 
 
 
-    template<class XGroupType>
-    KTExtensibleStructCore<XGroupType>::KTExtensibleStructCore(void)
+    template<class XBaseType>
+    KTExtensibleStructCore<XBaseType>::KTExtensibleStructCore(void)
     {
+        fPrev = 0;
         fNext = 0;
     }
 
-    template<class XGroupType>
-    KTExtensibleStructCore<XGroupType>::KTExtensibleStructCore(const KTExtensibleStructCore&)
+    template<class XBaseType>
+    KTExtensibleStructCore<XBaseType>::KTExtensibleStructCore(const KTExtensibleStructCore&)
     {
+        fPrev = 0;
         fNext = 0;
     }
 
-    template<class XGroupType>
-    KTExtensibleStructCore<XGroupType>::~KTExtensibleStructCore()
+    template<class XBaseType>
+    KTExtensibleStructCore<XBaseType>::~KTExtensibleStructCore()
     {
         delete fNext;
         fNext = 0;
     }
 
-    template<class XGroupType>
-    KTExtensibleStructCore<XGroupType>& KTExtensibleStructCore<XGroupType>::operator=(const KTExtensibleStructCore&)
+    template<class XBaseType>
+    KTExtensibleStructCore<XBaseType>& KTExtensibleStructCore<XBaseType>::operator=(const KTExtensibleStructCore&)
     {
         fNext = 0;
         return *this;
     }
 
-    template<class XGroupType>
-    void KTExtensibleStructCore<XGroupType>::Clear(void)
+    template<class XBaseType>
+    void KTExtensibleStructCore<XBaseType>::Clear(void)
     {
-    delete fNext;
-    fNext = 0;
+        delete fNext;
+        fNext = 0;
     }
 
-    template<class XGroupType>
+    template<class XBaseType>
     template<class XStructType>
-    inline XStructType& KTExtensibleStructCore<XGroupType>::Of(void)
+    inline XStructType& KTExtensibleStructCore<XBaseType>::Of(void)
     {
         XStructType* target = dynamic_cast<XStructType*>(this);
         if (target)
@@ -100,14 +129,15 @@ namespace Katydid
         if (! fNext)
         {
             fNext = new XStructType();
+            fNext->fPrev = this;
         }
 
         return fNext->Of<XStructType>();
     }
 
-    template<class XGroupType>
+    template<class XBaseType>
     template<class XStructType>
-    inline const XStructType& KTExtensibleStructCore<XGroupType>::Of(void) const
+    inline const XStructType& KTExtensibleStructCore<XBaseType>::Of(void) const
     {
         const XStructType* target = dynamic_cast<const XStructType*>(this);
         if (target)
@@ -118,6 +148,7 @@ namespace Katydid
         if (fNext == 0)
         {
             fNext = new XStructType();
+            fNext->fPrev = const_cast< KTExtensibleStructCore< XBaseType >* >(this);
         }
 
         return fNext->Of<XStructType>();
@@ -125,9 +156,9 @@ namespace Katydid
 
 
 
-    template<class XGroupType>
+    template<class XBaseType>
     template<class XStructType>
-    inline bool KTExtensibleStructCore<XGroupType>::Has(void) const
+    inline bool KTExtensibleStructCore<XBaseType>::Has(void) const
     {
         if (dynamic_cast<const XStructType*>(this))
         {
@@ -143,9 +174,9 @@ namespace Katydid
 
 
 
-    template<class XGroupType>
+    template<class XBaseType>
     template<class XStructType>
-    inline XStructType* KTExtensibleStructCore<XGroupType>::Detatch(void)
+    inline XStructType* KTExtensibleStructCore<XBaseType>::Detatch(void)
     {
         if (! fNext)
         {
@@ -157,30 +188,66 @@ namespace Katydid
             if (next->fNext)
             {
                 fNext = next->fNext;
+                fNext->fPrev = this;
                 next->fNext = 0;
             }
+            next->fPrev = 0;
             return next;
         }
         return fNext->Detatch<XStructType>();
     }
 
 
+    template<class XBaseType>
+    inline KTExtensibleStructCore<XBaseType>* KTExtensibleStructCore<XBaseType>::Next() const
+    {
+        return fNext;
+    }
 
-    template<class XInstanceType, class XGroupType>
-    KTExtensibleStruct<XInstanceType, XGroupType>::KTExtensibleStruct(void)
+    template<class XBaseType>
+    inline KTExtensibleStructCore<XBaseType>* KTExtensibleStructCore<XBaseType>::Prev() const
+    {
+        return fPrev;
+    }
+
+    template<class XBaseType>
+    inline KTExtensibleStructCore<XBaseType>* KTExtensibleStructCore<XBaseType>::Last() const
+    {
+        if (fNext == 0) return this;
+        return fNext->Last();
+    }
+
+    template<class XBaseType>
+    inline KTExtensibleStructCore<XBaseType>* KTExtensibleStructCore<XBaseType>::First() const
+    {
+        if (fPrev == 0) return this;
+        return fPrev->First();
+    }
+
+    template<class XBaseType>
+    inline void KTExtensibleStructCore<XBaseType>::SetPrevPtrInNext()
+    {
+        fNext->fPrev = this;
+        return;
+    }
+
+
+
+    template<class XInstanceType, class XBaseType>
+    KTExtensibleStruct<XInstanceType, XBaseType>::KTExtensibleStruct(void)
     {
         fIsCopyDisabled = false;
     }
 
-    template<class XInstanceType, class XGroupType>
-    KTExtensibleStruct<XInstanceType, XGroupType>::~KTExtensibleStruct()
+    template<class XInstanceType, class XBaseType>
+    KTExtensibleStruct<XInstanceType, XBaseType>::~KTExtensibleStruct()
     {
         fIsCopyDisabled = false;
     }
 
-    template<class XInstanceType, class XGroupType>
-    KTExtensibleStruct<XInstanceType, XGroupType>::KTExtensibleStruct(const KTExtensibleStruct<XInstanceType, XGroupType>& object) :
-            KTExtensibleStructCore<XGroupType>(object)
+    template<class XInstanceType, class XBaseType>
+    KTExtensibleStruct<XInstanceType, XBaseType>::KTExtensibleStruct(const KTExtensibleStruct<XInstanceType, XBaseType>& object) :
+            KTExtensibleStructCore<XBaseType>(object)
     {
         // should this check fIsCopyDisabled in object?
         fIsCopyDisabled = false;
@@ -191,8 +258,8 @@ namespace Katydid
         }
     }
 
-    template<class XInstanceType, class XGroupType>
-    KTExtensibleStruct<XInstanceType, XGroupType>& KTExtensibleStruct<XInstanceType, XGroupType>::operator=(const KTExtensibleStruct<XInstanceType, XGroupType>& object)
+    template<class XInstanceType, class XBaseType>
+    KTExtensibleStruct<XInstanceType, XBaseType>& KTExtensibleStruct<XInstanceType, XBaseType>::operator=(const KTExtensibleStruct<XInstanceType, XBaseType>& object)
     {
         // should this check fIsCopyDisabled in object?
         if ((&object == this) || fIsCopyDisabled)
@@ -206,13 +273,15 @@ namespace Katydid
         if (object.fNext)
         {
             this->fNext = object.fNext->Clone();
+            this->KTExtensibleStructCore< XBaseType >::SetPrevPtrInNext();
+            //this->fNext->fPrev = this;
         }
 
         return *this;
     }
 
-    template<class XInstanceType, class XGroupType>
-    KTExtensibleStructCore<XGroupType>* KTExtensibleStruct<XInstanceType, XGroupType>::Clone(void) const
+    template<class XInstanceType, class XBaseType>
+    KTExtensibleStructCore<XBaseType>* KTExtensibleStruct<XInstanceType, XBaseType>::Clone(void) const
     {
         // assume CRTP is used properly,
         // otherwise compiling fails here (intended behavior)
@@ -220,14 +289,17 @@ namespace Katydid
         if (this->fNext)
         {
             instance->fNext = this->fNext->Clone();
+            instance->SetPrevPtrInNext();
+            //instance->fNext->fPrev = instance->fNext;
         }
         return instance;
     }
 
-    template<class XInstanceType, class XGroupType>
-    void KTExtensibleStruct<XInstanceType, XGroupType>::Pull(const KTExtensibleStructCore<XGroupType>& object)
+    template<class XInstanceType, class XBaseType>
+    void KTExtensibleStruct<XInstanceType, XBaseType>::Pull(const KTExtensibleStructCore<XBaseType>& object)
     {
-        if (&object == this) {
+        if (&object == this)
+        {
             return;
         }
 
@@ -249,8 +321,8 @@ namespace Katydid
         }
     }
 
-    template<class XInstanceType, class XGroupType>
-    inline void KTExtensibleStruct<XInstanceType, XGroupType>::SetIsCopyDisabled(bool flag)
+    template<class XInstanceType, class XBaseType>
+    inline void KTExtensibleStruct<XInstanceType, XBaseType>::SetIsCopyDisabled(bool flag)
     {
         fIsCopyDisabled = flag;
         return;

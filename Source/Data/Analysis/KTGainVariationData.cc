@@ -10,6 +10,8 @@
 
 namespace Katydid
 {
+    const std::string KTGainVariationData::sName("gain-variation");
+
     KTGainVariationData::KTGainVariationData() :
             KTExtensibleData< KTGainVariationData >(),
             fComponentData(1)

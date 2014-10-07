@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTAnalyticAssociateData::sName("analytic-associate");
+
     KTAnalyticAssociateData::KTAnalyticAssociateData() :
         KTTimeSeriesDataCore(),
         KTExtensibleData< KTAnalyticAssociateData >()

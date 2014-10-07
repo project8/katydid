@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTFrequencyCandidateData::sName("frequency-candidate");
+
     KTFrequencyCandidateData::KTFrequencyCandidateData() :
             KTExtensibleData< KTFrequencyCandidateData >(),
             fComponentData(1),

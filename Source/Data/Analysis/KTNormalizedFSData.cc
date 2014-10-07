@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTNormalizedFSDataPolar::sName("normalized-fs-polar");
+
     KTNormalizedFSDataPolar::KTNormalizedFSDataPolar()
     {}
     KTNormalizedFSDataPolar::~KTNormalizedFSDataPolar()
@@ -31,6 +33,8 @@ namespace Katydid
         return *this;
     }
 
+
+    const std::string KTNormalizedFSDataFFTW::sName("normalized-fs-fftw");
 
     KTNormalizedFSDataFFTW::KTNormalizedFSDataFFTW()
     {}
@@ -57,6 +61,9 @@ namespace Katydid
         }
         return *this;
     }
+
+
+    const std::string KTNormalizedPSData::sName("normalized-ps");
 
     KTNormalizedPSData::KTNormalizedPSData()
     {}

@@ -278,7 +278,7 @@ namespace Katydid
                 (*sigIt->second.fAccumulatingSignal)(fLastAccumulatorPtr->fData);
                 sigIt->second.fSignalCount = 0;
             }
-            if (data->fLastData)
+            if (data->GetLastData())
             {
                 KTDEBUG(avlog_hh, "Emitting last-data signal");
                 if (! Scale(fLastAccumulatorPtr->fData->Of< XDataType >(), fLastAccumulatorPtr->fSliceHeader))

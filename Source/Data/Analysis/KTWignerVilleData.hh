@@ -25,9 +25,12 @@ namespace Katydid
 
             virtual KTWignerVilleData& SetNComponents(unsigned components);
 
-        protected:
+        private:
             std::vector< std::pair< unsigned, unsigned > > fWVComponentData;
-    };
+
+        public:
+            static const std::string sName;
+};
 
     inline const std::pair< unsigned, unsigned >& KTWignerVilleData::GetInputPair(unsigned component) const
     {

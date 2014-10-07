@@ -30,9 +30,11 @@ namespace Katydid
             KTTimeSeriesDist* GetTimeSeriesDist(unsigned component = 0);
             void SetTimeSeriesDist(KTTimeSeriesDist* record, unsigned component = 0);
 
-        protected:
+        private:
             std::vector< KTTimeSeriesDist* > fTimeSeriesDist;
 
+        public:
+            static const std::string sName;
     };
 
     inline unsigned KTTimeSeriesDistData::GetNComponents() const

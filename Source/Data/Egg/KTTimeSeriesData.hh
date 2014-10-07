@@ -74,6 +74,9 @@ namespace Katydid
             virtual ~KTTimeSeriesData();
 
             virtual KTTimeSeriesData& SetNComponents(unsigned num);
+
+        public:
+            static const std::string sName;
     };
 
 } /* namespace Katydid */

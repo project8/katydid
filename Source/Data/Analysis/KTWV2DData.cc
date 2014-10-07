@@ -10,6 +10,8 @@
 
 namespace Katydid
 {
+    const std::string KTWV2DData::sName("wigner-ville-2d");
+
     KTWV2DData::KTWV2DData() :
             KTMultiFSDataFFTWCore(),
             KTExtensibleData< KTWV2DData >(),

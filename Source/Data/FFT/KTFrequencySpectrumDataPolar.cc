@@ -25,6 +25,8 @@ namespace Katydid
     }
 
 
+    const std::string KTFrequencySpectrumDataPolar::sName("frequency-spectrum-polar");
+
     KTFrequencySpectrumDataPolar::KTFrequencySpectrumDataPolar() :
             KTFrequencySpectrumDataPolarCore(),
             KTExtensibleData< KTFrequencySpectrumDataPolar >()

@@ -61,12 +61,14 @@ namespace Katydid
             void SetNBins(unsigned nBins);
             void SetBinWidth(double binWidth);
 
-        protected:
+        private:
             std::vector< PerComponentData > fComponentData;
 
             unsigned fNBins;
             double fBinWidth;
 
+        public:
+            static const std::string sName;
 
     };
 

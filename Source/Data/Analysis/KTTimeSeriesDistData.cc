@@ -11,6 +11,7 @@
 
 namespace Katydid
 {
+    const std::string KTTimeSeriesDistData::sName("time-series-dist");
 
     KTTimeSeriesDistData::KTTimeSeriesDistData() :
             KTExtensibleData< KTTimeSeriesDistData >()

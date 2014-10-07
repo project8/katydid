@@ -110,6 +110,10 @@ namespace Katydid
             virtual ~KTMultiFSDataPolar();
 
             KTMultiFSDataPolar& SetNComponents(unsigned component);
+
+        public:
+            static const std::string sName;
+
     };
 
 } /* namespace Katydid */

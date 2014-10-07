@@ -16,6 +16,8 @@ namespace Katydid
 {
     KTLOGGER(evlog, "KTMultiTrackEventData")
 
+    const std::string KTMultiTrackEventData::sName("multi-track-event");
+
     KTMultiTrackEventData::KTMultiTrackEventData() :
             KTExtensibleData< KTMultiTrackEventData >(),
             fComponent(0),

@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTCorrelationData::sName("correlation");
+
     KTCorrelationData::KTCorrelationData() :
             KTFrequencySpectrumDataPolarCore(),
             KTExtensibleData< KTCorrelationData >(),

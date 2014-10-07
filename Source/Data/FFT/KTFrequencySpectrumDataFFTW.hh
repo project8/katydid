@@ -116,6 +116,10 @@ namespace Katydid
             virtual ~KTFrequencySpectrumDataFFTW();
 
             virtual KTFrequencySpectrumDataFFTW& SetNComponents(unsigned components);
+
+        public:
+            static const std::string sName;
+
     };
 
 } /* namespace Katydid */

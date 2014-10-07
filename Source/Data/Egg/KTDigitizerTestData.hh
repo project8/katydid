@@ -56,6 +56,9 @@ namespace Katydid
             void SetLinearityData(double maxDiffAvg, double maxDiffStdev, double avgLinRegSlope,double maxDiffAvgD, double maxDiffStdevD, double avgLinRegSlopeD, unsigned component = 0);
 
 
+        public:
+            static const std::string sName;
+
         private:
             unsigned fNBits;
 
@@ -71,12 +74,12 @@ namespace Katydid
             {
                 unsigned fNClipTop;
                 unsigned fNClipBottom;
-	        unsigned fNMultClipTop;
-	        unsigned fNMultClipBottom;
+                unsigned fNMultClipTop;
+                unsigned fNMultClipBottom;
                 double fTopClipFrac;
                 double fBottomClipFrac;
-	        double fMultTopClipFrac;
-	        double fMultBottomClipFrac;
+                double fMultTopClipFrac;
+                double fMultBottomClipFrac;
 
             };
 
@@ -84,14 +87,14 @@ namespace Katydid
             std::vector< ClippingData > fClippingData;
 
             struct LinearityData
-	    {
-	         double fMaxDiffAvg;
-	         double fMaxDiffStdev;
-	         double fAvgLinRegSlope;
-	         double fMaxDiffAvgD;
-	         double fMaxDiffStdevD;
-	         double fAvgLinRegSlopeD;
-	    };
+            {
+                double fMaxDiffAvg;
+                double fMaxDiffStdev;
+                double fAvgLinRegSlope;
+                double fMaxDiffAvgD;
+                double fMaxDiffStdevD;
+                double fAvgLinRegSlopeD;
+            };
 
             bool fLinearityFlag;
             std::vector< LinearityData > fLinearityData;

@@ -9,6 +9,7 @@
 
 namespace Katydid
 {
+    const std::string KTMCTruthEvents::sName("mc-truth-events");
 
     KTMCTruthEvents::KTMCTruthEvents() :
         KTExtensibleData< KTMCTruthEvents >(),

@@ -141,6 +141,9 @@ namespace Katydid
 
  #endif
 
+
+    const std::string KTMultiFSDataFFTW::sName("multi-fs-fftw");
+
     KTMultiFSDataFFTW::KTMultiFSDataFFTW() :
             KTMultiFSDataFFTWCore(),
             KTExtensibleData< KTMultiFSDataFFTW >()

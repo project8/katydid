@@ -25,9 +25,12 @@ namespace Katydid
 
             KTWV2DData& SetNComponents(unsigned component);
 
-        protected:
+        private:
             std::vector< std::pair< unsigned, unsigned > > fWVComponentData;
-    };
+
+        public:
+            static const std::string sName;
+};
 
     inline const std::pair< unsigned, unsigned >& KTWV2DData::GetInputPair(unsigned component) const
     {

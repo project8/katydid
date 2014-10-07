@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTDiscriminatedPoints2DData::sName("disc-points-2d");
+
     KTDiscriminatedPoints2DData::KTDiscriminatedPoints2DData() :
             KTExtensibleData< KTDiscriminatedPoints2DData >(),
             fComponentData(1),

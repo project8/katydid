@@ -70,7 +70,7 @@ namespace Katydid
             unsigned GetNRecords() const;
             void SetNRecords(unsigned rec);
 
-        protected:
+        private:
             double fEventLength;
             double fdfdt;
             double fSignalPower;
@@ -79,6 +79,9 @@ namespace Katydid
 
             unsigned fRecordSize;
             unsigned fNRecords;
+
+        public:
+            static const std::string sName;
     };
 
     inline double KTMCTruthEvents::GetEventLength()

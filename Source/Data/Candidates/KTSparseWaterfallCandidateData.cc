@@ -9,6 +9,8 @@
 
 namespace Katydid
 {
+    const std::string KTSparseWaterfallCandidateData::sName("sparse-wf-candidate");
+
     KTSparseWaterfallCandidateData::KTSparseWaterfallCandidateData() :
             KTExtensibleData< KTSparseWaterfallCandidateData >(),
             fPoints(),
