@@ -261,10 +261,10 @@ namespace Katydid
         fSpanCenterFreq = mxGetScalar(fCFArray);
         fSpan = mxGetScalar(fSpanArray);
 
-        fMinFreq = fSpanCenterFreq - fSpan/2.0;
-        fMaxFreq = fMinFreq + fAcqBW;
+        fMinFreq = fSpanCenterFreq - fAcqBW/2.0;
+        fMaxFreq = fSpanCenterFreq + fAcqBW/2.0;
 
-        fHeader.SetCenterFrequency(fMinFreq + fAcqBW/2.0);
+        fHeader.SetCenterFrequency(fSpanCenterFreq);
         fHeader.SetMinimumFrequency(fMinFreq);
         fHeader.SetMaximumFrequency(fMaxFreq);
 
