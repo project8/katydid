@@ -29,6 +29,9 @@ if (Katydid_ENABLE_TESTING)
                                     KTTestConfigurable.cc)
     target_link_libraries (TestApplication KatydidUtility KatydidCore ${EXTERNAL_LIBRARIES})
 
+    add_executable (TestApplyCut TestApplyCut.cc)
+    target_link_libraries (TestApplyCut KatydidUtility KatydidData ${EXTERNAL_LIBRARIES})
+    
     add_executable (TestAxisProperties TestAxisProperties.cc)
     target_link_libraries (TestAxisProperties KatydidUtility ${EXTERNAL_LIBRARIES})
     
@@ -139,6 +142,7 @@ if (Katydid_ENABLE_TESTING)
     pbuilder_install_executables (
                      ObjectSize
                      TestApplication
+                     TestApplyCut
                      TestAxisProperties
                      TestCacheDirectory
                      TestComplexPolar
@@ -177,6 +181,7 @@ if (Katydid_ENABLE_TESTING)
              
     # this command won't run; ExtractBundles needs arguments; I still need to add a data file to the repository to use here.
     add_test (Test_Application TestApplication)
+    add_test (Test_ApplyCut TestApplyCut)
     add_test (Test_AxisProperties TestAxisProperties)
     add_test (Test_CacheDirectory TestCacheDirectory)
     add_test (Test_ComplexPolar TestComplexPolar)
