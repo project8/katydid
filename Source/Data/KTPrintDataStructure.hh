@@ -36,7 +36,9 @@ namespace Katydid
      Available configuration values: none
 
      Slots:
-     - "print-data": void (KTDataPtr) -- Prints the structure of the data object; Does not modify the data; Emits signal "data"
+     - "print-data": void (KTDataPtr) -- Prints the structure of the data object; Does not modify the data or cuts; Emits signal "data"
+     - "print-cuts": void (KTDataPtr) -- Prints the structure of the data's cuts; Does not modify the data or cuts; Emits signal "data"
+     - "print-data-and-cuts": void (KTDataPtr) -- Prints the structure of the data object and its cuts; Does not modify the data or cuts; Emits signal "data"
 
      Signals:
      - "data": void (KTDataPtr) -- Emitted after structure information is printed
@@ -52,9 +54,12 @@ namespace Katydid
 
         public:
             void PrintDataStructure(KTDataPtr dataPtr);
-            //void PrintCutStructure(KTDataPtr dataPtr);
-            //void PrintDataAndCutStructure(KTDataPtr dataPtr);
+            void PrintCutStructure(KTDataPtr dataPtr);
+            void PrintDataAndCutStructure(KTDataPtr dataPtr);
 
+        private:
+            void DoPrintDataStructure(KTDataPtr dataPtr);
+            void DoPrintCutStructure(KTDataPtr dataPtr);
 
             //***************
             // Signals
@@ -69,8 +74,8 @@ namespace Katydid
 
         private:
             KTSlotOneArg< void (KTDataPtr) > fDataStructSlot;
-            //KTSlotOneArg< void (KTDataPtr) > fCutStructSlot;
-            //KTSlotOneArg< void (KTDataPtr) > fDataAndCutStructSlot;
+            KTSlotOneArg< void (KTDataPtr) > fCutStructSlot;
+            KTSlotOneArg< void (KTDataPtr) > fDataAndCutStructSlot;
 
     };
 }

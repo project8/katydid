@@ -24,7 +24,9 @@ namespace Katydid
     KTPrintDataStructure::KTPrintDataStructure(const std::string& name) :
             KTProcessor(name),
             fDataSignal("data", this),
-            fDataStructSlot("print-data", this, &KTPrintDataStructure::PrintDataStructure)
+            fDataStructSlot("print-data", this, &KTPrintDataStructure::PrintDataStructure),
+            fCutStructSlot("print-cuts", this, &KTPrintDataStructure::PrintCutStructure),
+            fDataAndCutStructSlot("print-data-and-cuts", this, &KTPrintDataStructure::PrintDataAndCutStructure)
     {
     }
 
@@ -39,8 +41,38 @@ namespace Katydid
 
     void KTPrintDataStructure::PrintDataStructure(KTDataPtr dataPtr)
     {
+        DoPrintDataStructure(dataPtr);
+
+        fDataSignal(dataPtr);
+
+        return;
+    }
+
+    void KTPrintDataStructure::PrintCutStructure(KTDataPtr dataPtr)
+    {
+        DoPrintCutStructure(dataPtr);
+
+        fDataSignal(dataPtr);
+
+        return;
+    }
+
+
+    void KTPrintDataStructure::PrintDataAndCutStructure(KTDataPtr dataPtr)
+    {
+        DoPrintDataStructure(dataPtr);
+        DoPrintCutStructure(dataPtr);
+
+        fDataSignal(dataPtr);
+
+        return;
+    }
+
+    void KTPrintDataStructure::DoPrintDataStructure(KTDataPtr dataPtr)
+    {
         std::stringstream printbuf;
-        printbuf << "Data Structure:\n";
+
+        printbuf << "\nData Structure:\n";
         printbuf << "\t- " << dataPtr->Name() << '\n';
         KTDEBUG(datalog, "Found data type " << dataPtr->Name());
         KTExtensibleStructCore< KTDataCore >* nextData = dataPtr->Next();
@@ -50,14 +82,31 @@ namespace Katydid
             KTDEBUG(datalog, "Found data type " << nextData->Name());
             nextData = nextData->Next();
         }
-        KTINFO(datalog, printbuf.str());
 
-        fDataSignal(dataPtr);
+        KTINFO(datalog, printbuf.str());
 
         return;
     }
 
-    //void KTPrintDataStructure::PrintCutStructure(KTDataPtr dataPtr);
-    //void KTPrintDataStructure::PrintDataAndCutStructure(KTDataPtr dataPtr);
+    void KTPrintDataStructure::DoPrintCutStructure(KTDataPtr dataPtr)
+    {
+        std::stringstream printbuf;
+
+        KTCutStatus& cutStatus = dataPtr->GetCutStatus();
+        printbuf << "\n" << cutStatus;
+
+        const KTCutResult* cutResult = cutStatus.CutResults();
+        printbuf << "Cut Structure:\n";
+        while (cutResult != NULL)
+        {
+            printbuf << "\t- " << cutResult->Name() << " -- is cut: " << cutResult->GetState() << '\n';
+            KTDEBUG(datalog, "Found cut type " << cutResult->Name());
+            cutResult = cutResult->Next();
+        }
+
+        KTINFO(datalog, printbuf.str());
+
+        return;
+    }
 
 } /* namespace Katydid */
