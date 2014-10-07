@@ -96,10 +96,9 @@ namespace Katydid
          if (! dataPtr->Has< KTSomeData >())
          {
              KTERROR(exlog, "Data type <KTSomeData> was not present");
-             return;
+             return false;
          }
-         Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTSomeData >());
-         return;
+         return Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTSomeData >());
      }
 
     */
@@ -110,7 +109,7 @@ namespace Katydid
             KTCut(const std::string& name = "default-cut-name");
             virtual ~KTCut();
 
-            virtual void Apply(KTDataPtr) = 0;
+            virtual bool Apply(KTDataPtr) = 0;
     };
 
 

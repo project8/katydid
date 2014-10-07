@@ -57,15 +57,14 @@ namespace Katydid
                 return isCut;
             }
 
-            void Apply(KTDataPtr dataPtr)
+            bool Apply(KTDataPtr dataPtr)
             {
                 if (! dataPtr->Has< KTTestData >())
                 {
                     KTERROR(testlog, "Data type <KTTestData> was not present");
-                    return;
+                    return false;
                 }
-                Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTTestData >());
-                return;
+                return Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTTestData >());
             }
     };
 
@@ -97,15 +96,14 @@ namespace Katydid
                 return isCut;
             }
 
-            void Apply(KTDataPtr dataPtr)
+            bool Apply(KTDataPtr dataPtr)
             {
                 if (! dataPtr->Has< KTTestData >())
                 {
                     KTERROR(testlog, "Data type <KTTestData> was not present");
-                    return;
+                    return false;
                 }
-                Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTTestData >());
-                return;
+                return Apply(dataPtr->Of< KTData >(), dataPtr->Of< KTTestData >());
             }
     };
 
