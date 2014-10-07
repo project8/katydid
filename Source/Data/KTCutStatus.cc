@@ -168,4 +168,11 @@ namespace Katydid
     const std::string KTCutStatus::KTCutResultHandle::sName("top");
 
 
+    std::ostream& operator<<(std::ostream& out, const KTCutStatus& status)
+    {
+        out << "Cut summary: " << status.fSummary << '\n';
+        return out;
+    }
+
+
 } /* namespace Katydid */

@@ -112,6 +112,8 @@ namespace Katydid
             //void RemoveCutResult(const std::string& cutName, bool doUpdateStatus=true);
 
         private:
+            friend std::ostream& operator<<(std::ostream& out, const KTCutStatus& status);
+
             boost::scoped_ptr< KTCutResultHandle > fCutResults;
 
             bitset_type fSummary;
@@ -123,6 +125,9 @@ namespace Katydid
             bool IsCut(const std::string& mask) const;
 
     };
+
+    std::ostream& operator<<(std::ostream& out, const KTCutStatus& status);
+
 
     inline const KTCutResult* KTCutStatus::CutResults() const
     {
