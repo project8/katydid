@@ -2,6 +2,7 @@
 # Author: N. Oblath
 
 set (DATA_HEADERFILES
+    KTApplyCut.hh
     KTData.hh
     KTCut.hh
     KTCutResult.hh
@@ -59,6 +60,7 @@ set (DATA_HEADERFILES
 )
 
 set (DATA_SOURCEFILES
+    KTApplyCut.cc
     KTData.cc
     KTCut.cc
     KTCutStatus.cc
