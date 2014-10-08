@@ -1,80 +1,76 @@
-# CMakeLists for Katydid/Source/Core
+# CMakeLists for Katydid/Source/KTCore
 # Author: N. Oblath
 
-set (CORE_DICT_HEADERFILES
-    KTEventLoop.hh
-    KTRootGuiLoop.hh
+set (KTCORE_HEADERFILES
+    Utility/KTCacheDirectory.hh
+    Utility/KTConcurrentQueue.hh
+    Utility/KTConfigurable.hh
+    Utility/KTDestroyer.hh
+    Utility/KTDirectory.hh
+    Utility/KTException.hh
+    Utility/KTExtensibleStruct.hh
+    Utility/KTExtensibleStructFactory.hh
+    Utility/KTFactory.hh
+    Utility/KTLogger.hh
+    Utility/KTMemberVariable.hh
+    Utility/KTNOFactory.hh
+    Utility/KTParam.hh
+    Utility/KTParamInputJSON.hh
+    Utility/KTSingleton.hh
+    Utility/KTTIFactory.hh
+    Data/KTApplyCut.hh
+    Data/KTCut.hh
+    Data/KTCutResult.hh
+    Data/KTCutStatus.hh
+    Data/KTData.hh
+    Processor/KTConnection.hh
+    Processor/KTPrimaryProcessor.hh
+    Processor/KTProcessor.hh
+    Processor/KTSignal.hh
+    Processor/KTSignalWrapper.hh
+    Processor/KTSlot.hh
+    Processor/KTSlotWrapper.hh
+    Application/KTApplication.hh
+    Application/KTCommandLineHandler.hh
+    Application/KTCommandLineOption.hh
+    Application/KTConfigurator.hh
+    Application/KTDataQueueProcessor.hh
+    Application/KTFilenameParsers.hh
+    Application/KTPrintDataStructure.hh
+    Application/KTProcessorToolbox.hh
 )
 
-set (CORE_NODICT_HEADERFILES
-    KTApplication.hh
-    KTCacheDirectory.hh
-    KTCommandLineHandler.hh
-    KTCommandLineOption.hh
-    KTConfigurable.hh
-    KTConfigurator.hh
-    KTConnection.hh
-    KTDataQueueProcessor.hh
-    KTDirectory.hh
-    KTFilenameParsers.hh
-    KTPrimaryProcessor.hh
-    KTProcessor.hh
-    KTProcessorToolbox.hh
-    KTRandom.hh
-    KTSignal.hh
-    KTSignalWrapper.hh
-    KTSlot.hh
-    KTSlotWrapper.hh
-)
-
-set (CORE_HEADERFILES ${CORE_DICT_HEADERFILES} ${CORE_NODICT_HEADERFILES})
-
-set (CORE_SOURCEFILES
-    KTApplication.cc
-    KTCacheDirectory.cc
-    KTCommandLineHandler.cc
-    KTConfigurable.cc
-    KTConfigurator.cc
-    KTDataQueueProcessor.cc
-    KTDirectory.cc
-    KTEventLoop.cc
-    KTFilenameParsers.cc
-    KTPrimaryProcessor.cc
-    KTProcessor.cc
-    KTProcessorToolbox.cc
-    KTRandom.cc
-    KTSignal.cc
-    KTSignalWrapper.cc
-    KTSlotWrapper.cc
-)
-
-if (ROOT_FOUND)
-    set (CORE_SOURCEFILES
-        ${CORE_SOURCEFILES}
-        KTRootGuiLoop.cc
-    )
-endif (ROOT_FOUND)
-
-
-if (ROOT_FOUND)
-    set (CORE_LINKDEF_HEADERFILE LinkDef/CoreLinkDef.hh)
-    set (CORE_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CoreDict.cxx)
-endif (ROOT_FOUND)
-
-set (KATYDID_LIBS
-    KatydidUtility
+set (KTCORE_SOURCEFILES
+    Utility/KTCacheDirectory.cc
+    Utility/KTConfigurable.cc
+    Utility/KTDirectory.cc
+    Utility/KTException.cc
+    Utility/KTLogger.cc
+    Utility/KTParam.cc
+    Utility/KTParamInputJSON.cc
+    Data/KTApplyCut.cc
+    Data/KTCut.cc
+    Data/KTCutResult.cc
+    Data/KTData.cc
+    Processor/KTPrimaryProcessor.cc
+    Processor/KTProcessor.cc
+    Processor/KTSignal.cc
+    Processor/KTSignalWrapper.cc
+    Processor/KTSlotWrapper.cc
+    Application/KTApplication.cc
+    Application/KTCommandLineHandler.cc
+    Application/KTConfigurator.cc
+    Application/KTDataQueueProcessor.cc
+    Application/KTFilenameParsers.cc
+    Application/KTPrintDataStructure.cc
+    Application/KTProcessorToolbox.cc
 )
 
 ##################################################
 
-if (ROOT_FOUND)
-    ROOT_GENERATE_DICTIONARY ("${CORE_DICT_HEADERFILES}" "${CORE_LINKDEF_HEADERFILE}" "${CORE_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
-endif (ROOT_FOUND)
+add_library (Katydid ${KTCORE_SOURCEFILES})
+target_link_libraries (Katydid ${EXTERNAL_LIBRARIES})
 
-add_library (KatydidCore ${CORE_SOURCEFILES} ${CORE_DICT_OUTFILE})
-#add_library (KatydidCore ${CORE_SOURCEFILES})
-target_link_libraries (KatydidCore ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
-
-pbuilder_install_headers (${CORE_HEADERFILES})
-pbuilder_install_libraries (KatydidCore)
+pbuilder_install_headers (${KTCORE_HEADERFILES})
+pbuilder_install_libraries (Katydid)
 
