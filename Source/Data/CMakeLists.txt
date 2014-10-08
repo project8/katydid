@@ -2,12 +2,6 @@
 # Author: N. Oblath
 
 set (DATA_HEADERFILES
-    KTApplyCut.hh
-    KTData.hh
-    KTCut.hh
-    KTCutResult.hh
-    KTCutStatus.hh
-    KTPrintDataStructure.hh
     Analysis/KTAmplitudeDistribution.hh
     Analysis/KTAnalyticAssociateData.hh
     Analysis/KTCluster1DData.hh
@@ -60,11 +54,6 @@ set (DATA_HEADERFILES
 )
 
 set (DATA_SOURCEFILES
-    KTApplyCut.cc
-    KTData.cc
-    KTCut.cc
-    KTCutStatus.cc
-    KTPrintDataStructure.cc
     Analysis/KTAmplitudeDistribution.cc
     Analysis/KTAnalyticAssociateData.cc
     Analysis/KTCluster1DData.cc
@@ -122,8 +111,8 @@ if (NOT FFTW_FOUND)
 endif (NOT FFTW_FOUND)
 
 set (KATYDID_LIBS
+    KTCore
     KatydidUtility
-    KatydidCore
 )
 
 ##################################################

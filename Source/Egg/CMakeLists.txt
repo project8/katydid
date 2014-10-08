@@ -10,7 +10,6 @@ set (EGG_NODICT_HEADERFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggProcessor.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader.hh
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTThroughputProfiler.hh
 )
 
 set (EGG_SOURCEFILES
@@ -19,7 +18,6 @@ set (EGG_SOURCEFILES
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggProcessor.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/KTEggReader2011.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTThroughputProfiler.cc
 )
 
 if (Katydid_USE_MONARCH)
@@ -68,8 +66,8 @@ set (EGG_HEADERFILES ${EGG_DICT_HEADERFILES} ${EGG_NODICT_HEADERFILES})
 #set (EGG_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EggDict.cxx)
 
 set (KATYDID_LIBS
+    KTCore
     KatydidUtility
-    KatydidCore
     KatydidData
     KatydidIO
 )

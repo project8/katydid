@@ -10,8 +10,8 @@ set (EVALUATION_SOURCEFILES
 )
 
 set (KATYDID_LIBS
+    KTCore
     KatydidUtility
-    KatydidCore
     KatydidData
 )
 

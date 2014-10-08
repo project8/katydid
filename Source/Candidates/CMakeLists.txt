@@ -27,8 +27,8 @@ set (CANDIDATES_SOURCEFILES
 )
 
 set (KATYDID_LIBS
+    KTCore
     KatydidUtility
-    KatydidCore
     KatydidData
     KatydidIO
 )

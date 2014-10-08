@@ -17,9 +17,9 @@ set (UTILITY_NODICT_HEADERFILES
     KTMaskedArray.hh
     KTMath.hh
     KTPhysicalArray.hh
+    KTRandom.hh
     KTSmooth.hh
     KTSpline.hh
-    KTTIFactory.hh
 )
 
 set (UTILITY_HEADERFILES ${UTILITY_DICT_HEADERFILES} ${UTILITY_NODICT_HEADERFILES})
@@ -32,19 +32,16 @@ set (UTILITY_SOURCEFILES
     complexpolar/specialization.cc
     KTAxisProperties.cc
     KTCountHistogram.cc
+    KTECDF.cc
     KTEventLoop.cc
-    KTException.cc
-    KTLogger.cc
-    KTParam.cc
-    KTParamInputJSON.cc
+    KTRandom.cc
     KTSmooth.cc
     KTSpline.cc
-    KTECDF.cc
 )
 
 if (ROOT_FOUND)
     set (UTILITY_SOURCEFILES
-        ${CORE_SOURCEFILES}
+        ${UTILITY_SOURCEFILES}
         KTRootGuiLoop.cc
     )
 
@@ -53,7 +50,7 @@ if (ROOT_FOUND)
 endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
-    Katydid
+    KTCore
 )
 
 ##################################################

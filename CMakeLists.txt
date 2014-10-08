@@ -237,9 +237,11 @@ include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/c
 
 # Subdirectories
 include_directories (BEFORE 
+    ${PROJECT_SOURCE_DIR}/Source/KTCore/Utility
+    ${PROJECT_SOURCE_DIR}/Source/KTCore/Data
+    ${PROJECT_SOURCE_DIR}/Source/KTCore/Processor
+    ${PROJECT_SOURCE_DIR}/Source/KTCore/Application
     ${PROJECT_SOURCE_DIR}/Source/Utility
-    ${PROJECT_SOURCE_DIR}/Source/Core
-    ${PROJECT_SOURCE_DIR}/Source/Data
     ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
     ${PROJECT_SOURCE_DIR}/Source/Data/Candidates
     ${PROJECT_SOURCE_DIR}/Source/Data/Egg
@@ -255,8 +257,10 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/Candidates
 )
 
+add_subdirectory (Source/KTCore)
+add_subdirectory (Source/KTCore/Executables/Main)
+add_subdirectory (Source/KTCore/Executables/Validation)
 add_subdirectory (Source/Utility)
-add_subdirectory (Source/Core)
 add_subdirectory (Source/Data)
 add_subdirectory (Source/IO)
 add_subdirectory (Source/Egg)

@@ -38,6 +38,7 @@ set (KTCORE_HEADERFILES
     Application/KTFilenameParsers.hh
     Application/KTPrintDataStructure.hh
     Application/KTProcessorToolbox.hh
+    Application/KTThroughputProfiler.hh
 )
 
 set (KTCORE_SOURCEFILES
@@ -50,7 +51,7 @@ set (KTCORE_SOURCEFILES
     Utility/KTParamInputJSON.cc
     Data/KTApplyCut.cc
     Data/KTCut.cc
-    Data/KTCutResult.cc
+    Data/KTCutStatus.cc
     Data/KTData.cc
     Processor/KTPrimaryProcessor.cc
     Processor/KTProcessor.cc
@@ -64,13 +65,14 @@ set (KTCORE_SOURCEFILES
     Application/KTFilenameParsers.cc
     Application/KTPrintDataStructure.cc
     Application/KTProcessorToolbox.cc
+    Application/KTThroughputProfiler.cc
 )
 
 ##################################################
 
-add_library (Katydid ${KTCORE_SOURCEFILES})
-target_link_libraries (Katydid ${EXTERNAL_LIBRARIES})
+add_library (KTCore ${KTCORE_SOURCEFILES})
+target_link_libraries (KTCore ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${KTCORE_HEADERFILES})
-pbuilder_install_libraries (Katydid)
+pbuilder_install_libraries (KTCore)
 
