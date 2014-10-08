@@ -11,14 +11,14 @@
 #include <string>
 #include <set>
 
-#include "KTWriter.hh"
 #include "KTEggHeader.hh"
+#include "KTWriter.hh"
 #include "KTMemberVariable.hh"
+#include "KTSlot.hh"
 #include "H5Cpp.h"
 
 namespace Katydid {
     class KTHDF5Writer;
-
     typedef KTDerivedTypeWriter< KTHDF5Writer > KTHDF5TypeWriter;
 
     class KTHDF5Writer : public KTWriterWithTypists< KTHDF5Writer > {
@@ -27,7 +27,10 @@ namespace Katydid {
             virtual ~KTHDF5Writer();
 
             bool Configure(const KTParamNode* node);
-            void WriteEggHeader(KTEggHeader* header);
+            bool WriteEggHeader(KTEggHeader& header);
+
+        private:
+            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
 
         public:
             H5::H5File* OpenFile(const std::string& filename, 

@@ -63,7 +63,7 @@ namespace Katydid
      - -z (--use-2011-egg-reader): Use the 2011 egg reader
 
      Signals:
-     - "header": void (KTEggHeader*) -- emitted when the file header is parsed.
+     - "header": void (KTDataPtr) -- emitted when the file header is parsed.
      - "raw-ts" void (KTDataPtr) -- emitted when a new raw time series is 
         produced; guarantees KTRawTimeSeriesData
      - "ts": void (KTDataPtr) -- emitted when the new calibrated time series is
@@ -150,7 +150,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalOneArg< KTEggHeader* > fHeaderSignal;
+            KTSignalData fHeaderSignal;
             KTSignalData fRawDataSignal;
             KTSignalData fDataSignal;
             KTSignalOneArg< void > fEggDoneSignal;

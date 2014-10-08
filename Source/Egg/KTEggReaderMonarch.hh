@@ -11,8 +11,6 @@
 
 #include "KTEggReader.hh"
 
-#include "KTEggHeader.hh"
-
 #include "MonarchRecord.hpp"
 #include "MonarchTypes.hpp"
 
@@ -32,6 +30,7 @@ namespace monarch
 
 namespace Katydid
 {
+    class KTEggHeader;
 
     class KTEggReaderMonarch : public KTEggReader
     {
@@ -80,7 +79,7 @@ namespace Katydid
 
         public:
             /// Opens the egg file and returns a new copy of the header information.
-            KTEggHeader* BreakEgg(const std::string& filename);
+            KTDataPtr BreakEgg(const std::string& filename);
             /// Returns the next slice's time series data.
             KTDataPtr HatchNextSlice();
             /// Closes the file.
@@ -93,7 +92,8 @@ namespace Katydid
             void CopyHeaderInformation(const monarch::MonarchHeader* monarchHeader);
 
             const monarch::Monarch* fMonarch;
-            KTEggHeader fHeader;
+            KTDataPtr fHeaderPtr;
+            KTEggHeader& fHeader;
             MonarchReadState fReadState;
 
             static const unsigned fMaxChannels = 2;

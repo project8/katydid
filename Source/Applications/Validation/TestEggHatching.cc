@@ -70,8 +70,8 @@ int main(int argc, char** argv)
 
 
     KTINFO(testegg, "Opening file");
-    const KTEggHeader* header = reader->BreakEgg(filename);
-    if (header != NULL)
+    KTDataPtr headerPtr = reader->BreakEgg(filename);
+    if (headerPtr)
     {
         KTINFO(testegg, "Egg opened successfully");
     }
@@ -82,11 +82,12 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    KTEggHeader& header = headerPtr->Of< KTEggHeader >();
     KTINFO(testegg, "Some header information:\n"
-           << "\tFilename: " << header->GetFilename() << '\n'
-           << "\tAcquisition Mode: " << header->GetAcquisitionMode() << '\n'
-           << "\tSlice Size: " << header->GetSliceSize() << '\n'
-           << "\tRecord Size: " << header->GetRecordSize());
+           << "\tFilename: " << header.GetFilename() << '\n'
+           << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
+           << "\tSlice Size: " << header.GetSliceSize() << '\n'
+           << "\tRecord Size: " << header.GetRecordSize());
 
     KTINFO(testegg, "Hatching slices");
     for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
@@ -127,7 +128,6 @@ int main(int argc, char** argv)
     KTINFO(testegg, "Test complete; cleaning up");
     reader->CloseEgg();
     delete reader;
-    delete header;
 
     return 0;
 }

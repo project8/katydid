@@ -54,7 +54,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteEggHeader(KTEggHeader* data);
+            void WriteEggHeader(KTDataPtr headerPtr);
 
         public:
             TTree* GetEggHeaderTree() const;

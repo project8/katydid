@@ -7,7 +7,6 @@
 
 #include "KTThroughputProfiler.hh"
 
-#include "KTEggHeader.hh"
 #include "KTParam.hh"
 
 #include "MonarchTypes.hpp"
@@ -31,13 +30,12 @@ namespace Katydid
             KTProcessor(name),
             fOutputFileFlag(false),
             fOutputFilename("throughput.json"),
-            fEggHeader(),
             fTimeStart(),
             fTimeEnd(),
             fNDataProcessed(0)
     {
-        RegisterSlot("start", this, &KTThroughputProfiler::ProcessHeader);
-        RegisterSlot("data", this, &KTThroughputProfiler::ProcessData);
+        RegisterSlot("start", this, &KTThroughputProfiler::StartProfiling);
+        RegisterSlot("data", this, &KTThroughputProfiler::Data);
         RegisterSlot("stop", this, &KTThroughputProfiler::Finish);
     };
 
@@ -72,16 +70,15 @@ namespace Katydid
         return Diff(fTimeStart, fTimeEnd);
     }
 
-    void KTThroughputProfiler::ProcessHeader(KTEggHeader* header)
+    void KTThroughputProfiler::StartProfiling(KTDataPtr header)
     {
-        fEggHeader = *header;
         KTINFO(proflog, "Profiling started");
         fNDataProcessed = 0;
         Start();
         return;
     }
 
-    void KTThroughputProfiler::ProcessData(KTDataPtr data)
+    void KTThroughputProfiler::Data(KTDataPtr data)
     {
         (void)data;
         fNDataProcessed++;
@@ -98,16 +95,16 @@ namespace Katydid
         KTPROG(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
 
         // Data production rate in bytes per second
-        double dataProductionRate = double(fEggHeader.GetNChannels()) * fEggHeader.GetAcquisitionRate() * double(fEggHeader.GetDataTypeSize());
+        //double dataProductionRate = double(fEggHeader.GetNChannels()) * fEggHeader.GetAcquisitionRate() * double(fEggHeader.GetDataTypeSize());
 
         // Data throughput rate in bytes per second
-        double dataThroughputRate = 0.;
-        if (totalSeconds != 0)
-            dataThroughputRate = double(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNDataProcessed * fEggHeader.GetDataTypeSize()) / totalSeconds;
+        //double dataThroughputRate = 0.;
+        //if (totalSeconds != 0)
+        //    dataThroughputRate = double(fEggHeader.GetSliceSize() * fEggHeader.GetNChannels() * fNDataProcessed * fEggHeader.GetDataTypeSize()) / totalSeconds;
 
-        KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
-        KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");
-        KTPROG(proflog, "Analysis time factor: " << dataProductionRate / dataThroughputRate);
+        //KTINFO(proflog, "Data production rate: " << dataProductionRate << " bytes per second");
+        //KTINFO(proflog, "Data throughput rate: " << dataThroughputRate << " bytes per second");
+        //KTPROG(proflog, "Analysis time factor: " << dataProductionRate / dataThroughputRate);
 
         return;
     }

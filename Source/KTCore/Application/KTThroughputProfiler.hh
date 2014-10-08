@@ -14,7 +14,6 @@
 
 #include "KTProcessor.hh"
 
-#include "KTEggHeader.hh"
 #include "KTData.hh"
 
 #include <string>
@@ -71,9 +70,9 @@ namespace Katydid
             void Start();
             void Stop();
 
-            void ProcessHeader(KTEggHeader* header);
+            void StartProfiling(KTDataPtr data);
 
-            void ProcessData(KTDataPtr data);
+            void Data(KTDataPtr data);
 
             void Finish();
 
@@ -91,8 +90,6 @@ namespace Katydid
 
             bool fOutputFileFlag;
             std::string fOutputFilename;
-
-            KTEggHeader fEggHeader;
 
             timespec fTimeStart;
             timespec fTimeEnd;

@@ -18,6 +18,7 @@ set (KTCORE_HEADERFILES
     Utility/KTParamInputJSON.hh
     Utility/KTSingleton.hh
     Utility/KTTIFactory.hh
+    Utility/KTTime.hh
     Data/KTApplyCut.hh
     Data/KTCut.hh
     Data/KTCutResult.hh
@@ -49,6 +50,7 @@ set (KTCORE_SOURCEFILES
     Utility/KTLogger.cc
     Utility/KTParam.cc
     Utility/KTParamInputJSON.cc
+    Utility/KTTime.cc
     Data/KTApplyCut.cc
     Data/KTCut.cc
     Data/KTCutStatus.cc

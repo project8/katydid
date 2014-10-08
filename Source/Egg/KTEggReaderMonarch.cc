@@ -7,6 +7,7 @@
 
 #include "KTEggReaderMonarch.hh"
 
+#include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 #include "KTRawTimeSeriesData.hh"
@@ -42,7 +43,8 @@ namespace Katydid
             fStride(0),
             fStartTime(0.),
             fMonarch(NULL),
-            fHeader(),
+            fHeaderPtr(new KTData()),
+            fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fReadState(),
             fNumberOfChannels(),
             fGetTimeInRun(&KTEggReaderMonarch::GetTimeInRunFirstCall),
@@ -75,7 +77,7 @@ namespace Katydid
         }
     }
 
-    KTEggHeader* KTEggReaderMonarch::BreakEgg(const string& filename)
+    KTDataPtr KTEggReaderMonarch::BreakEgg(const string& filename)
     {
         if (fStride == 0) fStride = fSliceSize;
 
@@ -94,7 +96,7 @@ namespace Katydid
         catch (MonarchException& e)
         {
             KTERROR(eggreadlog, "Unable to break egg: " << e.what());
-            return NULL;
+            return KTDataPtr();
 
         }
 
@@ -110,7 +112,7 @@ namespace Katydid
             fMonarch->Close();
             delete fMonarch;
             fMonarch = NULL;
-            return NULL;
+            return KTDataPtr();
         }
         CopyHeaderInformation(fMonarch->GetHeader());
         fHeader.SetRawSliceSize(fSliceSize);
@@ -147,7 +149,7 @@ namespace Katydid
 
         fSliceNumber = 0;
 
-        return new KTEggHeader(fHeader);
+        return fHeaderPtr;
     }
 
     KTDataPtr KTEggReaderMonarch::HatchNextSlice()

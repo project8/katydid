@@ -75,24 +75,25 @@ int main(int argc, char** argv)
 
     uint64_t fileSize = boost::filesystem::file_size(filename); // in bytes
 
-    const KTEggHeader* header = reader->BreakEgg(filename);
-    if (header == NULL)
+    KTDataPtr headerPtr = reader->BreakEgg(filename);
+    if (! headerPtr)
     {
         KTERROR(eggscan, "Egg file was not opened and no header was received");
         return -1;
     }
 
-    KTPROG(eggscan, *header);
+    KTEggHeader& header = headerPtr->Of< KTEggHeader >();
+    KTPROG(eggscan, header);
 
-    uint64_t recordMemorySize = header->GetSliceSize(); // each time bin is represented by 1 byte
+    uint64_t recordMemorySize = header.GetSliceSize(); // each time bin is represented by 1 byte
     uint64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
-    uint64_t slicesInFile = recordsInFile * uint64_t(header->GetRecordSize() / header->GetSliceSize()); // upper limit, assuming continuous acquisition
+    uint64_t slicesInFile = recordsInFile * uint64_t(header.GetRecordSize() / header.GetSliceSize()); // upper limit, assuming continuous acquisition
 
-    unsigned fsSizeFFTW = header->GetSliceSize();
+    unsigned fsSizeFFTW = header.GetSliceSize();
     unsigned fsSizePolar = fsSizeFFTW / 2 + 1;
-    double timeBinWidth = 1. / header->GetAcquisitionRate();
+    double timeBinWidth = 1. / header.GetAcquisitionRate();
     double freqBinWidth = 1. / (timeBinWidth * double(fsSizeFFTW));
-    double sliceLength = timeBinWidth * double(header->GetSliceSize());
+    double sliceLength = timeBinWidth * double(header.GetSliceSize());
     double fsMaxFreq = freqBinWidth * (double(fsSizePolar) - 0.5);
 
     KTPROG(eggscan, "Additional information:\n"

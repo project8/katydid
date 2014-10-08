@@ -6,6 +6,8 @@
  */
 
 #include "KTRSAMatReader.hh"
+
+#include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
@@ -29,7 +31,8 @@ namespace Katydid
             KTEggReader(),
             fSliceSize(1024),
             fStride(0),
-            fHeader(),
+            fHeaderPtr(new KTData()),
+            fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fSampleRateUnitsInHz(1.e6),
             fRecordSize(1),
             fBinWidth(0.),
@@ -54,7 +57,7 @@ namespace Katydid
         return fMaxChannels;
     }
 
-    KTEggHeader* KTRSAMatReader::BreakEgg(const string& filename)
+    KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
     {
         mxArray* fileInfoStruct;
         // Temporary variable to read time stamps
@@ -276,7 +279,6 @@ namespace Katydid
     }
     KTDataPtr KTRSAMatReader::HatchNextSlice()
     {
-
         // IMPORTANT:
         // Updated: KTRSAMatReader::HatchNextSlice is currently capable of reading MAT files containing multiple records, *as long as they have
         //          the same size* - that is, MAT files of identical sizes that were concatenated;

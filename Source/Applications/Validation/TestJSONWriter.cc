@@ -20,7 +20,8 @@ int main()
     KTINFO(testlog, "Preparing for test");
 
     // Setup a dummy header to print
-    KTEggHeader header;
+    KTDataPtr headerPtr(new KTData());
+    KTEggHeader& header = headerPtr->Of< KTEggHeader >();
     header.SetFilename("awesome_data.egg");
     header.SetAcquisitionMode(1);
     header.SetSliceSize(512);
@@ -38,7 +39,7 @@ int main()
     KTINFO(testlog, "Writing to file");
 
     // Writer the data
-    writer.GetTypeWriter< KTJSONTypeWriterEgg >()->WriteEggHeader(&header);
+    writer.GetTypeWriter< KTJSONTypeWriterEgg >()->WriteEggHeader(headerPtr);
 
     // Close the file
     writer.CloseFile();
@@ -51,7 +52,7 @@ int main()
 
     KTINFO(testlog, "Writing to terminal");
 
-    writer.GetTypeWriter< KTJSONTypeWriterEgg >()->WriteEggHeader(&header);
+    writer.GetTypeWriter< KTJSONTypeWriterEgg >()->WriteEggHeader(headerPtr);
 
     // Close the file
     writer.CloseFile();

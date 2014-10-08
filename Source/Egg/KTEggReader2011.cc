@@ -49,7 +49,7 @@ namespace Katydid
     {
     }
 
-    KTEggHeader* KTEggReader2011::BreakEgg(const std::string& filename)
+    KTDataPtr KTEggReader2011::BreakEgg(const std::string& filename)
     {
         // First, read all of the information from the file and put it in the right places
         if (fEggStream.is_open()) fEggStream.close();
@@ -61,7 +61,7 @@ namespace Katydid
         if (! fEggStream.is_open())
         {
             KTERROR(eggreadlog, "Egg filestream did not open (file: " << filename << ")");
-            return NULL;
+            return KTDataPtr();
         }
 
         // read the prelude (which states how long the header is in hex)
@@ -74,7 +74,7 @@ namespace Katydid
         {
             KTERROR(eggreadlog, "Egg filestream is bad after reading the prelude");
             delete [] readBuffer;
-            return NULL;
+            return KTDataPtr();
         }
         string newPrelude(readBuffer, sPreludeSize);
         fPrelude = newPrelude;
@@ -93,7 +93,7 @@ namespace Katydid
         {
             KTERROR(eggreadlog, "Egg filestream is bad after reading the header");
             delete [] readBuffer;
-            return NULL;
+            return KTDataPtr();
         }
         readBuffer[fHeaderSize] = '\0';
         string newHeader(readBuffer);
@@ -123,7 +123,7 @@ namespace Katydid
             KTERROR(eggreadlog, "Caught exception while parsing header:\n" <<
                     '\t' << e.what() << '\n' <<
                     '\t' << e.where<char>());
-            return NULL;
+            return KTDataPtr();
         }
         //std::cout << headerDOM;
 
@@ -131,20 +131,20 @@ namespace Katydid
         if (nodeHeader == NULL)
         {
             KTERROR(eggreadlog, "No header node");
-            return NULL;
+            return KTDataPtr();
         }
 
         rapidxml::xml_node<char>* nodeDataFormat = nodeHeader->first_node("data_format");
         if (nodeDataFormat == NULL)
         {
             KTERROR(eggreadlog, "No data format node");
-            return NULL;
+            return KTDataPtr();
         }
 
         rapidxml::xml_attribute<char>* attr = nodeDataFormat->first_attribute("id");
         if (attr == NULL)        {
             KTERROR(eggreadlog, "No id attribute in the data format node");
-            return NULL;
+            return KTDataPtr();
         };
         fHeaderInfo.fFrameIDSize = ConvertFromArray< int >(attr->value());
 
@@ -152,7 +152,7 @@ namespace Katydid
         if (attr == NULL)
         {
             KTERROR(eggreadlog, "No ts attribute in the data format node");
-            return NULL;
+            return KTDataPtr();
         }
         fHeaderInfo.fTimeStampSize = ConvertFromArray< int >(attr->value());
 
@@ -160,7 +160,7 @@ namespace Katydid
         if (attr == NULL)
         {
             KTERROR(eggreadlog, "No data attribute in the data format node");
-            return NULL;
+            return KTDataPtr();
         }
         fHeaderInfo.fRecordSize = ConvertFromArray< int >(attr->value());
 
@@ -170,14 +170,14 @@ namespace Katydid
         if (nodeDigitizer == NULL)
         {
             KTERROR(eggreadlog, "No digitizer node");
-            return NULL;
+            return KTDataPtr();
         }
 
         attr = nodeDigitizer->first_attribute("rate");
         if (attr == NULL)
         {
             KTERROR(eggreadlog, "No rate attribute in the digitizer node");
-            return NULL;
+            return KTDataPtr();
         }
         fHeaderInfo.fSampleRate = ConvertFromArray< double >(attr->value()) * fHeaderInfo.fHertzPerSampleRateUnit;
 
@@ -185,13 +185,13 @@ namespace Katydid
         if (nodeRun == NULL)
         {
             KTERROR(eggreadlog, "No run node");
-            return NULL;
+            return KTDataPtr();
         }
 
         attr = nodeRun->first_attribute("length");
         if (attr == NULL)        {
             KTERROR(eggreadlog, "No length attribute in the run node");
-            return NULL;
+            return KTDataPtr();
         }
         fHeaderInfo.fRunLength = ConvertFromArray< double >(attr->value()) * fHeaderInfo.fSecondsPerRunLengthUnit;
 
@@ -209,26 +209,27 @@ namespace Katydid
         // Everything should have been done correctly at this point,
         // and we're ready to create, fill, and return the KTEggHeader
 
-        KTEggHeader* eggHeader = new KTEggHeader();
-        eggHeader->SetFilename(filename);
-        eggHeader->SetAcquisitionMode(1);
-        eggHeader->SetRawSliceSize(fHeaderInfo.fRecordSize);
-        eggHeader->SetSliceSize(fHeaderInfo.fRecordSize);
-        eggHeader->SetSliceStride(fHeaderInfo.fRecordSize);
-        eggHeader->SetRecordSize(fHeaderInfo.fRecordSize);
-        eggHeader->SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
-        eggHeader->SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
+        KTDataPtr eggHeaderPtr(new KTData());
+        KTEggHeader& eggHeader = eggHeaderPtr->Of< KTEggHeader >();
+        eggHeader.SetFilename(filename);
+        eggHeader.SetAcquisitionMode(1);
+        eggHeader.SetRawSliceSize(fHeaderInfo.fRecordSize);
+        eggHeader.SetSliceSize(fHeaderInfo.fRecordSize);
+        eggHeader.SetSliceStride(fHeaderInfo.fRecordSize);
+        eggHeader.SetRecordSize(fHeaderInfo.fRecordSize);
+        eggHeader.SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
+        eggHeader.SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
         // timestamp
         // description
         // run type
-        eggHeader->SetRunSource(monarch::sSourceMantis);
-        eggHeader->SetFormatMode(monarch::sFormatSingle);
-        eggHeader->SetDataTypeSize(1);
-        eggHeader->SetBitDepth(8);
-        eggHeader->SetVoltageMin(-0.25);
-        eggHeader->SetVoltageRange(0.5);
+        eggHeader.SetRunSource(monarch::sSourceMantis);
+        eggHeader.SetFormatMode(monarch::sFormatSingle);
+        eggHeader.SetDataTypeSize(1);
+        eggHeader.SetBitDepth(8);
+        eggHeader.SetVoltageMin(-0.25);
+        eggHeader.SetVoltageRange(0.5);
 
-        return eggHeader;
+        return eggHeaderPtr;
     }
 
     KTDataPtr KTEggReader2011::HatchNextSlice()

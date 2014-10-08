@@ -190,23 +190,24 @@ namespace Katydid
 
         // ******************************************************************** //
         // Call BreakEgg - this actually opens the file and loads its content
-        KTEggHeader* header = reader->BreakEgg(fFilename);
-        if (header == NULL)
+        KTDataPtr headerPtr = reader->BreakEgg(fFilename);
+        if (! headerPtr)
         {
             KTERROR(egglog, "Egg did not break");
             return false;
         }
 
+        KTEggHeader& header = headerPtr->Of< KTEggHeader >();
 
         // pass the digitizer parameters from the egg header to the DAC
-        fDAC->SetNBits(header->GetBitDepth());
-        fDAC->SetMinVoltage(header->GetVoltageMin());
-        fDAC->SetVoltageRange(header->GetVoltageRange());
+        fDAC->SetNBits(header.GetBitDepth());
+        fDAC->SetMinVoltage(header.GetVoltageMin());
+        fDAC->SetVoltageRange(header.GetVoltageRange());
         fDAC->Initialize();
-        fDAC->UpdateEggHeader(header);
+        fDAC->UpdateEggHeader(&header);
 
 
-        fHeaderSignal(header);
+        fHeaderSignal(headerPtr);
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
 

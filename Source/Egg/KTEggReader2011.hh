@@ -48,7 +48,7 @@ namespace Katydid
             virtual ~KTEggReader2011();
 
         public:
-            virtual KTEggHeader* BreakEgg(const std::string& filename);
+            virtual KTDataPtr BreakEgg(const std::string& filename);
             virtual KTDataPtr HatchNextSlice();
             virtual bool CloseEgg();
 

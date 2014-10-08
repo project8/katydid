@@ -30,7 +30,6 @@ to not work with Katydid on Linux systems.
 #include "mat.h" 
 
 #include "KTEggReader.hh"
-#include "KTEggHeader.hh"
 
 #include <map>
 #include <string>
@@ -45,6 +44,7 @@ to not work with Katydid on Linux systems.
 
 namespace Katydid
 {
+    class KTEggHeader;
 
     class KTRSAMatReader : public KTEggReader
     {
@@ -57,7 +57,8 @@ namespace Katydid
             unsigned fStride;
 
         private:
-            KTEggHeader fHeader;
+            KTDataPtr fHeaderPtr;
+            KTEggHeader& fHeader;
             static const unsigned fMaxChannels = 2;
             double fSampleRateUnitsInHz;
             unsigned fRecordSize;
@@ -74,7 +75,7 @@ namespace Katydid
 
         public:
             /// Opens the egg file and returns a new copy of the header information.
-            KTEggHeader* BreakEgg(const std::string& filename);
+            KTDataPtr BreakEgg(const std::string& filename);
             /// Returns the next slice's time series data.
             KTDataPtr HatchNextSlice();
             /// Closes the file.

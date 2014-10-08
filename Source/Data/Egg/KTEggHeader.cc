@@ -13,8 +13,10 @@
 
 namespace Katydid
 {
+    const std::string KTEggHeader::sName("egg-header");
 
     KTEggHeader::KTEggHeader() :
+            KTExtensibleData< KTEggHeader >(),
             fFilename(),
             fAcquisitionMode(1),
             fNChannels(1),

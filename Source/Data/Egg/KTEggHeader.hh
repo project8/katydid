@@ -8,6 +8,8 @@
 #ifndef KTEGGHEADER_HH_
 #define KTEGGHEADER_HH_
 
+#include "KTData.hh"
+
 #include "KTMemberVariable.hh"
 
 #include "MonarchTypes.hpp"
@@ -16,7 +18,7 @@
 
 namespace Katydid
 {
-    class KTEggHeader
+    class KTEggHeader : public KTExtensibleData< KTEggHeader >
     {
         public:
             KTEggHeader();
@@ -47,6 +49,8 @@ namespace Katydid
             MEMBERVARIABLE(double, VoltageMin); /// in V
             MEMBERVARIABLE(double, VoltageRange); /// in V
 
+        public:
+            static const std::string sName;
     };
 
     std::ostream& operator<<(std::ostream& out, const KTEggHeader& header);
