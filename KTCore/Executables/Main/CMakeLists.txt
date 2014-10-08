@@ -1,4 +1,4 @@
-# CMakeLists for Katydid/Source/KTCore/Executables/Main
+# CMakeLists for Katydid/KTCore/Executables/Main
 # Author: N. Oblath
 
 # Executables

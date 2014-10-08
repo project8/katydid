@@ -1,4 +1,4 @@
-# CMakeLists for Katydid/Source/Applications/Validation
+# CMakeLists for Katydid/KTCore/Executables/Validation
 # Author: N. Oblath
 
 if (Katydid_ENABLE_TESTING)

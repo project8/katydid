@@ -218,7 +218,7 @@ option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 
 # Monarch
 if (Katydid_USE_MONARCH)
-    add_subdirectory (Source/Egg/Monarch)
+    add_subdirectory (Source/Time/Monarch)
     pbuilder_add_submodule_libraries (${Monarch_LIBRARIES})
     add_definitions(-DUSE_MONARCH)
 
@@ -229,50 +229,50 @@ if (Katydid_USE_MONARCH)
     endif ("${isSystemDir}" STREQUAL "-1")
 else (Katydid_USE_MONARCH)
     message(STATUS "Building without Monarch")
-    add_subdirectory(Source/Egg/Monarch EXCLUDE_FROM_ALL)
+    add_subdirectory(Source/Time/Monarch EXCLUDE_FROM_ALL)
     remove_definitions(-DUSE_MONARCH)
 endif (Katydid_USE_MONARCH)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Source)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Source)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax/cpp)
 
 # Subdirectories
 include_directories (BEFORE 
-    ${PROJECT_SOURCE_DIR}/Source/KTCore/Utility
-    ${PROJECT_SOURCE_DIR}/Source/KTCore/Data
-    ${PROJECT_SOURCE_DIR}/Source/KTCore/Processor
-    ${PROJECT_SOURCE_DIR}/Source/KTCore/Application
+    ${PROJECT_SOURCE_DIR}/KTCore/Utility
+    ${PROJECT_SOURCE_DIR}/KTCore/Data
+    ${PROJECT_SOURCE_DIR}/KTCore/Processor
+    ${PROJECT_SOURCE_DIR}/KTCore/Application
     ${PROJECT_SOURCE_DIR}/Source/Utility
-    ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
-    ${PROJECT_SOURCE_DIR}/Source/Data/Candidates
-    ${PROJECT_SOURCE_DIR}/Source/Data/Egg
-    ${PROJECT_SOURCE_DIR}/Source/Data/FFT
+    ${PROJECT_SOURCE_DIR}/Source/Data/SpectrumAnalysis
+    ${PROJECT_SOURCE_DIR}/Source/Data/EventAnalysis
+    ${PROJECT_SOURCE_DIR}/Source/Data/Time
+    ${PROJECT_SOURCE_DIR}/Source/Data/Transform
     ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/IO
     ${PROJECT_SOURCE_DIR}/Source/IO/Conversions
     ${PROJECT_SOURCE_DIR}/Source/Egg
     ${PROJECT_SOURCE_DIR}/Source/Simulation
     ${PROJECT_SOURCE_DIR}/Source/Evaluation
-    ${PROJECT_SOURCE_DIR}/Source/FFT
-    ${PROJECT_SOURCE_DIR}/Source/Analysis
-    ${PROJECT_SOURCE_DIR}/Source/Candidates
+    ${PROJECT_SOURCE_DIR}/Source/Transform
+    ${PROJECT_SOURCE_DIR}/Source/SpectrumAnalysis
+    ${PROJECT_SOURCE_DIR}/Source/EventAnalysis
 )
 
-add_subdirectory (Source/KTCore)
-add_subdirectory (Source/KTCore/Executables/Main)
-add_subdirectory (Source/KTCore/Executables/Validation)
+add_subdirectory (KTCore)
+add_subdirectory (KTCore/Executables/Main)
+add_subdirectory (KTCore/Executables/Validation)
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Data)
 add_subdirectory (Source/IO)
-add_subdirectory (Source/Egg)
+add_subdirectory (Source/Time)
 add_subdirectory (Source/Simulation)
 add_subdirectory (Source/Evaluation)
-add_subdirectory (Source/FFT)
-add_subdirectory (Source/Analysis)
-add_subdirectory (Source/Candidates)
-add_subdirectory (Source/Applications/Main)
-add_subdirectory (Source/Applications/Profiling)
-add_subdirectory (Source/Applications/Validation)
+add_subdirectory (Source/Transform)
+add_subdirectory (Source/SpectrumAnalysis)
+add_subdirectory (Source/EventAnalysis)
+add_subdirectory (Source/Executables/Main)
+add_subdirectory (Source/Executables/Profiling)
+add_subdirectory (Source/Executables/Validation)
 add_subdirectory (Examples)
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
