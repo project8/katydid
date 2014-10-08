@@ -67,7 +67,7 @@ set (KATYDID_LIBS
 ##################################################
 
 add_library (KatydidEgg ${EGG_SOURCEFILES})
-target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
+target_link_libraries (KatydidEgg ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES} ${EXTERNAL_LIBRARIES_MATLAB})
 
 pbuilder_install_headers (${EGG_HEADERFILES})
 pbuilder_install_libraries (KatydidEgg)
