@@ -38,7 +38,7 @@ set (Katydid_USE_MANTIS FALSE CACHE BOOL "Flag to optionally use Mantis (externa
 set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_HDF5 TRUE CACHE BOOL "Flag to optionally use HDF5")
-set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
+set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
 
@@ -268,6 +268,7 @@ add_subdirectory (Source/Candidates)
 add_subdirectory (Source/Applications/Main)
 add_subdirectory (Source/Applications/Profiling)
 add_subdirectory (Source/Applications/Validation)
+add_subdirectory (Examples)
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.

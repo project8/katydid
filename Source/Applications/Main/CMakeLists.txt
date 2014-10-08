@@ -1,21 +1,6 @@
 # CMakeLists for Katydid/Source/Applications/Main
 # Author: N. Oblath
 
-# Config files
-set (VALIDATION_CONFIGFILES
-    ConfigFiles/DisplayFFT.json
-    ConfigFiles/EvaluateCandidates.json
-    ConfigFiles/FSPeakAnalysisConfig.json
-    ConfigFiles/KatydidPSAnalysisTemplate.json
-    ConfigFiles/KatydidPSComplexConfig.json
-    ConfigFiles/KatydidPSConfig.json
-    ConfigFiles/KatydidWVConfig.json
-    ConfigFiles/ThroughputProfiler.json
-    ConfigFiles/ts-plot-direct-from-mantis.json
-)
-
-pbuilder_install_config (${VALIDATION_CONFIGFILES})
-    
 
 # Executables
 
