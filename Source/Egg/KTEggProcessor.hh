@@ -82,55 +82,25 @@ namespace Katydid
     class KTEggProcessor : public KTPrimaryProcessor
     {
         public:
-            enum EggReaderType
-            {
-                k2011EggReader,
-                kMonarchEggReader,
-                kRSAMATReader
-            };
-
-        public:
             KTEggProcessor(const std::string& name = "egg-processor");
             virtual ~KTEggProcessor();
 
             bool Configure(const KTParamNode* node);
 
-            unsigned GetNSlices() const;
-            void SetNSlices(unsigned nSlices);
+            MEMBERVARIABLE(unsigned, NSlices);
+            MEMBERVARIABLE(unsigned, ProgressReportInterval);
 
-            unsigned GetProgressReportInterval() const;
-            void SetProgressReportInterval(unsigned nSlices);
+            MEMBERVARIABLEREF(std::string, Filename);
+            MEMBERVARIABLEREF(std::string, EggReaderType);
 
-            const std::string& GetFilename() const;
-            void SetFilename(const std::string& filename);
+            MEMBERVARIABLE(unsigned, SliceSize);
+            MEMBERVARIABLE(unsigned, Stride);
+            MEMBERVARIABLE(double, StartTime);
 
-            EggReaderType GetEggReaderType() const;
-            void SetEggReaderType(EggReaderType type);
-
-            unsigned GetSliceSize() const;
-            void SetSliceSize(unsigned size);
-
-            unsigned GetStride() const;
-            void SetStride(unsigned stride);
-
-            bool GetNormalizeVoltages() const;
-            void SetNormalizeVoltages(bool flag);
+            MEMBERVARIABLE(bool, NormalizeVoltages);
 
         private:
-            unsigned fNSlices;
-            unsigned fProgressReportInterval;
-
-            std::string fFilename;
-
-            EggReaderType fEggReaderType;
-
-            unsigned fSliceSize;
-            unsigned fStride;
-            double fStartTime;
-
             KTDAC* fDAC;
-
-            bool fNormalizeVoltages;
 
         public:
             bool Run();
@@ -168,83 +138,6 @@ namespace Katydid
         data = reader->HatchNextSlice();
         if (data) return true;
         return false;
-    }
-
-    inline unsigned KTEggProcessor::GetNSlices() const
-    {
-        return fNSlices;
-    }
-
-    inline unsigned KTEggProcessor::GetProgressReportInterval() const
-    {
-        return fProgressReportInterval;
-    }
-
-    inline void KTEggProcessor::SetNSlices(unsigned nSlices)
-    {
-        fNSlices = nSlices;
-        return;
-    }
-
-    inline void KTEggProcessor::SetProgressReportInterval(unsigned nSlices)
-    {
-        fProgressReportInterval = nSlices;
-        return;
-    }
-
-    inline const std::string& KTEggProcessor::GetFilename() const
-    {
-        return fFilename;
-    }
-
-    inline void KTEggProcessor::SetFilename(const std::string& filename)
-    {
-        fFilename = filename;
-        return;
-    }
-
-    inline KTEggProcessor::EggReaderType KTEggProcessor::GetEggReaderType() const
-    {
-        return fEggReaderType;
-    }
-
-    inline void KTEggProcessor::SetEggReaderType(EggReaderType type)
-    {
-        fEggReaderType = type;
-        return;
-    }
-
-    inline unsigned KTEggProcessor::GetSliceSize() const
-    {
-        return fSliceSize;
-    }
-
-    inline void KTEggProcessor::SetSliceSize(unsigned size)
-    {
-        fSliceSize = size;
-        return;
-    }
-
-    inline unsigned KTEggProcessor::GetStride() const
-    {
-        return fStride;
-    }
-
-    inline void KTEggProcessor::SetStride(unsigned stride)
-    {
-        fStride = stride;
-        return;
-    }
-
-    inline bool KTEggProcessor::GetNormalizeVoltages() const
-    {
-        return fNormalizeVoltages;
-    }
-
-    inline void KTEggProcessor::SetNormalizeVoltages(bool flag)
-    {
-        fNormalizeVoltages = flag;
-        return;
     }
 
 } /* namespace Katydid */

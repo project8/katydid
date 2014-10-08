@@ -32,6 +32,8 @@ namespace Katydid
 
     const ifstream::pos_type KTEggReader2011::sPreludeSize = 9;
 
+    KT_REGISTER_EGGREADER(KTEggReader2011, "2011");
+
     KTEggReader2011::KTEggReader2011() :
             KTEggReader(),
             fFileName(),
@@ -47,6 +49,12 @@ namespace Katydid
 
     KTEggReader2011::~KTEggReader2011()
     {
+    }
+
+    bool KTEggReader2011::Configure(const KTEggProcessor& eggProc)
+    {
+        // not really configurable
+        return true;
     }
 
     KTDataPtr KTEggReader2011::BreakEgg(const std::string& filename)

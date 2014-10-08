@@ -8,24 +8,17 @@
 
 #include "KTEggProcessor.hh"
 
-#ifdef USE_MONARCH
-#include "KTEggReaderMonarch.hh"
-#endif
-
 #include "KTCommandLineOption.hh"
 #include "KTDAC.hh"
 #include "KTData.hh"
 #include "KTEggHeader.hh"
-#include "KTEggReader2011.hh"
+#include "KTEggReader.hh"
+#include "KTFactory.hh"
 #include "KTProcSummary.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
-
-#ifdef USE_MATLAB
-#include "KTRSAMatReader.hh"
-#endif
 
 using std::string;
 
@@ -45,7 +38,7 @@ namespace Katydid
             fNSlices(0),
             fProgressReportInterval(1),
             fFilename(""),
-            fEggReaderType(kMonarchEggReader),
+            fEggReaderType("none"),
             fSliceSize(1024),
             fStride(1024),
             fStartTime(0.),
@@ -70,47 +63,13 @@ namespace Katydid
         // config file setting
         if (node != NULL)
         {
-            string eggReaderTypeString( node->GetValue("egg-reader", "monarch") );
-            if (eggReaderTypeString == "monarch")
-            {
-                 SetEggReaderType(kMonarchEggReader);
-            }
-            else if (eggReaderTypeString == string("2011"))
-            {
-                SetEggReaderType(k2011EggReader);
-            }
-            else if (eggReaderTypeString == string("rsamat"))
-            {
-                SetEggReaderType(kRSAMATReader);
-            }
-            else
-            {
-                KTERROR(egglog, "Illegal string for egg reader type: <" << eggReaderTypeString << ">");
-                return false;
-            }
+            SetEggReaderType( node->GetValue("egg-reader", GetEggReaderType()) );
         }
         // command line setting (overrides config file, if used)
         if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
         {
-            SetEggReaderType(k2011EggReader);
+            SetEggReaderType("2011");
         }
-
-#ifndef USE_MATLAB
-        if (fEggReaderType == kRSAMATReader)
-        {
-            KTERROR(egglog, "Matlab is not enabled; please select another egg reader type");
-            return false;
-        }
-#endif
-
-
-#ifndef USE_MONARCH
-        if (fEggReaderType == kMonarchEggReader)
-        {
-            KTERROR(egglog, "Monarch is not enabled; please select another egg reader type");
-            return false;
-        }
-#endif
 
         // Other settings
 
@@ -154,39 +113,14 @@ namespace Katydid
 
     bool KTEggProcessor::ProcessEgg()
     {
-        KTEggReader* reader = NULL;
-
         // Create egg reader and transfer information
-        if (fEggReaderType == kMonarchEggReader)
+        KTEggReader* reader = KTFactory< KTEggReader >::GetInstance()->Create(fEggReaderType);
+        if (reader == NULL)
         {
-#ifdef USE_MONARCH
-            KTEggReaderMonarch* eggReaderMonarch = new KTEggReaderMonarch();
-            eggReaderMonarch->SetSliceSize(fSliceSize);
-            eggReaderMonarch->SetStride(fStride);
-            eggReaderMonarch->SetStartTime(fStartTime);
-            reader = eggReaderMonarch;
-#else
-            KTERROR(egglog, "Monarch is not enabled; please select another egg reader type");
+            KTERROR(egglog, "Invalid egg reader type: " << fEggReaderType);
             return false;
-#endif
         }
-        else if (fEggReaderType == k2011EggReader)
-        {
-            KTEggReader2011* eggReader2011 = new KTEggReader2011();
-            reader = eggReader2011;
-        }
-        else if (fEggReaderType == kRSAMATReader)
-        {
-#ifdef USE_MATLAB
-            KTRSAMatReader* matReader = new KTRSAMatReader();
-            matReader->SetSliceSize(fSliceSize);
-            matReader->SetStride(fStride);
-            reader = matReader;
-#else
-            KTERROR(egglog, "Matlab is not enabled; please select another egg reader type");
-            return false;
-#endif
-        }
+        reader->Configure(*this);
 
         // ******************************************************************** //
         // Call BreakEgg - this actually opens the file and loads its content
@@ -194,6 +128,7 @@ namespace Katydid
         if (! headerPtr)
         {
             KTERROR(egglog, "Egg did not break");
+            delete reader;
             return false;
         }
 
@@ -229,9 +164,9 @@ namespace Katydid
         fSummarySignal(summary);
         delete summary;
 
+        delete reader;
+
         return true;
-
-
     }
 
     void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)

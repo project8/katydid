@@ -8,6 +8,7 @@
 #include "KTEggReaderMonarch.hh"
 
 #include "KTEggHeader.hh"
+#include "KTEggProcessor.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 #include "KTRawTimeSeriesData.hh"
@@ -30,6 +31,8 @@ using std::vector;
 namespace Katydid
 {
     KTLOGGER(eggreadlog, "KTEggReaderMonarch");
+
+    KT_REGISTER_EGGREADER(KTEggReaderMonarch, "monarch");
 
     unsigned KTEggReaderMonarch::GetMaxChannels()
     {
@@ -75,6 +78,14 @@ namespace Katydid
             fMonarch->Close();
             delete fMonarch;
         }
+    }
+
+    bool KTEggReaderMonarch::Configure(const KTEggProcessor& eggProc)
+    {
+        SetSliceSize(eggProc.GetSliceSize());
+        SetStride(eggProc.GetStride());
+        SetStartTime(eggProc.GetStartTime());
+        return true;
     }
 
     KTDataPtr KTEggReaderMonarch::BreakEgg(const string& filename)

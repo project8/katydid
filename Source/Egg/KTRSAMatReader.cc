@@ -8,6 +8,7 @@
 #include "KTRSAMatReader.hh"
 
 #include "KTEggHeader.hh"
+#include "KTEggProcessor.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
@@ -26,6 +27,8 @@ using std::vector;
 namespace Katydid
 {
     KTLOGGER(eggreadlog, "KTRSAMatReader");
+
+    KT_REGISTER_EGGREADER(KTRSAMatReader, "rsamat");
 
     KTRSAMatReader::KTRSAMatReader() :
             KTEggReader(),
@@ -55,6 +58,13 @@ namespace Katydid
     unsigned KTRSAMatReader::GetMaxChannels()
     {
         return fMaxChannels;
+    }
+
+    bool KTRSAMatReader::Configure(const KTEggProcessor& eggProc)
+    {
+        SetSliceSize(eggProc.GetSliceSize());
+        SetStride(eggProc.GetStride());
+        return true;
     }
 
     KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)

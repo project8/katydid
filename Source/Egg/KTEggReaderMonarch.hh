@@ -78,6 +78,8 @@ namespace Katydid
             double fStartTime;
 
         public:
+            bool Configure(const KTEggProcessor& eggProc);
+
             /// Opens the egg file and returns a new copy of the header information.
             KTDataPtr BreakEgg(const std::string& filename);
             /// Returns the next slice's time series data.
