@@ -54,10 +54,9 @@ namespace Katydid
         return true;
     }
 
-    void KTAnalyticAssociator::InitializeWithHeader(KTEggHeader* header)
+    bool KTAnalyticAssociator::InitializeWithHeader(KTEggHeader& header)
     {
-        fFullFFT.InitializeWithHeader(header);
-        return;
+        return fFullFFT.InitializeWithHeader(header);
     }
 
     bool KTAnalyticAssociator::CreateAssociateData(KTTimeSeriesData& tsData)

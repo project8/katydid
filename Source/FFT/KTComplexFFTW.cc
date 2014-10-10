@@ -138,11 +138,11 @@ namespace Katydid
         return;
     }
 
-    void KTComplexFFTW::InitializeWithHeader(KTEggHeader* header)
+    bool KTComplexFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        SetSize(header->GetSliceSize());
+        SetSize(header.GetSliceSize());
         InitializeFFT();
-        return;
+        return true;
     }
 
     bool KTComplexFFTW::TransformData(KTTimeSeriesData& tsData)

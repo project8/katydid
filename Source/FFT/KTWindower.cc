@@ -77,15 +77,15 @@ namespace Katydid
         return true;
     }
 
-    void KTWindower::InitializeWithHeader(KTEggHeader* header)
+    bool KTWindower::InitializeWithHeader(KTEggHeader& header)
     {
-        if (! InitializeWindow(1. / header->GetAcquisitionRate(), header->GetSliceSize()))
+        if (! InitializeWindow(1. / header.GetAcquisitionRate(), header.GetSliceSize()))
         {
             KTERROR(windowlog, "Something went wrong while initializing the window function!");
-            return;
+            return false;
         }
         KTDEBUG(windowlog, "Window function initialized with header");
-        return;
+        return true;
     }
 
     bool KTWindower::WindowDataReal(KTTimeSeriesData& tsData)

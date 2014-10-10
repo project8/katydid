@@ -142,12 +142,12 @@ namespace Katydid
         return;
     }
 
-    void KTSimpleFFT::InitializeWithHeader(KTEggHeader* header)
+    bool KTSimpleFFT::InitializeWithHeader(KTEggHeader& header)
     {
         KTDEBUG(fftlog_simp, "Initializing via KTEggHeader");
-        SetTimeSize(header->GetSliceSize());
+        SetTimeSize(header.GetSliceSize());
         InitializeFFT();
-        return;
+        return true;
     }
 
     bool KTSimpleFFT::TransformData(KTTimeSeriesData& tsData)

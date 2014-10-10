@@ -67,7 +67,7 @@ namespace Katydid
      - "n-windows-to-average": unsigned -- number of windows to average together into a single WV window
 
      Slots:
-     - "header": void (KTEggHeader*) -- Initializes the transform using an Egg header
+     - "header": void (KTDataPtr) -- Initializes the transform using an Egg header; Requires KTEggHeader
      - "ts": void (KTDataPtr) -- Perform a WV transform on a time series; Requires KTTimeSeriesData; Adds KTWignerVilleData
      - "aa": void (KTDataPtr) -- Perform a WV transform on an analytic associate: Requires KTAnalyticAssociateData; Adds KTWignerVilleData
 
@@ -113,8 +113,8 @@ namespace Katydid
             KTComplexFFTW* GetFFT();
             const KTComplexFFTW* GetFFT() const;
 
-            void Initialize(double acqRate, unsigned nComponents, unsigned inputSliceSize);
-            void InitializeWithHeader(KTEggHeader* header);
+            bool Initialize(double acqRate, unsigned nComponents, unsigned inputSliceSize);
+            bool InitializeWithHeader(KTEggHeader& header);
 
         private:
             PairVector fPairs;
@@ -180,7 +180,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
             //KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
             //KTSlotDataOneType< KTAnalyticAssociateData > fAnalyticAssociateSlot;
 

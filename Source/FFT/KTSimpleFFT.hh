@@ -65,7 +65,7 @@ namespace Katydid
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
      Slots:
-     - "header": void (KTEggHeader*) -- Initialize the FFT from an Egg file header
+     - "header": void (KTDataPtr) -- Initialize the FFT from an Egg file header; Requires KTEggHeader
      - "ts": void (KTDataPtr) -- Perform an FFT; Requires KTTimeSeriesData; Adds KTFrequencySpectrumDataPolar; Emits signal "fft-forward"
      - "fs-polar": void (KTDataPtr) -- Perform a reverse FFT; Requires KTFrequencySpectrumDataPolar; Emits signal signal "fft-reverse"
 
@@ -86,7 +86,7 @@ namespace Katydid
             bool Configure(const KTParamNode* node);
 
             void InitializeFFT();
-            void InitializeWithHeader(KTEggHeader* header);
+            bool InitializeWithHeader(KTEggHeader& header);
 
             /// Forward FFT
             bool TransformData(KTTimeSeriesData& tsData);
@@ -160,7 +160,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
             KTSlotDataOneType< KTFrequencySpectrumDataPolar > fFSPolarSlot;
             KTSlotDataOneType< KTCorrelationData > fCorrSlot;
