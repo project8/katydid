@@ -78,6 +78,7 @@ macro (katydid_prepare_project VERSION_MAJOR VERSION_MINOR REVISION)
 	    ${KATYDID_CORE_DIR}/Library/Utility
 	    ${KATYDID_CORE_DIR}/Library/Data
 	    ${KATYDID_CORE_DIR}/Library/Processor
+	    ${KATYDID_CORE_DIR}/Library/IO
 	    ${KATYDID_CORE_DIR}/Library/Application
     )
 endmacro ()

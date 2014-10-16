@@ -4,6 +4,7 @@
 set (UTIL_DIR Utility)
 set (DATA_DIR Data)
 set (PROC_DIR Processor)
+set (IO_DIR IO)
 set (APPL_DIR Application)
 
 set (KTCORE_HEADERFILES
@@ -36,6 +37,8 @@ set (KTCORE_HEADERFILES
     ${PROC_DIR}/KTSignalWrapper.hh
     ${PROC_DIR}/KTSlot.hh
     ${PROC_DIR}/KTSlotWrapper.hh
+    ${IO_DIR}/KTReader.hh
+    ${IO_DIR}/KTWriter.hh
     ${APPL_DIR}/KTApplication.hh
     ${APPL_DIR}/KTCommandLineHandler.hh
     ${APPL_DIR}/KTCommandLineOption.hh
@@ -65,6 +68,8 @@ set (KTCORE_SOURCEFILES
     ${PROC_DIR}/KTSignal.cc
     ${PROC_DIR}/KTSignalWrapper.cc
     ${PROC_DIR}/KTSlotWrapper.cc
+    ${IO_DIR}/KTReader.cc
+    ${IO_DIR}/KTWriter.cc
     ${APPL_DIR}/KTApplication.cc
     ${APPL_DIR}/KTCommandLineHandler.cc
     ${APPL_DIR}/KTConfigurator.cc

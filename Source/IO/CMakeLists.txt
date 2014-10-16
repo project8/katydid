@@ -12,8 +12,6 @@ set (IO_HEADERFILES
     KTOfficialCandidatesWriter.hh
     KTTerminalTypeWriterEgg.hh
     KTTerminalWriter.hh
-    KTReader.hh
-    KTWriter.hh
 )
 
 set (IO_SOURCEFILES
@@ -27,8 +25,6 @@ set (IO_SOURCEFILES
     KTOfficialCandidatesWriter.cc
     KTTerminalTypeWriterEgg.cc
     KTTerminalWriter.cc
-    KTReader.cc
-    KTWriter.cc
 )
 
 if (ROOT_FOUND)
