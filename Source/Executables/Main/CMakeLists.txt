@@ -17,7 +17,7 @@ pbuilder_install_executables (
 
 if (Katydid_USE_MONARCH)
     add_executable (EggScanner EggScanner.cc)
-    target_link_libraries (EggScanner KTCore KatydidUtility KatydidData KatydidIO KatydidEgg ${EXTERNAL_LIBRARIES})
+    target_link_libraries (EggScanner KTCore KatydidUtility KatydidData KatydidIO KatydidTime ${EXTERNAL_LIBRARIES})
     
     pbuilder_install_executables ( 
         EggScanner

@@ -61,7 +61,7 @@ namespace Katydid
      FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
 
      Slots:
-     - "header": void (KTEggHeader*) -- Initialize the FFT from an Egg header
+     - "header": void (KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
      - "ts": void (KTDataPtr) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
      - "aa": void (KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
      - "fs-fftw": void (KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
@@ -83,7 +83,7 @@ namespace Katydid
             bool Configure(const KTParamNode* node);
 
             void InitializeFFT();
-            void InitializeWithHeader(KTEggHeader* header);
+            bool InitializeWithHeader(KTEggHeader& header);
 
             /// Forward FFT
             bool TransformData(KTTimeSeriesData& tsData);
@@ -150,7 +150,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
             KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;

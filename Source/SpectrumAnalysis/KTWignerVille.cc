@@ -102,12 +102,12 @@ namespace Katydid
         return true;
     }
 
-    void KTWignerVille::Initialize(double acqRate, unsigned nComponents, unsigned inputSliceSize)
+    bool KTWignerVille::Initialize(double acqRate, unsigned nComponents, unsigned inputSliceSize)
     {
         if (fPairs.empty())
         {
             KTWARN(wvlog, "No Wigner-Ville pairs specified; no transforms performed.");
-            return;
+            return false;
         }
         unsigned nPairs = fPairs.size();
 
@@ -199,12 +199,12 @@ namespace Katydid
         fWindowCounter = 0;
         fWindowAverageCounter = 0;
 
-        return;
+        return true;
     }
 
-    void KTWignerVille::InitializeWithHeader(KTEggHeader* header)
+    bool KTWignerVille::InitializeWithHeader(KTEggHeader& header)
     {
-        return Initialize(header->GetAcquisitionRate(), header->GetNChannels(), header->GetSliceSize());
+        return Initialize(header.GetAcquisitionRate(), header.GetNChannels(), header.GetSliceSize());
     }
 
     bool KTWignerVille::TransformData(KTTimeSeriesData& data, KTSliceHeader& header)

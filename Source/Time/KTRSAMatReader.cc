@@ -78,7 +78,7 @@ namespace Katydid
         if (fStride != fSliceSize)
         {
             KTERROR(eggreadlog, "The RSA matlab reader requires the stride equal the slice size");
-            return NULL;
+            return KTDataPtr();
         }
 
         // open the file
@@ -87,7 +87,7 @@ namespace Katydid
         if (fMatFilePtr == NULL)
         {
             KTERROR(eggreadlog, "Unable to open mat file: " << filename);
-            return NULL;
+            return KTDataPtr();
         }
 
         // Get the pointer to the data array
@@ -120,7 +120,7 @@ namespace Katydid
             if (rsaxml_mat == NULL)
             {
                 KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
-                return NULL;
+                return KTDataPtr();
             }
             for (unsigned ii = 0; ii < fRecordsPerFile; ++ii)
             {
@@ -129,7 +129,7 @@ namespace Katydid
                 if (rsaxml_mat == NULL)
                 {
                     KTERROR(eggreadlog, "Unable to read RSA XML config from fileInfoStruct (ii=" << ii << ")");
-                    return NULL;
+                    return KTDataPtr();
                 }
                 int buflen = mxGetN(rsaxml_mat) + 1;
                 char* rsaxml_str = new char[buflen];
@@ -175,7 +175,7 @@ namespace Katydid
         { // For Debugging
             KTINFO(eggreadlog, "Number of Records in File: fRecordsPerFile = " << fRecordsPerFile << " ");
             KTERROR(eggreadlog, "Done for now, we are debugging");
-            return NULL;
+            return KTDataPtr();
         }
 #endif
 
@@ -187,7 +187,7 @@ namespace Katydid
         if (rsaxml_mat == NULL)
         {
             KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
-            return NULL;
+            return KTDataPtr();
         }
         int buflen = mxGetN(rsaxml_mat) + 1;
         char* rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
@@ -195,7 +195,7 @@ namespace Katydid
         if (status != 0)
         {
             KTERROR(eggreadlog, "Unable to read XML Configuration string.");
-            return NULL;
+            return KTDataPtr();
         }
         KTINFO(eggreadlog, "Read XML Run Configuration");
 
@@ -285,7 +285,7 @@ namespace Katydid
         stringstream headerBuff;
         headerBuff << fHeader;
         KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
-        return new KTEggHeader(fHeader);
+        return fHeaderPtr;
     }
     KTDataPtr KTRSAMatReader::HatchNextSlice()
     {

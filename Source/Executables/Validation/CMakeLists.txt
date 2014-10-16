@@ -92,7 +92,7 @@ if (Katydid_ENABLE_TESTING)
     target_link_libraries (TestWindowFunction KTCore KatydidUtility KatydidData KatydidFFT)
     
     #add_executable (TestASCIIFileWriter TestASCIIFileWriter.cc)
-    #target_link_libraries (TestASCIIFileWriter KTCore KatydidEgg KatydidUtility KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
+    #target_link_libraries (TestASCIIFileWriter KTCore KatydidTime KatydidUtility KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
 
     pbuilder_install_executables (
                      ObjectSize
@@ -175,7 +175,7 @@ if (Katydid_ENABLE_TESTING)
     # executables that DO require Monarch
     if (Katydid_USE_MONARCH)
         add_executable (TestEggHatching TestEggHatching.cc)
-        target_link_libraries (TestEggHatching KTCore KatydidUtility KatydidData KatydidIO KatydidEgg ${EXTERNAL_LIBRARIES})
+        target_link_libraries (TestEggHatching KTCore KatydidUtility KatydidData KatydidIO KatydidTime ${EXTERNAL_LIBRARIES})
         
         pbuilder_install_executables ( 
                     TestEggHatching

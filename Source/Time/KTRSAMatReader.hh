@@ -31,6 +31,7 @@ to not work with Katydid on Linux systems.
 
 #include "KTEggReader.hh"
 
+#include <inttypes.h>
 #include <map>
 #include <string>
 #include <vector>
