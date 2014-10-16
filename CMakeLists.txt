@@ -7,31 +7,12 @@ cmake_minimum_required (VERSION 2.8.12)
 # Define the project
 project (Katydid)
 
+# Import Katydid core features
+include (KTCore/cmake/Katydid.cmake)
+katydid_prepare_project (1 11 0)
+
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
-
-# Include the build script
-include (PackageBuilder)
-
-# Set the version and associated variables
-pbuilder_prepare_project (1 11 0)
-
-# Add a "Standard" build type
-#set (CMAKE_BUILD_TYPE standard)
-set (CMAKE_CXX_FLAGS_STANDARD "-O1 -DNDEBUG -DSTANDARD" CACHE STRING "Flags used by the compiler during standard builds.")
-set (CMAKE_C_FLAGS_STANDARD "-O1 -DNDEBUG -DSTANDARD" CACHE STRING "Flags used by the compiler during standard builds.")
-set (CMAKE_EXE_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
-set (CMAKE_MODULE_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
-set (CMAKE_SHARED_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
-mark_as_advanced(CMAKE_CXX_FLAGS_STANDARD CMAKE_C_FLAGS_STANDARD CMAKE_EXE_LINKER_FLAGS_STANDARD CMAKE_MODULE_LINKER_FLAGS_STANDARD CMAKE_SHARED_LINKER_FLAGS_STANDARD)
-
-
-set (Katydid_SINGLETHREADED FALSE CACHE BOOL "Flag for running in single-threaded mode")
-if (Katydid_SINGLETHREADED)
-    add_definitions(-DSINGLETHREADED)
-else (Katydid_SINGLETHREADED)
-    remove_definitions(-DSINGLETHREADED)
-endif(Katydid_SINGLETHREADED)
 
 #optional build switches
 set (Katydid_USE_MANTIS FALSE CACHE BOOL "Flag to optionally use Mantis (external dependency)")
@@ -42,42 +23,9 @@ set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
 
-#optional compiler flags
-set (FLAG_WARNINGS "" CACHE STRING "Extra warning and error related flags")
-set (FLAG_WARNING_LEVEL "NORMAL" CACHE STRING "Valid values are NONE(-w), NORMAL(), MORE(-Wall), MOST(-Wall -Wextra)")
-set (FLAG_WARN_AS_ERROR FALSE CACHE BOOL "Treat all warnings as errors")
-mark_as_advanced(FLAG_WARNINGS)
-if (${CMAKE_BUILD_TYPE} MATCHES RELEASE|RelWithDebInfo|MinSizeRel/i)
-    set(FLAG_WARN_AS_ERROR TRUE)
-endif ()
-if (FLAG_WARN_AS_ERROR)
-    message(STATUS "warnings as errors")
-    set (FLAG_WARNINGS "-Werror ${FLAG_WARNINGS}")
-else (FLAG_WARN_AS_ERROR)
-    STRING(REGEX REPLACE "-Werror " "_" FLAG_WARNINGS "${FLAG_WARNINGS}")
-endif(FLAG_WARN_AS_ERROR)
-if (${FLAG_WARNING_LEVEL} MATCHES NONE)
-    STRING(REGEX REPLACE "-Wall |-Wextra " "" FLAG_WARNINGS "${FLAG_WARNINGS}")
-    set (FLAG_WARNINGS "${FLAG_WARNINGS} -w")
-endif (${FLAG_WARNING_LEVEL} MATCHES NONE)
-if (${FLAG_WARNING_LEVEL} MATCHES NORMAL)
-    STRING(REGEX REPLACE "-Wall |-Wextra |-w" "" FLAG_WARNINGS "${FLAG_WARNINGS}")
-endif (${FLAG_WARNING_LEVEL} MATCHES NORMAL)
-if (${FLAG_WARNING_LEVEL} MATCHES MORE)
-    STRING(REGEX REPLACE "-Wextra |-w" "" FLAG_WARNINGS "${FLAG_WARNINGS}")
-    set (FLAG_WARNINGS "-Wall ${FLAG_WARNINGS}")
-endif (${FLAG_WARNING_LEVEL} MATCHES MORE)
-if (${FLAG_WARNING_LEVEL} MATCHES MOST)
-    STRING(REGEX REPLACE "-w" "" FLAG_WARNINGS "${FLAG_WARNINGS}")
-    set (FLAG_WARNINGS "-Wall -Wextra ${FLAG_WARNINGS}")
-endif (${FLAG_WARNING_LEVEL} MATCHES MOST)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG_WARNINGS}")
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG_WARNINGS}")
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    pbuilder_add_ext_libraries (rt)
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+##############
+# Dependencies
+##############
 
 # Mantis
 if (Katydid_USE_MANTIS)
@@ -203,8 +151,6 @@ endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 
 
 # External packages distributed with Katydid
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidJSON)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidXML)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/nanoflann)
 
 # add an option to build the validation tests
@@ -238,10 +184,6 @@ include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax/
 
 # Subdirectories
 include_directories (BEFORE 
-    ${PROJECT_SOURCE_DIR}/KTCore/Utility
-    ${PROJECT_SOURCE_DIR}/KTCore/Data
-    ${PROJECT_SOURCE_DIR}/KTCore/Processor
-    ${PROJECT_SOURCE_DIR}/KTCore/Application
     ${PROJECT_SOURCE_DIR}/Source/Utility
     ${PROJECT_SOURCE_DIR}/Source/Data/SpectrumAnalysis
     ${PROJECT_SOURCE_DIR}/Source/Data/EventAnalysis
@@ -258,9 +200,8 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/EventAnalysis
 )
 
-add_subdirectory (KTCore)
-add_subdirectory (KTCore/Executables/Main)
-add_subdirectory (KTCore/Executables/Validation)
+katydid_build_core_library()
+
 add_subdirectory (Source/Utility)
 add_subdirectory (Source/Data)
 add_subdirectory (Source/IO)
@@ -274,6 +215,8 @@ add_subdirectory (Source/Executables/Main)
 add_subdirectory (Source/Executables/Profiling)
 add_subdirectory (Source/Executables/Validation)
 add_subdirectory (Examples)
+
+katydid_build_core_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.

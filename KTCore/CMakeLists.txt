@@ -1,4 +1,4 @@
-# CMakeLists for Katydid/KTCore
+# CMakeLists for KTCore
 # Author: N. Oblath
 
 set (KTCORE_HEADERFILES

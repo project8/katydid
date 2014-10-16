@@ -4,7 +4,7 @@
 
 # Executables
 
-add_executable (EvaluateCandidates ${PROJECT_SOURCE_DIR}/Source/KTCore/Executables/Main/Katydid.cc)
+add_executable (EvaluateCandidates ${PROJECT_SOURCE_DIR}/KTCore/Executables/Main/Katydid.cc)
 target_link_libraries (EvaluateCandidates KTCore KatydidUtility KatydidData KatydidIO KatydidEvaluation ${EXTERNAL_LIBRARIES})
 
 add_executable (Truncate Truncate.cc)
