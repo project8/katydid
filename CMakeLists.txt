@@ -192,7 +192,7 @@ include_directories (BEFORE
     ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/IO
     ${PROJECT_SOURCE_DIR}/Source/IO/Conversions
-    ${PROJECT_SOURCE_DIR}/Source/Egg
+    ${PROJECT_SOURCE_DIR}/Source/Time
     ${PROJECT_SOURCE_DIR}/Source/Simulation
     ${PROJECT_SOURCE_DIR}/Source/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/Transform

@@ -75,19 +75,19 @@ macro (katydid_prepare_project VERSION_MAJOR VERSION_MINOR REVISION)
 
 	# Katydid core directories
 	include_directories (BEFORE 
-	    ${KATYDID_CORE_DIR}/Utility
-	    ${KATYDID_CORE_DIR}/Data
-	    ${KATYDID_CORE_DIR}/Processor
-	    ${KATYDID_CORE_DIR}/Application
+	    ${KATYDID_CORE_DIR}/Library/Utility
+	    ${KATYDID_CORE_DIR}/Library/Data
+	    ${KATYDID_CORE_DIR}/Library/Processor
+	    ${KATYDID_CORE_DIR}/Library/Application
     )
 endmacro ()
 
 macro (katydid_build_core_library)
-	add_subdirectory (KTCore)
+	add_subdirectory (${KATYDID_CORE_DIR}/Library)
 endmacro ()
 
 macro (katydid_build_core_executables)
-	add_subdirectory (KTCore/Executables/Main)
-	add_subdirectory (KTCore/Executables/Validation)
+	add_subdirectory (${KATYDID_CORE_DIR}/Executables/Main)
+	add_subdirectory (${KATYDID_CORE_DIR}/Executables/Validation)
 endmacro ()
 
