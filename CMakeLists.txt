@@ -8,7 +8,7 @@ cmake_minimum_required (VERSION 2.8.12)
 project (Katydid)
 
 # Import Katydid core features
-include (KTCore/cmake/Katydid.cmake)
+include (KTCore/cmake/KatydidCore.cmake)
 katydid_prepare_project (1 11 0)
 
 # Specify the local directory for CMake modules

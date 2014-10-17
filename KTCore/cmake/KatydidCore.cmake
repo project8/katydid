@@ -1,11 +1,21 @@
+# KatydidCore.cmake
+# Macros for building a project using Katydid Core
 # Author: N. Oblath
 
+# Set CMAKE_MODULE_PATH to include this directory
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_LIST_DIR})
 
 # Include the build script
 include (PackageBuilder)
 
+# Main directory for Katydid Core
 set (KATYDID_CORE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
+
+# Version
+set (KATYDID_CORE_VERSION_MAJOR 1)
+set (KATYDID_CORE_VERSION_MINOR 0)
+set (KATYDID_CORE_REVISION 0)
+
 
 ##########
 # MACROS #
