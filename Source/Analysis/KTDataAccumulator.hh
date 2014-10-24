@@ -38,7 +38,20 @@ namespace Katydid
      @brief Averages data objects
 
      @details
+     The data accumulator running average of the data from a series of slices.
+     The size of the accumulator is the number of slices that are averaged together (configuration parameter "number-to-average").
+     If the accumulator size is 0, the data from all of the slices received will be summed together, and averaged at the end.
 
+     For slice i, the data received by the accumulator is D_i, and the average A_i is:
+       A_i = A_(i-1) * (S-1)/S + D_i / S
+     where S is the size of the accumulator.
+     
+     Note that this method of calculating A_i gives an effective average of S slices:  
+     At slice i, the amount removed from the previous sum is (1 / S) * A_(i-1) instead of (1 / S) * D_(i-N).
+     The effective average will be closest to the true average for large N.
+     
+     The signal interval is how often the output signal will be emitted.  
+     If the signal interval is 0, there will be no slice signals.
 
      Configuration name: "data-accumulator"
 
