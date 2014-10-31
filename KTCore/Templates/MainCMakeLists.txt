@@ -1,0 +1,24 @@
+# CMakeLists for [YOUR PACKAGE]
+# Author: [YOU]
+
+cmake_minimum_required (VERSION 2.8.12) # or newer
+
+# Define the project
+project ([YOUR PROJECT NAME])
+
+# Import Katydid core features
+include (KTCore/cmake/Katydid.cmake)
+katydid_prepare_project (1 11 0)
+
+
+[DEAL WITH DEPENDENCIES]
+
+
+katydid_build_core_library()
+
+[ADD YOUR SUBDIRECTORIES HERE]
+
+katydid_build_core_executables()
+
+
+[WHATEVER ELSE YOU MIGHT NEED TO DO]

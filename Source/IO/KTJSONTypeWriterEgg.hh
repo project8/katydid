@@ -10,6 +10,8 @@
 
 #include "KTJSONWriter.hh"
 
+#include "KTData.hh"
+
 namespace Katydid
 {
     class KTEggHeader;
@@ -23,8 +25,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-            void WriteEggHeader(KTEggHeader* header);
-
+            void WriteEggHeader(KTDataPtr headerPtr);
     };
 
 } /* namespace Katydid */

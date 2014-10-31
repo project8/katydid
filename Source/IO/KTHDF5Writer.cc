@@ -25,12 +25,12 @@ namespace Katydid
 
     KTHDF5Writer::KTHDF5Writer(const std::string& name) :
             KTWriterWithTypists< KTHDF5Writer >(name),
+            fHeaderSlot("header", this, &KTHDF5Writer::WriteEggHeader),
             fFilename("my_file.h5"),
             fFile(NULL),
             fHeaderParsed(false)
     {
         RegisterSlot("close-file", this, &KTHDF5Writer::CloseFile);
-        RegisterSlot("header", this, &KTHDF5Writer::WriteEggHeader);
     }
 
     KTHDF5Writer::~KTHDF5Writer()
@@ -102,13 +102,13 @@ namespace Katydid
         return result;
     }
 
-    void KTHDF5Writer::WriteEggHeader(KTEggHeader* header) {
+    bool KTHDF5Writer::WriteEggHeader(KTEggHeader& header) {
         // TODO(kofron): clearly this is insufficient
         // TODO(kofron): H5T_VARIABLE length for strings?
-        if (!this->OpenAndVerifyFile()) return;
+        if (!this->OpenAndVerifyFile()) return false;
 
         // copy the egg header.
-        this->fHeader = *header;
+        this->fHeader = header;
         this->fHeaderParsed = true;
 
         H5::Group* header_grp = this->AddGroup("/metadata");
@@ -133,7 +133,7 @@ namespace Katydid
         this->AddMetadata("header/center_frequency",this->fHeader.GetCenterFrequency());
         this->AddMetadata("header/minimum_frequency",this->fHeader.GetMinimumFrequency());
         this->AddMetadata("header/maximum_frequency",this->fHeader.GetMaximumFrequency());
-        return;
+        return true;
     }
 
     void KTHDF5Writer::WriteMetadata(std::string name, H5::DataType type, const void* value) {

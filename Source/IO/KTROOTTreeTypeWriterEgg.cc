@@ -59,7 +59,7 @@ namespace Katydid
     // Egg Header
     //*********************
 
-    void KTROOTTreeTypeWriterEgg::WriteEggHeader(KTEggHeader* header)
+    void KTROOTTreeTypeWriterEgg::WriteEggHeader(KTDataPtr headerPtr)
     {
         if (! fWriter->OpenAndVerifyFile()) return;
 
@@ -72,25 +72,27 @@ namespace Katydid
             }
         }
 
-        *fEggHeaderData.fFilename = header->GetFilename();
+        KTEggHeader& header = headerPtr->Of< KTEggHeader >();
+
+        *fEggHeaderData.fFilename = header.GetFilename();
         KTDEBUG(publog, "Writing egg header with filename <" << fEggHeaderData.fFilename << ">");
-        fEggHeaderData.fAcquisitionMode = header->GetAcquisitionMode();
-        fEggHeaderData.fNChannels = header->GetNChannels();
-        fEggHeaderData.fRawSliceSize = header->GetRawSliceSize();
-        fEggHeaderData.fSliceSize = header->GetSliceSize();
-        fEggHeaderData.fSliceStride = header->GetSliceStride();
-        fEggHeaderData.fRecordSize = header->GetRecordSize();
-        fEggHeaderData.fRunDuration = header->GetRunDuration();
-        fEggHeaderData.fAcquisitionRate = header->GetAcquisitionRate();
-        *fEggHeaderData.fTimestamp = header->GetTimestamp();
-        *fEggHeaderData.fDescription = header->GetDescription();
-        fEggHeaderData.fRunType = header->GetRunType();
-        fEggHeaderData.fRunSource = header->GetRunSource();
-        fEggHeaderData.fFormatMode = header->GetFormatMode();
-        fEggHeaderData.fDataTypeSize = header->GetDataTypeSize();
-        fEggHeaderData.fBitDepth = header->GetBitDepth();
-        fEggHeaderData.fVoltageMin = header->GetVoltageMin();
-        fEggHeaderData.fVoltageRange = header->GetVoltageRange();
+        fEggHeaderData.fAcquisitionMode = header.GetAcquisitionMode();
+        fEggHeaderData.fNChannels = header.GetNChannels();
+        fEggHeaderData.fRawSliceSize = header.GetRawSliceSize();
+        fEggHeaderData.fSliceSize = header.GetSliceSize();
+        fEggHeaderData.fSliceStride = header.GetSliceStride();
+        fEggHeaderData.fRecordSize = header.GetRecordSize();
+        fEggHeaderData.fRunDuration = header.GetRunDuration();
+        fEggHeaderData.fAcquisitionRate = header.GetAcquisitionRate();
+        *fEggHeaderData.fTimestamp = header.GetTimestamp();
+        *fEggHeaderData.fDescription = header.GetDescription();
+        fEggHeaderData.fRunType = header.GetRunType();
+        fEggHeaderData.fRunSource = header.GetRunSource();
+        fEggHeaderData.fFormatMode = header.GetFormatMode();
+        fEggHeaderData.fDataTypeSize = header.GetDataTypeSize();
+        fEggHeaderData.fBitDepth = header.GetBitDepth();
+        fEggHeaderData.fVoltageMin = header.GetVoltageMin();
+        fEggHeaderData.fVoltageRange = header.GetVoltageRange();
 
         fEggHeaderTree->Fill();
 

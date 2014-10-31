@@ -7,77 +7,25 @@ cmake_minimum_required (VERSION 2.8.12)
 # Define the project
 project (Katydid)
 
+# Import Katydid core features
+include (KTCore/cmake/KatydidCore.cmake)
+katydid_prepare_project (1 11 0)
+
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
-
-# Include the build script
-include (PackageBuilder)
-
-# Set the version and associated variables
-pbuilder_prepare_project (1 11 0)
-
-# Add a "Standard" build type
-#set (CMAKE_BUILD_TYPE standard)
-set (CMAKE_CXX_FLAGS_STANDARD "-O1 -DNDEBUG -DSTANDARD" CACHE STRING "Flags used by the compiler during standard builds.")
-set (CMAKE_C_FLAGS_STANDARD "-O1 -DNDEBUG -DSTANDARD" CACHE STRING "Flags used by the compiler during standard builds.")
-set (CMAKE_EXE_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
-set (CMAKE_MODULE_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
-set (CMAKE_SHARED_LINKER_FLAGS_STANDARD "" CACHE STRING "Flags used by the linker during standard builds.")
-mark_as_advanced(CMAKE_CXX_FLAGS_STANDARD CMAKE_C_FLAGS_STANDARD CMAKE_EXE_LINKER_FLAGS_STANDARD CMAKE_MODULE_LINKER_FLAGS_STANDARD CMAKE_SHARED_LINKER_FLAGS_STANDARD)
-
-
-set (Katydid_SINGLETHREADED FALSE CACHE BOOL "Flag for running in single-threaded mode")
-if (Katydid_SINGLETHREADED)
-    add_definitions(-DSINGLETHREADED)
-else (Katydid_SINGLETHREADED)
-    remove_definitions(-DSINGLETHREADED)
-endif(Katydid_SINGLETHREADED)
 
 #optional build switches
 set (Katydid_USE_MANTIS FALSE CACHE BOOL "Flag to optionally use Mantis (external dependency)")
 set (Katydid_USE_MONARCH TRUE CACHE BOOL "Flag to optionally use Monarch")
 set (Katydid_USE_FFTW TRUE CACHE BOOL "Flag to optionally use FFTW")
 set (Katydid_USE_HDF5 TRUE CACHE BOOL "Flag to optionally use HDF5")
-set (Katydid_USE_EIGEN TRUE CACHE BOOL "Flag to optionally use eigen")
+set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
 
-#optional compiler flags
-set (FLAG_WARNINGS "" CACHE STRING "Extra warning and error related flags")
-set (FLAG_WARNING_LEVEL "NORMAL" CACHE STRING "Valid values are NONE(-w), NORMAL(), MORE(-Wall), MOST(-Wall -Wextra)")
-set (FLAG_WARN_AS_ERROR FALSE CACHE BOOL "Treat all warnings as errors")
-mark_as_advanced(FLAG_WARNINGS)
-if (${CMAKE_BUILD_TYPE} MATCHES RELEASE|RelWithDebInfo|MinSizeRel/i)
-    set(FLAG_WARN_AS_ERROR TRUE)
-endif ()
-if (FLAG_WARN_AS_ERROR)
-    message(STATUS "warnings as errors")
-    set (FLAG_WARNINGS "-Werror ${FLAG_WARNINGS}")
-else (FLAG_WARN_AS_ERROR)
-    STRING(REGEX REPLACE "-Werror " "_" FLAG_WARNINGS "${FLAG_WARNINGS}")
-endif(FLAG_WARN_AS_ERROR)
-if (${FLAG_WARNING_LEVEL} MATCHES NONE)
-    STRING(REGEX REPLACE "-Wall |-Wextra " "" FLAG_WARNINGS "${FLAG_WARNINGS}")
-    set (FLAG_WARNINGS "${FLAG_WARNINGS} -w")
-endif (${FLAG_WARNING_LEVEL} MATCHES NONE)
-if (${FLAG_WARNING_LEVEL} MATCHES NORMAL)
-    STRING(REGEX REPLACE "-Wall |-Wextra |-w" "" FLAG_WARNINGS "${FLAG_WARNINGS}")
-endif (${FLAG_WARNING_LEVEL} MATCHES NORMAL)
-if (${FLAG_WARNING_LEVEL} MATCHES MORE)
-    STRING(REGEX REPLACE "-Wextra |-w" "" FLAG_WARNINGS "${FLAG_WARNINGS}")
-    set (FLAG_WARNINGS "-Wall ${FLAG_WARNINGS}")
-endif (${FLAG_WARNING_LEVEL} MATCHES MORE)
-if (${FLAG_WARNING_LEVEL} MATCHES MOST)
-    STRING(REGEX REPLACE "-w" "" FLAG_WARNINGS "${FLAG_WARNINGS}")
-    set (FLAG_WARNINGS "-Wall -Wextra ${FLAG_WARNINGS}")
-endif (${FLAG_WARNING_LEVEL} MATCHES MOST)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG_WARNINGS}")
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG_WARNINGS}")
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    pbuilder_add_ext_libraries (rt)
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed")
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+##############
+# Dependencies
+##############
 
 # Mantis
 if (Katydid_USE_MANTIS)
@@ -169,11 +117,14 @@ if (Katydid_USE_MATLAB)
 endif (Katydid_USE_MATLAB)
 if (MATLAB_FOUND)
     message (STATUS "matlab include dir: ${MATLAB_INCLUDE_DIR}")
+    get_filename_component (MATLAB_LIBRARY_DIR ${MATLAB_MAT_LIBRARY} DIRECTORY)
+    message (STATUS "matlab library dir: ${MATLAB_LIBRARY_DIR}")
     message (STATUS "matlab libraries: ${MATLAB_LIBRARIES}")
     add_definitions(-DUSE_MATLAB)
     include_directories (${MATLAB_INCLUDE_DIR})
     link_directories (${MATLAB_LIBRARY_DIR})
-    pbuilder_add_ext_libraries (${MATLAB_LIBRARIES})
+    set (EXTERNAL_LIBRARIES_MATLAB ${MATLAB_LIBRARIES})
+    #pbuilder_add_ext_libraries (${MATLAB_LIBRARIES})
 else (MATLAB_FOUND)
     message (STATUS "Building without Matlab")
     remove_definitions(-DUSE_MATLAB)
@@ -202,8 +153,6 @@ endif (OPENMP_FOUND AND NOT Katydid_SINGLETHREADED)
 
 
 # External packages distributed with Katydid
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidJSON)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/RapidXML)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/External/nanoflann)
 
 # add an option to build the validation tests
@@ -217,7 +166,7 @@ option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 
 # Monarch
 if (Katydid_USE_MONARCH)
-    add_subdirectory (Source/Egg/Monarch)
+    add_subdirectory (Source/Time/Monarch)
     pbuilder_add_submodule_libraries (${Monarch_LIBRARIES})
     add_definitions(-DUSE_MONARCH)
 
@@ -228,46 +177,48 @@ if (Katydid_USE_MONARCH)
     endif ("${isSystemDir}" STREQUAL "-1")
 else (Katydid_USE_MONARCH)
     message(STATUS "Building without Monarch")
-    add_subdirectory(Source/Egg/Monarch EXCLUDE_FROM_ALL)
+    add_subdirectory(Source/Time/Monarch EXCLUDE_FROM_ALL)
     remove_definitions(-DUSE_MONARCH)
 endif (Katydid_USE_MONARCH)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/Source)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Egg/Monarch/libthorax/cpp)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Source)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax/cpp)
 
 # Subdirectories
 include_directories (BEFORE 
     ${PROJECT_SOURCE_DIR}/Source/Utility
-    ${PROJECT_SOURCE_DIR}/Source/Core
-    ${PROJECT_SOURCE_DIR}/Source/Data
-    ${PROJECT_SOURCE_DIR}/Source/Data/Analysis
-    ${PROJECT_SOURCE_DIR}/Source/Data/Candidates
-    ${PROJECT_SOURCE_DIR}/Source/Data/Egg
-    ${PROJECT_SOURCE_DIR}/Source/Data/FFT
+    ${PROJECT_SOURCE_DIR}/Source/Data/SpectrumAnalysis
+    ${PROJECT_SOURCE_DIR}/Source/Data/EventAnalysis
+    ${PROJECT_SOURCE_DIR}/Source/Data/Time
+    ${PROJECT_SOURCE_DIR}/Source/Data/Transform
     ${PROJECT_SOURCE_DIR}/Source/Data/Evaluation
     ${PROJECT_SOURCE_DIR}/Source/IO
     ${PROJECT_SOURCE_DIR}/Source/IO/Conversions
-    ${PROJECT_SOURCE_DIR}/Source/Egg
+    ${PROJECT_SOURCE_DIR}/Source/Time
     ${PROJECT_SOURCE_DIR}/Source/Simulation
     ${PROJECT_SOURCE_DIR}/Source/Evaluation
-    ${PROJECT_SOURCE_DIR}/Source/FFT
-    ${PROJECT_SOURCE_DIR}/Source/Analysis
-    ${PROJECT_SOURCE_DIR}/Source/Candidates
+    ${PROJECT_SOURCE_DIR}/Source/Transform
+    ${PROJECT_SOURCE_DIR}/Source/SpectrumAnalysis
+    ${PROJECT_SOURCE_DIR}/Source/EventAnalysis
 )
 
+katydid_build_core_library()
+
 add_subdirectory (Source/Utility)
-add_subdirectory (Source/Core)
 add_subdirectory (Source/Data)
 add_subdirectory (Source/IO)
-add_subdirectory (Source/Egg)
+add_subdirectory (Source/Time)
 add_subdirectory (Source/Simulation)
 add_subdirectory (Source/Evaluation)
-add_subdirectory (Source/FFT)
-add_subdirectory (Source/Analysis)
-add_subdirectory (Source/Candidates)
-add_subdirectory (Source/Applications/Main)
-add_subdirectory (Source/Applications/Profiling)
-add_subdirectory (Source/Applications/Validation)
+add_subdirectory (Source/Transform)
+add_subdirectory (Source/SpectrumAnalysis)
+add_subdirectory (Source/EventAnalysis)
+add_subdirectory (Source/Executables/Main)
+add_subdirectory (Source/Executables/Profiling)
+add_subdirectory (Source/Executables/Validation)
+add_subdirectory (Examples)
+
+katydid_build_core_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
