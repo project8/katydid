@@ -7,6 +7,7 @@
 
 #include "KTBasicROOTTypeWriterAnalysis.hh"
 
+#include "KT2ROOT.hh"
 #include "KTAnalyticAssociateData.hh"
 #include "KTCorrelationData.hh"
 #include "KTCorrelationTSData.hh"
@@ -15,6 +16,7 @@
 #include "KTHoughData.hh"
 #include "KTLogger.hh"
 #include "KTNormalizedFSData.hh"
+#include "KTPowerSpectrumData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTIFactory.hh"
 #include "KTTimeFrequencyPolar.hh"
@@ -50,12 +52,14 @@ namespace Katydid
 
     void KTBasicROOTTypeWriterAnalysis::RegisterSlots()
     {
+        fWriter->RegisterSlot("snr-power", this, &KTBasicROOTTypeWriterAnalysis::WriteSNRPower);
         fWriter->RegisterSlot("norm-fs-polar", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolar);
         fWriter->RegisterSlot("norm-fs-fftw", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTW);
         fWriter->RegisterSlot("norm-fs-polar-phase", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolarPhase);
         fWriter->RegisterSlot("norm-fs-fftw-phase", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTWPhase);
         fWriter->RegisterSlot("norm-fs-polar-power", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataPolarPower);
         fWriter->RegisterSlot("norm-fs-fftw-power", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedFSDataFFTWPower);
+        fWriter->RegisterSlot("norm-ps", this, &KTBasicROOTTypeWriterAnalysis::WriteNormalizedPSData);
         fWriter->RegisterSlot("aa", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateData);
         fWriter->RegisterSlot("aa-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteAnalyticAssociateDataDistribution);
         fWriter->RegisterSlot("corr", this, &KTBasicROOTTypeWriterAnalysis::WriteCorrelationData);
@@ -70,6 +74,42 @@ namespace Katydid
         return;
     }
 
+    //************************
+    // SNR
+    //************************
+
+    void KTBasicROOTTypeWriterAnalysis::WriteSNRPower(KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTPowerSpectrumData& psData = data->Of< KTPowerSpectrumData >();
+        KTGainVariationData& gvData = data->Of< KTGainVariationData >();
+        unsigned nComponents = psData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            const KTPowerSpectrum* spectrum = psData.GetSpectrum(iComponent);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histSNRPower_" << sliceNumber << "_" << iComponent;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
+                TH1D* gvHist = gvData.CreateGainVariationHistogram(powerSpectrum->GetNbinsX(), iComponent, "htemp");
+                powerSpectrum->Divide(gvHist);
+                delete gvHist;
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
 
     //************************
     // Frequency Spectrum Data
@@ -249,6 +289,37 @@ namespace Katydid
         return;
     }
 
+    void KTBasicROOTTypeWriterAnalysis::WriteNormalizedPSData(KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTNormalizedPSData& psData = data->Of<KTNormalizedPSData>();
+        unsigned nComponents = psData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTPowerSpectrum* spectrum = psData.GetSpectrum(iChannel);
+            if (spectrum != NULL)
+            {
+                spectrum->ConvertToPowerSpectrum();
+                stringstream conv;
+                conv << "histNPS_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+
     //************************
     // Analytic Associate Data
     //************************
@@ -402,7 +473,7 @@ namespace Katydid
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -431,7 +502,7 @@ namespace Katydid
 
         if (! fWriter->OpenAndVerifyFile()) return;
 
-        for (unsigned iComponent=0; iComponent<nComponents; iComponent++)
+        for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -470,8 +541,11 @@ namespace Katydid
             conv << "histHT_" << sliceNumber << "_" << iPlot;
             string histName;
             conv >> histName;
-            TH2D* swHist = houghData.CreateHistogram(iPlot, histName);
+            TH2D* swHist = KT2ROOT::CreateHistogram(houghData.GetTransform(iPlot), histName);
             swHist->SetDirectory(fWriter->GetFile());
+            swHist->SetTitle("Hough Space");
+            swHist->SetXTitle("Angle");
+            swHist->SetYTitle("Radius");
             swHist->Write();
             KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
         }

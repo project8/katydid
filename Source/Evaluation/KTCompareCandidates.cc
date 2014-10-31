@@ -138,7 +138,7 @@ namespace Katydid
         }
 
         KTDataPtr dataPtr(new KTData());
-        dataPtr->fLastData = true;
+        dataPtr->SetLastData(true);
         KTCCResults& ccrData = dataPtr->Of< KTCCResults >();
 
         ccrData.SetEventLength(mcEventData.GetEventLength());

@@ -34,7 +34,7 @@ namespace Katydid
         fBinWidth = orig.GetBinWidth();
         fRangeMin = orig.GetRangeMin();
         fRangeMax = orig.GetRangeMax();
-        fLabel = orig.GetLabel();
+        fLabel = orig.GetAxisLabel();
     }
 
     KTAxisProperties< 1 >::~KTAxisProperties()
@@ -53,7 +53,7 @@ namespace Katydid
         fBinWidth = orig.GetBinWidth();
         fRangeMin = orig.GetRangeMin();
         fRangeMax = orig.GetRangeMax();
-        fLabel = orig.GetLabel();
+        fLabel = orig.GetAxisLabel();
         return *this;
     }
 
@@ -139,12 +139,12 @@ namespace Katydid
         return (size_t)(floor((pos - fRangeMin) / fBinWidth));
     }
 
-    const std::string& KTAxisProperties< 1 >::GetLabel() const
+    const std::string& KTAxisProperties< 1 >::GetAxisLabel() const
     {
         return fLabel;
     }
 
-    void KTAxisProperties< 1 >::SetLabel(const std::string& label)
+    void KTAxisProperties< 1 >::SetAxisLabel(const std::string& label)
     {
         fLabel = label;
         return;

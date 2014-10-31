@@ -41,11 +41,13 @@ namespace Katydid
     // Egg Header
     //***********
 
-    void KTJSONTypeWriterEgg::WriteEggHeader(KTEggHeader* header)
+    void KTJSONTypeWriterEgg::WriteEggHeader(KTDataPtr headerPtr)
     {
         using rapidjson::SizeType;
 
         if (! fWriter->OpenAndVerifyFile()) return;
+
+        KTEggHeader& header = headerPtr->Of< KTEggHeader >();
 
         KTJSONWriter::JSONMaker* jsonMaker = fWriter->GetJSONMaker();
 
@@ -53,40 +55,61 @@ namespace Katydid
         jsonMaker->StartObject();
 
         jsonMaker->String("filename");
-        jsonMaker->String(header->GetFilename().c_str(), (SizeType)header->GetFilename().length());
+        jsonMaker->String(header.GetFilename().c_str(), (SizeType)header.GetFilename().length());
 
         jsonMaker->String("acquisition-mode");
-        jsonMaker->Uint(header->GetAcquisitionMode());
+        jsonMaker->Uint(header.GetAcquisitionMode());
 
         jsonMaker->String("n-channels");
-        jsonMaker->Uint(header->GetNChannels());
+        jsonMaker->Uint(header.GetNChannels());
 
         jsonMaker->String("record-size");
-        jsonMaker->Uint((unsigned)header->GetSliceSize());
+        jsonMaker->Uint((unsigned)header.GetRecordSize());
+
+        jsonMaker->String("raw-slice-size");
+        jsonMaker->Uint((unsigned)header.GetSliceSize());
+
+        jsonMaker->String("slice-size");
+        jsonMaker->Uint((unsigned)header.GetSliceSize());
+
+        jsonMaker->String("slice-stride");
+        jsonMaker->Uint((unsigned)header.GetSliceStride());
 
         jsonMaker->String("monarch-record-size");
-        jsonMaker->Uint((unsigned)header->GetRecordSize());
+        jsonMaker->Uint((unsigned)header.GetRecordSize());
 
         jsonMaker->String("run-duration");
-        jsonMaker->Uint(header->GetRunDuration());
+        jsonMaker->Uint(header.GetRunDuration());
 
         jsonMaker->String("acquisition-rate");
-        jsonMaker->Double(header->GetAcquisitionRate());
+        jsonMaker->Double(header.GetAcquisitionRate());
 
         jsonMaker->String("timestamp");
-        jsonMaker->String(header->GetTimestamp().c_str(), (SizeType)header->GetTimestamp().length());
+        jsonMaker->String(header.GetTimestamp().c_str(), (SizeType)header.GetTimestamp().length());
 
         jsonMaker->String("description");
-        jsonMaker->String(header->GetDescription().c_str(), (SizeType)header->GetDescription().length());
+        jsonMaker->String(header.GetDescription().c_str(), (SizeType)header.GetDescription().length());
 
         jsonMaker->String("run-type");
-        jsonMaker->Uint(header->GetRunType());
+        jsonMaker->Uint(header.GetRunType());
 
         jsonMaker->String("run-source");
-        jsonMaker->Uint(header->GetRunSource());
+        jsonMaker->Uint(header.GetRunSource());
 
         jsonMaker->String("format-mode");
-        jsonMaker->Uint(header->GetFormatMode());
+        jsonMaker->Uint(header.GetFormatMode());
+
+        jsonMaker->String("data-type-size");
+        jsonMaker->Uint(header.GetDataTypeSize());
+
+        jsonMaker->String("bit-depth");
+        jsonMaker->Uint(header.GetBitDepth());
+
+        jsonMaker->String("voltage-min");
+        jsonMaker->Double(header.GetVoltageMin());
+
+        jsonMaker->String("voltage-range");
+        jsonMaker->Double(header.GetVoltageRange());
 
         jsonMaker->EndObject();
 

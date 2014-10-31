@@ -1,0 +1,43 @@
+{
+    "processor-toolbox":
+    {
+        "processors":
+        [
+            { "type": "egg-processor",          "name": "egg" },
+            { "type": "hdf5-writer",      "name": "h5" }
+        ],
+        
+        "connections":
+        [
+            {
+                "signal": "egg:header",
+                "slot": "h5:header"
+            },
+            
+            {
+                "signal": "egg:ts",
+                "slot": "h5:ts-raw"
+            }
+        ],
+        
+        "run-queue":
+        [
+            "egg"
+        ]
+    },
+    
+
+    "egg":
+    {
+        "filename": "/Users/kofron/Data/Krdatacold_520MHz_trapon2A_f1.egg",
+        "number-of-slices": 100,
+        "slice-size": 2048,
+        "stride": 2048,
+        "progress-report-interval": 1000
+    },
+    
+    "h5":
+    {
+        "output-file": "Krdatacold_520MHz_trapon2A_f1.h5"
+    }
+}

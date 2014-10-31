@@ -7,6 +7,7 @@
 
 #include "KTDataTypeDisplayAnalysis.hh"
 
+#include "KT2ROOT.hh"
 #include "KTAnalyticAssociateData.hh"
 #include "KTCorrelationData.hh"
 #include "KTCorrelationTSData.hh"
@@ -382,7 +383,7 @@ namespace Katydid
 
         if (! fWriter->OpenWindow()) return;
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -409,7 +410,7 @@ namespace Katydid
 
         if (! fWriter->OpenWindow()) return;
 
-        for (UInt_t iComponent=0; iComponent<nComponents; iComponent++)
+        for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
         {
             const KTTimeSeries* spectrum = tsData.GetTimeSeries(iComponent);
             if (spectrum != NULL)
@@ -446,7 +447,11 @@ namespace Katydid
             conv << "histHT_" << sliceNumber << "_" << iPlot;
             string histName;
             conv >> histName;
-            TH2D* swHist = houghData.CreateHistogram(iPlot, histName);
+            TH2D* swHist = KT2ROOT::CreateHistogram(houghData.GetTransform(iPlot), histName);
+            swHist->SetDirectory(NULL);
+            swHist->SetTitle("Hough Space");
+            swHist->SetXTitle("Angle");
+            swHist->SetYTitle("Radius");
             fWriter->Draw(swHist);
         }
         return;

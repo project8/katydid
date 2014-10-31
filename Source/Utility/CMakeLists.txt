@@ -1,81 +1,68 @@
 # CMakeLists for Katydid/Source/Utility
 # Author: N. Oblath
 
-if (LOG4CXX_FOUND)
-    set (LOGGER_CONFIGURATION "${CONFIG_INSTALL_DIR}/log4cxx.properties" )
-    set_source_files_properties (KTLogger.cc PROPERTIES COMPILE_DEFINITIONS
-        "LOG4CXX;LOGGER_CONFIGURATION=\"${LOGGER_CONFIGURATION}\""
-    )
-endif (LOG4CXX_FOUND)
-
-set (UTILITY_HEADERFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties_GetNBins.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTConcurrentQueue.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCountHistogram.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCutable.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCutableArray.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTDestroyer.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTException.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTExtensibleStruct.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTFactory.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMaskedArray.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTMath.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTNOFactory.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTParam.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTPhysicalArray.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSingleton.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTECDF.hh
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTTIFactory.hh
+set (UTILITY_DICT_HEADERFILES
+    KTEventLoop.hh
+    KTRootGuiLoop.hh
 )
 
+set (UTILITY_NODICT_HEADERFILES
+    complexpolar.hh
+    KTAxisProperties_GetNBins.hh
+    KTAxisProperties.hh
+    KTCountHistogram.hh
+    KTCutable.hh
+    KTCutableArray.hh
+    KTECDF.hh
+    KTMaskedArray.hh
+    KTMath.hh
+    KTPhysicalArray.hh
+    KTRandom.hh
+    KTSmooth.hh
+    KTSpline.hh
+)
+
+set (UTILITY_HEADERFILES ${UTILITY_DICT_HEADERFILES} ${UTILITY_NODICT_HEADERFILES})
+
 set (UTILITY_HEADER_SUBDIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar
+    complexpolar
 )
 
 set (UTILITY_SOURCEFILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/complexpolar/specialization.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTAxisProperties.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTCountHistogram.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTException.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTLogger.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTParam.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTSpline.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/KTECDF.cc
+    complexpolar/specialization.cc
+    KTAxisProperties.cc
+    KTCountHistogram.cc
+    KTECDF.cc
+    KTEventLoop.cc
+    KTRandom.cc
+    KTSmooth.cc
+    KTSpline.cc
 )
 
-if (LOG4CXX_FOUND)
-    set (UTILITY_HEADER_SUBDIRS
-        ${UTILITY_HEADER_SUBDIRS}
-        ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx
-    )
-    
+if (ROOT_FOUND)
     set (UTILITY_SOURCEFILES
         ${UTILITY_SOURCEFILES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx/KTLevel.cc
+        KTRootGuiLoop.cc
     )
-endif (LOG4CXX_FOUND)
 
+    set (UTILITY_LINKDEF_HEADERFILE LinkDef/UtilityLinkDef.hh)
+    set (UTILITY_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/UtilityDict.cxx)
+endif (ROOT_FOUND)
+
+set (KATYDID_LIBS
+    KTCore
+)
 
 ##################################################
 
-add_library (KatydidUtility ${UTILITY_SOURCEFILES})
-target_link_libraries (KatydidUtility ${EXTERNAL_LIBRARIES})
+if (ROOT_FOUND)
+    ROOT_GENERATE_DICTIONARY ("${UTILITY_DICT_HEADERFILES}" "${UTILITY_LINKDEF_HEADERFILE}" "${UTILITY_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+endif (ROOT_FOUND)
+
+add_library (KatydidUtility ${UTILITY_SOURCEFILES} ${UTILITY_DICT_OUTFILE})
+target_link_libraries (KatydidUtility ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
 pbuilder_install_headers (${UTILITY_HEADERFILES})
 pbuilder_install_header_dirs ("*.hh" ${UTILITY_HEADER_SUBDIRS})
 pbuilder_install_libraries (KatydidUtility)
-
-# install the log4cxx config file
-set (LEVEL "info")
-if (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-    set (LEVEL "debug")
-endif (CMAKE_BUILD_TYPE STREQUAL "DEBUG")
-if (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
-    set (LEVEL "prog#KTLevel")
-endif (CMAKE_BUILD_TYPE STREQUAL "RELEASE")
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/log4cxx/config/log4cxx.properties.in ${CONFIG_INSTALL_DIR}/log4cxx.properties @ONLY )
 

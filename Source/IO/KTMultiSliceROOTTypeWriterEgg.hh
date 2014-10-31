@@ -34,7 +34,7 @@ namespace Katydid
             void ClearHistograms();
 
         public:
-            void StartByHeader(KTEggHeader* header);
+            void StartByHeader(KTDataPtr);
 
             void AddTimeSeriesData(KTDataPtr data);
 

@@ -1,0 +1,41 @@
+{
+    "test-configurable":
+    {
+        "int-data": 5,
+        "double-data": 50,
+        "string-data": "It works!",
+        "comment": "This should not show up in the as-parsed configuration",
+        "comment":
+        {
+            "neither": "should this"
+        }
+        
+    },
+    
+    "nested-data":
+    {
+        "single-data": 222,
+        "single-data-2": -5000,
+        "#single-data-3": 1,
+        "single-data-3": 10,
+        
+        "sub-data":
+        {
+            "single-data":111,
+            "single-data-2": 6789,
+            "multi-data":
+            [ 345, 456, ["###", 567], 789 ]
+        }
+    },
+    
+    "nested-data-2":
+    {
+        "single-data-2": 212121,
+        "single-data-3": "this replaced an integer",
+        
+        "sub-data":
+        {
+            "single-data-2": 12345
+        }
+    }
+}

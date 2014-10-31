@@ -62,7 +62,7 @@ namespace Katydid
         if (! fWriter->OpenAndVerifyFile()) return;
 
         gStyle->SetOptStat(0);
-        for (unsigned iComponent=0; iComponent < fTSHists.size(); iComponent++)
+        for (unsigned iComponent=0; iComponent < fTSHists.size(); ++iComponent)
         {
             // Printing to graphics files
             stringstream conv;
@@ -105,7 +105,7 @@ namespace Katydid
     }
 
 
-    void KTMultiSliceROOTTypeWriterEgg::StartByHeader(KTEggHeader*)
+    void KTMultiSliceROOTTypeWriterEgg::StartByHeader(KTDataPtr)
     {
         fWriter->Start();
         return;
@@ -124,7 +124,7 @@ namespace Katydid
             fTSHists.resize(tsData.GetNComponents());
 
             std::string histNameBase("PowerSpectrum");
-            for (unsigned iComponent=0; iComponent < tsData.GetNComponents(); iComponent++)
+            for (unsigned iComponent=0; iComponent < tsData.GetNComponents(); ++iComponent)
             {
                 std::stringstream conv;
                 conv << iComponent;
@@ -135,7 +135,7 @@ namespace Katydid
         }
         else
         {
-            for (unsigned iComponent=0; iComponent < tsData.GetNComponents(); iComponent++)
+            for (unsigned iComponent=0; iComponent < tsData.GetNComponents(); ++iComponent)
             {
                 TH1D* newTS = tsData.GetTimeSeries(iComponent)->CreateHistogram();
                 fTSHists[iComponent]->Add(newTS);

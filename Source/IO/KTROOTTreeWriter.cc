@@ -111,7 +111,6 @@ namespace Katydid
             }
         }
         fTrees.clear();
-        fFile->Write();
         return;
     }
 
