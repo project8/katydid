@@ -1,6 +1,8 @@
 # CMakeLists for Katydid/Examples
 # Author: N. Oblath
 
+# Tutorial code is optionally built from the Source/SpectrumAnalysis and Source/Data CMakeLists files.
+
 # Config files
 set (EXAMPLE_CONFIGFILES
     ConfigFiles/DisplayFFT.json

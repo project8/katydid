@@ -62,17 +62,28 @@ if (ROOT_FOUND)
 endif (ROOT_FOUND)
 
 if (EIGEN3_FOUND)
-   set (ANALYSIS_HEADERFILES 
-       ${ANALYSIS_HEADERFILES}   
-       KTBiasedACM.hh
-       KTRQProcessor.hh
-   )
-   set (ANALYSIS_SOURCEFILES
-       ${ANALYSIS_SOURCEFILES}
-       KTRQProcessor.cc
-       KTBiasedACM.cc
-   )
+    set (ANALYSIS_HEADERFILES 
+        ${ANALYSIS_HEADERFILES}   
+        KTBiasedACM.hh
+        KTRQProcessor.hh
+    )
+    set (ANALYSIS_SOURCEFILES
+        ${ANALYSIS_SOURCEFILES}
+        KTRQProcessor.cc
+        KTBiasedACM.cc
+    )
 endif (EIGEN3_FOUND)
+
+if (Katydid_ENABLE_TUTORIAL)
+    set (ANALYSIS_HEADERFILES 
+        ${ANALYSIS_HEADERFILES}
+        ${PROJECT_SOURCE_DIR}/Examples/Tutorial/KTLowPassFilter.hh
+    )
+    set (ANALYSIS_SOURCEFILES 
+        ${ANALYSIS_SOURCEFILES}
+        ${PROJECT_SOURCE_DIR}/Examples/Tutorial/KTLowPassFilter.cc
+    )
+endif (Katydid_ENABLE_TUTORIAL)
 
 set (KATYDID_LIBS
     KTCore

@@ -110,6 +110,18 @@ if (NOT FFTW_FOUND)
     )
 endif (NOT FFTW_FOUND)
 
+if (Katydid_ENABLE_TUTORIAL)
+    set (DATA_HEADERFILES 
+        ${DATA_HEADERFILES}
+        ${PROJECT_SOURCE_DIR}/Examples/Tutorial/KTLowPassFilteredData.hh
+    )
+    set (DATA_SOURCEFILES 
+        ${DATA_SOURCEFILES}
+        ${PROJECT_SOURCE_DIR}/Examples/Tutorial/KTLowPassFilteredData.cc
+    )
+endif (Katydid_ENABLE_TUTORIAL)
+
+
 set (KATYDID_LIBS
     KTCore
     KatydidUtility
