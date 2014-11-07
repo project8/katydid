@@ -2,9 +2,10 @@
 
 ## Get Katydid
 1. Clone the git repo: git clone https://github.com/project8/katydid.git
-1.5. Checkout the tutorial branch: git checkout Tutorial-Complete
-2. Create a branch to work in: git branch tutorial
-3. Checkout the branch: git checkout tutorial
+2. Download the submodules: git submodule update --init --recursive
+2.5. Checkout the tutorial branch: git checkout Tutorial-Complete
+3. Create a branch to work in: git branch tutorial
+4. Checkout the branch: git checkout tutorial
 
 
 ## Setup
@@ -35,6 +36,25 @@
 8. Add signal/slot interface. (.hh and .cc)
 9. Finish documentation. (.hh)
 10. Add the class to the CMakeLists.txt file in Source/Data/SpectrumAnalysis.
+
+
+## Writer
+1. In Source/IO/KTBasicROOTTypeWriterAnalysis.hh, copy WriteNormalized[FSDataPolar/FSDataFFTW/PSData] to WriteLowPassFiltered[FSDataPolar/FSDataFFTW/PSData]
+2. Do the same copying in the .cc file.
+3. Change the class names in the functions appropriately.
+4. Add a #include line for the data class header.
+5. Add Register lines for the new functions (i.e. copy and modify the relevant WriteNormalized lines)
+
+
+## Build Katydid
+1. Create a build directory: mkdir build-tutorial
+2. Enter that directory: cd build-tutorial
+3. Run ccmake: ccmake ..
+4. Change the build type to DEBUG
+5. Configure by pressing 'c'
+6. Generate the build files and exit by pressing 'g'
+7. Build Katydid: make install
+   To speed the build process, if you have multiple cores, you can add a -j[# cores] argument.
 
 
 ## Config
