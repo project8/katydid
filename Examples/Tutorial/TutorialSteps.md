@@ -1,16 +1,15 @@
 # Tutorial -- Low-Pass Filter Processor
 
 ## Get Katydid
-1. Clone the git repo: git clone https://github.com/project8/katydid.git
-2. Download the submodules: git submodule update --init --recursive
+1. Clone the git repo: git clone --recursive https://github.com/project8/katydid.git
+2. cd katydid
 2.5. Checkout the tutorial branch: git checkout Tutorial-Complete
-3. Create a branch to work in: git branch tutorial
-4. Checkout the branch: git checkout tutorial
+3. Checkout the branch: git checkout -b tutorial
 
 
 ## Setup
 1. Copy KTProcessorTemplate.hh/cc files to the appropriate location (Source/SpectrumAnalysis) and new filenames.
-2. Copy a data class files (e.g. KTNormalizedFSData.hh/cc) to the appropriate location (Source/Data/SpectrumAnalysis) and new filenames.
+2. Copy a data class files (e.g. Source/Data/SpectrumAnalysis/KTNormalizedFSData.hh/cc) to the appropriate location (Source/Data/SpectrumAnalysis) and new filenames.
 
 
 ## Data

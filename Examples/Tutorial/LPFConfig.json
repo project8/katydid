@@ -22,11 +22,11 @@
             },
             {
                 "signal": "fft:fft-forward",
-                "slot": "lpf:fs-polar"
+                "slot": "lpf:ps"
             },
             {
-                "signal": "lpf:fs-polar",
-                "slot": "writer:lpf-fs-polar"
+                "signal": "lpf:ps",
+                "slot": "writer:lpf-ps"
             }
         ],
         

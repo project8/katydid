@@ -18,7 +18,6 @@
 #include "KTPowerSpectrum.hh"
 #include "KTPowerSpectrumData.hh"
 
-using boost::shared_ptr;
 
 namespace Katydid
 {
