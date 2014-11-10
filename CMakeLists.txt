@@ -23,6 +23,7 @@ set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
 
+
 ##############
 # Dependencies
 ##############
@@ -160,6 +161,14 @@ option (Katydid_ENABLE_TESTING "Build the validation tests and enable CMake test
 if (Katydid_ENABLE_TESTING)
     enable_testing ()
 endif (Katydid_ENABLE_TESTING)
+
+option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
+if (Katydid_ENABLE_TUTORIAL)
+    include_directories (${PROJECT_SOURCE_DIR}/Examples/Tutorial)
+    add_definitions (-DENABLE_TUTORIAL)
+else (Katydid_ENABLE_TUTORIAL)
+    remove_definitions (-DENABLE_TUTORIAL)
+endif (Katydid_ENABLE_TUTORIAL)
 
 # add an option to build the profiling tests
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)

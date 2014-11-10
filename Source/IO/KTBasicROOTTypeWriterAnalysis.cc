@@ -23,6 +23,10 @@
 #include "KTWignerVilleData.hh"
 #include "KTWV2DData.hh"
 
+#ifdef ENABLE_TUTORIAL
+#include "KTLowPassFilteredData.hh"
+#endif
+
 #include "TH1.h"
 #include "TH2.h"
 
@@ -71,6 +75,9 @@ namespace Katydid
         fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData);
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution);
         fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterAnalysis::WriteWV2DData);
+        fWriter->RegisterSlot("lpf-fs-polar", this, &KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredFSDataPolar);
+        fWriter->RegisterSlot("lpf-fs-fftw", this, &KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredFSDataFFTW);
+        fWriter->RegisterSlot("lpf-ps", this, &KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredPSData);
         return;
     }
 
@@ -693,5 +700,94 @@ namespace Katydid
         return;
     }
 
+#ifdef ENABLE_TUTORIAL
+    void KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredFSDataPolar(KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTLowPassFilteredFSDataPolar& fsData = data->Of<KTLowPassFilteredFSDataPolar>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            const KTFrequencySpectrumPolar* spectrum = fsData.GetSpectrumPolar(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histLPFFSpolar_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreateMagnitudeHistogram(histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredFSDataFFTW(KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTLowPassFilteredFSDataFFTW& fsData = data->Of<KTLowPassFilteredFSDataFFTW>();
+        unsigned nComponents = fsData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            const KTFrequencySpectrumFFTW* spectrum = fsData.GetSpectrumFFTW(iChannel);
+            if (spectrum != NULL)
+            {
+                stringstream conv;
+                conv << "histLPFFSfftw_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = spectrum->CreateMagnitudeHistogram(histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+
+    void KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredPSData(KTDataPtr data)
+    {
+        if (! data) return;
+
+        uint64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+
+        KTLowPassFilteredPSData& psData = data->Of<KTLowPassFilteredPSData>();
+        unsigned nComponents = psData.GetNComponents();
+
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        for (unsigned iChannel=0; iChannel<nComponents; iChannel++)
+        {
+            KTPowerSpectrum* spectrum = psData.GetSpectrum(iChannel);
+            if (spectrum != NULL)
+            {
+                spectrum->ConvertToPowerSpectrum();
+                stringstream conv;
+                conv << "histLPFPS_" << sliceNumber << "_" << iChannel;
+                string histName;
+                conv >> histName;
+                TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
+                powerSpectrum->SetDirectory(fWriter->GetFile());
+                powerSpectrum->Write();
+                KTDEBUG(publog, "Histogram <" << histName << "> written to ROOT file");
+            }
+        }
+        return;
+    }
+#endif /* ENABLE_TUTORIAL */
 
 } /* namespace Katydid */

@@ -82,6 +82,16 @@ namespace Katydid
             void WriteWignerVilleDataDistribution(KTDataPtr data);
             void WriteWV2DData(KTDataPtr data);
 
+#ifdef ENABLE_TUTORIAL
+            //************************
+            // LPF Tutorial Data
+            //************************
+        public:
+            void WriteLowPassFilteredFSDataPolar(KTDataPtr data);
+            void WriteLowPassFilteredFSDataFFTW(KTDataPtr data);
+            void WriteLowPassFilteredPSData(KTDataPtr data);
+#endif /* ENABLE_TUTORIAL */
+
     };
 
 } /* namespace Katydid */

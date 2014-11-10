@@ -5,6 +5,7 @@
         [
 	        { "type": "egg-processor",       "name": "egg" },
 	        { "type": "simple-fft",          "name": "fft" },
+            { "type": "convert-to-power",    "name": "to-ps" },
 	        { "type": "basic-root-writer",   "name": "writer" }
         ],
         
@@ -21,7 +22,11 @@
 	        },
 	        {
 	            "signal": "fft:fft-forward",
-	            "slot": "writer:fs-polar"
+                "slot": "to-ps:fs-polar-to-psd"
+            },
+            {
+                "signal": "to-ps:psd",
+	            "slot": "writer:ps"
 	        }
         ],
         
@@ -36,6 +41,7 @@
     {
         "filename": "/path/to/file.egg",
         "slice-size": 16384,
+        "egg-reader": "monarch",
         "number-of-slices": 1
     },
     
