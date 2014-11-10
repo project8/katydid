@@ -12,7 +12,6 @@
 #include "KTNOFactory.hh"
 #include "KTParam.hh"
 
-using boost::shared_ptr;
 
 namespace Katydid
 {
