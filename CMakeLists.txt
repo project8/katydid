@@ -165,6 +165,9 @@ endif (Katydid_ENABLE_TESTING)
 option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
 if (Katydid_ENABLE_TUTORIAL)
     include_directories (${PROJECT_SOURCE_DIR}/Examples/Tutorial)
+    add_definitions (-DENABLE_TUTORIAL)
+else (Katydid_ENABLE_TUTORIAL)
+    remove_definitions (-DENABLE_TUTORIAL)
 endif (Katydid_ENABLE_TUTORIAL)
 
 # add an option to build the profiling tests
