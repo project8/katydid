@@ -1,20 +1,17 @@
 /*
- * KTLowPassFilter.cc
+ * KTShiftCenterFFTW.cc
  *
- *  Created on: Nov 3, 2014
- *      Author: N.S. Oblath
+ *  Created on: Dec 1, 2014
+ *      Author: L. de Viveiros
  */
-
-#include "KTLowPassFilter.hh"
 
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
-#include "KTLowPassFilteredData.hh"
 #include "KTMath.hh"
 #include "KTParam.hh"
-#include "KTPowerSpectrum.hh"
-#include "KTPowerSpectrumData.hh"
+#include "KTEggHeader.hh"
+#include "KTShiftCenterFFTW.hh"
 
 
 namespace Katydid
@@ -26,13 +23,12 @@ namespace Katydid
 
     KTShiftCenterFFTW::KTShiftCenterFFTW(const std::string& name) :
             KTProcessor(name),
-            fIsInitialized(false),
             fCenterFrequency(0.),
             fMinimumFrequency(0.),
             fMaximumFrequency(0.),
             fFSFFTWSignal("fs-fftw-out", this),
-            fHeaderSlot("header", this, &KTComplexFFTW::InitializeWithHeader),
-            fFSFFTWSlot("fs-fftw-in", this, &KTLowPassFilter::Filter, &fFSFFTWSignal)
+            fHeaderSlot("header", this, &KTShiftCenterFFTW::InitializeWithHeader),
+            fFSFFTWSlot("fs-fftw-in", this, &KTShiftCenterFFTW::ShiftCenterFFTW, &fFSFFTWSignal)
     {
     }
 
@@ -53,7 +49,6 @@ namespace Katydid
         SetCenterFrequency(header.GetCenterFrequency());
         SetMinimumFrequency(header.GetMinimumFrequency());
         SetMaximumFrequency(header.GetMaximumFrequency());
-        fIsInitialized = true;
         return true;
     }
 
@@ -71,7 +66,7 @@ namespace Katydid
                 KTERROR(fftlog_comp, "Shift Center of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            KTDEBUG(fftlog_comp, "Shifted Center of Spectrum");
+            KTDEBUG(fftlog_comp, "Shifted Center of Spectrum to " << fCenterFrequency << " Hz" );
             newData.SetSpectrum(newSpectrum, iComponent);
         }
         KTINFO(fftlog_comp, "Completed ShiftCenterFFTW of " << nComponents << " frequency spectra (FFTW)");
@@ -83,9 +78,9 @@ namespace Katydid
     KTFrequencySpectrumFFTW* KTShiftCenterFFTW::ShiftCenterFFTW(const KTFrequencySpectrumFFTW* frequencySpectrum) const
     {
         // Read the Header Information
-        fCenterFrequency = GetCenterFrequency();
-        fMinimumFrequency = GetMinimumFrequency();
-        fMaximumFrequency = GetMaximumFrequency();
+        //fCenterFrequency = GetCenterFrequency();
+        //fMinimumFrequency = GetMinimumFrequency();
+        //fMaximumFrequency = GetMaximumFrequency();
 
         // Shift Spectrum
         KTDEBUG(fftlog_comp, "Creating new FS for shifted data");
@@ -95,6 +90,8 @@ namespace Katydid
 
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
+            (*newSpectrum)(iBin)[0] = (*frequencySpectrum)(iBin)[0];
+            (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1];
             // newSpectrum->SetBinCenter(iBin) = frequencySpectrum->GetBinCenter(iBin) + fCenterFrequency;
         }
 

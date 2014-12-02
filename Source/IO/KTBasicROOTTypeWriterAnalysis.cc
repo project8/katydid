@@ -75,7 +75,7 @@ namespace Katydid
         fWriter->RegisterSlot("wv", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleData);
         fWriter->RegisterSlot("wv-dist", this, &KTBasicROOTTypeWriterAnalysis::WriteWignerVilleDataDistribution);
         fWriter->RegisterSlot("wv-2d", this, &KTBasicROOTTypeWriterAnalysis::WriteWV2DData);
-#ifdef /* ENABLE_TUTORIAL */
+#ifdef ENABLE_TUTORIAL
         fWriter->RegisterSlot("lpf-fs-polar", this, &KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredFSDataPolar);
         fWriter->RegisterSlot("lpf-fs-fftw", this, &KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredFSDataFFTW);
         fWriter->RegisterSlot("lpf-ps", this, &KTBasicROOTTypeWriterAnalysis::WriteLowPassFilteredPSData);

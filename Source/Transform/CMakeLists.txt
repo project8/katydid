@@ -19,6 +19,7 @@ set (FFT_NODICT_HEADERFILES
 if (FFTW_FOUND)
     set (FFT_NODICT_HEADERFILES
         ${FFT_NODICT_HEADERFILES}
+        KTShiftCenterFFTW.hh
         KTComplexFFTW.hh
         KTSimpleFFT.hh
     )
@@ -41,6 +42,7 @@ set (FFT_SOURCEFILES
 if (FFTW_FOUND)
     set (FFT_SOURCEFILES
         ${FFT_SOURCEFILES}
+        KTShiftCenterFFTW.cc
         KTComplexFFTW.cc
         KTSimpleFFT.cc
     )
