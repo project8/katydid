@@ -30,9 +30,9 @@ namespace Katydid
             fCenterFrequency(0.),
             fMinimumFrequency(0.),
             fMaximumFrequency(0.),
-            fFSFFTWSignal("fs-fftw", this),
+            fFSFFTWSignal("fs-fftw-out", this),
             fHeaderSlot("header", this, &KTComplexFFTW::InitializeWithHeader),
-            fFSFFTWSlot("fs-fftw", this, &KTLowPassFilter::Filter, &fFSFFTWSignal)
+            fFSFFTWSlot("fs-fftw-in", this, &KTLowPassFilter::Filter, &fFSFFTWSignal)
     {
     }
 
