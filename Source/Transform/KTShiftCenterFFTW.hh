@@ -39,6 +39,7 @@ namespace Katydid
      Configuration name: "shiftcenter-fftw"
 
      Slots:
+     - "header": void (KTDataPtr) -- Initializes the function, getting it ready to shift the spectrum; Requires KTEggHeader
      - "fs-fftw-in": void (KTDataPtr) -- Shifts the center frequency of the FFTW spectrum; Requires KTFrequencySpectrumDataFFTW;
 
      Signals:
@@ -55,11 +56,14 @@ namespace Katydid
             bool Configure(const KTParamNode* node);
 
             MEMBERVARIABLE(double, CenterFrequency);
+            MEMBERVARIABLE(double, MinimumFrequency);
+            MEMBERVARIABLE(double, MaximumFrequency);
 
 
         public:
-            bool ShiftCenterFFTW(KTFrequencySpectrumDataFFTW& fsData);
+            bool InitializeWithHeader(KTEggHeader& header);
 
+            bool ShiftCenterFFTW(KTFrequencySpectrumDataFFTW& fsData);
             KTFrequencySpectrumFFTW* ShiftCenterFFTW(const KTFrequencySpectrumFFTW* frequencySpectrum) const;
 
 
@@ -75,6 +79,7 @@ namespace Katydid
             //***************
 
         private:
+            KTSlotDataOneType< KTEggHeader > fHeaderSlot;
             KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };

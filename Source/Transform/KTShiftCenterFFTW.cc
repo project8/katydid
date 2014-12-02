@@ -26,7 +26,12 @@ namespace Katydid
 
     KTShiftCenterFFTW::KTShiftCenterFFTW(const std::string& name) :
             KTProcessor(name),
+            fIsInitialized(false),
+            fCenterFrequency(0.),
+            fMinimumFrequency(0.),
+            fMaximumFrequency(0.),
             fFSFFTWSignal("fs-fftw", this),
+            fHeaderSlot("header", this, &KTComplexFFTW::InitializeWithHeader),
             fFSFFTWSlot("fs-fftw", this, &KTLowPassFilter::Filter, &fFSFFTWSignal)
     {
     }
@@ -38,7 +43,17 @@ namespace Katydid
     bool KTShiftCenterFFTW::Configure(const KTParamNode* node)
     {
         if (node == NULL) return false;
+        
+        return true;
+    }
 
+    bool KTShiftCenterFFTW::InitializeWithHeader(KTEggHeader& header)
+    {
+        //double fMinFreq, fMaxFreq, fSpanCenterFreq, fSpan;
+        SetCenterFrequency(header.GetCenterFrequency());
+        SetMinimumFrequency(header.GetMinimumFrequency());
+        SetMaximumFrequency(header.GetMaximumFrequency());
+        fIsInitialized = true;
         return true;
     }
 
@@ -65,17 +80,17 @@ namespace Katydid
     }
 
 
-    KTFrequencySpectrumFFTW* KTLowPassFilter::ShiftCenterFFTW(const KTFrequencySpectrumFFTW* frequencySpectrum) const
+    KTFrequencySpectrumFFTW* KTShiftCenterFFTW::ShiftCenterFFTW(const KTFrequencySpectrumFFTW* frequencySpectrum) const
     {
         // Read the Header Information
-        fSpanCenterFreq = fHeader.GetCenterFrequency();
-        fMinFreq = fHeader.GetMinimumFrequency();
-        fMaxFreq = fHeader.GetMaximumFrequency();
+        fCenterFrequency = GetCenterFrequency();
+        fMinimumFrequency = GetMinimumFrequency();
+        fMaximumFrequency = GetMaximumFrequency();
 
         // Shift Spectrum
         KTDEBUG(fftlog_comp, "Creating new FS for shifted data");
         unsigned nBins = frequencySpectrum->size();
-        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nBins, fMinFreq, fMaxFreq);
+        KTFrequencySpectrumFFTW* newSpectrum = new KTFrequencySpectrumFFTW(nBins, fMinimumFrequency, fMaximumFrequency);
         newSpectrum->SetNTimeBins(frequencySpectrum->GetNTimeBins());
 
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
