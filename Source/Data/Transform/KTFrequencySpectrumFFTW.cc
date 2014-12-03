@@ -203,93 +203,112 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumFFTW::CreatePowerSpectrum() const
     {
-        // The negative frequency values will be combined with the positive ones,
-        // so the power spectrum will go from the DC bin to the max frequency
-
-        // hmm, hardcoded for now
-        bool addNegFreqs = true;
-
-        unsigned nBins = fDCBin + 1;
-        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
-
         double valueImag, valueReal;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
+        KTPowerSpectrum* newPS;
 
-        // DC bin
-        valueReal = (*this)(fDCBin)[0];
-        valueImag = (*this)(fDCBin)[1];
-        (*newPS)(0) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+        // The behavior of this function depends on whether the spectrum contains a
+        // negative frequency or DC component
+        // If there is no negative or DC component, then we ignore fDCBin
 
-        // All bins besides the Nyquist and DC bins
-        unsigned totalBins = size();
-        /*
-        unsigned iPosBin = fDCBin + 1;
-        unsigned iNegBin = fDCBin - 1;
-        for (unsigned iBin=1; iBin<nBins-1; ++iBin)
+        if ( GetRangeMin()>0 )  // No negative frequencies nor DC - the spectrum is completely above 0
         {
-            //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
-            // order matters, so use (*this)() to access values
-            valueReal = (*this)(iNegBin)[0] + (*this)(iPosBin)[0];
-            valueImag = (*this)(iNegBin)[1] + (*this)(iPosBin)[1];
-            (*newFS)(iBin).set_rect(valueReal, valueImag);
-            iPosBin++;
-            iNegBin--;
-        }
-         */
-        // the negative and positive frequencies must be added in quadrature
-        if (addNegFreqs)
-        {
-#pragma omp parallel for private(valueReal, valueImag)
-            for (unsigned iBin=1; iBin<nBins-1; ++iBin)
+            bool addNegFreqs = false;
+            unsigned nBins = size();
+            newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
+            for (unsigned iBin=0; iBin<nBins; ++iBin)
             {
-                valueReal = sqrt( ((*this)(fDCBin - iBin)[0]*(*this)(fDCBin - iBin)[0]) + ((*this)(fDCBin + iBin)[0]*(*this)(fDCBin + iBin)[0]) );
-                valueImag = sqrt( ((*this)(fDCBin - iBin)[1]*(*this)(fDCBin - iBin)[1]) + ((*this)(fDCBin + iBin)[1]*(*this)(fDCBin + iBin)[1]) );
+                valueReal = (*this)(iBin)[0];
+                valueImag = (*this)(iBin)[1];
                 (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
-            }
-
-            // Nyquist bin
-            if (fIsSizeEven)
-            {
-                valueReal = (*this)(0)[0];
-                valueImag = (*this)(0)[1];
-                (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
-            }
-            else
-            {
-                valueReal = sqrt( ((*this)(0)[0]*(*this)(0)[0]) + ((*this)(totalBins-1)[0]*(*this)(totalBins-1)[0]) );
-                valueImag = sqrt( ((*this)(0)[1]*(*this)(0)[1]) + ((*this)(totalBins-1)[1]*(*this)(totalBins-1)[1]) );
-                (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
             }
         }
         else
         {
-#pragma omp parallel for private(valueReal, valueImag)
+            // The negative frequency values will be combined with the positive ones,
+            // so the power spectrum will go from the DC bin to the max frequency
+
+            // hmm, hardcoded for now
+            bool addNegFreqs = true;
+
+            unsigned nBins = fDCBin + 1;
+            newPS = new KTPowerSpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
+
+            // DC bin
+            valueReal = (*this)(fDCBin)[0];
+            valueImag = (*this)(fDCBin)[1];
+            (*newPS)(0) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+
+            // All bins besides the Nyquist and DC bins
+            unsigned totalBins = size();
+            /*
+            unsigned iPosBin = fDCBin + 1;
+            unsigned iNegBin = fDCBin - 1;
             for (unsigned iBin=1; iBin<nBins-1; ++iBin)
             {
-                valueReal = (*this)(fDCBin + iBin)[0];
-                valueImag = (*this)(fDCBin + iBin)[1];
-                (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+                //std::cout << iBin << "  " << iPosBin << "  " << iNegBin << std::endl;
+                // order matters, so use (*this)() to access values
+                valueReal = (*this)(iNegBin)[0] + (*this)(iPosBin)[0];
+                valueImag = (*this)(iNegBin)[1] + (*this)(iPosBin)[1];
+                (*newFS)(iBin).set_rect(valueReal, valueImag);
+                iPosBin++;
+                iNegBin--;
             }
-
-            // Nyquist bin
-            if (fIsSizeEven)
+             */
+            // the negative and positive frequencies must be added in quadrature
+            if (addNegFreqs)
             {
-                // in the event of even size, this is the only nyquist bin, so i have to use it, even though it's frequency is negative
-                valueReal = (*this)(0)[0];
-                valueImag = (*this)(0)[1];
-                (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+#pragma omp parallel for private(valueReal, valueImag)
+                for (unsigned iBin=1; iBin<nBins-1; ++iBin)
+                {
+                    valueReal = sqrt( ((*this)(fDCBin - iBin)[0]*(*this)(fDCBin - iBin)[0]) + ((*this)(fDCBin + iBin)[0]*(*this)(fDCBin + iBin)[0]) );
+                    valueImag = sqrt( ((*this)(fDCBin - iBin)[1]*(*this)(fDCBin - iBin)[1]) + ((*this)(fDCBin + iBin)[1]*(*this)(fDCBin + iBin)[1]) );
+                    (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+                }
+
+                // Nyquist bin
+                if (fIsSizeEven)
+                {
+                    valueReal = (*this)(0)[0];
+                    valueImag = (*this)(0)[1];
+                    (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+                }
+                else
+                {
+                    valueReal = sqrt( ((*this)(0)[0]*(*this)(0)[0]) + ((*this)(totalBins-1)[0]*(*this)(totalBins-1)[0]) );
+                    valueImag = sqrt( ((*this)(0)[1]*(*this)(0)[1]) + ((*this)(totalBins-1)[1]*(*this)(totalBins-1)[1]) );
+                    (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+                }
             }
             else
             {
-                valueReal = (*this)(totalBins-1)[0];
-                valueImag = (*this)(totalBins-1)[1];
-                (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+#pragma omp parallel for private(valueReal, valueImag)
+                for (unsigned iBin=1; iBin<nBins-1; ++iBin)
+                {
+                    valueReal = (*this)(fDCBin + iBin)[0];
+                    valueImag = (*this)(fDCBin + iBin)[1];
+                    (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+                }
+
+                // Nyquist bin
+                if (fIsSizeEven)
+                {
+                    // in the event of even size, this is the only nyquist bin, so i have to use it, even though it's frequency is negative
+                    valueReal = (*this)(0)[0];
+                    valueImag = (*this)(0)[1];
+                    (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+                }
+                else
+                {
+                    valueReal = (*this)(totalBins-1)[0];
+                    valueImag = (*this)(totalBins-1)[1];
+                    (*newPS)(nBins-1) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+                }
             }
         }
 
+
         return newPS;
-
-
 
 
 
