@@ -198,6 +198,7 @@ namespace Katydid
             KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << ")");
         }
 
+
         unsigned nComponents = data.GetNComponents();
 
         newData.SetNBins(data.GetSpectrumPolar(0)->size());
@@ -345,6 +346,12 @@ namespace Katydid
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + binWidth;
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
+        if ( true )
+        {
+            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin << " (frequency: " << fMinFrequency << " or " << freqMin << ")");
+            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << " or " << freqMax << ")");
+        }
+
         //************
         // SNR mode
         //************
@@ -429,6 +436,12 @@ namespace Katydid
         double freqMax = spectrum->GetBinLowEdge(fMaxBin) + spectrum->GetBinWidth();
         KTSpline::Implementation* splineImp = spline->Implement(nBins, freqMin, freqMax);
 
+        if ( true )
+        {
+            KTDEBUG(sdlog, "Minimum bin set to " << fMinBin << " (frequency: " << fMinFrequency << " or " << freqMin << ")");
+            KTDEBUG(sdlog, "Maximum bin set to " << fMaxBin << " (frequency: " << fMaxFrequency << " or " << freqMax << ")");
+        }
+
         //************
         // SNR mode
         //************
@@ -449,14 +462,16 @@ namespace Katydid
             }
 
             // loop over bins, checking against the threshold
-            double threshold, value;
+            double threshold, value, freq;
 #pragma omp parallel for private(value)
             for (unsigned iBin=fMinBin; iBin<=fMaxBin; ++iBin)
             {
                 value = (*spectrum)(iBin);
+                freq = spectrum->GetBinLowEdge(iBin);  
+                //freq = binWidth * ((double)iBin + 0.5);  
                 threshold = thresholdMult * (*splineImp)(iBin - fMinBin);
                 if (value >= threshold)
-                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(binWidth * ((double)iBin + 0.5), value, threshold), component);
+                    newData.AddPoint(iBin, KTDiscriminatedPoints1DData::Point(freq, value, threshold), component);
             }
         }
 
