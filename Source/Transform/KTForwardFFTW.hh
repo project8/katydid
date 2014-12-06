@@ -1,9 +1,9 @@
 /**
  @file KTForwardFFTW.hh
  @brief Contains KTForwardFFTW
- @details Calculates a 1-dimensional FFT on a set of real data.
+ @details Calculates a 1-dimensional FFT on a set of real or complex data.
  @author: N. S. Oblath
- @date: Sep 12, 2011
+ @date: Sep 12, 2011 (original); Dec 5, 2014 (KTForwardFFTW)
  */
 
 #ifndef KTFORWARDFFTW_HH_
@@ -28,17 +28,15 @@ namespace Katydid
     class KTParamNode;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
-    class KTFrequencySpectrumDataFFTW;
-    class KTFrequencySpectrumFFTW;
 
     /*!
      @class KTForwardFFTW
      @author N. S. Oblath
 
-     @brief A one-dimensional real-to-complex FFT class.
+     @brief A forward FFT class.
 
      @details
-     KTForwardFFTW performs a real-to-complex FFT on a one-dimensional array of doubles.
+     KTForwardFFTW performs a real-to-complex and complex-to-complex FFTs on a one-dimensional time series.
 
      The FFT is implemented using FFTW.
 
@@ -63,11 +61,9 @@ namespace Katydid
      - "header": void (KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
      - "ts": void (KTDataPtr) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
      - "aa": void (KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
-     - "fs-fftw": void (KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
 
      Signals:
      - "fft-forward": void (KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
-     - "fft-reverse": void (KTDataPtr) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
     class KTForwardFFTW : public KTFFTW, public KTProcessor
@@ -81,17 +77,11 @@ namespace Katydid
                 kC2C
             };
 
-            static unsigned sInstanceCount;
-            static bool sMultithreadedIsInitialized;
-
         public:
             KTForwardFFTW(const std::string& name = "forward-fftw");
             virtual ~KTForwardFFTW();
 
             bool Configure(const KTParamNode* node);
-
-            MEMBERVARIABLE(bool, PrepareForwardTransform);
-            MEMBERVARIABLE(bool, PrepareReverseTransform);
 
             MEMBERVARIABLE(bool, UseWisdom);
             MEMBERVARIABLEREF(std::string, WisdomFilename);
@@ -136,23 +126,12 @@ namespace Katydid
             /// Forward FFT - Complex Analytic Associate Data
             bool TransformComplexData(KTAnalyticAssociateData& aaData);
 
-            /// Reverse FFT - To Real Time Data
-            bool TransformData(KTFrequencySpectrumDataFFTW& fsData);
-            /// Reverse FFT 0 To ComplexTimeData
-            bool TransformData(KTFrequencySpectrumDataFFTW& fsData);
-
             /// Forward FFT - Real Data
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesReal* ts) const;
             void DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
             /// Forward FFT - Complex Data
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* ts) const;
             void DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
-            /// Reverse FFT
-            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* fs) const;
-            void DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const;
-            /// Reverse FFT
-            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* fs) const;
-            void DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesReal* tsOut) const;
 
         private:
             void AllocateArrays();
@@ -160,7 +139,6 @@ namespace Katydid
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)
 
             fftw_plan fForwardPlan;
-            fftw_plan fReversePlan;
 
             double* fTSArray;
             fftw_complex* fFSArray;
@@ -174,7 +152,6 @@ namespace Katydid
 
         private:
             KTSignalData fFFTForwardSignal;
-            KTSignalData fFFTReverseSignal;
 
             //***************
             // Slots
@@ -184,7 +161,6 @@ namespace Katydid
             KTSlotDataOneType< KTEggHeader > fHeaderSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
             KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
 
     };
 
