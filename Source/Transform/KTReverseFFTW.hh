@@ -1,13 +1,13 @@
 /**
- @file KTFFTW.hh
- @brief Contains KTFFTW
+ @file KTReverseFFTW.hh
+ @brief Contains KTReverseFFTW
  @details Calculates a 1-dimensional FFT on a set of real data.
  @author: N. S. Oblath
  @date: Sep 12, 2011
  */
 
-#ifndef KTCOMPLEXFFTW_HH_
-#define KTCOMPLEXFFTW_HH_
+#ifndef KTFORWARDFFTW_HH_
+#define KTFORWARDFFTW_HH_
 
 #include "KTFFT.hh"
 #include "KTProcessor.hh"
@@ -32,17 +32,17 @@ namespace Katydid
     class KTFrequencySpectrumFFTW;
 
     /*!
-     @class KTFFTW
+     @class KTReverseFFTW
      @author N. S. Oblath
 
      @brief A one-dimensional real-to-complex FFT class.
 
      @details
-     KTFFTW performs a real-to-complex FFT on a one-dimensional array of doubles.
+     KTReverseFFTW performs a real-to-complex FFT on a one-dimensional array of doubles.
 
      The FFT is implemented using FFTW.
 
-     Configuration name: "complex-fftw"
+     Configuration name: "forward-fftw"
 
      Available configuration values:
      - "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
@@ -70,7 +70,7 @@ namespace Katydid
      - "fft-reverse": void (KTDataPtr) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
-    class KTFFTW : public KTFFT, public KTProcessor
+    class KTReverseFFTW : public KTFFTW, public KTProcessor
     {
         private:
             typedef std::map< std::string, unsigned > TransformFlagMap;
@@ -85,8 +85,8 @@ namespace Katydid
             static bool sMultithreadedIsInitialized;
 
         public:
-            KTFFTW(const std::string& name = "fftw");
-            virtual ~KTFFTW();
+            KTReverseFFTW(const std::string& name = "forward-fftw");
+            virtual ~KTReverseFFTW();
 
             bool Configure(const KTParamNode* node);
 
@@ -122,11 +122,11 @@ namespace Katydid
             virtual double GetMinFrequency(double timeBinWidth) const;
             virtual double GetMaxFrequency(double timeBinWidth) const;
 
-            MEMBERVARIABLE_NOSET(KTFFTW::State, State);
+            MEMBERVARIABLE_NOSET(KTReverseFFTW::State, State);
             MEMBERVARIABLE_NOSET(bool, IsInitialized);
 
         private:
-            bool InitializeFFT(KTFFTW::State intendedState);
+            bool InitializeFFT(KTReverseFFTW::State intendedState);
 
         public:
             /// Forward FFT - Real Time Data
@@ -189,23 +189,23 @@ namespace Katydid
     };
 
 
-    inline double KTFFTW::GetMinFrequency(double timeBinWidth) const
+    inline double KTReverseFFTW::GetMinFrequency(double timeBinWidth) const
     {
         // There's one bin at the center, always: the DC bin.
         // # of bins on the negative side is nFreqBins/2 (rounded down because of integer division).
         // 0.5 is added to the # of bins because of the half of the DC bin on the negative frequency side.
-        return -GetFrequencyBinWidth(timeBinWidth) * (double(fSize/2) + 0.5);
+        return -GetFrequencyBinWidth(timeBinWidth) * (double(fTimeSize/2) + 0.5);
     }
 
-    inline double KTFFTW::GetMaxFrequency(double timeBinWidth) const
+    inline double KTReverseFFTW::GetMaxFrequency(double timeBinWidth) const
     {
         // There's one bin at the center, always: the DC bin.
         // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
         // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
-        unsigned nBinsToSide = fSize / 2;
-        return GetFrequencyBinWidth(timeBinWidth) * (double(nBinsToSide*2 == fSize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
+        unsigned nBinsToSide = fTimeSize / 2;
+        return GetFrequencyBinWidth(timeBinWidth) * (double(nBinsToSide*2 == fTimeSize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
     }
 
 } /* namespace Katydid */
 
-#endif /* KTCOMPLEXFFTW_HH_ */
+#endif /* KTFORWARDFFTW_HH_ */
