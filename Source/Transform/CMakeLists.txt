@@ -19,8 +19,8 @@ set (FFT_NODICT_HEADERFILES
 if (FFTW_FOUND)
     set (FFT_NODICT_HEADERFILES
         ${FFT_NODICT_HEADERFILES}
-        KTComplexFFTW.hh
-        KTSimpleFFT.hh
+        KTForwardFFTW.hh
+        KTReverseFFTW.hh
     )
 endif (FFTW_FOUND)        
 
@@ -41,8 +41,8 @@ set (FFT_SOURCEFILES
 if (FFTW_FOUND)
     set (FFT_SOURCEFILES
         ${FFT_SOURCEFILES}
-        KTComplexFFTW.cc
-        KTSimpleFFT.cc
+        KTForwardFFTW.cc
+        KTReverseFFTW.cc
     )
 endif (FFTW_FOUND)        
 
