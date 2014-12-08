@@ -160,6 +160,8 @@ namespace Katydid
 
         fSliceNumber = 0;
 
+        fHeader.SetTSDataType(KTEggHeader::kReal);
+
         return fHeaderPtr;
     }
 

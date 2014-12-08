@@ -219,6 +219,7 @@ namespace Katydid
 
         KTDataPtr eggHeaderPtr(new KTData());
         KTEggHeader& eggHeader = eggHeaderPtr->Of< KTEggHeader >();
+        eggHeader.SetTSDataType(KTEggHeader::kReal);
         eggHeader.SetFilename(filename);
         eggHeader.SetAcquisitionMode(1);
         eggHeader.SetRawSliceSize(fHeaderInfo.fRecordSize);
