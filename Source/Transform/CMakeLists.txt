@@ -20,7 +20,7 @@ if (FFTW_FOUND)
     set (FFT_NODICT_HEADERFILES
         ${FFT_NODICT_HEADERFILES}
         KTForwardFFTW.hh
-        KTReverseFFTW.hh
+        #KTReverseFFTW.hh
     )
 endif (FFTW_FOUND)        
 
@@ -42,7 +42,7 @@ if (FFTW_FOUND)
     set (FFT_SOURCEFILES
         ${FFT_SOURCEFILES}
         KTForwardFFTW.cc
-        KTReverseFFTW.cc
+        #KTReverseFFTW.cc
     )
 endif (FFTW_FOUND)        
 

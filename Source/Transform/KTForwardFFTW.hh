@@ -25,6 +25,7 @@ namespace Katydid
 {
     class KTAnalyticAssociateData;
     class KTEggHeader;
+    class KTFrequencySpectrumFFTW;
     class KTParamNode;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
@@ -107,8 +108,6 @@ namespace Katydid
             bool InitializeForComplexTDD();
             bool InitializeWithHeader(KTEggHeader& header);
 
-            virtual unsigned GetTimeSize() const;
-            virtual unsigned GetFrequencySize() const;
             virtual double GetMinFrequency(double timeBinWidth) const;
             virtual double GetMaxFrequency(double timeBinWidth) const;
 
@@ -151,7 +150,7 @@ namespace Katydid
             //***************
 
         private:
-            KTSignalData fFFTForwardSignal;
+            KTSignalData fFFTSignal;
 
             //***************
             // Slots
@@ -159,7 +158,8 @@ namespace Katydid
 
         private:
             KTSlotDataOneType< KTEggHeader > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTSRealSlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTSComplexSlot;
             KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
 
     };

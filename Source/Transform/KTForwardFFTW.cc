@@ -14,6 +14,7 @@
 #include "KTLogger.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTParam.hh"
 
 #include <algorithm>
@@ -29,9 +30,6 @@ namespace Katydid
 
     KT_REGISTER_PROCESSOR(KTForwardFFTW, "forward-fftw");
 
-    unsigned KTForwardFFTW::sInstanceCount = 0;
-    bool KTForwardFFTW::sMultithreadedIsInitialized = false;
-
     KTForwardFFTW::KTForwardFFTW(const std::string& name) :
             KTFFTW(),
             KTProcessor(name),
@@ -46,10 +44,11 @@ namespace Katydid
             fForwardPlan(),
             fInputArray(NULL),
             fOutputArray(NULL),
-            fFFTForwardSignal("fft-forward", this),
+            fFFTSignal("fft", this),
             fHeaderSlot("header", this, &KTForwardFFTW::InitializeWithHeader),
-            fTimeSeriesSlot("ts", this, &KTForwardFFTW::TransformData, &fFFTForwardSignal),
-            fAASlot("aa", this, &KTForwardFFTW::TransformData, &fFFTForwardSignal)
+            fTSRealSlot("ts", this, &KTForwardFFTW::TransformRealData, &fFFTSignal),
+            fTSComplexSlot("ts", this, &KTForwardFFTW::TransformComplexData, &fFFTSignal),
+            fAASlot("aa", this, &KTForwardFFTW::TransformComplexData, &fFFTSignal)
     {
         SetupInternalMaps();
     }
@@ -119,14 +118,14 @@ namespace Katydid
 
         if (intendedState == kR2C)
         {
-            KTDEBUG(fftlog_simp, "Creating plan: " << fTimeSize << " time bins; forward FFT");
+            KTDEBUG(fftwlog, "Creating plan: " << fTimeSize << " time bins; forward FFT");
             fForwardPlan = fftw_plan_dft_r2c_1d(fTimeSize, fTSArray, fFSArray, transformFlag);
 
         }
         else // intendedState == kC2C
         {
             KTDEBUG(fftwlog, "Creating plan: " << fTimeSize << " time bins; forward FFT");
-            fForwardPlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
+            fForwardPlan = fftw_plan_dft_1d(fTimeSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
 
         }
 
@@ -150,17 +149,19 @@ namespace Katydid
             KTERROR(fftwlog, "Unable to create the forward FFT plan! FFT is not initialized.");;
             return false;
         }
+
+        fState = intendedState;
         return true;
     }
 
     bool KTForwardFFTW::InitializeWithHeader(KTEggHeader& header)
     {
         SetTimeSize(header.GetSliceSize());
-        if (???)
+        if (header.GetTSDataType() == KTEggHeader::kReal)
         {
             return InitializeForRealTDD();
         }
-        else
+        else // == KTEggHeader::kComplex
         {
             return InitializeForComplexTDD();
         }
@@ -170,8 +171,8 @@ namespace Katydid
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
-            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
-            InitializeFFT();
+            SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
+            InitializeForRealTDD();
         }
 
         if (! fIsInitialized)
@@ -214,8 +215,8 @@ namespace Katydid
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
-            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
-            InitializeFFT();
+            SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
+            InitializeForComplexTDD();
         }
 
         if (! fIsInitialized)
@@ -258,8 +259,8 @@ namespace Katydid
     {
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
-            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
-            InitializeFFT();
+            SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
+            InitializeForComplexTDD();
         }
 
         if (! fIsInitialized)
@@ -301,10 +302,10 @@ namespace Katydid
     KTFrequencySpectrumFFTW* KTForwardFFTW::Transform(const KTTimeSeriesReal* ts) const
     {
         unsigned nBins = ts->size();
-        if (nBins != fSize)
+        if (nBins != fTimeSize)
         {
             KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
+                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << nBins);
             return NULL;
         }
 
@@ -325,10 +326,10 @@ namespace Katydid
     KTFrequencySpectrumFFTW* KTForwardFFTW::Transform(const KTTimeSeriesFFTW* ts) const
     {
         unsigned nBins = ts->size();
-        if (nBins != fSize)
+        if (nBins != fTimeSize)
         {
             KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
+                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << nBins);
             return NULL;
         }
 
@@ -349,7 +350,7 @@ namespace Katydid
     void KTForwardFFTW::DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const
     {
         copy(tsIn->begin(), tsIn->end(), fTSArray);
-        fftw_execute_dft(fForwardPlan, fTSArray, fsOut->GetData());
+        fftw_execute_dft_r2c(fForwardPlan, fTSArray, fsOut->GetData());
         (*fsOut) *= sqrt(2. / (double)fTimeSize);
         return;
     }
@@ -417,13 +418,13 @@ namespace Katydid
         FreeArrays();
         if (fState == kR2C)
         {
-            if (fInputArray == NULL)
+            if (fTSArray == NULL)
             {
-                fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
+                fTSArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
             }
-            if (fOutputArray == NULL)
+            if (fFSArray == NULL)
             {
-                fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
+                fFSArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
             }
         }
         else
