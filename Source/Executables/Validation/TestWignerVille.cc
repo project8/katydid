@@ -16,6 +16,7 @@
 #include "KTLogger.hh"
 #include "KTMath.hh"
 #include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTWignerVille.hh"
 #include "KTWignerVilleData.hh"
 
@@ -40,8 +41,8 @@ int main()
     double deltaFreq = -10.; // Hz
     double twoPi = 2. * KTMath::Pi();
 
-    KTTimeSeriesFFTW* ts1 = new KTTimeSeriesFFTW(nTimeBins, 0., 1.);
-    KTTimeSeriesFFTW* ts2 = new KTTimeSeriesFFTW(nTimeBins, 0., 1.);
+    KTTimeSeriesReal* ts1 = new KTTimeSeriesReal(nTimeBins, 0., 1.);
+    KTTimeSeriesReal* ts2 = new KTTimeSeriesReal(nTimeBins, 0., 1.);
     for (unsigned iBin=0; iBin<nTimeBins; iBin++)
     {
         double freq = startFreq + double(iBin)/1000. * deltaFreq;
@@ -61,14 +62,17 @@ int main()
     unsigned wvSize = 512;
 
     KTAnalyticAssociator aAssociator;
-    aAssociator.GetFullFFT()->SetTransformFlag("ESTIMATE");
-    aAssociator.GetFullFFT()->SetSize(wvSize);
-    aAssociator.GetFullFFT()->InitializeFFT();
+    aAssociator.GetForwardFFT()->SetTransformFlag("ESTIMATE");
+    aAssociator.GetForwardFFT()->SetTimeSize(wvSize);
+    aAssociator.GetForwardFFT()->InitializeForRealTDD();
+    aAssociator.GetReverseFFT()->SetTransformFlag("ESTIMATE");
+    aAssociator.GetReverseFFT()->SetTimeSize(wvSize);
+    aAssociator.GetReverseFFT()->InitializeForComplexTDD();
 
     KTWignerVille wvTransform;
     wvTransform.GetFFT()->SetTransformFlag("ESTIMATE");
-    wvTransform.GetFFT()->SetSize(/*2 */ wvSize);
-    wvTransform.GetFFT()->InitializeFFT();
+    wvTransform.GetFFT()->SetTimeSize(/*2 */ wvSize);
+    wvTransform.GetFFT()->InitializeForComplexTDD();
     wvTransform.AddPair(KTWignerVille::UIntPair(0, 1));
 
     unsigned nWindows = nTimeBins / wvSize;
@@ -85,8 +89,8 @@ int main()
     {
         KTINFO(testlog, "window: " << iWindow);
         //KTBasicTimeSeriesData windowData(2);
-        KTTimeSeriesFFTW* windowTS1 = new KTTimeSeriesFFTW(wvSize, ts1->GetBinLowEdge(windowStart), ts1->GetBinLowEdge(windowStart) + ts1->GetBinWidth() * (double)wvSize);
-        KTTimeSeriesFFTW* windowTS2 = new KTTimeSeriesFFTW(wvSize, ts2->GetBinLowEdge(windowStart), ts2->GetBinLowEdge(windowStart) + ts2->GetBinWidth() * (double)wvSize);
+        KTTimeSeriesReal* windowTS1 = new KTTimeSeriesReal(wvSize, ts1->GetBinLowEdge(windowStart), ts1->GetBinLowEdge(windowStart) + ts1->GetBinWidth() * (double)wvSize);
+        KTTimeSeriesReal* windowTS2 = new KTTimeSeriesReal(wvSize, ts2->GetBinLowEdge(windowStart), ts2->GetBinLowEdge(windowStart) + ts2->GetBinWidth() * (double)wvSize);
 
         for (unsigned iBin=windowStart; iBin < windowStart+wvSize; iBin++)
         {
