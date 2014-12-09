@@ -123,16 +123,18 @@ namespace Katydid
             bool TransformRealData(KTTimeSeriesData& tsData);
             /// Forward FFT - Real Data
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesReal* ts) const;
-            /// Forward FFT - Real Data
+            /// Forward FFT - Real Data - No size or bin width checks
             KTFrequencySpectrumFFTW*  FastTransform(const KTTimeSeriesReal* ts) const;
+            /// Forward FFT - Real Data - Output must exist - No size or bin width checks
             void DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
             /// Forward FFT - Real Time Data as Complex
             bool TransformRealDataAsComplex(KTTimeSeriesData& tsData);
             /// Forward FFT - Real-as-Complex Data
             KTFrequencySpectrumFFTW* TransformAsComplex(const KTTimeSeriesReal* ts) const;
-            /// Forward FFT - Real-as-Complex Data
+            /// Forward FFT - Real-as-Complex Data - No size or bin width checks
             KTFrequencySpectrumFFTW*  FastTransformAsComplex(const KTTimeSeriesReal* ts) const;
+            /// Forward FFT - Real-as-Complex Data - Output must exist - No size or bin width checks
             void DoTransformAsComplex(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
             /// Forward FFT - Complex Time Data
@@ -141,8 +143,9 @@ namespace Katydid
             bool TransformComplexData(KTAnalyticAssociateData& aaData);
             /// Forward FFT - Complex Data
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* ts) const;
-            /// Forward FFT - Complex Data
+            /// Forward FFT - Complex Data - No size or bin width checks
             KTFrequencySpectrumFFTW*  FastTransform(const KTTimeSeriesFFTW* ts) const;
+            /// Forward FFT - Complex Data - Output must exist - No size or bin width checks
             void DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
         private:

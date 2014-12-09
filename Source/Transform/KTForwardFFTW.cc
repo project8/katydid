@@ -506,7 +506,7 @@ namespace Katydid
     {
         fTimeSize = nBins;
         if (fState == kR2C) fFrequencySize = nBins / 2 + 1;
-        else fFrequencySize = nBins;
+        else fFrequencySize = nBins; // fState == kRasC2C or kC2C
 
         // clear things for good measure
         FreeArrays();
