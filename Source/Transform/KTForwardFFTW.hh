@@ -37,7 +37,20 @@ namespace Katydid
      @brief A forward FFT class.
 
      @details
-     KTForwardFFTW performs a real-to-complex and complex-to-complex FFTs on a one-dimensional time series.
+     KTForwardFFTW performs a real-to-complex, real-as-complex-to-complex, and complex-to-complex FFTs on a one-dimensional time series.
+
+     The basic options for use are:
+     - If you have real data, you'll do a real-to-complex transform.  Initialize with InitializeForRealTDD(), and
+       transform with TransformRealData() and related functions.
+       The output will be a KTFrequencySpectrumFFTW with size N/2 + 1, where N is the size of the time series.
+     - If you have complex data, you'll do a complex-to-complex transform.  Initialize with InitializeForComplexTDD(), and
+       transform with TransformComplexData() and related functions.
+       The output will be a KTFrequencySpectrumFFTW with size N.
+
+     The above are the two highly highly recommended modes of operation.  However, there's one more option:
+     if you have real data and want to pretend it's complex, you can do a real-as-complex-to-complex transform.
+     Initialize with InitializeForRealAsComplexTDD(), and transform with TransformRealAsComplexData() and related functions.
+     The output will be a KTFrequencySpectrumFFTW with size N.
 
      The FFT is implemented using FFTW.
 
@@ -60,11 +73,13 @@ namespace Katydid
 
      Slots:
      - "header": void (KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
-     - "ts": void (KTDataPtr) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
-     - "aa": void (KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
+     - "ts-real": void (KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "ts-fftw": void (KTDataPtr) -- Perform a forward FFT on a complex time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "aa": void (KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
+     - "ts-real-as-complex": void (KTDataPtr) -- Perform a forward FFT on a real time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumFFTW; Emits signal "fft"
 
      Signals:
-     - "fft-forward": void (KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
+     - "fft": void (KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
     */
 
     class KTForwardFFTW : public KTFFTW, public KTProcessor
@@ -182,6 +197,7 @@ namespace Katydid
             KTSlotDataOneType< KTTimeSeriesData > fTSRealSlot;
             KTSlotDataOneType< KTTimeSeriesData > fTSComplexSlot;
             KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
+            KTSlotDataOneType< KTTimeSeriesData > fTSRealAsComplexSlot;
 
     };
 

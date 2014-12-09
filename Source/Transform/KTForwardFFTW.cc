@@ -47,9 +47,10 @@ namespace Katydid
             fOutputArray(NULL),
             fFFTSignal("fft", this),
             fHeaderSlot("header", this, &KTForwardFFTW::InitializeWithHeader),
-            fTSRealSlot("ts", this, &KTForwardFFTW::TransformRealData, &fFFTSignal),
-            fTSComplexSlot("ts", this, &KTForwardFFTW::TransformComplexData, &fFFTSignal),
-            fAASlot("aa", this, &KTForwardFFTW::TransformComplexData, &fFFTSignal)
+            fTSRealSlot("ts-real", this, &KTForwardFFTW::TransformRealData, &fFFTSignal),
+            fTSComplexSlot("ts-fftw", this, &KTForwardFFTW::TransformComplexData, &fFFTSignal),
+            fAASlot("aa", this, &KTForwardFFTW::TransformComplexData, &fFFTSignal),
+            fTSRealAsComplexSlot("ts-real-as-complex", this, &KTForwardFFTW::TransformRealDataAsComplex, &fFFTSignal)
     {
         SetupInternalMaps();
     }
