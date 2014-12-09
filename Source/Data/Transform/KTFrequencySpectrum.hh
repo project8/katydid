@@ -10,10 +10,6 @@
 
 #include <string>
 
-#ifdef ROOT_FOUND
-class TH1D;
-#endif
-
 namespace Katydid
 {
     class KTPowerSpectrum;
@@ -50,17 +46,6 @@ namespace Katydid
             virtual KTFrequencySpectrum& Scale(double scale) = 0;
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const= 0;
-
-#ifdef ROOT_FOUND
-        public:
-            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const = 0;
-            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const = 0;
-
-            virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const = 0;
-
-            virtual TH1D* CreateMagnitudeDistributionHistogram(const std::string& name = "hFrequencySpectrumMagDist") const = 0;
-            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const = 0;
-#endif
     };
 
 } /* namespace Katydid */

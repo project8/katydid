@@ -15,10 +15,6 @@
 #include <cmath>
 #include <string>
 
-#ifdef ROOT_FOUND
-class TH1D;
-#endif
-
 namespace Katydid
 {
     class KTFrequencySpectrumPolar;
@@ -33,22 +29,6 @@ namespace Katydid
             virtual ~KTFrequencySpectrumFFTW();
 
         public:
-            bool GetIsSizeEven() const;
-            size_t GetNegFreqOffset() const;
-            size_t GetDCBin() const;
-
-        protected:
-            bool fIsSizeEven; /// Flag to indicate if the size of the array is even
-            size_t fNegFreqOffset; /// The number of bins by which the negative-frequency Nyquist bin is offset
-            size_t fDCBin; /// The bin number of the DC bin
-
-
-        public:
-            // replace some of the KTPhysicalArray interface
-
-            const fftw_complex& operator()(unsigned i) const;
-            fftw_complex& operator()(unsigned i);
-
             virtual double GetReal(unsigned bin) const;
             virtual double GetImag(unsigned bin) const;
 
@@ -65,16 +45,6 @@ namespace Katydid
             virtual unsigned GetNTimeBins() const;
             virtual void SetNTimeBins(unsigned bins);
 
-            /// Returns the size of the positive-frequency part of the array
-            //size_t size() const;
-            /// Returns the isze of the positive-frequency part of the array
-            //size_t GetNBins() const;
-
-            /// Returns the actual size of the storage array
-            //size_t size_total() const;
-            /// Returns the actual size of the storage array
-            //size_t GetNBinsTotal() const;
-
         public:
             // normal KTFrequencySpectrumPolar functions
 
@@ -87,7 +57,7 @@ namespace Katydid
 
             virtual KTFrequencySpectrumFFTW& Scale(double scale);
 
-            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar(bool addNegFreqs = true) const;
+            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar() const;
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
@@ -95,47 +65,9 @@ namespace Katydid
         private:
             unsigned fNTimeBins;
 
-#ifdef ROOT_FOUND
-        public:
-            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const;
-            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const;
-
-            virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const;
-
-            virtual TH1D* CreateMagnitudeDistributionHistogram(const std::string& name = "hFrequencySpectrumMagDist") const;
-            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
-#endif
-
         protected:
             mutable const fftw_complex* fPointCache;
     };
-
-    inline bool KTFrequencySpectrumFFTW::GetIsSizeEven() const
-    {
-        return fIsSizeEven;
-    }
-
-    inline size_t KTFrequencySpectrumFFTW::GetNegFreqOffset() const
-    {
-        return fNegFreqOffset;
-    }
-
-    inline size_t KTFrequencySpectrumFFTW::GetDCBin() const
-    {
-        return fDCBin;
-    }
-
-    inline const fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i) const
-    {
-        return (i >= fDCBin) ? fData[i - fDCBin] : fData[i + fNegFreqOffset];
-        //return fData[i];
-    }
-
-    inline fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i)
-    {
-        return (i >= fDCBin) ? fData[i - fDCBin] : fData[i + fNegFreqOffset];
-        //return fData[i];
-    }
 
     inline double KTFrequencySpectrumFFTW::GetReal(unsigned bin) const
     {
