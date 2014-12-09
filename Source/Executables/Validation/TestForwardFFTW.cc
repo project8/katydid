@@ -12,12 +12,11 @@
  */
 
 
+#include "KT2ROOT.hh"
+#include "KTForwardFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
-#include "KTComplexFFTW.hh"
 #include "KTTimeSeriesFFTW.hh"
-
-#include "KTSimpleFFT.hh"
 #include "KTTimeSeriesReal.hh"
 
 #ifdef ROOT_FOUND
@@ -31,7 +30,7 @@
 using namespace std;
 using namespace Katydid;
 
-KTLOGGER(vallog, "TestComplexFFTW");
+KTLOGGER(vallog, "TestForwardFFTW");
 
 int main()
 {
@@ -43,7 +42,7 @@ int main()
 
     const double mult = 30.;
 
-    KTINFO(vallog, "Testing the 1D real-to-complex FFT\n" <<
+    KTINFO(vallog, "Testing the 1D real-to-complex and real-as-complex-to-complex FFTs\n" <<
            "\tTime series characteristics:\n" <<
            "\tSize: " << nBins << " bins\n" <<
            "\tRange: " << startTime << " to " << endTime << " s\n" <<
@@ -62,21 +61,23 @@ int main()
     }
 
     // Create and prepare the FFT
-    KTComplexFFTW fullFFT;
-    fullFFT.SetSize(timeSeries->size());
-    fullFFT.SetTransformFlag("ESTIMATE");
-    fullFFT.InitializeFFT();
+    KTForwardFFTW r2cFFT;
+    r2cFFT.SetTimeSize(timeSeries->size());
+    r2cFFT.SetTransformFlag("ESTIMATE");
+    r2cFFT.InitializeForRealTDD();
 
-    KTSimpleFFT simpFFT;
-    simpFFT.SetTimeSize(timeSeries2->size());
-    simpFFT.SetTransformFlag("ESTIMATE");
-    simpFFT.InitializeFFT();
+    KTForwardFFTW rasc2cFFT;
+    rasc2cFFT.SetTimeSize(timeSeries2->size());
+    rasc2cFFT.SetTransformFlag("ESTIMATE");
+    rasc2cFFT.InitializeForRealAsComplexTDD();
 
     // Perform the FFT and get the results
     KTINFO(vallog, "Performing FFT");
-    KTFrequencySpectrumFFTW* frequencySpectrum = fullFFT.Transform(timeSeries);
-    KTFrequencySpectrumPolar* frequencySpectrum2 = simpFFT.Transform(timeSeries2);
+    KTFrequencySpectrumFFTW* frequencySpectrum = r2cFFT.Transform(timeSeries);
+    KTFrequencySpectrumFFTW* frequencySpectrum2 = rasc2cFFT.TransformAsComplex(timeSeries2);
     //size_t nFreqBins2 = frequencySpectrum2->size();
+
+    // Evaluate frequencySpectrum (r2c transform)
 
     // Find the peak frequency
     double peakFrequency = -1.;
@@ -84,7 +85,6 @@ int main()
     double value;
     size_t nFreqBins = frequencySpectrum->size();
 
-    size_t dcBin = frequencySpectrum->GetDCBin();
     for (unsigned iBin = 0; iBin < nFreqBins; iBin++)
     {
         value = (*frequencySpectrum)(iBin)[0]*(*frequencySpectrum)(iBin)[0] + (*frequencySpectrum)(iBin)[1]*(*frequencySpectrum)(iBin)[1];
@@ -93,39 +93,29 @@ int main()
             maxValue = value;
             peakFrequency = frequencySpectrum->GetBinCenter(iBin);
         }
-        if (iBin >= dcBin)
-        {
-            cout << iBin << '\t' << sqrt(value) << '\t' << (*frequencySpectrum2)(iBin-dcBin).abs() << endl;
-        }
-        else
-        {
-            cout << iBin << '\t' << sqrt(value) << endl;
-        }
     }
 
-    KTINFO(vallog, "FFT complete\n" <<
+    KTINFO(vallog, "R2C FFT complete\n" <<
            "\tFrequency spectrum characteristics:\n" <<
            "\tSize: " << nFreqBins << " bins\n" <<
-           "\tDC bin: " << frequencySpectrum->GetDCBin() << '\n' <<
-           "\tBin Offset: " << frequencySpectrum->GetNegFreqOffset() << '\n' <<
            "\tRange: " << frequencySpectrum->GetRangeMin() << " to " << frequencySpectrum->GetRangeMax() << " Hz\n" <<
            "\tBin width: " << frequencySpectrum->GetBinWidth() << " Hz\n" <<
            "\tPeak frequency: " << peakFrequency << " +/- " << 0.5 * frequencySpectrum->GetBinWidth() << " Hz\n");
 
 #ifdef ROOT_FOUND
-    TFile* file = new TFile("TestComplexFFTW.root", "recreate");
+    TFile* file = new TFile("TestForwardFFTW.root", "recreate");
     TH1D* tsHist = timeSeries->CreateHistogram("hTimeSeries");
-    TH1D* fsHist = frequencySpectrum->CreateMagnitudeHistogram("hFreqSpect");
+    TH1D* fsHistR2C = KT2ROOT::CreateMagnitudeHistogram(frequencySpectrum, "hFreqSpectR2C");
     tsHist->SetDirectory(file);
-    fsHist->SetDirectory(file);
+    fsHistR2C->SetDirectory(file);
     tsHist->Write();
-    fsHist->Write();
-    file->Close();
-    delete file;
+    fsHistR2C->Write();
+    //file->Close();
+    //delete file;
 #endif
 
     // Use Parseval's theorem to check the normalization of the FFT
-    KTINFO(vallog, "Using Parceval's theorem to check the normalization\n"
+    KTINFO(vallog, "Using Parceval's theorem to check the normalization of the R2C transform.\n"
            "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (double)nBins);
     // the latter is true because the average of sin^2 is 1/2, and we're effectively calculating avg(sin^2)*nbins.
 
@@ -162,8 +152,84 @@ int main()
                 "\t|diff|/avg = " << fractionalDiff);
     }
 
+    // Evaluate frequencySpectrum2 (rasc2c transform)
+
+    // Find the peak frequency
+    peakFrequency = -1.;
+    maxValue = -999999.;
+    nFreqBins = frequencySpectrum2->size();
+
+    for (unsigned iBin = 0; iBin < nFreqBins; iBin++)
+    {
+        value = (*frequencySpectrum2)(iBin)[0]*(*frequencySpectrum2)(iBin)[0] + (*frequencySpectrum2)(iBin)[1]*(*frequencySpectrum2)(iBin)[1];
+        if (value > maxValue)
+        {
+            maxValue = value;
+            peakFrequency = frequencySpectrum2->GetBinCenter(iBin);
+        }
+    }
+
+    KTINFO(vallog, "FFT complete\n" <<
+           "\tFrequency spectrum characteristics:\n" <<
+           "\tSize: " << nFreqBins << " bins\n" <<
+           "\tRange: " << frequencySpectrum2->GetRangeMin() << " to " << frequencySpectrum2->GetRangeMax() << " Hz\n" <<
+           "\tBin width: " << frequencySpectrum2->GetBinWidth() << " Hz\n" <<
+           "\tPeak frequency: " << peakFrequency << " +/- " << 0.5 * frequencySpectrum2->GetBinWidth() << " Hz\n");
+
+#ifdef ROOT_FOUND
+    //TFile* file = new TFile("TestForwardFFTW.root", "recreate");
+    //TH1D* tsHist = timeSeries->CreateHistogram("hTimeSeries");
+    TH1D* fsHistRasC2C = KT2ROOT::CreateMagnitudeHistogram(frequencySpectrum2, "hFreqSpectRasC2C");
+    //tsHist->SetDirectory(file);
+    fsHistRasC2C->SetDirectory(file);
+    //tsHist->Write();
+    fsHistRasC2C->Write();
+    file->Close();
+    delete file;
+#endif
+
+    // Use Parseval's theorem to check the normalization of the FFT
+    KTINFO(vallog, "Using Parceval's theorem to check the normalization of the RasC2C transform.\n"
+           "\tBoth sums should be approximately (1/2) * nBins = " << 0.5 * (double)nBins);
+    // the latter is true because the average of sin^2 is 1/2, and we're effectively calculating avg(sin^2)*nbins.
+
+    // Calculate sum(timeSeries[i]^2)
+    tsSum = 0.; // units: volts^2
+    for (unsigned iBin=0; iBin<nBins; iBin++)
+    {
+        tsSum += (*timeSeries)(iBin)[0] * (*timeSeries)(iBin)[0];
+    }
+
+    KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
+
+    // calculate (1/N) * sum(freqSpectrum[i]^2
+    fsSum = 0.; // units: volts^2
+    for (unsigned iBin=0; iBin<nFreqBins; iBin++)
+    {
+        fsSum += (*frequencySpectrum2)(iBin)[0] * (*frequencySpectrum2)(iBin)[0] + (*frequencySpectrum2)(iBin)[1] * (*frequencySpectrum2)(iBin)[1];
+    }
+
+    KTINFO(vallog, "sum(freqSpectrum2[i]^2) = " << fsSum << " V^2");
+
+    fractionalDiff = fabs(tsSum - fsSum) / (0.5 * (tsSum + fsSum));
+    threshold = 1.e-4;
+    if (fractionalDiff > threshold)
+    {
+        KTWARN(vallog, "The two sums appear to be unequal! (|diff|/avg > " << threshold << ")\n"
+                "\ttsSum - fsSum = " << tsSum - fsSum << "\n"
+                "\ttsSum / fsSum = " << tsSum / fsSum << "\n"
+                "\t|diff|/avg    = " << fractionalDiff);
+    }
+    else
+    {
+        KTINFO(vallog, "The two sums appear to be equal! (|diff|/avg <= " << threshold << ")\n"
+                "\t|diff|/avg = " << fractionalDiff);
+    }
+
+
     delete timeSeries;
     delete frequencySpectrum;
+    delete frequencySpectrum2;
 
     return 0;
 

@@ -41,8 +41,8 @@ if (Katydid_ENABLE_TESTING)
     add_executable (TestDistanceClustering TestDistanceClustering.cc)
     target_link_libraries (TestDistanceClustering KTCore KatydidUtility KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
-    add_executable (TestFrequencySpectrumFFTW TestFrequencySpectrumFFTW.cc)
-    target_link_libraries (TestFrequencySpectrumFFTW KTCore KatydidUtility KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
+    #add_executable (TestFrequencySpectrumFFTW TestFrequencySpectrumFFTW.cc)
+    #target_link_libraries (TestFrequencySpectrumFFTW KTCore KatydidUtility KatydidData KatydidIO ${EXTERNAL_LIBRARIES})
     
     # temporarily disabled because it's not compatible with the changes made while introducing the extensible data scheme
     #add_executable (TestHoughTransform TestHoughTransform.cc)
@@ -107,7 +107,7 @@ if (Katydid_ENABLE_TESTING)
                      TestDBScan
                      TestDBScanTrackClustering
                      TestDistanceClustering
-                     TestFrequencySpectrumFFTW
+                     #TestFrequencySpectrumFFTW
                      #TestHoughTransform
                      TestJSONWriter
                      TestKDTree
@@ -137,18 +137,18 @@ if (Katydid_ENABLE_TESTING)
         #pbuilder_install_headers (guiviewer.h guiviewerLinkDef.h)
         #pbuilder_install_executables (guiviewer)
     
-        add_executable (TestComplexFFTW TestComplexFFTW.cc)
-        target_link_libraries (TestComplexFFTW KTCore KatydidUtility KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
+        add_executable (TestForwardFFTW TestForwardFFTW.cc)
+        target_link_libraries (TestForwardFFTW KTCore KatydidUtility KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
         
-        add_executable (TestSimpleFFT TestSimpleFFT.cc)
-        target_link_libraries (TestSimpleFFT KTCore KatydidUtility KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
+        #add_executable (TestSimpleFFT TestSimpleFFT.cc)
+        #target_link_libraries (TestSimpleFFT KTCore KatydidUtility KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
     
         add_executable (TestWignerVille TestWignerVille.cc)
         target_link_libraries (TestWignerVille KTCore KatydidUtility KatydidData KatydidIO KatydidAnalysis ${EXTERNAL_LIBRARIES})
         
         pbuilder_install_executables (
-                         TestComplexFFTW
-                         TestSimpleFFT
+                         TestForwardFFTW
+                         #TestSimpleFFT
                          TestWignerVille
         )
     endif (FFTW_FOUND)

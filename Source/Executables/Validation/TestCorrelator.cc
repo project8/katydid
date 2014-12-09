@@ -24,7 +24,7 @@ int main()
     /*
     KTFrequencySpectrumDataPolar* dataInput = new KTFrequencySpectrumDataPolar(2);
 
-    KTFrequencySpectrumPolar* spectrum0 = new KTFrequencySpectrumPolar(10, 0, 10);
+    KTFrequencySpectrumPolar* spectrum0 = new KTFrequencySpectrumPolar(10, 0, 20);
     (*spectrum0)(0) = 0.;
     (*spectrum0)(1) = 0.;
     (*spectrum0)(2) = 1.;
@@ -36,7 +36,7 @@ int main()
     (*spectrum0)(8) = complexpolar<double>(0., 1.);
     (*spectrum0)(9) = complexpolar<double>(0., 10.);
 
-    KTFrequencySpectrumPolar* spectrum1 = new KTFrequencySpectrumPolar(10, 0, 10);
+    KTFrequencySpectrumPolar* spectrum1 = new KTFrequencySpectrumPolar(10, 0, 20);
     (*spectrum1)(0) = 0.;
     (*spectrum1)(1) = 0.;
     (*spectrum1)(2) = 0.;
@@ -54,7 +54,7 @@ int main()
     KTFrequencySpectrumDataFFTW* dataInput = new KTFrequencySpectrumDataFFTW();
     dataInput->SetNComponents(2);
 
-    KTFrequencySpectrumFFTW* spectrum0 = new KTFrequencySpectrumFFTW(19, -10, 10);
+    KTFrequencySpectrumFFTW* spectrum0 = new KTFrequencySpectrumFFTW(19, 0, 20);
     (*spectrum0)(0)[0] = 0.; (*spectrum0)(0)[1] = 0.;
     (*spectrum0)(1)[0] = 0.; (*spectrum0)(1)[1] = 0.;
     (*spectrum0)(2)[0] = 1.; (*spectrum0)(2)[1] = 0.;
@@ -75,7 +75,7 @@ int main()
     (*spectrum0)(17)[0] = 0.; (*spectrum0)(17)[1] = 0.;
     (*spectrum0)(18)[0] = 0.; (*spectrum0)(18)[1] = 0.;
 
-    KTFrequencySpectrumFFTW* spectrum1 = new KTFrequencySpectrumFFTW(19, -10, 10);
+    KTFrequencySpectrumFFTW* spectrum1 = new KTFrequencySpectrumFFTW(19, 0, 20);
     (*spectrum1)(0)[0] = 0.; (*spectrum1)(0)[1] = 0.;
     (*spectrum1)(1)[0] = 0.; (*spectrum1)(1)[1] = 0.;
     (*spectrum1)(2)[0] = 0.; (*spectrum1)(2)[1] = 0.;
