@@ -74,7 +74,9 @@ namespace Katydid
 
             enum State
             {
+                kNone,
                 kR2C,
+                kRasC2C,
                 kC2C
             };
 
@@ -93,11 +95,9 @@ namespace Katydid
             MEMBERVARIABLEREF_NOSET(std::string, TransformFlag);
 
         public:
-            /// note: SetTimeSize creates a new fTransform.
-            ///       It also sets fIsInitialized to false.
+            /// Set the number of time bins; FFT must be initialized after calling this.
             void SetTimeSize(unsigned nBins);
-            void SetFrequencySize(unsigned nBins);
-            /// note: SetTransoformFlag sets fIsInitialized to false.
+            /// Change the transform flag; FFT must be initialized after calling this.
             void SetTransformFlag(const std::string& flag);
 
         private:
@@ -105,6 +105,7 @@ namespace Katydid
 
         public:
             bool InitializeForRealTDD();
+            bool InitializeForRealAsComplexTDD();
             bool InitializeForComplexTDD();
             bool InitializeWithHeader(KTEggHeader& header);
 
@@ -118,31 +119,50 @@ namespace Katydid
             bool InitializeFFT(KTForwardFFTW::State intendedState);
 
         public:
+            // FFT Interface functions
+
             /// Forward FFT - Real Time Data
             bool TransformRealData(KTTimeSeriesData& tsData);
+            /// Forward FFT - Real Data
+            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesReal* ts) const;
+
+            /// Forward FFT - Real Time Data as Complex
+            bool TransformRealDataAsComplex(KTTimeSeriesData& tsData);
+            /// Forward FFT - Real-as-Complex Data
+            KTFrequencySpectrumFFTW* TransformAsComplex(const KTTimeSeriesReal* ts) const;
+
             /// Forward FFT - Complex Time Data
             bool TransformComplexData(KTTimeSeriesData& tsData);
             /// Forward FFT - Complex Analytic Associate Data
             bool TransformComplexData(KTAnalyticAssociateData& aaData);
-
-            /// Forward FFT - Real Data
-            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesReal* ts) const;
-            void DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
             /// Forward FFT - Complex Data
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* ts) const;
-            void DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
         private:
-            void AllocateArrays();
+            // Private FFT utility functions -- no size checks
+
+            /// Forward FFT - Real Data
+            KTFrequencySpectrumFFTW*  DoTransform(const KTTimeSeriesReal* tsIn) const;
+            /// Forward FFT - Real-as-Complex Data
+            KTFrequencySpectrumFFTW*  DoTransformAsComplex(const KTTimeSeriesReal* tsIn) const;
+            /// Forward FFT - Complex Data
+            KTFrequencySpectrumFFTW*  DoTransform(const KTTimeSeriesFFTW* tsIn) const;
+
+            // binning cache
+            void UpdateBinningCache(double timeBinWidth) const;
+            mutable double fTimeBinWidthCache;
+            mutable double fFreqMinCache;
+            mutable double fFreqMaxCache;
+
+            /// Allocate memory in the i/o arrays for an intended state if provided, or (default) the current state
+            bool AllocateArrays(State intendedState = kNone);
             void FreeArrays();
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)
 
             fftw_plan fForwardPlan;
 
-            double* fTSArray;
-            fftw_complex* fFSArray;
-
-            fftw_complex* fInputArray;
+            double*       fRInputArray;
+            fftw_complex* fCInputArray;
             fftw_complex* fOutputArray;
 
             //***************
@@ -167,19 +187,22 @@ namespace Katydid
 
     inline double KTForwardFFTW::GetMinFrequency(double timeBinWidth) const
     {
-        // There's one bin at the center, always: the DC bin.
-        // # of bins on the negative side is nFreqBins/2 (rounded down because of integer division).
-        // 0.5 is added to the # of bins because of the half of the DC bin on the negative frequency side.
-        return -GetFrequencyBinWidth(timeBinWidth) * (double(fTimeSize/2) + 0.5);
+        // DC bin is centered at 0
+        return -0.5 * GetFrequencyBinWidth(timeBinWidth);
     }
 
     inline double KTForwardFFTW::GetMaxFrequency(double timeBinWidth) const
     {
-        // There's one bin at the center, always: the DC bin.
-        // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
-        // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
-        unsigned nBinsToSide = fTimeSize / 2;
-        return GetFrequencyBinWidth(timeBinWidth) * (double(nBinsToSide*2 == fTimeSize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
+        return GetFrequencyBinWidth(timeBinWidth) * ((double)fFrequencySize - 0.5);
+    }
+
+    inline void KTForwardFFTW::UpdateBinningCache(double timeBinWidth) const
+    {
+        if (timeBinWidth == fTimeBinWidthCache) return;
+        fTimeBinWidthCache = timeBinWidth;
+        fFreqMinCache = GetMinFrequency(timeBinWidth);
+        fFreqMaxCache = GetMaxFrequency(timeBinWidth);
+        return;
     }
 
 } /* namespace Katydid */

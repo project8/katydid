@@ -39,10 +39,11 @@ namespace Katydid
             fFrequencySize(0),
             fTransformFlag("ESTIMATE"),
             fTransformFlagMap(),
-            fState(kR2C),
+            fState(kNone),
             fIsInitialized(false),
             fForwardPlan(),
-            fInputArray(NULL),
+            fRInputArray(NULL),
+            fCInputArray(NULL),
             fOutputArray(NULL),
             fFFTSignal("fft", this),
             fHeaderSlot("header", this, &KTForwardFFTW::InitializeWithHeader),
@@ -90,6 +91,11 @@ namespace Katydid
         return InitializeFFT(kR2C);
     }
 
+    bool KTForwardFFTW::InitializeForRealAsComplexTDD()
+    {
+        return InitializeFFT(kRasC2C);
+    }
+
     bool KTForwardFFTW::InitializeForComplexTDD()
     {
         return InitializeFFT(kC2C);
@@ -97,13 +103,23 @@ namespace Katydid
 
     bool KTForwardFFTW::InitializeFFT(KTForwardFFTW::State intendedState)
     {
+        if (intendedState == kNone)
+        {
+            KTERROR(fftwlog, "Cannot initialize FFT for state <" << intendedState << ">");
+            return false;
+        }
+
         // fTransformFlag is guaranteed to be valid in the Set method.
         KTDEBUG(fftwlog, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         unsigned transformFlag = iter->second;
 
         // allocate the input and output arrays if they're not there already
-        AllocateArrays();
+        if (! AllocateArrays())
+        {
+            KTERROR(fftwlog, "Unable to allocate arrays");
+            return false;
+        }
 
         if (fUseWisdom)
         {
@@ -118,15 +134,26 @@ namespace Katydid
 
         if (intendedState == kR2C)
         {
-            KTDEBUG(fftwlog, "Creating plan: " << fTimeSize << " time bins; forward FFT");
-            fForwardPlan = fftw_plan_dft_r2c_1d(fTimeSize, fTSArray, fFSArray, transformFlag);
-
+            KTDEBUG(fftwlog, "Creating R2C plan: " << fTimeSize << " time bins; forward FFT");
+            fForwardPlan = fftw_plan_dft_r2c_1d(fTimeSize, fRInputArray, fOutputArray, transformFlag);
+            // deleting arrays to save space
+            // input array is required; output array is not needed
+            fftw_free(fOutputArray);
+            fOutputArray = NULL;
         }
-        else // intendedState == kC2C
+        else // intendedState == kC2C || kRasC2C
         {
-            KTDEBUG(fftwlog, "Creating plan: " << fTimeSize << " time bins; forward FFT");
-            fForwardPlan = fftw_plan_dft_1d(fTimeSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
-
+            KTDEBUG(fftwlog, "Creating C2C plan: " << fTimeSize << " time bins; forward FFT");
+            fForwardPlan = fftw_plan_dft_1d(fTimeSize, fCInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
+            // deleting arrays to save space
+            // input array not required for C2C, but is for kRasC2C; output array not needed in either case
+            if (intendedState == kC2C)
+            {
+                fftw_free(fCInputArray);
+                fCInputArray = NULL;
+            }
+            fftw_free(fOutputArray);
+            fOutputArray = NULL;
         }
 
         if (fForwardPlan != NULL)
@@ -169,6 +196,12 @@ namespace Katydid
 
     bool KTForwardFFTW::TransformRealData(KTTimeSeriesData& tsData)
     {
+        if (fState != kR2C)
+        {
+            KTERROR(fftwlog, "Cannot do transform of real data in state <" << fState << ">");
+            return false;
+        }
+
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
             SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
@@ -195,7 +228,59 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = DoTransform(nextInput);
+
+            if (nextResult == NULL)
+            {
+                KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
+                return false;
+            }
+            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
+            newData.SetSpectrum(nextResult, iComponent);
+        }
+
+        KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
+
+        return true;
+    }
+
+    bool KTForwardFFTW::TransformRealDataAsComplex(KTTimeSeriesData& tsData)
+    {
+        if (fState != kRasC2C)
+        {
+            KTERROR(fftwlog, "Cannot do transform of real-as-complex data in state <" << fState << ">");
+            return false;
+        }
+
+        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
+        {
+            SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
+            InitializeForRealTDD();
+        }
+
+        if (! fIsInitialized)
+        {
+            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
+                    << "   Please first call InitializeFFT(), then perform the transform.");
+            return false;
+        }
+
+        UpdateBinningCache(tsData.GetTimeSeries(0)->GetTimeBinWidth());
+
+        unsigned nComponents = tsData.GetNComponents();
+
+        KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
+
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
+            if (nextInput == NULL)
+            {
+                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
+                return false;
+            }
+
+            KTFrequencySpectrumFFTW* nextResult = DoTransformAsComplex(nextInput);
 
             if (nextResult == NULL)
             {
@@ -213,6 +298,12 @@ namespace Katydid
 
     bool KTForwardFFTW::TransformComplexData(KTTimeSeriesData& tsData)
     {
+        if (fState != kC2C)
+        {
+            KTERROR(fftwlog, "Cannot do transform of complex data in state <" << fState << ">");
+            return false;
+        }
+
         if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
         {
             SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
@@ -225,6 +316,8 @@ namespace Katydid
                     << "   Please first call InitializeFFT(), then perform the transform.");
             return false;
         }
+
+        UpdateBinningCache(tsData.GetTimeSeries(0)->GetTimeBinWidth());
 
         unsigned nComponents = tsData.GetNComponents();
 
@@ -239,7 +332,7 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = DoTransform(nextInput);
 
             if (nextResult == NULL)
             {
@@ -257,7 +350,13 @@ namespace Katydid
 
     bool KTForwardFFTW::TransformComplexData(KTAnalyticAssociateData& tsData)
     {
-        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
+        if (fState != kC2C)
+        {
+            KTERROR(fftwlog, "Cannot do transform of complex data in state <" << fState << ">");
+            return false;
+        }
+
+        if (tsData.GetTimeSeries(0)->GetNTimeBins() != fTimeSize)
         {
             SetTimeSize(tsData.GetTimeSeries(0)->GetNTimeBins());
             InitializeForComplexTDD();
@@ -269,6 +368,8 @@ namespace Katydid
                     << "   Please first call InitializeFFT(), then perform the transform.");
             return false;
         }
+
+        UpdateBinningCache(tsData.GetTimeSeries(0)->GetTimeBinWidth());
 
         unsigned nComponents = tsData.GetNComponents();
 
@@ -283,7 +384,7 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = DoTransform(nextInput);
 
             if (nextResult == NULL)
             {
@@ -301,65 +402,86 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::Transform(const KTTimeSeriesReal* ts) const
     {
-        unsigned nBins = ts->size();
-        if (nBins != fTimeSize)
+        if (ts->size() != fTimeSize)
         {
             KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << nBins);
+                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << ts->size());
             return NULL;
         }
 
-        double timeBinWidth = ts->GetTimeBinWidth();
-        double freqMin = GetMinFrequency(timeBinWidth);
-        double freqMax = GetMaxFrequency(timeBinWidth);
+        UpdateBinningCache(ts->GetTimeBinWidth());
 
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
+        return DoTransform(ts);
+    }
 
-        DoTransform(ts, newFS);
-        //fftw_execute_dft(fForwardPlan, ts->GetData(), newSpectrum->GetData());
+    KTFrequencySpectrumFFTW* KTForwardFFTW::DoTransform(const KTTimeSeriesReal* ts) const
+    {
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
 
-        newFS->SetNTimeBins(nBins);
+        copy(ts->begin(), ts->end(), fRInputArray);
+        fftw_execute_dft_r2c(fForwardPlan, fRInputArray, newFS->GetData());
+        (*newFS) *= sqrt(2. / (double)fTimeSize);
+
+        newFS->SetNTimeBins(fTimeSize);
+
+        return newFS;
+    }
+
+    KTFrequencySpectrumFFTW* KTForwardFFTW::TransformAsComplex(const KTTimeSeriesReal* ts) const
+    {
+        if (ts->size() != fTimeSize)
+        {
+            KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << ts->size());
+            return NULL;
+        }
+
+        UpdateBinningCache(ts->GetTimeBinWidth());
+
+        return DoTransformAsComplex(ts);
+    }
+
+    KTFrequencySpectrumFFTW* KTForwardFFTW::DoTransformAsComplex(const KTTimeSeriesReal* ts) const
+    {
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
+
+        for (unsigned iBin = 0; iBin < fTimeSize; ++iBin)
+        {
+            fCInputArray[iBin][0] = ts->GetData()[iBin];
+            fCInputArray[iBin][1] = 0;
+        }
+        fftw_execute_dft(fForwardPlan, fCInputArray, newFS->GetData());
+        (*newFS) *= sqrt(1. / (double)fTimeSize);
+
+        newFS->SetNTimeBins(fTimeSize);
 
         return newFS;
     }
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::Transform(const KTTimeSeriesFFTW* ts) const
     {
-        unsigned nBins = ts->size();
-        if (nBins != fTimeSize)
+        if (ts->size() != fTimeSize)
         {
             KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << nBins);
+                    << "   Bin expected: " << fTimeSize << ";   Bins in data: " << ts->size());
             return NULL;
         }
 
-        double timeBinWidth = ts->GetTimeBinWidth();
-        double freqMin = GetMinFrequency(timeBinWidth);
-        double freqMax = GetMaxFrequency(timeBinWidth);
+        UpdateBinningCache(ts->GetTimeBinWidth());
 
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
+        return DoTransform(ts);
+    }
 
-        DoTransform(ts, newFS);
-        //fftw_execute_dft(fForwardPlan, ts->GetData(), newSpectrum->GetData());
+    KTFrequencySpectrumFFTW* KTForwardFFTW::DoTransform(const KTTimeSeriesFFTW* ts) const
+    {
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
 
-        newFS->SetNTimeBins(nBins);
+        fftw_execute_dft(fForwardPlan, ts->GetData(), newFS->GetData());
+        (*newFS) *= sqrt(1. / (double)  fTimeSize);
+
+        newFS->SetNTimeBins(fTimeSize);
 
         return newFS;
-    }
-
-    void KTForwardFFTW::DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const
-    {
-        copy(tsIn->begin(), tsIn->end(), fTSArray);
-        fftw_execute_dft_r2c(fForwardPlan, fTSArray, fsOut->GetData());
-        (*fsOut) *= sqrt(2. / (double)fTimeSize);
-        return;
-    }
-
-    void KTForwardFFTW::DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const
-    {
-        fftw_execute_dft(fForwardPlan, tsIn->GetData(), fsOut->GetData());
-        (*fsOut) *= sqrt(1. / (double)  fTimeSize);
-        return;
     }
 
     void KTForwardFFTW::SetTimeSize(unsigned nBins)
@@ -368,35 +490,24 @@ namespace Katydid
         if (fState == kR2C) fFrequencySize = nBins / 2 + 1;
         else fFrequencySize = nBins;
 
+        // clear things for good measure
         FreeArrays();
-        //fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fSize);
-        //fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
 
         fIsInitialized = false;
         return;
     }
 
-    void KTForwardFFTW::SetFrequencySize(unsigned nBins)
-    {
-        fFrequencySize = nBins;
-        if (fState == kR2C) fFrequencySize = (nBins - 1) * 2;
-        else fFrequencySize = nBins;
-
-        FreeArrays();
-        //fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fSize);
-        //fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
-
-        fIsInitialized = false;
-        return;
-    }
-
-    void KTForwardFFTW::SetTransformFlag(const std::string& flag)
+   void KTForwardFFTW::SetTransformFlag(const std::string& flag)
     {
         if (fTransformFlagMap.find(flag) == fTransformFlagMap.end())
         {
             KTWARN(fftwlog, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
             return;
         }
+
+        // delete the plan
+        if (fForwardPlan != NULL) fftw_destroy_plan(fForwardPlan);
+
         fTransformFlag = flag;
         fIsInitialized = false;
         return;
@@ -413,50 +524,52 @@ namespace Katydid
         return;
     }
 
-    void KTForwardFFTW::AllocateArrays()
+    bool KTForwardFFTW::AllocateArrays(State intendedState)
     {
         FreeArrays();
+        if (intendedState == kNone) intendedState = fState;
+        if (intendedState == kNone)
+        {
+            KTERROR(fftwlog, "Cannot allocate arrays for state <" << intendedState << ">");
+            return false;
+        }
+
         if (fState == kR2C)
         {
-            if (fTSArray == NULL)
+            if (fRInputArray == NULL)
             {
-                fTSArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
-            }
-            if (fFSArray == NULL)
-            {
-                fFSArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
-            }
-        }
-        else
-        {
-            if (fInputArray == NULL)
-            {
-                fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
+                fRInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
             }
             if (fOutputArray == NULL)
             {
                 fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
             }
         }
-        return;
+        else //  intendedState == kC2C or kRasC2C
+        {
+            if (fCInputArray == NULL)
+            {
+                fCInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
+            }
+            if (fOutputArray == NULL)
+            {
+                fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
+            }
+        }
+        return true;
     }
 
     void KTForwardFFTW::FreeArrays()
     {
-        if (fTSArray != NULL)
+        if (fRInputArray != NULL)
         {
-            fftw_free(fTSArray);
-            fTSArray = NULL;
+            fftw_free(fRInputArray);
+            fRInputArray = NULL;
         }
-        if (fFSArray != NULL)
+        if (fCInputArray != NULL)
         {
-            fftw_free(fFSArray);
-            fFSArray = NULL;
-        }
-        if (fInputArray != NULL)
-        {
-            fftw_free(fInputArray);
-            fInputArray = NULL;
+            fftw_free(fCInputArray);
+            fCInputArray = NULL;
         }
         if (fOutputArray != NULL)
         {
