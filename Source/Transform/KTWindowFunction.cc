@@ -11,6 +11,7 @@
 #include "KTForwardFFTW.hh"
 #endif
 
+#include "KT2ROOT.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
@@ -81,7 +82,7 @@ namespace Katydid
         fft.SetTransformFlag("ESTIMATE");
         fft.InitializeForRealTDD();
         KTFrequencySpectrumFFTW* freqSpect = fft.Transform(&timeData);
-        TH1D* hist = freqSpect->CreateMagnitudeHistogram(name);
+        TH1D* hist = KT2ROOT::CreateMagnitudeHistogram(freqSpect, name);
         hist->SetYTitle("Weight");
         delete freqSpect;
         return hist;
