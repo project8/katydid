@@ -8,7 +8,7 @@
 #include "KTWindowFunction.hh"
 
 #ifdef FFTW_FOUND
-#include "KTComplexFFTW.hh"
+#include "KTForwardFFTW.hh"
 #endif
 
 #include "KTFrequencySpectrumFFTW.hh"
@@ -16,7 +16,7 @@
 #include "KTMath.hh"
 #include "KTParam.hh"
 #include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 
 #ifdef ROOT_FOUND
 #include "TH1.h"
@@ -71,15 +71,15 @@ namespace Katydid
 #ifdef FFTW_FOUND
     TH1D* KTWindowFunction::CreateFrequencyResponseHistogram(const string& name) const
     {
-        KTTimeSeriesFFTW timeData(fSize, 0., double(fSize) * fBinWidth);
+        KTTimeSeriesReal timeData(fSize, 0., double(fSize) * fBinWidth);
         for (unsigned iBin=0; iBin<fSize+0; iBin++)
         {
             timeData.SetValue(iBin, GetWeight(iBin));
         }
-        KTComplexFFTW fft;
-        fft.SetSize(fSize);
+        KTForwardFFTW fft;
+        fft.SetTimeSize(fSize);
         fft.SetTransformFlag("ESTIMATE");
-        fft.InitializeFFT();
+        fft.InitializeForRealTDD();
         KTFrequencySpectrumFFTW* freqSpect = fft.Transform(&timeData);
         TH1D* hist = freqSpect->CreateMagnitudeHistogram(name);
         hist->SetYTitle("Weight");
