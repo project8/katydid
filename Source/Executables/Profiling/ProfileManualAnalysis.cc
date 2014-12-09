@@ -11,8 +11,9 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDistanceClustering.hh"
 #include "KTCluster1DData.hh"
-#include "KTComplexFFTW.hh"
+#include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
+#include "KTForwardFFTW.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -65,7 +66,7 @@ int main()
     unsigned recordSize = 32768;
     KTDAC::TimeSeriesType tsType = KTDAC::kFFTWTimeSeries;
 
-    KTComplexFFTW compFFT;
+    KTForwardFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
 
 #ifdef ROOT_FOUND
@@ -117,8 +118,8 @@ int main()
     KTDAC* dac = new KTDAC();
     dac->SetTimeSeriesType(tsType);
 
-    KTEggHeader* header = eggReader->BreakEgg(filename);
-    if (header == NULL)
+    KTDataPtr headerPtr = eggReader->BreakEgg(filename);
+    if (! headerPtr)
     {
         KTERROR(proflog, "Egg did not break");
         delete eggReader;
@@ -126,7 +127,7 @@ int main()
     }
 
     // Configure the FFT with the egg header
-    compFFT.InitializeWithHeader(header);
+    compFFT.InitializeWithHeader(headerPtr->Of< KTEggHeader >());
 
     // Start the profiler
     prof.Start();
@@ -159,10 +160,10 @@ int main()
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
 
         // Mark the time of this slice
-        prof.ProcessData(data);
+        prof.Data(data);
 
         // Calcualte the FFT
-        if (! compFFT.TransformData(tsData))
+        if (! compFFT.TransformRealData(tsData))
         {
             KTERROR(proflog, "A problem occurred while performing the FFT");
             continue;
@@ -239,7 +240,6 @@ int main()
     eggReader->CloseEgg();
     delete eggReader;
     delete dac;
-    delete header;
 
     return 0;
 }
