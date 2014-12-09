@@ -136,23 +136,28 @@ namespace Katydid
         if (intendedState == kR2C)
         {
             KTDEBUG(fftwlog, "Creating R2C plan: " << fTimeSize << " time bins; forward FFT");
+            // No FFTW_PRESERVE_INPUT, since the input array contents are replaced for each FFT
             fForwardPlan = fftw_plan_dft_r2c_1d(fTimeSize, fRInputArray, fOutputArray, transformFlag);
             // deleting arrays to save space
             // input array is required; output array is not needed
             fftw_free(fOutputArray);
             fOutputArray = NULL;
         }
-        else // intendedState == kC2C || kRasC2C
+        else if (intendedState == kC2C)
         {
             KTDEBUG(fftwlog, "Creating C2C plan: " << fTimeSize << " time bins; forward FFT");
+            // Add FFTW_PRESERVE_INPUT so that the input array content is not destroyed during the FFT
             fForwardPlan = fftw_plan_dft_1d(fTimeSize, fCInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
             // deleting arrays to save space
+            FreeArrays();
+        }
+        else // intendedState == kRasC2C
+        {
+            KTDEBUG(fftwlog, "Creating RasC2C plan: " << fTimeSize << " time bins; forward FFT");
+            // No FFTW_PRESERVE_INPUT, since the input array contents are replaced for each FFT
+            fForwardPlan = fftw_plan_dft_1d(fTimeSize, fCInputArray, fOutputArray, FFTW_FORWARD, transformFlag);
+            // deleting arrays to save space
             // input array not required for C2C, but is for kRasC2C; output array not needed in either case
-            if (intendedState == kC2C)
-            {
-                fftw_free(fCInputArray);
-                fCInputArray = NULL;
-            }
             fftw_free(fOutputArray);
             fOutputArray = NULL;
         }
@@ -160,8 +165,6 @@ namespace Katydid
         if (fForwardPlan != NULL)
         {
             fIsInitialized = true;
-            // delete the input and output arrays to save memory, since they're not needed for the transform
-            FreeArrays();
             if (fUseWisdom)
             {
                 if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
@@ -169,7 +172,7 @@ namespace Katydid
                     KTWARN(fftwlog, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
                 }
             }
-            KTDEBUG(fftwlog, "FFTW plans created; Initialization complete.");
+            KTDEBUG(fftwlog, "FFTW plan created; Initialization complete.");
         }
         else
         {
@@ -212,7 +215,7 @@ namespace Katydid
         if (! fIsInitialized)
         {
             KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
-                    << "   Please first call InitializeFFT(), then perform the transform.");
+                    << "\tPlease initialize the FFT first, then perform the transform.");
             return false;
         }
 
@@ -262,7 +265,7 @@ namespace Katydid
         if (! fIsInitialized)
         {
             KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
-                    << "   Please first call InitializeFFT(), then perform the transform.");
+                    << "\tPlease initialize the FFT first, then perform the transform.");
             return false;
         }
 
@@ -314,7 +317,7 @@ namespace Katydid
         if (! fIsInitialized)
         {
             KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
-                    << "   Please first call InitializeFFT(), then perform the transform.");
+                    << "\tPlease initialize the FFT first, then perform the transform.");
             return false;
         }
 
@@ -417,7 +420,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransform(const KTTimeSeriesReal* ts) const
     {
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache);
 
         DoTransform(ts, newFS);
 
@@ -450,7 +453,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransformAsComplex(const KTTimeSeriesReal* ts) const
     {
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache);
 
         DoTransformAsComplex(ts, newFS);
 
@@ -487,7 +490,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransform(const KTTimeSeriesFFTW* ts) const
     {
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache);
 
         DoTransform(ts, newFS);
 
@@ -559,10 +562,6 @@ namespace Katydid
             {
                 fRInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
             }
-            if (fOutputArray == NULL)
-            {
-                fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
-            }
         }
         else //  intendedState == kC2C or kRasC2C
         {
@@ -570,11 +569,12 @@ namespace Katydid
             {
                 fCInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
             }
-            if (fOutputArray == NULL)
-            {
-                fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
-            }
         }
+        if (fOutputArray == NULL)
+        {
+            fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
+        }
+
         return true;
     }
 

@@ -6,8 +6,8 @@
  @date: Sep 12, 2011
  */
 
-#ifndef KTFORWARDFFTW_HH_
-#define KTFORWARDFFTW_HH_
+#ifndef KTREVERSEFFTW_HH_
+#define KTREVERSEFFTW_HH_
 
 #include "KTFFT.hh"
 #include "KTProcessor.hh"
@@ -35,14 +35,14 @@ namespace Katydid
      @class KTReverseFFTW
      @author N. S. Oblath
 
-     @brief A one-dimensional real-to-complex FFT class.
+     @brief A one-dimensional complex-to-real or complex-to-complex reverse FFT class.
 
      @details
-     KTReverseFFTW performs a real-to-complex FFT on a one-dimensional array of doubles.
+     KTReverseFFTW performs a complex-to-real or complex-to-complex reverse FFT on a one-dimensional frequency spectrum.
 
      The FFT is implemented using FFTW.
 
-     Configuration name: "forward-fftw"
+     Configuration name: "reverse-fftw"
 
      Available configuration values:
      - "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
@@ -57,17 +57,15 @@ namespace Katydid
      - EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
-     FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
+     FFTW_PRESERVE_INPUT is automatically added to the transform flag when necessary so that the input data is not destroyed.
 
      Slots:
      - "header": void (KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
-     - "ts": void (KTDataPtr) -- Perform a forward FFT on the time series; Requires KTTimeSeriesData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
-     - "aa": void (KTDataPtr) -- Perform a forward FFT on an analytic associate data; Requires KTAnalyticAssociateData; Adds KTFrequencySpectrumPolar; Emits signal "fft-forward"
-     - "fs-fftw": void (KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft-reverse"
+     - "fs-fftw-to-real": void (KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft"
+     - "fs-fftw-to-complex": void (KTDataPtr) -- Perform a reverse FFT on the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTTimeSeriesData; Emits signal "fft"
 
      Signals:
-     - "fft-forward": void (KTDataPtr) -- Emitted upon performance of a forward transform; Guarantees KTFrequencySpectrumDataFFTW.
-     - "fft-reverse": void (KTDataPtr) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
+     - "fft": void (KTDataPtr) -- Emitted upon performance of a reverse transform; Guarantees KTTimeSeriesData.
     */
 
     class KTReverseFFTW : public KTFFTW, public KTProcessor
@@ -77,24 +75,21 @@ namespace Katydid
 
             enum State
             {
-                kR2C,
+                kNone,
+                kC2R,
                 kC2C
             };
 
-            static unsigned sInstanceCount;
-            static bool sMultithreadedIsInitialized;
-
         public:
-            KTReverseFFTW(const std::string& name = "forward-fftw");
+            KTReverseFFTW(const std::string& name = "reverse-fftw");
             virtual ~KTReverseFFTW();
 
             bool Configure(const KTParamNode* node);
 
-            MEMBERVARIABLE(bool, PrepareForwardTransform);
-            MEMBERVARIABLE(bool, PrepareReverseTransform);
-
             MEMBERVARIABLE(bool, UseWisdom);
             MEMBERVARIABLEREF(std::string, WisdomFilename);
+
+            MEMBERVARIABLE(KTReverseFFTW::State, RequestedState);
 
             MEMBERVARIABLE_NOSET(unsigned, TimeSize);
             MEMBERVARIABLE_NOSET(unsigned, FrequencySize);
@@ -102,11 +97,17 @@ namespace Katydid
             MEMBERVARIABLEREF_NOSET(std::string, TransformFlag);
 
         public:
-            /// note: SetTimeSize creates a new fTransform.
-            ///       It also sets fIsInitialized to false.
+            /// Set the number of time bins (also sets the number of frequency bins).
+            /// In r-to-c mode, number of frequency bins is N/2 + 1.
+            /// In c-to-c or r-as-c-to-c mode, number of frequency bins is N.
+            /// FFT must be initialized after calling this.
             void SetTimeSize(unsigned nBins);
+            /// Set the number of frequency bins (also sets the number of time bins).
+            /// In c-to-r mode, number of time bins is (N-1) * 2  (NOTE: number of time bins is always even!)
+            /// In c-to-c mode, number of time bins is N.
+            /// FFT must be initialized after calling this.
             void SetFrequencySize(unsigned nBins);
-            /// note: SetTransoformFlag sets fIsInitialized to false.
+            /// Change the transform flag; FFT must be initialized after calling this.
             void SetTransformFlag(const std::string& flag);
 
         private:
@@ -115,10 +116,9 @@ namespace Katydid
         public:
             bool InitializeForRealTDD();
             bool InitializeForComplexTDD();
+            bool InitializeFromRequestedState();
             bool InitializeWithHeader(KTEggHeader& header);
 
-            virtual unsigned GetTimeSize() const;
-            virtual unsigned GetFrequencySize() const;
             virtual double GetMinFrequency(double timeBinWidth) const;
             virtual double GetMaxFrequency(double timeBinWidth) const;
 
@@ -129,52 +129,48 @@ namespace Katydid
             bool InitializeFFT(KTReverseFFTW::State intendedState);
 
         public:
-            /// Forward FFT - Real Time Data
-            bool TransformRealData(KTTimeSeriesData& tsData);
-            /// Forward FFT - Complex Time Data
-            bool TransformComplexData(KTTimeSeriesData& tsData);
-            /// Forward FFT - Complex Analytic Associate Data
-            bool TransformComplexData(KTAnalyticAssociateData& aaData);
-
             /// Reverse FFT - To Real Time Data
-            bool TransformData(KTFrequencySpectrumDataFFTW& fsData);
-            /// Reverse FFT 0 To ComplexTimeData
-            bool TransformData(KTFrequencySpectrumDataFFTW& fsData);
-
-            /// Forward FFT - Real Data
-            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesReal* ts) const;
-            void DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
-            /// Forward FFT - Complex Data
-            KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* ts) const;
-            void DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
-            /// Reverse FFT
-            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* fs) const;
-            void DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const;
-            /// Reverse FFT
-            KTTimeSeriesFFTW* Transform(const KTFrequencySpectrumFFTW* fs) const;
+            bool TransformDataToReal(KTFrequencySpectrumDataFFTW& fsData);
+            /// Reverse FFT - To Real Time Series
+            KTTimeSeriesReal* TransformToReal(const KTFrequencySpectrumFFTW* fs) const;
+            /// Reverse FFT - To Real Time Series - No size or bin width checks
+            KTTimeSeriesReal* FastTransformToReal(const KTFrequencySpectrumFFTW* fs) const;
+            /// Reverse FFT - To Real Time Series - Output must exist - No size or bin width checks
             void DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesReal* tsOut) const;
 
+            /// Reverse FFT - To Complex Time Data
+            bool TransformDataToComplex(KTFrequencySpectrumDataFFTW& fsData);
+            /// Reverse FFT - To Complex Time Series
+            KTTimeSeriesFFTW* TransformToComplex(const KTFrequencySpectrumFFTW* fs) const;
+            /// Reverse FFT - To Complex Time Series - No size or bin width checks
+            KTTimeSeriesFFTW* FastTransformToComplex(const KTFrequencySpectrumFFTW* fs) const;
+            /// Reverse FFT - To Complex Time Series - Output must exist - No size or bin width checks
+            void DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const;
+
         private:
-            void AllocateArrays();
+            // binning cache
+            void UpdateBinningCache(double freqBinWidth) const;
+            mutable double fFreqBinWidthCache;
+            mutable double fTimeMinCache;
+            mutable double fTimeMaxCache;
+
+            /// Allocate memory in the i/o arrays for an intended state if provided, or (default) the current state
+            bool AllocateArrays(State intendedState = kNone);
             void FreeArrays();
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)
 
-            fftw_plan fForwardPlan;
             fftw_plan fReversePlan;
 
-            double* fTSArray;
-            fftw_complex* fFSArray;
-
             fftw_complex* fInputArray;
-            fftw_complex* fOutputArray;
+            double*       fROutputArray;
+            fftw_complex* fCOutputArray;
 
             //***************
             // Signals
             //***************
 
         private:
-            KTSignalData fFFTForwardSignal;
-            KTSignalData fFFTReverseSignal;
+            KTSignalData fFFTSignal;
 
             //***************
             // Slots
@@ -182,30 +178,32 @@ namespace Katydid
 
         private:
             KTSlotDataOneType< KTEggHeader > fHeaderSlot;
-            KTSlotDataOneType< KTTimeSeriesData > fTimeSeriesSlot;
-            KTSlotDataOneType< KTAnalyticAssociateData > fAASlot;
-            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWToRealSlot;
+            KTSlotDataOneType< KTFrequencySpectrumDataFFTW > fFSFFTWToComplexSlot;
 
     };
 
 
     inline double KTReverseFFTW::GetMinFrequency(double timeBinWidth) const
     {
-        // There's one bin at the center, always: the DC bin.
-        // # of bins on the negative side is nFreqBins/2 (rounded down because of integer division).
-        // 0.5 is added to the # of bins because of the half of the DC bin on the negative frequency side.
-        return -GetFrequencyBinWidth(timeBinWidth) * (double(fTimeSize/2) + 0.5);
+        // DC bin is centered at 0, with half a bin width on either side
+        return -0.5 * GetFrequencyBinWidth(timeBinWidth);
     }
 
     inline double KTReverseFFTW::GetMaxFrequency(double timeBinWidth) const
     {
-        // There's one bin at the center, always: the DC bin.
-        // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
-        // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
-        unsigned nBinsToSide = fTimeSize / 2;
-        return GetFrequencyBinWidth(timeBinWidth) * (double(nBinsToSide*2 == fTimeSize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
+        return GetFrequencyBinWidth(timeBinWidth) * ((double)fFrequencySize - 0.5);
+    }
+
+    inline void KTReverseFFTW::UpdateBinningCache(double freqBinWidth) const
+    {
+        if (freqBinWidth == fFreqBinWidthCache) return;
+        fFreqBinWidthCache = freqBinWidth;
+        fTimeMinCache = GetMinTime();
+        fTimeMaxCache = GetMaxTime(freqBinWidth);
+        return;
     }
 
 } /* namespace Katydid */
 
-#endif /* KTFORWARDFFTW_HH_ */
+#endif /* KTREVERSEFFTW_HH_ */

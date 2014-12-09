@@ -14,6 +14,7 @@
 #include "KTLogger.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 #include "KTParam.hh"
 
 #include <algorithm>
@@ -27,34 +28,28 @@ namespace Katydid
 {
     KTLOGGER(fftwlog, "KTReverseFFTW");
 
-    KT_REGISTER_PROCESSOR(KTReverseFFTW, "forward-fftw");
-
-    unsigned KTReverseFFTW::sInstanceCount = 0;
-    bool KTReverseFFTW::sMultithreadedIsInitialized = false;
+    KT_REGISTER_PROCESSOR(KTReverseFFTW, "reverse-fftw");
 
     KTReverseFFTW::KTReverseFFTW(const std::string& name) :
             KTFFTW(),
             KTProcessor(name),
-            fPrepareForwardTransform(true),
-            fPrepareReverseTransform(true),
             fUseWisdom(true),
             fWisdomFilename("wisdom_complexfft.fftw3"),
+            fRequestedState(kNone),
             fTimeSize(0),
             fFrequencySize(0),
             fTransformFlag("ESTIMATE"),
             fTransformFlagMap(),
-            fState(kR2C),
+            fState(kNone),
             fIsInitialized(false),
-            fForwardPlan(),
             fReversePlan(),
             fInputArray(NULL),
-            fOutputArray(NULL),
-            fFFTForwardSignal("fft-forward", this),
-            fFFTReverseSignal("fft-reverse", this),
+            fROutputArray(NULL),
+            fCOutputArray(NULL),
+            fFFTSignal("fft", this),
             fHeaderSlot("header", this, &KTReverseFFTW::InitializeWithHeader),
-            fTimeSeriesSlot("ts", this, &KTReverseFFTW::TransformData, &fFFTForwardSignal),
-            fAASlot("aa", this, &KTReverseFFTW::TransformData, &fFFTForwardSignal),
-            fFSFFTWSlot("fs-fftw", this, &KTReverseFFTW::TransformData, &fFFTReverseSignal)
+            fFSFFTWToRealSlot("fs-fftw-to-real", this, &KTReverseFFTW::TransformDataToReal, &fFFTSignal),
+            fFSFFTWToComplexSlot("fs-fftw-to-complex", this, &KTReverseFFTW::TransformDataToComplex, &fFFTSignal)
     {
         SetupInternalMaps();
     }
@@ -62,7 +57,6 @@ namespace Katydid
     KTReverseFFTW::~KTReverseFFTW()
     {
         FreeArrays();
-        if (fForwardPlan != NULL) fftw_destroy_plan(fForwardPlan);
         if (fReversePlan != NULL) fftw_destroy_plan(fReversePlan);
     }
 
@@ -73,11 +67,26 @@ namespace Katydid
         {
             SetTransformFlag(node->GetValue("transform-flag", fTransformFlag));
 
-            SetPrepareForwardTransform(node->GetValue("prep-forward-fft", fPrepareForwardTransform));
-            SetPrepareReverseTransform(node->GetValue("prep-reverse-fft", fPrepareReverseTransform));
-
             SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
             SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
+
+            if (node->Has("transform-to"))
+            {
+                string request(node->GetValue("transform-to"));
+                if (request == "real")
+                {
+                    SetRequestedState(kC2R);
+                }
+                else if (request == "complex")
+                {
+                    SetRequestedState(kC2C);
+                }
+                else
+                {
+                    KTERROR(fftwlog, "Invalid transform request: " << request);
+                    return false;
+                }
+            }
         }
 
         if (fUseWisdom)
@@ -97,7 +106,7 @@ namespace Katydid
 
     bool KTReverseFFTW::InitializeForRealTDD()
     {
-        return InitializeFFT(kR2C);
+        return InitializeFFT(kC2R);
     }
 
     bool KTReverseFFTW::InitializeForComplexTDD()
@@ -105,15 +114,36 @@ namespace Katydid
         return InitializeFFT(kC2C);
     }
 
+    bool KTReverseFFTW::InitializeFromRequestedState()
+    {
+        return InitializeFFT(fRequestedState);
+    }
+
+    bool KTReverseFFTW::InitializeWithHeader(KTEggHeader& header)
+    {
+        SetTimeSize(header.GetSliceSize());
+        return InitializeFromRequestedState();
+    }
+
     bool KTReverseFFTW::InitializeFFT(KTReverseFFTW::State intendedState)
     {
+        if (intendedState == kNone)
+        {
+            KTERROR(fftwlog, "Cannot initialize FFT for state <" << intendedState << ">");
+            return false;
+        }
+
         // fTransformFlag is guaranteed to be valid in the Set method.
         KTDEBUG(fftwlog, "Transform flag: " << fTransformFlag);
         TransformFlagMap::const_iterator iter = fTransformFlagMap.find(fTransformFlag);
         unsigned transformFlag = iter->second;
 
         // allocate the input and output arrays if they're not there already
-        AllocateArrays();
+        if (! AllocateArrays())
+        {
+            KTERROR(fftwlog, "Unable to allocate arrays");
+            return false;
+        }
 
         if (fUseWisdom)
         {
@@ -126,41 +156,28 @@ namespace Katydid
 
         InitializeMultithreaded();
 
-        if (intendedState == kR2C)
+        if (intendedState == kC2R)
         {
-            if (fPrepareForwardTransform)
-            {
-                KTDEBUG(fftlog_simp, "Creating plan: " << fTimeSize << " time bins; forward FFT");
-                fForwardPlan = fftw_plan_dft_r2c_1d(fTimeSize, fTSArray, fFSArray, transformFlag);
-            }
-            if (fPrepareReverseTransform)
-            {
-                KTDEBUG(fftlog_simp, "Creating plan: " << fFrequencySize << " frequency bins; reverse FFT");
-                fReversePlan = fftw_plan_dft_c2r_1d(fTimeSize, fFSArray, fTSArray, transformFlag);
-            }
-
+            KTDEBUG(fftwlog, "Creating C2R plan: " << fTimeSize << " time bins; reverse FFT");
+            // Add FFTW_PRESERVE_INPUT so that the input array content is not destroyed during the FFT
+            fReversePlan = fftw_plan_dft_c2r_1d(fTimeSize, fInputArray, fROutputArray, transformFlag | FFTW_PRESERVE_INPUT);
+            // deleting arrays to save space
+            // output array (fROutputArray) is required; input array is not needed
+            fftw_free(fInputArray);
+            fInputArray = NULL;
         }
-        else // intendedState == kC2C
+        else // intendedState == kC2C || kRasC2C
         {
-            if (fPrepareForwardTransform)
-            {
-                KTDEBUG(fftwlog, "Creating plan: " << fTimeSize << " time bins; forward FFT");
-                fForwardPlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_FORWARD, transformFlag | FFTW_PRESERVE_INPUT);
-            }
-            if (fPrepareReverseTransform)
-            {
-                KTDEBUG(fftwlog, "Creating plan: " << fFrequencySize << " frequency bins; backward FFT");
-                fReversePlan = fftw_plan_dft_1d(fSize, fInputArray, fOutputArray, FFTW_BACKWARD, transformFlag | FFTW_PRESERVE_INPUT);
-            }
-
-
+            KTDEBUG(fftwlog, "Creating C2C plan: " << fTimeSize << " time bins; forward FFT");
+            // Add FFTW_PRESERVE_INPUT so that the input array content is not destroyed during the FFT
+            fReversePlan = fftw_plan_dft_1d(fTimeSize, fInputArray, fCOutputArray, FFTW_BACKWARD, transformFlag | FFTW_PRESERVE_INPUT);
+            // deleting arrays to save space; neither input nor output are needed
+            FreeArrays();
         }
 
-        if (fForwardPlan != NULL && fReversePlan != NULL)
+        if (fReversePlan != NULL)
         {
             fIsInitialized = true;
-            // delete the input and output arrays to save memory, since they're not needed for the transform
-            FreeArrays();
             if (fUseWisdom)
             {
                 if (fftw_export_wisdom_to_filename(fWisdomFilename.c_str()) == 0)
@@ -168,181 +185,37 @@ namespace Katydid
                     KTWARN(fftwlog, "Unable to write FFTW wisdom to file <" << fWisdomFilename << ">");
                 }
             }
-            KTDEBUG(fftwlog, "FFTW plans created; Initialization complete.");
+            KTDEBUG(fftwlog, "FFTW plan created; Initialization complete.");
         }
         else
         {
             fIsInitialized = false;
-            if (fForwardPlan == NULL)
-            {
-                KTERROR(fftwlog, "Unable to create the forward FFT plan! FFT is not initialized.");;
-            }
-            if (fReversePlan == NULL)
-            {
-                KTERROR(fftwlog, "Unable to create the reverse FFT plan! FFT is not initialized.");
-            }
+            KTERROR(fftwlog, "Unable to create the reverse FFT plan! FFT is not initialized.");;
             return false;
         }
+
+        fState = intendedState;
         return true;
     }
 
-    bool KTReverseFFTW::InitializeWithHeader(KTEggHeader& header)
+    bool KTReverseFFTW::TransformDataToReal(KTFrequencySpectrumDataFFTW& fsData)
     {
-        SetTimeSize(header.GetSliceSize());
-        if (???)
+        if (fState != kC2R)
         {
-            return InitializeForRealTDD();
+            KTERROR(fftwlog, "Cannot do transform to real data in state <" << fState << ">");
+            return false;
         }
-        else
-        {
-            return InitializeForComplexTDD();
-        }
-    }
 
-    bool KTReverseFFTW::TransformRealData(KTTimeSeriesData& tsData)
-    {
-        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
+        if (fsData.GetSpectrumFFTW(0)->size() != GetFrequencySize())
         {
-            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
-            InitializeFFT();
+            SetFrequencySize(fsData.GetSpectrumFFTW(0)->size());
+            InitializeForRealTDD();
         }
 
         if (! fIsInitialized)
         {
             KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
-                    << "   Please first call InitializeFFT(), then perform the transform.");
-            return false;
-        }
-
-        unsigned nComponents = tsData.GetNComponents();
-
-        KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
-
-        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
-        {
-            const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
-            if (nextInput == NULL)
-            {
-                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal.");
-                return false;
-            }
-
-            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
-
-            if (nextResult == NULL)
-            {
-                KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
-                return false;
-            }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
-            newData.SetSpectrum(nextResult, iComponent);
-        }
-
-        KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
-
-        return true;
-    }
-
-    bool KTReverseFFTW::TransformComplexData(KTTimeSeriesData& tsData)
-    {
-        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
-        {
-            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
-            InitializeFFT();
-        }
-
-        if (! fIsInitialized)
-        {
-            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
-                    << "   Please first call InitializeFFT(), then perform the transform.");
-            return false;
-        }
-
-        unsigned nComponents = tsData.GetNComponents();
-
-        KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
-
-        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
-        {
-            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
-            if (nextInput == NULL)
-            {
-                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
-                return false;
-            }
-
-            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
-
-            if (nextResult == NULL)
-            {
-                KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
-                return false;
-            }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
-            newData.SetSpectrum(nextResult, iComponent);
-        }
-
-        KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
-
-        return true;
-    }
-
-    bool KTReverseFFTW::TransformComplexData(KTAnalyticAssociateData& tsData)
-    {
-        if (tsData.GetTimeSeries(0)->GetNTimeBins() != GetTimeSize())
-        {
-            SetSize(tsData.GetTimeSeries(0)->GetNTimeBins());
-            InitializeFFT();
-        }
-
-        if (! fIsInitialized)
-        {
-            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
-                    << "   Please first call InitializeFFT(), then perform the transform.");
-            return false;
-        }
-
-        unsigned nComponents = tsData.GetNComponents();
-
-        KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
-
-        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
-        {
-            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
-            if (nextInput == NULL)
-            {
-                KTERROR(fftwlog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW.");
-                return false;
-            }
-
-            KTFrequencySpectrumFFTW* nextResult = Transform(nextInput);
-
-            if (nextResult == NULL)
-            {
-                KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
-                return false;
-            }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
-            newData.SetSpectrum(nextResult, iComponent);
-        }
-
-        KTINFO(fftwlog, "FFT complete; " << nComponents << " channel(s) transformed");
-
-        return true;
-    }
-
-    bool KTReverseFFTW::TransformData(KTFrequencySpectrumDataFFTW& fsData)
-    {
-        if (fsData.GetSpectrumFFTW(0)->size() != GetSize())
-        {
-            SetSize(fsData.GetSpectrumFFTW(0)->size());
-            InitializeFFT();
-        }
-
-        if (! fIsInitialized)
-        {
-            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
-                    << "   Please first call InitializeFFT(), then perform the transform.");
+                    << "\tPlease initialize the FFT first, then perform the transform.");
             return false;
         }
 
@@ -359,7 +232,7 @@ namespace Katydid
                 return false;
             }
 
-            KTTimeSeriesFFTW* nextResult = Transform(nextInput);
+            KTTimeSeriesReal* nextResult = FastTransformToReal(nextInput);
 
             if (nextResult == NULL)
             {
@@ -374,84 +247,105 @@ namespace Katydid
         return true;
     }
 
-    KTFrequencySpectrumFFTW* KTReverseFFTW::Transform(const KTTimeSeriesReal* ts) const
+    KTTimeSeriesReal* KTReverseFFTW::TransformToReal(const KTFrequencySpectrumFFTW* fs) const
     {
-        unsigned nBins = ts->size();
-        if (nBins != fSize)
+        if (fs->size() != fFrequencySize)
         {
             KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
+                    << "\tBin expected: " << fFrequencySize << ";   Bins in data: " << fs->size());
             return NULL;
         }
 
-        double timeBinWidth = ts->GetTimeBinWidth();
-        double freqMin = GetMinFrequency(timeBinWidth);
-        double freqMax = GetMaxFrequency(timeBinWidth);
+        UpdateBinningCache(fs->GetFrequencyBinWidth());
 
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
-
-        DoTransform(ts, newFS);
-        //fftw_execute_dft(fForwardPlan, ts->GetData(), newSpectrum->GetData());
-
-        newFS->SetNTimeBins(nBins);
-
-        return newFS;
+        return FastTransformToReal(fs);
     }
 
-    KTFrequencySpectrumFFTW* KTReverseFFTW::Transform(const KTTimeSeriesFFTW* ts) const
+    KTTimeSeriesReal* KTReverseFFTW::FastTransformToReal(const KTFrequencySpectrumFFTW* fs) const
     {
-        unsigned nBins = ts->size();
-        if (nBins != fSize)
-        {
-            KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
-            return NULL;
-        }
-
-        double timeBinWidth = ts->GetTimeBinWidth();
-        double freqMin = GetMinFrequency(timeBinWidth);
-        double freqMax = GetMaxFrequency(timeBinWidth);
-
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(nBins, freqMin, freqMax);
-
-        DoTransform(ts, newFS);
-        //fftw_execute_dft(fForwardPlan, ts->GetData(), newSpectrum->GetData());
-
-        newFS->SetNTimeBins(nBins);
-
-        return newFS;
-    }
-
-    void KTReverseFFTW::DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const
-    {
-        copy(tsIn->begin(), tsIn->end(), fTSArray);
-        fftw_execute_dft(fForwardPlan, fTSArray, fsOut->GetData());
-        (*fsOut) *= sqrt(2. / (double)fTimeSize);
-        return;
-    }
-
-    void KTReverseFFTW::DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const
-    {
-        fftw_execute_dft(fForwardPlan, tsIn->GetData(), fsOut->GetData());
-        (*fsOut) *= sqrt(1. / (double)  fTimeSize);
-        return;
-    }
-
-    KTTimeSeriesFFTW* KTReverseFFTW::Transform(const KTFrequencySpectrumFFTW* fs) const
-    {
-        unsigned nBins = fs->size();
-        if (nBins != fSize)
-        {
-            KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
-                    << "   Bin expected: " << fSize << ";   Bins in data: " << nBins);
-            return NULL;
-        }
-
-        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, GetMinTime(), GetMaxTime(fs->GetBinWidth()));
+        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(fTimeSize, fTimeMinCache, fTimeMaxCache);
 
         DoTransform(fs, newTS);
-        //fftw_execute_dft(fReversePlan, fs->GetData(), newRecord->GetData());
 
+        return newTS;
+    }
+
+    void KTReverseFFTW::DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesReal* tsOut) const
+    {
+        fftw_execute_dft_c2r(fReversePlan, fsIn->GetData(), fROutputArray);
+        copy(fROutputArray, fROutputArray+fTimeSize, tsOut->begin());
+        (*tsOut) *= sqrt(1. / double(fTimeSize));
+        return;
+    }
+
+    bool KTReverseFFTW::TransformDataToComplex(KTFrequencySpectrumDataFFTW& fsData)
+    {
+        if (fState != kC2C)
+        {
+            KTERROR(fftwlog, "Cannot do transform to complex data in state <" << fState << ">");
+            return false;
+        }
+
+        if (fsData.GetSpectrumFFTW(0)->size() != GetFrequencySize())
+        {
+            SetFrequencySize(fsData.GetSpectrumFFTW(0)->size());
+            InitializeForComplexTDD();
+        }
+
+        if (! fIsInitialized)
+        {
+            KTERROR(fftwlog, "FFT must be initialized before the transform is performed\n"
+                    << "\tPlease initialize the FFT first, then perform the transform.");
+            return false;
+        }
+
+        unsigned nComponents = fsData.GetNComponents();
+
+        KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
+
+        for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
+        {
+            const KTFrequencySpectrumFFTW* nextInput = fsData.GetSpectrumFFTW(iComponent);
+            if (nextInput == NULL)
+            {
+                KTERROR(fftwlog, "Frequency spectrum <" << iComponent << "> does not appear to be present.");
+                return false;
+            }
+
+            KTTimeSeriesFFTW* nextResult = FastTransformToComplex(nextInput);
+
+            if (nextResult == NULL)
+            {
+                KTERROR(fftwlog, "One of the channels did not transform correctly.");
+                return false;
+            }
+            newData.SetTimeSeries(nextResult, iComponent);
+        }
+
+        KTDEBUG(fftwlog, "FFT complete; " << nComponents << " component(s) transformed");
+
+        return true;
+    }
+
+    KTTimeSeriesFFTW* KTReverseFFTW::TransformToComplex(const KTFrequencySpectrumFFTW* fs) const
+    {
+        if (fs->size() != fFrequencySize)
+        {
+            KTWARN(fftwlog, "Number of bins in the data provided does not match the number of bins set for this transform\n"
+                    << "\tBin expected: " << fFrequencySize << ";   Bins in data: " << fs->size());
+            return NULL;
+        }
+
+        UpdateBinningCache(fs->GetFrequencyBinWidth());
+
+        return FastTransformToComplex(fs);
+    }
+
+    KTTimeSeriesFFTW* KTReverseFFTW::FastTransformToComplex(const KTFrequencySpectrumFFTW* fs) const
+    {
+        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(fTimeSize, fTimeMinCache, fTimeMaxCache);
+
+        DoTransform(fs, newTS);
 
         return newTS;
     }
@@ -459,20 +353,18 @@ namespace Katydid
     void KTReverseFFTW::DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesFFTW* tsOut) const
     {
         fftw_execute_dft(fReversePlan, fsIn->GetData(), tsOut->GetData());
-        (*tsOut) *= sqrt(1. / double(fSize));
-
+        (*tsOut) *= sqrt(1. / double(fTimeSize));
         return;
     }
 
     void KTReverseFFTW::SetTimeSize(unsigned nBins)
     {
         fTimeSize = nBins;
-        if (fState == kR2C) fFrequencySize = nBins / 2 + 1;
-        else fFrequencySize = nBins;
+        if (fState == kC2R) fFrequencySize = nBins / 2 + 1;
+        else fFrequencySize = nBins; // fState == kRasC2C or kC2C
 
+        // clear things for good measure
         FreeArrays();
-        //fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fSize);
-        //fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
 
         fIsInitialized = false;
         return;
@@ -481,12 +373,11 @@ namespace Katydid
     void KTReverseFFTW::SetFrequencySize(unsigned nBins)
     {
         fFrequencySize = nBins;
-        if (fState == kR2C) fFrequencySize = (nBins - 1) * 2;
+        if (fState == kC2R) fFrequencySize = (nBins - 1) * 2;
         else fFrequencySize = nBins;
 
+        // clear things for good measure
         FreeArrays();
-        //fInputArray = (fftw_complex*) fftw_malloc(sizeof(double) * fSize);
-        //fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fSize);
 
         fIsInitialized = false;
         return;
@@ -499,6 +390,10 @@ namespace Katydid
             KTWARN(fftwlog, "Invalid transform flag requested: " << flag << "\n\tNo change was made.");
             return;
         }
+
+        // delete the plan
+        if (fReversePlan != NULL) fftw_destroy_plan(fReversePlan);
+
         fTransformFlag = flag;
         fIsInitialized = false;
         return;
@@ -515,55 +410,54 @@ namespace Katydid
         return;
     }
 
-    void KTReverseFFTW::AllocateArrays()
+    bool KTReverseFFTW::AllocateArrays(State intendedState)
     {
         FreeArrays();
-        if (fState == kR2C)
+        if (intendedState == kNone) intendedState = fState;
+        if (intendedState == kNone)
         {
-            if (fInputArray == NULL)
+            KTERROR(fftwlog, "Cannot allocate arrays for state <" << intendedState << ">");
+            return false;
+        }
+
+        if (fInputArray == NULL)
+        {
+            fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
+        }
+        if (fState == kC2R)
+        {
+            if (fROutputArray == NULL)
             {
-                fInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
-            }
-            if (fOutputArray == NULL)
-            {
-                fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
+                fROutputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
             }
         }
-        else
+        else //  intendedState == kC2C
         {
-            if (fInputArray == NULL)
+            if (fCOutputArray == NULL)
             {
-                fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
-            }
-            if (fOutputArray == NULL)
-            {
-                fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
+                fCOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
             }
         }
-        return;
+
+        return true;
     }
 
     void KTReverseFFTW::FreeArrays()
     {
-        if (fTSArray != NULL)
+        if (fROutputArray != NULL)
         {
-            fftw_free(fTSArray);
-            fTSArray = NULL;
+            fftw_free(fROutputArray);
+            fROutputArray = NULL;
         }
-        if (fFSArray != NULL)
+        if (fCOutputArray != NULL)
         {
-            fftw_free(fFSArray);
-            fFSArray = NULL;
+            fftw_free(fCOutputArray);
+            fCOutputArray = NULL;
         }
         if (fInputArray != NULL)
         {
             fftw_free(fInputArray);
             fInputArray = NULL;
-        }
-        if (fOutputArray != NULL)
-        {
-            fftw_free(fOutputArray);
-            fOutputArray = NULL;
         }
         return;
     }

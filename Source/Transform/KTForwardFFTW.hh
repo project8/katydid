@@ -69,7 +69,7 @@ namespace Katydid
      - EXHAUSTIVE -- "Considers an even wider range of algorithms, including many that we think are unlikely to be fast, to produce the most optimal plan but with a substantially increased planning time."
      These flag descriptions are quoted from the FFTW3 manual (http://www.fftw.org/fftw3_doc/Planner-Flags.html#Planner-Flags)
 
-     FFTW_PRESERVE_INPUT is automatically added to the transform flag so that, particularly for the reverse transform, the input data is not destroyed.
+     FFTW_PRESERVE_INPUT is automatically added to the transform flag when necessary so that the input data is not destroyed.
 
      Slots:
      - "header": void (KTDataPtr) -- Initialize the FFT from an Egg header; Requires KTEggHeader
@@ -136,31 +136,31 @@ namespace Katydid
         public:
             /// Forward FFT - Real Time Data
             bool TransformRealData(KTTimeSeriesData& tsData);
-            /// Forward FFT - Real Data
+            /// Forward FFT - Real Time Series
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesReal* ts) const;
-            /// Forward FFT - Real Data - No size or bin width checks
+            /// Forward FFT - Real Time Series - No size or bin width checks
             KTFrequencySpectrumFFTW*  FastTransform(const KTTimeSeriesReal* ts) const;
-            /// Forward FFT - Real Data - Output must exist - No size or bin width checks
+            /// Forward FFT - Real Time Series - Output must exist - No size or bin width checks
             void DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
             /// Forward FFT - Real Time Data as Complex
             bool TransformRealDataAsComplex(KTTimeSeriesData& tsData);
-            /// Forward FFT - Real-as-Complex Data
+            /// Forward FFT - Real-as-Complex Time Series
             KTFrequencySpectrumFFTW* TransformAsComplex(const KTTimeSeriesReal* ts) const;
-            /// Forward FFT - Real-as-Complex Data - No size or bin width checks
+            /// Forward FFT - Real-as-Complex Time Series - No size or bin width checks
             KTFrequencySpectrumFFTW*  FastTransformAsComplex(const KTTimeSeriesReal* ts) const;
-            /// Forward FFT - Real-as-Complex Data - Output must exist - No size or bin width checks
+            /// Forward FFT - Real-as-Complex Time Series - Output must exist - No size or bin width checks
             void DoTransformAsComplex(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
             /// Forward FFT - Complex Time Data
             bool TransformComplexData(KTTimeSeriesData& tsData);
             /// Forward FFT - Complex Analytic Associate Data
             bool TransformComplexData(KTAnalyticAssociateData& aaData);
-            /// Forward FFT - Complex Data
+            /// Forward FFT - Complex Time Series
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* ts) const;
-            /// Forward FFT - Complex Data - No size or bin width checks
+            /// Forward FFT - Complex Time Series - No size or bin width checks
             KTFrequencySpectrumFFTW*  FastTransform(const KTTimeSeriesFFTW* ts) const;
-            /// Forward FFT - Complex Data - Output must exist - No size or bin width checks
+            /// Forward FFT - Complex Time Series - Output must exist - No size or bin width checks
             void DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
         private:
@@ -204,7 +204,7 @@ namespace Katydid
 
     inline double KTForwardFFTW::GetMinFrequency(double timeBinWidth) const
     {
-        // DC bin is centered at 0
+        // DC bin is centered at 0, with half a bin width on either side
         return -0.5 * GetFrequencyBinWidth(timeBinWidth);
     }
 
