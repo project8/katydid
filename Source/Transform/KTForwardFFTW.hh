@@ -119,17 +119,21 @@ namespace Katydid
             bool InitializeFFT(KTForwardFFTW::State intendedState);
 
         public:
-            // FFT Interface functions
-
             /// Forward FFT - Real Time Data
             bool TransformRealData(KTTimeSeriesData& tsData);
             /// Forward FFT - Real Data
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesReal* ts) const;
+            /// Forward FFT - Real Data
+            KTFrequencySpectrumFFTW*  FastTransform(const KTTimeSeriesReal* ts) const;
+            void DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
             /// Forward FFT - Real Time Data as Complex
             bool TransformRealDataAsComplex(KTTimeSeriesData& tsData);
             /// Forward FFT - Real-as-Complex Data
             KTFrequencySpectrumFFTW* TransformAsComplex(const KTTimeSeriesReal* ts) const;
+            /// Forward FFT - Real-as-Complex Data
+            KTFrequencySpectrumFFTW*  FastTransformAsComplex(const KTTimeSeriesReal* ts) const;
+            void DoTransformAsComplex(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
             /// Forward FFT - Complex Time Data
             bool TransformComplexData(KTTimeSeriesData& tsData);
@@ -137,17 +141,11 @@ namespace Katydid
             bool TransformComplexData(KTAnalyticAssociateData& aaData);
             /// Forward FFT - Complex Data
             KTFrequencySpectrumFFTW* Transform(const KTTimeSeriesFFTW* ts) const;
+            /// Forward FFT - Complex Data
+            KTFrequencySpectrumFFTW*  FastTransform(const KTTimeSeriesFFTW* ts) const;
+            void DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const;
 
         private:
-            // Private FFT utility functions -- no size checks
-
-            /// Forward FFT - Real Data
-            KTFrequencySpectrumFFTW*  DoTransform(const KTTimeSeriesReal* tsIn) const;
-            /// Forward FFT - Real-as-Complex Data
-            KTFrequencySpectrumFFTW*  DoTransformAsComplex(const KTTimeSeriesReal* tsIn) const;
-            /// Forward FFT - Complex Data
-            KTFrequencySpectrumFFTW*  DoTransform(const KTTimeSeriesFFTW* tsIn) const;
-
             // binning cache
             void UpdateBinningCache(double timeBinWidth) const;
             mutable double fTimeBinWidthCache;

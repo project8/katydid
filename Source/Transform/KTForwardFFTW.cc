@@ -228,7 +228,7 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = DoTransform(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = FastTransform(nextInput);
 
             if (nextResult == NULL)
             {
@@ -280,7 +280,7 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = DoTransformAsComplex(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = FastTransformAsComplex(nextInput);
 
             if (nextResult == NULL)
             {
@@ -332,7 +332,7 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = DoTransform(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = FastTransform(nextInput);
 
             if (nextResult == NULL)
             {
@@ -384,7 +384,7 @@ namespace Katydid
                 return false;
             }
 
-            KTFrequencySpectrumFFTW* nextResult = DoTransform(nextInput);
+            KTFrequencySpectrumFFTW* nextResult = FastTransform(nextInput);
 
             if (nextResult == NULL)
             {
@@ -411,20 +411,26 @@ namespace Katydid
 
         UpdateBinningCache(ts->GetTimeBinWidth());
 
-        return DoTransform(ts);
+        return FastTransform(ts);
     }
 
-    KTFrequencySpectrumFFTW* KTForwardFFTW::DoTransform(const KTTimeSeriesReal* ts) const
+    KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransform(const KTTimeSeriesReal* ts) const
     {
         KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
 
-        copy(ts->begin(), ts->end(), fRInputArray);
-        fftw_execute_dft_r2c(fForwardPlan, fRInputArray, newFS->GetData());
-        (*newFS) *= sqrt(2. / (double)fTimeSize);
+        DoTransform(ts, newFS);
 
         newFS->SetNTimeBins(fTimeSize);
 
         return newFS;
+    }
+
+    void KTForwardFFTW::DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const
+    {
+        copy(tsIn->begin(), tsIn->end(), fRInputArray);
+        fftw_execute_dft_r2c(fForwardPlan, fRInputArray, fsOut->GetData());
+        (*fsOut) *= sqrt(2. / (double)fTimeSize);
+        return;
     }
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::TransformAsComplex(const KTTimeSeriesReal* ts) const
@@ -438,24 +444,30 @@ namespace Katydid
 
         UpdateBinningCache(ts->GetTimeBinWidth());
 
-        return DoTransformAsComplex(ts);
+        return FastTransformAsComplex(ts);
     }
 
-    KTFrequencySpectrumFFTW* KTForwardFFTW::DoTransformAsComplex(const KTTimeSeriesReal* ts) const
+    KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransformAsComplex(const KTTimeSeriesReal* ts) const
     {
         KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
 
-        for (unsigned iBin = 0; iBin < fTimeSize; ++iBin)
-        {
-            fCInputArray[iBin][0] = ts->GetData()[iBin];
-            fCInputArray[iBin][1] = 0;
-        }
-        fftw_execute_dft(fForwardPlan, fCInputArray, newFS->GetData());
-        (*newFS) *= sqrt(1. / (double)fTimeSize);
+        DoTransformAsComplex(ts, newFS);
 
         newFS->SetNTimeBins(fTimeSize);
 
         return newFS;
+    }
+
+    void KTForwardFFTW::DoTransformAsComplex(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const
+    {
+        for (unsigned iBin = 0; iBin < fTimeSize; ++iBin)
+        {
+            fCInputArray[iBin][0] = tsIn->GetData()[iBin];
+            fCInputArray[iBin][1] = 0;
+        }
+        fftw_execute_dft(fForwardPlan, fCInputArray, fsOut->GetData());
+        (*fsOut) *= sqrt(1. / (double)fTimeSize);
+        return;
     }
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::Transform(const KTTimeSeriesFFTW* ts) const
@@ -469,19 +481,25 @@ namespace Katydid
 
         UpdateBinningCache(ts->GetTimeBinWidth());
 
-        return DoTransform(ts);
+        return FastTransform(ts);
     }
 
-    KTFrequencySpectrumFFTW* KTForwardFFTW::DoTransform(const KTTimeSeriesFFTW* ts) const
+    KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransform(const KTTimeSeriesFFTW* ts) const
     {
         KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fTimeSize, fFreqMinCache, fFreqMaxCache);
 
-        fftw_execute_dft(fForwardPlan, ts->GetData(), newFS->GetData());
-        (*newFS) *= sqrt(1. / (double)  fTimeSize);
+        DoTransform(ts, newFS);
 
         newFS->SetNTimeBins(fTimeSize);
 
         return newFS;
+    }
+
+    void KTForwardFFTW::DoTransform(const KTTimeSeriesFFTW* tsIn, KTFrequencySpectrumFFTW* fsOut) const
+    {
+        fftw_execute_dft(fForwardPlan, tsIn->GetData(), fsOut->GetData());
+        (*fsOut) *= sqrt(1. / (double)  fTimeSize);
+        return;
     }
 
     void KTForwardFFTW::SetTimeSize(unsigned nBins)
