@@ -12,7 +12,8 @@
 #include "KTProcessor.hh"
 #include "KTTimeSeriesData.hh"
 
-#include "KTComplexFFTW.hh"
+#include "KTForwardFFTW.hh"
+#include "KTReverseFFTW.hh"
 #include "KTSlot.hh"
 
 
@@ -23,12 +24,13 @@ namespace Katydid
     class KTFrequencySpectrumFFTW;
     class KTNormalizedFSDataFFTW;
     class KTTimeSeriesFFTW;
+    class KTTimeSeriesReal;
 
     /*!
      @class KTAnalyticAssociator
      @author N. S. Oblath
 
-     @brief Creates an analytic associate of a time series
+     @brief Creates an analytic associate of a real time series
 
      @details
 
@@ -40,7 +42,7 @@ namespace Katydid
 
      Slots:
      - "header": void (KTDataPtr) -- Initializes the FFT; Requires KTEggHeader
-     - "ts": void (KTDataPtr) -- Calculates an analytic associate of the time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
+     - "ts": void (KTDataPtr) -- Calculates an analytic associate of the real time series; Requires KTTimeSeriesData; Adds KTAnalyticAssociateData; Optionally adds KTFrequencySpectrumDataFFTW
      - "fs-fftw": void (KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTFrequencySpectrumDataFFTW; Adds KTAnalyticAssociateData
      - "norm-fs-fftw": void (KTDataPtr) -- Calculates an analytic associate of the frequency spectrum; Requires KTNormalizedFSDataFFTW; Adds KTAnalyticAssociateData
 
@@ -57,13 +59,15 @@ namespace Katydid
 
             bool InitializeWithHeader(KTEggHeader& header);
 
-            KTComplexFFTW* GetFullFFT();
+            KTForwardFFTW* GetForwardFFT();
+            KTReverseFFTW* GetReverseFFT();
 
             bool GetSaveFrequencySpectrum() const;
             void SetSaveFrequencySpectrum(bool flag);
 
         private:
-            KTComplexFFTW fFullFFT;
+            KTForwardFFTW fForwardFFT;
+            KTReverseFFTW fReverseFFT;
 
             bool fSaveFrequencySpectrum;
 
@@ -72,9 +76,12 @@ namespace Katydid
             bool CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData);
             bool CreateAssociateData(KTNormalizedFSDataFFTW& fsData);
 
-           /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
-            KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
+            /// Calculates the AA and returns the new time series; the intermediate FS is assigned to the given output pointer.
+            KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTTimeSeriesReal* inputTS, KTFrequencySpectrumFFTW** outputFS=NULL);
             KTTimeSeriesFFTW* CalculateAnalyticAssociate(const KTFrequencySpectrumFFTW* inputFS);
+
+        private:
+            bool CheckAndDoFFTInit();
 
             //***************
             // Signals
@@ -95,9 +102,14 @@ namespace Katydid
 
     };
 
-    inline KTComplexFFTW* KTAnalyticAssociator::GetFullFFT()
+    inline KTForwardFFTW* KTAnalyticAssociator::GetForwardFFT()
     {
-        return &fFullFFT;
+        return &fForwardFFT;
+    }
+
+    inline KTReverseFFTW* KTAnalyticAssociator::GetReverseFFT()
+    {
+        return &fReverseFFT;
     }
 
     inline bool KTAnalyticAssociator::GetSaveFrequencySpectrum() const
