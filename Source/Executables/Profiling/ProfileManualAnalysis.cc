@@ -64,7 +64,6 @@ int main()
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
     unsigned nSlices = 50;
     unsigned recordSize = 32768;
-    KTDAC::TimeSeriesType tsType = KTDAC::kFFTWTimeSeries;
 
     KTForwardFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
@@ -116,7 +115,6 @@ int main()
     eggReader->SetSliceSize(recordSize);
 
     KTDAC* dac = new KTDAC();
-    dac->SetTimeSeriesType(tsType);
 
     KTDataPtr headerPtr = eggReader->BreakEgg(filename);
     if (! headerPtr)
