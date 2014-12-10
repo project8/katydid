@@ -424,7 +424,7 @@ namespace Katydid
         {
             fInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
         }
-        if (fState == kC2R)
+        if (intendedState == kC2R)
         {
             if (fROutputArray == NULL)
             {

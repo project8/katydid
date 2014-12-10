@@ -558,10 +558,11 @@ namespace Katydid
             return false;
         }
 
-        if (fState == kR2C)
+        if (intendedState == kR2C)
         {
             if (fRInputArray == NULL)
             {
+                KTDEBUG(fftwlog, "Allocating real input array");
                 fRInputArray = (double*) fftw_malloc(sizeof(double) * fTimeSize);
             }
         }
@@ -569,11 +570,13 @@ namespace Katydid
         {
             if (fCInputArray == NULL)
             {
+                KTDEBUG(fftwlog, "Allocating complex input array");
                 fCInputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fTimeSize);
             }
         }
         if (fOutputArray == NULL)
         {
+            KTDEBUG(fftwlog, "Allocating output array");
             fOutputArray = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * fFrequencySize);
         }
 
