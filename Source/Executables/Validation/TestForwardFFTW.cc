@@ -48,14 +48,14 @@ int main()
            "\tRange: " << startTime << " to " << endTime << " s\n" <<
            "\tSine wave frequency: " << mult / (2.*pi) << " Hz\n");
 
-    KTTimeSeriesFFTW* timeSeries = new KTTimeSeriesFFTW(nBins, startTime, endTime);
+    KTTimeSeriesReal* timeSeries = new KTTimeSeriesReal(nBins, startTime, endTime);
     KTTimeSeriesReal* timeSeries2 = new KTTimeSeriesReal(nBins, startTime, endTime);
 
     // Fill the time series with a sinusoid.
     // The units are volts.
     for (unsigned iBin=0; iBin<nBins; iBin++)
     {
-        (*timeSeries)(iBin)[0] = sin(timeSeries->GetBinCenter(iBin) * mult);
+        (*timeSeries)(iBin) = sin(timeSeries->GetBinCenter(iBin) * mult);
         (*timeSeries2)(iBin) = sin(timeSeries2->GetBinCenter(iBin) * mult);
         //KTDEBUG(vallog, iBin << "  " << (*timeSeries)(iBin));
     }
@@ -64,12 +64,20 @@ int main()
     KTForwardFFTW r2cFFT;
     r2cFFT.SetTimeSize(timeSeries->size());
     r2cFFT.SetTransformFlag("ESTIMATE");
-    r2cFFT.InitializeForRealTDD();
+    if (! r2cFFT.InitializeForRealTDD())
+    {
+        KTERROR(vallog, "Error while initializing the R2C FFT");
+        exit(-1);
+    }
 
     KTForwardFFTW rasc2cFFT;
     rasc2cFFT.SetTimeSize(timeSeries2->size());
     rasc2cFFT.SetTransformFlag("ESTIMATE");
-    rasc2cFFT.InitializeForRealAsComplexTDD();
+    if (! rasc2cFFT.InitializeForRealAsComplexTDD())
+    {
+        KTERROR(vallog, "Error while initializing the RasC2C FFT");
+        exit(-1);
+    }
 
     // Perform the FFT and get the results
     KTINFO(vallog, "Performing FFT");
@@ -123,7 +131,7 @@ int main()
     double tsSum = 0.; // units: volts^2
     for (unsigned iBin=0; iBin<nBins; iBin++)
     {
-        tsSum += (*timeSeries)(iBin)[0] * (*timeSeries)(iBin)[0];
+        tsSum += (*timeSeries)(iBin) * (*timeSeries)(iBin);
     }
 
     KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");
@@ -197,7 +205,7 @@ int main()
     tsSum = 0.; // units: volts^2
     for (unsigned iBin=0; iBin<nBins; iBin++)
     {
-        tsSum += (*timeSeries)(iBin)[0] * (*timeSeries)(iBin)[0];
+        tsSum += (*timeSeries)(iBin) * (*timeSeries)(iBin);
     }
 
     KTINFO(vallog, "sum(timeSeries[i]^2) = " << tsSum << " V^2");

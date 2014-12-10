@@ -139,7 +139,7 @@ namespace Katydid
         unsigned transformFlag = iter->second;
 
         // allocate the input and output arrays if they're not there already
-        if (! AllocateArrays())
+        if (! AllocateArrays(intendedState))
         {
             KTERROR(fftwlog, "Unable to allocate arrays");
             return false;

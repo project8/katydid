@@ -116,7 +116,7 @@ namespace Katydid
         unsigned transformFlag = iter->second;
 
         // allocate the input and output arrays if they're not there already
-        if (! AllocateArrays())
+        if (! AllocateArrays(intendedState))
         {
             KTERROR(fftwlog, "Unable to allocate arrays");
             return false;
@@ -140,6 +140,7 @@ namespace Katydid
             fForwardPlan = fftw_plan_dft_r2c_1d(fTimeSize, fRInputArray, fOutputArray, transformFlag);
             // deleting arrays to save space
             // input array is required; output array is not needed
+            KTDEBUG(fftwlog, "Freeing output array");
             fftw_free(fOutputArray);
             fOutputArray = NULL;
         }
@@ -158,6 +159,7 @@ namespace Katydid
             fForwardPlan = fftw_plan_dft_1d(fTimeSize, fCInputArray, fOutputArray, FFTW_FORWARD, transformFlag);
             // deleting arrays to save space
             // input array not required for C2C, but is for kRasC2C; output array not needed in either case
+            KTDEBUG(fftwlog, "Freeing output array");
             fftw_free(fOutputArray);
             fOutputArray = NULL;
         }
@@ -582,16 +584,19 @@ namespace Katydid
     {
         if (fRInputArray != NULL)
         {
+            KTDEBUG(fftwlog, "Freeing real input array");
             fftw_free(fRInputArray);
             fRInputArray = NULL;
         }
         if (fCInputArray != NULL)
         {
+            KTDEBUG(fftwlog, "Freeing complex input array");
             fftw_free(fCInputArray);
             fCInputArray = NULL;
         }
         if (fOutputArray != NULL)
         {
+            KTDEBUG(fftwlog, "Freeing output array");
             fftw_free(fOutputArray);
             fOutputArray = NULL;
         }
