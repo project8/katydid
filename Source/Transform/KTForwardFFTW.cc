@@ -87,28 +87,34 @@ namespace Katydid
         return true;
     }
 
-    bool KTForwardFFTW::InitializeForRealTDD()
+    bool KTForwardFFTW::InitializeForRealTDD(unsigned timeSize)
     {
-        return InitializeFFT(kR2C);
+        return InitializeFFT(kR2C, timeSize);
     }
 
-    bool KTForwardFFTW::InitializeForRealAsComplexTDD()
+    bool KTForwardFFTW::InitializeForRealAsComplexTDD(unsigned timeSize)
     {
-        return InitializeFFT(kRasC2C);
+        return InitializeFFT(kRasC2C, timeSize);
     }
 
-    bool KTForwardFFTW::InitializeForComplexTDD()
+    bool KTForwardFFTW::InitializeForComplexTDD(unsigned timeSize)
     {
-        return InitializeFFT(kC2C);
+        return InitializeFFT(kC2C, timeSize);
     }
 
-    bool KTForwardFFTW::InitializeFFT(KTForwardFFTW::State intendedState)
+    bool KTForwardFFTW::InitializeFFT(KTForwardFFTW::State intendedState, unsigned timeSize)
     {
         if (intendedState == kNone)
         {
             KTERROR(fftwlog, "Cannot initialize FFT for state <" << intendedState << ">");
             return false;
         }
+
+        if (timeSize == 0) timeSize = fTimeSize;
+
+        // Set the time size whether or not it's different from fTimeSize, since the frequency size might not be
+        // right for the intended state.
+        SetTimeSizeForState(timeSize, intendedState);
 
         // fTransformFlag is guaranteed to be valid in the Set method.
         KTDEBUG(fftwlog, "Transform flag: " << fTransformFlag);
@@ -189,14 +195,13 @@ namespace Katydid
 
     bool KTForwardFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        SetTimeSize(header.GetSliceSize());
         if (header.GetTSDataType() == KTEggHeader::kReal)
         {
-            return InitializeForRealTDD();
+            return InitializeForRealTDD(header.GetSliceSize());
         }
         else // == KTEggHeader::kComplex
         {
-            return InitializeForComplexTDD();
+            return InitializeForComplexTDD(header.GetSliceSize());
         }
     }
 
@@ -510,9 +515,26 @@ namespace Katydid
 
     void KTForwardFFTW::SetTimeSize(unsigned nBins)
     {
+        SetTimeSizeForState(nBins, fState);
+        return;
+    }
+
+    void KTForwardFFTW::SetTimeSizeForState(unsigned nBins, KTForwardFFTW::State intendedState)
+    {
         fTimeSize = nBins;
-        if (fState == kR2C) fFrequencySize = nBins / 2 + 1;
-        else fFrequencySize = nBins; // fState == kRasC2C or kC2C
+        if (intendedState == kR2C)
+        {
+            fFrequencySize = nBins / 2 + 1;
+        }
+        else if (intendedState == kC2C || intendedState == kRasC2C)
+        {
+            fFrequencySize = nBins;
+        }
+        else
+        {
+            KTDEBUG(fftwlog, "Time size set while in state <" << fState << ">; frequency size not changed");
+        }
+        KTDEBUG(fftwlog, "Time size set to " << fTimeSize << "; frequency size set to " << fFrequencySize);
 
         // clear things for good measure
         FreeArrays();

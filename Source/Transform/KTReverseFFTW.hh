@@ -111,12 +111,21 @@ namespace Katydid
             void SetTransformFlag(const std::string& flag);
 
         private:
+            /// note: does not change the state
+            void SetTimeSizeForState(unsigned nBins, KTReverseFFTW::State intendedState);
+            /// note: does not change the state
+            void SetFrequencySizeForState(unsigned nBins, KTReverseFFTW::State intendedState);
+
             TransformFlagMap fTransformFlagMap;
 
         public:
-            bool InitializeForRealTDD();
-            bool InitializeForComplexTDD();
-            bool InitializeFromRequestedState();
+            /// Initialize the FFT for real time domain data; optionally specify a new time size (the default value of 0 will leave it unchanged)
+            bool InitializeForRealTDD(unsigned timeSize = 0);
+            /// Initialize the FFT for complex time domain data; optionally specify a new time size (the default value of 0 will leave it unchanged)
+            bool InitializeForComplexTDD(unsigned timeSize = 0);
+            /// Initialize the FFT based on the requested state; optionally specify a new time size (the default value of 0 will leave it unchanged)
+            bool InitializeFromRequestedState(unsigned timeSize = 0);
+            /// Initialize the FFT using a KTEggHeader object.
             bool InitializeWithHeader(KTEggHeader& header);
 
             virtual double GetMinFrequency(double timeBinWidth) const;
@@ -126,7 +135,7 @@ namespace Katydid
             MEMBERVARIABLE_NOSET(bool, IsInitialized);
 
         private:
-            bool InitializeFFT(KTReverseFFTW::State intendedState);
+            bool InitializeFFT(KTReverseFFTW::State intendedState, unsigned timeSize = 0);
 
         public:
             /// Reverse FFT - To Real Time Data
@@ -155,6 +164,7 @@ namespace Katydid
             mutable double fTimeMaxCache;
 
             /// Allocate memory in the i/o arrays for an intended state if provided, or (default) the current state
+            /// note: does not change the state
             bool AllocateArrays(State intendedState = kNone);
             void FreeArrays();
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)

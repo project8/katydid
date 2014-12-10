@@ -104,34 +104,39 @@ namespace Katydid
         return true;
     }
 
-    bool KTReverseFFTW::InitializeForRealTDD()
+    bool KTReverseFFTW::InitializeForRealTDD(unsigned timeSize)
     {
-        return InitializeFFT(kC2R);
+        return InitializeFFT(kC2R, timeSize);
     }
 
-    bool KTReverseFFTW::InitializeForComplexTDD()
+    bool KTReverseFFTW::InitializeForComplexTDD(unsigned timeSize)
     {
-        return InitializeFFT(kC2C);
+        return InitializeFFT(kC2C, timeSize);
     }
 
-    bool KTReverseFFTW::InitializeFromRequestedState()
+    bool KTReverseFFTW::InitializeFromRequestedState(unsigned timeSize)
     {
-        return InitializeFFT(fRequestedState);
+        return InitializeFFT(fRequestedState, timeSize);
     }
 
     bool KTReverseFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        SetTimeSize(header.GetSliceSize());
-        return InitializeFromRequestedState();
+        return InitializeFromRequestedState(header.GetSliceSize());
     }
 
-    bool KTReverseFFTW::InitializeFFT(KTReverseFFTW::State intendedState)
+    bool KTReverseFFTW::InitializeFFT(KTReverseFFTW::State intendedState, unsigned timeSize)
     {
         if (intendedState == kNone)
         {
             KTERROR(fftwlog, "Cannot initialize FFT for state <" << intendedState << ">");
             return false;
         }
+
+        if (timeSize == 0) timeSize = fTimeSize;
+
+        // Set the time size whether or not it's different from fTimeSize, since the frequency size might not be
+        // right for the intended state.
+        SetTimeSizeForState(timeSize, intendedState);
 
         // fTransformFlag is guaranteed to be valid in the Set method.
         KTDEBUG(fftwlog, "Transform flag: " << fTransformFlag);
@@ -219,6 +224,8 @@ namespace Katydid
             return false;
         }
 
+        UpdateBinningCache(fsData.GetSpectrumFFTW(0)->GetFrequencyBinWidth());
+
         unsigned nComponents = fsData.GetNComponents();
 
         KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
@@ -299,6 +306,8 @@ namespace Katydid
             return false;
         }
 
+        UpdateBinningCache(fsData.GetSpectrumFFTW(0)->GetFrequencyBinWidth());
+
         unsigned nComponents = fsData.GetNComponents();
 
         KTTimeSeriesData& newData = fsData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
@@ -359,9 +368,25 @@ namespace Katydid
 
     void KTReverseFFTW::SetTimeSize(unsigned nBins)
     {
+        SetTimeSizeForState(nBins, fState);
+        return;
+    }
+
+    void KTReverseFFTW::SetTimeSizeForState(unsigned nBins, KTReverseFFTW::State intendedState)
+    {
         fTimeSize = nBins;
-        if (fState == kC2R) fFrequencySize = nBins / 2 + 1;
-        else fFrequencySize = nBins; // fState == kRasC2C or kC2C
+        if (intendedState == kC2R)
+        {
+            fFrequencySize = nBins / 2 + 1;
+        }
+        else if (intendedState == kC2C)
+        {
+            fFrequencySize = nBins;
+        }
+        else
+        {
+            KTDEBUG(fftwlog, "Time size set while in state <" << fState << ">; frequency size not changed");
+        }
 
         // clear things for good measure
         FreeArrays();
@@ -372,9 +397,25 @@ namespace Katydid
 
     void KTReverseFFTW::SetFrequencySize(unsigned nBins)
     {
+        SetFrequencySizeForState(nBins, fState);
+        return;
+    }
+
+    void KTReverseFFTW::SetFrequencySizeForState(unsigned nBins, KTReverseFFTW::State intendedState)
+    {
         fFrequencySize = nBins;
-        if (fState == kC2R) fFrequencySize = (nBins - 1) * 2;
-        else fFrequencySize = nBins;
+        if (intendedState == kC2R)
+        {
+            fTimeSize = (nBins - 1) * 2;
+        }
+        else if (intendedState == kC2C)
+        {
+            fTimeSize = nBins;
+        }
+        else
+        {
+            KTDEBUG(fftwlog, "Frequency size set while in state <" << fState << ">; time size not changed");
+        }
 
         // clear things for good measure
         FreeArrays();

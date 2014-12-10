@@ -116,12 +116,19 @@ namespace Katydid
             void SetTransformFlag(const std::string& flag);
 
         private:
+            /// note: does not change the state
+            void SetTimeSizeForState(unsigned nBins, KTForwardFFTW::State intendedState);
+
             TransformFlagMap fTransformFlagMap;
 
         public:
-            bool InitializeForRealTDD();
-            bool InitializeForRealAsComplexTDD();
-            bool InitializeForComplexTDD();
+            /// Initialize the FFT for real time domain data; optionally specify a new time size (the default value of 0 will leave it unchanged)
+            bool InitializeForRealTDD(unsigned timeSize = 0);
+            /// Initialize the FFT for real time domain data interpreted as complex; optionally specify a new time size (the default value of 0 will leave it unchanged)
+            bool InitializeForRealAsComplexTDD(unsigned timeSize = 0);
+            /// Initialize the FFT for complex time domain data; optionally specify a new time size (the default value of 0 will leave it unchanged)
+            bool InitializeForComplexTDD(unsigned timeSize = 0);
+            /// Initialize the FFT using a KTEggHeader object.
             bool InitializeWithHeader(KTEggHeader& header);
 
             virtual double GetMinFrequency(double timeBinWidth) const;
@@ -131,7 +138,7 @@ namespace Katydid
             MEMBERVARIABLE_NOSET(bool, IsInitialized);
 
         private:
-            bool InitializeFFT(KTForwardFFTW::State intendedState);
+            bool InitializeFFT(KTForwardFFTW::State intendedState, unsigned timeSize = 0);
 
         public:
             /// Forward FFT - Real Time Data
@@ -171,6 +178,7 @@ namespace Katydid
             mutable double fFreqMaxCache;
 
             /// Allocate memory in the i/o arrays for an intended state if provided, or (default) the current state
+            /// note: does not change the state
             bool AllocateArrays(State intendedState = kNone);
             void FreeArrays();
             void SetupInternalMaps(); // do not make this virtual (called from the constructor)
