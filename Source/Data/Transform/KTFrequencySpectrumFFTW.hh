@@ -29,6 +29,22 @@ namespace Katydid
             virtual ~KTFrequencySpectrumFFTW();
 
         public:
+            bool GetIsSizeEven() const;
+            size_t GetNegFreqOffset() const;
+            size_t GetDCBin() const;
+
+        protected:
+            bool fIsSizeEven; /// Flag to indicate if the size of the array is even
+            size_t fNegFreqOffset; /// The number of bins by which the negative-frequency Nyquist bin is offset
+            size_t fDCBin; /// The bin number of the DC bin
+
+
+        public:
+            // replace some of the KTPhysicalArray interface
+
+            const fftw_complex& operator()(unsigned i) const;
+            fftw_complex& operator()(unsigned i);
+
             virtual double GetReal(unsigned bin) const;
             virtual double GetImag(unsigned bin) const;
 
@@ -68,6 +84,33 @@ namespace Katydid
         protected:
             mutable const fftw_complex* fPointCache;
     };
+
+    inline bool KTFrequencySpectrumFFTW::GetIsSizeEven() const
+    {
+        return fIsSizeEven;
+    }
+
+    inline size_t KTFrequencySpectrumFFTW::GetNegFreqOffset() const
+    {
+        return fNegFreqOffset;
+    }
+
+    inline size_t KTFrequencySpectrumFFTW::GetDCBin() const
+    {
+        return fDCBin;
+    }
+
+    inline const fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i) const
+    {
+        return (i >= fDCBin) ? fData[i - fDCBin] : fData[i + fNegFreqOffset];
+        //return fData[i];
+    }
+
+    inline fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i)
+    {
+        return (i >= fDCBin) ? fData[i - fDCBin] : fData[i + fNegFreqOffset];
+        //return fData[i];
+    }
 
     inline double KTFrequencySpectrumFFTW::GetReal(unsigned bin) const
     {
