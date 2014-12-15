@@ -76,6 +76,9 @@ namespace Katydid
 
         *fEggHeaderData.fFilename = header.GetFilename();
         KTDEBUG(publog, "Writing egg header with filename <" << fEggHeaderData.fFilename << ">");
+        fEggHeaderData.fCenterFrequency = header.GetCenterFrequency();
+        fEggHeaderData.fMaximumFrequency = header.GetMaximumFrequency();
+        fEggHeaderData.fMinimumFrequency = header.GetMinimumFrequency();
         fEggHeaderData.fAcquisitionMode = header.GetAcquisitionMode();
         fEggHeaderData.fNChannels = header.GetNChannels();
         fEggHeaderData.fRawSliceSize = header.GetRawSliceSize();
@@ -110,6 +113,9 @@ namespace Katydid
         fWriter->AddTree(fEggHeaderTree);
 
         fEggHeaderTree->Branch("Filename", "TString", &fEggHeaderData.fFilename);
+        fEggHeaderTree->Branch("CenterFrequency", &fEggHeaderData.fCenterFrequency, "fCenterFrequency/d");
+        fEggHeaderTree->Branch("MaximumFrequency", &fEggHeaderData.fMaximumFrequency, "fMaximumFrequency/d");
+        fEggHeaderTree->Branch("MinimumFrequency", &fEggHeaderData.fMinimumFrequency, "fMinimumFrequency/d");
         fEggHeaderTree->Branch("AcquisitionMode", &fEggHeaderData.fAcquisitionMode, "fAcquisitionMode/i");
         fEggHeaderTree->Branch("NChannels", &fEggHeaderData.fNChannels, "fNChannels/i");
         fEggHeaderTree->Branch("RawSliceSize", &fEggHeaderData.fRawSliceSize, "fRawSliceSize/i");
