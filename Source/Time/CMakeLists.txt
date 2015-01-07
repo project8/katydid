@@ -21,11 +21,13 @@ if (Katydid_USE_MONARCH)
     set (EGG_HEADERFILES
         ${EGG_HEADERFILES}
         KTEgg2Reader.hh
+        KTEgg3Reader.hh
         #KTEggWriter.hh
     )
     set (EGG_SOURCEFILES
         ${EGG_SOURCEFILES}
         KTEgg2Reader.cc
+        KTEgg3Reader.cc
         #KTEggWriter.cc
     )
 endif (Katydid_USE_MONARCH)
