@@ -6,7 +6,7 @@ set (EGG_HEADERFILES
     KTDigitizerTests.hh
     KTEggProcessor.hh
     KTEggReader.hh
-    KTEggReader2011.hh
+    KTEgg1Reader.hh
 )
 
 set (EGG_SOURCEFILES
@@ -14,18 +14,18 @@ set (EGG_SOURCEFILES
     KTDigitizerTests.cc
     KTEggProcessor.cc
     KTEggReader.cc
-    KTEggReader2011.cc
+    KTEgg1Reader.cc
 )
 
 if (Katydid_USE_MONARCH)
     set (EGG_HEADERFILES
         ${EGG_HEADERFILES}
-        KTEggReaderMonarch.hh
+        KTEgg2Reader.hh
         #KTEggWriter.hh
     )
     set (EGG_SOURCEFILES
         ${EGG_SOURCEFILES}
-        KTEggReaderMonarch.cc
+        KTEgg2Reader.cc
         #KTEggWriter.cc
     )
 endif (Katydid_USE_MONARCH)

@@ -7,8 +7,6 @@
 
 #include "KTEggHeader.hh"
 
-#include "MonarchTypes.hpp"
-
 #include <ostream>
 
 namespace Katydid
@@ -28,9 +26,9 @@ namespace Katydid
             fAcquisitionRate(0),
             fTimestamp(),
             fDescription(),
-            fRunType(monarch::sRunTypeOther),
-            fRunSource(monarch::sSourceMantis),
-            fFormatMode(monarch::sFormatSingle),
+            fRunType(monarch2::sRunTypeOther),
+            fRunSource(monarch2::sSourceMantis),
+            fFormatMode(monarch2::sFormatSingle),
             fDataTypeSize(1),
             fBitDepth(8),
             fVoltageMin(-0.25),

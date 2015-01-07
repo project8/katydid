@@ -1,11 +1,11 @@
 /*
- * KTEggReader2011.cc
+ * KTEgg1Reader.cc
  *
  *  Created on: Aug 20, 2012
  *      Author: nsoblath
  */
 
-#include "KTEggReader2011.hh"
+#include "KTEgg1Reader.hh"
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
@@ -28,13 +28,13 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "KTEggReader2011");
+    KTLOGGER(eggreadlog, "KTEgg1Reader");
 
-    const ifstream::pos_type KTEggReader2011::sPreludeSize = 9;
+    const ifstream::pos_type KTEgg1Reader::sPreludeSize = 9;
 
-    KT_REGISTER_EGGREADER(KTEggReader2011, "2011");
+    KT_REGISTER_EGGREADER(KTEgg1Reader, "egg1");
 
-    KTEggReader2011::KTEggReader2011() :
+    KTEgg1Reader::KTEgg1Reader() :
             KTEggReader(),
             fFileName(),
             fEggStream(),
@@ -47,17 +47,17 @@ namespace Katydid
     {
     }
 
-    KTEggReader2011::~KTEggReader2011()
+    KTEgg1Reader::~KTEgg1Reader()
     {
     }
 
-    bool KTEggReader2011::Configure(const KTEggProcessor& eggProc)
+    bool KTEgg1Reader::Configure(const KTEggProcessor& eggProc)
     {
         // not really configurable
         return true;
     }
 
-    KTDataPtr KTEggReader2011::BreakEgg(const std::string& filename)
+    KTDataPtr KTEgg1Reader::BreakEgg(const std::string& filename)
     {
         // First, read all of the information from the file and put it in the right places
         if (fEggStream.is_open()) fEggStream.close();
@@ -230,8 +230,8 @@ namespace Katydid
         // timestamp
         // description
         // run type
-        eggHeader.SetRunSource(monarch::sSourceMantis);
-        eggHeader.SetFormatMode(monarch::sFormatSingle);
+        eggHeader.SetRunSource(monarch2::sSourceMantis);
+        eggHeader.SetFormatMode(monarch2::sFormatSingle);
         eggHeader.SetDataTypeSize(1);
         eggHeader.SetBitDepth(8);
         eggHeader.SetVoltageMin(-0.25);
@@ -240,7 +240,7 @@ namespace Katydid
         return eggHeaderPtr;
     }
 
-    KTDataPtr KTEggReader2011::HatchNextSlice()
+    KTDataPtr KTEgg1Reader::HatchNextSlice()
     {
         if (! fEggStream.good()) return KTDataPtr();
 
@@ -355,7 +355,7 @@ namespace Katydid
         return newData;
     }
 
-    bool KTEggReader2011::CloseEgg()
+    bool KTEgg1Reader::CloseEgg()
     {
         if (fEggStream.is_open()) fEggStream.close();
         return true;

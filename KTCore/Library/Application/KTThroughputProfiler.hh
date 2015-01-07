@@ -17,7 +17,25 @@
 #include "KTData.hh"
 
 #include <string>
+#include <sys/time.h>
+#include <time.h>
 
+#ifndef NSEC_PER_SEC
+#define NSEC_PER_SEC 1000000000
+#endif
+
+#ifndef SEC_PER_NSEC
+#define SEC_PER_NSEC 1.e-9
+#endif
+
+#ifdef __MACH__
+#include <mach/mach_time.h>
+
+#ifndef MACNANO
+#define MACNANO (+1.0E-9)
+#define MACGIGA UINT64_C(1000000000)
+#endif // MACNANO
+#endif // __MACH__
 
 namespace Katydid
 {
@@ -95,6 +113,15 @@ namespace Katydid
             timespec fTimeEnd;
 
             unsigned fNDataProcessed;
+
+            static int GetTimeCurrent(struct timespec* time);
+            static double TimeToSec(struct timespec time);
+            static void TimeDiff(struct timespec start, struct timespec end, struct timespec* diff);
+#ifdef __MACH__
+            static double sTimebase;
+            static uint64_t sTimestart;
+#endif
+
 
     };
 

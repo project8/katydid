@@ -10,8 +10,8 @@
 #include "KTLogger.hh"
 #include "KTThroughputProfiler.hh"
 
-#include "Monarch.hpp"
-#include "MonarchException.hpp"
+#include "M2Monarch.hh"
+#include "M2Exception.hh"
 
 #include <fftw3.h>
 
@@ -19,7 +19,7 @@
 
 using namespace std;
 using namespace Katydid;
-using namespace monarch;
+using namespace monarch2;
 
 KTLOGGER(proflog, "ProfileFFTWandMonarch");
 
@@ -34,18 +34,18 @@ int main(const int argc, const char** argv)
 
     unsigned nSlices = atoi(argv[2]);
 
-    const Monarch* tReadTest = Monarch::OpenForReading(argv[1]);
+    const Monarch2* tReadTest = Monarch2::OpenForReading(argv[1]);
     try
     {
         tReadTest->ReadHeader();
     }
-    catch (MonarchException& e)
+    catch (M2Exception& e)
     {
         KTERROR(proflog, "could not read header: " << e.what());
         return -1;
     }
 
-    const MonarchHeader* tReadHeader = tReadTest->GetHeader();
+    const M2Header* tReadHeader = tReadTest->GetHeader();
     KTEggHeader tEggHeader;
     tEggHeader.SetFilename(tReadHeader->GetFilename());
     tEggHeader.SetAcquisitionMode(tReadHeader->GetAcquisitionMode());
@@ -84,12 +84,12 @@ int main(const int argc, const char** argv)
 
     // Start the timer!
     KTINFO(proflog, "Starting profiling");
-    profiler.ProcessHeader(&tEggHeader);
+    profiler.Start();
 
-    const MonarchRecordBytes* tRecord1 = tReadTest->GetRecordSeparateOne();
-    const MonarchRecordBytes* tRecord2 = tReadTest->GetRecordSeparateTwo();
-    const MonarchRecordDataInterface< uint64_t > tData1( tRecord1->fData, tEggHeader.GetDataTypeSize() );
-    const MonarchRecordDataInterface< uint64_t > tData2( tRecord2->fData, tEggHeader.GetDataTypeSize() );
+    const M2RecordBytes* tRecord1 = tReadTest->GetRecordSeparateOne();
+    const M2RecordBytes* tRecord2 = tReadTest->GetRecordSeparateTwo();
+    const M2RecordDataInterface< uint64_t > tData1( tRecord1->fData, tEggHeader.GetDataTypeSize() );
+    const M2RecordDataInterface< uint64_t > tData2( tRecord2->fData, tEggHeader.GetDataTypeSize() );
 
     for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
     {
@@ -118,7 +118,7 @@ int main(const int argc, const char** argv)
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
 
-        profiler.ProcessData(dataPtr);
+        profiler.Data(dataPtr);
     }
 
     // Stop the timer and print info

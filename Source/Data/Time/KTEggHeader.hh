@@ -12,7 +12,7 @@
 
 #include "KTMemberVariable.hh"
 
-#include "MonarchTypes.hpp"
+#include "M2Types.hh"
 
 #include <string>
 
@@ -41,9 +41,9 @@ namespace Katydid
             MEMBERVARIABLE(double, AcquisitionRate); /// in Hz
             MEMBERVARIABLEREF(std::string, Timestamp);
             MEMBERVARIABLEREF(std::string, Description);
-            MEMBERVARIABLE(monarch::RunType, RunType);
-            MEMBERVARIABLE(monarch::RunSourceType, RunSource);
-            MEMBERVARIABLE(monarch::FormatModeType, FormatMode);
+            MEMBERVARIABLE(monarch2::RunType, RunType);
+            MEMBERVARIABLE(monarch2::RunSourceType, RunSource);
+            MEMBERVARIABLE(monarch2::FormatModeType, FormatMode);
             MEMBERVARIABLE(unsigned, DataTypeSize); /// in bytes
             MEMBERVARIABLE(unsigned, BitDepth); /// in bits
             MEMBERVARIABLE(double, VoltageMin); /// in V

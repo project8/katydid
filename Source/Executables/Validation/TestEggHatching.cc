@@ -11,8 +11,8 @@
 
 
 #include "KTEggHeader.hh"
-#include "KTEggReader2011.hh"
-#include "KTEggReaderMonarch.hh"
+#include "KTEgg1Reader.hh"
+#include "KTEgg2Reader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
@@ -49,10 +49,10 @@ int main(int argc, char** argv)
 
     KTEggReader* reader;
 
-    if (readerOption == "-z" || readerOption == "--use-old-egg-reader")
+    if (readerOption == "-z" || readerOption == "--use-egg1-reader")
     {
-        KTINFO(testegg, "Using 2011 egg reader");
-        KTEggReader2011* reader2011 = new KTEggReader2011();
+        KTINFO(testegg, "Using egg1 (2011) reader");
+        KTEgg1Reader* reader2011 = new KTEgg1Reader();
         reader = reader2011;
     }
     else
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
         KTINFO(testegg, "Slice size should be " << sliceSize);
         unsigned stride = 700000;
         KTINFO(testegg, "Stride should be " << stride << " (if 0, it should be the same as the slice size");
-        KTEggReaderMonarch* readerMonarch = new KTEggReaderMonarch();
+        KTEgg2Reader* readerMonarch = new KTEgg2Reader();
         readerMonarch->SetSliceSize(sliceSize);
         readerMonarch->SetStride(stride);
         reader = readerMonarch;

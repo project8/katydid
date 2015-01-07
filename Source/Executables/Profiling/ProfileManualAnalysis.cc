@@ -12,7 +12,8 @@
 #include "KTDistanceClustering.hh"
 #include "KTCluster1DData.hh"
 #include "KTComplexFFTW.hh"
-#include "KTEggReaderMonarch.hh"
+#include "KTEgg2Reader.hh"
+#include "KTEggHeader.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -111,19 +112,20 @@ int main()
     //******************************
 
     // Prepare the egg reader
-    KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+    KTEgg2Reader* eggReader = new KTEgg2Reader();
     eggReader->SetSliceSize(recordSize);
 
     KTDAC* dac = new KTDAC();
     dac->SetTimeSeriesType(tsType);
 
-    KTEggHeader* header = eggReader->BreakEgg(filename);
-    if (header == NULL)
+    KTDataPtr headerData = eggReader->BreakEgg(filename);
+    if (! headerData)
     {
         KTERROR(proflog, "Egg did not break");
         delete eggReader;
         return -1;
     }
+    KTEggHeader& header = headerData->Of< KTEggHeader >();
 
     // Configure the FFT with the egg header
     compFFT.InitializeWithHeader(header);
@@ -159,7 +161,7 @@ int main()
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
 
         // Mark the time of this slice
-        prof.ProcessData(data);
+        prof.Data(data);
 
         // Calcualte the FFT
         if (! compFFT.TransformData(tsData))
@@ -239,7 +241,6 @@ int main()
     eggReader->CloseEgg();
     delete eggReader;
     delete dac;
-    delete header;
 
     return 0;
 }

@@ -10,7 +10,7 @@
 
 #include "KTData.hh"
 
-#include "MonarchTypes.hpp"
+#include "M2Types.hh"
 
 #include <utility>
 #include <vector>
@@ -87,23 +87,23 @@ namespace Katydid
 
             // Per-Component Information
 
-            monarch::TimeType GetTimeStamp(unsigned component = 0) const;
-            void SetTimeStamp(monarch::TimeType timeStamp, unsigned component = 0);
+            monarch2::TimeType GetTimeStamp(unsigned component = 0) const;
+            void SetTimeStamp(monarch2::TimeType timeStamp, unsigned component = 0);
 
-            monarch::AcquisitionIdType GetAcquisitionID(unsigned component = 0) const;
-            void SetAcquisitionID(monarch::AcquisitionIdType acqId, unsigned component = 0);
+            monarch2::AcquisitionIdType GetAcquisitionID(unsigned component = 0) const;
+            void SetAcquisitionID(monarch2::AcquisitionIdType acqId, unsigned component = 0);
 
-            monarch::RecordIdType GetRecordID(unsigned component = 0) const;
-            void SetRecordID(monarch::RecordIdType recId, unsigned component = 0);
+            monarch2::RecordIdType GetRecordID(unsigned component = 0) const;
+            void SetRecordID(monarch2::RecordIdType recId, unsigned component = 0);
 
-            monarch::TimeType GetTimeStampAtSample(unsigned sample, unsigned component = 0);
+            monarch2::TimeType GetTimeStampAtSample(unsigned sample, unsigned component = 0);
 
         private:
             struct PerComponentData
             {
-                monarch::TimeType fTimeStamp; // in nsec
-                monarch::AcquisitionIdType fAcquisitionID;
-                monarch::RecordIdType fRecordID;
+                monarch2::TimeType fTimeStamp; // in nsec
+                monarch2::AcquisitionIdType fAcquisitionID;
+                monarch2::RecordIdType fRecordID;
             };
 
             double fTimeInRun; // in sec
@@ -352,45 +352,45 @@ namespace Katydid
         return std::make_pair (fTemp2, fTemp3);
     }
 
-    inline monarch::TimeType KTSliceHeader::GetTimeStamp(unsigned component) const
+    inline monarch2::TimeType KTSliceHeader::GetTimeStamp(unsigned component) const
     {
         return fComponentData[component].fTimeStamp;
     }
 
-    inline void KTSliceHeader::SetTimeStamp(monarch::TimeType timeStamp, unsigned component)
+    inline void KTSliceHeader::SetTimeStamp(monarch2::TimeType timeStamp, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fTimeStamp = timeStamp;
         return;
     }
 
-    inline monarch::AcquisitionIdType KTSliceHeader::GetAcquisitionID(unsigned component) const
+    inline monarch2::AcquisitionIdType KTSliceHeader::GetAcquisitionID(unsigned component) const
     {
         return fComponentData[component].fAcquisitionID;
     }
 
-    inline void KTSliceHeader::SetAcquisitionID(monarch::AcquisitionIdType acqId, unsigned component)
+    inline void KTSliceHeader::SetAcquisitionID(monarch2::AcquisitionIdType acqId, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fAcquisitionID = acqId;
         return;
     }
 
-    inline monarch::RecordIdType KTSliceHeader::GetRecordID(unsigned component) const
+    inline monarch2::RecordIdType KTSliceHeader::GetRecordID(unsigned component) const
     {
         return fComponentData[component].fRecordID;
     }
 
-    inline void KTSliceHeader::SetRecordID(monarch::RecordIdType recId, unsigned component)
+    inline void KTSliceHeader::SetRecordID(monarch2::RecordIdType recId, unsigned component)
     {
         if (component >= fComponentData.size()) fComponentData.resize(component+1);
         fComponentData[component].fRecordID = recId;
         return;
     }
 
-    inline monarch::TimeType KTSliceHeader::GetTimeStampAtSample(unsigned sample, unsigned component)
+    inline monarch2::TimeType KTSliceHeader::GetTimeStampAtSample(unsigned sample, unsigned component)
     {
-        return fComponentData[component].fTimeStamp + (monarch::TimeType)sample * (monarch::TimeType)(fBinWidth * 1.e9); // have to convert bin width to ns
+        return fComponentData[component].fTimeStamp + (monarch2::TimeType)sample * (monarch2::TimeType)(fBinWidth * 1.e9); // have to convert bin width to ns
     }
 
 

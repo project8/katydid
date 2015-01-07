@@ -1,11 +1,11 @@
 /*
- * KTEgg.cc
+ * KTEgg2Reader.cc
  *
  *  Created on: Sep 9, 2011
  *      Author: nsoblath
  */
 
-#include "KTEggReaderMonarch.hh"
+#include "KTEgg2Reader.hh"
 
 #include "KTEggHeader.hh"
 #include "KTEggProcessor.hh"
@@ -14,15 +14,15 @@
 #include "KTRawTimeSeriesData.hh"
 #include "KTRawTimeSeries.hh"
 
-#include "Monarch.hpp"
-#include "MonarchException.hpp"
-#include "MonarchHeader.hpp"
+#include "M2Monarch.hh"
+#include "M2Exception.hh"
+#include "M2Header.hh"
 
-using monarch::Monarch;
-using monarch::MonarchHeader;
-using monarch::MonarchException;
-using monarch::MonarchRecordBytes;
-using monarch::MonarchRecordDataInterface;
+using monarch2::Monarch2;
+using monarch2::M2Header;
+using monarch2::M2Exception;
+using monarch2::M2RecordBytes;
+using monarch2::M2RecordDataInterface;
 
 using std::map;
 using std::string;
@@ -30,17 +30,17 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "KTEggReaderMonarch");
+    KTLOGGER(eggreadlog, "KTEgg2Reader");
 
-    KT_REGISTER_EGGREADER(KTEggReaderMonarch, "monarch");
+    KT_REGISTER_EGGREADER(KTEgg2Reader, "egg2");
 
-    unsigned KTEggReaderMonarch::GetMaxChannels()
+    unsigned KTEgg2Reader::GetMaxChannels()
     {
         return fMaxChannels;
     }
 
 
-    KTEggReaderMonarch::KTEggReaderMonarch() :
+    KTEgg2Reader::KTEgg2Reader() :
             KTEggReader(),
             fSliceSize(1024),
             fStride(0),
@@ -50,7 +50,7 @@ namespace Katydid
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fReadState(),
             fNumberOfChannels(),
-            fGetTimeInRun(&KTEggReaderMonarch::GetTimeInRunFirstCall),
+            fGetTimeInRun(&KTEgg2Reader::GetTimeInRunFirstCall),
             fT0Offset(0),
             fSampleRateUnitsInHz(1.e6),
             fRecordSize(0),
@@ -67,11 +67,11 @@ namespace Katydid
         fNumberOfChannels.insert(AcqModeMapValue(1, 1));
         fNumberOfChannels.insert(AcqModeMapValue(2, 2));
 
-        fMonarchGetRecord[0] = &Monarch::GetRecordSeparateOne;
-        fMonarchGetRecord[1] = &Monarch::GetRecordSeparateTwo;
+        fMonarchGetRecord[0] = &Monarch2::GetRecordSeparateOne;
+        fMonarchGetRecord[1] = &Monarch2::GetRecordSeparateTwo;
     }
 
-    KTEggReaderMonarch::~KTEggReaderMonarch()
+    KTEgg2Reader::~KTEgg2Reader()
     {
         if (fMonarch != NULL)
         {
@@ -80,7 +80,7 @@ namespace Katydid
         }
     }
 
-    bool KTEggReaderMonarch::Configure(const KTEggProcessor& eggProc)
+    bool KTEgg2Reader::Configure(const KTEggProcessor& eggProc)
     {
         SetSliceSize(eggProc.GetSliceSize());
         SetStride(eggProc.GetStride());
@@ -88,7 +88,7 @@ namespace Katydid
         return true;
     }
 
-    KTDataPtr KTEggReaderMonarch::BreakEgg(const string& filename)
+    KTDataPtr KTEgg2Reader::BreakEgg(const string& filename)
     {
         if (fStride == 0) fStride = fSliceSize;
 
@@ -102,9 +102,9 @@ namespace Katydid
         KTINFO(eggreadlog, "Opening egg file <" << filename << ">");
         try
         {
-            fMonarch = Monarch::OpenForReading(filename);
+            fMonarch = Monarch2::OpenForReading(filename);
         }
-        catch (MonarchException& e)
+        catch (M2Exception& e)
         {
             KTERROR(eggreadlog, "Unable to break egg: " << e.what());
             return KTDataPtr();
@@ -116,7 +116,7 @@ namespace Katydid
         {
             fMonarch->ReadHeader();
         }
-        catch (MonarchException& e)
+        catch (M2Exception& e)
         {
             KTERROR(eggreadlog, "Header was not read correctly: " << e.what() << '\n' <<
                     "Egg breaking aborted.");
@@ -156,14 +156,14 @@ namespace Katydid
         }
 
         // force monarch to use Separate interface
-        fMonarch->SetInterface(monarch::sInterfaceSeparate);
+        fMonarch->SetInterface(monarch2::sInterfaceSeparate);
 
         fSliceNumber = 0;
 
         return fHeaderPtr;
     }
 
-    KTDataPtr KTEggReaderMonarch::HatchNextSlice()
+    KTDataPtr KTEgg2Reader::HatchNextSlice()
     {
         unsigned recordSize = fHeader.GetRecordSize();
 
@@ -269,9 +269,9 @@ namespace Katydid
 
         // Setup pointers to monarch and new katydid records
         unsigned nChannels = fHeader.GetNChannels();
-        vector< const MonarchRecordBytes* > monarchRecords(nChannels);
+        vector< const M2RecordBytes* > monarchRecords(nChannels);
         // the elements of monarchRecordData will need to be deleted
-        vector< const MonarchRecordDataInterface< uint64_t >* > monarchRecordData(nChannels);
+        vector< const M2RecordDataInterface< uint64_t >* > monarchRecordData(nChannels);
         vector< KTRawTimeSeries* > newRecords(nChannels);
         for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
@@ -279,7 +279,7 @@ namespace Katydid
             sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
             sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
             sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTime, iChannel);
-            monarchRecordData[iChannel] = new MonarchRecordDataInterface< uint64_t >(monarchRecords[iChannel]->fData, fHeader.GetDataTypeSize());
+            monarchRecordData[iChannel] = new M2RecordDataInterface< uint64_t >(monarchRecords[iChannel]->fData, fHeader.GetDataTypeSize());
 
             //tsData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
             newRecords[iChannel] = new KTRawTimeSeries(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
@@ -396,13 +396,13 @@ namespace Katydid
         return newData;
     }
 
-    bool KTEggReaderMonarch::CloseEgg()
+    bool KTEgg2Reader::CloseEgg()
     {
         try
         {
             fMonarch->Close();
         }
-        catch (MonarchException& e)
+        catch (M2Exception& e)
         {
             KTERROR(eggreadlog, "Something went wrong while closing the file: " << e.what());
         }
@@ -412,7 +412,7 @@ namespace Katydid
     }
 
 
-    void KTEggReaderMonarch::CopyHeaderInformation(const MonarchHeader* monarchHeader)
+    void KTEgg2Reader::CopyHeaderInformation(const M2Header* monarchHeader)
     {
         fHeader.SetFilename(monarchHeader->GetFilename());
         fHeader.SetAcquisitionMode(monarchHeader->GetAcquisitionMode());
@@ -432,19 +432,19 @@ namespace Katydid
         return;
     }
 
-    double KTEggReaderMonarch::GetTimeInRunFirstCall() const
+    double KTEgg2Reader::GetTimeInRunFirstCall() const
     {
         fT0Offset = (fMonarch->*fMonarchGetRecord[0])()->fTime;
         KTDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
         if (fT0Offset == 0)
         {
             KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is 0; switching GetTIR function to manual");
-            fGetTimeInRun = &KTEggReaderMonarch::GetTimeInRunManually;
+            fGetTimeInRun = &KTEgg2Reader::GetTimeInRunManually;
         }
         else
         {
             KTDEBUG(eggreadlog, "First call to GetTimeInRun; Monarch record time is not 0; switching GetTIR function to from-monarch");
-            fGetTimeInRun = &KTEggReaderMonarch::GetTimeInRunFromMonarch;
+            fGetTimeInRun = &KTEgg2Reader::GetTimeInRunFromMonarch;
         }
         return GetTimeInRun();
     }

@@ -13,8 +13,8 @@
 #include "KTCommandLineOption.hh"
 #include "KTData.hh"
 #include "KTEggHeader.hh"
-#include "KTEggReader2011.hh"
-#include "KTEggReaderMonarch.hh"
+#include "KTEgg1Reader.hh"
+#include "KTEgg2Reader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 
@@ -54,15 +54,15 @@ int main(int argc, char** argv)
     unsigned sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
 
     KTEggReader* reader;
-    if (clOpts->IsCommandLineOptSet("use-2011-egg-reader"))
+    if (clOpts->IsCommandLineOptSet("use-egg1-reader"))
     {
-        KTINFO(eggscan, "Using 2011 egg reader");
-        KTEggReader2011* reader2011 = new KTEggReader2011();
+        KTINFO(eggscan, "Using egg1 (2011) reader");
+        KTEgg1Reader* reader2011 = new KTEgg1Reader();
         reader = reader2011;
     }
     else
     {
-        KTEggReaderMonarch* readerMonarch = new KTEggReaderMonarch();
+        KTEgg2Reader* readerMonarch = new KTEgg2Reader();
         readerMonarch->SetSliceSize(sliceSize);
         reader = readerMonarch;
     }
