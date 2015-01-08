@@ -30,6 +30,7 @@
     "egg":
     {
         "filename": "/Users/kofron/Data/Krdatacold_520MHz_trapon2A_f1.egg",
+        "egg-reader": "egg2",
         "number-of-slices": 100,
         "slice-size": 2048,
         "stride": 2048,
