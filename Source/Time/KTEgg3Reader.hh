@@ -31,6 +31,9 @@ namespace Katydid
 {
     class KTEggHeader;
 
+    // NOTE: the first version of this KTEgg3Reader operates in much the same way as KTEgg2Reader, and does not take advantage of
+    // the flexibility of the full egg3 file format.  In particular, it only uses the channels in stream0 (though it uses as
+    // many channels as exist in that stream).
     class KTEgg3Reader : public KTEggReader
     {
         protected:
