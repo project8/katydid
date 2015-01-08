@@ -11,7 +11,7 @@
 
 #include "KTEggReader.hh"
 
-#include "M3Record.hh"
+#include "M3Stream.hh"
 #include "M3Types.hh"
 
 #include <map>
@@ -22,10 +22,9 @@
 #define SEC_PER_NSEC 1.e-9
 #endif
 
-namespace monarch
+namespace monarch3
 {
-    class Monarch;
-    class MonarchHeader;
+    class Monarch3;
 }
 
 namespace Katydid
@@ -35,11 +34,7 @@ namespace Katydid
     class KTEgg3Reader : public KTEggReader
     {
         protected:
-            typedef const monarch3::M3Record* (monarch3::Monarch3::*GetRecordFunction)() const;
             typedef double (KTEgg3Reader::*GetTIRFunction)() const;
-
-            typedef std::map< unsigned, int > AcquisitionModeMap;
-            typedef AcquisitionModeMap::value_type AcqModeMapValue;
 
             struct MonarchReadState
             {
@@ -50,7 +45,7 @@ namespace Katydid
                     kContinueReading,
                     kReachedNextRecord
                 };
-                monarch::AcquisitionIdType fAcquisitionID;
+                unsigned fAcquisitionID;
                 unsigned fReadPtrOffset; // sample offset of the read pointer in the current record
                 unsigned fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
                 unsigned fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
@@ -94,14 +89,10 @@ namespace Katydid
             void CopyHeaderInformation(const monarch3::M3Header* monarchHeader);
 
             const monarch3::Monarch3* fMonarch;
+            const monarch3::M3Stream* fStream0;
             KTDataPtr fHeaderPtr;
             KTEggHeader& fHeader;
             MonarchReadState fReadState;
-
-            static const unsigned fMaxChannels = 2;
-            GetRecordFunction fMonarchGetRecord[fMaxChannels];
-
-            AcquisitionModeMap fNumberOfChannels;
 
         public:
             double GetSampleRateUnitsInHz() const;
@@ -194,7 +185,7 @@ namespace Katydid
 
     inline double KTEgg3Reader::GetTimeInRunFromMonarch() const
     {
-        return double((fMonarch->*fMonarchGetRecord[0])()->fTime - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fReadPtrOffset);
+        return double(fStream0->GetChannelRecord(0)->GetTime() - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fReadPtrOffset);
     }
 
     inline double KTEgg3Reader::GetTimeInRunManually() const
