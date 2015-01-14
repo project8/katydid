@@ -30,13 +30,13 @@ namespace Katydid
 
         public:
             bool GetIsSizeEven() const;
-            size_t GetNegFreqOffset() const;
-            size_t GetDCBin() const;
+            size_t GetLeftOfCenterOffset() const;
+            size_t GetCenterBin() const;
 
         protected:
             bool fIsSizeEven; /// Flag to indicate if the size of the array is even
-            size_t fNegFreqOffset; /// The number of bins by which the negative-frequency Nyquist bin is offset
-            size_t fDCBin; /// The bin number of the DC bin
+            size_t fLeftOfCenterOffset; /// The number of bins by which the negative-frequency Nyquist bin is offset
+            size_t fCenterBin; /// The bin number of the DC bin
 
 
         public:
@@ -90,25 +90,25 @@ namespace Katydid
         return fIsSizeEven;
     }
 
-    inline size_t KTFrequencySpectrumFFTW::GetNegFreqOffset() const
+    inline size_t KTFrequencySpectrumFFTW::GetLeftOfCenterOffset() const
     {
-        return fNegFreqOffset;
+        return fLeftOfCenterOffset;
     }
 
-    inline size_t KTFrequencySpectrumFFTW::GetDCBin() const
+    inline size_t KTFrequencySpectrumFFTW::GetCenterBin() const
     {
-        return fDCBin;
+        return fCenterBin;
     }
 
     inline const fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i) const
     {
-        return (i >= fDCBin) ? fData[i - fDCBin] : fData[i + fNegFreqOffset];
+        return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
         //return fData[i];
     }
 
     inline fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i)
     {
-        return (i >= fDCBin) ? fData[i - fDCBin] : fData[i + fNegFreqOffset];
+        return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
         //return fData[i];
     }
 

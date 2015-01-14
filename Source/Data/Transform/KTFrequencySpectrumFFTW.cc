@@ -27,8 +27,8 @@ namespace Katydid
             KTPhysicalArray< 1, fftw_complex >(),
             KTFrequencySpectrum(),
             fIsSizeEven(true),
-            fNegFreqOffset(0),
-            fDCBin(0),
+            fLeftOfCenterOffset(0),
+            fCenterBin(0),
             fNTimeBins(0),
             fPointCache()
     {
@@ -38,21 +38,21 @@ namespace Katydid
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax),
             KTFrequencySpectrum(),
             fIsSizeEven(nBins%2 == 0),
-            fNegFreqOffset((nBins+1)/2),
-            fDCBin(nBins/2),
+            fLeftOfCenterOffset((nBins+1)/2),
+            fCenterBin(nBins/2),
             fNTimeBins(0),
             fPointCache()
     {
         //KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
-        //KTINFO(fslog, "neg freq offset: " << fNegFreqOffset);
+        //KTINFO(fslog, "neg freq offset: " << fLeftOfCenterOffset);
     }
 
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
             KTPhysicalArray< 1, fftw_complex >(orig),
             KTFrequencySpectrum(),
             fIsSizeEven(orig.fIsSizeEven),
-            fNegFreqOffset(orig.fNegFreqOffset),
-            fDCBin(orig.fDCBin),
+            fLeftOfCenterOffset(orig.fLeftOfCenterOffset),
+            fCenterBin(orig.fCenterBin),
             fNTimeBins(orig.fNTimeBins),
             fPointCache()
     {
@@ -66,8 +66,8 @@ namespace Katydid
     {
         KTPhysicalArray< 1, fftw_complex >::operator=(rhs);
         fIsSizeEven = rhs.fIsSizeEven;
-        fNegFreqOffset = rhs.fNegFreqOffset;
-        fDCBin = rhs.fDCBin;
+        fLeftOfCenterOffset = rhs.fLeftOfCenterOffset;
+        fCenterBin = rhs.fCenterBin;
         fNTimeBins = rhs.fNTimeBins;
         return *this;
     }
