@@ -24,16 +24,18 @@ namespace Katydid
     {
         public:
             KTFrequencySpectrumFFTW();
-            KTFrequencySpectrumFFTW(size_t nBins, double rangeMin=0., double rangeMax=1.);
+            KTFrequencySpectrumFFTW(size_t nBins, double rangeMin=0., double rangeMax=1., bool arrayOrderIsFlipped=false);
             KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig);
             virtual ~KTFrequencySpectrumFFTW();
 
         public:
+            bool GetIsArrayOrderFlipped() const;
             bool GetIsSizeEven() const;
             size_t GetLeftOfCenterOffset() const;
             size_t GetCenterBin() const;
 
         protected:
+            bool fIsArrayOrderFlipped; /// Flag to indicate that the bins to the left of center are actually in the right half of the array in memory
             bool fIsSizeEven; /// Flag to indicate if the size of the array is even
             size_t fLeftOfCenterOffset; /// The number of bins by which the negative-frequency Nyquist bin is offset
             size_t fCenterBin; /// The bin number of the DC bin
@@ -61,6 +63,19 @@ namespace Katydid
             virtual unsigned GetNTimeBins() const;
             virtual void SetNTimeBins(unsigned bins);
 
+        private:
+            typedef const fftw_complex& (KTFrequencySpectrumFFTW::*ConstOrderedBinAccessFunc)(unsigned) const;
+            typedef fftw_complex& (KTFrequencySpectrumFFTW::*OrderedBinAccessFunc)(unsigned);
+
+            ConstOrderedBinAccessFunc fConstBinAccess;
+            OrderedBinAccessFunc fBinAccess;
+
+            const fftw_complex& ReorderedBinAccess(unsigned i) const;
+            fftw_complex& ReorderedBinAccess(unsigned i);
+
+            const fftw_complex& AsIsBinAccess(unsigned i) const;
+            fftw_complex& AsIsBinAccess(unsigned i);
+
         public:
             // normal KTFrequencySpectrumPolar functions
 
@@ -85,6 +100,11 @@ namespace Katydid
             mutable const fftw_complex* fPointCache;
     };
 
+    inline bool KTFrequencySpectrumFFTW::GetIsArrayOrderFlipped() const
+    {
+        return fIsArrayOrderFlipped;
+    }
+
     inline bool KTFrequencySpectrumFFTW::GetIsSizeEven() const
     {
         return fIsSizeEven;
@@ -102,14 +122,32 @@ namespace Katydid
 
     inline const fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i) const
     {
-        return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
-        //return fData[i];
+        return (this->*fConstBinAccess)(i);
     }
 
     inline fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i)
     {
+        return (this->*fBinAccess)(i);
+    }
+
+    inline const fftw_complex& KTFrequencySpectrumFFTW::ReorderedBinAccess(unsigned i) const
+    {
         return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
-        //return fData[i];
+    }
+
+    inline fftw_complex& KTFrequencySpectrumFFTW::ReorderedBinAccess(unsigned i)
+    {
+        return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
+    }
+
+    inline const fftw_complex& KTFrequencySpectrumFFTW::AsIsBinAccess(unsigned i) const
+    {
+        return fData[i];
+    }
+
+    inline fftw_complex& KTFrequencySpectrumFFTW::AsIsBinAccess(unsigned i)
+    {
+        return fData[i];
     }
 
     inline double KTFrequencySpectrumFFTW::GetReal(unsigned bin) const

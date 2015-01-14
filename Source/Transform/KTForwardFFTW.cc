@@ -432,7 +432,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransform(const KTTimeSeriesReal* ts) const
     {
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache);
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache, false);
 
         DoTransform(ts, newFS);
 
@@ -465,7 +465,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransformAsComplex(const KTTimeSeriesReal* ts) const
     {
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache);
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache, true);
 
         DoTransformAsComplex(ts, newFS);
 
@@ -502,7 +502,7 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTForwardFFTW::FastTransform(const KTTimeSeriesFFTW* ts) const
     {
-        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache);
+        KTFrequencySpectrumFFTW* newFS = new KTFrequencySpectrumFFTW(fFrequencySize, fFreqMinCache, fFreqMaxCache, true);
 
         DoTransform(ts, newFS);
 

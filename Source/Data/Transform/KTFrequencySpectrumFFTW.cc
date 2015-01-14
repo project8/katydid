@@ -26,23 +26,37 @@ namespace Katydid
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW() :
             KTPhysicalArray< 1, fftw_complex >(),
             KTFrequencySpectrum(),
+            fIsArrayOrderFlipped(false),
             fIsSizeEven(true),
             fLeftOfCenterOffset(0),
             fCenterBin(0),
+            fConstBinAccess(&KTFrequencySpectrumFFTW::AsIsBinAccess),
+            fBinAccess(&KTFrequencySpectrumFFTW::AsIsBinAccess),
             fNTimeBins(0),
             fPointCache()
     {
     }
 
-    KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, double rangeMin, double rangeMax) :
+    KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(size_t nBins, double rangeMin, double rangeMax, bool arrayOrderIsFlipped) :
             KTPhysicalArray< 1, fftw_complex >(nBins, rangeMin, rangeMax),
             KTFrequencySpectrum(),
+            fIsArrayOrderFlipped(arrayOrderIsFlipped),
             fIsSizeEven(nBins%2 == 0),
             fLeftOfCenterOffset((nBins+1)/2),
             fCenterBin(nBins/2),
             fNTimeBins(0),
             fPointCache()
     {
+        if (arrayOrderIsFlipped)
+        {
+            fConstBinAccess = &KTFrequencySpectrumFFTW::ReorderedBinAccess;
+            fBinAccess = &KTFrequencySpectrumFFTW::ReorderedBinAccess;
+        }
+        else
+        {
+            fConstBinAccess = &KTFrequencySpectrumFFTW::AsIsBinAccess;
+            fBinAccess = &KTFrequencySpectrumFFTW::AsIsBinAccess;
+        }
         //KTINFO(fslog, "number of bins: " << nBins << "   is size even? " << fIsSizeEven);
         //KTINFO(fslog, "neg freq offset: " << fLeftOfCenterOffset);
     }
@@ -50,9 +64,12 @@ namespace Katydid
     KTFrequencySpectrumFFTW::KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig) :
             KTPhysicalArray< 1, fftw_complex >(orig),
             KTFrequencySpectrum(),
+            fIsArrayOrderFlipped(orig.fIsArrayOrderFlipped),
             fIsSizeEven(orig.fIsSizeEven),
             fLeftOfCenterOffset(orig.fLeftOfCenterOffset),
             fCenterBin(orig.fCenterBin),
+            fConstBinAccess(orig.fConstBinAccess),
+            fBinAccess(orig.fBinAccess),
             fNTimeBins(orig.fNTimeBins),
             fPointCache()
     {
@@ -65,9 +82,12 @@ namespace Katydid
     KTFrequencySpectrumFFTW& KTFrequencySpectrumFFTW::operator=(const KTFrequencySpectrumFFTW& rhs)
     {
         KTPhysicalArray< 1, fftw_complex >::operator=(rhs);
+        fIsArrayOrderFlipped = rhs.fIsArrayOrderFlipped;
         fIsSizeEven = rhs.fIsSizeEven;
         fLeftOfCenterOffset = rhs.fLeftOfCenterOffset;
         fCenterBin = rhs.fCenterBin;
+        fConstBinAccess = rhs.fConstBinAccess;
+        fBinAccess = rhs.fBinAccess;
         fNTimeBins = rhs.fNTimeBins;
         return *this;
     }
@@ -137,17 +157,57 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumFFTW::CreatePowerSpectrum() const
     {
-        unsigned nBins = size();
+        // This function creates a power spectrum that runs from DC to the largest absolute frequency.
+        // Negative-frequency bins are added to positive-frequency bins.
+        // It can handle frequency ranges that do or don't cross DC, and that are symmetric or asymmetric.
+
+        double maxFreq = std::max(fabs(GetRangeMin()), fabs(GetRangeMax()));
+        double minFreq = -0.5 * GetBinWidth();
+        unsigned nBins = (maxFreq - minFreq) / GetBinWidth();
+        if (GetRangeMax() < 0. || GetRangeMin() > 0.)
+        {
+            minFreq = std::min(fabs(GetRangeMin()), fabs(GetRangeMax()));
+            nBins = size();
+        }
+
         KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
+        for (unsigned iBin = 0; iBin < nBins; ++iBin) (*newPS)(iBin) = 0.;
+
+        int dcBin = FindBin(0.);
+        // default case: dcBin >= 0 && dcBin < size()
+        unsigned firstPosFreqBin = dcBin;
+        unsigned lastPosFreqBin = size();
+        unsigned firstNegFreqBin = 0;
+        unsigned lastNegFreqBin = dcBin;
+        if (dcBin >= size())
+        {
+            firstPosFreqBin = size(); // lastPosFreqBin = size();
+            lastNegFreqBin = size(); // firstNEgFreqBin = 0
+        }
+        else if (dcBin < 0)
+        {
+            firstPosFreqBin = 0; // lastPosFreqBin = size();
+            firstNegFreqBin = dcBin; // lastNegFreqBin = dcBin;
+        }
+
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
+
         double valueImag, valueReal;
 #pragma omp parallel for private(valueReal, valueImag)
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        for (unsigned iBin = firstPosFreqBin; iBin < lastPosFreqBin; ++iBin)
         {
-           valueReal = (*this)(iBin)[0];
-           valueImag = (*this)(iBin)[1];
-           (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+            valueReal = (*this)(iBin)[0];
+            valueImag = (*this)(iBin)[1];
+            (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
         }
+#pragma omp parallel for private(valueReal, valueImag)
+        for (unsigned iBin = firstNegFreqBin; iBin < lastNegFreqBin; ++iBin)
+        {
+            valueReal = (*this)(iBin)[0];
+            valueImag = (*this)(iBin)[1];
+            (*newPS)(iBin) = (valueReal * valueReal + valueImag * valueImag) * scaling;
+        }
+
         return newPS;
     }
 

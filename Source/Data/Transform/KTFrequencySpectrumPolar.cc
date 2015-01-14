@@ -76,16 +76,55 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumPolar::CreatePowerSpectrum() const
     {
-        unsigned nBins = size();
-        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
-        double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
-#pragma omp parallel for private(value)
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        // This function creates a power spectrum that runs from DC to the largest absolute frequency.
+        // Negative-frequency bins are added to positive-frequency bins.
+        // It can handle frequency ranges that do or don't cross DC, and that are symmetric or asymmetric.
+
+        double maxFreq = std::max(fabs(GetRangeMin()), fabs(GetRangeMax()));
+        double minFreq = -0.5 * GetBinWidth();
+        unsigned nBins = (maxFreq - minFreq) / GetBinWidth();
+        if (GetRangeMax() < 0. || GetRangeMin() > 0.)
         {
-           value = (*this)(iBin).abs();
-           (*newPS)(iBin) = value * value * scaling;
+            minFreq = std::min(fabs(GetRangeMin()), fabs(GetRangeMax()));
+            nBins = size();
         }
+
+        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
+        for (unsigned iBin = 0; iBin < nBins; ++iBin) (*newPS)(iBin) = 0.;
+
+        int dcBin = FindBin(0.);
+        // default case: dcBin >= 0 && dcBin < size()
+        unsigned firstPosFreqBin = dcBin;
+        unsigned lastPosFreqBin = size();
+        unsigned firstNegFreqBin = 0;
+        unsigned lastNegFreqBin = dcBin;
+        if (dcBin >= size())
+        {
+            firstPosFreqBin = size(); // lastPosFreqBin = size();
+            lastNegFreqBin = size(); // firstNEgFreqBin = 0
+        }
+        else if (dcBin < 0)
+        {
+            firstPosFreqBin = 0; // lastPosFreqBin = size();
+            firstNegFreqBin = dcBin; // lastNegFreqBin = dcBin;
+        }
+
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
+
+        double value;
+#pragma omp parallel for private(value)
+        for (unsigned iBin = firstPosFreqBin; iBin < lastPosFreqBin; ++iBin)
+        {
+            value = (*this)(iBin).abs();
+            (*newPS)(iBin) = value * value * scaling;
+        }
+#pragma omp parallel for private(value)
+        for (unsigned iBin = firstNegFreqBin; iBin < lastNegFreqBin; ++iBin)
+        {
+            value = (*this)(iBin).abs();
+            (*newPS)(iBin) = value * value * scaling;
+        }
+
         return newPS;
     }
 
