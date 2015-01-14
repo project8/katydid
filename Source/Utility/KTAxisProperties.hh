@@ -82,7 +82,7 @@ namespace Katydid
 
             // from physical value to bin number
         public:
-            size_t FindBin(size_t dim, double pos) const;
+            ssize_t FindBin(size_t dim, double pos) const;
 
             // axis labels
         public:
@@ -298,9 +298,9 @@ namespace Katydid
     }
 
     template< size_t NDims >
-    size_t KTAxisProperties< NDims >::FindBin(size_t dim, double pos) const
+    ssize_t KTAxisProperties< NDims >::FindBin(size_t dim, double pos) const
     {
-        return (size_t)(floor((pos - fRangeMin[dim-1]) / fBinWidths[dim-1]));
+        return (ssize_t)(floor((pos - fRangeMin[dim-1]) / fBinWidths[dim-1]));
     }
 
     template< size_t NDims >
@@ -382,7 +382,7 @@ namespace Katydid
 
             // from physical value to bin number
         public:
-            size_t FindBin(double pos) const;
+            ssize_t FindBin(double pos) const;
 
             // axis label
         public:
