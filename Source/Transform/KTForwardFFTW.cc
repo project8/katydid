@@ -35,6 +35,7 @@ namespace Katydid
             KTProcessor(name),
             fUseWisdom(true),
             fWisdomFilename("wisdom_complexfft.fftw3"),
+            fComplexAsIQ(false),
             fTimeSize(0),
             fFrequencySize(0),
             fTransformFlag("ESTIMATE"),
@@ -70,6 +71,8 @@ namespace Katydid
 
             SetUseWisdom(node->GetValue<bool>("use-wisdom", fUseWisdom));
             SetWisdomFilename(node->GetValue("wisdom-filename", fWisdomFilename));
+
+            SetComplexAsIQ(node->GetValue("transform-complex-as-iq", fComplexAsIQ));
         }
 
         if (fUseWisdom)
@@ -199,8 +202,10 @@ namespace Katydid
         {
             return InitializeForRealTDD(header.GetSliceSize());
         }
-        else // == KTEggHeader::kComplex
+        else // == KTEggHeader::kComplex || KTEggHeader::kIQ
         {
+            if (header.GetTSDataType() == KTEggHeader::kIQ) fComplexAsIQ = true;
+            else fComplexAsIQ = false;
             return InitializeForComplexTDD(header.GetSliceSize());
         }
     }

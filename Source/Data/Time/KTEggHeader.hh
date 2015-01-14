@@ -24,7 +24,8 @@ namespace Katydid
             enum TimeSeriesDataType
             {
                 kReal,
-                kComplex
+                kComplex,
+                kIQ
             };
 
         public:

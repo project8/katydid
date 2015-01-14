@@ -60,6 +60,7 @@ namespace Katydid
      - "transform_flag": string -- flag that determines how much planning is done prior to any transforms (see below)
      - "use-wisdom": bool -- whether or not to use FFTW wisdom to improve FFT performance
      - "wisdom-filename": string -- filename for loading/saving FFTW wisdom
+     - "transform-complex-as-iq": bool -- specify whether to treat complex data as IQ: the negative frequency bins are assumed to be a continuous extension of the positive frequency bins, and the whole spectrum is shifted so that it starts at DC.
 
      Transform flags control how FFTW performs the FFT.
      Currently only the following "rigor" flags are available:
@@ -103,6 +104,8 @@ namespace Katydid
 
             MEMBERVARIABLE(bool, UseWisdom);
             MEMBERVARIABLEREF(std::string, WisdomFilename);
+
+            MEMBERVARIABLE(bool, ComplexAsIQ);
 
             MEMBERVARIABLE_NOSET(unsigned, TimeSize);
             MEMBERVARIABLE_NOSET(unsigned, FrequencySize);
@@ -212,13 +215,34 @@ namespace Katydid
 
     inline double KTForwardFFTW::GetMinFrequency(double timeBinWidth) const
     {
-        // DC bin is centered at 0, with half a bin width on either side
-        return -0.5 * GetFrequencyBinWidth(timeBinWidth);
+        if (fState == kR2C || (fState == kC2C && fComplexAsIQ))
+        {
+            // DC bin is centered at 0, with half a bin width on either side
+            return -0.5 * GetFrequencyBinWidth(timeBinWidth);
+        }
+        else // frequencies symmetric about DC
+        {
+            // There's one bin at the center, always: the DC bin.
+            // # of bins on the negative side is nFreqBins/2 (rounded down because of integer division).
+            // 0.5 is added to the # of bins because of the half of the DC bin on the negative frequency side.
+            return -GetFrequencyBinWidth(timeBinWidth) * (double(fFrequencySize/2) + 0.5);
+        }
     }
 
     inline double KTForwardFFTW::GetMaxFrequency(double timeBinWidth) const
     {
-        return GetFrequencyBinWidth(timeBinWidth) * ((double)fFrequencySize - 0.5);
+        if (fState == kR2C || (fState == kC2C && fComplexAsIQ))
+        {
+            return GetFrequencyBinWidth(timeBinWidth) * ((double)fFrequencySize - 0.5);
+        }
+        else // frequencies symmetric about DC
+        {
+            // There's one bin at the center, always: the DC bin.
+            // # of bins on the positive side is nFreqBins/2 if the number of bins is odd, and nFreqBins/2-1 if the number of bins is even (division rounded down because of integer division).
+            // 0.5 is added to the # of bins because of the half of the DC bin on the positive frequency side.
+            unsigned nBinsToSide = fFrequencySize / 2;
+            return GetFrequencyBinWidth(timeBinWidth) * (double(nBinsToSide*2 == fFrequencySize ? nBinsToSide - 1 : nBinsToSide) + 0.5);
+        }
     }
 
     inline void KTForwardFFTW::UpdateBinningCache(double timeBinWidth) const
