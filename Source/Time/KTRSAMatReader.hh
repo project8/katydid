@@ -155,7 +155,10 @@ namespace Katydid
         // = fRecordsTimeStampSeconds[fRecordsRead]
         // Number of Samples within the record
         // = fSamplesRead - fRecordsRead*fRecordSize
-        return double(fSamplesRead - fRecordsRead*fRecordSize) * fBinWidth + fRecordsTimeStampSeconds[fRecordsRead];
+        // Luiz - 2015-01-13 - Commented out the addition of the use of the record timestamp to get the event time
+        //                   - we want the time only relative to the beginning of the record...
+        // return double(fSamplesRead - fRecordsRead*fRecordSize) * fBinWidth + fRecordsTimeStampSeconds[fRecordsRead];
+        return double(fSamplesRead - fRecordsRead*fRecordSize) * fBinWidth;
     }
     inline unsigned KTRSAMatReader::GetNSlicesProcessed() const
     {
