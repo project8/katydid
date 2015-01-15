@@ -55,7 +55,8 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
-            MEMBERVARIABLE(double, CenterFrequency);
+            MEMBERVARIABLE(double, RSAMinimumFrequency);
+            MEMBERVARIABLE(double, RSAMaximumFrequency);
             MEMBERVARIABLE(double, MinimumFrequency);
             MEMBERVARIABLE(double, MaximumFrequency);
 

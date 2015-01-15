@@ -203,7 +203,7 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumFFTW::CreatePowerSpectrum() const
     {
-        double valueImag, valueReal;
+        double valueImag, valueReal, fDCBinLeftEdge;
         double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
         KTPowerSpectrum* newPS;
 
@@ -211,7 +211,9 @@ namespace Katydid
         // negative frequency or DC component
         // If there is no negative or DC component, then we ignore fDCBin
 
-        if ( GetRangeMin()>0 )  // No negative frequencies nor DC - the spectrum is completely above 0
+        fDCBinLeftEdge = -0.5 * GetBinWidth();
+        KTDEBUG(fslog, "CreatePowerSpectrum - GetBinWidth=" << fDCBinLeftEdge << ", fDCBinLeftEdge=" << fDCBinLeftEdge << ", GetRangeMin=" << GetRangeMin() << ", GetRangeMax=" << GetRangeMax());
+        if ( GetRangeMin()>=(fDCBinLeftEdge*2) )  // No negative frequencies - the spectrum is above 0 - why the factor of 2?  Because for quadrature data, the width of the bins get divided by two
         {
             bool addNegFreqs = false;
             unsigned nBins = size();
@@ -232,7 +234,7 @@ namespace Katydid
             bool addNegFreqs = true;
 
             unsigned nBins = fDCBin + 1;
-            newPS = new KTPowerSpectrum(nBins, -0.5 * GetBinWidth(), GetRangeMax());
+            newPS = new KTPowerSpectrum(nBins, fDCBinLeftEdge, GetRangeMax());
 
             // DC bin
             valueReal = (*this)(fDCBin)[0];

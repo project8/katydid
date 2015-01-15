@@ -23,7 +23,8 @@ namespace Katydid
 
     KTShiftCenterFFTW::KTShiftCenterFFTW(const std::string& name) :
             KTProcessor(name),
-            fCenterFrequency(0.),
+            fRSAMinimumFrequency(0.),
+            fRSAMaximumFrequency(0.),
             fMinimumFrequency(0.),
             fMaximumFrequency(0.),
             fFSFFTWSignal("fs-fftw-out", this),
@@ -45,28 +46,35 @@ namespace Katydid
 
     bool KTShiftCenterFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        //double fMinFreq, fMaxFreq, fSpanCenterFreq, fSpan;
-        SetCenterFrequency(header.GetCenterFrequency());
-        SetMinimumFrequency(header.GetMinimumFrequency());
-        SetMaximumFrequency(header.GetMaximumFrequency());
+        SetRSAMinimumFrequency(header.GetMinimumFrequency());
+        SetRSAMaximumFrequency(header.GetMaximumFrequency());
         return true;
     }
 
 
     bool KTShiftCenterFFTW::ShiftCenterFFTW(KTFrequencySpectrumDataFFTW& fsData)
     {
+
         unsigned nComponents = fsData.GetNComponents();
+        double fDCBinLeftEdge, fSpan, fFreqBinWidth;
+
+
         KTFrequencySpectrumDataFFTW& newData = fsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
 
         for (unsigned iComponent=0; iComponent<nComponents; ++iComponent)
         {
+            fFreqBinWidth = fsData.GetSpectrumFFTW(iComponent)->GetBinWidth();
+            fDCBinLeftEdge = -0.5 * fFreqBinWidth;
+            fSpan = fRSAMaximumFrequency - fRSAMinimumFrequency;
+            SetMinimumFrequency(fDCBinLeftEdge);
+            SetMaximumFrequency(fDCBinLeftEdge + fSpan);
+
             KTFrequencySpectrumFFTW* newSpectrum = ShiftCenterFFTW(fsData.GetSpectrumFFTW(iComponent));
             if (newSpectrum == NULL)
             {
                 KTERROR(fftlog_comp, "Shift Center of spectrum " << iComponent << " failed for some reason. Continuing processing.");
                 continue;
             }
-            KTDEBUG(fftlog_comp, "Shifted Center of Spectrum to " << fCenterFrequency << " Hz" );
             newData.SetSpectrum(newSpectrum, iComponent);
         }
         KTINFO(fftlog_comp, "Completed ShiftCenterFFTW of " << nComponents << " frequency spectra (FFTW)");
@@ -94,6 +102,8 @@ namespace Katydid
             (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1];
             // newSpectrum->SetBinCenter(iBin) = frequencySpectrum->GetBinCenter(iBin) + fCenterFrequency;
         }
+
+        KTDEBUG(fftlog_comp, "Shifted Center of Spectrum to [ " << fMinimumFrequency << " - " << fMaximumFrequency << " ] Hz" );
 
         return newSpectrum;
     }
