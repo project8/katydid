@@ -219,8 +219,8 @@ namespace Katydid
         // The RSA samples at "SamplingFrequency" (e.g. 100 MHz), then decimates by 2 (50 MHz)
         // So the frequency of the samples in the data is 50 MHz.
         curr_node = data_node->first_node("SamplingFrequency");
-        double fAcqBW = atof(curr_node->value());
-        fHeader.SetAcquisitionRate(0.5 * fAcqBW);
+        double fAcqBW = 0.5 * atof(curr_node->value());
+        fHeader.SetAcquisitionRate(fAcqBW);
         fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetRecordSize() / fHeader.GetAcquisitionRate());
         curr_node = data_node->first_node("DateTime");
         fHeader.SetTimestamp(curr_node->value());
