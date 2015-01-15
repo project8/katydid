@@ -216,17 +216,11 @@ namespace Katydid
         curr_node = data_node->first_node("NumberSamples");
         fHeader.SetRecordSize((size_t) atoi(curr_node->value()));
         //rapidxml::xml_node< >* prod_spec_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("ProductSpecific");
-        // this conversion from the matlab files' SamplingFrequency to Katydid's AcquisitionRate is based on the following email from Brent, from 9/19/2014:
-        /*
-         * I think the resolution of (1) is that the RSA takes I/Q format samples -
-         * that's in-phase and quadrature components, enough to represent the complete complex number.
-         * That is worth two real samples so the "rate of information" if you will is twice that 50 Msps,
-         * resulting in a 50 MHz Nyquist limit.  There is probably a low-pass filter that cuts off
-         * the last 10 MHz to be conservative, resulting in the quoted 40 MHz bandwidth.
-         */
+        // The RSA samples at "SamplingFrequency" (e.g. 100 MHz), then decimates by 2 (50 MHz)
+        // So the frequency of the samples in the data is 50 MHz.
         curr_node = data_node->first_node("SamplingFrequency");
         double fAcqBW = atof(curr_node->value());
-        fHeader.SetAcquisitionRate(2. * fAcqBW);
+        fHeader.SetAcquisitionRate(0.5 * fAcqBW);
         fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetRecordSize() / fHeader.GetAcquisitionRate());
         curr_node = data_node->first_node("DateTime");
         fHeader.SetTimestamp(curr_node->value());
