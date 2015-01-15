@@ -357,7 +357,6 @@ namespace Katydid
         sliceHeader.SetAcquisitionID(fRecordsRead, iChannel);
         sliceHeader.SetRecordID(fRecordsRead, iChannel);
         sliceHeader.SetTimeStamp(sliceHeader.GetTimeInRun() / SEC_PER_NSEC, iChannel);
-        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // ********************************** //
         // Read data                          //
@@ -380,6 +379,7 @@ namespace Katydid
         tsData.SetTimeSeries(newSlice);
         sliceHeader.SetEndRecordNumber(fRecordsRead);
         sliceHeader.SetEndSampleNumber(fSamplesRead);
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         return newData;
 
