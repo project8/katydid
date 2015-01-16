@@ -84,7 +84,7 @@ int main(const int argc, const char** argv)
 
     // Start the timer!
     KTINFO(proflog, "Starting profiling");
-    profiler.ProcessHeader(&tEggHeader);
+    profiler.Start();
 
     const MonarchRecordBytes* tRecord1 = tReadTest->GetRecordSeparateOne();
     const MonarchRecordBytes* tRecord2 = tReadTest->GetRecordSeparateTwo();
@@ -118,7 +118,7 @@ int main(const int argc, const char** argv)
         // perform the fft
         fftw_execute_dft(tPlan, tInputArray, tOutputArray);
 
-        profiler.ProcessData(dataPtr);
+        profiler.Data(dataPtr);
     }
 
     // Stop the timer and print info
