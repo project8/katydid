@@ -199,10 +199,10 @@ namespace Katydid
         }
 
         fTimeLength = fEndTimeInRunC - fStartTimeInRunC;
-        fTimeLengthSigma = sqrt(fEndTimeInRunC * fEndTimeInRunC + fStartTimeInRunC * fStartTimeInRunC);
+        fTimeLengthSigma = sqrt(fEndTimeInRunCSigma * fEndTimeInRunCSigma + fStartTimeInRunCSigma * fStartTimeInRunCSigma);
 
         fFrequencyWidth = fEndFrequency - fStartFrequency;
-        fFrequencyWidthSigma = sqrt(fEndFrequency * fEndFrequency + fStartFrequency * fStartFrequency);
+        fFrequencyWidthSigma = sqrt(fEndFrequencySigma * fEndFrequencySigma + fStartFrequencySigma * fStartFrequencySigma);
 
         return;
     }
