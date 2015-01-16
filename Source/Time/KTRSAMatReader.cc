@@ -216,10 +216,10 @@ namespace Katydid
         curr_node = data_node->first_node("NumberSamples");
         fHeader.SetRecordSize((size_t) atoi(curr_node->value()));
         //rapidxml::xml_node< >* prod_spec_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("ProductSpecific");
-        // The RSA samples at "SamplingFrequency" (e.g. 100 MHz), then decimates by 2 (50 MHz)
-        // So the frequency of the samples in the data is 50 MHz.
+        // The RSA samples at 100 MHz, then decimates by 2 (50 MHz); the number reported by the RSA is "SamplingFrequency" = 50 MHz
+        // So the frequency of the samples in the data is 50 MHz, and since this is IQ data, the Bandwidth should also be 50 MHz.
         curr_node = data_node->first_node("SamplingFrequency");
-        double fAcqBW = 0.5 * atof(curr_node->value());
+        double fAcqBW = atof(curr_node->value());
         fHeader.SetAcquisitionRate(fAcqBW);
         fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetRecordSize() / fHeader.GetAcquisitionRate());
         curr_node = data_node->first_node("DateTime");
