@@ -28,6 +28,7 @@ namespace Katydid
 
             MEMBERVARIABLE(bool, IsCut);
 
+            MEMBERVARIABLE(double, StartTimeInAcq);
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);
             MEMBERVARIABLE(double, TimeLength);

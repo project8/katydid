@@ -35,6 +35,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, EventID);
 
             // this group of member variables is set by ProcessTracks()
+            MEMBERVARIABLE(double, StartTimeInAcq);
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);
             MEMBERVARIABLE(double, TimeLength);
