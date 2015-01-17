@@ -56,9 +56,9 @@ namespace Katydid {
      * are defined in KTCandidate.hh.  If the details change, this
      * has to change too.
      */
-    size_t MTENFields = 22;
+    size_t MTENFields = 23;
     size_t MTESize = sizeof(MTEData);
-    const char* MTEFieldNames[22] = {
+    const char* MTEFieldNames[23] = {
         "Component",
         "EventID",
         "StartTimeInAcq",
@@ -83,7 +83,7 @@ namespace Katydid {
         "FirstTrackIntercept",
         "FirstTrackTotalPower"
     };
-    size_t MTEFieldOffsets[22] = {
+    size_t MTEFieldOffsets[23] = {
         HOFFSET(MTEData, Component),
         HOFFSET(MTEData, EventID),
         HOFFSET(MTEData, StartTimeInAcq),
@@ -110,7 +110,7 @@ namespace Katydid {
     };
 
 /*
-    size_t FreqCanSizes[22] = {
+    size_t FreqCanSizes[23] = {
         sizeof(MTEData.Component),
         sizeof(MTEData.EventID),
         sizeof(MTEData.StartTimeInAcq),
@@ -137,7 +137,7 @@ namespace Katydid {
     };
 */
 
-    H5::PredType MTEFieldTypes[22] = {
+    H5::PredType MTEFieldTypes[23] = {
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_DOUBLE,

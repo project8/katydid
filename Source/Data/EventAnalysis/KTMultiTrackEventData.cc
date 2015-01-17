@@ -181,7 +181,6 @@ namespace Katydid
 
             if (trackIt->second.GetEndTimeInRunC() > fEndTimeInRunC)
             {
-                fEndTimeInAcq = trackIt->second.GetEndTimeInAcq();
                 fEndTimeInRunC = trackIt->second.GetEndTimeInRunC();
                 fEndTimeInRunCSigma = trackIt->second.GetEndTimeInRunCSigma();
                 fEndFrequency = trackIt->second.GetEndFrequency();
