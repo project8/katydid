@@ -214,6 +214,11 @@ namespace Katydid
         fHeader.SetNChannels(1);
         curr_node = data_node->first_node("NumberSamples");
         fHeader.SetRecordSize((size_t) atoi(curr_node->value()));
+        if (fSliceSize == 0)
+        {
+            fSliceSize = fHeader.GetRecordSize();
+            fStride = fSliceSize;
+        }
         //rapidxml::xml_node< >* prod_spec_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("ProductSpecific");
         // this conversion from the matlab files' SamplingFrequency to Katydid's AcquisitionRate is based on the following email from Brent, from 9/19/2014:
         /*
