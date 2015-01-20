@@ -15,6 +15,7 @@
 #include "KTRawTimeSeries.hh"
 
 #include "M3Monarch.hh"
+#include "M3DataInterface.hh"
 #include "M3Exception.hh"
 
 using monarch3::Monarch3;
@@ -22,7 +23,7 @@ using monarch3::M3ChannelHeader;
 using monarch3::M3Exception;
 using monarch3::M3Header;
 using monarch3::M3Record;
-using monarch3::M3RecordDataInterface;
+using monarch3::M3DataReader;
 using monarch3::M3StreamHeader;
 
 using std::map;
@@ -257,7 +258,7 @@ namespace Katydid
         unsigned nChannels = fHeader.GetNChannels();
         vector< const M3Record* > monarchRecords(nChannels);
         // the elements of monarchRecordData will need to be deleted
-        vector< const M3RecordDataInterface< uint64_t >* > monarchRecordData(nChannels);
+        vector< const M3DataReader< uint64_t >* > monarchRecordData(nChannels);
         vector< KTRawTimeSeries* > newRecords(nChannels);
         for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
         {
@@ -266,7 +267,7 @@ namespace Katydid
             sliceHeader.SetRecordID(monarchRecords[iChannel]->GetRecordId(), iChannel);
             sliceHeader.SetTimeStamp(monarchRecords[iChannel]->GetTime(), iChannel);
             // TODO: here we assume digitized data
-            monarchRecordData[iChannel] = new M3RecordDataInterface< uint64_t >(monarchRecords[iChannel]->GetData(), fHeader.GetDataTypeSize(), monarch3::sDigitized);
+            monarchRecordData[iChannel] = new M3DataReader< uint64_t >(monarchRecords[iChannel]->GetData(), fHeader.GetDataTypeSize(), monarch3::sDigitized);
 
             //tsData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
             newRecords[iChannel] = new KTRawTimeSeries(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
