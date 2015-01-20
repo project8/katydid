@@ -17,7 +17,6 @@ set (TIME_SOURCEFILES
     KTEgg1Reader.cc
 )
 
-message(STATUS "use monarch: ${Katydid_USE_MONARCH}")
 if (Katydid_USE_MONARCH)
     set (TIME_HEADERFILES
         ${TIME_HEADERFILES}
