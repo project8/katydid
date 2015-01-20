@@ -1,10 +1,10 @@
-# CMakeLists for Katydid/Source/Candidates
+# CMakeLists for Katydid/Source/EventAnalysis
 # Author: N. Oblath
 
-#set (CANDIDATES_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/CandidatesLinkDef.hh)
-#set (CANDIDATES_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/CandidatesDict.cxx)
+#set (EVENTANALYSIS_LINKDEF_HEADERFILE ${CMAKE_CURRENT_SOURCE_DIR}/LinkDef/EventAnalysisLinkDef.hh)
+#set (EVENTANALYSIS_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/EventAnalysisDict.cxx)
 
-set (CANDIDATES_HEADERFILES
+set (EVENTANALYSIS_HEADERFILES
     KTCandidateCleaner.hh
     KTCandidateTrackFinder.hh
     KTDBScan.hh
@@ -16,7 +16,7 @@ set (CANDIDATES_HEADERFILES
     KTTrackProcessing.hh
 )
 
-set (CANDIDATES_SOURCEFILES
+set (EVENTANALYSIS_SOURCEFILES
     KTCandidateCleaner.cc
     KTCandidateTrackFinder.cc
     KTDBScanEventClustering.cc
@@ -35,10 +35,10 @@ set (KATYDID_LIBS
 
 ##################################################
 
-#ROOT_GENERATE_DICTIONARY ("${CANDIDATES_DICT_HEADERFILES}" "${CANDIDATES_LINKDEF_HEADERFILE}" "${CANDIDATES_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+#ROOT_GENERATE_DICTIONARY ("${EVENTANALYSIS_DICT_HEADERFILES}" "${EVENTANALYSIS_LINKDEF_HEADERFILE}" "${EVENTANALYSIS_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 
-add_library (KatydidCandidates ${CANDIDATES_SOURCEFILES})
-target_link_libraries (KatydidCandidates ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
+add_library (KatydidEventAnalysis ${EVENTANALYSIS_SOURCEFILES})
+target_link_libraries (KatydidEventAnalysis ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
-pbuilder_install_libraries(KatydidCandidates)
-pbuilder_install_headers(${CANDIDATES_HEADERFILES})
+pbuilder_install_libraries(KatydidEventAnalysis)
+pbuilder_install_headers(${EVENTANALYSIS_HEADERFILES})

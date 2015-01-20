@@ -118,8 +118,13 @@ int main()
     KTDAC* dac = new KTDAC();
     dac->SetTimeSeriesType(tsType);
 
+<<<<<<< HEAD
     KTDataPtr headerData = eggReader->BreakEgg(filename);
     if (! headerData)
+=======
+    KTDataPtr headerPtr = eggReader->BreakEgg(filename);
+    if (! headerPtr)
+>>>>>>> develop
     {
         KTERROR(proflog, "Egg did not break");
         delete eggReader;
@@ -128,7 +133,7 @@ int main()
     KTEggHeader& header = headerData->Of< KTEggHeader >();
 
     // Configure the FFT with the egg header
-    compFFT.InitializeWithHeader(header);
+    compFFT.InitializeWithHeader(headerPtr->Of< KTEggHeader >());
 
     // Start the profiler
     prof.Start();
