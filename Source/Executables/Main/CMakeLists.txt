@@ -23,3 +23,12 @@ if (Katydid_USE_MONARCH)
         EggScanner
     )
 endif (Katydid_USE_MONARCH)
+
+if (Katydid_USE_MATLAB)
+    add_executable (RSAMatToEgg RSAMatToEgg.cc)
+    target_link_libraries (RSAMatToEgg KTCore KatydidUtility KatydidData KatydidTime ${EXTERNAL_LIBRARIES})
+    
+    pbuilder_install_executables (
+        RSAMatToEgg
+    )
+endif (Katydid_USE_MATLAB)
