@@ -17,15 +17,16 @@ set (TIME_SOURCEFILES
     KTEgg1Reader.cc
 )
 
+message(STATUS "use monarch: ${Katydid_USE_MONARCH}")
 if (Katydid_USE_MONARCH)
-    set (EGG_HEADERFILES
-        ${EGG_HEADERFILES}
+    set (TIME_HEADERFILES
+        ${TIME_HEADERFILES}
         KTEgg2Reader.hh
         KTEgg3Reader.hh
         #KTEggWriter.hh
     )
-    set (EGG_SOURCEFILES
-        ${EGG_SOURCEFILES}
+    set (TIME_SOURCEFILES
+        ${TIME_SOURCEFILES}
         KTEgg2Reader.cc
         KTEgg3Reader.cc
         #KTEggWriter.cc
