@@ -22,6 +22,9 @@ namespace Katydid
     struct TEggHeader
     {
         TString* fFilename;
+        Double_t fCenterFrequency;
+        Double_t fMaximumFrequency;
+        Double_t fMinimumFrequency;
         UInt_t fAcquisitionMode;
         UInt_t fNChannels;
         UInt_t fRawSliceSize; /// Number of bins per slice before any modification

@@ -1,10 +1,10 @@
-# CMakeLists for Katydid/Source/FFT
+# CMakeLists for Katydid/Source/Transform
 # Author: N. Oblath
 
-set (FFT_DICT_HEADERFILES
+set (TRANSFORM_DICT_HEADERFILES
 )
 
-set (FFT_NODICT_HEADERFILES
+set (TRANSFORM_NODICT_HEADERFILES
     KTBlackmanHarrisWindow.hh
     KTConvertToPower.hh
     KTFFT.hh
@@ -24,9 +24,9 @@ if (FFTW_FOUND)
     )
 endif (FFTW_FOUND)        
 
-set (FFT_HEADERFILES ${FFT_DICT_HEADERFILES} ${FFT_NODICT_HEADERFILES})
+set (TRANSFORM_HEADERFILES ${TRANSFORM_DICT_HEADERFILES} ${TRANSFORM_NODICT_HEADERFILES})
 
-set (FFT_SOURCEFILES
+set (TRANSFORM_SOURCEFILES
     KTBlackmanHarrisWindow.cc
     KTConvertToPower.cc
     KTFFT.cc
@@ -39,16 +39,23 @@ set (FFT_SOURCEFILES
 )
 
 if (FFTW_FOUND)
+<<<<<<< HEAD
     set (FFT_SOURCEFILES
         ${FFT_SOURCEFILES}
         KTForwardFFTW.cc
         KTReverseFFTW.cc
+=======
+    set (TRANSFORM_SOURCEFILES
+        ${TRANSFORM_SOURCEFILES}
+        KTComplexFFTW.cc
+        KTSimpleFFT.cc
+>>>>>>> develop
     )
 endif (FFTW_FOUND)        
 
 #if (ROOT_FOUND)
-#    set (FFT_LINKDEF_HEADERFILE LinkDef/FFTLinkDef.hh)
-#    set (FFT_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/FFTDict.cxx)
+#    set (TRANSFORM_LINKDEF_HEADERFILE LinkDef/TransformLinkDef.hh)
+#    set (TRANSFORM_DICT_OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/TransformDict.cxx)
 #endif (ROOT_FOUND)
 
 set (KATYDID_LIBS
@@ -61,12 +68,12 @@ set (KATYDID_LIBS
 ##################################################
 
 #if (ROOT_FOUND)
-#    ROOT_GENERATE_DICTIONARY ("${FFT_DICT_HEADERFILES}" "${FFT_LINKDEF_HEADERFILE}" "${FFT_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
+#    ROOT_GENERATE_DICTIONARY ("${TRANSFORM_DICT_HEADERFILES}" "${TRANSFORM_LINKDEF_HEADERFILE}" "${TRANSFORM_DICT_OUTFILE}" "${CMAKE_INCLUDE_PATH}")
 #endif (ROOT_FOUND)
 
-add_library (KatydidFFT ${FFT_SOURCEFILES} ${FFT_DICT_OUTFILE})
-target_link_libraries (KatydidFFT ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
+add_library (KatydidTransform ${TRANSFORM_SOURCEFILES} ${TRANSFORM_DICT_OUTFILE})
+target_link_libraries (KatydidTransform ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
-pbuilder_install_headers (${FFT_HEADERFILES})
-pbuilder_install_libraries (KatydidFFT)
+pbuilder_install_headers (${TRANSFORM_HEADERFILES})
+pbuilder_install_libraries (KatydidTransform)
          
