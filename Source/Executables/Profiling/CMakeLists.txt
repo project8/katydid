@@ -32,7 +32,7 @@ if (Katydid_ENABLE_PROFILING)
     )
              
     
-    if (Katydid_USE_MONARCH AND FFTW_FOUND)
+    if (Katydid_USE_MONARCH AND Monarch_BUILD_MONARCH2 AND FFTW_FOUND)
         add_executable (ProfileFFTWandMonarch ${CMAKE_CURRENT_SOURCE_DIR}/ProfileFFTWandMonarch.cc)
         target_link_libraries (ProfileFFTWandMonarch KTCore KatydidUtility KatydidData KatydidTime KatydidTransform ${EXTERNAL_LIBRARIES})
 
@@ -43,7 +43,7 @@ if (Katydid_ENABLE_PROFILING)
             ProfileFFTWandMonarch
             ProfileManualAnalysis
         )
-    endif (Katydid_USE_MONARCH AND FFTW_FOUND)
+    endif (Katydid_USE_MONARCH AND Monarch_BUILD_MONARCH2 AND FFTW_FOUND)
 
     # executables that DO require ROOT
     if (ROOT_FOUND)

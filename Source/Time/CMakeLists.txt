@@ -18,18 +18,33 @@ set (TIME_SOURCEFILES
 )
 
 if (Katydid_USE_MONARCH)
-    set (TIME_HEADERFILES
-        ${TIME_HEADERFILES}
-        KTEgg2Reader.hh
-        KTEgg3Reader.hh
-        #KTEggWriter.hh
-    )
-    set (TIME_SOURCEFILES
-        ${TIME_SOURCEFILES}
-        KTEgg2Reader.cc
-        KTEgg3Reader.cc
-        #KTEggWriter.cc
-    )
+    if( Monarch_BUILD_MONARCH2 )
+        set (TIME_HEADERFILES
+            ${TIME_HEADERFILES}
+            KTEgg2Reader.hh
+        )
+    endif( Monarch_BUILD_MONARCH2 )
+    if( Monarch_BUILD_MONARCH3 )
+        set (TIME_HEADERFILES
+            ${TIME_HEADERFILES}
+            KTEgg3Reader.hh
+        )
+    endif( Monarch_BUILD_MONARCH3 )
+    #KTEggWriter.hh
+    
+    if( Monarch_BUILD_MONARCH2 )
+        set (TIME_SOURCEFILES
+            ${TIME_SOURCEFILES}
+            KTEgg2Reader.cc
+        )
+    endif( Monarch_BUILD_MONARCH2 )
+    if( Monarch_BUILD_MONARCH3 )
+        set (TIME_SOURCEFILES
+            ${TIME_SOURCEFILES}
+            KTEgg3Reader.cc
+        )
+    endif( Monarch_BUILD_MONARCH3 )
+    #KTEggWriter.cc
 endif (Katydid_USE_MONARCH)
 
 if (Katydid_USE_MANTIS)

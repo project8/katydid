@@ -14,9 +14,12 @@
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTEgg1Reader.hh"
-#include "KTEgg2Reader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
+
+#ifdef USE_MONARCH2
+#include "KTEgg2Reader.hh"
+#endif
 
 #include <boost/filesystem.hpp>
 
@@ -62,9 +65,13 @@ int main(int argc, char** argv)
     }
     else
     {
+#ifdef USE_MONARCH2
         KTEgg2Reader* readerMonarch = new KTEgg2Reader();
         readerMonarch->SetSliceSize(sliceSize);
         reader = readerMonarch;
+#else
+        KTERROR(eggscan, "Can only use Egg1 reader unless Monarch2 is enabled");
+#endif
     }
 
     bool scanRecords = clOpts->IsCommandLineOptSet("scan-records");

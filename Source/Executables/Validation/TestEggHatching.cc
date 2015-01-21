@@ -12,10 +12,13 @@
 
 #include "KTEggHeader.hh"
 #include "KTEgg1Reader.hh"
-#include "KTEgg2Reader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
+
+#ifdef USE_MONARCH2
+#include "KTEgg2Reader.hh"
+#endif
 
 #include <iostream>
 
@@ -57,6 +60,7 @@ int main(int argc, char** argv)
     }
     else
     {
+#ifdef USE_MONARCH2
         KTINFO(testegg, "Using Monarch egg reader");
         unsigned sliceSize = 500000;
         KTINFO(testegg, "Slice size should be " << sliceSize);
@@ -66,6 +70,10 @@ int main(int argc, char** argv)
         readerMonarch->SetSliceSize(sliceSize);
         readerMonarch->SetStride(stride);
         reader = readerMonarch;
+#else
+        KTERROR(testegg, "Only the egg1 reader is enabled");
+        return -1;
+#endif
     }
 
 

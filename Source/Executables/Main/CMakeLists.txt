@@ -24,11 +24,11 @@ if (Katydid_USE_MONARCH)
     )
 endif (Katydid_USE_MONARCH)
 
-if (Katydid_USE_MATLAB)
+if (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
     add_executable (RSAMatToEgg RSAMatToEgg.cc)
     target_link_libraries (RSAMatToEgg KTCore KatydidUtility KatydidData KatydidTime ${EXTERNAL_LIBRARIES})
     
     pbuilder_install_executables (
         RSAMatToEgg
     )
-endif (Katydid_USE_MATLAB)
+endif (Katydid_USE_MATLAB AND Monarch_BUILD_MONARCH3)
