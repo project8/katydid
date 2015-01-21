@@ -4,7 +4,7 @@
  *  Created on: Jan 20, 2015
  *      Author: nsoblath
  *
- *  Usage: RSAMatToEgg -e outputFilename.egg -m inputFiles_*.mat
+ *  Usage: RSAMatToEgg -e outputFilename.egg [input files]
  */
 
 #include "KTData.hh"
@@ -35,7 +35,11 @@ KTLOGGER(exelog, "RSAMatToEgg");
 
 void PrintUsage()
 {
-    KTPROG(exelog, "-- insert help message here --");
+    KTPROG(exelog, "Usage:\n" <<
+            "\t> RSAMatToEgg -e outputFilename.egg [input files]\n\n" <<
+            "Parameters:\n" <<
+            "\t-e -- Specifies the filename that will be created.\n" <<
+            "\t[input files] -- Specifies the Matlab-formatted RSA files to be combined into the egg file; wildcards can be used");
     return;
 }
 
