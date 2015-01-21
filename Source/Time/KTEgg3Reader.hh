@@ -91,6 +91,10 @@ namespace Katydid
             /// Copy header information from the MonarchHeader object
             void CopyHeaderInformation(const monarch3::M3Header* monarchHeader);
 
+            KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
+            KTDataPtr HatchNextSliceReal();
+            KTDataPtr HatchNextSliceComplex();
+
             const monarch3::Monarch3* fMonarch;
             const monarch3::M3Stream* fStream0;
             KTDataPtr fHeaderPtr;
@@ -214,6 +218,11 @@ namespace Katydid
     inline const KTEgg3Reader::MonarchReadState& KTEgg3Reader::GetReadState() const
     {
         return fReadState;
+    }
+
+    inline KTDataPtr KTEgg3Reader::HatchNextSlice()
+    {
+        return (this->*fHatchNextSlicePtr)();
     }
 
 
