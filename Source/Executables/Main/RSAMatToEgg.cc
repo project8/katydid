@@ -7,12 +7,12 @@
  *  Usage: RSAMatToEgg -e outputFilename.egg -m inputFiles_*.mat
  */
 
-//#include "KTApplication.hh"
-//#include "KTCommandLineOption.hh"
 #include "KTData.hh"
 #include "KTEggHeader.hh"
 #include "KTMath.hh"
 #include "KTLogger.hh"
+#include "KTSliceHeader.hh"
+#include "KTRSAMatReader.hh"
 #include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 
@@ -118,20 +118,20 @@ int main(int argc, char** argv)
     header->SetTimestamp(eggHeader.GetTimestamp());
     header->SetDescription(eggHeader.GetDescription());
 
-    header->AddStream("RSA", KTMath::Nint(acqRate), recSize, 2, sizeof(double), monarch3::sAnalog, 14);
+    header->AddStream("RSA", KTMath::Nint(acqRate), recSize, 2, eggHeader.GetDataTypeSize(), monarch3::sAnalog, 14);
 
     // Setup the remaining details in the channel header
-    monarch3::M3ChannelHeader* chHeader = header->GetChannelHeaders()[0];
-    chHeader->SetVoltageMin(eggHeader.GetVoltageMin());
-    chHeader->SetVoltageRange(eggHeader.GetVoltageRange());
-    chHeader->SetFrequencyMin(eggHeader.GetMinimumFrequency());
-    chHeader->SetFrequencyRange(eggHeader.GetMaximumFrequency() - eggHeader.GetMinimumFrequency());
+    monarch3::M3ChannelHeader& chHeader = header->GetChannelHeaders()[0];
+    chHeader.SetVoltageMin(eggHeader.GetVoltageMin());
+    chHeader.SetVoltageRange(eggHeader.GetVoltageRange());
+    chHeader.SetFrequencyMin(eggHeader.GetMinimumFrequency());
+    chHeader.SetFrequencyRange(eggHeader.GetMaximumFrequency() - eggHeader.GetMinimumFrequency());
 
     monarch->WriteHeader();
 
     // Get the stream to use for writing to the file
     monarch3::M3Stream* stream = monarch->GetStream(0);
-    monarch3::M3ComplexDataWriter< fftw_complex > writer(stream->GetStreamRecord()->GetData(), sizeof(double), monarch3::sAnalog);
+    monarch3::M3ComplexDataWriter< fftw_complex > writer(stream->GetStreamRecord()->GetData(), eggHeader.GetDataTypeSize(), monarch3::sAnalog);
 
     bool success = true;
     for (; matIt != matFiles.end(); ++matIt)
@@ -181,7 +181,7 @@ int main(int argc, char** argv)
             stream->WriteRecord(firstRec);
             firstRec = false;
 
-            matReader->HatchNextSlice();
+            data = matReader->HatchNextSlice();
         }
 
         matReader->CloseEgg();
