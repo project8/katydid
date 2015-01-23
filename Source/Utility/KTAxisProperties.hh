@@ -12,6 +12,7 @@
 #include "KTAxisProperties_GetNBins.hh"
 
 #include <cmath>
+#include <sys/types.h>
 
 namespace Katydid
 {
