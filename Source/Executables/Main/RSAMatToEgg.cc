@@ -143,6 +143,8 @@ int main(int argc, char** argv)
         if (matReader == NULL)
         {
             // this will not the be the case in the first iteration, since the file is already open, but will be true after that
+            matReader = new KTRSAMatReader();
+            matReader->SetSliceSize(0);
             KTDataPtr newMatHeaderPtr = matReader->BreakEgg(matIt->string());
             KTEggHeader& newEggHeader = matHeaderPtr->Of< KTEggHeader >();
             if (newEggHeader.GetAcquisitionRate() != acqRate || newEggHeader.GetRecordSize() != recSize)
