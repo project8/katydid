@@ -17,8 +17,8 @@ set (TRANSFORM_NODICT_HEADERFILES
 )
 
 if (FFTW_FOUND)
-    set (FFT_NODICT_HEADERFILES
-        ${FFT_NODICT_HEADERFILES}
+    set (TRANSFORM_NODICT_HEADERFILES
+        ${TRANSFORM_NODICT_HEADERFILES}
         KTForwardFFTW.hh
         KTReverseFFTW.hh
     )
@@ -39,17 +39,10 @@ set (TRANSFORM_SOURCEFILES
 )
 
 if (FFTW_FOUND)
-<<<<<<< HEAD
-    set (FFT_SOURCEFILES
-        ${FFT_SOURCEFILES}
-        KTForwardFFTW.cc
-        KTReverseFFTW.cc
-=======
     set (TRANSFORM_SOURCEFILES
         ${TRANSFORM_SOURCEFILES}
-        KTComplexFFTW.cc
-        KTSimpleFFT.cc
->>>>>>> develop
+        KTForwardFFTW.cc
+        KTReverseFFTW.cc
     )
 endif (FFTW_FOUND)        
 
