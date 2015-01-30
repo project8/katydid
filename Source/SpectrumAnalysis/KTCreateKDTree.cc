@@ -87,10 +87,17 @@ namespace Katydid
 
     bool KTCreateKDTree::AddPoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
     {
+
+        KTDEBUG(kdlog, "Is this a new acquisition? fHaveNewData=" << fHaveNewData << " and GetIsNewAcquisition=" << slHeader.GetIsNewAcquisition());
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
         if (fHaveNewData && slHeader.GetIsNewAcquisition())
         {
+<<<<<<< HEAD
             KTDEBUG(kdlog, "New Acquisition - Run clustering on previous acquistion, clear out old points from tree");
+=======
+            KTDEBUG(kdlog, "New Acquisition - clear out old points from tree");
+
+>>>>>>> FFTWFix
             if (! MakeTree(false))
             {
                 KTERROR(kdlog, "An error occurred while clustering from the previous acquisition");
@@ -216,11 +223,14 @@ namespace Katydid
 
     bool KTCreateKDTree::ClearTree(bool willContinue, uint64_t firstSliceKept)
     {
+        KTDEBUG(kdlog, "ClearTree");
         if (! fHaveNewData) return true;
 
         // firstSliceKept is only used if willContinue == true
         if (willContinue)
         {
+            KTDEBUG(kdlog, "ClearTree(true)");
+
             // clear data up to the
             unsigned nComponents = fTreeData.GetNComponents();
             for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
@@ -238,6 +248,7 @@ namespace Katydid
         }
         else
         {
+            KTDEBUG(kdlog, "ClearTree(false)");
             // clear all data from the tree, but leave the memory intact
             unsigned nComponents = fTreeData.GetNComponents();
             for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
