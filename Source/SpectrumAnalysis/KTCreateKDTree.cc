@@ -92,12 +92,7 @@ namespace Katydid
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
         if (fHaveNewData && slHeader.GetIsNewAcquisition())
         {
-<<<<<<< HEAD
             KTDEBUG(kdlog, "New Acquisition - Run clustering on previous acquistion, clear out old points from tree");
-=======
-            KTDEBUG(kdlog, "New Acquisition - clear out old points from tree");
-
->>>>>>> FFTWFix
             if (! MakeTree(false))
             {
                 KTERROR(kdlog, "An error occurred while clustering from the previous acquisition");
