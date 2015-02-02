@@ -231,6 +231,9 @@ namespace Katydid
             return false;
         }
 
+        double timeBinWidth = tsData.GetTimeSeries(0)->GetTimeBinWidth();
+        UpdateBinningCache(timeBinWidth);
+
         unsigned nComponents = tsData.GetNComponents();
 
         KTFrequencySpectrumDataFFTW& newData = tsData.Of< KTFrequencySpectrumDataFFTW >().SetNComponents(nComponents);
@@ -251,7 +254,7 @@ namespace Katydid
                 KTERROR(fftwlog, "Channel <" << iComponent << "> did not transform correctly.");
                 return false;
             }
-            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " - " << nextResult->GetRangeMax());
+            KTDEBUG(fftwlog, "FFT computed; size: " << nextResult->size() << "; range: " << nextResult->GetRangeMin() << " -> " << nextResult->GetRangeMax() << "; TimeBinWidth=" << timeBinWidth);
             newData.SetSpectrum(nextResult, iComponent);
         }
 
