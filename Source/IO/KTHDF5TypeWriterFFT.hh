@@ -89,10 +89,11 @@ namespace Katydid {
     	H5::DataSet* CreatePolarFFTDSet(const std::string& name);
     	H5::DataSet* CreatePolarPowerDSet(const std::string& name);
     	H5::DataSet* CreateComplexFFTDSet(const std::string& name);
-        H5::DataSet* CreateFFTWFreqArrayDSet(const std::string& name);
     	H5::DataSet* CreateComplexPowerDSet(const std::string& name);
         H5::DataSet* CreatePowerSpecDSet(const std::string& name);
         H5::DataSet* CreatePSDDSet(const std::string& name);
+        H5::DataSet* CreateFFTWFreqArrayDSet(const std::string& name);
+        H5::DataSet* CreatePolarFreqArrayDSet(const std::string& name);
     	H5::DataSet* CreateDSet(const std::string& name, 
     							const H5::Group* grp,
     							const H5::DataSpace& ds);
@@ -144,7 +145,7 @@ namespace Katydid {
          fft_buffer* fPolarFFTFreqArrayBuffer;
          fft_buffer* fCmplxFFTFreqArrayBuffer;
         H5::DataSpace* fFFTWFreqArrayDSpace;
-        //H5::DataSpace* fPolarFreqArrayDSpace;
+        H5::DataSpace* fPolarFreqArrayDSpace;
 
 
         /* 
