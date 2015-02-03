@@ -209,7 +209,7 @@ namespace Katydid {
         "FrequencyWidth",
         "Slope",
         "Intercept",
-        "TotalPower"
+        "TotalPower",
         "StartTimeInRunCSigma",
         "EndTimeInRunCSigma",
         "TimeLengthSigma",
@@ -247,7 +247,7 @@ namespace Katydid {
     H5::PredType PTFieldTypes[22] = {
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT,
-        H5::PredType::NATIVE_HBOOL,
+        H5::PredType::NATIVE_INT8,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,

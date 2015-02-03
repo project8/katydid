@@ -32,14 +32,14 @@ namespace Katydid {
              */
             this->fMTEType = new H5::CompType(MTESize);
             // Insert fields into the type
-            for (int f = 0; f < 22; f++) {
+            for (int f = 0; f < 23; f++) {
                 this->fMTEType->insertMember(
                     MTEFieldNames[f],
                     MTEFieldOffsets[f],
                     MTEFieldTypes[f]);
             }
             this->fPTType = new H5::CompType(PTSize);
-            for (int f = 0; f < 21; f++) {
+            for (int f = 0; f < 22; f++) {
                 this->fPTType->insertMember(
                     PTFieldNames[f],
                     PTFieldOffsets[f],
