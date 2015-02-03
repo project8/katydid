@@ -44,7 +44,8 @@ namespace Katydid {
         fPSDBuffer(NULL),
         fSpectraGroup(NULL),
         fFFTGroup(NULL),
-        fPowerGroup(NULL)
+        fPowerGroup(NULL),
+        fFirstSliceHasBeenWritten(false)
     {}
 
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
@@ -69,6 +70,7 @@ namespace Katydid {
             KTDEBUG(publog, "Configuring from Egg header...");
             this->fNComponents = (header->GetNChannels());
             this->fSliceSize = (header->GetSliceSize());
+
 
             /*
              * Polar FFT preparation.  
@@ -120,6 +122,17 @@ namespace Katydid {
                this->fPSDBuffer = new fft_buffer(boost::extents[fNComponents][this->fPSDSize]);
                this->fPwrSpecBuffer = new fft_buffer(boost::extents[fNComponents][this->fPSDSize]);
 
+              /*
+               * Common FFT preparation
+               * Create arrays to store the frequency bins used in the FFT
+               * The arrays are the same size as the Polar and FFTW spectra
+               * Polar: 2N*(fSliceSize/2 + 1).
+               * FFTW: 2N*(fSliceSize).
+               */
+              this->fPolarFFTFreqArrayBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fPolarFFTSize]);     
+              this->fCmplxFFTFreqArrayBuffer = new fft_buffer(boost::extents[2*fNComponents][this->fCmplxFFTSize]);
+
+
         }
         KTDEBUG(publog, "Done.");
         this->fSpectraGroup = fWriter->AddGroup("/spectra");
@@ -144,8 +157,11 @@ namespace Katydid {
             KTDEBUG(publog, "Creating H5::DataSpaces for Complex FFT");
             hsize_t cmplx_fft_dims[] = {2*this->fNComponents, 
                                         this->fCmplxFFTSize};
+            hsize_t fftw_freqarray_dims[] = {this->fNComponents, 
+                                             this->fCmplxFFTSize};
 
             this->fCmplxFFTDSpace = new H5::DataSpace(2, cmplx_fft_dims);
+            this->fFFTWFreqArrayDSpace = new H5::DataSpace(2, fftw_freqarray_dims);
             KTDEBUG(publog, "Done.");
         }
         if(this->fPolarPwrDSpace == NULL) {
@@ -176,6 +192,7 @@ namespace Katydid {
             this->fPSDDSpace = new H5::DataSpace(2, psd_dims);
             KTDEBUG(publog, "Done.");
         }
+
     }
 
      H5::DataSet* KTHDF5TypeWriterFFT::CreatePolarFFTDSet(const std::string& name) {
@@ -198,7 +215,6 @@ namespace Katydid {
         return dset;
     }    
 
-
      H5::DataSet* KTHDF5TypeWriterFFT::CreateComplexFFTDSet(const std::string& name) {
       if(this->fFFTGroup == NULL) {
         this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/frequency"));
@@ -206,6 +222,16 @@ namespace Katydid {
         H5::DataSet* dset = this->CreateDSet(name, 
                                              this->fFFTGroup,
                                              *(this->fCmplxFFTDSpace));
+        return dset;
+    }
+
+     H5::DataSet* KTHDF5TypeWriterFFT::CreateFFTWFreqArrayDSet(const std::string& name) {
+      if(this->fFFTGroup == NULL) {
+        this->fFFTGroup = new H5::Group(this->fSpectraGroup->createGroup("/spectra/frequency"));
+      }
+        H5::DataSet* dset = this->CreateDSet(name, 
+                                             this->fFFTGroup,
+                                             *(this->fFFTWFreqArrayDSpace));
         return dset;
     }
 
@@ -336,8 +362,13 @@ namespace Katydid {
         name_builder << "complexFS_" << sliceN;
         name_builder >> spectrum_name;
 
-        H5::DataSet* dset = this->CreateComplexFFTDSet(spectrum_name);
-        KTDEBUG(publog, "Done.");
+        // START First Slice -> Create Frequency Array Name
+        KTDEBUG(publog, "Creating Frequency Array...");
+        std::string FreqArray_name;
+        std::stringstream FreqArray_name_builder;
+        FreqArray_name_builder << "FreqArray_" << sliceN;
+        FreqArray_name_builder >> FreqArray_name;
+        // END First Slice -> Create Frequency Array Name
 
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
         unsigned nComp = fsData.GetNComponents();
@@ -351,10 +382,18 @@ namespace Katydid {
                 for(int f=0; f < spec[0].size(); f++) {
                     (*this->fCmplxFFTBuffer)[iC][f] = spec[0].GetReal(f); 
                     (*this->fCmplxFFTBuffer)[iC+1][f] = spec[0].GetImag(f); 
+                    if ( !fFirstSliceHasBeenWritten ) (*this->fCmplxFFTFreqArrayBuffer)[iC][f] = spec[0].GetBinCenter(f);
                 }
                 
             }
         }
+        if ( !fFirstSliceHasBeenWritten ) {
+          // If First Slice -> Create and Write the Frequency Array
+          H5::DataSet* dset_FreqArray = this->CreateFFTWFreqArrayDSet(FreqArray_name);
+          dset_FreqArray->write(this->fCmplxFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
+          SetFirstSliceHasBeenWritten(true);
+        }
+        H5::DataSet* dset = this->CreateComplexFFTDSet(spectrum_name);
         dset->write(this->fCmplxFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE);
         KTDEBUG(publog, "Done.");
     }

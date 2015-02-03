@@ -12,6 +12,7 @@
 #include "KTHDF5Writer.hh"
 #include "KTEggHeader.hh"
 #include "KTData.hh"
+#include "KTMemberVariable.hh"
 
 #include "boost/multi_array.hpp"
 
@@ -37,6 +38,7 @@ namespace Katydid {
      */
     public:
     	void ProcessEggHeader();
+        MEMBERVARIABLE(bool, FirstSliceHasBeenWritten);
 
    	/*
    	 * Frequency Spectrum Data
@@ -87,6 +89,7 @@ namespace Katydid {
     	H5::DataSet* CreatePolarFFTDSet(const std::string& name);
     	H5::DataSet* CreatePolarPowerDSet(const std::string& name);
     	H5::DataSet* CreateComplexFFTDSet(const std::string& name);
+        H5::DataSet* CreateFFTWFreqArrayDSet(const std::string& name);
     	H5::DataSet* CreateComplexPowerDSet(const std::string& name);
         H5::DataSet* CreatePowerSpecDSet(const std::string& name);
         H5::DataSet* CreatePSDDSet(const std::string& name);
@@ -134,6 +137,15 @@ namespace Katydid {
         unsigned fPSDSize;
         fft_buffer* fPSDBuffer;
         H5::DataSpace* fPSDDSpace;
+
+        /*
+         * Frequency Arrays (the "X-Axis" of the FFT)
+         */
+         fft_buffer* fPolarFFTFreqArrayBuffer;
+         fft_buffer* fCmplxFFTFreqArrayBuffer;
+        H5::DataSpace* fFFTWFreqArrayDSpace;
+        //H5::DataSpace* fPolarFreqArrayDSpace;
+
 
         /* 
          * Group for spectral data
