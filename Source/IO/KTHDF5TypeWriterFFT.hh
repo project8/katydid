@@ -39,6 +39,7 @@ namespace Katydid {
     public:
     	void ProcessEggHeader();
         MEMBERVARIABLE(bool, FirstSliceHasBeenWritten);
+        MEMBERVARIABLE(bool, CompressFFTFlag);
 
    	/*
    	 * Frequency Spectrum Data

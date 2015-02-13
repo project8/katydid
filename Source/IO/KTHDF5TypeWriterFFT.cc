@@ -45,7 +45,8 @@ namespace Katydid {
         fSpectraGroup(NULL),
         fFFTGroup(NULL),
         fPowerGroup(NULL),
-        fFirstSliceHasBeenWritten(false)
+        fFirstSliceHasBeenWritten(false),
+        fCompressFFTFlag(false)
     {}
 
     KTHDF5TypeWriterFFT::~KTHDF5TypeWriterFFT()
@@ -135,6 +136,11 @@ namespace Katydid {
 
         }
         KTDEBUG(publog, "Done.");
+        std::string fFileFlag = fWriter->GetFileFlag();
+        if ( fFileFlag.compare("compressfft") == 0 ) {
+          SetCompressFFTFlag(true);
+          KTDEBUG(publog, "fFileFlag=compressfft");
+        }
         this->fSpectraGroup = fWriter->AddGroup("/spectra");
         this->CreateDataspaces();
     }
@@ -291,9 +297,17 @@ namespace Katydid {
     H5::DataSet* KTHDF5TypeWriterFFT::CreateDSet(const std::string& name,
                                                  const H5::Group* grp, 
                                                  const H5::DataSpace& ds) {
+        herr_t   hstatus;
         H5::DSetCreatPropList plist;
         unsigned default_value = 0.0;
         plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
+        if ( fCompressFFTFlag ) {
+          hsize_t ChunkSize[2] = {this->fNComponents,
+                                      this->fSliceSize};
+          plist.setChunk(2, ChunkSize);
+          plist.setDeflate(6);
+          KTDEBUG(publog, "Creating compressed HDF5 dataset.");
+        }
         KTDEBUG(publog, "Creating complex FFT dataset.");
         KTDEBUG(publog, grp);
         H5::DataSet* dset = new H5::DataSet(grp->createDataSet(name.c_str(),
