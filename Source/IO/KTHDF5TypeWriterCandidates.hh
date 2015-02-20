@@ -172,6 +172,7 @@ namespace Katydid {
     typedef struct {
         unsigned Component;
         unsigned TrackID;
+        unsigned EventID;
         bool IsCut;
         double StartTimeInAcq;
         double StartTimeInRunC;
@@ -194,11 +195,12 @@ namespace Katydid {
         double TotalPowerSigma;
     } PTData;
 
-    size_t PTNFields = 22;
+    size_t PTNFields = 23;
     size_t PTSize = sizeof(PTData);
-    const char* PTFieldNames[22] = {
+    const char* PTFieldNames[23] = {
         "Component",
         "TrackID",
+        "EventID",
         "IsCut",
         "StartTimeInAcq",
         "StartTimeInRunC",
@@ -220,9 +222,10 @@ namespace Katydid {
         "InterceptSigma",
         "TotalPowerSigma"
     };
-    size_t PTFieldOffsets[22] = {
+    size_t PTFieldOffsets[23] = {
         HOFFSET(PTData, Component),
         HOFFSET(PTData, TrackID),
+        HOFFSET(PTData, EventID),
         HOFFSET(PTData, IsCut),
         HOFFSET(PTData, StartTimeInAcq),
         HOFFSET(PTData, StartTimeInRunC),
@@ -244,7 +247,8 @@ namespace Katydid {
         HOFFSET(PTData, InterceptSigma),
         HOFFSET(PTData, TotalPowerSigma)
     };
-    H5::PredType PTFieldTypes[22] = {
+    H5::PredType PTFieldTypes[23] = {
+        H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_INT8,
@@ -293,6 +297,7 @@ namespace Katydid {
     private:
         std::vector<MTEData> fMTEDataBuffer;
         H5::CompType* fMTEType;
+        std::vector<PTData> fMTETracksDataBuffer;
         std::vector<PTData> fPTDataBuffer;
         H5::CompType* fPTType;
 

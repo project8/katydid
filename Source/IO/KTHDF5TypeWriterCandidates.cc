@@ -24,6 +24,7 @@ namespace Katydid {
     KTHDF5TypeWriterCandidates::KTHDF5TypeWriterCandidates() :
         KTHDF5TypeWriter(),
         fMTEDataBuffer(),
+        fMTETracksDataBuffer(),
         fPTDataBuffer(),
         fFlushMTEIdx(0),
         fFlushPTIdx(0) {
@@ -39,7 +40,7 @@ namespace Katydid {
                     MTEFieldTypes[f]);
             }
             this->fPTType = new H5::CompType(PTSize);
-            for (int f = 0; f < 22; f++) {
+            for (int f = 0; f < 23; f++) {
                 this->fPTType->insertMember(
                     PTFieldNames[f],
                     PTFieldOffsets[f],
@@ -73,7 +74,6 @@ namespace Katydid {
         KTDEBUG("NOT IMPLEMENTED");
     }
     void KTHDF5TypeWriterCandidates::WriteProcessedTrack(KTDataPtr data) {
-        KTDEBUG("NOT IMPLEMENTED");
         KTDEBUG(publog, "Processing Tracks");
         KTProcessedTrackData& ptData = data->Of< KTProcessedTrackData >();
 
@@ -110,6 +110,7 @@ namespace Katydid {
         KTDEBUG(publog, "Processing MTE");
         KTMultiTrackEventData& mteData = data->Of< KTMultiTrackEventData >();
 
+        // Write the event information
         MTEData event;
         event.Component = mteData.GetComponent();
         event.EventID = mteData.GetEventID();
@@ -134,8 +135,41 @@ namespace Katydid {
         event.FirstTrackSlope = mteData.GetFirstTrackSlope();
         event.FirstTrackIntercept = mteData.GetFirstTrackIntercept();
         event.FirstTrackTotalPower = mteData.GetFirstTrackTotalPower();
-
         (this->fMTEDataBuffer).push_back(event);
+
+        // Write the tracks that make up this event
+        KTDEBUG(publog, "Event " << event.EventID << " contains " << mteData.GetNTracks() << " tracks ");
+        PTData track;
+        for (KTMultiTrackEventData::TrackIt MTETrackIt = mteData.GetTracksBegin(); MTETrackIt != mteData.GetTracksEnd(); MTETrackIt++)
+        {
+            KTProcessedTrackData& ptData = mteData.GetTrack(MTETrackIt->first);
+            track.Component = ptData.GetComponent();
+            track.TrackID = ptData.GetTrackID();
+            track.EventID = mteData.GetEventID();
+            track.IsCut = ptData.GetIsCut();
+            track.StartTimeInAcq = ptData.GetStartTimeInAcq();
+            track.StartTimeInRunC = ptData.GetStartTimeInRunC();
+            track.EndTimeInRunC = ptData.GetEndTimeInRunC();
+            track.TimeLength = ptData.GetTimeLength();
+            track.StartFrequency = ptData.GetStartFrequency();
+            track.EndFrequency = ptData.GetEndFrequency();
+            track.FrequencyWidth = ptData.GetFrequencyWidth();
+            track.Slope = ptData.GetSlope();
+            track.Intercept = ptData.GetIntercept();
+            track.TotalPower = ptData.GetTotalPower();
+            track.StartTimeInRunCSigma = ptData.GetStartTimeInRunCSigma();
+            track.EndTimeInRunCSigma = ptData.GetEndTimeInRunCSigma();
+            track.TimeLengthSigma = ptData.GetTimeLengthSigma();
+            track.StartFrequencySigma = ptData.GetStartFrequencySigma();
+            track.EndFrequencySigma = ptData.GetEndFrequencySigma();
+            track.FrequencyWidthSigma = ptData.GetFrequencyWidthSigma();
+            track.SlopeSigma = ptData.GetSlopeSigma();
+            track.InterceptSigma = ptData.GetInterceptSigma();
+            track.TotalPowerSigma = ptData.GetTotalPowerSigma();
+            (this->fMTETracksDataBuffer).push_back(track);
+            KTDEBUG(publog, "Added track " << track.TrackID << "(EventID=" << track.EventID << ")");
+        }
+
 
         KTDEBUG("Done.");
         return;
@@ -144,22 +178,39 @@ namespace Katydid {
     void KTHDF5TypeWriterCandidates::WriteMTEBuffer() {
         KTDEBUG("writing MTE buffer.");
         // Now create the dataspace we need
-        hsize_t* dims = new hsize_t(this->fMTEDataBuffer.size());
-        H5::DataSpace dspace(1, dims);
+        hsize_t* dims_cands = new hsize_t(this->fMTEDataBuffer.size());
+        hsize_t* dims_tracks = new hsize_t(this->fMTETracksDataBuffer.size());
+        H5::DataSpace dspace_cands(1, dims_cands);
+        H5::DataSpace dspace_tracks(1, dims_tracks);
 
         if( !fWriter->OpenAndVerifyFile() ) return;
-        // Make a group
+        // Make a group for the events, and a subgroup for the tracks belonging to the event
         H5::Group* candidatesGroup = fWriter->AddGroup("candidates");
 
         // OK, create the dataset and write it down.
+        // Write the event information
         std::stringstream namestream;
         std::string dsetname;
         namestream << "candidates_" << this->fFlushMTEIdx;
         namestream >> dsetname;
-        H5::DataSet* dset = new H5::DataSet(candidatesGroup->createDataSet(dsetname.c_str(),
+        H5::DataSet* dset_cands = new H5::DataSet(candidatesGroup->createDataSet(dsetname.c_str(),
                                                                            *(this->fMTEType),
-                                                                           dspace));
-        dset->write((this->fMTEDataBuffer).data(),*(this->fMTEType));
+                                                                           dspace_cands));
+        dset_cands->write((this->fMTEDataBuffer).data(),*(this->fMTEType));
+
+        // Write the tracks that belong to the current events
+        //dsetname.clear();
+        //namestream.str(std::string());
+        std::stringstream namestream2;
+        std::string dsetname2;
+        namestream2 << "candidate_tracks_" << this->fFlushMTEIdx;
+        namestream2 >> dsetname2;
+        H5::DataSet* dset_tracks = new H5::DataSet(candidatesGroup->createDataSet(dsetname2.c_str(),
+                                                                           *(this->fPTType),
+                                                                           dspace_tracks));
+        dset_tracks->write((this->fMTETracksDataBuffer).data(),*(this->fPTType));
+
+        this->fMTETracksDataBuffer.clear();
         this->fMTEDataBuffer.clear();
         this->fFlushMTEIdx++;
     }
@@ -172,14 +223,14 @@ namespace Katydid {
 
         if( !fWriter->OpenAndVerifyFile() ) return;
         // Make a group
-        H5::Group* candidatesGroup = fWriter->AddGroup("tracks");
+        H5::Group* tracksGroup = fWriter->AddGroup("tracks");
 
         // OK, create the dataset and write it down.
         std::stringstream namestream;
         std::string dsetname;
         namestream << "tracks_" << this->fFlushPTIdx;
         namestream >> dsetname;
-        H5::DataSet* dset = new H5::DataSet(candidatesGroup->createDataSet(dsetname.c_str(),
+        H5::DataSet* dset = new H5::DataSet(tracksGroup->createDataSet(dsetname.c_str(),
                                                                            *(this->fPTType),
                                                                            dspace));
         dset->write((this->fPTDataBuffer).data(),*(this->fPTType));
