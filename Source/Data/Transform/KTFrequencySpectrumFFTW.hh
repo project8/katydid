@@ -15,10 +15,6 @@
 #include <cmath>
 #include <string>
 
-#ifdef ROOT_FOUND
-class TH1D;
-#endif
-
 namespace Katydid
 {
     class KTFrequencySpectrumPolar;
@@ -28,19 +24,21 @@ namespace Katydid
     {
         public:
             KTFrequencySpectrumFFTW();
-            KTFrequencySpectrumFFTW(size_t nBins, double rangeMin=0., double rangeMax=1.);
+            KTFrequencySpectrumFFTW(size_t nBins, double rangeMin=0., double rangeMax=1., bool arrayOrderIsFlipped=false);
             KTFrequencySpectrumFFTW(const KTFrequencySpectrumFFTW& orig);
             virtual ~KTFrequencySpectrumFFTW();
 
         public:
+            bool GetIsArrayOrderFlipped() const;
             bool GetIsSizeEven() const;
-            size_t GetNegFreqOffset() const;
-            size_t GetDCBin() const;
+            size_t GetLeftOfCenterOffset() const;
+            size_t GetCenterBin() const;
 
         protected:
+            bool fIsArrayOrderFlipped; /// Flag to indicate that the bins to the left of center are actually in the right half of the array in memory
             bool fIsSizeEven; /// Flag to indicate if the size of the array is even
-            size_t fNegFreqOffset; /// The number of bins by which the negative-frequency Nyquist bin is offset
-            size_t fDCBin; /// The bin number of the DC bin
+            size_t fLeftOfCenterOffset; /// The number of bins by which the negative-frequency Nyquist bin is offset
+            size_t fCenterBin; /// The bin number of the DC bin
 
 
         public:
@@ -65,15 +63,18 @@ namespace Katydid
             virtual unsigned GetNTimeBins() const;
             virtual void SetNTimeBins(unsigned bins);
 
-            /// Returns the size of the positive-frequency part of the array
-            //size_t size() const;
-            /// Returns the isze of the positive-frequency part of the array
-            //size_t GetNBins() const;
+        private:
+            typedef const fftw_complex& (KTFrequencySpectrumFFTW::*ConstOrderedBinAccessFunc)(unsigned) const;
+            typedef fftw_complex& (KTFrequencySpectrumFFTW::*OrderedBinAccessFunc)(unsigned);
 
-            /// Returns the actual size of the storage array
-            //size_t size_total() const;
-            /// Returns the actual size of the storage array
-            //size_t GetNBinsTotal() const;
+            ConstOrderedBinAccessFunc fConstBinAccess;
+            OrderedBinAccessFunc fBinAccess;
+
+            const fftw_complex& ReorderedBinAccess(unsigned i) const;
+            fftw_complex& ReorderedBinAccess(unsigned i);
+
+            const fftw_complex& AsIsBinAccess(unsigned i) const;
+            fftw_complex& AsIsBinAccess(unsigned i);
 
         public:
             // normal KTFrequencySpectrumPolar functions
@@ -87,7 +88,7 @@ namespace Katydid
 
             virtual KTFrequencySpectrumFFTW& Scale(double scale);
 
-            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar(bool addNegFreqs = true) const;
+            virtual KTFrequencySpectrumPolar* CreateFrequencySpectrumPolar() const;
             virtual KTPowerSpectrum* CreatePowerSpectrum() const;
 
             void Print(unsigned startPrint, unsigned nToPrint) const;
@@ -95,46 +96,58 @@ namespace Katydid
         private:
             unsigned fNTimeBins;
 
-#ifdef ROOT_FOUND
-        public:
-            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const;
-            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const;
-
-            virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const;
-
-            virtual TH1D* CreateMagnitudeDistributionHistogram(const std::string& name = "hFrequencySpectrumMagDist") const;
-            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
-#endif
-
         protected:
             mutable const fftw_complex* fPointCache;
     };
+
+    inline bool KTFrequencySpectrumFFTW::GetIsArrayOrderFlipped() const
+    {
+        return fIsArrayOrderFlipped;
+    }
 
     inline bool KTFrequencySpectrumFFTW::GetIsSizeEven() const
     {
         return fIsSizeEven;
     }
 
-    inline size_t KTFrequencySpectrumFFTW::GetNegFreqOffset() const
+    inline size_t KTFrequencySpectrumFFTW::GetLeftOfCenterOffset() const
     {
-        return fNegFreqOffset;
+        return fLeftOfCenterOffset;
     }
 
-    inline size_t KTFrequencySpectrumFFTW::GetDCBin() const
+    inline size_t KTFrequencySpectrumFFTW::GetCenterBin() const
     {
-        return fDCBin;
+        return fCenterBin;
     }
 
     inline const fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i) const
     {
-        return (i >= fDCBin) ? fData[i - fDCBin] : fData[i + fNegFreqOffset];
-        //return fData[i];
+        return (this->*fConstBinAccess)(i);
     }
 
     inline fftw_complex& KTFrequencySpectrumFFTW::operator()(unsigned i)
     {
-        return (i >= fDCBin) ? fData[i - fDCBin] : fData[i + fNegFreqOffset];
-        //return fData[i];
+        return (this->*fBinAccess)(i);
+    }
+
+    inline const fftw_complex& KTFrequencySpectrumFFTW::ReorderedBinAccess(unsigned i) const
+    {
+        return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
+    }
+
+    inline fftw_complex& KTFrequencySpectrumFFTW::ReorderedBinAccess(unsigned i)
+    {
+        return (i >= fCenterBin) ? fData[i - fCenterBin] : fData[i + fLeftOfCenterOffset];
+    }
+
+    inline const fftw_complex& KTFrequencySpectrumFFTW::AsIsBinAccess(unsigned i) const
+    {
+        return fData[i];
+    }
+
+    inline fftw_complex& KTFrequencySpectrumFFTW::AsIsBinAccess(unsigned i)
+    {
+        return fData[i];
     }
 
     inline double KTFrequencySpectrumFFTW::GetReal(unsigned bin) const

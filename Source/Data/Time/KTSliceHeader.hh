@@ -38,6 +38,8 @@ namespace Katydid
             void SetIsNewAcquisition(bool flag);
             double GetTimeInRun() const;
             void SetTimeInRun(double time);
+            double GetTimeInAcq() const;
+            void SetTimeInAcq(double time);
             uint64_t GetSliceNumber() const;
             void SetSliceNumber(uint64_t slice);
             unsigned GetNSlicesIncluded() const;
@@ -107,6 +109,7 @@ namespace Katydid
             };
 
             double fTimeInRun; // in sec
+            double fTimeInAcq; // in sec
             uint64_t fSliceNumber;
             unsigned fNSlicesIncluded; // for meta-slices
             bool fIsNewAcquisition;
@@ -167,6 +170,17 @@ namespace Katydid
     inline void KTSliceHeader::SetTimeInRun(double tir)
     {
         fTimeInRun = tir;
+        return;
+    }
+
+    inline double KTSliceHeader::GetTimeInAcq() const
+    {
+        return fTimeInAcq;
+    }
+
+    inline void KTSliceHeader::SetTimeInAcq(double tiacq)
+    {
+        fTimeInAcq = tiacq;
         return;
     }
 

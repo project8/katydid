@@ -16,6 +16,7 @@ namespace Katydid
             fComponent(0),
             fTrackID(0),
             fIsCut(false),
+            fStartTimeInAcq(0.),
             fStartTimeInRunC(0.),
             fEndTimeInRunC(0.),
             fTimeLength(0.),
@@ -42,6 +43,7 @@ namespace Katydid
             fComponent(orig.fComponent),
             fTrackID(orig.fTrackID),
             fIsCut(orig.fIsCut),
+            fStartTimeInAcq(orig.fStartTimeInAcq),
             fStartTimeInRunC(orig.fStartTimeInRunC),
             fEndTimeInRunC(orig.fEndTimeInRunC),
             fTimeLength(orig.fTimeLength),
@@ -72,6 +74,7 @@ namespace Katydid
         fComponent = rhs.fComponent;
         fTrackID = rhs.fTrackID;
         fIsCut = rhs.fIsCut;
+        fStartTimeInAcq = rhs.fStartTimeInAcq;
         fStartTimeInRunC = rhs.fStartTimeInRunC;
         fEndTimeInRunC = rhs.fEndTimeInRunC;
         fTimeLength = rhs.fTimeLength;

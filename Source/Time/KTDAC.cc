@@ -13,7 +13,6 @@
 #include "KTRawTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
 #include "thorax.hh"
@@ -31,7 +30,6 @@ namespace Katydid
             fNBits(8),
             fMinVoltage(-0.25),
             fVoltageRange(0.5),
-            fTimeSeriesType(kRealTimeSeries),
             fBitDepthMode(kNoChange),
             fEmulatedNBits(fNBits),
             fShouldRunInitialize(true),
@@ -57,15 +55,6 @@ namespace Katydid
         SetNBits(node->GetValue< unsigned >("n-bits", fNBits));
         SetMinVoltage(node->GetValue< double >("min-voltage", fMinVoltage));
         SetVoltageRange(node->GetValue< double >("voltage-range", fVoltageRange));
-
-        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
-        if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
-        else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
-        else
-        {
-            KTERROR(egglog, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
-            return false;
-        }
 
         if (node->Has("n-bits-emulated"))
         {
@@ -160,20 +149,6 @@ namespace Katydid
         return true;
     }
 
-    KTTimeSeries* KTDAC::ConvertToFFTW(KTRawTimeSeries* ts)
-    {
-        if (fShouldRunInitialize)
-            Initialize();
-
-        unsigned nBins = ts->size();
-        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts->GetRangeMin(), ts->GetRangeMax());
-        for (unsigned bin = 0; bin < nBins; ++bin)
-        {
-            (*newTS)(bin)[0] = Convert((*ts)(bin));
-        }
-        return newTS;
-    }
-
     KTTimeSeries* KTDAC::ConvertToReal(KTRawTimeSeries* ts)
     {
         if (fShouldRunInitialize)
@@ -185,34 +160,6 @@ namespace Katydid
         {
             (*newTS)(bin) = Convert((*ts)(bin));
         }
-        return newTS;
-    }
-
-    KTTimeSeries* KTDAC::ConvertToFFTWOversampled(KTRawTimeSeries* ts)
-    {
-        if (fShouldRunInitialize)
-            Initialize();
-
-        unsigned nBins = ts->size() / fOversamplingBins;
-        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts->GetRangeMin(), ts->GetRangeMax());
-        double avgValue;
-        unsigned bin = 0;
-        for (unsigned oversampledBin = 0; oversampledBin < nBins; ++oversampledBin)
-        {
-            avgValue = 0.;
-            for (unsigned iOSBin = 0; iOSBin < fOversamplingBins; ++iOSBin)
-            {
-                avgValue += Convert((*ts)(bin));
-                ++bin;
-            }
-            (*newTS)(oversampledBin)[0] = avgValue * fOversamplingScaleFactor;
-        }
-#ifndef NDEBUG
-        if (bin != ts->size())
-        {
-            KTWARN(egglog, "Data lost upon oversampling: " << ts->size() - bin << " samples");
-        }
-#endif
         return newTS;
     }
 
@@ -244,40 +191,6 @@ namespace Katydid
         return newTS;
     }
 
-    void KTDAC::SetTimeSeriesType(KTDAC::TimeSeriesType type)
-    {
-        fTimeSeriesType = type;
-        if (type == kFFTWTimeSeries)
-        {
-            if (fBitDepthMode != kIncreasing)
-            {
-                fConvertTSFunc = &KTDAC::ConvertToFFTW;
-                KTDEBUG(egglog, "Convert function set to FFTW");
-            }
-            else
-            {
-                KTDEBUG(egglog, "Convert function set to FFTW oversampled");
-                fConvertTSFunc = &KTDAC::ConvertToFFTWOversampled;
-            }
-        }
-        else
-        {
-            if (fBitDepthMode != kIncreasing)
-            {
-                KTDEBUG(egglog, "Convert function set to real");
-                fConvertTSFunc = &KTDAC::ConvertToReal;
-            }
-            else
-            {
-                KTDEBUG(egglog, "Convert function set to real oversampled");
-                fConvertTSFunc = &KTDAC::ConvertToRealOversampled;
-            }
-        }
-
-        fShouldRunInitialize = true;
-        return;
-    }
-
     bool KTDAC::SetEmulatedNBits(unsigned nBits)
     {
         if (nBits == fNBits)
@@ -298,31 +211,15 @@ namespace Katydid
         }
 
         // now update the conversion function pointer
-        if (fConvertTSFunc == &KTDAC::ConvertToReal || fConvertTSFunc == &KTDAC::ConvertToRealOversampled)
+        if (fBitDepthMode != kIncreasing)
         {
-            if (fBitDepthMode != kIncreasing)
-            {
-                KTDEBUG(egglog, "Convert function set to real");
-                fConvertTSFunc = &KTDAC::ConvertToReal;
-            }
-            else
-            {
-                KTDEBUG(egglog, "Convert function set to real oversampled");
-                fConvertTSFunc = &KTDAC::ConvertToRealOversampled;
-            }
+            KTDEBUG(egglog, "Convert function set to real");
+            fConvertTSFunc = &KTDAC::ConvertToReal;
         }
         else
         {
-            if (fBitDepthMode != kIncreasing)
-            {
-                KTDEBUG(egglog, "Convert function set to FFTW");
-                fConvertTSFunc = &KTDAC::ConvertToFFTW;
-            }
-            else
-            {
-                KTDEBUG(egglog, "Convert function set to FFTW oversampled");
-                fConvertTSFunc = &KTDAC::ConvertToFFTWOversampled;
-            }
+            KTDEBUG(egglog, "Convert function set to real oversampled");
+            fConvertTSFunc = &KTDAC::ConvertToRealOversampled;
         }
 
         fShouldRunInitialize = true;

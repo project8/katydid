@@ -41,7 +41,6 @@ namespace Katydid
      - "n-bits": unsigned -- Set the number of bits in the digitized data
      - "min-voltage": double -- Set the minimum voltage for the digitizer
      - "voltage-range": double -- Set the full-scale voltage range for the digitizer
-     - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
      - "n-bits-emulated": unsigned -- Set the number of bits to emulate
 
      Slots:
@@ -56,12 +55,6 @@ namespace Katydid
     class KTDAC : public KTProcessor
     {
         public:
-            enum TimeSeriesType
-            {
-                kRealTimeSeries,
-                kFFTWTimeSeries
-            };
-
             enum BitDepthMode
             {
                 kNoChange,
@@ -84,9 +77,6 @@ namespace Katydid
             double GetVoltageRange() const;
             void SetVoltageRange(double volts);
 
-            TimeSeriesType GetTimeSeriesType() const;
-            void SetTimeSeriesType(TimeSeriesType type);
-
             BitDepthMode GetBitDepthMode() const;
 
             unsigned GetEmulatedNBits() const;
@@ -96,8 +86,6 @@ namespace Katydid
             unsigned fNBits;
             double fMinVoltage;
             double fVoltageRange;
-
-            TimeSeriesType fTimeSeriesType;
 
             BitDepthMode fBitDepthMode;
             unsigned fEmulatedNBits;
@@ -110,10 +98,8 @@ namespace Katydid
 
             bool ConvertData(KTSliceHeader& header, KTRawTimeSeriesData& rawData);
 
-            KTTimeSeries* ConvertToFFTW(KTRawTimeSeries* ts);
             KTTimeSeries* ConvertToReal(KTRawTimeSeries* ts);
 
-            KTTimeSeries* ConvertToFFTWOversampled(KTRawTimeSeries* ts);
             KTTimeSeries* ConvertToRealOversampled(KTRawTimeSeries* ts);
 
             double Convert(uint64_t level);
@@ -177,11 +163,6 @@ namespace Katydid
         fVoltageRange = volts;
         fShouldRunInitialize = true;
         return;
-    }
-
-    inline KTDAC::TimeSeriesType KTDAC::GetTimeSeriesType() const
-    {
-        return fTimeSeriesType;
     }
 
     inline KTDAC::BitDepthMode KTDAC::GetBitDepthMode() const

@@ -76,16 +76,55 @@ namespace Katydid
 
     KTPowerSpectrum* KTFrequencySpectrumPolar::CreatePowerSpectrum() const
     {
-        unsigned nBins = size();
-        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
-        double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
-#pragma omp parallel for private(value)
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        // This function creates a power spectrum that runs from DC to the largest absolute frequency.
+        // Negative-frequency bins are added to positive-frequency bins.
+        // It can handle frequency ranges that do or don't cross DC, and that are symmetric or asymmetric.
+
+        double maxFreq = std::max(fabs(GetRangeMin()), fabs(GetRangeMax()));
+        double minFreq = -0.5 * GetBinWidth();
+        unsigned nBins = (maxFreq - minFreq) / GetBinWidth();
+        if (GetRangeMax() < 0. || GetRangeMin() > 0.)
         {
-           value = (*this)(iBin).abs();
-           (*newPS)(iBin) = value * value * scaling;
+            minFreq = std::min(fabs(GetRangeMin()), fabs(GetRangeMax()));
+            nBins = size();
         }
+
+        KTPowerSpectrum* newPS = new KTPowerSpectrum(nBins, GetRangeMin(), GetRangeMax());
+        for (unsigned iBin = 0; iBin < nBins; ++iBin) (*newPS)(iBin) = 0.;
+
+        int dcBin = FindBin(0.);
+        // default case: dcBin >= 0 && dcBin < size()
+        unsigned firstPosFreqBin = dcBin;
+        unsigned lastPosFreqBin = size();
+        unsigned firstNegFreqBin = 0;
+        unsigned lastNegFreqBin = dcBin;
+        if (dcBin >= size())
+        {
+            firstPosFreqBin = size(); // lastPosFreqBin = size();
+            lastNegFreqBin = size(); // firstNEgFreqBin = 0
+        }
+        else if (dcBin < 0)
+        {
+            firstPosFreqBin = 0; // lastPosFreqBin = size();
+            firstNegFreqBin = dcBin; // lastNegFreqBin = dcBin;
+        }
+
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
+
+        double value;
+#pragma omp parallel for private(value)
+        for (unsigned iBin = firstPosFreqBin; iBin < lastPosFreqBin; ++iBin)
+        {
+            value = (*this)(iBin).abs();
+            (*newPS)(iBin) = value * value * scaling;
+        }
+#pragma omp parallel for private(value)
+        for (unsigned iBin = firstNegFreqBin; iBin < lastNegFreqBin; ++iBin)
+        {
+            value = (*this)(iBin).abs();
+            (*newPS)(iBin) = value * value * scaling;
+        }
+
         return newPS;
     }
 
@@ -100,100 +139,5 @@ namespace Katydid
         KTDEBUG(fslog, "\n" << printStream.str());
         return;
     }
-
-
-#ifdef ROOT_FOUND
-    TH1D* KTFrequencySpectrumPolar::CreateMagnitudeHistogram(const std::string& name) const
-    {
-        unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            hist->SetBinContent((int)iBin+1, (*this)(iBin).abs());
-        }
-        hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Voltage (V)");
-        return hist;
-    }
-
-    TH1D* KTFrequencySpectrumPolar::CreatePhaseHistogram(const std::string& name) const
-    {
-        unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int)nBins, GetRangeMin(), GetRangeMax());
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            hist->SetBinContent((int)iBin+1, (*this)(iBin).arg());
-        }
-        hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Phase");
-        return hist;
-    }
-
-    TH1D* KTFrequencySpectrumPolar::CreatePowerHistogram(const std::string& name) const
-    {
-        unsigned nBins = size();
-        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, GetRangeMin(), GetRangeMax());
-        double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            value = (*this)(iBin).abs();
-            hist->SetBinContent((int)iBin + 1, value * value * scaling);
-        }
-        hist->SetXTitle("Frequency (Hz)");
-        hist->SetYTitle("Power (W)");
-        return hist;
-    }
-
-    TH1D* KTFrequencySpectrumPolar::CreateMagnitudeDistributionHistogram(const std::string& name) const
-    {
-        double tMaxMag = -1.;
-        double tMinMag = 1.e9;
-        unsigned nBins = size();
-        double value;
-        // Skip the DC bin: start at bin 1
-        for (unsigned iBin=1; iBin<nBins; ++iBin)
-        {
-            value = (*this)(iBin).abs();
-            if (value < tMinMag) tMinMag = value;
-            if (value > tMaxMag) tMaxMag = value;
-        }
-        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
-        TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            hist->Fill((*this)(iBin).abs());
-        }
-        hist->SetXTitle("Voltage (V)");
-        return hist;
-    }
-
-    TH1D* KTFrequencySpectrumPolar::CreatePowerDistributionHistogram(const std::string& name) const
-    {
-        double tMaxMag = -1.;
-        double tMinMag = 1.e9;
-        unsigned nBins = size();
-        double value;
-        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)GetNTimeBins();
-        // Skip the DC bin: start at bin 1
-        for (unsigned iBin=1; iBin<nBins; ++iBin)
-        {
-            value = (*this)(iBin).abs();
-            value *= value * scaling;
-            if (value < tMinMag) tMinMag = value;
-            if (value > tMaxMag) tMaxMag = value;
-        }
-        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
-        TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
-        for (unsigned iBin=0; iBin<nBins; ++iBin)
-        {
-            value = (*this)(iBin).abs();
-            hist->Fill(value * value * scaling);
-        }
-        hist->SetXTitle("Power (W)");
-        return hist;
-    }
-
-#endif
 
 } /* namespace Katydid */

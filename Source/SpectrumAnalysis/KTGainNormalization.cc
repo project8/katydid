@@ -228,9 +228,6 @@ namespace Katydid
 
     KTFrequencySpectrumFFTW* KTGainNormalization::Normalize(const KTFrequencySpectrumFFTW* frequencySpectrum, const KTSpline* spline)
     {
-        // PLEASE NOTE: There is on situation in which this normalization function will not operate properly: if the array size
-        //              is even, and scaling is requested all the way up to the Nyquist bin, the Nyquist bin will not be scaled.
-
         unsigned nBins = fMaxBin - fMinBin + 1;
         double freqMin = frequencySpectrum->GetBinLowEdge(fMinBin);
         double freqMax = frequencySpectrum->GetBinLowEdge(fMaxBin) + frequencySpectrum->GetBinWidth();
@@ -249,84 +246,32 @@ namespace Katydid
         //KTDEBUG(gnlog, "new array range: 0 - " << newSpectrum->size());
 
         // First directly copy data that's outside the scaling range
-        // DC bin
-        unsigned dcBin = frequencySpectrum->GetDCBin();
-        (*newSpectrum)(dcBin)[0] = (*frequencySpectrum)(dcBin)[0];
-        (*newSpectrum)(dcBin)[1] = (*frequencySpectrum)(dcBin)[1];
-        //KTDEBUG(gnlog, "bin = " << dcBin);
-
-        // Nyquist bin if the array size is even
-        unsigned lastBinNeg = 0;
-        if (frequencySpectrum->GetIsSizeEven())
+        unsigned iBin;
+#pragma omp parallel default(shared)
         {
-            (*newSpectrum)(0)[0] = (*frequencySpectrum)(0)[0];
-            (*newSpectrum)(0)[1] = (*frequencySpectrum)(0)[1];
-            lastBinNeg = 1;
-            //KTDEBUG(gnlog, "bin = 0");
-        }
-
-        unsigned minOffsetBin = fMinBin - dcBin;
-        unsigned maxOffsetBin = fMaxBin - dcBin;
-        unsigned spectrumSizeOffset = frequencySpectrum->size() - dcBin;
-
-        double scaling = 1.;
-        unsigned iBinPos, iBinNeg, iBin, iOffsetBin;
-#pragma omp parallel default(shared) private(iBinPos, iBinNeg, iBin, iOffsetBin, scaling)
-        {
-            // All of the other bins outside the scaling range, both positive and negative frequencies
-            //for (unsigned iBinPos=dcBin + 1, iBinNeg=dcBin - 1; iBinPos < fMinBin; iBinPos++, iBinNeg--)
-//#pragma omp master
-            //KTDEBUG(gnlog, "loop: 1 - " << minOffsetBin-1);
-#pragma omp for
-            for (iOffsetBin=1; iOffsetBin < minOffsetBin; ++iOffsetBin)
+#pragma omp for private(iBin)
+            for (iBin=0; iBin < fMinBin; ++iBin)
             {
-                iBinPos = dcBin + iOffsetBin;
-                iBinNeg = dcBin - iOffsetBin;
-                //KTDEBUG(gnlog, "    offset = " << iOffsetBin << "    binpos = " << iBinPos << "    binneg = " << iBinNeg);
-                (*newSpectrum)(iBinPos)[0] = (*frequencySpectrum)(iBinPos)[0];
-                (*newSpectrum)(iBinPos)[1] = (*frequencySpectrum)(iBinPos)[1];
-                (*newSpectrum)(iBinNeg)[0] = (*frequencySpectrum)(iBinNeg)[0];
-                (*newSpectrum)(iBinNeg)[1] = (*frequencySpectrum)(iBinNeg)[1];
+                (*newSpectrum)(iBin)[0] = (*frequencySpectrum)(iBin)[0];
+                (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1];
             }
-
+#pragma omp for private(iBin)
+            for (iBin=fMaxBin+1; iBin < nSpectrumBins; ++iBin)
+            {
+                (*newSpectrum)(iBin)[0] = (*frequencySpectrum)(iBin)[0];
+                (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1];
+            }
 
             // Then scale the bins within the scaling range
-            //for (unsigned iBinPos=fMinBin, iBinNeg=dcBin - (fMinBin-dcBin), iBin=0; iBinPos < fMaxBin+1; iBinPos++, iBinNeg--, ++iBin)
-//#pragma omp master
-            //KTDEBUG(gnlog, "loop: " << minOffsetBin << " - " << maxOffsetBin);
-#pragma omp for
-            for (iOffsetBin=minOffsetBin; iOffsetBin <= maxOffsetBin; ++iOffsetBin)
+            double scaling;
+#pragma omp for private(iBin, scaling)
+            for (iBin=fMinBin; iBin < fMaxBin+1; ++iBin)
             {
-                iBin = iOffsetBin - minOffsetBin;
-                iBinPos = dcBin + iOffsetBin;
-                iBinNeg = dcBin - iOffsetBin;
-                //KTDEBUG(gnlog, "    offset = " << iOffsetBin << "    binpos = " << iBinPos << "    binneg = " << iBinNeg << "    bin = " << iBin);
                 scaling = 1. / (*splineImp)(iBin);
-                (*newSpectrum)(iBinPos)[0] = (*frequencySpectrum)(iBinPos)[0] * scaling;
-                (*newSpectrum)(iBinPos)[1] = (*frequencySpectrum)(iBinPos)[1] * scaling;
-                (*newSpectrum)(iBinNeg)[0] = (*frequencySpectrum)(iBinNeg)[0] * scaling;
-                (*newSpectrum)(iBinNeg)[1] = (*frequencySpectrum)(iBinNeg)[1] * scaling;
+                (*newSpectrum)(iBin)[0] = (*frequencySpectrum)(iBin)[0] * scaling;
+                (*newSpectrum)(iBin)[1] = (*frequencySpectrum)(iBin)[1] * scaling;
             }
-
-
-
-
-            //for (unsigned iBinPos=fMaxBin+1, iBinNeg=dcBin - (fMaxBin+1-dcBin); iBinPos < nSpectrumBins; iBinPos++, iBinNeg--)
-//#pragma omp master
-            //KTDEBUG(gnlog, "loop: " << maxOffsetBin+1 << " - " << spectrumSizeOffset);
-#pragma omp for
-            for (iOffsetBin=maxOffsetBin + 1; iOffsetBin < spectrumSizeOffset; ++iOffsetBin)
-            {
-                iBinPos = dcBin + iOffsetBin;
-                iBinNeg = dcBin - iOffsetBin;
-                //KTDEBUG(gnlog, "    offset = " << iOffsetBin << "    binpos = " << iBinPos << "    binneg = " << iBinNeg);
-                (*newSpectrum)(iBinPos)[0] = (*frequencySpectrum)(iBinPos)[0];
-                (*newSpectrum)(iBinPos)[1] = (*frequencySpectrum)(iBinPos)[1];
-                (*newSpectrum)(iBinNeg)[0] = (*frequencySpectrum)(iBinNeg)[0];
-                (*newSpectrum)(iBinNeg)[1] = (*frequencySpectrum)(iBinNeg)[1];
-            }
-
-        } // end OpenMP parallel block
+        }
 
         spline->AddToCache(splineImp);
 

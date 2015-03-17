@@ -8,13 +8,13 @@
 #include "KTAnalyticAssociator.hh"
 
 #include "KTAnalyticAssociateData.hh"
-#include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTFrequencySpectrumFFTW.hh"
 #include "KTNormalizedFSData.hh"
 #include "KTParam.hh"
 #include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 
 using std::string;
 
@@ -26,7 +26,8 @@ namespace Katydid
 
     KTAnalyticAssociator::KTAnalyticAssociator(const std::string& name) :
             KTProcessor(name),
-            fFullFFT(),
+            fForwardFFT(),
+            fReverseFFT(),
             fSaveFrequencySpectrum(false),
             fAASignal("aa", this),
             fHeaderSlot("header", this, &KTAnalyticAssociator::InitializeWithHeader),
@@ -46,7 +47,11 @@ namespace Katydid
 
         SetSaveFrequencySpectrum(node->GetValue< bool >("save-frequency-spectrum", fSaveFrequencySpectrum));
 
-        if (! fFullFFT.Configure(node->NodeAt("complex-fftw")))
+        if (! fForwardFFT.Configure(node->NodeAt("forward-fftw")))
+        {
+            return false;
+        }
+        if (! fReverseFFT.Configure(node->NodeAt("reverse-fftw")))
         {
             return false;
         }
@@ -56,19 +61,38 @@ namespace Katydid
 
     bool KTAnalyticAssociator::InitializeWithHeader(KTEggHeader& header)
     {
-        return fFullFFT.InitializeWithHeader(header);
+        if (! fForwardFFT.InitializeWithHeader(header)) return false;
+        return fReverseFFT.InitializeWithHeader(header);
+    }
+
+    bool KTAnalyticAssociator::CheckAndDoFFTInit()
+    {
+        if (! fForwardFFT.GetIsInitialized())
+        {
+            fForwardFFT.InitializeForRealAsComplexTDD();
+            if (! fForwardFFT.GetIsInitialized())
+            {
+                KTERROR(aalog, "Unable to initialize forward FFT.");
+                return false;
+            }
+        }
+        if (! fReverseFFT.GetIsInitialized())
+        {
+            fReverseFFT.InitializeForComplexTDD();
+            if (! fReverseFFT.GetIsInitialized())
+            {
+                KTERROR(aalog, "Unable to initialize reverse FFT.");
+                return false;
+            }
+        }
+        return true;
     }
 
     bool KTAnalyticAssociator::CreateAssociateData(KTTimeSeriesData& tsData)
     {
-        if (! fFullFFT.GetIsInitialized())
+        if (! CheckAndDoFFTInit())
         {
-            fFullFFT.InitializeFFT();
-            if (! fFullFFT.GetIsInitialized())
-            {
-                KTERROR(aalog, "Unable to initialize full FFT.");
-                return false;
-            }
+            return false;
         }
 
         unsigned nComponents = tsData.GetNComponents();
@@ -85,10 +109,10 @@ namespace Katydid
         // Calculate the analytic associates
         for (unsigned iComponent = 0; iComponent < nComponents; ++iComponent)
         {
-            const KTTimeSeriesFFTW* nextInput = dynamic_cast< const KTTimeSeriesFFTW* >(tsData.GetTimeSeries(iComponent));
+            const KTTimeSeriesReal* nextInput = dynamic_cast< const KTTimeSeriesReal* >(tsData.GetTimeSeries(iComponent));
             if (nextInput == NULL)
             {
-                KTERROR(aalog, "Incorrect time series type: time series did not cast to KTTimeSeriesFFTW. Other types of time series data are not yet supported.");
+                KTERROR(aalog, "Incorrect time series type: time series did not cast to KTTimeSeriesReal. Other types of time series data are not yet supported.");
                 return false;
             }
 
@@ -119,14 +143,9 @@ namespace Katydid
 
     bool KTAnalyticAssociator::CreateAssociateData(KTFrequencySpectrumDataFFTW& fsData)
     {
-        if (! fFullFFT.GetIsInitialized())
+        if (! CheckAndDoFFTInit())
         {
-            fFullFFT.InitializeFFT();
-            if (! fFullFFT.GetIsInitialized())
-            {
-                KTERROR(aalog, "Unable to initialize full FFT.");
-                return false;
-            }
+            return false;
         }
 
         unsigned nComponents = fsData.GetNComponents();
@@ -156,14 +175,9 @@ namespace Katydid
 
     bool KTAnalyticAssociator::CreateAssociateData(KTNormalizedFSDataFFTW& fsData)
     {
-        if (! fFullFFT.GetIsInitialized())
+        if (! CheckAndDoFFTInit())
         {
-            fFullFFT.InitializeFFT();
-            if (! fFullFFT.GetIsInitialized())
-            {
-                KTERROR(aalog, "Unable to initialize full FFT.");
-                return false;
-            }
+            return false;
         }
 
         unsigned nComponents = fsData.GetNComponents();
@@ -192,10 +206,10 @@ namespace Katydid
     }
 
 
-    KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTTimeSeriesFFTW* inputTS, KTFrequencySpectrumFFTW** outputFS)
+    KTTimeSeriesFFTW* KTAnalyticAssociator::CalculateAnalyticAssociate(const KTTimeSeriesReal* inputTS, KTFrequencySpectrumFFTW** outputFS)
     {
         // Forward FFT
-        KTFrequencySpectrumFFTW* freqSpec = fFullFFT.Transform(inputTS);
+        KTFrequencySpectrumFFTW* freqSpec = fForwardFFT.TransformAsComplex(inputTS);
         if (freqSpec == NULL)
         {
             KTERROR(aalog, "Something went wrong with the forward FFT on the time series.");
@@ -206,7 +220,7 @@ namespace Katydid
         freqSpec->AnalyticAssociate();
 
         // reverse FFT
-        KTTimeSeriesFFTW* outputTS = fFullFFT.Transform(freqSpec);
+        KTTimeSeriesFFTW* outputTS = fReverseFFT.TransformToComplex(freqSpec);
 
         // copy the address of the frequency spectrum to outputFS if it's being kept; otherwise delete
         if (fSaveFrequencySpectrum) outputFS = &freqSpec;
@@ -228,7 +242,7 @@ namespace Katydid
         aaFS.AnalyticAssociate();
 
         // reverse FFT
-        KTTimeSeriesFFTW* outputTS = fFullFFT.Transform(&aaFS);
+        KTTimeSeriesFFTW* outputTS = fReverseFFT.TransformToComplex(&aaFS);
         if (outputTS == NULL)
         {
             KTERROR(aalog, "Something went wrong with the reverse FFT on the frequency spectrum.");

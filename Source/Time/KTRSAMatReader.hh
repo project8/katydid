@@ -99,6 +99,8 @@ namespace Katydid
             double GetTimeInRun() const;
             /// Same as GetTimeInRun
             virtual double GetIntegratedTime() const;
+            /// Returns the time within the current acquisition
+            double GetTimeInAcq() const;
 
             /// Returns the number of slices processed
             virtual unsigned GetNSlicesProcessed() const;
@@ -151,11 +153,17 @@ namespace Katydid
     }
     inline double KTRSAMatReader::GetTimeInRun() const
     {
-        // Time to the record
+        // Time to the acquisition, relative to the start of the run
         // = fRecordsTimeStampSeconds[fRecordsRead]
         // Number of Samples within the record
         // = fSamplesRead - fRecordsRead*fRecordSize
-        return double(fSamplesRead - fRecordsRead*fRecordSize) * fBinWidth + fRecordsTimeStampSeconds[fRecordsRead];
+        return GetTimeInAcq() + fRecordsTimeStampSeconds[fRecordsRead];
+    }
+    inline double KTRSAMatReader::GetTimeInAcq() const
+    {
+        // Number of Samples within the record
+        // = fSamplesRead - fRecordsRead*fRecordSize
+        return double(fSamplesRead - fRecordsRead*fRecordSize) * fBinWidth;
     }
     inline unsigned KTRSAMatReader::GetNSlicesProcessed() const
     {

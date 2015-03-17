@@ -11,9 +11,9 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDistanceClustering.hh"
 #include "KTCluster1DData.hh"
-#include "KTComplexFFTW.hh"
 #include "KTEggHeader.hh"
 #include "KTEggReaderMonarch.hh"
+#include "KTForwardFFTW.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -64,9 +64,8 @@ int main()
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
     unsigned nSlices = 50;
     unsigned recordSize = 32768;
-    KTDAC::TimeSeriesType tsType = KTDAC::kFFTWTimeSeries;
 
-    KTComplexFFTW compFFT;
+    KTForwardFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
 
 #ifdef ROOT_FOUND
@@ -116,7 +115,6 @@ int main()
     eggReader->SetSliceSize(recordSize);
 
     KTDAC* dac = new KTDAC();
-    dac->SetTimeSeriesType(tsType);
 
     KTDataPtr headerPtr = eggReader->BreakEgg(filename);
     if (! headerPtr)
@@ -163,7 +161,7 @@ int main()
         prof.Data(data);
 
         // Calcualte the FFT
-        if (! compFFT.TransformData(tsData))
+        if (! compFFT.TransformRealData(tsData))
         {
             KTERROR(proflog, "A problem occurred while performing the FFT");
             continue;

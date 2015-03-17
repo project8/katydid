@@ -37,7 +37,8 @@ namespace Katydid
             fVoltageRange(0.5),
             fCenterFrequency(0.0),
             fMinimumFrequency(0.0),
-            fMaximumFrequency(0.0)
+            fMaximumFrequency(0.0),
+            fTSDataType(kReal)
     {
     }
 
@@ -62,7 +63,8 @@ namespace Katydid
             fVoltageRange(orig.fVoltageRange),
             fCenterFrequency(orig.fCenterFrequency),
             fMinimumFrequency(orig.fMinimumFrequency),
-            fMaximumFrequency(orig.fMaximumFrequency)
+            fMaximumFrequency(orig.fMaximumFrequency),
+            fTSDataType(orig.fTSDataType)
     {
     }
 
@@ -93,6 +95,7 @@ namespace Katydid
         fCenterFrequency = rhs.fCenterFrequency;
         fMinimumFrequency = rhs.fMinimumFrequency;
         fMaximumFrequency = rhs.fMaximumFrequency;
+        fTSDataType = rhs.fTSDataType;
         return *this;
     }
 
@@ -118,7 +121,8 @@ namespace Katydid
                 << "\tVoltage Min: " << header.GetVoltageMin() << " V\n"
                 << "\tVoltage Range: " << header.GetVoltageRange() << " V\n"
                 << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
-                << "\tFrequency Span: " << header.GetMaximumFrequency()  - header.GetMinimumFrequency()<< " Hz\n";
+                << "\tFrequency Span: " << header.GetMaximumFrequency()  - header.GetMinimumFrequency()<< " Hz\n"
+                << "\tTime Series Data Type: " << header.GetTSDataType() << '\n';
         return out;
     }
 

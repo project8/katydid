@@ -21,6 +21,14 @@ namespace Katydid
     class KTEggHeader : public KTExtensibleData< KTEggHeader >
     {
         public:
+            enum TimeSeriesDataType
+            {
+                kReal,
+                kComplex,
+                kIQ
+            };
+
+        public:
             KTEggHeader();
             KTEggHeader(const KTEggHeader& orig);
             ~KTEggHeader();
@@ -48,6 +56,7 @@ namespace Katydid
             MEMBERVARIABLE(unsigned, BitDepth); /// in bits
             MEMBERVARIABLE(double, VoltageMin); /// in V
             MEMBERVARIABLE(double, VoltageRange); /// in V
+            MEMBERVARIABLE(TimeSeriesDataType, TSDataType);
 
         public:
             static const std::string sName;

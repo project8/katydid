@@ -96,7 +96,7 @@ namespace Katydid
                 conv << "histNFSpolar_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* magHist = spectrum->CreateMagnitudeHistogram(histName);
+                TH1D* magHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 fWriter->Draw(magHist);
             }
         }
@@ -123,7 +123,7 @@ namespace Katydid
                 conv << "histNFSfftw_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* magHist = spectrum->CreateMagnitudeHistogram(histName);
+                TH1D* magHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 fWriter->Draw(magHist);
             }
         }
@@ -150,7 +150,7 @@ namespace Katydid
                 conv << "histNFSpolarPhase_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* phaseHist = spectrum->CreatePhaseHistogram(histName);
+                TH1D* phaseHist = KT2ROOT::CreatePhaseHistogram(spectrum, histName);
                 fWriter->Draw(phaseHist);
             }
         }
@@ -177,7 +177,7 @@ namespace Katydid
                 conv << "histNFSfftwPhase_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* phaseHist = spectrum->CreatePhaseHistogram(histName);
+                TH1D* phaseHist = KT2ROOT::CreatePhaseHistogram(spectrum, histName);
                 fWriter->Draw(phaseHist);
             }
         }
@@ -204,7 +204,7 @@ namespace Katydid
                 conv << "histNPSpolar_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
+                TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
                 fWriter->Draw(powerSpectrum);
             }
         }
@@ -231,7 +231,7 @@ namespace Katydid
                 conv << "histNPSfftw_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
+                TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
                 fWriter->Draw(powerSpectrum);
             }
         }
@@ -326,7 +326,7 @@ namespace Katydid
                 conv << "histCorr_" << sliceNumber << "_" << iPair;
                 string histName;
                 conv >> histName;
-                TH1D* corrHist = spectrum->CreateMagnitudeHistogram(histName);
+                TH1D* corrHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", Correlation " << iPair << ", "
                         "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
@@ -357,7 +357,7 @@ namespace Katydid
                 conv << "histCorrDist_" << sliceNumber << "_" << iPair;
                 string histName;
                 conv >> histName;
-                TH1D* corrHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
+                TH1D* corrHist = KT2ROOT::CreateMagnitudeDistributionHistogram(spectrum, histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", Correlation " << iPair << ", "
                         "Channels (" << corrData.GetInputPair(iPair).first << ", " << corrData.GetInputPair(iPair).second << ")";
@@ -525,7 +525,7 @@ namespace Katydid
                 conv << "histWV_" << sliceNumber << "_" << iPair;
                 string histName;
                 conv >> histName;
-                TH1D* wvHist = spectrum->CreateMagnitudeHistogram(histName);
+                TH1D* wvHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
                         "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";
@@ -556,7 +556,7 @@ namespace Katydid
                 conv << "histWVDist_" << sliceNumber << "_" << iPair;
                 string histName;
                 conv >> histName;
-                TH1D* wvHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
+                TH1D* wvHist = KT2ROOT::CreateMagnitudeDistributionHistogram(spectrum, histName);
                 stringstream titleStream;
                 titleStream << "Slice " << sliceNumber << ", WignerVille Distribution " << iPair << ", "
                         "Channels (" << wvData.GetInputPair(iPair).first << ", " << wvData.GetInputPair(iPair).second << ")";

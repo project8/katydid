@@ -42,7 +42,7 @@ namespace Katydid
             fInputArray(new KTTimeSeriesFFTW(1,0.,1.)),
             fUseWindowFunction(false),
             fWindower(new KTWindower()),
-            fFFT(new KTComplexFFTW()),
+            fFFT(new KTForwardFFTW()),
             fOutputArrays(),
             fOutputData(new KTData()),
             fOutputSHData(NULL),
@@ -70,7 +70,7 @@ namespace Katydid
 
     bool KTWignerVille::Configure(const KTParamNode* node)
     {
-        fFFT->Configure(node->NodeAt("complex-fftw"));
+        fFFT->Configure(node->NodeAt("forward-fftw"));
 
         const KTParamNode* windowerNode = node->NodeAt("windower");
         if (windowerNode != NULL)
@@ -120,8 +120,8 @@ namespace Katydid
         }
 
         // initialize the FFT
-        fFFT->SetSize(fWindowSize);
-        fFFT->InitializeFFT();
+        fFFT->SetTimeSize(fWindowSize);
+        fFFT->InitializeForComplexTDD();
 
         double timeBW = 1. / acqRate;
 

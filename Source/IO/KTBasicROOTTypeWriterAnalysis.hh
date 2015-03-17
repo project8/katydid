@@ -59,8 +59,8 @@ namespace Katydid
             // Correlation TS Data
             //************************
         public:
-            void WriteCorrelationTSData(KTDataPtr data);
-            void WriteCorrelationTSDataDistribution(KTDataPtr data);
+            //void WriteCorrelationTSData(KTDataPtr data);
+            //void WriteCorrelationTSDataDistribution(KTDataPtr data);
 
             //************************
             // Hough Transform Data
