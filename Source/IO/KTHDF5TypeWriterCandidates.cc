@@ -184,8 +184,9 @@ namespace Katydid {
         H5::DataSpace dspace_tracks(1, dims_tracks);
 
         if( !fWriter->OpenAndVerifyFile() ) return;
-        // Make a group for the events, and a subgroup for the tracks belonging to the event
+        // Make a group for the events, and a separate group for the tracks belonging to the event
         H5::Group* candidatesGroup = fWriter->AddGroup("candidates");
+        H5::Group* candidateTracksGroup = fWriter->AddGroup("candidate_tracks");
 
         // OK, create the dataset and write it down.
         // Write the event information
@@ -205,7 +206,7 @@ namespace Katydid {
         std::string dsetname2;
         namestream2 << "candidate_tracks_" << this->fFlushMTEIdx;
         namestream2 >> dsetname2;
-        H5::DataSet* dset_tracks = new H5::DataSet(candidatesGroup->createDataSet(dsetname2.c_str(),
+        H5::DataSet* dset_tracks = new H5::DataSet(candidateTracksGroup->createDataSet(dsetname2.c_str(),
                                                                            *(this->fPTType),
                                                                            dspace_tracks));
         dset_tracks->write((this->fMTETracksDataBuffer).data(),*(this->fPTType));
