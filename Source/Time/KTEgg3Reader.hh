@@ -53,6 +53,11 @@ namespace Katydid
                 unsigned fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
                 unsigned fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
                 unsigned fAbsoluteRecordOffset; // number of records read in the run
+
+                unsigned fStartOfLastSliceRecord;
+                unsigned fStartOfLastSliceReadPtr;
+                unsigned fStartOfSliceAcquisitionId;
+                unsigned fCurrentRecord;
                 Status fStatus;
             };
 
@@ -100,6 +105,8 @@ namespace Katydid
             const monarch3::M3Stream* fStream0;
             KTDataPtr fHeaderPtr;
             KTEggHeader& fHeader;
+            KTSliceHeader fMasterSliceHeader;
+
             MonarchReadState fReadState;
 
         public:
@@ -221,10 +228,6 @@ namespace Katydid
         return fReadState;
     }
 
-    inline KTDataPtr KTEgg3Reader::HatchNextSlice()
-    {
-        return (this->*fHatchNextSlicePtr)();
-    }
 
 
 
