@@ -78,6 +78,8 @@ namespace Katydid
 
             virtual KTParam* Clone() const;
 
+            bool Empty() const;
+
             virtual bool IsNull() const;
             virtual bool IsValue() const;
 
@@ -238,8 +240,11 @@ namespace Katydid
             void PushFront( const KTParam& aValue );
             void PushFront( KTParam* aValue_ptr );
 
+            void Append( const KTParamArray& anArray );
+
             void Erase( unsigned aIndex );
             KTParam* Remove( unsigned aIndex );
+            void Clear();
 
             iterator Begin();
             const_iterator Begin() const;
@@ -296,6 +301,9 @@ namespace Katydid
 
             bool Has( const std::string& aName ) const;
             unsigned Count( const std::string& aName ) const;
+
+            unsigned Size() const;
+            bool Empty() const;
 
             /// Returns the result of ParamValue::Get if aName is present and is of type ParamValue
             /// Throws a KTException if aName is not present or is not of type ParamValue
@@ -360,6 +368,7 @@ namespace Katydid
 
             void Erase( const std::string& aName );
             KTParam* Remove( const std::string& aName );
+            void Clear();
 
             iterator Begin();
             const_iterator Begin() const;
