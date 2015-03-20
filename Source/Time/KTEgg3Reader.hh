@@ -92,7 +92,8 @@ namespace Katydid
             void CopyHeaderInformation(const monarch3::M3Header* monarchHeader);
 
             KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
-            KTDataPtr HatchNextSliceReal();
+            KTDataPtr HatchNextSliceRealUnsigned();
+            KTDataPtr HatchNextSliceRealSigned();
             KTDataPtr HatchNextSliceComplex();
 
             const monarch3::Monarch3* fMonarch;
