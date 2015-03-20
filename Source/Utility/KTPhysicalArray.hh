@@ -748,9 +748,9 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator+=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) += rhs(iBinX, iBinY);
             }
@@ -762,9 +762,9 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator-=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) -= rhs(iBinX, iBinY);
             }
@@ -776,9 +776,9 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator*=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) *= rhs(iBinX, iBinY);
             }
@@ -790,9 +790,9 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator/=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) /= rhs(iBinX, iBinY);
             }
@@ -803,9 +803,9 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator+=(const value_type& rhs)
     {
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) += rhs;
             }
@@ -816,9 +816,9 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator-=(const value_type& rhs)
     {
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) -= rhs;
             }
@@ -829,9 +829,9 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator*=(const value_type& rhs)
     {
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) *= rhs;
             }
@@ -842,9 +842,9 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator/=(const value_type& rhs)
     {
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) /= rhs;
             }
