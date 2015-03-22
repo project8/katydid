@@ -46,13 +46,13 @@ namespace Katydid
                     kInvalid,
                     kAtStartOfRun,
                     kContinueReading,
-                    kReachedNextRecord
+                    //kReachedNextRecord
                 };
-                unsigned fAcquisitionID;
-                unsigned fReadPtrOffset; // sample offset of the read pointer in the current record
-                unsigned fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
-                unsigned fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
-                unsigned fAbsoluteRecordOffset; // number of records read in the run
+                //unsigned fAcquisitionID;
+                //unsigned fReadPtrOffset; // sample offset of the read pointer in the current record
+                //unsigned fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
+                //unsigned fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
+                //unsigned fAbsoluteRecordOffset; // number of records read in the run
 
                 unsigned fStartOfLastSliceRecord;
                 unsigned fStartOfLastSliceReadPtr;
@@ -200,12 +200,12 @@ namespace Katydid
 
     inline double KTEgg3Reader::GetTimeInRunFromMonarch() const
     {
-        return double(fStream0->GetChannelRecord(0)->GetTime() - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fReadPtrOffset);
+        return double(fStream0->GetChannelRecord(0)->GetTime() - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fStartOfLastSliceReadPtr);
     }
 
     inline double KTEgg3Reader::GetTimeInRunManually() const
     {
-        return fBinWidth * double(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
+        return fBinWidth * double(fReadState.fStartOfLastSliceRecord * fRecordSize + fReadState.fStartOfLastSliceReadPtr);
     }
 
     inline double KTEgg3Reader::GetIntegratedTime() const

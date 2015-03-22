@@ -227,8 +227,6 @@ namespace Katydid
             fReadState.fStartOfSliceAcquisitionId = fStream0->GetAcquisitionId();
 
             fSliceNumber = 0;
-
-            fReadState.fStatus = MonarchReadState::kContinueReading;
         }
         else
         {
@@ -274,8 +272,6 @@ namespace Katydid
             fReadState.fStartOfSliceAcquisitionId = fStream0->GetAcquisitionId();
 
             ++fSliceNumber;
-
-            fReadState.fStatus = MonarchReadState::kContinueReading;
         }
 
         // at this point, the stream is ready for data to be copied from it, and fReadState is up-to-date
@@ -286,13 +282,36 @@ namespace Katydid
         // add a slice header, and fill out the slice header information
         KTSliceHeader& sliceHeader = newData->Of< KTSliceHeader >();
         sliceHeader = fMasterSliceHeader;
-        //TODO: copy slice header info here
+        if (fReadState.fStatus == MonarchReadState::kAtStartOfRun)
+        {
+            sliceHeader.SetIsNewAcquisition(true);
+        }
+        else
+        {
+            sliceHeader.SetIsNewAcquisition(false);
+        }
+        //sliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
+        //sliceHeader.SetRawSliceSize(fSliceSize);
+        //sliceHeader.SetSliceSize(fSliceSize);
+        //sliceHeader.CalculateBinWidthAndSliceLength();
+        //sliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
+        sliceHeader.SetTimeInRun(GetTimeInRun());
+        sliceHeader.SetSliceNumber(fSliceNumber);
+        sliceHeader.SetStartRecordNumber(fReadState.fCurrentRecord);
+        sliceHeader.SetStartSampleNumber(readPos);
+        //sliceHeader.SetRecordSize(fHeader.GetRecordSize());
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // create the raw time series objects that will contain the new copies of slices
+        // and set some channel-specific slice header info
         vector< KTRawTimeSeries* > newSlices(nChannels);
         for (unsigned iChan = 0; iChan < nChannels; ++iChan)
         {
             newSlices[iChan] = new KTRawTimeSeries(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+
+            sliceHeader.SetAcquisitionID(fStream0->GetAcquisitionId(), iChan);
+            sliceHeader.SetRecordID(fStream0->GetChannelRecord( iChan )->GetRecordId(), iChan);
+            sliceHeader.SetTimeStamp(fStream0->GetChannelRecord( iChan )->GetTime(), iChan);
         }
 
         // the write position on the new slice
@@ -301,7 +320,15 @@ namespace Katydid
         // the number of samples still to copy to the new slice
         unsigned samplesRemainingToCopy = fSliceSize;
 
+        // the last sample that will be copied in a record, for each copy
+        // the motivation for calculating this (at least initially) is to know the last (record, sample) pair for the slice
+        unsigned lastSampleCopied = 0;
+
+        fReadState.fStatus = MonarchReadState::kContinueReading;
+
+        //****************************************
         // loop until all samples have been copied
+        //****************************************
         while( samplesRemainingToCopy > 0 )
         {
             // calculate the end-of-slice position
@@ -315,6 +342,7 @@ namespace Katydid
                 // samplesBeyondRecord = endOfSlicePos - recordSize;
                 samplesToCopyFromThisRecord -= endOfSlicePos - recordSize;
             }
+            lastSampleCopied = readPos + samplesToCopyFromThisRecord - 1;
 
             // copy the samples from this record
             unsigned bytesToCopy = samplesToCopyFromThisRecord * nBytesInSample;
@@ -357,13 +385,32 @@ namespace Katydid
                     // also reset fStartOfSliceAcquisitionId
                     fReadState.fStartOfSliceAcquisitionId = fStream0->GetAcquisitionId();
 
-                }
+                    // reset slice data
+                    sliceHeader.SetIsNewAcquisition(true);
+                    sliceHeader.SetStartRecordNumber(fReadState.fCurrentRecord);
+                    sliceHeader.SetStartSampleNumber(readPos);
+                    for (unsigned iChan = 0; iChan < nChannels; ++iChan)
+                    {
+                        sliceHeader.SetAcquisitionID(fStream0->GetAcquisitionId(), iChan);
+                        sliceHeader.SetRecordID(fStream0->GetChannelRecord( iChan )->GetRecordId(), iChan);
+                        sliceHeader.SetTimeStamp(fStream0->GetChannelRecord( iChan )->GetTime(), iChan);
+                    }
+                    sliceHeader.SetTimeInRun(GetTimeInRun());
+                    KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
+                            "\tCurent record = " << fReadState.fCurrentRecord << '\n' <<
+                            "\tSlice start sample in record = " << readPos);
+                } // end if-block dealing with new acquisitions
 
                 // and now we're ready to loop back to copy samples from the new record
-            }
-        }
+            } // end if-block used when there are still samples left to copy for this slice
+
+        } // end while-loop responsible for copying samples to the slice
 
         // at this point, all of the samples have been copied into the new slice
+
+        // the slice header gets information about where the slice ended
+        sliceHeader.SetEndRecordNumber(fReadState.fCurrentRecord);
+        sliceHeader.SetEndSampleNumber(lastSampleCopied);
 
         // finally, set the records in the new data object
         KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(nChannels);
@@ -372,8 +419,7 @@ namespace Katydid
             tsData.SetTimeSeries(newSlices[iChannel], iChannel);
         }
 
-
-
+        return newData;
     }
 
 
@@ -385,7 +431,7 @@ namespace Katydid
 
 
 
-
+/*
 
 
     KTDataPtr KTEgg3Reader::HatchNextSliceRealUnsigned()
@@ -1090,6 +1136,8 @@ namespace Katydid
 
         return newData;
     }
+
+    */
 
     bool KTEgg3Reader::CloseEgg()
     {
