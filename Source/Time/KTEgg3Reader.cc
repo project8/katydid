@@ -42,6 +42,7 @@ namespace Katydid
             fStream0(NULL),
             fHeaderPtr(new KTData()),
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
+            fMasterSliceHeader(),
             fReadState(),
             fGetTimeInRun(&KTEgg3Reader::GetTimeInRunFirstCall),
             fT0Offset(0),
@@ -51,11 +52,10 @@ namespace Katydid
             fSliceNumber(0)
     {
         fReadState.fStatus = MonarchReadState::kInvalid;
-        fReadState.fAcquisitionID = 0;
-        fReadState.fReadPtrOffset = 0;
-        fReadState.fReadPtrRecordOffset = 0;
-        fReadState.fSliceStartPtrOffset = 0;
-        fReadState.fAbsoluteRecordOffset = 0;
+        fReadState.fStartOfLastSliceRecord = 0;
+        fReadState.fStartOfLastSliceReadPtr = 0;
+        fReadState.fStartOfSliceAcquisitionId = 0;
+        fReadState.fCurrentRecord = 0;
     }
 
     KTEgg3Reader::~KTEgg3Reader()
@@ -152,21 +152,29 @@ namespace Katydid
 
         // by default, start the read state at the beginning of the run
         fReadState.fStatus = MonarchReadState::kAtStartOfRun;
-        fReadState.fAcquisitionID = 0;
-        fReadState.fReadPtrOffset = 0;
-        fReadState.fAbsoluteRecordOffset = 0;
+        fReadState.fStartOfLastSliceRecord = 0;
+        fReadState.fStartOfLastSliceReadPtr = 0;
+        fReadState.fStartOfSliceAcquisitionId = 0;
+        fReadState.fCurrentRecord = 0;
 
         // skip forward in the run if fStartTime is non-zero
         if (fStartTime > 0.)
         {
             double recordLength = fRecordSize * fBinWidth; // seconds
             unsigned recordSkips = (unsigned)(fStartTime / recordLength);
-            fReadState.fAbsoluteRecordOffset = recordSkips;
-            fReadState.fReadPtrOffset = (unsigned)((fStartTime - (double)recordSkips * recordLength) / fBinWidth);
-            fReadState.fSliceStartPtrOffset = fReadState.fReadPtrOffset;
+            fReadState.fStartOfLastSliceRecord = recordSkips;
+            fReadState.fStartOfLastSliceReadPtr = (unsigned)((fStartTime - (double)recordSkips * recordLength) / fBinWidth);;
         }
 
         fSliceNumber = 0;
+
+        // set a few values in the master slice header that don't change with each slice
+        fMasterSliceHeader.SetSampleRate(fHeader.GetAcquisitionRate());
+        fMasterSliceHeader.SetRawSliceSize(fSliceSize);
+        fMasterSliceHeader.SetSliceSize(fSliceSize);
+        fMasterSliceHeader.CalculateBinWidthAndSliceLength();
+        fMasterSliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
+        fMasterSliceHeader.SetRecordSize(fHeader.GetRecordSize());
 
         // set the stream pointer to stream 0
         fStream0 = fMonarch->GetStream(0);
