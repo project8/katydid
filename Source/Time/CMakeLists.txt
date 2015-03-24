@@ -18,6 +18,8 @@ set (TIME_SOURCEFILES
 )
 
 if (Katydid_USE_MONARCH)
+    add_definitions(-DUSE_MONARCH)
+
     if( Monarch_BUILD_MONARCH2 )
         set (TIME_HEADERFILES
             ${TIME_HEADERFILES}

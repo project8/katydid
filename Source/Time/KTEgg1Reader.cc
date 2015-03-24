@@ -337,10 +337,10 @@ namespace Katydid
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTRawTimeSeries* newRecord = new KTRawTimeSeries(fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
+            KTRawTimeSeries* newRecord = new KTRawTimeSeries(1, sDigitizedUS, fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
             for (int iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
-                (*newRecord)(iBin) = readBuffer[iBin];
+                newRecord->SetAt(readBuffer[iBin], iBin);
             }
             delete [] readBuffer;
             KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(1);

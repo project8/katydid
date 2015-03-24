@@ -8,24 +8,33 @@
 #ifndef KTRAWTIMESERIES_HH_
 #define KTRAWTIMESERIES_HH_
 
-#include "KTPhysicalArray.hh"
-
-#include <stdint.h>
+#include "KTVarTypePhysicalArray.hh"
 
 namespace Katydid
 {
 
-    class KTRawTimeSeries :public KTPhysicalArray< 1, uint64_t >
+    class KTRawTimeSeries : public KTVarTypePhysicalArray< uint64_t >
     {
         public:
             KTRawTimeSeries();
-            KTRawTimeSeries(size_t nBins, double rangeMin, double rangeMax);
+            KTRawTimeSeries(size_t dataTypeSize, uint32_t dataFormat, size_t nBins, double rangeMin, double rangeMax);
             KTRawTimeSeries(const KTRawTimeSeries& orig);
             virtual ~KTRawTimeSeries();
 
             KTRawTimeSeries& operator=(const KTRawTimeSeries& rhs);
 
+            /// Create an interface object with a different interface type
+            template< typename XInterfaceType >
+            KTVarTypePhysicalArray< XInterfaceType > CreateInterface() const;
+
     };
+
+    template< typename XInterfaceType >
+    KTVarTypePhysicalArray< XInterfaceType > KTRawTimeSeries::CreateInterface() const
+    {
+        return KTVarTypePhysicalArray< XInterfaceType >( *this, false );
+    }
+
 
 } /* namespace Katydid */
 #endif /* KTRAWTIMESERIES_HH_ */

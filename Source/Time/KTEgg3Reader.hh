@@ -10,6 +10,7 @@
 #define KTEGG3READER_HH_
 
 #include "KTEggReader.hh"
+#include "KTSliceHeader.hh"
 
 #include "M3Stream.hh"
 #include "M3Types.hh"
@@ -96,13 +97,14 @@ namespace Katydid
             /// Copy header information from the MonarchHeader object
             void CopyHeaderInformation(const monarch3::M3Header* monarchHeader);
 
-            KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
-            KTDataPtr HatchNextSliceRealUnsigned();
-            KTDataPtr HatchNextSliceRealSigned();
-            KTDataPtr HatchNextSliceComplex();
+            //KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
+            //KTDataPtr HatchNextSliceRealUnsigned();
+            //KTDataPtr HatchNextSliceRealSigned();
+            //KTDataPtr HatchNextSliceComplex();
 
             const monarch3::Monarch3* fMonarch;
             const monarch3::M3Stream* fStream0;
+            const monarch3::M3StreamHeader* fStreamHeader0;
             KTDataPtr fHeaderPtr;
             KTEggHeader& fHeader;
             KTSliceHeader fMasterSliceHeader;
@@ -220,7 +222,7 @@ namespace Katydid
 
     inline unsigned KTEgg3Reader::GetNRecordsProcessed() const
     {
-        return fReadState.fAbsoluteRecordOffset + 1;
+        return fReadState.fCurrentRecord + 1;
     }
 
     inline const KTEgg3Reader::MonarchReadState& KTEgg3Reader::GetReadState() const

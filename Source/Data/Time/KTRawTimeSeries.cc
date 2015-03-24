@@ -11,21 +11,22 @@ namespace Katydid
 {
 
     KTRawTimeSeries::KTRawTimeSeries() :
-            KTPhysicalArray< 1, uint64_t >()
+            KTVarTypePhysicalArray< uint64_t >()
     {
-        fData[0] = 0;
+        SetAt(0., 0);
     }
 
-    KTRawTimeSeries::KTRawTimeSeries(size_t nBins, double rangeMin, double rangeMax) :
-            KTPhysicalArray< 1, uint64_t >(nBins, rangeMin, rangeMax)
+    KTRawTimeSeries::KTRawTimeSeries(size_t dataTypeSize, uint32_t dataFormat, size_t nBins, double rangeMin, double rangeMax) :
+                KTVarTypePhysicalArray< uint64_t >(dataTypeSize, dataFormat, nBins, rangeMin, rangeMax)
     {
         for (unsigned iBin = 0; iBin < nBins; ++iBin)
         {
-            fData[iBin] = 0;
+            SetAt(0., iBin);
         }
     }
+
     KTRawTimeSeries::KTRawTimeSeries(const KTRawTimeSeries& orig) :
-            KTPhysicalArray< 1, uint64_t >(orig)
+            KTVarTypePhysicalArray< uint64_t >(orig)
     {
     }
 
@@ -35,7 +36,7 @@ namespace Katydid
 
     KTRawTimeSeries& KTRawTimeSeries::operator=(const KTRawTimeSeries& rhs)
     {
-        KTPhysicalArray< 1, uint64_t >::operator=(rhs);
+        KTVarTypePhysicalArray< uint64_t >::operator=(rhs);
         return *this;
     }
 

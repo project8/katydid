@@ -37,9 +37,10 @@ namespace Katydid
             fSliceSize(1024),
             fStride(0),
             fStartTime(0.),
-            fHatchNextSlicePtr(NULL),
+            //fHatchNextSlicePtr(NULL),
             fMonarch(NULL),
             fStream0(NULL),
+            fStreamHeader0(NULL),
             fHeaderPtr(new KTData()),
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fMasterSliceHeader(),
@@ -114,8 +115,11 @@ namespace Katydid
         fHeader.SetSliceSize(fSliceSize);
         fHeader.SetSliceStride(fStride);
 
+        fStreamHeader0 = &(fMonarch->GetHeader()->GetStreamHeaders()[0]);
+
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
+        /*
         const M3StreamHeader& stream0Header = fMonarch->GetHeader()->GetStreamHeaders()[0];
         if (stream0Header.GetDataFormat() == sAnalog && stream0Header.GetSampleSize() == 2)
         {
@@ -142,6 +146,7 @@ namespace Katydid
             fMonarch = NULL;
             return KTDataPtr();
         }
+        */
 
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
@@ -315,7 +320,9 @@ namespace Katydid
         vector< KTRawTimeSeries* > newSlices(nChannels);
         for (unsigned iChan = 0; iChan < nChannels; ++iChan)
         {
-            newSlices[iChan] = new KTRawTimeSeries(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+            newSlices[iChan] = new KTRawTimeSeries(fStream0->GetDataTypeSize(),
+                    ConvertMonarch3DataFormat(fStreamHeader0->GetDataFormat()),
+                    fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
 
             sliceHeader.SetAcquisitionID(fStream0->GetAcquisitionId(), iChan);
             sliceHeader.SetRecordID(fStream0->GetChannelRecord( iChan )->GetRecordId(), iChan);
@@ -352,16 +359,37 @@ namespace Katydid
             }
             lastSampleCopied = readPos + samplesToCopyFromThisRecord - 1;
 
-            // copy the samples from this record
+            // number of bytes to copy from this record
             unsigned bytesToCopy = samplesToCopyFromThisRecord * nBytesInSample;
 
+            // write position in bytes
+            unsigned writePosBytes = writePos * nBytesInSample;
+            unsigned readPosBytes = readPos * nBytesInSample;
+
             // copy the samples from this record for each channel
+            KTDEBUG(eggreadlog, "Copying data to slice; " << bytesToCopy << " bytes in " << samplesToCopyFromThisRecord << " samples");
             for( unsigned iChan = 0; iChan < nChannels; ++iChan )
             {
-                memcpy( newSlices[iChan]->GetData() + writePos,
-                        fStream0->GetChannelRecord( iChan )->GetData() + readPos,
+                memcpy( newSlices[iChan]->GetStorage() + writePosBytes,
+                        fStream0->GetChannelRecord( iChan )->GetData() + readPosBytes,
                         bytesToCopy );
             }
+
+            //*** DEBUG ***
+            std::stringstream readstream, writestream;
+            M3DataReader< int64_t > readIfc(fStream0->GetChannelRecord( 0 )->GetData(), fHeader.GetDataTypeSize(), fHeader.GetFormatMode());
+            KTVarTypePhysicalArray< int64_t > writeIfc = newSlices[0]->CreateInterface< int64_t >();
+            for (unsigned iBin = 0; iBin < 10; ++iBin)
+            {
+                std::cout << "read at " << readPos + iBin << " = " << readPos << " + " << iBin << ";    write at " << writePos + iBin << " = " << writePos << " + " << iBin << std::endl;
+                readstream << readIfc.at( readPos + iBin ) << "  ";
+                writestream << writeIfc( writePos + iBin ) << "  ";
+            }
+
+            KTWARN(eggreadlog, "Reading:  " << readstream.str());
+            KTWARN(eggreadlog, "Writing:  " << writestream.str());
+
+            //*** DEBUG ***
 
             // update samplesRemainingToCopy
             samplesRemainingToCopy -= samplesToCopyFromThisRecord;

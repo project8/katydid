@@ -282,7 +282,7 @@ namespace Katydid
             monarchRecordData[iChannel] = new M2RecordDataInterface< uint64_t >(monarchRecords[iChannel]->fData, fHeader.GetDataTypeSize());
 
             //tsData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
-            newRecords[iChannel] = new KTRawTimeSeries(fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+            newRecords[iChannel] = new KTRawTimeSeries(fHeader.GetDataTypeSize(), sDigitizedUS, fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
         }
 
         KTDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
@@ -362,7 +362,7 @@ namespace Katydid
             for (unsigned iChannel = 0; iChannel < nChannels; ++iChannel)
             {
                 // set the data
-                (*newRecords[iChannel])(iBin) = monarchRecordData[iChannel]->at(fReadState.fReadPtrOffset);
+                newRecords[iChannel]->SetAt(monarchRecordData[iChannel]->at(fReadState.fReadPtrOffset), iBin);
             }
 
             // advance the pointer for the next bin
