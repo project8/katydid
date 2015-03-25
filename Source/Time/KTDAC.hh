@@ -11,12 +11,15 @@
 
 #include "KTProcessor.hh"
 
+#include "KTLogger.hh"
 #include "KTSlot.hh"
 
 #include <vector>
 
 namespace Katydid
 {
+    KTLOGGER(egglog_dac, "KTDAC");
+
     class KTEggHeader;
     class KTParamNode;
     class KTRawTimeSeries;
@@ -84,6 +87,9 @@ namespace Katydid
             double GetVoltageRange() const;
             void SetVoltageRange(double volts);
 
+            uint32_t GetDigitizedDataFormat() const;
+            bool SetDigitizedDataFormat(uint32_t format);
+
             TimeSeriesType GetTimeSeriesType() const;
             void SetTimeSeriesType(TimeSeriesType type);
 
@@ -96,6 +102,8 @@ namespace Katydid
             unsigned fNBits;
             double fMinVoltage;
             double fVoltageRange;
+
+            uint32_t fDigitizedDataFormat;
 
             TimeSeriesType fTimeSeriesType;
 
@@ -110,18 +118,36 @@ namespace Katydid
 
             bool ConvertData(KTSliceHeader& header, KTRawTimeSeriesData& rawData);
 
-            KTTimeSeries* ConvertToFFTW(KTRawTimeSeries* ts);
-            KTTimeSeries* ConvertToReal(KTRawTimeSeries* ts);
+            KTTimeSeries* ConvertUnsignedToFFTW(KTRawTimeSeries* ts);
+            KTTimeSeries* ConvertUnsignedToReal(KTRawTimeSeries* ts);
 
-            KTTimeSeries* ConvertToFFTWOversampled(KTRawTimeSeries* ts);
-            KTTimeSeries* ConvertToRealOversampled(KTRawTimeSeries* ts);
+            KTTimeSeries* ConvertSignedToFFTW(KTRawTimeSeries* ts);
+            KTTimeSeries* ConvertSignedToReal(KTRawTimeSeries* ts);
+
+            KTTimeSeries* ConvertUnsignedToFFTWOversampled(KTRawTimeSeries* ts);
+            KTTimeSeries* ConvertUnsignedToRealOversampled(KTRawTimeSeries* ts);
+
+            KTTimeSeries* ConvertSignedToFFTWOversampled(KTRawTimeSeries* ts);
+            KTTimeSeries* ConvertSignedToRealOversampled(KTRawTimeSeries* ts);
 
             double Convert(uint64_t level);
+            double Convert(int64_t level);
 
         private:
+            template< typename XInterfaceType >
+            KTTimeSeries* DoConvertToFFTW(const KTVarTypePhysicalArray< XInterfaceType >& ts);
+            template< typename XInterfaceType >
+            KTTimeSeries* DoConvertToReal(const KTVarTypePhysicalArray< XInterfaceType >& ts);
+
+            template< typename XInterfaceType >
+            KTTimeSeries* DoConvertToFFTWOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts);
+            template< typename XInterfaceType >
+            KTTimeSeries* DoConvertToRealOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts);
+
             bool fShouldRunInitialize;
 
             std::vector< double > fVoltages;
+            int64_t fIntLevelOffset;
 
             KTTimeSeries* (KTDAC::*fConvertTSFunc)(KTRawTimeSeries*);
 
@@ -179,6 +205,23 @@ namespace Katydid
         return;
     }
 
+    inline uint32_t KTDAC::GetDigitizedDataFormat() const
+    {
+        return fDigitizedDataFormat;
+    }
+
+    inline bool KTDAC::SetDigitizedDataFormat(uint32_t format)
+    {
+        if (fDigitizedDataFormat != sDigitizedS && fDigitizedDataFormat != sDigitizedUS)
+        {
+            KTERROR(egglog_dac, "Invalid digitized data format: " << fDigitizedDataFormat);
+            return false;
+        }
+        fDigitizedDataFormat = format;
+        fShouldRunInitialize = true;
+        return true;
+    }
+
     inline KTDAC::TimeSeriesType KTDAC::GetTimeSeriesType() const
     {
         return fTimeSeriesType;
@@ -194,9 +237,147 @@ namespace Katydid
         return fEmulatedNBits;
     }
 
+    inline KTTimeSeries* KTDAC::ConvertUnsignedToFFTW(KTRawTimeSeries* ts)
+    {
+        return DoConvertToFFTW(*ts);
+    }
+
+    inline KTTimeSeries* KTDAC::ConvertUnsignedToReal(KTRawTimeSeries* ts)
+    {
+        return DoConvertToReal(*ts);
+    }
+
+    inline KTTimeSeries* KTDAC::ConvertSignedToFFTW(KTRawTimeSeries* ts)
+    {
+        return DoConvertToFFTW(KTVarTypePhysicalArray< int64_t >(*ts, false));
+    }
+
+    inline KTTimeSeries* KTDAC::ConvertSignedToReal(KTRawTimeSeries* ts)
+    {
+        return DoConvertToReal(KTVarTypePhysicalArray< int64_t >(*ts, false));
+    }
+
+    inline KTTimeSeries* KTDAC::ConvertUnsignedToFFTWOversampled(KTRawTimeSeries* ts)
+    {
+        return DoConvertToFFTWOversampled(*ts);
+    }
+
+    inline KTTimeSeries* KTDAC::ConvertUnsignedToRealOversampled(KTRawTimeSeries* ts)
+    {
+        return DoConvertToRealOversampled(*ts);
+    }
+
+    inline KTTimeSeries* KTDAC::ConvertSignedToFFTWOversampled(KTRawTimeSeries* ts)
+    {
+        return DoConvertToFFTWOversampled(KTVarTypePhysicalArray< int64_t >(*ts, false));
+    }
+
+    inline KTTimeSeries* KTDAC::ConvertSignedToRealOversampled(KTRawTimeSeries* ts)
+    {
+        return DoConvertToRealOversampled(KTVarTypePhysicalArray< int64_t >(*ts, false));
+    }
+
+    void KTDAC::SetTimeSeriesType(KTDAC::TimeSeriesType type)
+    {
+        fTimeSeriesType = type;
+        fShouldRunInitialize = true;
+        return;
+    }
+
+    template< typename XInterfaceType >
+    KTTimeSeries* KTDAC::DoConvertToFFTW(const KTVarTypePhysicalArray< XInterfaceType >& ts)
+    {
+        if (fShouldRunInitialize) Initialize();
+
+        unsigned nBins = ts.size();
+        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts.GetRangeMin(), ts.GetRangeMax());
+        for (unsigned bin = 0; bin < nBins; ++bin)
+        {
+            (*newTS)(bin)[0] = Convert((ts)(bin));
+        }
+        return newTS;
+    }
+
+    template< typename XInterfaceType >
+    KTTimeSeries* KTDAC::DoConvertToReal(const KTVarTypePhysicalArray< XInterfaceType >& ts)
+    {
+        if (fShouldRunInitialize) Initialize();
+
+        unsigned nBins = ts.size();
+        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, ts.GetRangeMin(), ts.GetRangeMax());
+        for (unsigned bin = 0; bin < nBins; ++bin)
+        {
+            (*newTS)(bin) = Convert((ts)(bin));
+        }
+        return newTS;
+    }
+
+    template< typename XInterfaceType >
+    KTTimeSeries* KTDAC::DoConvertToFFTWOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts)
+    {
+        if (fShouldRunInitialize) Initialize();
+
+        unsigned nBins = ts.size() / fOversamplingBins;
+        KTTimeSeriesFFTW* newTS = new KTTimeSeriesFFTW(nBins, ts.GetRangeMin(), ts.GetRangeMax());
+        double avgValue;
+        unsigned bin = 0;
+        for (unsigned oversampledBin = 0; oversampledBin < nBins; ++oversampledBin)
+        {
+            avgValue = 0.;
+            for (unsigned iOSBin = 0; iOSBin < fOversamplingBins; ++iOSBin)
+            {
+                avgValue += Convert((ts)(bin));
+                ++bin;
+            }
+            (*newTS)(oversampledBin)[0] = avgValue * fOversamplingScaleFactor;
+        }
+#ifndef NDEBUG
+        if (bin != ts.size())
+        {
+            KTWARN(egglog_dac, "Data lost upon oversampling: " << ts.size() - bin << " samples");
+        }
+#endif
+        return newTS;
+    }
+
+    template< typename XInterfaceType >
+    KTTimeSeries* KTDAC::DoConvertToRealOversampled(const KTVarTypePhysicalArray< XInterfaceType >& ts)
+    {
+        if (fShouldRunInitialize) Initialize();
+
+        unsigned nBins = ts.size() / fOversamplingBins;
+        KTTimeSeriesReal* newTS = new KTTimeSeriesReal(nBins, ts.GetRangeMin(), ts.GetRangeMax());
+        double avgValue;
+        unsigned bin = 0;
+        for (unsigned oversampledBin = 0; oversampledBin < nBins; ++oversampledBin)
+        {
+            avgValue = 0.;
+            for (unsigned iOSBin = 0; iOSBin < fOversamplingBins; ++iOSBin)
+            {
+                avgValue += Convert((ts)(bin));
+                ++bin;
+            }
+            (*newTS)(oversampledBin) = avgValue * fOversamplingScaleFactor;
+        }
+#ifndef NDEBUG
+        if (bin != ts.size())
+        {
+            KTWARN(egglog_dac, "Data lost upon oversampling: " << ts.size() - bin << " samples");
+        }
+#endif
+        return newTS;
+    }
+
+
+
     inline double KTDAC::Convert(uint64_t level)
     {
         return fVoltages[level];
+    }
+
+    inline double KTDAC::Convert(int64_t level)
+    {
+        return fVoltages[level + fIntLevelOffset];
     }
 
     inline bool KTDAC::GetShouldRunInitialize()
