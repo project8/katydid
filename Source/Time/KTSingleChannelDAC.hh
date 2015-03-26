@@ -9,8 +9,12 @@
 #ifndef KTSINGLECHANNELDAC_HH_
 #define KTSINGLECHANNELDAC_HH_
 
+#include "KTConstants.hh"
 #include "KTLogger.hh"
 #include "KTMemberVariable.hh"
+#include "KTRawTimeSeries.hh"
+#include "KTTimeSeriesFFTW.hh"
+#include "KTTimeSeriesReal.hh"
 
 #include <vector>
 
@@ -18,16 +22,29 @@ namespace Katydid
 {
     KTLOGGER(egglog_scdac, "KTSingleChannelDAC");
 
+    class KTChannelHeader;
     class KTEggHeader;
     class KTParamNode;
-    class KTRawTimeSeries;
     class KTSliceHeader;
-    class KTTimeSeries;
 
 
 
     class KTSingleChannelDAC //: public KTProcessor
     {
+        public:
+            enum TimeSeriesType
+            {
+                kRealTimeSeries,
+                kFFTWTimeSeries
+            };
+
+            enum BitDepthMode
+            {
+                kNoChange,
+                kReducing,
+                kIncreasing
+            };
+
         public:
             KTSingleChannelDAC(/*const std::string& name = "dac"*/);
             virtual ~KTSingleChannelDAC();
@@ -42,7 +59,7 @@ namespace Katydid
 
             bool SetDigitizedDataFormat(uint32_t format);
 
-            void SetTimeSeriesType(KTDAC::TimeSeriesType type);
+            void SetTimeSeriesType(TimeSeriesType type);
 
             bool SetEmulatedNBits(unsigned nBits);
 
@@ -51,8 +68,8 @@ namespace Katydid
             MEMBERVARIABLE_NOSET(double, VoltageRange);
             MEMBERVARIABLE_NOSET(double, DACGain);
             MEMBERVARIABLE_NOSET(uint32_t, DigitizedDataFormat);
-            MEMBERVARIABLE_NOSET(KTDAC::TimeSeriesType, TimeSeriesType);
-            MEMBERVARIABLE_NOSET(KTDAC::BitDepthMode, BitDepthMode);
+            MEMBERVARIABLE_NOSET(TimeSeriesType, TimeSeriesType);
+            MEMBERVARIABLE_NOSET(BitDepthMode, BitDepthMode);
             MEMBERVARIABLE_NOSET(unsigned, EmulatedNBits);
 
         public:
@@ -93,7 +110,7 @@ namespace Katydid
             std::vector< double > fVoltages;
             int64_t fIntLevelOffset;
 
-            KTTimeSeries* (KTDAC::*fConvertTSFunc)(KTRawTimeSeries*);
+            KTTimeSeries* (KTSingleChannelDAC::*fConvertTSFunc)(KTRawTimeSeries*);
 
             MEMBERVARIABLE_NOSET(unsigned, OversamplingBins);
             MEMBERVARIABLE_NOSET(double, OversamplingScaleFactor);
@@ -157,7 +174,7 @@ namespace Katydid
         return DoConvertToRealOversampled(KTVarTypePhysicalArray< int64_t >(*ts, false));
     }
 
-    void KTSingleChannelDAC::SetTimeSeriesType(KTDAC::TimeSeriesType type)
+    inline void KTSingleChannelDAC::SetTimeSeriesType(TimeSeriesType type)
     {
         fTimeSeriesType = type;
         fShouldRunInitialize = true;

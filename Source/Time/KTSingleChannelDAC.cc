@@ -10,9 +10,7 @@
 #include "KTEggHeader.hh"
 #include "KTParam.hh"
 #include "KTRawTimeSeries.hh"
-#include "KTRawTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
-#include "KTTimeSeriesData.hh"
 #include "KTTimeSeriesFFTW.hh"
 #include "KTTimeSeriesReal.hh"
 
@@ -30,8 +28,8 @@ namespace Katydid
             fVoltageRange(0.5),
             fDACGain(-1.),
             fDigitizedDataFormat(sInvalidFormat),
-            fTimeSeriesType(KTDAC::kRealTimeSeries),
-            fBitDepthMode(KTDAC::kNoChange),
+            fTimeSeriesType(kRealTimeSeries),
+            fBitDepthMode(kNoChange),
             fEmulatedNBits(fNBits),
             fShouldRunInitialize(true),
             fVoltages(),
@@ -50,7 +48,7 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        if (node->Has("dac-gain") && node->GetValue("dac-gain") >= 0.)
+        if (node->Has("dac-gain") && node->GetValue< double >("dac-gain") >= 0.)
         {
             SetInputParameters(
                     node->GetValue< unsigned >("n-bits", fNBits),
@@ -71,7 +69,7 @@ namespace Katydid
         else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
         else
         {
-            KTERROR(egglog_dac, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
+            KTERROR(egglog_scdac, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
             return false;
         }
 
@@ -137,7 +135,7 @@ namespace Katydid
         unsigned levelDivisor = 1;
 
         dig_calib_params params;
-        if (fBitDepthMode == KTDAC::kReducing)
+        if (fBitDepthMode == kReducing)
         {
             get_calib_params(fEmulatedNBits, sizeof(uint64_t), fMinVoltage, fVoltageRange, &params);
             levelDivisor = 1 << (fNBits - fEmulatedNBits);
@@ -156,11 +154,11 @@ namespace Katydid
             }
         }
 
-        if (fBitDepthMode == KTDAC::kIncreasing)
+        if (fBitDepthMode == kIncreasing)
         {
             if (fNBits >= fEmulatedNBits)
             {
-                KTERROR(egglog_dac, "Increasing-bit-depth mode was indicated, but emulated bits (" << fEmulatedNBits << ") <= actual bits (" << fNBits << ")");
+                KTERROR(egglog_scdac, "Increasing-bit-depth mode was indicated, but emulated bits (" << fEmulatedNBits << ") <= actual bits (" << fNBits << ")");
                 return;
             }
             unsigned additionalBits = fEmulatedNBits - fNBits;
@@ -168,7 +166,7 @@ namespace Katydid
             fOversamplingScaleFactor = 1. / pow(2, additionalBits);
         }
 
-        KTDEBUG(egglog_dac, "Assigning voltages with:\n" <<
+        KTDEBUG(egglog_scdac, "Assigning voltages with:\n" <<
                 "\tDigitizer bits: " << fNBits << '\n' <<
                 "\tVoltage levels: " << (1 << fNBits) << '\n' <<
                 "\tEmulated bits: " << fEmulatedNBits << '\n' <<
@@ -189,7 +187,7 @@ namespace Katydid
             for (int64_t level = -fIntLevelOffset; level < fIntLevelOffset; ++level)
             {
                 fVoltages[level + fIntLevelOffset] = dd2a(level / levelDivisor, &params);
-                //KTWARN(egglog_dac, "level " << level << ", voltage " << fVoltages[level + fIntLevelOffset]);
+                //KTWARN(egglog_scdac, "level " << level << ", voltage " << fVoltages[level + fIntLevelOffset]);
             }
         }
         else //(fDigitizedDataFormat == sDigitizedUS)
@@ -198,65 +196,65 @@ namespace Katydid
             for (uint64_t level = 0; level < params.levels; ++level)
             {
                 fVoltages[level] = dd2a(level / levelDivisor, &params);
-                //KTWARN(egglog_dac, "level " << level << ", voltage " << fVoltages[level]);
+                //KTWARN(egglog_scdac, "level " << level << ", voltage " << fVoltages[level]);
             }
         }
 
         // setting the convert function
-        if (fTimeSeriesType == KTDAC::kFFTWTimeSeries)
+        if (fTimeSeriesType == kFFTWTimeSeries)
         {
-            if (fBitDepthMode != KTDAC::kIncreasing)
+            if (fBitDepthMode != kIncreasing)
             {
                 if (fDigitizedDataFormat == sDigitizedS)
                 {
                     fConvertTSFunc = &KTSingleChannelDAC::ConvertSignedToFFTW;
-                    KTDEBUG(egglog_dac, "Convert function set to FFTW");
+                    KTDEBUG(egglog_scdac, "Convert function set to FFTW");
                 }
                 else //(fDigitizedDataFormat == sDigitizedUS)
                 {
                     fConvertTSFunc = &KTSingleChannelDAC::ConvertUnsignedToFFTW;
-                    KTDEBUG(egglog_dac, "Convert function set to FFTW");
+                    KTDEBUG(egglog_scdac, "Convert function set to FFTW");
                 }
             }
-            else //(fBitDepthMode == KTDAC::kIncreasing)
+            else //(fBitDepthMode == kIncreasing)
             {
                 if (fDigitizedDataFormat == sDigitizedS)
                 {
-                    KTDEBUG(egglog_dac, "Convert function set to FFTW oversampled");
+                    KTDEBUG(egglog_scdac, "Convert function set to FFTW oversampled");
                     fConvertTSFunc = &KTSingleChannelDAC::ConvertSignedToFFTWOversampled;
                 }
                 else //(fDigitizedDataFormat == sDigitizedUS)
                 {
-                    KTDEBUG(egglog_dac, "Convert function set to FFTW oversampled");
+                    KTDEBUG(egglog_scdac, "Convert function set to FFTW oversampled");
                     fConvertTSFunc = &KTSingleChannelDAC::ConvertUnsignedToFFTWOversampled;
                 }
             }
         }
         else //(fTimeSeriesType == kRealTimeSeries)
         {
-            if (fBitDepthMode != KTDAC::kIncreasing)
+            if (fBitDepthMode != kIncreasing)
             {
                 if (fDigitizedDataFormat == sDigitizedS)
                 {
-                    KTDEBUG(egglog_dac, "Convert function set to real");
+                    KTDEBUG(egglog_scdac, "Convert function set to real");
                     fConvertTSFunc = &KTSingleChannelDAC::ConvertSignedToReal;
                 }
                 else //(fDigitizedDataFormat == sDigitizedUS)
                 {
-                    KTDEBUG(egglog_dac, "Convert function set to real");
+                    KTDEBUG(egglog_scdac, "Convert function set to real");
                     fConvertTSFunc = &KTSingleChannelDAC::ConvertUnsignedToReal;
                 }
             }
-            else //(fBitDepthMode == KTDAC::kIncreasing)
+            else //(fBitDepthMode == kIncreasing)
             {
                 if (fDigitizedDataFormat == sDigitizedS)
                 {
-                    KTDEBUG(egglog_dac, "Convert function set to real oversampled");
+                    KTDEBUG(egglog_scdac, "Convert function set to real oversampled");
                     fConvertTSFunc = &KTSingleChannelDAC::ConvertSignedToRealOversampled;
                 }
                 else //(fDigitizedDataFormat == sDigitizedUS)
                 {
-                    KTDEBUG(egglog_dac, "Convert function set to real oversampled");
+                    KTDEBUG(egglog_scdac, "Convert function set to real oversampled");
                     fConvertTSFunc = &KTSingleChannelDAC::ConvertUnsignedToRealOversampled;
                 }
             }
@@ -271,18 +269,18 @@ namespace Katydid
     {
         if (nBits == fNBits)
         {
-            fBitDepthMode = KTDAC::kNoChange;
+            fBitDepthMode = kNoChange;
             fEmulatedNBits = fNBits;
         }
         else if (nBits > fNBits)
         {
-            fBitDepthMode = KTDAC::kIncreasing;
+            fBitDepthMode = kIncreasing;
             fEmulatedNBits = nBits;
         }
         else
         {
             // otherwise nBits < fNBits
-            fBitDepthMode = KTDAC::kReducing;
+            fBitDepthMode = kReducing;
             fEmulatedNBits = nBits;
         }
 

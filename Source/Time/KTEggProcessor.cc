@@ -135,11 +135,7 @@ namespace Katydid
         KTEggHeader& header = headerPtr->Of< KTEggHeader >();
 
         // pass the digitizer parameters from the egg header to the DAC
-        fDAC->SetNBits(header.GetBitDepth());
-        fDAC->SetMinVoltage(header.GetVoltageMin());
-        fDAC->SetVoltageRange(header.GetVoltageRange());
-        fDAC->Initialize();
-        fDAC->UpdateEggHeader(&header);
+        fDAC->InitializeWithHeader(&header);
 
 
         fHeaderSignal(headerPtr);

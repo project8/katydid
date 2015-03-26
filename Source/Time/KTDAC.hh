@@ -29,8 +29,6 @@ namespace Katydid
     class KTTimeSeries;
     class KTTimeSeriesData;
 
-    class KTSingleChannelDAC;
-
     /*!
      @class KTDAC
      @author N.S. Oblath
@@ -61,20 +59,6 @@ namespace Katydid
     */
     class KTDAC : public KTProcessor
     {
-        public:
-            enum TimeSeriesType
-            {
-                kRealTimeSeries,
-                kFFTWTimeSeries
-            };
-
-            enum BitDepthMode
-            {
-                kNoChange,
-                kReducing,
-                kIncreasing
-            };
-
         public:
             KTDAC(const std::string& name = "dac");
             virtual ~KTDAC();
@@ -120,23 +104,23 @@ namespace Katydid
     };
 
 
-    unsigned KTDAC::GetNChannels() const
+    inline unsigned KTDAC::GetNChannels() const
     {
         return fChannelDACs.size();
     }
 
-    void KTDAC::SetNChannels(unsigned num)
+    inline void KTDAC::SetNChannels(unsigned num)
     {
         fChannelDACs.resize(num);
         return;
     }
 
-    const KTSingleChannelDAC& KTDAC::GetChannelDAC(unsigned channel = 0) const
+    inline const KTSingleChannelDAC& KTDAC::GetChannelDAC(unsigned channel) const
     {
         return fChannelDACs[channel];
     }
 
-    KTSingleChannelDAC& KTDAC::GetChannelDAC(unsigned channel = 0)
+    inline KTSingleChannelDAC& KTDAC::GetChannelDAC(unsigned channel)
     {
         return fChannelDACs[channel];
     }

@@ -50,8 +50,8 @@ int main(const int argc, const char** argv)
     tEggHeader.SetFilename(tReadHeader->GetFilename());
     tEggHeader.SetAcquisitionMode(tReadHeader->GetAcquisitionMode());
     tEggHeader.SetNChannels(2);
-    tEggHeader.SetRecordSize(tReadHeader->GetRecordSize());
-    tEggHeader.SetSliceSize(tReadHeader->GetRecordSize());
+    tEggHeader.GetChannelHeader(0)->SetRecordSize(tReadHeader->GetRecordSize());
+    tEggHeader.GetChannelHeader(0)->SetSliceSize(tReadHeader->GetRecordSize());
     tEggHeader.SetRunDuration(tReadHeader->GetRunDuration());
     tEggHeader.SetAcquisitionRate(tReadHeader->GetAcquisitionRate() * 1.e6);
 
@@ -59,12 +59,12 @@ int main(const int argc, const char** argv)
          << "\tFilename: " << tEggHeader.GetFilename() << '\n'
          << "\tAcquisition Mode: " << tEggHeader.GetAcquisitionMode() << '\n'
          << "\tNumber of Channels: " << tEggHeader.GetNChannels() << '\n'
-         << "\tRecord Size: " << tEggHeader.GetSliceSize() << '\n'
-         << "\tRecord Size: " << tEggHeader.GetRecordSize() << '\n'
+         << "\tRecord Size: " << tEggHeader.GetChannelHeader(0)->GetSliceSize() << '\n'
+         << "\tRecord Size: " << tEggHeader.GetChannelHeader(0)->GetRecordSize() << '\n'
          << "\tRun Duration: " << tEggHeader.GetRunDuration() << " s" << '\n'
          << "\tAcquisition Rate: " << tEggHeader.GetAcquisitionRate() << " Hz ");
 
-    unsigned tSize = tEggHeader.GetRecordSize();
+    unsigned tSize = tEggHeader.GetChannelHeader(0)->GetRecordSize();
 
     KTINFO(proflog, "File opened and header extracted successfully (" << tSize << ")");
 
@@ -88,8 +88,8 @@ int main(const int argc, const char** argv)
 
     const M2RecordBytes* tRecord1 = tReadTest->GetRecordSeparateOne();
     const M2RecordBytes* tRecord2 = tReadTest->GetRecordSeparateTwo();
-    const M2RecordDataInterface< uint64_t > tData1( tRecord1->fData, tEggHeader.GetDataTypeSize() );
-    const M2RecordDataInterface< uint64_t > tData2( tRecord2->fData, tEggHeader.GetDataTypeSize() );
+    const M2RecordDataInterface< uint64_t > tData1( tRecord1->fData, tEggHeader.GetChannelHeader(0)->GetDataTypeSize() );
+    const M2RecordDataInterface< uint64_t > tData2( tRecord2->fData, tEggHeader.GetChannelHeader(0)->GetDataTypeSize() );
 
     for (unsigned iSlice=0; iSlice < nSlices; iSlice++)
     {

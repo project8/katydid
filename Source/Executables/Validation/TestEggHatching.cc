@@ -94,8 +94,8 @@ int main(int argc, char** argv)
     KTINFO(testegg, "Some header information:\n"
            << "\tFilename: " << header.GetFilename() << '\n'
            << "\tAcquisition Mode: " << header.GetAcquisitionMode() << '\n'
-           << "\tSlice Size: " << header.GetSliceSize() << '\n'
-           << "\tRecord Size: " << header.GetRecordSize());
+           << "\tSlice Size: " << header.GetChannelHeader(0)->GetSliceSize() << '\n'
+           << "\tRecord Size: " << header.GetChannelHeader(0)->GetRecordSize());
 
     KTINFO(testegg, "Hatching slices");
     for (unsigned iSlice=0; iSlice < nSlices; iSlice++)

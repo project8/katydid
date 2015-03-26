@@ -22,26 +22,31 @@ namespace Katydid
     struct TEggHeader
     {
         TString* fFilename;
+        UInt_t fAcquisitionMode;
+        UInt_t fNChannels;
+        UInt_t fRunDuration;
+        Double_t fAcquisitionRate; /// in Hz
         Double_t fCenterFrequency;
         Double_t fMaximumFrequency;
         Double_t fMinimumFrequency;
-        UInt_t fAcquisitionMode;
-        UInt_t fNChannels;
-        UInt_t fRawSliceSize; /// Number of bins per slice before any modification
-        UInt_t fSliceSize; /// Number of bins per slice after any initial modification (e.g. by the DAC)
-        UInt_t fSliceStride;
-        UInt_t fRecordSize; /// Number of bins per Monarch record
-        UInt_t fRunDuration;
-        Double_t fAcquisitionRate; /// in Hz
         TString* fTimestamp;
         TString* fDescription;
-        UInt_t fRunType;
-        UInt_t fRunSource;
-        UInt_t fFormatMode;
-        UInt_t fDataTypeSize; /// in bytes
-        UInt_t fBitDepth; /// in bits
-        Double_t fVoltageMin; /// in V
-        Double_t fVoltageRange; /// in V
+    };
+
+    struct TChannelHeader
+    {
+            UInt_t fNumber;
+            TString* fSource;
+            UInt_t fRawSliceSize; /// Number of bins per slice before any modification
+            UInt_t fSliceSize; /// Number of bins per slice after any initial modification (e.g. by the DAC)
+            UInt_t fSliceStride;
+            UInt_t fRecordSize; /// Number of bins per Monarch record
+            UInt_t fSampleSize; /// Number of elements in each sample
+            UInt_t fDataTypeSize; /// in bytes
+            UInt_t fBitDepth; /// in bits
+            Double_t fVoltageMin; /// in V
+            Double_t fVoltageRange; /// in V
+            Double_t fDACGain;
     };
 
 
@@ -61,19 +66,28 @@ namespace Katydid
 
         public:
             TTree* GetEggHeaderTree() const;
+            TTree* GetChannelHeaderTree() const;
 
         private:
             bool SetupEggHeaderTree();
+            bool SetupChannelHeaderTree();
 
             TTree* fEggHeaderTree;
+            TTree* fChannelHeaderTree;
 
             TEggHeader fEggHeaderData;
+            TChannelHeader fChannelHeaderData;
 
     };
 
     inline TTree* KTROOTTreeTypeWriterEgg::GetEggHeaderTree() const
     {
         return fEggHeaderTree;
+    }
+
+    inline TTree* KTROOTTreeTypeWriterEgg::GetChannelHeaderTree() const
+    {
+        return fChannelHeaderTree;
     }
 
 } /* namespace Katydid */

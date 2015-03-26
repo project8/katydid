@@ -204,7 +204,7 @@ namespace Katydid
 
     bool KTWignerVille::InitializeWithHeader(KTEggHeader& header)
     {
-        return Initialize(header.GetAcquisitionRate(), header.GetNChannels(), header.GetSliceSize());
+        return Initialize(header.GetAcquisitionRate(), header.GetNChannels(), header.GetChannelHeader(0)->GetSliceSize());
     }
 
     bool KTWignerVille::TransformData(KTTimeSeriesData& data, KTSliceHeader& header)

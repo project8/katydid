@@ -68,7 +68,7 @@ namespace Katydid {
         if(header != NULL) {
             KTDEBUG(publog, "Configuring from Egg header...");
             this->fNComponents = (header->GetNChannels());
-            this->fSliceSize = (header->GetSliceSize());
+            this->fSliceSize = (header->GetChannelHeader(0)->GetSliceSize());
 
             /*
              * Polar FFT preparation.  

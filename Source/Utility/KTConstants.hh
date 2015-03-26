@@ -5,6 +5,8 @@
  *      Author: nsoblath
  */
 
+#ifndef KTCONSTANTS_HH_
+#define KTCONSTANTS_HH_
 
 #include <inttypes.h>
 
@@ -20,4 +22,6 @@ namespace Katydid
     static const uint32_t sDigitizedS = 1;
     static const uint32_t sAnalog = 2;
 
-}
+} /* namespace Katydid */
+
+#endif /* KTCONSTANTS_HH_ */

@@ -9,12 +9,9 @@
 
 #include "KTEggHeader.hh"
 #include "KTParam.hh"
-#include "KTRawTimeSeries.hh"
 #include "KTRawTimeSeriesData.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeriesData.hh"
-#include "KTTimeSeriesFFTW.hh"
-#include "KTTimeSeriesReal.hh"
 
 #include "thorax.hh"
 
@@ -46,11 +43,11 @@ namespace Katydid
 
         if (node->Has("channels"))
         {
-            const KTParamArray& channelsArray = node->ArrayAt("channels");
-            SetNChannels(channelsArray.Size());
+            const KTParamArray* channelsArray = node->ArrayAt("channels");
+            SetNChannels(channelsArray->Size());
             for (unsigned iChannel = 0; iChannel < fChannelDACs.size(); ++iChannel)
             {
-                fChannelDACs[iChannel].Configure(&channelsArray[iChannel].AsNode());
+                fChannelDACs[iChannel].Configure(&(*channelsArray)[iChannel].AsNode());
             }
         }
         else
@@ -96,12 +93,12 @@ namespace Katydid
         unsigned nComponents = header->GetNChannels();
         for (unsigned component = 0; component < nComponents; ++component)
         {
-            if (fChannelDACs[component].GetBitDepthMode() == kIncreasing)
+            if (fChannelDACs[component].GetBitDepthMode() == KTSingleChannelDAC::kIncreasing)
             {
                 header->GetChannelHeader(component)->SetSliceSize(
                         header->GetChannelHeader(component)->GetRawSliceSize() / fChannelDACs[component].GetOversamplingBins());
             }
-            if (fChannelDACs[component].GetBitDepthMode() != kNoChange)
+            if (fChannelDACs[component].GetBitDepthMode() != KTSingleChannelDAC::kNoChange)
             {
                 header->GetChannelHeader(component)->SetBitDepth(fChannelDACs[component].GetEmulatedNBits());
             }
@@ -116,7 +113,7 @@ namespace Katydid
         KTTimeSeriesData& newData = rawData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)
         {
-            if (fChannelDACs[component].GetBitDepthMode() == kIncreasing)
+            if (fChannelDACs[component].GetBitDepthMode() == KTSingleChannelDAC::kIncreasing)
             {
                 header.SetSliceSize(fChannelDACs[component].GetOversamplingBins());
             }

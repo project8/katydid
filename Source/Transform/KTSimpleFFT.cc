@@ -145,7 +145,7 @@ namespace Katydid
     bool KTSimpleFFT::InitializeWithHeader(KTEggHeader& header)
     {
         KTDEBUG(fftlog_simp, "Initializing via KTEggHeader");
-        SetTimeSize(header.GetSliceSize());
+        SetTimeSize(header.GetChannelHeader(0)->GetSliceSize());
         InitializeFFT();
         return true;
     }

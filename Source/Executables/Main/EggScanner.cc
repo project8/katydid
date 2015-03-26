@@ -92,15 +92,15 @@ int main(int argc, char** argv)
     KTEggHeader& header = headerPtr->Of< KTEggHeader >();
     KTPROG(eggscan, header);
 
-    uint64_t recordMemorySize = header.GetSliceSize(); // each time bin is represented by 1 byte
+    uint64_t recordMemorySize = header.GetChannelHeader(0)->GetRecordSize(); // each time bin is represented by 1 byte
     uint64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
-    uint64_t slicesInFile = recordsInFile * uint64_t(header.GetRecordSize() / header.GetSliceSize()); // upper limit, assuming continuous acquisition
+    uint64_t slicesInFile = recordsInFile * uint64_t(header.GetChannelHeader(0)->GetRecordSize() / header.GetChannelHeader(0)->GetSliceSize()); // upper limit, assuming continuous acquisition
 
-    unsigned fsSizeFFTW = header.GetSliceSize();
+    unsigned fsSizeFFTW = header.GetChannelHeader(0)->GetSliceSize();
     unsigned fsSizePolar = fsSizeFFTW / 2 + 1;
     double timeBinWidth = 1. / header.GetAcquisitionRate();
     double freqBinWidth = 1. / (timeBinWidth * double(fsSizeFFTW));
-    double sliceLength = timeBinWidth * double(header.GetSliceSize());
+    double sliceLength = timeBinWidth * double(header.GetChannelHeader(0)->GetSliceSize());
     double fsMaxFreq = freqBinWidth * (double(fsSizePolar) - 0.5);
 
     KTPROG(eggscan, "Additional information:\n"

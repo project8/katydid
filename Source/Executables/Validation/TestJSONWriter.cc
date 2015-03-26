@@ -24,11 +24,14 @@ int main()
     KTEggHeader& header = headerPtr->Of< KTEggHeader >();
     header.SetFilename("awesome_data.egg");
     header.SetAcquisitionMode(1);
-    header.SetSliceSize(512);
-    header.SetRecordSize(4194304);
     header.SetNChannels(2);
     header.SetRunDuration(203985);
     header.SetAcquisitionRate(500.);
+
+    KTChannelHeader* channelHeader = new KTChannelHeader();
+    channelHeader->SetSliceSize(512);
+    channelHeader->SetRecordSize(4194304);
+    header.SetChannelHeader(channelHeader, 0);
 
     // Set up the writer
     KTJSONWriter writer;

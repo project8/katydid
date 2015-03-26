@@ -65,10 +65,6 @@ namespace Katydid
             MEMBERVARIABLE(monarch2::RunType, RunType);
             MEMBERVARIABLE(monarch2::RunSourceType, RunSource);
             MEMBERVARIABLE(monarch2::FormatModeType, FormatMode);
-            //MEMBERVARIABLE(unsigned, DataTypeSize); /// in bytes
-            //MEMBERVARIABLE(unsigned, BitDepth); /// in bits
-            //MEMBERVARIABLE(double, VoltageMin); /// in V
-            //MEMBERVARIABLE(double, VoltageRange); /// in V
 
             unsigned GetNChannels() const;
             KTEggHeader& SetNChannels(unsigned nChannels);
