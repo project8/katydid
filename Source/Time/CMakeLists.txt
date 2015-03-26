@@ -7,6 +7,7 @@ set (TIME_HEADERFILES
     KTEggProcessor.hh
     KTEggReader.hh
     KTEgg1Reader.hh
+    KTSingleChannelDAC.hh
 )
 
 set (TIME_SOURCEFILES
@@ -15,6 +16,7 @@ set (TIME_SOURCEFILES
     KTEggProcessor.cc
     KTEggReader.cc
     KTEgg1Reader.cc
+    KTSingleChannelDAC.cc
 )
 
 if (Katydid_USE_MONARCH)

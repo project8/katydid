@@ -10,6 +10,7 @@ set (UTILITY_NODICT_HEADERFILES
     complexpolar.hh
     KTAxisProperties_GetNBins.hh
     KTAxisProperties.hh
+    KTConstants.hh
     KTCountHistogram.hh
     KTCutable.hh
     KTCutableArray.hh
@@ -38,7 +39,6 @@ set (UTILITY_SOURCEFILES
     KTRandom.cc
     KTSmooth.cc
     KTSpline.cc
-    KTVarTypePhysicalArray.cc
 )
 
 if (ROOT_FOUND)

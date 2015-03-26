@@ -221,10 +221,6 @@ namespace Katydid
         KTEggHeader& eggHeader = eggHeaderPtr->Of< KTEggHeader >();
         eggHeader.SetFilename(filename);
         eggHeader.SetAcquisitionMode(1);
-        eggHeader.SetRawSliceSize(fHeaderInfo.fRecordSize);
-        eggHeader.SetSliceSize(fHeaderInfo.fRecordSize);
-        eggHeader.SetSliceStride(fHeaderInfo.fRecordSize);
-        eggHeader.SetRecordSize(fHeaderInfo.fRecordSize);
         eggHeader.SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
         eggHeader.SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
         // timestamp
@@ -232,10 +228,24 @@ namespace Katydid
         // run type
         eggHeader.SetRunSource(monarch2::sSourceMantis);
         eggHeader.SetFormatMode(monarch2::sFormatSingle);
-        eggHeader.SetDataTypeSize(1);
-        eggHeader.SetBitDepth(8);
-        eggHeader.SetVoltageMin(-0.25);
-        eggHeader.SetVoltageRange(0.5);
+        unsigned iChannel = 0;
+        KTDEBUG(eggreadlog, "Adding header for channel " << iChannel);
+        //const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
+        KTChannelHeader* newChanHeader = new KTChannelHeader();
+        newChanHeader->SetNumber(iChannel);
+        newChanHeader->SetSource("Monarch1");
+        newChanHeader->SetRawSliceSize(fHeaderInfo.fRecordSize);
+        newChanHeader->SetSliceSize(fHeaderInfo.fRecordSize);
+        newChanHeader->SetSliceStride(fHeaderInfo.fRecordSize);
+        newChanHeader->SetRecordSize(fHeaderInfo.fRecordSize);
+        newChanHeader->SetSampleSize(1);
+        newChanHeader->SetDataTypeSize(1);
+        newChanHeader->SetDataFormat(sDigitizedUS);
+        newChanHeader->SetBitDepth(8);
+        newChanHeader->SetVoltageMin(-0.25);
+        newChanHeader->SetVoltageRange(0.5);
+        newChanHeader->SetDACGain(newChanHeader->GetVoltageRange() / (double)(1 << newChanHeader->GetBitDepth()));
+        eggHeader.SetChannelHeader(newChanHeader, iChannel);
 
         return eggHeaderPtr;
     }

@@ -94,8 +94,8 @@ namespace Katydid
             static unsigned GetMaxChannels();
 
         private:
-            /// Copy header information from the MonarchHeader object
-            void CopyHeaderInformation(const monarch3::M3Header* monarchHeader);
+            /// Copy header information from the M3Header object
+            void CopyHeader(const monarch3::M3Header* monarchHeader);
 
             //KTDataPtr (KTEgg3Reader::*fHatchNextSlicePtr)();
             //KTDataPtr HatchNextSliceRealUnsigned();
@@ -103,8 +103,9 @@ namespace Katydid
             //KTDataPtr HatchNextSliceComplex();
 
             const monarch3::Monarch3* fMonarch;
-            const monarch3::M3Stream* fStream0;
-            const monarch3::M3StreamHeader* fStreamHeader0;
+            const monarch3::M3Stream* fM3Stream;
+            const monarch3::M3StreamHeader* fM3StreamHeader;
+
             KTDataPtr fHeaderPtr;
             KTEggHeader& fHeader;
             KTSliceHeader fMasterSliceHeader;
@@ -147,6 +148,11 @@ namespace Katydid
 
             uint64_t fSliceNumber;
     };
+
+
+    uint32_t ConvertMonarch3DataFormat( uint32_t m3DataFormat );
+
+
 
     inline unsigned KTEgg3Reader::GetSliceSize() const
     {
@@ -202,7 +208,7 @@ namespace Katydid
 
     inline double KTEgg3Reader::GetTimeInRunFromMonarch() const
     {
-        return double(fStream0->GetChannelRecord(0)->GetTime() - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fStartOfLastSliceReadPtr);
+        return double(fM3Stream->GetChannelRecord(0)->GetTime() - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fStartOfLastSliceReadPtr);
     }
 
     inline double KTEgg3Reader::GetTimeInRunManually() const

@@ -8,35 +8,15 @@
 #ifndef KTVARTYPEPHYSICALARRAY_HH_
 #define KTVARTYPEPHYSICALARRAY_HH_
 
-#include "KTPhysicalArray.hh"
+#include "KTAxisProperties.hh"
+
+#include "KTConstants.hh"
 #include "KTException.hh"
 
-#ifdef USE_MONARCH
-#include "M3Constants.hh"
-#endif
-
 #include <cstring> // for memcpy
-#include <inttypes.h>
-
 
 namespace Katydid
 {
-    //*************************
-    // Data formats
-    //*************************
-    // Data format types (values matched to Monarch3's data format types; incompatible with Monarch2's data format constants)
-    static const uint32_t sInvalidFormat = UINT32_MAX;
-    static const uint32_t sDigitizedUS = 0;
-    static const uint32_t sDigitizedS = 1;
-    static const uint32_t sAnalog = 2;
-
-#ifdef USE_MONARCH
-    uint32_t ConvertMonarch3DataFormat( uint32_t m3DataFormat );
-
-    // Monarch2 data is all sDigitizedS
-#endif
-
-
     //*************************
     // Type information
     // Specializations for valid types

@@ -39,8 +39,8 @@ namespace Katydid
             fStartTime(0.),
             //fHatchNextSlicePtr(NULL),
             fMonarch(NULL),
-            fStream0(NULL),
-            fStreamHeader0(NULL),
+            fM3Stream(NULL),
+            fM3StreamHeader(NULL),
             fHeaderPtr(new KTData()),
             fHeader(fHeaderPtr->Of< KTEggHeader >()),
             fMasterSliceHeader(),
@@ -110,12 +110,14 @@ namespace Katydid
             fMonarch = NULL;
             return KTDataPtr();
         }
-        CopyHeaderInformation(fMonarch->GetHeader());
-        fHeader.SetRawSliceSize(fSliceSize);
-        fHeader.SetSliceSize(fSliceSize);
-        fHeader.SetSliceStride(fStride);
 
-        fStreamHeader0 = &(fMonarch->GetHeader()->GetStreamHeaders()[0]);
+        // Temporary assumption: using channel 0 + any other channels in the same stream
+        unsigned streamNum = fMonarch->GetHeader()->GetChannelStreams()[0];
+        // set the stream pointer to stream 0
+        fM3Stream = fMonarch->GetStream(streamNum);
+        fM3StreamHeader = &(fMonarch->GetHeader()->GetStreamHeaders()[streamNum]);
+
+        CopyHeader(fMonarch->GetHeader());
 
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
@@ -148,7 +150,7 @@ namespace Katydid
         }
         */
 
-        fRecordSize = fHeader.GetRecordSize();
+        fRecordSize = fHeader.GetChannelHeader(0)->GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
         fHeader.SetMinimumFrequency(0.0);
@@ -179,10 +181,7 @@ namespace Katydid
         fMasterSliceHeader.SetSliceSize(fSliceSize);
         fMasterSliceHeader.CalculateBinWidthAndSliceLength();
         fMasterSliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
-        fMasterSliceHeader.SetRecordSize(fHeader.GetRecordSize());
-
-        // set the stream pointer to stream 0
-        fStream0 = fMonarch->GetStream(0);
+        fMasterSliceHeader.SetRecordSize(fHeader.GetChannelHeader(0)->GetRecordSize());
 
         return fHeaderPtr;
     }
@@ -202,9 +201,9 @@ namespace Katydid
         }
 
         // Get the number of channels, record size and the number of bytes per sample from the stream
-        unsigned nChannels = fStream0->GetNChannels();
-        unsigned recordSize = fStream0->GetChannelRecordSize();
-        unsigned nBytesInSample = fStream0->GetDataTypeSize() * fStream0->GetSampleSize();
+        unsigned nChannels = fM3Stream->GetNChannels();
+        unsigned recordSize = fM3Stream->GetChannelRecordSize();
+        unsigned nBytesInSample = fM3Stream->GetDataTypeSize() * fM3Stream->GetSampleSize();
 
         // the read position in the current record (initialize to 0 for now; will be set correctly below)
         unsigned readPos = 0;
@@ -223,7 +222,7 @@ namespace Katydid
             isNewAcquisition = true;
 
             // if we're at the beginning of the run, load the first record
-            if (! fStream0->ReadRecord(fReadState.fStartOfLastSliceRecord))
+            if (! fM3Stream->ReadRecord(fReadState.fStartOfLastSliceRecord))
             {
                 KTERROR(eggreadlog, "There's nothing in the file or the requested start is beyond the end of the file");
                 return KTDataPtr();
@@ -237,7 +236,7 @@ namespace Katydid
             // at this point, fReadState.fStartOfLastSliceRecord and fReadState.fStartOfLastSliceReadPtr are where they need to be
             // for the slice that will follow this one.
             // but we need to set fReadState.fStartOfSliceAcquisitionId
-            fReadState.fStartOfSliceAcquisitionId = fStream0->GetAcquisitionId();
+            fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
 
             fSliceNumber = 0;
         }
@@ -265,7 +264,7 @@ namespace Katydid
             // if necessary, move to a new record
             if( recordShift != 0 )
             {
-                if (! fStream0->ReadRecord(recordShift - 1))  // 1 is subtracted since ReadRecord(0) goes to the next record
+                if (! fM3Stream->ReadRecord(recordShift - 1))  // 1 is subtracted since ReadRecord(0) goes to the next record
                 {
                     KTWARN(eggreadlog, "End of egg file reached after reading new records (or something else went wrong)");
                     return KTDataPtr();
@@ -273,9 +272,9 @@ namespace Katydid
                 // set the current record according to what's now loaded
                 fReadState.fCurrentRecord = fReadState.fCurrentRecord + recordShift;
                 // check if we're in a new acquisition
-                if (fReadState.fStartOfSliceAcquisitionId != fStream0->GetAcquisitionId())
+                if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
                 {
-                    KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fStream0->GetAcquisitionId());
+                    KTDEBUG(eggreadlog, "Starting slice in a new acquisition: " << fM3Stream->GetAcquisitionId());
                     isNewAcquisition = true;
                     // then we need to start reading at the start of this record
                     readPos = 0;
@@ -286,7 +285,7 @@ namespace Katydid
             fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
             fReadState.fStartOfLastSliceReadPtr = readPos;
             // also set fStartOfSliceAcquisitionId
-            fReadState.fStartOfSliceAcquisitionId = fStream0->GetAcquisitionId();
+            fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
 
             ++fSliceNumber;
         }
@@ -311,13 +310,13 @@ namespace Katydid
         vector< KTRawTimeSeries* > newSlices(nChannels);
         for (unsigned iChan = 0; iChan < nChannels; ++iChan)
         {
-            newSlices[iChan] = new KTRawTimeSeries(fStream0->GetDataTypeSize(),
-                    ConvertMonarch3DataFormat(fStreamHeader0->GetDataFormat()),
+            newSlices[iChan] = new KTRawTimeSeries(fM3Stream->GetDataTypeSize(),
+                    ConvertMonarch3DataFormat(fM3StreamHeader->GetDataFormat()),
                     fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
 
-            sliceHeader.SetAcquisitionID(fStream0->GetAcquisitionId(), iChan);
-            sliceHeader.SetRecordID(fStream0->GetChannelRecord( iChan )->GetRecordId(), iChan);
-            sliceHeader.SetTimeStamp(fStream0->GetChannelRecord( iChan )->GetTime(), iChan);
+            sliceHeader.SetAcquisitionID(fM3Stream->GetAcquisitionId(), iChan);
+            sliceHeader.SetRecordID(fM3Stream->GetChannelRecord( iChan )->GetRecordId(), iChan);
+            sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
         }
 
         // the write position on the new slice
@@ -362,7 +361,7 @@ namespace Katydid
             for( unsigned iChan = 0; iChan < nChannels; ++iChan )
             {
                 memcpy( newSlices[iChan]->GetStorage() + writePosBytes,
-                        fStream0->GetChannelRecord( iChan )->GetData() + readPosBytes,
+                        fM3Stream->GetChannelRecord( iChan )->GetData() + readPosBytes,
                         bytesToCopy );
             }
 
@@ -387,7 +386,7 @@ namespace Katydid
             if( samplesRemainingToCopy > 0 )
             {
                 // move to the next record
-                if (! fStream0->ReadRecord())
+                if (! fM3Stream->ReadRecord())
                 {
                     KTWARN(eggreadlog, "End of file reached before slice was completely read (or something else went wrong)");
                     return KTDataPtr();
@@ -397,7 +396,7 @@ namespace Katydid
                 readPos = 0; // reset the read position, which is now at the beginning of the new record
 
                 // check if we've moved to a new acquisition
-                if (fReadState.fStartOfSliceAcquisitionId != fStream0->GetAcquisitionId())
+                if (fReadState.fStartOfSliceAcquisitionId != fM3Stream->GetAcquisitionId())
                 {
                     KTDEBUG(eggreadlog, "New acquisition reached; starting slice again\n" <<
                             "\tUnused samples: " << writePos + samplesToCopyFromThisRecord)
@@ -409,7 +408,7 @@ namespace Katydid
                     fReadState.fStartOfLastSliceRecord = fReadState.fCurrentRecord;
                     fReadState.fStartOfLastSliceReadPtr = 0;
                     // also reset fStartOfSliceAcquisitionId
-                    fReadState.fStartOfSliceAcquisitionId = fStream0->GetAcquisitionId();
+                    fReadState.fStartOfSliceAcquisitionId = fM3Stream->GetAcquisitionId();
 
                     // reset slice data
                     sliceHeader.SetIsNewAcquisition(true);
@@ -417,9 +416,9 @@ namespace Katydid
                     sliceHeader.SetStartSampleNumber(readPos);
                     for (unsigned iChan = 0; iChan < nChannels; ++iChan)
                     {
-                        sliceHeader.SetAcquisitionID(fStream0->GetAcquisitionId(), iChan);
-                        sliceHeader.SetRecordID(fStream0->GetChannelRecord( iChan )->GetRecordId(), iChan);
-                        sliceHeader.SetTimeStamp(fStream0->GetChannelRecord( iChan )->GetTime(), iChan);
+                        sliceHeader.SetAcquisitionID(fM3Stream->GetAcquisitionId(), iChan);
+                        sliceHeader.SetRecordID(fM3Stream->GetChannelRecord( iChan )->GetRecordId(), iChan);
+                        sliceHeader.SetTimeStamp(fM3Stream->GetChannelRecord( iChan )->GetTime(), iChan);
                     }
                     sliceHeader.SetTimeInRun(GetTimeInRun());
                     KTDEBUG(eggreadlog, "Correction to time in run: " << GetTimeInRun() << " s\n" <<
@@ -465,31 +464,52 @@ namespace Katydid
     }
 
 
-    void KTEgg3Reader::CopyHeaderInformation(const M3Header* monarchHeader)
+    void KTEgg3Reader::CopyHeader(const M3Header* monarchHeader)
     {
-        const M3StreamHeader& stream0Header = monarchHeader->GetStreamHeaders()[0];
-        const M3ChannelHeader& channel0Header = monarchHeader->GetChannelHeaders()[0];
         fHeader.SetFilename(monarchHeader->GetFilename());
-        fHeader.SetAcquisitionMode(stream0Header.GetNChannels());
-        fHeader.SetNChannels(stream0Header.GetNChannels());
-        fHeader.SetRecordSize(stream0Header.GetRecordSize());
+        fHeader.SetAcquisitionMode(fM3StreamHeader->GetNChannels());
         fHeader.SetRunDuration(monarchHeader->GetRunDuration());
-        fHeader.SetAcquisitionRate(stream0Header.GetAcquisitionRate() * fSampleRateUnitsInHz);
+        fHeader.SetAcquisitionRate(fM3StreamHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
         fHeader.SetDescription(monarchHeader->GetDescription());
-        fHeader.SetRunType(999);
-        fHeader.SetRunSource(999);
-        fHeader.SetFormatMode(stream0Header.GetChannelFormat());
-        fHeader.SetDataTypeSize(stream0Header.GetDataTypeSize());
-        fHeader.SetBitDepth(stream0Header.GetBitDepth());
-        fHeader.SetVoltageMin(channel0Header.GetVoltageMin());
-        fHeader.SetVoltageRange(channel0Header.GetVoltageRange());
+        fHeader.SetRunType(999); // monarch2 property
+        fHeader.SetRunSource(999); // monarch2 property
+        fHeader.SetFormatMode(fM3StreamHeader->GetChannelFormat());
+
+        fHeader.SetNChannels(fM3StreamHeader->GetNChannels());
+        unsigned streamNum = fM3StreamHeader->GetNumber();
+        unsigned iChanInKatydid = 0;
+        // loop over all of the channels in the file, and use the map of channel # to stream # to find the channels in this stream
+        for (unsigned iChanInFile = 0; iChanInFile < monarchHeader->GetNChannels(); ++iChanInFile)
+        {
+            if (monarchHeader->GetChannelStreams()[iChanInFile] == streamNum)
+            {
+                KTDEBUG(eggreadlog, "Adding channel " << iChanInFile << " in the egg file");
+                const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
+                KTChannelHeader* newChanHeader = new KTChannelHeader();
+                newChanHeader->SetNumber(iChanInKatydid);
+                newChanHeader->SetSource(channelHeader.GetSource());
+                newChanHeader->SetRawSliceSize(fSliceSize);
+                newChanHeader->SetSliceSize(fSliceSize);
+                newChanHeader->SetSliceStride(fStride);
+                newChanHeader->SetRecordSize(fM3StreamHeader->GetRecordSize());
+                newChanHeader->SetSampleSize(channelHeader.GetSampleSize());
+                newChanHeader->SetDataTypeSize(channelHeader.GetDataTypeSize());
+                newChanHeader->SetDataFormat(ConvertMonarch3DataFormat(channelHeader.GetDataFormat()));
+                newChanHeader->SetBitDepth(channelHeader.GetBitDepth());
+                newChanHeader->SetVoltageMin(channelHeader.GetVoltageMin());
+                newChanHeader->SetVoltageRange(channelHeader.GetVoltageRange());
+                newChanHeader->SetDACGain(channelHeader.GetDACGain());
+                fHeader.SetChannelHeader(newChanHeader, iChanInKatydid);
+                ++iChanInKatydid;
+            }
+        }
         return;
     }
 
     double KTEgg3Reader::GetTimeInRunFirstCall() const
     {
-        fT0Offset = fStream0->GetChannelRecord(0)->GetTime();
+        fT0Offset = fM3Stream->GetChannelRecord(0)->GetTime();
         KTDEBUG(eggreadlog, "Time offset of the first slice: " << fT0Offset << " ns");
         if (fT0Offset == 0)
         {
@@ -503,6 +523,26 @@ namespace Katydid
         }
         return GetTimeInRun();
     }
+
+
+    uint32_t ConvertMonarch3DataFormat( uint32_t m3DataFormat )
+    {
+        switch( m3DataFormat )
+        {
+            case monarch3::sDigitizedUS:
+                return sDigitizedUS;
+                break;
+            case monarch3::sDigitizedS:
+                return sDigitizedS;
+                break;
+            case monarch3::sAnalog:
+                return sAnalog;
+                break;
+            default:
+                return sInvalidFormat;
+        }
+    }
+
 
 } /* namespace Katydid */
 

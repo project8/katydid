@@ -126,13 +126,10 @@ namespace Katydid
             return KTDataPtr();
         }
         CopyHeaderInformation(fMonarch->GetHeader());
-        fHeader.SetRawSliceSize(fSliceSize);
-        fHeader.SetSliceSize(fSliceSize);
-        fHeader.SetSliceStride(fStride);
 
         KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
 
-        fRecordSize = fHeader.GetRecordSize();
+        fRecordSize = fHeader.GetChannelHeader(0)->GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
 
         fHeader.SetMinimumFrequency(0.0);
@@ -165,7 +162,7 @@ namespace Katydid
 
     KTDataPtr KTEgg2Reader::HatchNextSlice()
     {
-        unsigned recordSize = fHeader.GetRecordSize();
+        unsigned recordSize = fHeader.GetChannelHeader(0)->GetRecordSize();
 
         if (fMonarch == NULL)
         {
@@ -264,7 +261,7 @@ namespace Katydid
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
         sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);
-        sliceHeader.SetRecordSize(fHeader.GetRecordSize());
+        sliceHeader.SetRecordSize(fHeader.GetChannelHeader(0)->GetRecordSize());
         KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // Setup pointers to monarch and new katydid records
@@ -279,10 +276,10 @@ namespace Katydid
             sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
             sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
             sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTime, iChannel);
-            monarchRecordData[iChannel] = new M2RecordDataInterface< uint64_t >(monarchRecords[iChannel]->fData, fHeader.GetDataTypeSize());
+            monarchRecordData[iChannel] = new M2RecordDataInterface< uint64_t >(monarchRecords[iChannel]->fData, fHeader.GetChannelHeader(iChannel)->GetDataTypeSize());
 
             //tsData->SetTimeSeries(new vector< DataType >(monarchRecord->fDataPtr, monarchRecord->fDataPtr+header->GetSliceSize()), iChannel);
-            newRecords[iChannel] = new KTRawTimeSeries(fHeader.GetDataTypeSize(), sDigitizedUS, fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
+            newRecords[iChannel] = new KTRawTimeSeries(fHeader.GetChannelHeader(iChannel)->GetDataTypeSize(), sDigitizedUS, fSliceSize, 0., double(fSliceSize) * sliceHeader.GetBinWidth());
         }
 
         KTDEBUG(eggreadlog, "Time in run: " << GetTimeInRun() << " s\n" <<
@@ -417,7 +414,6 @@ namespace Katydid
         fHeader.SetFilename(monarchHeader->GetFilename());
         fHeader.SetAcquisitionMode(monarchHeader->GetAcquisitionMode());
         fHeader.SetNChannels(fNumberOfChannels[fHeader.GetAcquisitionMode()]);
-        fHeader.SetRecordSize(monarchHeader->GetRecordSize());
         fHeader.SetRunDuration(monarchHeader->GetRunDuration());
         fHeader.SetAcquisitionRate(monarchHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
@@ -425,10 +421,26 @@ namespace Katydid
         fHeader.SetRunType(monarchHeader->GetRunType());
         fHeader.SetRunSource(monarchHeader->GetRunSource());
         fHeader.SetFormatMode(monarchHeader->GetFormatMode());
-        fHeader.SetDataTypeSize(monarchHeader->GetDataTypeSize());
-        fHeader.SetBitDepth(monarchHeader->GetBitDepth());
-        fHeader.SetVoltageMin(monarchHeader->GetVoltageMin());
-        fHeader.SetVoltageRange(monarchHeader->GetVoltageRange());
+        for (unsigned iChannel = 0; iChannel < fHeader.GetNChannels(); ++iChannel)
+        {
+            KTDEBUG(eggreadlog, "Adding header for channel " << iChannel);
+            //const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
+            KTChannelHeader* newChanHeader = new KTChannelHeader();
+            newChanHeader->SetNumber(iChannel);
+            newChanHeader->SetSource("Monarch2");
+            newChanHeader->SetRawSliceSize(fSliceSize);
+            newChanHeader->SetSliceSize(fSliceSize);
+            newChanHeader->SetSliceStride(fStride);
+            newChanHeader->SetRecordSize(monarchHeader->GetRecordSize());
+            newChanHeader->SetSampleSize(1);
+            newChanHeader->SetDataTypeSize(monarchHeader->GetDataTypeSize());
+            newChanHeader->SetDataFormat(sDigitizedUS);
+            newChanHeader->SetBitDepth(monarchHeader->GetBitDepth());
+            newChanHeader->SetVoltageMin(monarchHeader->GetVoltageMin());
+            newChanHeader->SetVoltageRange(monarchHeader->GetVoltageRange());
+            newChanHeader->SetDACGain(monarchHeader->GetVoltageRange() / (double)(1 << monarchHeader->GetBitDepth()));
+            fHeader.SetChannelHeader(newChanHeader, iChannel);
+        }
         return;
     }
 

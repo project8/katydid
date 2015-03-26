@@ -27,20 +27,11 @@ namespace Katydid
 
     KTDAC::KTDAC(const std::string& name) :
             KTProcessor(name),
-            fNBits(8),
-            fMinVoltage(-0.25),
-            fVoltageRange(0.5),
-            fTimeSeriesType(kRealTimeSeries),
-            fBitDepthMode(kNoChange),
-            fEmulatedNBits(fNBits),
-            fShouldRunInitialize(true),
-            fVoltages(),
-            fConvertTSFunc(NULL),
-            fOversamplingBins(1),
-            fOversamplingScaleFactor(1.),
+            fChannelDACs(1),
             fHeaderSignal("header", this),
             fTimeSeriesSignal("ts", this),
-            fHeaderSlot("header", this, &KTDAC::UpdateEggHeader),
+            fHeaderSlot("header", this, &KTDAC::InitializeWithHeader),
+            fNoInitHeaderSlot("header-no-init", this, &KTDAC::UpdateEggHeader),
             fRawTSSlot("raw-ts", this, &KTDAC::ConvertData, &fTimeSeriesSignal)
     {
     }
@@ -53,22 +44,24 @@ namespace Katydid
     {
         if (node == NULL) return false;
 
-        SetNBits(node->GetValue< unsigned >("n-bits", fNBits));
-        SetMinVoltage(node->GetValue< double >("min-voltage", fMinVoltage));
-        SetVoltageRange(node->GetValue< double >("voltage-range", fVoltageRange));
-
-        string timeSeriesTypeString = node->GetValue("time-series-type", "real");
-        if (timeSeriesTypeString == "real") SetTimeSeriesType(kRealTimeSeries);
-        else if (timeSeriesTypeString == "fftw") SetTimeSeriesType(kFFTWTimeSeries);
+        if (node->Has("channels"))
+        {
+            const KTParamArray& channelsArray = node->ArrayAt("channels");
+            SetNChannels(channelsArray.Size());
+            for (unsigned iChannel = 0; iChannel < fChannelDACs.size(); ++iChannel)
+            {
+                fChannelDACs[iChannel].Configure(&channelsArray[iChannel].AsNode());
+            }
+        }
         else
         {
-            KTERROR(egglog_dac, "Illegal string for time series type: <" << timeSeriesTypeString << ">");
-            return false;
-        }
-
-        if (node->Has("n-bits-emulated"))
-        {
-            SetEmulatedNBits(node->GetValue< unsigned >("n-bits-emulated", fEmulatedNBits));
+            SetNChannels(node->GetValue("n-channels", 1U));
+            KTSingleChannelDAC masterCopy;
+            masterCopy.Configure(node);
+            for (unsigned iChannel = 0; iChannel < fChannelDACs.size(); ++iChannel)
+            {
+                fChannelDACs[iChannel].Configure(masterCopy);
+            }
         }
 
         return true;
@@ -76,144 +69,42 @@ namespace Katydid
 
     void KTDAC::Initialize()
     {
-        if (! fVoltages.empty())
+        for (std::vector< KTSingleChannelDAC >::iterator scDACIt = fChannelDACs.begin(); scDACIt != fChannelDACs.end(); ++scDACIt)
         {
-            fVoltages.clear();
+            scDACIt->Initialize();
         }
 
-        unsigned levelDivisor = 1;
+        return;
+    }
 
-        dig_calib_params params;
-        if (fBitDepthMode == kReducing)
+    void KTDAC::InitializeWithHeader(KTEggHeader* header)
+    {
+        // setup each channel DAC with header info
+        unsigned nComponents = header->GetNChannels();
+        for (unsigned component = 0; component < nComponents; ++component)
         {
-            get_calib_params(fEmulatedNBits, sizeof(uint64_t), fMinVoltage, fVoltageRange, &params);
-            levelDivisor = 1 << (fNBits - fEmulatedNBits);
-        }
-        else
-        {
-            get_calib_params(fNBits, sizeof(uint64_t), fMinVoltage, fVoltageRange, &params);
-        }
-
-        if (fBitDepthMode == kIncreasing)
-        {
-            if (fNBits >= fEmulatedNBits)
-            {
-                KTERROR(egglog_dac, "Increasing-bit-depth mode was indicated, but emulated bits (" << fEmulatedNBits << ") <= actual bits (" << fNBits << ")");
-                return;
-            }
-            unsigned additionalBits = fEmulatedNBits - fNBits;
-            fOversamplingBins = pow(2, 2 * additionalBits);
-            fOversamplingScaleFactor = 1. / pow(2, additionalBits);
+            fChannelDACs[component].InitializeWithHeader(header->GetChannelHeader(component));
         }
 
-        KTDEBUG(egglog_dac, "Assigning voltages with:\n" <<
-                "\tDigitizer bits: " << fNBits << '\n' <<
-                "\tVoltage levels: " << (1 << fNBits) << '\n' <<
-                "\tEmulated bits: " << fEmulatedNBits << '\n' <<
-                "\tLevel divisor: " << levelDivisor << '\n' <<
-                "\tReduced levels: " << params.levels << '\n' <<
-                "\tVoltage range: " << params.v_range << '\n' <<
-                "\tMinimum voltage: " << params.v_min << " V\n" <<
-                "\tOversampling bins: " << fOversamplingBins << '\n' <<
-                "\tOversampling scale factor: " << fOversamplingScaleFactor << '\n');
+        UpdateEggHeader(header);
 
-
-        // calculating the voltage conversion
-        fVoltages.resize(params.levels);
-
-        if (fDigitizedDataFormat == sDigitizedS)
-        {
-            fIntLevelOffset = params.levels / 2;
-            for (int64_t level = -fIntLevelOffset; level < fIntLevelOffset; ++level)
-            {
-                fVoltages[level + fIntLevelOffset] = dd2a(level / levelDivisor, &params);
-                //KTWARN(egglog_dac, "level " << level << ", voltage " << fVoltages[level + fIntLevelOffset]);
-            }
-        }
-        else //(fDigitizedDataFormat == sDigitizedUS)
-        {
-            fIntLevelOffset = 0;
-            for (uint64_t level = 0; level < params.levels; ++level)
-            {
-                fVoltages[level] = dd2a(level / levelDivisor, &params);
-                //KTWARN(egglog_dac, "level " << level << ", voltage " << fVoltages[level]);
-            }
-        }
-
-        // setting the convert function
-        if (fTimeSeriesType == kFFTWTimeSeries)
-        {
-            if (fBitDepthMode != kIncreasing)
-            {
-                if (fDigitizedDataFormat == sDigitizedS)
-                {
-                    fConvertTSFunc = &KTDAC::ConvertSignedToFFTW;
-                    KTDEBUG(egglog_dac, "Convert function set to FFTW");
-                }
-                else //(fDigitizedDataFormat == sDigitizedUS)
-                {
-                    fConvertTSFunc = &KTDAC::ConvertUnsignedToFFTW;
-                    KTDEBUG(egglog_dac, "Convert function set to FFTW");
-                }
-            }
-            else //(fBitDepthMode == kIncreasing)
-            {
-                if (fDigitizedDataFormat == sDigitizedS)
-                {
-                    KTDEBUG(egglog_dac, "Convert function set to FFTW oversampled");
-                    fConvertTSFunc = &KTDAC::ConvertSignedToFFTWOversampled;
-                }
-                else //(fDigitizedDataFormat == sDigitizedUS)
-                {
-                    KTDEBUG(egglog_dac, "Convert function set to FFTW oversampled");
-                    fConvertTSFunc = &KTDAC::ConvertUnsignedToFFTWOversampled;
-                }
-            }
-        }
-        else //(fTimeSeriesType == kRealTimeSeries)
-        {
-            if (fBitDepthMode != kIncreasing)
-            {
-                if (fDigitizedDataFormat == sDigitizedS)
-                {
-                    KTDEBUG(egglog_dac, "Convert function set to real");
-                    fConvertTSFunc = &KTDAC::ConvertSignedToReal;
-                }
-                else //(fDigitizedDataFormat == sDigitizedUS)
-                {
-                    KTDEBUG(egglog_dac, "Convert function set to real");
-                    fConvertTSFunc = &KTDAC::ConvertUnsignedToReal;
-                }
-            }
-            else //(fBitDepthMode == kIncreasing)
-            {
-                if (fDigitizedDataFormat == sDigitizedS)
-                {
-                    KTDEBUG(egglog_dac, "Convert function set to real oversampled");
-                    fConvertTSFunc = &KTDAC::ConvertSignedToRealOversampled;
-                }
-                else //(fDigitizedDataFormat == sDigitizedUS)
-                {
-                    KTDEBUG(egglog_dac, "Convert function set to real oversampled");
-                    fConvertTSFunc = &KTDAC::ConvertUnsignedToRealOversampled;
-                }
-            }
-        }
-
-
-        fShouldRunInitialize = false;
         return;
     }
 
     void KTDAC::UpdateEggHeader(KTEggHeader* header)
     {
-        if (fBitDepthMode == kIncreasing)
+        unsigned nComponents = header->GetNChannels();
+        for (unsigned component = 0; component < nComponents; ++component)
         {
-            header->SetSliceSize(header->GetRawSliceSize() / fOversamplingBins);
-        }
-        if (fBitDepthMode != kNoChange)
-        {
-            header->SetBitDepth(fEmulatedNBits);
+            if (fChannelDACs[component].GetBitDepthMode() == kIncreasing)
+            {
+                header->GetChannelHeader(component)->SetSliceSize(
+                        header->GetChannelHeader(component)->GetRawSliceSize() / fChannelDACs[component].GetOversamplingBins());
+            }
+            if (fChannelDACs[component].GetBitDepthMode() != kNoChange)
+            {
+                header->GetChannelHeader(component)->SetBitDepth(fChannelDACs[component].GetEmulatedNBits());
+            }
         }
         fHeaderSignal(header);
         return;
@@ -221,40 +112,17 @@ namespace Katydid
 
     bool KTDAC::ConvertData(KTSliceHeader& header, KTRawTimeSeriesData& rawData)
     {
-        if (fBitDepthMode == kIncreasing)
-        {
-            header.SetSliceSize(fOversamplingBins);
-        }
         unsigned nComponents = rawData.GetNComponents();
         KTTimeSeriesData& newData = rawData.Of< KTTimeSeriesData >().SetNComponents(nComponents);
         for (unsigned component = 0; component < nComponents; ++component)
         {
-            KTTimeSeries* newTS = (this->*fConvertTSFunc)(rawData.GetTimeSeries(component));
+            if (fChannelDACs[component].GetBitDepthMode() == kIncreasing)
+            {
+                header.SetSliceSize(fChannelDACs[component].GetOversamplingBins());
+            }
+            KTTimeSeries* newTS = fChannelDACs[component].ConvertTimeSeries(rawData.GetTimeSeries(component));
             newData.SetTimeSeries(newTS, component);
         }
-        return true;
-    }
-
-    bool KTDAC::SetEmulatedNBits(unsigned nBits)
-    {
-        if (nBits == fNBits)
-        {
-            fBitDepthMode = kNoChange;
-            fEmulatedNBits = fNBits;
-        }
-        else if (nBits > fNBits)
-        {
-            fBitDepthMode = kIncreasing;
-            fEmulatedNBits = nBits;
-        }
-        else
-        {
-            // otherwise nBits < fNBits
-            fBitDepthMode = kReducing;
-            fEmulatedNBits = nBits;
-        }
-
-        fShouldRunInitialize = true;
         return true;
     }
 
