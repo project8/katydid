@@ -114,8 +114,7 @@ namespace Katydid
 
     void KTSingleChannelDAC::InitializeWithHeader(KTChannelHeader* header)
     {
-        //nbits, min voltage, voltage range, dac gain
-
+        SetInputParameters(header->GetBitDepth(), header->GetVoltageMin(), header->GetVoltageRange(), header->GetDACGain());
         Initialize();
         return;
     }
@@ -126,6 +125,8 @@ namespace Katydid
         {
             return;
         }
+
+        KTDEBUG(egglog_scdac, "Initializing single-channel DAC");
 
         if (! fVoltages.empty())
         {
