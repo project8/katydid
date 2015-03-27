@@ -90,15 +90,6 @@ namespace Katydid
         jsonMaker->String("description");
         jsonMaker->String(header.GetDescription().c_str(), (SizeType)header.GetDescription().length());
 
-        jsonMaker->String("run-type");
-        jsonMaker->Uint(header.GetRunType());
-
-        jsonMaker->String("run-source");
-        jsonMaker->Uint(header.GetRunSource());
-
-        jsonMaker->String("format-mode");
-        jsonMaker->Uint(header.GetFormatMode());
-
         jsonMaker->String("data-type-size");
         jsonMaker->Uint(header.GetChannelHeader(0)->GetDataTypeSize());
 

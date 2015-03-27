@@ -472,9 +472,6 @@ namespace Katydid
         fHeader.SetAcquisitionRate(fM3StreamHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
         fHeader.SetDescription(monarchHeader->GetDescription());
-        fHeader.SetRunType(999); // monarch2 property
-        fHeader.SetRunSource(999); // monarch2 property
-        fHeader.SetFormatMode(fM3StreamHeader->GetChannelFormat());
 
         fHeader.SetNChannels(fM3StreamHeader->GetNChannels());
         unsigned streamNum = fM3StreamHeader->GetNumber();

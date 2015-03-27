@@ -124,8 +124,6 @@ namespace Katydid
         this->AddMetadata("header/record_size",this->fHeader.GetChannelHeader(0)->GetRecordSize());
         this->AddMetadata("header/run_duration",this->fHeader.GetRunDuration());
         this->AddMetadata("header/acquisition_rate",this->fHeader.GetAcquisitionRate());
-        this->AddMetadata("header/run_type",this->fHeader.GetRunType());
-        this->AddMetadata("header/format_mode",this->fHeader.GetFormatMode());
         this->AddMetadata("header/data_type_size",this->fHeader.GetChannelHeader(0)->GetDataTypeSize());
         this->AddMetadata("header/bit_depth",this->fHeader.GetChannelHeader(0)->GetBitDepth());
         this->AddMetadata("header/voltage_min",this->fHeader.GetChannelHeader(0)->GetVoltageMin());

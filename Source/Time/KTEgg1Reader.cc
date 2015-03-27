@@ -226,8 +226,6 @@ namespace Katydid
         // timestamp
         // description
         // run type
-        eggHeader.SetRunSource(monarch2::sSourceMantis);
-        eggHeader.SetFormatMode(monarch2::sFormatSingle);
         unsigned iChannel = 0;
         KTDEBUG(eggreadlog, "Adding header for channel " << iChannel);
         //const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];

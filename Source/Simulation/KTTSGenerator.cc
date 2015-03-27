@@ -144,8 +144,6 @@ namespace Katydid
         newHeader->SetAcquisitionRate(1. / fBinWidth);
         //newHeader->SetDescription();
         //newHeader->SetRunType();
-        newHeader->SetRunSource(monarch2::sSourceSimulation);
-        //newHeader->SetFormatMode();
 
         for (unsigned iChannel = 0; iChannel < fNChannels; ++iChannel)
         {

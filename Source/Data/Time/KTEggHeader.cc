@@ -87,9 +87,6 @@ namespace Katydid
             fMaximumFrequency(0.0),
             fTimestamp(),
             fDescription(),
-            fRunType(monarch2::sRunTypeOther),
-            fRunSource(monarch2::sSourceMantis),
-            fFormatMode(monarch2::sFormatSingle),
             fChannelHeaders()
     {
     }
@@ -104,9 +101,6 @@ namespace Katydid
             fMaximumFrequency(orig.fMaximumFrequency),
             fTimestamp(orig.fTimestamp),
             fDescription(orig.fDescription),
-            fRunType(orig.fRunType),
-            fRunSource(orig.fRunSource),
-            fFormatMode(orig.fFormatMode),
             fChannelHeaders()
     {
         for( vector< KTChannelHeader* >::const_iterator chIt = orig.fChannelHeaders.begin(); chIt != orig.fChannelHeaders.end(); ++chIt)
@@ -130,9 +124,6 @@ namespace Katydid
         fMaximumFrequency = rhs.fMaximumFrequency;
         fTimestamp = rhs.fTimestamp;
         fDescription = rhs.fDescription;
-        fRunType = rhs.fRunType;
-        fRunSource = rhs.fRunSource;
-        fFormatMode = rhs.fFormatMode;
         fChannelHeaders.clear();
         fChannelHeaders.resize(rhs.fChannelHeaders.size());
         for( vector< KTChannelHeader* >::const_iterator chIt = rhs.fChannelHeaders.begin(); chIt != rhs.fChannelHeaders.end(); ++chIt)
@@ -190,10 +181,7 @@ namespace Katydid
                 << "\tCenter Frequency: " << header.GetCenterFrequency() << " Hz\n"
                 << "\tFrequency Span: " << header.GetMaximumFrequency()  - header.GetMinimumFrequency()<< " Hz\n"
                 << "\tTimestamp: " << header.GetTimestamp() << '\n'
-                << "\tDescription: " << header.GetDescription() << '\n'
-                << "\tRun Type: " << header.GetRunType() << '\n'
-                << "\tRun Source: " << header.GetRunSource() << '\n'
-                << "\tFormat Mode: " << header.GetFormatMode() << '\n';
+                << "\tDescription: " << header.GetDescription() << '\n';
         for (unsigned iChan = 0; iChan < header.GetNChannels(); ++iChan)
         {
             out << *header.GetChannelHeader(iChan);

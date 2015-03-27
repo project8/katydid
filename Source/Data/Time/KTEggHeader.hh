@@ -12,8 +12,6 @@
 
 #include "KTMemberVariable.hh"
 
-#include "M2Types.hh"
-
 #include <string>
 #include <vector>
 
@@ -62,9 +60,6 @@ namespace Katydid
             MEMBERVARIABLE(double, MaximumFrequency);
             MEMBERVARIABLEREF(std::string, Timestamp);
             MEMBERVARIABLEREF(std::string, Description);
-            MEMBERVARIABLE(monarch2::RunType, RunType);
-            MEMBERVARIABLE(monarch2::RunSourceType, RunSource);
-            MEMBERVARIABLE(monarch2::FormatModeType, FormatMode);
 
             unsigned GetNChannels() const;
             KTEggHeader& SetNChannels(unsigned nChannels);

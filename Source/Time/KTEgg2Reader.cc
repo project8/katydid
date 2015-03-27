@@ -418,9 +418,6 @@ namespace Katydid
         fHeader.SetAcquisitionRate(monarchHeader->GetAcquisitionRate() * fSampleRateUnitsInHz);
         fHeader.SetTimestamp(monarchHeader->GetTimestamp());
         fHeader.SetDescription(monarchHeader->GetDescription());
-        fHeader.SetRunType(monarchHeader->GetRunType());
-        fHeader.SetRunSource(monarchHeader->GetRunSource());
-        fHeader.SetFormatMode(monarchHeader->GetFormatMode());
         for (unsigned iChannel = 0; iChannel < fHeader.GetNChannels(); ++iChannel)
         {
             KTDEBUG(eggreadlog, "Adding header for channel " << iChannel);
