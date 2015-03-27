@@ -11,6 +11,7 @@
 #include <string>
 
 #include "KTPhysicalArray.hh"
+#include "KTVarTypePhysicalArray.hh"
 
 class TH1I;
 class TH1D;
@@ -19,7 +20,6 @@ class TH2D;
 namespace Katydid
 {
     class KTPowerSpectrum;
-    class KTRawTimeSeries;
     class KTTimeSeriesDist;
     class KTTimeSeriesFFTW;
     class KTTimeSeriesReal;
@@ -30,7 +30,8 @@ namespace Katydid
             KT2ROOT();
             virtual ~KT2ROOT();
 
-            static TH1I* CreateHistogram(const KTRawTimeSeries* ts, const std::string& histName = "hRawTimeSeries");
+            static TH1I* CreateHistogram(const KTVarTypePhysicalArray< uint64_t >* ts, const std::string& histName = "hRawTimeSeries");
+            static TH1I* CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const std::string& histName = "hRawTimeSeries");
             static TH1I* CreateHistogram(const KTTimeSeriesDist* tsDist, const std::string& histName = "hTSDist");
             //static TH1I* CreateAmplitudeDistributionHistogram(const KTRawTimeSeries* ts, const std::string& histName = "hRawTSDist");
 

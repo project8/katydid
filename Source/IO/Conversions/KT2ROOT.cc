@@ -40,10 +40,24 @@ namespace Katydid
     {
     }
 
-    TH1I* KT2ROOT::CreateHistogram(const KTRawTimeSeries* ts, const string& histName)
+    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< uint64_t >* ts, const string& histName)
     {
         unsigned nBins = ts->size();
-        TH1I* hist = new TH1I(histName.c_str(), "Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (ADC)");
+        return hist;
+
+    }
+
+    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName)
+    {
+        unsigned nBins = ts->size();
+        TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));

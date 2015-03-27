@@ -56,7 +56,8 @@ namespace Katydid
     {
         if (! data) return;
 
-        ULong64_t sliceNumber = data->Of<KTSliceHeader>().GetSliceNumber();
+        KTSliceHeader& slHeader = data->Of<KTSliceHeader>();
+        ULong64_t sliceNumber = slHeader.GetSliceNumber();
 
         KTRawTimeSeriesData& tsData = data->Of<KTRawTimeSeriesData>();
         UInt_t nComponents = tsData.GetNComponents();
@@ -72,8 +73,17 @@ namespace Katydid
                 conv << "histRawTS_" << sliceNumber << "_" << iComponent;
                 string histName;
                 conv >> histName;
-                TH1I* tsHist = KT2ROOT::CreateHistogram(timeSeries, histName);
-                fWriter->Draw(tsHist);
+                if (slHeader.GetRawDataFormatType(iComponent) == sDigitizedUS)
+                {
+                    TH1I* tsHist = KT2ROOT::CreateHistogram(timeSeries, histName);
+                    fWriter->Draw(tsHist);
+                }
+                else if(slHeader.GetRawDataFormatType(iComponent) == sDigitizedS)
+                {
+                    KTVarTypePhysicalArray< int64_t > array(*timeSeries, false);
+                    TH1I* tsHist = KT2ROOT::CreateHistogram(&array, histName);
+                    fWriter->Draw(tsHist);
+                }
             }
         }
         return;

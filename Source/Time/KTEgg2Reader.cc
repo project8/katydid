@@ -337,6 +337,7 @@ namespace Katydid
                         sliceHeader.SetAcquisitionID(monarchRecords[iChannel]->fAcquisitionId, iChannel);
                         sliceHeader.SetRecordID(monarchRecords[iChannel]->fRecordId, iChannel);
                         sliceHeader.SetTimeStamp(monarchRecords[iChannel]->fTime, iChannel);
+                        sliceHeader.SetRawDataFormatType(fHeader.GetChannelHeader(iChannel)->GetDataFormat(), iChannel);
                     }
                     // reset bin count to 0
                     iBin = 0;

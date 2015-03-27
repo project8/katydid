@@ -30,6 +30,7 @@ namespace Katydid
                 double fSampleRate;
                 double fHertzPerSampleRateUnit;
                 double fSecondsPerRunLengthUnit;
+                unsigned fDataFormat;
 
                 HeaderInfo() :
                     fSliceSize(0),
@@ -39,7 +40,8 @@ namespace Katydid
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),
-                    fSecondsPerRunLengthUnit(1.)
+                    fSecondsPerRunLengthUnit(1.),
+                    fDataFormat(sInvalidFormat)
                 {}
             };
 
