@@ -28,7 +28,7 @@ namespace Katydid
             fDataTypeSize(0),
             fDataFormat(sInvalidFormat),
             fBitDepth(0),
-            fVoltageMin(0),
+            fVoltageOffset(0),
             fVoltageRange(0.),
             fDACGain(0.)
     {
@@ -45,7 +45,7 @@ namespace Katydid
             fDataTypeSize(orig.fDataTypeSize),
             fDataFormat(orig.fDataFormat),
             fBitDepth(orig.fBitDepth),
-            fVoltageMin(orig.fVoltageMin),
+            fVoltageOffset(orig.fVoltageOffset),
             fVoltageRange(orig.fVoltageRange),
             fDACGain(orig.fDACGain)
     {
@@ -67,7 +67,7 @@ namespace Katydid
         fDataTypeSize = rhs.fDataTypeSize;
         fDataFormat = rhs.fDataFormat;
         fBitDepth = rhs.fBitDepth;
-        fVoltageMin = rhs.fVoltageMin;
+        fVoltageOffset = rhs.fVoltageOffset;
         fVoltageRange = rhs.fVoltageRange;
         fDACGain = rhs.fDACGain;
         return *this;
@@ -164,7 +164,7 @@ namespace Katydid
                 << "\tData Type Size: " << header.GetDataTypeSize() << " bytes\n"
                 << "\tData Format: " << header.GetDataFormat() << '\n'
                 << "\tBit Depth: " << header.GetBitDepth() << " bits\n"
-                << "\tVoltage Minimum: " << header.GetVoltageMin() << " V\n"
+                << "\tVoltage Offset: " << header.GetVoltageOffset() << " V\n"
                 << "\tVoltage Range: " << header.GetVoltageRange() << " V\n"
                 << "\tDAC Gain: " << header.GetDACGain() << '\n';
         return out;

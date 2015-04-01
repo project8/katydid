@@ -44,7 +44,7 @@ namespace Katydid
             UInt_t fSampleSize; /// Number of elements in each sample
             UInt_t fDataTypeSize; /// in bytes
             UInt_t fBitDepth; /// in bits
-            Double_t fVoltageMin; /// in V
+            Double_t fVoltageOffset; /// in V
             Double_t fVoltageRange; /// in V
             Double_t fDACGain;
     };

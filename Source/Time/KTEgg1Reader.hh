@@ -10,6 +10,8 @@
 
 #include "KTEggReader.hh"
 
+#include "KTConstants.hh"
+
 #include <fstream>
 #include <sstream>
 

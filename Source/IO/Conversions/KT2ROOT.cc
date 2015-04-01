@@ -56,6 +56,14 @@ namespace Katydid
 
     TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName)
     {
+        //**** DEBUG ****//
+        /*std::stringstream tStream;
+        for (unsigned i=0; i<10; ++i)
+        {
+            tStream << (*ts)(i) << "  ";
+        }
+        KTWARN( dblog, tStream.str() );*/
+        //**** DEBUG ****//
         unsigned nBins = ts->size();
         TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)

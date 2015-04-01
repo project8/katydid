@@ -36,7 +36,7 @@ namespace Katydid
             MEMBERVARIABLE( unsigned, DataTypeSize );
             MEMBERVARIABLE( unsigned, DataFormat );
             MEMBERVARIABLE( unsigned, BitDepth );
-            MEMBERVARIABLE( double, VoltageMin );
+            MEMBERVARIABLE( double, VoltageOffset );
             MEMBERVARIABLE( double, VoltageRange );
             MEMBERVARIABLE( double, DACGain );
     };

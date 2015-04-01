@@ -495,7 +495,7 @@ namespace Katydid
                 newChanHeader->SetDataTypeSize(channelHeader.GetDataTypeSize());
                 newChanHeader->SetDataFormat(ConvertMonarch3DataFormat(channelHeader.GetDataFormat()));
                 newChanHeader->SetBitDepth(channelHeader.GetBitDepth());
-                newChanHeader->SetVoltageMin(channelHeader.GetVoltageMin());
+                newChanHeader->SetVoltageOffset(channelHeader.GetVoltageOffset());
                 newChanHeader->SetVoltageRange(channelHeader.GetVoltageRange());
                 newChanHeader->SetDACGain(channelHeader.GetDACGain());
                 fHeader.SetChannelHeader(newChanHeader, iChanInKatydid);

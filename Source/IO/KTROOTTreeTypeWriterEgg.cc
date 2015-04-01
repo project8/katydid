@@ -113,7 +113,7 @@ namespace Katydid
             fChannelHeaderData.fSampleSize = chanHeader->GetSampleSize();
             fChannelHeaderData.fDataTypeSize = chanHeader->GetDataTypeSize();
             fChannelHeaderData.fBitDepth = chanHeader->GetBitDepth();
-            fChannelHeaderData.fVoltageMin = chanHeader->GetVoltageMin();
+            fChannelHeaderData.fVoltageOffset = chanHeader->GetVoltageOffset();
             fChannelHeaderData.fVoltageRange = chanHeader->GetVoltageRange();
             fChannelHeaderData.fDACGain = chanHeader->GetDACGain();
 
@@ -166,7 +166,7 @@ namespace Katydid
         fChannelHeaderTree->Branch("SampleSize", &fChannelHeaderData.fSampleSize, "fSampleSize/i");
         fChannelHeaderTree->Branch("DataTypeSize", &fChannelHeaderData.fDataTypeSize, "fDataTypeSize/i");
         fChannelHeaderTree->Branch("BitDepth", &fChannelHeaderData.fBitDepth, "fBitDepth/i");
-        fChannelHeaderTree->Branch("VoltageMin", &fChannelHeaderData.fVoltageMin, "fVoltageMin/d");
+        fChannelHeaderTree->Branch("VoltageOffset", &fChannelHeaderData.fVoltageOffset, "fVoltageOffset/d");
         fChannelHeaderTree->Branch("VoltageRange", &fChannelHeaderData.fVoltageRange, "fVoltageRange/d");
         fChannelHeaderTree->Branch("DACGain", &fChannelHeaderData.fDACGain, "fDACGAin/d");
 

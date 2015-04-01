@@ -52,10 +52,10 @@ namespace Katydid
             bool Configure(const KTParamNode* node);
             bool Configure(const KTSingleChannelDAC& master);
 
-            /// Set input parameters wth the DAC gain calculated from the number of bits and the voltage range
-            void SetInputParameters(unsigned nBits, double minVoltage, double voltageRange);
+            /// Set input parameters with the DAC gain calculated from the number of bits and the voltage range
+            void SetInputParameters(unsigned nBits, double voltageOffset, double voltageRange);
             /// Set input parameters with the DAC gain specified explicitly
-            void SetInputParameters(unsigned nBits, double minVoltage, double voltageRange, double dacGain);
+            void SetInputParameters(unsigned nBits, double voltageOffset, double voltageRange, double dacGain);
 
             bool SetDigitizedDataFormat(uint32_t format);
 
@@ -64,7 +64,7 @@ namespace Katydid
             bool SetEmulatedNBits(unsigned nBits);
 
             MEMBERVARIABLE_NOSET(unsigned, NBits);
-            MEMBERVARIABLE_NOSET(double, MinVoltage);
+            MEMBERVARIABLE_NOSET(double, VoltageOffset);
             MEMBERVARIABLE_NOSET(double, VoltageRange);
             MEMBERVARIABLE_NOSET(double, DACGain);
             MEMBERVARIABLE_NOSET(uint32_t, DigitizedDataFormat);

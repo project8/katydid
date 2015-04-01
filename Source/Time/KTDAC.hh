@@ -11,7 +11,6 @@
 
 #include "KTProcessor.hh"
 
-#include "KTLogger.hh"
 #include "KTSingleChannelDAC.hh"
 #include "KTSlot.hh"
 
@@ -19,8 +18,6 @@
 
 namespace Katydid
 {
-    KTLOGGER(egglog_dac, "KTDAC");
-
     class KTEggHeader;
     class KTParamNode;
     class KTRawTimeSeries;

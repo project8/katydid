@@ -96,8 +96,8 @@ namespace Katydid
         jsonMaker->String("bit-depth");
         jsonMaker->Uint(header.GetChannelHeader(0)->GetBitDepth());
 
-        jsonMaker->String("voltage-min");
-        jsonMaker->Double(header.GetChannelHeader(0)->GetVoltageMin());
+        jsonMaker->String("voltage-offset");
+        jsonMaker->Double(header.GetChannelHeader(0)->GetVoltageOffset());
 
         jsonMaker->String("voltage-range");
         jsonMaker->Double(header.GetChannelHeader(0)->GetVoltageRange());
