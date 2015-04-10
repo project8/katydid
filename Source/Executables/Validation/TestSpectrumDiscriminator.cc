@@ -5,6 +5,7 @@
  *      Author: nsoblath
  */
 
+#include "KT2ROOT.hh"
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
@@ -74,7 +75,7 @@ int main()
 #ifdef ROOT_FOUND
     TFile* file = new TFile("spectrum_disc_test.root", "recreate");
 
-    TH1D* histFreqSpec = spectrum->CreateMagnitudeHistogram("hFreqSpectrum");
+    TH1D* histFreqSpec = KT2ROOT::CreateMagnitudeHistogram(spectrum, "hFreqSpectrum");
     histFreqSpec->SetDirectory(file);
     histFreqSpec->Write();
 #endif

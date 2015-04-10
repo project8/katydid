@@ -7,6 +7,7 @@
 
 #include "KTDataTypeDisplayFFT.hh"
 
+#include "KT2ROOT.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
 #include "KTFrequencySpectrumPolar.hh"
@@ -90,7 +91,7 @@ namespace Katydid
                 conv << "histFSpolar_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* magHist = spectrum->CreateMagnitudeHistogram(histName);
+                TH1D* magHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 fWriter->Draw(magHist);
             }
         }
@@ -117,7 +118,7 @@ namespace Katydid
                 conv << "histFSfftw_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* magHist = spectrum->CreateMagnitudeHistogram(histName);
+                TH1D* magHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, histName);
                 fWriter->Draw(magHist);
             }
         }
@@ -144,7 +145,7 @@ namespace Katydid
                 conv << "histFSpolarPhase_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* phaseHist = spectrum->CreatePhaseHistogram(histName);
+                TH1D* phaseHist = KT2ROOT::CreatePhaseHistogram(spectrum, histName);
                 fWriter->Draw(phaseHist);
             }
         }
@@ -171,7 +172,7 @@ namespace Katydid
                 conv << "histFSfftwPhase_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* phaseHist = spectrum->CreatePhaseHistogram(histName);
+                TH1D* phaseHist = KT2ROOT::CreatePhaseHistogram(spectrum, histName);
                 fWriter->Draw(phaseHist);
             }
         }
@@ -198,7 +199,7 @@ namespace Katydid
                 conv << "histPSpolar_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
+                TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
                 fWriter->Draw(powerSpectrum);
             }
         }
@@ -225,7 +226,7 @@ namespace Katydid
                 conv << "histPSfftw_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* powerSpectrum = spectrum->CreatePowerHistogram(histName);
+                TH1D* powerSpectrum = KT2ROOT::CreatePowerHistogram(spectrum, histName);
                 fWriter->Draw(powerSpectrum);
             }
         }
@@ -252,7 +253,7 @@ namespace Katydid
                 conv << "histFSDistpolar_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* magDistHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
+                TH1D* magDistHist = KT2ROOT::CreateMagnitudeDistributionHistogram(spectrum, histName);
                 fWriter->Draw(magDistHist);
             }
         }
@@ -279,7 +280,7 @@ namespace Katydid
                 conv << "histFSDistfftw_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* magDistHist = spectrum->CreateMagnitudeDistributionHistogram(histName);
+                TH1D* magDistHist = KT2ROOT::CreateMagnitudeDistributionHistogram(spectrum, histName);
                 fWriter->Draw(magDistHist);
             }
         }
@@ -306,7 +307,7 @@ namespace Katydid
                 conv << "histPSDistpolar_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* powerDistHist = spectrum->CreatePowerDistributionHistogram(histName);
+                TH1D* powerDistHist = KT2ROOT::CreatePowerDistributionHistogram(spectrum, histName);
                 fWriter->Draw(powerDistHist);
             }
         }
@@ -333,7 +334,7 @@ namespace Katydid
                 conv << "histPSDistfftw_" << sliceNumber << "_" << iChannel;
                 string histName;
                 conv >> histName;
-                TH1D* powerDistHist = spectrum->CreatePowerDistributionHistogram(histName);
+                TH1D* powerDistHist = KT2ROOT::CreatePowerDistributionHistogram(spectrum, histName);
                 fWriter->Draw(powerDistHist);
             }
         }

@@ -7,6 +7,7 @@
 
 #include "KTMultiSliceROOTTypeWriterAnalysis.hh"
 
+#include "KT2ROOT.hh"
 #include "KTCorrelationData.hh"
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
@@ -126,7 +127,7 @@ namespace Katydid
                 std::stringstream conv;
                 conv << iComponent;
                 std::string histName = histNameBase + conv.str();
-                TH1D* newCorr = corrData.GetSpectrum(iComponent)->CreateMagnitudeHistogram(histName);
+                TH1D* newCorr = KT2ROOT::CreateMagnitudeHistogram(corrData.GetSpectrumPolar(iComponent), histName);
                 fCorrHists[iComponent] = newCorr;
             }
         }
@@ -134,7 +135,7 @@ namespace Katydid
         {
             for (unsigned iComponent=0; iComponent < nComponents; ++iComponent)
             {
-                TH1D* newCorr = corrData.GetSpectrum(iComponent)->CreateMagnitudeHistogram();
+                TH1D* newCorr = KT2ROOT::CreateMagnitudeHistogram(corrData.GetSpectrumPolar(iComponent));
                 fCorrHists[iComponent]->Add(newCorr);
                 delete newCorr;
             }

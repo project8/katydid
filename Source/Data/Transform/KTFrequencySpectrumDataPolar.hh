@@ -41,7 +41,7 @@ namespace Katydid
 
         protected:
             std::vector< KTFrequencySpectrumPolar* > fSpectra;
-
+/*
 #ifdef ROOT_FOUND
         public:
             TH1D* CreateMagnitudeHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumMag") const;
@@ -51,6 +51,7 @@ namespace Katydid
 
             TH1D* CreatePowerDistributionHistogram(unsigned component = 0, const std::string& name = "hFrequencySpectrumPowerDist") const;
 #endif
+*/
     };
 
     inline const KTFrequencySpectrumPolar* KTFrequencySpectrumDataPolarCore::GetSpectrumPolar(unsigned component) const
@@ -86,6 +87,7 @@ namespace Katydid
         return;
     }
 
+    /*
 #ifdef ROOT_FOUND
     inline TH1D* KTFrequencySpectrumDataPolarCore::CreateMagnitudeHistogram(unsigned component, const std::string& name) const
     {
@@ -106,7 +108,7 @@ namespace Katydid
         return fSpectra[component]->CreatePowerDistributionHistogram(name);
     }
 #endif
-
+*/
 
 
 

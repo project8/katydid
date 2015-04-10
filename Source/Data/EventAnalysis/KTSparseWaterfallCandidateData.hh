@@ -24,7 +24,8 @@ namespace Katydid
                 double fTimeInRunC;
                 double fFrequency;
                 double fAmplitude;
-                Point(double tirc, double freq, double amp) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp) {}
+                double fTimeInAcq;
+                Point(double tirc, double freq, double amp, double tiacq) : fTimeInRunC(tirc), fFrequency(freq), fAmplitude(amp), fTimeInAcq(tiacq) {}
             };
 
             struct PointCompare
@@ -55,6 +56,7 @@ namespace Katydid
 
             MEMBERVARIABLE(double, TimeInRunC);
             MEMBERVARIABLE(double, TimeLength);
+            MEMBERVARIABLE(double, TimeInAcq);
             //MEMBERVARIABLE(uint64_t, FirstSliceNumber);
             //MEMBERVARIABLE(uint64_t, LastSliceNumber);
             MEMBERVARIABLE(double, MinimumFrequency);

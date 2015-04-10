@@ -42,7 +42,6 @@ namespace Katydid
      - "n-bits": unsigned -- Set the number of bits in the digitized data
      - "min-voltage": double -- Set the minimum voltage for the digitizer
      - "voltage-range": double -- Set the full-scale voltage range for the digitizer
-     - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
      - "n-bits-emulated": unsigned -- Set the number of bits to emulate
 
      Slots:

@@ -61,6 +61,8 @@ namespace Katydid
             /// Returns the time since the run started in seconds
             double GetTimeInRun() const;
             virtual double GetIntegratedTime() const;
+            /// Returns the time within the current acquisition
+            double GetTimeInAcq() const;
 
             virtual unsigned GetNSlicesProcessed() const ;
             virtual unsigned GetNRecordsProcessed() const;
@@ -98,6 +100,11 @@ namespace Katydid
     inline double KTEgg1Reader::GetTimeInRun() const
     {
         return double(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
+    }
+    inline double KTEggReader2011::GetTimeInAcq() const
+    {
+        // For the Egg data taken with a free streaming digitizer, the TimeInRun happens to be equal to the TimeInAcq
+        return GetTimeInRun();
     }
 
     inline double KTEgg1Reader::GetIntegratedTime() const

@@ -45,6 +45,14 @@ namespace Katydid
     class KTEggHeader : public KTExtensibleData< KTEggHeader >
     {
         public:
+            enum TimeSeriesDataType
+            {
+                kReal,
+                kComplex,
+                kIQ
+            };
+
+        public:
             KTEggHeader();
             KTEggHeader(const KTEggHeader& orig);
             ~KTEggHeader();

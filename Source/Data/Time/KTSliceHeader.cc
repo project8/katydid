@@ -16,6 +16,7 @@ namespace Katydid
     KTSliceHeader::KTSliceHeader() :
             KTExtensibleData< KTSliceHeader >(),
             fTimeInRun(0.),
+            fTimeInAcq(0.),
             fSliceNumber(0),
             fNSlicesIncluded(1),
             fIsNewAcquisition(true),
@@ -38,6 +39,7 @@ namespace Katydid
     KTSliceHeader::KTSliceHeader(const KTSliceHeader& orig) :
             KTExtensibleData< KTSliceHeader >(orig),
             fTimeInRun(orig.fTimeInRun),
+            fTimeInAcq(orig.fTimeInAcq),
             fSliceNumber(orig.fSliceNumber),
             fNSlicesIncluded(orig.fNSlicesIncluded),
             fIsNewAcquisition(orig.fIsNewAcquisition),
@@ -72,6 +74,7 @@ namespace Katydid
     {
         fIsNewAcquisition = rhs.fIsNewAcquisition;
         fTimeInRun = rhs.fTimeInRun;
+        fTimeInAcq = rhs.fTimeInAcq;
         fSliceNumber = rhs.fSliceNumber;
         fNSlicesIncluded = rhs.fNSlicesIncluded;
         fRawSliceSize = rhs.fRawSliceSize;
@@ -102,6 +105,7 @@ namespace Katydid
                 "\tSample Rate: " << hdr.GetSampleRate() << " Hz\n" <<
                 "\tBin Width: " << hdr.GetBinWidth() << " s\n" <<
                 "\tTime in Run: " << hdr.GetTimeInRun() << " s\n" <<
+                "\tTime in Acq: " << hdr.GetTimeInAcq() << " s\n" <<
                 "\tIs New Acquisition?: " << hdr.GetIsNewAcquisition() << '\n' <<
                 "\tStart Record: " << hdr.GetStartRecordNumber() << '\n' <<
                 "\tStart Sample: " << hdr.GetStartSampleNumber() << '\n' <<

@@ -92,8 +92,7 @@ namespace Katydid
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
         if (fHaveNewData && slHeader.GetIsNewAcquisition())
         {
-            KTDEBUG(kdlog, "New Acquisition - clear out old points from tree");
-
+            KTDEBUG(kdlog, "New Acquisition - Run clustering on previous acquistion, clear out old points from tree");
             if (! MakeTree(false))
             {
                 KTERROR(kdlog, "An error occurred while clustering from the previous acquisition");
@@ -129,6 +128,7 @@ namespace Katydid
             {
                 newPoint.fCoords[1] = fInvScalingY * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
+                newPoint.fTimeInAcq = fInvScalingX * (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
                 fTreeData.AddPoint(newPoint, iComponent);
             }
             KTDEBUG(kdlog, "Tree data (component " << iComponent << ") now has " << fTreeData.GetSetOfPoints(iComponent).size() << " points (Slice Number: " << newPoint.fSliceNumber << ")");
@@ -179,6 +179,7 @@ namespace Katydid
             newPoint.fCoords[0] = fInvScalingX * pIt->fTimeInRunC;
             newPoint.fCoords[1] = fInvScalingY * pIt->fFrequency;
             newPoint.fAmplitude = pIt->fAmplitude;
+            newPoint.fTimeInAcq = fInvScalingX * pIt->fTimeInAcq;
             fTreeData.AddPoint(newPoint, component);
         }
         KTDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");

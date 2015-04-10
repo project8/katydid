@@ -15,10 +15,6 @@
 #include <cmath>
 #include <string>
 
-#ifdef ROOT_FOUND
-class TH1D;
-#endif
-
 namespace Katydid
 {
     class KTPowerSpectrum;
@@ -60,16 +56,6 @@ namespace Katydid
         private:
             unsigned fNTimeBins;
 
-#ifdef ROOT_FOUND
-        public:
-            virtual TH1D* CreateMagnitudeHistogram(const std::string& name = "hFrequencySpectrumMag") const;
-            virtual TH1D* CreatePhaseHistogram(const std::string& name = "hFrequencySpectrumPhase") const;
-
-            virtual TH1D* CreatePowerHistogram(const std::string& name = "hFrequencySpectrumPower") const;
-
-            virtual TH1D* CreateMagnitudeDistributionHistogram(const std::string& name = "hFrequencySpectrumMagDist") const;
-            virtual TH1D* CreatePowerDistributionHistogram(const std::string& name = "hFrequencySpectrumPowerDist") const;
-#endif
     };
 
     inline double KTFrequencySpectrumPolar::GetReal(unsigned bin) const

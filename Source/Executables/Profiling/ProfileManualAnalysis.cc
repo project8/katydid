@@ -11,9 +11,9 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDistanceClustering.hh"
 #include "KTCluster1DData.hh"
-#include "KTComplexFFTW.hh"
-#include "KTEgg2Reader.hh"
 #include "KTEggHeader.hh"
+#include "KTEgg2Reader.hh"
+#include "KTForwardFFTW.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -66,7 +66,7 @@ int main()
     unsigned recordSize = 32768;
     KTSingleChannelDAC::TimeSeriesType tsType = KTSingleChannelDAC::kFFTWTimeSeries;
 
-    KTComplexFFTW compFFT;
+    KTForwardFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
 
 #ifdef ROOT_FOUND
@@ -165,7 +165,7 @@ int main()
         prof.Data(data);
 
         // Calcualte the FFT
-        if (! compFFT.TransformData(tsData))
+        if (! compFFT.TransformRealData(tsData))
         {
             KTERROR(proflog, "A problem occurred while performing the FFT");
             continue;

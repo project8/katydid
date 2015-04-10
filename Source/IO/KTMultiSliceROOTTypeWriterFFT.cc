@@ -7,6 +7,7 @@
 
 #include "KTMultiSliceROOTTypeWriterFFT.hh"
 
+#include "KT2ROOT.hh"
 #include "KTEggHeader.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
@@ -148,7 +149,7 @@ namespace Katydid
                 std::stringstream conv;
                 conv << iChannel;
                 std::string histName = histNameBase + conv.str();
-                TH1D* newPS = fsData.GetSpectrumPolar(iChannel)->CreatePowerHistogram(histName);
+                TH1D* newPS = KT2ROOT::CreatePowerHistogram(fsData.GetSpectrumPolar(iChannel), histName);
                 fFSHists[iChannel] = newPS;
             }
         }
@@ -156,7 +157,7 @@ namespace Katydid
         {
             for (unsigned iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
-                TH1D* newPS = fsData.GetSpectrumPolar(iChannel)->CreatePowerHistogram();
+                TH1D* newPS = KT2ROOT::CreatePowerHistogram(fsData.GetSpectrumPolar(iChannel));
                 fFSHists[iChannel]->Add(newPS);
                 delete newPS;
             }
@@ -177,7 +178,7 @@ namespace Katydid
                 std::stringstream conv;
                 conv << iChannel;
                 std::string histName = histNameBase + conv.str();
-                TH1D* newPS = fsData.GetSpectrumFFTW(iChannel)->CreatePowerHistogram(histName);
+                TH1D* newPS = KT2ROOT::CreatePowerHistogram(fsData.GetSpectrumFFTW(iChannel), histName);
                 fFSFFTWHists[iChannel] = newPS;
             }
         }
@@ -185,7 +186,7 @@ namespace Katydid
         {
             for (unsigned iChannel=0; iChannel < fsData.GetNComponents(); iChannel++)
             {
-                TH1D* newPS = fsData.GetSpectrumFFTW(iChannel)->CreatePowerHistogram();
+                TH1D* newPS = KT2ROOT::CreatePowerHistogram(fsData.GetSpectrumFFTW(iChannel));
                 fFSFFTWHists[iChannel]->Add(newPS);
                 delete newPS;
             }

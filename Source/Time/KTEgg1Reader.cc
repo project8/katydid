@@ -219,6 +219,7 @@ namespace Katydid
 
         KTDataPtr eggHeaderPtr(new KTData());
         KTEggHeader& eggHeader = eggHeaderPtr->Of< KTEggHeader >();
+        eggHeader.SetTSDataType(KTEggHeader::kReal);
         eggHeader.SetFilename(filename);
         eggHeader.SetAcquisitionMode(1);
         eggHeader.SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
@@ -324,6 +325,7 @@ namespace Katydid
         sliceHeader.SetSliceSize(fHeaderInfo.fRecordSize);
         sliceHeader.SetSliceLength(double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
         sliceHeader.SetTimeInRun(GetTimeInRun());
+        sliceHeader.SetTimeInAcq(GetTimeInAcq());
         sliceHeader.SetSliceNumber((uint64_t)fRecordsRead);
         sliceHeader.SetStartRecordNumber(fRecordsRead);
         sliceHeader.SetStartSampleNumber(0);

@@ -157,6 +157,8 @@ namespace Katydid
 
         fSliceNumber = 0;
 
+        fHeader.SetTSDataType(KTEggHeader::kReal);
+
         return fHeaderPtr;
     }
 
@@ -258,6 +260,7 @@ namespace Katydid
         sliceHeader.CalculateBinWidthAndSliceLength();
         sliceHeader.SetNonOverlapFrac((double)fStride / (double)fSliceSize);
         sliceHeader.SetTimeInRun(GetTimeInRun());
+        sliceHeader.SetTimeInAcq(GetTimeInAcq());
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fReadState.fAbsoluteRecordOffset);
         sliceHeader.SetStartSampleNumber(fReadState.fReadPtrOffset);

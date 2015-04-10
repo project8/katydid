@@ -19,6 +19,8 @@ class TH2D;
 
 namespace Katydid
 {
+    class KTFrequencySpectrumFFTW;
+    class KTFrequencySpectrumPolar;
     class KTPowerSpectrum;
     class KTTimeSeriesDist;
     class KTTimeSeriesFFTW;
@@ -40,6 +42,32 @@ namespace Katydid
 
             static TH1D* CreateHistogram(const KTTimeSeriesReal* ts, const std::string& histName = "hTimeSeries");
             //static TH1D* CreateAmplitudeDistributionHistogram(const KTTimeSeriesReal* ts, const std::string& histName = "hTimeSeriesDist");
+
+
+            //*******************
+            // Frequency Spectrum
+            //*******************
+
+            static TH1D* CreateMagnitudeHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name = "hFrequencySpectrumMag");
+            static TH1D* CreatePhaseHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name = "hFrequencySpectrumPhase");
+
+            static TH1D* CreatePowerHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name = "hFrequencySpectrumPower");
+
+            static TH1D* CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name = "hFrequencySpectrumMagDist");
+            static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name = "hFrequencySpectrumPowerDist");
+
+            static TH1D* CreateMagnitudeHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumMag");
+            static TH1D* CreatePhaseHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPhase");
+
+            static TH1D* CreatePowerHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPower");
+
+            static TH1D* CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumMagDist");
+            static TH1D* CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name = "hFrequencySpectrumPowerDist");
+
+
+            //***************
+            // Power Spectrum
+            //***************
 
             static TH1D* CreatePowerHistogram(const KTPowerSpectrum* ps, const std::string& name = "hPowerSpectrum");
             static TH1D* CreatePowerDistributionHistogram(const KTPowerSpectrum* ps, const std::string& name = "hPowerSpectrumPower");

@@ -71,6 +71,7 @@ namespace Katydid {
         MTEData event;
         event.Component = mteData.GetComponent();
         event.EventID = mteData.GetEventID();
+        event.StartTimeInAcq = mteData.GetStartTimeInAcq();
         event.StartTimeInRunC = mteData.GetStartTimeInRunC();
         event.EndTimeInRunC = mteData.GetEndTimeInRunC();
         event.TimeLength = mteData.GetTimeLength();

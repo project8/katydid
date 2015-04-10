@@ -210,6 +210,7 @@ namespace Katydid
         //printf("Sampling Frequency: %s\n", curr_node->value());
 
         // Write configuration from XML into fHeader variable
+        fHeader.SetTSDataType(KTEggHeader::kIQ);
         fHeader.SetFilename(filename);
         fHeader.SetNChannels(1);
         fHeader.SetChannelHeader(new KTChannelHeader());
@@ -221,14 +222,8 @@ namespace Katydid
             fStride = fSliceSize;
         }
         //rapidxml::xml_node< >* prod_spec_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("ProductSpecific");
-        // this conversion from the matlab files' SamplingFrequency to Katydid's AcquisitionRate is based on the following email from Brent, from 9/19/2014:
-        /*
-         * I think the resolution of (1) is that the RSA takes I/Q format samples -
-         * that's in-phase and quadrature components, enough to represent the complete complex number.
-         * That is worth two real samples so the "rate of information" if you will is twice that 50 Msps,
-         * resulting in a 50 MHz Nyquist limit.  There is probably a low-pass filter that cuts off
-         * the last 10 MHz to be conservative, resulting in the quoted 40 MHz bandwidth.
-         */
+        // The RSA samples at 100 MHz, then decimates by 2 (50 MHz); the number reported by the RSA is "SamplingFrequency" = 50 MHz
+        // So the frequency of the samples in the data is 50 MHz, and since this is IQ data, the Bandwidth should also be 50 MHz.
         curr_node = data_node->first_node("SamplingFrequency");
         double fAcqBW = atof(curr_node->value());
         fHeader.SetAcquisitionRate(2. * fAcqBW);
@@ -354,6 +349,7 @@ namespace Katydid
         sliceHeader.CalculateBinWidthAndSliceLength();
         sliceHeader.SetNonOverlapFrac((double) fStride / (double) fSliceSize);
         sliceHeader.SetTimeInRun(GetTimeInRun());
+        sliceHeader.SetTimeInAcq(GetTimeInAcq());
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fRecordsRead);
         sliceHeader.SetStartSampleNumber(fSamplesRead);
@@ -363,7 +359,6 @@ namespace Katydid
         sliceHeader.SetAcquisitionID(fRecordsRead, iChannel);
         sliceHeader.SetRecordID(fRecordsRead, iChannel);
         sliceHeader.SetTimeStamp(sliceHeader.GetTimeInRun() / SEC_PER_NSEC, iChannel);
-        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         // ********************************** //
         // Read data                          //
@@ -386,6 +381,9 @@ namespace Katydid
         tsData.SetTimeSeries(newSlice);
         sliceHeader.SetEndRecordNumber(fRecordsRead);
         sliceHeader.SetEndSampleNumber(fSamplesRead);
+
+        KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
+
 
         return newData;
 

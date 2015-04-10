@@ -26,6 +26,7 @@ namespace Katydid {
     typedef struct {
         unsigned Component;
         unsigned EventID;
+        double StartTimeInAcq;
         double StartTimeInRunC;
         double EndTimeInRunC;
         double TimeLength;
@@ -55,11 +56,12 @@ namespace Katydid {
      * are defined in KTCandidate.hh.  If the details change, this
      * has to change too.
      */
-    size_t MTENFields = 22;
+    size_t MTENFields = 23;
     size_t MTESize = sizeof(MTEData);
-    const char* MTEFieldNames[22] = {
+    const char* MTEFieldNames[23] = {
         "Component",
         "EventID",
+        "StartTimeInAcq",
         "StartTimeInRunC",
         "EndTimeInRunC",
         "TimeLength",
@@ -81,9 +83,10 @@ namespace Katydid {
         "FirstTrackIntercept",
         "FirstTrackTotalPower"
     };
-    size_t MTEFieldOffsets[22] = {
+    size_t MTEFieldOffsets[23] = {
         HOFFSET(MTEData, Component),
         HOFFSET(MTEData, EventID),
+        HOFFSET(MTEData, StartTimeInAcq),
         HOFFSET(MTEData, StartTimeInRunC),
         HOFFSET(MTEData, EndTimeInRunC),
         HOFFSET(MTEData, TimeLength),
@@ -107,9 +110,10 @@ namespace Katydid {
     };
 
 /*
-    size_t FreqCanSizes[22] = {
+    size_t FreqCanSizes[23] = {
         sizeof(MTEData.Component),
         sizeof(MTEData.EventID),
+        sizeof(MTEData.StartTimeInAcq),
         sizeof(MTEData.StartTimeInRunC),
         sizeof(MTEData.EndTimeInRunC),
         sizeof(MTEData.TimeLength),
@@ -133,9 +137,10 @@ namespace Katydid {
     };
 */
 
-    H5::PredType MTEFieldTypes[22] = {
+    H5::PredType MTEFieldTypes[23] = {
         H5::PredType::NATIVE_UINT,
         H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
         H5::PredType::NATIVE_DOUBLE,
