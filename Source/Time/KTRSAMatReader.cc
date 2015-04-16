@@ -44,7 +44,7 @@ namespace Katydid
             fSamplesRead(0),
             fSamplesPerFile(0),
             fRecordsPerFile(1),
-            fRecordsTimeStampSeconds(NULL),
+            fRecordsTimeStampSeconds(),
             fTSArrayMat(NULL),
             fMatFilePtr(NULL)
     {
@@ -52,7 +52,6 @@ namespace Katydid
 
     KTRSAMatReader::~KTRSAMatReader()
     {
-        if (fRecordsTimeStampSeconds != NULL) delete [] fRecordsTimeStampSeconds;
     }
 
     unsigned KTRSAMatReader::GetMaxChannels()
@@ -69,6 +68,11 @@ namespace Katydid
 
     KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
     {
+        // Note on reading variables with MatIO:
+        // Before each call to Mat_VarRead (or similar), a call should be made to Mat_Rewind, which resets the file-read pointer to the beginning of the file.
+        // This way your variable will be found no matter what order the variables are in the file.
+        // This step is necessary because Mat_VarRead (or similar) leave the file pointer either at the variable or at the next variable.
+
         if (fMatFilePtr != NULL || fTSArrayMat != NULL)
         {
             KTERROR(eggreadlog, "Either the file pointer (" << fMatFilePtr << ") or the array data (" << fTSArrayMat << ") is open/allocated");
@@ -95,20 +99,13 @@ namespace Katydid
             return KTDataPtr();
         }
 
-        matvar_t* data = NULL;
-        while ( (data = Mat_VarReadNextInfo(fMatFilePtr)) != NULL )
-        {
-            std::cout << "data in file: " << data->name << std::endl;;
-            Mat_VarFree(data);
-            data = NULL;
-        }
-
         double timeFromFirstToLastRecord = 0.;
 
         // Check if the file has the variable "fileinfo", and if it has more than 1 entry;
         //  -> this variable contains the info on individual files when hey are concatenated;
         //  -> If there more than one entry, then it's a concatenated file, and we have 1 fileinfo
         //     per original file
+        Mat_Rewind(fMatFilePtr);
         matvar_t* fileInfoStruct = Mat_VarRead(fMatFilePtr, "fileinfo");
         if (fileInfoStruct == NULL)
         {
@@ -116,60 +113,79 @@ namespace Katydid
             // If fileInfoStruct doesn't exist or is not a structure, then it's an original MAT file
             fRecordsPerFile = 1;
             timeFromFirstToLastRecord = 0;
-            if (fRecordsTimeStampSeconds != NULL) delete [] fRecordsTimeStampSeconds;
-            fRecordsTimeStampSeconds = new double[1]; //(double *) calloc(1, sizeof(double));
+            fRecordsTimeStampSeconds.resize(1);
             fRecordsTimeStampSeconds[0] = 0;
         }
         else
-        { // TODO: deal with fileInfoStruct for concatenated files
+        {
             // If fileInfoStruct exists, then this is a concatenated file
 
             // Get the number of records (that is, original mat files),
             //  then create an array to save the timestamps
-            std::cout << "file info class type: " << fileInfoStruct->class_type << std::endl;
-            std::cout << "file info data type: " << fileInfoStruct->data_type << std::endl;
-            /*
-            fRecordsPerFile = mxGetNumberOfElements(fileInfoStruct);
-            KTINFO(eggreadlog, "Number of Records in File: fRecordsPerFile = " << fRecordsPerFile << " ");
-            if (fRecordsTimeStampSeconds != NULL) delete [] fRecordsTimeStampSeconds;
-            fRecordsTimeStampSeconds = new double[fRecordsPerFile]; //(double *) calloc(fRecordsPerFile, sizeof(double));
+            //Mat_VarPrint(fileInfoStruct, 1);
+
+            fRecordsPerFile = fileInfoStruct->dims[1];
+            KTINFO(eggreadlog, "Number of Records in File: " << fRecordsPerFile << " ");
+            fRecordsTimeStampSeconds.resize(fRecordsPerFile);
             // Read the timestamps into a string, then convert the string to Epoch seconds
-            mxArray* rsaxml_mat = mxGetField(fileInfoStruct, 0, "rsaMetadata");
-            if (rsaxml_mat == NULL)
-            {
-                KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
-                return KTDataPtr();
-            }
-            for (unsigned ii = 0; ii < fRecordsPerFile; ++ii)
+            //mxArray* rsaxml_mat = mxGetField(fileInfoStruct, 0, "rsaMetadata");
+            //if (rsaxml_mat == NULL)
+            //{
+            //    KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
+            //    return KTDataPtr();
+            //}
+            for (unsigned iRecord = 0; iRecord < fRecordsPerFile; ++iRecord)
             {
                 // Read XML Configuration for this Record (original MAT file)
-                rsaxml_mat = mxGetField(fileInfoStruct, ii, "rsaMetadata");
-                if (rsaxml_mat == NULL)
+                string rsaMetaDataName("rsaMetadata");
+                matvar_t* rsaxml_mat = Mat_VarGetStructField(fileInfoStruct, (void*)rsaMetaDataName.c_str(), MAT_BY_NAME, iRecord);
+                if (rsaxml_mat == NULL || rsaxml_mat->class_type != MAT_C_CHAR || rsaxml_mat->data_type != MAT_T_UINT8)
                 {
-                    KTERROR(eggreadlog, "Unable to read RSA XML config from fileInfoStruct (ii=" << ii << ")");
+                    if (rsaxml_mat == NULL )
+                    {
+                        KTERROR(eggreadlog, "Cannot find RSA metadata for record #" << iRecord);
+                    }
+                    else
+                    {
+                        KTERROR(eggreadlog, "I don't know how to read RSA metadata with class type <" << rsaxml_mat->class_type << "> and data type <" << rsaxml_mat->data_type << ">");
+                    }
+                    Mat_VarFree(rsaxml_mat);
+                    Mat_VarFree(fileInfoStruct);
+                    Mat_Close(fMatFilePtr);
+                    fMatFilePtr = NULL;
                     return KTDataPtr();
                 }
-                int buflen = mxGetN(rsaxml_mat) + 1;
-                char* rsaxml_str = new char[buflen];
-                mxGetString(rsaxml_mat, rsaxml_str, buflen);
-                // For debugging // KTINFO(eggreadlog, "rsaxml_str: " << rsaxml_str << " \n ii = " << ii );
+                //Mat_VarPrint(rsaxml_mat, 1);
+                size_t buflen = rsaxml_mat->dims[1];  //mxGetN(rsaxml_mat) + 1;
+                char* rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
+                memcpy(rsaxml_str, rsaxml_mat->data, buflen);
+                //int status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
+                //if (status != 0)
+                //{
+                //    KTERROR(eggreadlog, "Unable to read XML Configuration string.");
+                //    return KTDataPtr();
+                //}
+                KTINFO(eggreadlog, "Read XML metadata for record " << iRecord);
+                //std::cout << "xml string: \n" << rsaxml_str << std::endl;
+
                 // Parse XML
                 rapidxml::xml_document< > doc;
                 doc.parse< 0 >(rsaxml_str);
-                rapidxml::xml_node< >* data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
-                rapidxml::xml_node< >* curr_node = data_node->first_node("DateTime");
+                rapidxml::xml_node< >* curr_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription")->first_node("DateTime");
+
                 char* recordsTimeStampStr = new char[curr_node->value_size()]; //(char*) calloc(curr_node->value_size(), sizeof(char));
                 strncpy(recordsTimeStampStr, curr_node->value(), curr_node->value_size() - 6);
                 strncpy(&recordsTimeStampStr[10], " ", 1);
                 // For Debugging: // cout << "DateTime: " << recordsTimeStampStr << "\n";
                 // Convert from String to Epoch Seconds
                 ptime1temp = boost::posix_time::time_from_string(recordsTimeStampStr);
-                if (ii == 0) ptime1temp_1st = ptime1temp;
+                if (iRecord == 0) ptime1temp_1st = ptime1temp;
                 tdur1temp = ptime1temp - ptime1temp_1st;
-                fRecordsTimeStampSeconds[ii] = ((double) tdur1temp.total_nanoseconds()) * SEC_PER_NSEC;
+                fRecordsTimeStampSeconds[iRecord] = ((double) tdur1temp.total_nanoseconds()) * SEC_PER_NSEC;
                 // For Debugging: // fRecordsTimeStampSeconds[ii] = 0;
                 delete [] recordsTimeStampStr;
                 delete [] rsaxml_str;
+                Mat_VarFree(rsaxml_mat);
             }
             timeFromFirstToLastRecord = fRecordsTimeStampSeconds[fRecordsPerFile - 1] - fRecordsTimeStampSeconds[0];
             // For Debugging:
@@ -177,8 +193,9 @@ namespace Katydid
             // timeFromFirstToLastRecord = 0;
             // fRecordsTimeStampSeconds = (double *) calloc(1, sizeof(fRecordsTimeStampSeconds));
             // fRecordsTimeStampSeconds[0] = 0;
-            mxDestroyArray(rsaxml_mat);
-            */
+
+            //Mat_VarFree(fileInfoStruct);
+            //fileInfoStruct = NULL;
         }
 
 #if 0
@@ -190,6 +207,7 @@ namespace Katydid
 #endif
 
         // Read XML Configuration
+        Mat_Rewind(fMatFilePtr);
         matvar_t* rsaxml_mat = Mat_VarRead(fMatFilePtr, "rsaMetadata");
         if (rsaxml_mat == NULL)
         {
@@ -223,7 +241,7 @@ namespace Katydid
         rapidxml::xml_document< > doc;
         doc.parse< 0 >(rsaxml_str);
         rapidxml::xml_node< >* data_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription");
-        rapidxml::xml_node< >* curr_node;
+        rapidxml::xml_node< >* curr_node = NULL;
         // For debugging:
         //curr_node = data_node->first_node("SamplingFrequency");
         //cout << "Name of my current node is: " << curr_node->name() << "\n";
@@ -270,6 +288,7 @@ namespace Katydid
         fHeader.SetSliceStride(fStride);
 
         // Get the pointer to the data array
+        Mat_Rewind(fMatFilePtr);
         fTSArrayMat = Mat_VarRead(fMatFilePtr, "Y");
         if (fTSArrayMat == NULL)
         {
@@ -287,7 +306,7 @@ namespace Katydid
             fMatFilePtr = NULL;
             return KTDataPtr();
         }
-        Mat_VarPrint(fTSArrayMat, 1);
+        //Mat_VarPrint(fTSArrayMat, 1);
 
         // A few last useful variables
         fRecordSize = fHeader.GetRecordSize();
@@ -303,7 +322,9 @@ namespace Katydid
         // tells you the center frequency __of the span__.  So the Minimum 
         // frequency should be the center frequency - span/2, and maximum 
         // frequency should be minimum frequency + fAcqBW.  
+        Mat_Rewind(fMatFilePtr);
         matvar_t* cfArray = Mat_VarRead(fMatFilePtr, "InputCenter");
+        Mat_Rewind(fMatFilePtr);
         matvar_t* spanArray = Mat_VarRead(fMatFilePtr, "Span");
         if (cfArray == NULL || spanArray == NULL)
         {
@@ -429,8 +450,7 @@ namespace Katydid
 
     bool KTRSAMatReader::CloseEgg()
     {
-        if (fRecordsTimeStampSeconds != NULL) delete [] fRecordsTimeStampSeconds;
-        fRecordsTimeStampSeconds = NULL;
+        fRecordsTimeStampSeconds.clear();
 
         /* clean matlab variable before exit */
         if (fTSArrayMat != NULL) Mat_VarFree(fTSArrayMat);

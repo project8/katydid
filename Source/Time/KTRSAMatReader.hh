@@ -69,7 +69,7 @@ namespace Katydid
             unsigned fSamplesRead;
             unsigned fSamplesPerFile;
             unsigned fRecordsPerFile;
-            double *fRecordsTimeStampSeconds;
+            std::vector< double > fRecordsTimeStampSeconds;
             matvar_t *fTSArrayMat;
             mat_t *fMatFilePtr;
 
