@@ -69,7 +69,6 @@ namespace Katydid
 
     KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
     {
-        mxArray* fileInfoStruct;
         // Temporary variable to read time stamps
         boost::posix_time::ptime ptime1temp, ptime1temp_1st; // From Boost
         boost::posix_time::time_duration tdur1temp; // From Boost
@@ -83,34 +82,47 @@ namespace Katydid
 
         // open the file
         KTINFO(eggreadlog, "Opening mat file <" << filename << ">");
-        fMatFilePtr = matOpen(filename.c_str(), "r");
+        fMatFilePtr = Mat_Open(filename.c_str(), MAT_ACC_RDONLY);
         if (fMatFilePtr == NULL)
         {
             KTERROR(eggreadlog, "Unable to open mat file: " << filename);
             return KTDataPtr();
         }
 
-        // Get the pointer to the data array
-        fTSArrayMat = matGetVariable(fMatFilePtr, "Y");
+        matvar_t* data = NULL;
+        while ( (data = Mat_VarReadNextInfo(fMatFilePtr)) != NULL )
+        {
+            std::cout << "data in file: " << data->name << std::endl;;
+            Mat_VarFree(data);
+            data = NULL;
+        }
+
+        double timeFromFirstToLastRecord = 0.;
 
         // Check if the file has the variable "fileinfo", and if it has more than 1 entry;
         //  -> this variable contains the info on individual files when hey are concatenated;
         //  -> If there more than one entry, then it's a concatenated file, and we have 1 fileinfo
         //     per original file
-        fileInfoStruct = matGetVariable(fMatFilePtr, "fileinfo");
+        matvar_t* fileInfoStruct = Mat_VarRead(fMatFilePtr, "fileinfo");
         if (fileInfoStruct == NULL)
         {
-            KTINFO(eggreadlog, "No fileinfo variable in file - this is not a proper Concatenated MAT file");
+            KTINFO(eggreadlog, "No fileinfo variable in file, therefore this is probably an original MAT file");
+            // If fileInfoStruct doesn't exist or is not a structure, then it's an original MAT file
+            fRecordsPerFile = 1;
+            timeFromFirstToLastRecord = 0;
+            if (fRecordsTimeStampSeconds != NULL) delete [] fRecordsTimeStampSeconds;
+            fRecordsTimeStampSeconds = new double[1]; //(double *) calloc(1, sizeof(double));
+            fRecordsTimeStampSeconds[0] = 0;
         }
-
-        double timeFromFirstToLastRecord;
-
-        if (fileInfoStruct != NULL)
+        else
         {
             // If fileInfoStruct exists, then this is a concatenated file
 
             // Get the number of records (that is, original mat files),
             //  then create an array to save the timestamps
+            std::cout << "file info class type: " << fileInfoStruct->class_type << std::endl;
+            std::cout << "file info data type: " << fileInfoStruct->data_type << std::endl;
+            /*
             fRecordsPerFile = mxGetNumberOfElements(fileInfoStruct);
             KTINFO(eggreadlog, "Number of Records in File: fRecordsPerFile = " << fRecordsPerFile << " ");
             if (fRecordsTimeStampSeconds != NULL) delete [] fRecordsTimeStampSeconds;
@@ -160,15 +172,7 @@ namespace Katydid
             // fRecordsTimeStampSeconds = (double *) calloc(1, sizeof(fRecordsTimeStampSeconds));
             // fRecordsTimeStampSeconds[0] = 0;
             mxDestroyArray(rsaxml_mat);
-        }
-        else
-        {
-            // If fileInfoStruct doesn't exist or is not a structure, then it's an original MAT file
-            fRecordsPerFile = 1;
-            timeFromFirstToLastRecord = 0;
-            if (fRecordsTimeStampSeconds != NULL) delete [] fRecordsTimeStampSeconds;
-            fRecordsTimeStampSeconds = new double[1]; //(double *) calloc(1, sizeof(double));
-            fRecordsTimeStampSeconds[0] = 0;
+            */
         }
 
 #if 0
@@ -179,25 +183,50 @@ namespace Katydid
         }
 #endif
 
+        // Get the pointer to the data array
+        fTSArrayMat = Mat_VarRead(fMatFilePtr, "Y");
+        if (fTSArrayMat == NULL)
+        {
+            KTERROR(eggreadlog, "Unable to find variable \"Y\"");
+            Mat_Close(fMatFilePtr);
+            fMatFilePtr = NULL;
+            return KTDataPtr();
+        }
+
 
 
 
         // Read XML Configuration
-        mxArray* rsaxml_mat = matGetVariable(fMatFilePtr, "rsaMetadata");
+        matvar_t* rsaxml_mat = Mat_VarRead(fMatFilePtr, "rsaMetadata");
         if (rsaxml_mat == NULL)
         {
             KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
+            Mat_VarFree(fTSArrayMat);
+            Mat_Close(fMatFilePtr);
+            fMatFilePtr = NULL;
             return KTDataPtr();
         }
-        int buflen = mxGetN(rsaxml_mat) + 1;
-        char* rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
-        int status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
-        if (status != 0)
+        if (rsaxml_mat->class_type != MAT_C_CHAR || rsaxml_mat->data_type != MAT_T_UINT8)
         {
-            KTERROR(eggreadlog, "Unable to read XML Configuration string.");
+            KTERROR(eggreadlog, "I don't know how to read a header with class type <" << rsaxml_mat->class_type << "> and data type <" << rsaxml_mat->data_type << ">");
+            Mat_VarFree(fTSArrayMat);
+            Mat_VarFree(rsaxml_mat);
+            Mat_Close(fMatFilePtr);
+            fMatFilePtr = NULL;
             return KTDataPtr();
         }
+        //Mat_VarPrint(rsaxml_mat, 1);
+        size_t buflen = rsaxml_mat->dims[1];  //mxGetN(rsaxml_mat) + 1;
+        char* rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
+        memcpy(rsaxml_str, rsaxml_mat->data, buflen);
+        //int status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
+        //if (status != 0)
+        //{
+        //    KTERROR(eggreadlog, "Unable to read XML Configuration string.");
+        //    return KTDataPtr();
+        //}
         KTINFO(eggreadlog, "Read XML Run Configuration");
+        //std::cout << "xml string: \n" << rsaxml_str << std::endl;
 
         // Parse XML
         rapidxml::xml_document< > doc;
@@ -239,22 +268,24 @@ namespace Katydid
         //fHeader.SetVoltageRange(monarchHeader->GetVoltageRange());
 
         // Close the XML variable
-        mxDestroyArray(rsaxml_mat);
+        Mat_VarFree(rsaxml_mat);
+        rsaxml_mat = NULL;
         delete [] rsaxml_str;
+        rsaxml_str = NULL;
 
         // Get configuration from JSON config file
         fHeader.SetRawSliceSize(fSliceSize);
         fHeader.SetSliceSize(fSliceSize);
         fHeader.SetSliceStride(fStride);
 
+        Mat_VarPrint(fTSArrayMat, 1);
         // A few last useful variables
-
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
         fSliceNumber = 0; // Number of Slices saved
         fRecordsRead = 0; // Number of records read from file
         fSamplesRead = 0; // Number of samples read from file (not from record)
-        fSamplesPerFile = (unsigned) mxGetNumberOfElements(fTSArrayMat);
+        fSamplesPerFile = fTSArrayMat->dims[0];
 
         // Read center frequency, and derive minimum and maximum frequencies 
         // from the span.
@@ -262,28 +293,36 @@ namespace Katydid
         // tells you the center frequency __of the span__.  So the Minimum 
         // frequency should be the center frequency - span/2, and maximum 
         // frequency should be minimum frequency + fAcqBW.  
-        mxArray *fCFArray, *fSpanArray;
-        double fMinFreq, fMaxFreq, fSpanCenterFreq, fSpan;
-        fCFArray = matGetVariable(fMatFilePtr, "InputCenter");
-        fSpanArray = matGetVariable(fMatFilePtr, "Span");
-        fSpanCenterFreq = mxGetScalar(fCFArray);
-        fSpan = mxGetScalar(fSpanArray);
+        matvar_t* cfArray = Mat_VarRead(fMatFilePtr, "InputCenter");
+        matvar_t* spanArray = Mat_VarRead(fMatFilePtr, "Span");
+        if (cfArray == NULL || spanArray == NULL)
+        {
+            KTERROR(eggreadlog, "Could not find either the center frequency (" << cfArray << ") or the span ("
+                    << spanArray << ") in the MAT file");
+            Mat_VarFree(fTSArrayMat);
+            if (cfArray != NULL) Mat_VarFree(cfArray);
+            if (spanArray != NULL) Mat_VarFree(spanArray);
+            Mat_Close(fMatFilePtr);
+            fMatFilePtr = NULL;
+            return KTDataPtr();
+        }
+        //Mat_VarPrint(cfArray, 1);
+        //Mat_VarPrint(spanArray, 1);
 
-        fMinFreq = fSpanCenterFreq - fAcqBW/2.0;
-        fMaxFreq = fSpanCenterFreq + fAcqBW/2.0;
+        double spanCenterFreq = ((double*)cfArray->data)[0];
+        double span = ((double*)spanArray->data)[0];
 
-        fHeader.SetCenterFrequency(fSpanCenterFreq);
-        fHeader.SetMinimumFrequency(fMinFreq);
-        fHeader.SetMaximumFrequency(fMaxFreq);
+        fHeader.SetCenterFrequency(spanCenterFreq);
+        fHeader.SetMinimumFrequency(spanCenterFreq - fAcqBW/2.0);
+        fHeader.SetMaximumFrequency(spanCenterFreq + fAcqBW/2.0);
 
         // Log the contents of the header
-        stringstream headerBuff;
-        headerBuff << fHeader;
-        KTDEBUG(eggreadlog, "Parsed header:\n" << headerBuff.str());
+        KTDEBUG(eggreadlog, "Parsed header:\n" << fHeader);
         return fHeaderPtr;
     }
     KTDataPtr KTRSAMatReader::HatchNextSlice()
     {
+        /*
         // IMPORTANT:
         // Updated: KTRSAMatReader::HatchNextSlice is currently capable of reading MAT files containing multiple records, *as long as they have
         //          the same size* - that is, MAT files of identical sizes that were concatenated;
@@ -378,9 +417,9 @@ namespace Katydid
 
         KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
-
         return newData;
-
+*/
+        return KTDataPtr();
     }
 
     bool KTRSAMatReader::CloseEgg()
@@ -389,10 +428,15 @@ namespace Katydid
         fRecordsTimeStampSeconds = NULL;
 
         /* clean matlab variable before exit */
-        mxDestroyArray(fTSArrayMat);
+        if (fTSArrayMat != NULL) Mat_VarFree(fTSArrayMat);
 
         // Close matlab file
-        if (matClose(fMatFilePtr) != 0)
+        if (fMatFilePtr == NULL)
+        {
+            KTWARN(eggreadlog, "Mat file is not open");
+            return true;
+        }
+        if (Mat_Close(fMatFilePtr) != 0)
         {
             KTERROR(eggreadlog, "Something went wrong while closing the mat file");
             return false;

@@ -27,7 +27,7 @@ to not work with Katydid on Linux systems.
 #ifndef KTRSAMATREADER_HH_
 #define KTRSAMATREADER_HH_
 
-#include "mat.h" 
+#include "matio.h"
 
 #include "KTEggReader.hh"
 
@@ -70,8 +70,8 @@ namespace Katydid
             unsigned fSamplesPerFile;
             unsigned fRecordsPerFile;
             double *fRecordsTimeStampSeconds;
-            mxArray *fTSArrayMat;
-            MATFile *fMatFilePtr;
+            matvar_t *fTSArrayMat;
+            mat_t *fMatFilePtr;
 
 
         public:
