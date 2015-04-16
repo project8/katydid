@@ -69,6 +69,12 @@ namespace Katydid
 
     KTDataPtr KTRSAMatReader::BreakEgg(const string& filename)
     {
+        if (fMatFilePtr != NULL || fTSArrayMat != NULL)
+        {
+            KTERROR(eggreadlog, "Either the file pointer (" << fMatFilePtr << ") or the array data (" << fTSArrayMat << ") is open/allocated");
+            return KTDataPtr();
+        }
+
         // Temporary variable to read time stamps
         boost::posix_time::ptime ptime1temp, ptime1temp_1st; // From Boost
         boost::posix_time::time_duration tdur1temp; // From Boost
@@ -115,7 +121,7 @@ namespace Katydid
             fRecordsTimeStampSeconds[0] = 0;
         }
         else
-        {
+        { // TODO: deal with fileInfoStruct for concatenated files
             // If fileInfoStruct exists, then this is a concatenated file
 
             // Get the number of records (that is, original mat files),
@@ -183,25 +189,11 @@ namespace Katydid
         }
 #endif
 
-        // Get the pointer to the data array
-        fTSArrayMat = Mat_VarRead(fMatFilePtr, "Y");
-        if (fTSArrayMat == NULL)
-        {
-            KTERROR(eggreadlog, "Unable to find variable \"Y\"");
-            Mat_Close(fMatFilePtr);
-            fMatFilePtr = NULL;
-            return KTDataPtr();
-        }
-
-
-
-
         // Read XML Configuration
         matvar_t* rsaxml_mat = Mat_VarRead(fMatFilePtr, "rsaMetadata");
         if (rsaxml_mat == NULL)
         {
             KTERROR(eggreadlog, "Unable to read RSA XML config from MAT file");
-            Mat_VarFree(fTSArrayMat);
             Mat_Close(fMatFilePtr);
             fMatFilePtr = NULL;
             return KTDataPtr();
@@ -209,7 +201,6 @@ namespace Katydid
         if (rsaxml_mat->class_type != MAT_C_CHAR || rsaxml_mat->data_type != MAT_T_UINT8)
         {
             KTERROR(eggreadlog, "I don't know how to read a header with class type <" << rsaxml_mat->class_type << "> and data type <" << rsaxml_mat->data_type << ">");
-            Mat_VarFree(fTSArrayMat);
             Mat_VarFree(rsaxml_mat);
             Mat_Close(fMatFilePtr);
             fMatFilePtr = NULL;
@@ -278,7 +269,26 @@ namespace Katydid
         fHeader.SetSliceSize(fSliceSize);
         fHeader.SetSliceStride(fStride);
 
+        // Get the pointer to the data array
+        fTSArrayMat = Mat_VarRead(fMatFilePtr, "Y");
+        if (fTSArrayMat == NULL)
+        {
+            KTERROR(eggreadlog, "Unable to find variable \"Y\"");
+            Mat_Close(fMatFilePtr);
+            fMatFilePtr = NULL;
+            return KTDataPtr();
+        }
+        if (fTSArrayMat->data_type != MAT_T_SINGLE)
+        {
+            KTERROR(eggreadlog, "Data type is not single-precision floating-point: " << fTSArrayMat->data_type);
+            Mat_VarFree(fTSArrayMat);
+            fTSArrayMat = NULL;
+            Mat_Close(fMatFilePtr);
+            fMatFilePtr = NULL;
+            return KTDataPtr();
+        }
         Mat_VarPrint(fTSArrayMat, 1);
+
         // A few last useful variables
         fRecordSize = fHeader.GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
@@ -322,7 +332,6 @@ namespace Katydid
     }
     KTDataPtr KTRSAMatReader::HatchNextSlice()
     {
-        /*
         // IMPORTANT:
         // Updated: KTRSAMatReader::HatchNextSlice is currently capable of reading MAT files containing multiple records, *as long as they have
         //          the same size* - that is, MAT files of identical sizes that were concatenated;
@@ -397,15 +406,13 @@ namespace Katydid
         // Read data                          //
         // ********************************** //
         KTTimeSeriesFFTW* newSliceComplex = new KTTimeSeriesFFTW(sliceHeader.GetSliceSize(), 0., double(sliceHeader.GetSliceSize()) * sliceHeader.GetBinWidth());
-        float *data_real_ptr;
-        float *data_imag_ptr;
 
-        data_real_ptr = (float *) mxGetData(fTSArrayMat);
-        data_imag_ptr = (float *) mxGetImagData(fTSArrayMat);
+        float* dataReal = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Re;
+        float* dataImag = (float*)((mat_complex_split_t*)fTSArrayMat->data)->Im;
         for (unsigned iBin = 0; iBin < fSliceSize; iBin++)
         {
-            (*newSliceComplex)(iBin)[0] = double(data_real_ptr[iBin + fSamplesRead]);
-            (*newSliceComplex)(iBin)[1] = double(data_imag_ptr[iBin + fSamplesRead]);
+            (*newSliceComplex)(iBin)[0] = double(dataReal[iBin + fSamplesRead]);
+            (*newSliceComplex)(iBin)[1] = double(dataImag[iBin + fSamplesRead]);
         }
         KTTimeSeries* newSlice = newSliceComplex;
         fSamplesRead = fSamplesRead + fSliceSize;
@@ -418,8 +425,6 @@ namespace Katydid
         KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
         return newData;
-*/
-        return KTDataPtr();
     }
 
     bool KTRSAMatReader::CloseEgg()
