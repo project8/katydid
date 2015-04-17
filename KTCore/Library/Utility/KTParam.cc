@@ -166,6 +166,11 @@ namespace Katydid
         return false;
     }
 
+    bool KTParamValue::Empty() const
+    {
+        return fValue.empty();
+    }
+
     bool KTParamValue::IsValue() const
     {
         return true;
@@ -404,6 +409,15 @@ namespace Katydid
         return;
     }
 
+    void KTParamArray::Append( const KTParamArray& anArray )
+    {
+        for( KTParamArray::const_iterator it = anArray.Begin(); it != anArray.End(); ++it )
+        {
+            PushBack( *(*it) );
+        }
+        return;
+    }
+
     void KTParamArray::Erase( unsigned aIndex )
     {
         delete fContents[ aIndex ];
@@ -414,6 +428,15 @@ namespace Katydid
         KTParam* tCurrent = fContents[ aIndex ];
         fContents[ aIndex ] = NULL;
         return tCurrent;
+    }
+    void KTParamArray::Clear()
+    {
+        for( unsigned ind = 0; ind < fContents.size(); ++ind )
+        {
+            delete fContents[ ind ];
+        }
+        fContents.clear();
+        return;
     }
 
     KTParamArray::iterator KTParamArray::Begin()
@@ -521,6 +544,15 @@ namespace Katydid
     unsigned KTParamNode::Count( const std::string& aName ) const
     {
         return fContents.count( aName );
+    }
+
+    unsigned KTParamNode::Size() const
+    {
+        return fContents.size();
+    }
+    bool KTParamNode::Empty() const
+    {
+        return fContents.empty();
     }
 
     std::string KTParamNode::GetValue( const std::string& aName ) const
@@ -742,6 +774,16 @@ namespace Katydid
             return removed;
         }
         return NULL;
+    }
+
+    void KTParamNode::Clear()
+    {
+        for( iterator it = fContents.begin(); it != fContents.end(); ++it )
+        {
+            delete it->second;
+        }
+        fContents.clear();
+        return;
     }
 
     KTParamNode::iterator KTParamNode::Begin()

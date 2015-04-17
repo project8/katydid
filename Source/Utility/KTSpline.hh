@@ -13,6 +13,7 @@
 #endif
 
 #include <list>
+#include <cstddef>
 
 namespace Katydid
 {
