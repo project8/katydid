@@ -157,8 +157,9 @@ namespace Katydid
                 }
                 //Mat_VarPrint(rsaxml_mat, 1);
                 size_t buflen = rsaxml_mat->dims[1];  //mxGetN(rsaxml_mat) + 1;
-                char* rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
+                char* rsaxml_str = new char [buflen+1]; //(char*) calloc(buflen, sizeof(char));
                 memcpy(rsaxml_str, rsaxml_mat->data, buflen);
+                rsaxml_str[buflen] = char( 0 );
                 //int status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
                 //if (status != 0)
                 //{
@@ -166,12 +167,15 @@ namespace Katydid
                 //    return KTDataPtr();
                 //}
                 KTINFO(eggreadlog, "Read XML metadata for record " << iRecord);
+                //printf("Size of buflen: %d\n",buflen);
+                //printf("Size of rsaxml_str: %d\n",sizeof(rsaxml_str));
                 //std::cout << "xml string: \n" << rsaxml_str << std::endl;
 
                 // Parse XML
                 rapidxml::xml_document< > doc;
                 doc.parse< 0 >(rsaxml_str);
                 rapidxml::xml_node< >* curr_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("DataDescription")->first_node("DateTime");
+
 
                 char* recordsTimeStampStr = new char[curr_node->value_size()]; //(char*) calloc(curr_node->value_size(), sizeof(char));
                 strncpy(recordsTimeStampStr, curr_node->value(), curr_node->value_size() - 6);
