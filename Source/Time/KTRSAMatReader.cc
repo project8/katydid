@@ -230,8 +230,9 @@ namespace Katydid
         }
         //Mat_VarPrint(rsaxml_mat, 1);
         size_t buflen = rsaxml_mat->dims[1];  //mxGetN(rsaxml_mat) + 1;
-        char* rsaxml_str = new char [buflen]; //(char*) calloc(buflen, sizeof(char));
+        char* rsaxml_str = new char [buflen+1]; //(char*) calloc(buflen, sizeof(char));
         memcpy(rsaxml_str, rsaxml_mat->data, buflen);
+        rsaxml_str[buflen] = char( 0 );
         //int status = mxGetString(rsaxml_mat, rsaxml_str, buflen);
         //if (status != 0)
         //{
