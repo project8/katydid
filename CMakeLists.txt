@@ -9,7 +9,7 @@ project (Katydid)
 
 # Import Katydid core features
 include (KTCore/cmake/KatydidCore.cmake)
-katydid_prepare_project (2 0 6)
+katydid_prepare_project (2 0 7)
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
