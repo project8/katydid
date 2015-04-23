@@ -25,6 +25,7 @@ namespace Katydid
 
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(unsigned, TrackID);
+            MEMBERVARIABLE(unsigned, EventID);
 
             MEMBERVARIABLE(bool, IsCut);
 

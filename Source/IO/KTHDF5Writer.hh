@@ -38,6 +38,7 @@ namespace Katydid {
             void CloseFile();
 
             MEMBERVARIABLEREF(std::string, Filename);
+            MEMBERVARIABLEREF(std::string, FileFlag);
 
             bool OpenAndVerifyFile();
 

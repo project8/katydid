@@ -49,6 +49,7 @@ namespace Katydid {
         double FirstTrackTotalPower;
     } MTEData;
 
+
     /*
      * A bunch of calculations we have to do in order to store 
      * candidate data structs in an HDF5 table.  This is all
@@ -163,6 +164,115 @@ namespace Katydid {
         H5::PredType::NATIVE_DOUBLE
     };
 
+    /*
+     * Now the same for Processed Track Data
+     * Keep an eye on KTProcessedTrackData.hh - if that changes, you need to change the definitions here too
+     */ 
+
+    typedef struct {
+        unsigned Component;
+        unsigned TrackID;
+        unsigned EventID;
+        bool IsCut;
+        double StartTimeInAcq;
+        double StartTimeInRunC;
+        double EndTimeInRunC;
+        double TimeLength;
+        double StartFrequency;
+        double EndFrequency;
+        double FrequencyWidth;
+        double Slope;
+        double Intercept;
+        double TotalPower;
+        double StartTimeInRunCSigma;
+        double EndTimeInRunCSigma;
+        double TimeLengthSigma;
+        double StartFrequencySigma;
+        double EndFrequencySigma;
+        double FrequencyWidthSigma;
+        double SlopeSigma;
+        double InterceptSigma;
+        double TotalPowerSigma;
+    } PTData;
+
+    size_t PTNFields = 23;
+    size_t PTSize = sizeof(PTData);
+    const char* PTFieldNames[23] = {
+        "Component",
+        "TrackID",
+        "EventID",
+        "IsCut",
+        "StartTimeInAcq",
+        "StartTimeInRunC",
+        "EndTimeInRunC",
+        "TimeLength",
+        "StartFrequency",
+        "EndFrequency",
+        "FrequencyWidth",
+        "Slope",
+        "Intercept",
+        "TotalPower",
+        "StartTimeInRunCSigma",
+        "EndTimeInRunCSigma",
+        "TimeLengthSigma",
+        "StartFrequencySigma",
+        "EndFrequencySigma",
+        "FrequencyWidthSigma",
+        "SlopeSigma",
+        "InterceptSigma",
+        "TotalPowerSigma"
+    };
+    size_t PTFieldOffsets[23] = {
+        HOFFSET(PTData, Component),
+        HOFFSET(PTData, TrackID),
+        HOFFSET(PTData, EventID),
+        HOFFSET(PTData, IsCut),
+        HOFFSET(PTData, StartTimeInAcq),
+        HOFFSET(PTData, StartTimeInRunC),
+        HOFFSET(PTData, EndTimeInRunC),
+        HOFFSET(PTData, TimeLength),
+        HOFFSET(PTData, StartFrequency),
+        HOFFSET(PTData, EndFrequency),
+        HOFFSET(PTData, FrequencyWidth),
+        HOFFSET(PTData, Slope),
+        HOFFSET(PTData, Intercept),
+        HOFFSET(PTData, TotalPower),
+        HOFFSET(PTData, StartTimeInRunCSigma),
+        HOFFSET(PTData, EndTimeInRunCSigma),
+        HOFFSET(PTData, TimeLengthSigma),
+        HOFFSET(PTData, StartFrequencySigma),
+        HOFFSET(PTData, EndFrequencySigma),
+        HOFFSET(PTData, FrequencyWidthSigma),
+        HOFFSET(PTData, SlopeSigma),
+        HOFFSET(PTData, InterceptSigma),
+        HOFFSET(PTData, TotalPowerSigma)
+    };
+    H5::PredType PTFieldTypes[23] = {
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_UINT,
+        H5::PredType::NATIVE_INT8,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE,
+        H5::PredType::NATIVE_DOUBLE
+    };
+
     class KTHDF5TypeWriterCandidates: public KTHDF5TypeWriter {
         /*
         * The usual constructor/destructor/slot boilerplate
@@ -182,12 +292,17 @@ namespace Katydid {
         void WriteProcessedTrack(KTDataPtr data);
         void WriteMultiTrackEvent(KTDataPtr data);
         void WriteMTEBuffer();
+        void WritePTBuffer();
 
     private:
         std::vector<MTEData> fMTEDataBuffer;
         H5::CompType* fMTEType;
+        std::vector<PTData> fMTETracksDataBuffer;
+        std::vector<PTData> fPTDataBuffer;
+        H5::CompType* fPTType;
 
-        unsigned fFlushIdx;
+        unsigned fFlushMTEIdx;
+        unsigned fFlushPTIdx;
     };
 };
 

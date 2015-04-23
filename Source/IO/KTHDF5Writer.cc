@@ -27,6 +27,7 @@ namespace Katydid
             KTWriterWithTypists< KTHDF5Writer >(name),
             fHeaderSlot("header", this, &KTHDF5Writer::WriteEggHeader),
             fFilename("my_file.h5"),
+            fFileFlag("nocompress"),
             fFile(NULL),
             fHeaderParsed(false)
     {
@@ -44,6 +45,7 @@ namespace Katydid
         if (node != NULL)
         {
             SetFilename(node->GetValue("output-file", fFilename));
+            SetFileFlag(node->GetValue("file-flag", fFileFlag));
         }
 
         // Command-line settings
