@@ -121,7 +121,7 @@ namespace Katydid
 
     bool KTReverseFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        return InitializeFromRequestedState(header.GetSliceSize());
+        return InitializeFromRequestedState(header.GetChannelHeader(0)->GetSliceSize());
     }
 
     bool KTReverseFFTW::InitializeFFT(KTReverseFFTW::State intendedState, unsigned timeSize)

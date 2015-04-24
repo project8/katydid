@@ -68,6 +68,7 @@ namespace Katydid
             MEMBERVARIABLE(double, MaximumFrequency);
             MEMBERVARIABLEREF(std::string, Timestamp);
             MEMBERVARIABLEREF(std::string, Description);
+            MEMBERVARIABLE(TimeSeriesDataType, TSDataType );
 
             unsigned GetNChannels() const;
             KTEggHeader& SetNChannels(unsigned nChannels);

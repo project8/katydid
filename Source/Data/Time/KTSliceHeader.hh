@@ -33,6 +33,7 @@ namespace Katydid
             KTSliceHeader& SetNComponents(unsigned num);
 
             MEMBERVARIABLE(double, TimeInRun); // in sec
+            MEMBERVARIABLE(double, TimeInAcq); // in sec
             MEMBERVARIABLE(uint64_t, SliceNumber);
             MEMBERVARIABLE(unsigned, NSlicesIncluded); // for meta-slices
             MEMBERVARIABLE(bool, IsNewAcquisition);

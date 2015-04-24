@@ -502,6 +502,14 @@ namespace Katydid
                 ++iChanInKatydid;
             }
         }
+
+        // set the TS data type size based on channel 0 (by Katydid's channel counting)
+        if (fHeader.GetChannelHeader(0)->GetSampleSize() == 1) fHeader.SetTSDataType(KTEggHeader::kReal);
+        else if (fHeader.GetChannelHeader(0)->GetSampleSize() == 2) fHeader.SetTSDataType(KTEggHeader::kComplex);
+        else
+        {
+            KTERROR(eggreadlog, "Cannot handle sample size == " << fHeader.GetChannelHeader(0)->GetSampleSize());
+        }
         return;
     }
 
