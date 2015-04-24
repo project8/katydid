@@ -101,7 +101,7 @@ namespace Katydid
     {
         return double(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
     }
-    inline double KTEggReader2011::GetTimeInAcq() const
+    inline double KTEgg1Reader::GetTimeInAcq() const
     {
         // For the Egg data taken with a free streaming digitizer, the TimeInRun happens to be equal to the TimeInAcq
         return GetTimeInRun();
