@@ -1,15 +1,16 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-cmake_minimum_required (VERSION 2.8.12)
+cmake_minimum_required (VERSION 3.0)
 
 
 # Define the project
-project (Katydid)
+cmake_policy( SET CMP0048 NEW ) # version in project()
+project (Katydid VERSION 2.0.6)
 
 # Import Katydid core features
 include (KTCore/cmake/KatydidCore.cmake)
-katydid_prepare_project (2 0 6)
+katydid_prepare_project ()
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
