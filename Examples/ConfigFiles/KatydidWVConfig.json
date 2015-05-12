@@ -49,9 +49,13 @@
     "egg":
     {
         "filename": "/path/to/file.egg",
+        "egg-reader": "egg3",
         "number-of-slices": 1,
         "slice-size": 16384,
-        "time-series-type": "fftw"
+        "dac":
+        {
+            "time-series-type": "fftw"
+        }
     },
     
     "wv":

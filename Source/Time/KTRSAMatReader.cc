@@ -256,21 +256,27 @@ namespace Katydid
         fHeader.SetTSDataType(KTEggHeader::kIQ);
         fHeader.SetFilename(filename);
         fHeader.SetNChannels(1);
+        fHeader.SetChannelHeader(new KTChannelHeader());
         curr_node = data_node->first_node("NumberSamples");
-        fHeader.SetRecordSize((size_t) atoi(curr_node->value()));
+        fHeader.GetChannelHeader(0)->SetRecordSize((size_t) atoi(curr_node->value()));
+        if (fSliceSize == 0)
+        {
+            fSliceSize = fHeader.GetChannelHeader(0)->GetRecordSize();
+            fStride = fSliceSize;
+        }
         //rapidxml::xml_node< >* prod_spec_node = doc.first_node("DataFile")->first_node("DataSetsCollection")->first_node("DataSets")->first_node("ProductSpecific");
         // The RSA samples at 100 MHz, then decimates by 2 (50 MHz); the number reported by the RSA is "SamplingFrequency" = 50 MHz
         // So the frequency of the samples in the data is 50 MHz, and since this is IQ data, the Bandwidth should also be 50 MHz.
         curr_node = data_node->first_node("SamplingFrequency");
         double fAcqBW = atof(curr_node->value());
-        fHeader.SetAcquisitionRate(fAcqBW);
-        fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetRecordSize() / fHeader.GetAcquisitionRate());
+        fHeader.SetAcquisitionRate(2. * fAcqBW);
+        fHeader.SetRunDuration(timeFromFirstToLastRecord + (double) fHeader.GetChannelHeader(0)->GetRecordSize() / fHeader.GetAcquisitionRate());
         curr_node = data_node->first_node("DateTime");
         fHeader.SetTimestamp(curr_node->value());
         curr_node = data_node->first_node("NumberFormat");
         if (strcmp(curr_node->value(), "Int32") == 0)
         {
-            fHeader.SetDataTypeSize(sizeof(int32_t));
+            fHeader.GetChannelHeader(0)->SetDataTypeSize(sizeof(int32_t));
         }
         // The variables below could not be obtained from the XML configuration:
         //fHeader.SetDescription(monarchHeader->GetDescription());
@@ -288,9 +294,9 @@ namespace Katydid
         rsaxml_str = NULL;
 
         // Get configuration from JSON config file
-        fHeader.SetRawSliceSize(fSliceSize);
-        fHeader.SetSliceSize(fSliceSize);
-        fHeader.SetSliceStride(fStride);
+        fHeader.GetChannelHeader(0)->SetRawSliceSize(fSliceSize);
+        fHeader.GetChannelHeader(0)->SetSliceSize(fSliceSize);
+        fHeader.GetChannelHeader(0)->SetSliceStride(fStride);
 
         // Get the pointer to the data array
         Mat_Rewind(fMatFilePtr);
@@ -313,8 +319,7 @@ namespace Katydid
         }
         //Mat_VarPrint(fTSArrayMat, 1);
 
-        // A few last useful variables
-        fRecordSize = fHeader.GetRecordSize();
+        fRecordSize = fHeader.GetChannelHeader(0)->GetRecordSize();
         fBinWidth = 1. / fHeader.GetAcquisitionRate();
         fSliceNumber = 0; // Number of Slices saved
         fRecordsRead = 0; // Number of records read from file
@@ -421,7 +426,7 @@ namespace Katydid
         sliceHeader.SetSliceNumber(fSliceNumber);
         sliceHeader.SetStartRecordNumber(fRecordsRead);
         sliceHeader.SetStartSampleNumber(fSamplesRead);
-        sliceHeader.SetRecordSize(fHeader.GetRecordSize());
+        sliceHeader.SetRecordSize(fHeader.GetChannelHeader(0)->GetRecordSize());
         // Slice Header Variables that depend on channel number
         unsigned iChannel = 0;
         sliceHeader.SetAcquisitionID(fRecordsRead, iChannel);

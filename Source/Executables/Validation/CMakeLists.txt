@@ -138,10 +138,10 @@ if (Katydid_ENABLE_TESTING)
         #pbuilder_install_executables (guiviewer)
     
         add_executable (TestForwardFFTW TestForwardFFTW.cc)
-        target_link_libraries (TestForwardFFTW KTCore KatydidUtility KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
+        target_link_libraries (TestForwardFFTW KTCore KatydidUtility KatydidData KatydidIO KatydidTransform ${EXTERNAL_LIBRARIES})
         
         #add_executable (TestSimpleFFT TestSimpleFFT.cc)
-        #target_link_libraries (TestSimpleFFT KTCore KatydidUtility KatydidData KatydidIO KatydidFFT ${EXTERNAL_LIBRARIES})
+        #target_link_libraries (TestSimpleFFT KTCore KatydidUtility KatydidData KatydidIO KatydidTransform ${EXTERNAL_LIBRARIES})
     
         add_executable (TestWignerVille TestWignerVille.cc)
         target_link_libraries (TestWignerVille KTCore KatydidUtility KatydidData KatydidIO KatydidSpectrumAnalysis ${EXTERNAL_LIBRARIES})

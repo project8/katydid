@@ -6,7 +6,8 @@ set (TIME_HEADERFILES
     KTDigitizerTests.hh
     KTEggProcessor.hh
     KTEggReader.hh
-    KTEggReader2011.hh
+    KTEgg1Reader.hh
+    KTSingleChannelDAC.hh
 )
 
 set (TIME_SOURCEFILES
@@ -14,20 +15,40 @@ set (TIME_SOURCEFILES
     KTDigitizerTests.cc
     KTEggProcessor.cc
     KTEggReader.cc
-    KTEggReader2011.cc
+    KTEgg1Reader.cc
+    KTSingleChannelDAC.cc
 )
 
 if (Katydid_USE_MONARCH)
-    set (TIME_HEADERFILES
-        ${TIME_HEADERFILES}
-        KTEggReaderMonarch.hh
-        #KTEggWriter.hh
-    )
-    set (TIME_SOURCEFILES
-        ${TIME_SOURCEFILES}
-        KTEggReaderMonarch.cc
-        #KTEggWriter.cc
-    )
+    add_definitions(-DUSE_MONARCH)
+
+    if( Monarch_BUILD_MONARCH2 )
+        set (TIME_HEADERFILES
+            ${TIME_HEADERFILES}
+            KTEgg2Reader.hh
+        )
+    endif( Monarch_BUILD_MONARCH2 )
+    if( Monarch_BUILD_MONARCH3 )
+        set (TIME_HEADERFILES
+            ${TIME_HEADERFILES}
+            KTEgg3Reader.hh
+        )
+    endif( Monarch_BUILD_MONARCH3 )
+    #KTEggWriter.hh
+    
+    if( Monarch_BUILD_MONARCH2 )
+        set (TIME_SOURCEFILES
+            ${TIME_SOURCEFILES}
+            KTEgg2Reader.cc
+        )
+    endif( Monarch_BUILD_MONARCH2 )
+    if( Monarch_BUILD_MONARCH3 )
+        set (TIME_SOURCEFILES
+            ${TIME_SOURCEFILES}
+            KTEgg3Reader.cc
+        )
+    endif( Monarch_BUILD_MONARCH3 )
+    #KTEggWriter.cc
 endif (Katydid_USE_MONARCH)
 
 if (Katydid_USE_MANTIS)

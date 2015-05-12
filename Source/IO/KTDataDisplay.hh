@@ -54,6 +54,7 @@ namespace Katydid
      - "multi-fs-polar":
      - "norm-fs-fftw":
      - "norm-fs-polar":
+     - "raw-ts":
      - "ts":
      - "ts-dist":
      - "wv":

@@ -1,14 +1,16 @@
 /*
- * KTEggReader2011.hh
+ * KTEgg1Reader.hh
  *
  *  Created on: Aug 20, 2012
  *      Author: nsoblath
  */
 
-#ifndef KTEGGREADER2011_HH_
-#define KTEGGREADER2011_HH_
+#ifndef KTEGG1READER_HH_
+#define KTEGG1READER_HH_
 
 #include "KTEggReader.hh"
+
+#include "KTConstants.hh"
 
 #include <fstream>
 #include <sstream>
@@ -16,7 +18,7 @@
 namespace Katydid
 {
 
-    class KTEggReader2011 : public KTEggReader
+    class KTEgg1Reader : public KTEggReader
     {
         private:
         public:
@@ -30,6 +32,7 @@ namespace Katydid
                 double fSampleRate;
                 double fHertzPerSampleRateUnit;
                 double fSecondsPerRunLengthUnit;
+                unsigned fDataFormat;
 
                 HeaderInfo() :
                     fSliceSize(0),
@@ -39,13 +42,14 @@ namespace Katydid
                     fRunLength(0.),
                     fSampleRate(0.),
                     fHertzPerSampleRateUnit(1.),
-                    fSecondsPerRunLengthUnit(1.)
+                    fSecondsPerRunLengthUnit(1.),
+                    fDataFormat(sInvalidFormat)
                 {}
             };
 
         public:
-            KTEggReader2011();
-            virtual ~KTEggReader2011();
+            KTEgg1Reader();
+            virtual ~KTEgg1Reader();
 
         public:
             virtual bool Configure(const KTEggProcessor& eggProc);
@@ -84,7 +88,7 @@ namespace Katydid
     };
 
     template< typename XReturnType, typename XArrayType >
-    XReturnType KTEggReader2011::ConvertFromArray(XArrayType* value)
+    XReturnType KTEgg1Reader::ConvertFromArray(XArrayType* value)
     {
         std::stringstream converter;
         XReturnType converted;
@@ -93,31 +97,31 @@ namespace Katydid
         return converted;
     }
 
-    inline double KTEggReader2011::GetTimeInRun() const
+    inline double KTEgg1Reader::GetTimeInRun() const
     {
         return double(fRecordsRead * fHeaderInfo.fRecordSize) / fHeaderInfo.fSampleRate;
     }
-    inline double KTEggReader2011::GetTimeInAcq() const
+    inline double KTEgg1Reader::GetTimeInAcq() const
     {
         // For the Egg data taken with a free streaming digitizer, the TimeInRun happens to be equal to the TimeInAcq
         return GetTimeInRun();
     }
 
-    inline double KTEggReader2011::GetIntegratedTime() const
+    inline double KTEgg1Reader::GetIntegratedTime() const
     {
         return GetTimeInRun();
     }
 
-    inline unsigned KTEggReader2011::GetNSlicesProcessed() const
+    inline unsigned KTEgg1Reader::GetNSlicesProcessed() const
     {
         return fRecordsRead;
     }
 
-    inline unsigned KTEggReader2011::GetNRecordsProcessed() const
+    inline unsigned KTEgg1Reader::GetNRecordsProcessed() const
     {
         return fRecordsRead;
     }
 
 
 } /* namespace Katydid */
-#endif /* KTEGGREADER2011_HH_ */
+#endif /* KTEGG1READER_HH_ */

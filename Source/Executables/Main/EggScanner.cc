@@ -13,10 +13,13 @@
 #include "KTCommandLineOption.hh"
 #include "KTData.hh"
 #include "KTEggHeader.hh"
-#include "KTEggReader2011.hh"
-#include "KTEggReaderMonarch.hh"
+#include "KTEgg1Reader.hh"
 #include "KTLogger.hh"
 #include "KTSliceHeader.hh"
+
+#ifdef USE_MONARCH2
+#include "KTEgg2Reader.hh"
+#endif
 
 #include <boost/filesystem.hpp>
 
@@ -54,17 +57,21 @@ int main(int argc, char** argv)
     unsigned sliceSize = clOpts->GetCommandLineValue< unsigned >("slice-size", 16384);
 
     KTEggReader* reader;
-    if (clOpts->IsCommandLineOptSet("use-2011-egg-reader"))
+    if (clOpts->IsCommandLineOptSet("use-egg1-reader"))
     {
-        KTINFO(eggscan, "Using 2011 egg reader");
-        KTEggReader2011* reader2011 = new KTEggReader2011();
+        KTINFO(eggscan, "Using egg1 (2011) reader");
+        KTEgg1Reader* reader2011 = new KTEgg1Reader();
         reader = reader2011;
     }
     else
     {
-        KTEggReaderMonarch* readerMonarch = new KTEggReaderMonarch();
+#ifdef USE_MONARCH2
+        KTEgg2Reader* readerMonarch = new KTEgg2Reader();
         readerMonarch->SetSliceSize(sliceSize);
         reader = readerMonarch;
+#else
+        KTERROR(eggscan, "Can only use Egg1 reader unless Monarch2 is enabled");
+#endif
     }
 
     bool scanRecords = clOpts->IsCommandLineOptSet("scan-records");
@@ -85,15 +92,15 @@ int main(int argc, char** argv)
     KTEggHeader& header = headerPtr->Of< KTEggHeader >();
     KTPROG(eggscan, header);
 
-    uint64_t recordMemorySize = header.GetSliceSize(); // each time bin is represented by 1 byte
+    uint64_t recordMemorySize = header.GetChannelHeader(0)->GetRecordSize(); // each time bin is represented by 1 byte
     uint64_t recordsInFile = fileSize / recordMemorySize; // approximate, rounding down
-    uint64_t slicesInFile = recordsInFile * uint64_t(header.GetRecordSize() / header.GetSliceSize()); // upper limit, assuming continuous acquisition
+    uint64_t slicesInFile = recordsInFile * uint64_t(header.GetChannelHeader(0)->GetRecordSize() / header.GetChannelHeader(0)->GetSliceSize()); // upper limit, assuming continuous acquisition
 
-    unsigned fsSizeFFTW = header.GetSliceSize();
+    unsigned fsSizeFFTW = header.GetChannelHeader(0)->GetSliceSize();
     unsigned fsSizePolar = fsSizeFFTW / 2 + 1;
     double timeBinWidth = 1. / header.GetAcquisitionRate();
     double freqBinWidth = 1. / (timeBinWidth * double(fsSizeFFTW));
-    double sliceLength = timeBinWidth * double(header.GetSliceSize());
+    double sliceLength = timeBinWidth * double(header.GetChannelHeader(0)->GetSliceSize());
     double fsMaxFreq = freqBinWidth * (double(fsSizePolar) - 0.5);
 
     KTPROG(eggscan, "Additional information:\n"

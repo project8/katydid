@@ -7,6 +7,7 @@
 
 #include "KTTSGenerator.hh"
 
+#include "KTConstants.hh"
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
 #include "KTProcSummary.hh"
@@ -86,19 +87,7 @@ namespace Katydid
         // Create, signal, and destroy the egg header
         KTEggHeader* newHeader = CreateEggHeader();
 
-        KTDEBUG(genlog, "Created header:\n"
-             << "\tFilename: " << newHeader->GetFilename() << '\n'
-             << "\tAqcuisition Mode: " << newHeader->GetAcquisitionMode() << '\n'
-             << "\tNumber of Channels: " << newHeader->GetNChannels() << '\n'
-             << "\tSlice Size: " << newHeader->GetSliceSize() << '\n'
-             << "\tRecord Size: " << newHeader->GetRecordSize() << '\n'
-             << "\tRun Duration: " << newHeader->GetRunDuration() << " ms" << '\n'
-             << "\tAcquisition Rate: " << newHeader->GetAcquisitionRate() << " Hz \n"
-             << "\tTimestamp: " << newHeader->GetTimestamp() << '\n'
-             << "\tDescription: " << newHeader->GetDescription() << '\n'
-             << "\tRun Type: " << newHeader->GetRunType() << '\n'
-             << "\tRun Source: " << newHeader->GetRunSource() << '\n'
-             << "\tFormat Mode: " << newHeader->GetFormatMode());
+        KTDEBUG(genlog, "Created header:\n" << *newHeader);
 
         fHeaderSignal(newHeader);
         delete newHeader;
@@ -151,14 +140,30 @@ namespace Katydid
         newHeader->SetFilename(fConfigName);
         newHeader->SetAcquisitionMode(fNChannels);
         newHeader->SetNChannels(fNChannels);
-        newHeader->SetSliceSize(fSliceSize);
-        newHeader->SetRecordSize(fRecordSize);
         newHeader->SetRunDuration(fSliceSize * fNSlices * fBinWidth);
         newHeader->SetAcquisitionRate(1. / fBinWidth);
         //newHeader->SetDescription();
         //newHeader->SetRunType();
-        newHeader->SetRunSource(monarch::sSourceSimulation);
-        //newHeader->SetFormatMode();
+
+        for (unsigned iChannel = 0; iChannel < fNChannels; ++iChannel)
+        {
+            KTChannelHeader* newChanHeader = new KTChannelHeader();
+            newChanHeader->SetNumber(iChannel);
+            newChanHeader->SetSource("KTTSGenerator");
+            newChanHeader->SetRawSliceSize(fSliceSize);
+            newChanHeader->SetSliceSize(fSliceSize);
+            newChanHeader->SetSliceStride(fSliceSize);
+            newChanHeader->SetRecordSize(fRecordSize);
+            newChanHeader->SetSampleSize(1);
+            newChanHeader->SetDataTypeSize(1);
+            newChanHeader->SetDataFormat(sDigitizedUS);
+            newChanHeader->SetBitDepth(8);
+            newChanHeader->SetVoltageOffset(-0.25);
+            newChanHeader->SetVoltageRange(0.5);
+            newChanHeader->SetDACGain(newChanHeader->GetVoltageRange() / (double)(1 << newChanHeader->GetBitDepth()));
+            newHeader->SetChannelHeader(newChanHeader, iChannel);
+
+        }
 
         newHeader->SetTimestamp(get_absolute_time_string());
 
@@ -189,7 +194,7 @@ namespace Katydid
 
         for (unsigned iComponent = 0; iComponent < fNChannels; ++iComponent)
         {
-            sliceHeader.SetTimeStamp((monarch::TimeType)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
+            sliceHeader.SetTimeStamp((uint64_t)(sliceHeader.GetTimeInRun() * (double)NSEC_PER_SEC), iComponent); // TODO: change this to 1e3 when switch to usec is made
             sliceHeader.SetAcquisitionID(0);
             sliceHeader.SetRecordID(0);
         }

@@ -121,7 +121,7 @@ namespace Katydid
 
     bool KTReverseFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        return InitializeFromRequestedState(header.GetSliceSize());
+        return InitializeFromRequestedState(header.GetChannelHeader(0)->GetSliceSize());
     }
 
     bool KTReverseFFTW::InitializeFFT(KTReverseFFTW::State intendedState, unsigned timeSize)
@@ -280,7 +280,7 @@ namespace Katydid
     void KTReverseFFTW::DoTransform(const KTFrequencySpectrumFFTW* fsIn, KTTimeSeriesReal* tsOut) const
     {
         fftw_execute_dft_c2r(fReversePlan, fsIn->GetData(), fROutputArray);
-        copy(fROutputArray, fROutputArray+fTimeSize, tsOut->begin());
+        std::copy(fROutputArray, fROutputArray+fTimeSize, tsOut->begin());
         (*tsOut) *= sqrt(1. / double(fTimeSize));
         return;
     }

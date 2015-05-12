@@ -1,18 +1,18 @@
 /**
- @file KTEgg.hh
- @brief Contains KTEgg
- @details Reads Egg data files: parses the header and produces slices.
+ @file KTEgg2Reader.hh
+ @brief Contains KTEgg2Reader
+ @details Reads Egg2 data files: parses the header and produces slices.
  @author: N. S. Oblath
  @date: Sep 9, 2011
  */
 
-#ifndef KTEGGREADERMONARCH_HH_
-#define KTEGGREADERMONARCH_HH_
+#ifndef KTEGG2READER_HH_
+#define KTEGG2READER_HH_
 
 #include "KTEggReader.hh"
 
-#include "MonarchRecord.hpp"
-#include "MonarchTypes.hpp"
+#include "M2Record.hh"
+#include "M2Types.hh"
 
 #include <map>
 #include <string>
@@ -22,21 +22,21 @@
 #define SEC_PER_NSEC 1.e-9
 #endif
 
-namespace monarch
+namespace monarch2
 {
-    class Monarch;
-    class MonarchHeader;
+    class Monarch2;
+    class M2Header;
 }
 
 namespace Katydid
 {
     class KTEggHeader;
 
-    class KTEggReaderMonarch : public KTEggReader
+    class KTEgg2Reader : public KTEggReader
     {
         protected:
-            typedef const monarch::MonarchRecordBytes* (monarch::Monarch::*GetRecordFunction)() const;
-            typedef double (KTEggReaderMonarch::*GetTIRFunction)() const;
+            typedef const monarch2::M2RecordBytes* (monarch2::Monarch2::*GetRecordFunction)() const;
+            typedef double (KTEgg2Reader::*GetTIRFunction)() const;
 
             typedef std::map< unsigned, int > AcquisitionModeMap;
             typedef AcquisitionModeMap::value_type AcqModeMapValue;
@@ -50,7 +50,7 @@ namespace Katydid
                     kContinueReading,
                     kReachedNextRecord
                 };
-                monarch::AcquisitionIdType fAcquisitionID;
+                monarch2::AcquisitionIdType fAcquisitionID;
                 unsigned fReadPtrOffset; // sample offset of the read pointer in the current record
                 unsigned fReadPtrRecordOffset; // record offset of the read pointer relative to the start of the slice
                 unsigned fSliceStartPtrOffset; // sample offset of the start of the slice in the relevant record
@@ -59,8 +59,8 @@ namespace Katydid
             };
 
         public:
-            KTEggReaderMonarch();
-            virtual ~KTEggReaderMonarch();
+            KTEgg2Reader();
+            virtual ~KTEgg2Reader();
 
         public:
             unsigned GetSliceSize() const;
@@ -91,9 +91,9 @@ namespace Katydid
 
         private:
             /// Copy header information from the MonarchHeader object
-            void CopyHeaderInformation(const monarch::MonarchHeader* monarchHeader);
+            void CopyHeaderInformation(const monarch2::M2Header* monarchHeader);
 
-            const monarch::Monarch* fMonarch;
+            const monarch2::Monarch2* fMonarch;
             KTDataPtr fHeaderPtr;
             KTEggHeader& fHeader;
             MonarchReadState fReadState;
@@ -132,7 +132,7 @@ namespace Katydid
             double GetTimeInRunFirstCall() const;
             double GetTimeInRunFromMonarch() const;
             double GetTimeInRunManually() const;
-            mutable monarch::TimeType fT0Offset; /// Time of the first record
+            mutable monarch2::TimeType fT0Offset; /// Time of the first record
 
             double fSampleRateUnitsInHz;
 
@@ -142,90 +142,90 @@ namespace Katydid
             uint64_t fSliceNumber;
     };
 
-    inline unsigned KTEggReaderMonarch::GetSliceSize() const
+    inline unsigned KTEgg2Reader::GetSliceSize() const
     {
         return fSliceSize;
     }
 
-    inline void KTEggReaderMonarch::SetSliceSize(unsigned size)
+    inline void KTEgg2Reader::SetSliceSize(unsigned size)
     {
         fSliceSize = size;
         return;
     }
 
-    inline unsigned KTEggReaderMonarch::GetStride() const
+    inline unsigned KTEgg2Reader::GetStride() const
     {
         return fStride;
     }
 
-    inline void KTEggReaderMonarch::SetStride(unsigned stride)
+    inline void KTEgg2Reader::SetStride(unsigned stride)
     {
         fStride = stride;
         return;
     }
 
-    inline double KTEggReaderMonarch::GetStartTime() const
+    inline double KTEgg2Reader::GetStartTime() const
     {
         return fStartTime;
     }
 
-    inline void KTEggReaderMonarch::SetStartTime(double time)
+    inline void KTEgg2Reader::SetStartTime(double time)
     {
         fStartTime = time;
         return;
     }
 
-    inline double KTEggReaderMonarch::GetSampleRateUnitsInHz() const
+    inline double KTEgg2Reader::GetSampleRateUnitsInHz() const
     {
         return fSampleRateUnitsInHz;
     }
 
-    inline unsigned KTEggReaderMonarch::GetRecordSize() const
+    inline unsigned KTEgg2Reader::GetRecordSize() const
     {
         return fRecordSize;
     }
-    inline double KTEggReaderMonarch::GetBinWidth() const
+    inline double KTEgg2Reader::GetBinWidth() const
     {
         return fBinWidth;
     }
 
-    inline double KTEggReaderMonarch::GetTimeInRun() const
+    inline double KTEgg2Reader::GetTimeInRun() const
     {
         return (this->*fGetTimeInRun)();
     }
 
-    inline double KTEggReaderMonarch::GetTimeInRunFromMonarch() const
+    inline double KTEgg2Reader::GetTimeInRunFromMonarch() const
     {
         return double((fMonarch->*fMonarchGetRecord[0])()->fTime - fT0Offset) * SEC_PER_NSEC + fBinWidth * double(fReadState.fReadPtrOffset);
     }
 
-    inline double KTEggReaderMonarch::GetTimeInRunManually() const
+    inline double KTEgg2Reader::GetTimeInRunManually() const
     {
         return fBinWidth * double(fReadState.fAbsoluteRecordOffset * fRecordSize + fReadState.fReadPtrOffset);
     }
 
-    inline double KTEggReaderMonarch::GetIntegratedTime() const
+    inline double KTEgg2Reader::GetIntegratedTime() const
     {
         return GetTimeInRun();
     }
 
-    inline double KTEggReaderMonarch::GetTimeInAcq() const
+    inline double KTEgg2Reader::GetTimeInAcq() const
     {
         // For the Egg data taken with a free streaming digitizer, the TimeInRun happens to be equal to the TimeInAcq
         return GetTimeInRun();
     }
 
-    inline unsigned KTEggReaderMonarch::GetNSlicesProcessed() const
+    inline unsigned KTEgg2Reader::GetNSlicesProcessed() const
     {
         return (unsigned)fSliceNumber;
     }
 
-    inline unsigned KTEggReaderMonarch::GetNRecordsProcessed() const
+    inline unsigned KTEgg2Reader::GetNRecordsProcessed() const
     {
         return fReadState.fAbsoluteRecordOffset + 1;
     }
 
-    inline const KTEggReaderMonarch::MonarchReadState& KTEggReaderMonarch::GetReadState() const
+    inline const KTEgg2Reader::MonarchReadState& KTEgg2Reader::GetReadState() const
     {
         return fReadState;
     }
@@ -235,4 +235,4 @@ namespace Katydid
 
 } /* namespace Katydid */
 
-#endif /* KTEGGREADERMONARCH_HH_ */
+#endif /* KTEGG2READER_HH_ */

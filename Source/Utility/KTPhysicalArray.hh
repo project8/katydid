@@ -207,11 +207,11 @@ namespace Katydid
     {
         public:
             typedef XDataType value_type;
-            typedef typename boost::numeric::ublas::vector< XDataType > array_type;
-            typedef typename array_type::const_iterator const_iterator;
-            typedef typename array_type::iterator iterator;
-            typedef typename array_type::const_reverse_iterator const_reverse_iterator;
-            typedef typename array_type::reverse_iterator reverse_iterator;
+            typedef XDataType* array_type;
+            typedef XDataType* const_iterator;
+            typedef XDataType* iterator;
+            typedef XDataType* const_reverse_iterator;
+            typedef XDataType* reverse_iterator;
 
         private:
             typedef KTNBinsInArray< 1, array_type > XNBinsFunctor;
@@ -263,31 +263,25 @@ namespace Katydid
             reverse_iterator rbegin();
             reverse_iterator rend();
 
-        private:
-            void SetNewNBinsFunc(); // called from constructor; do not make virtual
-
     };
 
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >::KTPhysicalArray() :
             KTAxisProperties< 1 >(),
-            fData(),
+            fData(NULL),
             fLabel()
     {
-        SetNBinsFunc(new KTNBinsInArray< 1, array_type >(&fData, &array_type::size));
-        //std::cout << "You have created a 1-D physical array" << std::endl;
+        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(0));
     }
 
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >::KTPhysicalArray(size_t nBins, double rangeMin, double rangeMax) :
             KTAxisProperties< 1 >(rangeMin, rangeMax),
-            fData(nBins),
+            fData(NULL),
             fLabel()
     {
-        SetNewNBinsFunc();
-        //SetNBinsFunc(KTNBinsInArray< 1, array_type >(this, &array_type::size));
-        //SetNBinsFunc(boost::bind(&KTNBinsInArray< 1, array_type >::operator(), boost::ref(fNBinsFunc)));
-        //std::cout << "You have created a 1-D physical array with " << nBins << " bins, going from " << rangeMin << " to " << rangeMax << "  binwidth: " << fBinWidth << std::endl;
+        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(nBins));
+        fData = new XDataType[ nBins ];
     }
 
     template< typename XDataType >
@@ -296,12 +290,18 @@ namespace Katydid
             fData(orig.fData),
             fLabel(orig.fLabel)
     {
-        SetNewNBinsFunc();
+        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(orig.size()));
+        fData = new XDataType[ orig.size() ];
+        memcpy( fData, orig.fData, orig.size() * sizeof( XDataType ) );
     }
 
     template< typename XDataType >
     KTPhysicalArray< 1, XDataType >::~KTPhysicalArray()
     {
+        if (fData != NULL)
+        {
+            delete [] fData;
+        }
     }
 
     template< typename XDataType >
@@ -332,31 +332,31 @@ namespace Katydid
     template< typename XDataType >
     inline const typename KTPhysicalArray< 1, XDataType >::value_type& KTPhysicalArray< 1, XDataType >::operator()(unsigned i) const
     {
-#ifdef Katydid_DEBUG
+#ifndef NDEBUG
         if (i >= size())
         {
             std::stringstream msg;
-            msg << "Out of bounds: " << i << " >= " << fData.size();
+            msg << "Out of bounds: " << i << " >= " << size();
             KTERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif
-        return fData(i);
+        return fData[i];
     }
 
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::value_type& KTPhysicalArray< 1, XDataType >::operator()(unsigned i)
     {
-#ifdef Katydid_DEBUG
+#ifndef NDEBUG
         if (i >= size())
         {
             std::stringstream msg;
-            msg << "Out of bounds: " << i << " >= " << fData.size();
+            msg << "Out of bounds: " << i << " >= " << size();
             KTERROR(utillog_physarr, msg.str());
             throw std::out_of_range(msg.str());
         }
 #endif
-        return fData(i);
+        return fData[i];
     }
 
     template< typename XDataType >
@@ -369,10 +369,15 @@ namespace Katydid
     template< typename XDataType >
     inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator=(const KTPhysicalArray< 1, value_type>& rhs)
     {
-        fData = rhs.fData;
+        if( fData != NULL )
+        {
+            delete [] fData;
+        }
         fLabel = rhs.fLabel;
+        SetNBinsFunc(new KTNBinsInArray< 1, FixedSize >(rhs.size()));
+        fData = new XDataType[ rhs.size() ];
+        memcpy( fData, rhs.fData, rhs.size() * sizeof( XDataType ) );
         KTAxisProperties< 1 >::operator=(rhs);
-        SetNewNBinsFunc();
         return *this;
     }
 
@@ -381,9 +386,9 @@ namespace Katydid
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
 #pragma omp parallel for
-        for (size_t iBin=0; iBin<fData.size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
-            fData(iBin) += rhs(iBin);
+            fData[iBin] += rhs.fData[iBin];
         }
         return *this;
     }
@@ -393,9 +398,9 @@ namespace Katydid
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
 #pragma omp parallel for
-        for (size_t iBin=0; iBin<fData.size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
-            fData(iBin) -= rhs(iBin);
+            fData[iBin] -= rhs.fData[iBin];
         }
         return *this;
     }
@@ -405,9 +410,9 @@ namespace Katydid
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
 #pragma omp parallel for
-        for (size_t iBin=0; iBin<fData.size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
-            fData(iBin) *= rhs(iBin);
+            fData[iBin] *= rhs.fData[iBin];
         }
         return *this;
     }
@@ -417,9 +422,9 @@ namespace Katydid
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
 #pragma omp parallel for
-        for (size_t iBin=0; iBin<fData.size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
-            fData(iBin) /= rhs(iBin);
+            fData[iBin] /= rhs.fData[iBin];
         }
         return *this;
     }
@@ -428,9 +433,9 @@ namespace Katydid
     inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator+=(const value_type& rhs)
     {
 #pragma omp parallel for
-        for (size_t iBin=0; iBin<fData.size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
-            fData(iBin) += rhs;
+            fData[iBin] += rhs;
         }
         return *this;
     }
@@ -439,9 +444,9 @@ namespace Katydid
     inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator-=(const value_type& rhs)
     {
 #pragma omp parallel for
-        for (size_t iBin=0; iBin<fData.size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
-            fData(iBin) -= rhs;
+            fData[iBin] -= rhs;
         }
         return *this;
     }
@@ -450,9 +455,9 @@ namespace Katydid
     inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator*=(const value_type& rhs)
     {
 #pragma omp parallel for
-        for (size_t iBin=0; iBin<fData.size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
-            fData(iBin) *= rhs;
+            fData[iBin] *= rhs;
         }
         return *this;
     }
@@ -461,9 +466,9 @@ namespace Katydid
     inline KTPhysicalArray< 1, XDataType >& KTPhysicalArray< 1, XDataType >::operator/=(const XDataType& rhs)
     {
 #pragma omp parallel for
-        for (size_t iBin=0; iBin<fData.size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
-            fData(iBin) /= rhs;
+            fData[iBin] /= rhs;
         }
         return *this;
     }
@@ -471,57 +476,50 @@ namespace Katydid
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::const_iterator KTPhysicalArray< 1, XDataType >::begin() const
     {
-        return fData.begin();
+        return fData;
     }
 
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::const_iterator KTPhysicalArray< 1, XDataType >::end() const
     {
-        return fData.end();
+        return fData + size();
     }
 
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::iterator KTPhysicalArray< 1, XDataType >::begin()
     {
-        return fData.begin();
+        return fData;
     }
 
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::iterator KTPhysicalArray< 1, XDataType >::end()
     {
-        return fData.end();
+        return fData + size();
     }
 
 
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::const_reverse_iterator KTPhysicalArray< 1, XDataType >::rbegin() const
     {
-        return fData.rbegin();
+        return fData + size() - 1;
     }
 
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::const_reverse_iterator KTPhysicalArray< 1, XDataType >::rend() const
     {
-        return fData.rend();
+        return fData - 1;
     }
 
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rbegin()
     {
-        return fData.rbegin();
+        return fData + size() - 1;
     }
 
     template< typename XDataType >
     inline typename KTPhysicalArray< 1, XDataType >::reverse_iterator KTPhysicalArray< 1, XDataType >::rend()
     {
-        return fData.rend();
-    }
-
-    template< typename XDataType >
-    inline void KTPhysicalArray< 1, XDataType >::SetNewNBinsFunc()
-    {
-        SetNBinsFunc(new KTNBinsInArray< 1, array_type >(&fData, &array_type::size));
-        return;
+        return fData - 1;
     }
 
 
@@ -750,9 +748,9 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator+=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) += rhs(iBinX, iBinY);
             }
@@ -764,9 +762,9 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator-=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) -= rhs(iBinX, iBinY);
             }
@@ -778,9 +776,9 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator*=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) *= rhs(iBinX, iBinY);
             }
@@ -792,9 +790,9 @@ namespace Katydid
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator/=(const KTPhysicalArray< 2, value_type>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) /= rhs(iBinX, iBinY);
             }
@@ -805,9 +803,9 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator+=(const value_type& rhs)
     {
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) += rhs;
             }
@@ -818,9 +816,9 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator-=(const value_type& rhs)
     {
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) -= rhs;
             }
@@ -831,9 +829,9 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator*=(const value_type& rhs)
     {
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) *= rhs;
             }
@@ -844,9 +842,9 @@ namespace Katydid
     template< typename XDataType >
     KTPhysicalArray< 2, XDataType >& KTPhysicalArray< 2, XDataType >::operator/=(const value_type& rhs)
     {
-        for (size_t iBinX=0; iBinX<fData.size1(); iBinX++)
+        for (size_t iBinX=0; iBinX<fData.size1(); ++iBinX)
         {
-            for (size_t iBinY=0; iBinY<fData.size2(); iBinY++)
+            for (size_t iBinY=0; iBinY<fData.size2(); ++iBinY)
             {
                 fData(iBinX, iBinY) /= rhs;
             }

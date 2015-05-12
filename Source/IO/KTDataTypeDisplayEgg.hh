@@ -23,6 +23,7 @@ namespace Katydid
             void RegisterSlots();
 
         public:
+            void DrawRawTimeSeriesData(KTDataPtr data);
             void DrawTimeSeriesData(KTDataPtr data);
             void DrawTimeSeriesDataDistribution(KTDataPtr data);
 

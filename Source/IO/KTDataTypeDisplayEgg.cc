@@ -7,8 +7,11 @@
 
 #include "KTDataTypeDisplayEgg.hh"
 
+#include "KT2ROOT.hh"
 #include "KTTIFactory.hh"
 #include "KTLogger.hh"
+#include "KTRawTimeSeriesData.hh"
+#include "KTRawTimeSeries.hh"
 #include "KTSliceHeader.hh"
 #include "KTTimeSeries.hh"
 #include "KTTimeSeriesData.hh"
@@ -38,11 +41,53 @@ namespace Katydid
 
     void KTDataTypeDisplayEgg::RegisterSlots()
     {
+        fWriter->RegisterSlot("raw-ts", this, &KTDataTypeDisplayEgg::DrawRawTimeSeriesData);
         fWriter->RegisterSlot("ts", this, &KTDataTypeDisplayEgg::DrawTimeSeriesData);
         fWriter->RegisterSlot("ts-dist", this, &KTDataTypeDisplayEgg::DrawTimeSeriesDataDistribution);
         return;
     }
 
+
+    //*********************
+    // Raw Time Series Data
+    //*********************
+
+    void KTDataTypeDisplayEgg::DrawRawTimeSeriesData(KTDataPtr data)
+    {
+        if (! data) return;
+
+        KTSliceHeader& slHeader = data->Of<KTSliceHeader>();
+        ULong64_t sliceNumber = slHeader.GetSliceNumber();
+
+        KTRawTimeSeriesData& tsData = data->Of<KTRawTimeSeriesData>();
+        UInt_t nComponents = tsData.GetNComponents();
+
+        if (! fWriter->OpenWindow()) return;
+
+        for (UInt_t iComponent=0; iComponent<nComponents; ++iComponent)
+        {
+            const KTRawTimeSeries* timeSeries = tsData.GetTimeSeries(iComponent);
+            if (timeSeries != NULL)
+            {
+                stringstream conv;
+                conv << "histRawTS_" << sliceNumber << "_" << iComponent;
+                string histName;
+                conv >> histName;
+                if (slHeader.GetRawDataFormatType(iComponent) == sDigitizedUS)
+                {
+                    TH1I* tsHist = KT2ROOT::CreateHistogram(timeSeries, histName);
+                    fWriter->Draw(tsHist);
+                }
+                else if(slHeader.GetRawDataFormatType(iComponent) == sDigitizedS)
+                {
+                    KTVarTypePhysicalArray< int64_t > array(*timeSeries, false);
+                    TH1I* tsHist = KT2ROOT::CreateHistogram(&array, histName);
+                    fWriter->Draw(tsHist);
+                }
+            }
+        }
+        return;
+    }
 
     //*****************
     // Time Series Data

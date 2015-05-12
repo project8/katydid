@@ -1,15 +1,16 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-cmake_minimum_required (VERSION 2.8.12)
+cmake_minimum_required (VERSION 3.0)
 
 
 # Define the project
-project (Katydid)
+cmake_policy( SET CMP0048 NEW ) # version in project()
+project (Katydid VERSION 2.1.0)
 
 # Import Katydid core features
 include (KTCore/cmake/KatydidCore.cmake)
-katydid_prepare_project (2 1 0)
+katydid_prepare_project ()
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
@@ -83,7 +84,7 @@ else (Katydid_USE_HDF5)
 endif (Katydid_USE_HDF5)
 if (HDF5_FOUND)
     #add_definitions (-DHDF5_FOUND)
-    include_directories (${HDF5_INCLUDE_DIR})
+    include_directories (BEFORE ${HDF5_INCLUDE_DIR})
     pbuilder_add_ext_libraries (${HDF5_CXX_LIBRARIES})
 else (HDF5_FOUND)
     #remove_definitions (-DHDF5_FOUND)
@@ -173,7 +174,17 @@ option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 if (Katydid_USE_MONARCH)
     add_subdirectory (Source/Time/Monarch)
     pbuilder_add_submodule_libraries (${Monarch_LIBRARIES})
-    add_definitions(-DUSE_MONARCH)
+    add_definitions (-DUSE_MONARCH)
+    if (Monarch_BUILD_MONARCH2)
+        add_definitions(-DUSE_MONARCH2)
+    else (Monarch_BUILD_MONARCH2)
+        remove_definitions(-DUSE_MONARCH2)
+    endif (Monarch_BUILD_MONARCH2)
+    if (Monarch_BUILD_MONARCH3 )
+        add_definitions(-DUSE_MONARCH3)
+    else (Monarch_BUILD_MONARCH3)
+        remove_definitions(-DUSE_MONARCH3)
+    endif (Monarch_BUILD_MONARCH3)
 
     # add to the RPATH to be used when installing, but only if it's not a system directory
     list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
@@ -182,12 +193,16 @@ if (Katydid_USE_MONARCH)
     endif ("${isSystemDir}" STREQUAL "-1")
 else (Katydid_USE_MONARCH)
     message(STATUS "Building without Monarch")
-    add_subdirectory(Source/Time/Monarch EXCLUDE_FROM_ALL)
-    remove_definitions(-DUSE_MONARCH)
+    add_subdirectory (Source/Time/Monarch EXCLUDE_FROM_ALL)
+    remove_definitions (-DUSE_MONARCH)
+    remove_definitions (-DUSE_MONARCH2)
+    remove_definitions (-DUSE_MONARCH3)
 endif (Katydid_USE_MONARCH)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Source)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Monarch2)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Monarch3)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax/cpp)
+include_directories (BEFORE ${PROJECT_BINARY_DIR}/Source/Time/Monarch)
 
 # Subdirectories
 include_directories (BEFORE 

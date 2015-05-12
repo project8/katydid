@@ -79,7 +79,7 @@ namespace Katydid
 
     bool KTWindower::InitializeWithHeader(KTEggHeader& header)
     {
-        if (! InitializeWindow(1. / header.GetAcquisitionRate(), header.GetSliceSize()))
+        if (! InitializeWindow(1. / header.GetAcquisitionRate(), header.GetChannelHeader(0)->GetSliceSize()))
         {
             KTERROR(windowlog, "Something went wrong while initializing the window function!");
             return false;

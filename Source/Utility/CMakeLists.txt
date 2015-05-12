@@ -10,6 +10,7 @@ set (UTILITY_NODICT_HEADERFILES
     complexpolar.hh
     KTAxisProperties_GetNBins.hh
     KTAxisProperties.hh
+    KTConstants.hh
     KTCountHistogram.hh
     KTCutable.hh
     KTCutableArray.hh
@@ -20,6 +21,7 @@ set (UTILITY_NODICT_HEADERFILES
     KTRandom.hh
     KTSmooth.hh
     KTSpline.hh
+    KTVarTypePhysicalArray.hh
 )
 
 set (UTILITY_HEADERFILES ${UTILITY_DICT_HEADERFILES} ${UTILITY_NODICT_HEADERFILES})

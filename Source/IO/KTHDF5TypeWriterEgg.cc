@@ -67,8 +67,8 @@ namespace Katydid {
         if ( fWriter->OpenAndVerifyFile() && (fHeaderProcessed == false)) {
             KTEggHeader* header = fWriter->GetHeader();
             this->fNComponents = (header->GetNChannels());
-            this->fRawSliceSize = (header->GetRawSliceSize());
-            this->fSliceSize = (header->GetSliceSize());  
+            this->fRawSliceSize = (header->GetChannelHeader(0)->GetRawSliceSize());
+            this->fSliceSize = (header->GetChannelHeader(0)->GetSliceSize());
 
             this->fRealTimeBuffer = new double[fSliceSize];
             this->fRawTimeBuffer = new unsigned[fRawSliceSize];

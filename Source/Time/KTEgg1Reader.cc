@@ -1,11 +1,11 @@
 /*
- * KTEggReader2011.cc
+ * KTEgg1Reader.cc
  *
  *  Created on: Aug 20, 2012
  *      Author: nsoblath
  */
 
-#include "KTEggReader2011.hh"
+#include "KTEgg1Reader.hh"
 
 #include "KTEggHeader.hh"
 #include "KTLogger.hh"
@@ -28,13 +28,13 @@ using std::vector;
 
 namespace Katydid
 {
-    KTLOGGER(eggreadlog, "KTEggReader2011");
+    KTLOGGER(eggreadlog, "KTEgg1Reader");
 
-    const ifstream::pos_type KTEggReader2011::sPreludeSize = 9;
+    const ifstream::pos_type KTEgg1Reader::sPreludeSize = 9;
 
-    KT_REGISTER_EGGREADER(KTEggReader2011, "2011");
+    KT_REGISTER_EGGREADER(KTEgg1Reader, "egg1");
 
-    KTEggReader2011::KTEggReader2011() :
+    KTEgg1Reader::KTEgg1Reader() :
             KTEggReader(),
             fFileName(),
             fEggStream(),
@@ -47,17 +47,17 @@ namespace Katydid
     {
     }
 
-    KTEggReader2011::~KTEggReader2011()
+    KTEgg1Reader::~KTEgg1Reader()
     {
     }
 
-    bool KTEggReader2011::Configure(const KTEggProcessor& eggProc)
+    bool KTEgg1Reader::Configure(const KTEggProcessor& eggProc)
     {
         // not really configurable
         return true;
     }
 
-    KTDataPtr KTEggReader2011::BreakEgg(const std::string& filename)
+    KTDataPtr KTEgg1Reader::BreakEgg(const std::string& filename)
     {
         // First, read all of the information from the file and put it in the right places
         if (fEggStream.is_open()) fEggStream.close();
@@ -222,26 +222,34 @@ namespace Katydid
         eggHeader.SetTSDataType(KTEggHeader::kReal);
         eggHeader.SetFilename(filename);
         eggHeader.SetAcquisitionMode(1);
-        eggHeader.SetRawSliceSize(fHeaderInfo.fRecordSize);
-        eggHeader.SetSliceSize(fHeaderInfo.fRecordSize);
-        eggHeader.SetSliceStride(fHeaderInfo.fRecordSize);
-        eggHeader.SetRecordSize(fHeaderInfo.fRecordSize);
         eggHeader.SetRunDuration(fHeaderInfo.fRunLength * fHeaderInfo.fSecondsPerRunLengthUnit);
         eggHeader.SetAcquisitionRate(fHeaderInfo.fSampleRate * fHeaderInfo.fHertzPerSampleRateUnit);
         // timestamp
         // description
         // run type
-        eggHeader.SetRunSource(monarch::sSourceMantis);
-        eggHeader.SetFormatMode(monarch::sFormatSingle);
-        eggHeader.SetDataTypeSize(1);
-        eggHeader.SetBitDepth(8);
-        eggHeader.SetVoltageMin(-0.25);
-        eggHeader.SetVoltageRange(0.5);
+        unsigned iChannel = 0;
+        KTDEBUG(eggreadlog, "Adding header for channel " << iChannel);
+        //const M3ChannelHeader& channelHeader = monarchHeader->GetChannelHeaders()[iChanInFile];
+        KTChannelHeader* newChanHeader = new KTChannelHeader();
+        newChanHeader->SetNumber(iChannel);
+        newChanHeader->SetSource("Monarch1");
+        newChanHeader->SetRawSliceSize(fHeaderInfo.fRecordSize);
+        newChanHeader->SetSliceSize(fHeaderInfo.fRecordSize);
+        newChanHeader->SetSliceStride(fHeaderInfo.fRecordSize);
+        newChanHeader->SetRecordSize(fHeaderInfo.fRecordSize);
+        newChanHeader->SetSampleSize(1);
+        newChanHeader->SetDataTypeSize(1);
+        newChanHeader->SetDataFormat(sDigitizedUS);
+        newChanHeader->SetBitDepth(8);
+        newChanHeader->SetVoltageOffset(-0.25);
+        newChanHeader->SetVoltageRange(0.5);
+        newChanHeader->SetDACGain(newChanHeader->GetVoltageRange() / (double)(1 << newChanHeader->GetBitDepth()));
+        eggHeader.SetChannelHeader(newChanHeader, iChannel);
 
         return eggHeaderPtr;
     }
 
-    KTDataPtr KTEggReader2011::HatchNextSlice()
+    KTDataPtr KTEgg1Reader::HatchNextSlice()
     {
         if (! fEggStream.good()) return KTDataPtr();
 
@@ -324,6 +332,7 @@ namespace Katydid
         sliceHeader.SetEndRecordNumber(fRecordsRead);
         sliceHeader.SetEndSampleNumber(fHeaderInfo.fRecordSize - 1);
         sliceHeader.SetRecordSize(fHeaderInfo.fRecordSize);
+        sliceHeader.SetRawDataFormatType(fHeaderInfo.fDataFormat, 0);
 
         // read the record
         readBuffer = new unsigned char [fHeaderInfo.fRecordSize];
@@ -339,10 +348,10 @@ namespace Katydid
         else
         {
             //vector< DataType >* newRecord = new vector< DataType >(readBuffer, readBuffer + fHeaderInfo.fRecordSize/sizeof(unsigned char));
-            KTRawTimeSeries* newRecord = new KTRawTimeSeries(fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
+            KTRawTimeSeries* newRecord = new KTRawTimeSeries(1, sDigitizedUS, fHeaderInfo.fRecordSize, 0., double(fHeaderInfo.fRecordSize) * sliceHeader.GetBinWidth());
             for (int iBin=0; iBin<fHeaderInfo.fRecordSize; iBin++)
             {
-                (*newRecord)(iBin) = readBuffer[iBin];
+                newRecord->SetAt(readBuffer[iBin], iBin);
             }
             delete [] readBuffer;
             KTRawTimeSeriesData& tsData = newData->Of< KTRawTimeSeriesData >().SetNComponents(1);
@@ -357,7 +366,7 @@ namespace Katydid
         return newData;
     }
 
-    bool KTEggReader2011::CloseEgg()
+    bool KTEgg1Reader::CloseEgg()
     {
         if (fEggStream.is_open()) fEggStream.close();
         return true;

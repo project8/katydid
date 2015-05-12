@@ -27,7 +27,7 @@ namespace Katydid
 {
     static KTCommandLineOption< int > sNsCLO("Egg Processor", "Number of slices to process", "n-slices", 'n');
     static KTCommandLineOption< string > sFilenameCLO("Egg Processor", "Egg filename to open", "egg-file", 'e');
-    static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the 2011 egg reader", "use-2011-egg-reader", 'z');
+    static KTCommandLineOption< bool > sOldReaderCLO("Egg Processor", "Use the egg1 (2011) reader", "use-egg1-reader", 'z');
 
     KTLOGGER(egglog, "KTEggProcessor");
 
@@ -66,9 +66,9 @@ namespace Katydid
             SetEggReaderType( node->GetValue("egg-reader", GetEggReaderType()) );
         }
         // command line setting (overrides config file, if used)
-        if (fCLHandler->IsCommandLineOptSet("use-2011-egg-reader"))
+        if (fCLHandler->IsCommandLineOptSet("use-egg1-reader"))
         {
-            SetEggReaderType("2011");
+            SetEggReaderType("egg1");
         }
 
         // Other settings
@@ -135,11 +135,7 @@ namespace Katydid
         KTEggHeader& header = headerPtr->Of< KTEggHeader >();
 
         // pass the digitizer parameters from the egg header to the DAC
-        fDAC->SetNBits(header.GetBitDepth());
-        fDAC->SetMinVoltage(header.GetVoltageMin());
-        fDAC->SetVoltageRange(header.GetVoltageRange());
-        fDAC->Initialize();
-        fDAC->UpdateEggHeader(&header);
+        fDAC->InitializeWithHeader(&header);
 
 
         fHeaderSignal(headerPtr);

@@ -200,13 +200,13 @@ namespace Katydid
     {
         if (header.GetTSDataType() == KTEggHeader::kReal)
         {
-            return InitializeForRealTDD(header.GetSliceSize());
+            return InitializeForRealTDD(header.GetChannelHeader(0)->GetSliceSize());
         }
         else // == KTEggHeader::kComplex || KTEggHeader::kIQ
         {
             if (header.GetTSDataType() == KTEggHeader::kIQ) fComplexAsIQ = true;
             else fComplexAsIQ = false;
-            return InitializeForComplexTDD(header.GetSliceSize());
+            return InitializeForComplexTDD(header.GetChannelHeader(0)->GetSliceSize());
         }
     }
 
@@ -446,7 +446,7 @@ namespace Katydid
 
     void KTForwardFFTW::DoTransform(const KTTimeSeriesReal* tsIn, KTFrequencySpectrumFFTW* fsOut) const
     {
-        copy(tsIn->begin(), tsIn->end(), fRInputArray);
+        std::copy(tsIn->begin(), tsIn->end(), fRInputArray);
         fftw_execute_dft_r2c(fForwardPlan, fRInputArray, fsOut->GetData());
         (*fsOut) *= sqrt(2. / (double)fTimeSize);
         return;

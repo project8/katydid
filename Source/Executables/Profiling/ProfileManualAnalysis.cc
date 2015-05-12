@@ -12,7 +12,7 @@
 #include "KTDistanceClustering.hh"
 #include "KTCluster1DData.hh"
 #include "KTEggHeader.hh"
-#include "KTEggReaderMonarch.hh"
+#include "KTEgg2Reader.hh"
 #include "KTForwardFFTW.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
@@ -64,6 +64,7 @@ int main()
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
     unsigned nSlices = 50;
     unsigned recordSize = 32768;
+    KTSingleChannelDAC::TimeSeriesType tsType = KTSingleChannelDAC::kFFTWTimeSeries;
 
     KTForwardFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
@@ -111,21 +112,24 @@ int main()
     //******************************
 
     // Prepare the egg reader
-    KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+    KTEgg2Reader* eggReader = new KTEgg2Reader();
     eggReader->SetSliceSize(recordSize);
 
     KTDAC* dac = new KTDAC();
 
-    KTDataPtr headerPtr = eggReader->BreakEgg(filename);
-    if (! headerPtr)
+    KTDataPtr headerData = eggReader->BreakEgg(filename);
+    if (! headerData)
     {
         KTERROR(proflog, "Egg did not break");
         delete eggReader;
         return -1;
     }
+    KTEggHeader& header = headerData->Of< KTEggHeader >();
+
+    dac->InitializeWithHeader(&header);
 
     // Configure the FFT with the egg header
-    compFFT.InitializeWithHeader(headerPtr->Of< KTEggHeader >());
+    compFFT.InitializeWithHeader(header);
 
     // Start the profiler
     prof.Start();

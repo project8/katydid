@@ -118,7 +118,8 @@ namespace Katydid
             out << "\n\tComponent " << iComponent << '\n' <<
                     "\t\tTimestamp: " << hdr.GetTimeStamp(iComponent) << " ns\n" <<
                     "\t\tAcquisition ID: " << hdr.GetAcquisitionID(iComponent) << '\n' <<
-                    "\t\tRecord ID: " << hdr.GetRecordID(iComponent);
+                    "\t\tRecord ID: " << hdr.GetRecordID(iComponent) << '\n' <<
+                    "\t\tRaw Data Format Type: " << hdr.GetRawDataFormatType(iComponent);
         }
         return out;
     }

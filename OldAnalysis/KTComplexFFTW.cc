@@ -140,7 +140,7 @@ namespace Katydid
 
     bool KTComplexFFTW::InitializeWithHeader(KTEggHeader& header)
     {
-        SetSize(header.GetSliceSize());
+        SetSize(header.GetChannelHeader(0)->GetSliceSize());
         InitializeFFT();
         return true;
     }

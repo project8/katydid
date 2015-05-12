@@ -64,19 +64,19 @@ namespace Katydid
         jsonMaker->Uint(header.GetNChannels());
 
         jsonMaker->String("record-size");
-        jsonMaker->Uint((unsigned)header.GetRecordSize());
+        jsonMaker->Uint((unsigned)header.GetChannelHeader(0)->GetRecordSize());
 
         jsonMaker->String("raw-slice-size");
-        jsonMaker->Uint((unsigned)header.GetSliceSize());
+        jsonMaker->Uint((unsigned)header.GetChannelHeader(0)->GetSliceSize());
 
         jsonMaker->String("slice-size");
-        jsonMaker->Uint((unsigned)header.GetSliceSize());
+        jsonMaker->Uint((unsigned)header.GetChannelHeader(0)->GetSliceSize());
 
         jsonMaker->String("slice-stride");
-        jsonMaker->Uint((unsigned)header.GetSliceStride());
+        jsonMaker->Uint((unsigned)header.GetChannelHeader(0)->GetSliceStride());
 
         jsonMaker->String("monarch-record-size");
-        jsonMaker->Uint((unsigned)header.GetRecordSize());
+        jsonMaker->Uint((unsigned)header.GetChannelHeader(0)->GetRecordSize());
 
         jsonMaker->String("run-duration");
         jsonMaker->Uint(header.GetRunDuration());
@@ -90,26 +90,17 @@ namespace Katydid
         jsonMaker->String("description");
         jsonMaker->String(header.GetDescription().c_str(), (SizeType)header.GetDescription().length());
 
-        jsonMaker->String("run-type");
-        jsonMaker->Uint(header.GetRunType());
-
-        jsonMaker->String("run-source");
-        jsonMaker->Uint(header.GetRunSource());
-
-        jsonMaker->String("format-mode");
-        jsonMaker->Uint(header.GetFormatMode());
-
         jsonMaker->String("data-type-size");
-        jsonMaker->Uint(header.GetDataTypeSize());
+        jsonMaker->Uint(header.GetChannelHeader(0)->GetDataTypeSize());
 
         jsonMaker->String("bit-depth");
-        jsonMaker->Uint(header.GetBitDepth());
+        jsonMaker->Uint(header.GetChannelHeader(0)->GetBitDepth());
 
-        jsonMaker->String("voltage-min");
-        jsonMaker->Double(header.GetVoltageMin());
+        jsonMaker->String("voltage-offset");
+        jsonMaker->Double(header.GetChannelHeader(0)->GetVoltageOffset());
 
         jsonMaker->String("voltage-range");
-        jsonMaker->Double(header.GetVoltageRange());
+        jsonMaker->Double(header.GetChannelHeader(0)->GetVoltageRange());
 
         jsonMaker->EndObject();
 
