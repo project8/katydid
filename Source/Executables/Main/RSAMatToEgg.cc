@@ -106,7 +106,7 @@ int main(int argc, char** argv)
     KTDataPtr matHeaderPtr = matReader->BreakEgg(matIt->string());
     KTEggHeader& eggHeader = matHeaderPtr->Of< KTEggHeader >();
     double acqRate = eggHeader.GetAcquisitionRate();
-    unsigned recSize = eggHeader.GetRecordSize();
+    unsigned recSize = eggHeader.GetChannelHeader(0)->GetRecordSize();
 
     // Open and setup the output file via the header
     monarch3::Monarch3* monarch = monarch3::Monarch3::OpenForWriting(outputFilename.string());
@@ -122,12 +122,12 @@ int main(int argc, char** argv)
     header->SetTimestamp(eggHeader.GetTimestamp());
     header->SetDescription(eggHeader.GetDescription());
 
-    header->AddStream("RSA", KTMath::Nint(acqRate), recSize, 2, eggHeader.GetDataTypeSize(), monarch3::sAnalog, 14);
+    header->AddStream("RSA", KTMath::Nint(acqRate), recSize, 2, eggHeader.GetChannelHeader(0)->GetDataTypeSize(), monarch3::sAnalog, 14);
 
     // Setup the remaining details in the channel header
     monarch3::M3ChannelHeader& chHeader = header->GetChannelHeaders()[0];
-    chHeader.SetVoltageMin(eggHeader.GetVoltageMin());
-    chHeader.SetVoltageRange(eggHeader.GetVoltageRange());
+    chHeader.SetVoltageOffset(eggHeader.GetChannelHeader(0)->GetVoltageOffset());
+    chHeader.SetVoltageRange(eggHeader.GetChannelHeader(0)->GetVoltageRange());
     chHeader.SetFrequencyMin(eggHeader.GetMinimumFrequency());
     chHeader.SetFrequencyRange(eggHeader.GetMaximumFrequency() - eggHeader.GetMinimumFrequency());
 
@@ -135,7 +135,7 @@ int main(int argc, char** argv)
 
     // Get the stream to use for writing to the file
     monarch3::M3Stream* stream = monarch->GetStream(0);
-    monarch3::M3ComplexDataWriter< fftw_complex > writer(stream->GetStreamRecord()->GetData(), eggHeader.GetDataTypeSize(), monarch3::sAnalog);
+    monarch3::M3ComplexDataWriter< fftw_complex > writer(stream->GetStreamRecord()->GetData(), recSize, monarch3::sAnalog);
 
     bool success = true;
     for (; matIt != matFiles.end(); ++matIt)
@@ -147,11 +147,11 @@ int main(int argc, char** argv)
             matReader->SetSliceSize(0);
             KTDataPtr newMatHeaderPtr = matReader->BreakEgg(matIt->string());
             KTEggHeader& newEggHeader = matHeaderPtr->Of< KTEggHeader >();
-            if (newEggHeader.GetAcquisitionRate() != acqRate || newEggHeader.GetRecordSize() != recSize)
+            if (newEggHeader.GetAcquisitionRate() != acqRate || newEggHeader.GetChannelHeader(0)->GetRecordSize() != recSize)
             {
                 KTERROR(exelog, "File <" << matIt->string() << "> has parameters that don't match the first file:\n" <<
                         "\tAcquisition rate: first = " << acqRate << "\tthis = " << newEggHeader.GetAcquisitionRate() << '\n' <<
-                        "\tRecord size:      first = " << recSize << "\tthis = " << newEggHeader.GetRecordSize());
+                        "\tRecord size:      first = " << recSize << "\tthis = " << newEggHeader.GetChannelHeader(0)->GetRecordSize());
                 success = false;
                 matReader->CloseEgg();
                 delete matReader;
