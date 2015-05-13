@@ -4,26 +4,26 @@
 set (IO_HEADERFILES
     KTBasicASCIITypeWriterTS.hh
     KTBasicAsciiWriter.hh
-    KTJSONTypeWriterEgg.hh
+    KTJSONTypeWriterTime.hh
     KTJSONTypeWriterEvaluation.hh
-    KTJSONTypeWriterCandidates.hh
+    KTJSONTypeWriterEventAnalysis.hh
     KTJSONWriter.hh
     KTMultiFileJSONReader.hh
     KTOfficialCandidatesWriter.hh
-    KTTerminalTypeWriterEgg.hh
+    KTTerminalTypeWriterTime.hh
     KTTerminalWriter.hh
 )
 
 set (IO_SOURCEFILES
     KTBasicASCIITypeWriterTS.cc
     KTBasicAsciiWriter.cc
-    KTJSONTypeWriterEgg.cc
+    KTJSONTypeWriterTime.cc
     KTJSONTypeWriterEvaluation.cc
-    KTJSONTypeWriterCandidates.hh
+    KTJSONTypeWriterEventAnalysis.hh
     KTJSONWriter.cc
     KTMultiFileJSONReader.cc
     KTOfficialCandidatesWriter.cc
-    KTTerminalTypeWriterEgg.cc
+    KTTerminalTypeWriterTime.cc
     KTTerminalWriter.cc
 )
 
@@ -37,22 +37,22 @@ if (ROOT_FOUND)
         ${IO_HEADERFILES}
         ${IO_DICT_HEADERFILES}
         KTBasicROOTFileWriter.hh
-        KTBasicROOTTypeWriterAnalysis.hh
-        KTBasicROOTTypeWriterCandidates.hh
-        KTBasicROOTTypeWriterEgg.hh
-        KTBasicROOTTypeWriterFFT.hh
+        KTBasicROOTTypeWriterSpectrumAnalysis.hh
+        KTBasicROOTTypeWriterEventAnalysis.hh
+        KTBasicROOTTypeWriterTime.hh
+        KTBasicROOTTypeWriterTransform.hh
         KTDataDisplay.hh
-        KTDataTypeDisplayAnalysis.hh
-        KTDataTypeDisplayEgg.hh
-        KTDataTypeDisplayFFT.hh
+        KTDataTypeDisplaySpectrumAnalysis.hh
+        KTDataTypeDisplayTime.hh
+        KTDataTypeDisplayTransform.hh
         KTMultiFileROOTTreeReader.hh
-        KTMultiSliceROOTTypeWriterAnalysis.hh
-        KTMultiSliceROOTTypeWriterEgg.hh
-        KTMultiSliceROOTTypeWriterFFT.hh
+        KTMultiSliceROOTTypeWriterSpectrumAnalysis.hh
+        KTMultiSliceROOTTypeWriterTime.hh
+        KTMultiSliceROOTTypeWriterTransform.hh
         KTMultiSliceROOTWriter.hh
-        KTROOTTreeTypeWriterAnalysis.hh
-        KTROOTTreeTypeWriterCandidates.hh
-        KTROOTTreeTypeWriterEgg.hh
+        KTROOTTreeTypeWriterSpectrumAnalysis.hh
+        KTROOTTreeTypeWriterEventAnalysis.hh
+        KTROOTTreeTypeWriterTime.hh
         KTROOTTreeTypeWriterEvaluation.hh
         KTROOTTreeWriter.hh
         Conversions/KT2ROOT.hh
@@ -60,24 +60,24 @@ if (ROOT_FOUND)
 
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
-        KTBasicROOTTypeWriterAnalysis.cc
-        KTBasicROOTTypeWriterCandidates.cc
-        KTBasicROOTTypeWriterEgg.cc
-        KTBasicROOTTypeWriterFFT.cc
+        KTBasicROOTTypeWriterSpectrumAnalysis.cc
+        KTBasicROOTTypeWriterEventAnalysis.cc
+        KTBasicROOTTypeWriterTime.cc
+        KTBasicROOTTypeWriterTransform.cc
         KTBasicROOTFileWriter.cc
         KTDisplayWindow.cc
-        KTDataTypeDisplayAnalysis.cc
-        KTDataTypeDisplayEgg.cc
-        KTDataTypeDisplayFFT.cc
+        KTDataTypeDisplaySpectrumAnalysis.cc
+        KTDataTypeDisplayTime.cc
+        KTDataTypeDisplayTransform.cc
         KTDataDisplay.cc
         KTMultiFileROOTTreeReader.cc
-        KTMultiSliceROOTTypeWriterAnalysis.cc
-        KTMultiSliceROOTTypeWriterEgg.cc
-        KTMultiSliceROOTTypeWriterFFT.cc
+        KTMultiSliceROOTTypeWriterSpectrumAnalysis.cc
+        KTMultiSliceROOTTypeWriterTime.cc
+        KTMultiSliceROOTTypeWriterTransform.cc
         KTMultiSliceROOTWriter.cc
-        KTROOTTreeTypeWriterAnalysis.cc
-        KTROOTTreeTypeWriterCandidates.cc
-        KTROOTTreeTypeWriterEgg.cc
+        KTROOTTreeTypeWriterSpectrumAnalysis.cc
+        KTROOTTreeTypeWriterEventAnalysis.cc
+        KTROOTTreeTypeWriterTime.cc
         KTROOTTreeTypeWriterEvaluation.cc
         KTROOTTreeWriter.cc
         Conversions/KT2ROOT.cc
@@ -91,19 +91,19 @@ endif (ROOT_FOUND)
 if (HDF5_FOUND)
     set (IO_HEADERFILES
         ${IO_HEADERFILES}
-        KTHDF5TypeWriterFFT.hh
-        KTHDF5TypeWriterEgg.hh
-        KTHDF5TypeWriterCandidates.hh
-        KTHDF5TypeWriterAnalysis.hh
+        KTHDF5TypeWriterTransform.hh
+        KTHDF5TypeWriterTime.hh
+        KTHDF5TypeWriterEventAnalysis.hh
+        KTHDF5TypeWriterSpectrumAnalysis.hh
         KTHDF5Writer.hh
     )
     
     set (IO_SOURCEFILES
         ${IO_SOURCEFILES}
-        KTHDF5TypeWriterFFT.cc
-        KTHDF5TypeWriterEgg.cc
-        KTHDF5TypeWriterCandidates.cc
-        KTHDF5TypeWriterAnalysis.cc
+        KTHDF5TypeWriterTransform.cc
+        KTHDF5TypeWriterTime.cc
+        KTHDF5TypeWriterEventAnalysis.cc
+        KTHDF5TypeWriterSpectrumAnalysis.cc
         KTHDF5Writer.cc
     )
     

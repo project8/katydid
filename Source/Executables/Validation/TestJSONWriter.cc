@@ -5,9 +5,9 @@
  *      Author: nsoblath
  */
 
+#include "KTJSONTypeWriterTime.hh"
 #include "KTEggHeader.hh"
 #include "KTJSONWriter.hh"
-#include "KTJSONTypeWriterEgg.hh"
 #include "KTLogger.hh"
 
 using namespace Katydid;
@@ -42,7 +42,7 @@ int main()
     KTINFO(testlog, "Writing to file");
 
     // Writer the data
-    writer.GetTypeWriter< KTJSONTypeWriterEgg >()->WriteEggHeader(headerPtr);
+    writer.GetTypeWriter< KTJSONTypeWriterTime >()->WriteEggHeader(headerPtr);
 
     // Close the file
     writer.CloseFile();
@@ -55,7 +55,7 @@ int main()
 
     KTINFO(testlog, "Writing to terminal");
 
-    writer.GetTypeWriter< KTJSONTypeWriterEgg >()->WriteEggHeader(headerPtr);
+    writer.GetTypeWriter< KTJSONTypeWriterTime >()->WriteEggHeader(headerPtr);
 
     // Close the file
     writer.CloseFile();
