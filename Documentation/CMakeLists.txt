@@ -2,7 +2,7 @@
 # To change where the Doxygen site is built, modify the WORKING_DIRECTORY (line 10)
 
 # add a target to generate API documentation with Doxygen
-find_package (Doxygen)
+find_package (Doxygen REQUIRED)
 if (DOXYGEN_FOUND)
     configure_file (${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
     add_custom_target (${PROJECT_NAME}_doc
@@ -16,9 +16,27 @@ endif(DOXYGEN_FOUND)
 ###########
 #### sphinx
 find_package(Sphinx REQUIRED)
+execute_process( COMMAND python -c "import breathe"
+                 RESULT_VARIABLE BREATH_FOUND_RESULT
+                 OUTPUT_QUIET
+                 ERROR_QUIET
+               )
+if(NOT BREATH_FOUND_RESULT EQUAL 0)
+    message( ERROR "the python breathe package is required for sphinx+doxygen" )
+endif(NOT BREATH_FOUND_RESULT EQUAL 0)
 
 if(NOT DEFINED SPHINX_THEME)
-    set(SPHINX_THEME classic CACHE STRING "Sphinx string name")
+    execute_process( COMMAND python -c "import sphinx_rtd_theme"
+                     RESULT_VARIABLE SPHINX_RTD_THEME_FOUND
+                     OUTPUT_QUIET
+                     ERROR_QUIET
+                   )
+    if(SPHINX_RTD_THEME_FOUND EQUAL 0)
+        set(SPHINX_THEME sphinx_rtd_theme CACHE STRING "Sphinx string name")
+    else(SPHINX_RTD_THEME_FOUND EQUAL 0)
+        message( WARNING "sphinx_rtd_theme python package not found, using default sphinx theme")
+        set(SPHINX_THEME classic CACHE STRING "Sphinx string name")
+    endif(SPHINX_RTD_THEME_FOUND EQUAL 0)
 endif()
 
 if(NOT DEFINED SPHINX_THEME_DIR)
@@ -26,6 +44,15 @@ if(NOT DEFINED SPHINX_THEME_DIR)
 endif()
 
 message( STATUS "Katydid_VERSION is: ${${PROJECT_NAME}_VERSION}" )
+
+execute_process( COMMAND python -c "import sphinx_rtd_theme"
+                 RESULT_VARIABLE PY_RES_TEST
+                 OUTPUT_QUIET
+                 ERROR_QUIET
+               )
+message( STATUS "py result is: ${PY_RES_TEST}" )
+message( STATUS "py output is: ${PY_OUT_TEST}" )
+message( STATUS "py error  is: ${PY_ERR_TEST}" )
 
 # configured documentation tools and intermediate build results
 set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")

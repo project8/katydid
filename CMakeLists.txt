@@ -243,7 +243,9 @@ katydid_build_core_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
-add_subdirectory (Documentation)
+if(Katydid_ENABLE_BUILD_DOC)
+    add_subdirectory (Documentation)
+endif(Katydid_ENABLE_BUILD_DOC)
 
 
 # Install config files
