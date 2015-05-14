@@ -23,6 +23,7 @@ set (Katydid_USE_HDF5 TRUE CACHE BOOL "Flag to optionally use HDF5")
 set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
+set (Katydid_ENABLE_BUILD_DOC FALSE CACHE BOOL "Enable the options to build the documentation (requires Doxygen and Sphinx with Breathe)")
 
 
 ##############
@@ -242,7 +243,7 @@ katydid_build_core_executables()
 
 # Doxygen documentation can be built with "make doc" (it's not included with the "all" make target)
 # By default it builds in the source tree.
-add_subdirectory (Documentation/ReferenceGuide)
+add_subdirectory (Documentation)
 
 
 # Install config files
