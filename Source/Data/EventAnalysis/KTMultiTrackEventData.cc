@@ -22,6 +22,7 @@ namespace Katydid
             KTExtensibleData< KTMultiTrackEventData >(),
             fComponent(0),
             fEventID(0),
+            fStartTimeInAcq(0.),
             fStartTimeInRunC(0.),
             fEndTimeInRunC(0.),
             fTimeLength(0.),
@@ -50,6 +51,7 @@ namespace Katydid
             KTExtensibleData< KTMultiTrackEventData >(orig),
             fComponent(orig.fComponent),
             fEventID(orig.fEventID),
+            fStartTimeInAcq(orig.fStartTimeInAcq),
             fStartTimeInRunC(orig.fStartTimeInRunC),
             fEndTimeInRunC(orig.fEndTimeInRunC),
             fTimeLength(orig.fTimeLength),
@@ -88,6 +90,7 @@ namespace Katydid
 
         fComponent = rhs.fComponent;
 
+        fStartTimeInAcq = rhs.fStartTimeInAcq;
         fStartTimeInRunC = rhs.fStartTimeInRunC;
         fEndTimeInRunC = rhs.fEndTimeInRunC;
         fTimeLength = rhs.fTimeLength;
@@ -132,6 +135,7 @@ namespace Katydid
 
         TrackCIt trackIt = fTracks.begin();
 
+        fStartTimeInAcq = trackIt->second.GetStartTimeInAcq();
         fStartTimeInRunC = trackIt->second.GetStartTimeInRunC();
         fEndTimeInRunC = trackIt->second.GetEndTimeInRunC();
         fTimeLength = trackIt->second.GetTimeLength();
@@ -161,6 +165,7 @@ namespace Katydid
 
             if (trackIt->second.GetStartTimeInRunC() < fStartTimeInRunC)
             {
+                fStartTimeInAcq = trackIt->second.GetStartTimeInAcq();
                 fStartTimeInRunC = trackIt->second.GetStartTimeInRunC();
                 fStartTimeInRunCSigma = trackIt->second.GetStartTimeInRunCSigma();
                 fStartFrequency = trackIt->second.GetStartFrequency();
@@ -199,10 +204,10 @@ namespace Katydid
         }
 
         fTimeLength = fEndTimeInRunC - fStartTimeInRunC;
-        fTimeLengthSigma = sqrt(fEndTimeInRunC * fEndTimeInRunC + fStartTimeInRunC * fStartTimeInRunC);
+        fTimeLengthSigma = sqrt(fEndTimeInRunCSigma * fEndTimeInRunCSigma + fStartTimeInRunCSigma * fStartTimeInRunCSigma);
 
         fFrequencyWidth = fEndFrequency - fStartFrequency;
-        fFrequencyWidthSigma = sqrt(fEndFrequency * fEndFrequency + fStartFrequency * fStartFrequency);
+        fFrequencyWidthSigma = sqrt(fEndFrequencySigma * fEndFrequencySigma + fStartFrequencySigma * fStartFrequencySigma);
 
         return;
     }
@@ -211,6 +216,7 @@ namespace Katydid
     {
         fTracks.clear();
 
+        fStartTimeInAcq = 0.;
         fStartTimeInRunC = 0.;
         fEndTimeInRunC = 0.;
         fTimeLength = 0.;

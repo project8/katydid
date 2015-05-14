@@ -11,6 +11,7 @@
 
 #include "KTProcessor.hh"
 
+#include "KTSingleChannelDAC.hh"
 #include "KTSlot.hh"
 
 #include <vector>
@@ -41,92 +42,43 @@ namespace Katydid
      - "n-bits": unsigned -- Set the number of bits in the digitized data
      - "min-voltage": double -- Set the minimum voltage for the digitizer
      - "voltage-range": double -- Set the full-scale voltage range for the digitizer
-     - "time-series-type": string -- Type of time series to produce (options: real [default], fftw)
      - "n-bits-emulated": unsigned -- Set the number of bits to emulate
 
      Slots:
-     - "header": void (KTEggHeader*) -- Update the contents of the egg header if the bit depths is being changed; Emits signal "header"
+     - "header": void (KTEggHeader*) -- Sets up the DACs with the header information and then updates the contents if the bit depths are being changed; Emits signal "header"
+     - "header-no-init": void (KTEggHeader*) -- Updates the contents of the egg header if the bit depths are being changed; Emits signal "header"
      - "raw-ts": void (KTDataPtr) -- Performs the DAC process on a single slice; Requires KTRawTimeSeriesData; Adds KTTimeSeriesData; Emits signal "ts"
 
      Signals:
      - "header": void (KTEggHeader*) -- Emitted upon update of an egg header.
      - "ts": void (KTDataPtr) -- Emitted upon DAC completion for a single slice; Guarantees KTTimeSeriesData.
     */
-
     class KTDAC : public KTProcessor
     {
-        public:
-            enum TimeSeriesType
-            {
-                kRealTimeSeries,
-                kFFTWTimeSeries
-            };
-
-            enum BitDepthMode
-            {
-                kNoChange,
-                kReducing,
-                kIncreasing
-            };
-
         public:
             KTDAC(const std::string& name = "dac");
             virtual ~KTDAC();
 
             bool Configure(const KTParamNode* node);
 
-            unsigned GetNBits() const;
-            void SetNBits(unsigned nBits);
+            unsigned GetNChannels() const;
+            void SetNChannels(unsigned num);
 
-            double GetMinVoltage() const;
-            void SetMinVoltage(double volts);
+            const KTSingleChannelDAC& GetChannelDAC(unsigned channel = 0) const;
+            KTSingleChannelDAC& GetChannelDAC(unsigned channel = 0);
 
-            double GetVoltageRange() const;
-            void SetVoltageRange(double volts);
-
-            TimeSeriesType GetTimeSeriesType() const;
-            void SetTimeSeriesType(TimeSeriesType type);
-
-            BitDepthMode GetBitDepthMode() const;
-
-            unsigned GetEmulatedNBits() const;
-            bool SetEmulatedNBits(unsigned nBits);
 
         private:
-            unsigned fNBits;
-            double fMinVoltage;
-            double fVoltageRange;
-
-            TimeSeriesType fTimeSeriesType;
-
-            BitDepthMode fBitDepthMode;
-            unsigned fEmulatedNBits;
+            std::vector< KTSingleChannelDAC > fChannelDACs;
 
         public:
             void Initialize();
-            bool GetShouldRunInitialize();
+            void InitializeWithHeader(KTEggHeader* header);
 
             void UpdateEggHeader(KTEggHeader* header);
 
             bool ConvertData(KTSliceHeader& header, KTRawTimeSeriesData& rawData);
 
-            KTTimeSeries* ConvertToFFTW(KTRawTimeSeries* ts);
-            KTTimeSeries* ConvertToReal(KTRawTimeSeries* ts);
-
-            KTTimeSeries* ConvertToFFTWOversampled(KTRawTimeSeries* ts);
-            KTTimeSeries* ConvertToRealOversampled(KTRawTimeSeries* ts);
-
-            double Convert(uint64_t level);
-
-        private:
-            bool fShouldRunInitialize;
-
-            std::vector< double > fVoltages;
-
-            KTTimeSeries* (KTDAC::*fConvertTSFunc)(KTRawTimeSeries*);
-
-            unsigned fOversamplingBins;
-            double fOversamplingScaleFactor;
 
             //***************
             // Signals
@@ -142,68 +94,32 @@ namespace Katydid
 
         private:
             KTSlotOneArg< void (KTEggHeader*) > fHeaderSlot;
+            KTSlotOneArg< void (KTEggHeader*) > fNoInitHeaderSlot;
             KTSlotDataTwoTypes< KTSliceHeader, KTRawTimeSeriesData > fRawTSSlot;
 
     };
 
-    inline unsigned KTDAC::GetNBits() const
+
+    inline unsigned KTDAC::GetNChannels() const
     {
-        return fNBits;
+        return fChannelDACs.size();
     }
-    inline void KTDAC::SetNBits(unsigned nBits)
+
+    inline void KTDAC::SetNChannels(unsigned num)
     {
-        fNBits = nBits;
-        fShouldRunInitialize = true;
+        fChannelDACs.resize(num);
         return;
     }
 
-    inline double KTDAC::GetMinVoltage() const
+    inline const KTSingleChannelDAC& KTDAC::GetChannelDAC(unsigned channel) const
     {
-        return fMinVoltage;
-    }
-    inline void KTDAC::SetMinVoltage(double volts)
-    {
-        fMinVoltage = volts;
-        fShouldRunInitialize = true;
-        return;
+        return fChannelDACs[channel];
     }
 
-    inline double KTDAC::GetVoltageRange() const
+    inline KTSingleChannelDAC& KTDAC::GetChannelDAC(unsigned channel)
     {
-        return fVoltageRange;
+        return fChannelDACs[channel];
     }
-    inline void KTDAC::SetVoltageRange(double volts)
-    {
-        fVoltageRange = volts;
-        fShouldRunInitialize = true;
-        return;
-    }
-
-    inline KTDAC::TimeSeriesType KTDAC::GetTimeSeriesType() const
-    {
-        return fTimeSeriesType;
-    }
-
-    inline KTDAC::BitDepthMode KTDAC::GetBitDepthMode() const
-    {
-        return fBitDepthMode;
-    }
-
-    inline unsigned KTDAC::GetEmulatedNBits() const
-    {
-        return fEmulatedNBits;
-    }
-
-    inline double KTDAC::Convert(uint64_t level)
-    {
-        return fVoltages[level];
-    }
-
-    inline bool KTDAC::GetShouldRunInitialize()
-    {
-        return fShouldRunInitialize;
-    }
-
 
 }
  /* namespace Katydid */

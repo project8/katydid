@@ -195,18 +195,21 @@ namespace Katydid
                 DBSCAN::Cluster::const_iterator pointIdIt = clustIt->begin();
                 double time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
                 double freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
+                double timeInAcq = points[*pointIdIt].fTimeInAcq * data.GetXScaling();
                 double minFreq = freq;
                 double maxFreq = minFreq;
                 double minTime = time;
+                double minTimeInAcq = timeInAcq;
                 double maxTime = minTime;
-                cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1.));
+                cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1., timeInAcq));
                 KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
                 for (++pointIdIt; pointIdIt != clustIt->end(); ++pointIdIt)
                 {
                     time = points[*pointIdIt].fCoords[0] * data.GetXScaling();
                     freq = points[*pointIdIt].fCoords[1] * data.GetYScaling();
-                    cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1.));
+                    timeInAcq = points[*pointIdIt].fTimeInAcq * data.GetXScaling();;
+                    cand.AddPoint(KTSparseWaterfallCandidateData::Point(time, freq, 1., timeInAcq));
                     KTDEBUG(tclog, "Added point #" << *pointIdIt << ": " << time << ", " << freq)
 
                     if (time > maxTime)
@@ -216,6 +219,7 @@ namespace Katydid
                     else if (time < minTime)
                     {
                         minTime = time;
+                        minTimeInAcq = timeInAcq;
                     }
 
                     if (freq > maxFreq)
@@ -235,6 +239,7 @@ namespace Katydid
                 //cand.SetFreqBinWidth(fFreqBinWidth);
 
                 cand.SetTimeInRunC(minTime);
+                cand.SetTimeInAcq(minTimeInAcq);
                 cand.SetTimeLength(maxTime - minTime);
 
                 cand.SetMinimumFrequency(minFreq);

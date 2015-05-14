@@ -7,16 +7,12 @@
 
 #include "KTLogger.hh"
 
-#include "MonarchLogger.hpp"
-
 #include <exception>
 #include <iostream>
 
 using namespace Katydid;
-using namespace monarch;
 
-KTLOGGER(logger, "TestLogger(katydid)")
-MLOGGER(mlog, "TestLogger(monarch)");
+KTLOGGER(logger, "TestLogger")
 
 int main()
 {
@@ -28,12 +24,6 @@ int main()
         KTWARN(logger, "This is a WARN message from Katydid");
         KTERROR(logger, "This is an ERROR message from Katydid");
         KTFATAL(logger, "This is a FATAL message from Katydid");
-
-        MDEBUG(mlog, "This is a DEBUG message from Monarch");
-        MINFO(mlog, "This is an INFO message from Monarch");
-        MWARN(mlog, "This is a WARN message from Monarch");
-        MERROR(mlog, "This is an ERROR message from Monarch");
-        MFATAL(mlog, "This is a FATAL message from Monarch");
     }
     catch (std::exception& e)
     {

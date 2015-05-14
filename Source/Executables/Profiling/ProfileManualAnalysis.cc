@@ -11,8 +11,9 @@
 #include "KTDiscriminatedPoints1DData.hh"
 #include "KTDistanceClustering.hh"
 #include "KTCluster1DData.hh"
-#include "KTComplexFFTW.hh"
-#include "KTEggReaderMonarch.hh"
+#include "KTEggHeader.hh"
+#include "KTEgg2Reader.hh"
+#include "KTForwardFFTW.hh"
 #include "KTFrequencyCandidateData.hh"
 #include "KTFrequencyCandidateIdentifier.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
@@ -63,9 +64,9 @@ int main()
     string filename("/Users/nsoblath/My_Documents/Project_8/DataAnalysis/data/mc_file_20s_p1e-15_1hz.egg");
     unsigned nSlices = 50;
     unsigned recordSize = 32768;
-    KTDAC::TimeSeriesType tsType = KTDAC::kFFTWTimeSeries;
+    KTSingleChannelDAC::TimeSeriesType tsType = KTSingleChannelDAC::kFFTWTimeSeries;
 
-    KTComplexFFTW compFFT;
+    KTForwardFFTW compFFT;
     compFFT.SetTransformFlag("ESTIMATE");
 
 #ifdef ROOT_FOUND
@@ -111,19 +112,21 @@ int main()
     //******************************
 
     // Prepare the egg reader
-    KTEggReaderMonarch* eggReader = new KTEggReaderMonarch();
+    KTEgg2Reader* eggReader = new KTEgg2Reader();
     eggReader->SetSliceSize(recordSize);
 
     KTDAC* dac = new KTDAC();
-    dac->SetTimeSeriesType(tsType);
 
-    KTEggHeader* header = eggReader->BreakEgg(filename);
-    if (header == NULL)
+    KTDataPtr headerData = eggReader->BreakEgg(filename);
+    if (! headerData)
     {
         KTERROR(proflog, "Egg did not break");
         delete eggReader;
         return -1;
     }
+    KTEggHeader& header = headerData->Of< KTEggHeader >();
+
+    dac->InitializeWithHeader(&header);
 
     // Configure the FFT with the egg header
     compFFT.InitializeWithHeader(header);
@@ -159,10 +162,10 @@ int main()
         KTTimeSeriesData& tsData = data->Of< KTTimeSeriesData >();
 
         // Mark the time of this slice
-        prof.ProcessData(data);
+        prof.Data(data);
 
         // Calcualte the FFT
-        if (! compFFT.TransformData(tsData))
+        if (! compFFT.TransformRealData(tsData))
         {
             KTERROR(proflog, "A problem occurred while performing the FFT");
             continue;
@@ -239,7 +242,6 @@ int main()
     eggReader->CloseEgg();
     delete eggReader;
     delete dac;
-    delete header;
 
     return 0;
 }

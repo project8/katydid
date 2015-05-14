@@ -1,0 +1,63 @@
+{
+    "processor-toolbox":
+    {
+        "processors":
+        [
+            { "type": "egg-processor",       "name": "egg" },
+            { "type": "simple-fft",          "name": "fft" },
+            { "type": "low-pass-filter",     "name": "lpf" },
+            { "type": "basic-root-writer",   "name": "writer" }
+        ],
+        
+        "connections":
+        [
+            {
+                "signal": "egg:header",
+                "slot": "fft:header"
+            },
+            
+            {
+                "signal": "egg:ts",
+                "slot": "fft:ts"
+            },
+            {
+                "signal": "fft:fft-forward",
+                "slot": "lpf:ps"
+            },
+            {
+                "signal": "lpf:ps",
+                "slot": "writer:lpf-ps"
+            }
+        ],
+        
+        "run-queue":
+        [
+            "egg"
+        ]
+    },
+    
+
+    "egg":
+    {
+        "filename": "/path/to/file.egg",
+        "egg-reader": "egg3",
+        "slice-size": 16384,
+        "number-of-slices": 1
+    },
+    
+    "fft":
+    {
+        "transform-flag": "ESTIMATE"
+    },
+    
+    "lpf":
+    {
+        "rc": 50.0e6
+    },
+    
+    "writer":
+    {
+        "output-file": "/path/to/file.root",
+        "file-flag": "recreate"
+    }
+}

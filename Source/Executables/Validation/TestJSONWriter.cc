@@ -5,9 +5,9 @@
  *      Author: nsoblath
  */
 
+#include "KTJSONTypeWriterTime.hh"
 #include "KTEggHeader.hh"
 #include "KTJSONWriter.hh"
-#include "KTJSONTypeWriterEgg.hh"
 #include "KTLogger.hh"
 
 using namespace Katydid;
@@ -24,11 +24,14 @@ int main()
     KTEggHeader& header = headerPtr->Of< KTEggHeader >();
     header.SetFilename("awesome_data.egg");
     header.SetAcquisitionMode(1);
-    header.SetSliceSize(512);
-    header.SetRecordSize(4194304);
     header.SetNChannels(2);
     header.SetRunDuration(203985);
     header.SetAcquisitionRate(500.);
+
+    KTChannelHeader* channelHeader = new KTChannelHeader();
+    channelHeader->SetSliceSize(512);
+    channelHeader->SetRecordSize(4194304);
+    header.SetChannelHeader(channelHeader, 0);
 
     // Set up the writer
     KTJSONWriter writer;
@@ -39,7 +42,7 @@ int main()
     KTINFO(testlog, "Writing to file");
 
     // Writer the data
-    writer.GetTypeWriter< KTJSONTypeWriterEgg >()->WriteEggHeader(headerPtr);
+    writer.GetTypeWriter< KTJSONTypeWriterTime >()->WriteEggHeader(headerPtr);
 
     // Close the file
     writer.CloseFile();
@@ -52,7 +55,7 @@ int main()
 
     KTINFO(testlog, "Writing to terminal");
 
-    writer.GetTypeWriter< KTJSONTypeWriterEgg >()->WriteEggHeader(headerPtr);
+    writer.GetTypeWriter< KTJSONTypeWriterTime >()->WriteEggHeader(headerPtr);
 
     // Close the file
     writer.CloseFile();

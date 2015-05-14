@@ -20,7 +20,6 @@ namespace Katydid
     // Forward declare whatever classes you can
     // input data type . . .
     // output data type . . .
-    class KTEggHeader;
     class KTParamNode;
 
     /*!
@@ -38,7 +37,6 @@ namespace Katydid
      - "some-name": [type] -- [what it does]
 
      Slots:
-     - "header": void (const KTEggHeader* header) -- [what it does]
      - "[slot-name]": void (KTDataPtr) -- [what it does]; Requires [input data type]; Adds [output data type]; Emits signal "[signal-name]"
 
      Signals:
@@ -79,7 +77,6 @@ namespace Katydid
             //***************
 
         private:
-            KTSlotOneArg< void (const KTEggHeader*) > fHeaderSlot;
             KTSlotDataOneType< [Input Data Type] > f[SomeName]Slot;
 
     };

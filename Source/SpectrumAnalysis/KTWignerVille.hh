@@ -11,7 +11,7 @@
 
 #include "KTProcessor.hh"
 
-#include "KTComplexFFTW.hh"
+#include "KTForwardFFTW.hh"
 #include "KTFrequencySpectrumDataFFTW.hh"
 #include "KTLogger.hh"
 #include "KTMath.hh"
@@ -33,7 +33,6 @@ namespace Katydid
     KTLOGGER(wvlog, "KTWignerVille");
 
     class KTAnalyticAssociateData;
-    class KTComplexFFTW;
     class KTEggHeader;
     //class KTSliceHeader;
     class KTTimeSeriesData;
@@ -110,8 +109,8 @@ namespace Katydid
             KTWindower* GetWindower();
             const KTWindower* GetWindower() const;
 
-            KTComplexFFTW* GetFFT();
-            const KTComplexFFTW* GetFFT() const;
+            KTForwardFFTW* GetFFT();
+            const KTForwardFFTW* GetFFT() const;
 
             bool Initialize(double acqRate, unsigned nComponents, unsigned inputSliceSize);
             bool InitializeWithHeader(KTEggHeader& header);
@@ -154,7 +153,7 @@ namespace Katydid
             bool fUseWindowFunction;
             KTWindower* fWindower;
 
-            KTComplexFFTW* fFFT;
+            KTForwardFFTW* fFFT;
 
             std::vector< KTFrequencySpectrumFFTW* > fOutputArrays;
 
@@ -266,12 +265,12 @@ namespace Katydid
         return fWindower;
     }
 
-    inline KTComplexFFTW* KTWignerVille::GetFFT()
+    inline KTForwardFFTW* KTWignerVille::GetFFT()
     {
         return fFFT;
     }
 
-    inline const KTComplexFFTW* KTWignerVille::GetFFT() const
+    inline const KTForwardFFTW* KTWignerVille::GetFFT() const
     {
         return fFFT;
     }

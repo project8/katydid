@@ -19,7 +19,6 @@
 #include <cmath>
 #include <numeric>
 
-using boost::shared_ptr;
 using std::vector;
 
 namespace Katydid
@@ -346,7 +345,7 @@ namespace Katydid
  	    double regBigDist = 0;
 	    for (size_t iBin = fitStart; (double)iBin <= fitEnd; ++iBin)
 	      {
-		double regYDist = abs((*ts)(iBin) -  avgLinRegSlope*(iBin-fitStart));
+		double regYDist = fabs((*ts)(iBin) -  avgLinRegSlope*(iBin-fitStart));
 		if (regYDist > regBigDist)
 		  {
 		    regBigDist = regYDist;
@@ -441,7 +440,7 @@ namespace Katydid
  	    double regBigDist = 0;
 	    for (size_t iBin = fitStartD; iBin <= fitEndD; ++iBin)
 	      {
-		double regYDist = abs((*ts)(iBin) - ( avgLinRegSlopeD*(iBin-fitStartD)+localMax));
+		double regYDist = fabs((*ts)(iBin) - ( avgLinRegSlopeD*(iBin-fitStartD)+localMax));
 		if (regYDist > regBigDist)
 		  {
 		    regBigDist = regYDist;

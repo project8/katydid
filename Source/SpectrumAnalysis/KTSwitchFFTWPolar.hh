@@ -50,12 +50,6 @@ namespace Katydid
 
             bool Configure(const KTParamNode* node);
 
-            bool GetUseNegFreqs() const;
-            void SetUseNegFreqs(bool flag);
-
-        private:
-            bool fUseNegFreqs;
-
         public:
             bool SwitchToPolar(KTFrequencySpectrumDataFFTW& fsData);
             bool SwitchToPolar(KTNormalizedFSDataFFTW& fsData);
@@ -79,17 +73,6 @@ namespace Katydid
             KTSlotDataOneType< KTWignerVilleData > fWignerVilleSlot;
 
     };
-
-    inline bool KTSwitchFFTWPolar::GetUseNegFreqs() const
-    {
-        return fUseNegFreqs;
-    }
-
-    inline void KTSwitchFFTWPolar::SetUseNegFreqs(bool flag)
-    {
-        fUseNegFreqs = flag;
-        return;
-    }
 
 } /* namespace Katydid */
 #endif /* KTSWITCHFFTWPOLAR_HH_ */

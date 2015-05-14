@@ -25,9 +25,11 @@ namespace Katydid
 
             MEMBERVARIABLE(unsigned, Component);
             MEMBERVARIABLE(unsigned, TrackID);
+            MEMBERVARIABLE(unsigned, EventID);
 
             MEMBERVARIABLE(bool, IsCut);
 
+            MEMBERVARIABLE(double, StartTimeInAcq);
             MEMBERVARIABLE(double, StartTimeInRunC);
             MEMBERVARIABLE(double, EndTimeInRunC);
             MEMBERVARIABLE(double, TimeLength);

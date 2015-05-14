@@ -87,9 +87,12 @@ namespace Katydid
 
     bool KTCreateKDTree::AddPoints(KTSliceHeader& slHeader, KTDiscriminatedPoints1DData& discPoints)
     {
+
+        KTDEBUG(kdlog, "Is this a new acquisition? fHaveNewData=" << fHaveNewData << " and GetIsNewAcquisition=" << slHeader.GetIsNewAcquisition());
         // first check to see if this is a new acquisition; if so, run clustering on the previous acquistion's data
         if (fHaveNewData && slHeader.GetIsNewAcquisition())
         {
+            KTDEBUG(kdlog, "New Acquisition - Run clustering on previous acquistion, clear out old points from tree");
             if (! MakeTree(false))
             {
                 KTERROR(kdlog, "An error occurred while clustering from the previous acquisition");
@@ -125,9 +128,10 @@ namespace Katydid
             {
                 newPoint.fCoords[1] = fInvScalingY * pIt->second.fAbscissa;
                 newPoint.fAmplitude = pIt->second.fOrdinate;
+                newPoint.fTimeInAcq = fInvScalingX * (slHeader.GetTimeInAcq() + 0.5 * slHeader.GetSliceLength());
                 fTreeData.AddPoint(newPoint, iComponent);
             }
-            KTDEBUG(kdlog, "Tree data (component " << iComponent << ") now has " << fTreeData.GetSetOfPoints(iComponent).size() << " points");
+            KTDEBUG(kdlog, "Tree data (component " << iComponent << ") now has " << fTreeData.GetSetOfPoints(iComponent).size() << " points (Slice Number: " << newPoint.fSliceNumber << ")");
         }
 
         ++fSliceInWindowCount;
@@ -175,6 +179,7 @@ namespace Katydid
             newPoint.fCoords[0] = fInvScalingX * pIt->fTimeInRunC;
             newPoint.fCoords[1] = fInvScalingY * pIt->fFrequency;
             newPoint.fAmplitude = pIt->fAmplitude;
+            newPoint.fTimeInAcq = fInvScalingX * pIt->fTimeInAcq;
             fTreeData.AddPoint(newPoint, component);
         }
         KTDEBUG(kdlog, "Tree data (component " << component << ") now has " << fTreeData.GetSetOfPoints(component).size() << " points");
@@ -204,17 +209,23 @@ namespace Katydid
         // yet another exception to the separation of normal function and signals/slots; sorry
         fKDTreeSignal(fDataPtr);
 
-        fHaveNewData = false;
+        // LdV 2015-01-14 - Commented the line below
+        //                - fHaveNewData has to remain unchanged until ClearTree; it shouldn't be changed here
+        //                - This probably wasn't noticed before because we weren't using multi-record files with the digitizer data  
+        //fHaveNewData = false;
         return true;
     }
 
     bool KTCreateKDTree::ClearTree(bool willContinue, uint64_t firstSliceKept)
     {
+        KTDEBUG(kdlog, "ClearTree");
         if (! fHaveNewData) return true;
 
         // firstSliceKept is only used if willContinue == true
         if (willContinue)
         {
+            KTDEBUG(kdlog, "ClearTree(true)");
+
             // clear data up to the
             unsigned nComponents = fTreeData.GetNComponents();
             for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)
@@ -232,6 +243,7 @@ namespace Katydid
         }
         else
         {
+            KTDEBUG(kdlog, "ClearTree(false)");
             // clear all data from the tree, but leave the memory intact
             unsigned nComponents = fTreeData.GetNComponents();
             for (unsigned iComponent = 0; iComponent != nComponents; ++iComponent)

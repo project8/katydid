@@ -20,6 +20,7 @@ namespace Katydid
             //fFreqBinWidth(0.),
             fTimeInRunC(0.),
             fTimeLength(0.),
+            fTimeInAcq(0.),
             //fFirstSliceNumber(0),
             //fLastSliceNumber(0),
             fMinimumFrequency(0.),

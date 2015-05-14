@@ -9,10 +9,6 @@
 
 #include "KTParam.hh"
 
-#include "MonarchTypes.hpp"
-
-#include "thorax.hh"
-
 #include <sstream>
 
 
@@ -91,7 +87,7 @@ namespace Katydid
         KTINFO(proflog, "Profiling stopped");
         timespec diffTime = Elapsed();
         KTPROG(proflog, fNDataProcessed << " slices processed");
-        double totalSeconds = time_to_sec(diffTime);
+        double totalSeconds = TimeToSec(diffTime);
         KTPROG(proflog, "Throughput time: " << diffTime.tv_sec << " sec and " << diffTime.tv_nsec << " nsec (" << totalSeconds << " sec)");
 
         // Data production rate in bytes per second
@@ -112,15 +108,61 @@ namespace Katydid
     timespec KTThroughputProfiler::CurrentTime()
     {
         timespec ts;
-        get_time_current(&ts);
+        GetTimeCurrent(&ts);
         return ts;
     }
 
     timespec KTThroughputProfiler::Diff(timespec start, timespec end) const
     {
         timespec diff;
-        time_diff(start, end, &diff);
+        TimeDiff(start, end, &diff);
         return diff;
+    }
+
+#ifdef __MACH__
+    double KTThroughputProfiler::sTimebase = 0.0;
+    uint64_t KTThroughputProfiler::sTimestart = 0;
+#endif
+
+    int KTThroughputProfiler::GetTimeCurrent(struct timespec* time)
+    {
+    #ifdef __MACH__ // OS X does not have clock_gettime, use clock_get_time
+        if (! sTimestart)
+        {
+            mach_timebase_info_data_t tb = { .numer = 0, .denom = 1 };
+            mach_timebase_info(&tb);
+            sTimebase = tb.numer;
+            sTimebase /= tb.denom;
+            sTimestart = mach_absolute_time();
+        }
+        double diff = (mach_absolute_time() - sTimestart) * sTimebase;
+        time->tv_sec = diff * MACNANO;
+        time->tv_nsec = diff - (time->tv_sec * MACGIGA);
+        return 0;
+    #else
+        return clock_gettime(CLOCK_PROCESS_CPUTIME_ID, time);
+    #endif
+
+    }
+
+    double KTThroughputProfiler::TimeToSec(struct timespec time)
+    {
+        return (double)time.tv_sec + (double)time.tv_nsec / (double)NSEC_PER_SEC;
+    }
+
+    void KTThroughputProfiler::TimeDiff(struct timespec start, struct timespec end, struct timespec* diff)
+    {
+        if ((end.tv_nsec - start.tv_nsec < 0))
+        {
+            diff->tv_sec = end.tv_sec - start.tv_sec - 1;
+            diff->tv_nsec = 1000000000 + end.tv_nsec - start.tv_nsec;
+        }
+        else
+        {
+            diff->tv_sec = end.tv_sec - start.tv_sec;
+            diff->tv_nsec = end.tv_nsec - start.tv_nsec;
+        }
+        return;
     }
 
 } /* namespace Katydid */

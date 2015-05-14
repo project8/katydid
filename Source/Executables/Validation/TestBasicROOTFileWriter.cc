@@ -6,7 +6,6 @@
  */
 
 #include "KTBasicROOTFileWriter.hh"
-#include "KTBasicROOTTypeWriterFFT.hh"
 #include "KTData.hh"
 #include "KTFrequencySpectrumPolar.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
@@ -14,6 +13,8 @@
 #include "complexpolar.hh"
 
 #include <iostream>
+
+#include "KTBasicROOTTypeWriterTransform.hh"
 
 using namespace Katydid;
 using namespace std;
@@ -42,7 +43,7 @@ int main()
     writer.SetFileFlag("recreate");
 
     // Writer the data
-    writer.GetTypeWriter< KTBasicROOTTypeWriterFFT >()->WriteFrequencySpectrumDataPolar(data);
+    writer.GetTypeWriter< KTBasicROOTTypeWriterTransform >()->WriteFrequencySpectrumDataPolar(data);
 
     // Set up next data
     (*spectrum1)(3).set_polar(10., .5);
@@ -50,7 +51,7 @@ int main()
     header.SetSliceNumber(2);
 
     // Publish the data
-    writer.GetTypeWriter< KTBasicROOTTypeWriterFFT >()->WriteFrequencySpectrumDataPolar(data);
+    writer.GetTypeWriter< KTBasicROOTTypeWriterTransform >()->WriteFrequencySpectrumDataPolar(data);
 
     cout << "Test complete; see histograms in test_writer.root" << endl;
 

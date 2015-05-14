@@ -7,7 +7,6 @@
 
 #include "KTApplication.hh"
 #include "KTDataDisplay.hh"
-#include "KTDataTypeDisplayFFT.hh"
 #include "KTData.hh"
 #include "KTDisplayWindow.hh"
 #include "KTFrequencySpectrumPolar.hh"
@@ -20,6 +19,7 @@
 #include "TH1.h"
 
 #include <iostream>
+#include "KTDataTypeDisplayTransform.hh"
 
 
 
@@ -99,7 +99,7 @@ int main()
         display.SetHeight(500);
 
         // Writer the data
-        display.GetTypeWriter< KTDataTypeDisplayFFT >()->DrawFrequencySpectrumDataPolar(data);
+        display.GetTypeWriter< KTDataTypeDisplayTransform >()->DrawFrequencySpectrumDataPolar(data);
 
         // Set up next data
         (*spectrum1)(3).set_polar(10., .5);
@@ -107,7 +107,7 @@ int main()
         header.SetSliceNumber(2);
 
         // Publish the data
-        display.GetTypeWriter< KTDataTypeDisplayFFT >()->DrawFrequencySpectrumDataPolar(data);
+        display.GetTypeWriter< KTDataTypeDisplayTransform >()->DrawFrequencySpectrumDataPolar(data);
     }
 
 

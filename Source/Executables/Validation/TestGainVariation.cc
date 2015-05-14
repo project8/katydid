@@ -10,6 +10,7 @@
  *      > TestGainVariation [nBins [nFitPoints [true_A true_B true_C [noise_sigma]]]]
  */
 
+#include "KT2ROOT.hh"
 #include "KTGainNormalization.hh"
 #include "KTGainVariationData.hh"
 #include "KTFrequencySpectrumDataPolar.hh"
@@ -120,7 +121,7 @@ int main(int argc, char** argv)
 #ifdef ROOT_FOUND
     TFile* file = new TFile("gain_var_test.root", "recreate");
 
-    TH1D* spectrumHist = spectrum->CreateMagnitudeHistogram("hInputMag");
+    TH1D* spectrumHist = KT2ROOT::CreateMagnitudeHistogram(spectrum, "hInputMag");
     spectrumHist->Write();
 #endif
 
@@ -168,7 +169,7 @@ int main(int argc, char** argv)
 
     KTINFO(vallog, "Processing complete");
 #ifdef ROOT_FOUND
-    TH1D* normalizedHist = normData.GetSpectrumPolar(0)->CreateMagnitudeHistogram("hOutputMag");
+    TH1D* normalizedHist = KT2ROOT::CreateMagnitudeHistogram(normData.GetSpectrumPolar(0), "hOutputMag");
     normalizedHist->SetLineColor(2);
     normalizedHist->Write();
 #endif

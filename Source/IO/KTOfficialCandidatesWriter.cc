@@ -163,7 +163,7 @@ namespace Katydid
         fJSONMaker->String(header->GetFilename().c_str(), (SizeType)header->GetFilename().length());
 
         fJSONMaker->String("record_size");
-        fJSONMaker->Uint((unsigned)header->GetRecordSize());
+        fJSONMaker->Uint((unsigned)header->GetChannelHeader(0)->GetRecordSize());
 
         return;
     }

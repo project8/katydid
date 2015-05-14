@@ -27,6 +27,7 @@ namespace Katydid
             KTWriterWithTypists< KTHDF5Writer >(name),
             fHeaderSlot("header", this, &KTHDF5Writer::WriteEggHeader),
             fFilename("my_file.h5"),
+            fFileFlag("nocompress"),
             fFile(NULL),
             fHeaderParsed(false)
     {
@@ -44,6 +45,7 @@ namespace Katydid
         if (node != NULL)
         {
             SetFilename(node->GetValue("output-file", fFilename));
+            SetFileFlag(node->GetValue("file-flag", fFileFlag));
         }
 
         // Command-line settings
@@ -118,18 +120,16 @@ namespace Katydid
         this->AddMetadata("header/description", this->fHeader.GetDescription());
         this->AddMetadata("header/acquisition_mode", this->fHeader.GetAcquisitionMode());
         this->AddMetadata("header/n_channels", this->fHeader.GetNChannels());        
-        this->AddMetadata("header/raw_slice_size",this->fHeader.GetRawSliceSize());
-        this->AddMetadata("header/slice_size",this->fHeader.GetSliceSize());
-        this->AddMetadata("header/slice_stride",this->fHeader.GetSliceStride());
-        this->AddMetadata("header/record_size",this->fHeader.GetRecordSize());
+        this->AddMetadata("header/raw_slice_size",this->fHeader.GetChannelHeader(0)->GetRawSliceSize());
+        this->AddMetadata("header/slice_size",this->fHeader.GetChannelHeader(0)->GetSliceSize());
+        this->AddMetadata("header/slice_stride",this->fHeader.GetChannelHeader(0)->GetSliceStride());
+        this->AddMetadata("header/record_size",this->fHeader.GetChannelHeader(0)->GetRecordSize());
         this->AddMetadata("header/run_duration",this->fHeader.GetRunDuration());
         this->AddMetadata("header/acquisition_rate",this->fHeader.GetAcquisitionRate());
-        this->AddMetadata("header/run_type",this->fHeader.GetRunType());
-        this->AddMetadata("header/format_mode",this->fHeader.GetFormatMode());
-        this->AddMetadata("header/data_type_size",this->fHeader.GetDataTypeSize());
-        this->AddMetadata("header/bit_depth",this->fHeader.GetBitDepth());
-        this->AddMetadata("header/voltage_min",this->fHeader.GetVoltageMin());
-        this->AddMetadata("header/voltage_range",this->fHeader.GetVoltageRange());
+        this->AddMetadata("header/data_type_size",this->fHeader.GetChannelHeader(0)->GetDataTypeSize());
+        this->AddMetadata("header/bit_depth",this->fHeader.GetChannelHeader(0)->GetBitDepth());
+        this->AddMetadata("header/voltage_offset",this->fHeader.GetChannelHeader(0)->GetVoltageOffset());
+        this->AddMetadata("header/voltage_range",this->fHeader.GetChannelHeader(0)->GetVoltageRange());
         this->AddMetadata("header/center_frequency",this->fHeader.GetCenterFrequency());
         this->AddMetadata("header/minimum_frequency",this->fHeader.GetMinimumFrequency());
         this->AddMetadata("header/maximum_frequency",this->fHeader.GetMaximumFrequency());

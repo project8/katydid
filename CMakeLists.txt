@@ -1,15 +1,16 @@
 # CMakeLists for Katydid
 # Author: N. Oblath
 
-cmake_minimum_required (VERSION 2.8.12)
+cmake_minimum_required (VERSION 3.0)
 
 
 # Define the project
-project (Katydid)
+cmake_policy( SET CMP0048 NEW ) # version in project()
+project (Katydid VERSION 2.2.0)
 
 # Import Katydid core features
 include (KTCore/cmake/KatydidCore.cmake)
-katydid_prepare_project (2 0 0)
+katydid_prepare_project ()
 
 # Specify the local directory for CMake modules
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
@@ -22,6 +23,7 @@ set (Katydid_USE_HDF5 TRUE CACHE BOOL "Flag to optionally use HDF5")
 set (Katydid_USE_EIGEN FALSE CACHE BOOL "Flag to optionally use eigen")
 set (Katydid_USE_ROOT TRUE CACHE BOOL "Flag to optionally use ROOT")
 set (Katydid_USE_MATLAB FALSE CACHE BOOL "Flag to optionally use Matlab libraries, needed to read MAT files")
+
 
 ##############
 # Dependencies
@@ -82,7 +84,7 @@ else (Katydid_USE_HDF5)
 endif (Katydid_USE_HDF5)
 if (HDF5_FOUND)
     #add_definitions (-DHDF5_FOUND)
-    include_directories (${HDF5_INCLUDE_DIR})
+    include_directories (BEFORE ${HDF5_INCLUDE_DIR})
     pbuilder_add_ext_libraries (${HDF5_CXX_LIBRARIES})
 else (HDF5_FOUND)
     #remove_definitions (-DHDF5_FOUND)
@@ -113,22 +115,18 @@ include_directories (${ROOT_INCLUDES})
 
 # Matlab
 if (Katydid_USE_MATLAB)
-    find_package(Matlab)
+    find_package(MatIO)
 endif (Katydid_USE_MATLAB)
-if (MATLAB_FOUND)
-    message (STATUS "matlab include dir: ${MATLAB_INCLUDE_DIR}")
-    get_filename_component (MATLAB_LIBRARY_DIR ${MATLAB_MAT_LIBRARY} DIRECTORY)
-    message (STATUS "matlab library dir: ${MATLAB_LIBRARY_DIR}")
-    message (STATUS "matlab libraries: ${MATLAB_LIBRARIES}")
+if (MATIO_FOUND)
+    message (STATUS "MatIO include dirs: ${MATIO_INCLUDE_DIRS}")
+    message (STATUS "MatIO libraries: ${MATIO_LIBRARIES}")
     add_definitions(-DUSE_MATLAB)
-    include_directories (${MATLAB_INCLUDE_DIR})
-    link_directories (${MATLAB_LIBRARY_DIR})
-    set (EXTERNAL_LIBRARIES_MATLAB ${MATLAB_LIBRARIES})
-    #pbuilder_add_ext_libraries (${MATLAB_LIBRARIES})
-else (MATLAB_FOUND)
+    include_directories (${MATIO_INCLUDE_DIRS})
+    pbuilder_add_ext_libraries (${MATIO_LIBRARIES})
+else (MATIO_FOUND)
     message (STATUS "Building without Matlab")
     remove_definitions(-DUSE_MATLAB)
-endif (MATLAB_FOUND)
+endif (MATIO_FOUND)
 
 # eigen
 if (Katydid_USE_EIGEN)
@@ -161,6 +159,14 @@ if (Katydid_ENABLE_TESTING)
     enable_testing ()
 endif (Katydid_ENABLE_TESTING)
 
+option (Katydid_ENABLE_TUTORIAL "Build the tutorial code" OFF)
+if (Katydid_ENABLE_TUTORIAL)
+    include_directories (${PROJECT_SOURCE_DIR}/Examples/Tutorial)
+    add_definitions (-DENABLE_TUTORIAL)
+else (Katydid_ENABLE_TUTORIAL)
+    remove_definitions (-DENABLE_TUTORIAL)
+endif (Katydid_ENABLE_TUTORIAL)
+
 # add an option to build the profiling tests
 option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 
@@ -168,7 +174,17 @@ option (Katydid_ENABLE_PROFILING "Build the profiling tests" OFF)
 if (Katydid_USE_MONARCH)
     add_subdirectory (Source/Time/Monarch)
     pbuilder_add_submodule_libraries (${Monarch_LIBRARIES})
-    add_definitions(-DUSE_MONARCH)
+    add_definitions (-DUSE_MONARCH)
+    if (Monarch_BUILD_MONARCH2)
+        add_definitions(-DUSE_MONARCH2)
+    else (Monarch_BUILD_MONARCH2)
+        remove_definitions(-DUSE_MONARCH2)
+    endif (Monarch_BUILD_MONARCH2)
+    if (Monarch_BUILD_MONARCH3 )
+        add_definitions(-DUSE_MONARCH3)
+    else (Monarch_BUILD_MONARCH3)
+        remove_definitions(-DUSE_MONARCH3)
+    endif (Monarch_BUILD_MONARCH3)
 
     # add to the RPATH to be used when installing, but only if it's not a system directory
     list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${Monarch_LIBRARY_DIR}" isSystemDir)
@@ -177,12 +193,16 @@ if (Katydid_USE_MONARCH)
     endif ("${isSystemDir}" STREQUAL "-1")
 else (Katydid_USE_MONARCH)
     message(STATUS "Building without Monarch")
-    add_subdirectory(Source/Time/Monarch EXCLUDE_FROM_ALL)
-    remove_definitions(-DUSE_MONARCH)
+    add_subdirectory (Source/Time/Monarch EXCLUDE_FROM_ALL)
+    remove_definitions (-DUSE_MONARCH)
+    remove_definitions (-DUSE_MONARCH2)
+    remove_definitions (-DUSE_MONARCH3)
 endif (Katydid_USE_MONARCH)
-include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Source)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Monarch2)
+include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/Monarch3)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax)
 include_directories (BEFORE ${PROJECT_SOURCE_DIR}/Source/Time/Monarch/libthorax/cpp)
+include_directories (BEFORE ${PROJECT_BINARY_DIR}/Source/Time/Monarch)
 
 # Subdirectories
 include_directories (BEFORE 

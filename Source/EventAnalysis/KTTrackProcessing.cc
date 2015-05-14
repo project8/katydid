@@ -108,9 +108,10 @@ namespace Katydid
         // First loop over points, and first point-line-distance cut
 
         unsigned nPoints = points.size();
-        typedef vector< std::pair< double, double > > SimplePoints;
-        SimplePoints pointsScaled, pointsUnscaled;
+        typedef vector< std::pair< double, double > > SimplePoints2D;
+        SimplePoints2D pointsScaled, pointsUnscaled, pointsUnscaledInAcq;
         pointsScaled.reserve(nPoints);
+        pointsUnscaledInAcq.reserve(nPoints);
         vector< unsigned > pointsCuts;
         pointsCuts.reserve(nPoints);
         unsigned nPointsUsed = 0;
@@ -121,10 +122,11 @@ namespace Katydid
         for (Points::const_iterator pIt = points.begin(); pIt != points.end(); ++pIt)
         {
             //cout << "calculating a distance..." << endl;
-            pointsUnscaled.push_back(SimplePoints::value_type(pIt->fTimeInRunC, pIt->fFrequency));
+            pointsUnscaled.push_back(SimplePoints2D::value_type(pIt->fTimeInRunC, pIt->fFrequency));
+            pointsUnscaledInAcq.push_back(SimplePoints2D::value_type(pIt->fTimeInAcq, pIt->fFrequency));
             xScaled = (pIt->fTimeInRunC - xOffset) / xScale;
             yScaled = (pIt->fFrequency - yOffset) / yScale;
-            pointsScaled.push_back(SimplePoints::value_type(xScaled, yScaled));
+            pointsScaled.push_back(SimplePoints2D::value_type(xScaled, yScaled));
             //cout << "i: " << iPoint << "\t y_i: " << ys[iPoint] << "\t x_i: " << xs[iPoint] << endl;
             //cout << "scaled: y_isc: " << yiscaled << "\t xisc: " << xiscaled << endl;
             distance = PointLineDistance(xScaled, yScaled, htCosAngle, htSinAngle, -htRadius);
@@ -163,6 +165,7 @@ namespace Katydid
         // second distance cut based on LS fit
         double startTime = std::numeric_limits< double >::max();
         double stopTime = -1.;
+        double startTimeInAcq = 0;
         double startFreq, stopFreq;
         nPointsUsed = 0;
         unsigned nPointsCut2 = 0;
@@ -178,6 +181,7 @@ namespace Katydid
                 {
                     startTime = pointsUnscaled[iPoint].first;
                     startFreq = startTime * lsSlope + lsIntercept;
+                    startTimeInAcq = pointsUnscaledInAcq[iPoint].first;
                 }
                 if (pointsUnscaled[iPoint].first > stopTime)
                 { //possibly update stop time/frequency
@@ -223,6 +227,7 @@ namespace Katydid
             procTrack.SetIsCut(true);
         }
 
+        procTrack.SetStartTimeInAcq(startTimeInAcq);
         procTrack.SetStartTimeInRunC(startTime);
         procTrack.SetEndTimeInRunC(stopTime);
         procTrack.SetTimeLength(stopTime - startTime);

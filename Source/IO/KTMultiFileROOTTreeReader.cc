@@ -11,14 +11,13 @@
 #include "KTNOFactory.hh"
 #include "KTLogger.hh"
 #include "KTParam.hh"
-#include "KTROOTTreeTypeWriterAnalysis.hh"
-
 #include "TAxis.h"
 #include "TFile.h"
 #include "TH1D.h"
 #include "TTree.h"
 
 #include <sstream>
+#include "KTROOTTreeTypeWriterSpectrumAnalysis.hh"
 
 
 

@@ -100,6 +100,7 @@
     "egg":
     {
         "filename": "path/to/egg/file.egg",
+        "egg-reader": "egg3",
         "slice-size": 16384,
         "number-of-slices": 1
     },

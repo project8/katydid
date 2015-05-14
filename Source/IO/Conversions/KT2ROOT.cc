@@ -10,6 +10,8 @@
 #include "KTLogger.hh"
 
 #include "KTHoughData.hh"
+#include "KTFrequencySpectrumFFTW.hh"
+#include "KTFrequencySpectrumPolar.hh"
 #include "KTPowerSpectrum.hh"
 #include "KTRawTimeSeries.hh"
 #include "KTTimeSeriesDist.hh"
@@ -40,10 +42,32 @@ namespace Katydid
     {
     }
 
-    TH1I* KT2ROOT::CreateHistogram(const KTRawTimeSeries* ts, const string& histName)
+    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< uint64_t >* ts, const string& histName)
     {
         unsigned nBins = ts->size();
-        TH1I* hist = new TH1I(histName.c_str(), "Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*ts)(iBin));
+        }
+        hist->SetXTitle("Time (s)");
+        hist->SetYTitle("Voltage (ADC)");
+        return hist;
+
+    }
+
+    TH1I* KT2ROOT::CreateHistogram(const KTVarTypePhysicalArray< int64_t >* ts, const string& histName)
+    {
+        //**** DEBUG ****//
+        /*std::stringstream tStream;
+        for (unsigned i=0; i<10; ++i)
+        {
+            tStream << (*ts)(i) << "  ";
+        }
+        KTWARN( dblog, tStream.str() );*/
+        //**** DEBUG ****//
+        unsigned nBins = ts->size();
+        TH1I* hist = new TH1I(histName.c_str(), "Raw Time Series", (int)nBins, ts->GetRangeMin(), ts->GetRangeMax());
         for (unsigned iBin=0; iBin<nBins; ++iBin)
         {
             hist->SetBinContent((int)iBin+1, (*ts)(iBin));
@@ -169,6 +193,189 @@ namespace Katydid
         return hist;
     }
 */
+
+    TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*fs)(iBin).abs());
+        }
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreatePhaseHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, (*fs)(iBin).arg());
+        }
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Phase");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreatePowerHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)(fs->GetNTimeBins());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            value = (*fs)(iBin).abs();
+            hist->SetBinContent((int)iBin + 1, value * value * scaling);
+        }
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Power (W)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
+    {
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        unsigned nBins = fs->size();
+        double value;
+        // Skip the DC bin: start at bin 1
+        for (unsigned iBin=1; iBin<nBins; ++iBin)
+        {
+            value = (*fs)(iBin).abs();
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->Fill((*fs)(iBin).abs());
+        }
+        hist->SetXTitle("Voltage (V)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreatePowerDistributionHistogram(const KTFrequencySpectrumPolar* fs, const std::string& name)
+    {
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        unsigned nBins = fs->size();
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)fs->GetNTimeBins();
+        // Skip the DC bin: start at bin 1
+        for (unsigned iBin=1; iBin<nBins; ++iBin)
+        {
+            value = (*fs)(iBin).abs();
+            value *= value * scaling;
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            value = (*fs)(iBin).abs();
+            hist->Fill(value * value * scaling);
+        }
+        hist->SetXTitle("Power (W)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreateMagnitudeHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Magnitude", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, std::sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]));
+        }
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Voltage (V)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreatePhaseHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        TH1D* hist = new TH1D(name.c_str(), "Frequency Spectrum: Phase", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, std::atan2((*fs)(iBin)[1], (*fs)(iBin)[0]));
+        }
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Phase");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreatePowerHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        TH1D* hist = new TH1D(name.c_str(), "Power Spectrum", (int)nBins, fs->GetRangeMin(), fs->GetRangeMax());
+        double value, valueImag, valueReal;
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)fs->GetNTimeBins();
+
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            hist->SetBinContent((int)iBin+1, scaling * ((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]));
+        }
+
+        hist->SetXTitle("Frequency (Hz)");
+        hist->SetYTitle("Power (W)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreateMagnitudeDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        double value;
+        // skip the DC bin; start at iBin = 1
+        for (unsigned iBin=1; iBin<nBins; ++iBin)
+        {
+            value = std::sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]);
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(name.c_str(), "Magnitude Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            value = sqrt((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]);
+            hist->Fill(value);
+        }
+        hist->SetXTitle("Voltage (V)");
+        return hist;
+    }
+
+    TH1D* KT2ROOT::CreatePowerDistributionHistogram(const KTFrequencySpectrumFFTW* fs, const std::string& name)
+    {
+        unsigned nBins = fs->size();
+        double tMaxMag = -1.;
+        double tMinMag = 1.e9;
+        double value;
+        double scaling = 1. / KTPowerSpectrum::GetResistance() / (double)fs->GetNTimeBins();
+        // skip the DC bin; start at iBin = 1
+        for (unsigned iBin=1; iBin<nBins; ++iBin)
+        {
+            value = ((*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1]) * scaling;
+            if (value < tMinMag) tMinMag = value;
+            if (value > tMaxMag) tMaxMag = value;
+        }
+        if (tMinMag < 1. && tMaxMag > 1.) tMinMag = 0.;
+        TH1D* hist = new TH1D(name.c_str(), "Power Distribution", 100, tMinMag*0.95, tMaxMag*1.05);
+        for (unsigned iBin=0; iBin<nBins; ++iBin)
+        {
+            value = (*fs)(iBin)[0] * (*fs)(iBin)[0] + (*fs)(iBin)[1] * (*fs)(iBin)[1];
+            hist->Fill(value * scaling);
+        }
+        hist->SetXTitle("Power (W)");
+        return hist;
+    }
 
     TH1D* KT2ROOT::CreatePowerHistogram(const KTPowerSpectrum* ps, const std::string& name)
     {

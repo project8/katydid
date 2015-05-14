@@ -102,7 +102,7 @@ namespace Katydid
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator+=(const KTPhysicalArray< 1, fftw_complex>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBin=0; iBin<rhs.size(); iBin++)
+        for (size_t iBin=0; iBin<rhs.size(); ++iBin)
         {
             fData[iBin][0] = fData[iBin][0] + rhs.fData[iBin][0];
             fData[iBin][1] = fData[iBin][1] + rhs.fData[iBin][1];
@@ -114,7 +114,7 @@ namespace Katydid
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator-=(const KTPhysicalArray< 1, fftw_complex>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBin=0; iBin<size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
             fData[iBin][0] = fData[iBin][0] - rhs.fData[iBin][0];
             fData[iBin][1] = fData[iBin][1] - rhs.fData[iBin][1];
@@ -126,7 +126,7 @@ namespace Katydid
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator*=(const KTPhysicalArray< 1, fftw_complex>& rhs)
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
-        for (size_t iBin=0; iBin<size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
             fTempCache[0] = fData[iBin][0] * rhs.fData[iBin][0] - fData[iBin][1] * rhs.fData[iBin][1];
             fTempCache[1] = fData[iBin][0] * rhs.fData[iBin][1] + fData[iBin][1] * rhs.fData[iBin][0];
@@ -141,7 +141,7 @@ namespace Katydid
     {
         if (! this->IsCompatibleWith(rhs)) return *this;
         double abs, arg;
-        for (size_t iBin=0; iBin<size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
             abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) / (rhs.fData[iBin][0]*rhs.fData[iBin][0] + rhs.fData[iBin][1]*rhs.fData[iBin][1]));
             arg = std::atan2(fData[iBin][1], fData[iBin][0]) - std::atan2(rhs.fData[iBin][1], rhs.fData[iBin][0]);
@@ -156,7 +156,7 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator+=(const fftw_complex& rhs)
     {
-        for (size_t iBin=0; iBin<size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
             fData[iBin][0] = fData[iBin][0] + rhs[0];
             fData[iBin][1] = fData[iBin][1] + rhs[1];
@@ -167,7 +167,7 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator-=(const fftw_complex& rhs)
     {
-        for (size_t iBin=0; iBin<size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
             fData[iBin][0] = fData[iBin][0] - rhs[0];
             fData[iBin][1] = fData[iBin][1] - rhs[1];
@@ -178,7 +178,7 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator*=(const fftw_complex& rhs)
     {
-        for (size_t iBin=0; iBin<size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
             fTempCache[0] = fData[iBin][0] * rhs[0] - fData[iBin][1] * rhs[1];
             fTempCache[1] = fData[iBin][0] * rhs[1] + fData[iBin][1] * rhs[0];
@@ -194,7 +194,7 @@ namespace Katydid
         double abs, arg;
         double rhsabs = rhs[0]*rhs[0] + rhs[1]*rhs[1];
         double rhsarg = std::atan2(rhs[1], rhs[0]);
-        for (size_t iBin=0; iBin<size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
             abs = std::sqrt((fData[iBin][0]*fData[iBin][0] + fData[iBin][1]*fData[iBin][1]) / rhsabs);
             arg = std::atan2(fData[iBin][1], fData[iBin][0]) - rhsarg;
@@ -209,7 +209,7 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >& KTPhysicalArray< 1, fftw_complex >::operator*=(double rhs)
     {
-        for (size_t iBin=0; iBin<size(); iBin++)
+        for (size_t iBin=0; iBin<size(); ++iBin)
         {
             fData[iBin][0] = fData[iBin][0] * rhs;
             fData[iBin][1] = fData[iBin][1] * rhs;
@@ -246,25 +246,25 @@ namespace Katydid
 
     KTPhysicalArray< 1, fftw_complex >::const_reverse_iterator KTPhysicalArray< 1, fftw_complex >::rbegin() const
     {
-        return fData;
+        return fData + size() - 1;
     }
 
 
     KTPhysicalArray< 1, fftw_complex >::const_reverse_iterator KTPhysicalArray< 1, fftw_complex >::rend() const
     {
-        return fData + size();
+        return fData - 1;
     }
 
 
     KTPhysicalArray< 1, fftw_complex >::reverse_iterator KTPhysicalArray< 1, fftw_complex >::rbegin()
     {
-        return fData;
+        return fData + size() - 1;
     }
 
 
     KTPhysicalArray< 1, fftw_complex >::reverse_iterator KTPhysicalArray< 1, fftw_complex >::rend()
     {
-        return fData + size();
+        return fData - 1;
     }
 
 

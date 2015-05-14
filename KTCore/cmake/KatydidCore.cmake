@@ -22,8 +22,8 @@ set (KATYDID_CORE_REVISION 0)
 ##########
 
 # This should be called immediately after setting the project name
-macro (katydid_prepare_project VERSION_MAJOR VERSION_MINOR REVISION)
-	pbuilder_prepare_project (${VERSION_MAJOR} ${VERSION_MINOR} ${REVISION})
+macro (katydid_prepare_project)
+	pbuilder_prepare_project ()
 
     # Add a "Standard" build type
 	#set (CMAKE_BUILD_TYPE standard)

@@ -27,7 +27,7 @@ to not work with Katydid on Linux systems.
 #ifndef KTRSAMATREADER_HH_
 #define KTRSAMATREADER_HH_
 
-#include "mat.h" 
+#include "matio.h"
 
 #include "KTEggReader.hh"
 
@@ -69,9 +69,9 @@ namespace Katydid
             unsigned fSamplesRead;
             unsigned fSamplesPerFile;
             unsigned fRecordsPerFile;
-            double *fRecordsTimeStampSeconds;
-            mxArray *fTSArrayMat;
-            MATFile *fMatFilePtr;
+            std::vector< double > fRecordsTimeStampSeconds;
+            matvar_t *fTSArrayMat;
+            mat_t *fMatFilePtr;
 
 
         public:
@@ -99,6 +99,8 @@ namespace Katydid
             double GetTimeInRun() const;
             /// Same as GetTimeInRun
             virtual double GetIntegratedTime() const;
+            /// Returns the time within the current acquisition
+            double GetTimeInAcq() const;
 
             /// Returns the number of slices processed
             virtual unsigned GetNSlicesProcessed() const;
@@ -151,11 +153,17 @@ namespace Katydid
     }
     inline double KTRSAMatReader::GetTimeInRun() const
     {
-        // Time to the record
+        // Time to the acquisition, relative to the start of the run
         // = fRecordsTimeStampSeconds[fRecordsRead]
         // Number of Samples within the record
         // = fSamplesRead - fRecordsRead*fRecordSize
-        return double(fSamplesRead - fRecordsRead*fRecordSize) * fBinWidth + fRecordsTimeStampSeconds[fRecordsRead];
+        return GetTimeInAcq() + fRecordsTimeStampSeconds[fRecordsRead];
+    }
+    inline double KTRSAMatReader::GetTimeInAcq() const
+    {
+        // Number of Samples within the record
+        // = fSamplesRead - fRecordsRead*fRecordSize
+        return double(fSamplesRead - fRecordsRead*fRecordSize) * fBinWidth;
     }
     inline unsigned KTRSAMatReader::GetNSlicesProcessed() const
     {

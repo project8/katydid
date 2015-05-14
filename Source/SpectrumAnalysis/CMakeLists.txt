@@ -1,7 +1,7 @@
-# CMakeLists for Katydid/Source/Analysis
+# CMakeLists for Katydid/Source/SpectrumAnalysis
 # Author: N. Oblath
 
-set (ANALYSIS_HEADERFILES
+set (SPECTRUMANALYSIS_HEADERFILES
     KTAmplitudeCounter.hh
     KTAmplitudeDistributor.hh
     KTConsensusThresholding.hh
@@ -18,7 +18,7 @@ set (ANALYSIS_HEADERFILES
     #KTAutoCorrMatrix.hh
 )
 
-set (ANALYSIS_SOURCEFILES
+set (SPECTRUMANALYSIS_SOURCEFILES
     KTAmplitudeCounter.cc
     KTAmplitudeDistributor.cc
     KTConsensusThresholding.cc
@@ -36,56 +36,67 @@ set (ANALYSIS_SOURCEFILES
 )
 
 if (FFTW_FOUND)
-    set (ANALYSIS_HEADERFILES
-        ${ANALYSIS_HEADERFILES}
+    set (SPECTRUMANALYSIS_HEADERFILES
+        ${SPECTRUMANALYSIS_HEADERFILES}
         KTAnalyticAssociator.hh
         KTWignerVille.hh
     )
-    set (ANALYSIS_SOURCEFILES
-        ${ANALYSIS_SOURCEFILES}
+    set (SPECTRUMANALYSIS_SOURCEFILES
+        ${SPECTRUMANALYSIS_SOURCEFILES}
         KTAnalyticAssociator.cc
         KTWignerVille.cc
     )
 endif (FFTW_FOUND)
 
 if (ROOT_FOUND)
-    set (ANALYSIS_HEADERFILES 
-        ${ANALYSIS_HEADERFILES}   
+    set (SPECTRUMANALYSIS_HEADERFILES 
+        ${SPECTRUMANALYSIS_HEADERFILES}   
         KTGainNormalization.hh
         KTVariableSpectrumDiscriminator.hh
     )
-    set (ANALYSIS_SOURCEFILES
-        ${ANALYSIS_SOURCEFILES}
+    set (SPECTRUMANALYSIS_SOURCEFILES
+        ${SPECTRUMANALYSIS_SOURCEFILES}
         KTGainNormalization.cc
         KTVariableSpectrumDiscriminator.cc
     )
 endif (ROOT_FOUND)
 
 if (EIGEN3_FOUND)
-   set (ANALYSIS_HEADERFILES 
-       ${ANALYSIS_HEADERFILES}   
-       KTBiasedACM.hh
-       KTRQProcessor.hh
-   )
-   set (ANALYSIS_SOURCEFILES
-       ${ANALYSIS_SOURCEFILES}
-       KTRQProcessor.cc
-       KTBiasedACM.cc
-   )
+    set (SPECTRUMANALYSIS_HEADERFILES 
+        ${SPECTRUMANALYSIS_HEADERFILES}   
+        KTBiasedACM.hh
+        KTRQProcessor.hh
+    )
+    set (SPECTRUMANALYSIS_SOURCEFILES
+        ${SPECTRUMANALYSIS_SOURCEFILES}
+        KTRQProcessor.cc
+        KTBiasedACM.cc
+    )
 endif (EIGEN3_FOUND)
+
+if (Katydid_ENABLE_TUTORIAL)
+    set (SPECTRUMANALYSIS_HEADERFILES 
+        ${SPECTRUMANALYSIS_HEADERFILES}
+        ${PROJECT_SOURCE_DIR}/Examples/Tutorial/KTLowPassFilter.hh
+    )
+    set (SPECTRUMANALYSIS_SOURCEFILES 
+        ${SPECTRUMANALYSIS_SOURCEFILES}
+        ${PROJECT_SOURCE_DIR}/Examples/Tutorial/KTLowPassFilter.cc
+    )
+endif (Katydid_ENABLE_TUTORIAL)
 
 set (KATYDID_LIBS
     KTCore
     KatydidUtility
     KatydidData
     KatydidIO
-    KatydidFFT
+    KatydidTransform
 )
 
 ##################################################
 
-add_library (KatydidAnalysis ${ANALYSIS_SOURCEFILES})
-target_link_libraries (KatydidAnalysis ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
+add_library (KatydidSpectrumAnalysis ${SPECTRUMANALYSIS_SOURCEFILES})
+target_link_libraries (KatydidSpectrumAnalysis ${KATYDID_LIBS} ${EXTERNAL_LIBRARIES})
 
-pbuilder_install_libraries(KatydidAnalysis)
-pbuilder_install_headers(${ANALYSIS_HEADERFILES})
+pbuilder_install_libraries(KatydidSpectrumAnalysis)
+pbuilder_install_headers(${SPECTRUMANALYSIS_HEADERFILES})
