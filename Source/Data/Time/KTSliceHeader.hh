@@ -12,6 +12,7 @@
 
 #include "KTMemberVariable.hh"
 
+#include <inttypes.h>
 #include <utility>
 #include <vector>
 

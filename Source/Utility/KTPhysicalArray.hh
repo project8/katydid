@@ -15,6 +15,7 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/bind.hpp>
 
+#include <cstring>
 #include <sstream>
 #include <stdexcept>
 
