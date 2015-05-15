@@ -45,15 +45,6 @@ endif()
 
 message( STATUS "Katydid_VERSION is: ${${PROJECT_NAME}_VERSION}" )
 
-execute_process( COMMAND python -c "import sphinx_rtd_theme"
-                 RESULT_VARIABLE PY_RES_TEST
-                 OUTPUT_QUIET
-                 ERROR_QUIET
-               )
-message( STATUS "py result is: ${PY_RES_TEST}" )
-message( STATUS "py output is: ${PY_OUT_TEST}" )
-message( STATUS "py error  is: ${PY_ERR_TEST}" )
-
 # configured documentation tools and intermediate build results
 set(BINARY_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
 # Sphinx cache with pickled ReST documents
