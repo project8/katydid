@@ -10,6 +10,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+.. toctree::
+   :hidden:
+
+   from_doxygen
+
 ..   ClientManual
    DeviceConfigStandards
    Reminders

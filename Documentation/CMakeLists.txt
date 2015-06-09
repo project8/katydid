@@ -63,6 +63,7 @@ configure_file(
     @ONLY
 )
 file (REMOVE ${BINARY_BUILD_DIR}/conf.py.in.tmp)
+file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/katydid_logo_favicon.ico" DESTINATION "${BINARY_BUILD_DIR}")
 
 add_custom_target(
     ${PROJECT_NAME}_sphinx ALL
