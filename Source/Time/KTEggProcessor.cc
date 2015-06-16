@@ -143,8 +143,9 @@ namespace Katydid
         KTPROG(egglog, "Proceeding with slice processing");
 
 
+        KTDEBUG(egglog, "(KTEggProcessor::ProcessEgg 2) Header Number of Channels: " << header.GetNChannels());
 
-        if (fNSlices == 0) UnlimitedLoop(reader);
+        if (fNSlices == 0) UnlimitedLoop(reader, header);
         else LimitedLoop(reader);
 
         fEggDoneSignal();
@@ -165,7 +166,7 @@ namespace Katydid
         return true;
     }
 
-    void KTEggProcessor::UnlimitedLoop(KTEggReader* reader)
+    void KTEggProcessor::UnlimitedLoop(KTEggReader* reader, KTEggHeader& header)
     {
         unsigned iSlice = 0, iProgress = 0;
         KTDataPtr data, nextData;
@@ -214,6 +215,7 @@ namespace Katydid
             if (! nextSliceIsValid) break;
             data = nextData;
         }
+        KTDEBUG(egglog, "(KTRSAMatReader::HatchNextSlice) Header Number of Channels: " << header.GetNChannels());
         return;
     }
 

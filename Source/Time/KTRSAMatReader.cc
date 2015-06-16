@@ -455,6 +455,8 @@ namespace Katydid
 
         KTDEBUG(eggreadlog, sliceHeader << "\nNote: some fields may not be filled in correctly yet");
 
+        KTDEBUG(eggreadlog, "(KTRSAMatReader::HatchNextSlice) Header Number of Channels: " << fHeader.GetNChannels());
+
         return newData;
     }
 

@@ -198,6 +198,7 @@ namespace Katydid
 
     bool KTForwardFFTW::InitializeWithHeader(KTEggHeader& header)
     {
+        KTDEBUG(fftwlog, "(FFT) Header Number of Channels: " << header.GetNChannels());
         if (header.GetTSDataType() == KTEggHeader::kReal)
         {
             return InitializeForRealTDD(header.GetChannelHeader(0)->GetSliceSize());
@@ -208,6 +209,7 @@ namespace Katydid
             else fComplexAsIQ = false;
             return InitializeForComplexTDD(header.GetChannelHeader(0)->GetSliceSize());
         }
+
     }
 
     bool KTForwardFFTW::TransformRealData(KTTimeSeriesData& tsData)

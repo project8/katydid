@@ -51,7 +51,6 @@ namespace Katydid {
         void WriteFrequencySpectrumDataFFTWPhase(KTDataPtr data);
         void WriteFrequencySpectrumDataPolarPower(KTDataPtr data);
         void WriteFrequencySpectrumDataFFTWPower(KTDataPtr data);
-
         void WriteFrequencySpectrumDataPolarMagnitudeDistribution(KTDataPtr data);
         void WriteFrequencySpectrumDataFFTWMagnitudeDistribution(KTDataPtr data);
         void WriteFrequencySpectrumDataPolarPowerDistribution(KTDataPtr data);
@@ -62,7 +61,6 @@ namespace Katydid {
          */
         void WritePowerSpectrum(KTDataPtr data);
         void WritePowerSpectralDensity(KTDataPtr data);
-
         void WritePowerSpectrumDistribution(KTDataPtr data);
         void WritePowerSpectralDensityDistribution(KTDataPtr data);
 
@@ -86,73 +84,35 @@ namespace Katydid {
      * Internal data members
      */
     private:
-    	typedef boost::multi_array<double, 2> fft_buffer;
-    	H5::DataSet* CreatePolarFFTDSet(const std::string& name);
-    	H5::DataSet* CreatePolarPowerDSet(const std::string& name);
-    	H5::DataSet* CreateComplexFFTDSet(const std::string& name);
-    	H5::DataSet* CreateComplexPowerDSet(const std::string& name);
-        H5::DataSet* CreatePowerSpecDSet(const std::string& name);
-        H5::DataSet* CreatePSDDSet(const std::string& name);
-        H5::DataSet* CreateFFTWFreqArrayDSet(const std::string& name);
-        H5::DataSet* CreatePolarFreqArrayDSet(const std::string& name);
-    	H5::DataSet* CreateDSet(const std::string& name, 
+    	typedef boost::multi_array<double, 4> fft_buffer;
+        typedef boost::multi_array<double, 1> freq_buffer;
+    	void PrepareHDF5File(const std::string& SlotName);
+    	H5::DataSet* CreateDSet(const std::string& name,
     							const H5::Group* grp,
     							const H5::DataSpace& ds);
 
-    	void CreateDataspaces();
+    	unsigned fNChannels;
+        unsigned fNComponents;
+        unsigned fNumberOfSlices;
+        unsigned fSliceSize;
 
-    	unsigned fNComponents;
-    	unsigned fSliceSize;
-
-    	H5::Group* fFFTGroup;
-    	H5::Group* fPowerGroup;
-
-    	/*
-    	 * power FS and PS
-    	 */
-    	unsigned fPolarFFTSize;
-    	fft_buffer* fPolarFFTBuffer;
-    	H5::DataSpace* fPolarFFTDSpace;
-
-    	unsigned fPolarPwrSize;
-    	fft_buffer* fPolarPwrBuffer;
-    	H5::DataSpace* fPolarPwrDSpace;
-
-    	/* 
-    	 * complex (FFTW) FS and PS
-    	 */
-    	unsigned fCmplxFFTSize;
-    	fft_buffer* fCmplxFFTBuffer;
-    	H5::DataSpace* fCmplxFFTDSpace;
-
-    	unsigned fCmplxPwrSize;
-    	fft_buffer* fCmplxPwrBuffer;
-    	H5::DataSpace* fCmplxPwrDSpace;
-
-        /*
-         * Power spectrum and Power spectral density
-         */
-        unsigned fPwrSpecSize;
-        fft_buffer* fPwrSpecBuffer;
-        H5::DataSpace* fPwrSpecDSpace;
-
-        unsigned fPSDSize;
-        fft_buffer* fPSDBuffer;
-        H5::DataSpace* fPSDDSpace;
-
-        /*
-         * Frequency Arrays (the "X-Axis" of the FFT)
-         */
-         fft_buffer* fPolarFFTFreqArrayBuffer;
-         fft_buffer* fCmplxFFTFreqArrayBuffer;
-        H5::DataSpace* fFFTWFreqArrayDSpace;
-        H5::DataSpace* fPolarFreqArrayDSpace;
-
-
-        /* 
-         * Group for spectral data
-         */
         H5::Group* fSpectraGroup;
+    	H5::Group* fFFTGroup;
+        H5::DataSet* fDSet;
+        H5::DataSet* fDSet_FreqArray;
+
+    	unsigned fFFTSize;
+    	fft_buffer* fFFTBuffer;
+    	H5::DataSpace* fFFTDataSpace;
+
+        // Frequency Arrays (the "X-Axis" of the FFT)
+        freq_buffer* fFFTFreqArrayBuffer;
+        H5::DataSpace* fFFTFreqArrayDataSpace;
+
+        // Dataspace dimensions
+        hsize_t ds_dims[4];
+        hsize_t ds_maxdims[4];
+
     };
 }
 
