@@ -182,7 +182,7 @@ namespace Katydid {
         plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
         int rank = ds.getSimpleExtentNdims();
         if (rank==4) {
-            hsize_t ChunkSize[4] = {this->fNChannels,1,this->fNComponents,this->fFFTSize};
+            hsize_t ChunkSize[4] = {this->ds_dims[0],1,this->ds_dims[2],this->ds_dims[3]};
             plist.setChunk(4, ChunkSize);
         }
         if (rank==1) {
@@ -220,28 +220,28 @@ namespace Katydid {
         // Get Slice Number
         uint64_t sliceN = data->Of<KTSliceHeader>().GetSliceNumber();
         KTDEBUG(publog, "Writing Slice " << sliceN);
-
-        KTDEBUG(publog, "Copying Spectrum Dataset (Complex FFT) to Buffer.");
+        // Get Data
         KTFrequencySpectrumDataFFTW& fsData = data->Of<KTFrequencySpectrumDataFFTW>();
-        unsigned nChannels = fsData.GetNComponents();
-        for (unsigned iC = 0; iC < nChannels; iC++) {
+
+        // Write the Frequency Array, that is, the array that will be used as X-axis of the spectrum
+        // (only if this is the first slice)
+        if ( !fFirstSliceHasBeenWritten ) {
+            // Write Frequency Array
+            unsigned iC = 0;
             const KTFrequencySpectrumFFTW* spec = fsData.GetSpectrumFFTW(iC);
             if (spec != NULL) {
                 for(int f=0; f < spec[0].size(); f++) {
-                    (*this->fFFTBuffer)[iC][0][0][f] = spec[0].GetReal(f);
-                    (*this->fFFTBuffer)[iC][0][1][f] = spec[0].GetImag(f);
-                    if ( (!fFirstSliceHasBeenWritten) & (iC==0)) (*this->fFFTFreqArrayBuffer)[f] = spec[0].GetBinCenter(f);
+                    (*this->fFFTFreqArrayBuffer)[f] = spec[0].GetBinCenter(f);
                 }
+                this->fDSet_FreqArray->write(this->fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
+                SetFirstSliceHasBeenWritten(true);
             }
         }
 
-        // Write data to HDF5 file
-        KTDEBUG(publog, "Writing Spectrum Dataset (Complex FFT) to HDF5 file.");
-        if ( !fFirstSliceHasBeenWritten ) {
-            // Write Frequency Array
-            this->fDSet_FreqArray->write(this->fFFTFreqArrayBuffer->data(), H5::PredType::NATIVE_DOUBLE);
-            SetFirstSliceHasBeenWritten(true);
-        }
+
+        // Write Spectrum Array
+
+        // Define where the data will be written in the dataset
         // If sliceN is greater than the number of Slices per Record, then extend the dataset
         // This probably happens because there is more than 1 record in the Egg file being processed
         if (sliceN>=this->ds_dims[1])
@@ -259,8 +259,29 @@ namespace Katydid {
         H5::DataSpace mspace1 ( 4, dims1 );
         H5::DataSpace fspace1 = this->fDSet->getSpace();
         fspace1.selectHyperslab( H5S_SELECT_SET, dims1, offset );
+
+        // Copy data to Buffer
+        // For now we need to do this because of the way we want to save the data.
+        // The spec object has the data organized in [Samples][Component].
+        // The dataset is [...][Component][Samples].
+        KTDEBUG(publog, "Copying Spectrum Dataset (Complex FFT) to Buffer.");
+        unsigned nChannels = fsData.GetNComponents();
+        for (unsigned iC = 0; iC < nChannels; iC++) {
+            const KTFrequencySpectrumFFTW* spec = fsData.GetSpectrumFFTW(iC);
+            if (spec != NULL) {
+                for(int f=0; f < spec[0].size(); f++) {
+                    (*this->fFFTBuffer)[iC][0][0][f] = spec[0].GetReal(f);
+                    (*this->fFFTBuffer)[iC][0][1][f] = spec[0].GetImag(f);
+                }
+            }
+        }
+
+        // Write Buffer to Dataset
+        KTDEBUG(publog, "Writing Spectrum Dataset (Complex FFT) to HDF5 file.");
         // Write spectrum
         this->fDSet->write(this->fFFTBuffer->data(), H5::PredType::NATIVE_DOUBLE, mspace1,fspace1);
+
+
         KTDEBUG(publog, "Done Writing Slice to File.");
     }
 
