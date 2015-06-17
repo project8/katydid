@@ -142,9 +142,6 @@ namespace Katydid
         KTINFO(egglog, "The egg file has been opened successfully and the header was parsed and processed;");
         KTPROG(egglog, "Proceeding with slice processing");
 
-
-        KTDEBUG(egglog, "(KTEggProcessor::ProcessEgg 2) Header Number of Channels: " << header.GetNChannels());
-
         if (fNSlices == 0) UnlimitedLoop(reader);
         else LimitedLoop(reader);
 

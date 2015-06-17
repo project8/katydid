@@ -112,19 +112,16 @@ namespace Katydid
         // copy the egg header.
         this->fHeader = header;
         this->fHeader.SetChannelHeader(header.GetChannelHeader(0),0);
-        KTDEBUG(publog, "Header Number of Channels: " << header.GetNChannels());
         this->fHeaderParsed = true;
-        //KTDEBUG(publog, "header.GetChannelHeader(0): - " << header.GetChannelHeader(0));
-        //KTDEBUG(publog, "this->fHeader.GetChannelHeader(0): - " << this->fHeader.GetChannelHeader(0));
 
 
         H5::Group* header_grp = this->AddGroup("/metadata");
-       
+
         // Write the header.
         this->AddMetadata("header/mantis_timestamp",this->fHeader.GetTimestamp());
         this->AddMetadata("header/description", this->fHeader.GetDescription());
         this->AddMetadata("header/acquisition_mode", this->fHeader.GetAcquisitionMode());
-        this->AddMetadata("header/n_channels", this->fHeader.GetNChannels());        
+        this->AddMetadata("header/n_channels", this->fHeader.GetNChannels());
         this->AddMetadata("header/raw_slice_size",this->fHeader.GetChannelHeader(0)->GetRawSliceSize());
         this->AddMetadata("header/slice_size",this->fHeader.GetChannelHeader(0)->GetSliceSize());
         this->AddMetadata("header/slice_stride",this->fHeader.GetChannelHeader(0)->GetSliceStride());
