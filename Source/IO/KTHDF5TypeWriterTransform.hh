@@ -38,6 +38,7 @@ namespace Katydid {
      */
     public:
     	void ProcessEggHeader();
+        void PrepareHDF5File();
         MEMBERVARIABLE(bool, FirstSliceHasBeenWritten);
         MEMBERVARIABLE(bool, CompressFFTFlag);
 
@@ -86,7 +87,6 @@ namespace Katydid {
     private:
     	typedef boost::multi_array<double, 4> fft_buffer;
         typedef boost::multi_array<double, 1> freq_buffer;
-    	void PrepareHDF5File(const std::string& SlotName);
     	H5::DataSet* CreateDSet(const std::string& name,
     							const H5::Group* grp,
     							const H5::DataSpace& ds);
@@ -95,6 +95,8 @@ namespace Katydid {
         unsigned fNComponents;
         unsigned fNumberOfSlices;
         unsigned fSliceSize;
+        unsigned fSliceNumber;
+        std::string fSpectrumName;
 
         H5::Group* fSpectraGroup;
     	H5::Group* fFFTGroup;
