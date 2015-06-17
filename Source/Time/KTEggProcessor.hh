@@ -111,7 +111,7 @@ namespace Katydid
             void NormalizeData(KTDataPtr& data);
 
         private:
-            void UnlimitedLoop(KTEggReader* reader, KTEggHeader& header);
+            void UnlimitedLoop(KTEggReader* reader);
             void LimitedLoop(KTEggReader* reader);
 
 

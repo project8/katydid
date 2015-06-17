@@ -8,7 +8,6 @@
 #include "KTEggHeader.hh"
 
 #include "KTConstants.hh"
-#include "KTLogger.hh"
 
 #include <ostream>
 
@@ -17,8 +16,6 @@ using std::vector;
 namespace Katydid
 {
     const std::string KTEggHeader::sName("egg-header");
-
-    KTLOGGER(eggheaderlog, "KTEggHeader");
 
     KTChannelHeader::KTChannelHeader() :
             fNumber(0),
@@ -151,7 +148,6 @@ namespace Katydid
         {
             fChannelHeaders[iComponent] = NULL;
         }
-        KTINFO(eggheaderlog,"(KTEggHeader::SetNChannels) Set Number of Channel Headers to " << num);
         return *this;
     }
 
