@@ -14,6 +14,7 @@
 #include "KTData.hh"
 #include "KTEggReader.hh"
 #include "KTSlot.hh"
+#include "KTEggHeader.hh"
 
 
 namespace Katydid
@@ -110,7 +111,7 @@ namespace Katydid
             void NormalizeData(KTDataPtr& data);
 
         private:
-            void UnlimitedLoop(KTEggReader* reader);
+            void UnlimitedLoop(KTEggReader* reader, KTEggHeader& header);
             void LimitedLoop(KTEggReader* reader);
 
 

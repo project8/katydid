@@ -111,7 +111,12 @@ namespace Katydid
 
         // copy the egg header.
         this->fHeader = header;
+        this->fHeader.SetChannelHeader(header.GetChannelHeader(0),0);
+        KTDEBUG(publog, "Header Number of Channels: " << header.GetNChannels());
         this->fHeaderParsed = true;
+        //KTDEBUG(publog, "header.GetChannelHeader(0): - " << header.GetChannelHeader(0));
+        //KTDEBUG(publog, "this->fHeader.GetChannelHeader(0): - " << this->fHeader.GetChannelHeader(0));
+
 
         H5::Group* header_grp = this->AddGroup("/metadata");
        
@@ -152,9 +157,9 @@ namespace Katydid
             token = name.substr(0, pos);
             group_name_builder << token;
             group_name_builder >> group_name;
-            KTINFO(group_name);
             grp = *(this->AddGroup(group_name));
             name.erase(0, pos + delimiter.length());
+            KTINFO(group_name + delimiter + name);
         }
         H5::DataSpace dspace(H5S_SCALAR);
         H5::DSetCreatPropList plist;
