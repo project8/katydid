@@ -101,7 +101,7 @@ namespace Katydid {
         Buffers and Dataspaces will have 4 dimensions:
         1 - Number of channels (sometimes called fNComponents in other modules)
         2 - Number of slices
-        3 - Number of components (real-only: 1;  real and imaginary: 2;  polar amplitude and angle: 2)
+        3 - Number of Parts (real-only: 1;  real and imaginary: 2;  polar amplitude and angle: 2)
         4 - Number of samples in slice
         */
 
@@ -113,21 +113,21 @@ namespace Katydid {
          * The choices are made in the functions called by the slot
          * i.e.: WriteFrequencySpectrumDataFFTW, WriteFrequencySpectrumDataPolar, etc...
          * There are two variables that need to be defined in theses functions before calling PrepareHDF5File:
-         * (1) fFFTSize  and  (2) fNComponents
+         * (1) fFFTSize  and  (2) fNParts
          *
          * (1) FFTSize:  Number of Samples in the FFT in each Slice
          * Polar FFT -> Each row is fSliceSize/2 + 1 long.
          * Complex FFT -> Each row is fSliceSize long.
          * PS and PSD spectrum -> Power is only calculated for positive frequencies and DC. The buffer is therefore the same shape as the polar power spectrum.
          *
-         * (2) fNComponents: number of components in each sample: Complex FFT has 2 components (real and imag), Polar FFT has 2 components (magnitude and angle), power has 1 component (real)
+         * (2) fNParts: number of parts in each sample: Complex FFT has 2 parts (real and imag), Polar FFT has 2 parts (magnitude and angle), power has 1 part (real)
          *
          */
 
 
         //////////////////////////////////////////////////////////////////////////////////
         // Create Buffers
-        this->fFFTBuffer = new fft_buffer(boost::extents[fNChannels][1][this->fNComponents][this->fFFTSize]);
+        this->fFFTBuffer = new fft_buffer(boost::extents[fNChannels][1][this->fNParts][this->fFFTSize]);
         // Create arrays to store the frequency bins used in the FFT. The arrays are the same size as the Polar and FFTW spectra
         this->fFFTFreqArrayBuffer = new freq_buffer(boost::extents[this->fFFTSize]);
 
@@ -140,11 +140,11 @@ namespace Katydid {
         if(this->fFFTDataSpace == NULL) {
             this->ds_dims[0] = this->fNChannels;
             this->ds_dims[1] = this->fNumberOfSlices;
-            this->ds_dims[2] = this->fNComponents;
+            this->ds_dims[2] = this->fNParts;
             this->ds_dims[3] = this->fFFTSize;
             this->ds_maxdims[0] = this->fNChannels;
             this->ds_maxdims[1] = H5S_UNLIMITED;
-            this->ds_maxdims[2] = this->fNComponents;
+            this->ds_maxdims[2] = this->fNParts;
             this->ds_maxdims[3] = this->fFFTSize;
             this->fFFTDataSpace = new H5::DataSpace(4, this->ds_dims,this->ds_maxdims);
         }
@@ -220,7 +220,7 @@ namespace Katydid {
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
             this->fFFTSize = this->fSliceSize;
-            this->fNComponents = 2;
+            this->fNParts = 2;
             this->fSpectrumName = "complexFS";
             this->PrepareHDF5File();
         }
@@ -235,8 +235,8 @@ namespace Katydid {
 
         // Copy data to Buffer
         // For now we need to do this because of the way we want to save the data.
-        // The spec object has the data organized in [Samples][Component].
-        // The dataset is [...][Component][Samples].
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
         KTDEBUG(publog, "Copying Spectrum Dataset (Complex FFT) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; iC++) {
@@ -272,7 +272,7 @@ namespace Katydid {
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
             this->fFFTSize = (this->fSliceSize >> 1) + 1;
-            this->fNComponents = 2;
+            this->fNParts = 2;
             this->fSpectrumName = "polarFS";
             this->PrepareHDF5File();
         }
@@ -287,8 +287,8 @@ namespace Katydid {
 
         // Copy data to Buffer
         // For now we need to do this because of the way we want to save the data.
-        // The spec object has the data organized in [Samples][Component].
-        // The dataset is [...][Component][Samples].
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
         KTDEBUG(publog, "Copying Spectrum Dataset (Polar FFT) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; iC++) {
@@ -333,7 +333,7 @@ namespace Katydid {
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
             this->fFFTSize = (this->fSliceSize >> 1) + 1;
-            this->fNComponents = 1;
+            this->fNParts = 1;
             this->fSpectrumName = "polarPS";
             this->PrepareHDF5File();
         }
@@ -348,8 +348,8 @@ namespace Katydid {
 
         // Copy data to Buffer
         // For now we need to do this because of the way we want to save the data.
-        // The spec object has the data organized in [Samples][Component].
-        // The dataset is [...][Component][Samples].
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
         KTDEBUG(publog, "Copying Spectrum Dataset (Polar PS) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; iC++) {
@@ -384,7 +384,7 @@ namespace Katydid {
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
             this->fFFTSize = this->fSliceSize;
-            this->fNComponents = 1;
+            this->fNParts = 1;
             this->fSpectrumName = "complexPS";
             this->PrepareHDF5File();
         }
@@ -399,8 +399,8 @@ namespace Katydid {
 
         // Copy data to Buffer
         // For now we need to do this because of the way we want to save the data.
-        // The spec object has the data organized in [Samples][Component].
-        // The dataset is [...][Component][Samples].
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
         KTDEBUG(publog, "Copying Spectrum Dataset (Complex PS) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; iC++) {
@@ -449,7 +449,7 @@ namespace Katydid {
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
             this->fFFTSize = (this->fSliceSize >> 1) + 1;
-            this->fNComponents = 1;
+            this->fNParts = 1;
             this->fSpectrumName = "PS";
             this->PrepareHDF5File();
         }
@@ -464,8 +464,8 @@ namespace Katydid {
 
         // Copy data to Buffer
         // For now we need to do this because of the way we want to save the data.
-        // The spec object has the data organized in [Samples][Component].
-        // The dataset is [...][Component][Samples].
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
         KTDEBUG(publog, "Copying Spectrum Dataset (PS) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; iC++) {
@@ -501,7 +501,7 @@ namespace Katydid {
         if ( fWriter->DidParseHeader() ) {
             this->ProcessEggHeader();
             this->fFFTSize = (this->fSliceSize >> 1) + 1;
-            this->fNComponents = 1;
+            this->fNParts = 1;
             this->fSpectrumName = "PSD";
             this->PrepareHDF5File();
         }
@@ -516,8 +516,8 @@ namespace Katydid {
 
         // Copy data to Buffer
         // For now we need to do this because of the way we want to save the data.
-        // The spec object has the data organized in [Samples][Component].
-        // The dataset is [...][Component][Samples].
+        // The spec object has the data organized in [Samples][Parts].
+        // The dataset is [...][Parts][Samples].
         KTDEBUG(publog, "Copying Spectrum Dataset (PSD) to Buffer.");
         unsigned nChannels = fsData.GetNComponents();
         for (unsigned iC = 0; iC < nChannels; iC++) {
