@@ -11,6 +11,8 @@
 
 #include "KTWriter.hh"
 
+#include "KTMemberVariable.hh"
+
 #include "TFile.h"
 
 namespace Katydid
@@ -32,6 +34,7 @@ namespace Katydid
      Available configuration values:
      - "output-file": string -- output filename
      - "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
+     - "spectrogram-size": unsigned -- number of slices per spectrogram
 
      Slots:
      - "aa":
@@ -73,20 +76,16 @@ namespace Katydid
             TFile* OpenFile(const std::string& filename, const std::string& flag);
             void CloseFile();
 
-            const std::string& GetFilename() const;
-            void SetFilename(const std::string& filename);
+            MEMBERVARIABLEREF(std::string, Filename);
+            MEMBERVARIABLEREF(std::string, FileFlag);
 
-            const std::string& GetFileFlag() const;
-            void SetFileFlag(const std::string& flag);
+            MEMBERVARIABLE(unsigned, SpectrogramSize);
 
             TFile* GetFile();
 
             bool OpenAndVerifyFile();
 
-        protected:
-            std::string fFilename;
-            std::string fFileFlag;
-
+        private:
             TFile* fFile;
 
     };

@@ -26,6 +26,7 @@ namespace Katydid
             KTWriterWithTypists< KTROOTSpectrogramWriter >(name),
             fFilename("spect_output.root"),
             fFileFlag("recreate"),
+            fSpectrogramSize(1),
             fFile(NULL)
     {
     }
@@ -42,6 +43,7 @@ namespace Katydid
         {
             SetFilename(node->GetValue("output-file", fFilename));
             SetFileFlag(node->GetValue("file-flag", fFileFlag));
+            SetSpectrogramSize(node->GetValue("spectrogram-size", fSpectrogramSize));
         }
 
         // Command-line settings
