@@ -39,7 +39,7 @@ namespace Katydid {
         fDSet(NULL),
         fDSet_FreqArray(NULL),
         fFirstSliceHasBeenWritten(false),
-        fCompressFFTFlag(false)
+        fUseCompressionFlag(false)
     {}
 
     KTHDF5TypeWriterTransform::~KTHDF5TypeWriterTransform()
@@ -85,10 +85,8 @@ namespace Katydid {
             KTDEBUG(publog, "Number of Slices: " << this->fNumberOfSlices);
         }
         KTDEBUG(publog, "Done.");
-        std::string fFileFlag = fWriter->GetFileFlag();
-        if ( fFileFlag.compare("compressfft") == 0 ) {
-          SetCompressFFTFlag(true);
-          KTDEBUG(publog, "fFileFlag=compressfft");
+        if ( fWriter->GetUseCompressionFlag() ) {
+          SetUseCompressionFlag(true);
         }
         this->fSpectraGroup = fWriter->AddGroup("/spectra");
     }
@@ -187,14 +185,15 @@ namespace Katydid {
         plist.setFillValue(H5::PredType::NATIVE_DOUBLE, &default_value);
         int rank = ds.getSimpleExtentNdims();
         if (rank==4) {
-            hsize_t ChunkSize[4] = {this->ds_dims[0],1,this->ds_dims[2],this->ds_dims[3]};
+            // Uses 10 slices per chunk; we want a high number to improve compression, but not too high so that it's still fast
+            hsize_t ChunkSize[4] = {this->ds_dims[0],10,this->ds_dims[2],this->ds_dims[3]};
             plist.setChunk(4, ChunkSize);
         }
         if (rank==1) {
             hsize_t ChunkSize[1] = {this->fFFTSize};
             plist.setChunk(1, ChunkSize);
         }
-        if ( fCompressFFTFlag ) {
+        if ( fUseCompressionFlag ) {
           plist.setDeflate(6);
           KTDEBUG(publog, "Creating compressed HDF5 dataset.");
         }

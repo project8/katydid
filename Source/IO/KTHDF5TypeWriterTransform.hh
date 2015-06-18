@@ -1,10 +1,50 @@
 /*
  * KTHDF5TypeWriterTransform.hh
- *
- *  Created on: 9/12/2014
- *      Author: J.N. Kofron
- * 
+ @details
+
+Saves FFTs and Power Spectra to HDF5 files.
+
+All FFTs from a given Egg or Mat file are saved inside a single HDF5 dataset (instead of one dataset per slice).
+
+The dataset will have 4 dimensions:
+1 - Number of channels (sometimes called fNComponents in other modules)
+2 - Number of slices
+3 - Number of components (real-only: 1;  real and imaginary: 2;  polar amplitude and angle: 2)
+4 - Number of samples in slice
+
+The slot determines what FFT or Power Spectrum will be written to file.
+it’s one unique slot for each possible output:
+fs-fftw -> complex FFT
+fs-polar -> polar FFT
+ps -> Power Spectrum
+psd -> PSD
+etc...
+
+Inputs:
+output-file: full path with name for output file.  Preferred extension is h5.
+use-compression: true or false (default: false).  Uses the built-in hdf5 compression.
+
+Example:
+    ...
+    { "type": "hdf5-writer",   "name": "h5w" },
+    ...
+    {
+        "signal": "fft:fft",
+        "slot": "h5w:fs-fftw"
+    }
+    ...
+    "h5w":
+    {
+        "output-file": "/temp/fft_20150523T1206_TopCoil1p0A_CF1050MHz_000000001_to_000000014.h5",
+        "use-compression": true
+    }
+
+
+ @author: J.N. Kofron, 
+ @date: 9/12/2014
+ @edited: 6/17/2015, L. de Viveiros
  */
+
 
 #ifndef __KTHDF5TYPEWRITERTRANSFORM_HH
 #define __KTHDF5TYPEWRITERTRANSFORM_HH
@@ -40,7 +80,7 @@ namespace Katydid {
     	void ProcessEggHeader();
         void PrepareHDF5File();
         MEMBERVARIABLE(bool, FirstSliceHasBeenWritten);
-        MEMBERVARIABLE(bool, CompressFFTFlag);
+        MEMBERVARIABLE(bool, UseCompressionFlag);
 
    	/*
    	 * Frequency Spectrum Data
