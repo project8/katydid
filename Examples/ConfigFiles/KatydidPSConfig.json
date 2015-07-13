@@ -3,31 +3,31 @@
     {
         "processors":
         [
-	        { "type": "egg-processor",       "name": "egg" },
-	        { "type": "simple-fft",          "name": "fft" },
+            { "type": "egg-processor",       "name": "egg" },
+            { "type": "forward-fftw",        "name": "fft" },
             { "type": "convert-to-power",    "name": "to-ps" },
-	        { "type": "basic-root-writer",   "name": "writer" }
+            { "type": "basic-root-writer",   "name": "writer" }
         ],
         
         "connections":
         [
-	        {
-	            "signal": "egg:header",
-	            "slot": "fft:header"
-	        },
+	    {
+	        "signal": "egg:header",
+	        "slot": "fft:header"
+	    },
 	        
-	        {
-	            "signal": "egg:ts",
-	            "slot": "fft:ts"
-	        },
-	        {
-	            "signal": "fft:fft-forward",
+	    {
+	        "signal": "egg:ts",
+	        "slot": "fft:ts-real"
+	    },
+	    {
+	        "signal": "fft:fft",
                 "slot": "to-ps:fs-polar-to-psd"
             },
             {
                 "signal": "to-ps:psd",
-	            "slot": "writer:ps"
-	        }
+	        "slot": "writer:ps"
+	    }
         ],
         
         "run-queue":
@@ -42,7 +42,6 @@
         "filename": "/path/to/file.egg",
         "egg-reader": "egg3",
         "slice-size": 16384,
-        "egg-reader": "monarch",
         "number-of-slices": 1
     },
     
