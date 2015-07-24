@@ -14,6 +14,8 @@
 
 namespace Katydid
 {
+    class KTProcSummary;
+
     class KTTerminalTypeWriterTime : public KTTerminalTypeWriter
     {
         public:
@@ -23,8 +25,12 @@ namespace Katydid
             void RegisterSlots();
 
         public:
+            void WriteEggHeader(KTDataPtr data);
+
             void WriteTimeSeriesData(KTDataPtr data);
             void WriteDigitizerTestData(KTDataPtr data);
+
+            void WriteProcSummary(const KTProcSummary* summary);
     };
 
 } /* namespace Katydid */
