@@ -1,15 +1,16 @@
 # Tutorial -- Low-Pass Filter Processor
 
+For this tutorial, your goal is to add to Katydid the ability to apply a low-pass filter to frequency-domain data.  You will need to create the processor that performs the filtering, and data objects that will represent post-filtered data.  Your processor should be able to act on 3 data types: KTFrequencySpectrumDataPolar, KTFrequencySpectrumDataFFTW, and KTPowerSpectrumData.
+
 ## Get Katydid
 1. Clone the git repo: git clone --recursive https://github.com/project8/katydid.git
 2. cd katydid
-2.5. Checkout the tutorial branch: git checkout Tutorial-Complete
-3. Checkout the branch: git checkout -b tutorial
+3. Create a branch for your development work: git checkout -b tutorial
 
 
 ## Setup
-1. Copy KTProcessorTemplate.hh/cc files to the appropriate location (Source/SpectrumAnalysis) and new filenames.
-2. Copy a data class files (e.g. Source/Data/SpectrumAnalysis/KTNormalizedFSData.hh/cc) to the appropriate location (Source/Data/SpectrumAnalysis) and new filenames.
+1. Copy KTProcessorTemplate.hh/cc files to the appropriate location (Source/SpectrumAnalysis) and new filenames (best practice: something that indicates what the processor will do).
+2. Copy a data class files (e.g. Source/Data/SpectrumAnalysis/KTNormalizedFSData.hh/cc) to the appropriate location (Source/Data/SpectrumAnalysis) and new filenames (best practice: something that indicates what the data represents).
 
 
 ## Data
@@ -24,8 +25,8 @@
 2. Fix class name and class-name documentation. (.hh and .cc)
 3. Fix config name. (.hh and .cc)
 4. Add brief description. (.hh)
-5. Add mean and sigma parameters using MEMBERVARIABLE.  Add KTMemberVariable.hh inclusion. (.hh and .cc)
-6. Implement Configure function to set mean and sigma. (.hh and .cc)
+5. Add the time constant parameter using MEMBERVARIABLE (or you can write the variable declaration, and getter and setter methods).  Add KTMemberVariable.hh inclusion. (.hh and .cc)
+6. Implement Configure function to set the time constant. (.hh and .cc)
 7. Create and implement Convolve functions: (.hh and .cc)
     ```
     bool Filter(KTFrequencySpectrumDataPolar& fsData);
@@ -49,11 +50,12 @@
 1. Create a build directory: mkdir build-tutorial
 2. Enter that directory: cd build-tutorial
 3. Run ccmake: ccmake ..
-4. Change the build type to DEBUG
-5. Configure by pressing 'c'
-6. Generate the build files and exit by pressing 'g'
-7. Build Katydid: make install
-   To speed the build process, if you have multiple cores, you can add a -j[# cores] argument.
+4. Run the initial configuration step by pressing 'c'
+5. Change the build type to DEBUG
+6. Configure by pressing 'c'
+7. Generate the build files and exit by pressing 'g'
+8. Build Katydid: make install
+   To speed the build process, if you have multiple cores, you can add a -j argument.
 
 
 ## Config

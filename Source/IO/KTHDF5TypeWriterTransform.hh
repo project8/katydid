@@ -9,7 +9,7 @@ All FFTs from a given Egg or Mat file are saved inside a single HDF5 dataset (in
 The dataset will have 4 dimensions:
 1 - Number of channels (sometimes called fNComponents in other modules)
 2 - Number of slices
-3 - Number of components (real-only: 1;  real and imaginary: 2;  polar amplitude and angle: 2)
+3 - Number of parts (real-only: 1;  real and imaginary: 2;  polar amplitude and angle: 2)
 4 - Number of samples in slice
 
 The slot determines what FFT or Power Spectrum will be written to file.
@@ -132,7 +132,7 @@ namespace Katydid {
     							const H5::DataSpace& ds);
 
     	unsigned fNChannels;
-        unsigned fNComponents;
+        unsigned fNParts;
         unsigned fNumberOfSlices;
         unsigned fSliceSize;
         unsigned fSliceNumber;
