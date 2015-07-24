@@ -34,40 +34,22 @@ namespace Katydid
      Available configuration values:
      - "output-file": string -- output filename
      - "file-flag": string -- TFile option: CREATE, RECREATE, or UPDATE
-     - "spectrogram-size": unsigned -- number of slices per spectrogram
+     - "min-time": double -- start time for the spectrograms
+     - "max-time": double -- end time for the spectrograms
+     - "min-freq": double -- start frequency for the spectrograms
+     - "max-freq": double -- end frequency for the spectrograms
 
      Slots:
-     - "aa":
-     - "aa-dist":
-     - "corr":
-     - "corr-dist":
-     - "corr-ts":
-     - "corr-ts-dist":
-     - "hough":
-     - "gain-var":
-     - "fs-fftw":
-     - "fs-polar":
-     - "fs-fftw-phase":
-     - "fs-polar-phase":
-     - "fs-fftw-power":
-     - "fs-polar-power":
-     - "fs-fftw-power-dist":
-     - "fs-polar-power-dist":
-     - "multi-fs-fftw":
-     - "multi-fs-polar":
-     - "norm-fs-fftw":
-     - "norm-fs-polar":
-     - "ts":
-     - "ts-dist":
-     - "wv":
-     - "wv-2d":
+     - "fs-fftw": void (KTDataPtr) -- Contribute a spectrum to a FS-FFTW spectrogram.
+     - "fs-polar": void (KTDataPtr) -- Contribute a spectrum to a FS-polar spectrogram.
+
      
     */
 
     class KTROOTSpectrogramWriter : public KTWriterWithTypists< KTROOTSpectrogramWriter >//public KTWriter
     {
         public:
-            KTROOTSpectrogramWriter(const std::string& name = "basic-root-writer");
+            KTROOTSpectrogramWriter(const std::string& name = "root-spectrogram-writer");
             virtual ~KTROOTSpectrogramWriter();
 
             bool Configure(const KTParamNode* node);
@@ -79,14 +61,15 @@ namespace Katydid
             MEMBERVARIABLEREF(std::string, Filename);
             MEMBERVARIABLEREF(std::string, FileFlag);
 
-            MEMBERVARIABLE(unsigned, SpectrogramSize);
+            MEMBERVARIABLE(double, MinTime); // in sec
+            MEMBERVARIABLE(double, MaxTime); // in sec
 
-            TFile* GetFile();
+            MEMBERVARIABLE(double, MinFreq); // in Hz
+            MEMBERVARIABLE(double, MaxFreq); // in Hz
+
+            MEMBERVARIABLE_NOSET(TFile*, File);
 
             bool OpenAndVerifyFile();
-
-        private:
-            TFile* fFile;
 
     };
 
@@ -96,6 +79,7 @@ namespace Katydid
         fFile = new TFile(filename.c_str(), flag.c_str());
         return fFile;
     }
+
     inline void KTROOTSpectrogramWriter::CloseFile()
     {
         if (fFile != NULL)
@@ -106,32 +90,6 @@ namespace Katydid
         }
         return;
     }
-
-    inline const std::string& KTROOTSpectrogramWriter::GetFilename() const
-    {
-        return fFilename;
-    }
-    inline void KTROOTSpectrogramWriter::SetFilename(const std::string& filename)
-    {
-        fFilename = filename;
-        return;
-    }
-
-    inline const std::string& KTROOTSpectrogramWriter::GetFileFlag() const
-    {
-        return fFileFlag;
-    }
-    inline void KTROOTSpectrogramWriter::SetFileFlag(const std::string& flag)
-    {
-        fFileFlag = flag;
-        return;
-    }
-
-    inline TFile* KTROOTSpectrogramWriter::GetFile()
-    {
-        return fFile;
-    }
-
 
 } /* namespace Katydid */
 #endif /* KTROOTSPECTROGRAMWRITER_HH_ */

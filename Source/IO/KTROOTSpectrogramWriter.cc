@@ -20,13 +20,16 @@ namespace Katydid
     KT_REGISTER_WRITER(KTROOTSpectrogramWriter, "root-spectrogram-writer");
     KT_REGISTER_PROCESSOR(KTROOTSpectrogramWriter, "root-spectrogram-writer");
 
-    static KTCommandLineOption< string > sBRWFilenameCLO("ROOT Spectrogram Writer", "ROOT spectrogram writer filename", "rsw-file");
+    static KTCommandLineOption< string > sRSWFilenameCLO("ROOT Spectrogram Writer", "ROOT spectrogram writer filename", "rsw-file");
 
     KTROOTSpectrogramWriter::KTROOTSpectrogramWriter(const std::string& name) :
             KTWriterWithTypists< KTROOTSpectrogramWriter >(name),
             fFilename("spect_output.root"),
             fFileFlag("recreate"),
-            fSpectrogramSize(1),
+            fMinTime(0.),
+            fMaxTime(0.),
+            fMinFreq(0.),
+            fMaxFreq(0.),
             fFile(NULL)
     {
     }
@@ -43,7 +46,10 @@ namespace Katydid
         {
             SetFilename(node->GetValue("output-file", fFilename));
             SetFileFlag(node->GetValue("file-flag", fFileFlag));
-            SetSpectrogramSize(node->GetValue("spectrogram-size", fSpectrogramSize));
+            SetMinFreq(node->GetValue("min-freq", fMinFreq));
+            SetMaxFreq(node->GetValue("max-freq", fMaxFreq));
+            SetMinTime(node->GetValue("min-time", fMinTime));
+            SetMaxTime(node->GetValue("max-time", fMaxTime));
         }
 
         // Command-line settings

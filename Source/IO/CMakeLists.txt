@@ -50,6 +50,7 @@ if (ROOT_FOUND)
         KTMultiSliceROOTTypeWriterTime.hh
         KTMultiSliceROOTTypeWriterTransform.hh
         KTMultiSliceROOTWriter.hh
+        KTROOTSpectrogramTypeWriterTransform.hh
         KTROOTSpectrogramWriter.hh
         KTROOTTreeTypeWriterSpectrumAnalysis.hh
         KTROOTTreeTypeWriterEventAnalysis.hh
@@ -76,6 +77,7 @@ if (ROOT_FOUND)
         KTMultiSliceROOTTypeWriterTime.cc
         KTMultiSliceROOTTypeWriterTransform.cc
         KTMultiSliceROOTWriter.cc
+        KTROOTSpectrogramTypeWriterTransform.cc
         KTROOTSpectrogramWriter.cc
         KTROOTTreeTypeWriterSpectrumAnalysis.cc
         KTROOTTreeTypeWriterEventAnalysis.cc
