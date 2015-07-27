@@ -11,6 +11,7 @@
 #include "KTParam.hh"
 
 using std::string;
+using std::stringstream;
 
 namespace Katydid
 {
@@ -74,5 +75,50 @@ namespace Katydid
         fFile->cd();
         return true;
     }
+
+
+    //****************************
+    // KTROOTSpectrogramTypeWriter
+    //****************************
+
+    KTROOTSpectrogramTypeWriter::KTROOTSpectrogramTypeWriter()
+    {
+    }
+
+    KTROOTSpectrogramTypeWriter::~KTROOTSpectrogramTypeWriter()
+    {
+    }
+
+    void KTROOTSpectrogramTypeWriter::CreateNewSpectrograms(const KTFrequencyDomainArrayData& data, unsigned nComponents, double startTime, unsigned sliceLength, std::vector< SpectrogramData >& spectrograms, string histNameBase)
+    {
+        if (spectrograms.size() < nComponents)
+        {
+            // Yes, we do need to resize the vector of histograms
+            // Get number of components and resize the vector of histograms
+            unsigned currentSize = spectrograms.size();
+            spectrograms.resize(nComponents);
+
+            // calculate the properties of the time axis
+            unsigned nSlices = unsigned((fWriter->GetMaxTime() - startTime) / sliceLength) + 1; // the +1 is so that the end time is the first slice ending outside the max time.
+            double endTime = startTime + sliceLength * (double)nSlices;
+            for (unsigned iComponent = currentSize; iComponent < nComponents; ++iComponent)
+            {
+                // calculate the properties of the frequency axis
+                double freqBinWidth = data.GetArray(iComponent)->GetAxis().GetBinWidth();
+                spectrograms[iComponent].fFirstFreqBin = unsigned((fWriter->GetMinFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth);
+                spectrograms[iComponent].fLastFreqBin = unsigned((fWriter->GetMaxFreq() - data.GetArray(iComponent)->GetAxis().GetBinLowEdge(0)) / freqBinWidth) + 1;
+                unsigned nFreqBins = spectrograms[iComponent].fLastFreqBin - spectrograms[iComponent].fFirstFreqBin + 1;
+                double startFreq = spectrograms[iComponent].fFirstFreqBin * freqBinWidth;
+                double endFreq = spectrograms[iComponent].fLastFreqBin * freqBinWidth;
+                // form the histogram name
+                stringstream conv;
+                conv << iComponent;
+                string histName = histNameBase + conv.str();
+                spectrograms[iComponent].fSpectrogram = new TH2D(histName.c_str(), "Spectrogram", nSlices, startTime, endTime, nFreqBins, startFreq, endFreq );
+                spectrograms[iComponent].fNextTimeBinToFill = 0;
+            }
+        } // done initializing new spectrograms
+    }
+
 
 } /* namespace Katydid */

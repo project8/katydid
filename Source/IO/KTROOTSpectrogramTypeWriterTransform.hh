@@ -10,13 +10,8 @@
 
 #include "KTROOTSpectrogramWriter.hh"
 
-#include "KTData.hh"
-
-class TH2D;
-
 namespace Katydid
 {
-
     class KTROOTSpectrogramTypeWriterTransform : public KTROOTSpectrogramTypeWriter//, public KTTypeWriterTransform
     {
         public:
@@ -33,24 +28,24 @@ namespace Katydid
             void AddFrequencySpectrumDataFFTW(KTDataPtr data);
             void OutputFrequencySpectrumDataFFTW();
 
+            void AddPowerSpectrumData(KTDataPtr data);
+            void OutputPowerSpectrumData();
+
+            void AddPSDData(KTDataPtr data);
+            void OutputPSDData();
+
             void OutputSpectrograms();
 
             void ClearSpectrograms();
 
         private:
-            struct SpectrogramData {
-                TH2D* fSpectrogram;
-                unsigned fFirstFreqBin; // frequency-axis bin 0 is this bin in the incoming data
-                unsigned fLastFreqBin; // frequency-axis last-bin is this bin in the incoming data
-                unsigned fNextTimeBinToFill; // keep track of the progress filling the spectrogram from slice to slice
-            };
-
             void OutputASpectrogramSet(std::vector< SpectrogramData >& aSpectSet);
             void ClearASpectrogramSet(std::vector< SpectrogramData >& aSpectSet);
 
             std::vector< SpectrogramData > fFSPolarSpectrograms;
             std::vector< SpectrogramData > fFSFFTWSpectrograms;
-
+            std::vector< SpectrogramData > fPowerSpectrograms;
+            std::vector< SpectrogramData > fPSDSpectrograms;
     };
 
 

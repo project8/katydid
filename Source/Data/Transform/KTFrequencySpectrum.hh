@@ -8,13 +8,13 @@
 #ifndef KTFREQUENCYSPECTRUM_HH_
 #define KTFREQUENCYSPECTRUM_HH_
 
-#include <string>
+#include "KTFrequencyDomainArray.hh"
 
 namespace Katydid
 {
     class KTPowerSpectrum;
 
-    class KTFrequencySpectrum
+    class KTFrequencySpectrum : public KTFrequencyDomainArray
     {
         public:
             KTFrequencySpectrum();
@@ -24,12 +24,6 @@ namespace Katydid
             virtual unsigned GetNTimeBins() const = 0;
             /// Set the size of the time-domain array from which this spectrum was created
             virtual void SetNTimeBins(unsigned bins) = 0;
-
-            /// Get the size of the array using the KTFrequencySpectrum interface
-            virtual unsigned GetNFrequencyBins() const = 0;
-
-            /// Get the bin width of the array using the KTFrequencySpectrum interface
-            virtual double GetFrequencyBinWidth() const = 0;
 
             virtual double GetReal(unsigned bin) const = 0;
             virtual double GetImag(unsigned bin) const = 0;
@@ -46,6 +40,17 @@ namespace Katydid
             virtual KTFrequencySpectrum& Scale(double scale) = 0;
 
             virtual KTPowerSpectrum* CreatePowerSpectrum() const= 0;
+    };
+
+    class KTFrequencySpectrumData : public KTFrequencyDomainArrayData
+    {
+        public:
+            KTFrequencySpectrumData();
+            virtual ~KTFrequencySpectrumData();
+
+            virtual const KTFrequencySpectrum* GetSpectrum(unsigned component = 0) const = 0;
+            virtual KTFrequencySpectrum* GetSpectrum(unsigned component = 0) = 0;
+
     };
 
 } /* namespace Katydid */

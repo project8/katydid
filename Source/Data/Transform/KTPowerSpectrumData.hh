@@ -17,7 +17,7 @@
 namespace Katydid
 {
 
-    class KTPowerSpectrumDataCore
+    class KTPowerSpectrumDataCore : public KTFrequencyDomainArrayData
     {
         public:
             KTPowerSpectrumDataCore();
@@ -27,6 +27,9 @@ namespace Katydid
 
             virtual const KTPowerSpectrum* GetSpectrum(unsigned component = 0) const;
             virtual KTPowerSpectrum* GetSpectrum(unsigned component = 0);
+
+            const KTFrequencyDomainArray* GetArray(unsigned component = 0) const;
+            KTFrequencyDomainArray* GetArray(unsigned component = 0);
 
             void SetSpectrum(KTPowerSpectrum* spectrum, unsigned component = 0);
 
@@ -42,6 +45,16 @@ namespace Katydid
     }
 
     inline KTPowerSpectrum* KTPowerSpectrumDataCore::GetSpectrum(unsigned component)
+    {
+        return fSpectra[component];
+    }
+
+    inline const KTFrequencyDomainArray* KTPowerSpectrumDataCore::GetArray(unsigned component) const
+    {
+        return fSpectra[component];
+    }
+
+    inline KTFrequencyDomainArray* KTPowerSpectrumDataCore::GetArray(unsigned component)
     {
         return fSpectra[component];
     }
