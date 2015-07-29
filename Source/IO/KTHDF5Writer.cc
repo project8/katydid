@@ -24,7 +24,7 @@ namespace Katydid
     static KTCommandLineOption< string > sRTWFilenameCLO("HDF5 Writer", "HDF5 writer filename", "hdf5-file");
 
     KTHDF5Writer::KTHDF5Writer(const std::string& name) :
-            KTWriterWithTypists< KTHDF5Writer >(name),
+            KTWriterWithTypists< KTHDF5Writer, KTHDF5TypeWriter >(name),
             fHeaderSlot("header", this, &KTHDF5Writer::WriteEggHeader),
             fFilename("my_file.h5"),
             fUseCompressionFlag(false),

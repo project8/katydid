@@ -24,7 +24,7 @@ namespace Katydid
     static KTCommandLineOption< string > sRSWFilenameCLO("ROOT Spectrogram Writer", "ROOT spectrogram writer filename", "rsw-file");
 
     KTROOTSpectrogramWriter::KTROOTSpectrogramWriter(const std::string& name) :
-            KTWriterWithTypists< KTROOTSpectrogramWriter >(name),
+            KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >(name),
             fFilename("spect_output.root"),
             fFileFlag("recreate"),
             fMinTime(0.),
@@ -81,7 +81,8 @@ namespace Katydid
     // KTROOTSpectrogramTypeWriter
     //****************************
 
-    KTROOTSpectrogramTypeWriter::KTROOTSpectrogramTypeWriter()
+    KTROOTSpectrogramTypeWriter::KTROOTSpectrogramTypeWriter() :
+        KTDerivedTypeWriter< KTROOTSpectrogramWriter >()
     {
     }
 

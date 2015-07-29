@@ -19,7 +19,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTJSONWriter, "json-writer");
 
     KTJSONWriter::KTJSONWriter(const std::string& name) :
-            KTWriterWithTypists< KTJSONWriter >(name),
+            KTWriterWithTypists< KTJSONWriter, KTJSONTypeWriter >(name),
             fFilename("basic_output.json"),
             fFileMode("w+"),
             fPrettyJSONFlag(true),

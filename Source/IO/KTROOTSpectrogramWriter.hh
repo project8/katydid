@@ -80,7 +80,7 @@ namespace Katydid
      
     */
 
-    class KTROOTSpectrogramWriter : public KTWriterWithTypists< KTROOTSpectrogramWriter >//public KTWriter
+    class KTROOTSpectrogramWriter : public KTWriterWithTypists< KTROOTSpectrogramWriter, KTROOTSpectrogramTypeWriter >//public KTWriter
     {
         public:
             KTROOTSpectrogramWriter(const std::string& name = "root-spectrogram-writer");

@@ -41,7 +41,7 @@ namespace Katydid
      
     */
 
-    class KTTerminalWriter : public KTWriterWithTypists< KTTerminalWriter >
+    class KTTerminalWriter : public KTWriterWithTypists< KTTerminalWriter, KTTerminalTypeWriter >
     {
         public:
             KTTerminalWriter(const std::string& name = "terminal-writer");

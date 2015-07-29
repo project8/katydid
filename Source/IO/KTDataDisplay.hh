@@ -62,7 +62,7 @@ namespace Katydid
 
     */
 
-    class KTDataDisplay : public KTWriterWithTypists< KTDataDisplay >
+    class KTDataDisplay : public KTWriterWithTypists< KTDataDisplay, KTDataTypeDisplay >
     {
 
         public:
