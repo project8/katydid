@@ -21,7 +21,6 @@ namespace Katydid
             void RegisterSlots();
 
         public:
-
             void AddFrequencySpectrumDataPolar(KTDataPtr data);
             void OutputFrequencySpectrumDataPolar();
 
@@ -34,18 +33,19 @@ namespace Katydid
             void AddPSDData(KTDataPtr data);
             void OutputPSDData();
 
-            void OutputSpectrograms();
+        private:
+            std::vector< SpectrogramData > fFSPolarSpectrograms;
+            std::vector< SpectrogramData > fFSFFTWSpectrograms;
+            std::vector< SpectrogramData > fPowerSpectrograms;
+            std::vector< SpectrogramData > fPSDSpectrograms;
 
+        public:
+            void OutputSpectrograms();
             void ClearSpectrograms();
 
         private:
             void OutputASpectrogramSet(std::vector< SpectrogramData >& aSpectSet);
             void ClearASpectrogramSet(std::vector< SpectrogramData >& aSpectSet);
-
-            std::vector< SpectrogramData > fFSPolarSpectrograms;
-            std::vector< SpectrogramData > fFSFFTWSpectrograms;
-            std::vector< SpectrogramData > fPowerSpectrograms;
-            std::vector< SpectrogramData > fPSDSpectrograms;
     };
 
 

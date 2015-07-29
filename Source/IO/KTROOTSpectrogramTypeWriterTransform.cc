@@ -36,27 +36,6 @@ namespace Katydid
         OutputSpectrograms();
     }
 
-    void KTROOTSpectrogramTypeWriterTransform::OutputSpectrograms()
-    {
-        if (! fWriter->OpenAndVerifyFile()) return;
-
-        OutputASpectrogramSet(fFSPolarSpectrograms);
-        OutputASpectrogramSet(fFSFFTWSpectrograms);
-        OutputASpectrogramSet(fPowerSpectrograms);
-        OutputASpectrogramSet(fPSDSpectrograms);
-
-        return;
-    }
-
-    void KTROOTSpectrogramTypeWriterTransform::ClearSpectrograms()
-    {
-        ClearASpectrogramSet(fFSPolarSpectrograms);
-        ClearASpectrogramSet(fFSFFTWSpectrograms);
-        ClearASpectrogramSet(fPowerSpectrograms);
-        ClearASpectrogramSet(fPSDSpectrograms);
-        return;
-    }
-
     void KTROOTSpectrogramTypeWriterTransform::OutputASpectrogramSet(vector< SpectrogramData >& aSpectrogramSet)
     {
         // this function does not check the root file; it's assumed to be opened and verified already
@@ -80,6 +59,27 @@ namespace Katydid
         return;
     }
 
+    void KTROOTSpectrogramTypeWriterTransform::OutputSpectrograms()
+    {
+        if (! fWriter->OpenAndVerifyFile()) return;
+
+        OutputASpectrogramSet(fFSPolarSpectrograms);
+        OutputASpectrogramSet(fFSFFTWSpectrograms);
+        OutputASpectrogramSet(fPowerSpectrograms);
+        OutputASpectrogramSet(fPSDSpectrograms);
+
+        return;
+    }
+
+    void KTROOTSpectrogramTypeWriterTransform::ClearSpectrograms()
+    {
+        ClearASpectrogramSet(fFSPolarSpectrograms);
+        ClearASpectrogramSet(fFSFFTWSpectrograms);
+        ClearASpectrogramSet(fPowerSpectrograms);
+        ClearASpectrogramSet(fPSDSpectrograms);
+        return;
+    }
+
     void KTROOTSpectrogramTypeWriterTransform::RegisterSlots()
     {
         fWriter->RegisterSlot("fs-polar", this, &KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataPolar);
@@ -90,9 +90,9 @@ namespace Katydid
     }
 
 
-    //**********************
-    // Frequency Series Data
-    //**********************
+    //************************
+    // Frequency Spectrum Data
+    //************************
 
     void KTROOTSpectrogramTypeWriterTransform::AddFrequencySpectrumDataPolar(KTDataPtr data)
     {
@@ -105,6 +105,10 @@ namespace Katydid
         AddFrequencySpectrumDataHelper< KTFrequencySpectrumDataFFTW >(data, fFSFFTWSpectrograms, "FSFFTWSpectrogram_");
         return;
     }
+
+    //********************
+    // Power Spectrum Data
+    //********************
 
     void KTROOTSpectrogramTypeWriterTransform::AddPowerSpectrumData(KTDataPtr data)
     {
