@@ -42,7 +42,7 @@ namespace Katydid
     */
 
 
-    class KTJSONWriter : public KTWriterWithTypists< KTJSONWriter >
+    class KTJSONWriter : public KTWriterWithTypists< KTJSONWriter, KTJSONTypeWriter >
     {
         public:
             typedef KTJSONMaker< rapidjson::FileStream > JSONMaker;

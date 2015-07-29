@@ -23,7 +23,7 @@ namespace Katydid
 
 
 
-    class KTROOTTreeWriter : public KTWriterWithTypists< KTROOTTreeWriter >//public KTWriter
+    class KTROOTTreeWriter : public KTWriterWithTypists< KTROOTTreeWriter, KTROOTTreeTypeWriter >//public KTWriter
     {
         public:
             KTROOTTreeWriter(const std::string& name = "root-tree-writer");

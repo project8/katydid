@@ -10,6 +10,7 @@
 namespace Katydid
 {
     KTFrequencySpectrumDataFFTWCore::KTFrequencySpectrumDataFFTWCore() :
+            KTFrequencySpectrumData(),
             fSpectra(1)
     {
         fSpectra[0] = NULL;

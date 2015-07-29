@@ -57,6 +57,16 @@ namespace Katydid
         return *this;
     }
 
+    const KTAxisProperties< 1 >& KTFrequencySpectrumPolar::GetAxis() const
+    {
+        return *this;
+    }
+
+    KTAxisProperties< 1 >& KTFrequencySpectrumPolar::GetAxis()
+    {
+        return *this;
+    }
+
     KTFrequencySpectrumPolar& KTFrequencySpectrumPolar::CConjugate()
     {
         unsigned nBins = size();

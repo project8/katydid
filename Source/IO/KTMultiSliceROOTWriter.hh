@@ -30,7 +30,7 @@ namespace Katydid
     };
 
 
-    class KTMultiSliceROOTWriter : public KTWriterWithTypists< KTMultiSliceROOTWriter >//public KTWriter
+    class KTMultiSliceROOTWriter : public KTWriterWithTypists< KTMultiSliceROOTWriter, KTMultiSliceROOTTypeWriter >//public KTWriter
     {
         public:
             KTMultiSliceROOTWriter(const std::string& name = "multislice-root-writer");

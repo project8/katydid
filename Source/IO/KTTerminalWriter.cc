@@ -17,7 +17,7 @@ namespace Katydid
     KT_REGISTER_PROCESSOR(KTTerminalWriter, "terminal-writer");
 
     KTTerminalWriter::KTTerminalWriter(const std::string& name) :
-            KTWriterWithTypists< KTTerminalWriter >(name)
+            KTWriterWithTypists< KTTerminalWriter, KTTerminalTypeWriter >(name)
     {
     }
 

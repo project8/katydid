@@ -14,7 +14,11 @@
 
 namespace Katydid {
 
-    class KTBasicASCIIWriter : public KTWriterWithTypists< KTBasicASCIIWriter > {
+    class KTBasicASCIIWriter;
+
+    typedef KTDerivedTypeWriter< KTBasicASCIIWriter > KTBasicASCIITypeWriter;
+
+    class KTBasicASCIIWriter : public KTWriterWithTypists< KTBasicASCIIWriter, KTBasicASCIITypeWriter > {
             // Constructors/destructors
         public:
             KTBasicASCIIWriter(const std::string& name = "basic-ascii-writer");
@@ -37,7 +41,6 @@ namespace Katydid {
 
     }; // class KTBasicASCIIWriter
 
-    typedef KTDerivedTypeWriter< KTBasicASCIIWriter > KTBasicASCIITypeWriter;
 }; // namespace Katydid
 
 

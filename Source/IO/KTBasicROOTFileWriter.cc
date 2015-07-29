@@ -23,7 +23,7 @@ namespace Katydid
     static KTCommandLineOption< string > sBRWFilenameCLO("Basic ROOT File Writer", "Basic ROOT file writer filename", "brw-file");
 
     KTBasicROOTFileWriter::KTBasicROOTFileWriter(const std::string& name) :
-            KTWriterWithTypists< KTBasicROOTFileWriter >(name),
+            KTWriterWithTypists< KTBasicROOTFileWriter, KTBasicROOTTypeWriter >(name),
             fFilename("basic_output.root"),
             fFileFlag("recreate"),
             fFile(NULL)

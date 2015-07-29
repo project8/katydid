@@ -27,7 +27,7 @@ namespace Katydid
     static KTCommandLineOption< string > sRTWFilenameCLO("ROOT Tree Writer", "ROOT Tree writer filename", "rtw-file");
 
     KTROOTTreeWriter::KTROOTTreeWriter(const std::string& name) :
-            KTWriterWithTypists< KTROOTTreeWriter >(name),
+            KTWriterWithTypists< KTROOTTreeWriter, KTROOTTreeTypeWriter >(name),
             fFilename("tree_output.root"),
             fFileFlag("recreate"),
             fFile(NULL),

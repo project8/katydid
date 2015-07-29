@@ -71,11 +71,11 @@ namespace Katydid
 
     };
 
-    template< class XWriter >
+    template< class XWriter, class XTypist >
     class KTWriterWithTypists : public KTWriter
     {
         protected:
-            typedef std::map< const std::type_info*, KTDerivedTypeWriter< XWriter >* > TypeWriterMap;
+            typedef std::map< const std::type_info*, XTypist* > TypeWriterMap;
         public:
             KTWriterWithTypists(const std::string& name = "default-writer-with-typists-name");
             virtual ~KTWriterWithTypists();
@@ -89,25 +89,25 @@ namespace Katydid
     };
 
 
-    template< class XWriter >
-    KTWriterWithTypists< XWriter >::KTWriterWithTypists(const std::string& name) :
+    template< class XWriter, class XTypist >
+    KTWriterWithTypists< XWriter, XTypist >::KTWriterWithTypists(const std::string& name) :
             KTWriter(name),
             fTypeWriters()
     {
-        KTTIFactory< KTDerivedTypeWriter< XWriter > >* twFactory = KTTIFactory< KTDerivedTypeWriter< XWriter > >::GetInstance();
-        for (typename KTTIFactory< KTDerivedTypeWriter< XWriter > >::FactoryCIt factoryIt = twFactory->GetFactoryMapBegin();
+        KTTIFactory< XTypist >* twFactory = KTTIFactory< XTypist >::GetInstance();
+        for (typename KTTIFactory< XTypist >::FactoryCIt factoryIt = twFactory->GetFactoryMapBegin();
                 factoryIt != twFactory->GetFactoryMapEnd();
                 factoryIt++)
         {
-            KTDerivedTypeWriter< XWriter >* newTypeWriter = twFactory->Create(factoryIt);
+            XTypist* newTypeWriter = twFactory->Create(factoryIt);
             newTypeWriter->SetWriter(static_cast< XWriter* >(this));
             newTypeWriter->RegisterSlots();
             fTypeWriters.insert(typename TypeWriterMap::value_type(factoryIt->first, newTypeWriter));
         }
     }
 
-    template< class XWriter >
-    KTWriterWithTypists< XWriter >::~KTWriterWithTypists()
+    template< class XWriter, class XTypist >
+    KTWriterWithTypists< XWriter, XTypist >::~KTWriterWithTypists()
     {
         while (! fTypeWriters.empty())
         {
@@ -116,9 +116,9 @@ namespace Katydid
         }
     }
 
-    template< class XWriter >
+    template< class XWriter, class XTypist >
     template< class XTypeWriter >
-    XTypeWriter* KTWriterWithTypists< XWriter >::GetTypeWriter()
+    XTypeWriter* KTWriterWithTypists< XWriter, XTypist >::GetTypeWriter()
     {
         typename TypeWriterMap::const_iterator it = fTypeWriters.find(&typeid(XTypeWriter));
         if (it == fTypeWriters.end())
